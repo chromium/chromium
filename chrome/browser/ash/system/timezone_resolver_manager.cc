@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/preferences.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
@@ -221,21 +221,6 @@ bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
 
 void TimeZoneResolverManager::OnLocalStateInitialized(bool initialized) {
   local_state_initialized_ = initialized;
-  if (initialized) {
-    const PrefService::Preference* device_pref =
-        g_browser_process->local_state()->FindPreference(
-            prefs::kResolveDeviceTimezoneByGeolocation);
-    // Migrate old kResolveDeviceTimezoneByGeolocation system preference.
-    if (device_pref && !device_pref->IsDefaultValue()) {
-      const bool enabled = device_pref->GetValue()->GetBool();
-      g_browser_process->local_state()->SetInteger(
-          prefs::kResolveDeviceTimezoneByGeolocationMethod,
-          enabled ? static_cast<int>(TimeZoneResolveMethod::IP_ONLY)
-                  : static_cast<int>(TimeZoneResolveMethod::DISABLED));
-      g_browser_process->local_state()->ClearPref(
-          prefs::kResolveDeviceTimezoneByGeolocation);
-    }
-  }
   if (initialized_)
     UpdateTimezoneResolver();
 }
@@ -300,9 +285,7 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
     return TimeZoneResolveMethodFromInt(
         user_prefs->GetInteger(prefs::kResolveTimezoneByGeolocationMethod));
   }
-  return user_prefs->GetBoolean(prefs::kResolveTimezoneByGeolocation)
-             ? TimeZoneResolveMethod::IP_ONLY
-             : TimeZoneResolveMethod::DISABLED;
+  return TimeZoneResolveMethod::IP_ONLY;
 }
 
 // static

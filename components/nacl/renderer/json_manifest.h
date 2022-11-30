@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H
-#define COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H
+#ifndef COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H_
+#define COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H_
 
 #include <memory>
 #include <set>
@@ -26,7 +26,6 @@ class JsonManifest {
 
   JsonManifest(const std::string& manifest_base_url,
                const std::string& sandbox_isa,
-               bool nonsfi_enabled,
                bool pnacl_debug);
   ~JsonManifest();
 
@@ -38,7 +37,6 @@ class JsonManifest {
   // manifest file.
   bool GetProgramURL(std::string* full_url,
                      PP_PNaClOptions* pnacl_options,
-                     bool* uses_nonsfi_mode,
                      ErrorInfo* error_info) const;
 
   // Gets all the keys and their URLs in the "files" section that are
@@ -56,26 +54,24 @@ class JsonManifest {
 
  private:
   bool MatchesSchema(ErrorInfo* error_info);
-  bool GetKeyUrl(const base::DictionaryValue& dictionary,
+  bool GetKeyUrl(const base::Value::Dict& dictionary,
                  const std::string& key,
                  std::string* full_url,
                  PP_PNaClOptions* pnacl_options) const;
-  bool GetURLFromISADictionary(const base::DictionaryValue& parent_dictionary,
+  bool GetURLFromISADictionary(const base::Value::Dict& parent_dictionary,
                                const std::string& parent_key,
                                std::string* url,
                                PP_PNaClOptions* pnacl_options,
-                               bool* uses_nonsfi_mode,
                                ErrorInfo* error_info) const;
 
   std::string manifest_base_url_;
   std::string sandbox_isa_;
-  bool nonsfi_enabled_;
   bool pnacl_debug_;
 
   // The dictionary of manifest information parsed in Init().
-  std::unique_ptr<base::DictionaryValue> dictionary_;
+  base::Value::Dict dictionary_;
 };
 
 }  // namespace nacl
 
-#endif  // COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H
+#endif  // COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H_

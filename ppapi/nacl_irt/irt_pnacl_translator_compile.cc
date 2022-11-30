@@ -1,19 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "build/build_config.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
 #include "native_client/src/untrusted/irt/irt_dev.h"
 #include "ppapi/nacl_irt/irt_interfaces.h"
 #include "ppapi/nacl_irt/plugin_startup.h"
 #include "ppapi/proxy/ppapi_messages.h"
-
-#if !defined(OS_NACL_NONSFI)
 
 namespace {
 
@@ -25,6 +21,10 @@ class TranslatorCompileListener : public IPC::Listener {
     channel_ = IPC::Channel::Create(handle, IPC::Channel::MODE_SERVER, this);
     CHECK(channel_->Connect());
   }
+
+  TranslatorCompileListener(const TranslatorCompileListener&) = delete;
+  TranslatorCompileListener& operator=(const TranslatorCompileListener&) =
+      delete;
 
   // Needed for handling sync messages in OnMessageReceived().
   bool Send(IPC::Message* message) {
@@ -96,8 +96,6 @@ class TranslatorCompileListener : public IPC::Listener {
 
   std::unique_ptr<IPC::Channel> channel_;
   const struct nacl_irt_pnacl_compile_funcs* funcs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslatorCompileListener);
 };
 
 void ServeTranslateRequest(const struct nacl_irt_pnacl_compile_funcs* funcs) {
@@ -109,8 +107,4 @@ void ServeTranslateRequest(const struct nacl_irt_pnacl_compile_funcs* funcs) {
 }
 
 const struct nacl_irt_private_pnacl_translator_compile
-    nacl_irt_private_pnacl_translator_compile = {
-  ServeTranslateRequest
-};
-
-#endif  // !defined(OS_NACL_NONSFI)
+    nacl_irt_private_pnacl_translator_compile = {ServeTranslateRequest};

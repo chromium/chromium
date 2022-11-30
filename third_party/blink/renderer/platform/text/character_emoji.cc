@@ -1,20 +1,21 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/text/character.h"
 
 #include <unicode/uvernum.h>
+
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 #if defined(USING_SYSTEM_ICU) || (U_ICU_VERSION_MAJOR_NUM <= 61)
 #include <unicode/uniset.h>
 
 namespace {
-Mutex& GetFreezePatternMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+base::Lock& GetFreezePatternLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 }  // namespace
 
@@ -206,7 +207,7 @@ static const char kEmojiModifierBasePattern[] =
 
 static void applyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicodeSet,
                                          const char* pattern) {
-  MutexLocker mutexLocker(GetFreezePatternMutex());
+  base::AutoLock locker(GetFreezePatternLock());
   if (!unicodeSet->isEmpty())
     return;
   ICUError err;

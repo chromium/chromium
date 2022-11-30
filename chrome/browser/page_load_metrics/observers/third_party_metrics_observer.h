@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_THIRD_PARTY_METRICS_OBSERVER_H_
 
 #include <map>
-#include <string>
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -33,12 +31,21 @@ class ThirdPartyMetricsObserver
   };
 
   ThirdPartyMetricsObserver();
+
+  ThirdPartyMetricsObserver(const ThirdPartyMetricsObserver&) = delete;
+  ThirdPartyMetricsObserver& operator=(const ThirdPartyMetricsObserver&) =
+      delete;
+
   ~ThirdPartyMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
+  const char* GetObserverName() const override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void FrameReceivedFirstUserActivation(
+  void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
@@ -117,8 +124,6 @@ class ThirdPartyMetricsObserver
 
   // True if this page loaded a third-party font.
   bool third_party_font_loaded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_THIRD_PARTY_METRICS_OBSERVER_H_

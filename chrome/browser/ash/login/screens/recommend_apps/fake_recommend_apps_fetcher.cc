@@ -1,18 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher.h"
 
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
-constexpr base::TimeDelta kFakeLoadingTime = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kFakeLoadingTime = base::Seconds(3);
 constexpr const int kMaxAppCount = 21;
 
 }  // namespace
@@ -26,8 +27,7 @@ FakeRecommendAppsFetcher::~FakeRecommendAppsFetcher() = default;
 
 void FakeRecommendAppsFetcher::OnTimer() {
   base::Value apps(base::Value::Type::LIST);
-  for (int i = 0; i < std::min(std::max(0, fake_apps_count_), kMaxAppCount);
-       i++) {
+  for (int i = 0; i < base::clamp(fake_apps_count_, 0, kMaxAppCount); i++) {
     base::Value app(base::Value::Type::DICTIONARY);
     app.SetKey("name", base::Value(base::StringPrintf("Fake App %d", (i + 1))));
     app.SetKey("package_name", base::Value(base::StringPrintf(
@@ -50,4 +50,4 @@ void FakeRecommendAppsFetcher::Retry() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,10 @@ public class AccessibilityEventDispatcher {
     // populated once in the constructor.
     private Set<Integer> mViewIndependentEventsToThrottle;
 
+    // Set of AccessibilityEvent types that are relevant to enabled accessibility services and
+    // will be enqueued to be dispatched.
+    private Set<Integer> mRelevantEventTypes;
+
     // For events being throttled (see: |mEventsToThrottle|), this array will map the eventType
     // to the last time (long in milliseconds) such an event has been sent.
     private Map<Long, Long> mEventLastFiredTimes = new HashMap<Long, Long>();
@@ -35,6 +39,9 @@ public class AccessibilityEventDispatcher {
     // Implementation of the callback interface to {@link WebContentsAccessibilityImpl} so that we
     // can maintain a connection through JNI to the native code.
     private Client mClient;
+
+    // Simple boolean to plumb through the ContentFeatureList enabled/disabled flag.
+    private boolean mOnDemandEnabled;
 
     /**
      * Callback interface to link {@link WebContentsAccessibilityImpl} with an instance of the
@@ -73,10 +80,13 @@ public class AccessibilityEventDispatcher {
      *  Create an AccessibilityEventDispatcher and define the delays for event types.
      */
     public AccessibilityEventDispatcher(Client mClient, Map<Integer, Integer> eventThrottleDelays,
-            Set<Integer> viewIndependentEventsToThrottle) {
+            Set<Integer> viewIndependentEventsToThrottle, Set<Integer> relevantEventTypes,
+            boolean onDemandEnabled) {
         this.mClient = mClient;
         this.mEventThrottleDelays = eventThrottleDelays;
         this.mViewIndependentEventsToThrottle = viewIndependentEventsToThrottle;
+        this.mRelevantEventTypes = relevantEventTypes;
+        this.mOnDemandEnabled = onDemandEnabled;
     }
 
     /**
@@ -88,6 +98,11 @@ public class AccessibilityEventDispatcher {
      * @param eventType         The AccessibilityEvent type.
      */
     public void enqueueEvent(int virtualViewId, int eventType) {
+        // Check whether OnDemand feature is enabled and if this is a relevant event type.
+        if (mOnDemandEnabled && !mRelevantEventTypes.contains(eventType)) {
+            return;
+        }
+
         // Check whether this type of event is one we want to throttle, and if not then send it
         if (!mEventThrottleDelays.containsKey(eventType)) {
             mClient.dispatchEvent(virtualViewId, eventType);
@@ -134,6 +149,32 @@ public class AccessibilityEventDispatcher {
                     (mEventLastFiredTimes.get(uuid) + mEventThrottleDelays.get(eventType)) - now);
             mPendingEvents.put(uuid, myRunnable);
         }
+    }
+
+    /**
+     * Helper method to cancel all posted Runnables if the Client object is being destroyed early.
+     */
+    public void clearQueue() {
+        for (Long uuid : mPendingEvents.keySet()) {
+            mClient.removeRunnable(mPendingEvents.get(uuid));
+        }
+        mPendingEvents.clear();
+    }
+
+    /**
+     * Helper method to update the list of relevant event types to be dispatched.
+     * @param relevantEventTypes        Set<Integer> relevant event types
+     */
+    public void updateRelevantEventTypes(Set<Integer> relevantEventTypes) {
+        this.mRelevantEventTypes = relevantEventTypes;
+    }
+
+    /**
+     * Helper method to set the OnDemand feature enabled boolean.
+     * @param onDemandEnabled           boolean is feature enabled
+     */
+    public void setOnDemandEnabled(boolean onDemandEnabled) {
+        mOnDemandEnabled = onDemandEnabled;
     }
 
     /**

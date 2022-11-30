@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "util/linux/ptrace_connection.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -31,6 +30,10 @@ namespace crashpad {
 class ProcStatReader {
  public:
   ProcStatReader();
+
+  ProcStatReader(const ProcStatReader&) = delete;
+  ProcStatReader& operator=(const ProcStatReader&) = delete;
+
   ~ProcStatReader();
 
   //! \brief Initializes the reader.
@@ -74,8 +77,6 @@ class ProcStatReader {
   std::string contents_;
   size_t third_column_position_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcStatReader);
 };
 
 }  // namespace crashpad

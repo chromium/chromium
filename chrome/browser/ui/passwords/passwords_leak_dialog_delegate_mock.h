@@ -1,17 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_MOCK_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_MOCK_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+class GURL;
 
 class PasswordsLeakDialogDelegateMock : public PasswordsLeakDialogDelegate {
  public:
   PasswordsLeakDialogDelegateMock();
+
+  PasswordsLeakDialogDelegateMock(const PasswordsLeakDialogDelegateMock&) =
+      delete;
+  PasswordsLeakDialogDelegateMock& operator=(
+      const PasswordsLeakDialogDelegateMock&) = delete;
+
   ~PasswordsLeakDialogDelegateMock() override;
 
   MOCK_METHOD(void, OnLeakDialogHidden, (), (override));
@@ -19,9 +28,10 @@ class PasswordsLeakDialogDelegateMock : public PasswordsLeakDialogDelegate {
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordsLeakDialogDelegateMock);
+  MOCK_METHOD(void,
+              StartAutomatedPasswordChange,
+              (const GURL&, const std::u16string&),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_MOCK_H_

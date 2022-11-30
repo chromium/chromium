@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "mojo/core/dispatcher.h"
@@ -25,6 +24,10 @@ class MOJO_SYSTEM_IMPL_EXPORT HandleTable
     : public base::trace_event::MemoryDumpProvider {
  public:
   HandleTable();
+
+  HandleTable(const HandleTable&) = delete;
+  HandleTable& operator=(const HandleTable&) = delete;
+
   ~HandleTable() override;
 
   // HandleTable is thread-hostile. All access should be gated by GetLock().
@@ -38,7 +41,7 @@ class MOJO_SYSTEM_IMPL_EXPORT HandleTable
       const std::vector<Dispatcher::DispatcherInTransit>& dispatchers,
       MojoHandle* handles);
 
-  scoped_refptr<Dispatcher> GetDispatcher(MojoHandle handle) const;
+  scoped_refptr<Dispatcher> GetDispatcher(MojoHandle handle);
   MojoResult GetAndRemoveDispatcher(MojoHandle,
                                     scoped_refptr<Dispatcher>* dispatcher);
 
@@ -65,23 +68,61 @@ class MOJO_SYSTEM_IMPL_EXPORT HandleTable
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   struct Entry {
-    Entry();
     explicit Entry(scoped_refptr<Dispatcher> dispatcher);
-    Entry(const Entry& other);
     ~Entry();
+    Entry(const Entry& entry);
+    Entry& operator=(const Entry&) = delete;
 
-    scoped_refptr<Dispatcher> dispatcher;
+    const scoped_refptr<Dispatcher> dispatcher;
     bool busy = false;
   };
 
-  using HandleMap = std::unordered_map<MojoHandle, Entry>;
+  // A helper class for storing dispatchers that caches the last fetched
+  // dispatcher. This is an optimization for the common case that the same
+  // dispatcher is fetched repeatedly. Please see https://crbug.com/1295449 for
+  // more details.
+  class EntriesAccessor {
+   public:
+    EntriesAccessor();
+    ~EntriesAccessor();
 
-  HandleMap handles_;
+    // Returns whether an Entry was inserted.
+    bool Add(MojoHandle handle, Entry entry);
+
+    // Returns nullptr if a dispatcher is not found.
+    const scoped_refptr<Dispatcher>* GetDispatcher(MojoHandle handle);
+
+    // Returns nullptr if an entry is not found.
+    Entry* GetMutable(MojoHandle handle);
+
+    // See `Remove` below.
+    enum RemovalCondition { kRemoveOnlyIfBusy, kRemoveOnlyIfNotBusy };
+
+    // Returns whether an entry was found, and if found, `MOJO_RESULT_BUSY` if
+    // `Entry.busy` is true and `MOJO_RESULT_OK` if `Entry.busy` is false. If an
+    // entry is not found, `MOJO_RESULT_NOT_FOUND` is returned.
+    //
+    // If an entry is found, and if `removal_condition` matches `Entry.busy`, it
+    // is removed from storage and -- if `dispatcher` is not nullptr -- the
+    // corresponding dispatcher is returned in `dispatcher`. Otherwise,
+    // `dispatcher` is left unchanged.
+    MojoResult Remove(MojoHandle handle,
+                      RemovalCondition removal_condition,
+                      scoped_refptr<Dispatcher>* dispatcher);
+
+    const std::unordered_map<MojoHandle, Entry>& GetUnderlyingMap() const;
+
+   private:
+    std::unordered_map<MojoHandle, Entry> handles_;
+    scoped_refptr<Dispatcher> last_read_dispatcher_;
+    MojoHandle last_read_handle_ = MOJO_HANDLE_INVALID;
+  };
+
+  EntriesAccessor entries_;
+
   base::Lock lock_;
 
-  uint32_t next_available_handle_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleTable);
+  uintptr_t next_available_handle_ = 1;
 };
 
 }  // namespace core

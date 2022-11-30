@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer_private;
 
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -19,10 +20,11 @@ public class WebLayerAccessibilityUtil extends AccessibilityUtil {
 
     private WebLayerAccessibilityUtil() {}
 
-    public void onBrowserResumed() {
+    public void onBrowserResumed(ProfileImpl profile) {
         // When a browser is resumed the cached state may have be stale and needs to be
         // recalculated.
         updateIsAccessibilityEnabledAndNotify();
+        FontSizePrefs.getInstance(profile).onSystemFontScaleChanged();
     }
 
     public void onAllBrowsersDestroyed() {

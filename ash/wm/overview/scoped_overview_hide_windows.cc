@@ -1,9 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 
+#include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 
@@ -20,9 +22,19 @@ ScopedOverviewHideWindows::ScopedOverviewHideWindows(
 ScopedOverviewHideWindows::~ScopedOverviewHideWindows() {
   for (const auto& element : window_visibility_) {
     element.first->RemoveObserver(this);
-    if (element.second)
+
+    // While in the middle of the destructor of `aura::Window`,
+    // `OverviewItem::OnWindowDestroying()` might be called before
+    // `ScopedOverviewHideWindows::OnWindowDestroying()`. It eventually invokes
+    // `OverviewGrid::RemoveItem()`, and finally reaches here. Therefore, we
+    // need to check if the hidden window is going to be destroyed.
+    if (!element.first->is_destroying() && element.second)
       element.first->Show();
   }
+}
+
+bool ScopedOverviewHideWindows::HasWindow(aura::Window* window) const {
+  return base::Contains(window_visibility_, window);
 }
 
 void ScopedOverviewHideWindows::AddWindow(aura::Window* window) {
@@ -32,11 +44,20 @@ void ScopedOverviewHideWindows::AddWindow(aura::Window* window) {
 }
 
 void ScopedOverviewHideWindows::RemoveWindow(aura::Window* window) {
-  DCHECK(base::Contains(window_visibility_, window));
+  DCHECK(HasWindow(window));
   window->RemoveObserver(this);
-  if (window_visibility_[window])
+  if (!window->is_destroying() && window_visibility_[window])
     window->Show();
   window_visibility_.erase(window);
+}
+
+void ScopedOverviewHideWindows::RemoveAllWindows() {
+  std::vector<aura::Window*> windows_to_remove;
+  windows_to_remove.reserve(window_visibility_.size());
+  for (const auto& element : window_visibility_)
+    windows_to_remove.push_back(element.first);
+  for (auto* window : base::Reversed(windows_to_remove))
+    RemoveWindow(window);
 }
 
 void ScopedOverviewHideWindows::OnWindowDestroying(aura::Window* window) {

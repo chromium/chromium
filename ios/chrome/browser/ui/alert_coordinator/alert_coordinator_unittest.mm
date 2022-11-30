@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
-#include "base/test/task_environment.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,8 +27,9 @@
 class AlertCoordinatorTest : public PlatformTest {
  protected:
   AlertCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     view_controller_ = [[UIViewController alloc] init];
-    browser_ = std::make_unique<TestBrowser>();
     [scoped_key_window_.Get() setRootViewController:view_controller_];
   }
 
@@ -52,11 +54,11 @@ class AlertCoordinatorTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   AlertCoordinator* alert_coordinator_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
-  std::unique_ptr<Browser> browser_;
 };
 
 #pragma mark - Tests.
@@ -235,7 +237,7 @@ TEST_F(AlertCoordinatorTest, OnlyOneCancelAction) {
   EXPECT_EQ(UIAlertActionStyleCancel, action.style);
 }
 
-// Tests that the |noInteractionAction| block is called for an alert coordinator
+// Tests that the `noInteractionAction` block is called for an alert coordinator
 // which is stopped before the user has interacted with it.
 TEST_F(AlertCoordinatorTest, NoInteractionActionTest) {
   // Setup.
@@ -257,7 +259,7 @@ TEST_F(AlertCoordinatorTest, NoInteractionActionTest) {
   EXPECT_TRUE(block_called);
 }
 
-// Tests that the |noInteractionAction| block is not called for an alert
+// Tests that the `noInteractionAction` block is not called for an alert
 // coordinator which is dismissed with the cancel button.
 TEST_F(AlertCoordinatorTest, NoInteractionActionWithCancelTest) {
   // Setup.

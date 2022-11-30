@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,10 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 // Enable this to log and crash on unexpected errors during shader compilation.
 #define CHECK_FOR_UNKNOWN_ERRORS false
 
@@ -49,6 +53,9 @@ struct Env {
                                     gl::kANGLEImplementationNullName);
     base::FeatureList::InitializeInstance(std::string(), std::string());
     base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
+#if defined(USE_OZONE)
+    ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
+#endif
     gpu::GLTestHelper::InitializeGLDefault();
     ::gles2::Initialize();
   }

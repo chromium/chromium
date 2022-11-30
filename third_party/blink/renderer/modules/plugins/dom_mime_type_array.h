@@ -25,13 +25,13 @@
 #include "third_party/blink/renderer/core/page/plugins_changed_observer.h"
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class ExceptionState;
-class Frame;
 class LocalDOMWindow;
 class PluginData;
 
@@ -41,7 +41,7 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DOMMimeTypeArray(LocalDOMWindow*);
+  DOMMimeTypeArray(LocalDOMWindow*, bool should_return_fixed_plugin_data);
 
   void UpdatePluginData();
 
@@ -50,8 +50,6 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   DOMMimeType* namedItem(const AtomicString& property_name);
   void NamedPropertyEnumerator(Vector<String>&, ExceptionState&) const;
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&) const;
-
-  static bool ShouldReturnEmptyPluginData(Frame*);
 
   // PluginsChangedObserver implementation.
   void PluginsChanged() override;
@@ -62,7 +60,7 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   PluginData* GetPluginData() const;
   void ContextDestroyed() override;
 
-  bool ShouldReturnEmptyPluginData() const;
+  const bool should_return_fixed_plugin_data_;
 
   HeapVector<Member<DOMMimeType>> dom_mime_types_;
 };

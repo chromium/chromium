@@ -1,20 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.media;
 
-import android.annotation.TargetApi;
 import android.media.MediaFormat;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -51,7 +51,7 @@ class HdrMetadata {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public void addMetadataToFormat(MediaFormat format) {
         synchronized (mLock) {
             assert mNativeJniHdrMetadata != 0;
@@ -83,8 +83,8 @@ class HdrMetadata {
             hdrStaticInfo.putShort((short) ((primaryBChromaticityY() * MAX_CHROMATICITY) + 0.5f));
             hdrStaticInfo.putShort((short) ((whitePointChromaticityX() * MAX_CHROMATICITY) + 0.5f));
             hdrStaticInfo.putShort((short) ((whitePointChromaticityY() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) (maxMasteringLuminance() + 0.5f));
-            hdrStaticInfo.putShort((short) (minMasteringLuminance() + 0.5f));
+            hdrStaticInfo.putShort((short) (maxColorVolumeLuminance() + 0.5f));
+            hdrStaticInfo.putShort((short) (minColorVolumeLuminance() + 0.5f));
             hdrStaticInfo.putShort((short) maxContentLuminance());
             hdrStaticInfo.putShort((short) maxFrameAverageLuminance());
 
@@ -174,12 +174,14 @@ class HdrMetadata {
                 mNativeJniHdrMetadata, HdrMetadata.this);
     }
 
-    private float maxMasteringLuminance() {
-        return HdrMetadataJni.get().maxMasteringLuminance(mNativeJniHdrMetadata, HdrMetadata.this);
+    private float maxColorVolumeLuminance() {
+        return HdrMetadataJni.get().maxColorVolumeLuminance(
+                mNativeJniHdrMetadata, HdrMetadata.this);
     }
 
-    private float minMasteringLuminance() {
-        return HdrMetadataJni.get().minMasteringLuminance(mNativeJniHdrMetadata, HdrMetadata.this);
+    private float minColorVolumeLuminance() {
+        return HdrMetadataJni.get().minColorVolumeLuminance(
+                mNativeJniHdrMetadata, HdrMetadata.this);
     }
 
     private int maxContentLuminance() {
@@ -204,8 +206,8 @@ class HdrMetadata {
         float primaryBChromaticityY(long nativeJniHdrMetadata, HdrMetadata caller);
         float whitePointChromaticityX(long nativeJniHdrMetadata, HdrMetadata caller);
         float whitePointChromaticityY(long nativeJniHdrMetadata, HdrMetadata caller);
-        float maxMasteringLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
-        float minMasteringLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
+        float maxColorVolumeLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
+        float minColorVolumeLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
         int maxContentLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
         int maxFrameAverageLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
     }

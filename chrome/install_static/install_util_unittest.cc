@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include <tuple>
 
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/win_util.h"
@@ -25,22 +24,6 @@ using ::testing::ElementsAre;
 using ::testing::StrCaseEq;
 
 namespace install_static {
-
-// Tests the MatchPattern function in the install_static library.
-TEST(InstallStaticTest, MatchPattern) {
-  EXPECT_TRUE(MatchPattern(L"", L""));
-  EXPECT_TRUE(MatchPattern(L"", L"*"));
-  EXPECT_FALSE(MatchPattern(L"", L"*a"));
-  EXPECT_FALSE(MatchPattern(L"", L"abc"));
-  EXPECT_TRUE(MatchPattern(L"Hello1234", L"He??o*1*"));
-  EXPECT_TRUE(MatchPattern(L"Foo", L"F*?"));
-  EXPECT_TRUE(MatchPattern(L"Foo", L"F*"));
-  EXPECT_FALSE(MatchPattern(L"Foo", L"F*b"));
-  EXPECT_TRUE(MatchPattern(L"abcd", L"*c*d"));
-  EXPECT_TRUE(MatchPattern(L"abcd", L"*?c*d"));
-  EXPECT_FALSE(MatchPattern(L"abcd", L"abcd*efgh"));
-  EXPECT_TRUE(MatchPattern(L"foobarabc", L"*bar*"));
-}
 
 // Tests the install_static::GetSwitchValueFromCommandLine function.
 TEST(InstallStaticTest, GetSwitchValueFromCommandLineTest) {
@@ -285,6 +268,10 @@ TEST(InstallStaticTest, BrowserProcessTest) {
 class InstallStaticUtilTest
     : public ::testing::TestWithParam<
           std::tuple<InstallConstantIndex, const char*>> {
+ public:
+  InstallStaticUtilTest(const InstallStaticUtilTest&) = delete;
+  InstallStaticUtilTest& operator=(const InstallStaticUtilTest&) = delete;
+
  protected:
   InstallStaticUtilTest()
       : system_level_(std::string(std::get<1>(GetParam())) != "user"),
@@ -355,8 +342,6 @@ class InstallStaticUtilTest
   const HKEY root_key_;
   const nt::ROOT_KEY nt_root_key_;
   registry_util::RegistryOverrideManager override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallStaticUtilTest);
 };
 
 TEST_P(InstallStaticUtilTest, GetChromeInstallSubDirectory) {
@@ -376,7 +361,7 @@ TEST_P(InstallStaticUtilTest, GetChromeInstallSubDirectory) {
       L"Chromium",
   };
 #endif
-  static_assert(base::size(kInstallDirs) == NUM_INSTALL_MODES,
+  static_assert(std::size(kInstallDirs) == NUM_INSTALL_MODES,
                 "kInstallDirs out of date.");
   EXPECT_THAT(GetChromeInstallSubDirectory(),
               StrCaseEq(kInstallDirs[std::get<0>(GetParam())]));
@@ -399,7 +384,7 @@ TEST_P(InstallStaticUtilTest, GetRegistryPath) {
       L"Software\\Chromium",
   };
 #endif
-  static_assert(base::size(kRegistryPaths) == NUM_INSTALL_MODES,
+  static_assert(std::size(kRegistryPaths) == NUM_INSTALL_MODES,
                 "kRegistryPaths out of date.");
   EXPECT_THAT(GetRegistryPath(),
               StrCaseEq(kRegistryPaths[std::get<0>(GetParam())]));
@@ -425,7 +410,7 @@ TEST_P(InstallStaticUtilTest, GetUninstallRegistryPath) {
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Chromium",
   };
 #endif
-  static_assert(base::size(kUninstallRegistryPaths) == NUM_INSTALL_MODES,
+  static_assert(std::size(kUninstallRegistryPaths) == NUM_INSTALL_MODES,
                 "kUninstallRegistryPaths out of date.");
   EXPECT_THAT(GetUninstallRegistryPath(),
               StrCaseEq(kUninstallRegistryPaths[std::get<0>(GetParam())]));
@@ -444,7 +429,7 @@ TEST_P(InstallStaticUtilTest, GetAppGuid) {
       L"{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}",  // Google Chrome Dev.
       L"{4EA16AC7-FD5A-47C3-875B-DBF4A2008C20}",  // Google Chrome SxS (Canary).
   };
-  static_assert(base::size(kAppGuids) == NUM_INSTALL_MODES,
+  static_assert(std::size(kAppGuids) == NUM_INSTALL_MODES,
                 "kAppGuids out of date.");
   EXPECT_THAT(GetAppGuid(), StrCaseEq(kAppGuids[std::get<0>(GetParam())]));
 #else
@@ -467,7 +452,7 @@ TEST_P(InstallStaticUtilTest, GetBaseAppId) {
       L"Chromium",
   };
 #endif
-  static_assert(base::size(kBaseAppIds) == NUM_INSTALL_MODES,
+  static_assert(std::size(kBaseAppIds) == NUM_INSTALL_MODES,
                 "kBaseAppIds out of date.");
   EXPECT_THAT(GetBaseAppId(), StrCaseEq(kBaseAppIds[std::get<0>(GetParam())]));
 }
@@ -519,7 +504,7 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
       L"{635EFA6F-08D6-4EC9-BD14-8A0FDE975159}"  // Chromium.
   };
 #endif
-  static_assert(base::size(kToastActivatorClsids) == NUM_INSTALL_MODES,
+  static_assert(std::size(kToastActivatorClsids) == NUM_INSTALL_MODES,
                 "kToastActivatorClsids out of date.");
 
   EXPECT_EQ(GetToastActivatorClsid(),
@@ -574,7 +559,7 @@ TEST_P(InstallStaticUtilTest, GetElevatorClsid) {
       L"{D133B120-6DB4-4D6B-8BFE-83BF8CA1B1B0}",  // Chromium.
   };
 #endif
-  static_assert(base::size(kElevatorClsids) == NUM_INSTALL_MODES,
+  static_assert(std::size(kElevatorClsids) == NUM_INSTALL_MODES,
                 "kElevatorClsids needs to be updated for any new modes.");
 
   EXPECT_EQ(GetElevatorClsid(), kElevatorClsids[std::get<0>(GetParam())]);
@@ -640,7 +625,7 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
       L"{B88C45B9-8825-4629-B83E-77CC67D9CEED}",  // Chromium.
   };
 #endif
-  static_assert(base::size(kElevatorIids) == NUM_INSTALL_MODES,
+  static_assert(std::size(kElevatorIids) == NUM_INSTALL_MODES,
                 "kElevatorIids needs to be updated for any new modes.");
 
   EXPECT_EQ(GetElevatorIid(), kElevatorIids[std::get<0>(GetParam())]);

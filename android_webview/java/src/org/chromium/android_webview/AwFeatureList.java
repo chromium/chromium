@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@ import android.content.pm.PackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Java accessor for base/feature_list.h state.
@@ -63,14 +63,35 @@ public final class AwFeatureList {
         return AwFeatureListJni.get().isEnabled(featureName);
     }
 
-    // Deprecated: Use AwFeatures.*
-    // This constant is here temporarily to avoid breaking Clank.
-    @Deprecated
-    public static final String WEBVIEW_CONNECTIONLESS_SAFE_BROWSING =
-            "WebViewConnectionlessSafeBrowsing";
+    /**
+     * Returns the configured feature parameter value as an integer.
+     *
+     * If the feature is not enabled or the parameter does not exist, this method
+     * will return the |defaultValue|.
+     *
+     * Calling this method will mark the field trial as active. See details
+     * in base/metrics/field_trial_params.h
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in android_webview/browser/aw_feature_list.cc
+     *
+     * @param featureName The name of the feature to query.
+     * @param paramName The name of the feature parameter to query.
+     * @param defaultValue The default value to return if the feature or parameter is not found.
+     * @return The configured parameter value as an integer.
+     */
+    public static int getFeatureParamValueAsInt(
+            String featureName, String paramName, int defaultValue) {
+        assert featureName != null : "featureName should not be null";
+        assert paramName != null : "paramName should not be null";
+
+        return AwFeatureListJni.get().getFeatureParamValueAsInt(
+                featureName, paramName, defaultValue);
+    }
 
     @NativeMethods
     interface Natives {
         boolean isEnabled(String featureName);
+        int getFeatureParamValueAsInt(String featureName, String paramName, int defaultValue);
     }
 }

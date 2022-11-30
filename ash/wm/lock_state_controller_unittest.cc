@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/cpp/ash_switches.h"
-#include "ash/public/cpp/login_constants.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shutdown_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -18,15 +18,19 @@
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/power/power_button_test_base.h"
 #include "ash/touch/touch_devices_controller.h"
+#include "ash/utility/layer_copy_animator.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator.h"
 #include "ash/wm/test_session_state_animator.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/fake/fake_display_snapshot.h"
@@ -37,6 +41,10 @@
 namespace ash {
 namespace {
 
+constexpr char kShelfShutdownConfirmationHistogramName[] =
+    "Ash.Shelf.ShutdownConfirmationBubble.TimeToNextBoot."
+    "LoginShutdownToPowerUpDuration";
+
 // Shorthand for some long constants.
 constexpr power_manager::BacklightBrightnessChange_Cause kUserCause =
     power_manager::BacklightBrightnessChange_Cause_USER_REQUEST;
@@ -46,7 +54,7 @@ bool cursor_visible() {
   return Shell::Get()->cursor_manager()->IsCursorVisible();
 }
 
-void CheckCalledCallback(bool* flag) {
+void CheckCalledCallback(bool* flag, bool aborted) {
   if (flag)
     (*flag) = true;
 }
@@ -55,6 +63,10 @@ void CheckCalledCallback(bool* flag) {
 class TestShutdownController : public ShutdownController {
  public:
   TestShutdownController() = default;
+
+  TestShutdownController(const TestShutdownController&) = delete;
+  TestShutdownController& operator=(const TestShutdownController&) = delete;
+
   ~TestShutdownController() override = default;
 
   int num_shutdown_requests() const { return num_shutdown_requests_; }
@@ -67,8 +79,6 @@ class TestShutdownController : public ShutdownController {
   }
 
   int num_shutdown_requests_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShutdownController);
 };
 
 }  // namespace
@@ -76,6 +86,10 @@ class TestShutdownController : public ShutdownController {
 class LockStateControllerTest : public PowerButtonTestBase {
  public:
   LockStateControllerTest() = default;
+
+  LockStateControllerTest(const LockStateControllerTest&) = delete;
+  LockStateControllerTest& operator=(const LockStateControllerTest&) = delete;
+
   ~LockStateControllerTest() override = default;
 
   // PowerButtonTestBase:
@@ -92,6 +106,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
     test_shutdown_controller_ = std::make_unique<TestShutdownController>();
     lock_state_test_api_->set_shutdown_controller(
         test_shutdown_controller_.get());
+
+    local_state_ = Shell::Get()->local_state();
   }
   void TearDown() override {
     test_shutdown_controller_.reset();
@@ -122,8 +138,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
     power_manager_client()->SendScreenBrightnessChanged(change);
   }
 
-  void ExpectPreLockAnimationStarted() {
-    SCOPED_TRACE("Failure in ExpectPreLockAnimationStarted");
+  void ExpectPreLockAnimationStarted(const std::string& scope) {
+    SCOPED_TRACE("ExpectPreLockAnimationStarted:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
@@ -136,8 +152,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
     EXPECT_TRUE(lock_state_test_api_->is_animating_lock());
   }
 
-  void ExpectPreLockAnimationRunning() {
-    SCOPED_TRACE("Failure in ExpectPreLockAnimationRunning");
+  void ExpectPreLockAnimationRunning(const std::string& scope) {
+    SCOPED_TRACE("ExpectPreLockAnimationRunning:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
@@ -147,8 +163,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
     EXPECT_TRUE(lock_state_test_api_->is_animating_lock());
   }
 
-  void ExpectPreLockAnimationCancel() {
-    SCOPED_TRACE("Failure in ExpectPreLockAnimationCancel");
+  void ExpectPreLockAnimationCancel(const std::string& scope) {
+    SCOPED_TRACE("ExpectPreLockAnimationCancel:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
@@ -157,8 +173,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
         SessionStateAnimator::SHELF, SessionStateAnimator::ANIMATION_FADE_IN));
   }
 
-  void ExpectPreLockAnimationFinished() {
-    SCOPED_TRACE("Failure in ExpectPreLockAnimationFinished");
+  void ExpectPreLockAnimationFinished(const std::string& scope) {
+    SCOPED_TRACE("ExpectPreLockAnimationFinished:" + scope);
     EXPECT_FALSE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
         SessionStateAnimator::ANIMATION_LIFT));
@@ -169,8 +185,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
         SessionStateAnimator::ANIMATION_HIDE_IMMEDIATELY));
   }
 
-  void ExpectPostLockAnimationStarted() {
-    SCOPED_TRACE("Failure in ExpectPostLockAnimationStarted");
+  void ExpectPostLockAnimationStarted(const std::string& scope) {
+    SCOPED_TRACE("ExpectPostLockAnimationStarted:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::LOCK_SCREEN_CONTAINERS,
@@ -179,30 +195,31 @@ class LockStateControllerTest : public PowerButtonTestBase {
         SessionStateAnimator::SHELF, SessionStateAnimator::ANIMATION_FADE_IN));
   }
 
-  void ExpectPostLockAnimationFinished() {
-    SCOPED_TRACE("Failure in ExpectPostLockAnimationFinished");
+  void ExpectPostLockAnimationFinished(const std::string& scope) {
+    SCOPED_TRACE("ExpectPostLockAnimationFinished:" + scope);
     EXPECT_FALSE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::LOCK_SCREEN_CONTAINERS,
         SessionStateAnimator::ANIMATION_RAISE_TO_SCREEN));
   }
 
-  void ExpectUnlockBeforeUIDestroyedAnimationStarted() {
-    SCOPED_TRACE("Failure in ExpectUnlockBeforeUIDestroyedAnimationStarted");
+  void ExpectUnlockBeforeUIDestroyedAnimationStarted(const std::string& scope) {
+    SCOPED_TRACE("ExpectUnlockBeforeUIDestroyedAnimationStarted:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::LOCK_SCREEN_CONTAINERS,
         SessionStateAnimator::ANIMATION_LIFT));
   }
 
-  void ExpectUnlockBeforeUIDestroyedAnimationFinished() {
-    SCOPED_TRACE("Failure in ExpectUnlockBeforeUIDestroyedAnimationFinished");
+  void ExpectUnlockBeforeUIDestroyedAnimationFinished(
+      const std::string& scope) {
+    SCOPED_TRACE("ExpectUnlockBeforeUIDestroyedAnimationFinished:" + scope);
     EXPECT_FALSE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::LOCK_SCREEN_CONTAINERS,
         SessionStateAnimator::ANIMATION_LIFT));
   }
 
-  void ExpectUnlockAfterUIDestroyedAnimationStarted() {
-    SCOPED_TRACE("Failure in ExpectUnlockAfterUIDestroyedAnimationStarted");
+  void ExpectUnlockAfterUIDestroyedAnimationStarted(const std::string& scope) {
+    SCOPED_TRACE("ExpectUnlockAfterUIDestroyedAnimationStarted:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
@@ -211,8 +228,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
         SessionStateAnimator::SHELF, SessionStateAnimator::ANIMATION_FADE_IN));
   }
 
-  void ExpectUnlockAfterUIDestroyedAnimationFinished() {
-    SCOPED_TRACE("Failure in ExpectUnlockAfterUIDestroyedAnimationFinished");
+  void ExpectUnlockAfterUIDestroyedAnimationFinished(const std::string& scope) {
+    SCOPED_TRACE("ExpectUnlockAfterUIDestroyedAnimationFinished:" + scope);
     EXPECT_EQ(0u, test_animator_->GetAnimationCount());
     EXPECT_FALSE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
@@ -221,62 +238,62 @@ class LockStateControllerTest : public PowerButtonTestBase {
         SessionStateAnimator::SHELF, SessionStateAnimator::ANIMATION_FADE_IN));
   }
 
-  void ExpectShutdownAnimationStarted() {
-    SCOPED_TRACE("Failure in ExpectShutdownAnimationStarted");
+  void ExpectShutdownAnimationStarted(const std::string& scope) {
+    SCOPED_TRACE("ExpectShutdownAnimationStarted:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::ROOT_CONTAINER,
         SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS));
   }
 
-  void ExpectShutdownAnimationFinished() {
-    SCOPED_TRACE("Failure in ExpectShutdownAnimationFinished");
+  void ExpectShutdownAnimationFinished(const std::string& scope) {
+    SCOPED_TRACE(" ExpectShutdownAnimationFinished:" + scope);
     EXPECT_EQ(0u, test_animator_->GetAnimationCount());
     EXPECT_FALSE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::ROOT_CONTAINER,
         SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS));
   }
 
-  void ExpectShutdownAnimationCancel() {
-    SCOPED_TRACE("Failure in ExpectShutdownAnimationCancel");
+  void ExpectShutdownAnimationCancel(const std::string& scope) {
+    SCOPED_TRACE("ExpectShutdownAnimationCancel:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::ROOT_CONTAINER,
         SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS));
   }
 
-  void ExpectWallpaperIsShowing() {
-    SCOPED_TRACE("Failure in ExpectWallpaperIsShowing");
+  void ExpectWallpaperIsShowing(const std::string& scope) {
+    SCOPED_TRACE("ExpectWallpaperIsShowing:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::WALLPAPER,
         SessionStateAnimator::ANIMATION_FADE_IN));
   }
 
-  void ExpectWallpaperIsHiding() {
-    SCOPED_TRACE("Failure in ExpectWallpaperIsHiding");
+  void ExpectWallpaperIsHiding(const std::string& scope) {
+    SCOPED_TRACE("ExpectWallpaperIsHiding:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::WALLPAPER,
         SessionStateAnimator::ANIMATION_FADE_OUT));
   }
 
-  void ExpectRestoringWallpaperVisibility() {
-    SCOPED_TRACE("Failure in ExpectRestoringWallpaperVisibility");
+  void ExpectRestoringWallpaperVisibility(const std::string& scope) {
+    SCOPED_TRACE(" ExpectRestoringWallpaperVisibility:" + scope);
     EXPECT_LT(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(test_animator_->AreContainersAnimated(
         SessionStateAnimator::WALLPAPER,
         SessionStateAnimator::ANIMATION_FADE_IN));
   }
 
-  void ExpectUnlockedState() {
-    SCOPED_TRACE("Failure in ExpectUnlockedState");
+  void ExpectUnlockedState(const std::string& scope) {
+    SCOPED_TRACE("ExpectUnlockedState:" + scope);
     EXPECT_EQ(0u, test_animator_->GetAnimationCount());
     EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
   }
 
-  void ExpectLockedState() {
-    SCOPED_TRACE("Failure in ExpectLockedState");
+  void ExpectLockedState(const std::string& scope) {
+    SCOPED_TRACE("ExpectLockedState:" + scope);
     EXPECT_EQ(0u, test_animator_->GetAnimationCount());
     EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
   }
@@ -292,9 +309,28 @@ class LockStateControllerTest : public PowerButtonTestBase {
   }
 
   void SuccessfulAuthentication(bool* call_flag) {
-    base::OnceClosure closure = base::BindOnce(&CheckCalledCallback, call_flag);
-    lock_state_controller_->OnLockScreenHide(std::move(closure));
+    auto callback = base::BindOnce(&CheckCalledCallback, call_flag);
+    lock_state_controller_->OnLockScreenHide(std::move(callback));
   }
+
+  bool IsDefaultValueLoginShutdownTimestamp() {
+    auto* login_shutdown_timestamp_pref =
+        local_state_->FindPreference(prefs::kLoginShutdownTimestampPrefName);
+
+    return login_shutdown_timestamp_pref->IsDefaultValue();
+  }
+
+  // To check if histogram of LockStateController is recorded correctly, we need
+  // to simulate the restart of a device as the metrics measures the time delta
+  // between a shutdown from login/lock screen and a following restart. By
+  // calling the constructor of LockStateController, the restart of a device is
+  // simulated and the call of UmaHistogramLongTimes is triggered if a previous
+  // shutdown was initiated with ShutdownReason::LOGIN_SHUT_DOWN_BUTTON.
+  void RestartDevice() {
+    LockStateController(test_shutdown_controller_.get(), local_state_);
+  }
+
+  base::HistogramTester& histograms() { return histograms_; }
 
   std::unique_ptr<ShutdownController::ScopedResetterForTest>
       shutdown_controller_resetter_;
@@ -302,7 +338,11 @@ class LockStateControllerTest : public PowerButtonTestBase {
   TestSessionStateAnimator* test_animator_ = nullptr;   // not owned
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(LockStateControllerTest);
+  // Histogram value verifier.
+  base::HistogramTester histograms_;
+
+  // To access the pref kLoginShutdownTimestampPrefName
+  PrefService* local_state_ = nullptr;
 };
 
 // Test the show menu and shutdown flow for non-Chrome-OS hardware that doesn't
@@ -312,7 +352,7 @@ class LockStateControllerTest : public PowerButtonTestBase {
 TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDown) {
   Initialize(ButtonType::LEGACY, LoginStatus::USER);
 
-  ExpectUnlockedState();
+  ExpectUnlockedState("1");
 
   // We should request that the screen be locked immediately after seeing the
   // power button get pressed.
@@ -328,7 +368,7 @@ TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDown) {
   // Hold the button again and check that we start shutting down.
   PressPowerButton();
 
-  ExpectShutdownAnimationStarted();
+  ExpectShutdownAnimationStarted("2");
 
   EXPECT_EQ(0, NumShutdownRequests());
   // Make sure a mouse move event won't show the cursor.
@@ -338,6 +378,8 @@ TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDown) {
   EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
   lock_state_test_api_->trigger_real_shutdown_timeout();
   EXPECT_EQ(1, NumShutdownRequests());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 }
 
 // Test that we ignore power button presses when the screen is turned off on an
@@ -422,29 +464,60 @@ TEST_F(LockStateControllerTest, LockButtonBasicGuest) {
   EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
 }
 
+class LockStateControllerAnimationTest
+    : public LockStateControllerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void AdvanceOrAbort(SessionStateAnimator::AnimationSpeed speed) {
+    if (GetParam()) {
+      test_animator_->Advance(test_animator_->GetDuration(speed));
+    } else {
+      test_animator_->AbortAnimations(
+          SessionStateAnimator::kAllNonRootContainersMask);
+    }
+  }
+
+  // Switches to tablet mode for tests that want table mode power button
+  // behavior, also sets other session related info to simulate being on a lock
+  // screen with some other relevant user prefs.
+  void PrepareSessionForUnlockAnimationInTabletModeTest() {
+    power_button_controller_->OnTabletModeStarted();
+    // Advance mock clock to now. If we don't do this, PowerButtonController
+    // will wrongly assume that we have accidental button presses due to all
+    // timestamps zeroed.
+    tick_clock_.SetNowTicks(base::TimeTicks::Now());
+
+    Shell::Get()->session_controller()->SetSessionInfo(
+        SessionInfo{.can_lock_screen = true,
+                    .should_lock_screen_automatically = true,
+                    .state = session_manager::SessionState::LOCKED});
+  }
+};
+
 // Test the basic operation of the lock button.
-TEST_F(LockStateControllerTest, LockButtonBasic) {
+TEST_P(LockStateControllerAnimationTest, LockButtonBasic) {
   // If we're logged in as a regular user, we should start the lock timer and
   // the pre-lock animation.
   Initialize(ButtonType::NORMAL, LoginStatus::USER);
 
   PressLockButton();
-  ExpectPreLockAnimationStarted();
+  ExpectPreLockAnimationStarted("1");
   AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE, 0.5f);
-  ExpectPreLockAnimationRunning();
+  ExpectPreLockAnimationRunning("2");
 
   // If the button is released immediately, we shouldn't lock the screen.
   ReleaseLockButton();
-  ExpectPreLockAnimationCancel();
-  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
 
-  ExpectUnlockedState();
+  ExpectPreLockAnimationCancel("3");
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+
+  ExpectUnlockedState("4");
   EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
 
   // Press the button again and let the lock timeout fire.  We should request
   // that the screen be locked.
   PressLockButton();
-  ExpectPreLockAnimationStarted();
+  ExpectPreLockAnimationStarted("4");
   Advance(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE);
 
   GetSessionControllerClient()->FlushForTest();
@@ -454,22 +527,68 @@ TEST_F(LockStateControllerTest, LockButtonBasic) {
   // anything.
   ReleaseLockButton();
   PressLockButton();
-  ExpectPreLockAnimationFinished();
+  ExpectPreLockAnimationFinished("5");
   ReleaseLockButton();
 
   // Pressing the button also shouldn't do anything after the screen is locked.
-  ExpectPostLockAnimationStarted();
+  ExpectPostLockAnimationStarted("6");
 
   PressLockButton();
   ReleaseLockButton();
-  ExpectPostLockAnimationStarted();
+  ExpectPostLockAnimationStarted("7");
+
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  ExpectPostLockAnimationFinished("8");
+
+  PressLockButton();
+  ReleaseLockButton();
+  ExpectPostLockAnimationFinished("9");
+}
+
+TEST_P(LockStateControllerAnimationTest,
+       PowerButtonCancelsUnlockBeforeLockUIDestroyedInTabletMode) {
+  PrepareSessionForUnlockAnimationInTabletModeTest();
+
+  Shell::Get()->session_controller()->RunUnlockAnimation(
+      base::BindLambdaForTesting([](bool aborted) { EXPECT_TRUE(aborted); }));
+
+  ExpectUnlockBeforeUIDestroyedAnimationStarted("0");
+  AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS, 0.5f);
+
+  PressPowerButton();
+  ReleasePowerButton();
 
   Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
-  ExpectPostLockAnimationFinished();
+  ExpectUnlockBeforeUIDestroyedAnimationFinished("1");
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
+}
 
-  PressLockButton();
-  ReleaseLockButton();
-  ExpectPostLockAnimationFinished();
+TEST_P(LockStateControllerAnimationTest,
+       PowerButtonCancelsUnlockAfterLockUIDestroyedInTabletMode) {
+  PrepareSessionForUnlockAnimationInTabletModeTest();
+
+  Shell::Get()->session_controller()->RunUnlockAnimation(
+      base::BindLambdaForTesting([](bool aborted) {
+        EXPECT_TRUE(true);
+        Shell::Get()->session_controller()->SetSessionInfo(
+            SessionInfo{.can_lock_screen = true,
+                        .should_lock_screen_automatically = true,
+                        .state = session_manager::SessionState::ACTIVE});
+      }));
+
+  ExpectUnlockBeforeUIDestroyedAnimationStarted("0");
+  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  ExpectUnlockBeforeUIDestroyedAnimationFinished("1");
+
+  ExpectUnlockAfterUIDestroyedAnimationStarted("2");
+  AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS, 0.5f);
+
+  PressPowerButton();
+  ReleasePowerButton();
+
+  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  GetSessionControllerClient()->FlushForTest();
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 }
 
 #if 0
@@ -500,18 +619,23 @@ TEST_F(LockStateControllerTest, ShutdownWithoutButton) {
       SessionStateAnimator::ANIMATION_HIDE_IMMEDIATELY));
   GenerateMouseMoveEvent();
   EXPECT_FALSE(cursor_visible());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 }
 
 // Test that we display the fast-close animation and shut down when we get an
 // outside request to shut down (e.g. from the login or lock screen).
-TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreen) {
+TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLoginScreen) {
   Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
       ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
 
-  ExpectShutdownAnimationStarted();
-  Advance(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
+  ExpectShutdownAnimationStarted("1");
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
 
   GenerateMouseMoveEvent();
   EXPECT_FALSE(cursor_visible());
@@ -522,19 +646,22 @@ TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreen) {
   EXPECT_EQ(1, NumShutdownRequests());
 }
 
-TEST_F(LockStateControllerTest, RequestShutdownFromLockScreen) {
+TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
   Initialize(ButtonType::NORMAL, LoginStatus::USER);
 
   LockScreen();
 
-  Advance(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
-  ExpectPostLockAnimationFinished();
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
+  ExpectPostLockAnimationFinished("1");
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
       ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
 
-  ExpectShutdownAnimationStarted();
-  Advance(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
+  ExpectShutdownAnimationStarted("2");
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
 
   GenerateMouseMoveEvent();
   EXPECT_FALSE(cursor_visible());
@@ -545,86 +672,175 @@ TEST_F(LockStateControllerTest, RequestShutdownFromLockScreen) {
   EXPECT_EQ(1, NumShutdownRequests());
 }
 
+// Test that historgram of time delta was recorded if a previous shutdown was
+// initiated from login/lock screen.
+TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreenThenRestart) {
+  Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
+
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
+
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
+
+  GenerateMouseMoveEvent();
+  EXPECT_FALSE(cursor_visible());
+
+  EXPECT_EQ(0, NumShutdownRequests());
+  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
+  lock_state_test_api_->trigger_real_shutdown_timeout();
+  EXPECT_EQ(1, NumShutdownRequests());
+
+  // Simulate restarting device
+  RestartDevice();
+  histograms().ExpectTotalCount(kShelfShutdownConfirmationHistogramName, 1);
+}
+
+TEST_F(LockStateControllerTest, RequestShutdownFromLockScreenThenRestart) {
+  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+
+  LockScreen();
+
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
+
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
+
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
+
+  GenerateMouseMoveEvent();
+  EXPECT_FALSE(cursor_visible());
+
+  EXPECT_EQ(0, NumShutdownRequests());
+  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
+  lock_state_test_api_->trigger_real_shutdown_timeout();
+  EXPECT_EQ(1, NumShutdownRequests());
+
+  // Simulate restarting device
+  RestartDevice();
+  histograms().ExpectTotalCount(kShelfShutdownConfirmationHistogramName, 1);
+}
+
+// Test that historgram of time delta was not recorded if a previous shutdown
+// was not initiated from login/lock screen.
+TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDownThenRestart) {
+  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+
+  ExpectUnlockedState("1");
+
+  // We should request that the screen be locked immediately after seeing the
+  // power button get pressed.
+  PressPowerButton();
+
+  EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
+
+  // We shouldn't progress towards the shutdown state, however.
+  EXPECT_FALSE(lock_state_test_api_->shutdown_timer_is_running());
+
+  ReleasePowerButton();
+
+  // Hold the button again and check that we start shutting down.
+  PressPowerButton();
+
+  ExpectShutdownAnimationStarted("2");
+
+  EXPECT_EQ(0, NumShutdownRequests());
+  // Make sure a mouse move event won't show the cursor.
+  GenerateMouseMoveEvent();
+  EXPECT_FALSE(cursor_visible());
+
+  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
+  lock_state_test_api_->trigger_real_shutdown_timeout();
+  EXPECT_EQ(1, NumShutdownRequests());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
+
+  // Simulate restarting device
+  RestartDevice();
+  histograms().ExpectTotalCount(kShelfShutdownConfirmationHistogramName, 0);
+}
 // Test that hidden wallpaper appears and reverts correctly on lock/cancel.
-TEST_F(LockStateControllerTest, TestHiddenWallpaperLockCancel) {
+TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockCancel) {
   Initialize(ButtonType::NORMAL, LoginStatus::USER);
   HideWallpaper();
 
-  ExpectUnlockedState();
+  ExpectUnlockedState("1");
   PressLockButton();
 
-  ExpectPreLockAnimationStarted();
-  ExpectWallpaperIsShowing();
+  ExpectPreLockAnimationStarted("2");
+  ExpectWallpaperIsShowing("3");
 
   // Forward only half way through.
   AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE, 0.5f);
 
   // Release the button before the lock timer fires.
   ReleaseLockButton();
-  ExpectPreLockAnimationCancel();
-  ExpectWallpaperIsHiding();
+  ExpectPreLockAnimationCancel("4");
+  ExpectWallpaperIsHiding("5");
 
-  Advance(SessionStateAnimator::ANIMATION_SPEED_UNDO_MOVE_WINDOWS);
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_UNDO_MOVE_WINDOWS);
 
   // When the CancelPrelockAnimation sequence finishes it queues up a
   // restore wallpaper visibility sequence when the wallpaper is hidden.
-  ExpectRestoringWallpaperVisibility();
+  ExpectRestoringWallpaperVisibility("6");
 
-  Advance(SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
 
-  ExpectUnlockedState();
+  ExpectUnlockedState("6");
 }
 
 // Test that hidden wallpaper appears and revers correctly on lock/unlock.
-TEST_F(LockStateControllerTest, TestHiddenWallpaperLockUnlock) {
+TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockUnlock) {
   Initialize(ButtonType::NORMAL, LoginStatus::USER);
   HideWallpaper();
 
-  ExpectUnlockedState();
+  ExpectUnlockedState("1");
 
   // Press the lock button and check that the lock timer is started and that we
   // start lifting the non-screen-locker containers.
   PressLockButton();
 
-  ExpectPreLockAnimationStarted();
-  ExpectWallpaperIsShowing();
+  ExpectPreLockAnimationStarted("2");
+  ExpectWallpaperIsShowing("3");
 
   Advance(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE);
 
-  ExpectPreLockAnimationFinished();
+  ExpectPreLockAnimationFinished("4");
 
   LockScreen();
 
   ReleaseLockButton();
 
-  ExpectPostLockAnimationStarted();
-  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
-  ExpectPostLockAnimationFinished();
+  ExpectPostLockAnimationStarted("5");
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  ExpectPostLockAnimationFinished("6");
 
-  ExpectLockedState();
+  ExpectLockedState("7");
 
   SuccessfulAuthentication(nullptr);
 
-  ExpectUnlockBeforeUIDestroyedAnimationStarted();
-  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
-  ExpectUnlockBeforeUIDestroyedAnimationFinished();
+  ExpectUnlockBeforeUIDestroyedAnimationStarted("8");
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  ExpectUnlockBeforeUIDestroyedAnimationFinished("9");
 
   UnlockScreen();
 
-  ExpectUnlockAfterUIDestroyedAnimationStarted();
-  ExpectWallpaperIsHiding();
+  ExpectUnlockAfterUIDestroyedAnimationStarted("10");
+  ExpectWallpaperIsHiding("11");
 
-  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
 
   // When the StartUnlockAnimationAfterUIDestroyed sequence finishes it queues
   // up a restore wallpaper visibility sequence when the wallpaper is hidden.
-  ExpectRestoringWallpaperVisibility();
+  ExpectRestoringWallpaperVisibility("12");
 
-  Advance(SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
 
-  ExpectUnlockAfterUIDestroyedAnimationFinished();
+  ExpectUnlockAfterUIDestroyedAnimationFinished("13");
 
-  ExpectUnlockedState();
+  ExpectUnlockedState("14");
 }
 
 // Tests the default behavior of disabling the touchscreen when the screen is
@@ -673,12 +889,12 @@ TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
   ASSERT_TRUE(power_button_test_api_->TriggerPreShutdownTimeout());
   EXPECT_TRUE(lock_state_test_api_->shutdown_timer_is_running());
 
-  ExpectShutdownAnimationStarted();
+  ExpectShutdownAnimationStarted("1");
   AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN, 0.5f);
   // Release the power button before the shutdown timer fires.
   ReleasePowerButton();
   EXPECT_FALSE(lock_state_test_api_->shutdown_timer_is_running());
-  ExpectShutdownAnimationCancel();
+  ExpectShutdownAnimationCancel("2");
 
   power_button_controller_->DismissMenu();
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
@@ -690,7 +906,7 @@ TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
   EXPECT_TRUE(lock_state_test_api_->shutdown_timer_is_running());
 
   Advance(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
-  ExpectShutdownAnimationFinished();
+  ExpectShutdownAnimationFinished("3");
   lock_state_test_api_->trigger_shutdown_timeout();
 
   EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
@@ -699,37 +915,111 @@ TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
   // When the timeout fires, we should request a shutdown.
   lock_state_test_api_->trigger_real_shutdown_timeout();
   EXPECT_EQ(1, NumShutdownRequests());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 }
 
-TEST_F(LockStateControllerTest, CancelShouldResetWallpaperBlur) {
+TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
   Initialize(ButtonType::NORMAL, LoginStatus::USER);
 
-  ExpectUnlockedState();
+  ExpectUnlockedState("1");
 
   auto* wallpaper_view = Shell::Get()
                              ->GetPrimaryRootWindowController()
                              ->wallpaper_widget_controller()
                              ->wallpaper_view();
 
-  auto* overview_controller = Shell::Get()->overview_controller();
   // Enter Overview and verify wallpaper properties.
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
 
   // Start lock animation and verify wallpaper properties.
   PressLockButton();
-  ExpectPreLockAnimationStarted();
-  EXPECT_EQ(login_constants::kBlurSigma, wallpaper_view->blur_sigma());
+  ExpectPreLockAnimationStarted("2");
+  EXPECT_EQ(wallpaper_constants::kLockLoginBlur, wallpaper_view->blur_sigma());
 
   // Cancel lock animation.
   AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE, 0.5f);
   ReleaseLockButton();
-  ExpectPreLockAnimationCancel();
-  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
-  ExpectUnlockedState();
+  ExpectPreLockAnimationCancel("3");
+  AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  ExpectUnlockedState("4");
 
   // Verify wallpaper blur are restored to overview's.
   EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
+}
+
+INSTANTIATE_TEST_SUITE_P(LockStateControllerAnimation,
+                         LockStateControllerAnimationTest,
+                         /*complete or abort=*/::testing::Bool());
+
+class LockStateControllerMockTimeTest : public PowerButtonTestBase {
+ public:
+  LockStateControllerMockTimeTest()
+      : PowerButtonTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  LockStateControllerMockTimeTest(const LockStateControllerMockTimeTest&) =
+      delete;
+  LockStateControllerMockTimeTest& operator=(
+      const LockStateControllerMockTimeTest&) = delete;
+  ~LockStateControllerMockTimeTest() override = default;
+
+  void Advance(const base::TimeDelta& delta) {
+    task_environment()->FastForwardBy(delta);
+  }
+
+  void SetUp() override {
+    PowerButtonTestBase::SetUp();
+    InitPowerButtonControllerMembers(
+        chromeos::PowerManagerClient::TabletMode::UNSUPPORTED);
+  }
+};
+
+class TestLayerCopyAnimator final : public LayerCopyAnimator {
+ public:
+  TestLayerCopyAnimator(aura::Window* window, base::OnceClosure callback)
+      : LayerCopyAnimator(window), callback_(std::move(callback)) {}
+  TestLayerCopyAnimator(const TestLayerCopyAnimator&) = delete;
+  TestLayerCopyAnimator& operator=(const TestLayerCopyAnimator&) = delete;
+  ~TestLayerCopyAnimator() override = default;
+
+  // LayerCopyAnimator:
+  void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer) override {
+    // Move the callback first because the object may be deleted.
+    auto callback = std::move(callback_);
+    LayerCopyAnimator::OnLayerCopied(std::move(new_layer));
+    std::move(callback).Run();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+TEST_F(LockStateControllerMockTimeTest, LockWithoutAnimation) {
+  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+  EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
+  auto* shelf_container = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                                              kShellWindowId_ShelfContainer);
+  auto* lock_container =
+      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                          kShellWindowId_LockScreenContainersContainer);
+
+  base::RunLoop loop;
+  base::RepeatingClosure done_closure =
+      base::BarrierClosure(2, loop.QuitClosure());
+
+  auto callback = [&]() { done_closure.Run(); };
+
+  new TestLayerCopyAnimator(shelf_container,
+                            base::BindLambdaForTesting(callback));
+  new TestLayerCopyAnimator(lock_container,
+                            base::BindLambdaForTesting(callback));
+
+  lock_state_controller_->LockWithoutAnimation();
+  EXPECT_TRUE(lock_state_controller_->animating_lock_for_test());
+  loop.Run();
+  EXPECT_FALSE(lock_state_controller_->animating_lock_for_test());
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 }
 
 }  // namespace ash

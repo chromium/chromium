@@ -1,8 +1,0 @@
-This directory contains the prebuilt helper binaries necessary to grab traces
-on the devices (e.g., memdump, ps_ext). The repository actually contains only
-the SHA1 hashes (in prebuilt_name.sha1) of the latest version of the prebuilts.
-The corresponding binaries are stored in Google Cloud Storage and synced on
-demand at runtime (in this folder) by prebuilts_fetcher.py.
-
-See http://www.chromium.org/developers/telemetry/upload_to_cloud_storage for
-further instructions on how to update the files when a new version is required.

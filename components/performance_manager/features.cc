@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,48 +7,63 @@
 
 #include "components/performance_manager/public/features.h"
 
-#include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
-namespace performance_manager {
-namespace features {
+namespace performance_manager::features {
 
-const base::Feature kTabLoadingFrameNavigationThrottles{
-    "TabLoadingFrameNavigationThrottles", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRunOnMainThread,
+             "RunOnMainThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Parameters associated with the "TabLoadingFrameNavigationThrottles"
-// feature.
-const base::FeatureParam<int> kMinimumThrottleTimeoutMilliseconds = {
-    &kTabLoadingFrameNavigationThrottles, "MinimumThrottleTimeoutMilliseconds",
-    1000};
-// This defaults to the 99th %ile of LargestContentfulPaint (LCP).
-const base::FeatureParam<int> kMaximumThrottleTimeoutMilliseconds = {
-    &kTabLoadingFrameNavigationThrottles, "MaximumThrottleTimeoutMilliseconds",
-    40000};
-// This defaults to 3 since 3 * 99th%ile FCP ~= 99th%ile LCP.
-const base::FeatureParam<double> kFCPMultiple = {
-    &kTabLoadingFrameNavigationThrottles, "FCPMultiple", 3.0};
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
+             "BackgroundTabLoadingFromPerformanceManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-TabLoadingFrameNavigationThrottlesParams::
-    TabLoadingFrameNavigationThrottlesParams() = default;
+BASE_FEATURE(kHighEfficiencyModeAvailable,
+             "HighEfficiencyModeAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-TabLoadingFrameNavigationThrottlesParams::
-    ~TabLoadingFrameNavigationThrottlesParams() = default;
+BASE_FEATURE(kBatterySaverModeAvailable,
+             "BatterySaverModeAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// static
-TabLoadingFrameNavigationThrottlesParams
-TabLoadingFrameNavigationThrottlesParams::GetParams() {
-  TabLoadingFrameNavigationThrottlesParams params;
-  params.minimum_throttle_timeout = base::TimeDelta::FromMilliseconds(
-      kMinimumThrottleTimeoutMilliseconds.Get());
-  params.maximum_throttle_timeout = base::TimeDelta::FromMilliseconds(
-      kMaximumThrottleTimeoutMilliseconds.Get());
-  params.fcp_multiple = kFCPMultiple.Get();
-  return params;
-}
+const base::FeatureParam<base::TimeDelta> kHighEfficiencyModeTimeBeforeDiscard{
+    &kHighEfficiencyModeAvailable, "time_before_discard", base::Hours(2)};
 
-const base::Feature kRunOnMainThread{"RunOnMainThread",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool> kHighEfficiencyModeDefaultState{
+    &kHighEfficiencyModeAvailable, "default_state", false};
 
-}  // namespace features
-}  // namespace performance_manager
+// 10 tabs is the 70th percentile of tab counts based on UMA data.
+const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold{
+    &kHighEfficiencyModeAvailable,
+    "tab_count_threshold",
+    10,
+};
+
+const base::FeatureParam<int> kHighEfficiencyModePromoMemoryPercentThreshold{
+    &kHighEfficiencyModeAvailable,
+    "memory_percent_threshold",
+    70,
+};
+#endif
+
+BASE_FEATURE(kBFCachePerformanceManagerPolicy,
+             "BFCachePerformanceManagerPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUrgentPageDiscarding,
+             "UrgentPageDiscarding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPageTimelineMonitor,
+             "PageTimelineMonitor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime{
+    &kPageTimelineMonitor, "time_between_collect_slice", base::Minutes(5)};
+
+}  // namespace performance_manager::features

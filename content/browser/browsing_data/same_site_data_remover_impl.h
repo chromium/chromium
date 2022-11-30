@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,29 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 
 namespace net {
 class CookieStore;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace content {
+
+class StoragePartition;
 
 class CONTENT_EXPORT SameSiteDataRemoverImpl {
  public:
   explicit SameSiteDataRemoverImpl(BrowserContext* browser_context);
+
+  SameSiteDataRemoverImpl(const SameSiteDataRemoverImpl&) = delete;
+  SameSiteDataRemoverImpl& operator=(const SameSiteDataRemoverImpl&) = delete;
+
   ~SameSiteDataRemoverImpl();
 
   // Returns a set containing domains associated with deleted SameSite=None
@@ -41,20 +52,17 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   // call since it's not needed for the function execution.
   void ClearStoragePartitionData(base::OnceClosure closure);
 
-  // Clears storage for domains in the provided set.
-  void ClearStoragePartitionForOrigins(
-      base::OnceClosure closure,
-      StoragePartition::OriginMatcherFunction origin_matcher);
+  // Clears storage for origins in the provided set.
+  void ClearStoragePartitionForOrigins(base::OnceClosure closure,
+                                       std::set<url::Origin> origins);
 
   // For testing purposes only.
   void OverrideStoragePartitionForTesting(StoragePartition* storage_partition);
 
  private:
-  BrowserContext* browser_context_;
-  StoragePartition* storage_partition_;
+  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<StoragePartition> storage_partition_;
   std::set<std::string> same_site_none_domains_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverImpl);
 };
 
 }  // namespace content

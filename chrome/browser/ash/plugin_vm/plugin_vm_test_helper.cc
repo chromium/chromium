@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,16 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -28,9 +32,11 @@ namespace plugin_vm {
 namespace {
 
 const char kDiskImageImportCommandUuid[] = "3922722bd7394acf85bf4d5a330d4a47";
-const char kPluginVmLicenseKey[] = "LICENSE_KEY";
 const char kDomain[] = "example.com";
 const char kDeviceId[] = "device_id";
+
+// Arbitrary container value used for updating the GuestOsRegistryService.
+const char kPluginVmContainer[] = "PluginVmContainer";
 
 // For adding a fake shelf item without requiring opening an actual window.
 class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
@@ -43,7 +49,7 @@ class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
                       int32_t event_flags,
                       int64_t display_id) override {}
   void Close() override {
-    ChromeLauncherController::instance()->CloseLauncherItem(
+    ChromeShelfController::instance()->ReplaceWithAppShortcutOrRemove(
         ash::ShelfID(kPluginVmShelfAppId));
   }
 };
@@ -51,7 +57,7 @@ class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
 }  // namespace
 
 void SetupConciergeForSuccessfulDiskImageImport(
-    chromeos::FakeConciergeClient* fake_concierge_client_) {
+    ash::FakeConciergeClient* fake_concierge_client_) {
   // Set immediate response for the ImportDiskImage call: will be that "image is
   // in progress":
   vm_tools::concierge::ImportDiskImageResponse import_disk_image_response;
@@ -85,7 +91,7 @@ void SetupConciergeForSuccessfulDiskImageImport(
 }
 
 void SetupConciergeForFailedDiskImageImport(
-    chromeos::FakeConciergeClient* fake_concierge_client_,
+    ash::FakeConciergeClient* fake_concierge_client_,
     vm_tools::concierge::DiskImageStatus status) {
   // Set immediate response for the ImportDiskImage call: will be that "image is
   // in progress":
@@ -119,7 +125,7 @@ void SetupConciergeForFailedDiskImageImport(
 }
 
 void SetupConciergeForCancelDiskImageOperation(
-    chromeos::FakeConciergeClient* fake_concierge_client_,
+    ash::FakeConciergeClient* fake_concierge_client_,
     bool success) {
   vm_tools::concierge::CancelDiskImageResponse cancel_disk_image_response;
   cancel_disk_image_response.set_success(success);
@@ -131,6 +137,10 @@ PluginVmTestHelper::PluginVmTestHelper(TestingProfile* testing_profile)
     : testing_profile_(testing_profile) {
   testing_profile_->ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();
+
+  current_apps_.set_vm_name(kPluginVmName);
+  current_apps_.set_container_name(kPluginVmContainer);
+  current_apps_.set_vm_type(guest_os::VmType::PLUGIN_VM);
 }
 
 PluginVmTestHelper::~PluginVmTestHelper() = default;
@@ -138,10 +148,10 @@ PluginVmTestHelper::~PluginVmTestHelper() = default;
 void PluginVmTestHelper::SetPolicyRequirementsToAllowPluginVm() {
   testing_profile_->GetPrefs()->SetBoolean(plugin_vm::prefs::kPluginVmAllowed,
                                            true);
+  testing_profile_->GetPrefs()->SetString(plugin_vm::prefs::kPluginVmUserId,
+                                          "fake-id");
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, true);
-  testing_profile_->ScopedCrosSettingsTestHelper()->SetString(
-      chromeos::kPluginVmLicenseKey, kPluginVmLicenseKey);
+      ash::kPluginVmAllowed, true);
 }
 
 void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {
@@ -186,23 +196,44 @@ void PluginVmTestHelper::OpenShelfItem() {
   ash::ShelfID shelf_id(kPluginVmShelfAppId);
   std::unique_ptr<ash::ShelfItemDelegate> delegate =
       std::make_unique<FakeShelfItemDelegate>(shelf_id);
-  ChromeLauncherController* laucher_controller =
-      ChromeLauncherController::instance();
-  // Similar logic to AppServiceAppWindowLauncherController, for handling pins
+  ChromeShelfController* shelf_controller = ChromeShelfController::instance();
+  // Similar logic to AppServiceAppWindowShelfController, for handling pins
   // and spinners.
-  if (laucher_controller->GetItem(shelf_id)) {
-    laucher_controller->shelf_model()->SetShelfItemDelegate(
+  if (shelf_controller->GetItem(shelf_id)) {
+    shelf_controller->shelf_model()->ReplaceShelfItemDelegate(
         shelf_id, std::move(delegate));
-    laucher_controller->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
+    shelf_controller->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   } else {
-    laucher_controller->CreateAppLauncherItem(std::move(delegate),
-                                              ash::STATUS_RUNNING);
+    shelf_controller->CreateAppItem(std::move(delegate), ash::STATUS_RUNNING);
   }
 }
 
 void PluginVmTestHelper::CloseShelfItem() {
-  ChromeLauncherController::instance()->Close(
-      ash::ShelfID(kPluginVmShelfAppId));
+  ChromeShelfController::instance()->Close(ash::ShelfID(kPluginVmShelfAppId));
+}
+
+void PluginVmTestHelper::AddApp(const vm_tools::apps::App& app) {
+  for (int i = 0; i < current_apps_.apps_size(); ++i) {
+    if (current_apps_.apps(i).desktop_file_id() == app.desktop_file_id()) {
+      *current_apps_.mutable_apps(i) = app;
+      UpdateRegistry();
+      return;
+    }
+  }
+  *current_apps_.add_apps() = app;
+  UpdateRegistry();
+}
+
+// static
+std::string PluginVmTestHelper::GenerateAppId(const std::string& app_name) {
+  return guest_os::GuestOsRegistryService::GenerateAppId(
+      app_name, /*vm_name=*/kPluginVmName,
+      /*container_name=*/kPluginVmContainer);
+}
+
+void PluginVmTestHelper::UpdateRegistry() {
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(testing_profile_)
+      ->UpdateApplicationList(current_apps_);
 }
 
 }  // namespace plugin_vm

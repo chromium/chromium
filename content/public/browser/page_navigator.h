@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,17 @@
 #include "content/public/common/referrer.h"
 #include "ipc/ipc_message.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}
 
 namespace content {
 
@@ -77,7 +81,7 @@ struct CONTENT_EXPORT OpenURLParams {
   // drop), and the frame with the corresponding token may have been deleted
   // before the navigation begins. This parameter is defined if and only if
   // |initiator_process_id| below is.
-  base::Optional<blink::LocalFrameToken> initiator_frame_token;
+  absl::optional<blink::LocalFrameToken> initiator_frame_token;
 
   // ID of the renderer process of the RenderFrameHost that initiated the
   // navigation. This is defined if and only if |initiator_frame_token| above
@@ -85,7 +89,7 @@ struct CONTENT_EXPORT OpenURLParams {
   int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
 
   // The origin of the initiator of the navigation.
-  base::Optional<url::Origin> initiator_origin;
+  absl::optional<url::Origin> initiator_origin;
 
   // SiteInstance of the frame that initiated the navigation or null if we
   // don't know it.
@@ -104,7 +108,7 @@ struct CONTENT_EXPORT OpenURLParams {
 
   // The browser-global FrameTreeNode ID or RenderFrameHost::kNoFrameTreeNodeId
   // to indicate the main frame.
-  int frame_tree_node_id;
+  int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
 
   // Routing id of the source RenderFrameHost.
   int source_render_frame_id = MSG_ROUTING_NONE;
@@ -123,7 +127,7 @@ struct CONTENT_EXPORT OpenURLParams {
 
   // Indicates whether this navigation should replace the current
   // navigation entry.
-  bool should_replace_current_entry;
+  bool should_replace_current_entry = false;
 
   // Indicates whether this navigation was triggered while processing a user
   // gesture if the navigation was initiated by the renderer.
@@ -135,14 +139,14 @@ struct CONTENT_EXPORT OpenURLParams {
       blink::mojom::TriggeringEventInfo::kUnknown;
 
   // Indicates whether this navigation was started via context menu.
-  bool started_from_context_menu;
+  bool started_from_context_menu = false;
 
   // Optional URLLoaderFactory to facilitate navigation to a blob URL.
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
 
   // Indicates that the navigation should happen in an app window if
   // possible, i.e. if an app for the URL is installed.
-  bool open_app_window_if_possible;
+  bool open_app_window_if_possible = false;
 
   // If this navigation was initiated from a link that specified the
   // hrefTranslate attribute, this contains the attribute's value (a BCP47
@@ -150,12 +154,15 @@ struct CONTENT_EXPORT OpenURLParams {
   std::string href_translate;
 
   // Indicates if this navigation is a reload.
-  ReloadType reload_type;
+  ReloadType reload_type = ReloadType::NONE;
 
   // Optional impression associated with this navigation. Only set on
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
-  base::Optional<blink::Impression> impression;
+  absl::optional<blink::Impression> impression;
+
+  // Indicates that this navigation is for PDF content in a renderer.
+  bool is_pdf = false;
 };
 
 class PageNavigator {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,16 +13,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "storage/browser/quota/quota_client.h"
+#include "base/time/time.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_task.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
-
-using blink::mojom::StorageType;
 
 namespace storage {
 
@@ -33,10 +30,10 @@ namespace storage {
 // methods: SetQuota() and UpdateUsage().
 //
 // For time-based deletion test:
-// Origins can be added to the mock by calling AddOrigin, and that list of
-// origins is then searched through in GetOriginsModifiedBetween.
-// Neither GetOriginsModifiedBetween nor DeleteOriginData touches the actual
-// origin data stored in the profile.
+// Storage keys can be added to the mock by calling AddStorageKey, and that list
+// of storage keys is then searched through in GetStorageKeysModifiedBetween.
+// Neither GetStorageKeysModifiedBetween nor DeleteStorageKeyData touches the
+// actual storage key data stored in the profile.
 class MockQuotaManager : public QuotaManager {
  public:
   MockQuotaManager(bool is_incognito,
@@ -44,120 +41,215 @@ class MockQuotaManager : public QuotaManager {
                    scoped_refptr<base::SingleThreadTaskRunner> io_thread,
                    scoped_refptr<SpecialStoragePolicy> special_storage_policy);
 
+  MockQuotaManager(const MockQuotaManager&) = delete;
+  MockQuotaManager& operator=(const MockQuotaManager&) = delete;
+
+  // Overrides QuotaManager's implementation that maintains an internal
+  // container of created buckets and avoids going to the DB.
+  void UpdateOrCreateBucket(
+      const BucketInitParams& bucket_params,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
+  // Synchronous wrapper around `UpdateOrCreateBucket`, which overrides
+  // QuotaManager's implementation that maintains an internal container of
+  // created buckets and avoids going to the DB.
+  // NOTE: the asynchronous version of this method `UpdateOrCreateBucket` is
+  // preferred; only use this synchronous version where asynchronous bucket
+  // retrieval is not possible.
+  QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+      const BucketInitParams& params);
+
+  // Overrides QuotaManager's implementation that maintains an internal
+  // container of created buckets and avoids going to the DB.
+  void GetOrCreateBucketDeprecated(
+      const BucketInitParams& bucket_params,
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
+  // Overrides QuotaManager's implementation to fetch from an internal
+  // container populated by calls to GetOrCreateBucket.
+  void GetBucketById(
+      const BucketId& bucket_id,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
+  // Overrides QuotaManager's implementation to fetch from an internal
+  // container populated by calls to GetOrCreateBucket.
+  void GetBucket(const blink::StorageKey& storage_key,
+                 const std::string& bucket_name,
+                 blink::mojom::StorageType type,
+                 base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
+  void GetBucketsForStorageKey(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+      bool delete_expired = false) override;
+
   // Overrides QuotaManager's implementation. The internal usage data is
-  // updated when MockQuotaManagerProxy::NotifyStorageModified() is
-  // called.  The internal quota value can be updated by calling
-  // a helper method MockQuotaManagerProxy::SetQuota().
-  void GetUsageAndQuota(const url::Origin& origin,
+  // updated when `MockQuotaManagerProxy::NotifyStorageModified()` or
+  // `MockQuotaManagerProxy::NotifyBucketModified()` is called. The internal
+  // quota value can be updated by calling a helper method
+  // `MockQuotaManager::SetQuota()`.
+  void GetUsageAndQuota(const blink::StorageKey& storage_key,
                         blink::mojom::StorageType type,
                         UsageAndQuotaCallback callback) override;
 
   // Overrides QuotaManager's implementation with a canned implementation that
-  // allows clients to set up the origin database that should be queried. This
-  // method will only search through the origins added explicitly via AddOrigin.
-  void GetOriginsModifiedBetween(blink::mojom::StorageType type,
+  // allows clients to set up the storage key database that should be queried.
+  // This method will only search through the storage keys added explicitly via
+  // AddStorageKey.
+  void GetBucketsModifiedBetween(blink::mojom::StorageType type,
                                  base::Time begin,
                                  base::Time end,
-                                 GetOriginsCallback callback) override;
+                                 GetBucketsCallback callback) override;
 
-  // Removes an origin from the canned list of origins, but doesn't touch
-  // anything on disk. The caller must provide |quota_client_types| which
+  // Removes a bucket from the canned list of buckets, but doesn't touch
+  // anything on disk. The caller must provide `quota_client_types` which
   // specifies the types of QuotaClients which should be removed from this
-  // origin. Setting the mask to AllQuotaClientTypes() will remove all clients
-  // from the origin, regardless of type.
-  void DeleteOriginData(const url::Origin& origin,
-                        blink::mojom::StorageType type,
+  // bucket. Setting the mask to AllQuotaClientTypes() will remove all
+  // clients from the bucket, regardless of type.
+  void DeleteBucketData(const BucketLocator& bucket,
                         QuotaClientTypes quota_client_types,
                         StatusCallback callback) override;
 
+  // Finds and removes a bucket from the canned list of buckets, but doesn't
+  // touch anything on disk. Will remove bucket data from all QuotaClientTypes.
+  // Will return kOk if deletion is successful or there is no bucket to delete.
+  void FindAndDeleteBucketData(const blink::StorageKey& storage_key,
+                               const std::string& bucket_name,
+                               StatusCallback callback) override;
+
+  void UpdateBucketPersistence(
+      BucketId bucket,
+      bool persistent,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
+
   // Overrides QuotaManager's implementation so that tests can observe
   // calls to this function.
-  void NotifyWriteFailed(const url::Origin& origin) override;
+  void NotifyWriteFailed(const blink::StorageKey& storage_key) override;
+
+  void CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType storage_type,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
   // Helper method for updating internal quota info.
-  void SetQuota(const url::Origin& origin, StorageType type, int64_t quota);
+  void SetQuota(const blink::StorageKey& storage_key,
+                blink::mojom::StorageType type,
+                int64_t quota);
 
   // Helper methods for timed-deletion testing:
-  // Adds an origin to the canned list that will be searched through via
-  // GetOriginsModifiedBetween.
-  // |quota_clients| specified the types of QuotaClients this canned origin
+  // Adds a bucket to the canned list that will be searched through via
+  // GetBucketsModifiedBetween.
+  // `quota_clients` specified the types of QuotaClients this canned bucket
   // contains.
-  bool AddOrigin(const url::Origin& origin,
-                 StorageType type,
+  bool AddBucket(const BucketInfo& bucket,
                  QuotaClientTypes quota_client_types,
                  base::Time modified);
 
+  // Creates a BucketInfo object with a generated BucketId. Makes sure newly
+  // created buckets are created with a unique id and with the specified
+  // attributes.
+  BucketInfo CreateBucket(const BucketInitParams& params,
+                          blink::mojom::StorageType type);
+
   // Helper methods for timed-deletion testing:
-  // Checks an origin and type against the origins that have been added via
-  // AddOrigin and removed via DeleteOriginData. If the origin exists in the
-  // canned list with the proper StorageType and client, returns true.
-  bool OriginHasData(const url::Origin& origin,
-                     StorageType type,
+  // Checks a bucket against the buckets that have been added via AddBucket and
+  // removed via DeleteBucketData. If the bucket exists in the canned list with
+  // the proper client, returns true.
+  bool BucketHasData(const BucketInfo& bucket,
                      QuotaClientType quota_client_type) const;
 
-  std::map<const url::Origin, int> write_error_tracker() const {
+  // Returns the count for how many buckets still exist for the client to make
+  // sure there are no buckets that aren't accounted for during testing.
+  int BucketDataCount(QuotaClientType quota_client);
+
+  std::map<const blink::StorageKey, int> write_error_tracker() const {
     return write_error_tracker_;
   }
+
+  void SetDisableDatabase(bool disable) { db_disabled_ = disable; }
 
  protected:
   ~MockQuotaManager() override;
 
  private:
   friend class MockQuotaManagerProxy;
+  FRIEND_TEST_ALL_PREFIXES(MockQuotaManagerTest, QuotaAndUsage);
 
-  // Contains the essential bits of information about an origin that the
+  // Contains the essential bits of information about a bucket that the
   // MockQuotaManager needs to understand for time-based deletion:
-  // the origin itself, the StorageType and its modification time.
-  struct OriginInfo {
-    OriginInfo(const url::Origin& origin,
-               StorageType type,
+  // the bucket itself, the StorageType, its modification time and its
+  // QuotaClients.
+  struct BucketData {
+    BucketData(const BucketInfo& bucket,
                QuotaClientTypes quota_clients,
                base::Time modified);
-    ~OriginInfo();
+    ~BucketData();
 
-    OriginInfo(const OriginInfo&) = delete;
-    OriginInfo& operator=(const OriginInfo&) = delete;
+    BucketData(const BucketData&) = delete;
+    BucketData& operator=(const BucketData&) = delete;
 
-    OriginInfo(OriginInfo&&);
-    OriginInfo& operator=(OriginInfo&&);
+    BucketData(BucketData&&);
+    BucketData& operator=(BucketData&&);
 
-    url::Origin origin;
-    StorageType type;
+    BucketInfo bucket;
     QuotaClientTypes quota_client_types;
     base::Time modified;
   };
 
-  // Contains the essential information for each origin for usage/quota testing.
-  // (Ideally this should probably merged into the above struct, but for
-  // regular usage/quota testing we hardly need modified time but only
-  // want to keep usage and quota information, so this struct exists.
-  struct StorageInfo {
-    StorageInfo();
-    ~StorageInfo();
-    int64_t usage;
-    int64_t quota;
-    blink::mojom::UsageBreakdownPtr usage_breakdown;
+  // Structure to support tracking quota per storage key.
+  struct StorageKeyQuota {
+    int64_t quota = std::numeric_limits<int64_t>::max();
   };
 
+  // Structure to support tracking usage per bucket.
+  struct BucketUsage {
+    int64_t usage = 0;
+  };
+
+  QuotaErrorOr<BucketInfo> FindBucketById(const BucketId& bucket_id);
+
+  QuotaErrorOr<BucketInfo> FindBucket(const blink::StorageKey& storage_key,
+                                      const std::string& bucket_name,
+                                      blink::mojom::StorageType type);
+
+  QuotaErrorOr<BucketInfo> FindAndUpdateBucket(
+      const BucketInitParams& bucket_params,
+      blink::mojom::StorageType type);
+
   // This must be called via MockQuotaManagerProxy.
-  void UpdateUsage(const url::Origin& origin, StorageType type, int64_t delta);
-  void DidGetModifiedInTimeRange(GetOriginsCallback callback,
-                                 std::unique_ptr<std::set<url::Origin>> origins,
-                                 StorageType storage_type);
-  void DidDeleteOriginData(StatusCallback callback,
+  void UpdateUsage(const BucketId& bucket_id, int64_t delta);
+
+  void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+                    QuotaErrorOr<BucketInfo> result);
+  void DidGetModifiedInTimeRange(
+      GetBucketsCallback callback,
+      std::unique_ptr<std::set<BucketLocator>> buckets,
+      blink::mojom::StorageType storage_type);
+  void DidDeleteBucketData(StatusCallback callback,
                            blink::mojom::QuotaStatusCode status);
 
-  // The list of stored origins that have been added via AddOrigin.
-  std::vector<OriginInfo> origins_;
-  std::map<std::pair<url::Origin, StorageType>, StorageInfo>
-      usage_and_quota_map_;
+  base::FilePath profile_path() { return profile_path_; }
 
-  // Tracks number of times NotifyFailedWrite has been called per origin.
-  std::map<const url::Origin, int> write_error_tracker_;
+  const base::FilePath profile_path_;
+
+  BucketId::Generator bucket_id_generator_;
+
+  // The list of stored buckets that have been added via AddBucket.
+  std::vector<BucketData> buckets_;
+  std::map<std::pair<blink::StorageKey, blink::mojom::StorageType>,
+           StorageKeyQuota>
+      quota_map_;
+  std::map<BucketId, BucketUsage> usage_map_;
+
+  // Tracks number of times NotifyFailedWrite has been called per storage key.
+  std::map<const blink::StorageKey, int> write_error_tracker_;
+
+  bool db_disabled_ = false;
 
   base::WeakPtrFactory<MockQuotaManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuotaManager);
 };
 
 }  // namespace storage

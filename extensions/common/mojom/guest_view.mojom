@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ module extensions.mojom;
 
 import "extensions/common/api/mime_handler.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 interface GuestView {
@@ -16,6 +15,11 @@ interface GuestView {
   // |success| is true the MimeHandlerViewEmbedder should proceed with attaching
   // the GuestView.
   ReadyToCreateMimeHandlerView(int32 routing_id, bool success);
+
+  // Queries whether the frame identified by `routing_id` is allowed to inject
+  // the script with the provided `script_id`.
+  [Sync]
+  CanExecuteContentScript(int32 routing_id, string script_id) => (bool allowed);
 };
 
 // An interface implemented by the renderer which is used for creating a

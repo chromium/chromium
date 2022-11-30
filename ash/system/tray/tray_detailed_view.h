@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/view_click_listener.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -25,7 +24,6 @@ class ImageView;
 class Label;
 class ProgressBar;
 class ScrollView;
-class Separator;
 }  // namespace views
 
 namespace ash {
@@ -39,11 +37,18 @@ class ASH_EXPORT TrayDetailedView : public views::View,
                                     public ViewClickListener {
  public:
   explicit TrayDetailedView(DetailedViewDelegate* delegate);
+
+  TrayDetailedView(const TrayDetailedView&) = delete;
+  TrayDetailedView& operator=(const TrayDetailedView&) = delete;
+
   ~TrayDetailedView() override;
 
   // ViewClickListener:
   // Don't override this --- override HandleViewClicked.
   void OnViewClicked(views::View* sender) final;
+
+  // Setter for `progress_bar_` accessibility label.
+  void OverrideProgressBarAccessibleName(const std::u16string& name);
 
  protected:
   // views::View:
@@ -90,19 +95,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
       bool checked,
       bool enterprise_managed = false);
 
-  // Adds connected sub label to the |view| with appropriate style and updates
-  // accessibility label.
-  void SetupConnectedScrollListItem(HoverHighlightView* view);
-
-  // Adds connected sub label with the device's battery percentage to the |view|
-  // with appropriate style and updates accessibility label.
-  void SetupConnectedScrollListItem(HoverHighlightView* view,
-                                    base::Optional<uint8_t> battery_percentage);
-
-  // Adds connecting sub label to the |view| with appropriate style and updates
-  // accessibility label.
-  void SetupConnectingScrollListItem(HoverHighlightView* view);
-
   // Adds a sticky sub header to |scroll_content_| containing |icon| and a text
   // represented by |text_id| resource id.
   TriView* AddScrollListSubHeader(const gfx::VectorIcon& icon, int text_id);
@@ -122,16 +114,13 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Helper functions which create and return the settings and help buttons,
   // respectively, used in the material design top-most header row. The caller
   // assumes ownership of the returned buttons.
-  views::Button* CreateInfoButton(views::Button::PressedCallback callback,
-                                  int info_accessible_name_id);
+  virtual views::Button* CreateInfoButton(
+      views::Button::PressedCallback callback,
+      int info_accessible_name_id);
+
   views::Button* CreateSettingsButton(views::Button::PressedCallback callback,
                                       int setting_accessible_name_id);
   views::Button* CreateHelpButton(views::Button::PressedCallback callback);
-
-  // Create a horizontal separator line to be drawn between rows in a detailed
-  // view above the sub-header rows. Caller takes ownership of the returned
-  // view.
-  views::Separator* CreateListSubHeaderSeparator();
 
   // Closes the bubble that contains the detailed view.
   void CloseBubble();
@@ -139,6 +128,11 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   TriView* tri_view() { return tri_view_; }
   views::ScrollView* scroller() const { return scroller_; }
   views::View* scroll_content() const { return scroll_content_; }
+
+  // Gets called in the constructor of the `CalendarView`, or any other views in
+  // the future that don't have a separator to modify the value of
+  // `has_separator` to false.
+  void IgnoreSeparator();
 
  private:
   friend class TrayDetailedViewTest;
@@ -170,7 +164,12 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::ImageView* sub_header_image_view_ = nullptr;
   const gfx::VectorIcon* sub_header_icon_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(TrayDetailedView);
+  // Gets modified to false in the constructor of the view if it doesn't have a
+  // separator.
+  bool has_separator_ = true;
+
+  // The accessible name for the `progress_bar_`.
+  absl::optional<std::u16string> progress_bar_accessible_name_;
 };
 
 }  // namespace ash

@@ -1,13 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 #define CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 
-#include <memory>
-#include <vector>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "cc/animation/animation_export.h"
@@ -19,8 +17,8 @@
 #include "cc/trees/target_property.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/target_property.h"
-#include "ui/gfx/geometry/scroll_offset.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class TransformOperations;
@@ -63,11 +61,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
 
   void ClearAffectedElementTypes(const PropertyToElementIdMap& element_id_map);
 
-  // Called when |element_id| is available to animate in |list_type|.
-  void ElementIdRegistered(ElementId element_id, ElementListType list_type);
-
-  // Called when |element_id| is no longer avialable to animate in |list_type|.
-  void ElementIdUnregistered(ElementId element_id, ElementListType list_type);
+  void RemoveKeyframeEffects();
 
   void AddKeyframeEffect(KeyframeEffect* keyframe_effect);
   void RemoveKeyframeEffect(KeyframeEffect* keyframe_effect);
@@ -86,7 +80,8 @@ class CC_ANIMATION_EXPORT ElementAnimations
   // Returns true if there are any KeyframeModels at all to process.
   bool HasAnyKeyframeModel() const;
 
-  bool HasAnyAnimationTargetingProperty(TargetProperty::Type property) const;
+  bool HasAnyAnimationTargetingProperty(TargetProperty::Type property,
+                                        ElementId element_id) const;
 
   // Returns true if there is an animation that is either currently animating
   // the given property or scheduled to animate this property in the future, and
@@ -99,29 +94,12 @@ class CC_ANIMATION_EXPORT ElementAnimations
   bool IsCurrentlyAnimatingProperty(TargetProperty::Type target_property,
                                     ElementListType list_type) const;
 
-  bool has_element_in_active_list() const {
-    return has_element_in_active_list_;
-  }
-  bool has_element_in_pending_list() const {
-    return has_element_in_pending_list_;
-  }
-  bool has_element_in_any_list() const {
-    return has_element_in_active_list_ || has_element_in_pending_list_;
-  }
-
-  void set_has_element_in_active_list(bool has_element_in_active_list) {
-    has_element_in_active_list_ = has_element_in_active_list;
-  }
-  void set_has_element_in_pending_list(bool has_element_in_pending_list) {
-    has_element_in_pending_list_ = has_element_in_pending_list;
-  }
-
   bool AnimationsPreserveAxisAlignment() const;
 
   // Returns the maximum scale along any dimension at any destination in active
   // scale animations, or kInvalidScale if there is no active transform
   // animation or the scale cannot be computed.
-  float MaximumScale(ElementListType list_type) const;
+  float MaximumScale(ElementId element_id, ElementListType list_type) const;
 
   bool ScrollOffsetAnimationWasInterrupted() const;
 
@@ -154,11 +132,11 @@ class CC_ANIMATION_EXPORT ElementAnimations
   void OnTransformAnimated(const gfx::TransformOperations& operations,
                            int target_property_id,
                            gfx::KeyframeModel* keyframe_model) override;
-  void OnScrollOffsetAnimated(const gfx::ScrollOffset& scroll_offset,
+  void OnScrollOffsetAnimated(const gfx::PointF& scroll_offset,
                               int target_property_id,
                               gfx::KeyframeModel* keyframe_model) override;
 
-  gfx::ScrollOffset ScrollOffsetForAnimation() const;
+  absl::optional<gfx::PointF> ScrollOffsetForAnimation() const;
 
   // Returns a map of target property to the ElementId for that property, for
   // KeyframeEffects associated with this ElementAnimations.
@@ -205,10 +183,14 @@ class CC_ANIMATION_EXPORT ElementAnimations
                            const gfx::Transform& transform,
                            gfx::KeyframeModel* keyframe_model);
   void OnScrollOffsetAnimated(ElementListType list_type,
-                              const gfx::ScrollOffset& scroll_offset,
+                              const gfx::PointF& scroll_offset,
                               gfx::KeyframeModel* keyframe_model);
 
   static gfx::TargetProperties GetPropertiesMaskForAnimationState();
+
+  void UpdateMaximumScale(ElementId element_id,
+                          ElementListType list_type,
+                          float* cached_scale);
 
   void UpdateKeyframeEffectsTickingState() const;
   void RemoveKeyframeEffectsFromTicking() const;
@@ -219,18 +201,17 @@ class CC_ANIMATION_EXPORT ElementAnimations
       gfx::KeyframeModel* keyframe_model) const;
 
   base::ObserverList<KeyframeEffect>::Unchecked keyframe_effects_list_;
-  AnimationHost* animation_host_;
+  raw_ptr<AnimationHost> animation_host_;
   ElementId element_id_;
-
-  bool has_element_in_active_list_;
-  bool has_element_in_pending_list_;
 
   mutable bool needs_push_properties_;
 
   PropertyAnimationState active_state_;
   PropertyAnimationState pending_state_;
-  float active_maximum_scale_;
-  float pending_maximum_scale_;
+  float transform_property_active_maximum_scale_;
+  float transform_property_pending_maximum_scale_;
+  float scale_property_active_maximum_scale_;
+  float scale_property_pending_maximum_scale_;
 };
 
 }  // namespace cc

@@ -1,16 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/crash/content/app/breakpad_win.h"
 
+#include <tchar.h>
+#include <windows.h>
+
 #include <crtdbg.h>
 #include <intrin.h>
 #include <shellapi.h>
 #include <stddef.h>
-#include <tchar.h>
 #include <userenv.h>
-#include <windows.h>
 #include <winnt.h>
 
 #include <algorithm>
@@ -27,7 +28,6 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -39,8 +39,6 @@
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/common/result_codes.h"
-#include "sandbox/win/src/nt_internals.h"
-#include "sandbox/win/src/sidestep/preamble_patcher.h"
 #include "third_party/breakpad/breakpad/src/client/windows/common/ipc_protocol.h"
 #include "third_party/breakpad/breakpad/src/client/windows/handler/exception_handler.h"
 
@@ -95,16 +93,6 @@ const wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 google_breakpad::ExceptionHandler* g_breakpad = nullptr;
 google_breakpad::ExceptionHandler* g_dumphandler_no_crash = nullptr;
 
-#if !defined(_WIN64)
-EXCEPTION_POINTERS g_surrogate_exception_pointers = {0};
-EXCEPTION_RECORD g_surrogate_exception_record = {0};
-CONTEXT g_surrogate_context = {0};
-#endif  // !defined(_WIN64)
-
-typedef NTSTATUS (WINAPI* NtTerminateProcessPtr)(HANDLE ProcessHandle,
-                                                 NTSTATUS ExitStatus);
-char* g_real_terminate_process_stub = nullptr;
-
 // Returns the custom info structure based on the dll in parameter and the
 // process type.
 google_breakpad::CustomClientInfo* GetCustomInfo(
@@ -156,12 +144,11 @@ google_breakpad::CustomClientInfo* GetCustomInfo(
     }
   }
 
-  static base::NoDestructor<google_breakpad::CustomClientInfo>
-      custom_client_info;
-  custom_client_info->entries = &custom_entries->front();
-  custom_client_info->count = custom_entries->size();
+  static google_breakpad::CustomClientInfo custom_client_info;
+  custom_client_info.entries = &custom_entries->front();
+  custom_client_info.count = custom_entries->size();
 
-  return custom_client_info.get();
+  return &custom_client_info;
 }
 
 }  // namespace
@@ -210,7 +197,7 @@ std::wstring GetProfileType() {
       { PT_ROAMING, L"roaming" },
       { PT_TEMPORARY, L"temporary" },
     };
-    for (size_t i = 0; i < base::size(kBitNames); ++i) {
+    for (size_t i = 0; i < std::size(kBitNames); ++i) {
       const DWORD this_bit = kBitNames[i].bit;
       if ((profile_bits & this_bit) != 0) {
         profile_type.append(kBitNames[i].name);
@@ -356,17 +343,7 @@ bool ShowRestartDialogIfCrashed(bool* exit_now) {
 }
 
 extern "C" void __declspec(dllexport) TerminateProcessWithoutDump() {
-  // Patched stub exists based on conditions (See InitCrashReporter).
-  // As a side note this function also gets called from
-  // WindowProcExceptionFilter.
-  if (g_real_terminate_process_stub == nullptr) {
-    ::TerminateProcess(::GetCurrentProcess(), content::RESULT_CODE_KILLED);
-  } else {
-    NtTerminateProcessPtr real_terminate_proc =
-        reinterpret_cast<NtTerminateProcessPtr>(
-            static_cast<char*>(g_real_terminate_process_stub));
-    real_terminate_proc(::GetCurrentProcess(), content::RESULT_CODE_KILLED);
-  }
+  ::TerminateProcess(::GetCurrentProcess(), content::RESULT_CODE_KILLED);
 }
 
 // Crashes the process after generating a dump for the provided exception. Note
@@ -380,74 +357,6 @@ extern "C" int __declspec(dllexport) CrashForException(
   }
   return EXCEPTION_CONTINUE_SEARCH;
 }
-
-#ifndef _WIN64
-static NTSTATUS WINAPI HookNtTerminateProcess(HANDLE ProcessHandle,
-                                              NTSTATUS ExitStatus) {
-  if (g_breakpad &&
-      (ProcessHandle == ::GetCurrentProcess() || ProcessHandle == NULL)) {
-    NT_TIB* tib = reinterpret_cast<NT_TIB*>(NtCurrentTeb());
-    void* address_on_stack = _AddressOfReturnAddress();
-    if (address_on_stack < tib->StackLimit ||
-        address_on_stack > tib->StackBase) {
-      g_surrogate_exception_record.ExceptionAddress = _ReturnAddress();
-      g_surrogate_exception_record.ExceptionCode = DBG_TERMINATE_PROCESS;
-      g_surrogate_exception_record.ExceptionFlags = EXCEPTION_NONCONTINUABLE;
-      CrashForException(&g_surrogate_exception_pointers);
-    }
-  }
-
-  NtTerminateProcessPtr real_proc =
-      reinterpret_cast<NtTerminateProcessPtr>(
-          static_cast<char*>(g_real_terminate_process_stub));
-  return real_proc(ProcessHandle, ExitStatus);
-}
-
-static void InitTerminateProcessHooks() {
-  NtTerminateProcessPtr terminate_process_func_address =
-      reinterpret_cast<NtTerminateProcessPtr>(::GetProcAddress(
-          ::GetModuleHandle(L"ntdll.dll"), "NtTerminateProcess"));
-  if (terminate_process_func_address == NULL)
-    return;
-
-  DWORD old_protect = 0;
-  if (!::VirtualProtect(reinterpret_cast<void*>(terminate_process_func_address),
-                        5, PAGE_EXECUTE_READWRITE, &old_protect))
-    return;
-
-  g_real_terminate_process_stub = reinterpret_cast<char*>(VirtualAllocEx(
-      ::GetCurrentProcess(), NULL, sidestep::kMaxPreambleStubSize,
-      MEM_COMMIT, PAGE_EXECUTE_READWRITE));
-  if (g_real_terminate_process_stub == NULL)
-    return;
-
-  g_surrogate_exception_pointers.ContextRecord = &g_surrogate_context;
-  g_surrogate_exception_pointers.ExceptionRecord =
-      &g_surrogate_exception_record;
-
-  sidestep::SideStepError patch_result = sidestep::PreamblePatcher::Patch(
-      reinterpret_cast<void*>(terminate_process_func_address),
-      reinterpret_cast<void*>(HookNtTerminateProcess),
-      g_real_terminate_process_stub, sidestep::kMaxPreambleStubSize);
-  if (patch_result != sidestep::SIDESTEP_SUCCESS) {
-    CHECK(::VirtualFreeEx(::GetCurrentProcess(), g_real_terminate_process_stub,
-                    0, MEM_RELEASE));
-    CHECK(::VirtualProtect(
-        reinterpret_cast<void*>(terminate_process_func_address), 5, old_protect,
-        &old_protect));
-    return;
-  }
-
-  DWORD dummy = 0;
-  CHECK(
-      ::VirtualProtect(reinterpret_cast<void*>(terminate_process_func_address),
-                       5, old_protect, &dummy));
-  CHECK(::VirtualProtect(g_real_terminate_process_stub,
-                         sidestep::kMaxPreambleStubSize,
-                         old_protect,
-                         &old_protect));
-}
-#endif
 
 static void InitPipeNameEnvVar(bool is_per_user_install) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -600,14 +509,6 @@ void InitCrashReporter(const std::string& process_type_switch) {
     // This might break JIT debuggers, but at least it will always
     // generate a crashdump for these exceptions.
     g_breakpad->set_handle_debug_exceptions(true);
-
-#ifndef _WIN64
-    if (process_type != L"browser" &&
-        !GetCrashReporterClient()->IsRunningUnattended()) {
-      // Initialize the hook TerminateProcess to catch unexpected exits.
-      InitTerminateProcessHooks();
-    }
-#endif
   }
 }
 

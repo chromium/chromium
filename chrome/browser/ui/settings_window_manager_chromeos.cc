@@ -1,14 +1,16 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -19,10 +21,9 @@
 #include "chrome/browser/ui/settings_window_manager_observer_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/client/aura_constants.h"
 #include "url/gurl.h"
@@ -92,9 +93,11 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
 
   // TODO(crbug.com/1067073): Remove legacy Settings Window.
   if (!UseDeprecatedSettingsWindow(profile)) {
-    web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SETTINGS,
-                                     {.url = gurl},
-                                     apps::MakeWindowInfo(display_id));
+    ash::SystemAppLaunchParams params;
+    params.url = gurl;
+    ash::LaunchSystemWebAppAsync(
+        profile, ash::SystemWebAppType::SETTINGS, params,
+        std::make_unique<apps::WindowInfo>(display_id));
     // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
     // notify SettingsWindowObservers.
     return;
@@ -157,8 +160,8 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
 
 Browser* SettingsWindowManager::FindBrowserForProfile(Profile* profile) {
   if (!UseDeprecatedSettingsWindow(profile)) {
-    return web_app::FindSystemWebAppBrowser(profile,
-                                            web_app::SystemAppType::SETTINGS);
+    return ash::FindSystemWebAppBrowser(profile,
+                                        ash::SystemWebAppType::SETTINGS);
   }
 
   auto iter = settings_session_map_.find(profile);
@@ -173,16 +176,15 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
 
   Profile* profile = browser->profile();
   if (!UseDeprecatedSettingsWindow(profile)) {
-    if (!browser->app_controller() || !browser->app_controller()->HasAppId())
+    if (!browser->app_controller())
       return false;
 
     // TODO(calamity): Determine whether, during startup, we need to wait for
     // app install and then provide a valid answer here.
-    base::Optional<std::string> settings_app_id =
-        web_app::GetAppIdForSystemWebApp(profile,
-                                         web_app::SystemAppType::SETTINGS);
+    absl::optional<std::string> settings_app_id =
+        ash::GetAppIdForSystemWebApp(profile, ash::SystemWebAppType::SETTINGS);
     return settings_app_id &&
-           browser->app_controller()->GetAppId() == settings_app_id.value();
+           browser->app_controller()->app_id() == settings_app_id.value();
   } else {
     auto iter = settings_session_map_.find(profile);
     return iter != settings_session_map_.end() &&

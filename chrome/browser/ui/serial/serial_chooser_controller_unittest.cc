@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/permissions/mock_chooser_controller_view.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/mojom/serial.mojom.h"
@@ -41,20 +41,11 @@ class SerialChooserControllerTest : public ChromeRenderViewHostTestHarness {
         ->SetPortManagerForTesting(std::move(port_manager));
   }
 
-  void TearDown() override {
-    // Because SerialBlocklist is a singleton it must be cleared after tests run
-    // to prevent leakage between tests.
-    feature_list_.Reset();
-    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
-
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
   base::UnguessableToken AddPort(
       const std::string& display_name,
       const base::FilePath& path,
-      base::Optional<uint16_t> vendor_id = base::nullopt,
-      base::Optional<uint16_t> product_id = base::nullopt) {
+      absl::optional<uint16_t> vendor_id = absl::nullopt,
+      absl::optional<uint16_t> product_id = absl::nullopt) {
     auto port = device::mojom::SerialPortInfo::New();
     port->token = base::UnguessableToken::Create();
     port->display_name = display_name;
@@ -72,21 +63,9 @@ class SerialChooserControllerTest : public ChromeRenderViewHostTestHarness {
     return port_token;
   }
 
-  void SetDynamicBlocklist(base::StringPiece value) {
-    feature_list_.Reset();
-
-    std::map<std::string, std::string> parameters;
-    parameters[kWebSerialBlocklistAdditions.name] = std::string(value);
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kWebSerialBlocklist, parameters}}, {});
-
-    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
-  }
-
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
 };
 
@@ -121,7 +100,7 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), base::DoNothing());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {
@@ -137,7 +116,7 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
   port->token = base::UnguessableToken::Create();
   port->display_name = "Test Port 1";
   port->path = base::FilePath(FILE_PATH_LITERAL("/dev/ttyS0"));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This path will be ignored and not generate additional chooser entries or
   // be displayed in the device name.
   port->alternate_path = base::FilePath(FILE_PATH_LITERAL("/dev/alternateS0"));
@@ -196,7 +175,7 @@ TEST_F(SerialChooserControllerTest, PortSelected) {
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), callback.Get());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {
@@ -247,7 +226,7 @@ TEST_F(SerialChooserControllerTest, PortFiltered) {
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), base::DoNothing());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {
@@ -285,10 +264,32 @@ TEST_F(SerialChooserControllerTest, PortFiltered) {
   }
 }
 
-TEST_F(SerialChooserControllerTest, Blocklist) {
-  base::HistogramTester histogram_tester;
+class SerialChooserControllerTestWithBlockedPorts
+    : public SerialChooserControllerTest {
+ public:
+  SerialChooserControllerTestWithBlockedPorts() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kWebSerialBlocklist,
+          {{kWebSerialBlocklistAdditions.name, "usb:1234:0002"}}}},
+        {});
+    // Reinitialize SerialBlocklist in case it was already initialized by
+    // another test.
+    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
+  }
 
-  // Create two ports from the same vendor with different product IDs.
+  ~SerialChooserControllerTestWithBlockedPorts() override {
+    // Clear the blocklist so that later tests are unaffected.
+    feature_list_.Reset();
+    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SerialChooserControllerTestWithBlockedPorts, Blocklist) {
+  // Create two ports from the same vendor with different product IDs. The
+  // second one is on the blocklist.
   base::UnguessableToken port_1 =
       AddPort("Test Port 1", base::FilePath(FILE_PATH_LITERAL("/dev/ttyS0")),
               0x1234, 0x0001);
@@ -296,14 +297,11 @@ TEST_F(SerialChooserControllerTest, Blocklist) {
       AddPort("Test Port 2", base::FilePath(FILE_PATH_LITERAL("/dev/ttyS1")),
               0x1234, 0x0002);
 
-  // Add the second port to the blocklist.
-  SetDynamicBlocklist("usb:1234:0002");
-
   std::vector<blink::mojom::SerialPortFilterPtr> filters;
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), base::DoNothing());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {

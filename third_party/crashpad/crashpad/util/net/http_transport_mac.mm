@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 
 #include "util/net/http_transport.h"
 
-#include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #include <sys/utsname.h>
 
@@ -24,10 +23,104 @@
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "package.h"
-#include "third_party/apple_cf/CFStreamAbstract.h"
 #include "util/file/file_io.h"
 #include "util/misc/implicit_cast.h"
+#include "util/misc/metrics.h"
 #include "util/net/http_body.h"
+
+// An implementation of NSInputStream that reads from a
+// crashpad::HTTPBodyStream.
+@interface CrashpadHTTPBodyStreamTransport : NSInputStream {
+ @private
+  NSStreamStatus _streamStatus;
+  id<NSStreamDelegate> _delegate;
+  crashpad::HTTPBodyStream* _bodyStream;  // weak
+}
+- (instancetype)initWithBodyStream:(crashpad::HTTPBodyStream*)bodyStream;
+@end
+
+@implementation CrashpadHTTPBodyStreamTransport
+
+- (instancetype)initWithBodyStream:(crashpad::HTTPBodyStream*)bodyStream {
+  if ((self = [super init])) {
+    _streamStatus = NSStreamStatusNotOpen;
+    _bodyStream = bodyStream;
+  }
+  return self;
+}
+
+// NSInputStream:
+
+- (BOOL)hasBytesAvailable {
+  // Per Apple's documentation: "May also return YES if a read must be attempted
+  // in order to determine the availability of bytes."
+  switch (_streamStatus) {
+    case NSStreamStatusAtEnd:
+    case NSStreamStatusClosed:
+    case NSStreamStatusError:
+      return NO;
+    default:
+      return YES;
+  }
+}
+
+- (NSInteger)read:(uint8_t*)buffer maxLength:(NSUInteger)maxLen {
+  _streamStatus = NSStreamStatusReading;
+
+  crashpad::FileOperationResult rv =
+      _bodyStream->GetBytesBuffer(buffer, maxLen);
+
+  if (rv == 0)
+    _streamStatus = NSStreamStatusAtEnd;
+  else if (rv < 0)
+    _streamStatus = NSStreamStatusError;
+  else
+    _streamStatus = NSStreamStatusOpen;
+
+  return rv;
+}
+
+- (BOOL)getBuffer:(uint8_t**)buffer length:(NSUInteger*)length {
+  return NO;
+}
+
+// NSStream:
+
+- (void)scheduleInRunLoop:(NSRunLoop*)runLoop forMode:(NSString*)mode {
+}
+
+- (void)removeFromRunLoop:(NSRunLoop*)runLoop forMode:(NSString*)mode {
+}
+
+- (void)open {
+  _streamStatus = NSStreamStatusOpen;
+}
+
+- (void)close {
+  _streamStatus = NSStreamStatusClosed;
+}
+
+- (NSStreamStatus)streamStatus {
+  return _streamStatus;
+}
+
+- (id<NSStreamDelegate>)delegate {
+  return _delegate;
+}
+
+- (void)setDelegate:(id)delegate {
+  _delegate = delegate;
+}
+
+- (id)propertyForKey:(NSStreamPropertyKey)key {
+  return nil;
+}
+
+- (BOOL)setProperty:(id)property forKey:(NSStreamPropertyKey)key {
+  return NO;
+}
+
+@end
 
 namespace crashpad {
 
@@ -52,13 +145,11 @@ NSString* UserAgentString() {
 
   // CFNetwork would use the main bundle’s CFBundleName, or the main
   // executable’s filename if none.
-  user_agent = AppendEscapedFormat(
-      user_agent, @"%@", [NSString stringWithUTF8String:PACKAGE_NAME]);
+  user_agent = AppendEscapedFormat(user_agent, @"%@", @PACKAGE_NAME);
 
   // CFNetwork would use the main bundle’s CFBundleVersion, or the string
   // “(unknown version)” if none.
-  user_agent = AppendEscapedFormat(
-      user_agent, @"/%@", [NSString stringWithUTF8String:PACKAGE_VERSION]);
+  user_agent = AppendEscapedFormat(user_agent, @"/%@", @PACKAGE_VERSION);
 
   // Expected to be CFNetwork.
   NSBundle* nsurl_bundle = [NSBundle bundleForClass:[NSURLRequest class]];
@@ -78,10 +169,8 @@ NSString* UserAgentString() {
   if (uname(&os) != 0) {
     PLOG(WARNING) << "uname";
   } else {
-    user_agent = AppendEscapedFormat(
-        user_agent, @" %@", [NSString stringWithUTF8String:os.sysname]);
-    user_agent = AppendEscapedFormat(
-        user_agent, @"/%@", [NSString stringWithUTF8String:os.release]);
+    user_agent = AppendEscapedFormat(user_agent, @" %@", @(os.sysname));
+    user_agent = AppendEscapedFormat(user_agent, @"/%@", @(os.release));
 
     // CFNetwork just uses the equivalent of os.machine to obtain the native
     // (kernel) architecture. Here, give the process’ architecture as well as
@@ -98,7 +187,7 @@ NSString* UserAgentString() {
 #endif
     user_agent = AppendEscapedFormat(user_agent, @" (%@", arch);
 
-    NSString* machine = [NSString stringWithUTF8String:os.machine];
+    NSString* machine = @(os.machine);
     if (![machine isEqualToString:arch]) {
       user_agent = AppendEscapedFormat(user_agent, @"; %@", machine);
     }
@@ -109,127 +198,16 @@ NSString* UserAgentString() {
   return user_agent;
 }
 
-// An implementation of CFReadStream. This implements the V0 callback
-// scheme.
-class HTTPBodyStreamCFReadStream {
- public:
-  explicit HTTPBodyStreamCFReadStream(HTTPBodyStream* body_stream)
-      : body_stream_(body_stream) {
-  }
-
-  // Creates a new NSInputStream, which the caller owns.
-  NSInputStream* CreateInputStream() {
-    CFStreamClientContext context = {
-        .version = 0,
-        .info = this,
-        .retain = nullptr,
-        .release = nullptr,
-        .copyDescription = nullptr
-    };
-    constexpr CFReadStreamCallBacksV0 callbacks = {
-        .version = 0,
-        .open = &Open,
-        .openCompleted = &OpenCompleted,
-        .read = &Read,
-        .getBuffer = &GetBuffer,
-        .canRead = &CanRead,
-        .close = &Close,
-        .copyProperty = &CopyProperty,
-        .schedule = &Schedule,
-        .unschedule = &Unschedule
-    };
-    CFReadStreamRef read_stream = CFReadStreamCreate(nullptr,
-        reinterpret_cast<const CFReadStreamCallBacks*>(&callbacks), &context);
-    return base::mac::CFToNSCast(read_stream);
-  }
-
- private:
-  static HTTPBodyStream* GetStream(void* info) {
-    return static_cast<HTTPBodyStreamCFReadStream*>(info)->body_stream_;
-  }
-
-  static Boolean Open(CFReadStreamRef stream,
-                      CFStreamError* error,
-                      Boolean* open_complete,
-                      void* info) {
-    *open_complete = TRUE;
-    return TRUE;
-  }
-
-  static Boolean OpenCompleted(CFReadStreamRef stream,
-                               CFStreamError* error,
-                               void* info) {
-    return TRUE;
-  }
-
-  static CFIndex Read(CFReadStreamRef stream,
-                      UInt8* buffer,
-                      CFIndex buffer_length,
-                      CFStreamError* error,
-                      Boolean* at_eof,
-                      void* info) {
-    if (buffer_length == 0) {
-      *at_eof = FALSE;
-      return 0;
-    }
-
-    FileOperationResult bytes_read =
-        GetStream(info)->GetBytesBuffer(buffer, buffer_length);
-    if (bytes_read < 0) {
-      error->error = -1;
-      error->domain = kCFStreamErrorDomainCustom;
-    } else {
-      *at_eof = bytes_read == 0;
-    }
-
-    return bytes_read;
-  }
-
-  static const UInt8* GetBuffer(CFReadStreamRef stream,
-                                CFIndex max_bytes_to_read,
-                                CFIndex* num_bytes_read,
-                                CFStreamError* error,
-                                Boolean* at_eof,
-                                void* info) {
-    return nullptr;
-  }
-
-  static Boolean CanRead(CFReadStreamRef stream, void* info) {
-    return TRUE;
-  }
-
-  static void Close(CFReadStreamRef stream, void* info) {}
-
-  static CFTypeRef CopyProperty(CFReadStreamRef stream,
-                                CFStringRef property_name,
-                                void* info) {
-    return nullptr;
-  }
-
-  static void Schedule(CFReadStreamRef stream,
-                       CFRunLoopRef run_loop,
-                       CFStringRef run_loop_mode,
-                       void* info) {}
-
-  static void Unschedule(CFReadStreamRef stream,
-                         CFRunLoopRef run_loop,
-                         CFStringRef run_loop_mode,
-                         void* info) {}
-
-  HTTPBodyStream* body_stream_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(HTTPBodyStreamCFReadStream);
-};
-
 class HTTPTransportMac final : public HTTPTransport {
  public:
   HTTPTransportMac();
+
+  HTTPTransportMac(const HTTPTransportMac&) = delete;
+  HTTPTransportMac& operator=(const HTTPTransportMac&) = delete;
+
   ~HTTPTransportMac() override;
 
   bool ExecuteSynchronously(std::string* response_body) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportMac);
 };
 
 HTTPTransportMac::HTTPTransportMac() : HTTPTransport() {
@@ -262,9 +240,9 @@ bool HTTPTransportMac::ExecuteSynchronously(std::string* response_body) {
           forHTTPHeaderField:base::SysUTF8ToNSString(pair.first)];
     }
 
-    HTTPBodyStreamCFReadStream body_stream_cf(body_stream());
     base::scoped_nsobject<NSInputStream> input_stream(
-        body_stream_cf.CreateInputStream());
+        [[CrashpadHTTPBodyStreamTransport alloc]
+            initWithBodyStream:body_stream()]);
     [request setHTTPBodyStream:input_stream.get()];
 
     NSURLResponse* response = nil;
@@ -280,6 +258,7 @@ bool HTTPTransportMac::ExecuteSynchronously(std::string* response_body) {
 #pragma clang diagnostic pop
 
     if (error) {
+      Metrics::CrashUploadErrorCode(error.code);
       LOG(ERROR) << [[error localizedDescription] UTF8String] << " ("
                  << [[error domain] UTF8String] << " " << [error code] << ")";
       return false;

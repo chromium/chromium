@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTENSIONS_PERMISSIONS_TRACKER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTENSIONS_PERMISSIONS_TRACKER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "extensions/browser/extension_registry.h"
@@ -17,6 +17,9 @@ class BrowserContext;
 }
 
 namespace extensions {
+
+// Returns true if the |extension_id| is allowed in managed guest sessions.
+bool IsAllowlistedForManagedGuestSession(const std::string& extension_id);
 
 // Used to track the installation of the force-installed extensions of the
 // managed-guest session to decide whether the permissions of the extensions
@@ -64,7 +67,8 @@ class ExtensionsPermissionsTracker : public ExtensionRegistryObserver {
   // Set of not yet loaded force installed extensions.
   std::set<ExtensionId> pending_forced_extensions_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      observation_{this};
 };
 
 }  // namespace extensions

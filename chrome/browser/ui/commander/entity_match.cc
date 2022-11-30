@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,8 +125,8 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_last_active();
-       it != browser_list->end_last_active(); ++it) {
+           browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
     Browser* browser = *it;
     if (browser == browser_to_exclude || !browser->is_type_normal())
       continue;
@@ -152,12 +152,14 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
 std::vector<GroupMatch> GroupsMatchingInput(
     const Browser* browser,
     const std::u16string& input,
-    base::Optional<tab_groups::TabGroupId> group_to_exclude) {
+    absl::optional<tab_groups::TabGroupId> group_to_exclude) {
   DCHECK(browser);
   std::vector<GroupMatch> results;
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   TabGroupModel* model = browser->tab_strip_model()->group_model();
+  if (!model)
+    return results;
   // For empty input, use this to preserve TabGroupModel's ordering, which is
   // arbitrary but still helpful to keep consistent across calls and surfaces.
   double ordering_score = .95;

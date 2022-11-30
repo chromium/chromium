@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -40,13 +40,14 @@ if (is_fuchsia) {
       "bindings_manager_fuchsia.cc",
       "bindings_manager_fuchsia.h",
     ]
-    deps = [
+    public_deps = [
       ":bindings_manager",
+      "//fuchsia_web/runners/cast/fidl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    ]
+    deps = [
       "//base",
       "//components/cast/message_port",
-      "//fuchsia:cast_fidl",
-      "//fuchsia/base",
-      "//fuchsia/base:message_port",
     ]
   }
 }
@@ -56,23 +57,22 @@ if (is_linux || is_chromeos || is_android) {
     sources = [
       "bindings_manager_cast.cc",
       "bindings_manager_cast.h",
-      "named_message_port_connector_cast.cc",
-      "named_message_port_connector_cast.h",
     ]
 
     deps = [
       ":bindings_manager",
       "//base",
-      "//chromecast/browser:public",
+      "//chromecast/bindings/public/mojom",
       "//components/cast/api_bindings:manager",
-      "//components/cast/message_port",
-      "//components/cast/named_message_port_connector",
-      "//components/on_load_script_injector/browser",
+      "//components/cast/message_port:message_port_cast",
+      "//mojo/public/cpp/bindings",
+      "//third_party/blink/public/common",
     ]
   }
 
   source_set("browsertests_cast") {
     testonly = true
+
     sources = [ "bindings_manager_cast_browsertest.cc" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -86,6 +86,7 @@ if (is_linux || is_chromeos || is_android) {
       "//chromecast/base:chromecast_switches",
       "//chromecast/bindings:bindings_manager_cast",
       "//chromecast/browser:browser",
+      "//chromecast/browser:client",
       "//chromecast/browser:public",
       "//components/cast/message_port:test_message_port_receiver",
       "//components/cast/named_message_port_connector:resources",

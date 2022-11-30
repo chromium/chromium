@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -17,6 +15,7 @@
 #include "media/base/multi_channel_resampler.h"
 #include "services/audio/delay_buffer.h"
 #include "services/audio/loopback_group_member.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioBus;
@@ -65,6 +64,9 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
   SnooperNode(const media::AudioParameters& input_params,
               const media::AudioParameters& output_params);
 
+  SnooperNode(const SnooperNode&) = delete;
+  SnooperNode& operator=(const SnooperNode&) = delete;
+
   ~SnooperNode() final;
 
   // GroupMember::Snooper implementation. Inserts more data into the delay
@@ -76,9 +78,9 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
   // Given the timing of recent OnData() calls and the |duration| of output that
   // would be requested in a call to Render(), determine the latest possible
   // |reference_time| for a Render() call that won't result in an underrun.
-  // Returns base::nullopt while current conditions prohibit making a reliable
+  // Returns absl::nullopt while current conditions prohibit making a reliable
   // suggestion.
-  base::Optional<base::TimeTicks> SuggestLatestRenderTime(FrameTicks duration);
+  absl::optional<base::TimeTicks> SuggestLatestRenderTime(FrameTicks duration);
 
   // Renders more audio that was recorded from the GroupMember until
   // |output_bus| is filled, resampling and remixing the channels if necessary.
@@ -170,8 +172,6 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
 
   // The frame position where recording into the delay buffer always starts.
   static constexpr FrameTicks kWriteStartPosition = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SnooperNode);
 };
 
 }  // namespace audio

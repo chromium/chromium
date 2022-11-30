@@ -34,18 +34,16 @@
 namespace blink {
 
 LayoutRect BoxShape::ShapeMarginLogicalBoundingBox() const {
-  FloatRect margin_bounds(bounds_.Rect());
+  gfx::RectF margin_bounds = bounds_.Rect();
   if (ShapeMargin() > 0)
-    margin_bounds.Inflate(ShapeMargin());
-  return static_cast<LayoutRect>(margin_bounds);
+    margin_bounds.Outset(ShapeMargin());
+  return EnclosingLayoutRect(margin_bounds);
 }
 
 FloatRoundedRect BoxShape::ShapeMarginBounds() const {
-  FloatRoundedRect margin_bounds(bounds_);
-  if (ShapeMargin() > 0) {
-    margin_bounds.Inflate(ShapeMargin());
-    margin_bounds.ExpandRadii(ShapeMargin());
-  }
+  FloatRoundedRect margin_bounds = bounds_;
+  if (ShapeMargin() > 0)
+    margin_bounds.OutsetForShapeMargin(ShapeMargin());
   return margin_bounds;
 }
 
@@ -58,34 +56,34 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
 
   float y1 = logical_top.ToFloat();
   float y2 = (logical_top + logical_height).ToFloat();
-  const FloatRect& rect = margin_bounds.Rect();
+  const gfx::RectF& rect = margin_bounds.Rect();
 
   if (!margin_bounds.IsRounded())
-    return LineSegment(margin_bounds.Rect().X(), margin_bounds.Rect().MaxX());
+    return LineSegment(margin_bounds.Rect().x(), margin_bounds.Rect().right());
 
   float top_corner_max_y =
-      std::max<float>(margin_bounds.TopLeftCorner().MaxY(),
-                      margin_bounds.TopRightCorner().MaxY());
+      std::max<float>(margin_bounds.TopLeftCorner().bottom(),
+                      margin_bounds.TopRightCorner().bottom());
   float bottom_corner_min_y =
-      std::min<float>(margin_bounds.BottomLeftCorner().Y(),
-                      margin_bounds.BottomRightCorner().Y());
+      std::min<float>(margin_bounds.BottomLeftCorner().y(),
+                      margin_bounds.BottomRightCorner().y());
 
   if (top_corner_max_y <= bottom_corner_min_y && y1 <= top_corner_max_y &&
       y2 >= bottom_corner_min_y)
-    return LineSegment(rect.X(), rect.MaxX());
+    return LineSegment(rect.x(), rect.right());
 
-  float x1 = rect.MaxX();
-  float x2 = rect.X();
+  float x1 = rect.right();
+  float x2 = rect.x();
   float min_x_intercept;
   float max_x_intercept;
 
-  if (y1 <= margin_bounds.TopLeftCorner().MaxY() &&
-      y2 >= margin_bounds.BottomLeftCorner().Y())
-    x1 = rect.X();
+  if (y1 <= margin_bounds.TopLeftCorner().bottom() &&
+      y2 >= margin_bounds.BottomLeftCorner().y())
+    x1 = rect.x();
 
-  if (y1 <= margin_bounds.TopRightCorner().MaxY() &&
-      y2 >= margin_bounds.BottomRightCorner().Y())
-    x2 = rect.MaxX();
+  if (y1 <= margin_bounds.TopRightCorner().bottom() &&
+      y2 >= margin_bounds.BottomRightCorner().y())
+    x2 = rect.right();
 
   if (margin_bounds.XInterceptsAtY(y1, min_x_intercept, max_x_intercept)) {
     x1 = std::min<float>(x1, min_x_intercept);
@@ -102,16 +100,9 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
 }
 
 void BoxShape::BuildDisplayPaths(DisplayPaths& paths) const {
-  paths.shape.AddRoundedRect(bounds_.Rect(), bounds_.GetRadii().TopLeft(),
-                             bounds_.GetRadii().TopRight(),
-                             bounds_.GetRadii().BottomLeft(),
-                             bounds_.GetRadii().BottomRight());
+  paths.shape.AddRoundedRect(bounds_);
   if (ShapeMargin())
-    paths.margin_shape.AddRoundedRect(
-        ShapeMarginBounds().Rect(), ShapeMarginBounds().GetRadii().TopLeft(),
-        ShapeMarginBounds().GetRadii().TopRight(),
-        ShapeMarginBounds().GetRadii().BottomLeft(),
-        ShapeMarginBounds().GetRadii().BottomRight());
+    paths.margin_shape.AddRoundedRect(ShapeMarginBounds());
 }
 
 }  // namespace blink

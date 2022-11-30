@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,7 +27,7 @@ def ReadSerializedData(input_path):
 
   linebreak = data.index(b'\n')
   # First line is comma-separated list of languages.
-  language_codes = data[:linebreak].strip().split(b',')
+  language_codes = data[:linebreak].strip().decode(encoding="utf-8").split(',')
   # Rest of the file is the serialized tree.
   tree_bytes = data[linebreak+1:]
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,8 @@
 #include <set>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/common/importer/importer_url_row.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
@@ -40,6 +38,9 @@ class SafariImporter : public Importer {
   // |library_dir| is the full path to the ~/Library directory,
   // We pass it in as a parameter for testing purposes.
   explicit SafariImporter(const base::FilePath& library_dir);
+
+  SafariImporter(const SafariImporter&) = delete;
+  SafariImporter& operator=(const SafariImporter&) = delete;
 
   // Importer:
   void StartImport(const importer::SourceProfile& source_profile,
@@ -90,8 +91,6 @@ class SafariImporter : public Importer {
                        favicon_base::FaviconUsageDataList* favicons);
 
   base::FilePath library_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafariImporter);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_SAFARI_IMPORTER_H_

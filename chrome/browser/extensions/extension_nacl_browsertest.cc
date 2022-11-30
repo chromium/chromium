@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/nacl/common/nacl_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -127,13 +127,13 @@ class NaClExtensionTest : public extensions::ExtensionBrowserTest {
       run_loop.Run();
     }
 
-    static const base::FilePath path(ChromeContentClient::kNaClPluginFileName);
+    static const base::FilePath path(nacl::kInternalNaClPluginFileName);
     content::WebPluginInfo info;
     return PluginService::GetInstance()->GetPluginInfoByPath(path, &info);
   }
 
   void CheckPluginsCreated(const GURL& url, PluginType expected_to_succeed) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     // Don't run tests if the NaCl plugin isn't loaded.
     if (!IsNaClPluginLoaded())
       return;
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
 
   // Navigate to a page with an iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Navigate the subframe to the extension's html file.
   content::WebContents* web_contents =
@@ -258,8 +258,9 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
 
   // Sanity check - the test setup should cause main frame and subframe to be in
   // a different process.
-  content::RenderFrameHost* subframe = web_contents->GetAllFrames()[1];
-  EXPECT_NE(web_contents->GetMainFrame()->GetProcess(), subframe->GetProcess());
+  content::RenderFrameHost* subframe = ChildFrameAt(web_contents, 0);
+  EXPECT_NE(web_contents->GetPrimaryMainFrame()->GetProcess(),
+            subframe->GetProcess());
 
   // Insert a plugin element into the subframe.  Before the fix from
   // https://crrev.com/2932703005 this would have trigerred a crash reported in

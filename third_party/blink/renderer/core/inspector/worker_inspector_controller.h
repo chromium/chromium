@@ -32,12 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_WORKER_INSPECTOR_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -69,6 +68,9 @@ class WorkerInspectorController final
                             WorkerThreadDebugger*,
                             scoped_refptr<InspectorTaskRunner>,
                             std::unique_ptr<WorkerDevToolsParams>);
+  WorkerInspectorController(const WorkerInspectorController&) = delete;
+  WorkerInspectorController& operator=(const WorkerInspectorController&) =
+      delete;
   ~WorkerInspectorController() override;
   void Trace(Visitor*) const;
 
@@ -110,8 +112,6 @@ class WorkerInspectorController final
   base::UnguessableToken parent_devtools_token_;
   KURL url_;
   const PlatformThreadId worker_thread_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerInspectorController);
 };
 
 }  // namespace blink

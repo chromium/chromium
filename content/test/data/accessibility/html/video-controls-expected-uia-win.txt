@@ -1,0 +1,17 @@
+Document
+++Group IsControlElement=false
+++++Group Name='Unable to play media.' IsEnabled=false
+++++++Group IsControlElement=false
+++++++++Group IsControlElement=false
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Button Name='play' IsEnabled=false
+++++++++++++++Group IsControlElement=false
+++++++++++++Group IsControlElement=false
+++++++++++++++Group IsControlElement=false
+++++++++++++++Button Name='mute' IsEnabled=false
+++++++++++++Button Name='enter full screen' IsEnabled=false
+++++++++++++++Group IsControlElement=false
+++++++++++++Button Name='show more media controls' IsEnabled=false ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++++++++++Group IsControlElement=false
+++++++++++Slider Name='video time scrubber' IsEnabled=false RangeValue.IsReadOnly=true RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00 Value.Value='elapsed time: 0:00'

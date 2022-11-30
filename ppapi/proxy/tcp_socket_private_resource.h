@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/tcp_socket_resource_base.h"
 #include "ppapi/thunk/ppb_tcp_socket_private_api.h"
 
@@ -28,6 +27,9 @@ class PPAPI_PROXY_EXPORT TCPSocketPrivateResource
                            int pending_resource_id,
                            const PP_NetAddress_Private& local_addr,
                            const PP_NetAddress_Private& remote_addr);
+
+  TCPSocketPrivateResource(const TCPSocketPrivateResource&) = delete;
+  TCPSocketPrivateResource& operator=(const TCPSocketPrivateResource&) = delete;
 
   ~TCPSocketPrivateResource() override;
 
@@ -66,9 +68,6 @@ class PPAPI_PROXY_EXPORT TCPSocketPrivateResource
       int pending_host_id,
       const PP_NetAddress_Private& local_addr,
       const PP_NetAddress_Private& remote_addr) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketPrivateResource);
 };
 
 }  // namespace proxy

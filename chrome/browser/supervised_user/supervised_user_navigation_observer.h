@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
@@ -18,8 +18,8 @@
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class SupervisedUserService;
@@ -40,12 +40,22 @@ class SupervisedUserNavigationObserver
       public SupervisedUserServiceObserver,
       public supervised_user::mojom::SupervisedUserCommands {
  public:
+  SupervisedUserNavigationObserver(const SupervisedUserNavigationObserver&) =
+      delete;
+  SupervisedUserNavigationObserver& operator=(
+      const SupervisedUserNavigationObserver&) = delete;
+
   ~SupervisedUserNavigationObserver() override;
 
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>&
   blocked_navigations() const {
     return blocked_navigations_;
   }
+
+  static void BindSupervisedUserCommands(
+      mojo::PendingAssociatedReceiver<
+          supervised_user::mojom::SupervisedUserCommands> receiver,
+      content::RenderFrameHost* rfh);
 
   // Called when a network request to |url| is blocked.
   static void OnRequestBlocked(
@@ -73,7 +83,7 @@ class SupervisedUserNavigationObserver
   // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void FrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 
@@ -128,12 +138,13 @@ class SupervisedUserNavigationObserver
   // be called when an interstitial is no longer showing. This should be
   // enforced by the mojo caller.
   void GoBack() override;
-  void RequestPermission(RequestPermissionCallback callback) override;
+  void RequestUrlAccessRemote(RequestUrlAccessRemoteCallback callback) override;
+  void RequestUrlAccessLocal(RequestUrlAccessLocalCallback callback) override;
   void Feedback() override;
 
-  // When a request is successfully created, this method is called
-  // asynchronously.
-  void RequestCreated(RequestPermissionCallback callback,
+  // When a remote URL approval request is successfully created, this method is
+  // called asynchronously.
+  void RequestCreated(RequestUrlAccessRemoteCallback callback,
                       const std::string& host,
                       bool successfully_created_request);
 
@@ -142,10 +153,10 @@ class SupervisedUserNavigationObserver
   void MaybeUpdateRequestedHosts();
 
   // Owned by SupervisedUserService.
-  const SupervisedUserURLFilter* url_filter_;
+  raw_ptr<const SupervisedUserURLFilter> url_filter_;
 
   // Owned by SupervisedUserServiceFactory (lifetime of Profile).
-  SupervisedUserService* supervised_user_service_;
+  raw_ptr<SupervisedUserService> supervised_user_service_;
 
   // Keeps track of the blocked frames. It maps the frame's globally unique
   // id to its corresponding |SupervisedUserInterstitial| instance.
@@ -163,16 +174,14 @@ class SupervisedUserNavigationObserver
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       blocked_navigations_;
 
-  content::WebContentsFrameReceiverSet<
+  content::RenderFrameHostReceiverSet<
       supervised_user::mojom::SupervisedUserCommands>
-      receiver_;
+      receivers_;
 
   base::WeakPtrFactory<SupervisedUserNavigationObserver> weak_ptr_factory_{
       this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserNavigationObserver);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_NAVIGATION_OBSERVER_H_

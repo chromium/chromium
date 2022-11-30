@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
@@ -61,8 +61,12 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseProvider {
       const base::FilePath& unique_db_dir,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  ProtoDatabaseProvider(const ProtoDatabaseProvider&) = delete;
+  ProtoDatabaseProvider& operator=(const ProtoDatabaseProvider&) = delete;
+
   virtual ~ProtoDatabaseProvider();
 
+  // This method is thread safe.
   void SetSharedDBDeleteObsoleteDelayForTesting(base::TimeDelta delay);
 
  private:
@@ -86,8 +90,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseProvider {
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
 
   base::WeakPtrFactory<ProtoDatabaseProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtoDatabaseProvider);
 };
 
 template <typename P, typename T>

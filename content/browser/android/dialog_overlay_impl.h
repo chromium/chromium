@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,17 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_observer.h"
 
 namespace content {
+
+class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // Native counterpart to DialogOverlayImpl java class.  This is created by the
 // java side.  When the WebContents for the provided token is attached or
@@ -30,7 +33,8 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   DialogOverlayImpl(const base::android::JavaParamRef<jobject>& obj,
                     RenderFrameHostImpl* rfhi,
                     WebContents* web_contents,
-                    bool power_efficient);
+                    bool power_efficient,
+                    bool observe_container_view);
   ~DialogOverlayImpl() override;
 
   // Called when the java side is ready for token / dismissed callbacks.  May
@@ -77,17 +81,25 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   void Stop();
   void RegisterWindowObserverIfNeeded(ui::WindowAndroid* window);
 
+  void StartObservingContainerView();
+  void StopObservingContainerView();
+  void ObserveContainerViewIfNeeded(
+      const base::android::ScopedJavaLocalRef<jobject>& container_view);
+
   // Java object that owns us.
   JavaObjectWeakGlobalRef obj_;
 
   // RenderFrameHostImpl* associated with the given overlay routing token.
-  RenderFrameHostImpl* rfhi_;
+  raw_ptr<RenderFrameHostImpl> rfhi_;
 
   // Do we care about power efficiency?
-  bool power_efficient_;
+  const bool power_efficient_;
 
   // Whether we added ourselves as an observer through WindowAndroid.
   bool observed_window_android_;
+
+  // Whether we should observe the container view for location changes.
+  const bool observe_container_view_;
 };
 
 }  // namespace content

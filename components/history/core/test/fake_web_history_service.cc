@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -52,6 +52,9 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
               base::Time end,
               int max_count);
 
+  FakeRequest(const FakeRequest&) = delete;
+  FakeRequest& operator=(const FakeRequest&) = delete;
+
   // WebHistoryService::Request implementation.
   bool IsPending() override;
   int GetResponseCode() override;
@@ -63,7 +66,7 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
   void Start() override;
 
  private:
-  FakeWebHistoryService* service_;
+  raw_ptr<FakeWebHistoryService> service_;
   GURL url_;
   bool emulate_success_;
   int emulate_response_code_;
@@ -73,8 +76,6 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
   int max_count_;
   bool is_pending_;
   std::string response_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRequest);
 };
 
 FakeWebHistoryService::FakeRequest::FakeRequest(
@@ -212,7 +213,7 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
                                         base::Time end,
                                         size_t count,
                                         bool* more_results_left) {
-  // Make sure that |visits_| is sorted in reverse chronological order before we
+  // Make sure that `visits_` is sorted in reverse chronological order before we
   // return anything. This means that the most recent results are returned
   // first.
   std::sort(visits_.begin(), visits_.end(),
@@ -222,7 +223,7 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
   *more_results_left = false;
   std::vector<Visit> result;
   for (const Visit& visit : visits_) {
-    // |begin| is inclusive, |end| is exclusive.
+    // `begin` is inclusive, `end` is exclusive.
     if (visit.timestamp >= begin && visit.timestamp < end) {
       // We found another valid result, but cannot return it because we've
       // reached max count.
@@ -246,7 +247,7 @@ base::Time FakeWebHistoryService::GetTimeForKeyInQuery(
   int64_t us;
   if (!base::StringToInt64(value, &us))
      return base::Time();
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(us);
+  return base::Time::UnixEpoch() + base::Microseconds(us);
 }
 
 FakeWebHistoryService::Request* FakeWebHistoryService::CreateRequest(

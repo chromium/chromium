@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -25,8 +25,9 @@ const nearby_share::mojom::Visibility kTestPublicCertificateVisibility =
 TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt) {
   nearbyshare::proto::PublicCertificate proto_cert =
       GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
+  proto_cert.set_for_self_share(true);
 
-  base::Optional<NearbyShareDecryptedPublicCertificate> cert =
+  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           proto_cert, GetNearbyShareTestEncryptedMetadataKey());
   EXPECT_TRUE(cert);
@@ -39,6 +40,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt) {
             cert->id());
   EXPECT_EQ(GetNearbyShareTestMetadata().SerializeAsString(),
             cert->unencrypted_metadata().SerializeAsString());
+  EXPECT_EQ(proto_cert.for_self_share(), cert->for_self_share());
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt_IncorrectKeyFailure) {
@@ -74,7 +76,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt_InvalidDataFailure) {
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, Verify) {
-  base::Optional<NearbyShareDecryptedPublicCertificate> cert =
+  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility),
           GetNearbyShareTestEncryptedMetadataKey());
@@ -88,7 +90,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Verify_InitFailure) {
       GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
   proto_cert.set_public_key("invalid public key");
 
-  base::Optional<NearbyShareDecryptedPublicCertificate> cert =
+  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           proto_cert, GetNearbyShareTestEncryptedMetadataKey());
   ASSERT_TRUE(cert);
@@ -97,7 +99,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Verify_InitFailure) {
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, Verify_WrongSignature) {
-  base::Optional<NearbyShareDecryptedPublicCertificate> cert =
+  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility),
           GetNearbyShareTestEncryptedMetadataKey());
@@ -107,7 +109,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Verify_WrongSignature) {
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, HashAuthenticationToken) {
-  base::Optional<NearbyShareDecryptedPublicCertificate> cert =
+  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility),
           GetNearbyShareTestEncryptedMetadataKey());

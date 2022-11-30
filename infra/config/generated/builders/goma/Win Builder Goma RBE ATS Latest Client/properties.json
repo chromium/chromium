@@ -1,0 +1,58 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "goma",
+              "builder": "Win Builder Goma RBE ATS Latest Client",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.goma.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "goma_enable_global_file_stat_cache",
+                  "mb",
+                  "goma_latest_client",
+                  "goma_use_local"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 32
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "goma",
+          "builder": "Win Builder Goma RBE ATS Latest Client",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.goma.fyi",
+  "recipe": "chromium"
+}

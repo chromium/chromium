@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,11 @@
 namespace blink {
 
 namespace {
+
+TEST(PhysicalRectTest, AddOffset) {
+  EXPECT_EQ(PhysicalRect(1, 2, 3, 4) + PhysicalOffset(5, 6),
+            PhysicalRect(6, 8, 3, 4));
+}
 
 struct PhysicalOffsetRectUniteTestData {
   const char* test_case;
@@ -25,11 +30,11 @@ struct PhysicalOffsetRectUniteTestData {
     {"saturated width",
      {-1000, 0, 200, 200},
      {33554402, 500, 30, 100},
-     {0, 0, 99999999.0f, 600}},
+     {0, 0, 99999999, 600}},
     {"saturated height",
      {0, -1000, 200, 200},
      {0, 33554402, 100, 30},
-     {0, 0, 200, 99999999.0f}},
+     {0, 0, 200, 99999999}},
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -64,6 +69,54 @@ TEST_P(PhysicalRectUniteTest, Data) {
     expected.size.height += kExtraForSaturation;
   }
   EXPECT_EQ(expected, actual);
+}
+
+TEST(PhysicalRectTest, SquaredDistanceTo) {
+  PhysicalRect rect(0, 0, 200, 200);
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(-10, -10)))
+      << "over the top-left corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 0)))
+      << "on the top-left corner";
+  EXPECT_EQ(100, rect.SquaredDistanceTo(PhysicalOffset(10, -10)))
+      << "over the top edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(10, 0)))
+      << "on the top edge";
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(210, -10)))
+      << "over the top-right corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 0)))
+      << "on the top-right corner";
+  EXPECT_EQ(100, rect.SquaredDistanceTo(PhysicalOffset(210, 10)))
+      << "over the right edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 10)))
+      << "on the right edge";
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(210, 210)))
+      << "over the bottom-right corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 200)))
+      << "on the bottom-right corner";
+  EXPECT_EQ(10000, rect.SquaredDistanceTo(PhysicalOffset(100, 300)))
+      << "over the bottom edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(100, 200)))
+      << "on the bottom edge";
+  EXPECT_EQ(401, rect.SquaredDistanceTo(PhysicalOffset(-20, 201)))
+      << "over the bottom-left corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 200)))
+      << "on the bottom-left corner";
+  EXPECT_EQ(9, rect.SquaredDistanceTo(PhysicalOffset(-3, 100)))
+      << "over the left edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 3)))
+      << "on the left edge";
+
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(10, 190))) << "contained";
+
+  // Huge size
+  rect = PhysicalRect(LayoutUnit(500), LayoutUnit(), LayoutUnit::Max(),
+                      LayoutUnit());
+  EXPECT_GT(rect.SquaredDistanceTo(PhysicalOffset(10, 0)), 0);
+
+  // Negative size
+  rect = PhysicalRect(LayoutUnit(500), LayoutUnit(), LayoutUnit(-100),
+                      LayoutUnit());
+  EXPECT_EQ(1, rect.SquaredDistanceTo(PhysicalOffset(501, 0)));
 }
 
 TEST(PhysicalRectTest, InclusiveIntersect) {
@@ -128,54 +181,55 @@ TEST(PhysicalRectTest, IntersectsInclusively) {
   EXPECT_FALSE(b.IntersectsInclusively(a));
 }
 
-TEST(PhysicalRectTest, EnclosingIntRect) {
+TEST(PhysicalRectTest, ToEnclosingRect) {
   LayoutUnit small;
   small.SetRawValue(1);
   PhysicalRect small_dimensions_rect(LayoutUnit(42.5f), LayoutUnit(84.5f),
                                      small, small);
-  EXPECT_EQ(IntRect(42, 84, 1, 1), EnclosingIntRect(small_dimensions_rect));
+  EXPECT_EQ(gfx::Rect(42, 84, 1, 1), ToEnclosingRect(small_dimensions_rect));
 
   PhysicalRect integral_rect(100, 150, 200, 350);
-  EXPECT_EQ(IntRect(100, 150, 200, 350), EnclosingIntRect(integral_rect));
+  EXPECT_EQ(gfx::Rect(100, 150, 200, 350), ToEnclosingRect(integral_rect));
 
   PhysicalRect fractional_pos_rect(LayoutUnit(100.6f), LayoutUnit(150.8f),
                                    LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(100, 150, 201, 351), EnclosingIntRect(fractional_pos_rect));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_pos_rect));
 
   PhysicalRect fractional_dimensions_rect(
       LayoutUnit(100), LayoutUnit(150), LayoutUnit(200.6f), LayoutUnit(350.4f));
-  EXPECT_EQ(IntRect(100, 150, 201, 351),
-            EnclosingIntRect(fractional_dimensions_rect));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_dimensions_rect));
 
   PhysicalRect fractional_both_rect1(LayoutUnit(100.6f), LayoutUnit(150.8f),
                                      LayoutUnit(200.4f), LayoutUnit(350.2f));
-  EXPECT_EQ(IntRect(100, 150, 201, 351),
-            EnclosingIntRect(fractional_both_rect1));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_both_rect1));
 
   PhysicalRect fractional_both_rect2(LayoutUnit(100.5f), LayoutUnit(150.7f),
                                      LayoutUnit(200.3f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(100, 150, 201, 351),
-            EnclosingIntRect(fractional_both_rect2));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_both_rect2));
 
   PhysicalRect fractional_both_rect3(LayoutUnit(100.3f), LayoutUnit(150.2f),
                                      LayoutUnit(200.8f), LayoutUnit(350.9f));
-  EXPECT_EQ(IntRect(100, 150, 202, 352),
-            EnclosingIntRect(fractional_both_rect3));
+  EXPECT_EQ(gfx::Rect(100, 150, 202, 352),
+            ToEnclosingRect(fractional_both_rect3));
 
   PhysicalRect fractional_negpos_rect1(LayoutUnit(-100.4f), LayoutUnit(-150.8f),
                                        LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(-101, -151, 201, 351),
-            EnclosingIntRect(fractional_negpos_rect1));
+  EXPECT_EQ(gfx::Rect(-101, -151, 201, 351),
+            ToEnclosingRect(fractional_negpos_rect1));
 
   PhysicalRect fractional_negpos_rect2(LayoutUnit(-100.5f), LayoutUnit(-150.7f),
                                        LayoutUnit(199.4f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-101, -151, 200, 351),
-            EnclosingIntRect(fractional_negpos_rect2));
+  EXPECT_EQ(gfx::Rect(-101, -151, 200, 351),
+            ToEnclosingRect(fractional_negpos_rect2));
 
   PhysicalRect fractional_negpos_rect3(LayoutUnit(-100.3f), LayoutUnit(-150.2f),
                                        LayoutUnit(199.6f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-101, -151, 201, 352),
-            EnclosingIntRect(fractional_negpos_rect3));
+  EXPECT_EQ(gfx::Rect(-101, -151, 201, 352),
+            ToEnclosingRect(fractional_negpos_rect3));
 }
 
 TEST(LayoutRectTest, EdgesOnPixelBoundaries) {

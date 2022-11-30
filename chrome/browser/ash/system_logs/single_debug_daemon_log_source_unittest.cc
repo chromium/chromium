@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,8 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,17 +21,18 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
  public:
   SingleDebugDaemonLogSourceTest() : num_callback_calls_(0) {}
 
+  SingleDebugDaemonLogSourceTest(const SingleDebugDaemonLogSourceTest&) =
+      delete;
+  SingleDebugDaemonLogSourceTest& operator=(
+      const SingleDebugDaemonLogSourceTest&) = delete;
+
   void SetUp() override {
     // Since no debug daemon will be available during a unit test, use
     // FakeDebugDaemonClient to provide dummy DebugDaemonClient functionality.
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::make_unique<chromeos::FakeDebugDaemonClient>());
+    ash::DebugDaemonClient::InitializeFake();
   }
 
-  void TearDown() override {
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        nullptr);
-  }
+  void TearDown() override { ash::DebugDaemonClient::Shutdown(); }
 
  protected:
   SysLogsSourceCallback fetch_callback() {
@@ -61,8 +60,6 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
 
   // Stores results from the log source.
   SystemLogsResponse response_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleDebugDaemonLogSourceTest);
 };
 
 TEST_F(SingleDebugDaemonLogSourceTest, SingleCall) {

@@ -1,0 +1,94 @@
+<style include="network-shared">
+  .open-settings-icon {
+    height: 15px;
+  }
+</style>
+<template is="dom-repeat" items="[[networkHealthState_.networks]]"
+    as="network">
+  <network-health-container label="[[getNetworkTypeString_(network.type)]]"
+      expanded="[[getTypeExpanded_(network.type, typeExpanded_.*)]]"
+      on-toggle-expanded="onToggleExpanded_">
+    <span slot="header">
+      <img class="type-icon" src="[[getNetworkTypeIcon_(network.type)]]">
+    </span>
+    <template is="dom-if" if="[[network.name]]">
+      <div class="network-attribute-container">
+        <div class="network-attribute-label">
+          [[i18n('OncName')]]
+        </div>
+        <span class="network-attribute-value">
+          [[network.name]]
+        </span>
+      </div>
+    </template>
+    <div class="network-attribute-container">
+      <div class="network-attribute-label">
+        [[i18n('NetworkHealthState')]]
+      </div>
+      <span class="network-attribute-value">
+        [[getNetworkStateString_(network.state)]]
+      </span>
+    </div>
+    <template is="dom-if" if="[[showPortalState_(network)]]">
+      <div class="network-attribute-container">
+        <div class="network-attribute-label">
+          [[i18n('OncPortalState')]]
+        </div>
+        <span class="network-attribute-value">
+          [[getPortalStateString_(network.portalState)]]
+        </span>
+      </div>
+    </template>
+    <template is="dom-if" if="[[network.signalStrength]]">
+      <div class="network-attribute-container">
+        <div class="network-attribute-label">
+          [[i18n('OncWiFi-SignalStrength')]]
+        </div>
+        <span class="network-attribute-value">
+          [[getSignalStrengthString_(network.signalStrength)]]
+        </span>
+      </div>
+    </template>
+    <template is="dom-if" if="[[network.ipv4Address]]">
+      <div class="network-attribute-container">
+        <div class="network-attribute-label">
+          [[i18n('OncIpv4Address')]]
+        </div>
+        <span class="network-attribute-value">
+          [[network.ipv4Address]]
+        </span>
+      </div>
+    </template>
+    <template is="dom-if" if="[[network.ipv6Addresses.length]]">
+      <div class="network-attribute-container">
+        <div class="network-attribute-label">
+          [[i18n('OncIpv6Address')]]
+        </div>
+        <span class="network-attribute-value">
+          [[joinAddresses_(network.ipv6Addresses)]]
+        </span>
+      </div>
+    </template>
+    <template is="dom-if" if="[[network.macAddress]]">
+      <div class="network-attribute-container">
+        <div class="network-attribute-label">
+          [[i18n('OncMacAddress')]]
+        </div>
+        <span class="network-attribute-value">
+          [[network.macAddress]]
+        </span>
+      </div>
+    </template>
+    <template is="dom-if" if="[[showSettingsLink_(network)]]">
+      <div class="network-attribute-container">
+        <a href="[[getNetworkUrl_(network)]]">
+          <div class="network-attribute-label">
+            [[i18n('OpenInSettings')]]
+            <iron-icon class="open-settings-icon" icon="cr:open-in-new">
+            </iron-icon>
+          </div>
+        </a>
+      </div>
+    </template>
+  </network-health-container>
+</template>

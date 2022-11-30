@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/ntp_snippets/category.h"
@@ -19,24 +18,38 @@
 namespace {
 
 // dict.Get() specialization for base::Time values
-bool GetTimeValue(const base::DictionaryValue& dict,
+bool GetTimeValue(const base::Value::Dict& dict,
                   const std::string& key,
                   base::Time* time) {
-  std::string time_value;
-  return dict.GetString(key, &time_value) &&
-         base::Time::FromString(time_value.c_str(), time);
+  const std::string* time_value = dict.FindString(key);
+  if (!time_value) {
+    return false;
+  }
+  return base::Time::FromString(time_value->c_str(), time);
 }
 
 // dict.Get() specialization for GURL values
-bool GetURLValue(const base::DictionaryValue& dict,
+bool GetURLValue(const base::Value::Dict& dict,
                  const std::string& key,
                  GURL* url) {
-  std::string spec;
-  if (!dict.GetString(key, &spec)) {
+  const std::string* spec = dict.FindString(key);
+  if (!spec) {
     return false;
   }
-  *url = GURL(spec);
+  *url = GURL(*spec);
   return url->is_valid();
+}
+
+// dict.Get() specialization for std::string values
+bool GetStringValue(const base::Value::Dict& dict,
+                    const std::string& key,
+                    std::string* str) {
+  const std::string* str_value = dict.FindString(key);
+  if (!str_value) {
+    return false;
+  }
+  *str = *str_value;
+  return true;
 }
 
 }  // namespace
@@ -65,20 +78,19 @@ RemoteSuggestion::~RemoteSuggestion() = default;
 // static
 std::unique_ptr<RemoteSuggestion>
 RemoteSuggestion::CreateFromContentSuggestionsDictionary(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     int remote_category_id,
     const base::Time& fetch_date) {
-  const base::ListValue* ids;
-  if (!dict.GetList("ids", &ids)) {
+  const base::Value::List* ids = dict.FindList("ids");
+  if (!ids) {
     return nullptr;
   }
   std::vector<std::string> parsed_ids;
-  for (const auto& value : *ids) {
-    std::string id;
-    if (!value.GetAsString(&id)) {
+  for (const base::Value& value : *ids) {
+    if (!value.is_string()) {
       return nullptr;
     }
-    parsed_ids.push_back(id);
+    parsed_ids.push_back(value.GetString());
   }
 
   if (parsed_ids.empty()) {
@@ -87,23 +99,23 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
   auto snippet = MakeUnique(parsed_ids, remote_category_id);
   snippet->fetch_date_ = fetch_date;
 
-  if (!(dict.GetString("title", &snippet->title_) &&
+  if (!(GetStringValue(dict, "title", &snippet->title_) &&
         GetTimeValue(dict, "creationTime", &snippet->publish_date_) &&
         GetTimeValue(dict, "expirationTime", &snippet->expiry_date_) &&
-        dict.GetString("attribution", &snippet->publisher_name_) &&
+        GetStringValue(dict, "attribution", &snippet->publisher_name_) &&
         GetURLValue(dict, "fullPageUrl", &snippet->url_))) {
     return nullptr;
   }
 
   // Optional fields.
-  dict.GetString("snippet", &snippet->snippet_);
+  GetStringValue(dict, "snippet", &snippet->snippet_);
   GetURLValue(dict, "imageUrl", &snippet->salient_image_url_);
   GetURLValue(dict, "ampUrl", &snippet->amp_url_);
 
   // TODO(sfiera): also favicon URL.
 
   const base::Value* image_dominant_color_value =
-      dict.FindKey("imageDominantColor");
+      dict.Find("imageDominantColor");
   if (image_dominant_color_value) {
     // The field is defined as fixed32 in the proto (effectively 32 bits
     // unsigned int), however, JSON does not support unsigned types. As a result
@@ -119,19 +131,21 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
     snippet->image_dominant_color_ = image_dominant_color;
   }
 
-  double score;
-  if (dict.GetDouble("score", &score)) {
-    snippet->score_ = score;
-  }
+  absl::optional<double> score = dict.FindDouble("score");
+  if (score)
+    snippet->score_ = *score;
 
-  const base::DictionaryValue* notification_info = nullptr;
-  if (dict.GetDictionary("notificationInfo", &notification_info)) {
-    if (notification_info->GetBoolean("shouldNotify",
-                                      &snippet->should_notify_) &&
-        snippet->should_notify_) {
-      if (!GetTimeValue(*notification_info, "deadline",
-                        &snippet->notification_deadline_)) {
-        snippet->notification_deadline_ = base::Time::Max();
+  if (const base::Value::Dict* notification_info =
+          dict.FindDict("notificationInfo")) {
+    absl::optional<bool> should_notify =
+        notification_info->FindBool("shouldNotify");
+    if (should_notify) {
+      snippet->should_notify_ = should_notify.value();
+      if (snippet->should_notify_) {
+        if (!GetTimeValue(*notification_info, "deadline",
+                          &snippet->notification_deadline_)) {
+          snippet->notification_deadline_ = base::Time::Max();
+        }
       }
     }
   }
@@ -140,7 +154,7 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
   // content_type_ of the class |RemoteSuggestion| is by default initialized to
   // ContentType::UNKNOWN.
   std::string content_type;
-  if (dict.GetString("contentType", &content_type)) {
+  if (GetStringValue(dict, "contentType", &content_type)) {
     if (content_type == "VIDEO") {
       snippet->content_type_ = ContentType::VIDEO;
     } else {

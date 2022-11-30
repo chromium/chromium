@@ -1,11 +1,15 @@
 /*
- * Copyright 2019 The Chromium Authors. All rights reserved.
+ * Copyright 2019 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
 
 var gPaymentResponse = null;
 var gRetryPromise = null;
+
+const bobPayMethod = Object.freeze({
+  supportedMethods: 'https://bobpay.com',
+});
 
 /**
  * Launches the PaymentRequest UI
@@ -16,7 +20,7 @@ function buy() { // eslint-disable-line no-unused-vars
     requestPayerName: true,
     requestPayerPhone: true,
   };
-  getPaymentResponse(options)
+  getPaymentResponseWithMethod(options, [bobPayMethod])
       .then(function(response) {
         gPaymentResponse = response;
         var eventPromise = new Promise(function(resolve) {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -58,6 +59,7 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
         public SettingsContext(SettingsFragmentImpl fragmentImpl, Context embedderContext) {
             super(new ContextThemeWrapper(ClassLoaderContextWrapperFactory.get(embedderContext),
                     R.style.Theme_WebLayer_Settings));
+            getTheme().applyStyle(R.style.ColorOverlay_WebLayer, /*force=*/true);
             mEmbedderContext = embedderContext;
             mFragmentImpl = fragmentImpl;
         }
@@ -104,6 +106,9 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
                 intent = SettingsIntentHelper.createIntentForSiteSettingsSingleWebsite(
                         mEmbedderContext, profile.getName(), profile.isIncognito(),
                         address.getOrigin());
+            } else if (newFragmentClassName.equals(AccessibilitySettings.class.getName())) {
+                intent = SettingsIntentHelper.createIntentForAccessibilitySettings(
+                        mEmbedderContext, profile.getName(), profile.isIncognito());
             } else {
                 throw new IllegalArgumentException("Unsupported Fragment: " + newFragmentClassName);
             }
@@ -149,6 +154,10 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
                 mFragmentArguments = SingleWebsiteSettings.createFragmentArgsForSite(
                         fragmentArgs.getString(SettingsFragmentArgs.SINGLE_WEBSITE_URL));
                 break;
+            case SettingsFragmentArgs.ACCESSIBILITY:
+                mFragmentClass = AccessibilitySettings.class;
+                mFragmentArguments = null;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Site Settings Fragment");
         }
@@ -171,6 +180,9 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
                 if (settingsFragment instanceof SiteSettingsPreferenceFragment) {
                     ((SiteSettingsPreferenceFragment) settingsFragment)
                             .setSiteSettingsDelegate(new WebLayerSiteSettingsDelegate(mProfile));
+                } else if (settingsFragment instanceof AccessibilitySettings) {
+                    ((AccessibilitySettings) settingsFragment)
+                            .setDelegate(new WebLayerAccessibilitySettingsDelegate(mProfile));
                 }
                 getSupportFragmentManager()
                         .beginTransaction()

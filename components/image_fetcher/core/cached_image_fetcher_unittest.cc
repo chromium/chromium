@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -55,17 +55,14 @@ const char kCacheLoadHistogramName[] = "ImageFetcher.ImageLoadFromCacheTime";
 const char kNetworkLoadHistogramName[] =
     "ImageFetcher.ImageLoadFromNetworkTime";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL ImageUrl() {
-  return GURL("http://gstatic.img.com/foo.jpg");
-}
-
 }  // namespace
 
 class CachedImageFetcherTest : public testing::Test {
  public:
   CachedImageFetcherTest() {}
+
+  CachedImageFetcherTest(const CachedImageFetcherTest&) = delete;
+  CachedImageFetcherTest& operator=(const CachedImageFetcherTest&) = delete;
 
   ~CachedImageFetcherTest() override {
     cached_image_fetcher_.reset();
@@ -95,12 +92,13 @@ class CachedImageFetcherTest : public testing::Test {
         base::SequencedTaskRunnerHandle::Get());
 
     // Use an initial request to start the cache up.
-    image_cache_->SaveImage(ImageUrl().spec(), kImageData,
+    const std::string kImageUrl("http://gstatic.img.com/foo.jpg");
+    image_cache_->SaveImage(kImageUrl, kImageData,
                             /* needs_transcoding */ false,
-                            /* expiration_interval */ base::nullopt);
+                            /* expiration_interval */ absl::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-    image_cache_->DeleteImage(ImageUrl().spec());
+    image_cache_->DeleteImage(kImageUrl);
     RunUntilIdle();
 
     shared_factory_ =
@@ -138,19 +136,17 @@ class CachedImageFetcherTest : public testing::Test {
   std::unique_ptr<CachedImageFetcher> cached_image_fetcher_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-  FakeImageDecoder* fake_image_decoder_;
+  raw_ptr<FakeImageDecoder> fake_image_decoder_;
 
   scoped_refptr<ImageCache> image_cache_;
   base::SimpleTestClock clock_;
   TestingPrefServiceSimple test_prefs_;
   base::ScopedTempDir data_dir_;
-  FakeDB<CachedImageMetadataProto>* db_;
+  raw_ptr<FakeDB<CachedImageMetadataProto>> db_;
   std::map<std::string, CachedImageMetadataProto> metadata_store_;
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherTest);
 };
 
 MATCHER(EmptyImage, "") {
@@ -169,9 +165,10 @@ MATCHER(NonEmptyString, "") {
 // that they both can use what's inside.
 TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   // Save the image in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageData,
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -180,7 +177,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   EXPECT_CALL(data_callback, Run(kImageData, _));
   EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
   cached_image_fetcher()->FetchImageAndData(
-      ImageUrl(), data_callback.Get(), image_callback.Get(),
+      kImageUrl, data_callback.Get(), image_callback.Get(),
       ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
   db()->LoadCallback(true);
   RunUntilIdle();
@@ -194,9 +191,10 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
 
 TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
   // Save the image in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageData,
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ true,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -205,7 +203,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
   EXPECT_CALL(data_callback, Run(kImageData, _));
   EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
   cached_image_fetcher()->FetchImageAndData(
-      ImageUrl(), data_callback.Get(), image_callback.Get(),
+      kImageUrl, data_callback.Get(), image_callback.Get(),
       ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
   db()->LoadCallback(true);
   RunUntilIdle();
@@ -221,10 +219,11 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
 TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
   CreateCachedImageFetcher(/* read_only */ true);
   // Save the image in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageData,
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
-  test_url_loader_factory()->AddResponse(ImageUrl().spec(), kImageData);
+                           /* expiration_interval */ absl::nullopt);
+  test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
   RunUntilIdle();
   {
     // Even if there's a decoding error, read_only cache shouldn't alter the
@@ -234,7 +233,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
     base::MockCallback<ImageFetcherCallback> image_callback;
     EXPECT_CALL(image_callback, Run(EmptyImage(), _));
     cached_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), image_callback.Get(),
+        kImageUrl, data_callback.Get(), image_callback.Get(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -254,7 +253,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
     base::MockCallback<ImageFetcherCallback> image_callback;
     EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
     cached_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), image_callback.Get(),
+        kImageUrl, data_callback.Get(), image_callback.Get(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -263,8 +262,9 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
 
 TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
   // Expect the image to be fetched by URL.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   {
-    test_url_loader_factory()->AddResponse(ImageUrl().spec(), kImageData);
+    test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
 
     base::MockCallback<ImageDataFetcherCallback> data_callback;
     base::MockCallback<ImageFetcherCallback> image_callback;
@@ -272,7 +272,7 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
     EXPECT_CALL(data_callback, Run(NonEmptyString(), _));
     EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
     cached_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), image_callback.Get(),
+        kImageUrl, data_callback.Get(), image_callback.Get(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -287,7 +287,7 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
   {
     EXPECT_CALL(*this, OnImageLoaded(false, NonEmptyString()));
     image_cache()->LoadImage(
-        /* read_only */ false, ImageUrl().spec(),
+        /* read_only */ false, kImageUrl.spec(),
         base::BindOnce(&CachedImageFetcherTest::OnImageLoaded,
                        base::Unretained(this)));
     db()->LoadCallback(true);
@@ -303,7 +303,7 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
     EXPECT_CALL(data_callback, Run(NonEmptyString(), _));
     EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
     cached_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), image_callback.Get(),
+        kImageUrl, data_callback.Get(), image_callback.Get(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -313,8 +313,9 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
 TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheReadOnly) {
   CreateCachedImageFetcher(/* read_only */ true);
   // Expect the image to be fetched by URL.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   {
-    test_url_loader_factory()->AddResponse(ImageUrl().spec(), kImageData);
+    test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
 
     base::MockCallback<ImageDataFetcherCallback> data_callback;
     base::MockCallback<ImageFetcherCallback> image_callback;
@@ -322,7 +323,7 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheReadOnly) {
     EXPECT_CALL(data_callback, Run(NonEmptyString(), _));
     EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
     cached_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), image_callback.Get(),
+        kImageUrl, data_callback.Get(), image_callback.Get(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -337,7 +338,7 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheReadOnly) {
   {
     EXPECT_CALL(*this, OnImageLoaded(false, std::string()));
     image_cache()->LoadImage(
-        /* read_only */ false, ImageUrl().spec(),
+        /* read_only */ false, kImageUrl.spec(),
         base::BindOnce(&CachedImageFetcherTest::OnImageLoaded,
                        base::Unretained(this)));
     db()->LoadCallback(true);
@@ -346,8 +347,9 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheReadOnly) {
 }
 
 TEST_F(CachedImageFetcherTest, FetchImageWithoutTranscodingDoesNotDecode) {
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   {
-    test_url_loader_factory()->AddResponse(ImageUrl().spec(), kImageData);
+    test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
     image_decoder()->SetDecodingValid(false);
 
     base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -355,7 +357,7 @@ TEST_F(CachedImageFetcherTest, FetchImageWithoutTranscodingDoesNotDecode) {
     EXPECT_CALL(data_callback, Run(kImageData, _));
     ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName);
     params.set_skip_transcoding_for_testing(true);
-    cached_image_fetcher()->FetchImageAndData(ImageUrl(), data_callback.Get(),
+    cached_image_fetcher()->FetchImageAndData(kImageUrl, data_callback.Get(),
                                               ImageFetcherCallback(), params);
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -365,7 +367,7 @@ TEST_F(CachedImageFetcherTest, FetchImageWithoutTranscodingDoesNotDecode) {
     base::MockCallback<ImageDataFetcherCallback> data_callback;
     EXPECT_CALL(data_callback, Run(kImageData, _));
     cached_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), ImageFetcherCallback(),
+        kImageUrl, data_callback.Get(), ImageFetcherCallback(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -374,11 +376,12 @@ TEST_F(CachedImageFetcherTest, FetchImageWithoutTranscodingDoesNotDecode) {
 
 TEST_F(CachedImageFetcherTest, FetchImageWithSkipDiskCache) {
   // Save the image in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageDataOther,
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  image_cache()->SaveImage(kImageUrl.spec(), kImageDataOther,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
-  test_url_loader_factory()->AddResponse(ImageUrl().spec(), kImageData);
+  test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
   base::MockCallback<ImageFetcherCallback> image_callback;
@@ -388,7 +391,7 @@ TEST_F(CachedImageFetcherTest, FetchImageWithSkipDiskCache) {
 
   EXPECT_CALL(data_callback, Run(kImageData, _));
   EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
-  cached_image_fetcher()->FetchImageAndData(ImageUrl(), data_callback.Get(),
+  cached_image_fetcher()->FetchImageAndData(kImageUrl, data_callback.Get(),
                                             image_callback.Get(), params);
 
   RunUntilIdle();

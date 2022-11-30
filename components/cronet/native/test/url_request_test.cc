@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -17,7 +17,7 @@
 #include "components/cronet/native/test/test_upload_data_provider.h"
 #include "components/cronet/native/test/test_url_request_callback.h"
 #include "components/cronet/native/test/test_util.h"
-#include "components/cronet/test/test_server.h"
+#include "components/cronet/testing/test_server/test_server.h"
 #include "cronet_c.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -44,6 +44,9 @@ class StatusListener {
         expect_request_not_done_(false) {
     Cronet_UrlRequestStatusListener_SetClientContext(status_listener_, this);
   }
+
+  StatusListener(const StatusListener&) = delete;
+  StatusListener& operator=(const StatusListener&) = delete;
 
   ~StatusListener() {
     Cronet_UrlRequestStatusListener_Destroy(status_listener_);
@@ -78,7 +81,7 @@ class StatusListener {
   }
 
   Cronet_UrlRequestStatusListenerPtr const status_listener_;
-  TestUrlRequestCallback* const callback_;
+  const raw_ptr<TestUrlRequestCallback> callback_;
 
   Cronet_UrlRequestStatusListener_Status status_ =
       Cronet_UrlRequestStatusListener_Status_INVALID;
@@ -89,8 +92,6 @@ class StatusListener {
   // this variable races the reading of it, but it's initialized to a safe
   // value.
   std::atomic_bool expect_request_not_done_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusListener);
 };
 
 // Query and return status of |request|. |callback| is verified to not yet have
@@ -281,6 +282,10 @@ void VerifyRequestFinishedInfoListener(
 // to add a RequestFinishedInfoListener.
 class UrlRequestTest : public ::testing::TestWithParam<
                            std::tuple<bool, RequestFinishedListenerType>> {
+ public:
+  UrlRequestTest(const UrlRequestTest&) = delete;
+  UrlRequestTest& operator=(const UrlRequestTest&) = delete;
+
  protected:
   UrlRequestTest() {}
   ~UrlRequestTest() override {}
@@ -493,9 +498,6 @@ class UrlRequestTest : public ::testing::TestWithParam<
   // CleanupRequestFinishedListener() and to allow tests that never run the
   // |request_finished_listener_| to be able to destroy it.
   Cronet_RequestFinishedInfoListenerPtr request_finished_listener_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UrlRequestTest);
 };
 
 const bool kDirectExecutorEnabled[]{true, false};
@@ -1656,9 +1658,9 @@ TEST_F(UrlRequestTestNoParam,
 
   base::WaitableEvent done_event;
   struct ListenerContext {
-    TestUrlRequestCallback* test_callback;
+    raw_ptr<TestUrlRequestCallback> test_callback;
     Cronet_UrlRequestPtr url_request;
-    base::WaitableEvent* done_event;
+    raw_ptr<base::WaitableEvent> done_event;
   };
   ListenerContext listener_context = {&test_callback, request, &done_event};
 
@@ -1718,9 +1720,9 @@ TEST_F(UrlRequestTestNoParam,
 
   base::WaitableEvent done_event;
   struct ListenerContext {
-    TestUrlRequestCallback* test_callback;
+    raw_ptr<TestUrlRequestCallback> test_callback;
     Cronet_UrlRequestPtr url_request;
-    base::WaitableEvent* done_event;
+    raw_ptr<base::WaitableEvent> done_event;
   };
   ListenerContext listener_context = {&test_callback, request, &done_event};
 

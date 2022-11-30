@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,103 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+
+// The list of all HTML autocomplete field mode hints supported by Chrome.
+// See [ http://is.gd/whatwg_autocomplete ] for the full list of specced hints.
+enum HtmlFieldMode {
+  kNone,
+  kBilling,
+  kShipping,
+};
+
+// The list of all HTML autocomplete field type hints supported by Chrome.
+// See [ http://is.gd/whatwg_autocomplete ] for the full list of specced hints.
+enum HtmlFieldType {
+  // Default type.
+  kUnspecified,
+
+  // Name types.
+  kName,
+  kHonorificPrefix,
+  kGivenName,
+  kAdditionalName,
+  kFamilyName,
+
+  // Business types.
+  kOrganization,
+
+  // Address types.
+  kStreetAddress,
+  kAddressLine1,
+  kAddressLine2,
+  kAddressLine3,
+  kAddressLevel1,   // For U.S. addresses, corresponds to the state.
+  kAddressLevel2,   // For U.S. addresses, corresponds to the city.
+  kAddressLevel3,   // An area that is more specific than LEVEL2.
+  kCountryCode,     // The ISO 3166-1-alpha-2 country code.
+  kCountryName,     // The localized country name.
+  kPostalCode,
+  kFullAddress,     // The complete address, formatted for display.
+
+  // Credit card types.
+  kCreditCardNameFull,
+  kCreditCardNameFirst,
+  kCreditCardNameLast,
+  kCreditCardNumber,
+  kCreditCardExp,
+  kCreditCardExpMonth,
+  kCreditCardExpYear,
+  kCreditCardVerificationCode,
+  kCreditCardType,
+
+  // Phone number types.
+  kTel,
+  kTelCountryCode,
+  kTelNational,
+  kTelAreaCode,
+  kTelLocal,
+  kTelLocalPrefix,
+  kTelLocalSuffix,
+  kTelExtension,
+
+  // Email.
+  kEmail,
+
+  // Birthdate.
+  kBirthdateDay,
+  kBirthdateMonth,
+  kBirthdateYear,
+
+  // Transaction details.
+  kTransactionAmount,
+  kTransactionCurrency,
+
+  // Variants of type hints specified in the HTML specification that are
+  // inferred based on a field's 'maxlength' attribute.
+  // TODO(isherman): Remove these types, in favor of understanding maxlength
+  // when filling fields.
+  kAdditionalNameInitial,
+  kCreditCardExpDate2DigitYear,
+  kCreditCardExpDate4DigitYear,
+  kCreditCardExp2DigitYear,
+  kCreditCardExp4DigitYear,
+
+  // Universal Payment Interface - Virtual Payment Address.
+  kUpiVpa,
+
+  // Phone number verification one-time-codes.
+  kOneTimeCode,
+
+  // Promo code for merchant sites.
+  kMerchantPromoCode,
+
+  // International Bank Account Number (IBAN) for banking and merchant sites.
+  kIban,
+
+  // Non-standard autocomplete types.
+  kUnrecognized,
+};
 
 // Events observed by the Password Manager that indicate either that a form is
 // potentially being submitted, or that a form has already been successfully
@@ -35,8 +130,9 @@ enum SubmissionSource {
   NONE,                      // No submission signal was detected.
   SAME_DOCUMENT_NAVIGATION,  // The form was removed in same document
                              // navigation.
-  XHR_SUCCEEDED,             // The form was removed whem XHR succeeded.
-  FRAME_DETACHED,            // The subframe which has form was detached.
+  XHR_SUCCEEDED,             // The form was removed when XHR succeeded.
+  FRAME_DETACHED,            // The subframe or non primary main frame
+                             // containing the form was detached.
   DOM_MUTATION_AFTER_XHR,    // The form was removed after XHR.
   PROBABLY_FORM_SUBMITTED,   // The form was probably submitted since new page
                              // is loaded.
@@ -67,22 +163,112 @@ enum ButtonTitleType {
   SPAN = 7                         // e.g. <span name='btn'>
 };
 
-// autofill::LocalFrameToken
-struct LocalFrameToken {
+// Describes various criteria (e.g. there are empty fields in the form) that
+// affect whether a form is ready for submission. Don't change IDs as they are
+// used for metrics.
+// TODO(crbug.com/1299394): Which criteria will be used for the actual launch
+// is a subject to change. For now, we collect metrics to test two versions:
+// - |kFieldAfterPasswordField| is the criterion to enable submission in the
+//   regular launch.
+// - |kTwoFields| is the criterion to enable submission in the conservative
+//   launch.
+// After the launch, passing the state to the browser will be useless.
+// Therefore, the enum will be removed.
+enum SubmissionReadinessState {
+  // No information received. Supposed to be unused on Android.
+  kNoInformation = 0,
+  // Error occurred while assessing submission readiness. Ideally, Chrome
+  // should not report such votes. Otherwise, |CalculateSubmissionReadiness|
+  // should be corrected.
+  kError = 1,
+
+  // Various blockers of forms submission.
+  // The username field is not found.
+  kNoUsernameField = 2,
+  // There are fields between username and password fields.
+  kFieldBetweenUsernameAndPassword = 3,
+  // There is a field right after the password field by focus traversal.
+  kFieldAfterPasswordField = 4,
+  // There are other empty fields. If the |kFieldBetweenUsernameAndPassword| or
+  // |kFieldAfterPasswordField| criteria are matched, they should be reported,
+  // not this one.
+  kEmptyFields = 5,
+  // No empty fields and there are more than two visible fields.
+  kMoreThanTwoFields = 6,
+
+  // The most conservative criterion for submission.
+  // There are only two visible fields: username and password.
+  kTwoFields = 7,
+};
+
+// autofill::FrameToken (components/autofill/core/common/unique_ids.h)
+struct FrameToken {
+  // The token wrapped by a LocalFrameToken or a RemoteFrameToken.
   mojo_base.mojom.UnguessableToken token;
+  // Indicates whether |token| represents a LocalFrameToken.
+  bool is_local;
 };
 
-// autofill::FormRendererId
+// autofill::FrameTokenWithPredecessor
+// (components/autofill/core/common/form_data.h)
+struct FrameTokenWithPredecessor {
+  FrameToken token;
+  int32 predecessor;
+};
+
+// autofill::FormRendererId (components/autofill/core/common/unique_ids.h)
 struct FormRendererId {
-  uint32 id;
+  uint64 id;
 };
 
-// autofill::FieldRendererId
+// autofill::FieldRendererId (components/autofill/core/common/unique_ids.h)
 struct FieldRendererId {
-  uint32 id;
+  uint64 id;
 };
 
-// autofill::FormFieldData
+// autofill::SelectOption (components/autofill/core/common/form_field_data.h)
+struct SelectOption {
+  mojo_base.mojom.String16 value;
+  mojo_base.mojom.String16 content;
+};
+
+// autofill::Section::Autocomplete
+// (components/autofill/core/common/form_field_data.h)
+struct SectionAutocomplete {
+  string section;
+  HtmlFieldMode html_field_mode;
+};
+
+// autofill::Section::FieldIdentifier
+// (components/autofill/core/common/form_field_data.h)
+struct SectionFieldIdentifier {
+  string field_name;
+  uint64 local_frame_id;
+  FieldRendererId field_renderer_id;
+};
+
+// autofill::Section::SectionValue
+// (components/autofill/core/common/form_field_data.h)
+union SectionValue {
+  bool default_section;
+  SectionAutocomplete autocomplete;
+  SectionFieldIdentifier field_identifier;
+};
+
+// autofill::Section (components/autofill/core/common/form_field_data.h)
+struct Section {
+  SectionValue value;
+};
+
+// autofill::AutocompleteParsingResult
+// (components/autofill/core/common/autocomplete_parsing_util.h)
+struct AutocompleteParsingResult {
+  string section;
+  HtmlFieldMode mode;
+  HtmlFieldType field_type;
+};
+
+// autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
 struct FormFieldData {
   enum CheckStatus {
     kNotCheckable,
@@ -111,6 +297,7 @@ struct FormFieldData {
     kAriaLabel,
     kCombined,  // Combined with various elements.
     kValue,     // label is the value of element.
+    kFor,       // Derived from the "for" attribute of a label element.
   };
 
   mojo_base.mojom.String16 label;
@@ -120,20 +307,22 @@ struct FormFieldData {
   mojo_base.mojom.String16 value;
   string form_control_type;
   string autocomplete_attribute;
+  AutocompleteParsingResult? parsed_autocomplete;
   mojo_base.mojom.String16 placeholder;
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
   mojo_base.mojom.String16 aria_description;
-  LocalFrameToken host_frame;
   FieldRendererId unique_renderer_id;
+  FormRendererId host_form_id;
   uint32 properties_mask;
   int32 form_control_ax_id;
 
   uint64 max_length;
   bool is_autofilled;
-  string section;
+  Section section;
   CheckStatus check_status;
   bool is_focusable;
+  bool is_visible;
   bool should_autocomplete;
   RoleAttribute role;
   mojo_base.mojom.TextDirection text_direction;
@@ -141,8 +330,7 @@ struct FormFieldData {
   bool is_readonly;
   mojo_base.mojom.String16 user_input;
 
-  array<mojo_base.mojom.String16> option_values;
-  array<mojo_base.mojom.String16> option_contents;
+  array<SelectOption> options;
 
   LabelSource label_source;
 
@@ -150,27 +338,27 @@ struct FormFieldData {
 
   array<mojo_base.mojom.String16> datalist_values;
   array<mojo_base.mojom.String16> datalist_labels;
+
+  bool force_override;
 };
 
+// autofill::ButtonTitleInfo (components/autofill/core/common/form_data.h)
 struct ButtonTitleInfo {
   mojo_base.mojom.String16 title;
   ButtonTitleType type;
 };
 
-// autofill::FormData
+// autofill::FormData (components/autofill/core/common/form_data.h)
 struct FormData {
   mojo_base.mojom.String16 id_attribute;
   mojo_base.mojom.String16 name_attribute;
   mojo_base.mojom.String16 name;
   array<ButtonTitleInfo> button_titles;
-  url.mojom.Url url;
-  url.mojom.Url full_url;
   url.mojom.Url action;
   bool is_action_empty;
-  url.mojom.Origin main_frame_origin;
   bool is_form_tag;
-  LocalFrameToken host_frame;
   FormRendererId unique_renderer_id;
+  array<FrameTokenWithPredecessor> child_frames;
   SubmissionIndicatorEvent submission_event;
   array<FormFieldData> fields;
   array<FieldRendererId> username_predictions;
@@ -178,7 +366,9 @@ struct FormData {
 };
 
 // autofill::FormFieldDataPredictions
+// (components/autofill/core/common/form_field_data_predictions.h)
 struct FormFieldDataPredictions {
+  string host_form_signature;
   string signature;
   string heuristic_type;
   string server_type;
@@ -188,6 +378,7 @@ struct FormFieldDataPredictions {
 };
 
 // autofill::FormDataPredictions
+// (components/autofill/core/common/form_data_predictions.h)
 struct FormDataPredictions {
   FormData data;
   string signature;
@@ -195,6 +386,7 @@ struct FormDataPredictions {
 };
 
 // autofill::PasswordAndMetadata
+// (components/autofill/core/common/password_form_fill_data.h)
 struct PasswordAndMetadata {
   mojo_base.mojom.String16 username;
   mojo_base.mojom.String16 password;
@@ -203,6 +395,7 @@ struct PasswordAndMetadata {
 };
 
 // autofill::PasswordFormFillData
+// (components/autofill/core/common/password_form_fill_data.h)
 struct PasswordFormFillData {
   FormRendererId form_renderer_id;
   url.mojom.Url url;
@@ -217,12 +410,14 @@ struct PasswordFormFillData {
 };
 
 // autofill::PasswordFormGenerationData
+// (components/autofill/core/common/password_form_generation_data.h)
 struct PasswordFormGenerationData {
    FieldRendererId new_password_renderer_id;
    FieldRendererId confirmation_password_renderer_id;
 };
 
 // autofill::password_generation::PasswordGenerationUIData
+// (components/autofill/core/common/password_generation_util.h)
 struct PasswordGenerationUIData {
   gfx.mojom.RectF bounds;
   int32 max_length;
@@ -230,10 +425,12 @@ struct PasswordGenerationUIData {
   FieldRendererId generation_element_id;
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
+  mojo_base.mojom.String16 user_typed_password;
   FormData form_data;
 };
 
 // autofill::ParsingResult
+// (components/autofill/core/common/password_form_fill_data.h)
 struct ParsingResult {
   FieldRendererId username_renderer_id;
   FieldRendererId password_renderer_id;
@@ -252,4 +449,15 @@ enum AutofillState {
   // There are available autocomplete suggestions for the input. Autocomplete
   // only fills in a single input.
   kAutocompleteAvailable,
+};
+
+// The possible actions that the renderer can take on receiving form data.
+enum RendererFormDataAction {
+  kFill,     // The renderer should fill the form data.
+  kPreview,  // The renderer should preview the form data.
+};
+
+// autofill::FormElementWasClicked (components/autofill/core/common/aliases.h)
+struct FormElementWasClicked {
+  bool form_element_was_clicked;
 };

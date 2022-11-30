@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import android.speech.RecognizerResultsIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,13 +45,13 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
 
         if (ShortcutSource.BOOKMARK_NAVIGATOR_WIDGET
                 == IntentUtils.safeGetIntExtra(
-                        launchIntent, ShortcutHelper.EXTRA_SOURCE, ShortcutSource.UNKNOWN)) {
+                        launchIntent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN)) {
             return LaunchCause.HOME_SCREEN_WIDGET;
         }
 
         if (ShortcutSource.ADD_TO_HOMESCREEN_SHORTCUT
                 == IntentUtils.safeGetIntExtra(
-                        launchIntent, ShortcutHelper.EXTRA_SOURCE, ShortcutSource.UNKNOWN)) {
+                        launchIntent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN)) {
             return LaunchCause.HOME_SCREEN_SHORTCUT;
         }
 

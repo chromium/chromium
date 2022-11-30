@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,25 @@
 
 namespace blink {
 
-const int kCompositorNamespaceBitCount = 4;
+const int kCompositorNamespaceBitCount = 5;
 
 enum class CompositorElementIdNamespace {
   kPrimary,
   kUniqueObjectId,
   kScroll,
   kStickyTranslation,
+  kAnchorScrollTranslation,
   kPrimaryEffect,
   kPrimaryTransform,
   kEffectFilter,
   kEffectMask,
   kEffectClipPath,
+  kScaleTransform,
+  kRotateTransform,
+  kTranslateTransform,
   kVerticalScrollbar,
   kHorizontalScrollbar,
+  kSharedElementTransition,
   kDOMNodeId,
   // The following values are for internal usage only.
   kMax = kDOMNodeId,
@@ -33,7 +38,7 @@ enum class CompositorElementIdNamespace {
   kMaxRepresentable = 1 << kCompositorNamespaceBitCount
 };
 
-static_assert(CompositorElementIdNamespace::kMax <=
+static_assert(CompositorElementIdNamespace::kMax <
                   CompositorElementIdNamespace::kMaxRepresentable,
               "");
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Builtins in localStorage assert_array_equals: b expected property 0 to be function "function key() { [native code] }" but got "key" (expected array [function "function key() { [native code] }", function "function getItem() { [native code] }", function "function setItem() { [native code] }", function "function removeItem() { [native code] }", function "function clear() { [native code] }"] got ["key", "getItem", "setItem", "removeItem", "clear"])
+FAIL Builtins in sessionStorage assert_array_equals: b expected property 0 to be function "function key() { [native code] }" but got "key" (expected array [function "function key() { [native code] }", function "function getItem() { [native code] }", function "function setItem() { [native code] }", function "function removeItem() { [native code] }", function "function clear() { [native code] }"] got ["key", "getItem", "setItem", "removeItem", "clear"])
+Harness: the test ran to completion.
+

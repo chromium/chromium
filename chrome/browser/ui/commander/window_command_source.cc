@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,6 @@
 namespace commander {
 
 namespace {
-
-// TODO(lgrey): Specifically not deduping this with BookmarkCommandSource right
-// now since I'm not actually sure if we want the same threshold for different
-// nouns.
-size_t constexpr kNounFirstMinimum = 2;
-
 
 // Activates `browser` if it's still present.
 void SwitchToBrowser(base::WeakPtr<Browser> browser) {
@@ -89,9 +83,6 @@ CommandSource::CommandResults WindowCommandSource::GetCommands(
   BrowserList* browser_list = BrowserList::GetInstance();
   if (browser_list->size() < 2)
     return results;
-  if (input.size() >= kNounFirstMinimum) {
-    results = SwitchCommandsForWindowsMatching(browser, input);
-  }
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   // TODO(lgrey): Temporarily using untranslated strings since it's not
@@ -108,7 +99,7 @@ CommandSource::CommandResults WindowCommandSource::GetCommands(
     results.push_back(std::move(verb));
   }
   score = finder.Find(merge_title, &ranges);
-  if (score > 0) {
+  if (score > 0 && !browser->is_type_devtools()) {
     auto verb = std::make_unique<CommandItem>(merge_title, score, ranges);
     verb->command = std::make_pair(
         merge_title, base::BindRepeating(&MergeCommandsForWindowsMatching,

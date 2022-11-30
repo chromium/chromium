@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/audio/android/opensles_input.h"
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/audio_bus.h"
@@ -47,8 +46,8 @@ OpenSLESInputStream::OpenSLESInputStream(AudioManagerAndroid* audio_manager,
   format_.channelMask = ChannelCountToSLESChannelMask(params.channels());
 
   buffer_size_bytes_ = params.GetBytesPerBuffer(kSampleFormat);
-  hardware_delay_ = base::TimeDelta::FromSecondsD(
-      params.frames_per_buffer() / static_cast<double>(params.sample_rate()));
+  hardware_delay_ = base::Seconds(params.frames_per_buffer() /
+                                  static_cast<double>(params.sample_rate()));
 
   memset(&audio_data_, 0, sizeof(audio_data_));
 }
@@ -63,18 +62,17 @@ OpenSLESInputStream::~OpenSLESInputStream() {
   DCHECK(!audio_data_[0]);
 }
 
-bool OpenSLESInputStream::Open() {
+AudioInputStream::OpenOutcome OpenSLESInputStream::Open() {
   DVLOG(2) << __PRETTY_FUNCTION__;
   DCHECK(thread_checker_.CalledOnValidThread());
   if (engine_object_.Get())
-    return false;
+    return AudioInputStream::OpenOutcome::kFailed;
 
   if (!CreateRecorder())
-    return false;
+    return AudioInputStream::OpenOutcome::kFailed;
 
   SetupAudioBuffer();
-
-  return true;
+  return AudioInputStream::OpenOutcome::kSuccess;
 }
 
 void OpenSLESInputStream::Start(AudioInputCallback* callback) {
@@ -239,7 +237,7 @@ bool OpenSLESInputStream::CreateRecorder() {
   LOG_ON_FAILURE_AND_RETURN(
       (*engine)->CreateAudioRecorder(
           engine, recorder_object_.Receive(), &audio_source, &audio_sink,
-          base::size(interface_id), interface_id, interface_required),
+          std::size(interface_id), interface_id, interface_required),
       false);
 
   SLAndroidConfigurationItf recorder_config;

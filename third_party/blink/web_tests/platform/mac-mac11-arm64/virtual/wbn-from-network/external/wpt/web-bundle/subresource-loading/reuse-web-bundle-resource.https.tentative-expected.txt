@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS A webbundle should be fetched again when new script element is appended.
+PASS 'remove(), then append()' should reuse webbundle resources
+PASS 'remove(), then append()' should reuse webbundle resources and both scripts should fire load events
+PASS 'remove(), then append()' should reuse webbundle resources and both scripts should fire error events
+PASS Should reuse webbundle resources if a credential mode is same
+PASS Should not reuse webbundle resources if a credentials mode is different (same-origin vs omit)
+FAIL Should not reuse webbundle resources if a credential mode is different (same-origin vs include assert_equals: expected 1 but got 0
+FAIL 'remove(), then append()' for the same element should reuse webbundle resources assert_equals: expected 1 but got 2
+PASS Multiple 'remove(), then append()' for the same element should reuse webbundle resources
+PASS 'remove(), then append() in a separate task' should not reuse webbundle resources
+PASS replaceWith() should reuse webbundle resources.
+FAIL append() should reuse webbundle resoruces even if the old script was moved to another document. assert_equals: expected 1 but got 0
+PASS Even if the bundle is still loading, we should reuse the resources.
+PASS When reusing the resources with script2, a load event should be fired regardless of if the script1 fired a load
+PASS When reusing the resources with script2, an error event should be fired regardless of if the script1 fired an error
+Harness: the test ran to completion.
+

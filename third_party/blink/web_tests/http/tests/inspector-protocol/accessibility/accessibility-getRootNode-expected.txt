@@ -1,0 +1,100 @@
+Tests Accessibility.getRootAXNode
+
+getRootAXNode for main frame:
+
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 144
+    }
+    frameId : <string>
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [3] : {
+                nativeSource : title
+                type : relatedElement
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    properties : <object>
+    role : {
+        type : internalRole
+        value : RootWebArea
+    }
+}
+
+getRootAXNode for iframe:
+
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 144
+    }
+    frameId : <string>
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [3] : {
+                nativeSource : title
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Iframe with accessible name
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Iframe with accessible name
+    }
+    nodeId : <string>
+    properties : <object>
+    role : {
+        type : internalRole
+        value : RootWebArea
+    }
+}
+

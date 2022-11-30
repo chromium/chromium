@@ -1,28 +1,46 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/signals/device_info_fetcher_win.h"
 
+#include <Windows.h>
+// SECURITY_WIN32 must be defined in order to get
+// EXTENDED_NAME_FORMAT enumeration.
+#define SECURITY_WIN32 1
+#include <security.h>
+#undef SECURITY_WIN32
+#include <wincred.h>
+
+#include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_types.h"
+#include "base/win/windows_version.h"
 #include "base/win/wmi.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
 
 // Those headers need defines from windows_types.h, thus have to come after it.
+#include <DSRole.h>        // NOLINT(build/include_order)
 #include <iphlpapi.h>      // NOLINT(build/include_order)
 #include <powersetting.h>  // NOLINT(build/include_order)
 #include <propsys.h>       // NOLINT(build/include_order)
 #include <shobjidl.h>      // NOLINT(build/include_order)
 
-using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
-
 namespace enterprise_signals {
 
 namespace {
+
+constexpr wchar_t kSecureBootRegPath[] =
+    L"SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State";
+constexpr wchar_t kSecureBootRegKey[] = L"UEFISecureBootEnabled";
 
 // Possible results of the "System.Volume.BitLockerProtection" shell property.
 // These values are undocumented but were directly validated on a Windows 10
@@ -66,8 +84,8 @@ std::string GetComputerName() {
 
 // Retrieves the state of the screen locking feature from the screen saver
 // settings.
-base::Optional<bool> GetScreenLockStatus() {
-  base::Optional<bool> status;
+absl::optional<bool> GetScreenLockStatus() {
+  absl::optional<bool> status;
   BOOL value = FALSE;
   if (::SystemParametersInfo(SPI_GETSCREENSAVESECURE, 0, &value, 0))
     status = static_cast<bool>(value);
@@ -75,8 +93,8 @@ base::Optional<bool> GetScreenLockStatus() {
 }
 
 // Checks if locking is enabled at the currently active power scheme.
-base::Optional<bool> GetConsoleLockStatus() {
-  base::Optional<bool> status;
+absl::optional<bool> GetConsoleLockStatus() {
+  absl::optional<bool> status;
   SYSTEM_POWER_STATUS sps;
   // https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-getsystempowerstatus
   // Retrieves the power status of the system. The status indicates whether the
@@ -121,11 +139,11 @@ base::Optional<bool> GetConsoleLockStatus() {
 // Gets cumulative screen locking policy based on the screen saver and console
 // lock status.
 SettingValue GetScreenlockSecured() {
-  const base::Optional<bool> screen_lock_status = GetScreenLockStatus();
+  const absl::optional<bool> screen_lock_status = GetScreenLockStatus();
   if (screen_lock_status.value_or(false))
     return SettingValue::ENABLED;
 
-  const base::Optional<bool> console_lock_status = GetConsoleLockStatus();
+  const absl::optional<bool> console_lock_status = GetConsoleLockStatus();
   if (console_lock_status.value_or(false))
     return SettingValue::ENABLED;
 
@@ -137,13 +155,12 @@ SettingValue GetScreenlockSecured() {
 }
 
 // Returns the volume where the Windows OS is installed.
-base::Optional<std::wstring> GetOsVolume() {
-  base::Optional<std::wstring> volume;
+absl::optional<std::wstring> GetOsVolume() {
+  absl::optional<std::wstring> volume;
   base::FilePath windows_dir;
   if (base::PathService::Get(base::DIR_WINDOWS, &windows_dir) &&
       windows_dir.IsAbsolute()) {
-    std::vector<std::wstring> components;
-    windows_dir.GetComponents(&components);
+    std::vector<std::wstring> components = windows_dir.GetComponents();
     DCHECK(components.size());
     volume = components[0];
   }
@@ -193,7 +210,7 @@ bool GetPropVariantAsInt64(PROPVARIANT variant, int64_t* out_value) {
 SettingValue GetDiskEncrypted() {
   // |volume| has to be a |wstring| because SHCreateItemFromParsingName() only
   // accepts |PCWSTR| which is |wchar_t*|.
-  base::Optional<std::wstring> volume = GetOsVolume();
+  absl::optional<std::wstring> volume = GetOsVolume();
   if (!volume.has_value())
     return SettingValue::UNKNOWN;
 
@@ -260,6 +277,64 @@ std::vector<std::string> GetMacAddresses() {
   return mac_addresses;
 }
 
+absl::optional<std::string> GetWindowsMachineDomain() {
+  if (!base::win::IsEnrolledToDomain())
+    return absl::nullopt;
+  std::string domain;
+  ::DSROLE_PRIMARY_DOMAIN_INFO_BASIC* info = nullptr;
+  if (::DsRoleGetPrimaryDomainInformation(nullptr,
+                                          ::DsRolePrimaryDomainInfoBasic,
+                                          (PBYTE*)&info) == ERROR_SUCCESS) {
+    if (info->DomainNameFlat)
+      domain = base::WideToUTF8(info->DomainNameFlat);
+    ::DsRoleFreeMemory(info);
+  }
+  return domain.empty() ? absl::nullopt : absl::make_optional(domain);
+}
+
+absl::optional<std::string> GetWindowsUserDomain() {
+  WCHAR username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
+  DWORD username_length = sizeof(username);
+  if (!::GetUserNameExW(::NameSamCompatible, username, &username_length) ||
+      username_length <= 0) {
+    return absl::nullopt;
+  }
+  // The string corresponds to DOMAIN\USERNAME. If there isn't a domain, the
+  // domain name is replaced by the name of the machine, so the function
+  // returns nothing in that case.
+  std::string username_str = base::WideToUTF8(username);
+  std::string domain = username_str.substr(0, username_str.find("\\"));
+
+  return domain == base::ToUpperASCII(GetComputerNameW())
+             ? absl::nullopt
+             : absl::make_optional(domain);
+}
+
+std::string GetSecurityPatchLevel() {
+  base::win::OSInfo* gi = base::win::OSInfo::GetInstance();
+
+  return base::NumberToString(gi->version_number().patch);
+}
+
+SettingValue GetSecureBootEnabled() {
+  base::win::RegKey key;
+  auto result = key.Open(HKEY_LOCAL_MACHINE, kSecureBootRegPath,
+                         KEY_QUERY_VALUE | KEY_WOW64_64KEY);
+
+  if (result != ERROR_SUCCESS || !key.Valid()) {
+    return SettingValue::UNKNOWN;
+  }
+
+  DWORD secure_boot_dw;
+  result = key.ReadValueDW(kSecureBootRegKey, &secure_boot_dw);
+
+  if (result != ERROR_SUCCESS) {
+    return SettingValue::UNKNOWN;
+  }
+
+  return secure_boot_dw == 1 ? SettingValue::ENABLED : SettingValue::DISABLED;
+}
+
 }  // namespace
 
 DeviceInfoFetcherWin::DeviceInfoFetcherWin() = default;
@@ -270,12 +345,17 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   DeviceInfo device_info;
   device_info.os_name = "windows";
   device_info.os_version = base::SysInfo::OperatingSystemVersion();
+  device_info.security_patch_level = GetSecurityPatchLevel();
   device_info.device_host_name = GetComputerName();
   device_info.device_model = base::SysInfo::HardwareModelName();
   device_info.serial_number = GetSerialNumber();
   device_info.screen_lock_secured = GetScreenlockSecured();
   device_info.disk_encrypted = GetDiskEncrypted();
   device_info.mac_addresses = GetMacAddresses();
+  device_info.windows_machine_domain = GetWindowsMachineDomain();
+  device_info.windows_user_domain = GetWindowsUserDomain();
+  device_info.secure_boot_enabled = GetSecureBootEnabled();
+
   return device_info;
 }
 

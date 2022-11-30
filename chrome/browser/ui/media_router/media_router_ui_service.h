@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_BROWSER_UI_MEDIA_ROUTER_MEDIA_ROUTER_UI_SERVICE_H_
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -29,6 +30,10 @@ class MediaRouterUIService : public KeyedService {
   MediaRouterUIService(
       Profile* profile,
       std::unique_ptr<MediaRouterActionController> action_controller);
+
+  MediaRouterUIService(const MediaRouterUIService&) = delete;
+  MediaRouterUIService& operator=(const MediaRouterUIService&) = delete;
+
   ~MediaRouterUIService() override;
 
   // KeyedService:
@@ -47,13 +52,11 @@ class MediaRouterUIService : public KeyedService {
   void ConfigureService();
   void DisableService();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<MediaRouterActionController> action_controller_;
   std::unique_ptr<PrefChangeRegistrar> profile_pref_registrar_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterUIService);
 };
 
 }  // namespace media_router

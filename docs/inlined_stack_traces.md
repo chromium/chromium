@@ -1,6 +1,6 @@
 # Dealing with stack traces that involve inlined code
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/docs/inlined_stack_traces.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/main/docs/inlined_stack_traces.md)
 
 Sometimes we get crashes with stack traces that are hard to use.
 They may contain the file and line-number for the inlined method
@@ -57,7 +57,7 @@ so the code we are interested in is at `0x17c3a78`.
 
 ## Dumping the compiled code
 
-[This doc](https://chromium.googlesource.com/chromium/src/+/master/docs/disassemble_code.md) describes how to dump the assembler code for a method from a binary.
+[This doc](https://chromium.googlesource.com/chromium/src/+/main/docs/disassemble_code.md) describes how to dump the assembler code for a method from a binary.
 In this example, it's a crash from an Android Chrome binary.
 Only Googlers have access to the unstripped binary files needed for this example
 but the steps are generic and work with any version of Chromium

@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
+
+// Provides Cast platform API binding scripts and methods for connecting those
+// scripts with Cast service backends.
+interface ApiBindings {
+  // Gets the list of bindings to early-inject into the page at load time.
+  // The returned ApiBindings must be evaluated in order.
+  GetAll() => (array<ApiBinding> bindings);
+
+  // Should be invoked when a connecting a named MessagePort to a native
+  // bindings backend.
+  // |port_name| is a string-based ID. It is used to locate corresponding
+  // native bindings backend.
+  // |port| is one end of a paired message channel. It can be deserilized
+  // to bind a blink::WebMessagePort to perform bi-directional communication.
+  Connect(string port_name, blink.mojom.MessagePortDescriptor port);
+};
+
+struct ApiBinding {
+  // Script to execute before the load of a web document. |script| uses
+  // UTF-8 encoding.
+  string script;
+};

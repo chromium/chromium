@@ -44,14 +44,14 @@ var previousFocusedElement;
 function checkFocusable(id) {
     element = document.getElementById(id);
     element.focus();
-    assert_true(document.activeElement == element);
+    assert_equals(document.activeElement, element);
 }
 
 function checkNotFocusable(id) {
     previousFocusedElement = document.activeElement;
     element = document.getElementById(id);
     element.focus();
-    assert_true(document.activeElement == previousFocusedElement);
+    assert_equals(document.activeElement, previousFocusedElement);
 }
 
 var focusableTestScenarios = [

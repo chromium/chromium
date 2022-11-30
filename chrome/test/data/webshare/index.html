@@ -32,9 +32,10 @@
 
     async function share_multiple_files() {
       try {
-        const first_file = create_file('sample.mp3', 'audio/mpeg', 345);
+        const first_file = create_file('sam.ple.mp3', 'audio/mpeg', 345);
         const second_file = create_file('../sample.mp4', 'video/mp4', 67890);
-        await navigator.share({files: [first_file, second_file]});
+        const third_file = create_file('sam\\ple.gif', 'image/gif', 1);
+        await navigator.share({files: [first_file, second_file, third_file]});
         return 'share succeeded';
       } catch(error) {
         return ('share failed: ' + error);
@@ -149,6 +150,16 @@
         const second_file = create_file(second_filename, 'text/csv', 15);
         await navigator.share({files: [first_file, second_file],
                                url: "https://example.com/"});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+
+    async function share_pdf_file() {
+      try {
+        const pdf_file = create_file('sample.pdf', 'application/pdf', 12);
+        await navigator.share({files: [pdf_file]});
         return 'share succeeded';
       } catch(error) {
         return ('share failed: ' + error);

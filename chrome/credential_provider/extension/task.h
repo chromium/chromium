@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace extension {
 struct Config {
   // Set a default execution period in case it isn't defined by individual
   // tasks.
-  Config() : execution_period(base::TimeDelta::FromHours(1)) {}
+  Config() : execution_period(base::Hours(1)) {}
 
   // The period that the task will be executed on.
   base::TimeDelta execution_period;

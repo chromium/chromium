@@ -1,0 +1,102 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/projector_app/projector_app.gni")
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Projector App is ash-chrome only")
+
+static_library("projector_app") {
+  sources = [
+    "annotator_message_handler.cc",
+    "annotator_message_handler.h",
+    "projector_app_client.cc",
+    "projector_app_client.h",
+    "projector_message_handler.cc",
+    "projector_message_handler.h",
+    "projector_oauth_token_fetcher.cc",
+    "projector_oauth_token_fetcher.h",
+    "projector_screencast.cc",
+    "projector_screencast.h",
+    "projector_xhr_sender.cc",
+    "projector_xhr_sender.h",
+    "trusted_projector_annotator_ui.cc",
+    "trusted_projector_annotator_ui.h",
+    "trusted_projector_ui.cc",
+    "trusted_projector_ui.h",
+    "untrusted_projector_annotator_ui.cc",
+    "untrusted_projector_annotator_ui.h",
+    "untrusted_projector_ui.cc",
+    "untrusted_projector_ui.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/resources:media_app_bundle_resources",
+    "//ash/webui/resources:projector_annotator_trusted_resources",
+    "//ash/webui/resources:projector_annotator_untrusted_resources",
+    "//ash/webui/resources:projector_app_bundle_resources",
+    "//ash/webui/resources:projector_app_trusted_resources",
+    "//ash/webui/resources:projector_app_untrusted_resources",
+    "//ash/webui/resources:projector_common_resources",
+    "//chromeos/strings",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//third_party/re2:re2",
+    "//ui/resources",
+    "//ui/webui",
+  ]
+
+  public_deps = [ "//ash/webui/projector_app/public/cpp" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/mock_app_client.cc",
+    "test/mock_app_client.h",
+    "test/mock_xhr_sender.cc",
+    "test/mock_xhr_sender.h",
+  ]
+
+  public_deps = [
+    ":projector_app",
+    "//ash/public/cpp:cpp",
+    "//ash/public/cpp:test_support",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "test/annotator_message_handler_unittest.cc",
+    "test/projector_message_handler_unittest.cc",
+    "test/projector_oauth_token_fetcher_unittest.cc",
+    "test/projector_xhr_sender_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+# Used to turn off tests that only work with our CIPD package e.g. loading ink.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_CROS_PROJECTOR_APP=$enable_cros_projector_app" ]
+}

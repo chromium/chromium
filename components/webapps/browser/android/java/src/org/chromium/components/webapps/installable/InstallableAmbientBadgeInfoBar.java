@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnCl
 
         Resources res = layout.getResources();
         prompt.setText(mMessageText);
-        ApiCompatibilityUtils.setTextAppearance(prompt, R.style.TextAppearance_TextLarge_Blue);
+        ApiCompatibilityUtils.setTextAppearance(prompt, R.style.TextAppearance_TextLarge_Link);
         prompt.setGravity(Gravity.CENTER_VERTICAL);
         prompt.setOnClickListener(this);
 

@@ -1,26 +1,39 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/platform_util.h"
 
+#include <fcntl.h>
+
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_list.h"
+#include "base/containers/contains.h"
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/platform_util_internal.h"
-#include "components/dbus/thread_linux/dbus_thread_linux.h"
+// This file gets pulled in in Chromecast builds, which causes "gn check" to
+// complain as Chromecast doesn't use (or depend on) //components/dbus.
+// TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
+// on Chromecast and remove the nogncheck below.
+#include "components/dbus/thread_linux/dbus_thread_linux.h"  // nogncheck
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -29,37 +42,35 @@ namespace platform_util {
 
 namespace {
 
+const char kMethodListActivatableNames[] = "ListActivatableNames";
+const char kMethodNameHasOwner[] = "NameHasOwner";
+
 const char kFreedesktopFileManagerName[] = "org.freedesktop.FileManager1";
 const char kFreedesktopFileManagerPath[] = "/org/freedesktop/FileManager1";
 
 const char kMethodShowItems[] = "ShowItems";
 
-class ShowItemHelper : public content::NotificationObserver {
+const char kFreedesktopPortalName[] = "org.freedesktop.portal.Desktop";
+const char kFreedesktopPortalPath[] = "/org/freedesktop/portal/desktop";
+const char kFreedesktopPortalOpenURI[] = "org.freedesktop.portal.OpenURI";
+
+const char kMethodOpenDirectory[] = "OpenDirectory";
+
+class ShowItemHelper {
  public:
   static ShowItemHelper& GetInstance() {
     static base::NoDestructor<ShowItemHelper> instance;
     return *instance;
   }
 
-  ShowItemHelper() {
-    registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                   content::NotificationService::AllSources());
-  }
+  ShowItemHelper()
+      : browser_shutdown_subscription_(
+            browser_shutdown::AddAppTerminatingCallback(
+                base::BindOnce(&ShowItemHelper::OnAppTerminating,
+                               base::Unretained(this)))) {}
 
   ShowItemHelper(const ShowItemHelper&) = delete;
   ShowItemHelper& operator=(const ShowItemHelper&) = delete;
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
-    // The browser process is about to exit. Clean up while we still can.
-    if (bus_)
-      bus_->ShutdownOnDBusThreadAndBlock();
-    bus_.reset();
-    filemanager_proxy_ = nullptr;
-  }
 
   void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
     if (!bus_) {
@@ -71,8 +82,157 @@ class ShowItemHelper : public content::NotificationObserver {
       bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
     }
 
-    if (!filemanager_proxy_) {
-      filemanager_proxy_ =
+    if (!dbus_proxy_) {
+      dbus_proxy_ = bus_->GetObjectProxy(DBUS_SERVICE_DBUS,
+                                         dbus::ObjectPath(DBUS_PATH_DBUS));
+    }
+
+    if (prefer_filemanager_interface_.has_value()) {
+      if (prefer_filemanager_interface_.value()) {
+        VLOG(1) << "Using FileManager1 to show folder";
+        ShowItemUsingFileManager(profile, full_path);
+      } else {
+        VLOG(1) << "Using OpenURI to show folder";
+        ShowItemUsingFreedesktopPortal(profile, full_path);
+      }
+    } else {
+      CheckFileManagerRunning(profile, full_path);
+    }
+  }
+
+ private:
+  void OnAppTerminating() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    // The browser process is about to exit. Clean up while we still can.
+    if (bus_)
+      bus_->ShutdownOnDBusThreadAndBlock();
+    bus_.reset();
+    object_proxy_ = nullptr;
+  }
+
+  void CheckFileManagerRunning(Profile* profile,
+                               const base::FilePath& full_path) {
+    dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(kFreedesktopFileManagerName);
+
+    dbus_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&ShowItemHelper::CheckFileManagerRunningResponse,
+                       weak_ptr_factory_.GetWeakPtr(), profile, full_path));
+  }
+
+  void CheckFileManagerRunningResponse(Profile* profile,
+                                       const base::FilePath& full_path,
+                                       dbus::Response* response) {
+    if (prefer_filemanager_interface_.has_value()) {
+      ShowItemInFolder(profile, full_path);
+      return;
+    }
+
+    bool is_running = false;
+
+    if (!response) {
+      LOG(ERROR) << "Failed to call " << kMethodNameHasOwner;
+    } else {
+      dbus::MessageReader reader(response);
+      bool owned = false;
+
+      if (!reader.PopBool(&owned)) {
+        LOG(ERROR) << "Failed to read " << kMethodNameHasOwner << " resposne";
+      } else if (owned) {
+        is_running = true;
+      }
+    }
+
+    if (is_running) {
+      prefer_filemanager_interface_ = true;
+      ShowItemInFolder(profile, full_path);
+    } else {
+      CheckFileManagerActivatable(profile, full_path);
+    }
+  }
+
+  void CheckFileManagerActivatable(Profile* profile,
+                                   const base::FilePath& full_path) {
+    dbus::MethodCall method_call(DBUS_INTERFACE_DBUS,
+                                 kMethodListActivatableNames);
+    dbus_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&ShowItemHelper::CheckFileManagerActivatableResponse,
+                       weak_ptr_factory_.GetWeakPtr(), profile, full_path));
+  }
+
+  void CheckFileManagerActivatableResponse(Profile* profile,
+                                           const base::FilePath& full_path,
+                                           dbus::Response* response) {
+    if (prefer_filemanager_interface_.has_value()) {
+      ShowItemInFolder(profile, full_path);
+      return;
+    }
+
+    bool is_activatable = false;
+
+    if (!response) {
+      LOG(ERROR) << "Failed to call " << kMethodListActivatableNames;
+    } else {
+      dbus::MessageReader reader(response);
+      std::vector<std::string> names;
+      if (!reader.PopArrayOfStrings(&names)) {
+        LOG(ERROR) << "Failed to read " << kMethodListActivatableNames
+                   << " response";
+      } else if (base::Contains(names, kFreedesktopFileManagerName)) {
+        is_activatable = true;
+      }
+    }
+
+    prefer_filemanager_interface_ = is_activatable;
+    ShowItemInFolder(profile, full_path);
+  }
+
+  void ShowItemUsingFreedesktopPortal(Profile* profile,
+                                      const base::FilePath& full_path) {
+    if (!object_proxy_) {
+      object_proxy_ = bus_->GetObjectProxy(
+          kFreedesktopPortalName, dbus::ObjectPath(kFreedesktopPortalPath));
+    }
+
+    base::ScopedFD fd(
+        HANDLE_EINTR(open(full_path.value().c_str(), O_RDONLY | O_CLOEXEC)));
+    if (!fd.is_valid()) {
+      PLOG(ERROR) << "Failed to open " << full_path << " for URI portal";
+
+      // At least open the parent folder, as long as we're not in the unit
+      // tests.
+      if (internal::AreShellOperationsAllowed()) {
+        OpenItem(profile, full_path.DirName(), OPEN_FOLDER,
+                 OpenOperationCallback());
+      }
+
+      return;
+    }
+
+    dbus::MethodCall open_directory_call(kFreedesktopPortalOpenURI,
+                                         kMethodOpenDirectory);
+    dbus::MessageWriter writer(&open_directory_call);
+
+    writer.AppendString("");
+
+    // Note that AppendFileDescriptor() duplicates the fd, so we shouldn't
+    // release ownership of it here.
+    writer.AppendFileDescriptor(fd.get());
+
+    dbus::MessageWriter options_writer(nullptr);
+    writer.OpenArray("{sv}", &options_writer);
+    writer.CloseContainer(&options_writer);
+
+    ShowItemUsingBusCall(&open_directory_call, profile, full_path);
+  }
+
+  void ShowItemUsingFileManager(Profile* profile,
+                                const base::FilePath& full_path) {
+    if (!object_proxy_) {
+      object_proxy_ =
           bus_->GetObjectProxy(kFreedesktopFileManagerName,
                                dbus::ObjectPath(kFreedesktopFileManagerPath));
     }
@@ -85,35 +245,44 @@ class ShowItemHelper : public content::NotificationObserver {
         {"file://" + full_path.value()});  // List of file(s) to highlight.
     writer.AppendString({});               // startup-id
 
+    ShowItemUsingBusCall(&show_items_call, profile, full_path);
+  }
+
+  void ShowItemUsingBusCall(dbus::MethodCall* call,
+                            Profile* profile,
+                            const base::FilePath& full_path) {
     // Skip opening the folder during browser tests, to avoid leaving an open
     // file explorer window behind.
     if (!internal::AreShellOperationsAllowed())
       return;
 
-    filemanager_proxy_->CallMethod(
-        &show_items_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+    object_proxy_->CallMethod(
+        call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&ShowItemHelper::ShowItemInFolderResponse,
-                       weak_ptr_factory_.GetWeakPtr(), profile, full_path));
+                       weak_ptr_factory_.GetWeakPtr(), profile, full_path,
+                       call->GetMember()));
   }
 
- private:
   void ShowItemInFolderResponse(Profile* profile,
                                 const base::FilePath& full_path,
+                                const std::string& method,
                                 dbus::Response* response) {
     if (response)
       return;
 
-    LOG(ERROR) << "Error calling " << kMethodShowItems;
-    // If the FileManager1 call fails, at least open the parent folder.
+    LOG(ERROR) << "Error calling " << method;
+    // If the bus call fails, at least open the parent folder.
     OpenItem(profile, full_path.DirName(), OPEN_FOLDER,
              OpenOperationCallback());
   }
 
-  content::NotificationRegistrar registrar_;
-
   scoped_refptr<dbus::Bus> bus_;
-  dbus::ObjectProxy* filemanager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
 
+  absl::optional<bool> prefer_filemanager_interface_;
+
+  base::CallbackListSubscription browser_shutdown_subscription_;
   base::WeakPtrFactory<ShowItemHelper> weak_ptr_factory_{this};
 };
 
@@ -186,7 +355,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   ShowItemHelper::GetInstance().ShowItemInFolder(profile, full_path);
 }
 
-void OpenExternal(Profile* profile, const GURL& url) {
+void OpenExternal(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (url.SchemeIs("mailto"))
     XDGEmail(url.spec());

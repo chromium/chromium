@@ -1,25 +1,30 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {getCaller, pending, repeatUntil, RootPath} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
 /**
  * Fake task.
  */
-class FakeTask {
+export class FakeTask {
   /**
    * @param {boolean} isDefault Whether the task is default or not.
-   * @param {string} taskId Task ID.
+   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+   *     descriptor.
    * @param {string=} opt_title Title of the task.
    * @param {boolean=} opt_isGenericFileHandler Whether the task is a generic
    *     file handler.
    */
-  constructor(isDefault, taskId, opt_title, opt_isGenericFileHandler) {
+  constructor(isDefault, descriptor, opt_title, opt_isGenericFileHandler) {
     this.driveApp = false;
     this.iconUrl = 'chrome://theme/IDR_DEFAULT_FAVICON';  // Dummy icon
     this.isDefault = isDefault;
-    this.taskId = taskId;
+    this.descriptor = descriptor;
     this.title = opt_title;
     this.isGenericFileHandler = opt_isGenericFileHandler || false;
     Object.freeze(this);
@@ -32,9 +37,15 @@ class FakeTask {
  * @type {Array<FakeTask>}
  * @const
  */
-const DOWNLOADS_FAKE_TASKS = [
-  new FakeTask(true, 'dummytaskid|open-with', 'DummyTask1'),
-  new FakeTask(false, 'dummytaskid-2|open-with', 'DummyTask2')
+export const DOWNLOADS_FAKE_TASKS = [
+  new FakeTask(
+      true,
+      {appId: 'dummytaskid', taskType: 'fake-type', actionId: 'open-with'},
+      'DummyTask1'),
+  new FakeTask(
+      false,
+      {appId: 'dummytaskid-2', taskType: 'fake-type', actionId: 'open-with'},
+      'DummyTask2'),
 ];
 
 /**
@@ -44,7 +55,11 @@ const DOWNLOADS_FAKE_TASKS = [
  * @const
  */
 const DOWNLOADS_FAKE_TEXT = [
-  new FakeTask(true, FILE_MANAGER_EXTENSIONS_ID + '|file|view-in-browser'),
+  new FakeTask(true, {
+    appId: FILE_MANAGER_EXTENSIONS_ID,
+    taskType: 'file',
+    actionId: 'view-in-browser',
+  }),
 ];
 
 /**
@@ -54,7 +69,11 @@ const DOWNLOADS_FAKE_TEXT = [
  * @const
  */
 const DOWNLOADS_FAKE_PDF = [
-  new FakeTask(true, FILE_MANAGER_EXTENSIONS_ID + '|file|view-as-pdf'),
+  new FakeTask(true, {
+    appId: FILE_MANAGER_EXTENSIONS_ID,
+    taskType: 'file',
+    actionId: 'view-as-pdf',
+  }),
 ];
 
 /**
@@ -64,8 +83,12 @@ const DOWNLOADS_FAKE_PDF = [
  * @const
  */
 const DRIVE_FAKE_TASKS = [
-  new FakeTask(true, 'dummytaskid|drive|open-with', 'DummyTask1'),
-  new FakeTask(false, 'dummytaskid-2|drive|open-with', 'DummyTask2')
+  new FakeTask(
+      true, {appId: 'dummytaskid', taskType: 'drive', actionId: 'open-with'},
+      'DummyTask1'),
+  new FakeTask(
+      false, {appId: 'dummytaskid-2', taskType: 'drive', actionId: 'open-with'},
+      'DummyTask2'),
 ];
 
 /**
@@ -84,12 +107,12 @@ async function setupTaskTest(rootPath, fakeTasks) {
  * Tests executing the default task when there is only one task.
  *
  * @param {string} appId Window ID.
- * @param {string} expectedTaskId Task ID expected to execute.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+ *     descriptor.
  */
-async function executeDefaultTask(appId, expectedTaskId) {
+async function executeDefaultTask(appId, descriptor) {
   // Select file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']));
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Double-click the file.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -97,19 +120,19 @@ async function executeDefaultTask(appId, expectedTaskId) {
       ['#file-list li.table-row[selected] .filename-label span']));
 
   // Wait until the task is executed.
-  await remoteCall.waitUntilTaskExecutes(appId, expectedTaskId);
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor);
 }
 
 /**
  * Tests to specify default task via the default task dialog.
  *
  * @param {string} appId Window ID.
- * @param {string} expectedTaskId Task ID to be expected to newly specify as
- *     default.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+ *     descriptor of the task expected to be newly specified as default.
  * @return {Promise} Promise to be fulfilled/rejected depends on the test
  *     result.
  */
-async function defaultTaskDialog(appId, expectedTaskId) {
+async function defaultTaskDialog(appId, descriptor) {
   // Prepare expected labels.
   const expectedLabels = [
     'DummyTask1 (default)',
@@ -117,7 +140,7 @@ async function defaultTaskDialog(appId, expectedTaskId) {
   ];
 
   // Select file.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Click the change default menu.
   await remoteCall.waitForElement(appId, '#tasks[multiple]');
@@ -149,12 +172,14 @@ async function defaultTaskDialog(appId, expectedTaskId) {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeEvent', appId, [
         '#default-task-dialog #default-tasks-list li:nth-of-type(2)',
-        'mousedown', {bubbles: true, button: 0}
+        'mousedown',
+        {bubbles: true, button: 0},
       ]));
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeEvent', appId, [
-        '#default-task-dialog #default-tasks-list li:nth-of-type(2)', 'click',
-        {bubbles: true}
+        '#default-task-dialog #default-tasks-list li:nth-of-type(2)',
+        'click',
+        {bubbles: true},
       ]));
 
   // Wait for the dialog hidden, and the task is executed.
@@ -177,39 +202,37 @@ async function defaultTaskDialog(appId, expectedTaskId) {
       !!await remoteCall.waitForElement(appId, '#tasks-menu[hidden]'));
 
   // Check the executed tasks.
-  await remoteCall.waitUntilTaskExecutes(appId, expectedTaskId);
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor);
 }
 
 testcase.executeDefaultTaskDrive = async () => {
   const appId = await setupTaskTest(RootPath.DRIVE, DRIVE_FAKE_TASKS);
-  await executeDefaultTask(appId, 'dummytaskid|drive|open-with');
+  await executeDefaultTask(appId, DRIVE_FAKE_TASKS[0].descriptor);
 };
 
 testcase.executeDefaultTaskDownloads = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TASKS);
-  await executeDefaultTask(appId, 'dummytaskid|open-with');
+  await executeDefaultTask(appId, DOWNLOADS_FAKE_TASKS[0].descriptor);
 };
 
 testcase.defaultTaskForTextPlain = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TEXT);
-  await executeDefaultTask(
-      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-in-browser');
+  await executeDefaultTask(appId, DOWNLOADS_FAKE_TEXT[0].descriptor);
 };
 
 testcase.defaultTaskForPdf = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_PDF);
-  await executeDefaultTask(
-      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-as-pdf');
+  await executeDefaultTask(appId, DOWNLOADS_FAKE_PDF[0].descriptor);
 };
 
 testcase.defaultTaskDialogDrive = async () => {
   const appId = await setupTaskTest(RootPath.DRIVE, DRIVE_FAKE_TASKS);
-  await defaultTaskDialog(appId, 'dummytaskid-2|drive|open-with');
+  await defaultTaskDialog(appId, DRIVE_FAKE_TASKS[1].descriptor);
 };
 
 testcase.defaultTaskDialogDownloads = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TASKS);
-  await defaultTaskDialog(appId, 'dummytaskid-2|open-with');
+  await defaultTaskDialog(appId, DOWNLOADS_FAKE_TASKS[1].descriptor);
 };
 
 
@@ -218,20 +241,41 @@ testcase.defaultTaskDialogDownloads = async () => {
  */
 testcase.changeDefaultDialogScrollList = async () => {
   const tasks = [
-    new FakeTask(true, 'dummytaskid|open-with', 'DummyTask1'),
-    new FakeTask(false, 'dummytaskid-2|open-with', 'DummyTask2'),
-    new FakeTask(false, 'dummytaskid-3|open-with', 'DummyTask3'),
-    new FakeTask(false, 'dummytaskid-3|open-with', 'DummyTask4'),
-    new FakeTask(false, 'dummytaskid-3|open-with', 'DummyTask5'),
-    new FakeTask(false, 'dummytaskid-3|open-with', 'DummyTask6'),
-    new FakeTask(false, 'dummytaskid-3|open-with', 'DummyTask7'),
+    new FakeTask(
+        true,
+        {appId: 'dummytaskid', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask1'),
+    new FakeTask(
+        false,
+        {appId: 'dummytaskid-2', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask2'),
+    new FakeTask(
+        false,
+        {appId: 'dummytaskid-3', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask3'),
+    new FakeTask(
+        false,
+        {appId: 'dummytaskid-3', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask4'),
+    new FakeTask(
+        false,
+        {appId: 'dummytaskid-3', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask5'),
+    new FakeTask(
+        false,
+        {appId: 'dummytaskid-3', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask6'),
+    new FakeTask(
+        false,
+        {appId: 'dummytaskid-3', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask7'),
   ];
 
   // Override tasks for the test.
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
 
   // Select file.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Click the change default task menu.
   await remoteCall.waitForElement(appId, '#tasks[multiple]');
@@ -258,8 +302,9 @@ testcase.changeDefaultDialogScrollList = async () => {
 
 testcase.genericTaskIsNotExecuted = async () => {
   const tasks = [new FakeTask(
-      false, 'dummytaskid|open-with', 'DummyTask1',
-      true /* isGenericFileHandler */)];
+      false,
+      {appId: 'dummytaskid', taskType: 'fake-type', actionId: 'open-with'},
+      'DummyTask1', true /* isGenericFileHandler */)];
 
   // When default task is not set, executeDefaultInternal_ in file_tasks.js
   // tries to show it in a browser tab. By checking the view-in-browser task is
@@ -267,39 +312,48 @@ testcase.genericTaskIsNotExecuted = async () => {
   //
   // See: src/ui/file_manager/file_manager/foreground/js/file_tasks.js&l=404
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
-  await executeDefaultTask(
-      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-in-browser');
+  await executeDefaultTask(appId, {
+    appId: FILE_MANAGER_EXTENSIONS_ID,
+    taskType: 'file',
+    actionId: 'view-in-browser',
+  });
 };
 
 testcase.genericTaskAndNonGenericTask = async () => {
   const tasks = [
     new FakeTask(
-        false, 'dummytaskid|open-with', 'DummyTask1',
-        true /* isGenericFileHandler */),
+        false,
+        {appId: 'dummytaskid', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask1', true /* isGenericFileHandler */),
     new FakeTask(
-        false, 'dummytaskid-2|open-with', 'DummyTask2',
-        false /* isGenericFileHandler */),
+        false,
+        {appId: 'dummytaskid-2', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask2', false /* isGenericFileHandler */),
     new FakeTask(
-        false, 'dummytaskid-3|open-with', 'DummyTask3',
-        true /* isGenericFileHandler */)
+        false,
+        {appId: 'dummytaskid-3', taskType: 'fake-type', actionId: 'open-with'},
+        'DummyTask3', true /* isGenericFileHandler */),
   ];
 
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
-  await executeDefaultTask(appId, 'dummytaskid-2|open-with');
+  await executeDefaultTask(appId, tasks[1].descriptor);
 };
 
 testcase.noActionBarOpenForDirectories = async () => {
-  const tasks = [new FakeTask(true, 'dummytaskid|open-with', 'DummyTask1')];
+  const tasks = [new FakeTask(
+      true,
+      {appId: 'dummytaskid', taskType: 'fake-type', actionId: 'open-with'},
+      'DummyTask1')];
 
   // Override tasks for the test.
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
 
   // Select file and ensure action bar open is shown.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   await remoteCall.waitForElement(appId, '#tasks:not([hidden])');
 
   // Select dir and ensure action bar open is hidden, but context menu is shown.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']);
+  await remoteCall.waitUntilSelected(appId, 'photos');
   await remoteCall.waitForElement(appId, '#tasks[hidden]');
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
       'fakeMouseRightClick', appId, ['#file-list .table-row[selected]']));

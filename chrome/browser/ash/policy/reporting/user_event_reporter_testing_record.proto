@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+message UserEventReporterTestingRecord {
+  optional int64 field1 = 1;
+
+  optional int64 field2 = 2;
+}

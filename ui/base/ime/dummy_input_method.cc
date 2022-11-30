@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,19 @@ DummyInputMethod::DummyInputMethod() {
 DummyInputMethod::~DummyInputMethod() {
 }
 
-void DummyInputMethod::SetDelegate(internal::InputMethodDelegate* delegate) {
-}
+void DummyInputMethod::SetImeKeyEventDispatcher(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher) {}
 
 void DummyInputMethod::OnFocus() {
 }
 
+void DummyInputMethod::OnTouch(ui::EventPointerType pointerType) {}
+
 void DummyInputMethod::OnBlur() {
 }
 
-#if defined(OS_WIN)
-bool DummyInputMethod::OnUntranslatedIMEMessage(const MSG event,
+#if BUILDFLAG(IS_WIN)
+bool DummyInputMethod::OnUntranslatedIMEMessage(const CHROME_MSG event,
                                                 NativeEventResult* result) {
   return false;
 }
@@ -51,8 +53,7 @@ ui::EventDispatchDetails DummyInputMethod::DispatchKeyEvent(
   return ui::EventDispatchDetails();
 }
 
-void DummyInputMethod::OnTextInputTypeChanged(const TextInputClient* client) {
-}
+void DummyInputMethod::OnTextInputTypeChanged(TextInputClient* client) {}
 
 void DummyInputMethod::OnCaretBoundsChanged(const TextInputClient* client) {
 }
@@ -64,27 +65,12 @@ TextInputType DummyInputMethod::GetTextInputType() const {
   return TEXT_INPUT_TYPE_NONE;
 }
 
-TextInputMode DummyInputMethod::GetTextInputMode() const {
-  return TEXT_INPUT_MODE_DEFAULT;
-}
-
-int DummyInputMethod::GetTextInputFlags() const {
-  return 0;
-}
-
-bool DummyInputMethod::CanComposeInline() const {
-  return true;
-}
-
 bool DummyInputMethod::IsCandidatePopupOpen() const {
   return false;
 }
 
-bool DummyInputMethod::GetClientShouldDoLearning() {
-  return false;
+void DummyInputMethod::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
 }
-
-void DummyInputMethod::ShowVirtualKeyboardIfEnabled() {}
 
 void DummyInputMethod::AddObserver(InputMethodObserver* observer) {
 }

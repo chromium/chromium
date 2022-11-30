@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+import "ash/components/arc/mojom/app_permissions.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
+
+// Contains information about an application that is accessing resources
+// tracked by the privacy indicators.
+struct PrivacyApplication {
+  string package_name;
+  int32 uid;
+};
+
+// A record about an apps access to a resource tracked by the privacy
+// indicators.
+struct PrivacyItem {
+  // The type of resourced accessed by the application.
+  AppPermissionGroup permission_group;
+  // The application associated with this privacy item.
+  PrivacyApplication privacy_application;
+};
+
+// Interface for Android communicating to Ash.
+// Next Method ID: 3
+interface PrivacyItemsHost {
+  // Notifies Chrome that the privacy items accessed by applications have
+  // changed.
+  OnPrivacyItemsChanged@0(array<PrivacyItem> privacy_items);
+  // Notifies Chrome when the SystemUI flag that determines whether to show
+  // the privacy indicators for microphone + camera has changed.
+  // See frameworks/base/core/java/com/android/internal/config/sysui/SystemUiDeviceConfigFlags.java
+  OnMicCameraIndicatorRequirementChanged@1(bool flag);
+  // Notifies Chrome when the SystemUI flag that determines whether to show
+  // the privacy indicators for location has changed.
+  // See frameworks/base/core/java/com/android/internal/config/sysui/SystemUiDeviceConfigFlags.java
+  OnLocationIndicatorRequirementChanged@2(bool flag);
+};
+
+// Interface for communicating to Android.
+// Next Method ID: 2
+interface PrivacyItemsInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<PrivacyItemsHost> host_remote) => ();
+  // Tell android WM the maximum bounds of the indicators, regardless of
+  // whether they're being shown or not.
+  OnStaticPrivacyIndicatorBoundsChanged@1(int32 displayId, array<Rect> bounds);
+};

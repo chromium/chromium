@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/synchronization/waitable_event.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_on_gpu.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "components/viz/service/display/skia_output_surface.h"
-#include "gpu/ipc/scheduler_sequence.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
@@ -22,6 +22,15 @@ OverlayProcessorAndroid::OverlayProcessorAndroid(
     DisplayCompositorMemoryAndTaskController* display_controller)
     : OverlayProcessorUsingStrategy(),
       gpu_task_scheduler_(display_controller->gpu_task_scheduler()) {
+  // Promoting video to overlay with SurfaceView overlays requires recreation of
+  // main SurfaceView and Display. This leads to the situation when we
+  // consider video overlay not being efficient for the first frame after we
+  // updated SurfaceView and video gets demoted back to composition. To avoid
+  // this, we disable heuristics that filter out not efficient quads but still
+  // sort them by potential power savings.
+  prioritization_config_.changing_threshold = false;
+  prioritization_config_.damage_rate_threshold = false;
+
   // In unittests, we don't have the gpu_task_scheduler_ set up, but still want
   // to test ProcessForOverlays functionalities where we are making overlay
   // candidates correctly.
@@ -132,7 +141,7 @@ void OverlayProcessorAndroid::OverlayPresentationComplete() {
   pending_overlay_locks_.pop_front();
 }
 
-void OverlayProcessorAndroid::CheckOverlaySupport(
+void OverlayProcessorAndroid::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidates) {
   // For pre-SurfaceControl Android we should not have output surface as overlay
@@ -172,6 +181,7 @@ void OverlayProcessorAndroid::CheckOverlaySupport(
     promotion_hint_info_map_[candidate.resource_id] = candidate.display_rect;
   }
 }
+
 gfx::Rect OverlayProcessorAndroid::GetOverlayDamageRectForOutputSurface(
     const OverlayCandidate& overlay) const {
   return ToEnclosedRect(overlay.display_rect);
@@ -187,11 +197,6 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
     DisplayResourceProvider* resource_provider,
     const CandidateList& candidates,
     const QuadList& quad_list) {
-  // No need to notify overlay promotion if not any resource wants promotion
-  // hints.
-  if (!resource_provider->DoAnyResourcesWantPromotionHints())
-    return;
-
   // If we don't have a processor_on_gpu_, there is nothing to send the overlay
   // promotions to.
   if (!processor_on_gpu_) {
@@ -204,12 +209,20 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
   ResourceIdSet promotion_hint_requestor_set;
 
   for (auto* quad : quad_list) {
-    if (quad->material != DrawQuad::Material::kStreamVideoContent)
+    if (quad->material != DrawQuad::Material::kTextureContent)
       continue;
-    ResourceId id = StreamVideoDrawQuad::MaterialCast(quad)->resource_id();
+    const TextureDrawQuad* texture_quad = TextureDrawQuad::MaterialCast(quad);
+    if (!texture_quad->is_stream_video)
+      continue;
+    ResourceId id = texture_quad->resource_id();
     if (!resource_provider->DoesResourceWantPromotionHint(id))
       continue;
     promotion_hint_requestor_set.insert(id);
+  }
+
+  if (promotion_hint_requestor_set.empty()) {
+    promotion_hint_info_map_.clear();
+    return;
   }
 
   base::flat_set<gpu::Mailbox> promotion_denied;

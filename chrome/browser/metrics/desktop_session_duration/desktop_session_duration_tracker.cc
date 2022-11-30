@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -153,7 +154,7 @@ void DesktopSessionDurationTracker::EndSession(
   // Trim any timeouts from the session length and lower bound to a session of
   // length 0.
   delta -= time_to_discount;
-  if (delta < base::TimeDelta())
+  if (delta.is_negative())
     delta = base::TimeDelta();
 
   for (Observer& observer : observer_list_)
@@ -166,8 +167,7 @@ void DesktopSessionDurationTracker::EndSession(
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", delta);
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
 }
 
 void DesktopSessionDurationTracker::InitInactivityTimeout() {
@@ -179,7 +179,7 @@ void DesktopSessionDurationTracker::InitInactivityTimeout() {
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_minutes);
 
-  inactivity_timeout_ = base::TimeDelta::FromMinutes(timeout_minutes);
+  inactivity_timeout_ = base::Minutes(timeout_minutes);
 }
 
 }  // namespace metrics

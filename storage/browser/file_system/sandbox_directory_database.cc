@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
@@ -158,8 +157,8 @@ class DatabaseCheckHelper {
   bool ScanDirectory();
   bool ScanHierarchy();
 
-  SandboxDirectoryDatabase* dir_db_;
-  leveldb::DB* db_;
+  raw_ptr<SandboxDirectoryDatabase> dir_db_;
+  raw_ptr<leveldb::DB> db_;
   base::FilePath path_;
 
   std::set<base::FilePath> files_in_db_;
@@ -305,8 +304,7 @@ bool DatabaseCheckHelper::ScanDirectory() {
       if (!path_.AppendRelativePath(absolute_file_path, &relative_file_path))
         return false;
 
-      if (std::find(kExcludes, kExcludes + base::size(kExcludes),
-                    relative_file_path) != kExcludes + base::size(kExcludes))
+      if (base::Contains(kExcludes, relative_file_path))
         continue;
 
       if (find_info.IsDirectory()) {
@@ -357,7 +355,6 @@ bool DatabaseCheckHelper::ScanHierarchy() {
         return false;
 
       // Check if the child knows the parent as its parent.
-      FileInfo file_info;
       if (!dir_db_->GetFileInfo(id, &file_info))
         return false;
       if (file_info.parent_id != dir_id)
@@ -747,7 +744,7 @@ bool SandboxDirectoryDatabase::Init(RecoveryOption recovery_option) {
                                 SandboxDirectoryRepairResult::DB_REPAIR_FAILED,
                                 SandboxDirectoryRepairResult::DB_REPAIR_MAX);
       LOG(WARNING) << "Failed to repair SandboxDirectoryDatabase.";
-      FALLTHROUGH;
+      [[fallthrough]];
     case DELETE_ON_CORRUPTION:
       LOG(WARNING) << "Clearing SandboxDirectoryDatabase.";
       if (!leveldb_chrome::DeleteDB(filesystem_data_directory_, options).ok())
@@ -799,7 +796,7 @@ bool SandboxDirectoryDatabase::IsFileSystemConsistent() {
 void SandboxDirectoryDatabase::ReportInitStatus(const leveldb::Status& status) {
   base::Time now = base::Time::Now();
   const base::TimeDelta minimum_interval =
-      base::TimeDelta::FromHours(kSandboxDirectoryMinimumReportIntervalHours);
+      base::Hours(kSandboxDirectoryMinimumReportIntervalHours);
   if (last_reported_time_ + minimum_interval >= now)
     return;
   last_reported_time_ = now;
@@ -919,7 +916,6 @@ bool SandboxDirectoryDatabase::RemoveFileInfoHelper(
     if (!ListChildren(file_id, &children))
       return false;
     if (children.size()) {
-      LOG(ERROR) << "Can't remove a directory with children.";
       return false;
     }
   }

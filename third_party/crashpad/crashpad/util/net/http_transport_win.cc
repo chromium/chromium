@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,10 +22,11 @@
 #include <wchar.h>
 #include <winhttp.h>
 
+#include <iterator>
+
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,7 +97,7 @@ std::string WinHttpMessage(const char* extra) {
                              error_code,
                              0,
                              msgbuf,
-                             static_cast<DWORD>(base::size(msgbuf)),
+                             static_cast<DWORD>(std::size(msgbuf)),
                              nullptr);
   if (!len) {
     return base::StringPrintf("%s: error 0x%lx while retrieving error 0x%lx",
@@ -131,12 +132,13 @@ using ScopedHINTERNET = base::ScopedGeneric<HINTERNET, ScopedHINTERNETTraits>;
 class HTTPTransportWin final : public HTTPTransport {
  public:
   HTTPTransportWin();
+
+  HTTPTransportWin(const HTTPTransportWin&) = delete;
+  HTTPTransportWin& operator=(const HTTPTransportWin&) = delete;
+
   ~HTTPTransportWin() override;
 
   bool ExecuteSynchronously(std::string* response_body) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportWin);
 };
 
 HTTPTransportWin::HTTPTransportWin() : HTTPTransport() {

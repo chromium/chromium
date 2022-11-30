@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,8 @@ SkCanvas* X11CanvasSurface::GetCanvas() {
   return x11_software_bitmap_presenter_.GetSkCanvas();
 }
 
-void X11CanvasSurface::ResizeCanvas(const gfx::Size& viewport_size) {
+void X11CanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
+                                    float scale) {
   x11_software_bitmap_presenter_.Resize(viewport_size);
 }
 

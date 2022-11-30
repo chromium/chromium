@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -48,15 +48,12 @@ class MultiTabLoadingPageLoadMetricsObserverTest
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
     timing.navigation_start = base::Time::FromDoubleT(1);
-    timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(300);
-    timing.paint_timing->first_contentful_paint =
-        base::TimeDelta::FromMilliseconds(300);
-    timing.paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromMilliseconds(700);
+    timing.parse_timing->parse_start = base::Milliseconds(300);
+    timing.paint_timing->first_contentful_paint = base::Milliseconds(300);
+    timing.paint_timing->first_meaningful_paint = base::Milliseconds(700);
     timing.document_timing->dom_content_loaded_event_start =
-        base::TimeDelta::FromMilliseconds(600);
-    timing.document_timing->load_event_start =
-        base::TimeDelta::FromMilliseconds(1000);
+        base::Milliseconds(600);
+    timing.document_timing->load_event_start = base::Milliseconds(1000);
     PopulateRequiredTimingFields(&timing);
 
     if (tab_state == Background) {
@@ -99,7 +96,7 @@ class MultiTabLoadingPageLoadMetricsObserverTest
   }
 
  private:
-  base::Optional<int> number_of_tabs_with_inflight_load_;
+  absl::optional<int> number_of_tabs_with_inflight_load_;
 };
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, SingleTabLoading) {

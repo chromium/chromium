@@ -1,16 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/fido/cable/fido_cable_discovery.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -35,7 +34,7 @@ namespace device {
 namespace {
 
 constexpr auto kTestCableVersion = CableDiscoveryData::Version::V1;
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 constexpr auto kTestCableVersionNumber = 1;
 #endif
 
@@ -62,7 +61,7 @@ constexpr CableSessionPreKeyArray kTestSessionPreKey = {
      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};
 
 // TODO(https://crbug.com/837088): Add support for multiple EIDs on Windows.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 constexpr CableEidArray kSecondaryClientEid = {
     {0x15, 0x14, 0x13, 0x12, 0x11, 0x10, 0x09, 0x08, 0x07, 0x06, 0x05, 0x04,
      0x03, 0x02, 0x01, 0x00}};
@@ -78,7 +77,7 @@ constexpr CableSessionPreKeyArray kSecondarySessionPreKey = {
     {0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
      0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
      0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd}};
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 // Below constants are used to construct MockBluetoothDevice for testing.
 constexpr char kTestBleDeviceAddress[] = "11:12:13:14:15:16";
@@ -101,14 +100,11 @@ MATCHER_P2(IsAdvertisementContent,
            expected_client_eid,
            expected_uuid_formatted_client_eid,
            "") {
-#if defined(OS_MAC)
-  const auto uuid_list = arg->service_uuids();
-  return std::any_of(uuid_list->begin(), uuid_list->end(),
-                     [this](const auto& uuid) {
-                       return uuid == expected_uuid_formatted_client_eid;
-                     });
+#if BUILDFLAG(IS_MAC)
+  return base::Contains(*arg->service_uuids(),
+                        expected_uuid_formatted_client_eid);
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   const auto manufacturer_data = arg->manufacturer_data();
   const auto manufacturer_data_value = manufacturer_data->find(0x00E0);
 
@@ -125,10 +121,9 @@ MATCHER_P2(IsAdvertisementContent,
                     manufacturer_data_payload.end(),
                     expected_client_eid.begin(), expected_client_eid.end());
 
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const auto service_data = arg->service_data();
-  const auto service_data_with_uuid =
-      service_data->find(kCableAdvertisementUUID128);
+  const auto service_data_with_uuid = service_data->find(kGoogleCableUUID128);
 
   if (service_data_with_uuid == service_data->end())
     return false;
@@ -140,9 +135,9 @@ MATCHER_P2(IsAdvertisementContent,
          std::equal(service_data_value.begin() + 2, service_data_value.end(),
                     expected_client_eid.begin(), expected_client_eid.end());
 
-#endif
-
+#else
   return true;
+#endif
 }
 
 class CableMockBluetoothAdvertisement : public BluetoothAdvertisement {
@@ -212,12 +207,11 @@ class CableMockAdapter : public MockBluetoothAdapter {
     std::copy(authenticator_eid.begin(), authenticator_eid.end(),
               service_data.begin() + 2);
     BluetoothDevice::ServiceDataMap service_data_map;
-    service_data_map.emplace(kCableAdvertisementUUID128,
-                             std::move(service_data));
+    service_data_map.emplace(kGoogleCableUUID128, std::move(service_data));
 
     mock_device->UpdateAdvertisementData(
-        1 /* rssi */, base::nullopt /* flags */, BluetoothDevice::UUIDList(),
-        base::nullopt /* tx_power */, std::move(service_data_map),
+        1 /* rssi */, absl::nullopt /* flags */, BluetoothDevice::UUIDList(),
+        absl::nullopt /* tx_power */, std::move(service_data_map),
         BluetoothDevice::ManufacturerDataMap());
 
     auto* mock_device_ptr = mock_device.get();
@@ -325,8 +319,7 @@ class FakeFidoCableDiscovery : public FidoCableDiscovery {
  public:
   explicit FakeFidoCableDiscovery(
       std::vector<CableDiscoveryData> discovery_data)
-      : FidoCableDiscovery(std::move(discovery_data),
-                           /*ble_observer=*/nullptr) {}
+      : FidoCableDiscovery(std::move(discovery_data)) {}
   ~FakeFidoCableDiscovery() override = default;
 
  private:
@@ -456,7 +449,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsIncorrectDevice) {
 // not applicable.
 // TODO(https://crbug.com/837088): Support multiple EIDs on Windows and enable
 // these tests.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // Tests Cable discovery flow when multiple(2) sets of client/authenticator EIDs
 // are passed on from the relying party. We should expect 2 invocations of
 // BluetoothAdapter::RegisterAdvertisement().
@@ -558,7 +551,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryWithAdvertisementFailures) {
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(cable_discovery->AdvertisementsForTesting().empty());
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(FidoCableDiscoveryTest, TestUnregisterAdvertisementUponDestruction) {
   auto cable_discovery = CreateDiscovery();

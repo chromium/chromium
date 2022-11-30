@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -69,9 +68,9 @@ const unsigned int kRecentlyClosedCount = 8;
 const size_t kMaximumMenuWidthInChars = 50;
 
 // Constants used in menu definitions.  The first non-Chrome command is at
-// IDC_FIRST_BOOKMARK_MENU.
+// IDC_FIRST_UNBOUNDED_MENU.
 enum ReservedCommandId {
-  kLastChromeCommand = IDC_FIRST_BOOKMARK_MENU - 1,
+  kLastChromeCommand = IDC_FIRST_UNBOUNDED_MENU - 1,
   kMenuEnd,
   kSeparator,
   kSubmenu,
@@ -145,13 +144,6 @@ constexpr DbusAppmenuCommand kToolsMenu[] = {
     {IDC_DEV_TOOLS_DEVICES, IDS_DEV_TOOLS_DEVICES},
     {kMenuEnd}};
 
-// TODO(crbug.com/1108289): Remove after launch.
-constexpr DbusAppmenuCommand kOldProfilesMenu[] = {
-    {kSeparator},
-    {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
-    {kTagProfileCreate, IDS_PROFILES_CREATE_BUTTON_LABEL},
-    {kMenuEnd}};
-
 constexpr DbusAppmenuCommand kProfilesMenu[] = {
     {kSeparator},
     {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
@@ -168,8 +160,8 @@ constexpr DbusAppmenuCommand kHelpMenu[] = {
 void FindMenuItemsForCommandAux(
     ui::MenuModel* menu,
     int command,
-    std::vector<std::pair<ui::MenuModel*, int>>* menu_items) {
-  for (int i = 0; i < menu->GetItemCount(); i++) {
+    std::vector<std::pair<ui::MenuModel*, size_t>>* menu_items) {
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     if (menu->GetCommandIdAt(i) == command)
       menu_items->push_back({menu, i});
     if (menu->GetTypeAt(i) == ui::SimpleMenuModel::ItemType::TYPE_SUBMENU) {
@@ -179,10 +171,10 @@ void FindMenuItemsForCommandAux(
   }
 }
 
-std::vector<std::pair<ui::MenuModel*, int>> FindMenuItemsForCommand(
+std::vector<std::pair<ui::MenuModel*, size_t>> FindMenuItemsForCommand(
     ui::MenuModel* menu,
     int command) {
-  std::vector<std::pair<ui::MenuModel*, int>> menu_items;
+  std::vector<std::pair<ui::MenuModel*, size_t>> menu_items;
   FindMenuItemsForCommandAux(menu, command, &menu_items);
   return menu_items;
 }
@@ -191,6 +183,9 @@ std::vector<std::pair<ui::MenuModel*, int>> FindMenuItemsForCommand(
 
 struct DbusAppmenu::HistoryItem {
   HistoryItem() : session_id(SessionID::InvalidValue()) {}
+
+  HistoryItem(const HistoryItem&) = delete;
+  HistoryItem& operator=(const HistoryItem&) = delete;
 
   // The title for the menu item.
   std::u16string title;
@@ -209,9 +204,6 @@ struct DbusAppmenu::HistoryItem {
   // is the owner of all items. If it is not a window, then the entry is a
   // single page and the vector will be empty.
   std::vector<HistoryItem*> tabs;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryItem);
 };
 
 DbusAppmenu::DbusAppmenu(BrowserView* browser_view, uint32_t browser_frame_id)
@@ -256,10 +248,7 @@ void DbusAppmenu::Initialize(DbusMenu::InitializedCallback callback) {
   BuildStaticMenu(IDS_VIEW_MENU_LINUX, kViewMenu);
   history_menu_ = BuildStaticMenu(IDS_HISTORY_MENU_LINUX, kHistoryMenu);
   BuildStaticMenu(IDS_TOOLS_MENU_LINUX, kToolsMenu);
-  profiles_menu_ =
-      base::FeatureList::IsEnabled(features::kNewProfilePicker)
-          ? BuildStaticMenu(IDS_PROFILES_MENU_NAME, kProfilesMenu)
-          : BuildStaticMenu(IDS_PROFILES_OPTIONS_GROUP_NAME, kOldProfilesMenu);
+  profiles_menu_ = BuildStaticMenu(IDS_PROFILES_MENU_NAME, kProfilesMenu);
   BuildStaticMenu(IDS_HELP_MENU_LINUX, kHelpMenu);
 
   pref_change_registrar_.Init(browser_->profile()->GetPrefs());
@@ -308,7 +297,7 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
     if (command_id == kSeparator) {
       // Use InsertSeparatorAt() instead of AddSeparator() because the latter
       // refuses to add a separator to an empty menu.
-      int old_item_count = menu->GetItemCount();
+      size_t old_item_count = menu->GetItemCount();
       menu->InsertSeparatorAt(old_item_count,
                               ui::MenuSeparatorType::SPACING_SEPARATOR);
 
@@ -318,11 +307,11 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
       continue;
     }
 
-    int string_id = commands->str_id;
+    int command_str_id = commands->str_id;
     if (command_id == IDC_SHOW_BOOKMARK_BAR)
-      menu->AddCheckItemWithStringId(command_id, string_id);
+      menu->AddCheckItemWithStringId(command_id, command_str_id);
     else
-      menu->AddItemWithStringId(command_id, string_id);
+      menu->AddItemWithStringId(command_id, command_str_id);
     if (command_id < kLastChromeCommand)
       RegisterCommandObserver(command_id);
   }
@@ -354,6 +343,35 @@ void DbusAppmenu::AddHistoryItemToMenu(std::unique_ptr<HistoryItem> item,
   int command_id = NextCommandId();
   menu->InsertItemAt(index, command_id, title);
   history_items_[command_id] = std::move(item);
+}
+
+void DbusAppmenu::AddEntryToHistoryMenu(
+    SessionID id,
+    std::u16string title,
+    int index,
+    const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
+        tabs) {
+  // Create the item for the parent/window.
+  auto item = std::make_unique<HistoryItem>();
+  item->session_id = id;
+
+  auto parent_menu = std::make_unique<ui::SimpleMenuModel>(this);
+  int command = NextCommandId();
+  history_menu_->InsertSubMenuAt(index, command, title, parent_menu.get());
+  parent_menu->AddItemWithStringId(command,
+                                   IDS_HISTORY_CLOSED_RESTORE_WINDOW_LINUX);
+  parent_menu->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+
+  // Loop over the tabs and add them to the submenu.
+  int subindex = 2;
+  for (const auto& tab : tabs) {
+    std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
+    item->tabs.push_back(tab_item.get());
+    AddHistoryItemToMenu(std::move(tab_item), parent_menu.get(), subindex++);
+  }
+
+  history_items_[command] = std::move(item);
+  recently_closed_window_menus_.push_back(std::move(parent_menu));
 }
 
 void DbusAppmenu::GetTopSitesData() {
@@ -486,43 +504,43 @@ void DbusAppmenu::TabRestoreServiceChanged(
     sessions::TabRestoreService::Entry* entry = it->get();
 
     if (entry->type == sessions::TabRestoreService::WINDOW) {
-      sessions::TabRestoreService::Window* entry_win =
+      sessions::TabRestoreService::Window* window =
           static_cast<sessions::TabRestoreService::Window*>(entry);
-      auto& tabs = entry_win->tabs;
+
+      auto& tabs = window->tabs;
       if (tabs.empty())
         continue;
-
-      // Create the item for the parent/window.
-      auto item = std::make_unique<HistoryItem>();
-      item->session_id = entry_win->id;
 
       std::u16string title = l10n_util::GetPluralStringFUTF16(
           IDS_RECENTLY_CLOSED_WINDOW, tabs.size());
 
-      auto parent_menu = std::make_unique<ui::SimpleMenuModel>(this);
-      int command = NextCommandId();
-      history_menu_->InsertSubMenuAt(index++, command, title,
-                                     parent_menu.get());
-      parent_menu->AddItemWithStringId(command,
-                                       IDS_HISTORY_CLOSED_RESTORE_WINDOW_LINUX);
-      parent_menu->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-
-      // Loop over the window's tabs and add them to the submenu.
-      int subindex = 2;
-      for (const auto& tab : tabs) {
-        std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
-        item->tabs.push_back(tab_item.get());
-        AddHistoryItemToMenu(std::move(tab_item), parent_menu.get(),
-                             subindex++);
-      }
-
-      history_items_[command] = std::move(item);
-      recently_closed_window_menus_.push_back(std::move(parent_menu));
+      AddEntryToHistoryMenu(window->id, title, index++, tabs);
       ++added_count;
     } else if (entry->type == sessions::TabRestoreService::TAB) {
       sessions::TabRestoreService::Tab* tab =
           static_cast<sessions::TabRestoreService::Tab*>(entry);
       AddHistoryItemToMenu(HistoryItemForTab(*tab), history_menu_, index++);
+      ++added_count;
+    } else if (entry->type == sessions::TabRestoreService::GROUP) {
+      sessions::TabRestoreService::Group* group =
+          static_cast<sessions::TabRestoreService::Group*>(entry);
+
+      auto& tabs = group->tabs;
+      if (tabs.empty())
+        continue;
+
+      std::u16string title;
+      if (group->visual_data.title().empty()) {
+        title = l10n_util::GetPluralStringFUTF16(
+            IDS_RECENTLY_CLOSED_GROUP_UNNAMED, tabs.size());
+      } else {
+        title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
+                                                 tabs.size());
+        title = base::ReplaceStringPlaceholders(
+            title, {group->visual_data.title()}, nullptr);
+      }
+
+      AddEntryToHistoryMenu(group->id, title, index++, tabs);
       ++added_count;
     }
   }
@@ -561,7 +579,8 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
   } else if (command_id == kTagProfileEdit) {
     avatar_menu_->EditProfile(active_profile_index_);
   } else if (command_id == kTagProfileCreate) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
   } else if (base::Contains(history_items_, command_id)) {
     HistoryItem* item = history_items_[command_id].get();
     // If this item can be restored using TabRestoreService, do so.

@@ -4,13 +4,11 @@ file://ui/webui/PLATFORM_OWNERS
 per-file device_log_ui*=stevenjb@chromium.org
 
 per-file devtools_ui*=dgozman@chromium.org
-per-file devtools_ui*=pfeldman@chromium.org
 per-file devtools_ui*=caseq@chromium.org
 per-file inspect_ui*=dgozman@chromium.org
-per-file inspect_ui*=pfeldman@chromium.org
 per-file inspect_ui*=caseq@chromium.org
-
-per-file history_ui*=calamity@chromium.org
+per-file review_notification_permissions*=rainhard@chromium.org
+per-file review_notification_permissions*=sauski@google.com
 
 per-file memory_internals_ui*=erikchen@chromium.org
 
@@ -20,4 +18,4 @@ per-file ntp_tiles_internals_ui.*=file://components/ntp_tiles/OWNERS
 
 per-file signin_internals_ui*=achuith@chromium.org
 
-per-file invalidations_message_handler.*=file://components/invalidation/OWNERS
+per-file invalidations/invalidations_message_handler.*=file://components/invalidation/OWNERS

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,16 +31,9 @@ public interface PaymentUiServiceTestInterface {
     boolean clickPaymentHandlerCloseButtonForTest();
 
     /**
-     * Confirms payment in minimal UI.
+     * Closes the payment UI.
      *
-     * @return Whether the payment was confirmed successfully.
+     * @return Whether the closing was successful.
      */
-    boolean confirmMinimalUIForTest();
-
-    /**
-     * Dismisses the minimal UI.
-     *
-     * @return Whether the dismissal was successful.
-     */
-    boolean dismissMinimalUIForTest();
+    boolean closeDialogForTest();
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
-#include "content/browser/renderer_host/hit_test_debug_key_event_observer.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -31,17 +30,16 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/web_input_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/delegated_ink_point.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
-#if defined(OS_WIN)
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/display/screen.h"
-#endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace {
 
@@ -54,17 +52,7 @@ namespace {
 // of the border area, in percentage of the corresponding dimension.
 const int kMouseLockBorderPercentage = 15;
 
-// While the mouse is locked we want the invisible mouse to stay within the
-// confines of the screen so we keep it in a capture region the size of the
-// screen.  However, on windows when the mouse hits the edge of the screen some
-// events trigger and cause strange issues to occur. To stop those events from
-// occuring we add a small border around the edge of the capture region.
-// This constant controls how many pixels wide that border is.
-#if defined(OS_WIN)
-const int KMouseCaptureRegionBorder = 5;
-#endif
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // A callback function for EnumThreadWindows to enumerate and dismiss
 // any owned popup windows.
 BOOL CALLBACK DismissOwnedPopups(HWND window, LPARAM arg) {
@@ -79,7 +67,7 @@ BOOL CALLBACK DismissOwnedPopups(HWND window, LPARAM arg) {
 
   return TRUE;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsFractionalScaleFactor(float scale_factor) {
   return (scale_factor - static_cast<int>(scale_factor)) > 0;
@@ -88,10 +76,11 @@ bool IsFractionalScaleFactor(float scale_factor) {
 // We don't mark these as handled so that they're sent back to the
 // DefWindowProc so it can generate WM_APPCOMMAND as necessary.
 bool ShouldGenerateAppCommand(const ui::MouseEvent* event) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return (event->native_event().message == WM_NCXBUTTONUP);
-#endif
+#else
   return false;
+#endif
 }
 
 // Reset unchanged touch points to StateStationary for touchmove and
@@ -131,10 +120,7 @@ RenderWidgetHostViewEventHandler::RenderWidgetHostViewEventHandler(
       host_(host),
       host_view_(host_view),
       delegate_(delegate),
-      mouse_wheel_phase_handler_(host_view),
-      debug_observer_(features::IsVizHitTestingDebugEnabled()
-                          ? std::make_unique<HitTestDebugKeyEventObserver>(host)
-                          : nullptr) {}
+      mouse_wheel_phase_handler_(host_view) {}
 
 RenderWidgetHostViewEventHandler::~RenderWidgetHostViewEventHandler() {
   DCHECK(!mouse_locked_);
@@ -146,20 +132,6 @@ void RenderWidgetHostViewEventHandler::SetPopupChild(
   popup_child_host_view_ = popup_child_host_view;
   popup_child_event_handler_ = popup_child_event_handler;
 }
-
-#if defined(OS_WIN)
-void RenderWidgetHostViewEventHandler::UpdateMouseLockRegion() {
-  RECT window_rect =
-      display::Screen::GetScreen()
-          ->DIPToScreenRectInWindow(window_, window_->GetBoundsInScreen())
-          .ToRECT();
-  window_rect.left += KMouseCaptureRegionBorder;
-  window_rect.right -= KMouseCaptureRegionBorder;
-  window_rect.top += KMouseCaptureRegionBorder;
-  window_rect.bottom -= KMouseCaptureRegionBorder;
-  ::ClipCursor(&window_rect);
-}
-#endif
 
 blink::mojom::PointerLockResult RenderWidgetHostViewEventHandler::LockMouse(
     bool request_unadjusted_movement) {
@@ -178,17 +150,7 @@ blink::mojom::PointerLockResult RenderWidgetHostViewEventHandler::LockMouse(
   }
   mouse_locked_ = true;
 
-#if !defined(OS_WIN)
-  window_->SetCapture();
-#else
-  UpdateMouseLockRegion();
-#endif
-  aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
-  if (cursor_client) {
-    cursor_client->HideCursor();
-    cursor_client->LockCursor();
-  }
+  window_->GetHost()->LockMouse(window_);
 
   if (ShouldMoveToCenter(unlocked_global_mouse_position_))
     MoveCursorToCenter(nullptr);
@@ -239,12 +201,7 @@ void RenderWidgetHostViewEventHandler::UnlockMouse() {
   mouse_locked_ = false;
   mouse_locked_unadjusted_movement_.reset();
 
-  if (window_->HasCapture())
-    window_->ReleaseCapture();
-
-#if defined(OS_WIN)
-  ::ClipCursor(NULL);
-#endif
+  window_->GetHost()->UnlockMouse(window_);
 
   // Ensure that the global mouse position is updated here to its original
   // value. If we don't do this then the synthesized mouse move which is posted
@@ -256,17 +213,11 @@ void RenderWidgetHostViewEventHandler::UnlockMouse() {
   synthetic_move_position_ =
       gfx::ToFlooredPoint(unlocked_global_mouse_position_);
 
-  aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
-  if (cursor_client) {
-    cursor_client->UnlockCursor();
-    cursor_client->ShowCursor();
-  }
   host_->LostMouseLock();
 }
 
 bool RenderWidgetHostViewEventHandler::LockKeyboard(
-    base::Optional<base::flat_set<ui::DomCode>> codes) {
+    absl::optional<base::flat_set<ui::DomCode>> codes) {
   aura::Window* root_window = window_->GetRootWindow();
   if (!root_window)
     return false;
@@ -327,7 +278,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
   DCHECK(event);
   DCHECK_EQ(event->type(), ui::ET_MOUSEWHEEL);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!mouse_locked_) {
     // We get mouse wheel/scroll messages even if we are not in the foreground.
     // So here we check if we have any owned popup windows in the foreground and
@@ -360,63 +311,6 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
     } else {
       ProcessMouseWheelEvent(mouse_wheel_event, *event->latency());
     }
-  }
-}
-
-void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
-    ui::LocatedEvent* event,
-    bool hovering,
-    int32_t pointer_id) {
-  const cc::RenderFrameMetadata& last_metadata =
-      host_->render_frame_metadata_provider()->LastRenderFrameMetadata();
-  if (last_metadata.delegated_ink_metadata.has_value() &&
-      hovering == last_metadata.delegated_ink_metadata.value()
-                      .delegated_ink_is_hovering) {
-    if (!delegated_ink_point_renderer_.is_bound()) {
-      ui::Compositor* compositor = window_ && window_->layer()
-                                       ? window_->layer()->GetCompositor()
-                                       : nullptr;
-
-      // The remote can't be bound if the compositor is null, so bail if that
-      // is the case so we don't crash by trying to use an unbound remote.
-      if (!compositor)
-        return;
-
-      TRACE_EVENT_INSTANT0("input",
-                           "Binding mojo interface for delegated ink points.",
-                           TRACE_EVENT_SCOPE_THREAD);
-      compositor->SetDelegatedInkPointRenderer(
-          delegated_ink_point_renderer_.BindNewPipeAndPassReceiver());
-      delegated_ink_point_renderer_.reset_on_disconnect();
-    }
-
-    gfx::PointF point = event->root_location_f();
-    point.Scale(host_view_->GetDeviceScaleFactor());
-    gfx::DelegatedInkPoint delegated_ink_point(point, event->time_stamp(),
-                                               pointer_id);
-    TRACE_EVENT_INSTANT1("input",
-                         "Forwarding delegated ink point from browser.",
-                         TRACE_EVENT_SCOPE_THREAD, "delegated point",
-                         delegated_ink_point.ToString());
-
-    // Calling this will result in IPC calls to get |delegated_ink_point| to
-    // viz. The decision to do this here was made with the understanding that
-    // the IPC overhead will result in a minor increase in latency for getting
-    // this event to the renderer. However, by sending it here, the event is
-    // given the greatest possible chance to make it to viz before
-    // DrawAndSwap() is called, allowing more points to be drawn as part of
-    // the delegated ink trail, and thus reducing user perceived latency.
-    delegated_ink_point_renderer_->StoreDelegatedInkPoint(delegated_ink_point);
-    ended_delegated_ink_trail_ = false;
-  } else if (delegated_ink_point_renderer_.is_bound() &&
-             !ended_delegated_ink_trail_) {
-    // Let viz know that the most recent point it received from us is probably
-    // the last point the user is inking, so it shouldn't predict anything
-    // beyond it.
-    TRACE_EVENT_INSTANT0("input", "Delegated ink trail ended",
-                         TRACE_EVENT_SCOPE_THREAD);
-    delegated_ink_point_renderer_->ResetPrediction();
-    ended_delegated_ink_trail_ = true;
   }
 }
 
@@ -463,9 +357,6 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     bool is_selection_popup = NeedsInputGrab(popup_child_host_view_);
     if (CanRendererHandleEvent(event, mouse_locked_, is_selection_popup) &&
         !(event->flags() & ui::EF_FROM_TOUCH)) {
-      bool hovering = (event->type() ^ ui::ET_MOUSE_DRAGGED) &&
-                      (event->type() ^ ui::ET_MOUSE_PRESSED);
-      ForwardDelegatedInkPoint(event, hovering, event->pointer_details().id);
 
       // Confirm existing composition text on mouse press, to make sure
       // the input caret won't be moved with an ongoing composition text.
@@ -508,7 +399,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
   TRACE_EVENT0("input", "RenderWidgetHostViewBase::OnScrollEvent");
   const bool should_route_event = ShouldRouteEvents();
   if (event->type() == ui::ET_SCROLL) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // TODO(ananta)
     // Investigate if this is true for Windows 8 Metro ASH as well.
     if (event->finger_count() != 2)
@@ -519,7 +410,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
         mouse_wheel_event, should_route_event);
 
-    base::Optional<blink::WebGestureEvent> maybe_synthetic_fling_cancel;
+    absl::optional<blink::WebGestureEvent> maybe_synthetic_fling_cancel;
     if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {
       maybe_synthetic_fling_cancel =
           ui::MakeWebGestureEventFlingCancel(mouse_wheel_event);
@@ -589,9 +480,6 @@ void RenderWidgetHostViewEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 
   if (handled)
     return;
-
-  ForwardDelegatedInkPoint(event, event->hovering(),
-                           event->pointer_details().id);
 
   if (had_no_pointer)
     delegate_->selection_controller_client()->OnTouchDown();
@@ -708,7 +596,7 @@ bool RenderWidgetHostViewEventHandler::CanRendererHandleEvent(
   if (event->type() == ui::ET_MOUSE_EXITED) {
     if (mouse_locked || selection_popup)
       return false;
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Don't forward the mouse leave message which is received when the context
     // menu is displayed by the page. This confuses the page and causes state
     // changes.
@@ -718,7 +606,7 @@ bool RenderWidgetHostViewEventHandler::CanRendererHandleEvent(
     return true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Renderer cannot handle WM_XBUTTON or NC events.
   switch (event->native_event().message) {
     case WM_XBUTTONDOWN:
@@ -771,9 +659,9 @@ void RenderWidgetHostViewEventHandler::ForwardMouseEventToParent(
 
   // Take a copy of |event|, to avoid ConvertLocationToTarget mutating the
   // event.
-  std::unique_ptr<ui::Event> event_copy = ui::Event::Clone(*event);
+  std::unique_ptr<ui::Event> event_copy = event->Clone();
   ui::MouseEvent* mouse_event = static_cast<ui::MouseEvent*>(event_copy.get());
-  mouse_event->ConvertLocationToTarget(window_, window_->parent());
+  mouse_event->ConvertLocationToTarget(window_.get(), window_->parent());
   window_->parent()->delegate()->OnMouseEvent(mouse_event);
   if (mouse_event->handled())
     event->SetHandled();
@@ -814,9 +702,8 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
     // If we receive non client mouse messages while we are in the locked state
     // it probably means that the mouse left the borders of our window and
     // needs to be moved back to the center.
-    if (event->flags() & ui::EF_IS_NON_CLIENT) {
-      // TODO(jonross): ideally this would not be done for mus
-      // (crbug.com/621412)
+    if ((event->flags() & ui::EF_IS_NON_CLIENT) &&
+        !window_->GetHost()->SupportsMouseLock()) {
       MoveCursorToCenter(event);
       return;
     }
@@ -920,10 +807,12 @@ void RenderWidgetHostViewEventHandler::ModifyEventMovementAndCoords(
 
 void RenderWidgetHostViewEventHandler::MoveCursorToCenter(
     ui::MouseEvent* event) {
+  DCHECK(!window_->GetHost()->SupportsMouseLock());
+
   gfx::Point center(gfx::Rect(window_->bounds().size()).CenterPoint());
   gfx::Point center_in_screen(window_->GetBoundsInScreen().CenterPoint());
   window_->MoveCursorTo(center);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/781182): Set the global position when move cursor to center.
   // This is a workaround for a bug from Windows update 16299, and should be
   // remove once the bug is fixed in OS. When consolidate_movement_ flag is
@@ -952,7 +841,7 @@ bool RenderWidgetHostViewEventHandler::MatchesSynthesizedMovePosition(
     const blink::WebMouseEvent& event) {
   if (event.GetType() == blink::WebInputEvent::Type::kMouseMove &&
       synthetic_move_position_.has_value()) {
-    if (IsFractionalScaleFactor(host_view_->current_device_scale_factor())) {
+    if (IsFractionalScaleFactor(host_view_->GetDeviceScaleFactor())) {
       // For fractional scale factors, the conversion from pixels to dip and
       // vice versa could result in off by 1 or 2 errors which hurts us because
       // the artificial move to center event cause the cursor to bounce around
@@ -984,10 +873,13 @@ bool RenderWidgetHostViewEventHandler::ShouldMoveToCenter(
     gfx::PointF mouse_screen_position) {
   // Do not need to move to center in unadjusted movement mode as
   // the movement value are directly from OS.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (mouse_locked_unadjusted_movement_)
     return false;
 #endif
+
+  if (window_->GetHost()->SupportsMouseLock())
+    return false;
 
   gfx::Rect rect = window_->bounds();
   rect = delegate_->ConvertRectToScreen(rect);
@@ -1007,7 +899,7 @@ bool RenderWidgetHostViewEventHandler::ShouldRouteEvents() const {
   // Do not route events that are currently targeted to page popups such as
   // <select> element drop-downs, since these cannot contain cross-process
   // frames.
-  if (!host_->delegate()->IsWidgetForMainFrame(host_))
+  if (!host_->delegate()->IsWidgetForPrimaryMainFrame(host_))
     return false;
 
   return !!host_->delegate()->GetInputEventRouter();

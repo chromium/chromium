@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/display/types/display_types_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -20,6 +19,10 @@ namespace display {
 class DISPLAY_TYPES_EXPORT DisplayMode {
  public:
   DisplayMode(const gfx::Size& size, bool interlaced, float refresh_rate);
+
+  DisplayMode(const DisplayMode&) = delete;
+  DisplayMode& operator=(const DisplayMode&) = delete;
+
   ~DisplayMode();
   std::unique_ptr<DisplayMode> Clone() const;
 
@@ -28,6 +31,7 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   float refresh_rate() const { return refresh_rate_; }
 
   bool operator<(const DisplayMode& other) const;
+  bool operator>(const DisplayMode& other) const;
 
   std::string ToString() const;
 
@@ -35,8 +39,6 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   const gfx::Size size_;
   const float refresh_rate_;
   const bool is_interlaced_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayMode);
 };
 
 // Used to by gtest to print readable errors.

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,36 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 
 namespace variations {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Exposed for testing.
+enum class InvalidStudyReason {
+  kInvalidMinVersion = 0,
+  kInvalidMaxVersion = 1,
+  kInvalidMinOsVersion = 2,
+  kInvalidMaxOsVersion = 3,
+  kMissingExperimentName = 4,
+  kRepeatedExperimentName = 5,
+  kTotalProbabilityOverflow = 6,
+  kMissingDefaultExperimentInList = 7,
+  kBlankStudyName = 8,
+  kExperimentProbabilityOverflow = 9,
+  kTriggerAndNonTriggerExperimentId = 10,
+  kMaxValue = kTriggerAndNonTriggerExperimentId,
+};
+
 class Study;
+class EntropyProviders;
+class VariationsLayers;
 
 // Wrapper over Study with extra information computed during pre-processing,
 // such as whether the study is expired and its total probability.
-class ProcessedStudy {
+class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
  public:
   // The default group used when a study doesn't specify one. This is needed
   // because the field trial api requires a default group name.
@@ -26,7 +47,7 @@ class ProcessedStudy {
   ProcessedStudy(const ProcessedStudy& other);
   ~ProcessedStudy();
 
-  bool Init(const Study* study, bool is_expired);
+  bool Init(const Study* study);
 
   const Study* study() const { return study_; }
 
@@ -38,11 +59,13 @@ class ProcessedStudy {
     return all_assignments_to_one_group_;
   }
 
-  bool is_expired() const { return is_expired_; }
+  bool ShouldStudyUseLowEntropy() const;
 
-  const std::vector<std::string>& associated_features() const {
-    return associated_features_;
-  }
+  // Returns the entropy provider that should be used to select a group for
+  // this study.
+  const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
+      const EntropyProviders& entropy_providers,
+      const VariationsLayers& layers) const;
 
   // Gets the index of the experiment with the given |name|. Returns -1 if no
   // experiment is found.
@@ -50,31 +73,17 @@ class ProcessedStudy {
 
   // Gets the default experiment name for the study, or a generic one if none is
   // specified.
-  const char* GetDefaultExperimentName() const;
-
-  static bool ValidateAndAppendStudy(
-      const Study* study,
-      bool is_expired,
-      std::vector<ProcessedStudy>* processed_studies);
+  const base::StringPiece GetDefaultExperimentName() const;
 
  private:
   // Corresponding Study object. Weak reference.
-  const Study* study_ = nullptr;
+  raw_ptr<const Study> study_ = nullptr;
 
   // Computed total group probability for the study.
   base::FieldTrial::Probability total_probability_ = 0;
 
   // Whether all assignments are to a single group.
   bool all_assignments_to_one_group_ = false;
-
-  // Whether the study is expired.
-  bool is_expired_ = false;
-
-  // A list of feature names associated with this study by default. Studies
-  // might have groups that do not specify any feature associations – this is
-  // often the case for a default group, for example. The features listed here
-  // will be associated with all such groups.
-  std::vector<std::string> associated_features_;
 };
 
 }  // namespace variations

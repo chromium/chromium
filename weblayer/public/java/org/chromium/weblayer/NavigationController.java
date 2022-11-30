@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 /**
  * Provides methods to control navigation, along with maintaining the current list of navigations.
  */
-public class NavigationController {
+class NavigationController {
     private INavigationController mNavigationController;
     private final ObserverList<NavigationCallback> mCallbacks;
 
@@ -153,9 +153,8 @@ public class NavigationController {
     /**
      * Navigates to the entry at {@link index}.
      *
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
-     * @throws IndexOutOfBoundsException
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     public void goToIndex(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
@@ -223,8 +222,8 @@ public class NavigationController {
      * Returns the uri to display for the navigation at index.
      *
      * @param index The index of the navigation.
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     @NonNull
     public Uri getNavigationEntryDisplayUri(int index) throws IndexOutOfBoundsException {
@@ -240,8 +239,8 @@ public class NavigationController {
     /**
      * Returns the title of the navigation entry at the supplied index.
      *
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     @NonNull
     public String getNavigationEntryTitle(int index) throws IndexOutOfBoundsException {
@@ -259,8 +258,8 @@ public class NavigationController {
      * This will be true for certain navigations, such as certain client side redirects and
      * history.pushState navigations done without user interaction.
      *
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     public boolean isNavigationEntrySkippable(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
@@ -334,10 +333,10 @@ public class NavigationController {
         }
 
         @Override
-        public void loadStateChanged(boolean isLoading, boolean toDifferentDocument) {
+        public void loadStateChanged(boolean isLoading, boolean shouldShowLoadingUi) {
             StrictModeWorkaround.apply();
             for (NavigationCallback callback : mCallbacks) {
-                callback.onLoadStateChanged(isLoading, toDifferentDocument);
+                callback.onLoadStateChanged(isLoading, shouldShowLoadingUi);
             }
         }
 
@@ -395,6 +394,14 @@ public class NavigationController {
             StrictModeWorkaround.apply();
             for (NavigationCallback callback : mCallbacks) {
                 callback.onPageDestroyed((Page) page);
+            }
+        }
+
+        @Override
+        public void onPageLanguageDetermined(IClientPage page, String language) {
+            StrictModeWorkaround.apply();
+            for (NavigationCallback callback : mCallbacks) {
+                callback.onPageLanguageDetermined((Page) page, language);
             }
         }
     }

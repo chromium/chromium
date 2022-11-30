@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,55 +6,13 @@
 #define BASE_TASK_TASK_FEATURES_H_
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace base {
 
-struct Feature;
-
-extern const BASE_EXPORT Feature kAllTasksUserBlocking;
-
-// Under this feature, unused threads in ThreadGroup are only detached
-// if the total number of threads in the pool is above the initial capacity.
-extern const BASE_EXPORT Feature kNoDetachBelowInitialCapacity;
-
-// Under this feature, workers blocked with MayBlock are replaced immediately
-// instead of waiting for a threshold in the foreground thread group.
-extern const BASE_EXPORT Feature kMayBlockWithoutDelay;
-
-// Under this feature, ThreadPool::ShouldYield() always returns false
-extern const BASE_EXPORT Feature kDisableJobYield;
-// Under this feature, JobTaskSource doesn't use worker count in its sort key
-// such that worker threads are not distributed among running jobs equally.
-extern const BASE_EXPORT Feature kDisableFairJobScheduling;
-// Under this feature, priority update on Jobs is disabled.
-extern const BASE_EXPORT Feature kDisableJobUpdatePriority;
-// Under this feature, another WorkerThread is signaled only after the current
-// thread was assigned work.
-extern const BASE_EXPORT Feature kWakeUpAfterGetWork;
-
-// Strategy affecting how WorkerThreads are signaled to pick up pending work.
-enum class WakeUpStrategy {
-  // A single thread scheduling new work signals all required WorkerThreads.
-  kCentralizedWakeUps,
-  // Each thread signals at most a single thread, either when scheduling new
-  // work or picking up pending work.
-  kSerializedWakeUps,
-  // Each thread signals at most 2 threads, either when scheduling new
-  // work or picking up pending work.
-  kExponentialWakeUps,
-  // Each thread signals as many threads as necessary, either when scheduling
-  // new work or picking up pending work.
-  kGreedyWakeUps,
-};
-
-// Under this feature, a given WakeUpStrategy param is used.
-extern const BASE_EXPORT Feature kWakeUpStrategyFeature;
-extern const BASE_EXPORT base::FeatureParam<WakeUpStrategy>
-    kWakeUpStrategyParam;
-
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #define HAS_NATIVE_THREAD_POOL() 1
 #else
 #define HAS_NATIVE_THREAD_POOL() 0
@@ -64,15 +22,59 @@ extern const BASE_EXPORT base::FeatureParam<WakeUpStrategy>
 // Under this feature, ThreadPoolImpl will use a foreground ThreadGroup backed
 // by a native thread pool implementation. The Windows Thread Pool API and
 // libdispatch are used on Windows and macOS/iOS respectively.
-extern const BASE_EXPORT Feature kUseNativeThreadPool;
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseNativeThreadPool);
 // Under this feature, ThreadPoolImpl will use a background ThreadGroup backed
 // by a native thread pool implementation.
-extern const BASE_EXPORT Feature kUseBackgroundNativeThreadPool;
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseBackgroundNativeThreadPool);
 #endif
 
-// Whether threads in the ThreadPool should be reclaimed after being idle for 5
-// minutes, instead of 30 seconds.
-extern const BASE_EXPORT Feature kUseFiveMinutesThreadReclaimTime;
+// Under this feature, worker threads are not reclaimed after a timeout. Rather,
+// only excess workers are cleaned up immediately after finishing a task.
+BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);
+
+// This feature controls whether wake ups are possible for canceled tasks.
+BASE_EXPORT BASE_DECLARE_FEATURE(kNoWakeUpsForCanceledTasks);
+
+// Controls whether or not canceled delayed tasks are removed from task queues.
+BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveCanceledTasksInTaskQueue);
+
+// This feature controls whether or not the scheduled task is always abandoned
+// when a timer is stopped or reset. The re-use of the scheduled task is an
+// optimization that ensures a timer can not leave multiple canceled tasks in
+// the task queue. Meant to be used in conjunction with
+// kRemoveCanceledTasksInTaskQueue.
+BASE_EXPORT BASE_DECLARE_FEATURE(kAlwaysAbandonScheduledTask);
+
+// Under this feature, a non-zero leeway is added to delayed tasks. Along with
+// DelayPolicy, this affects the time at which a delayed task runs.
+BASE_EXPORT BASE_DECLARE_FEATURE(kAddTaskLeewayFeature);
+constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
+extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
+
+// Under this feature, wake ups are aligned at a 8ms boundary when allowed per
+// DelayPolicy.
+BASE_EXPORT BASE_DECLARE_FEATURE(kAlignWakeUps);
+
+// Under this feature, tasks that need high resolution timer are determined
+// based on explicit DelayPolicy rather than based on a threshold.
+BASE_EXPORT BASE_DECLARE_FEATURE(kExplicitHighResolutionTimerWin);
+
+// Feature to run tasks by batches before pumping out messages.
+BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
+
+// Feature to run tasks by batches before pumping out messages.
+BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserPeriodicYieldingToNative);
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam;
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeFlingInputAfterMsParam;
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeNoInputAfterMsParam;
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeDelay;
+
+BASE_EXPORT void InitializeTaskLeeway();
+BASE_EXPORT TimeDelta GetTaskLeeway();
 
 }  // namespace base
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/net/cast_transport_defines.h"
-#include "media/cast/net/rtcp/test_rtcp_packet_builder.h"
+#include "media/cast/test/test_rtcp_packet_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -22,10 +21,13 @@ namespace cast {
 static const uint32_t kRemoteSsrc = 0x10203;
 static const uint32_t kLocalSsrc = 0x40506;
 static const uint32_t kUnknownSsrc = 0xDEAD;
-static const base::TimeDelta kTargetDelay =
-    base::TimeDelta::FromMilliseconds(100);
+static const base::TimeDelta kTargetDelay = base::Milliseconds(100);
 
 class RtcpParserTest : public ::testing::Test {
+ public:
+  RtcpParserTest(const RtcpParserTest&) = delete;
+  RtcpParserTest& operator=(const RtcpParserTest&) = delete;
+
  protected:
   RtcpParserTest()
       : testing_clock_(new base::SimpleTestTickClock()),
@@ -134,13 +136,10 @@ class RtcpParserTest : public ::testing::Test {
 
   std::unique_ptr<base::SimpleTestTickClock> testing_clock_;
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RtcpParserTest);
 };
 
 TEST_F(RtcpParserTest, BrokenPacketIsIgnored) {
-  const char bad_packet[] = {0, 0, 0, 0};
+  const uint8_t bad_packet[] = {0, 0, 0, 0};
   RtcpParser parser(kLocalSsrc, kRemoteSsrc);
   base::BigEndianReader reader(bad_packet, sizeof(bad_packet));
   EXPECT_FALSE(parser.Parse(&reader));
@@ -434,7 +433,7 @@ TEST_F(RtcpParserTest, InjectReceiverReportWithReceiverLogVerificationBase) {
   static const uint32_t kTimeDelayMs = 10;
   static const uint32_t kDelayDeltaMs = 123;
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeBaseMs));
+  testing_clock.Advance(base::Milliseconds(kTimeBaseMs));
 
   RtcpReceiverLogMessage receiver_log;
   RtcpReceiverFrameLogMessage frame_log(RtpTimeTicks().Expand(kRtpTimestamp));
@@ -442,10 +441,10 @@ TEST_F(RtcpParserTest, InjectReceiverReportWithReceiverLogVerificationBase) {
 
   event_log.type = FRAME_ACK_SENT;
   event_log.event_timestamp = testing_clock.NowTicks();
-  event_log.delay_delta = base::TimeDelta::FromMilliseconds(kDelayDeltaMs);
+  event_log.delay_delta = base::Milliseconds(kDelayDeltaMs);
   frame_log.event_log_messages_.push_back(event_log);
 
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeDelayMs));
+  testing_clock.Advance(base::Milliseconds(kTimeDelayMs));
   event_log.type = PACKET_RECEIVED;
   event_log.event_timestamp = testing_clock.NowTicks();
   event_log.packet_id = kLostPacketId1;
@@ -477,7 +476,7 @@ TEST_F(RtcpParserTest, InjectReceiverReportWithReceiverLogVerificationMulti) {
   static const uint32_t kTimeDelayMs = 10;
   static const int kDelayDeltaMs = 123;  // To be varied for every frame.
   base::SimpleTestTickClock testing_clock;
-  testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeBaseMs));
+  testing_clock.Advance(base::Milliseconds(kTimeBaseMs));
 
   RtcpReceiverLogMessage receiver_log;
 
@@ -486,11 +485,10 @@ TEST_F(RtcpParserTest, InjectReceiverReportWithReceiverLogVerificationMulti) {
     RtcpReceiverEventLogMessage event_log;
     event_log.type = FRAME_ACK_SENT;
     event_log.event_timestamp = testing_clock.NowTicks();
-    event_log.delay_delta =
-        base::TimeDelta::FromMilliseconds((j - 50) * kDelayDeltaMs);
+    event_log.delay_delta = base::Milliseconds((j - 50) * kDelayDeltaMs);
     frame_log.event_log_messages_.push_back(event_log);
     receiver_log.push_back(frame_log);
-    testing_clock.Advance(base::TimeDelta::FromMilliseconds(kTimeDelayMs));
+    testing_clock.Advance(base::Milliseconds(kTimeDelayMs));
   }
 
   TestRtcpPacketBuilder p;
@@ -524,7 +522,7 @@ TEST(RtcpUtilityTest, NtpAndTime) {
   base::TimeTicks out_1 = ConvertNtpToTimeTicks(ntp_seconds_1, ntp_fraction_1);
   EXPECT_EQ(input_time, out_1);  // Verify inverse.
 
-  base::TimeDelta time_delta = base::TimeDelta::FromMilliseconds(1000);
+  base::TimeDelta time_delta = base::Milliseconds(1000);
   input_time += time_delta;
 
   uint32_t ntp_seconds_2 = 0;
@@ -539,7 +537,7 @@ TEST(RtcpUtilityTest, NtpAndTime) {
   EXPECT_EQ((ntp_seconds_2 - ntp_seconds_1), UINT32_C(1));
   EXPECT_NEAR(ntp_fraction_2, ntp_fraction_1, 1);
 
-  time_delta = base::TimeDelta::FromMilliseconds(500);
+  time_delta = base::Milliseconds(500);
   input_time += time_delta;
 
   uint32_t ntp_seconds_3 = 0;

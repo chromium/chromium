@@ -1,4 +1,4 @@
-# Copyright (c) 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -49,8 +49,8 @@ def main():
       cp_cmd = ['gsutil.py', 'cp', line, output_file]
       try:
         subprocess.check_call(cp_cmd)
-      except subprocess.CalledProcessError, e:
-        print e.output
+      except subprocess.CalledProcessError as e:
+        print(e.output)
         sys.exit(1)
 
 if __name__ == '__main__':

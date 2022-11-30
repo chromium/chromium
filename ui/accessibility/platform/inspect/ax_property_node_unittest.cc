@@ -1,11 +1,11 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 using ui::AXPropertyFilter;
@@ -16,10 +16,11 @@ namespace ui {
 class AXPropertyNodeTest : public testing::Test {
  public:
   AXPropertyNodeTest() = default;
-  ~AXPropertyNodeTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXPropertyNodeTest);
+  AXPropertyNodeTest(const AXPropertyNodeTest&) = delete;
+  AXPropertyNodeTest& operator=(const AXPropertyNodeTest&) = delete;
+
+  ~AXPropertyNodeTest() override = default;
 };
 
 AXPropertyNode Parse(const char* input) {
@@ -29,35 +30,20 @@ AXPropertyNode Parse(const char* input) {
 
 AXPropertyNode GetArgumentNode(const char* input) {
   auto got = Parse(input);
-  if (got.parameters.size() == 0) {
+  if (got.arguments.size() == 0) {
     return AXPropertyNode();
   }
-  return std::move(got.parameters[0]);
+  return std::move(got.arguments[0]);
 }
 
 void ParseAndCheck(const char* input, const char* expected) {
-  auto got = Parse(input).ToString();
+  auto got = Parse(input).ToFlatString();
   EXPECT_EQ(got, expected);
 }
 
-struct ProperyNodeCheck {
-  std::string target;
-  std::string name_or_value;
-  std::vector<ProperyNodeCheck> parameters;
-};
-
-void Check(const AXPropertyNode& got, const ProperyNodeCheck& expected) {
-  EXPECT_EQ(got.target, expected.target);
-  EXPECT_EQ(got.name_or_value, expected.name_or_value);
-  EXPECT_EQ(got.parameters.size(), expected.parameters.size());
-  for (auto i = 0U;
-       i < std::min(expected.parameters.size(), got.parameters.size()); i++) {
-    Check(got.parameters[i], expected.parameters[i]);
-  }
-}
-
-void ParseAndCheck(const char* input, const ProperyNodeCheck& expected) {
-  Check(Parse(input), expected);
+void ParseAndCheckTree(const char* input, const char* expected) {
+  auto got = AXPropertyNode::From(input).ToTreeString();
+  EXPECT_EQ(got, expected);
 }
 
 TEST_F(AXPropertyNodeTest, ParseProperty) {
@@ -87,17 +73,6 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
   // Line indexes filter.
   ParseAndCheck(":3,:5;AXDOMClassList", ":3,:5;AXDOMClassList");
 
-  // Context object.
-  ParseAndCheck(":1.AXDOMClassList", ":1.AXDOMClassList");
-  ParseAndCheck(":1.AXDOMClassList", {":1", "AXDOMClassList"});
-
-  ParseAndCheck(":1.AXIndexForTextMarker(:1.AXTextMarkerForIndex(0))",
-                ":1.AXIndexForTextMarker(:1.AXTextMarkerForIndex(0))");
-  ParseAndCheck(":1.AXIndexForTextMarker(:1.AXTextMarkerForIndex(0))",
-                {":1",
-                 "AXIndexForTextMarker",
-                 {{":1", "AXTextMarkerForIndex", {{"", "0"}}}}});
-
   // Wrong format.
   ParseAndCheck("Role(3", "Role(3)");
   ParseAndCheck("TableFor(CellBy(id", "TableFor(CellBy(id))");
@@ -109,6 +84,9 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
   EXPECT_EQ(GetArgumentNode("ChildAt(3)").IsDict(), false);
   EXPECT_EQ(GetArgumentNode("ChildAt(3)").IsArray(), false);
   EXPECT_EQ(GetArgumentNode("ChildAt(3)").AsInt(), 3);
+  EXPECT_EQ(GetArgumentNode("AXPerformAction(AXPress)").AsString(), "AXPress");
+  EXPECT_EQ(GetArgumentNode("AXPerformAction('AXPress')").AsString(),
+            "AXPress");
 
   // Dict: FindStringKey
   EXPECT_EQ(
@@ -119,18 +97,18 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
       "forward");
   EXPECT_EQ(GetArgumentNode("Text({start: :1, dir: forward})")
                 .FindStringKey("notexists"),
-            base::nullopt);
+            absl::nullopt);
 
   // Dict: FindIntKey
   EXPECT_EQ(GetArgumentNode("Text({loc: 3, len: 2})").FindIntKey("loc"), 3);
   EXPECT_EQ(GetArgumentNode("Text({loc: 3, len: 2})").FindIntKey("len"), 2);
   EXPECT_EQ(GetArgumentNode("Text({loc: 3, len: 2})").FindIntKey("notexists"),
-            base::nullopt);
+            absl::nullopt);
 
   // Dict: FindKey
   EXPECT_EQ(GetArgumentNode("Text({anchor: {:1, 0, up}})")
                 .FindKey("anchor")
-                ->ToString(),
+                ->ToFlatString(),
             "anchor: {}(:1, 0, up)");
 
   EXPECT_EQ(GetArgumentNode("Text({anchor: {:1, 0, up}})").FindKey("focus"),
@@ -139,8 +117,178 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
   EXPECT_EQ(GetArgumentNode("AXStringForTextMarkerRange({anchor: {:2, 1, "
                             "down}, focus: {:2, 2, down}})")
                 .FindKey("anchor")
-                ->ToString(),
+                ->ToFlatString(),
             "anchor: {}(:2, 1, down)");
+}
+
+TEST_F(AXPropertyNodeTest, CallChains) {
+  ParseAndCheckTree("textbox.name", R"~~(textbox.
+name)~~");
+
+  ParseAndCheckTree("textbox.parent.name",
+                    R"~~(textbox.
+parent.
+name)~~");
+
+  ParseAndCheckTree("table.rowAt(row.childIndex)",
+                    R"~~(table.
+rowAt(
+  row.
+  childIndex
+))~~");
+
+  ParseAndCheckTree(":1.AXDOMClassList", R"~~(:1.
+AXDOMClassList)~~");
+
+  ParseAndCheckTree(":1.AXIndexForTextMarker(:1.AXTextMarkerForIndex(0))",
+                    R"~~(:1.
+AXIndexForTextMarker(
+  :1.
+  AXTextMarkerForIndex(
+    0
+  )
+))~~");
+
+  ParseAndCheckTree("table.cellAt(cell.rowIndex, cell.columnIndex)",
+                    R"~~(table.
+cellAt(
+  cell.
+  rowIndex,
+  cell.
+  columnIndex
+))~~");
+
+  ParseAndCheckTree(
+      "table.cellAt(table.rowIndexFor(cell), table.columnIndexFor(cell))",
+      R"~~(table.
+cellAt(
+  table.
+  rowIndexFor(
+    cell
+  ),
+  table.
+  columnIndexFor(
+    cell
+  )
+))~~");
+}
+
+TEST_F(AXPropertyNodeTest, CallChains_Array) {
+  ParseAndCheckTree("children[3]", R"~~(children.
+[](
+  3
+))~~");
+
+  ParseAndCheckTree("textbox.AXChildren[0]", R"~~(textbox.
+AXChildren.
+[](
+  0
+))~~");
+
+  ParseAndCheckTree("textbox.AXChildrenFor(textbox_child)[0]", R"~~(textbox.
+AXChildrenFor(
+  textbox_child
+).
+[](
+  0
+))~~");
+
+  ParseAndCheckTree("get(AXChildren[0])", R"~~(get(
+  AXChildren.
+  [](
+    0
+  )
+))~~");
+
+  ParseAndCheckTree("textbox.AXChildren[0].AXRole", R"~~(textbox.
+AXChildren.
+[](
+  0
+).
+AXRole)~~");
+
+  ParseAndCheckTree(
+      "textarea.AXTextMarkerRangeForUIElement(textarea.AXChildren[0])",
+      R"~~(textarea.
+AXTextMarkerRangeForUIElement(
+  textarea.
+  AXChildren.
+  [](
+    0
+  )
+))~~");
+}
+
+TEST_F(AXPropertyNodeTest, Variables) {
+  // Statement
+  ParseAndCheckTree(
+      "textmarker_range:= textarea.AXTextMarkerRangeForUIElement(textarea)",
+      R"~~(textmarker_range:textarea.
+AXTextMarkerRangeForUIElement(
+  textarea
+))~~");
+
+  // Integer array
+  ParseAndCheckTree("var:= [3, 4]",
+                    R"~~(var:[](
+  3,
+  4
+))~~");
+
+  // Range dictionary
+  ParseAndCheckTree("var:= {loc: 3, len: 2}",
+                    R"~~(var:{}(
+  loc:3,
+  len:2
+))~~");
+
+  // TextMarker dictionary
+  ParseAndCheckTree("var:= {:2, 2, down}",
+                    R"~~(var:{}(
+  :2,
+  2,
+  down
+))~~");
+
+  // TextMarker array
+  ParseAndCheckTree("var:= [{:2, 2, down}, {:1, 1, up}]",
+                    R"~~(var:[](
+  {}(
+    :2,
+    2,
+    down
+  ),
+  {}(
+    :1,
+    1,
+    up
+  )
+))~~");
+
+  // TextMarkerRange dictionary
+  ParseAndCheckTree("var:= {anchor: {:2, 1, down}, focus: {:2, 2, down} }",
+                    R"~~(var:{}(
+  anchor:{}(
+    :2,
+    1,
+    down
+  ),
+  focus:{}(
+    :2,
+    2,
+    down
+  )
+))~~");
+}
+
+TEST_F(AXPropertyNodeTest, RValue) {
+  ParseAndCheckTree("textarea.AXSelectedTextMarkerRange = {loc: 3, len: 2}",
+                    R"~~(textarea.
+AXSelectedTextMarkerRange=
+{}(
+  loc:3,
+  len:2
+))~~");
 }
 
 }  // namespace ui

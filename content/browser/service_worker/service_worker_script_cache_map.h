@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/common/content_export.h"
@@ -31,6 +32,10 @@ class ServiceWorkerVersion;
 // for a particular version's implicit script resources.
 class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
  public:
+  ServiceWorkerScriptCacheMap(const ServiceWorkerScriptCacheMap&) = delete;
+  ServiceWorkerScriptCacheMap& operator=(const ServiceWorkerScriptCacheMap&) =
+      delete;
+
   int64_t LookupResourceId(const GURL& url);
 
   // Used during the initial run of a new version to build the map
@@ -90,7 +95,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
 
   void RunCallback(uint64_t callback_id, int result);
 
-  ServiceWorkerVersion* owner_;
+  raw_ptr<ServiceWorkerVersion> owner_;
   base::WeakPtr<ServiceWorkerContextCore> context_;
   ResourceMap resource_map_;
   int main_script_net_error_ = net::OK;
@@ -100,8 +105,6 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
       callbacks_;
 
   base::WeakPtrFactory<ServiceWorkerScriptCacheMap> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerScriptCacheMap);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,7 +32,6 @@
 #include "extensions/common/extension.h"
 
 namespace extensions {
-class CastChannelAsyncApiFunction;
 
 namespace api {
 class BluetoothSocketApiFunction;
@@ -176,7 +175,6 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
   // TODO(rockot): ApiResourceData could be moved out of ApiResourceManager and
   // we could avoid maintaining a friends list here.
   friend class BluetoothAPI;
-  friend class CastChannelAsyncApiFunction;
   friend class api::BluetoothSocketApiFunction;
   friend class api::BluetoothSocketEventDispatcher;
   friend class api::SerialConnectFunction;
@@ -198,11 +196,11 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     typedef std::map<std::string, std::unordered_set<int>>
         ExtensionToResourceMap;
 
-    ApiResourceData() : next_id_(1) { sequence_checker_.DetachFromSequence(); }
+    ApiResourceData() : next_id_(1) { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
     // TODO(lazyboy): Pass unique_ptr<T> instead of T*.
     int Add(T* api_resource) {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       int id = GenerateId();
       if (id > 0) {
         api_resource_map_[id] = base::WrapUnique<T>(api_resource);
@@ -223,7 +221,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     }
 
     void Remove(const std::string& extension_id, int api_resource_id) {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       if (GetOwnedResource(extension_id, api_resource_id)) {
         ExtensionToResourceMap::iterator it =
             extension_resource_map_.find(extension_id);
@@ -233,7 +231,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     }
 
     T* Get(const std::string& extension_id, int api_resource_id) {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return GetOwnedResource(extension_id, api_resource_id);
     }
 
@@ -244,7 +242,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     bool Replace(const std::string& extension_id,
                  int api_resource_id,
                  T* api_resource) {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       T* old_resource = api_resource_map_[api_resource_id].get();
       if (old_resource && extension_id == old_resource->owner_extension_id()) {
         api_resource_map_[api_resource_id] = base::WrapUnique<T>(api_resource);
@@ -254,7 +252,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     }
 
     std::unordered_set<int>* GetResourceIds(const std::string& extension_id) {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return GetOwnedResourceIds(extension_id);
     }
 
@@ -294,7 +292,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
 
     std::unordered_set<int>* GetOwnedResourceIds(
         const std::string& extension_id) {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       ExtensionToResourceMap::iterator it =
           extension_resource_map_.find(extension_id);
       if (it == extension_resource_map_.end())
@@ -314,16 +312,16 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
 
     void CleanupResourcesFromExtension(const std::string& extension_id,
                                        bool remove_all) {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-      ExtensionToResourceMap::iterator it =
+      ExtensionToResourceMap::iterator extension_it =
           extension_resource_map_.find(extension_id);
-      if (it == extension_resource_map_.end())
+      if (extension_it == extension_resource_map_.end())
         return;
 
       // Remove all resources, or the non persistent ones only if |remove_all|
       // is false.
-      std::unordered_set<int>& resource_ids = it->second;
+      std::unordered_set<int>& resource_ids = extension_it->second;
       for (std::unordered_set<int>::iterator it = resource_ids.begin();
            it != resource_ids.end();) {
         bool erase = false;
@@ -350,7 +348,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     }
 
     void Cleanup() {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
       // Subtle: Move |api_resource_map_| to a temporary and clear that.
       // |api_resource_map_| will become empty and any destructors called
@@ -370,7 +368,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     int next_id_;
     ApiResourceMap api_resource_map_;
     ExtensionToResourceMap extension_resource_map_;
-    base::SequenceChecker sequence_checker_;
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   content::NotificationRegistrar registrar_;

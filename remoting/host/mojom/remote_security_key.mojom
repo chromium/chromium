@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+import "mojo/public/mojom/base/byte_string.mojom";
+
+// Interface to allow the remote security key binary (used for SK forwarding) to
+// send SK requests to the chromoting host via IPC. The host sends these to the
+// CRD client website over the network then returns the client response over IPC
+// once it has been received.
+// Version skew is not a concern as the IPC server (remoting host) and IPC
+// client (a standalone binary) are updated in the same package.
+// The standalone binary runs in the user context and the host process runs as
+// LOCAL_SERVICE in a low-integrity sandbox.
+interface SecurityKeyForwarder {
+  // Forwards a security key request to the client website (via the host
+  // process) and returns a response.  |request_data| and |response_data| are
+  // opaque to the Chromoting host and client. A request originates from an
+  // external binary on the host (like ssh-agent or a native message host) and
+  // is passed on to a similar handler on the client which processes the request
+  // and sends back a response which is then returned to the process which made
+  // the request.
+  OnSecurityKeyRequest(mojo_base.mojom.ByteString request_data) =>
+      (mojo_base.mojom.ByteString response_data);
+};

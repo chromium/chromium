@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_COMMANDER_COMMANDER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_COMMANDER_COMMANDER_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class CommanderHandler;
@@ -22,7 +23,7 @@ class CommanderUI : public content::WebUIController {
   CommanderHandler* handler() { return handler_; }
 
  private:
-  CommanderHandler* handler_;
+  raw_ptr<CommanderHandler> handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_COMMANDER_COMMANDER_UI_H_

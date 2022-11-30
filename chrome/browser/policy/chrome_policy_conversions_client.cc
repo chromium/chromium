@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
+#include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -35,14 +36,14 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/policy/active_directory_policy_manager.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -55,29 +56,28 @@ namespace policy {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-Value GetIdentityFieldsFromPolicy(
+Value::Dict GetIdentityFieldsFromPolicy(
     const enterprise_management::PolicyData* policy) {
-  Value identity_fields(Value::Type::DICTIONARY);
+  Value::Dict identity_fields;
   if (!policy) {
     return identity_fields;
   }
 
   if (policy->has_device_id())
-    identity_fields.SetKey("client_id", Value(policy->device_id()));
+    identity_fields.Set("client_id", policy->device_id());
 
   if (policy->has_annotated_location()) {
-    identity_fields.SetKey("device_location",
-                           Value(policy->annotated_location()));
+    identity_fields.Set("device_location", policy->annotated_location());
   }
 
   if (policy->has_annotated_asset_id())
-    identity_fields.SetKey("asset_id", Value(policy->annotated_asset_id()));
+    identity_fields.Set("asset_id", policy->annotated_asset_id());
 
   if (policy->has_display_domain())
-    identity_fields.SetKey("display_domain", Value(policy->display_domain()));
+    identity_fields.Set("display_domain", policy->display_domain());
 
   if (policy->has_machine_name())
-    identity_fields.SetKey("machine_name", Value(policy->machine_name()));
+    identity_fields.Set("machine_name", policy->machine_name());
 
   return identity_fields;
 }
@@ -116,18 +116,17 @@ bool ChromePolicyConversionsClient::HasUserPolicies() const {
   return profile_ != nullptr;
 }
 
-Value ChromePolicyConversionsClient::GetExtensionPolicies(
+Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
     PolicyDomain policy_domain) {
-  Value policies(Value::Type::LIST);
+  Value::List policies;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
   const bool for_signin_screen =
       policy_domain == POLICY_DOMAIN_SIGNIN_EXTENSIONS;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* extension_profile = for_signin_screen
-                                   ? chromeos::ProfileHelper::GetSigninProfile()
-                                   : profile_;
+  Profile* extension_profile =
+      for_signin_screen ? ash::ProfileHelper::GetSigninProfile() : profile_;
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* extension_profile = profile_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -151,7 +150,7 @@ Value ChromePolicyConversionsClient::GetExtensionPolicies(
   for (const scoped_refptr<const extensions::Extension>& extension :
        *extension_set) {
     // Skip this extension if it's not an enterprise extension.
-    if (!extension->manifest()->HasPath(
+    if (!extension->manifest()->FindPath(
             extensions::manifest_keys::kStorageManagedSchema)) {
       continue;
     }
@@ -159,17 +158,18 @@ Value ChromePolicyConversionsClient::GetExtensionPolicies(
     PolicyNamespace policy_namespace =
         PolicyNamespace(policy_domain, extension->id());
     PolicyErrorMap empty_error_map;
-    Value extension_policies =
+    Value::Dict extension_policies =
         GetPolicyValues(extension_profile->GetProfilePolicyConnector()
                             ->policy_service()
                             ->GetPolicies(policy_namespace),
                         &empty_error_map, PoliciesSet(), PoliciesSet(),
                         GetKnownPolicies(schema_map, policy_namespace));
-    Value extension_policies_data(Value::Type::DICTIONARY);
-    extension_policies_data.SetKey("name", Value(extension->name()));
-    extension_policies_data.SetKey("id", Value(extension->id()));
-    extension_policies_data.SetKey("forSigninScreen", Value(for_signin_screen));
-    extension_policies_data.SetKey("policies", std::move(extension_policies));
+    Value::Dict extension_policies_data;
+    extension_policies_data.Set(policy::kNameKey, extension->name());
+    extension_policies_data.Set(policy::kIdKey, extension->id());
+    extension_policies_data.Set("forSigninScreen", for_signin_screen);
+    extension_policies_data.Set(policy::kPoliciesKey,
+                                std::move(extension_policies));
     policies.Append(std::move(extension_policies_data));
   }
 #endif
@@ -177,8 +177,8 @@ Value ChromePolicyConversionsClient::GetExtensionPolicies(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
-  Value policies(Value::Type::LIST);
+Value::List ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
+  Value::List policies;
   // DeviceLocalAccount policies are only available for affiliated users and for
   // system logs.
   if (!GetDeviceLocalAccountPoliciesEnabled() &&
@@ -192,8 +192,8 @@ Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
   bool current_user_policies_enabled = GetUserPoliciesEnabled();
   EnableUserPolicies(true);
 
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DCHECK(connector);  // always not-null.
 
   auto* device_local_account_policy_service =
@@ -227,8 +227,7 @@ Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
 
     // Make a copy that can be modified, since some policy values are modified
     // before being displayed.
-    PolicyMap map;
-    map.CopyFrom(cloud_policy_store->policy_map());
+    PolicyMap map = cloud_policy_store->policy_map().Clone();
 
     // Get a list of all the errors in the policy values.
     const ConfigurationPolicyHandlerList* handler_list =
@@ -242,15 +241,15 @@ Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
     // Convert dictionary values to strings for display.
     handler_list->PrepareForDisplaying(&map);
 
-    Value current_account_policies =
+    Value::Dict current_account_policies =
         GetPolicyValues(map, &errors, deprecated_policies, future_policies,
                         GetKnownPolicies(schema_map, policy_namespace));
-    Value current_account_policies_data(Value::Type::DICTIONARY);
-    current_account_policies_data.SetKey("id", Value(user_id));
-    current_account_policies_data.SetKey("user_id", Value(user_id));
-    current_account_policies_data.SetKey("name", Value(user_id));
-    current_account_policies_data.SetKey("policies",
-                                         std::move(current_account_policies));
+    Value::Dict current_account_policies_data;
+    current_account_policies_data.Set(policy::kIdKey, user_id);
+    current_account_policies_data.Set("user_id", user_id);
+    current_account_policies_data.Set(policy::kNameKey, user_id);
+    current_account_policies_data.Set(policy::kPoliciesKey,
+                                      std::move(current_account_policies));
     policies.Append(std::move(current_account_policies_data));
   }
 
@@ -260,32 +259,32 @@ Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
   return policies;
 }
 
-Value ChromePolicyConversionsClient::GetIdentityFields() {
-  Value identity_fields(Value::Type::DICTIONARY);
+Value::Dict ChromePolicyConversionsClient::GetIdentityFields() {
+  Value::Dict identity_fields;
   if (!GetDeviceInfoEnabled())
-    return Value();
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    return Value::Dict();
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector) {
     LOG(ERROR) << "Cannot dump identity fields, no policy connector";
-    return Value();
+    return Value::Dict();
   }
-  if (connector->IsEnterpriseManaged()) {
-    identity_fields.SetKey("enrollment_domain",
-                           Value(connector->GetEnterpriseEnrollmentDomain()));
+  if (connector->IsDeviceEnterpriseManaged()) {
+    identity_fields.Set("enrollment_domain",
+                        connector->GetEnterpriseEnrollmentDomain());
 
     if (connector->IsActiveDirectoryManaged()) {
-      Value active_directory_info = GetIdentityFieldsFromPolicy(
+      Value::Dict active_directory_info = GetIdentityFieldsFromPolicy(
           connector->GetDeviceActiveDirectoryPolicyManager()
               ->store()
               ->policy());
-      identity_fields.MergeDictionary(&active_directory_info);
+      identity_fields.Merge(std::move(active_directory_info));
     }
 
     if (connector->IsCloudManaged()) {
-      Value cloud_info = GetIdentityFieldsFromPolicy(
+      Value::Dict cloud_info = GetIdentityFieldsFromPolicy(
           connector->GetDeviceCloudPolicyManager()->device_store()->policy());
-      identity_fields.MergeDictionary(&cloud_info);
+      identity_fields.Merge(std::move(cloud_info));
     }
   }
   return identity_fields;

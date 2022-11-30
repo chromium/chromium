@@ -1,19 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_THROTTLING_THROTTLING_NETWORK_CONTROLLER_H_
-#define SERVICES_NETWORK_THROTTLING_THROTTLING_NETWORK_CONTROLLER_H_
+#ifndef SERVICES_NETWORK_THROTTLING_THROTTLING_CONTROLLER_H_
+#define SERVICES_NETWORK_THROTTLING_THROTTLING_CONTROLLER_H_
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -25,6 +24,9 @@ class ThrottlingNetworkInterceptor;
 // profile ID and their throttling conditions.
 class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
  public:
+  ThrottlingController(const ThrottlingController&) = delete;
+  ThrottlingController& operator=(const ThrottlingController&) = delete;
+
   // Applies network emulation configuration.
   static void SetConditions(const base::UnguessableToken& throttling_profile_id,
                             std::unique_ptr<NetworkConditions>);
@@ -35,9 +37,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
 
  private:
   friend class ScopedThrottlingToken;
+  friend class base::NoDestructor<ThrottlingController>;
 
   ThrottlingController();
   ~ThrottlingController();
+
+  static ThrottlingController& instance();
 
   // Registers the profile ID for the NetLog source. This is called from
   // ScopedThrottlingToken.
@@ -48,24 +53,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
   // Unregister the NetLog source. This is called from ScopedThrottlingToken.
   static void UnregisterNetLogSource(uint32_t net_log_source_id);
 
-  // Returns whether there is an interceptor for the profile ID. This is called
-  // from ScopedThrottlingToken.
-  static bool HasInterceptor(
-      const base::UnguessableToken& throttling_profile_id);
-
   void Register(uint32_t net_log_source_id,
                 const base::UnguessableToken& throttling_profile_id);
   void Unregister(uint32_t net_log_source_id);
 
-  base::Optional<base::UnguessableToken> GetProfileID(
+  absl::optional<base::UnguessableToken> GetProfileID(
       uint32_t net_log_source_id);
 
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,
                             std::unique_ptr<NetworkConditions> conditions);
 
   ThrottlingNetworkInterceptor* FindInterceptor(uint32_t net_log_source_id);
-
-  static ThrottlingController* instance_;
 
   using InterceptorMap =
       std::map<base::UnguessableToken,
@@ -77,10 +75,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
   InterceptorMap interceptors_;
   NetLogSourceProfileMap net_log_source_profile_map_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingController);
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_THROTTLING_THROTTLING_NETWORK_CONTROLLER_H_
+#endif  // SERVICES_NETWORK_THROTTLING_THROTTLING_CONTROLLER_H_

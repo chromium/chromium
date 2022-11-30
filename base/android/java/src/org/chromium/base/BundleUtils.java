@@ -1,17 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.view.LayoutInflater;
 
 import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import androidx.collection.SimpleArrayMap;
 
 import dalvik.system.BaseDexClassLoader;
@@ -23,7 +27,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Utils for working with android app bundles.
@@ -42,7 +49,9 @@ import java.util.Arrays;
  * we can dynamically set whether or not we're in a bundle for targets that use static shared
  * library APKs.
  */
-public final class BundleUtils {
+public class BundleUtils {
+    private static final String TAG = "BundleUtils";
+    private static final String LOADED_SPLITS_KEY = "split_compat_loaded_splits";
     private static Boolean sIsBundle;
     private static final Object sSplitLock = new Object();
 
@@ -50,6 +59,14 @@ public final class BundleUtils {
     // createIsolatedSplitContext() for more info.
     private static final SimpleArrayMap<String, ClassLoader> sCachedClassLoaders =
             new SimpleArrayMap<>();
+
+    private static final Map<String, ClassLoader> sInflationClassLoaders =
+            Collections.synchronizedMap(new ArrayMap<>());
+    private static SplitCompatClassLoader sSplitCompatClassLoaderInstance;
+
+    // List of splits that were loaded during the last run of chrome when
+    // restoring from recents.
+    private static ArrayList<String> sSplitsToRestore;
 
     /**
      * {@link BundleUtils#isBundle()}  is not called directly by native because
@@ -206,8 +223,13 @@ public final class BundleUtils {
 
             // SplitCompat is installed on the application context, so check there for library paths
             // which were added to that ClassLoader.
-            path = ((BaseDexClassLoader) ContextUtils.getApplicationContext().getClassLoader())
-                           .findLibrary(libraryName);
+            ClassLoader classLoader = ContextUtils.getApplicationContext().getClassLoader();
+            // In WebLayer, the class loader will be a WrappedClassLoader.
+            if (classLoader instanceof BaseDexClassLoader) {
+                path = ((BaseDexClassLoader) classLoader).findLibrary(libraryName);
+            } else if (classLoader instanceof WrappedClassLoader) {
+                path = ((WrappedClassLoader) classLoader).findLibrary(libraryName);
+            }
             if (path != null) {
                 return path;
             }
@@ -221,6 +243,157 @@ public final class BundleUtils {
     @Nullable
     public static String getNativeLibraryPath(String libraryName) {
         return getNativeLibraryPath(libraryName, "");
+    }
+
+    public static void checkContextClassLoader(Context baseContext, Activity activity) {
+        ClassLoader activityClassLoader = activity.getClass().getClassLoader();
+        ClassLoader contextClassLoader = baseContext.getClassLoader();
+        if (activityClassLoader != contextClassLoader) {
+            Log.w(TAG, "Mismatched ClassLoaders between Activity and context (fixing): %s",
+                    activity.getClass());
+            replaceClassLoader(baseContext, activityClassLoader);
+        }
+    }
+
+    /**
+     * Constructs a new instance of the given class name. If the application context class loader
+     * can load the class, that class loader will be used, otherwise the class loader from the
+     * passed in context will be used.
+     */
+    public static Object newInstance(Context context, String className) {
+        Context appContext = ContextUtils.getApplicationContext();
+        if (appContext != null && canLoadClass(appContext.getClassLoader(), className)) {
+            context = appContext;
+        }
+        try {
+            return context.getClassLoader().loadClass(className).newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Creates a context which can access classes from the specified split, but inherits theme
+     * resources from the passed in context. This is useful if a context is needed to inflate
+     * layouts which reference classes from a split.
+     */
+    public static Context createContextForInflation(Context context, String splitName) {
+        if (!BundleUtils.isIsolatedSplitInstalled(context, splitName)) {
+            return context;
+        }
+        ClassLoader splitClassLoader = registerSplitClassLoaderForInflation(splitName);
+        return new ContextWrapper(context) {
+            @Override
+            public ClassLoader getClassLoader() {
+                return splitClassLoader;
+            }
+
+            @Override
+            public Object getSystemService(String name) {
+                Object ret = super.getSystemService(name);
+                if (Context.LAYOUT_INFLATER_SERVICE.equals(name)) {
+                    ret = ((LayoutInflater) ret).cloneInContext(this);
+                }
+                return ret;
+            }
+        };
+    }
+
+    public static ClassLoader registerSplitClassLoaderForInflation(String splitName) {
+        ClassLoader splitClassLoader = sInflationClassLoaders.get(splitName);
+        if (splitClassLoader == null) {
+            splitClassLoader = BundleUtils
+                                       .createIsolatedSplitContext(
+                                               ContextUtils.getApplicationContext(), splitName)
+                                       .getClassLoader();
+            sInflationClassLoaders.put(splitName, splitClassLoader);
+        }
+        return splitClassLoader;
+    }
+
+    public static boolean canLoadClass(ClassLoader classLoader, String className) {
+        try {
+            Class.forName(className, false, classLoader);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    public static ClassLoader getSplitCompatClassLoader() {
+        // SplitCompatClassLoader needs to be lazy loaded to ensure the Chrome
+        // context is loaded and its class loader is set as the parent
+        // classloader for the SplitCompatClassLoader. This happens in
+        // Application#attachBaseContext.
+        if (sSplitCompatClassLoaderInstance == null) {
+            sSplitCompatClassLoaderInstance = new SplitCompatClassLoader();
+        }
+        return sSplitCompatClassLoaderInstance;
+    }
+
+    public static void saveLoadedSplits(Bundle outState) {
+        outState.putStringArrayList(
+                LOADED_SPLITS_KEY, new ArrayList(sInflationClassLoaders.keySet()));
+    }
+
+    public static void restoreLoadedSplits(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return;
+        }
+        sSplitsToRestore = savedInstanceState.getStringArrayList(LOADED_SPLITS_KEY);
+    }
+
+    private static class SplitCompatClassLoader extends ClassLoader {
+        public SplitCompatClassLoader() {
+            // The chrome split classloader if the chrome split exists, otherwise
+            // the base module class loader.
+            super(ContextUtils.getApplicationContext().getClassLoader());
+        }
+
+        private Class<?> checkSplitsClassLoaders(String className) throws ClassNotFoundException {
+            for (ClassLoader cl : sInflationClassLoaders.values()) {
+                try {
+                    return cl.loadClass(className);
+                } catch (ClassNotFoundException ignore) {
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Loads the class with the specified binary name.
+         */
+        @Override
+        public Class<?> findClass(String cn) throws ClassNotFoundException {
+            Class<?> foundClass = checkSplitsClassLoaders(cn);
+            if (foundClass != null) {
+                return foundClass;
+            }
+            // We will never have android.* classes in isolated split class loaders,
+            // but android framework inflater does sometimes try loading classes
+            // that do not exist when inflating xml files on startup.
+            if (sSplitsToRestore != null && !cn.startsWith("android.")) {
+                // If we fail from all the currently loaded classLoaders, lets
+                // try loading some splits that were loaded when chrome was last
+                // run and check again.
+                restoreSplitsClassLoaders();
+                foundClass = checkSplitsClassLoaders(cn);
+                if (foundClass != null) {
+                    return foundClass;
+                }
+            }
+            throw new ClassNotFoundException(cn);
+        }
+
+        private void restoreSplitsClassLoaders() {
+            // Load splits that were stored in the SavedInstanceState Bundle.
+            for (String splitName : sSplitsToRestore) {
+                if (!sInflationClassLoaders.containsKey(splitName)) {
+                    registerSplitClassLoaderForInflation(splitName);
+                }
+            }
+            sSplitsToRestore = null;
+        }
     }
 
     @Nullable

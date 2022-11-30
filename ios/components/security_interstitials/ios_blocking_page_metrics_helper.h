@@ -1,13 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_IOS_BLOCKING_PAGE_METRICS_HELPER_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_IOS_BLOCKING_PAGE_METRICS_HELPER_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "url/gurl.h"
 
@@ -28,6 +25,11 @@ class IOSBlockingPageMetricsHelper
       const GURL& request_url,
       const security_interstitials::MetricsHelper::ReportDetails
           report_details);
+
+  IOSBlockingPageMetricsHelper(const IOSBlockingPageMetricsHelper&) = delete;
+  IOSBlockingPageMetricsHelper& operator=(const IOSBlockingPageMetricsHelper&) =
+      delete;
+
   ~IOSBlockingPageMetricsHelper() override;
 
  protected:
@@ -37,9 +39,6 @@ class IOSBlockingPageMetricsHelper
   void RecordExtraUserInteractionMetrics(
       security_interstitials::MetricsHelper::Interaction interaction) override;
   void RecordExtraShutdownMetrics() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IOSBlockingPageMetricsHelper);
 };
 
 }  // namespace security_interstitials

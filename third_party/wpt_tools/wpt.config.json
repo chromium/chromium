@@ -6,10 +6,15 @@
   "log_level": "info",
   "ports": {
     "http": [8001, 8081],
+    "http-private": [8082],
+    "http-public": [8093],
     "https": [8444, 8445],
+    "https-private": [8446],
+    "https-public": [8447],
     "h2": [9000],
     "ws": [9001],
-    "wss": [9444]
+    "wss": [9444],
+    "webtransport-h3": [11000]
   },
   "ssl": {
     "type": "pregenerated",

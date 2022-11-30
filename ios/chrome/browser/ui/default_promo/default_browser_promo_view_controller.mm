@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_view_controller.h"
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/grit/ios_google_chrome_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,24 +24,22 @@
   self.customSpacingAfterImage = 30;
 
   self.helpButtonAvailable = YES;
+  self.helpButtonAccessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
 
-  self.primaryActionAvailable = YES;
-  self.secondaryActionAvailable = YES;
   self.showDismissBarButton = NO;
   self.titleString = GetDefaultBrowserPromoTitle();
   self.subtitleString =
       IsInModifiedStringsGroup()
           ? l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE)
           : l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_DESCRIPTION);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_MAIN_BUTTON_TEXT);
+  self.primaryActionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
   if (IsInRemindMeLaterGroup() &&
       !ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
     // Show the Remind Me Later button if the user is in the correct experiment
     // group and this isn't the second impression.
     self.secondaryActionString = l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_REMIND_ME_LATER_BUTTON_TEXT);
-    self.tertiaryActionAvailable = YES;
     self.tertiaryActionString =
         l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
   } else {
@@ -50,9 +47,6 @@
         l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
   }
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
-  if (@available(iOS 13.4, *)) {
-    self.pointerInteractionEnabled = YES;
-  }
   [super loadView];
 }
 

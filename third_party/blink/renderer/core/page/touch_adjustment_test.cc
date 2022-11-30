@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -20,12 +20,12 @@ class FakeChromeClient : public RenderingTestChromeClient {
     screen_info_.device_scale_factor = device_scale_factor;
   }
 
-  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     return screen_info_;
   }
 
  private:
-  ScreenInfo screen_info_;
+  display::ScreenInfo screen_info_;
 };
 
 }  // namespace
@@ -96,13 +96,6 @@ TEST_F(TouchAdjustmentTest, AdjustmentRangeUpperboundScale) {
   SetZoomAndScale(0.5 /* dsf */, 1 /* browser_zoom */, 1 /* page_scale */);
   result = GetHitTestRectForAdjustment(GetFrame(), touch_area);
   EXPECT_EQ(result, max_touch_area_dip_unscaled * 0.5f);
-
-  // When DeviceScaleFactorDeprecated() is not 1, zoom-for-dsf is disabled,
-  // touch_area should be in dip.
-  SetZoomAndScale(2 /* dsf */, 1 /* browser_zoom */, 1 /* page_scale */);
-  GetPage().SetDeviceScaleFactorDeprecated(0.5);
-  result = GetHitTestRectForAdjustment(GetFrame(), touch_area);
-  EXPECT_EQ(result, max_touch_area_dip_unscaled);
 }
 
 TEST_F(TouchAdjustmentTest, AdjustmentRangeLowerboundScale) {

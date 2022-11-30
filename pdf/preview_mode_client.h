@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "pdf/pdf_engine.h"
 
 namespace chrome_pdf {
@@ -40,7 +41,8 @@ class PreviewModeClient : public PDFEngine::Client {
   void UpdateCursor(ui::mojom::CursorType cursor_type) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
-  void NotifySelectedFindResultChanged(int current_find_index) override;
+  void NotifySelectedFindResultChanged(int current_find_index,
+                                       bool final_result) override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
   void Alert(const std::string& message) override;
@@ -63,21 +65,16 @@ class PreviewModeClient : public PDFEngine::Client {
                                                bool case_sensitive) override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
-  pp::Instance* GetPluginInstance() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
-  void FormTextFieldFocusChange(bool in_focus) override;
-  bool IsPrintPreview() override;
-  SkColor GetBackgroundColor() override;
+  void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
+  bool IsPrintPreview() const override;
+  SkColor GetBackgroundColor() const override;
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
-  void ScheduleTaskOnMainThread(const base::Location& from_here,
-                                ResultCallback callback,
-                                int32_t result,
-                                base::TimeDelta delay) override;
 
  private:
-  Client* const client_;
+  const raw_ptr<Client> client_;
 };
 
 }  // namespace chrome_pdf

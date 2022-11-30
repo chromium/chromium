@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_oes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -55,7 +55,20 @@ WebGLVertexArrayObjectOES* OESVertexArrayObject::createVertexArrayOES() {
 void OESVertexArrayObject::deleteVertexArrayOES(
     WebGLVertexArrayObjectOES* array_object) {
   WebGLExtensionScopedContext scoped(this);
-  if (!array_object || scoped.IsLost())
+  if (scoped.IsLost() || !array_object)
+    return;
+
+  // ValidateWebGLObject generates an error if the object has already been
+  // deleted, so we must replicate most of its checks here.
+  if (!array_object->Validate(scoped.Context()->ContextGroup(),
+                              scoped.Context())) {
+    scoped.Context()->SynthesizeGLError(
+        GL_INVALID_OPERATION, "deleteVertexArrayOES",
+        "object does not belong to this context");
+    return;
+  }
+
+  if (array_object->MarkedForDeletion())
     return;
 
   if (!array_object->IsDefaultObject() &&
@@ -68,7 +81,9 @@ void OESVertexArrayObject::deleteVertexArrayOES(
 GLboolean OESVertexArrayObject::isVertexArrayOES(
     WebGLVertexArrayObjectOES* array_object) {
   WebGLExtensionScopedContext scoped(this);
-  if (!array_object || scoped.IsLost())
+  if (scoped.IsLost() || !array_object ||
+      !array_object->Validate(scoped.Context()->ContextGroup(),
+                              scoped.Context()))
     return 0;
 
   if (!array_object->HasEverBeenBound())

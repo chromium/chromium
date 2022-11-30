@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,25 @@
 #include <map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/paint/paint_canvas.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/caption_style.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/native_theme/native_theme_export.h"
 #include "ui/native_theme/native_theme_observer.h"
+
+namespace cc {
+class PaintCanvas;
+}
 
 namespace gfx {
 class Rect;
@@ -55,13 +59,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kCheckbox,
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     kFrameTopArea,
 #endif
     kInnerSpinButton,
     kMenuList,
     kMenuPopupBackground,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     kMenuCheck,
     kMenuCheckBackground,
     kMenuPopupArrow,
@@ -109,6 +113,19 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kNumStates = kPressed + 1,
   };
 
+  // Enum used for kPageColors pref. Page Colors is a browser setting that can
+  // be used to simulate forced colors mode. This enum should match its React
+  // counterpart.
+  enum PageColors {
+    kOff = 0,
+    kDusk = 1,
+    kDesert = 2,
+    kBlack = 3,
+    kWhite = 4,
+    kHighContrast = 5,
+    kMaxValue = kHighContrast,
+  };
+
   // OS-level preferred color scheme. (Ex. high contrast or dark mode color
   // preference.)
   enum class PreferredColorScheme {
@@ -122,7 +139,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kNoPreference = 0,
     kMore = 1,
     kLess = 2,
-    kMaxValue = kLess,
+    kCustom = 3,
+    kMaxValue = kCustom,
   };
 
   // IMPORTANT!
@@ -244,9 +262,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int classic_state;  // Used on Windows when uxtheme is not available.
   };
 
-  enum ScrollbarOverlayColorTheme {
-    ScrollbarOverlayColorThemeDark,
-    ScrollbarOverlayColorThemeLight
+  enum class ScrollbarOverlayColorTheme {
+    kDefault = 0,
+    kLight = 1,
+    kDark = 2,
   };
 
   struct ScrollbarThumbExtraParams {
@@ -254,7 +273,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     ScrollbarOverlayColorTheme scrollbar_theme;
   };
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   enum ScrollbarOrientation {
     // Vertical scrollbar on the right side of content.
     kVerticalOnRight,
@@ -270,6 +289,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     bool is_overlay;
     ScrollbarOverlayColorTheme scrollbar_theme;
     ScrollbarOrientation orientation;  // Used on Mac for drawing gradients.
+    float scale_from_dip;
   };
 #endif
 
@@ -316,7 +336,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     MenuBackgroundExtraParams menu_background;
     ProgressBarExtraParams progress_bar;
     ScrollbarArrowExtraParams scrollbar_arrow;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     ScrollbarExtraParams scrollbar_extra;
 #endif
     ScrollbarTrackExtraParams scrollbar_track;
@@ -325,6 +345,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
     TextFieldExtraParams text_field;
     TrackbarExtraParams trackbar;
   };
+
+  NativeTheme(const NativeTheme&) = delete;
+  NativeTheme& operator=(const NativeTheme&) = delete;
 
   // Return the size of the part.
   virtual gfx::Size GetPartSize(Part part,
@@ -336,23 +359,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                        float height) const;
 
   // Paint the part to the canvas.
-  virtual void Paint(cc::PaintCanvas* canvas,
-                     Part part,
-                     State state,
-                     const gfx::Rect& rect,
-                     const ExtraParams& extra,
-                     ColorScheme color_scheme = ColorScheme::kDefault,
-                     const base::Optional<SkColor>& accent_color = 0) const = 0;
-
-  // Paint part during state transition, used for overlay scrollbar state
-  // transition animation.
-  virtual void PaintStateTransition(cc::PaintCanvas* canvas,
-                                    Part part,
-                                    State startState,
-                                    State endState,
-                                    double progress,
-                                    const gfx::Rect& rect,
-                                    ScrollbarOverlayColorTheme theme) const {}
+  virtual void Paint(
+      cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
+      Part part,
+      State state,
+      const gfx::Rect& rect,
+      const ExtraParams& extra,
+      ColorScheme color_scheme = ColorScheme::kDefault,
+      const absl::optional<SkColor>& accent_color = absl::nullopt) const = 0;
 
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which
@@ -367,15 +382,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // which defines the center tile. This is the tile that should be resized out
   // when the part is resized.
   virtual gfx::Rect GetNinePatchAperture(Part part) const = 0;
-
-  // Colors for GetSystemColor().
-  enum ColorId {
-#define OP(enum_name) enum_name
-    NATIVE_THEME_COLOR_IDS,
-#undef OP
-
-    kColorId_NumColors,
-  };
 
   enum class SystemThemeColor {
     kNotSupported,
@@ -392,15 +398,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kMaxValue = kWindowText,
   };
 
-  // Returns a color from the system theme.
-  SkColor GetSystemColor(
-      ColorId color_id,
-      ColorScheme color_scheme = ColorScheme::kDefault) const;
-
-  // Returns an un-tinted or unprocessed color from the system theme before
-  // processing.
-  SkColor GetUnprocessedSystemColor(ColorId color_id,
-                                    ColorScheme color_scheme) const;
+  // Returns the key corresponding to this native theme object.
+  // Use `use_custom_frame` == true when Chromium renders the titlebar.
+  // False when the window manager renders the titlebar (currently GTK only).
+  ColorProviderManager::Key GetColorProviderKey(
+      scoped_refptr<ColorProviderManager::ThemeInitializerSupplier>
+          custom_theme,
+      bool use_custom_frame = true) const;
 
   // Returns a shared instance of the native theme that should be used for web
   // rendering. Do not use it in a normal application context (i.e. browser).
@@ -424,16 +428,21 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void RemoveObserver(NativeThemeObserver* observer);
 
   // Notify observers of native theme changes.
-  virtual void NotifyObservers();
+  virtual void NotifyOnNativeThemeUpdated();
 
-  // Returns whether the user has an explicit contrast preference, i.e. whether
-  // we are in forced colors mode or PreferredContrast is set.
+  // Notify observers of caption style changes.
+  virtual void NotifyOnCaptionStyleUpdated();
+
+  // Notify observers of preferred contrast changes.
+  virtual void NotifyOnPreferredContrastUpdated();
+
+  // Returns whether the user has an explicit contrast preference.
   virtual bool UserHasContrastPreference() const;
 
   // Returns whether we are in forced colors mode, controlled by system
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.
-  virtual bool InForcedColorsMode() const;
+  bool InForcedColorsMode() const;
 
   // Returns the PlatformHighContrastColorScheme used by the OS. Returns a value
   // other than kNone only if the default system color scheme is
@@ -445,6 +454,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // colors, you probably shouldn't. Instead, use GetSystemColor().
   virtual bool ShouldUseDarkColors() const;
 
+  // Returns the user's current page colors.
+  virtual PageColors GetPageColors() const;
+
   // Returns the OS-level user preferred color scheme. See the comment for
   // CalculatePreferredColorScheme() for details on how preferred color scheme
   // is calculated.
@@ -454,13 +466,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
   virtual PreferredContrast GetPreferredContrast() const;
 
   // Returns the system's caption style.
-  virtual base::Optional<CaptionStyle> GetSystemCaptionStyle() const;
+  virtual absl::optional<CaptionStyle> GetSystemCaptionStyle() const;
 
   virtual ColorScheme GetDefaultSystemColorScheme() const;
 
   virtual const std::map<SystemThemeColor, SkColor>& GetSystemColors() const;
 
-  base::Optional<SkColor> GetSystemThemeColor(
+  absl::optional<SkColor> GetSystemThemeColor(
       SystemThemeColor theme_color) const;
 
   bool HasDifferentSystemColors(
@@ -470,13 +482,18 @@ class NATIVE_THEME_EXPORT NativeTheme {
     should_use_dark_colors_ = should_use_dark_colors;
   }
   void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
+  void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
     preferred_color_scheme_ = preferred_color_scheme;
   }
-  void set_preferred_contrast(PreferredContrast preferred_contrast) {
-    preferred_contrast_ = preferred_contrast;
-  }
+  void SetPreferredContrast(PreferredContrast preferred_contrast);
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
+  ui::SystemTheme system_theme() const { return system_theme_; }
+
+  // Set the user_color for ColorProviderManager::Key.
+  void set_user_color(absl::optional<SkColor> user_color) {
+    user_color_ = user_color;
+  }
 
   // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if
@@ -493,18 +510,23 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Assign the focus-ring-appropriate alpha value to the provided base_color.
   virtual SkColor FocusRingColorForBaseColor(SkColor base_color) const;
 
- protected:
-  explicit NativeTheme(bool should_only_use_dark_colors);
-  virtual ~NativeTheme();
+  float AdjustBorderWidthByZoom(float border_width, float zoom_level) const;
 
-  // Gets the color from the color provider if using a color provider is enable.
-  base::Optional<SkColor> GetColorProviderColor(ColorId color_id,
-                                                ColorScheme color_scheme) const;
+  float AdjustBorderRadiusByZoom(Part part,
+                                 float border_width,
+                                 float zoom_level) const;
 
   // Whether high contrast is forced via command-line flag.
-  bool IsForcedHighContrast() const;
+  static bool IsForcedHighContrast();
+
   // Whether dark mode is forced via command-line flag.
-  bool IsForcedDarkMode() const;
+  static bool IsForcedDarkMode();
+
+ protected:
+  explicit NativeTheme(
+      bool should_only_use_dark_colors,
+      ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
+  virtual ~NativeTheme();
 
   // Calculates and returns the current user preferred color scheme. The
   // base behavior is to set preferred color scheme to light or dark depending
@@ -526,14 +548,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // platform behaviors.
   virtual void ConfigureWebInstance() {}
 
-  // TODO(http://crbug.com/1057754): Remove this.
-  virtual bool AllowColorPipelineRedirection(ColorScheme color_scheme) const;
-
-  // Returns a color from the system theme, pre-Color Pipeline.
-  virtual SkColor GetSystemColorDeprecated(ColorId color_id,
-                                           ColorScheme color_scheme,
-                                           bool apply_processing) const;
-
   // Allows one native theme to observe changes in another. For example, the
   // web native theme for Windows observes the corresponding ui native theme in
   // order to receive changes regarding the state of dark mode, forced colors
@@ -542,6 +556,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
       : public NativeThemeObserver {
    public:
     ColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
+
+    ColorSchemeNativeThemeObserver(const ColorSchemeNativeThemeObserver&) =
+        delete;
+    ColorSchemeNativeThemeObserver& operator=(
+        const ColorSchemeNativeThemeObserver&) = delete;
+
     ~ColorSchemeNativeThemeObserver() override;
 
    private:
@@ -549,27 +569,26 @@ class NATIVE_THEME_EXPORT NativeTheme {
     void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
     // The theme that gets updated when OnNativeThemeUpdated() is called.
-    NativeTheme* const theme_to_update_;
-
-    DISALLOW_COPY_AND_ASSIGN(ColorSchemeNativeThemeObserver);
+    const raw_ptr<NativeTheme> theme_to_update_;
   };
 
   mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
-  SkColor GetSystemColorCommon(ColorId color_id,
-                               ColorScheme color_scheme,
-                               bool apply_processing) const;
-
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
 
+  // User's primary color. Included in the ColorProvider Key.
+  absl::optional<SkColor> user_color_;
+
   bool should_use_dark_colors_ = false;
+  const ui::SystemTheme system_theme_;
   bool forced_colors_ = false;
+  PageColors page_colors_ = PageColors::kOff;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeTheme);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace ui

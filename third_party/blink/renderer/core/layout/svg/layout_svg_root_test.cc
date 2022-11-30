@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,21 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace blink {
 
-class LayoutSVGRootTest : public RenderingTest {
+class LayoutSVGRootTest : public RenderingTest, public PaintTestConfigurations {
   void SetUp() override {
     EnableCompositing();
     RenderingTest::SetUp();
   }
 };
 
-TEST_F(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
+INSTANTIATE_PAINT_TEST_SUITE_P(LayoutSVGRootTest);
+
+TEST_P(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   SetBodyInnerHTML(R"HTML(
     <svg id='root' style='border: 10px solid red; width: 200px; height:
     100px; overflow: visible' viewBox='0 0 200 100'>
@@ -47,7 +49,7 @@ TEST_F(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 }
 
-TEST_F(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
+TEST_P(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
   SetBodyInnerHTML(R"HTML(
     <svg id='root' style='width: 100px; will-change: transform; height:
     100px; overflow: visible; position: absolute;'>
@@ -55,20 +57,17 @@ TEST_F(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
     </svg>
   )HTML");
 
-  const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("root"));
-  auto* paint_layer = root.Layer();
-  ASSERT_TRUE(paint_layer);
-  auto* graphics_layer = paint_layer->GraphicsLayerBacking(&root);
-  ASSERT_TRUE(graphics_layer);
-  EXPECT_EQ(graphics_layer->Size(), gfx::Size(100, 100));
+  auto* layer =
+      CcLayersByDOMElementId(GetDocument().View()->RootCcLayer(), "root")[0];
+  EXPECT_EQ(gfx::Size(100, 100), layer->bounds());
 
   GetDocument().getElementById("rect")->setAttribute("height", "200");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(graphics_layer->Size(), gfx::Size(100, 200));
+  EXPECT_EQ(gfx::Size(100, 200), layer->bounds());
 }
 
-TEST_F(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
+TEST_P(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   SetBodyInnerHTML(R"HTML(
     <svg id='root' style='border: 10px solid red; width: 200px; height:
     100px; overflow: hidden' viewBox='0 0 200 100'>
@@ -94,7 +93,7 @@ TEST_F(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 }
 
-TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
+TEST_P(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <svg id='svg' style='width: 300px; height: 300px; position: relative;
@@ -123,20 +122,9 @@ TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
   EXPECT_EQ(2, count);
 }
 
-class CompositeSVGLayoutSVGRootTest : public LayoutSVGRootTest,
-                                      private ScopedCompositeSVGForTest {
- public:
-  CompositeSVGLayoutSVGRootTest() : ScopedCompositeSVGForTest(true) {
-    // The tests don't apply in CompositeAfterPaint.
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  }
-};
-
-// A PaintLayer is needed for the purposes of creating a GraphicsLayer to limit
-// CompositeSVG to SVG subtrees. This PaintLayer will not be needed with
-// CompositeAfterPaint. If compositing is needed for descendants, the paint
-// layer should be self-painting. Otherwise, it should be non-self-painting.
-TEST_F(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
+// A PaintLayer is needed to ensure the parent layer knows about non-isolated
+// descendants with blend mode.
+TEST_P(LayoutSVGRootTest, PaintLayerType) {
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
       <rect id="rect" width="100" height="100" fill="green"/>
@@ -151,88 +139,12 @@ TEST_F(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
                                                      "will-change: transform");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(root.Layer());
-  EXPECT_TRUE(root.Layer()->IsSelfPaintingLayer());
+  EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 
   GetDocument().getElementById("rect")->removeAttribute("style");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(root.Layer());
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
-}
-
-TEST_F(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
-  SetBodyInnerHTML(R"HTML(
-    <svg id="root" style="width: 200px; height: 200px;">
-      <rect id="rect" width="100" height="100" fill="green"/>
-      <text id="text" x="10" y="30">
-        text
-        <tspan id="tspan">tspan</tspan>
-      </text>
-    </svg>
-  )HTML");
-
-  const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("root"));
-  EXPECT_FALSE(root.HasDescendantCompositingReasons());
-
-  GetDocument().getElementById("rect")->setAttribute("style",
-                                                     "will-change: transform");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(root.HasDescendantCompositingReasons());
-  GetDocument().getElementById("rect")->removeAttribute("style");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(root.HasDescendantCompositingReasons());
-
-  GetDocument().getElementById("rect")->setAttribute(
-      "style", "backdrop-filter: invert(100%)");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(root.HasDescendantCompositingReasons());
-  GetDocument().getElementById("rect")->removeAttribute("style");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(root.HasDescendantCompositingReasons());
-
-  GetDocument().getElementById("text")->setAttribute("style",
-                                                     "will-change: transform");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(root.HasDescendantCompositingReasons());
-  GetDocument().getElementById("text")->removeAttribute("style");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(root.HasDescendantCompositingReasons());
-
-  GetDocument().getElementById("tspan")->setAttribute("style",
-                                                      "will-change: transform");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(root.HasDescendantCompositingReasons());
-  GetDocument().getElementById("tspan")->removeAttribute("style");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(root.HasDescendantCompositingReasons());
-
-  GetDocument().getElementById("tspan")->setAttribute(
-      "style", "backdrop-filter: invert(100%)");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(root.HasDescendantCompositingReasons());
-  GetDocument().getElementById("tspan")->removeAttribute("style");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(root.HasDescendantCompositingReasons());
-}
-
-TEST_F(CompositeSVGLayoutSVGRootTest, CompositedSVGMetric) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      .anim { animation: anim 5s infinite; }
-      @keyframes anim {
-        from { transform: translateX(0); }
-        to { transform: translateX(100px); }
-      }
-    </style>
-    <svg style="width: 200px; height: 200px;">
-      <rect id="rect" width="100" height="100" fill="green"/>
-    </svg>
-  )HTML");
-
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCompositedSVG));
-  auto* rect = GetDocument().getElementById("rect");
-  rect->setAttribute(html_names::kClassAttr, "anim");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCompositedSVG));
 }
 
 }  // namespace blink

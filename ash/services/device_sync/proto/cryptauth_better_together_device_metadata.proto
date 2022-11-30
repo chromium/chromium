@@ -1,0 +1,69 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package cryptauthv2;
+
+option optimize_for = LITE_RUNTIME;
+
+//--------------------- ATTENTION ------------------------
+// If you chamge this file please change 
+// j/c/g/android/gms/auth_proximity/proto/cryptauth_better_together_feature_metadata.proto
+// as well.
+
+
+// A seed used to feed an EID BLE advertisement for some time period.
+// Next ID: 4
+message BeaconSeed {
+  // The beacon seed bytes.
+  bytes data = 1;
+
+  // The time at which this key becomes active.
+  int64 start_time_millis = 2;
+
+  // The time at which this key becomes inactive.
+  int64 end_time_millis = 3;
+}
+
+// Data required to verify the remote device.
+// Next ID: 3
+message AttestationData {
+  enum Type {
+    UNKNOWN = 0;
+
+    // A Chrome OS "soft-bind" certificate chain.
+    // The |certificates| field holds a PEM encoded X.509 certificate chain
+    // ordered from leaf to root.
+    CROS_SOFT_BIND_CERT_CHAIN = 1;
+  }
+
+  Type type = 1;
+
+  // The certificate data as specified by |type|.
+  repeated bytes certificates = 2;
+}
+
+// Device metadata relevant to the suite of multi-device (Better Together)
+// features. This data is sent to and received from CryptAuth--using end-to-end
+// encryption--as part of DeviceSync v2.
+// Next ID: 5
+message BetterTogetherDeviceMetadata {
+  // A cryptographic public key associated with the device.
+  // The format of this key is a serialized SecureMessage.GenericPublicKey.
+  bytes public_key = 1;
+
+  // A device model name that's guaranteed not to contain any PII.
+  string no_pii_device_name = 2;
+
+  // A list of seeds for EID BLE advertisements targeting this device.
+  repeated BeaconSeed beacon_seeds = 3;
+
+  // Bluetooth public address, formatted as a hex string with colons and capital
+  // letters. Example: "01:23:45:67:89:AB"
+  string bluetooth_public_address = 4;
+
+  // Attestation data associated with this device.
+  AttestationData attestation_data = 5;
+}

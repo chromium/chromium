@@ -1,11 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -24,8 +26,11 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/style/platform_style.h"
+#include "ui/views/view_class_properties.h"
 
 using content::WebContents;
 using security_state::SecurityLevel;
@@ -39,6 +44,7 @@ LocationIconView::LocationIconView(
 
   SetID(VIEW_ID_LOCATION_ICON);
   SetUpForAnimation();
+  SetProperty(views::kElementIdentifierKey, kLocationIconElementId);
 
   // Readability is guaranteed by the omnibox theme.
   label()->SetAutoColorReadabilityEnabled(false);
@@ -86,7 +92,7 @@ bool LocationIconView::OnMousePressed(const ui::MouseEvent& event) {
 void LocationIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (delegate_->IsEditingOrEmpty()) {
     node_data->role = ax::mojom::Role::kImage;
-    node_data->SetName(l10n_util::GetStringUTF8(IDS_ACC_SEARCH_ICON));
+    node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACC_SEARCH_ICON));
     return;
   }
 
@@ -144,7 +150,7 @@ bool LocationIconView::GetShowText() const {
 }
 
 const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
-  return GetInkDrop();
+  return views::InkDrop::Get(this)->GetInkDrop();
 }
 
 std::u16string LocationIconView::GetText() const {
@@ -200,7 +206,7 @@ void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
   if (!GetAnimateTextVisibilityChange() || suppress_animations)
     ResetSlideAnimation(should_show);
   else if (should_show)
-    AnimateIn(base::nullopt);
+    AnimateIn(absl::nullopt);
   else
     AnimateOut();
 }
@@ -236,24 +242,20 @@ void LocationIconView::Update(bool suppress_animations) {
                      : l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
 
   // We should only enable/disable the InkDrop if the editing state has changed,
-  // as the drop gets recreated when SetInkDropMode is called. This can result
-  // in strange behaviour, like the the InkDrop disappearing mid animation.
+  // as the drop gets recreated when views::InkDrop::Get(this)->SetMode() is
+  // called. This can result in strange behaviour, like the the InkDrop
+  // disappearing mid animation.
   if (is_editing_or_empty != was_editing_or_empty_) {
     // If the omnibox is empty or editing, the user should not be able to left
     // click on the icon. As such, the icon should not show a highlight or be
     // focusable. Note: using the middle mouse to copy-and-paste should still
     // work on the icon.
     if (is_editing_or_empty) {
-      SetInkDropMode(InkDropMode::OFF);
+      views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
       SetFocusBehavior(FocusBehavior::NEVER);
     } else {
-      SetInkDropMode(InkDropMode::ON);
-
-#if defined(OS_MAC)
-      SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-#else
-      SetFocusBehavior(FocusBehavior::ALWAYS);
-#endif
+      views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+      SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
     }
   }
 
@@ -262,6 +264,7 @@ void LocationIconView::Update(bool suppress_animations) {
     last_update_security_level_ =
         delegate_->GetLocationBarModel()->GetSecurityLevel();
   }
+
   was_editing_or_empty_ = is_editing_or_empty;
 }
 

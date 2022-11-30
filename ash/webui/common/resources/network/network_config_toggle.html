@@ -1,0 +1,40 @@
+<style include="network-shared">
+  :host {
+    cursor: pointer;
+  }
+  :host([disabled]) {
+    cursor: initial;
+  }
+  cr-policy-network-indicator-mojo {
+    --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
+  }
+  cr-policy-network-indicator-mojo.left {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
+  div.property-box {
+    width: 100%;
+  }
+</style>
+
+<div class="property-box">
+  <div class="start">
+    <div aria-hidden="true">[[label]]</div>
+    <div id="sub-label" class="cr-secondary-text" aria-hidden="true">
+      [[subLabel]]
+    </div>
+  </div>
+  <template is="dom-if" if="[[policyOnLeft]]">
+    <cr-policy-network-indicator-mojo class="left"
+        property="[[property]]" tooltip-position="left">
+    </cr-policy-network-indicator-mojo>
+  </template>
+  <cr-toggle checked="{{checked}}"
+      disabled="[[getDisabled_(disabled, property)]]"
+      aria-label$="[[label]]" aria-describedby="sub-label">
+  </cr-toggle>
+  <template is="dom-if" if="[[!policyOnLeft]]">
+    <cr-policy-network-indicator-mojo
+        property="[[property]]" tooltip-position="left">
+    </cr-policy-network-indicator-mojo>
+  </template>
+</div>

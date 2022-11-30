@@ -1,13 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_PREFETCH_NETWORK_REQUEST_FACTORY_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_PREFETCH_NETWORK_REQUEST_FACTORY_H_
-
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "components/offline_pages/core/prefetch/prefetch_network_request_factory_impl.h"

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/platform_thread.h"
 #include "dbus/exported_object.h"
@@ -68,6 +68,11 @@ class BluetoothProfileServiceProviderImpl
         base::BindOnce(&BluetoothProfileServiceProviderImpl::OnExported,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  BluetoothProfileServiceProviderImpl(
+      const BluetoothProfileServiceProviderImpl&) = delete;
+  BluetoothProfileServiceProviderImpl& operator=(
+      const BluetoothProfileServiceProviderImpl&) = delete;
 
   ~BluetoothProfileServiceProviderImpl() override {
     DVLOG(1) << "Cleaning up Bluetooth Profile: " << object_path_.value();
@@ -215,12 +220,12 @@ class BluetoothProfileServiceProviderImpl
 
   // D-Bus bus object is exported on, not owned by this object and must
   // outlive it.
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // All incoming method calls are passed on to the Delegate and a callback
   // passed to generate the reply. |delegate_| is generally the object that
   // owns this one, and must outlive it.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // D-Bus object path of object we are exporting, kept so we can unregister
   // again in our destructor.
@@ -235,8 +240,6 @@ class BluetoothProfileServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothProfileServiceProviderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothProfileServiceProviderImpl);
 };
 
 BluetoothProfileServiceProvider::BluetoothProfileServiceProvider() = default;

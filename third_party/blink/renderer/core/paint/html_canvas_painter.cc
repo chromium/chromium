@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,9 +44,6 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
         .MarkFirstContentfulPaint();
   }
 
-  bool flatten_composited_layers =
-      paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers;
-
   if (auto* layer = canvas->ContentsCcLayer()) {
     // TODO(crbug.com/705019): For a texture layer canvas, setting the layer
     // background color to an opaque color will cause the layer to be treated as
@@ -55,17 +52,19 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
     if (layout_html_canvas_.DrawsBackgroundOntoContentLayer()) {
       Color background_color =
           layout_html_canvas_.ResolveColor(GetCSSPropertyBackgroundColor());
-      layer->SetBackgroundColor(background_color.Rgb());
+      // TODO(crbug/1308932): Remove FromColor and use just SkColor4f.
+      layer->SetBackgroundColor(SkColor4f::FromColor(background_color.Rgb()));
     }
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-        !flatten_composited_layers) {
-      IntRect pixel_snapped_rect = PixelSnappedIntRect(paint_rect);
-      layer->SetBounds(gfx::Size(pixel_snapped_rect.Size()));
+    // We do not take the foreign layer code path when printing because it
+    // prevents painting canvas content as vector graphics.
+    if (!paint_info.ShouldOmitCompositingInfo() && !canvas->IsPrinting()) {
+      gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(paint_rect);
+      layer->SetBounds(pixel_snapped_rect.size());
       layer->SetIsDrawable(true);
       layer->SetHitTestable(true);
       RecordForeignLayer(context, layout_html_canvas_,
                          DisplayItem::kForeignLayerCanvas, layer,
-                         pixel_snapped_rect.Location());
+                         pixel_snapped_rect.origin());
       return;
     }
   }
@@ -78,7 +77,7 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
                               paint_offset);
   ScopedInterpolationQuality interpolation_quality_scope(
       context, InterpolationQualityForCanvas(layout_html_canvas_.StyleRef()));
-  canvas->Paint(context, paint_rect, flatten_composited_layers);
+  canvas->Paint(context, paint_rect, paint_info.ShouldOmitCompositingInfo());
 }
 
 }  // namespace blink

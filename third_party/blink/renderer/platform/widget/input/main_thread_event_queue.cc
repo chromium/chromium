@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,7 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kMaxRafDelay =
-    base::TimeDelta::FromMilliseconds(5 * 1000);
+constexpr base::TimeDelta kMaxRafDelay = base::Milliseconds(5 * 1000);
 
 class QueuedClosure : public MainThreadEventQueueTask {
  public:
@@ -44,8 +43,7 @@ class QueuedClosure : public MainThreadEventQueueTask {
 
 // Time interval at which touchmove events during scroll will be skipped
 // during rAF signal.
-constexpr base::TimeDelta kAsyncTouchMoveInterval =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAsyncTouchMoveInterval = base::Milliseconds(200);
 
 }  // namespace
 
@@ -74,8 +72,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
               WebInputEvent::Type::kPointerRawUpdate);
     std::unique_ptr<cc::EventMetrics> metrics =
         cc::EventMetrics::CreateFromExisting(
-            raw_event->Event().GetTypeAsUiEventType(), base::nullopt,
-            raw_event->Event().GetScrollInputType(),
+            raw_event->Event().GetTypeAsUiEventType(),
             cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
             original_metrics);
     return std::make_unique<QueuedWebInputEvent>(
@@ -138,6 +135,12 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
 
     known_by_scheduler_count_ += other_event->known_by_scheduler_count_;
     event_->CoalesceWith(*other_event->event_);
+    auto* metrics = metrics_ ? metrics_->AsScrollUpdate() : nullptr;
+    auto* other_metrics = other_event->metrics_
+                              ? other_event->metrics_->AsScrollUpdate()
+                              : nullptr;
+    if (metrics && other_metrics)
+      metrics->CoalesceWith(*other_metrics);
 
     // The newest event (|other_item|) always wins when updating fields.
     originally_cancelable_ = other_event->originally_cancelable_;
@@ -156,7 +159,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       // The |callback| won't be run, so our stored |callback_| should run
       // indicating error.
       HandledEvent(queue, mojom::blink::InputEventResultState::kNotConsumed,
-                   event_->latency_info(), nullptr, base::nullopt);
+                   event_->latency_info(), nullptr, absl::nullopt);
     }
   }
 
@@ -164,12 +167,11 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
                     mojom::blink::InputEventResultState ack_result,
                     const ui::LatencyInfo& latency_info,
                     mojom::blink::DidOverscrollParamsPtr overscroll,
-                    base::Optional<cc::TouchAction> touch_action) {
+                    absl::optional<cc::TouchAction> touch_action) {
+    // callback_ can be null in tests.
     if (callback_) {
       std::move(callback_).Run(ack_result, latency_info, std::move(overscroll),
                                touch_action);
-    } else {
-      DCHECK(!overscroll) << "Unexpected overscroll for un-acked event";
     }
 
     if (!blocking_coalesced_callbacks_.empty()) {
@@ -178,20 +180,18 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       for (auto&& callback : blocking_coalesced_callbacks_) {
         coalesced_latency_info.set_trace_id(callback.second);
         std::move(callback.first)
-            .Run(ack_result, coalesced_latency_info, nullptr, base::nullopt);
+            .Run(ack_result, coalesced_latency_info, nullptr, absl::nullopt);
       }
     }
 
-    if (queue->main_thread_scheduler_) {
-      // TODO(dtapuska): Change the scheduler API to take into account number of
-      // events processed.
-      for (size_t i = 0; i < known_by_scheduler_count_; ++i) {
-        queue->main_thread_scheduler_->DidHandleInputEventOnMainThread(
-            event_->Event(),
-            ack_result == blink::mojom::InputEventResultState::kConsumed
-                ? WebInputEventResult::kHandledApplication
-                : WebInputEventResult::kNotHandled);
-      }
+    // TODO(dtapuska): Change the scheduler API to take into account number of
+    // events processed.
+    for (size_t i = 0; i < known_by_scheduler_count_; ++i) {
+      queue->widget_scheduler_->DidHandleInputEventOnMainThread(
+          event_->Event(),
+          ack_result == mojom::blink::InputEventResultState::kConsumed
+              ? WebInputEventResult::kHandledApplication
+              : WebInputEventResult::kNotHandled);
     }
   }
 
@@ -257,7 +257,7 @@ MainThreadEventQueue::SharedState::~SharedState() {}
 MainThreadEventQueue::MainThreadEventQueue(
     MainThreadEventQueueClient* client,
     const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
-    scheduler::WebThreadScheduler* main_thread_scheduler,
+    scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
     bool allow_raf_aligned_input)
     : client_(client),
       last_touch_start_forced_nonblocking_due_to_fling_(false),
@@ -266,7 +266,8 @@ MainThreadEventQueue::MainThreadEventQueue(
       allow_raf_aligned_input_(allow_raf_aligned_input),
       shared_state_lock_("MainThreadEventQueue.shared_state_lock_"),
       main_task_runner_(main_task_runner),
-      main_thread_scheduler_(main_thread_scheduler) {
+      widget_scheduler_(std::move(widget_scheduler)) {
+  DCHECK(widget_scheduler_);
   raf_fallback_timer_ = std::make_unique<base::OneShotTimer>();
   raf_fallback_timer_->SetTaskRunner(main_task_runner);
 
@@ -396,7 +397,7 @@ void MainThreadEventQueue::HandleEvent(
 
   if (callback) {
     std::move(callback).Run(ack_result, cloned_latency_info, nullptr,
-                            base::nullopt);
+                            absl::nullopt);
   }
 }
 
@@ -500,6 +501,9 @@ void MainThreadEventQueue::DispatchEvents() {
   }
 
   PossiblyScheduleMainFrame();
+
+  if (client_)
+    client_->InputEventsDispatched(/*raf_aligned=*/false);
 }
 
 static bool IsAsyncTouchMove(
@@ -567,6 +571,9 @@ void MainThreadEventQueue::DispatchRafAlignedInput(base::TimeTicks frame_time) {
   }
 
   PossiblyScheduleMainFrame();
+
+  if (client_)
+    client_->InputEventsDispatched(/*raf_aligned=*/true);
 }
 
 void MainThreadEventQueue::PostTaskToMainThread() {
@@ -606,9 +613,9 @@ void MainThreadEventQueue::QueueEvent(
       }
 
       // Notify the scheduler that we'll enqueue a task to the main thread.
-      if (is_input_event && main_thread_scheduler_) {
-        main_thread_scheduler_->WillPostInputEventToMainThread(input_event_type,
-                                                               attribution);
+      if (is_input_event) {
+        widget_scheduler_->WillPostInputEventToMainThread(input_event_type,
+                                                          attribution);
       }
     }
   }
@@ -668,10 +675,8 @@ bool MainThreadEventQueue::HandleEventOnMainThread(
     std::unique_ptr<cc::EventMetrics> metrics,
     HandledEventCallback handled_callback) {
   // Notify the scheduler that the main thread is about to execute handlers.
-  if (main_thread_scheduler_) {
-    main_thread_scheduler_->WillHandleInputEventOnMainThread(
-        event.Event().GetType(), attribution);
-  }
+  widget_scheduler_->WillHandleInputEventOnMainThread(event.Event().GetType(),
+                                                      attribution);
 
   bool handled = false;
   if (client_) {
@@ -705,8 +710,6 @@ void MainThreadEventQueue::SetNeedsMainFrame() {
     }
     if (client_)
       client_->SetNeedsMainFrame();
-    if (main_thread_scheduler_)
-      main_thread_scheduler_->OnMainFrameRequestedForInput();
     return;
   }
 

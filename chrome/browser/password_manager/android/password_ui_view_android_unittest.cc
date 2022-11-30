@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -25,7 +25,7 @@
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/browser/ui/credential_provider_interface.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,47 +54,6 @@ struct PasswordUIViewAndroidDestroyDeleter {
   }
 };
 
-class FakeCredentialProvider
-    : public password_manager::CredentialProviderInterface {
- public:
-  FakeCredentialProvider() = default;
-  ~FakeCredentialProvider() override = default;
-
-  // password_manager::CredentialProviderInterface
-  std::vector<std::unique_ptr<PasswordForm>> GetAllPasswords() override;
-
-  // Adds a PasswordForm specified by the arguments to the list returned by
-  // GetAllPasswords.
-  void AddPasswordEntry(const std::string& origin,
-                        const std::string& username,
-                        const std::string& password);
-
- private:
-  std::vector<std::unique_ptr<PasswordForm>> passwords_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCredentialProvider);
-};
-
-std::vector<std::unique_ptr<PasswordForm>>
-FakeCredentialProvider::GetAllPasswords() {
-  std::vector<std::unique_ptr<PasswordForm>> clone;
-  for (const auto& password : passwords_) {
-    clone.push_back(std::make_unique<PasswordForm>(*password));
-  }
-  return clone;
-}
-
-void FakeCredentialProvider::AddPasswordEntry(const std::string& origin,
-                                              const std::string& username,
-                                              const std::string& password) {
-  auto form = std::make_unique<PasswordForm>();
-  form->url = GURL(origin);
-  form->signon_realm = origin;
-  form->username_value = base::UTF8ToUTF16(username);
-  form->password_value = base::UTF8ToUTF16(password);
-  passwords_.push_back(std::move(form));
-}
-
 }  // namespace
 
 class PasswordUIViewAndroidTest : public ::testing::Test {
@@ -107,18 +66,42 @@ class PasswordUIViewAndroidTest : public ::testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     testing_profile_ =
         testing_profile_manager_.CreateTestingProfile("TestProfile");
-    profiles::SetLastUsedProfile(
-        testing_profile_->GetPath().BaseName().MaybeAsASCII());
+    profiles::SetLastUsedProfile(testing_profile_->GetBaseName());
 
     store_ = CreateAndUseTestPasswordStore(testing_profile_);
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    ASSERT_TRUE(temp_dir().CreateUniqueTempDir());
   }
 
+  void TearDown() override {
+    store_->ShutdownOnUIThread();
+    RunUntilIdle();
+  }
+
+  PasswordForm AddPasswordEntry(const std::string& origin,
+                                const std::string& username,
+                                const std::string& password) {
+    PasswordForm form;
+    form.url = GURL(origin);
+    form.signon_realm = origin;
+    form.username_value = base::UTF8ToUTF16(username);
+    form.password_value = base::UTF8ToUTF16(password);
+    store_->AddLogin(form);
+    RunUntilIdle();
+    return form;
+  }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  raw_ptr<JNIEnv> env() { return env_; }
+  base::ScopedTempDir& temp_dir() { return temp_dir_; }
+
+ private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_;
   scoped_refptr<TestPasswordStore> store_;
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -126,26 +109,28 @@ class PasswordUIViewAndroidTest : public ::testing::Test {
 // PasswordUIViewAndroid arrives at the same result as synchronous way to
 // serialize the passwords.
 TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
-  FakeCredentialProvider provider;
-  provider.AddPasswordEntry("https://example.com", "username", "password");
+  PasswordForm form =
+      AddPasswordEntry("https://example.com", "username", "password");
 
   // Let the PasswordCSVWriter compute the result instead of hard-coding it,
   // because this test focuses on PasswordUIView and not on detecting changes in
   // PasswordCSVWriter.
   const std::string expected_result =
       password_manager::PasswordCSVWriter::SerializePasswords(
-          provider.GetAllPasswords());
+          {password_manager::CredentialUIEntry(form)});
 
   std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
       password_ui_view(
-          new PasswordUIViewAndroid(env_, JavaParamRef<jobject>(nullptr)));
+          new PasswordUIViewAndroid(env(), JavaParamRef<jobject>(nullptr)));
+  // SavedPasswordsPresenter needs time to initialize and fetch passwords.
+  RunUntilIdle();
+
   PasswordUIViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
-  password_ui_view->set_credential_provider_for_testing(&provider);
   password_ui_view->HandleSerializePasswords(
-      env_, nullptr,
+      env(), nullptr,
       base::android::ConvertUTF8ToJavaString(
-          env_, temp_dir_.GetPath().AsUTF8Unsafe()),
+          env(), temp_dir().GetPath().AsUTF8Unsafe()),
       nullptr, nullptr);
 
   content::RunAllTasksUntilIdle();
@@ -167,23 +152,24 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
 // Test that destroying the PasswordUIView when tasks are pending does not lead
 // to crashes.
 TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_Cancelled) {
-  FakeCredentialProvider provider;
-  provider.AddPasswordEntry("https://example.com", "username", "password");
+  AddPasswordEntry("https://example.com", "username", "password");
 
   std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
       password_ui_view(
-          new PasswordUIViewAndroid(env_, JavaParamRef<jobject>(nullptr)));
+          new PasswordUIViewAndroid(env(), JavaParamRef<jobject>(nullptr)));
+  // SavedPasswordsPresenter needs time to initialize and fetch passwords.
+  RunUntilIdle();
+
   PasswordUIViewAndroid::SerializationResult serialized_passwords;
   serialized_passwords.entries_count = 123;
   serialized_passwords.exported_file_path = "somepath";
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
-  password_ui_view->set_credential_provider_for_testing(&provider);
   base::android::ScopedJavaLocalRef<jstring> java_target_dir =
       base::android::ConvertUTF8ToJavaString(
-          env_, temp_dir_.GetPath().AsUTF8Unsafe());
+          env(), temp_dir().GetPath().AsUTF8Unsafe());
   password_ui_view->HandleSerializePasswords(
-      env_, nullptr,
-      base::android::JavaParamRef<jstring>(env_, java_target_dir.obj()),
+      env(), nullptr,
+      base::android::JavaParamRef<jstring>(env(), java_target_dir.obj()),
       nullptr, nullptr);
   // Register the PasswordUIView for deletion. It should not destruct itself
   // before the background tasks are run. The results of the background tasks
@@ -199,22 +185,23 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_Cancelled) {
 
 // Test that an I/O error is reported.
 TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_WriteFailed) {
-  FakeCredentialProvider provider;
-  provider.AddPasswordEntry("https://example.com", "username", "password");
+  AddPasswordEntry("https://example.com", "username", "password");
 
   std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
       password_ui_view(
-          new PasswordUIViewAndroid(env_, JavaParamRef<jobject>(nullptr)));
+          new PasswordUIViewAndroid(env(), JavaParamRef<jobject>(nullptr)));
+  // SavedPasswordsPresenter needs time to initialize and fetch passwords.
+  RunUntilIdle();
+
   PasswordUIViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
-  password_ui_view->set_credential_provider_for_testing(&provider);
   base::android::ScopedJavaLocalRef<jstring> java_temp_file =
       base::android::ConvertUTF8ToJavaString(
-          env_, "/This directory cannot be created");
+          env(), "/This directory cannot be created");
   password_ui_view->HandleSerializePasswords(
-      env_, nullptr,
-      base::android::JavaParamRef<jstring>(env_, java_temp_file.obj()), nullptr,
-      nullptr);
+      env(), nullptr,
+      base::android::JavaParamRef<jstring>(env(), java_temp_file.obj()),
+      nullptr, nullptr);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(0, serialized_passwords.entries_count);
   EXPECT_FALSE(serialized_passwords.error.empty());

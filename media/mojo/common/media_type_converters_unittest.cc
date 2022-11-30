@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <memory>
 
-#include "base/stl_util.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -61,18 +61,17 @@ void CompareAudioBuffers(SampleFormat sample_format,
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   const uint8_t kData[] = "hello, world";
   const uint8_t kSideData[] = "sideshow bob";
-  const size_t kDataSize = base::size(kData);
-  const size_t kSideDataSize = base::size(kSideData);
+  const size_t kDataSize = std::size(kData);
+  const size_t kSideDataSize = std::size(kSideData);
 
   // Original.
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
       reinterpret_cast<const uint8_t*>(&kData), kDataSize,
       reinterpret_cast<const uint8_t*>(&kSideData), kSideDataSize));
-  buffer->set_timestamp(base::TimeDelta::FromMilliseconds(123));
-  buffer->set_duration(base::TimeDelta::FromMilliseconds(456));
-  buffer->set_discard_padding(
-      DecoderBuffer::DiscardPadding(base::TimeDelta::FromMilliseconds(5),
-                                    base::TimeDelta::FromMilliseconds(6)));
+  buffer->set_timestamp(base::Milliseconds(123));
+  buffer->set_duration(base::Milliseconds(456));
+  buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
+      base::Milliseconds(5), base::Milliseconds(6)));
 
   // Convert from and back.
   mojom::DecoderBufferPtr ptr(mojom::DecoderBuffer::From(*buffer));
@@ -108,7 +107,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS) {
 
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {
   const uint8_t kData[] = "hello, world";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   // Original.
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
@@ -129,7 +128,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {
 
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CencEncryptedBuffer) {
   const uint8_t kData[] = "hello, world";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
   const char kIv[] = "0123456789abcdef";
 
@@ -165,7 +164,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CencEncryptedBuffer) {
 
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CbcsEncryptedBuffer) {
   const uint8_t kData[] = "hello, world";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
   const char kIv[] = "0123456789abcdef";
 
@@ -234,7 +233,7 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
   // Original.
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_4_0;
   const int kSampleRate = 48000;
-  const base::TimeDelta start_time = base::TimeDelta::FromSecondsD(1000.0);
+  const base::TimeDelta start_time = base::Seconds(1000.0);
   scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
       kSampleFormatPlanarF32, kChannelLayout,
       ChannelLayoutToChannelCount(kChannelLayout), kSampleRate, 0.0f, 1.0f,

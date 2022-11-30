@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
@@ -125,6 +124,9 @@ class GLES2_IMPL_EXPORT ShareGroup
  public:
   ShareGroup(bool bind_generates_resource, uint64_t tracing_guid);
 
+  ShareGroup(const ShareGroup&) = delete;
+  ShareGroup& operator=(const ShareGroup&) = delete;
+
   bool bind_generates_resource() const {
     return bind_generates_resource_;
   }
@@ -185,8 +187,6 @@ class GLES2_IMPL_EXPORT ShareGroup
 
   mutable base::Lock lost_lock_;
   bool lost_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ShareGroup);
 };
 
 }  // namespace gles2

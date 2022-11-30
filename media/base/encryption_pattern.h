@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ namespace media {
 // encrypted, and the next nine are skipped. This pattern is applied
 // repeatedly until the end of the last 16-byte block in the subsample.
 // Any remaining bytes are left clear.
-// TODO(jrummell): Use base::Optional<EncryptionPattern> everywhere.
+// TODO(jrummell): Use absl::optional<EncryptionPattern> everywhere.
 class MEDIA_EXPORT EncryptionPattern {
  public:
   EncryptionPattern();

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -21,6 +22,7 @@ class BrowserContext;
 // uniqueness key to lookup StoragePartition objects in the global map.
 class CONTENT_EXPORT StoragePartitionConfig {
  public:
+  StoragePartitionConfig();  // Needed by the SiteInfo default constructor
   StoragePartitionConfig(const StoragePartitionConfig&);
   StoragePartitionConfig& operator=(const StoragePartitionConfig&);
 
@@ -65,10 +67,11 @@ class CONTENT_EXPORT StoragePartitionConfig {
     if (fallback != FallbackMode::kNone) {
       DCHECK(!is_default());
       DCHECK(!partition_domain_.empty());
-      // TODO(acollwell): Ideally we shouldn't have storage partition configs
-      // that differ only in their fallback mode, but unfortunately that isn't
-      // true. When that is fixed this can be made more robust by disallowing
-      // fallback from storage partitions with an empty partition name.
+      // TODO(https://crbug.com/1279537): Ideally we shouldn't have storage
+      // partition configs that differ only in their fallback mode, but
+      // unfortunately that isn't true. When that is fixed this can be made more
+      // robust by disallowing fallback from storage partitions with an empty
+      // partition name.
       // DCHECK(!partition_name_.empty());
     }
     fallback_to_partition_domain_for_blob_urls_ = fallback;
@@ -76,13 +79,17 @@ class CONTENT_EXPORT StoragePartitionConfig {
   FallbackMode fallback_to_partition_domain_for_blob_urls() const {
     return fallback_to_partition_domain_for_blob_urls_;
   }
-  base::Optional<StoragePartitionConfig> GetFallbackForBlobUrls() const;
+  absl::optional<StoragePartitionConfig> GetFallbackForBlobUrls() const;
 
   bool operator<(const StoragePartitionConfig& rhs) const;
   bool operator==(const StoragePartitionConfig& rhs) const;
   bool operator!=(const StoragePartitionConfig& rhs) const;
 
  private:
+  friend StoragePartitionConfig CreateStoragePartitionConfigForTesting(
+      bool,
+      const std::string&,
+      const std::string&);
   FRIEND_TEST_ALL_PREFIXES(StoragePartitionConfigTest, OperatorLess);
 
   StoragePartitionConfig(const std::string& partition_domain,
@@ -98,44 +105,6 @@ class CONTENT_EXPORT StoragePartitionConfig {
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
                                         const StoragePartitionConfig& config);
-
-// Represents the storage partition ID that is used as the key for the
-// SessionStorageNamespaceMap. This type is to help facilitate migrating the
-// map key away from a string to a StoragePartitionConfig.
-class CONTENT_EXPORT StoragePartitionId {
- public:
-  explicit StoragePartitionId(BrowserContext* browser_context);
-  StoragePartitionId(const std::string& partition_id,
-                     const StoragePartitionConfig& config);
-  StoragePartitionId(const StoragePartitionId&) = default;
-  StoragePartitionId& operator=(const StoragePartitionId&) = default;
-
-  const StoragePartitionConfig& config() const { return config_; }
-
-  bool operator==(const StoragePartitionId& rhs) const {
-    return id_ == rhs.id_;
-  }
-  bool operator!=(const StoragePartitionId& rhs) const {
-    return id_ != rhs.id_;
-  }
-  bool operator<(const StoragePartitionId& rhs) const { return id_ < rhs.id_; }
-
-  // String representation of this object for debug logging purposes.
-  std::string ToString() const;
-
- private:
-  std::string id_;
-
-  // Config generated with the same information used to generate `id_`.
-  // Currently this field is being used to determine if we can replace the
-  // string representation with a StoragePartitionConfig. This field is
-  // intentionally left out of the comparison operators because we want equality
-  // and less-than to work the exact same way they did before this field was
-  // added. This field is only intended to be used by code in
-  // NavigationControllerImpl to establish whether it is safe to change the
-  // StoragePartitionId representation.
-  StoragePartitionConfig config_;
-};
 
 }  // namespace content
 

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -31,14 +30,18 @@ class BlockedPopupTabHelper
       public web::WebStateUserData<BlockedPopupTabHelper> {
  public:
   explicit BlockedPopupTabHelper(web::WebState* web_state);
+
+  BlockedPopupTabHelper(const BlockedPopupTabHelper&) = delete;
+  BlockedPopupTabHelper& operator=(const BlockedPopupTabHelper&) = delete;
+
   ~BlockedPopupTabHelper() override;
 
-  // Returns true if popup requested by the page with the given |source_url|
+  // Returns true if popup requested by the page with the given `source_url`
   // should be blocked.
   bool ShouldBlockPopup(const GURL& source_url);
 
   // Shows the popup blocker infobar for the popup with given popup_url.
-  // |referrer| represents the frame which requested this popup.
+  // `referrer` represents the frame which requested this popup.
   void HandlePopup(const GURL& popup_url, const web::Referrer& referrer);
 
   // infobars::InfoBarManager::Observer implementation.
@@ -69,7 +72,7 @@ class BlockedPopupTabHelper
   ChromeBrowserState* GetBrowserState() const;
 
   // Registers this object as an observer for the InfoBarManager associated with
-  // |web_state_|.  Does nothing if already registered.
+  // `web_state_`.  Does nothing if already registered.
   void RegisterAsInfoBarManagerObserverIfNeeded(
       infobars::InfoBarManager* infobar_manager);
 
@@ -82,12 +85,11 @@ class BlockedPopupTabHelper
   // For management of infobars::InfoBarManager::Observer registration.  This
   // object will not start observing the InfoBarManager until ShowInfoBars() is
   // called.
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      scoped_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      scoped_observation_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedPopupTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_BLOCKED_POPUP_TAB_HELPER_H_

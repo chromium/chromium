@@ -1,24 +1,29 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/history/history_tab_helper.h"
 
-#include "base/memory/ptr_util.h"
-#include "components/history/core/browser/history_constants.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/ntp_snippets/features.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#import "base/memory/ptr_util.h"
+#import "components/history/core/browser/history_constants.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/ntp_snippets/features.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/translate/core/common/language_detection_details.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/complex_tasks/ios_content_record_task_id.h"
+#import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#include "net/http/http_response_headers.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "net/http/http_response_headers.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,14 +31,14 @@
 
 namespace {
 
-base::Optional<std::u16string> GetPageTitle(const web::NavigationItem& item) {
+absl::optional<std::u16string> GetPageTitle(const web::NavigationItem& item) {
   const std::u16string& title = item.GetTitleForDisplay();
   if (title.empty() ||
       title == l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return base::Optional<std::u16string>(title);
+  return absl::optional<std::u16string>(title);
 }
 
 }  // namespace
@@ -45,7 +50,7 @@ HistoryTabHelper::~HistoryTabHelper() {
 void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
   DCHECK(!delay_notification_);
 
-  const base::Optional<std::u16string> title = GetPageTitle(item);
+  const absl::optional<std::u16string> title = GetPageTitle(item);
   // Don't update the history if current entry has no title.
   if (!title) {
     return;
@@ -55,6 +60,91 @@ void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
   if (history_service) {
     history_service->SetPageTitle(item.GetVirtualURL(), title.value());
   }
+}
+
+history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
+    web::NavigationItem* last_committed_item,
+    web::NavigationContext* navigation_context) {
+  const GURL& url = last_committed_item->GetURL();
+
+  const ui::PageTransition transition =
+      last_committed_item->GetTransitionType();
+
+  history::RedirectList redirects;
+  const GURL& original_url = last_committed_item->GetOriginalRequestURL();
+  const GURL& referrer_url = last_committed_item->GetReferrer().url;
+  if (original_url != url) {
+    // Simulate a valid redirect chain in case of URLs that have been modified
+    // by CRWWebController -finishHistoryNavigationFromEntry:.
+    if (transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT ||
+        url.EqualsIgnoringRef(original_url)) {
+      redirects.push_back(referrer_url);
+    }
+    // TODO(crbug.com/703872): the redirect chain is not constructed the same
+    // way as desktop so this part needs to be revised.
+    redirects.push_back(original_url);
+    redirects.push_back(url);
+  }
+
+  // Navigations originating from New Tab Page or Reading List should not
+  // contribute to Most Visited.
+  const bool content_suggestions_navigation =
+      referrer_url == ntp_snippets::GetContentSuggestionsReferrerURL() &&
+      ui::PageTransitionCoreTypeIs(transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  const bool consider_for_ntp_most_visited =
+      !content_suggestions_navigation &&
+      referrer_url != kReadingListReferrerURL;
+
+  const int http_response_code =
+      navigation_context->GetResponseHeaders()
+          ? navigation_context->GetResponseHeaders()->response_code()
+          : 0;
+
+  // Hide navigations that result in an error in order to prevent the omnibox
+  // from suggesting URLs that have never been navigated to successfully.
+  // (If a navigation to the URL succeeds at some point, the URL will be
+  // unhidden and thus eligible to be suggested by the omnibox.)
+  const bool hidden = (http_response_code >= 400);
+
+  history::VisitContextAnnotations::OnVisitFields context_annotations;
+
+  context_annotations.browser_type =
+      history::VisitContextAnnotations::BrowserType::kTabbed;
+
+  IOSChromeSessionTabHelper* session_tab_helper =
+      IOSChromeSessionTabHelper::FromWebState(web_state_);
+  if (session_tab_helper) {
+    context_annotations.window_id = session_tab_helper->window_id();
+    context_annotations.tab_id = session_tab_helper->session_id();
+  }
+
+  IOSTaskTabHelper* task_tab_helper =
+      IOSTaskTabHelper::FromWebState(web_state_);
+  if (task_tab_helper) {
+    const IOSContentRecordTaskId* content_record_task_id =
+        task_tab_helper->GetContextRecordTaskId(
+            last_committed_item->GetUniqueID());
+    if (content_record_task_id) {
+      context_annotations.task_id = content_record_task_id->task_id();
+      context_annotations.root_task_id = content_record_task_id->root_task_id();
+      context_annotations.parent_task_id =
+          content_record_task_id->parent_task_id();
+    }
+  }
+
+  context_annotations.response_code = http_response_code;
+
+  return history::HistoryAddPageArgs(
+      url, last_committed_item->GetTimestamp(), this,
+      last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
+      hidden, history::SOURCE_BROWSED,
+      /*did_replace_entry=*/false, consider_for_ntp_most_visited,
+      navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
+                                           : absl::nullopt,
+      /*opener=*/absl::nullopt,
+      /*bookmark_id=*/absl::nullopt,
+      /*context_annotations=*/std::move(context_annotations));
 }
 
 void HistoryTabHelper::SetDelayHistoryServiceNotification(
@@ -81,9 +171,28 @@ void HistoryTabHelper::SetDelayHistoryServiceNotification(
   }
 }
 
+void HistoryTabHelper::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  if (history::HistoryService* hs = GetHistoryService()) {
+    web::NavigationItem* last_committed_item =
+        web_state_->GetNavigationManager()->GetLastCommittedItem();
+    if (last_committed_item) {
+      hs->SetPageLanguageForVisit(
+          /*context_id=*/this, last_committed_item->GetUniqueID(),
+          web_state_->GetLastCommittedURL(), details.adopted_language);
+    }
+  }
+}
+
 HistoryTabHelper::HistoryTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
+
+  // A translate client is not always attached to a web state (e.g. tests).
+  if (ChromeIOSTranslateClient* translate_client =
+          ChromeIOSTranslateClient::FromWebState(web_state)) {
+    translate_observation_.Observe(translate_client->GetTranslateDriver());
+  }
 }
 
 void HistoryTabHelper::DidFinishNavigation(
@@ -130,8 +239,8 @@ void HistoryTabHelper::DidFinishNavigation(
   // desktop, but prevents dumping huge view-source urls into the history
   // database. Keep it NDEBUG only because view-source:// URLs are enabled
   // on NDEBUG builds only.
-  const GURL& url = last_committed_item->GetURL();
 #ifndef NDEBUG
+  const GURL& url = last_committed_item->GetURL();
   if (url.SchemeIs(url::kDataScheme)) {
     return;
   }
@@ -139,47 +248,8 @@ void HistoryTabHelper::DidFinishNavigation(
 
   num_title_changes_ = 0;
 
-  history::RedirectList redirects;
-  const GURL& original_url = last_committed_item->GetOriginalRequestURL();
-  const GURL& referrer_url = last_committed_item->GetReferrer().url;
-  if (original_url != url) {
-    // Simulate a valid redirect chain in case of URLs that have been modified
-    // by CRWWebController -finishHistoryNavigationFromEntry:.
-    if (transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT ||
-        url.EqualsIgnoringRef(original_url)) {
-      redirects.push_back(referrer_url);
-    }
-    // TODO(crbug.com/703872): the redirect chain is not constructed the same
-    // way as desktop so this part needs to be revised.
-    redirects.push_back(original_url);
-    redirects.push_back(url);
-  }
-
-  // Navigations originating from New Tab Page or Reading List should not
-  // contribute to Most Visited.
-  const bool content_suggestions_navigation =
-      referrer_url == ntp_snippets::GetContentSuggestionsReferrerURL() &&
-      ui::PageTransitionCoreTypeIs(transition,
-                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  const bool consider_for_ntp_most_visited =
-      !content_suggestions_navigation &&
-      referrer_url != kReadingListReferrerURL;
-
-  // Hide navigations that result in an error in order to prevent the omnibox
-  // from suggesting URLs that have never been navigated to successfully.
-  // (If a navigation to the URL succeeds at some point, the URL will be
-  // unhidden and thus eligible to be suggested by the omnibox.)
-  const bool hidden =
-      (navigation_context->GetResponseHeaders() &&
-       navigation_context->GetResponseHeaders()->response_code() >= 400);
-  history::HistoryAddPageArgs add_page_args(
-      url, last_committed_item->GetTimestamp(), this,
-      last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
-      hidden, history::SOURCE_BROWSED,
-      /*did_replace_entry=*/false, consider_for_ntp_most_visited,
-      /*floc_allowed=*/false,
-      navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
-                                           : base::nullopt);
+  history::HistoryAddPageArgs add_page_args =
+      CreateHistoryAddPageArgs(last_committed_item, navigation_context);
 
   if (delay_notification_) {
     recorded_navigations_.push_back(std::move(add_page_args));
@@ -228,6 +298,9 @@ void HistoryTabHelper::TitleWasSet(web::WebState* web_state) {
 
 void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
+
+  translate_observation_.Reset();
+
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }

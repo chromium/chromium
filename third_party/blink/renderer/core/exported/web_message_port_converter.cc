@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 
 namespace blink {
 
-base::Optional<MessagePortChannel>
+absl::optional<MessagePortChannel>
 WebMessagePortConverter::DisentangleAndExtractMessagePortChannel(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value) {
   MessagePort* port = V8MessagePort::ToImplWithTypeCheck(isolate, value);
   if (!port || port->IsNeutered())
-    return base::nullopt;
+    return absl::nullopt;
   return port->Disentangle();
 }
 

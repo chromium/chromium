@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -67,7 +67,7 @@ void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
 
 void PageInfoBubbleViewBase::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host == web_contents()->GetMainFrame()) {
+  if (render_frame_host == web_contents()->GetPrimaryMainFrame()) {
     GetWidget()->Close();
   }
 }
@@ -78,14 +78,16 @@ void PageInfoBubbleViewBase::OnVisibilityChanged(
     GetWidget()->Close();
 }
 
-void PageInfoBubbleViewBase::DidStartNavigation(
-    content::NavigationHandle* handle) {
-  if (handle->IsInMainFrame())
-    GetWidget()->Close();
+void PageInfoBubbleViewBase::PrimaryPageChanged(content::Page& page) {
+  GetWidget()->Close();
 }
 
 void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   // Subclasses may update instead, but this the only safe general option.
+  GetWidget()->Close();
+}
+
+void PageInfoBubbleViewBase::WebContentsDestroyed() {
   GetWidget()->Close();
 }
 

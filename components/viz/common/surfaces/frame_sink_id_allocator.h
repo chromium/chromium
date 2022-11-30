@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,9 @@ class VIZ_COMMON_EXPORT FrameSinkIdAllocator {
   constexpr explicit FrameSinkIdAllocator(uint32_t client_id)
       : client_id_(client_id), next_sink_id_(1u) {}
 
+  FrameSinkIdAllocator(const FrameSinkIdAllocator&) = delete;
+  FrameSinkIdAllocator& operator=(const FrameSinkIdAllocator&) = delete;
+
   FrameSinkId NextFrameSinkId() {
     return FrameSinkId(client_id_, next_sink_id_++);
   }
@@ -27,8 +30,6 @@ class VIZ_COMMON_EXPORT FrameSinkIdAllocator {
  private:
   const uint32_t client_id_;
   uint32_t next_sink_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkIdAllocator);
 };
 
 }  // namespace viz

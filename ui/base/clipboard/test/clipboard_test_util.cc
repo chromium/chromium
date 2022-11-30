@@ -1,12 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 
+#include <vector>
+
+#include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
-#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace ui {
@@ -19,26 +22,27 @@ class ReadImageHelper {
  public:
   ReadImageHelper() = default;
   ~ReadImageHelper() = default;
-  SkBitmap ReadImage(Clipboard* clipboard) {
-    base::WaitableEvent event;
-    SkBitmap bitmap;
-    clipboard->ReadImage(
+
+  std::vector<uint8_t> ReadPng(Clipboard* clipboard) {
+    base::RunLoop loop;
+    std::vector<uint8_t> png;
+    clipboard->ReadPng(
         ClipboardBuffer::kCopyPaste,
         /* data_dst = */ nullptr,
-        base::BindLambdaForTesting([&](const SkBitmap& result) {
-          bitmap = result;
-          event.Signal();
+        base::BindLambdaForTesting([&](const std::vector<uint8_t>& result) {
+          png = result;
+          loop.Quit();
         }));
-    event.Wait();
-    return bitmap;
+    loop.Run();
+    return png;
   }
 };
 
 }  // namespace
 
-SkBitmap ReadImage(Clipboard* clipboard) {
+std::vector<uint8_t> ReadPng(Clipboard* clipboard) {
   ReadImageHelper read_image_helper;
-  return read_image_helper.ReadImage(clipboard);
+  return read_image_helper.ReadPng(clipboard);
 }
 
 }  // namespace clipboard_test_util

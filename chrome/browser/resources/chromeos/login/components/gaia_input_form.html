@@ -1,0 +1,30 @@
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-common-styles">
+  :host {
+    display: block;
+    font-size: 16px;
+  }
+
+  :host ::slotted(gaia-input) {
+    margin-bottom: 24px;
+  }
+
+  :host ::slotted(gaia-input:last-of-type) {
+    margin-bottom: 28px;
+  }
+</style>
+<div on-keydown="onKeyDown_">
+  <slot id="inputs" name="inputs"></slot>
+  <div class="horizontal-reverse justified layout center">
+    <gaia-button id="button" on-click="onButtonClicked_" class="self-end"
+        hidden="[[!buttonText]]">
+      <span>[[buttonText]]</span>
+    </gaia-button>
+    <slot></slot>
+  </div>
+</div>

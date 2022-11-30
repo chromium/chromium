@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,14 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/mojom/process.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
-#include "components/arc/mojom/process.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 
 namespace task_manager {
 
@@ -26,6 +24,8 @@ class ArcProcessTask
       public arc::ConnectionObserver<arc::mojom::IntentHelperInstance> {
  public:
   explicit ArcProcessTask(arc::ArcProcess arc_process);
+  ArcProcessTask(const ArcProcessTask&) = delete;
+  ArcProcessTask& operator=(const ArcProcessTask&) = delete;
   ~ArcProcessTask() override;
 
   // task_manager::Task:
@@ -55,8 +55,6 @@ class ArcProcessTask
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ArcProcessTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProcessTask);
 };
 
 }  // namespace task_manager

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/assistant/test_support/fake_s3_server.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -20,17 +19,14 @@ class PrefService;
 
 namespace ash {
 class AssistantTestApi;
-}  // namespace ash
+}
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
-class FakeS3Server;
 class LoggedInUserMixin;
 
 // Default wait time before we conclude the wait actions have timed out.
-constexpr base::TimeDelta kDefaultWaitTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDefaultWaitTimeout = base::Seconds(10);
 
 // Creates everything required to test the Assistant in browser tests.
 // This includes:
@@ -40,9 +36,9 @@ constexpr base::TimeDelta kDefaultWaitTimeout =
 //     - Enabling the Assistant service.
 //     - Disabling all Assistant animations.
 //
-// See definition of |chromeos::assistant::FakeS3Server| for an explanation of
-// the different modes the fake S3 server can run in (specified by passing
-// |FakeS3Mode| into the constructor).
+// See definition of `FakeS3Server` for an explanation of the different modes
+// the fake S3 server can run in (specified by passing `FakeS3Mode` into the
+// constructor).
 class AssistantTestMixin : public InProcessBrowserTestMixin {
  public:
   AssistantTestMixin(InProcessBrowserTestMixinHost* host,
@@ -50,6 +46,10 @@ class AssistantTestMixin : public InProcessBrowserTestMixin {
                      net::EmbeddedTestServer* embedded_test_server,
                      FakeS3Mode mode,
                      int test_data_version);
+
+  AssistantTestMixin(const AssistantTestMixin&) = delete;
+  AssistantTestMixin& operator=(const AssistantTestMixin&) = delete;
+
   ~AssistantTestMixin() override;
 
   // InProcessBrowserTestMixin overrides:
@@ -131,18 +131,15 @@ class AssistantTestMixin : public InProcessBrowserTestMixin {
 
  private:
   PrefService* GetUserPreferences();
-  void SendKeyPress(ui::KeyboardCode key);
+  void SendKeyPress(::ui::KeyboardCode key);
   void DisableAssistant();
 
   FakeS3Server fake_s3_server_;
   FakeS3Mode mode_;
-  std::unique_ptr<ash::AssistantTestApi> test_api_;
+  std::unique_ptr<AssistantTestApi> test_api_;
   std::unique_ptr<LoggedInUserMixin> user_mixin_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantTestMixin);
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_TEST_MIXIN_H_

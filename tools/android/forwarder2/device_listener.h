@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "tools/android/forwarder2/forwarders_manager.h"
@@ -52,6 +51,9 @@ class DeviceListener {
       std::unique_ptr<Socket> host_socket,
       int port,
       ErrorCallback error_callback);
+
+  DeviceListener(const DeviceListener&) = delete;
+  DeviceListener& operator=(const DeviceListener&) = delete;
 
   ~DeviceListener();
 
@@ -99,8 +101,6 @@ class DeviceListener {
   scoped_refptr<base::SingleThreadTaskRunner> deletion_task_runner_;
   base::Thread thread_;
   ForwardersManager forwarders_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceListener);
 };
 
 }  // namespace forwarder

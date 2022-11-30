@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -22,15 +21,16 @@ class CORE_EXPORT CSSVariableParser {
  public:
   static bool ContainsValidVariableReferences(CSSParserTokenRange);
 
+  static CSSValue* ParseDeclarationIncludingCSSWide(const CSSTokenizedValue&,
+                                                    bool is_animation_tainted,
+                                                    const CSSParserContext&);
   static CSSCustomPropertyDeclaration* ParseDeclarationValue(
-      const AtomicString&,
       const CSSTokenizedValue&,
       bool is_animation_tainted,
       const CSSParserContext&);
-  static CSSVariableReferenceValue* ParseRegisteredPropertyValue(
+  static CSSVariableReferenceValue* ParseVariableReferenceValue(
       CSSParserTokenRange,
       const CSSParserContext&,
-      bool require_var_reference,
       bool is_animation_tainted);
 
   static bool IsValidVariableName(const CSSParserToken&);

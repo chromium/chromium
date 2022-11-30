@@ -1,13 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_H_
 
-#include "base/macros.h"
-
-namespace chromeos {
+namespace ash {
 
 // An interface that defines screen for adding users into multi-profile session.
 // Current implementation is a singleton.
@@ -19,6 +17,9 @@ class UserAddingScreen {
     virtual void OnUserAddingFinished() {}
     virtual ~Observer() {}
   };
+
+  UserAddingScreen(const UserAddingScreen&) = delete;
+  UserAddingScreen& operator=(const UserAddingScreen&) = delete;
 
   static UserAddingScreen* Get();
 
@@ -32,10 +33,14 @@ class UserAddingScreen {
  protected:
   UserAddingScreen();
   virtual ~UserAddingScreen();
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::UserAddingScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_H_

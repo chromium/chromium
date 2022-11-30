@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,28 +6,68 @@
 
 #include <utility>
 
+#include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
-#include "components/content_capture/browser/content_capture_receiver_manager.h"
+#include "base/values.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
 namespace content_capture {
 
 namespace {
 
-ContentCaptureReceiverManager* GetContentCaptureReceiverManager(
+OnscreenContentProvider* GetOnscreenContentProvider(
     content::RenderFrameHost* rfh) {
   if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh))
-    return ContentCaptureReceiverManager::FromWebContents(web_contents);
+    return OnscreenContentProvider::FromWebContents(web_contents);
   return nullptr;
 }
 
+std::string ToFaviconTypeString(blink::mojom::FaviconIconType type) {
+  if (type == blink::mojom::FaviconIconType::kFavicon)
+    return "favicon";
+  else if (type == blink::mojom::FaviconIconType::kTouchIcon)
+    return "touch icon";
+  else if (type == blink::mojom::FaviconIconType::kTouchPrecomposedIcon)
+    return "touch precomposed icon";
+  return "invalid";
+}
+
 }  // namespace
+
+// static
+std::string ContentCaptureReceiver::ToJSON(
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  if (candidates.empty())
+    return std::string();
+  base::Value favicon_array(base::Value::Type::LIST);
+  for (const auto& favicon_url : candidates) {
+    base::Value favicon(base::Value::Type::DICTIONARY);
+    favicon.SetStringKey("url", favicon_url->icon_url.spec());
+    favicon.SetStringKey("type", ToFaviconTypeString(favicon_url->icon_type));
+
+    if (!favicon_url->icon_sizes.empty()) {
+      base::Value sizes(base::Value::Type::LIST);
+      for (auto icon_size : favicon_url->icon_sizes) {
+        base::Value size(base::Value::Type::DICTIONARY);
+        size.SetIntKey("width", icon_size.width());
+        size.SetIntKey("height", icon_size.height());
+        sizes.Append(std::move(size));
+      }
+      favicon.SetKey("sizes", std::move(sizes));
+    }
+    favicon_array.Append(std::move(favicon));
+  }
+  std::string result;
+  base::JSONWriter::Write(favicon_array, &result);
+  return result;
+}
 
 ContentCaptureReceiver::ContentCaptureReceiver(content::RenderFrameHost* rfh)
     : rfh_(rfh), id_(GetIdFrom(rfh)) {}
@@ -48,8 +88,8 @@ void ContentCaptureReceiver::BindPendingReceiver(
 void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
                                                bool first_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* manager = GetContentCaptureReceiverManager(rfh_);
-  if (!manager)
+  auto* provider = GetOnscreenContentProvider(rfh_);
+  if (!provider)
     return;
 
   if (first_data) {
@@ -66,6 +106,8 @@ void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
     // Copies everything except id and children.
     frame_content_capture_data_.url = data.value;
     frame_content_capture_data_.bounds = data.bounds;
+    RetrieveFaviconURL();
+
     has_session_ = true;
   }
   // We can't avoid copy the data here because frame needs to be replaced.
@@ -73,28 +115,28 @@ void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
   // be reset once activity is resumed, URL is needed to rebuild session.
   ContentCaptureFrame frame(frame_content_capture_data_);
   frame.children = data.children;
-  manager->DidCaptureContent(this, frame);
+  provider->DidCaptureContent(this, frame);
 }
 
 void ContentCaptureReceiver::DidUpdateContent(const ContentCaptureData& data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* manager = GetContentCaptureReceiverManager(rfh_);
-  if (!manager)
+  auto* provider = GetOnscreenContentProvider(rfh_);
+  if (!provider)
     return;
 
   // We can't avoid copy the data here because frame needs to be replaced.
   ContentCaptureFrame frame(frame_content_capture_data_);
   frame.children = data.children;
-  manager->DidUpdateContent(this, frame);
+  provider->DidUpdateContent(this, frame);
 }
 
 void ContentCaptureReceiver::DidRemoveContent(
     const std::vector<int64_t>& data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* manager = GetContentCaptureReceiverManager(rfh_);
-  if (!manager)
+  auto* provider = GetOnscreenContentProvider(rfh_);
+  if (!provider)
     return;
-  manager->DidRemoveContent(this, data);
+  provider->DidRemoveContent(this, data);
 }
 
 void ContentCaptureReceiver::StartCapture() {
@@ -126,10 +168,10 @@ void ContentCaptureReceiver::RemoveSession() {
 
   // TODO(crbug.com/995952): Find a way to notify of session being removed if
   // rfh isn't available.
-  if (auto* manager = GetContentCaptureReceiverManager(rfh_)) {
-    manager->DidRemoveSession(this);
+  if (auto* provider = GetOnscreenContentProvider(rfh_)) {
+    provider->DidRemoveSession(this);
     has_session_ = false;
-    // We can reset the frame_content_capture_data_ here, because it could be
+    // We can't reset the frame_content_capture_data_ here, because it could be
     // used by GetFrameContentCaptureDataLastSeen(), has_session_ is used to
     // check if new session shall be created as needed.
   }
@@ -162,17 +204,37 @@ void ContentCaptureReceiver::SetTitle(const std::u16string& title) {
 
   title_update_task_runner_->PostDelayedTask(
       FROM_HERE, notify_title_update_callback_->callback(),
-      base::TimeDelta::FromSeconds(exponential_delay_));
+      base::Seconds(exponential_delay_));
 
   exponential_delay_ =
       exponential_delay_ < 256 ? exponential_delay_ * 2 : exponential_delay_;
 }
 
+void ContentCaptureReceiver::UpdateFaviconURL(
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  if (!has_session_)
+    return;
+  frame_content_capture_data_.favicon = ToJSON(candidates);
+  auto* provider = GetOnscreenContentProvider(rfh_);
+  if (!provider)
+    return;
+  provider->DidUpdateFavicon(this);
+}
+
+void ContentCaptureReceiver::RetrieveFaviconURL() {
+  if (!rfh()->IsActive() || !rfh()->IsInPrimaryMainFrame() ||
+      disable_get_favicon_from_web_contents_for_testing()) {
+    frame_content_capture_data_.favicon = std::string();
+  } else {
+    frame_content_capture_data_.favicon = ToJSON(rfh()->FaviconURLs());
+  }
+}
+
 void ContentCaptureReceiver::NotifyTitleUpdate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (auto* manager = GetContentCaptureReceiverManager(rfh_))
-    manager->DidUpdateTitle(this);
+  if (auto* provider = GetOnscreenContentProvider(rfh_))
+    provider->DidUpdateTitle(this);
 
   // Reset the task after running.
   notify_title_update_callback_ = nullptr;
@@ -199,12 +261,28 @@ const ContentCaptureFrame& ContentCaptureReceiver::GetContentCaptureFrame() {
 
   frame_content_capture_data_.id = id_;
   frame_content_capture_data_.url = url;
-  const base::Optional<gfx::Size>& size = rfh_->GetFrameSize();
+  const absl::optional<gfx::Size>& size = rfh_->GetFrameSize();
   if (size.has_value())
     frame_content_capture_data_.bounds = gfx::Rect(size.value());
+  RetrieveFaviconURL();
 
   has_session_ = true;
   return frame_content_capture_data_;
+}
+
+// static
+bool
+    ContentCaptureReceiver::disable_get_favicon_from_web_contents_for_testing_ =
+        false;
+
+void ContentCaptureReceiver::DisableGetFaviconFromWebContentsForTesting() {
+  disable_get_favicon_from_web_contents_for_testing_ = true;
+}
+
+// static
+bool ContentCaptureReceiver::
+    disable_get_favicon_from_web_contents_for_testing() {
+  return disable_get_favicon_from_web_contents_for_testing_;
 }
 
 }  // namespace content_capture

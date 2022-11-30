@@ -1,11 +1,11 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Types for building models of metric description xml files.
 
 UMA uses several XML files to allow clients to describe the metrics that they
 collect, e.g.
-https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/rappor/rappor.xml
+https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/rappor/rappor.xml
 
 These types can be used to build models that describe the canonical formatted
 structure of these files, and the models can be used to extract the contents of

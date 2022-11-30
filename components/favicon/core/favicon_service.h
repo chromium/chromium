@@ -1,11 +1,10 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_SERVICE_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_SERVICE_H_
 
-#include <vector>
 
 #include "base/callback.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -114,8 +113,8 @@ class FaviconService : public CoreFaviconService, public LargeFaviconProvider {
   // Set the favicon for |page_url| for |icon_type| in the thumbnail database.
   // Unlike SetFavicons(), this method will not delete preexisting bitmap data
   // which is associated to |page_url| if at all possible. Use this method if
-  // the favicon bitmaps for any of ui::GetSupportedScaleFactors() are not
-  // known.
+  // the favicon bitmaps for any of ui::GetSupportedResourceScaleFactors() are
+  // not known.
   virtual void MergeFavicon(const GURL& page_url,
                             const GURL& icon_url,
                             favicon_base::IconType icon_type,

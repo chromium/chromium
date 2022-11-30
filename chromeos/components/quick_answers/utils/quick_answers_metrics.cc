@@ -1,18 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chromeos/components/quick_answers/quick_answers_notice.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 namespace {
+
 const char kQuickAnswerActiveImpression[] = "QuickAnswers.ActiveImpression";
 const char kQuickAnswerClick[] = "QuickAnswers.Click";
 const char kQuickAnswerResult[] = "QuickAnswers.Result";
@@ -21,12 +22,22 @@ const char kQuickAnswerLoadingStatus[] = "QuickAnswers.Loading.Status";
 const char kQuickAnswerLoadingDuration[] = "QuickAnswers.Loading.Duration";
 const char kQuickAnswerSelectedContentLength[] =
     "QuickAnswers.SelectedContent.Length";
-const char kDurationSuffix[] = ".Duration";
-
-const char kQuickAnswersNotice[] = "QuickAnswers.Consent";
-const char kQuickAnswersNoticeDuration[] = "QuickAnswers.Consent.Duration";
-const char kQuickAnswersNoticeImpression[] = "QuickAnswers.Consent.Impression";
+const char kQuickAnswersRequestTextLength[] = "QuickAnswers.RequestTextLength";
+const char kQuickAnswersTtsEngineEvent[] =
+    "QuickAnswers.TextToSpeech.EngineEvent";
+const char kQuickAnswersDictionaryIntentSource[] =
+    "QuickAnswers.DictionaryIntent.Source";
+const char kQuickAnswersDictionaryIntentLanguage[] =
+    "QuickAnswers.DictionaryIntent.Language";
 const char kQuickAnswersNetworkError[] = "QuickAnswers.NetworkError.IntentType";
+const char kQuickAnswersNetworkResponseCode[] =
+    "QuickAnswers.NetworkError.ResponseCode";
+const char kQuickAnswerFeatureEnabled[] = "QuickAnswers.FeatureEnabled";
+
+const char kDurationSuffix[] = ".Duration";
+const char kDefinitionSuffix[] = ".Definition";
+const char kTranslationSuffix[] = ".Translation";
+const char kUnitConversionSuffix[] = ".UnitConversion";
 
 std::string ResultTypeToString(ResultType result_type) {
   switch (result_type) {
@@ -43,17 +54,6 @@ std::string ResultTypeToString(ResultType result_type) {
     default:
       NOTREACHED() << "Invalid ResultType.";
       return ".Unknown";
-  }
-}
-
-std::string NoticeInteractionTypeToString(NoticeInteractionType type) {
-  switch (type) {
-    case NoticeInteractionType::kAccept:
-      return "Accept";
-    case NoticeInteractionType::kManageSettings:
-      return "ManageSettings";
-    case NoticeInteractionType::kDismiss:
-      return "Dismiss";
   }
 }
 
@@ -99,39 +99,72 @@ void RecordSelectedTextLength(int length) {
   base::UmaHistogramCounts1000(kQuickAnswerSelectedContentLength, length);
 }
 
+void RecordRequestTextLength(IntentType intent_type, int length) {
+  std::string histogram_name = kQuickAnswersRequestTextLength;
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      histogram_name += kDefinitionSuffix;
+      break;
+    case IntentType::kTranslation:
+      histogram_name += kTranslationSuffix;
+      break;
+    case IntentType::kUnit:
+      histogram_name += kUnitConversionSuffix;
+      break;
+    case IntentType::kUnknown:
+      return;
+  }
+
+  base::UmaHistogramCounts1000(histogram_name, length);
+}
+
 void RecordActiveImpression(ResultType result_type,
                             const base::TimeDelta duration) {
   RecordTypeAndDuration(kQuickAnswerActiveImpression, result_type, duration,
                         /*is_medium_bucketization=*/true);
 }
 
-void RecordNoticeInteraction(NoticeInteractionType type,
-                             int nth_impression,
-                             const base::TimeDelta duration) {
-  std::string interaction_type = NoticeInteractionTypeToString(type);
-  base::UmaHistogramExactLinear(
-      base::StringPrintf("%s.%s", kQuickAnswersNoticeImpression,
-                         interaction_type.c_str()),
-      nth_impression, kNoticeImpressionCap);
-  base::UmaHistogramTimes(
-      base::StringPrintf("%s.%s", kQuickAnswersNoticeDuration,
-                         interaction_type.c_str()),
-      duration);
-}
-
-void RecordNoticeImpression(int nth_impression) {
-  // Record every impression event.
-  base::UmaHistogramExactLinear(kQuickAnswersNotice, nth_impression,
-                                kNoticeImpressionCap);
-}
-
 void RecordIntentType(IntentType intent_type) {
   base::UmaHistogramEnumeration(kQuickAnswerIntent, intent_type);
 }
 
-void RecordNetworkError(IntentType intent_type) {
+void RecordNetworkError(IntentType intent_type, int response_code) {
   base::UmaHistogramEnumeration(kQuickAnswersNetworkError, intent_type);
+
+  std::string histogram_name = kQuickAnswersNetworkResponseCode;
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      histogram_name += kDefinitionSuffix;
+      break;
+    case IntentType::kTranslation:
+      histogram_name += kTranslationSuffix;
+      break;
+    case IntentType::kUnit:
+      histogram_name += kUnitConversionSuffix;
+      break;
+    case IntentType::kUnknown:
+      return;
+  }
+
+  base::UmaHistogramSparse(histogram_name, response_code);
+}
+
+void RecordTtsEngineEvent(TtsEngineEvent event) {
+  base::UmaHistogramEnumeration(kQuickAnswersTtsEngineEvent, event);
+}
+
+void RecordDictionaryIntentSource(DictionaryIntentSource source) {
+  base::UmaHistogramEnumeration(kQuickAnswersDictionaryIntentSource, source);
+}
+
+void RecordDictionaryIntentLanguage(const std::string& language) {
+  base::UmaHistogramSparse(
+      kQuickAnswersDictionaryIntentLanguage,
+      language::LanguageUsageMetrics::ToLanguageCodeHash(language));
+}
+
+void RecordFeatureEnabled(bool enabled) {
+  base::UmaHistogramBoolean(kQuickAnswerFeatureEnabled, enabled);
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos

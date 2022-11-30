@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,19 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "components/find_in_page/find_result_observer.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/public/tab.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "weblayer/browser/browser_controls_navigation_state_handler_delegate.h"
 #endif
@@ -29,10 +30,6 @@
 namespace js_injection {
 class JsCommunicationHost;
 }
-
-namespace autofill {
-class AutofillProvider;
-}  // namespace autofill
 
 namespace blink {
 namespace web_pref {
@@ -63,7 +60,7 @@ class NavigationControllerImpl;
 class NewTabDelegate;
 class ProfileImpl;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class BrowserControlsContainerView;
 enum class ControlsVisibilityReason;
 #endif
@@ -71,7 +68,7 @@ enum class ControlsVisibilityReason;
 class TabImpl : public Tab,
                 public content::WebContentsDelegate,
                 public content::WebContentsObserver,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                 public BrowserControlsNavigationStateHandlerDelegate,
 #endif
                 public find_in_page::FindResultObserver {
@@ -100,7 +97,7 @@ class TabImpl : public Tab,
   };
 
   // TODO(sky): investigate a better way to not have so many ifdefs.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TabImpl(ProfileImpl* profile,
           const base::android::JavaParamRef<jobject>& java_impl,
           std::unique_ptr<content::WebContents> web_contents);
@@ -108,6 +105,10 @@ class TabImpl : public Tab,
   explicit TabImpl(ProfileImpl* profile,
                    std::unique_ptr<content::WebContents> web_contents,
                    const std::string& guid = std::string());
+
+  TabImpl(const TabImpl&) = delete;
+  TabImpl& operator=(const TabImpl&) = delete;
+
   ~TabImpl() override;
 
   // Returns the TabImpl from the specified WebContents (which may be null), or
@@ -134,7 +135,7 @@ class TabImpl : public Tab,
 
   void ShowContextMenu(const content::ContextMenuParams& params);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> GetJavaTab() {
     return java_impl_;
   }
@@ -160,14 +161,10 @@ class TabImpl : public Tab,
   void SetJavaImpl(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& impl);
 
-  // Invoked every time that the Java-side AutofillProvider instance is
-  // changed (set to null or to a new object). On first invocation with a non-
-  // null object initializes the native Autofill infrastructure. On
-  // subsequent invocations updates the association of that native
-  // infrastructure with its Java counterpart.
-  void OnAutofillProviderChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& autofill_provider);
+  // Invoked every time that the Java-side AutofillProvider instance is created,
+  // the native side autofill might have been initialized in the case that
+  // Android context is switched.
+  void InitializeAutofillIfNecessary(JNIEnv* env);
   void UpdateBrowserControlsConstraint(JNIEnv* env,
                                        jint constraint,
                                        jboolean animate);
@@ -233,7 +230,9 @@ class TabImpl : public Tab,
       const std::u16string& js_object_name) override;
   std::unique_ptr<FaviconFetcher> CreateFaviconFetcher(
       FaviconFetcherDelegate* delegate) override;
-#if !defined(OS_ANDROID)
+  void SetTranslateTargetLanguage(
+      const std::string& translate_target_lang) override;
+#if !BUILDFLAG(IS_ANDROID)
   void AttachToView(views::WebView* web_view) override;
 #endif
 
@@ -243,9 +242,10 @@ class TabImpl : public Tab,
   // Executes |script| with a user gesture.
   void ExecuteScriptWithUserGestureForTests(const std::u16string& script);
 
-  // Initializes the autofill system with |provider| for tests.
-  void InitializeAutofillForTests(
-      std::unique_ptr<autofill::AutofillProvider> provider);
+#if BUILDFLAG(IS_ANDROID)
+  // Initializes the autofill system for tests.
+  void InitializeAutofillForTests();
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   // content::WebContentsDelegate:
@@ -257,11 +257,13 @@ class TabImpl : public Tab,
                               content::InvalidateTypes changed_flags) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* web_contents) override;
-  content::ColorChooser* OpenColorChooser(
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* web_contents,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)
       override;
+#endif
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
@@ -277,6 +279,7 @@ class TabImpl : public Tab,
       content::WebContents* web_contents) override;
   bool OnlyExpandTopControlsAtPageTop() override;
   bool ShouldAnimateBrowserControlsHeightChanges() override;
+  bool IsBackForwardCacheSupported() override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
@@ -296,7 +299,7 @@ class TabImpl : public Tab,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   void CloseContents(content::WebContents* source) override;
@@ -306,7 +309,7 @@ class TabImpl : public Tab,
                  const gfx::Rect& selection_rect,
                  int active_match_ordinal,
                  bool final_update) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void FindMatchRectsReply(content::WebContents* web_contents,
                            int version,
                            const std::vector<gfx::RectF>& rects,
@@ -326,13 +329,14 @@ class TabImpl : public Tab,
 #endif
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidChangeVisibleSecurityState() override;
 
   // find_in_page::FindResultObserver:
   void OnFindResultAvailable(content::WebContents* web_contents) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // BrowserControlsNavigationStateHandlerDelegate:
   void OnBrowserControlsStateStateChanged(
       ControlsVisibilityReason reason,
@@ -346,15 +350,14 @@ class TabImpl : public Tab,
 
   void UpdateRendererPrefs(bool should_sync_prefs);
 
-  void InitializeAutofill();
-
   // Returns the FindTabHelper for the page, or null if none exists.
   find_in_page::FindTabHelper* GetFindTabHelper();
 
   static sessions::SessionTabHelperDelegate* GetSessionServiceTabHelperDelegate(
       content::WebContents* web_contents);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  void InitializeAutofillDriver();
   void SetBrowserControlsConstraint(ControlsVisibilityReason reason,
                                     cc::BrowserControlsState constraint);
 #endif
@@ -365,20 +368,21 @@ class TabImpl : public Tab,
 
   void EnterFullscreenImpl();
 
-  BrowserImpl* browser_ = nullptr;
-  ErrorPageDelegate* error_page_delegate_ = nullptr;
-  FullscreenDelegate* fullscreen_delegate_ = nullptr;
-  NewTabDelegate* new_tab_delegate_ = nullptr;
-  GoogleAccountsDelegate* google_accounts_delegate_ = nullptr;
-  ProfileImpl* profile_;
+  raw_ptr<BrowserImpl> browser_ = nullptr;
+  raw_ptr<ErrorPageDelegate> error_page_delegate_ = nullptr;
+  raw_ptr<FullscreenDelegate> fullscreen_delegate_ = nullptr;
+  raw_ptr<NewTabDelegate> new_tab_delegate_ = nullptr;
+  raw_ptr<GoogleAccountsDelegate> google_accounts_delegate_ = nullptr;
+  raw_ptr<ProfileImpl> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NavigationControllerImpl> navigation_controller_;
   base::ObserverList<TabObserver>::Unchecked observers_;
   base::CallbackListSubscription locale_change_subscription_;
 
-#if defined(OS_ANDROID)
-  BrowserControlsContainerView* top_controls_container_view_ = nullptr;
-  BrowserControlsContainerView* bottom_controls_container_view_ = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  raw_ptr<BrowserControlsContainerView> top_controls_container_view_ = nullptr;
+  raw_ptr<BrowserControlsContainerView> bottom_controls_container_view_ =
+      nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
   std::unique_ptr<BrowserControlsNavigationStateHandler>
       browser_controls_navigation_state_handler_;
@@ -401,8 +405,6 @@ class TabImpl : public Tab,
   // If true, the fullscreen delegate is called when the tab gains active.
   bool enter_fullscreen_on_gained_active_ = false;
 
-  std::unique_ptr<autofill::AutofillProvider> autofill_provider_;
-
   const std::string guid_;
 
   std::map<std::string, std::string> data_;
@@ -413,8 +415,6 @@ class TabImpl : public Tab,
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
   base::WeakPtrFactory<TabImpl> weak_ptr_factory_for_fullscreen_exit_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabImpl);
 };
 
 }  // namespace weblayer

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
@@ -23,6 +22,10 @@ class GlobalWebStateEventTracker : public WebStateObserver {
  public:
   // Returns the instance of GlobalWebStateEventTracker.
   static GlobalWebStateEventTracker* GetInstance();
+
+  GlobalWebStateEventTracker(const GlobalWebStateEventTracker&) = delete;
+  GlobalWebStateEventTracker& operator=(const GlobalWebStateEventTracker&) =
+      delete;
 
   // Adds/removes observers.
   void AddObserver(GlobalWebStateObserver* observer);
@@ -48,12 +51,11 @@ class GlobalWebStateEventTracker : public WebStateObserver {
   ~GlobalWebStateEventTracker() override;
 
   // ScopedObserver used to track registration with WebState.
-  ScopedObserver<WebState, WebStateObserver> scoped_observer_{this};
+  base::ScopedMultiSourceObservation<WebState, WebStateObserver>
+      scoped_observations_{this};
 
   // List of observers currently registered with the tracker.
   base::ObserverList<GlobalWebStateObserver, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalWebStateEventTracker);
 };
 
 }  // namespace web

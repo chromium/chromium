@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 namespace network {
 
 OptionalTrustTokenParams::OptionalTrustTokenParams() = default;
-OptionalTrustTokenParams::OptionalTrustTokenParams(base::nullopt_t) {}
+OptionalTrustTokenParams::OptionalTrustTokenParams(absl::nullopt_t) {}
 OptionalTrustTokenParams::OptionalTrustTokenParams(
     mojom::TrustTokenParamsPtr ptr)
     : ptr_(std::move(ptr)) {}

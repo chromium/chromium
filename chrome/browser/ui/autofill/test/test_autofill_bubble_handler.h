@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
@@ -25,6 +24,11 @@ class TestSaveUPIBubble final : public SaveUPIBubble {
 class TestAutofillBubbleHandler : public AutofillBubbleHandler {
  public:
   TestAutofillBubbleHandler();
+
+  TestAutofillBubbleHandler(const TestAutofillBubbleHandler&) = delete;
+  TestAutofillBubbleHandler& operator=(const TestAutofillBubbleHandler&) =
+      delete;
+
   ~TestAutofillBubbleHandler() override;
 
   // AutofillBubbleHandler:
@@ -45,11 +49,23 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       SaveUPIBubbleController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* contents,
-      SaveAddressProfileBubbleController* controller,
+      SaveUpdateAddressProfileBubbleController* controller,
+      bool is_user_gesture) override;
+  AutofillBubbleBase* ShowUpdateAddressProfileBubble(
+      content::WebContents* contents,
+      SaveUpdateAddressProfileBubbleController* controller,
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowEditAddressProfileDialog(
       content::WebContents* contents,
       EditAddressProfileDialogController* controller) override;
+  AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
+      content::WebContents* web_contents,
+      VirtualCardManualFallbackBubbleController* controller,
+      bool is_user_gesture) override;
+  AutofillBubbleBase* ShowVirtualCardEnrollBubble(
+      content::WebContents* web_contents,
+      VirtualCardEnrollBubbleController* controller,
+      bool is_user_gesture) override;
   void OnPasswordSaved() override;
 
  private:
@@ -58,9 +74,10 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> save_card_bubble_view_;
   std::unique_ptr<TestSaveUPIBubble> save_upi_bubble_;
   std::unique_ptr<TestAutofillBubble> save_address_profile_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> update_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> edit_address_profile_bubble_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillBubbleHandler);
+  std::unique_ptr<TestAutofillBubble> virtual_card_manual_fallback_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> virtual_card_enroll_bubble_view_;
 };
 
 }  // namespace autofill

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ namespace {
 std::u16string FormatUrlToSubdomain(const GURL& url) {
   std::u16string formated_url = url_formatter::FormatUrl(
       url, url_formatter::kFormatUrlOmitTrivialSubdomains,
-      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   return base::UTF8ToUTF16(GURL(formated_url).host());
 }
 
@@ -34,8 +34,10 @@ TabUIHelper::TabUIData::TabUIData(const GURL& url)
     : title(FormatUrlToSubdomain(url)), favicon(favicon::GetDefaultFavicon()) {}
 
 TabUIHelper::TabUIHelper(content::WebContents* contents)
-    : WebContentsObserver(contents) {}
-TabUIHelper::~TabUIHelper() {}
+    : WebContentsObserver(contents),
+      content::WebContentsUserData<TabUIHelper>(*contents) {}
+
+TabUIHelper::~TabUIHelper() = default;
 
 std::u16string TabUIHelper::GetTitle() const {
   const std::u16string& contents_title = web_contents()->GetTitle();
@@ -45,7 +47,7 @@ std::u16string TabUIHelper::GetTitle() const {
   if (tab_ui_data_)
     return tab_ui_data_->title;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
 #else
   return std::u16string();
@@ -93,7 +95,8 @@ void TabUIHelper::NotifyInitialNavigationDelayed(bool is_navigation_delayed) {
 
 void TabUIHelper::DidStopLoading() {
   // Reset the properties after the initial navigation finishes loading, so that
-  // latter navigations are not affected.
+  // latter navigations are not affected. Note that the prerendered page won't
+  // reset the properties because DidStopLoading is not called for prerendering.
   is_navigation_delayed_ = false;
   created_by_session_restore_ = false;
   tab_ui_data_.reset();
@@ -151,4 +154,4 @@ void TabUIHelper::UpdateFavicon(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper);

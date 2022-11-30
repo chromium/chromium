@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
@@ -22,6 +21,12 @@ class MockRTCPeerConnectionHandlerClient
     : public RTCPeerConnectionHandlerClient {
  public:
   MockRTCPeerConnectionHandlerClient();
+
+  MockRTCPeerConnectionHandlerClient(
+      const MockRTCPeerConnectionHandlerClient&) = delete;
+  MockRTCPeerConnectionHandlerClient& operator=(
+      const MockRTCPeerConnectionHandlerClient&) = delete;
+
   ~MockRTCPeerConnectionHandlerClient() override;
 
   // RTCPeerConnectionHandlerClient implementation.
@@ -30,7 +35,7 @@ class MockRTCPeerConnectionHandlerClient
                void(RTCIceCandidatePlatform* candidate));
   MOCK_METHOD6(DidFailICECandidate,
                void(const String& address,
-                    base::Optional<uint16_t> port,
+                    absl::optional<uint16_t> port,
                     const String& host_candidate,
                     const String& url,
                     int error_code,
@@ -42,19 +47,9 @@ class MockRTCPeerConnectionHandlerClient
                     RTCSessionDescriptionPlatform*));
   MOCK_METHOD1(DidChangeIceGatheringState,
                void(webrtc::PeerConnectionInterface::IceGatheringState state));
-  MOCK_METHOD1(DidChangeIceConnectionState,
-               void(webrtc::PeerConnectionInterface::IceConnectionState state));
   MOCK_METHOD1(
       DidChangePeerConnectionState,
       void(webrtc::PeerConnectionInterface::PeerConnectionState state));
-  void DidModifyReceiversPlanB(
-      webrtc::PeerConnectionInterface::SignalingState signaling_state,
-      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_added,
-      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_removed)
-      override {
-    DidModifyReceiversPlanBForMock(signaling_state, &receivers_added,
-                                   &receivers_removed);
-  }
   MOCK_METHOD1(DidModifySctpTransport,
                void(blink::WebRTCSctpTransportSnapshot snapshot));
   void DidModifyTransceivers(
@@ -72,10 +67,6 @@ class MockRTCPeerConnectionHandlerClient
 
   // Move-only arguments do not play nicely with MOCK, the workaround is to
   // EXPECT_CALL with these instead.
-  MOCK_METHOD3(DidModifyReceiversPlanBForMock,
-               void(webrtc::PeerConnectionInterface::SignalingState,
-                    Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*,
-                    Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*));
   MOCK_METHOD3(DidModifyTransceiversForMock,
                void(webrtc::PeerConnectionInterface::SignalingState,
                     Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>*,
@@ -88,7 +79,7 @@ class MockRTCPeerConnectionHandlerClient
       Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_removed);
 
   const std::string& candidate_sdp() const { return candidate_sdp_; }
-  const base::Optional<uint16_t>& candidate_mlineindex() const {
+  const absl::optional<uint16_t>& candidate_mlineindex() const {
     return candidate_mline_index_;
   }
   const std::string& candidate_mid() const { return candidate_mid_; }
@@ -97,10 +88,8 @@ class MockRTCPeerConnectionHandlerClient
  private:
   String remote_stream_id_;
   std::string candidate_sdp_;
-  base::Optional<uint16_t> candidate_mline_index_;
+  absl::optional<uint16_t> candidate_mline_index_;
   std::string candidate_mid_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRTCPeerConnectionHandlerClient);
 };
 
 }  // namespace blink

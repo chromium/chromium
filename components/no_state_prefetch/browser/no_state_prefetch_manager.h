@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,10 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -23,9 +21,10 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_config.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -86,6 +85,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   NoStatePrefetchManager(
       content::BrowserContext* browser_context,
       std::unique_ptr<NoStatePrefetchManagerDelegate> delegate);
+
+  NoStatePrefetchManager(const NoStatePrefetchManager&) = delete;
+  NoStatePrefetchManager& operator=(const NoStatePrefetchManager&) = delete;
+
   ~NoStatePrefetchManager() override;
 
   // From KeyedService:
@@ -93,37 +96,38 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   // Entry points for adding prerenders.
 
-  // Adds a prerender for |url| if valid. |process_id| and |route_id| identify
-  // the RenderView that the prerender request came from. If |size| is empty, a
+  // Starts a prefetch for |url| if valid. |process_id| and |route_id| identify
+  // the RenderView that the prefetch request came from. If |size| is empty, a
   // default from the PrerenderConfig is used. Returns a NoStatePrefetchHandle
   // if the URL was added, NULL if it was not. If the launching RenderView is
-  // itself prerendering, the prerender is added as a pending prerender.
-  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromLinkRelPrerender(
+  // itself prefetching, the prefetch is added as a pending prefetch.
+  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromLinkRelPrerender(
       int process_id,
       int route_id,
       const GURL& url,
-      blink::mojom::PrerenderRelType rel_type,
+      blink::mojom::PrerenderTriggerType trigger_type,
       const content::Referrer& referrer,
       const url::Origin& initiator_origin,
       const gfx::Size& size);
 
-  // Adds a prerender for |url| if valid. As the prerender request is coming
+  // Starts a prefetch for |url| if valid. As the prefetch request is coming
   // from a source without a RenderFrameHost (i.e., the omnibox) we don't have a
   // child or route id, or a referrer. This method uses sensible values for
   // those. The |session_storage_namespace| matches the namespace of the active
-  // tab at the time the prerender is generated from the omnibox. Returns a
-  // NoStatePrefetchHandle or NULL. If the prerender fails, the prerender
-  // manager may fallback and initiate a preconnect to |url|.
-  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromOmnibox(
+  // tab at the time the prefetch is started from the omnibox. Returns a
+  // NoStatePrefetchHandle or NULL. If the prefetch fails, the prefetch manager
+  // may fallback and initiate a preconnect to |url|.
+  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromOmnibox(
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
 
-  // Adds a prerender for the prefetch url from NavigationPredictor on
-  // page load, if NoStatePrefetch and prefetch_after_preconnect are true.
-  // Uses the NavigationPredictor's browser context and the default
+  // Starts a prefetch for the prefetch url from NavigationPredictor on page
+  // load, if NoStatePrefetch and prefetch_after_preconnect are true. Uses the
+  // NavigationPredictor's browser context and the default
   // SessionStorageNamespace. Returns a NoStatePrefetchHandle or NULL.
-  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromNavigationPredictor(
+  std::unique_ptr<NoStatePrefetchHandle>
+  StartPrefetchingFromNavigationPredictor(
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
@@ -138,7 +142,15 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
 
-  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromExternalRequest(
+  // Adds a NoStatePrefetch that only allows for same origin requests (i.e.,
+  // requests that only redirect to the same origin).
+  std::unique_ptr<NoStatePrefetchHandle> AddSameOriginSpeculation(
+      const GURL& url,
+      content::SessionStorageNamespace* session_storage_namespace,
+      const gfx::Size& size,
+      const url::Origin& initiator_origin);
+
+  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromExternalRequest(
       const GURL& url,
       const content::Referrer& referrer,
       content::SessionStorageNamespace* session_storage_namespace,
@@ -155,15 +167,19 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Cancels all active prerenders.
   void CancelAllPrerenders();
 
+  // Destroys all pending prerenders using FinalStatus.  Also deletes them as
+  // well as any swapped out WebContents queued for destruction.
+  // Used both on destruction, and when clearing the browsing history.
+  void DestroyAllContents(FinalStatus final_status);
+
   // Moves a NoStatePrefetchContents to the pending delete list from the list of
   // active prerenders when prerendering should be cancelled.
   virtual void MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
                                         FinalStatus final_status);
 
-  // Query the list of current prerender pages to see if the given web contents
-  // is prerendering a page.
-  bool IsWebContentsPrerendering(
-      const content::WebContents* web_contents) const;
+  // Query the list of current prefetches to see if the given web contents is
+  // prefetching a page.
+  bool IsWebContentsPrefetching(const content::WebContents* web_contents) const;
 
   // Returns the NoStatePrefetchContents object for the given web_contents,
   // otherwise returns NULL. Note that the NoStatePrefetchContents may have been
@@ -177,9 +193,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   virtual NoStatePrefetchContents* GetNoStatePrefetchContentsForRoute(
       int child_id,
       int route_id) const;
-
-  // Returns a list of all WebContents being prerendered.
-  std::vector<content::WebContents*> GetAllPrerenderingContents() const;
 
   // Returns a list of all WebContents being NoStatePrefetched.
   std::vector<content::WebContents*>
@@ -221,14 +234,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   base::TimeTicks GetCurrentTimeTicks() const;
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
-  void DisablePageLoadMetricsObserverForTesting() {
-    page_load_metric_observer_disabled_ = true;
-  }
-
-  bool PageLoadMetricsObserverDisabledForTesting() const {
-    return page_load_metric_observer_disabled_;
-  }
-
   void AddObserver(std::unique_ptr<NoStatePrefetchManagerObserver> observer);
 
   // Notification that a prerender has completed and its bytes should be
@@ -268,38 +273,43 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Returns true iff the |url| is found in the list of recent prefetches.
   bool HasRecentlyPrefetchedUrlForTesting(const GURL& url);
 
-  // Adds a prerender for |url| from |initiator_origin|. The |origin| specifies
-  // how the prerender was added. Returns a NoStatePrefetchHandle or nullptr.
+  // Starts a prefetch for |url| from |initiator_origin|. The |origin| specifies
+  // how the prefetch was started. Returns a NoStatePrefetchHandle or nullptr.
   // Only for testing.
   std::unique_ptr<NoStatePrefetchHandle>
-  AddPrerenderWithPreconnectFallbackForTesting(
+  StartPrefetchingWithPreconnectFallbackForTesting(
       Origin origin,
       const GURL& url,
-      const base::Optional<url::Origin>& initiator_origin);
+      const absl::optional<url::Origin>& initiator_origin);
 
  protected:
-  class PrerenderData : public base::SupportsWeakPtr<PrerenderData> {
+  class NoStatePrefetchData
+      : public base::SupportsWeakPtr<NoStatePrefetchData> {
    public:
     struct OrderByExpiryTime;
 
-    PrerenderData(NoStatePrefetchManager* manager,
-                  std::unique_ptr<NoStatePrefetchContents> contents,
-                  base::TimeTicks expiry_time);
+    NoStatePrefetchData(NoStatePrefetchManager* manager,
+                        std::unique_ptr<NoStatePrefetchContents> contents,
+                        base::TimeTicks expiry_time);
 
-    ~PrerenderData();
+    NoStatePrefetchData(const NoStatePrefetchData&) = delete;
+    NoStatePrefetchData& operator=(const NoStatePrefetchData&) = delete;
 
-    // A new NoStatePrefetchHandle has been created for this PrerenderData.
+    ~NoStatePrefetchData();
+
+    // A new NoStatePrefetchHandle has been created for this
+    // NoStatePrefetchData.
     void OnHandleCreated(NoStatePrefetchHandle* handle);
 
     // The launcher associated with a handle is navigating away from the context
-    // that launched this prerender. If the prerender is active, it may stay
+    // that launched this prefetch. If the prerender is active, it may stay
     // alive briefly though, in case we we going through a redirect chain that
     // will eventually land at it.
     void OnHandleNavigatedAway(NoStatePrefetchHandle* handle);
 
     // The launcher associated with a handle has taken explicit action to cancel
-    // this prerender. We may well destroy the prerender in this case if no
-    // other handles continue to track it.
+    // this prefetch. We may well destroy the prerender in this case if no other
+    // handles continue to track it.
     void OnHandleCanceled(NoStatePrefetchHandle* handle);
 
     NoStatePrefetchContents* contents() { return contents_.get(); }
@@ -316,38 +326,35 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
     }
 
    private:
-    NoStatePrefetchManager* const manager_;
+    const raw_ptr<NoStatePrefetchManager> manager_;
     std::unique_ptr<NoStatePrefetchContents> contents_;
 
     // The number of distinct NoStatePrefetchHandles created for |this|,
-    // including ones that have called PrerenderData::OnHandleNavigatedAway(),
-    // but not counting the ones that have called
-    // PrerenderData::OnHandleCanceled(). For pending prerenders, this will
-    // always be 1, since the NoStatePrefetchManager only merges handles of
-    // running prerenders.
+    // including ones that have called
+    // NoStatePrefetchData::OnHandleNavigatedAway(), but not counting the ones
+    // that have called NoStatePrefetchData::OnHandleCanceled(). For pending
+    // prefetches, this will always be 1, since the NoStatePrefetchManager only
+    // merges handles of running prefetches.
     int handle_count_ = 0;
 
     // The time when OnHandleNavigatedAway was called.
     base::TimeTicks abandon_time_;
 
-    // After this time, this prerender is no longer fresh, and should be
-    // removed.
+    // After this time, this prefetch is no longer fresh, and should be removed.
     base::TimeTicks expiry_time_;
-
-    DISALLOW_COPY_AND_ASSIGN(PrerenderData);
   };
 
-  // Called by a PrerenderData to signal that the launcher has navigated away
-  // from the context that launched the prerender. A user may have clicked
+  // Called by a NoStatePrefetchData to signal that the launcher has navigated
+  // away from the context that launched the prefetch. A user may have clicked
   // a link in a page containing a <link rel=prerender> element, or the user
   // might have committed an omnibox navigation. This is used to possibly
-  // shorten the TTL of the prerendered page.
-  void SourceNavigatedAway(PrerenderData* prerender_data);
+  // shorten the TTL of the page for NoStatePrefetch.
+  void SourceNavigatedAway(NoStatePrefetchData* prefetch_data);
 
   // Same as base::SysInfo::IsLowEndDevice(), overridden in tests.
   virtual bool IsLowEndDevice() const;
 
-  // Whether network prediction is enabled for prerender origin, |origin|.
+  // Whether network prediction is enabled for prefetch origin, |origin|.
   bool IsPredictionEnabled(Origin origin);
 
  private:
@@ -358,30 +365,29 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   class OnCloseWebContentsDeleter;
   struct NavigationRecord;
-  using PrerenderDataVector = std::vector<std::unique_ptr<PrerenderData>>;
+  using NoStatePrefetchDataVector =
+      std::vector<std::unique_ptr<NoStatePrefetchData>>;
 
-  // Time interval before a new prerender is allowed.
-  static const int kMinTimeBetweenPrerendersMs = 500;
+  // Time interval before a new prefetch is allowed.
+  static const int kMinTimeBetweenPrefetchesMs = 500;
 
   // Time window for which we record old navigations, in milliseconds.
   static const int kNavigationRecordWindowMs = 5000;
 
-  // Adds a prerender for |url| from |referrer|. The |origin| specifies how the
-  // prerender was added. If |bounds| is empty, then
+  // Starts a prefetch for |url| from |referrer|. The |origin| specifies how the
+  // prefetch was started. If |bounds| is empty, then
   // NoStatePrefetchContents::StartPrerendering will instead use a default from
   // PrerenderConfig. Returns a NoStatePrefetchHandle or NULL.
-  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderWithPreconnectFallback(
+  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingWithPreconnectFallback(
       Origin origin,
       const GURL& url,
       const content::Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       const gfx::Rect& bounds,
       content::SessionStorageNamespace* session_storage_namespace);
 
   void StartSchedulingPeriodicCleanups();
   void StopSchedulingPeriodicCleanups();
-
-  void EvictOldestPrerendersIfNecessary();
 
   // Deletes stale and cancelled prerendered NoStatePrefetchContents, as well as
   // WebContents that have been replaced by prerendered WebContents.
@@ -406,26 +412,26 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   CreateNoStatePrefetchContents(
       const GURL& url,
       const content::Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       Origin origin);
 
-  // Insures the |active_prerenders_| are sorted by increasing expiry time. Call
-  // after every mutation of |active_prerenders_| that can possibly make it
+  // Insures the |active_prefetches_| are sorted by increasing expiry time. Call
+  // after every mutation of |active_prefetches_| that can possibly make it
   // unsorted (e.g. an insert, or changing an expiry time).
-  void SortActivePrerenders();
+  void SortActivePrefetches();
 
-  // Finds the active PrerenderData object for a running prerender matching
+  // Finds the active NoStatePrefetchData object for a running prefetch matching
   // |url| and |session_storage_namespace|.
-  PrerenderData* FindPrerenderData(
+  NoStatePrefetchData* FindNoStatePrefetchData(
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace);
 
   // Given the |no_state_prefetch_contents|, find the iterator in
-  // |active_prerenders_| corresponding to the given prerender.
-  PrerenderDataVector::iterator FindIteratorForNoStatePrefetchContents(
+  // |active_prefetches_| corresponding to the given prefetch.
+  NoStatePrefetchDataVector::iterator FindIteratorForNoStatePrefetchContents(
       NoStatePrefetchContents* no_state_prefetch_contents);
 
-  bool DoesRateLimitAllowPrerender(Origin origin) const;
+  bool DoesRateLimitAllowPrefetch(Origin origin) const;
 
   // Deletes old WebContents that have been replaced by prerendered ones.  This
   // is needed because they're replaced in a callback from the old WebContents,
@@ -455,11 +461,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Returns a new Value representing the pages currently being prerendered.
   std::unique_ptr<base::ListValue> GetActivePrerendersAsValue() const;
 
-  // Destroys all pending prerenders using FinalStatus.  Also deletes them as
-  // well as any swapped out WebContents queued for destruction.
-  // Used both on destruction, and when clearing the browsing history.
-  void DestroyAllContents(FinalStatus final_status);
-
   // Records the final status a prerender in the case that a
   // NoStatePrefetchContents was never created, adds a PrerenderHistory entry,
   // and may also initiate a preconnect to |url|.
@@ -475,17 +476,17 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   Config config_;
 
   // The browser_context that owns this NoStatePrefetchManager.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The delegate that allows content embedder to override the logic in this
   // class.
   std::unique_ptr<NoStatePrefetchManagerDelegate> delegate_;
 
-  // All running prerenders. Sorted by expiry time, in ascending order.
-  PrerenderDataVector active_prerenders_;
+  // All running prefetches. Sorted by expiry time, in ascending order.
+  NoStatePrefetchDataVector active_prefetches_;
 
-  // Prerenders awaiting deletion.
-  PrerenderDataVector to_delete_prerenders_;
+  // Prefetches awaiting deletion.
+  NoStatePrefetchDataVector to_delete_prefetches_;
 
   // List of recent navigations in this browser_context, sorted by ascending
   // |navigate_time_|.
@@ -501,8 +502,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // pages.
   base::RepeatingTimer repeating_timer_;
 
-  // Track time of last prerender to limit prerender spam.
-  base::TimeTicks last_prerender_start_time_;
+  // Track time of last prefetch to limit prefetch spam.
+  base::TimeTicks last_prefetch_start_time_;
 
   std::vector<std::unique_ptr<content::WebContents>> old_web_contents_list_;
 
@@ -524,15 +525,11 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   using PrerenderProcessSet = std::set<content::RenderProcessHost*>;
   PrerenderProcessSet prerender_process_hosts_;
 
-  const base::TickClock* tick_clock_;
-
-  bool page_load_metric_observer_disabled_ = false;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   std::vector<std::unique_ptr<NoStatePrefetchManagerObserver>> observers_;
 
   base::WeakPtrFactory<NoStatePrefetchManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchManager);
 };
 
 }  // namespace prerender

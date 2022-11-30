@@ -1,15 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ORIENTATION_DEVICE_H
-#define DEVICE_VR_ORIENTATION_DEVICE_H
+#ifndef DEVICE_VR_ORIENTATION_ORIENTATION_DEVICE_H_
+#define DEVICE_VR_ORIENTATION_ORIENTATION_DEVICE_H_
 
 #include <memory>
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -31,7 +30,7 @@ class VROrientationSession;
 // TODO(crbug.com/730440) If RELATIVE_ORIENTATION_QUATERNION is ever
 // implemented on Windows, use that instead.
 static constexpr mojom::SensorType kOrientationSensorType =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION;
 #else
     mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION;
@@ -76,7 +75,7 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDevice
   base::OnceClosure ready_callback_;
 
   // The initial state of the world used to define forwards.
-  base::Optional<gfx::Quaternion> base_pose_;
+  absl::optional<gfx::Quaternion> base_pose_;
   gfx::Quaternion latest_pose_;
 
   mojo::Remote<mojom::Sensor> sensor_;
@@ -88,4 +87,4 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDevice
 
 }  // namespace device
 
-#endif  // DEVICE_VR_ORIENTATION_DEVICE_H
+#endif  // DEVICE_VR_ORIENTATION_ORIENTATION_DEVICE_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,21 +24,21 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 @interface MetricsAppInterface : NSObject
 
 // Enable/Disable the metrics in the app for test.
-// |overrideMetricsAndCrashReportingForTesting| must be called before setting
+// `overrideMetricsAndCrashReportingForTesting` must be called before setting
 // the value.
-// |stopOverridingMetricsAndCrashReportingForTesting| must be called at the end
+// `stopOverridingMetricsAndCrashReportingForTesting` must be called at the end
 // of the test for cleanup.
-// |setMetricsAndCrashReportingForTesting:| can be called to enable/disable
+// `setMetricsAndCrashReportingForTesting:` can be called to enable/disable
 // metrics. It returns whether metrics were previously enabled.
 + (void)overrideMetricsAndCrashReportingForTesting;
 + (void)stopOverridingMetricsAndCrashReportingForTesting;
 + (BOOL)setMetricsAndCrashReportingForTesting:(BOOL)enabled;
 
-// Returns whether UKM recording is |enabled|.
+// Returns whether UKM recording is `enabled`.
 + (BOOL)checkUKMRecordingEnabled:(BOOL)enabled;
 
 // Returns YES if the ReportUserNoisedUserBirthYearAndGender feature is enabled.
-+ (BOOL)isReportUserNoisedUserBirthYearAndGenderEnabled WARN_UNUSED_RESULT;
++ (BOOL)isReportUserNoisedUserBirthYearAndGenderEnabled [[nodiscard]];
 
 // Returns the current UKM client ID.
 + (uint64_t)UKMClientID;
@@ -49,11 +49,11 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 // Adds a new sourceID for UKM.
 + (void)UKMRecordDummySource:(int64_t)sourceID;
 
-// Updates the network time to approximately |now|.
+// Updates the network time to approximately `now`.
 + (void)updateNetworkTime:(base::Time)now;
 
 // Gets the maximum eligible birth year for reporting demographics based on
-// |now|.
+// `now`.
 + (int)maximumEligibleBirthYearForTime:(base::Time)now;
 
 // If data are available, creates a UKM Report and stores it in the
@@ -90,34 +90,34 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 
 // Creates a chrome_test_util::HistogramTester that will record every histogram
 // sent during test.
-+ (NSError*)setupHistogramTester WARN_UNUSED_RESULT;
++ (NSError*)setupHistogramTester [[nodiscard]];
 
 // Releases the chrome_test_util::HistogramTester.
-+ (NSError*)releaseHistogramTester WARN_UNUSED_RESULT;
++ (NSError*)releaseHistogramTester [[nodiscard]];
 
 // We don't know the values of the samples, but we know how many there are.
 // This measures the diff from the snapshot taken when this object was
 // constructed.
 + (NSError*)expectTotalCount:(int)count
-                forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+                forHistogram:(NSString*)histogram [[nodiscard]];
 
 // We know the exact number of samples in a bucket, but other buckets may
 // have samples as well. Measures the diff from the snapshot taken when this
 // object was constructed.
 + (NSError*)expectCount:(int)count
               forBucket:(int)bucket
-           forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+           forHistogram:(NSString*)histogram [[nodiscard]];
 
 // We know the exact number of samples in a bucket, and that no other bucket
 // should have samples. Measures the diff from the snapshot taken when this
 // object was constructed.
 + (NSError*)expectUniqueSampleWithCount:(int)count
                               forBucket:(int)bucket
-                           forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+                           forHistogram:(NSString*)histogram [[nodiscard]];
 
-// Checks the sum of all samples recorder for |histogram|.
+// Checks the sum of all samples recorder for `histogram`.
 + (NSError*)expectSum:(NSInteger)sum
-         forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+         forHistogram:(NSString*)histogram [[nodiscard]];
 
 @end
 

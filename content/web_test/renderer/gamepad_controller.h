@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -26,6 +25,10 @@ class RenderFrame;
 class GamepadController : public base::SupportsWeakPtr<GamepadController> {
  public:
   GamepadController();
+
+  GamepadController(const GamepadController&) = delete;
+  GamepadController& operator=(const GamepadController&) = delete;
+
   ~GamepadController();
 
   void Reset();
@@ -77,6 +80,7 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
   void SetAxisCount(int index, int axes);
   void SetAxisData(int index, int axis, double data);
   void SetDualRumbleVibrationActuator(int index, bool enabled);
+  void SetTriggerRumbleVibrationActuator(int index, bool enabled);
 
   void OnInterfaceRequest(mojo::ScopedMessagePipeHandle handle);
 
@@ -95,8 +99,6 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
   device::GamepadHardwareBuffer* gamepads_ = nullptr;
 
   base::WeakPtrFactory<GamepadController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadController);
 };
 
 }  // namespace content

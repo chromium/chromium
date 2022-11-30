@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ const char kSecondUserCorpExampleComEmail[] = "bob@corp.example.com";
 const char kThirdUserCorpExampleComEmail[] = "carol@corp.example.com";
 const char kFourthUserCorpExampleTestEmail[] = "dan@corp.example.test";
 const char kFifthUserExampleTestEmail[] = "eve@example.test";
+const char kSixthUserCorpExampleTestEmail[] = "fatima@example.test";
 
 }  // namespace saml_test_users
 }  // namespace ash

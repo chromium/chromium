@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <ios>
 #include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
-#include "build/build_config.h"
 
 namespace base {
 namespace internal {
@@ -125,15 +125,11 @@ class VectorBuffer {
 
   // Trivially copyable types can use memcpy. trivially copyable implies
   // that there is a trivial destructor as we don't have to call it.
-  template <typename T2 = T,
-            typename std::enable_if<base::is_trivially_copyable<T2>::value,
-                                    int>::type = 0>
+  template <
+      typename T2 = T,
+      typename std::enable_if<std::is_trivially_copyable_v<T2>, int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
-    CHECK(!RangesOverlap(from_begin, from_end, to))
-        // TODO(crbug.com/1172816): Remove logging once root cause is found.
-        << std::hex << "from_begin: 0x" << get_uintptr(from_begin)
-        << ", from_end: 0x" << get_uintptr(from_end) << ", to: 0x"
-        << get_uintptr(to);
+    CHECK(!RangesOverlap(from_begin, from_end, to));
 
     memcpy(
         to, from_begin,
@@ -144,7 +140,7 @@ class VectorBuffer {
   // destruct the original.
   template <typename T2 = T,
             typename std::enable_if<std::is_move_constructible<T2>::value &&
-                                        !base::is_trivially_copyable<T2>::value,
+                                        !std::is_trivially_copyable_v<T2>,
                                     int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));
@@ -160,7 +156,7 @@ class VectorBuffer {
   // destruct the original.
   template <typename T2 = T,
             typename std::enable_if<!std::is_move_constructible<T2>::value &&
-                                        !base::is_trivially_copyable<T2>::value,
+                                        !std::is_trivially_copyable_v<T2>,
                                     int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));
@@ -185,7 +181,9 @@ class VectorBuffer {
                 .ValueOrDie() <= from_begin_uintptr);
   }
 
-  T* buffer_ = nullptr;
+  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data and tab_search:top100:2020).
+  RAW_PTR_EXCLUSION T* buffer_ = nullptr;
   size_t capacity_ = 0;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
+#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -27,6 +27,11 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
  public:
   explicit ChromePaymentRequestDelegate(
       content::RenderFrameHost* render_frame_host);
+
+  ChromePaymentRequestDelegate(const ChromePaymentRequestDelegate&) = delete;
+  ChromePaymentRequestDelegate& operator=(const ChromePaymentRequestDelegate&) =
+      delete;
+
   ~ChromePaymentRequestDelegate() override;
 
   // PaymentRequestDelegate:
@@ -39,19 +44,20 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   const std::string& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
-  void DoFullCardRequest(
-      const autofill::CreditCard& credit_card,
-      base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-          result_delegate) override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;
   autofill::RegionDataLoader* GetRegionDataLoader() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   std::string GetAuthenticatedEmail() const override;
   PrefService* GetPrefService() override;
   bool IsBrowserWindowActive() const override;
+  void ShowNoMatchingPaymentCredentialDialog(
+      const std::u16string& merchant_name,
+      const std::string& rp_id,
+      base::OnceClosure response_callback,
+      base::OnceClosure opt_out_callback) override;
 
   // ContentPaymentRequestDelegate:
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+  std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
@@ -64,7 +70,9 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
   PaymentRequestDialog* GetDialogForTesting() override;
-  const PaymentUIObserver* GetPaymentUIObserver() const override;
+  SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
+      override;
+  const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
 
  protected:
   // Reference to the dialog so that we can satisfy calls to CloseDialog(). This
@@ -80,9 +88,9 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
 
   std::unique_ptr<SecurePaymentConfirmationController> spc_dialog_;
 
-  content::GlobalFrameRoutingId frame_routing_id_;
+  std::unique_ptr<SecurePaymentConfirmationNoCreds> spc_no_creds_dialog_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromePaymentRequestDelegate);
+  content::GlobalRenderFrameHostId frame_routing_id_;
 };
 
 }  // namespace payments

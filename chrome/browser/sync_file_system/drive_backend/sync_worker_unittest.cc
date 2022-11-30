@@ -1,18 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.h"
@@ -51,19 +51,24 @@ class MockSyncTask : public ExclusiveTask {
   explicit MockSyncTask(bool used_network) {
     set_used_network(used_network);
   }
+
+  MockSyncTask(const MockSyncTask&) = delete;
+  MockSyncTask& operator=(const MockSyncTask&) = delete;
+
   ~MockSyncTask() override {}
 
   void RunExclusive(SyncStatusCallback callback) override {
     std::move(callback).Run(SYNC_STATUS_OK);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSyncTask);
 };
 
 class MockExtensionService : public TestExtensionService {
  public:
   MockExtensionService() : registry_(nullptr) {}
+
+  MockExtensionService(const MockExtensionService&) = delete;
+  MockExtensionService& operator=(const MockExtensionService&) = delete;
+
   ~MockExtensionService() override {}
 
   void AddExtension(const extensions::Extension* extension) override {
@@ -92,21 +97,23 @@ class MockExtensionService : public TestExtensionService {
 
  private:
   extensions::ExtensionRegistry registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExtensionService);
 };
 
 class SyncWorkerTest : public testing::Test,
                        public base::SupportsWeakPtr<SyncWorkerTest> {
  public:
   SyncWorkerTest() {}
+
+  SyncWorkerTest(const SyncWorkerTest&) = delete;
+  SyncWorkerTest& operator=(const SyncWorkerTest&) = delete;
+
   ~SyncWorkerTest() override {}
 
   void SetUp() override {
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("SyncWorkerTest");
 
-    extension_service_.reset(new MockExtensionService);
+    extension_service_ = std::make_unique<MockExtensionService>();
     std::unique_ptr<drive::DriveServiceInterface> fake_drive_service(
         new drive::FakeDriveService);
 
@@ -117,9 +124,9 @@ class SyncWorkerTest : public testing::Test,
             base::ThreadTaskRunnerHandle::Get() /* ui_task_runner */,
             base::ThreadTaskRunnerHandle::Get() /* worker_task_runner */));
 
-    sync_worker_.reset(
-        new SyncWorker(profile_dir_.GetPath(), extension_service_->AsWeakPtr(),
-                       &extension_service_->registry(), in_memory_env_.get()));
+    sync_worker_ = std::make_unique<SyncWorker>(
+        profile_dir_.GetPath(), extension_service_->AsWeakPtr(),
+        &extension_service_->registry(), in_memory_env_.get());
     sync_worker_->Initialize(std::move(sync_engine_context));
 
     sync_worker_->SetSyncEnabled(true);
@@ -161,8 +168,6 @@ class SyncWorkerTest : public testing::Test,
 
   std::unique_ptr<MockExtensionService> extension_service_;
   std::unique_ptr<SyncWorker> sync_worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncWorkerTest);
 };
 
 TEST_F(SyncWorkerTest, EnableOrigin) {

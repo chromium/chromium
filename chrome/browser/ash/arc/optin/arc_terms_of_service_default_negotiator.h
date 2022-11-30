@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_DEFAULT_NEGOTIATOR_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_negotiator.h"
@@ -28,6 +26,12 @@ class ArcTermsOfServiceDefaultNegotiator
  public:
   ArcTermsOfServiceDefaultNegotiator(PrefService* pref_service,
                                      ArcSupportHost* support_host);
+
+  ArcTermsOfServiceDefaultNegotiator(
+      const ArcTermsOfServiceDefaultNegotiator&) = delete;
+  ArcTermsOfServiceDefaultNegotiator& operator=(
+      const ArcTermsOfServiceDefaultNegotiator&) = delete;
+
   ~ArcTermsOfServiceDefaultNegotiator() override;
 
  private:
@@ -52,8 +56,6 @@ class ArcTermsOfServiceDefaultNegotiator
   ArcSupportHost* const support_host_;
 
   std::unique_ptr<ArcOptInPreferenceHandler> preference_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceDefaultNegotiator);
 };
 
 }  // namespace arc

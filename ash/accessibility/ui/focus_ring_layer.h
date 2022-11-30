@@ -1,16 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_ACCESSIBILITY_UI_FOCUS_RING_LAYER_H_
 #define ASH_ACCESSIBILITY_UI_FOCUS_RING_LAYER_H_
 
-#include <memory>
-
 #include "ash/accessibility/ui/accessibility_layer.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -22,11 +18,13 @@ namespace ash {
 class FocusRingLayer : public AccessibilityLayer {
  public:
   explicit FocusRingLayer(AccessibilityLayerDelegate* delegate);
+
+  FocusRingLayer(const FocusRingLayer&) = delete;
+  FocusRingLayer& operator=(const FocusRingLayer&) = delete;
+
   ~FocusRingLayer() override;
 
   // AccessibilityLayer overrides:
-  bool CanAnimate() const override;
-  bool NeedToAnimate() const override;
   int GetInset() const override;
 
   // Set a custom color, or reset to the default.
@@ -41,9 +39,7 @@ class FocusRingLayer : public AccessibilityLayer {
   // ui::LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;
 
-  base::Optional<SkColor> custom_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRingLayer);
+  absl::optional<SkColor> custom_color_;
 };
 
 }  // namespace ash

@@ -75,10 +75,11 @@ async_test(t => {
                     menu.lastElementChild);
 
       const elements = [ menu.lastElementChild,
-                         menu.lastElementChild.previousSibling ];
+                         menu.lastElementChild.previousSibling,
+                         menu.lastElementChild.previousSibling.previousSibling ];
 
       if (document.pictureInPictureEnabled)
-        elements.push(menu.lastElementChild.previousSibling.previousSibling);
+        elements.push(menu.lastElementChild.previousSibling.previousSibling.previousSibling);
 
       testNavigation(internals.shadowRoot(video), elements,
                      () => { eventSender.keyDown('ArrowUp'); },

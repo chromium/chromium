@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ PresentationNavigationPolicy::~PresentationNavigationPolicy() = default;
 bool PresentationNavigationPolicy::AllowNavigation(
     content::NavigationHandle* navigation_handle) {
   // We only care about top-level navigations that are cross-document.
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return true;
   }

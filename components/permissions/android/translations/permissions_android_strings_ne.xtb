@@ -1,14 +1,31 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1569387923882100876">जडित यन्त्र</translation>
+<translation id="1612196535745283361">यन्त्रहरू स्क्यान गर्न Chrome लाई स्थान माथिको पहुँच चाहिन्छ। यस यन्त्रमा स्थान माथिको पहुँचलाई <ph name="BEGIN_LINK" />निष्क्रिय पारिएको छ<ph name="END_LINK" />।</translation>
+<translation id="1769234867324334094">यो साइटका हकमा <ph name="APP_NAME" /> लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
+<translation id="1993768208584545658"><ph name="SITE" /> जोडा बनाउन चाहन्छ</translation>
 <translation id="2077832278056815832">अन्य एपका सबै बबल वा ओभरले बन्द गर्नुहोस्। त्यसपछि, फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="230115972905494466">कुनै पनि मिल्दाजुल्दा यन्त्र भेटिएनन्</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
-<translation id="2416359993254398973">यो साइटका लागि Chrome लाई तपाईंको क्यमेरामाथि पहुँच राख्न अनुमति आवश्यक हुन्छ।</translation>
 <translation id="2987449669841041897">यो साइट तपाईंको अनुमति माग्न सक्दैन</translation>
-<translation id="557283862590186398">यो साइटका लागि Chrome लाई तपाईंको माइक्रोफोनमाथि पहुँच राख्न अनुमति आवश्यक हुन्छ।</translation>
-<translation id="5860491529813859533">सक्रिय गर्नुहोस्</translation>
-<translation id="6092062101542170135">अगाडि बढ्न Android सम्बन्धी सेटिङमा गई NFC सक्रिय गर्नुहोस्</translation>
-<translation id="6393863479814692971">यो साइटका लागि Chrome लाई  तपाईंको क्यामेरा र माइक्रोफोनमाथि पहुँच राख्न अनुमति आवश्यक हुन्छ।</translation>
-<translation id="6697947395630195233">यो साइटसँग तपाईंको स्थानसम्बन्धी जानकारी आदान प्रदान गर्न Chrome लाई तपाईंको स्थानमाथिको पहुँच आवश्यक हुन्छ।</translation>
-<translation id="7134415045456331657">Chrome लाई तपाईं वरपरको ठाउँको 3D नक्सा बनाउन तपाईंको क्यामेरा प्रयोग गर्ने अनुमति चाहिन्छ।</translation>
+<translation id="3036750288708366620"><ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="3773755127849930740">जोडा बनाउने प्रक्रियालाई अनुमति दिन <ph name="BEGIN_LINK" />ब्लुटुथ<ph name="END_LINK" /> लाई अन गर्नुहोस्</translation>
+<translation id="4915549754973153784">अन्य यन्त्रहरूलाई स्क्यान गर्दा <ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" />…</translation>
+<translation id="4925793601605263825">यो साइटका हकमा <ph name="APP_NAME" /> लाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
+<translation id="5230560987958996918"><ph name="SITE" /> वरपरका ब्लुटुथ यन्त्रहरू खोज्न स्क्यान गर्न चाहन्छ। निम्न यन्त्रहरू फेला परेका छन्:</translation>
+<translation id="5527082711130173040">यन्त्रहरू स्क्यान गर्न Chrome लाई स्थान माथिको पहुँच चाहिन्छ। <ph name="BEGIN_LINK1" />अनुमतिहरूलाई अपडेट गर्नुहोस्<ph name="END_LINK1" />। यो डिभाइसमा स्थान माथिको पहुँचलाई पनि <ph name="BEGIN_LINK2" />निष्क्रिय पारिएको छ<ph name="END_LINK2" />।</translation>
+<translation id="5817918615728894473">जोडा  बनाउनुहोस्</translation>
+<translation id="5858741533101922242">Chrome ले ब्लुटुथ एडाप्टरलाई सक्रिय गर्न सकेन</translation>
+<translation id="5860491529813859533">अन गर्नुहोस्</translation>
+<translation id="6049776452963514597">यो साइटका हकमा <ph name="APP_NAME" /> लाई तपाईंको क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
+<translation id="6092062101542170135">अगाडि बढ्न Android सम्बन्धी सेटिङमा गई NFC अन गर्नुहोस्</translation>
+<translation id="6656545060687952787">Chrome डिभाइसहरूको लागि स्क्यान गर्न स्थान पहुँच आवश्यक छ। <ph name="BEGIN_LINK" /> अनुमतिहरू अपडेट गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="7146360184282545445">तपाईं वरपरको ठाउँको 3D नक्सा बनाउन <ph name="APP_NAME" /> लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
+<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK1" /> वा <ph name="BEGIN_LINK2" />पुन:स्क्यान गर्नुहोस्<ph name="END_LINK2" /></translation>
+<translation id="781351614677332494">यो साइटसँग तपाईंको लोकेसन सेयर गर्न <ph name="APP_NAME" /> लाई तपाईंको लोकेसन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
+<translation id="7884346424584885269">नजिकैका डिभाइसहरू स्क्यान गर्नका निम्ति Chrome लाई अनुमति दिनु पर्ने हुन्छ। <ph name="BEGIN_LINK" />अनुमति बदल्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="8368027906805972958">अज्ञात वा प्रयोग गर्न नमिल्ने यन्त्र (<ph name="DEVICE_ID" />)</translation>
+<translation id="8687353297350450808">{N_BARS,plural, =1{सङ्केतको क्षमता स्तर: # बार}other{सङ्केतको क्षमता स्तर: # बारहरू}}</translation>
+<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 </translationbundle>

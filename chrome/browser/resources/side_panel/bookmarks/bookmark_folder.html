@@ -1,0 +1,219 @@
+<style include="mwb-element-shared-style">
+  :host {
+    --row-height: 40px;
+    display: block;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .row {
+    --row-padding-inline-start: calc(var(--node-depth) * 17px);
+    --row-icon-width: 20px;
+    align-items: center;
+    appearance: none;
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
+    color: currentColor;
+    display: grid;
+    font-size: var(--mwb-primary-text-font-size);
+    grid-template-areas: 'arrow icon title';
+    grid-template-columns: var(--row-icon-width) var(--row-icon-width) auto;
+    height: var(--row-height);
+    line-height: var(--row-height);
+    padding-block-end: 0;
+    padding-block-start: 0;
+    padding-inline-start: var(--row-padding-inline-start);
+    text-align: start;
+    width: 100%;
+  }
+
+  :host-context([hover-visible]) .row:not([empty]):hover {
+    background-color: var(--mwb-list-item-hover-background-color);
+  }
+
+  :host-context(.focus-outline-visible) .row:focus,
+  :host-context(.focus-outline-visible) .row:focus:hover {
+    background-color: var(--mwb-list-item-selected-background-color);
+    outline: none;
+  }
+
+  .row:focus-visible:focus {
+    outline: none;
+  }
+
+  :host-context([hover-visible]) .row:not([empty]):active,
+  :host-context(.focus-outline-visible) .row:not([empty]):active {
+    background-color: var(--cr-active-background-color);
+  }
+
+  .arrow,
+  .icon,
+  .title {
+    /**
+     * Keep content-visibility on inner children of .row instead of on .row
+     * as the CSS property seems to have bugs with rendering elements outside
+     * of .row when dragging elements around.
+     */
+    content-visibility: auto;
+  }
+
+  #arrow {
+    grid-area: arrow;
+    justify-self: center;
+  }
+
+  #arrowIcon {
+    --cr-icon-button-hover-background-color: transparent;
+    --cr-icon-button-active-background-color: transparent;
+    margin: 0;
+    transform: rotate(-90deg);
+    transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #arrowIcon[open] {
+    transform: rotate(0);
+  }
+
+  #arrowIcon:focus,
+  #arrowIcon:hover {
+    background: none;
+    box-shadow: none;
+  }
+
+  :host-context([dir='rtl']) #arrowIcon:not([open]) {
+    transform: rotate(90deg);
+  }
+
+  .icon {
+    background-position: left center;
+    background-repeat: no-repeat;
+    grid-area: icon;
+    height: 16px;
+    justify-self: center;
+    width: 16px;
+  }
+
+  #folderIcon {
+    background-image: url(chrome://theme/IDR_FOLDER_CLOSED);
+  }
+
+  /**
+   * Folder icons are OS-specific. On Mac, there is a separate folder icon
+   * for dark mode; on non-Mac, there is a separate folder icon for open states
+   * and the icon for that is slightly larger. This is mirroring the icons
+   * used in chrome://bookmarks.
+   */
+<if expr="is_macosx">
+  @media (prefers-color-scheme: dark) {
+    #folderIcon {
+      background-image: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
+    }
+  }
+</if>
+
+<if expr="not is_macosx">
+    #folderIcon {
+      height: 20px;
+      width: 20px;
+    }
+
+    #folderIcon[open] {
+      background-image: url(chrome://theme/IDR_FOLDER_OPEN);
+    }
+</if>
+
+  .title {
+    grid-area: title;
+    overflow: hidden;
+    padding: 0 10px;
+    text-overflow: ellipsis;
+  }
+
+  .bookmark {
+    color: currentColor;
+    text-decoration: none;
+  }
+
+  #children {
+    --node-depth: var(--child-depth);
+    min-height: calc(var(--child-count, 0) * var(--row-height));
+  }
+
+  [drop-position='into'] {
+    background: var(--mwb-list-item-selected-background-color);
+  }
+
+  [drop-position='above'],
+  [drop-position='below'] {
+    position: relative;
+  }
+
+  [drop-position='above']::after,
+  [drop-position='below']::after {
+    background: var(--google-blue-500);
+    content: '';
+    display: block;
+    height: 2px;
+    left: calc(
+        var(--row-padding-inline-start) + var(--row-icon-width));
+    position: absolute;
+    right: 0;
+    top: -1px;
+  }
+
+  [drop-position='below']::after {
+    bottom: -1px;
+    top: auto;
+  }
+</style>
+<div id="container" role="treeitem" aria-expanded="[[getAriaExpanded_(open_)]]">
+  <button id="folder" class="row"
+      title="[[folder.title]]"
+      draggable="true"
+      data-bookmark="[[folder]]"
+      empty$="[[!folder.children.length]]"
+      on-click="onFolderClick_" on-contextmenu="onFolderContextMenu_">
+    <div id="arrow" hidden$="[[!folder.children.length]]">
+      <cr-icon-button
+          id="arrowIcon"
+          iron-icon="cr:arrow-drop-down"
+          open$="[[open_]]"
+          tabindex="-1">
+      </cr-icon-button>
+    </div>
+    <div id="folderIcon" class="icon" open$="[[open_]]"></div>
+    <div class="title">[[folder.title]]</div>
+  </button>
+
+  <template is="dom-if" if="[[open_]]" restamp>
+    <div id="children" role="group">
+      <template is="dom-repeat" items="[[folder.children]]" initial-count="20">
+        <template is="dom-if" if="[[!item.url]]" restamp>
+          <bookmark-folder
+              id="bookmark-[[item.id]]"
+              folder="[[item]]"
+              depth="[[childDepth_]]"
+              open-folders="[[openFolders]]">
+          </bookmark-folder>
+        </template>
+
+        <template is="dom-if" if="[[item.url]]" restamp>
+          <button
+              id="bookmark-[[item.id]]" role="treeitem" class="bookmark row"
+              title="[[item.title]]"
+              draggable="true" data-bookmark="[[item]]"
+              on-click="onBookmarkClick_"
+              on-auxclick="onBookmarkAuxClick_"
+              on-contextmenu="onBookmarkContextMenu_">
+            <div
+                class="icon"
+                style="background-image: [[getBookmarkIcon_(item.url)]]">
+            </div>
+            <div class="title">[[item.title]]</div>
+          </button>
+        </template>
+      </template>
+    </div>
+  </template>
+</div>

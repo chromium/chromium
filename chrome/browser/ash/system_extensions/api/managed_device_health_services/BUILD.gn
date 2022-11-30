@@ -1,0 +1,24 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "managed_device_health_services_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/ash/system_extensions/api/test_support",
+    "//content/test:test_support",
+    "//testing/gtest:gtest",
+  ]
+
+  data = [ "//chrome/browser/ash/system_extensions/api/managed_device_health_services/test/" ]
+}

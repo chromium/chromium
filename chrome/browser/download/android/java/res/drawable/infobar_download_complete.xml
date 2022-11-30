@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
+
+    <path
+        android:name="circle"
+        android:fillColor="@color/icon_animated_faded_color_list"
+        android:fillAlpha="0"
+        android:pathData="M 0,12 C 0,6 6,0 12,0 C 18,0 24,6 24,12 C 24,18 18,24 12,24 C 6,24 0,18 0,12"/>
+
+    <path
+        android:name="check_mark"
+        android:pathData="M5 18h14v2H5v-2zm4.6-2.7L5 10.7l2-1.9 2.6 2.6L17 4l2 2-9.4 9.3z"
+        android:fillColor="@macro/default_icon_color_accent1"/>
+
+</vector>

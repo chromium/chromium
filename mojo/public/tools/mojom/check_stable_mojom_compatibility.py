@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Verifies backward-compatibility of mojom type changes.
@@ -12,19 +12,17 @@ This can be used e.g. by a presubmit check to prevent developers from making
 breaking changes to stable mojoms."""
 
 import argparse
-import errno
 import io
 import json
 import os
 import os.path
-import shutil
-import six
 import sys
-import tempfile
 
 from mojom.generate import module
 from mojom.generate import translate
 from mojom.parse import parser
+
+# pylint: disable=raise-missing-from
 
 
 class ParseError(Exception):
@@ -40,6 +38,8 @@ def _ValidateDelta(root, delta):
   not produce or rely on cached module translations, but instead parses the full
   transitive closure of a mojom's input dependencies all at once.
   """
+
+  translate.is_running_backwards_compatibility_check_hack = True
 
   # First build a map of all files covered by the delta
   affected_files = set()
@@ -73,11 +73,20 @@ def _ValidateDelta(root, delta):
     try:
       ast = parser.Parse(contents, mojom)
     except Exception as e:
-      six.reraise(
-          ParseError,
-          'encountered exception {0} while parsing {1}'.format(e, mojom),
-          sys.exc_info()[2])
+      raise ParseError('encountered exception {0} while parsing {1}'.format(
+          e, mojom))
     for imp in ast.import_list:
+      if (not file_overrides.get(imp.import_filename)
+          and not os.path.exists(os.path.join(root, imp.import_filename))):
+        # Speculatively construct a path prefix to locate the import_filename
+        mojom_path = os.path.dirname(os.path.normpath(mojom)).split(os.sep)
+        test_prefix = ''
+        for path_component in mojom_path:
+          test_prefix = os.path.join(test_prefix, path_component)
+          test_import_filename = os.path.join(test_prefix, imp.import_filename)
+          if os.path.exists(os.path.join(root, test_import_filename)):
+            imp.import_filename = test_import_filename
+            break
       parseMojom(imp.import_filename, file_overrides, override_modules)
 
     # Now that the transitive set of dependencies has been imported and parsed
@@ -89,10 +98,10 @@ def _ValidateDelta(root, delta):
     modules[mojom] = translate.OrderedModule(ast, mojom, all_modules)
 
   old_modules = {}
-  for mojom in old_files.keys():
+  for mojom in old_files:
     parseMojom(mojom, old_files, old_modules)
   new_modules = {}
-  for mojom in new_files.keys():
+  for mojom in new_files:
     parseMojom(mojom, new_files, new_modules)
 
   # At this point we have a complete set of translated Modules from both the

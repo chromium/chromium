@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,30 +12,37 @@
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
-#include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/pin_validator.h"
+#include "remoting/host/usage_stats_consent.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <termios.h>
 #include <unistd.h>
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/host/setup/daemon_controller_delegate_linux.h"
+#include "remoting/host/setup/start_host_as_root.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
 #include "base/process/process_info.h"
-#endif  // defined(OS_WIN)
+
+#include <windows.h>
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -51,7 +58,7 @@ base::RunLoop* g_active_run_loop = nullptr;
 
 // Lets us hide the PIN that a user types.
 void SetEcho(bool echo) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD mode;
   HANDLE console_handle = GetStdHandle(STD_INPUT_HANDLE);
   if (!GetConsoleMode(console_handle, &mode)) {
@@ -69,7 +76,7 @@ void SetEcho(bool echo) {
     term.c_lflag &= ~ECHO;
   }
   tcsetattr(STDIN_FILENO, TCSANOW, &term);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 // Reads a newline-terminated string from stdin.
@@ -120,6 +127,13 @@ void OnDone(HostStarter::Result result) {
 }  // namespace
 
 int StartHostMain(int argc, char** argv) {
+#if BUILDFLAG(IS_LINUX)
+  // Minimize the amount of code that runs as root on Posix systems.
+  if (getuid() == 0) {
+    return remoting::StartHostAsRoot(argc, argv);
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   // google_apis::GetOAuth2ClientID/Secret need a static CommandLine.
   base::CommandLine::Init(argc, argv);
   const base::CommandLine* command_line =
@@ -133,6 +147,12 @@ int StartHostMain(int argc, char** argv) {
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
+
+#if defined(REMOTING_ENABLE_BREAKPAD)
+  if (IsUsageStatsAllowed()) {
+    InitializeCrashReporting();
+  }
+#endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "RemotingHostSetup");
@@ -150,23 +170,25 @@ int StartHostMain(int argc, char** argv) {
   // for the account which generated |code|.
   std::string host_owner = command_line->GetSwitchValueASCII("host-owner");
 
-#if defined(OS_POSIX)
-  // Check if current user is root. If it is root, then throw an error message.
-  // This is because start_host should be run in user mode.
-  if (geteuid() == 0) {
-    fprintf(stderr, "Refusing to run %s as root.", argv[0]);
-    return 1;
+#if BUILDFLAG(IS_LINUX)
+  if (command_line->HasSwitch("no-start")) {
+    // On Linux, registering the host with systemd and starting it is the only
+    // reason start_host requires root. The --no-start options skips that final
+    // step, allowing it to be run non-interactively if the parent process has
+    // root and can do complete the setup itself. Since this functionality is
+    // Linux-specific, it isn't plumbed through the platform-independent daemon
+    // controller code, and must be configured on the Linux delegate explicitly.
+    DaemonControllerDelegateLinux::set_start_host_after_setup(false);
   }
-#endif  // defined(OS_POSIX)
-
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN)
   // The tool must be run elevated on Windows so the host has access to the
   // directories used to store the configuration JSON files.
   if (!base::IsCurrentProcessElevated()) {
     fprintf(stderr, "Error: %s must be run as an elevated process.", argv[0]);
     return 1;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (command_line->HasSwitch("help") || command_line->HasSwitch("h") ||
       command_line->HasSwitch("?") || !command_line->GetArgs().empty()) {
@@ -226,14 +248,12 @@ int StartHostMain(int argc, char** argv) {
   g_main_thread_task_executor = &main_thread_task_executor;
   base::Thread::Options io_thread_options(base::MessagePumpType::IO, 0);
   base::Thread io_thread("IO thread");
-  io_thread.StartWithOptions(io_thread_options);
+  io_thread.StartWithOptions(std::move(io_thread_options));
 
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter(
       new remoting::URLRequestContextGetter(io_thread.task_runner()));
   network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner(
       url_request_context_getter);
-
-  net::URLFetcher::SetIgnoreCertificateRequests(true);
 
   // Start the host.
   std::unique_ptr<HostStarter> host_starter(HostStarter::Create(

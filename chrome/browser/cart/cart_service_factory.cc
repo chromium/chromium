@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_service_factory.h"
 
 #include "chrome/browser/cart/cart_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "content/public/browser/storage_partition.h"
 
 // static
@@ -24,9 +24,9 @@ CartService* CartServiceFactory::GetForProfile(Profile* profile) {
 }
 
 CartServiceFactory::CartServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ChromeCartService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ChromeCartService") {
+  DependsOn(HistoryServiceFactory::GetInstance());
+}
 
 CartServiceFactory::~CartServiceFactory() = default;
 

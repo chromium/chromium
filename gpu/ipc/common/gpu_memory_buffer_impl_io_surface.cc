@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gfx/mac/io_surface_hdr_metadata.h"
 
 namespace gpu {
 namespace {
@@ -43,6 +42,7 @@ uint32_t LockFlags(gfx::BufferUsage usage) {
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
     case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
       return 0;
   }
   NOTREACHED();
@@ -148,11 +148,6 @@ void GpuMemoryBufferImplIOSurface::SetColorSpace(
     return;
   color_space_ = color_space;
   IOSurfaceSetColorSpace(io_surface_, color_space);
-}
-
-void GpuMemoryBufferImplIOSurface::SetHDRMetadata(
-    const gfx::HDRMetadata& hdr_metadata) {
-  IOSurfaceSetHDRMetadata(io_surface_, hdr_metadata);
 }
 
 gfx::GpuMemoryBufferType GpuMemoryBufferImplIOSurface::GetType() const {

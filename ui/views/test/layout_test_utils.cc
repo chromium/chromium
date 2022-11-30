@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,9 @@ void PrintTo(MaximumFlexSizeRule maximum_flex_size_rule, ::std::ostream* os) {
   switch (maximum_flex_size_rule) {
     case MaximumFlexSizeRule::kPreferred:
       *os << "MaximumFlexSizeRule::kPreferred";
+      break;
+    case MaximumFlexSizeRule::kScaleToMaximum:
+      *os << "MaximumFlexSizeRule::kScaleToMaximum";
       break;
     case MaximumFlexSizeRule::kUnbounded:
       *os << "MaximumFlexSizeRule::kUnbounded";

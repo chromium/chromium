@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,12 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-    BUILDFLAG(ENABLE_DESKTOP_AURA)
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"  // nogncheck
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #endif
 
 namespace views {
@@ -55,7 +51,7 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
   return false;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 struct FindAllWindowsData {
   std::vector<aura::Window*>* windows;
@@ -69,19 +65,18 @@ BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
   return TRUE;
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 std::vector<aura::Window*> GetAllTopLevelWindows() {
   std::vector<aura::Window*> roots;
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-    BUILDFLAG(ENABLE_DESKTOP_AURA)
-  roots = DesktopWindowTreeHostLinux::GetAllOpenWindows();
-#elif defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   {
     FindAllWindowsData data = {&roots};
     EnumThreadWindows(GetCurrentThreadId(), FindAllWindowsCallback,
                       reinterpret_cast<LPARAM>(&data));
   }
+#elif BUILDFLAG(ENABLE_DESKTOP_AURA)
+  roots = DesktopWindowTreeHostPlatform::GetAllOpenWindows();
 #endif
   aura::test::AuraTestHelper* aura_test_helper =
       aura::test::AuraTestHelper::GetInstance();
@@ -125,25 +120,13 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
   // the window manager is interested in knowing the size constraints. On
   // ChromeOS, it's handled internally. Elsewhere, the size constraints need to
   // be pushed to the window server when they change.
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return widget->GetNativeWindow()->delegate()->GetMinimumSize();
-#endif  // USE_OZONE
-#if defined(USE_X11)
-  EXPECT_FALSE(features::IsUsingOzonePlatform());
-  ui::SizeHints hints;
-  ui::GetWmNormalHints(
-      static_cast<x11::Window>(
-          widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget()),
-      &hints);
-  return gfx::Size(hints.min_width, hints.min_height);
-#endif  // USE_X11
-#endif  // OS_LINUX && !OS_CHROMEOS
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  return widget->GetNativeWindow()->delegate()->GetMinimumSize();
+#endif
   NOTREACHED();
   return gfx::Size();
 }
@@ -154,14 +137,14 @@ ui::EventSink* WidgetTest::GetEventSink(Widget* widget) {
 }
 
 // static
-ui::internal::InputMethodDelegate* WidgetTest::GetInputMethodDelegateForWidget(
+ui::ImeKeyEventDispatcher* WidgetTest::GetImeKeyEventDispatcherForWidget(
     Widget* widget) {
   return widget->GetNativeWindow()->GetRootWindow()->GetHost();
 }
 
 // static
 bool WidgetTest::IsNativeWindowTransparent(gfx::NativeWindow window) {
-  return window->transparent();
+  return window->GetTransparent();
 }
 
 // static

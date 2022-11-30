@@ -1,31 +1,48 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/omnibox/browser/autocomplete_match.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-const CGFloat kOmniboxIconSize = 16;
-}  // namespace
+using base::UserMetricsAction;
 
 @interface OmniboxMediator () <SearchEngineObserving>
+
+// Is Browser incognito.
+@property(nonatomic, assign, readonly) BOOL isIncognito;
 
 // Whether the current default search engine supports search-by-image.
 @property(nonatomic, assign) BOOL searchEngineSupportsSearchByImage;
@@ -46,10 +63,11 @@ const CGFloat kOmniboxIconSize = 16;
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
 }
 
-- (instancetype)init {
+- (instancetype)initWithIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
+    _isIncognito = isIncognito;
   }
   return self;
 }
@@ -66,8 +84,12 @@ const CGFloat kOmniboxIconSize = 16;
   _templateURLService = templateURLService;
   self.searchEngineSupportsSearchByImage =
       search_engines::SupportsSearchByImage(templateURLService);
-  _searchEngineObserver =
-      std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
+  if (_templateURLService) {
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
+  } else {
+    _searchEngineObserver.reset();
+  }
 }
 
 - (void)setSearchEngineSupportsSearchByImage:
@@ -90,30 +112,43 @@ const CGFloat kOmniboxIconSize = 16;
   [self updateConsumerEmptyTextImage];
 }
 
-#pragma mark - OmniboxLeftImageConsumer
+#pragma mark - PopupMatchPreviewDelegate
 
-- (void)setLeftImageForAutocompleteType:(AutocompleteMatchType::Type)matchType
-                             answerType:
-                                 (base::Optional<SuggestionAnswer::AnswerType>)
-                                     answerType
-                             faviconURL:(GURL)faviconURL {
-  UIImage* image = GetOmniboxSuggestionIconForAutocompleteMatchType(
-      matchType, /* is_starred */ false);
-  [self.consumer updateAutocompleteIcon:image];
+- (void)setPreviewSuggestion:(id<AutocompleteSuggestion>)suggestion
+               isFirstUpdate:(BOOL)isFirstUpdate {
+  // On first update, don't set the preview text, as omnibox will automatically
+  // receive the suggestion as inline autocomplete through OmniboxViewIOS.
+  if (!isFirstUpdate) {
+    [self.consumer updateText:suggestion.omniboxPreviewText];
+  }
 
+  // When no suggestion is previewed, just show the default image.
+  if (!suggestion) {
+    [self setDefaultLeftImage];
+    return;
+  }
+
+  // Set the suggestion image, or load it if necessary.
+  [self.consumer updateAutocompleteIcon:suggestion.matchTypeIcon];
   __weak OmniboxMediator* weakSelf = self;
-
-  if (AutocompleteMatch::IsSearchType(matchType)) {
+  if ([suggestion isMatchTypeSearch]) {
     // Show Default Search Engine favicon.
     [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
       [weakSelf.consumer updateAutocompleteIcon:image];
     }];
-  } else {
-    // Show favicon.
-    [self loadFaviconByPageURL:faviconURL
+  } else if (suggestion.destinationUrl.gurl.is_valid()) {
+    // Show url favicon when it's valid.
+    [self loadFaviconByPageURL:suggestion.destinationUrl.gurl
                     completion:^(UIImage* image) {
                       [weakSelf.consumer updateAutocompleteIcon:image];
                     }];
+  } else if (isFirstUpdate) {
+    // When no suggestion is highlighted (aka. isFirstUpdate) show the default
+    // browser icon.
+    [self setDefaultLeftImage];
+  } else {
+    // When a suggestion is highlighted, show the same icon as in the popup.
+    [self.consumer updateAutocompleteIcon:suggestion.matchTypeIcon];
   }
 }
 
@@ -124,21 +159,21 @@ const CGFloat kOmniboxIconSize = 16;
 
   __weak OmniboxMediator* weakSelf = self;
   // Show Default Search Engine favicon.
-  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
-    [weakSelf.consumer updateAutocompleteIcon:image];
+  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* icon) {
+    [weakSelf.consumer updateAutocompleteIcon:icon];
   }];
 }
 
 // Loads a favicon for a given page URL.
-// |pageURL| is url for the page that needs a favicon
-// |completion| handler might be called multiple
+// `pageURL` is url for the page that needs a favicon
+// `completion` handler might be called multiple
 // times, synchronously and asynchronously. It will always be called on the main
 // thread.
 - (void)loadFaviconByPageURL:(GURL)pageURL
                   completion:(void (^)(UIImage* image))completion {
   // Can't load favicons without a favicon loader.
   DCHECK(self.faviconLoader);
-
+  DCHECK(pageURL.is_valid());
   // Remember which favicon is loaded in case we start loading a new one
   // before this one completes.
   self.latestFaviconURL = pageURL;
@@ -157,12 +192,12 @@ const CGFloat kOmniboxIconSize = 16;
   // Download the favicon.
   // The code below mimics that in OmniboxPopupMediator.
   self.faviconLoader->FaviconForPageUrl(
-      pageURL, kOmniboxIconSize, kOmniboxIconSize,
+      pageURL, kMinFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/false, handleFaviconResult);
 }
 
 // Loads a favicon for the current default search engine.
-// |completion| handler might be called multiple times, synchronously
+// `completion` handler might be called multiple times, synchronously
 // and asynchronously. It will always be called on the main
 // thread.
 - (void)loadDefaultSearchEngineFaviconWithCompletion:
@@ -189,9 +224,8 @@ const CGFloat kOmniboxIconSize = 16;
   if (defaultProvider && defaultProvider->GetEngineType(
                              self.templateURLService->search_terms_data()) ==
                              SEARCH_ENGINE_GOOGLE) {
-    UIImage* bundledLogo = ios::GetChromeBrowserProvider()
-                               ->GetBrandedImageProvider()
-                               ->GetOmniboxAnswerIcon();
+    UIImage* bundledLogo = ios::provider::GetBrandedImage(
+        ios::provider::BrandedImage::kOmniboxAnswer);
 
     if (bundledLogo) {
       self.currentDefaultSearchEngineFavicon = bundledLogo;
@@ -208,7 +242,7 @@ const CGFloat kOmniboxIconSize = 16;
   __weak __typeof(self) weakSelf = self;
   self.latestDefaultSearchEngine = defaultProvider;
   auto handleFaviconResult = ^void(FaviconAttributes* faviconCacheResult) {
-    DCHECK_LE(faviconCacheResult.faviconImage.size.width, kOmniboxIconSize);
+    DCHECK_LE(faviconCacheResult.faviconImage.size.width, kMinFaviconSizePt);
     if (weakSelf.latestDefaultSearchEngine != defaultProvider ||
         !faviconCacheResult.faviconImage ||
         faviconCacheResult.usesDefaultImage) {
@@ -231,13 +265,13 @@ const CGFloat kOmniboxIconSize = 16;
         TemplateURLRef::SearchTermsArgs(std::u16string()),
         _templateURLService->search_terms_data());
     self.faviconLoader->FaviconForPageUrl(
-        GURL(emptyPageUrl), kOmniboxIconSize, kOmniboxIconSize,
+        GURL(emptyPageUrl), kMinFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/YES, handleFaviconResult);
   } else {
     // Download the favicon.
     // The code below mimics that in OmniboxPopupMediator.
     self.faviconLoader->FaviconForIconUrl(defaultProvider->favicon_url(),
-                                          kOmniboxIconSize, kOmniboxIconSize,
+                                          kMinFaviconSizePt, kMinFaviconSizePt,
                                           handleFaviconResult);
   }
 }
@@ -254,6 +288,125 @@ const CGFloat kOmniboxIconSize = 16;
   [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
     [weakSelf.consumer setEmptyTextLeadingImage:image];
   }];
+}
+
+#pragma mark - OmniboxViewControllerPasteDelegate
+
+- (void)didTapPasteToSearchButton:(NSArray<NSItemProvider*>*)itemProviders {
+  __weak __typeof(self) weakSelf = self;
+  auto textCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+        dispatch_async(dispatch_get_main_queue(), ^{
+          NSString* text = static_cast<NSString*>(providedItem);
+          if (text) {
+            [weakSelf.loadQueryCommandsHandler loadQuery:text immediately:YES];
+            [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+          }
+        });
+      };
+  auto imageCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIImage* image = static_cast<UIImage*>(providedItem);
+          if (image) {
+            [weakSelf loadImageQuery:image];
+            [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+          }
+        });
+      };
+  for (NSItemProvider* itemProvider in itemProviders) {
+    if (self.searchEngineSupportsSearchByImage &&
+        [itemProvider canLoadObjectOfClass:[UIImage class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedImage"));
+      [itemProvider loadObjectOfClass:[UIImage class]
+                    completionHandler:imageCompletion];
+      break;
+    } else if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedLink"));
+      [self logUserPasted];
+      // Load URL as a NSString to avoid further conversion.
+      [itemProvider loadObjectOfClass:[NSString class]
+                    completionHandler:textCompletion];
+      break;
+    } else if ([itemProvider canLoadObjectOfClass:[NSString class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedText"));
+      [itemProvider loadObjectOfClass:[NSString class]
+                    completionHandler:textCompletion];
+      break;
+    }
+  }
+}
+
+- (void)didTapVisitCopiedLink {
+  [self logUserPasted];
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
+      base::BindOnce(^(absl::optional<GURL> optionalURL) {
+        if (!optionalURL) {
+          return;
+        }
+        NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [weakSelf.loadQueryCommandsHandler loadQuery:url immediately:YES];
+          [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+        });
+      }));
+}
+
+- (void)didTapSearchCopiedText {
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
+      base::BindOnce(^(absl::optional<std::u16string> optionalText) {
+        if (!optionalText) {
+          return;
+        }
+        NSString* query = base::SysUTF16ToNSString(optionalText.value());
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [weakSelf.loadQueryCommandsHandler loadQuery:query immediately:YES];
+          [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+        });
+      }));
+}
+
+- (void)didTapSearchCopiedImage {
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+        if (!optionalImage) {
+          return;
+        }
+        UIImage* image = optionalImage.value().ToUIImage();
+        [weakSelf loadImageQuery:image];
+        [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+      }));
+}
+
+#pragma mark - Private methods
+
+// Logs that user pasted a link into the omnibox.
+- (void)logUserPasted {
+  // Don't log pastes in incognito.
+  if (self.isIncognito) {
+    return;
+  }
+
+  DefaultBrowserSceneAgent* agent =
+      [DefaultBrowserSceneAgent agentFromScene:self.sceneState];
+  [agent.nonModalScheduler logUserPastedInOmnibox];
+}
+
+// Loads an image-search query with `image`.
+- (void)loadImageQuery:(UIImage*)image {
+  DCHECK(image);
+  web::NavigationManager::WebLoadParams webParams =
+      ImageSearchParamGenerator::LoadParamsForImage(image,
+                                                    self.templateURLService);
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+  self.URLLoadingBrowserAgent->Load(params);
 }
 
 @end

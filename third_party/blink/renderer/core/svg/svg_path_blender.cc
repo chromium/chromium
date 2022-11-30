@@ -19,10 +19,11 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_blender.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_consumer.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
-#include "third_party/blink/renderer/platform/animation/animation_utilities.h"
+#include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -46,16 +47,16 @@ class SVGPathBlender::BlendState {
 
  private:
   float BlendAnimatedDimensonalFloat(float, float, FloatBlendMode);
-  FloatPoint BlendAnimatedFloatPointSameCoordinates(const FloatPoint& from,
-                                                    const FloatPoint& to);
-  FloatPoint BlendAnimatedFloatPoint(const FloatPoint& from,
-                                     const FloatPoint& to);
+  gfx::PointF BlendAnimatedPointSameCoordinates(const gfx::PointF& from,
+                                                const gfx::PointF& to);
+  gfx::PointF BlendAnimatedPoint(const gfx::PointF& from,
+                                 const gfx::PointF& to);
   bool CanBlend(const PathSegmentData& from_seg, const PathSegmentData& to_seg);
 
-  FloatPoint from_sub_path_point_;
-  FloatPoint from_current_point_;
-  FloatPoint to_sub_path_point_;
-  FloatPoint to_current_point_;
+  gfx::PointF from_sub_path_point_;
+  gfx::PointF from_current_point_;
+  gfx::PointF to_sub_path_point_;
+  gfx::PointF to_current_point_;
 
   double progress_;
   float add_types_count_;
@@ -78,10 +79,10 @@ float SVGPathBlender::BlendState::BlendAnimatedDimensonalFloat(
   if (types_are_equal_)
     return Blend(from, to, progress_);
 
-  float from_value = blend_mode == kBlendHorizontal ? from_current_point_.X()
-                                                    : from_current_point_.Y();
-  float to_value = blend_mode == kBlendHorizontal ? to_current_point_.X()
-                                                  : to_current_point_.Y();
+  float from_value = blend_mode == kBlendHorizontal ? from_current_point_.x()
+                                                    : from_current_point_.y();
+  float to_value = blend_mode == kBlendHorizontal ? to_current_point_.x()
+                                                  : to_current_point_.y();
 
   // Transform toY to the coordinate mode of fromY
   float anim_value =
@@ -99,29 +100,29 @@ float SVGPathBlender::BlendState::BlendAnimatedDimensonalFloat(
                             : anim_value - current_value;
 }
 
-FloatPoint SVGPathBlender::BlendState::BlendAnimatedFloatPointSameCoordinates(
-    const FloatPoint& from_point,
-    const FloatPoint& to_point) {
+gfx::PointF SVGPathBlender::BlendState::BlendAnimatedPointSameCoordinates(
+    const gfx::PointF& from_point,
+    const gfx::PointF& to_point) {
   if (add_types_count_) {
-    FloatPoint repeated_to_point = to_point;
-    repeated_to_point.Scale(add_types_count_, add_types_count_);
-    return from_point + repeated_to_point;
+    gfx::PointF repeated_to_point =
+        gfx::ScalePoint(to_point, add_types_count_, add_types_count_);
+    return from_point + repeated_to_point.OffsetFromOrigin();
   }
   return Blend(from_point, to_point, progress_);
 }
 
-FloatPoint SVGPathBlender::BlendState::BlendAnimatedFloatPoint(
-    const FloatPoint& from_point,
-    const FloatPoint& to_point) {
+gfx::PointF SVGPathBlender::BlendState::BlendAnimatedPoint(
+    const gfx::PointF& from_point,
+    const gfx::PointF& to_point) {
   if (types_are_equal_)
-    return BlendAnimatedFloatPointSameCoordinates(from_point, to_point);
+    return BlendAnimatedPointSameCoordinates(from_point, to_point);
 
-  // Transform toPoint to the coordinate mode of fromPoint
-  FloatPoint animated_point = to_point;
+  // Transform to_point to the coordinate mode of from_point
+  gfx::PointF animated_point = to_point;
   if (from_is_absolute_)
-    animated_point += to_current_point_;
+    animated_point += to_current_point_.OffsetFromOrigin();
   else
-    animated_point.Move(-to_current_point_.X(), -to_current_point_.Y());
+    animated_point -= to_current_point_.OffsetFromOrigin();
 
   animated_point = Blend(from_point, animated_point, progress_);
 
@@ -132,13 +133,12 @@ FloatPoint SVGPathBlender::BlendState::BlendAnimatedFloatPoint(
 
   // Transform the animated point to the coordinate mode, needed for the current
   // progress.
-  FloatPoint current_point =
+  gfx::PointF current_point =
       Blend(from_current_point_, to_current_point_, progress_);
   if (!from_is_absolute_)
-    return animated_point + current_point;
+    return animated_point + current_point.OffsetFromOrigin();
 
-  animated_point.Move(-current_point.X(), -current_point.Y());
-  return animated_point;
+  return animated_point - current_point.OffsetFromOrigin();
 }
 
 bool SVGPathBlender::BlendState::CanBlend(const PathSegmentData& from_seg,
@@ -160,12 +160,12 @@ bool SVGPathBlender::BlendState::CanBlend(const PathSegmentData& from_seg,
          ToAbsolutePathSegType(to_seg.command);
 }
 
-static void UpdateCurrentPoint(FloatPoint& sub_path_point,
-                               FloatPoint& current_point,
+static void UpdateCurrentPoint(gfx::PointF& sub_path_point,
+                               gfx::PointF& current_point,
                                const PathSegmentData& segment) {
   switch (segment.command) {
     case kPathSegMoveToRel:
-      current_point += segment.target_point;
+      current_point += segment.target_point.OffsetFromOrigin();
       sub_path_point = current_point;
       break;
     case kPathSegLineToRel:
@@ -176,7 +176,7 @@ static void UpdateCurrentPoint(FloatPoint& sub_path_point,
     case kPathSegLineToVerticalRel:
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToQuadraticSmoothRel:
-      current_point += segment.target_point;
+      current_point += segment.target_point.OffsetFromOrigin();
       break;
     case kPathSegMoveToAbs:
       current_point = segment.target_point;
@@ -191,10 +191,10 @@ static void UpdateCurrentPoint(FloatPoint& sub_path_point,
       current_point = segment.target_point;
       break;
     case kPathSegLineToHorizontalAbs:
-      current_point.SetX(segment.target_point.X());
+      current_point.set_x(segment.target_point.x());
       break;
     case kPathSegLineToVerticalAbs:
-      current_point.SetY(segment.target_point.Y());
+      current_point.set_y(segment.target_point.y());
       break;
     case kPathSegClosePath:
       current_point = sub_path_point;
@@ -218,13 +218,13 @@ bool SVGPathBlender::BlendState::BlendSegments(
     case kPathSegCurveToCubicRel:
     case kPathSegCurveToCubicAbs:
       blended_segment.point1 =
-          BlendAnimatedFloatPoint(from_seg.point1, to_seg.point1);
-      FALLTHROUGH;
+          BlendAnimatedPoint(from_seg.point1, to_seg.point1);
+      [[fallthrough]];
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
       blended_segment.point2 =
-          BlendAnimatedFloatPoint(from_seg.point2, to_seg.point2);
-      FALLTHROUGH;
+          BlendAnimatedPoint(from_seg.point2, to_seg.point2);
+      [[fallthrough]];
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
     case kPathSegLineToRel:
@@ -232,36 +232,36 @@ bool SVGPathBlender::BlendState::BlendSegments(
     case kPathSegCurveToQuadraticSmoothRel:
     case kPathSegCurveToQuadraticSmoothAbs:
       blended_segment.target_point =
-          BlendAnimatedFloatPoint(from_seg.target_point, to_seg.target_point);
+          BlendAnimatedPoint(from_seg.target_point, to_seg.target_point);
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      blended_segment.target_point.SetX(BlendAnimatedDimensonalFloat(
-          from_seg.target_point.X(), to_seg.target_point.X(),
+      blended_segment.target_point.set_x(BlendAnimatedDimensonalFloat(
+          from_seg.target_point.x(), to_seg.target_point.x(),
           kBlendHorizontal));
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      blended_segment.target_point.SetY(BlendAnimatedDimensonalFloat(
-          from_seg.target_point.Y(), to_seg.target_point.Y(), kBlendVertical));
+      blended_segment.target_point.set_y(BlendAnimatedDimensonalFloat(
+          from_seg.target_point.y(), to_seg.target_point.y(), kBlendVertical));
       break;
     case kPathSegClosePath:
       break;
     case kPathSegCurveToQuadraticRel:
     case kPathSegCurveToQuadraticAbs:
       blended_segment.target_point =
-          BlendAnimatedFloatPoint(from_seg.target_point, to_seg.target_point);
+          BlendAnimatedPoint(from_seg.target_point, to_seg.target_point);
       blended_segment.point1 =
-          BlendAnimatedFloatPoint(from_seg.point1, to_seg.point1);
+          BlendAnimatedPoint(from_seg.point1, to_seg.point1);
       break;
     case kPathSegArcRel:
     case kPathSegArcAbs:
       blended_segment.target_point =
-          BlendAnimatedFloatPoint(from_seg.target_point, to_seg.target_point);
-      blended_segment.point1 = BlendAnimatedFloatPointSameCoordinates(
-          from_seg.ArcRadii(), to_seg.ArcRadii());
-      blended_segment.point2 = BlendAnimatedFloatPointSameCoordinates(
-          from_seg.point2, to_seg.point2);
+          BlendAnimatedPoint(from_seg.target_point, to_seg.target_point);
+      blended_segment.point1 =
+          BlendAnimatedPointSameCoordinates(from_seg.point1, to_seg.point1);
+      blended_segment.point2 =
+          BlendAnimatedPointSameCoordinates(from_seg.point2, to_seg.point2);
       if (add_types_count_) {
         blended_segment.arc_large = from_seg.arc_large || to_seg.arc_large;
         blended_segment.arc_sweep = from_seg.arc_sweep || to_seg.arc_sweep;

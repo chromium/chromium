@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,7 @@ class MediaPipelineBufferExtensionTests : public testing::Test {
   scoped_refptr<CastDecoderBufferImpl> CreateBuffer(int64_t pts_increment = 3) {
     scoped_refptr<CastDecoderBufferImpl> buffer(
         new CastDecoderBufferImpl(3, StreamId::kPrimary));
-    buffer->set_timestamp(base::TimeDelta::FromMicroseconds(current_pts_));
+    buffer->set_timestamp(base::Microseconds(current_pts_));
     current_pts_ += pts_increment;
     return buffer;
   }

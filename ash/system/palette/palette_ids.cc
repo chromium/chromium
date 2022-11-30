@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,6 @@ PaletteTrayOptions PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id) {
       return PALETTE_OPTIONS_COUNT;
     case PaletteToolId::CREATE_NOTE:
       return PALETTE_NEW_NOTE;
-    case PaletteToolId::CAPTURE_REGION:
-      return PALETTE_CAPTURE_REGION;
-    case PaletteToolId::CAPTURE_SCREEN:
-      return PALETTE_CAPTURE_SCREEN;
     case PaletteToolId::LASER_POINTER:
       return PALETTE_LASER_POINTER;
     case PaletteToolId::MAGNIFY:

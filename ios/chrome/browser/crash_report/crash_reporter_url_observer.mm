@@ -1,27 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
+#import "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
 
 #import <Foundation/Foundation.h>
 
-#include <map>
+#import <map>
 
-#include "base/check.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/crash/core/common/crash_key.h"
+#import "base/check.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,7 +34,7 @@ namespace {
 // Max number of urls to send. This represent 1 URL per WebState group.
 const int kNumberOfURLsToSend = 3;
 
-// Keep the following two CrashKey arrays in sync with |kNumberOfURLsToSend|.
+// Keep the following two CrashKey arrays in sync with `kNumberOfURLsToSend`.
 static crash_reporter::CrashKeyString<1024> url_crash_keys[] = {
     {"url0", CrashKeyString<1024>::Tag::kArray},
     {"url1", CrashKeyString<1024>::Tag::kArray},

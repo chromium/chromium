@@ -1,0 +1,12 @@
+Test that an attributionsrc that redirects to an insecure origin and tries to register a trigger triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : http://devtools.test:8000
+            request : <object>
+            violationType : UntrustworthyReportingOrigin
+        }
+    }
+}
+

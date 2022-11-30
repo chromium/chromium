@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 
 namespace gfx {
@@ -26,12 +27,17 @@ class TouchToFillViewImpl : public TouchToFillView {
   void Show(
       const GURL& url,
       IsOriginSecure is_origin_secure,
-      base::span<const password_manager::UiCredential> credentials) override;
+      base::span<const password_manager::UiCredential> credentials,
+      base::span<const TouchToFillWebAuthnCredential> webauthn_credentials,
+      bool trigger_submission) override;
   void OnCredentialSelected(
       const password_manager::UiCredential& credential) override;
   void OnDismiss() override;
 
   void OnCredentialSelected(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& credential);
+  void OnWebAuthnCredentialSelected(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& credential);
   void OnManagePasswordsSelected(JNIEnv* env);
@@ -43,7 +49,7 @@ class TouchToFillViewImpl : public TouchToFillView {
   // java object whenever Show() is called.
   bool RecreateJavaObject();
 
-  TouchToFillController* controller_ = nullptr;
+  raw_ptr<TouchToFillController> controller_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 

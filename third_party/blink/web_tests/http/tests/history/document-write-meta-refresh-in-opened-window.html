@@ -1,7 +1,7 @@
 <script>
 if (window.testRunner) {
   testRunner.waitUntilDone();
-  testRunner.setCanOpenWindows();
+  testRunner.setPopupBlockingEnabled(false);
   testRunner.dumpAsText();
   testRunner.dumpBackForwardList();
   if (window.opener)

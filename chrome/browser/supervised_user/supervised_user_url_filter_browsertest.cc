@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -24,10 +23,13 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -41,10 +43,12 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 using content::NavigationController;
 using content::NavigationEntry;
@@ -75,15 +79,14 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
 
   void SendAccessRequest(WebContents* tab) {
-    tab->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(
-            "supervisedUserErrorPageController.requestPermission()"),
+    tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"supervisedUserErrorPageController.requestPermission()",
         base::NullCallback());
     return;
   }
 
   void GoBack(WebContents* tab) {
-    tab->GetMainFrame()->ExecuteJavaScriptForTests(
+    tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"supervisedUserErrorPageController.goBack()", base::NullCallback());
     return;
   }
@@ -134,8 +137,8 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
 
   SupervisedUserService* supervised_user_service_ = nullptr;
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
       embedded_test_server(), this};
 };
 
@@ -161,6 +164,9 @@ class TabClosingObserver : public TabStripModelObserver {
     tab_strip_->AddObserver(this);
   }
 
+  TabClosingObserver(const TabClosingObserver&) = delete;
+  TabClosingObserver& operator=(const TabClosingObserver&) = delete;
+
   void WaitForContentsClosing() {
     if (!contents_)
       return;
@@ -177,7 +183,9 @@ class TabClosingObserver : public TabStripModelObserver {
 
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
-      if (contents_ == contents.contents && contents.will_be_deleted) {
+      if (contents_ == contents.contents &&
+          contents.remove_reason ==
+              TabStripModelChange::RemoveReason::kDeleted) {
         if (run_loop_.running())
           run_loop_.Quit();
         contents_ = nullptr;
@@ -193,15 +201,13 @@ class TabClosingObserver : public TabStripModelObserver {
 
   // Contents to wait for.
   content::WebContents* contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TabClosingObserver);
 };
 
 // Navigates to a blocked URL.
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
                        SendAccessRequestOnBlockedURL) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -339,14 +345,14 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
                        NavigateFromBlockedPageToBlockedPage) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
   GURL test_url2("http://www.a.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url2));
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
   EXPECT_EQ(test_url2, tab->GetVisibleURL());
@@ -372,21 +378,21 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
 
-  ui_test_utils::NavigateToURL(browser(), allowed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
 
   // Navigate to it and check that we don't get an interstitial.
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
   // Navigate to a blocked page and go back on the interstitial.
   GURL blocked_url("http://www.new-example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), blocked_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   GoBackAndWaitForNavigation(tab);
 
-  EXPECT_EQ(allowed_url.spec(), tab->GetURL().spec());
+  EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
   EXPECT_EQ(SupervisedUserURLFilter::BLOCK,
@@ -417,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
@@ -438,9 +444,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   content::TestNavigationObserver block_observer(web_contents);
   block_observer.Wait();
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(web_contents);
   GoBack(web_contents);
   observer.Wait();
 
@@ -457,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
@@ -478,12 +482,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   // Verify that there is no crash when closing the blocked tab
   // (https://crbug.com/719708).
   browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabStripModel::CLOSE_USER_GESTURE);
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -519,23 +523,21 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   content::TestNavigationObserver unblock_observer(web_contents);
   unblock_observer.Wait();
 
-  ASSERT_EQ(test_url, web_contents->GetURL());
+  ASSERT_EQ(test_url, web_contents->GetLastCommittedURL());
 
   EXPECT_FALSE(ShownPageIsInterstitial(browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(web_contents);
 
   // Set the host as allowed.
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
@@ -552,7 +554,91 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
             filter->GetFilteringBehaviorForURL(test_url.GetWithEmptyPath()));
 
   observer.Wait();
-  EXPECT_EQ(test_url, web_contents->GetURL());
+  EXPECT_EQ(test_url, web_contents->GetLastCommittedURL());
+}
+
+class MockSupervisedUserURLFilterObserver
+    : public SupervisedUserURLFilter::Observer {
+ public:
+  explicit MockSupervisedUserURLFilterObserver(SupervisedUserURLFilter* filter)
+      : filter_(filter) {
+    filter_->AddObserver(this);
+  }
+  ~MockSupervisedUserURLFilterObserver() { filter_->RemoveObserver(this); }
+
+  MockSupervisedUserURLFilterObserver(
+      const MockSupervisedUserURLFilterObserver&) = delete;
+  MockSupervisedUserURLFilterObserver& operator=(
+      const MockSupervisedUserURLFilterObserver&) = delete;
+
+  // SupervisedUserURLFilter::Observer:
+  void OnSiteListUpdated() override {}
+  MOCK_METHOD(void,
+              OnURLChecked,
+              (const GURL& url,
+               SupervisedUserURLFilter::FilteringBehavior behavior,
+               supervised_user_error_page::FilteringBehaviorReason reason,
+               bool uncertain),
+              (override));
+
+ private:
+  SupervisedUserURLFilter* const filter_;
+};
+
+class SupervisedUserURLFilterPrerenderingTest
+    : public SupervisedUserURLFilterTest {
+ public:
+  SupervisedUserURLFilterPrerenderingTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &SupervisedUserURLFilterPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~SupervisedUserURLFilterPrerenderingTest() override = default;
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+// Tests that prerendering doesn't check SupervisedUserURLFilter.
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterPrerenderingTest, OnURLChecked) {
+  MockSupervisedUserURLFilterObserver observer(
+      supervised_user_service_->GetURLFilter());
+
+  GURL test_url("http://www.example.com/simple.html");
+  EXPECT_CALL(observer, OnURLChecked).Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Load a page in prerendering.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetWebContents());
+  // We do not yet support prerendering for supervised users and prerendering is
+  // canceled even though it tries to start prerendering. So, OnURLChecked() is
+  // never called in prerendering.
+  EXPECT_CALL(observer, OnURLChecked).Times(0);
+  GURL prerender_url("http://www.example.com/title1.html");
+  // Try prerendering.
+  prerender_helper().AddPrerenderAsync(prerender_url);
+  // Ensure that prerendering has started.
+  registry_observer.WaitForTrigger(prerender_url);
+  auto prerender_id = prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     prerender_id);
+  // Prerendering is canceled.
+  host_observer.WaitForDestroyed();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Navigate the primary page to the URL.
+  EXPECT_CALL(observer, OnURLChecked).Times(1);
+  prerender_helper().NavigatePrimaryPage(prerender_url);
 }
 
 }  // namespace

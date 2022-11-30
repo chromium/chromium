@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 generate_jni("subresource_filter_jni_headers") {
   sources = [
+    "java/src/org/chromium/components/subresource_filter/AdsBlockedDialog.java",
     "java/src/org/chromium/components/subresource_filter/AdsBlockedInfoBar.java",
     "java/src/org/chromium/components/subresource_filter/SubresourceFilterFeatureList.java",
   ]
@@ -13,6 +14,7 @@ generate_jni("subresource_filter_jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/subresource_filter/AdsBlockedDialog.java",
     "java/src/org/chromium/components/subresource_filter/AdsBlockedInfoBar.java",
     "java/src/org/chromium/components/subresource_filter/SubresourceFilterFeatureList.java",
   ]
@@ -20,8 +22,11 @@ android_library("java") {
     ":java_resources",
     ":subresource_filter_jni_headers",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/infobars/android:infobar_android_enums_java",
     "//components/infobars/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
@@ -29,26 +34,32 @@ android_library("java") {
   resources_package = "org.chromium.components.subresource_filter"
 }
 
+robolectric_library("junit") {
+  sources = [ "java/src/org/chromium/components/subresource_filter/AdsBlockedDialogTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 source_set("android") {
   sources = [
-    "ads_blocked_infobar.cc",
-    "ads_blocked_infobar.h",
-    "ads_blocked_infobar_delegate.cc",
-    "ads_blocked_infobar_delegate.h",
+    "ads_blocked_dialog.cc",
+    "ads_blocked_dialog.h",
     "subresource_filter_feature_list.cc",
   ]
   deps = [
     ":subresource_filter_jni_headers",
     "//base",
-    "//components/infobars/android",
-    "//components/infobars/content",
-    "//components/infobars/core",
-    "//components/resources:android_resources",
-    "//components/strings:components_strings_grit",
-    "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
     "//content/public/browser",
-    "//ui/base",
+    "//ui/android:android",
   ]
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,11 +36,10 @@ class MockTranslateInfoBarDelegate
  public:
   MockTranslateInfoBarDelegate(
       const base::WeakPtr<translate::TranslateManager>& translate_manager,
-      bool is_off_the_record,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
+      translate::TranslateErrors error_type,
       bool triggered_from_menu);
   ~MockTranslateInfoBarDelegate() override;
 
@@ -55,7 +54,7 @@ class MockTranslateInfoBarDelegate
   MOCK_METHOD0(Translate, void());
   MOCK_METHOD0(ToggleAlwaysTranslate, void());
   MOCK_METHOD0(ToggleTranslatableLanguageByPrefs, void());
-  MOCK_METHOD0(ToggleNeverPrompt, void());
+  MOCK_METHOD0(ToggleNeverPromptSite, void());
   MOCK_METHOD0(RevertWithoutClosingInfobar, void());
   MOCK_METHOD1(UpdateTargetLanguage, void(const std::string& language_code));
   MOCK_METHOD1(UpdateSourceLanguage, void(const std::string& language_code));

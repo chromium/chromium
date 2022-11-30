@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,17 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 
 namespace {
 
-base::Optional<uint32_t> FindMemoryTypeIndex(
+absl::optional<uint32_t> FindMemoryTypeIndex(
     VkPhysicalDevice physical_device,
     const VkMemoryRequirements* requirements,
     VkMemoryPropertyFlags flags) {
@@ -36,7 +34,7 @@ base::Optional<uint32_t> FindMemoryTypeIndex(
     return i;
   }
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -88,11 +86,12 @@ std::unique_ptr<VulkanImage> VulkanImage::CreateFromGpuMemoryBufferHandle(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling) {
+    VkImageTiling image_tiling,
+    uint32_t queue_family_index) {
   auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   if (!image->InitializeFromGpuMemoryBufferHandle(
           device_queue, std::move(gmb_handle), size, format, usage, flags,
-          image_tiling)) {
+          image_tiling, queue_family_index)) {
     return nullptr;
   }
   return image;
@@ -108,21 +107,22 @@ std::unique_ptr<VulkanImage> VulkanImage::Create(
     VkImageTiling image_tiling,
     VkDeviceSize device_size,
     uint32_t memory_type_index,
-    base::Optional<VulkanYCbCrInfo>& ycbcr_info,
+    absl::optional<VulkanYCbCrInfo>& ycbcr_info,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags) {
   auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   image->device_queue_ = device_queue;
   image->image_ = vk_image;
   image->device_memory_ = vk_device_memory;
-  image->size_ = size;
-  image->format_ = format;
-  image->image_tiling_ = image_tiling;
+  image->create_info_.extent = {static_cast<uint32_t>(size.width()),
+                                static_cast<uint32_t>(size.height()), 1};
+  image->create_info_.format = format;
+  image->create_info_.tiling = image_tiling;
   image->device_size_ = device_size;
   image->memory_type_index_ = memory_type_index;
   image->ycbcr_info_ = ycbcr_info;
-  image->usage_ = usage;
-  image->flags_ = flags;
+  image->create_info_.usage = usage;
+  image->create_info_.flags = flags;
   return image;
 }
 
@@ -149,7 +149,7 @@ void VulkanImage::Destroy() {
   device_queue_ = nullptr;
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 base::ScopedFD VulkanImage::GetMemoryFd(
     VkExternalMemoryHandleTypeFlagBits handle_type) {
   VkMemoryGetFdInfoKHR get_fd_info = {
@@ -169,7 +169,7 @@ base::ScopedFD VulkanImage::GetMemoryFd(
 
   return base::ScopedFD(memory_fd);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
                              const gfx::Size& size,
@@ -185,32 +185,29 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
   DCHECK(device_memory_ == VK_NULL_HANDLE);
 
   device_queue_ = device_queue;
-  size_ = size;
-  format_ = format;
-  usage_ = usage;
-  flags_ = flags;
-  image_tiling_ = image_tiling;
-
-  VkImageCreateInfo create_info = {
+  create_info_ = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .pNext = vk_image_create_info_next,
-      .flags = flags_,
+      .flags = flags,
       .imageType = VK_IMAGE_TYPE_2D,
-      .format = format_,
-      .extent = {size.width(), size.height(), 1},
+      .format = format,
+      .extent = {static_cast<uint32_t>(size.width()),
+                 static_cast<uint32_t>(size.height()), 1},
       .mipLevels = 1,
       .arrayLayers = 1,
       .samples = VK_SAMPLE_COUNT_1_BIT,
-      .tiling = image_tiling_,
+      .tiling = image_tiling,
       .usage = usage,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .queueFamilyIndexCount = 0,
       .pQueueFamilyIndices = nullptr,
-      .initialLayout = image_layout_,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
   };
   VkDevice vk_device = device_queue->GetVulkanDevice();
-  VkResult result =
-      vkCreateImage(vk_device, &create_info, nullptr /* pAllocator */, &image_);
+  VkResult result = vkCreateImage(vk_device, &create_info_,
+                                  nullptr /* pAllocator */, &image_);
+  create_info_.pNext = nullptr;
+
   if (result != VK_SUCCESS) {
     DLOG(ERROR) << "vkCreateImage failed result:" << result;
     device_queue_ = nullptr;
@@ -276,7 +273,7 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
   // initialized in InitializeWithExternalMemoryAndModifiers(). For
   // VK_IMAGE_TILING_OPTIMAL the layout is not usable and
   // vkGetImageSubresourceLayout() is illegal.
-  if (image_tiling_ != VK_IMAGE_TILING_LINEAR)
+  if (image_tiling != VK_IMAGE_TILING_LINEAR)
     return true;
 
   const VkImageSubresource image_subresource = {
@@ -299,10 +296,10 @@ bool VulkanImage::InitializeWithExternalMemory(
     VkImageTiling image_tiling,
     void* image_create_info_next,
     void* memory_allocation_info_next) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   constexpr auto kHandleType =
-      VK_EXTERNAL_MEMORY_HANDLE_TYPE_TEMP_ZIRCON_VMO_BIT_FUCHSIA;
-#elif defined(OS_WIN)
+      VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
+#elif BUILDFLAG(IS_WIN)
   constexpr auto kHandleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;
 #else
   constexpr auto kHandleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
@@ -325,7 +322,7 @@ bool VulkanImage::InitializeWithExternalMemory(
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifier_info = {
       .sType =
           VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,

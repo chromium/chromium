@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
@@ -76,6 +76,9 @@ class NET_EXPORT URLRequestThrottlerEntry
                            double jitter_factor,
                            int maximum_backoff_ms);
 
+  URLRequestThrottlerEntry(const URLRequestThrottlerEntry&) = delete;
+  URLRequestThrottlerEntry& operator=(const URLRequestThrottlerEntry&) = delete;
+
   // Used by the manager, returns true if the entry needs to be garbage
   // collected.
   bool IsEntryOutdated() const;
@@ -138,20 +141,18 @@ class NET_EXPORT URLRequestThrottlerEntry
   const int max_send_threshold_;
 
   // True if DisableBackoffThrottling() has been called on this object.
-  bool is_backoff_disabled_;
+  bool is_backoff_disabled_ = false;
 
   // Access it through GetBackoffEntry() to allow a unit test seam.
   BackoffEntry backoff_entry_;
 
   // Weak back-reference to the manager object managing us.
-  URLRequestThrottlerManager* manager_;
+  raw_ptr<URLRequestThrottlerManager> manager_;
 
   // Canonicalized URL string that this entry is for; used for logging only.
   std::string url_id_;
 
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestThrottlerEntry);
 };
 
 }  // namespace net

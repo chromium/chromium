@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ namespace {{variant}} {
 #include <stdint.h>
 {%- endif %}
 
-{% if structs|length -%}
+{% if structs|length or unions|length -%}
 #include "mojo/public/cpp/bindings/struct_forward.h"
 {%- endif %}
 
@@ -140,10 +140,12 @@ using {{interface.name}}InterfaceBase = {{interface.name}}InterfaceBase;
 {%-   endfor %}
 {%- endif %}
 
-{#--- Constants #}
+{#--- Constants that do not rely on other headers (basic types) #}
 {%- for constant in module.constants %}
+{%-  if not constant.kind|is_enum_kind %}
 {{ kythe_annotation("%s.%s"|format(module_prefix, constant.name)) }}
 {{constant|format_constant_declaration}};
+{%- endif %}
 {%- endfor %}
 
 {#--- Struct Forward Declarations -#}
@@ -165,9 +167,9 @@ using {{struct.name}}Ptr = mojo::StructPtr<{{struct.name}}>;
 {%  for union in unions %}
 class {{union.name}};
 {%    if union|should_inline_union %}
-typedef mojo::InlinedStructPtr<{{union.name}}> {{union.name}}Ptr;
+using {{union.name}}Ptr = mojo::InlinedStructPtr<{{union.name}}>;
 {%    else %}
-typedef mojo::StructPtr<{{union.name}}> {{union.name}}Ptr;
+using {{union.name}}Ptr = mojo::StructPtr<{{union.name}}>;
 {%    endif %}
 {%- endfor %}
 
@@ -175,16 +177,6 @@ typedef mojo::StructPtr<{{union.name}}> {{union.name}}Ptr;
 {#--- Interface Forward Declarations -#}
 {%  for interface in interfaces %}
 class {{interface.name}};
-{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
-using {{interface.name}}Ptr = mojo::InterfacePtr<{{interface.name}}>;
-using {{interface.name}}PtrInfo = mojo::InterfacePtrInfo<{{interface.name}}>;
-{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
-using {{interface.name}}Request = mojo::InterfaceRequest<{{interface.name}}>;
-using {{interface.name}}AssociatedPtrInfo =
-    mojo::AssociatedInterfacePtrInfo<{{interface.name}}>;
-{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
-using {{interface.name}}AssociatedRequest =
-    mojo::AssociatedInterfaceRequest<{{interface.name}}>;
 {%  endfor %}
 
 

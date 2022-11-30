@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <string>
 
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/common/api/virtual_keyboard.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioSystem;
@@ -27,6 +27,11 @@ class ChromeVirtualKeyboardDelegate
  public:
   explicit ChromeVirtualKeyboardDelegate(
       content::BrowserContext* browser_context);
+
+  ChromeVirtualKeyboardDelegate(const ChromeVirtualKeyboardDelegate&) = delete;
+  ChromeVirtualKeyboardDelegate& operator=(
+      const ChromeVirtualKeyboardDelegate&) = delete;
+
   ~ChromeVirtualKeyboardDelegate() override;
 
   // TODO(oka): Create ChromeVirtualKeyboardPrivateDelegate class and move all
@@ -63,8 +68,9 @@ class ChromeVirtualKeyboardDelegate
       OnGetClipboardHistoryCallback get_history_callback) override;
   bool PasteClipboardItem(const std::string& clipboard_item_id) override;
   bool DeleteClipboardItem(const std::string& clipboard_item_id) override;
-  api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
-      const api::virtual_keyboard::RestrictFeatures::Params& params) override;
+  void RestrictFeatures(
+      const api::virtual_keyboard::RestrictFeatures::Params& params,
+      OnRestrictFeaturesCallback callback) override;
 
  private:
   // ash::ClipboardHistoryController::Observer:
@@ -72,16 +78,16 @@ class ChromeVirtualKeyboardDelegate
   void OnClipboardHistoryItemsUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
 
+  void OnGetHistoryValuesAfterItemsUpdated(base::Value updated_items);
+
   void OnHasInputDevices(OnKeyboardSettingsCallback on_settings_callback,
                          bool has_audio_input_devices);
-  void DispatchConfigChangeEvent(
-      std::unique_ptr<base::DictionaryValue> settings);
+  void DispatchConfigChangeEvent(absl::optional<base::Value::Dict> settings);
 
   content::BrowserContext* browser_context_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   base::WeakPtr<ChromeVirtualKeyboardDelegate> weak_this_;
   base::WeakPtrFactory<ChromeVirtualKeyboardDelegate> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ChromeVirtualKeyboardDelegate);
 };
 
 }  // namespace extensions

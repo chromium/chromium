@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
+#include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 
 namespace cert_verifier {
@@ -77,7 +79,7 @@ void ReconnectURLLoaderFactory(
 }  // namespace
 
 CertVerifierServiceImpl::CertVerifierServiceImpl(
-    std::unique_ptr<net::CertVerifier> verifier,
+    std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier,
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
     scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher)
     : verifier_(std::move(verifier)),
@@ -118,8 +120,22 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
   }
 }
 
+void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
+    base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>
+        service_factory_impl) {
+  service_factory_impl_ = std::move(service_factory_impl);
+}
+
+void CertVerifierServiceImpl::UpdateChromeRootStoreData(
+    const net::ChromeRootStoreData* root_store_data) {
+  verifier_->UpdateChromeRootStoreData(cert_net_fetcher_, root_store_data);
+}
+
 void CertVerifierServiceImpl::Verify(
     const net::CertVerifier::RequestParams& params,
+    uint32_t netlog_source_type,
+    uint32_t netlog_source_id,
+    base::TimeTicks netlog_source_start_time,
     mojo::PendingRemote<mojom::CertVerifierRequest> cert_verifier_request) {
   DVLOG(3) << "Received certificate validation request for hostname: "
            << params.hostname();
@@ -138,11 +154,24 @@ void CertVerifierServiceImpl::Verify(
       base::BindOnce(&CertVerifyResultHelper::CompleteCertVerifierRequest,
                      std::move(result_helper));
 
+  if (netlog_source_type >=
+      static_cast<uint32_t>(net::NetLogSourceType::COUNT)) {
+    // Note that netlog_source_id is not checked here. It is valid to pass a
+    // unbound NetLogWithSource into CertVerifier::Verify. If that occurs
+    // the netlog_source_id passed through mojo will be kInvalidId and the
+    // NetLogWithSource::Make below will in turn create an unbound
+    // NetLogWithSource.
+    receiver_.ReportBadMessage("invalid NetLogSource");
+    return;
+  }
   int net_err = verifier_->Verify(
       params, result.get(), std::move(callback),
       result_helper_ptr->local_request(),
-      net::NetLogWithSource::Make(net::NetLog::Get(),
-                                  net::NetLogSourceType::CERT_VERIFIER_JOB));
+      net::NetLogWithSource::Make(
+          net::NetLog::Get(),
+          net::NetLogSource(
+              static_cast<net::NetLogSourceType>(netlog_source_type),
+              netlog_source_id, netlog_source_start_time)));
   if (net_err == net::ERR_IO_PENDING) {
     // If this request is to be completely asynchronously, give the callback
     // ownership of our mojom::CertVerifierRequest and net::CertVerifyResult.
@@ -158,6 +187,9 @@ void CertVerifierServiceImpl::Verify(
 }
 
 void CertVerifierServiceImpl::OnDisconnectFromService() {
+  if (service_factory_impl_) {
+    service_factory_impl_->RemoveService(this);
+  }
   delete this;
 }
 

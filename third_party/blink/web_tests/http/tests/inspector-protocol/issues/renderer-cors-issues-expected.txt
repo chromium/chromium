@@ -1,0 +1,77 @@
+Test to make sure early CORS issues are correctly reported.
+Cors issue: {
+    code : CorsIssue
+    details : {
+        corsIssueDetails : {
+            corsErrorStatus : {
+                corsError : CorsDisabledScheme
+                failedParameter : file
+            }
+            initiatorOrigin : http://127.0.0.1:8000
+            isWarning : false
+            location : {
+                columnNumber : 7
+                lineNumber : 2
+                scriptId : <string>
+                url : 
+            }
+            request : {
+                requestId : <string>
+                url : file://doesnt.matter/
+            }
+        }
+    }
+    issueId : <string>
+}
+Issue link present: true
+Cors issue: {
+    code : CorsIssue
+    details : {
+        corsIssueDetails : {
+            corsErrorStatus : {
+                corsError : DisallowedByMode
+                failedParameter : 
+            }
+            initiatorOrigin : http://127.0.0.1:8000
+            isWarning : false
+            location : {
+                columnNumber : 7
+                lineNumber : 6
+                scriptId : <string>
+                url : 
+            }
+            request : {
+                requestId : <string>
+                url : https://devtools-b.oopif.test:8443/index.html
+            }
+        }
+    }
+    issueId : <string>
+}
+Issue link present: true
+Cors issue: {
+    code : CorsIssue
+    details : {
+        corsIssueDetails : {
+            corsErrorStatus : {
+                corsError : NoCorsRedirectModeNotFollow
+                failedParameter : 
+            }
+            initiatorOrigin : http://127.0.0.1:8000
+            isWarning : false
+            location : {
+                columnNumber : 7
+                lineNumber : 11
+                scriptId : <string>
+                url : 
+            }
+            request : {
+                requestId : <string>
+                url : https://devtools-b.oopif.test:8443/index.html
+            }
+        }
+    }
+    issueId : <string>
+}
+Issue link present: true
+

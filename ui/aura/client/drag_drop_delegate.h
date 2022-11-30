@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -26,6 +27,7 @@ struct AURA_EXPORT DragUpdateInfo {
   DragUpdateInfo();
   DragUpdateInfo(int op, ui::DataTransferEndpoint endpoint);
 
+  DragUpdateInfo(const DragUpdateInfo& update_info);
   DragUpdateInfo& operator=(const DragUpdateInfo& update_info);
 
   // A bitmask of the DragDropTypes::DragOperation supported.
@@ -37,9 +39,16 @@ struct AURA_EXPORT DragUpdateInfo {
 // Delegate interface for drag and drop actions on aura::Window.
 class AURA_EXPORT DragDropDelegate {
  public:
+  // Callback emitted by GetDropCallback used to handle deferred drop events.
+  // Note that it does not contain a location. If implementers need a location,
+  // they should bind it in GetDropCallback. See crbug.com/1289902.
+  using DropCallback =
+      base::OnceCallback<void(std::unique_ptr<ui::OSExchangeData> data,
+                              ui::mojom::DragOperation& output_drag_op)>;
+
   // OnDragEntered is invoked when the mouse enters this window during a drag &
   // drop session. This is immediately followed by an invocation of
-  // OnDragUpdated, and eventually one of OnDragExited or OnPerformDrop.
+  // OnDragUpdated, and eventually one of OnDragExited, or GetDropCallback.
   virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
 
   // Invoked during a drag and drop session while the mouse is over the window.
@@ -51,15 +60,11 @@ class AURA_EXPORT DragDropDelegate {
   // when the drag session was canceled and the mouse was over the window.
   virtual void OnDragExited() = 0;
 
-  // Invoked during a drag and drop session when OnDragUpdated returns a valid
-  // operation and the user release the mouse. This function gets the ownership
-  // of underlying OSExchangeData. A reference to this same OSExchangeData is
-  // also stored in the DropTargetEvent. Implementor of this function should be
-  // aware of keeping the OSExchageData alive until it wants to access it
-  // through the parameter or the stored reference in DropTargetEvent.
-  virtual ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) = 0;
+  // Invoked during a drag and drop session when the user release the mouse, but
+  // the drop is held because of the DataTransferPolicyController.
+  // The returned callback may be NullCallback if there's nothing to do and the
+  // drop event is ignored.
+  virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event) = 0;
 
  protected:
   virtual ~DragDropDelegate() {}

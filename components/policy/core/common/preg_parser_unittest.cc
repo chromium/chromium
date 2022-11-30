@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ const char kRegistryPolFile[] = "parser_test/registry.pol";
 const char kInvalidEncodingRegistryPolFile[] = "invalid_encoding/registry.pol";
 const char kNonExistingRegistryPolFile[] = "does_not_exist.pol";
 
-const char kRegistryKey[] = "SOFTWARE\\Policies\\Chromium";
+const char16_t kRegistryKey[] = u"SOFTWARE\\Policies\\Chromium";
 
 // Check whether two RegistryDicts equal each other.
 testing::AssertionResult RegistryDictEquals(const RegistryDict& a,
@@ -58,33 +58,33 @@ testing::AssertionResult RegistryDictEquals(const RegistryDict& a,
   for (; iter_value_a != a.values().end() && iter_value_b != b.values().end();
        ++iter_value_a, ++iter_value_b) {
     if (iter_value_a->first != iter_value_b->first ||
-        *iter_value_a->second != *iter_value_b->second) {
+        iter_value_a->second != iter_value_b->second) {
       return testing::AssertionFailure()
              << "Value mismatch " << iter_value_a->first << "="
-             << *iter_value_a->second << " vs. " << iter_value_b->first << "="
-             << *iter_value_b->second;
+             << iter_value_a->second << " vs. " << iter_value_b->first << "="
+             << iter_value_b->second;
     }
   }
   if (iter_value_a != a.values().end())
     return testing::AssertionFailure()
            << "Value mismatch, a has extra value " << iter_value_a->first << "="
-           << *iter_value_a->second;
+           << iter_value_a->second;
   if (iter_value_b != b.values().end())
     return testing::AssertionFailure()
            << "Value mismatch, b has extra value " << iter_value_b->first << "="
-           << *iter_value_b->second;
+           << iter_value_b->second;
 
   return testing::AssertionSuccess();
 }
 
 void SetInteger(RegistryDict* dict, const std::string& name, int value) {
-  dict->SetValue(name, base::WrapUnique<base::Value>(new base::Value(value)));
+  dict->SetValue(name, base::Value(value));
 }
 
 void SetString(RegistryDict* dict,
                const std::string& name,
                const std::string& value) {
-  dict->SetValue(name, base::WrapUnique<base::Value>(new base::Value(value)));
+  dict->SetValue(name, base::Value(value));
 }
 
 class PRegParserTest : public testing::Test {
@@ -117,8 +117,7 @@ TEST_F(PRegParserTest, TestParseFile) {
   // Run the parser.
   base::FilePath test_file(test_data_dir_.AppendASCII(kRegistryPolFile));
   PolicyLoadStatusUmaReporter status;
-  ASSERT_TRUE(preg_parser::ReadFile(test_file, base::ASCIIToUTF16(kRegistryKey),
-                                    &dict, &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
   // Build the expected output dictionary.
   RegistryDict expected;
@@ -154,8 +153,7 @@ TEST_F(PRegParserTest, SubstringRootInvalid) {
 
   // Safety check with kRegistryKey (dict should not be empty).
   RegistryDict dict2;
-  ASSERT_TRUE(preg_parser::ReadFile(test_file, base::ASCIIToUTF16(kRegistryKey),
-                                    &dict2, &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict2, &status));
   EXPECT_FALSE(RegistryDictEquals(dict2, empty));
 }
 
@@ -165,8 +163,7 @@ TEST_F(PRegParserTest, RejectInvalidStrings) {
       test_data_dir_.AppendASCII(kInvalidEncodingRegistryPolFile));
   PolicyLoadStatusUmaReporter status;
   RegistryDict dict;
-  ASSERT_TRUE(preg_parser::ReadFile(test_file, base::ASCIIToUTF16(kRegistryKey),
-                                    &dict, &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
   RegistryDict empty;
   EXPECT_TRUE(RegistryDictEquals(dict, empty));
@@ -178,8 +175,7 @@ TEST_F(PRegParserTest, LoadStatusSampling) {
   RegistryDict dict;
   base::FilePath test_file(
       test_data_dir_.AppendASCII(kNonExistingRegistryPolFile));
-  ASSERT_FALSE(preg_parser::ReadFile(
-      test_file, base::ASCIIToUTF16(kRegistryKey), &dict, &status));
+  ASSERT_FALSE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
   PolicyLoadStatusSampler::StatusSet expected_status_set;
   expected_status_set[POLICY_LOAD_STATUS_STARTED] = true;

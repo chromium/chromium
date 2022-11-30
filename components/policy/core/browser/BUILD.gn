@@ -1,7 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 group("browser") {
@@ -33,15 +34,36 @@ source_set("internal") {
     "policy_conversions_client.h",
     "policy_error_map.cc",
     "policy_error_map.h",
-    "proxy_policy_handler.cc",
-    "proxy_policy_handler.h",
+    "signin/user_cloud_signin_restriction_policy_fetcher.cc",
+    "signin/user_cloud_signin_restriction_policy_fetcher.h",
+    "url_allowlist_policy_handler.cc",
+    "url_allowlist_policy_handler.h",
     "url_blocklist_manager.cc",
     "url_blocklist_manager.h",
     "url_blocklist_policy_handler.cc",
     "url_blocklist_policy_handler.h",
-    "url_util.cc",
-    "url_util.h",
+    "url_scheme_list_policy_handler.cc",
+    "url_scheme_list_policy_handler.h",
+    "webui/json_generation.cc",
+    "webui/json_generation.h",
+    "webui/machine_level_user_cloud_policy_status_provider.cc",
+    "webui/machine_level_user_cloud_policy_status_provider.h",
+    "webui/policy_data_utils.cc",
+    "webui/policy_data_utils.h",
+    "webui/policy_status_provider.cc",
+    "webui/policy_status_provider.h",
+    "webui/policy_webui_constants.cc",
+    "webui/policy_webui_constants.h",
   ]
+
+  if (!is_chromeos_ash) {
+    sources += [
+      "cloud/user_policy_signin_service_base.cc",
+      "cloud/user_policy_signin_service_base.h",
+      "cloud/user_policy_signin_service_util.cc",
+      "cloud/user_policy_signin_service_util.h",
+    ]
+  }
 
   configs += [ "//components/policy:component_implementation" ]
 
@@ -55,9 +77,11 @@ source_set("internal") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/reporting/proto:record_proto",
+    "//components/signin/public/identity_manager:identity_manager",
     "//components/strings",
     "//components/url_formatter",
     "//components/url_matcher",
+    "//components/version_info",
     "//extensions/buildflags",
     "//net",
     "//services/network/public/cpp",
@@ -76,7 +100,6 @@ source_set("internal") {
 
   public_deps += [ "//components/policy/core/common:internal" ]
   deps += [
-    "//components/proxy_config",
     "//google_apis",
     "//net",
     "//third_party/icu",
@@ -88,14 +111,9 @@ static_library("test_support") {
   sources = [
     "configuration_policy_pref_store_test.cc",
     "configuration_policy_pref_store_test.h",
+    "policy_pref_mapping_test.cc",
+    "policy_pref_mapping_test.h",
   ]
-
-  if (!is_android && !is_fuchsia) {
-    sources += [
-      "policy_pref_mapping_test.cc",
-      "policy_pref_mapping_test.h",
-    ]
-  }
 
   public_deps = [
     ":browser",
@@ -123,11 +141,13 @@ source_set("unit_tests") {
     "configuration_policy_handler_list_unittest.cc",
     "configuration_policy_handler_unittest.cc",
     "configuration_policy_pref_store_unittest.cc",
+    "policy_conversions_client_unittest.cc",
     "policy_error_map_unittest.cc",
-    "proxy_policy_handler_unittest.cc",
+    "signin/user_cloud_signin_restriction_policy_fetcher_unittest.cc",
+    "url_allowlist_policy_handler_unittest.cc",
     "url_blocklist_manager_unittest.cc",
     "url_blocklist_policy_handler_unittest.cc",
-    "url_util_unittest.cc",
+    "url_scheme_list_policy_handler_unittest.cc",
   ]
   deps = [
     ":browser",
@@ -135,10 +155,13 @@ source_set("unit_tests") {
     "//base",
     "//components/policy:generated",
     "//components/prefs:test_support",
-    "//components/proxy_config",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/url_formatter",
+    "//components/url_matcher",
     "//google_apis",
     "//net",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

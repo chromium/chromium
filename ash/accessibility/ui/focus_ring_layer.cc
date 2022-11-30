@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,10 +30,7 @@ const SkColor kShadowColor = SkColorSetRGB(77, 144, 254);
 FocusRingLayer::FocusRingLayer(AccessibilityLayerDelegate* delegate)
     : AccessibilityLayer(delegate) {}
 
-FocusRingLayer::~FocusRingLayer() {
-  if (compositor_ && compositor_->HasAnimationObserver(this))
-    compositor_->RemoveAnimationObserver(this);
-}
+FocusRingLayer::~FocusRingLayer() = default;
 
 void FocusRingLayer::SetColor(SkColor color) {
   custom_color_ = color;
@@ -41,14 +38,6 @@ void FocusRingLayer::SetColor(SkColor color) {
 
 void FocusRingLayer::ResetColor() {
   custom_color_.reset();
-}
-
-bool FocusRingLayer::CanAnimate() const {
-  return compositor_ && compositor_->HasAnimationObserver(this);
-}
-
-bool FocusRingLayer::NeedToAnimate() const {
-  return true;
 }
 
 int FocusRingLayer::GetInset() const {
@@ -73,7 +62,7 @@ void FocusRingLayer::OnPaintLayer(const ui::PaintContext& context) {
     // Fade out alpha quadratically.
     flags.setAlpha((kShadowAlpha * (r - i) * (r - i)) / (r * r));
     gfx::Rect outsetRect = bounds;
-    outsetRect.Inset(-i, -i, -i, -i);
+    outsetRect.Inset(-i);
     recorder.canvas()->DrawRect(outsetRect, flags);
   }
 }

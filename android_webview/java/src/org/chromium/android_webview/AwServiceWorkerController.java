@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,42 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
+import androidx.annotation.GuardedBy;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
+import org.chromium.build.annotations.DoNotInline;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Manages clients and settings for Service Workers.
  */
 public class AwServiceWorkerController {
+    @GuardedBy("mAwServiceWorkerClientLock")
     private AwServiceWorkerClient mServiceWorkerClient;
-    private AwContentsIoThreadClient mServiceWorkerIoThreadClient;
-    private AwContentsBackgroundThreadClient mServiceWorkerBackgroundThreadClient;
-    private AwServiceWorkerSettings mServiceWorkerSettings;
-    private AwBrowserContext mBrowserContext;
 
-    public AwServiceWorkerController(Context applicationContext, AwBrowserContext browserContext) {
-        mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext);
+    @DoNotInline // Native stores this as a weak reference.
+    @NonNull
+    private final AwContentsIoThreadClient mServiceWorkerIoThreadClient;
+    @NonNull
+    private final AwContentsBackgroundThreadClient mServiceWorkerBackgroundThreadClient;
+    @NonNull
+    private final AwServiceWorkerSettings mServiceWorkerSettings;
+    @NonNull
+    private final AwBrowserContext mBrowserContext;
+
+    // Lock to protect access to the |mServiceWorkerClient|
+    private final Object mAwServiceWorkerClientLock = new Object();
+
+    public AwServiceWorkerController(
+            @NonNull Context applicationContext, @NonNull AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
+        mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext, mBrowserContext);
+        mServiceWorkerBackgroundThreadClient = new ServiceWorkerBackgroundThreadClientImpl();
+        mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClientImpl();
+        AwContentsStatics.setServiceWorkerIoThreadClient(
+                mServiceWorkerIoThreadClient, mBrowserContext);
     }
 
     /**
@@ -34,17 +54,9 @@ public class AwServiceWorkerController {
     /**
      * Set custom client to receive callbacks from Service Workers. Can be null.
      */
-    public void setServiceWorkerClient(AwServiceWorkerClient client) {
-        mServiceWorkerClient = client;
-        if (client != null) {
-            mServiceWorkerBackgroundThreadClient = new ServiceWorkerBackgroundThreadClientImpl();
-            mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClientImpl();
-            AwContentsStatics.setServiceWorkerIoThreadClient(
-                    mServiceWorkerIoThreadClient, mBrowserContext);
-        } else {
-            mServiceWorkerBackgroundThreadClient = null;
-            mServiceWorkerIoThreadClient = null;
-            AwContentsStatics.setServiceWorkerIoThreadClient(null, mBrowserContext);
+    public void setServiceWorkerClient(@Nullable AwServiceWorkerClient client) {
+        synchronized (mAwServiceWorkerClientLock) {
+            mServiceWorkerClient = client;
         }
     }
 
@@ -100,7 +112,11 @@ public class AwServiceWorkerController {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?
             //  - do we need to post an error if the response data == null?
-            return mServiceWorkerClient.shouldInterceptRequest(request);
+            synchronized (mAwServiceWorkerClientLock) {
+                return mServiceWorkerClient != null
+                        ? mServiceWorkerClient.shouldInterceptRequest(request)
+                        : null;
+            }
         }
     }
 }

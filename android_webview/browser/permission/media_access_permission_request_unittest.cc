@@ -1,11 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "android_webview/browser/permission/media_access_permission_request.h"
+
+#include <memory>
+
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace android_webview {
 
@@ -59,11 +64,11 @@ class MediaAccessPermissionRequestTest : public testing::Test {
         false /* request_pan_tilt_zoom_permission */);
 
     std::unique_ptr<TestMediaAccessPermissionRequest> permission_request;
-    permission_request.reset(new TestMediaAccessPermissionRequest(
+    permission_request = std::make_unique<TestMediaAccessPermissionRequest>(
         request,
         base::BindOnce(&MediaAccessPermissionRequestTest::Callback,
                        base::Unretained(this)),
-        audio_devices, video_devices));
+        audio_devices, video_devices);
     return permission_request;
   }
 
@@ -75,10 +80,10 @@ class MediaAccessPermissionRequestTest : public testing::Test {
   blink::mojom::MediaStreamRequestResult result_;
 
  private:
-  void Callback(const blink::MediaStreamDevices& devices,
+  void Callback(const blink::mojom::StreamDevicesSet& stream_devices_set,
                 blink::mojom::MediaStreamRequestResult result,
                 std::unique_ptr<content::MediaStreamUI> ui) {
-    devices_ = devices;
+    devices_ = blink::ToMediaStreamDevicesList(stream_devices_set);
     result_ = result;
   }
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 // See also allowsMultipleAgentsOfSameTypePerScene.
 @property(nonatomic, weak) SceneState* sceneState;
 
-// Returns the agent of this class iff one is already added to |sceneState|.
+// Returns the agent of this class iff one is already added to `sceneState`.
 + (instancetype)agentFromScene:(SceneState*)sceneState;
 
 // You can override this in your subclass. The default is NO.

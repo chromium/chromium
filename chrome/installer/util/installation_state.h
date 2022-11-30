@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/installer/util/app_commands.h"
-#include "chrome/installer/util/channel_info.h"
 
 namespace base {
 class Version;
@@ -30,14 +28,15 @@ class InstallationState;
 class ProductState {
  public:
   ProductState();
+
+  ProductState(const ProductState&) = delete;
+  ProductState& operator=(const ProductState&) = delete;
+
   ~ProductState();
 
   // Returns true if the product is installed (i.e., the product's Clients key
   // exists and has a "pv" value); false otherwise.
   bool Initialize(bool system_install);
-
-  // Returns the product's channel info (i.e., the Google Update "ap" value).
-  const ChannelInfo& channel() const { return channel_; }
 
   // Returns the path to the product's "setup.exe"; may be empty.
   base::FilePath GetSetupPath() const;
@@ -93,7 +92,6 @@ class ProductState {
   void Clear();
 
  protected:
-  ChannelInfo channel_;
   std::unique_ptr<base::Version> version_;
   std::unique_ptr<base::Version> old_version_;
   std::wstring brand_;
@@ -110,8 +108,6 @@ class ProductState {
 
  private:
   friend class InstallationState;
-
-  DISALLOW_COPY_AND_ASSIGN(ProductState);
 };  // class ProductState
 
 // Encapsulates the state of all products on the system.
@@ -119,6 +115,9 @@ class ProductState {
 class InstallationState {
  public:
   InstallationState();
+
+  InstallationState(const InstallationState&) = delete;
+  InstallationState& operator=(const InstallationState&) = delete;
 
   // Initializes this object with the machine's current state.
   void Initialize();
@@ -139,9 +138,6 @@ class InstallationState {
  protected:
   ProductState user_chrome_;
   ProductState system_chrome_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallationState);
 };  // class InstallationState
 
 }  // namespace installer

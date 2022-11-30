@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_parameters.h"
@@ -16,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using ::testing::_;
 
@@ -36,14 +36,18 @@ class WebAudioSourceProviderImplTest : public testing::Test,
  public:
   WebAudioSourceProviderImplTest()
       : params_(media::AudioParameters::AUDIO_PCM_LINEAR,
-                media::CHANNEL_LAYOUT_STEREO,
+                media::ChannelLayoutConfig::Stereo(),
                 kTestSampleRate,
                 64),
         fake_callback_(0.1, kTestSampleRate),
         mock_sink_(new media::MockAudioRendererSink()),
         wasp_impl_(new WebAudioSourceProviderImpl(mock_sink_, &media_log_)) {}
 
-  virtual ~WebAudioSourceProviderImplTest() = default;
+  WebAudioSourceProviderImplTest(const WebAudioSourceProviderImplTest&) =
+      delete;
+  WebAudioSourceProviderImplTest& operator=(
+      const WebAudioSourceProviderImplTest&) = delete;
+  ~WebAudioSourceProviderImplTest() override = default;
 
   void CallAllSinkMethodsAndVerify(bool verify) {
     testing::InSequence s;
@@ -115,8 +119,6 @@ class WebAudioSourceProviderImplTest : public testing::Test,
   scoped_refptr<WebAudioSourceProviderImpl> wasp_impl_;
 
   base::WeakPtrFactory<WebAudioSourceProviderImplTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebAudioSourceProviderImplTest);
 };
 
 TEST_F(WebAudioSourceProviderImplTest, SetClientBeforeInitialize) {
@@ -371,8 +373,8 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   // given. Ensure this doesn't crash.
   EXPECT_FALSE(wasp_impl_->IsOptimizedForHardwareParameters());
   auto stream_params = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_MONO,
-      kTestSampleRate * 2, 64);
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Mono(), kTestSampleRate * 2, 64);
 
   EXPECT_CALL(*this,
               SetFormat(stream_params.channels(), stream_params.sample_rate()));
@@ -400,8 +402,8 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
 TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
   // Create a stereo stream
   auto stereo_params = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_STEREO,
-      kTestSampleRate * 2, 64);
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Stereo(), kTestSampleRate * 2, 64);
 
   // When Initialize() is called after setClient(), the params should propagate
   // to the client via setFormat() during the call.
@@ -416,8 +418,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
 
   // Create a mono stream
   auto mono_params = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_MONO,
-      kTestSampleRate * 2, 64);
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Mono(), kTestSampleRate * 2, 64);
 
   auto bus = media::AudioBus::Create(mono_params);
 

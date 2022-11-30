@@ -1,21 +1,20 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ImageTransformParam} from './metadata/image_orientation.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
-// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.m.js';
-// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.m.js';
-// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
+import {ImageTransformParam} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_orientation.js';
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+
+import {FileType} from '../../common/js/file_type.js';
 
 /**
  * Loads a thumbnail using provided url. In CANVAS mode, loaded images
  * are attached as <canvas> element, while in IMAGE mode as <img>.
  * <canvas> renders faster than <img>, however has bigger memory overhead.
  */
-/* #export */ class ThumbnailLoader {
+export class ThumbnailLoader {
   /**
    * @param {!Entry} entry File entry.
    * @param {!ThumbnailLoader.LoaderType=} opt_loaderType Canvas or Image
@@ -45,7 +44,7 @@
     const loadTargets = opt_loadTargets || [
       ThumbnailLoader.LoadTarget.CONTENT_METADATA,
       ThumbnailLoader.LoadTarget.EXTERNAL_METADATA,
-      ThumbnailLoader.LoadTarget.FILE_ENTRY
+      ThumbnailLoader.LoadTarget.FILE_ENTRY,
     ];
 
     /** @private @const {!Entry} */
@@ -200,7 +199,7 @@
           cache: true,
           priority: this.priority_,
           timestamp: modificationTime,
-          orientation: this.transform_
+          orientation: this.transform_,
         }),
         this.image_, () => {}, () => {
           this.image_.onerror(new Event('load-error'));
@@ -253,7 +252,7 @@
         cache: true,
         priority: this.priority_,
         timestamp: modificationTime,
-        orientation: this.transform_
+        orientation: this.transform_,
       });
 
       if (fillMode === ThumbnailLoader.FillMode.OVER_FILL) {
@@ -337,7 +336,7 @@
           cache: true,
           priority: this.priority_,
           timestamp: modificationTime,
-          orientation: this.transform_
+          orientation: this.transform_,
         }),
         this.image_, () => {}, () => {
           this.image_.onerror(new Event('load-error'));
@@ -516,7 +515,7 @@ ThumbnailLoader.FillMode = {
   FILL: 0,       // Fill whole box. Image may be cropped.
   FIT: 1,        // Keep aspect ratio, do not crop.
   OVER_FILL: 2,  // Fill whole box with possible stretching.
-  AUTO: 3        // Try to fill, but if incompatible aspect ratio, then fit.
+  AUTO: 3,       // Try to fill, but if incompatible aspect ratio, then fit.
 };
 
 /**
@@ -525,7 +524,7 @@ ThumbnailLoader.FillMode = {
  */
 ThumbnailLoader.LoaderType = {
   IMAGE: 0,
-  CANVAS: 1
+  CANVAS: 1,
 };
 
 /**
@@ -538,7 +537,7 @@ ThumbnailLoader.LoadTarget = {
   // e.g. EXIF thumbnail.
   CONTENT_METADATA: 'contentMetadata',
   // Image file itself.
-  FILE_ENTRY: 'fileEntry'
+  FILE_ENTRY: 'fileEntry',
 };
 
 /**

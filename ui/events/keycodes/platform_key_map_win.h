@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,10 @@ class EVENTS_EXPORT PlatformKeyMap {
   // Create and load key map table with specified keyboard layout.
   // Visible for testing.
   explicit PlatformKeyMap(HKL layout);
+
+  PlatformKeyMap(const PlatformKeyMap&) = delete;
+  PlatformKeyMap& operator=(const PlatformKeyMap&) = delete;
+
   ~PlatformKeyMap();
 
   // Returns the DOM KeyboardEvent key from |KeyboardCode|+|EventFlags| and
@@ -67,8 +71,6 @@ class EVENTS_EXPORT PlatformKeyMap {
                              base::IntPairHash<std::pair<int, int>>>
       KeyboardCodeToKeyMap;
   KeyboardCodeToKeyMap printable_keycode_to_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeyMap);
 };
 
 }  // namespace ui

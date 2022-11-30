@@ -1,0 +1,34 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("access_code_cast_integration_base") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "access_code_cast_integration_browsertest.cc",
+    "access_code_cast_integration_browsertest.h",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/media/router:router",
+    "//chrome/browser/media/router:test_support",
+    "//chrome/browser/media/router/discovery:discovery",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/media_router:test_support",
+    "//components/keyed_service/content:content",
+    "//components/media_router/browser:browser",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/user_manager:user_manager",
+    "//content/test:test_support",
+  ]
+}

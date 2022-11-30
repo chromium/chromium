@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,16 +21,16 @@ BackgroundSyncDelegateImpl::BackgroundSyncDelegateImpl(
 
 BackgroundSyncDelegateImpl::~BackgroundSyncDelegateImpl() = default;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
 BackgroundSyncDelegateImpl::CreateBackgroundSyncEventKeepAlive() {
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void BackgroundSyncDelegateImpl::GetUkmSourceId(
     const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<ukm::SourceId>)> callback) {
+    base::OnceCallback<void(absl::optional<ukm::SourceId>)> callback) {
   // The exact URL which registered the Background Sync event is not saved,
   // and the current main frame URL might not correspond to |origin|. Thus, we
   // associate a new source ID with the origin.
@@ -75,7 +75,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
   return 0;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 void BackgroundSyncDelegateImpl::ScheduleBrowserWakeUpWithDelay(
     blink::mojom::BackgroundSyncType sync_type,
@@ -99,6 +99,6 @@ bool BackgroundSyncDelegateImpl::ShouldDisableAndroidNetworkDetection() {
   // embedder is supported.
   return true;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace weblayer

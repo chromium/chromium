@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,31 +63,27 @@ SSLErrorUI::~SSLErrorUI() {
   controller_->metrics_helper()->RecordShutdownMetrics();
 }
 
-void SSLErrorUI::PopulateStringsForHTML(base::DictionaryValue* load_time_data) {
-  DCHECK(load_time_data);
-
+void SSLErrorUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
   // Shared with other errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(ssl_info_, time_triggered_,
                                                   load_time_data);
 
   // Shared values for both the overridable and non-overridable versions.
-  load_time_data->SetBoolean("bad_clock", false);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetString("tabTitle",
-                            l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
-  load_time_data->SetString("heading",
-                            l10n_util::GetStringUTF16(IDS_SSL_V2_HEADING));
-  load_time_data->SetString(
+  load_time_data.Set("bad_clock", false);
+  load_time_data.Set("hide_primary_button", false);
+  load_time_data.Set("tabTitle", l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
+  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_SSL_V2_HEADING));
+  load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_SSL_V2_PRIMARY_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url_)));
-  load_time_data->SetString(
+  load_time_data.Set(
       "recurrentErrorParagraph",
       l10n_util::GetStringUTF16(IDS_SSL_V2_RECURRENT_ERROR_PARAGRAPH));
-  load_time_data->SetBoolean("show_recurrent_error_paragraph",
-                             controller_->HasSeenRecurrentError());
+  load_time_data.Set("show_recurrent_error_paragraph",
+                     controller_->HasSeenRecurrentError());
 
   if (soft_override_enabled_)
     PopulateOverridableStrings(load_time_data);
@@ -111,8 +107,7 @@ int SSLErrorUI::cert_error() const {
   return cert_error_;
 }
 
-void SSLErrorUI::PopulateOverridableStrings(
-    base::DictionaryValue* load_time_data) {
+void SSLErrorUI::PopulateOverridableStrings(base::Value::Dict& load_time_data) {
   DCHECK(soft_override_enabled_);
 
   std::u16string url(common_string_util::GetFormattedHostName(request_url_));
@@ -120,49 +115,49 @@ void SSLErrorUI::PopulateOverridableStrings(
       ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_),
       ssl_info_.cert.get(), request_url_);
 
-  load_time_data->SetBoolean("overridable", true);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetString("explanationParagraph", error_info.details());
-  load_time_data->SetString(
+  load_time_data.Set("overridable", true);
+  load_time_data.Set("hide_primary_button", false);
+  load_time_data.Set("explanationParagraph", error_info.details());
+  load_time_data.Set(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_SSL_OVERRIDABLE_SAFETY_BUTTON));
 
 // On iOS, offer to close the page instead of navigating to NTP when unable to
 // go back. See crbug.com/1058476 for discussion.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (!controller()->CanGoBack()) {
-    load_time_data->SetString(
+    load_time_data.Set(
         "primaryButtonText",
         l10n_util::GetStringUTF16(IDS_SSL_OVERRIDABLE_CLOSE_PAGE_BUTTON));
-    load_time_data->SetBoolean("primary_button_close_page", true);
+    load_time_data.Set("primary_button_close_page", true);
   }
 #endif
 
-  load_time_data->SetString(
+  load_time_data.Set(
       "finalParagraph",
       l10n_util::GetStringFUTF16(IDS_SSL_OVERRIDABLE_PROCEED_PARAGRAPH, url));
 }
 
 void SSLErrorUI::PopulateNonOverridableStrings(
-    base::DictionaryValue* load_time_data) {
+    base::Value::Dict& load_time_data) {
   DCHECK(!soft_override_enabled_);
 
   std::u16string url(common_string_util::GetFormattedHostName(request_url_));
   ssl_errors::ErrorInfo::ErrorType type =
       ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_);
 
-  load_time_data->SetBoolean("overridable", false);
-  load_time_data->SetBoolean("hide_primary_button", false);
-  load_time_data->SetString(
+  load_time_data.Set("overridable", false);
+  load_time_data.Set("hide_primary_button", false);
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringFUTF16(IDS_SSL_NONOVERRIDABLE_MORE, url));
-  load_time_data->SetString("primaryButtonText",
-                            l10n_util::GetStringUTF16(IDS_SSL_RELOAD));
+  load_time_data.Set("primaryButtonText",
+                     l10n_util::GetStringUTF16(IDS_SSL_RELOAD));
 
   // Customize the help link depending on the specific error type.
   // Only mark as HSTS if none of the more specific error types apply,
   // and use INVALID as a fallback if no other string is appropriate.
-  load_time_data->SetInteger("errorType", type);
+  load_time_data.Set("errorType", type);
   int help_string = IDS_SSL_NONOVERRIDABLE_INVALID;
   switch (type) {
     case ssl_errors::ErrorInfo::CERT_REVOKED:
@@ -178,8 +173,8 @@ void SSLErrorUI::PopulateNonOverridableStrings(
       if (requested_strict_enforcement_)
         help_string = IDS_SSL_NONOVERRIDABLE_HSTS;
   }
-  load_time_data->SetString("finalParagraph",
-                            l10n_util::GetStringFUTF16(help_string, url));
+  load_time_data.Set("finalParagraph",
+                     l10n_util::GetStringFUTF16(help_string, url));
 }
 
 void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {

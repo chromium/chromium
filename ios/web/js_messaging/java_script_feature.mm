@@ -1,17 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#include "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/js_messaging/web_frame_internal.h"
+#import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/js_messaging/web_frame_internal.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -20,9 +21,9 @@
 
 namespace {
 
-// Returns a JavaScript safe string based on |script_filename|. This is used as
+// Returns a JavaScript safe string based on `script_filename`. This is used as
 // a unique identifier for a given script and passed to
-// |MakeScriptInjectableOnce| which ensures JS isn't executed multiple times due
+// `MakeScriptInjectableOnce` which ensures JS isn't executed multiple times due
 // to duplicate injection.
 NSString* InjectionTokenForScript(NSString* script_filename) {
   NSMutableCharacterSet* validCharacters =
@@ -47,10 +48,10 @@ JavaScriptFeature::FeatureScript::CreateWithFilename(
     InjectionTime injection_time,
     TargetFrames target_frames,
     ReinjectionBehavior reinjection_behavior,
-    std::map<std::string, NSString*> replacements) {
+    const PlaceholderReplacementsCallback& replacements_callback) {
   return JavaScriptFeature::FeatureScript(filename, injection_time,
                                           target_frames, reinjection_behavior,
-                                          replacements);
+                                          replacements_callback);
 }
 
 JavaScriptFeature::FeatureScript::FeatureScript(
@@ -58,15 +59,22 @@ JavaScriptFeature::FeatureScript::FeatureScript(
     InjectionTime injection_time,
     TargetFrames target_frames,
     ReinjectionBehavior reinjection_behavior,
-    std::map<std::string, NSString*> replacements)
+    const PlaceholderReplacementsCallback& replacements_callback)
     : script_filename_(filename),
       injection_time_(injection_time),
       target_frames_(target_frames),
       reinjection_behavior_(reinjection_behavior),
-      replacements_(replacements) {}
+      replacements_callback_(replacements_callback) {}
 
-JavaScriptFeature::FeatureScript::FeatureScript(const FeatureScript& other) =
-    default;
+JavaScriptFeature::FeatureScript::FeatureScript(const FeatureScript&) = default;
+
+JavaScriptFeature::FeatureScript& JavaScriptFeature::FeatureScript::operator=(
+    const FeatureScript&) = default;
+
+JavaScriptFeature::FeatureScript::FeatureScript(FeatureScript&&) = default;
+
+JavaScriptFeature::FeatureScript& JavaScriptFeature::FeatureScript::operator=(
+    FeatureScript&&) = default;
 
 JavaScriptFeature::FeatureScript::~FeatureScript() = default;
 
@@ -78,7 +86,7 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
   }
   // WKUserScript instances will automatically be re-injected by WebKit when the
   // document is re-created, even though the JavaScript context will not be
-  // re-created. So the script needs to be wrapped in |MakeScriptInjectableOnce|
+  // re-created. So the script needs to be wrapped in `MakeScriptInjectableOnce`
   // so that is is not re-injected.
   return MakeScriptInjectableOnce(
       InjectionTokenForScript(script_filename),
@@ -87,11 +95,18 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
 
 NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
     NSString* script) const {
-  for (auto item : replacements_) {
-    script = [script
-        stringByReplacingOccurrencesOfString:base::SysUTF8ToNSString(item.first)
-                                  withString:item.second];
+  if (replacements_callback_.is_null())
+    return script;
+
+  PlaceholderReplacements replacements = replacements_callback_.Run();
+  if (!replacements)
+    return script;
+
+  for (NSString* key in replacements) {
+    script = [script stringByReplacingOccurrencesOfString:key
+                                               withString:replacements[key]];
   }
+
   return script;
 }
 
@@ -133,19 +148,19 @@ JavaScriptFeature::GetDependentFeatures() const {
   return dependent_features_;
 }
 
-base::Optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
+absl::optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
     const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<JavaScriptFeature::ScriptMessageHandler>
+absl::optional<JavaScriptFeature::ScriptMessageHandler>
 JavaScriptFeature::GetScriptMessageHandler() const {
   if (!GetScriptMessageHandlerName()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,
-                             weak_factory_.GetWeakPtr());
+                             weak_factory_.GetMutableWeakPtr());
 }
 
 void JavaScriptFeature::ScriptMessageReceived(WebState* web_state,
@@ -155,14 +170,15 @@ bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,
     const std::string& function_name,
     const std::vector<base::Value>& parameters) {
+  DCHECK(web_frame);
+
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
 
-  // A feature can still ExecuteJavaScript even if there are no initial scripts,
-  // so a nil content_world here will execute JS in the main page content world.
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+  DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world);
@@ -174,14 +190,15 @@ bool JavaScriptFeature::CallJavaScriptFunction(
     const std::vector<base::Value>& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
+  DCHECK(web_frame);
+
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
 
-  // A feature can still ExecuteJavaScript even if there are no initial scripts,
-  // so a nil content_world here will execute JS in the main page content world.
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+  DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world, std::move(callback), timeout);

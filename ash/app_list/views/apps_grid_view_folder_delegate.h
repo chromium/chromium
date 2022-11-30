@@ -1,10 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_FOLDER_DELEGATE_H_
 #define ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_FOLDER_DELEGATE_H_
 
+#include <memory>
+
+#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 
@@ -20,12 +23,13 @@ class AppListItemView;
 class ASH_EXPORT AppsGridViewFolderDelegate {
  public:
   // Called when a folder item is dragged out of the folder to be re-parented.
-  // |original_drag_view| is the |drag_view_| inside the folder's grid view.
-  // |drag_point_in_folder_grid| is the last drag point in coordinate of the
-  // AppsGridView inside the folder.
-  virtual void ReparentItem(AppListItemView* original_drag_view,
-                            const gfx::Point& drag_point_in_folder_grid,
-                            bool has_native_drag) = 0;
+  // `original_drag_view` is the `drag_view_` inside the folder's grid view.
+  // `drag_point_in_folder_grid` is the last drag point in coordinate of the
+  // AppsGridView inside the folder. `pointer` describes the type of pointer
+  // used for the drag action (mouse or touch).
+  virtual void ReparentItem(AppsGridView::Pointer pointer,
+                            AppListItemView* original_drag_view,
+                            const gfx::Point& drag_point_in_folder_grid) = 0;
 
   // Dispatches drag event from the hidden grid view to the root level grid view
   // for re-parenting a folder item.
@@ -38,20 +42,19 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
   // |events_forwarded_to_drag_drop_host|: True if the dragged item is dropped
   // to the drag_drop_host, eg. dropped on shelf.
   // |cancel_drag|: True if the drag is ending because it has been canceled.
+  // |drag_icon_proxy|: The drag icon proxy that was created for the dragged app
+  // item view, if any.
   virtual void DispatchEndDragEventForReparent(
       bool events_forwarded_to_drag_drop_host,
-      bool cancel_drag) = 0;
+      bool cancel_drag,
+      std::unique_ptr<AppDragIconProxy> drag_icon_proxy) = 0;
 
-  // Returns whether the |view| is within the folder view's bounds.
-  // The |view| is expected to be in the folder's apps grid view hierarchy.
-  virtual bool IsViewOutsideOfFolder(AppListItemView* view) = 0;
+  // Returns whether |drag_point| in the folder apps grid bounds is within the
+  // folder view's bounds.
+  virtual bool IsDragPointOutsideOfFolder(const gfx::Point& drag_point) = 0;
 
   // Returns true if the associated folder item is an OEM folder.
   virtual bool IsOEMFolder() const = 0;
-
-  // Hides or show the root level's grid view. This is needed so that the
-  // synchronous drag has an icon for reparenting while it loads.
-  virtual void SetRootLevelDragViewVisible(bool visible) = 0;
 
   // Moves |reparented_item| to the root level's grid view, left/right/up/down
   // of the folder's grid position.

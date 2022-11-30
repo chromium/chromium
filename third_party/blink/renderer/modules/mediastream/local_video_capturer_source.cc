@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,16 @@
 
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
+#include "base/task/bind_post_task.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
+#include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -41,6 +45,7 @@ media::VideoCaptureFormats LocalVideoCapturerSource::GetPreferredFormats() {
 void LocalVideoCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
+    const VideoCaptureCropVersionCB& crop_version_callback,
     const RunningCallback& running_callback) {
   DCHECK(params.requested_format.IsValid());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -52,7 +57,7 @@ void LocalVideoCapturerSource::StartCapture(
           task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                             &LocalVideoCapturerSource::OnStateUpdate,
                             weak_factory_.GetWeakPtr()))),
-      new_frame_callback);
+      new_frame_callback, crop_version_callback);
 }
 
 media::VideoCaptureFeedbackCB LocalVideoCapturerSource::GetFeedbackCallback()
@@ -101,29 +106,35 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
     OnLog("LocalVideoCapturerSource::OnStateUpdate discarding state update.");
     return;
   }
+  RunState run_state =
+      (state == VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED)
+          ? RunState::kSystemPermissionsError
+          : RunState::kStopped;
+
   auto* frame = LocalFrame::FromFrameToken(frame_token_);
   switch (state) {
     case VIDEO_CAPTURE_STATE_STARTED:
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is now running.");
-      running_callback_.Run(true);
+      running_callback_.Run(RunState::kRunning);
       break;
 
     case VIDEO_CAPTURE_STATE_STOPPING:
     case VIDEO_CAPTURE_STATE_STOPPED:
     case VIDEO_CAPTURE_STATE_ERROR:
+    case VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED:
     case VIDEO_CAPTURE_STATE_ENDED:
       std::move(release_device_cb_).Run();
       release_device_cb_ =
           frame && frame->Client()
               ? manager_->UseDevice(session_id_,
                                     &frame->GetBrowserInterfaceBroker())
-              : base::DoNothing::Once();
+              : base::DoNothing();
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is no longer running.");
-      running_callback_.Run(false);
+      running_callback_.Run(run_state);
       break;
 
     case VIDEO_CAPTURE_STATE_STARTING:
@@ -135,7 +146,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
 }
 
 // static
-std::unique_ptr<media::VideoCapturerSource> LocalVideoCapturerSource::Create(
+std::unique_ptr<VideoCapturerSource> LocalVideoCapturerSource::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     LocalFrame* frame,
     const base::UnguessableToken& session_id) {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/types/id_type.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,7 +26,7 @@ namespace internal {
 struct RemoteSetElementIdTypeTag {};
 }  // namespace internal
 
-using RemoteSetElementId = util::IdTypeU32<internal::RemoteSetElementIdTypeTag>;
+using RemoteSetElementId = base::IdTypeU32<internal::RemoteSetElementIdTypeTag>;
 
 // Shared implementation of a set of remotes, used by both RemoteSet and
 // AssociatedRemoteSet aliases (see below).
@@ -80,14 +79,18 @@ class RemoteSetImpl {
 
     reference operator*() const { return it_->second; }
     pointer operator->() const { return &it_->second; }
-    bool operator==(const self_type& rhs) { return it_ == rhs.it_; }
-    bool operator!=(const self_type& rhs) { return it_ != rhs.it_; }
+    bool operator==(const self_type& rhs) const { return it_ == rhs.it_; }
+    bool operator!=(const self_type& rhs) const { return it_ != rhs.it_; }
 
    private:
     typename Storage::const_iterator it_;
   };
 
   RemoteSetImpl() = default;
+
+  RemoteSetImpl(const RemoteSetImpl&) = delete;
+  RemoteSetImpl& operator=(const RemoteSetImpl&) = delete;
+
   ~RemoteSetImpl() = default;
 
   // Adds a new remote to this set and returns a unique ID that can be used to
@@ -122,7 +125,7 @@ class RemoteSetImpl {
   // Returns an `Interface*` for the given ID, that can be used to issue
   // interface calls.
   Interface* Get(RemoteSetElementId id) {
-    auto* it = storage_.find(id);
+    auto it = storage_.find(id);
     if (it == storage_.end())
       return nullptr;
     return it->second.get();
@@ -148,7 +151,7 @@ class RemoteSetImpl {
 
   void FlushForTesting() {
     for (auto& it : storage_) {
-        it.second.FlushForTesting();
+      it.second.FlushForTesting();
     }
   }
 
@@ -166,8 +169,6 @@ class RemoteSetImpl {
   RemoteSetElementId::Generator remote_set_element_id_generator_;
   Storage storage_;
   DisconnectHandler disconnect_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSetImpl);
 };
 
 template <typename Interface>

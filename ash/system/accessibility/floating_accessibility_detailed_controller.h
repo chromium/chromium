@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,7 @@
 
 namespace ash {
 
-namespace tray {
 class AccessibilityDetailedView;
-}
 
 // Controller for the detailed view of accessibility floating menu.
 class ASH_EXPORT FloatingAccessibilityDetailedController
@@ -61,11 +59,11 @@ class ASH_EXPORT FloatingAccessibilityDetailedController
 
   DetailedBubbleView* bubble_view_ = nullptr;
   views::Widget* bubble_widget_ = nullptr;
-  tray::AccessibilityDetailedView* detailed_view_ = nullptr;
+  AccessibilityDetailedView* detailed_view_ = nullptr;
 
   Delegate* const delegate_;  // Owns us.
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_ACCESSIBILITY_FLOATING_ACCESSIBILITY_DETAILED_CONTROLLER_H
+#endif  // ASH_SYSTEM_ACCESSIBILITY_FLOATING_ACCESSIBILITY_DETAILED_CONTROLLER_H_

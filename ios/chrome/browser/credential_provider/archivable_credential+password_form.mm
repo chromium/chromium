@@ -1,16 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,10 +19,28 @@
 
 namespace {
 
+using base::SysNSStringToUTF8;
+using base::SysNSStringToUTF16;
 using base::SysUTF8ToNSString;
 using base::SysUTF16ToNSString;
 
 }  // namespace
+
+password_manager::PasswordForm PasswordFormFromCredential(
+    id<Credential> credential) {
+  password_manager::PasswordForm form;
+
+  GURL url(SysNSStringToUTF8(credential.serviceIdentifier));
+  DCHECK(url.is_valid());
+
+  form.url = password_manager_util::StripAuthAndParams(url);
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
+  form.username_value = SysNSStringToUTF16(credential.user);
+  form.encrypted_password = SysNSStringToUTF8(credential.keychainIdentifier);
+  form.times_used = credential.rank;
+
+  return form;
+}
 
 @implementation ArchivableCredential (PasswordForm)
 

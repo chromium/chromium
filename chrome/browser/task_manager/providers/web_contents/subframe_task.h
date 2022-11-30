@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_SUBFRAME_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_SUBFRAME_TASK_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
 namespace content {
@@ -21,8 +21,9 @@ namespace task_manager {
 class SubframeTask : public RendererTask {
  public:
   SubframeTask(content::RenderFrameHost* render_frame_host,
-               content::WebContents* web_contents,
                RendererTask* main_task);
+  SubframeTask(const SubframeTask&) = delete;
+  SubframeTask& operator=(const SubframeTask&) = delete;
   ~SubframeTask() override;
 
   // task_manager::RendererTask:
@@ -36,12 +37,10 @@ class SubframeTask : public RendererTask {
  private:
   std::u16string GetTitle();
 
-  content::SiteInstance* site_instance_;
+  raw_ptr<content::SiteInstance> site_instance_;
 
   // The task for the main frame of this WebContents.
-  RendererTask* main_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubframeTask);
+  raw_ptr<RendererTask> main_task_;
 };
 
 }  // namespace task_manager

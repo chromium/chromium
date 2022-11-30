@@ -1,19 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.payments;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
 import org.chromium.components.payments.OriginSecurityChecker;
+import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
@@ -55,10 +59,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     @VisibleForTesting
     public static class ChromePaymentRequestDelegateImpl
             implements ChromePaymentRequestService.Delegate {
-        private final TwaPackageManagerDelegate mPackageManagerDelegate =
-                new TwaPackageManagerDelegate();
         private final RenderFrameHost mRenderFrameHost;
-        private boolean mSkipUiForBasicCard;
 
         private ChromePaymentRequestDelegateImpl(RenderFrameHost renderFrameHost) {
             mRenderFrameHost = renderFrameHost;
@@ -102,23 +103,17 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         }
 
         @Override
-        public boolean skipUiForBasicCard() {
-            return mSkipUiForBasicCard; // Only tests may set it to true.
-        }
-
-        @Override
         @Nullable
         public String getTwaPackageName() {
             WebContents liveWebContents =
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
-            ChromeActivity activity = ChromeActivity.fromWebContents(liveWebContents);
-            return activity != null ? mPackageManagerDelegate.getTwaPackageName(activity) : null;
-        }
+            Activity activity = ActivityUtils.getActivityFromWebContents(liveWebContents);
+            if (!(activity instanceof CustomTabActivity)) return null;
 
-        @VisibleForTesting
-        public void setSkipUiForBasicCard() {
-            mSkipUiForBasicCard = true;
+            CustomTabActivity customTabActivity = ((CustomTabActivity) activity);
+            if (!customTabActivity.isInTwaMode()) return null;
+            return customTabActivity.getTwaPackage();
         }
     }
 
@@ -169,6 +164,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
 
         return new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
-                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate));
+                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate,
+                                PaymentAppServiceBridge::new));
     }
 }

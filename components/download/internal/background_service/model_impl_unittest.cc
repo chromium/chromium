@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/stats.h"
@@ -31,6 +31,10 @@ class DownloadServiceModelImplTest : public testing::Test {
  public:
   DownloadServiceModelImplTest() : store_(nullptr) {}
 
+  DownloadServiceModelImplTest(const DownloadServiceModelImplTest&) = delete;
+  DownloadServiceModelImplTest& operator=(const DownloadServiceModelImplTest&) =
+      delete;
+
   ~DownloadServiceModelImplTest() override = default;
 
   void SetUp() override {
@@ -41,11 +45,8 @@ class DownloadServiceModelImplTest : public testing::Test {
 
  protected:
   test::MockModelClient client_;
-  test::TestStore* store_;
+  raw_ptr<test::TestStore> store_;
   std::unique_ptr<ModelImpl> model_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadServiceModelImplTest);
 };
 
 }  // namespace

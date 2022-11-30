@@ -1,89 +1,156 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/transitions/surface_animation_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/logging.h"
 #include "base/time/time.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/switches.h"
+#include "components/viz/common/transition_utils.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 namespace {
 
-CompositorRenderPassId NextRenderPassId(const CompositorRenderPassId& id) {
-  return CompositorRenderPassId(id.GetUnsafeValue() + 1);
+// This function swaps a SharedElementDrawQuad with a RenderPassDrawQuad.
+// |target_render_pass| is the render pass where the SharedElementDrawQuad is
+// drawn.
+// |shared_element_quad| is the quad providing the geometry to draw this shared
+// element's content.
+// |shared_element_content_pass| is the render pass which provides the content
+// for this shared element.
+void ReplaceSharedElementWithRenderPass(
+    CompositorRenderPass* target_render_pass,
+    const SharedElementDrawQuad& shared_element_quad,
+    const CompositorRenderPass* shared_element_content_pass) {
+  auto pass_id = shared_element_content_pass->id;
+  const gfx::Rect& shared_pass_output_rect =
+      shared_element_content_pass->output_rect;
+
+  auto* copied_quad_state =
+      target_render_pass->CreateAndAppendSharedQuadState();
+  *copied_quad_state = *shared_element_quad.shared_quad_state;
+
+  gfx::Transform transform;
+  transform.Scale(shared_element_quad.rect.width() /
+                      static_cast<SkScalar>(shared_pass_output_rect.width()),
+                  shared_element_quad.rect.height() /
+                      static_cast<SkScalar>(shared_pass_output_rect.height()));
+  transform.Translate(-shared_pass_output_rect.x(),
+                      -shared_pass_output_rect.y());
+
+  copied_quad_state->quad_to_target_transform.PreConcat(transform);
+
+  auto* render_pass_quad =
+      target_render_pass
+          ->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
+  gfx::RectF tex_coord_rect(gfx::SizeF(shared_element_quad.rect.size()));
+  tex_coord_rect.Offset(-shared_pass_output_rect.x(),
+                        -shared_pass_output_rect.y());
+  render_pass_quad->SetNew(
+      /*shared_quad_state=*/copied_quad_state,
+      /*rect=*/shared_element_quad.rect,
+      /*visible_rect=*/shared_pass_output_rect,
+      /*render_pass_id=*/pass_id,
+      /*mask_resource_id=*/kInvalidResourceId,
+      /*mask_uv_rect=*/gfx::RectF(),
+      /*mask_texture_size=*/gfx::Size(),
+      /*filters_scale=*/gfx::Vector2dF(),
+      /*filters_origin=*/gfx::PointF(),
+      /*tex_coord_rect=*/tex_coord_rect,
+      /*force_anti_aliasing_off=*/false,
+      /*backdrop_filter_quality*/ 1.f);
 }
 
-constexpr base::TimeDelta kDefaultAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+// This function swaps a SharedElementDrawQuad with a TextureDrawQuad.
+// |target_render_pass| is the render pass where the SharedElementDrawQuad is
+// drawn.
+// |shared_element_quad| is the quad providing the geometry to draw this shared
+// element's content.
+// |y_flipped| indicates if the texture should be flipped vertically when
+// composited.
+// |id| is a reference to the texture which provides the content for this shared
+// element.
+void ReplaceSharedElementWithTexture(
+    CompositorRenderPass* target_render_pass,
+    const SharedElementDrawQuad& shared_element_quad,
+    bool y_flipped,
+    ResourceId resource_id) {
+  auto* copied_quad_state =
+      target_render_pass->CreateAndAppendSharedQuadState();
+  *copied_quad_state = *shared_element_quad.shared_quad_state;
 
-// Scale the overall duration to produce the opacity duration. Opacity
-// transitions which reveal an element (i.e., transition opacity from 0 -> 1)
-// should finish ahead of a translation. This way, you'll see the next page fade
-// into view and settle while fully opaque. Similarly, transitions which hide an
-// element (i.e., transition opacity from 1 -> 0) should, for a brief period,
-// animate with full opacity so the user can get a sense of the motion before
-// the element disappears.
-constexpr float kOpacityTransitionDurationScaleFactor = 0.8f;
-
-// When performing slides, the amount moved is proportional to the minimum
-// viewport dimension -- this controls that proportion.
-constexpr float kTranslationProportion = 0.05f;
-
-// When performing implosions or explosions layers grow or shrink. This value
-// determines the scaling done to achieve the larger of the two sizes.
-constexpr float kScaleProportion = 1.1f;
-
-void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
-                                   const gfx::Rect& output_rect,
-                                   const gfx::Transform& src_transform,
-                                   float src_opacity,
-                                   ResourceId id) {
-  auto* src_quad_state = render_pass->CreateAndAppendSharedQuadState();
-  src_quad_state->SetAll(
-      /*quad_to_target_transform=*/src_transform,
-      /*quad_layer_rect=*/output_rect,
-      /*visible_layer_rect=*/output_rect,
-      /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/false,
-      /*opacity=*/src_opacity,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
-
-  auto* src_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  auto* texture_quad =
+      target_render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};
-  src_quad->SetNew(
-      /*shared_quad_state=*/src_quad_state,
-      /*rect=*/output_rect,
-      /*visible_rect=*/output_rect,
-      /*needs_blending=*/true,
-      /*resource_id=*/id,
+  texture_quad->SetNew(
+      /*shared_quad_state=*/copied_quad_state,
+      /*rect=*/shared_element_quad.rect,
+      /*visible_rect=*/shared_element_quad.visible_rect,
+      /*needs_blending=*/shared_element_quad.needs_blending,
+      /*resource_id=*/resource_id,
       /*premultiplied_alpha=*/true,
       /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
-      /*background_color=*/SK_ColorWHITE,
-      /*vertex_opacity=*/vertex_opacity,
-      /*y_flipped=*/true,
-      /*nearest_neighbor=*/true,
+      /*background_color=*/SkColors::kTransparent,
+      /*vertex_opacity=*/vertex_opacity, y_flipped,
+      /*nearest_neighbor=*/false,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
 }
 
 }  // namespace
 
-SurfaceAnimationManager::SurfaceAnimationManager() = default;
+class SurfaceAnimationManager::StorageWithSurface {
+ public:
+  StorageWithSurface(SurfaceSavedFrameStorage* storage, Surface* surface)
+      : storage_(storage) {
+    DCHECK(!storage_->has_active_surface());
+    storage_->set_active_surface(surface);
+  }
+
+  ~StorageWithSurface() { storage_->set_active_surface(nullptr); }
+
+  SurfaceSavedFrameStorage* operator->() { return storage_; }
+
+ private:
+  raw_ptr<SurfaceSavedFrameStorage> storage_;
+};
+
+SurfaceAnimationManager::SurfaceAnimationManager(
+    SharedBitmapManager* shared_bitmap_manager)
+    : transferable_resource_tracker_(shared_bitmap_manager) {}
+
 SurfaceAnimationManager::~SurfaceAnimationManager() = default;
 
 void SurfaceAnimationManager::SetDirectiveFinishedCallback(
@@ -91,10 +158,10 @@ void SurfaceAnimationManager::SetDirectiveFinishedCallback(
   sequence_id_finished_callback_ = std::move(sequence_id_finished_callback);
 }
 
-bool SurfaceAnimationManager::ProcessTransitionDirectives(
+void SurfaceAnimationManager::ProcessTransitionDirectives(
     const std::vector<CompositorFrameTransitionDirective>& directives,
-    SurfaceSavedFrameStorage* storage) {
-  bool started_animation = false;
+    Surface* active_surface) {
+  StorageWithSurface storage(&surface_saved_frame_storage_, active_surface);
   for (auto& directive : directives) {
     // Don't process directives with sequence ids smaller than or equal to the
     // last seen one. It is possible that we call this with the same frame
@@ -109,9 +176,11 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
       case CompositorFrameTransitionDirective::Type::kSave:
         handled = ProcessSaveDirective(directive, storage);
         break;
-      case CompositorFrameTransitionDirective::Type::kAnimate:
-        handled = ProcessAnimateDirective(directive, storage);
-        started_animation |= handled;
+      case CompositorFrameTransitionDirective::Type::kAnimateRenderer:
+        handled = ProcessAnimateRendererDirective(directive, storage);
+        break;
+      case CompositorFrameTransitionDirective::Type::kRelease:
+        handled = ProcessReleaseDirective();
         break;
     }
 
@@ -122,186 +191,59 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
     if (!handled)
       sequence_id_finished_callback_.Run(directive.sequence_id());
   }
-  return started_animation;
 }
 
 bool SurfaceAnimationManager::ProcessSaveDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
+  // We can only have one saved frame. It is the job of the client to ensure the
+  // correct API usage. So if we are receiving a save directive while we already
+  // have a saved frame, release it first. That ensures that any subsequent
+  // animate directives which presumably rely on this save directive will
+  // succeed.
+  ProcessReleaseDirective();
+
   // We need to be in the idle state in order to save.
   if (state_ != State::kIdle)
     return false;
-  storage->ProcessSaveDirective(directive, sequence_id_finished_callback_);
+  empty_resource_ids_ =
+      storage->ProcessSaveDirective(directive, sequence_id_finished_callback_);
   return true;
 }
 
-bool SurfaceAnimationManager::ProcessAnimateDirective(
+bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
-  // We can only begin an animate if we are currently idle.
+    StorageWithSurface& storage) {
+  // We can only begin an animate if we are currently idle. The renderer sends
+  // this in response to a notification of the capture completing successfully.
   if (state_ != State::kIdle)
     return false;
 
-  // Make sure we don't actually have anything saved as a texture.
-  DCHECK(!saved_root_texture_.has_value());
-
+  DCHECK(!saved_textures_);
+  state_ = State::kAnimatingRenderer;
   auto saved_frame = storage->TakeSavedFrame();
-  // We can't animate if we don't have a saved frame.
-  if (!saved_frame || !saved_frame->IsValid())
+  if (!saved_frame || !saved_frame->IsValid()) {
+    LOG(ERROR) << "Failure in caching shared element snapshots";
     return false;
+  }
 
-  // Take the save directive.
-  save_directive_.emplace(saved_frame->directive());
-  animate_directive_.emplace(directive);
-
-  // Convert the texture result into a transferable resource.
-  saved_root_texture_.emplace(
-      transferable_resource_tracker_.ImportResource(std::move(saved_frame)));
-
-  UpdateAnimationCurves(saved_root_texture_->size);
-  state_ = State::kAnimating;
+  // Import the saved frame, which converts it to a ResourceFrame -- a
+  // structure which has transferable resources.
+  saved_textures_.emplace(
+      transferable_resource_tracker_.ImportResources(std::move(saved_frame)));
+  empty_resource_ids_.clear();
   return true;
 }
 
-bool SurfaceAnimationManager::NeedsBeginFrame() const {
-  // If we're animating we need to keep pumping frames to advance the animation.
-  // If we're done, we require one more frame to switch back to idle state.
-  return animator_.IsAnimating() || state_ == State::kLastFrame;
-}
+bool SurfaceAnimationManager::ProcessReleaseDirective() {
+  if (state_ != State::kAnimatingRenderer)
+    return false;
 
-void SurfaceAnimationManager::NotifyFrameAdvanced(base::TimeTicks new_time) {
-  animator_.Tick(new_time);
-
-  switch (state_) {
-    case State::kIdle:
-      NOTREACHED() << "We should not advance frames when idle";
-      break;
-    case State::kAnimating:
-      FinishAnimationIfNeeded();
-      break;
-    case State::kLastFrame:
-      FinalizeAndDisposeOfState();
-      break;
-  }
-}
-
-void SurfaceAnimationManager::FinishAnimationIfNeeded() {
-  DCHECK_EQ(state_, State::kAnimating);
-  DCHECK(saved_root_texture_.has_value());
-  DCHECK(save_directive_.has_value());
-  DCHECK(animate_directive_.has_value());
-  if (!animator_.IsAnimating()) {
-    state_ = State::kLastFrame;
-    sequence_id_finished_callback_.Run(animate_directive_->sequence_id());
-  }
-}
-
-void SurfaceAnimationManager::FinalizeAndDisposeOfState() {
-  DCHECK_EQ(state_, State::kLastFrame);
-  DCHECK(saved_root_texture_.has_value());
-  // Set state to idle.
   state_ = State::kIdle;
-
-  // Ensure to return the texture / unref it.
-  transferable_resource_tracker_.UnrefResource(saved_root_texture_->id);
-  saved_root_texture_.reset();
-
-  save_directive_.reset();
-  animate_directive_.reset();
-}
-
-void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
-  DCHECK(saved_root_texture_);
-  if (state_ == State::kLastFrame) {
-    surface->ResetInterpolatedFrame();
-    return;
-  }
-
-  const auto& active_frame = surface->GetActiveFrame();
-
-  CompositorFrame interpolated_frame;
-  interpolated_frame.metadata = active_frame.metadata.Clone();
-  interpolated_frame.resource_list = active_frame.resource_list;
-  interpolated_frame.resource_list.push_back(*saved_root_texture_);
-  CompositorRenderPassId max_id = CompositorRenderPassId(0);
-  for (auto& render_pass : active_frame.render_pass_list) {
-    if (render_pass->id > max_id)
-      max_id = render_pass->id;
-    // TODO(vmpstr): If we are doing an interpolation, we fail requested copy
-    // requests, since we can't copy them into an interpolated frame below. The
-    // todo is to change DeepCopy into a function that copies everything and
-    // moves copy output requests, since we can satisfy the requests on the
-    // interpolated frame.
-    render_pass->copy_requests.clear();
-    interpolated_frame.render_pass_list.emplace_back(render_pass->DeepCopy());
-  }
-
-  gfx::Rect output_rect =
-      interpolated_frame.render_pass_list.back()->output_rect;
-
-  auto animation_pass = CompositorRenderPass::Create(2, 2);
-  animation_pass->SetNew(NextRenderPassId(max_id), output_rect, output_rect,
-                         gfx::Transform());
-
-  bool src_on_top = false;
-  switch (save_directive_->effect()) {
-    case CompositorFrameTransitionDirective::Effect::kRevealRight:
-    case CompositorFrameTransitionDirective::Effect::kRevealLeft:
-    case CompositorFrameTransitionDirective::Effect::kRevealUp:
-    case CompositorFrameTransitionDirective::Effect::kRevealDown:
-    case CompositorFrameTransitionDirective::Effect::kExplode:
-    case CompositorFrameTransitionDirective::Effect::kFade:
-      src_on_top = true;
-      break;
-    default:
-      break;
-  }
-
-  gfx::Transform src_transform = src_transform_.Apply();
-  gfx::Transform dst_transform = dst_transform_.Apply();
-
-  if (src_on_top) {
-    CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
-                                  src_transform, src_opacity_,
-                                  saved_root_texture_->id);
-  }
-
-  auto* dst_quad_state = animation_pass->CreateAndAppendSharedQuadState();
-  dst_quad_state->SetAll(
-      /*quad_to_target_transform=*/dst_transform,
-      /*quad_layer_rect=*/output_rect,
-      /*visible_layer_rect=*/output_rect,
-      /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false,
-      /*are_contents_opaque=*/false,
-      /*opacity=*/dst_opacity_,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
-
-  auto* dst_quad =
-      animation_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-  dst_quad->SetNew(
-      /*shared_quad_state=*/dst_quad_state,
-      /*rect=*/output_rect,
-      /*visible_rect=*/output_rect,
-      /*render_pass_id=*/interpolated_frame.render_pass_list.back()->id,
-      /*mask_resource_id=*/kInvalidResourceId,
-      /*mask_uv_rect=*/gfx::RectF(),
-      /*mask_texture_size=*/gfx::Size(),
-      /*filters_scale=*/gfx::Vector2dF(),
-      /*filters_origin=*/gfx::PointF(),
-      /*tex_coord_rect=*/gfx::RectF(output_rect),
-      /*force_anti_aliasing_off=*/false,
-      /*backdrop_filter_quality*/ 1.0f);
-
-  if (!src_on_top) {
-    CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
-                                  src_transform, src_opacity_,
-                                  saved_root_texture_->id);
-  }
-
-  interpolated_frame.render_pass_list.push_back(std::move(animation_pass));
-  surface->SetInterpolatedFrame(std::move(interpolated_frame));
+  if (saved_textures_)
+    transferable_resource_tracker_.ReturnFrame(*saved_textures_);
+  saved_textures_.reset();
+  return true;
 }
 
 void SurfaceAnimationManager::RefResources(
@@ -320,204 +262,120 @@ void SurfaceAnimationManager::UnrefResources(
     return;
   for (const auto& resource : resources) {
     if (resource.id >= kVizReservedRangeStartId)
-      transferable_resource_tracker_.UnrefResource(resource.id);
-  }
-}
-void SurfaceAnimationManager::OnFloatAnimated(
-    const float& value,
-    int target_property_id,
-    gfx::KeyframeModel* keyframe_model) {
-  if (target_property_id == kDstOpacity) {
-    dst_opacity_ = value;
-  } else {
-    src_opacity_ = value;
+      transferable_resource_tracker_.UnrefResource(resource.id, resource.count);
   }
 }
 
-void SurfaceAnimationManager::OnTransformAnimated(
-    const gfx::TransformOperations& operations,
-    int target_property_id,
-    gfx::KeyframeModel* keyframe_model) {
-  if (target_property_id == kDstTransform) {
-    dst_transform_ = operations;
-  } else {
-    src_transform_ = operations;
+bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
+    std::vector<TransferableResource>* resource_list,
+    const base::flat_map<SharedElementResourceId, const CompositorRenderPass*>*
+        element_id_to_pass,
+    const DrawQuad& quad,
+    CompositorRenderPass& copy_pass) {
+  if (quad.material != DrawQuad::Material::kSharedElement)
+    return false;
+
+  const auto& shared_element_quad = *SharedElementDrawQuad::MaterialCast(&quad);
+
+  // Look up the shared element in live render passes first.
+  auto pass_it = element_id_to_pass->find(shared_element_quad.resource_id);
+  if (pass_it != element_id_to_pass->end()) {
+    ReplaceSharedElementWithRenderPass(&copy_pass, shared_element_quad,
+                                       pass_it->second);
+    return true;
   }
+
+  if (saved_textures_) {
+    auto texture_it = saved_textures_->element_id_to_resource.find(
+        shared_element_quad.resource_id);
+
+    if (texture_it != saved_textures_->element_id_to_resource.end()) {
+      const auto& transferable_resource = texture_it->second;
+      if (transferable_resource.is_null())
+        return true;
+
+      resource_list->push_back(transferable_resource);
+
+      // GPU textures are flipped but software bitmaps are not.
+      bool y_flipped = !transferable_resource.is_software;
+      ReplaceSharedElementWithTexture(&copy_pass, shared_element_quad,
+                                      y_flipped, resource_list->back().id);
+      return true;
+    }
+  }
+
+  if (empty_resource_ids_.count(shared_element_quad.resource_id) > 0)
+    return true;
+
+#if DCHECK_IS_ON()
+  LOG(ERROR) << "Content not found for shared element: "
+             << shared_element_quad.resource_id.ToString();
+  LOG(ERROR) << "Known shared element ids:";
+  for (const auto& [shared_resource_id, render_pass] : *element_id_to_pass) {
+    LOG(ERROR) << " " << shared_resource_id.ToString()
+               << " -> RenderPassId: " << render_pass->id.GetUnsafeValue();
+  }
+
+  if (saved_textures_) {
+    LOG(ERROR) << "Known saved textures:";
+    for (const auto& [shared_resource_id, transferable_resource] :
+         saved_textures_->element_id_to_resource) {
+      LOG(ERROR) << " " << shared_resource_id.ToString();
+    }
+  }
+
+  // The DCHECK below is for debugging in dev builds. This can happen in
+  // production code because of a compromised renderer.
+  NOTREACHED();
+#endif
+
+  return true;
 }
 
-void SurfaceAnimationManager::UpdateAnimationCurves(
-    const gfx::Size& output_size) {
-  // A small translation. We want to roughly scale this with screen size, but
-  // we choose the minimum screen dimension to keep horizontal and vertical
-  // transitions consistent and to avoid the impact of very oblong screen.
-  const float delta = std::min(output_size.width(), output_size.height()) *
-                      kTranslationProportion;
+void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
+  const auto& active_frame = surface->GetActiveFrame();
+  if (!active_frame.metadata.has_shared_element_resources)
+    return;
 
-  gfx::TransformOperations start_transform;
-  gfx::TransformOperations end_transform;
-  int transform_property_id = kDstTransform;
+  // A frame created by resolving SharedElementResourceIds to their
+  // corresponding static or live snapshot.
+  DCHECK(!surface->HasInterpolatedFrame())
+      << "Can not override interpolated frame";
+  CompositorFrame resolved_frame;
+  resolved_frame.metadata = active_frame.metadata.Clone();
+  resolved_frame.resource_list = active_frame.resource_list;
 
-  float start_opacity = 0.0f;
-  float end_opacity = 1.0f;
-  int opacity_property_id = kDstOpacity;
+  base::flat_map<SharedElementResourceId, const CompositorRenderPass*>
+      element_id_to_pass;
+  TransitionUtils::FilterCallback filter_callback = base::BindRepeating(
+      &SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource,
+      base::Unretained(this), base::Unretained(&resolved_frame.resource_list),
+      base::Unretained(&element_id_to_pass));
 
-  DCHECK(save_directive_.has_value());
+  for (auto& render_pass : active_frame.render_pass_list) {
+    auto copy_requests = std::move(render_pass->copy_requests);
+    auto pass_copy = TransitionUtils::CopyPassWithQuadFiltering(
+        *render_pass, filter_callback);
+    pass_copy->copy_requests = std::move(copy_requests);
 
-  switch (save_directive_->effect()) {
-    case CompositorFrameTransitionDirective::Effect::kCoverLeft: {
-      start_transform.AppendTranslate(delta, 0.0f, 0.0f);
-      break;
+    // This must be done after copying the render pass so we use the render pass
+    // id of |pass_copy| when replacing SharedElementDrawQuads.
+    if (pass_copy->shared_element_resource_id.IsValid()) {
+      DCHECK(element_id_to_pass.find(pass_copy->shared_element_resource_id) ==
+             element_id_to_pass.end());
+      element_id_to_pass.emplace(pass_copy->shared_element_resource_id,
+                                 pass_copy.get());
     }
-    case CompositorFrameTransitionDirective::Effect::kCoverRight: {
-      start_transform.AppendTranslate(-delta, 0.0f, 0.0f);
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kCoverUp: {
-      start_transform.AppendTranslate(0.0f, delta, 0.0f);
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kCoverDown: {
-      start_transform.AppendTranslate(0.0f, -delta, 0.0f);
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kRevealLeft: {
-      end_transform.AppendTranslate(-delta, 0.0f, 0.0f);
-      transform_property_id = kSrcTransform;
-      std::swap(start_opacity, end_opacity);
-      opacity_property_id = kSrcOpacity;
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kRevealRight: {
-      end_transform.AppendTranslate(delta, 0.0f, 0.0f);
-      transform_property_id = kSrcTransform;
-      std::swap(start_opacity, end_opacity);
-      opacity_property_id = kSrcOpacity;
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kRevealUp: {
-      end_transform.AppendTranslate(0.0f, -delta, 0.0f);
-      transform_property_id = kSrcTransform;
-      std::swap(start_opacity, end_opacity);
-      opacity_property_id = kSrcOpacity;
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kRevealDown: {
-      end_transform.AppendTranslate(0.0f, delta, 0.0f);
-      transform_property_id = kSrcTransform;
-      std::swap(start_opacity, end_opacity);
-      opacity_property_id = kSrcOpacity;
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kExplode: {
-      start_transform.AppendTranslate(output_size.width() * 0.5f,
-                                      output_size.height() * 0.5f, 0.0f);
-      start_transform.AppendScale(1.0f, 1.0f, 1.0f);
-      start_transform.AppendTranslate(-output_size.width() * 0.5f,
-                                      -output_size.height() * 0.5f, 0.0f);
 
-      end_transform.AppendTranslate(output_size.width() * 0.5f,
-                                    output_size.height() * 0.5f, 0.0f);
-      end_transform.AppendScale(kScaleProportion, kScaleProportion, 1.0f);
-      end_transform.AppendTranslate(-output_size.width() * 0.5f,
-                                    -output_size.height() * 0.5f, 0.0f);
-      transform_property_id = kSrcTransform;
-      std::swap(start_opacity, end_opacity);
-      opacity_property_id = kSrcOpacity;
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kFade: {
-      // Fade is effectively an explode with no scaling.
-      transform_property_id = kSrcTransform;
-      std::swap(start_opacity, end_opacity);
-      opacity_property_id = kSrcOpacity;
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kNone: {
-      transform_property_id = kSrcTransform;
-      start_opacity = end_opacity = 0.0f;
-      opacity_property_id = kSrcOpacity;
-      break;
-    }
-    case CompositorFrameTransitionDirective::Effect::kImplode: {
-      start_transform.AppendTranslate(output_size.width() * 0.5f,
-                                      output_size.height() * 0.5f, 0.0f);
-      start_transform.AppendScale(kScaleProportion, kScaleProportion, 1.0f);
-      start_transform.AppendTranslate(-output_size.width() * 0.5f,
-                                      -output_size.height() * 0.5f, 0.0f);
-
-      end_transform.AppendTranslate(output_size.width() * 0.5f,
-                                    output_size.height() * 0.5f, 0.0f);
-      end_transform.AppendScale(1.0f, 1.0f, 1.0f);
-      end_transform.AppendTranslate(-output_size.width() * 0.5f,
-                                    -output_size.height() * 0.5f, 0.0f);
-      break;
-    }
+    resolved_frame.render_pass_list.push_back(std::move(pass_copy));
   }
 
-  // Ensure we have no conflicting animation.
-  animator_.RemoveAllKeyframeModels();
+  surface->SetInterpolatedFrame(std::move(resolved_frame));
+}
 
-  // We will use the ease in or ease out timing function (used by CSS
-  // transitions) depending on whether the the new content is being covered or
-  // revealed. If it's being covered, then we want to immediately start moving,
-  // but ease into position, eg.
-  std::unique_ptr<gfx::CubicBezierTimingFunction> timing_function =
-      gfx::CubicBezierTimingFunction::CreatePreset(
-          opacity_property_id == kSrcOpacity
-              ? gfx::CubicBezierTimingFunction::EaseType::EASE_IN
-              : gfx::CubicBezierTimingFunction::EaseType::EASE_OUT);
-
-  // Create the transform curve.
-  base::TimeDelta transform_duration = kDefaultAnimationDuration;
-
-  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> transform_curve(
-      gfx::KeyframedTransformAnimationCurve::Create());
-  transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta(), start_transform, timing_function->Clone()));
-  transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      transform_duration, end_transform, timing_function->Clone()));
-  transform_curve->set_target(this);
-  animator_.AddKeyframeModel(gfx::KeyframeModel::Create(
-      std::move(transform_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
-      transform_property_id));
-
-  // Create the opacity curve. Somewhat more complicated because it may be
-  // delayed wrt to the transform curve. See description of
-  // |kOpacityTransitionDurationScaleFactor| above.
-  base::TimeDelta opacity_duration =
-      transform_duration * kOpacityTransitionDurationScaleFactor;
-  base::TimeDelta opacity_delay = start_opacity == 0.0f
-                                      ? base::TimeDelta()
-                                      : transform_duration - opacity_duration;
-
-  // Opacity transitions do not need to ease in or out. By passing nullptr for
-  // the timing function here, we are choosing the "linear" timing function.
-  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> float_curve(
-      gfx::KeyframedFloatAnimationCurve::Create());
-  if (!opacity_delay.is_zero()) {
-    float_curve->AddKeyframe(
-        gfx::FloatKeyframe::Create(base::TimeDelta(), start_opacity, nullptr));
-  }
-  float_curve->AddKeyframe(
-      gfx::FloatKeyframe::Create(opacity_delay, start_opacity, nullptr));
-  float_curve->AddKeyframe(
-      gfx::FloatKeyframe::Create(opacity_duration, end_opacity, nullptr));
-  float_curve->set_target(this);
-  animator_.AddKeyframeModel(gfx::KeyframeModel::Create(
-      std::move(float_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
-      opacity_property_id));
-
-  // We should now have animations queued up.
-  DCHECK(animator_.IsAnimating());
-
-  // To ensure we don't flicker at the beginning of the animation, ensure that
-  // our initial state is correct before we start ticking.
-  src_opacity_ = 1.0f;
-  dst_opacity_ = 1.0f;
-  src_transform_ = gfx::TransformOperations();
-  dst_transform_ = gfx::TransformOperations();
-  OnTransformAnimated(start_transform, transform_property_id, nullptr);
-  OnFloatAnimated(start_opacity, opacity_property_id, nullptr);
+SurfaceSavedFrameStorage*
+SurfaceAnimationManager::GetSurfaceSavedFrameStorageForTesting() {
+  return &surface_saved_frame_storage_;
 }
 
 }  // namespace viz

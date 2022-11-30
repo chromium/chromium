@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service_internal.h"
-#include "chrome/updater/updater_scope.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace updater {
+
+enum class UpdaterScope;
+class UpdateServiceInternalProxyImpl;
 
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceInternalProxy : public UpdateServiceInternal {
@@ -30,16 +28,8 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
  private:
   ~UpdateServiceInternalProxy() override;
 
-  // These function are invoked on the |com_task_runner_|.
-  void RunOnSTA(base::OnceClosure callback);
-  void InitializeUpdateServiceOnSTA(base::OnceClosure callback);
-
-  // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Runs the tasks which involve outbound COM calls and inbound COM callbacks.
-  // This task runner is thread-affine with the COM STA.
-  scoped_refptr<base::SingleThreadTaskRunner> STA_task_runner_;
+  scoped_refptr<UpdateServiceInternalProxyImpl> impl_;
 };
 
 }  // namespace updater

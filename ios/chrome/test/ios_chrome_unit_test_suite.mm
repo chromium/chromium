@@ -1,26 +1,27 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/ios_chrome_unit_test_suite.h"
+#import "ios/chrome/test/ios_chrome_unit_test_suite.h"
 
-#include "base/macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/path_service.h"
-#include "base/test/test_simple_task_runner.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
-#include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
-#include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/test/testing_application_context.h"
-#include "ios/components/webui/web_ui_url_constants.h"
+#import "base/metrics/user_metrics.h"
+#import "base/path_service.h"
+#import "base/test/test_simple_task_runner.h"
+#import "components/breadcrumbs/core/breadcrumb_manager.h"
+#import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
+#import "components/content_settings/core/common/content_settings_pattern.h"
+#import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/test/testing_application_context.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/test_chrome_provider_initializer.h"
 #import "ios/web/public/web_client.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_paths.h"
-#include "url/url_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "ui/base/ui_base_paths.h"
+#import "url/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,12 +33,21 @@ class IOSChromeUnitTestSuiteInitializer
     : public testing::EmptyTestEventListener {
  public:
   IOSChromeUnitTestSuiteInitializer() {}
+
+  IOSChromeUnitTestSuiteInitializer(const IOSChromeUnitTestSuiteInitializer&) =
+      delete;
+  IOSChromeUnitTestSuiteInitializer& operator=(
+      const IOSChromeUnitTestSuiteInitializer&) = delete;
+
   ~IOSChromeUnitTestSuiteInitializer() override {}
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-    DCHECK(!ios::GetChromeBrowserProvider());
-    test_ios_chrome_provider_initializer_.reset(
-        new ios::TestChromeProviderInitializer());
+    ios::provider::Initialize();
+
+    chrome_browser_provider_ = ios::CreateChromeBrowserProvider();
+    ios::ChromeBrowserProvider* previous_provider =
+        ios::SetChromeBrowserProvider(chrome_browser_provider_.get());
+    DCHECK(!previous_provider);
 
     DCHECK(!GetApplicationContext());
     application_context_.reset(new TestingApplicationContext);
@@ -47,16 +57,19 @@ class IOSChromeUnitTestSuiteInitializer
     DCHECK_EQ(GetApplicationContext(), application_context_.get());
     application_context_.reset();
 
-    test_ios_chrome_provider_initializer_.reset();
-    DCHECK(!ios::GetChromeBrowserProvider());
+    ios::ChromeBrowserProvider* previous_provider =
+        ios::SetChromeBrowserProvider(nullptr);
+    DCHECK_EQ(previous_provider, chrome_browser_provider_.get());
+    chrome_browser_provider_.reset();
+
+    breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+        .ResetForTesting();
   }
 
  private:
-  std::unique_ptr<ios::TestChromeProviderInitializer>
-      test_ios_chrome_provider_initializer_;
+  std::unique_ptr<ios::ChromeBrowserProvider> chrome_browser_provider_;
   std::unique_ptr<ApplicationContext> application_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeUnitTestSuiteInitializer);
 };
 
 }  // namespace

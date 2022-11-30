@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/runner.js"></script>
+<sn-show-element active="true">
+  <sn-table slot="table-slot"></sn-table>
+  <sn-form slot="form-slot"></sn-form>
+</sn-show-element>
+<script>
+  const TABLE_COLS = 5;
+  const TABLE_ROWS = 5;
+  const FORM_CONTROLS = 5;
+
+  class snShowElement extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: 'open' });
+      this.shadowRoot.innerHTML = `<div><slot name="table-slot"></slot></div>`;
+    }
+
+    static get observedAttributes() {
+      return ['active'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (newValue != oldValue && newValue == "true")
+        this.shadowRoot.querySelector('slot').name = 'table-slot';
+      else if (newValue == "false")
+        this.shadowRoot.querySelector('slot').name = 'form-slot';
+    }
+  }
+
+  class snFormChild extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: 'open' });
+      this.shadowRoot.innerHTML = `<div>x</div>`;
+    }
+  }
+
+  class snForm extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: 'open' });
+      this.shadowRoot.appendChild(this.populateForm(FORM_CONTROLS))
+    }
+
+    populateForm(numControls) {
+      const formElem = document.createElement('form');
+      for (let i = 0; i < numControls; i++)
+        formElem.appendChild(this.populateControl(document.createElement('sn-form-child')))
+      return formElem;
+    }
+
+    populateControl(root) {
+      /*
+      * append into shadow root when 1 and add as child element and append slot in shadow dom when 0
+      * different signature inputs :
+      * worst case : 00000000000
+      * best case : 11111111111
+      * middle case : 11001011101
+      * */
+      const signature = "00000000000";
+      let elem = root;
+      for (let i = 0; i < signature.length; i++) {
+        let form = document.createElement('sn-form-child');
+        if (signature[i] === "1")
+          elem.shadowRoot.appendChild(form);
+        else {
+          elem.shadowRoot.appendChild(document.createElement('slot'));
+          elem.appendChild(form);
+        }
+        elem = form;
+      }
+      return root;
+    }
+  }
+
+  class snTable extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: 'open' });
+      this.shadowRoot.innerHTML = this.createTable();
+
+    }
+
+    createTable() {
+      const tableData = `<td><div><div><a><div><span>X</span></div></a><button></button></div></div></td>`;
+      const tableRow = `<tr>${Array(TABLE_COLS).fill(tableData).join('')}<tr>`;
+      const tableHTML = `<table><tbody>${Array(TABLE_ROWS).fill(tableRow).join('')}</tbody></table>`;
+      return tableHTML;
+    }
+  }
+
+  customElements.define('sn-table', snTable);
+  customElements.define('sn-form-child', snFormChild);
+  customElements.define('sn-form', snForm);
+  customElements.define('sn-show-element', snShowElement);
+
+  var isDone = false;
+  var startTime;
+
+  function toggleDisplay() {
+    const snShowElem = document.querySelector('sn-show-element');
+    const currentState = snShowElem.getAttribute('active');
+    snShowElem.setAttribute("active", currentState == "true" ? "false" : "true");
+  }
+
+  function runTest() {
+    if (startTime) {
+      PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+      PerfTestRunner.addRunTestEndMarker();
+    }
+    if (!isDone) {
+      PerfTestRunner.addRunTestStartMarker();
+      startTime = PerfTestRunner.now();
+
+      setTimeout(toggleDisplay, 250);
+
+      // Re-run the same test.
+      // Wait to allow the asynchronous accessibility code that's
+      // covered by traceEventsToMeasure to have a chance to run.
+      setTimeout(runTest, 2500);
+    }
+  }
+
+  PerfTestRunner.startMeasureValuesAsync({
+      description: 'Test accessibility performance when updating slots',
+      unit: 'ms',
+      done: function () {
+          isDone = true;
+      },
+      run: function() {
+          runTest();
+      },
+      iterationCount: 6,
+      tracingCategories: 'accessibility',
+      traceEventsToMeasure: [
+        'AXObjectCacheImpl::ChildrenChanged(LayoutObject)',
+        'ProcessDeferredAccessibilityEvents',
+        'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
+      ]
+  });
+</script>
+</body>
+</html>

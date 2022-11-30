@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ TestWindowParentingClient::~TestWindowParentingClient() {
 
 Window* TestWindowParentingClient::GetDefaultParent(Window* window,
                                                     const gfx::Rect& bounds) {
-  return default_parent_ ? default_parent_ : root_window_;
+  return default_parent_ ? default_parent_.get() : root_window_.get();
 }
 
 }  // namespace test

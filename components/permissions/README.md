@@ -2,22 +2,59 @@
 
 [TOC]
 
+## PermissionController
+
+The
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h)
+is the entry point for clients of the permissions infrastructure from both the
+`//content` and the embedder (e.g. `//chrome`) layers.
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h)
+provides access to the permissions API and can be reached as
+`content::BrowserContext::GetPermissionController()` or
+`Profile::GetPermissionController()`.
+
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h)
+has the following API:
+*   `blink::mojom::PermissionStatus PermissionController::GetPermissionStatusForWorker`
+*   `blink::mojom::PermissionStatus PermissionController::GetPermissionStatusForCurrentDocument`
+*   `blink::mojom::PermissionStatus PermissionController::GetPermissionStatusForOriginWithoutContext`
+    Use this API only in special cases when there is no active document or
+    worker. E.g., `PermissionType::PAYMENT_HANDLER` permission verification of
+    payment providers in a PWA's manifest.
+*   `PermissionController::RequestPermissionFromCurrentDocument`
+*   `PermissionController::RequestPermissionsFromCurrentDocument`
+
+## PermissionControllerImpl
+
+The [PermissionControllerImpl](https://cs.chromium.org/chromium/src/content/browser/permissions/permission_controller_impl.h)
+is the implementation of the
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h).
+[PermissionControllerImpl](https://cs.chromium.org/chromium/src/content/browser/permissions/permission_controller_impl.h)
+is meant to be used only internally in `//content` and is not available for
+external clients.
+
+[PermissionControllerImpl](https://cs.chromium.org/chromium/src/content/browser/permissions/permission_controller_impl.h)
+provides various functionality such as:
+
+*   Reset a permission's state to the default
+*   Observe permissions changes
+*   Override permission status for DevTools.
+
 ## PermissionManager and PermissionContextBase
 
 The
 [PermissionManager](https://cs.chromium.org/chromium/src/components/permissions/permission_manager.h)
-is the entry point for clients of the permissions infrastructure.
+is an implementation of
+[PermissionControllerDelegate](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller_delegate.h).
 [PermissionManager](https://cs.chromium.org/chromium/src/components/permissions/permission_manager.h)
 is a
 [KeyedService](https://cs.chromium.org/chromium/src/components/keyed_service/core/keyed_service.h)
 which means it is attached to a
 [BrowserContext](https://cs.chromium.org/chromium/src/content/public/browser/browser_context.h).
-Clients can perform various operations such as:
-
-*   Query the status of a permission
-*   Request a permission from the user
-*   Reset a permission's state to the default
-*   Observe permissions changes
+It allows to get permission status for
+[ContentSettingsType](https://cs.chromium.org/chromium/src/components/content_settings/core/common/content_settings_types.h).
+That API should be used only to display permission status in UI like PageInfo
+and SiteSettings.
 
 Internally,
 [PermissionManager](https://cs.chromium.org/chromium/src/components/permissions/permission_manager.h)
@@ -61,13 +98,6 @@ saved and retrieved using a key consisting of a 3-tuple of values:
 *   Content type: this is a
     [ContentSettingsType](https://cs.chromium.org/chromium/src/components/content_settings/core/common/content_settings_types.h)
     that specifies which setting this operation refers to.
-
-> NOTE: While the code contains a `ResourceIdentifier` this is deprecated and
-> should never be used.
-
-See [go/otjvl](go/otjvl) for a breakdown of primary/secondary pattern meanings
-based on
-[ContentSettingsType](https://cs.chromium.org/chromium/src/components/content_settings/core/common/content_settings_types.h)
 
 A
 [ContentSettingsPattern](https://cs.chromium.org/chromium/src/components/content_settings/core/common/content_settings_pattern.h)
@@ -182,26 +212,13 @@ to present to the user based on information about the request.
 
 For specific permission prompt requests a decision could be made to enforce a
 quiet UI version of the permission prompt. Currently this only applies to
-NOTIFICATION permission requests.
+NOTIFICATIONS permission requests.
 
 A quiet UI prompt can be triggered if any of these conditions are met:
 
 *   The user has enabled quiet prompts in settings.
-*   The user's denial behavior has caused quiet prompts to be enabled
-    automatically. See below for more details on this.
 *   The site requesting the permissions is marked by Safe Browsing as having a
     bad reputation.
-
-In order for the user's behavior to automatically enable quiet notification
-prompts, the feature variation of
-"[kQuietNotificationPromptsWithAdaptiveActivation](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc?g=0&l=1444)"
-needs to the enabled variation for the
-"[quiet-notification-prompts](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc?g=0&l=4626)"
-feature to enable adaptively activating quiet notifications based on user
-behavior. If adaptive activation is enabled, when the user has decided to deny 3
-notification prompts in a row (regardless if on the same site or entirely
-different sites), they will automatically start receiving only quiet
-notification permission prompts.
 
 The
 [AdaptiveQuietNotificationPermissionUiEnabler](https://cs.chromium.org/chromium/src/chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h)
@@ -213,3 +230,36 @@ the appropriate UI flavor.
 
 A quiet UI prompt will use a right-side omnibox indicator on desktop or a
 mini-infobar on Android.
+
+## [PermissionsSecurityModelInteractiveUITest](https://cs.chromium.org/chromium/src/chrome/browser/permissions/permissions_security_model_interactive_uitest.cc)
+
+### Testing
+
+Requesting and verification of permissions does not feature unified behavior in
+different environments. In other words, based on the preconditions, a permission
+request could be shown or automatically declined. To make sure that all cases
+work as intended, we introduced [PermissionsSecurityModelInteractiveUITest](https://cs.chromium.org/chromium/src/chrome/browser/permissions/permissions_security_model_interactive_uitest.cc).
+
+### Add your own test
+
+If you're adding a new environment that requires non-default behavior for
+permissions, then you need to add a test in
+[PermissionsSecurityModelInteractiveUITest](https://cs.chromium.org/chromium/src/chrome/browser/permissions/permissions_security_model_interactive_uitest.cc).
+
+Steps to follow:
+
+*   Create a new test fixture and activate your environment and get a
+    [WebContents](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/web_contents.h)
+    or a [RenderFrameHost](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/render_frame_host.h).
+*   Create a method  `VerifyPermissionForXYZ`, where `XYZ` is the name of your
+    environment. You can use the already defined `VerifyPermission` method if you
+    expect to have default behavior for permissions. In `VerifyPermissionForXYZ`
+    define a new behavior you expect to have.
+*   Call `VerifyPermissionForXYZ` from your newly created test fixture.
+
+> EXAMPLE:
+> [PermissionRequestWithPortalTest](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/permissions/permissions_security_model_interactive_uitest.cc;drc=c662f11e160976c04682f41941aaeccad92ace48;bpv=0;bpt=1;l=1063)
+> enables the [Portals](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/common/features.cc;l=179;drc=c662f11e160976c04682f41941aaeccad92ace48).
+> The [PortalActivation] test verifies that permissions are disabled in Portals.
+> [VerifyPermissionsDeniedForPortal](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/permissions/permissions_security_model_interactive_uitest.cc;drc=c662f11e160976c04682f41941aaeccad92ace48;l=429) incapsulates all logic
+> needed for a particular permission verification.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_GAIA_REMOTE_CONSENT_FLOW_H_
 
 #include "base/callback_list.h"
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
@@ -88,8 +87,10 @@ class GaiaRemoteConsentFlow
 
   void GaiaRemoteConsentFlowFailed(Failure failure);
 
-  Delegate* delegate_;
-  Profile* profile_;
+  void DetachWebAuthFlow();
+
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<Profile> profile_;
   CoreAccountId account_id_;
   RemoteConsentResolutionData resolution_data_;
 

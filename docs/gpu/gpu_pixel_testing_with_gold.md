@@ -8,7 +8,7 @@ sections ([1][pixel debugging], [2][pixel updating]) of the general GPU testing
 documentation.
 
 [local pixel testing]: gpu_testing.md#Running-the-pixel-tests-locally
-[GPU Pixel Wrangling]: pixel_wrangling.md
+[GPU Pixel Wrangling]: http://go/gpu-pixel-wrangler
 [pixel debugging]: gpu_testing.md#Debugging-Pixel-Test-Failures-on-the-GPU-Bots
 [pixel updating]: gpu_testing.md#Updating-and-Adding-New-Pixel-Tests-to-the-GPU-Bots
 
@@ -125,9 +125,9 @@ the CL was merged as. In the above example, if the CL was merged as commit
 You can see all currently untriaged images that are currently being produced on
 ToT on the [GPU Gold instance's main page][gpu gold instance] and currently
 untriaged images for a CL by substituting the Gerrit CL number into
-`https://chrome-gpu-gold.skia.org/search?issue=[CL Number]&unt=true&master=true`.
+`https://chrome-gold.skia.org/search?issue=[CL Number]&unt=true&master=true`.
 
-[gpu gold instance]: https://chrome-gpu-gold.skia.org
+[gpu gold instance]: https://chrome-gold.skia.org
 
 It's possible, particularly if a test is regularly producing multiple images,
 for an image to be untriaged but not show up on the front page of the Gold
@@ -135,7 +135,7 @@ instance (for details, see [this crbug comment][untriaged non tot comment]). To
 see all such images, visit [this link][untriaged non tot].
 
 [untriaged non tot comment]: https://bugs.chromium.org/p/skia/issues/detail?id=9189#c4
-[untriaged non tot]: https://chrome-gpu-gold.skia.org/search?fdiffmax=-1&fref=false&frgbamax=255&frgbamin=0&head=false&include=false&limit=50&master=false&match=name&metric=combined&neg=false&offset=0&pos=false&query=source_type%3Dchrome-gpu&sort=desc&unt=true
+[untriaged non tot]: https://chrome-gold.skia.org/search?fdiffmax=-1&fref=false&frgbamax=255&frgbamin=0&head=false&include=false&limit=50&master=false&match=name&metric=combined&neg=false&offset=0&pos=false&query=source_type%3Dchrome-gpu&sort=desc&unt=true
 
 ### Finding A Failed Build
 
@@ -160,7 +160,7 @@ shard number.
 
 If for some reason an image is not showing up in Gold but you know the hash, you
 can manually navigate to the page for it by filling in the correct information
-to `https://chrome-gpu-gold.skia.org/detail?test=[test_name]&digest=[hash]`.
+to `https://chrome-gold.skia.org/detail?test=[test_name]&digest=[hash]`.
 From there, you should be able to triage it as normal.
 
 If this happens, please also file a bug in [Skia's bug tracker][skia crbug] so

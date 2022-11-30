@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test soft navigation heuristics on a detached frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+  promise_test(async t => {
+      const frame = document.createElement("iframe");
+      const loaded = new Promise(resolve => {
+        frame.addEventListener("load", resolve());
+      });
+      frame.src = "../resources/event-click-detaching-frame.html";
+      document.body.appendChild(frame);
+      await loaded;
+      t.step_wait(() => !frame.contentWindow);
+  }, "Test that an event click that detaches the iframe on which it was fired" +
+     " doesn't crash");
+</script>
+</body>
+</html>

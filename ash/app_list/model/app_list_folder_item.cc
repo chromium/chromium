@@ -1,10 +1,13 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/app_list/model/app_list_folder_item.h"
 
+#include <utility>
+
 #include "ash/app_list/model/app_list_item_list.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/guid.h"
@@ -13,14 +16,24 @@
 
 namespace ash {
 
-AppListFolderItem::AppListFolderItem(const std::string& id)
+AppListFolderItem::AppListFolderItem(
+    const std::string& id,
+    AppListModelDelegate* app_list_model_delegate)
     : AppListItem(id),
       folder_type_(id == kOemFolderId ? FOLDER_TYPE_OEM : FOLDER_TYPE_NORMAL),
-      item_list_(std::make_unique<AppListItemList>()) {
-  EnsureIconsForAvailableConfigTypes(
-      {AppListConfigType::kLarge, AppListConfigType::kMedium,
-       AppListConfigType::kSmall},
-      false /*request_icon_update*/);
+      item_list_(std::make_unique<AppListItemList>(app_list_model_delegate)) {
+  // `item_list_` is initially empty, so there are no items to observe.
+  // Item observers are added later in OnListItemAdded().
+  item_list_->AddObserver(this);
+
+  std::vector<AppListConfigType> configs;
+  if (features::IsProductivityLauncherEnabled()) {
+    configs = {AppListConfigType::kRegular, AppListConfigType::kDense};
+  } else {
+    configs = {AppListConfigType::kLarge, AppListConfigType::kMedium,
+               AppListConfigType::kSmall};
+  }
+  EnsureIconsForAvailableConfigTypes(configs, /*request_icon_update=*/false);
   config_provider_observation_.Observe(&AppListConfigProvider::Get());
   set_is_folder(true);
 }
@@ -28,6 +41,9 @@ AppListFolderItem::AppListFolderItem(const std::string& id)
 AppListFolderItem::~AppListFolderItem() {
   for (auto& image : folder_images_)
     image.second->RemoveObserver(this);
+  for (size_t i = 0; i < item_list_->item_count(); ++i)
+    item_list_->item_at(i)->RemoveObserver(this);
+  item_list_->RemoveObserver(this);
 }
 
 gfx::Rect AppListFolderItem::GetTargetIconRectInFolderForItem(
@@ -50,6 +66,10 @@ AppListItem* AppListFolderItem::FindChildItem(const std::string& id) {
   return item_list_->FindItem(id);
 }
 
+AppListItem* AppListFolderItem::GetChildItemAt(size_t index) {
+  return item_list_->item_at(index);
+}
+
 size_t AppListFolderItem::ChildItemCount() const {
   return item_list_->item_count();
 }
@@ -62,16 +82,36 @@ void AppListFolderItem::OnAppListConfigCreated(AppListConfigType config_type) {
                                      true /*request_icon_update*/);
 }
 
-bool AppListFolderItem::IsPersistent() const {
-  return GetMetadata()->is_persistent;
+void AppListFolderItem::OnListItemAdded(size_t index, AppListItem* item) {
+  item->AddObserver(this);
+  UpdateIsNewInstall();
+  UpdateNotificationBadge();
 }
 
-void AppListFolderItem::SetIsPersistent(bool is_persistent) {
-  metadata()->is_persistent = is_persistent;
+void AppListFolderItem::OnListItemRemoved(size_t index, AppListItem* item) {
+  item->RemoveObserver(this);
+  UpdateIsNewInstall();
+  UpdateNotificationBadge();
+}
+
+void AppListFolderItem::ItemBadgeVisibilityChanged() {
+  UpdateNotificationBadge();
+}
+
+void AppListFolderItem::ItemIsNewInstallChanged() {
+  UpdateIsNewInstall();
+}
+
+bool AppListFolderItem::IsSystemFolder() const {
+  return GetMetadata()->is_system_folder;
+}
+
+void AppListFolderItem::SetIsSystemFolder(bool is_system_folder) {
+  metadata()->is_system_folder = is_system_folder;
 }
 
 bool AppListFolderItem::ShouldAutoRemove() const {
-  return ChildItemCount() <= (IsPersistent() ? 0u : 1u);
+  return ChildItemCount() <= (IsSystemFolder() ? 0u : 1u);
 }
 
 std::string AppListFolderItem::GenerateId() {
@@ -95,6 +135,12 @@ FolderImage* AppListFolderItem::GetFolderImageForTesting(
   if (image_it == folder_images_.end())
     return nullptr;
   return image_it->second.get();
+}
+
+void AppListFolderItem::RequestFolderIconUpdate() {
+  // Request a folder icon refresh for each AppListConfigType available.
+  for (auto& folder_image_pair : folder_images_)
+    folder_image_pair.second->ItemIconChanged(folder_image_pair.first);
 }
 
 void AppListFolderItem::EnsureIconsForAvailableConfigTypes(
@@ -123,6 +169,30 @@ void AppListFolderItem::EnsureIconsForAvailableConfigTypes(
       image_ptr->UpdateIcon();
     }
   }
+}
+
+void AppListFolderItem::UpdateIsNewInstall() {
+  bool contains_new_install_item = false;
+  for (size_t i = 0; i < item_list_->item_count(); ++i) {
+    if (item_list_->item_at(i)->is_new_install()) {
+      contains_new_install_item = true;
+      break;
+    }
+  }
+  // The folder is marked with the "new install" dot if it contains an item that
+  // is a new install.
+  SetIsNewInstall(contains_new_install_item);
+}
+
+void AppListFolderItem::UpdateNotificationBadge() {
+  bool contains_item_with_notification_badge = false;
+  for (size_t i = 0; i < item_list_->item_count(); ++i) {
+    if (item_list_->item_at(i)->has_notification_badge()) {
+      contains_item_with_notification_badge = true;
+      break;
+    }
+  }
+  AppListItem::UpdateNotificationBadge(contains_item_with_notification_badge);
 }
 
 }  // namespace ash

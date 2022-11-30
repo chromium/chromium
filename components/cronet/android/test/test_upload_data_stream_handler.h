@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/upload_data_stream.h"
 
@@ -29,6 +28,10 @@ class TestUploadDataStreamHandler {
       JNIEnv* env,
       jobject jtest_upload_data_stream_handler,
       jlong jcontext_adapter);
+
+  TestUploadDataStreamHandler(const TestUploadDataStreamHandler&) = delete;
+  TestUploadDataStreamHandler& operator=(const TestUploadDataStreamHandler&) =
+      delete;
 
   ~TestUploadDataStreamHandler();
 
@@ -95,8 +98,6 @@ class TestUploadDataStreamHandler {
   // A Java reference pointer for calling methods on the Java
   // TestUploadDataStreamHandler object. Initialized during construction.
   base::android::ScopedJavaGlobalRef<jobject> jtest_upload_data_stream_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUploadDataStreamHandler);
 };
 
 }  // namespace cronet

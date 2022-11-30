@@ -1,0 +1,6 @@
+document.accessibilityAttributeNames.has(AXLoaded)='yes'
+document.accessibilityAttributeValue(AXLoaded)=1
+not_applicable.accessibilityAttributeNames.has(AXLoaded)='no'
+// Test of AccessibilityAttributeValue for "not applicable" element is
+// necessary because the value can be requested.
+not_applicable.accessibilityAttributeValue(AXLoaded)=1

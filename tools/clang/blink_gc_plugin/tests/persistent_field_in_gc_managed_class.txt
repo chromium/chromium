@@ -17,16 +17,25 @@ class HeapObject : public GarbageCollected<HeapObject> {
 ./persistent_field_in_gc_managed_class.h:17:5: note: [blink-gc] Field 'm_obj' defining a GC root declared here:
     Persistent<HeapObject> m_obj;
     ^
+./persistent_field_in_gc_managed_class.h:20:1: warning: [blink-gc] Class 'HeapObject' contains GC root in field 'm_unique_part'.
+class HeapObject : public GarbageCollected<HeapObject> {
+^
+./persistent_field_in_gc_managed_class.h:27:5: note: [blink-gc] Field 'm_unique_part' with embedded GC root in 'HeapObject' declared here:
+    std::unique_ptr<PartObject> m_unique_part;
+    ^
+./persistent_field_in_gc_managed_class.h:17:5: note: [blink-gc] Field 'm_obj' defining a GC root declared here:
+    Persistent<HeapObject> m_obj;
+    ^
 ./persistent_field_in_gc_managed_class.h:20:1: warning: [blink-gc] Class 'HeapObject' contains GC root in field 'm_objs'.
 class HeapObject : public GarbageCollected<HeapObject> {
 ^
-./persistent_field_in_gc_managed_class.h:27:5: note: [blink-gc] Field 'm_objs' defining a GC root declared here:
+./persistent_field_in_gc_managed_class.h:28:5: note: [blink-gc] Field 'm_objs' defining a GC root declared here:
     Persistent<HeapVector<Member<HeapObject>>> m_objs;
     ^
 ./persistent_field_in_gc_managed_class.h:20:1: warning: [blink-gc] Class 'HeapObject' contains GC root in field 'm_weakPersistent'.
 class HeapObject : public GarbageCollected<HeapObject> {
 ^
-./persistent_field_in_gc_managed_class.h:28:5: note: [blink-gc] Field 'm_weakPersistent' defining a GC root declared here:
+./persistent_field_in_gc_managed_class.h:29:5: note: [blink-gc] Field 'm_weakPersistent' defining a GC root declared here:
     WeakPersistent<HeapObject> m_weakPersistent;
     ^
-4 warnings generated.
+5 warnings generated.

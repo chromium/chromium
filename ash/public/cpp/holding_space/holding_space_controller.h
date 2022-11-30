@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONTROLLER_H_
 
+#include <map>
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -15,7 +16,6 @@
 namespace ash {
 
 class HoldingSpaceClient;
-class HoldingSpaceColorProvider;
 class HoldingSpaceControllerObserver;
 class HoldingSpaceModel;
 
@@ -26,7 +26,7 @@ class HoldingSpaceModel;
 // using HoldingSpaceController::Get().
 class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
  public:
-  explicit HoldingSpaceController(std::unique_ptr<HoldingSpaceColorProvider>);
+  HoldingSpaceController();
   HoldingSpaceController(const HoldingSpaceController& other) = delete;
   HoldingSpaceController& operator=(const HoldingSpaceController& other) =
       delete;
@@ -55,9 +55,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
 
   void SetClient(HoldingSpaceClient* client);
   void SetModel(HoldingSpaceModel* model);
-
-  // The singleton provider for colors used by holding space.
-  std::unique_ptr<HoldingSpaceColorProvider> color_provider_;
 
   // The currently active holding space client, set by `SetClient()`.
   HoldingSpaceClient* client_ = nullptr;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,19 +15,20 @@ module.exports = {
   'rules': {
     // Enabled checks.
     'brace-style': ['error', '1tbs'],
+
+    // https://google.github.io/styleguide/jsguide.html#features-arrays-trailing-comma
+    // https://google.github.io/styleguide/jsguide.html#features-objects-use-trailing-comma
+    'comma-dangle': ['error', 'always-multiline'],
+
     'curly': ['error', 'multi-line', 'consistent'],
+    'new-parens': 'error',
+    'no-array-constructor': 'error',
+    'no-console': ['error', {allow: ['info', 'warn', 'error', 'assert']}],
     'no-extra-boolean-cast': 'error',
     'no-extra-semi': 'error',
     'no-new-wrappers': 'error',
     'no-restricted-properties': [
       'error',
-      {
-        'object': 'document',
-        'property': 'getElementById',
-        'message': 'Use $(\'id\') or getSVGElement(\'id\') ' +
-            'from chrome://resources/js/util.js instead of ' +
-            'document.getElementById(\'id\')',
-      },
       {
         'property': '__lookupGetter__',
         'message': 'Use Object.getOwnPropertyDescriptor',
@@ -50,10 +51,156 @@ module.exports = {
         'message': 'Use ES modules or cr.define() instead',
       },
     ],
+    'no-throw-literal': 'error',
+    'no-trailing-spaces': 'error',
     'no-var': 'error',
     'prefer-const': 'error',
+    'quotes': ['error', 'single', {allowTemplateLiterals: true}],
     'semi': ['error', 'always'],
+
+    // https://google.github.io/styleguide/jsguide.html#features-one-variable-per-declaration
+    'one-var': ['error', {
+      let: 'never',
+      const: 'never',
+    }],
 
     // TODO(dpapad): Add more checks according to our styleguide.
   },
+
+  'overrides': [{
+    'files': ['**/*.ts'],
+    'parser': './third_party/node/node_modules/@typescript-eslint/parser',
+    'plugins': [
+      '@typescript-eslint',
+    ],
+    'rules': {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error', {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        }
+      ],
+
+      'semi': 'off',
+      '@typescript-eslint/semi': ['error'],
+
+      // https://google.github.io/styleguide/tsguide.html#arrayt-type
+      '@typescript-eslint/array-type': ['error', {
+        default: 'array-simple',
+      }],
+
+      // https://google.github.io/styleguide/tsguide.html#type-assertions-syntax
+      '@typescript-eslint/consistent-type-assertions': ['error', {
+         assertionStyle: 'as',
+      }],
+
+      // https://google.github.io/styleguide/tsguide.html#interfaces-vs-type-aliases
+      "@typescript-eslint/consistent-type-definitions": ['error', 'interface'],
+
+      // https://google.github.io/styleguide/jsguide.html#naming
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: ['class', 'interface', 'typeAlias', 'enum', 'typeParameter'],
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'enumMember',
+          format: ['UPPER_CASE'],
+        },
+        {
+          selector: 'classMethod',
+          format: ['camelCase'],
+          modifiers: ['public'],
+        },
+        {
+          selector: 'classMethod',
+          format: ['camelCase'],
+          modifiers: ['private'],
+          trailingUnderscore: 'allow',
+        },
+        {
+          selector: 'classProperty',
+          format: ['UPPER_CASE'],
+          modifiers: ['private', 'static', 'readonly'],
+        },
+        {
+          selector: 'classProperty',
+          format: ['UPPER_CASE'],
+          modifiers: ['public', 'static', 'readonly'],
+        },
+        {
+          selector: 'classProperty',
+          format: ['camelCase'],
+          modifiers: ['public'],
+        },
+        {
+          selector: 'classProperty',
+          format: ['camelCase'],
+          modifiers: ['private'],
+          trailingUnderscore: 'allow',
+        },
+        {
+          selector: 'parameter',
+          format: ['camelCase'],
+          leadingUnderscore: 'allow',
+        },
+        {
+          selector: 'function',
+          format: ['camelCase'],
+        },
+      ],
+
+      '@typescript-eslint/member-delimiter-style': ['error', {
+        multiline: {
+          delimiter: 'comma',
+          requireLast: true,
+        },
+        singleline: {
+          delimiter: 'comma',
+          requireLast: false,
+        },
+        overrides: {
+          interface: {
+            multiline: {
+              delimiter: 'semi',
+              requireLast: true,
+            },
+            singleline: {
+              delimiter: 'semi',
+              requireLast: false,
+            },
+          },
+        },
+      }],
+
+      // https://google.github.io/styleguide/tsguide.html#wrapper-types
+      '@typescript-eslint/ban-types': ['error', {
+        extendDefaults: false,
+        types: {
+          String: {
+            message: 'Use string instead',
+            fixWith: 'string',
+          },
+          Boolean: {
+            message: 'Use boolean instead',
+            fixWith: 'boolean',
+          },
+          Number: {
+            message: 'Use number instead',
+            fixWith: 'number',
+          },
+          Symbol: {
+            message: 'Use symbol instead',
+            fixWith: 'symbol',
+          },
+          BigInt: {
+            message: 'Use bigint instead',
+            fixWith: 'bigint',
+          },
+        }
+      }],
+    }
+  }]
 };

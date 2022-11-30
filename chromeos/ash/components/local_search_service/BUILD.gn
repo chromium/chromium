@@ -1,0 +1,105 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("local_search_service") {
+  sources = [
+    "content_extraction_utils.cc",
+    "content_extraction_utils.h",
+    "index.cc",
+    "index.h",
+    "inverted_index.cc",
+    "inverted_index.h",
+    "inverted_index_search.cc",
+    "inverted_index_search.h",
+    "linear_map_search.cc",
+    "linear_map_search.h",
+    "local_search_service.cc",
+    "local_search_service.h",
+    "pref_names.cc",
+    "pref_names.h",
+    "search_metrics_reporter.cc",
+    "search_metrics_reporter.h",
+    "search_utils.cc",
+    "search_utils.h",
+    "shared_structs.cc",
+    "shared_structs.h",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//cc",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//chromeos/ash/components/string_matching",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/metrics:metrics",
+    "//components/prefs",
+    "//ui/gfx",
+  ]
+}
+
+source_set("local_search_service_provider") {
+  sources = [
+    "local_search_service_provider_for_testing.cc",
+    "local_search_service_provider_for_testing.h",
+    "oop_local_search_service_provider.cc",
+    "oop_local_search_service_provider.h",
+  ]
+
+  deps = [
+    ":local_search_service",
+    "//chromeos/ash/components/local_search_service/public/cpp:local_search_service_provider",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//content/public/browser:browser",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+
+  deps = [
+    ":local_search_service",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "content_extraction_utils_unittest.cc",
+    "inverted_index_search_unittest.cc",
+    "inverted_index_unittest.cc",
+    "linear_map_search_unittest.cc",
+    "local_search_service_provider_unittest.cc",
+    "local_search_service_proxy_unittest.cc",
+    "local_search_service_unittest.cc",
+    "search_metrics_reporter_unittest.cc",
+    "search_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":local_search_service",
+    ":local_search_service_provider",
+    ":test_support",
+    "//base/test:test_support",
+    "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/local_search_service/public/cpp:local_search_service_provider",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings:bindings",
+    "//testing/gtest",
+  ]
+}

@@ -1,0 +1,46 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
+
+source_set("telemetry_services") {
+  sources = [
+    "bluetooth_observer.cc",
+    "bluetooth_observer.h",
+    "lid_observer.cc",
+    "lid_observer.h",
+    "power_observer.cc",
+    "power_observer.h",
+    "system_events_service.cc",
+    "system_events_service.h",
+  ]
+
+  deps = [
+    "//ash/webui/telemetry_extension_ui/mojom",
+    "//base",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "system_events_service_unittest.cc" ]
+  deps = [
+    ":telemetry_services",
+    "//ash/webui/telemetry_extension_ui/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_browsertest.h"
@@ -17,7 +16,7 @@
 #include "media/media_buildflags.h"
 #include "ui/display/display_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -27,21 +26,17 @@ class MediaCanPlayTypeTest : public MediaBrowserTest {
  public:
   MediaCanPlayTypeTest() = default;
 
+  MediaCanPlayTypeTest(const MediaCanPlayTypeTest&) = delete;
+  MediaCanPlayTypeTest& operator=(const MediaCanPlayTypeTest&) = delete;
+
   void SetUpOnMainThread() override {
     EXPECT_TRUE(
         NavigateToURL(shell(), GetTestUrl("media", "canplaytype_test.html")));
   }
 
   void ExecuteTest(const std::string& command) {
-    bool result;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(" + command + ");",
-        &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(true, EvalJs(shell(), command));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaCanPlayTypeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_av1) {
@@ -77,10 +72,30 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp3) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  ExecuteTest("testMp4Variants(true)");  // has_proprietary_codecs=true
+#if !BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // The function signature for JS is:
+  // testMp4Variants(has_proprietary_codecs:bool, platform_guarantees_hevc:bool)
+  ExecuteTest("testMp4Variants(false, false)");
+#elif BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    ExecuteTest("testMp4Variants(true, false)");
+    return;
+  }
+  ExecuteTest("testMp4Variants(true, true)");
+#elif BUILDFLAG(IS_MAC)
+  if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    ExecuteTest("testMp4Variants(true, false)");
+  } else if (__builtin_available(macOS 11.0, *)) {
+    // the Mac compiler freaks out if __builtin_available is not the _only_
+    // condition in the if statement, which is why it's written like this.
+    ExecuteTest("testMp4Variants(true, true)");
+  } else {
+    ExecuteTest("testMp4Variants(true, false)");
+  }
 #else
-  ExecuteTest("testMp4Variants(false)");  // has_proprietary_codecs=false
+  // Other platforms query the gpu each time to find out, so it would be
+  // unreliable on the bots to test for this.
+  ExecuteTest("testMp4Variants(true, false)");
 #endif
 }
 
@@ -113,10 +128,17 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_AvcLevels) {
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mp4aVariants) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // xHE-AAC support is currently only available on P+.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
+    ExecuteTest(
+        "testMp4aVariants(true, true)");  // has_proprietary_codecs=true,
+                                          // has_xhe_aac_support=true
+    return;
+  }
+#elif BUILDFLAG(IS_MAC)
+  if (__builtin_available(macOS 10.15, *)) {
     ExecuteTest(
         "testMp4aVariants(true, true)");  // has_proprietary_codecs=true,
                                           // has_xhe_aac_support=true
@@ -133,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mp4aVariants) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_HLS) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ExecuteTest("testHls(true)");  // has_hls_support=true
 #else
   ExecuteTest("testHls(false)");            // has_hls_support=false
@@ -163,9 +185,10 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mpeg2Ts) {
 // See more complete codec string testing in media/base/video_codecs_unittest.cc
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_NewVp9Variants) {
 // Profile 2 and 3 support is currently disabled on Android prior to P and MIPS.
-#if (defined(ARCH_CPU_ARM_FAMILY) && !defined(OS_WIN) && !defined(OS_MAC)) || \
+#if (defined(ARCH_CPU_ARM_FAMILY) && !BUILDFLAG(IS_WIN) && \
+     !BUILDFLAG(IS_MAC)) ||                                \
     defined(ARCH_CPU_MIPS_FAMILY)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
     ExecuteTest("testNewVp9Variants(true)");  // has_profile_2_3_support=true

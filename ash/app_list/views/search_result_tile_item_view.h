@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace ui {
@@ -35,12 +35,13 @@ class ASH_EXPORT SearchResultTileItemView
       public views::ContextMenuController {
  public:
   explicit SearchResultTileItemView(AppListViewDelegate* view_delegate);
+
+  SearchResultTileItemView(const SearchResultTileItemView&) = delete;
+  SearchResultTileItemView& operator=(const SearchResultTileItemView&) = delete;
+
   ~SearchResultTileItemView() override;
 
   void OnResultChanged() override;
-
-  // Overridden from SearchResultBaseView:
-  std::u16string ComputeAccessibleName() const override;
 
   // Informs the SearchResultTileItemView of its parent's background color. The
   // controls within the SearchResultTileItemView will adapt to suit the given
@@ -59,6 +60,7 @@ class ASH_EXPORT SearchResultTileItemView
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // Overridden from SearchResultObserver:
   void OnMetadataChanged() override;
@@ -89,6 +91,7 @@ class ASH_EXPORT SearchResultTileItemView
   void SetBadgeIcon(const ui::ImageModel& badge_icon,
                     bool use_badge_icon_background);
   void SetTitle(const std::u16string& title);
+  void SetTitleTags(const SearchResultTags& tags);
   void SetRating(float rating);
   void SetPrice(const std::u16string& price);
 
@@ -111,7 +114,7 @@ class ASH_EXPORT SearchResultTileItemView
   gfx::Size CalculatePreferredSize() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
-  AppListViewDelegate* const view_delegate_;           // Owned by AppListView.
+  AppListViewDelegate* const view_delegate_;  // Owned by AppListView.
 
   views::ImageView* icon_ = nullptr;         // Owned by views hierarchy.
   views::ImageView* badge_ = nullptr;        // Owned by views hierarchy.
@@ -136,8 +139,6 @@ class ASH_EXPORT SearchResultTileItemView
   std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 
   base::WeakPtrFactory<SearchResultTileItemView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultTileItemView);
 };
 
 }  // namespace ash

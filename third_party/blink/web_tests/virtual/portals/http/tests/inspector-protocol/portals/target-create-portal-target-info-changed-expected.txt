@@ -1,0 +1,2 @@
+Tests that no spurious targetInfoChanged events are emitted during portal creation.
+

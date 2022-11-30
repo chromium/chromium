@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -15,13 +14,13 @@
 // Platform-specific headers for detecting tablet devices.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/tablet_mode.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Returns whether the screen supports touch input. Returns false if it
 // couldn't be checked.
@@ -45,13 +44,13 @@ bool HasBuiltInTouchScreen() {
   return (result & NID_INTEGRATED_TOUCH) != 0;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
 // static
 void WebUITabStripFieldTrial::RegisterFieldTrialIfNecessary() {
-  static base::NoDestructor<WebUITabStripFieldTrial> instance;
+  static WebUITabStripFieldTrial instance;
 }
 
 WebUITabStripFieldTrial::WebUITabStripFieldTrial() {
@@ -81,7 +80,7 @@ WebUITabStripFieldTrial::WebUITabStripFieldTrial() {
 bool WebUITabStripFieldTrial::DeviceIsTabletModeCapable() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return HasBuiltInTouchScreen();
 #else
   // No known way to determine tablet-capability on other platforms.

@@ -1,0 +1,13 @@
+<script>
+  const worker = new SharedWorker('fetch_from_shared_worker.js');
+
+  let resolve;
+  worker.port.onmessage = e => { resolve(e.data); };
+  worker.port.start();
+
+  function fetchFromSharedWorker(url) {
+    let p = new Promise(r => { resolve = r; });
+    worker.port.postMessage({url});
+    return p;
+  }
+</script>

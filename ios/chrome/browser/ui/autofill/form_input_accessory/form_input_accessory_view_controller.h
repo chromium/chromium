@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,26 @@
 
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
 
+@protocol BrandingViewControllerDelegate;
 @protocol FormSuggestionClient;
+@class LayoutGuideCenter;
 @class ManualFillAccessoryViewController;
 @protocol ManualFillAccessoryViewControllerDelegate;
 
 // Creates and manages a custom input accessory view while the user is
-// interacting with a form. Also handles hiding and showing the default
-// accessory view elements. Defaults in paused state and needs to be started by
-// calling |continueCustomKeyboardView|.
+// interacting with a form.
 @interface FormInputAccessoryViewController
-    : NSObject <FormInputAccessoryConsumer>
+    : UIViewController <FormInputAccessoryConsumer>
 
 // Client in charge of handling actions in suggestions.
 @property(nonatomic, weak) id<FormSuggestionClient> formSuggestionClient;
 
-// Presents a view above the keyboard.
-- (void)presentView:(UIView*)view;
+// The layout guide center to use to refer to the first suggestion label.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// Delegate object for the branding view controller.
+@property(nonatomic, weak) id<BrandingViewControllerDelegate>
+    brandingViewControllerDelegate;
 
 // Shows the manual fallback icons as the first option in the suggestions bar,
 // and locks them in that position.

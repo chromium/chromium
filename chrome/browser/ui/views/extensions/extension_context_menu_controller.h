@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,25 +7,31 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 
 class ToolbarActionViewController;
 
 namespace views {
 class Button;
+class MenuItemView;
 class MenuModelAdapter;
 class MenuRunner;
 }  // namespace views
 
 class ExtensionContextMenuController : public views::ContextMenuController {
  public:
-  // TODO(crbug.com/995473): Remove delegate once extensions toolbar menu
-  // launches.
   explicit ExtensionContextMenuController(
-      ToolbarActionView::Delegate* delegate,
-      ToolbarActionViewController* controller);
+      ToolbarActionViewController* controller,
+      extensions::ExtensionContextMenuModel::ContextMenuSource
+          context_menu_source);
+
+  ExtensionContextMenuController(const ExtensionContextMenuController&) =
+      delete;
+  ExtensionContextMenuController& operator=(
+      const ExtensionContextMenuController&) = delete;
+
   ~ExtensionContextMenuController() override;
 
   // views::ContextMenuController:
@@ -51,18 +57,13 @@ class ExtensionContextMenuController : public views::ContextMenuController {
 
   // The root MenuItemView for the context menu, or null if no menu is being
   // shown. This is used for testing.
-  views::MenuItemView* menu_ = nullptr;
-
-  // This delegate_ is set only for ToolbarActionsBar and used to determine if
-  // the extension is triggered from the AppMenu.
-  // TODO(crbug.com/995473): This should be removed when extensions toolbar menu
-  // launches.
-  const ToolbarActionView::Delegate* const delegate_;
+  raw_ptr<views::MenuItemView> menu_ = nullptr;
 
   // This controller contains the data for the extension's context menu.
-  ToolbarActionViewController* const controller_;
+  const raw_ptr<ToolbarActionViewController> controller_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuController);
+  // Location where the context menu is open from.
+  extensions::ExtensionContextMenuModel::ContextMenuSource context_menu_source_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_CONTEXT_MENU_CONTROLLER_H_

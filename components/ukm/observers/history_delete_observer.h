@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UKM_OBSERVERS_HISTORY_DELETE_OBSERVER_H_
 #define COMPONENTS_UKM_OBSERVERS_HISTORY_DELETE_OBSERVER_H_
-
-#include <set>
 
 #include "base/scoped_multi_source_observation.h"
 #include "components/history/core/browser/history_service.h"
@@ -18,6 +16,10 @@ namespace ukm {
 class HistoryDeleteObserver : public history::HistoryServiceObserver {
  public:
   HistoryDeleteObserver();
+
+  HistoryDeleteObserver(const HistoryDeleteObserver&) = delete;
+  HistoryDeleteObserver& operator=(const HistoryDeleteObserver&) = delete;
+
   ~HistoryDeleteObserver() override;
 
   // Starts observing a service for history deletions.
@@ -37,8 +39,6 @@ class HistoryDeleteObserver : public history::HistoryServiceObserver {
   base::ScopedMultiSourceObservation<history::HistoryService,
                                      history::HistoryServiceObserver>
       history_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDeleteObserver);
 };
 
 }  // namespace ukm

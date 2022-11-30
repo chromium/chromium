@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,6 @@ import org.chromium.content_public.browser.InputMethodManagerWrapper;
  * A factory class for {@link ThreadedInputConnection}. The class also includes triggering
  * mechanism (hack) to run our InputConnection on non-UI thread.
  */
-// TODO(changwan): add unit tests once Robolectric supports Android API level >= 21.
-// See crbug.com/588547 for details.
 public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnection.Factory {
     private static final String TAG = "Ime";
     private static final boolean DEBUG_LOGS = false;
@@ -41,7 +39,8 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
     private boolean mReentrantTriggering;
     private boolean mTriggerDelayedOnCreateInputConnection;
 
-    @IntDef({FocusState.NOT_APPLICABLE, FocusState.VIEW_FOCUSED_WITHOUT_WINDOW_FOCUS,
+    @IntDef({FocusState.NOT_APPLICABLE, FocusState.WINDOW_FOCUS_LOST,
+            FocusState.VIEW_FOCUSED_WITHOUT_WINDOW_FOCUS,
             FocusState.VIEW_FOCUSED_THEN_WINDOW_FOCUSED})
     @interface FocusState {
         int NOT_APPLICABLE = 0;

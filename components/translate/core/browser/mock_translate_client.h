@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/infobar.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_driver.h"
@@ -37,12 +38,12 @@ class MockTranslateClient : public TranslateClient {
 
   std::unique_ptr<TranslatePrefs> GetTranslatePrefs() override;
 
-  MOCK_METHOD0(GetTranslateAcceptLanguages, TranslateAcceptLanguages*());
+  MOCK_METHOD0(GetAcceptLanguagesService, language::AcceptLanguagesService*());
   MOCK_CONST_METHOD0(GetInfobarIconID, int());
 
-#if !defined(USE_AURA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
-      std::unique_ptr<TranslateInfoBarDelegate> delegate) const {
+      std::unique_ptr<TranslateInfoBarDelegate> delegate) const override {
     return std::make_unique<infobars::InfoBar>(std::move(delegate));
   }
 #endif
@@ -51,15 +52,14 @@ class MockTranslateClient : public TranslateClient {
                bool(translate::TranslateStep,
                     const std::string&,
                     const std::string&,
-                    TranslateErrors::Type,
+                    TranslateErrors,
                     bool));
   MOCK_METHOD1(IsTranslatableURL, bool(const GURL&));
-  MOCK_METHOD1(ShowReportLanguageDetectionErrorUI, void(const GURL&));
   MOCK_CONST_METHOD0(IsAutofillAssistantRunning, bool());
 
  private:
-  TranslateDriver* driver_;
-  PrefService* prefs_;
+  raw_ptr<TranslateDriver> driver_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace testing

@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_UPRGRADE_TYPES_H_
-#define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_UPRGRADE_TYPES_H_
+#ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_UPGRADE_TYPES_H_
+#define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_UPGRADE_TYPES_H_
 
 #include <string>
 
@@ -58,4 +58,4 @@ typedef base::OnceCallback<void(CompleteUpgradeStatus)> CompleteUpgradeCallback;
 
 }  // namespace offline_pages
 
-#endif  // COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_UPRGRADE_TYPES_H_
+#endif  // COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_UPGRADE_TYPES_H_

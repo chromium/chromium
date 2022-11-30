@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ enum class SnapshotOperationResult {
 // found at the source and successfully copied. Returns |false| if the item was
 // found at the source but not successfully copied. Returns no value if the file
 // was not at the source.
-base::Optional<bool> CopyItemToSnapshotDirectory(
+absl::optional<bool> CopyItemToSnapshotDirectory(
     const base::FilePath& relative_path,
     const base::FilePath& user_data_dir,
     const base::FilePath& snapshot_dir,
@@ -57,7 +57,7 @@ base::Optional<bool> CopyItemToSnapshotDirectory(
 
   // If nothing exists to be moved, do not consider it a success or a failure.
   if (!base::PathExists(source))
-    return base::nullopt;
+    return absl::nullopt;
 
   bool copy_success = is_directory ? base::CopyDirectory(source, destination,
                                                          /*recursive=*/true)
@@ -122,11 +122,11 @@ void MoveFolderForLaterDeletion(const base::FilePath& source,
                                 const base::FilePath& target) {
   if (MoveWithoutFallback(source, target))
     return;
-  auto failure_count =
-      MoveContents(source, base::GetUniquePath(target), ExclusionPredicate());
   // If some files failed to be moved, try and delete them immediately.
-  if (failure_count.has_value())
+  if (!MoveContents(source, base::GetUniquePath(target),
+                    ExclusionPredicate())) {
     base::DeletePathRecursively(source);
+  }
 }
 
 }  // namespace
@@ -153,32 +153,19 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
         snapshot_dir, move_target_dir.AppendASCII(version.GetString()));
   }
 
-  size_t success_count = 0;
-  size_t error_count = 0;
-  auto record_success_error = [&success_count, &error_count](
-                                  base::Optional<bool> success,
-                                  SnapshotItemId id) {
-    if (!success.has_value())
-      return;
-    if (success.value()) {
-      ++success_count;
-    } else {
-      ++error_count;
+  auto record_item_failure = [](absl::optional<bool> success,
+                                SnapshotItemId id) {
+    if (!success.value_or(true))
       base::UmaHistogramEnumeration("Downgrade.TakeSnapshot.ItemFailure", id);
-    }
   };
 
   // Abort the snapshot if the snapshot directory could not be created.
-  if (!base::CreateDirectory(snapshot_dir)) {
-    base::UmaHistogramEnumeration(
-        "Downgrade.TakeSnapshot.Result",
-        SnapshotOperationResult::kFailedToCreateSnapshotDirectory);
+  if (!base::CreateDirectory(snapshot_dir))
     return;
-  }
 
   // Copy items to be preserved at the top-level of User Data.
   for (const auto& file : GetUserSnapshotItemDetails()) {
-    record_success_error(
+    record_item_failure(
         CopyItemToSnapshotDirectory(base::FilePath(file.path), user_data_dir_,
                                     snapshot_dir, file.is_directory),
         file.id);
@@ -190,40 +177,24 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
   for (const auto& profile_dir : GetUserProfileDirectories(user_data_dir_)) {
     // Abort the current profile snapshot if the profile directory could not be
     // created. This succeeds almost all the time.
-    if (!base::CreateDirectory(snapshot_dir.Append(profile_dir))) {
-      ++error_count;
+    if (!base::CreateDirectory(snapshot_dir.Append(profile_dir)))
       continue;
-    }
     for (const auto& file : profile_snapshot_item_details) {
-      record_success_error(CopyItemToSnapshotDirectory(
-                               profile_dir.Append(file.path), user_data_dir_,
-                               snapshot_dir, file.is_directory),
-                           file.id);
+      record_item_failure(CopyItemToSnapshotDirectory(
+                              profile_dir.Append(file.path), user_data_dir_,
+                              snapshot_dir, file.is_directory),
+                          file.id);
     }
   }
 
   // Copy the "Last Version" file to the snapshot directory last since it is the
   // file that determines, by its presence in the snapshot directory, if the
   // snapshot is complete.
-  record_success_error(
+  record_item_failure(
       CopyItemToSnapshotDirectory(base::FilePath(kDowngradeLastVersionFile),
                                   user_data_dir_, snapshot_dir,
                                   /*is_directory=*/false),
       SnapshotItemId::kLastVersion);
-
-  auto snapshot_result = SnapshotOperationResult::kFailure;
-  if (error_count == 0)
-    snapshot_result = SnapshotOperationResult::kSuccess;
-  else if (success_count > 0)
-    snapshot_result = SnapshotOperationResult::kPartialSuccess;
-
-  if (error_count > 0) {
-    base::UmaHistogramExactLinear("Downgrade.TakeSnapshot.FailureCount",
-                                  error_count, 100);
-  }
-
-  base::UmaHistogramEnumeration("Downgrade.TakeSnapshot.Result",
-                                snapshot_result);
 }
 
 void SnapshotManager::RestoreSnapshot(const base::Version& version) {
@@ -300,7 +271,7 @@ void SnapshotManager::RestoreSnapshot(const base::Version& version) {
 
 void SnapshotManager::PurgeInvalidAndOldSnapshots(
     int max_number_of_snapshots,
-    base::Optional<uint32_t> milestone) const {
+    absl::optional<uint32_t> milestone) const {
   const auto snapshot_dir = user_data_dir_.Append(kSnapshotsDir);
 
   // Move the invalid snapshots within from Snapshots/NN to Snapshots.DELETE/NN.

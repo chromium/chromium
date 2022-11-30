@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/atl.h"
@@ -336,7 +336,7 @@ bool JobCreationOlderThanDaysPredicate(ComPtr<IBackgroundCopyJob> job,
   if (FAILED(hr))
     return false;
 
-  const base::TimeDelta time_delta(base::TimeDelta::FromDays(num_days));
+  const base::TimeDelta time_delta(base::Days(num_days));
   const base::Time creation_time(base::Time::FromFileTime(times.CreationTime));
 
   return creation_time + time_delta < base::Time::Now();
@@ -411,8 +411,8 @@ BackgroundDownloader::~BackgroundDownloader() = default;
 void BackgroundDownloader::StartTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_ = std::make_unique<base::OneShotTimer>();
-  timer_->Start(FROM_HERE, base::TimeDelta::FromSeconds(kJobPollingIntervalSec),
-                this, &BackgroundDownloader::OnTimer);
+  timer_->Start(FROM_HERE, base::Seconds(kJobPollingIntervalSec), this,
+                &BackgroundDownloader::OnTimer);
 }
 
 void BackgroundDownloader::OnTimer() {
@@ -770,8 +770,7 @@ HRESULT BackgroundDownloader::InitializeNewJob(
 }
 
 bool BackgroundDownloader::IsStuck() {
-  const base::TimeDelta job_stuck_timeout(
-      base::TimeDelta::FromMinutes(kJobStuckTimeoutMin));
+  const base::TimeDelta job_stuck_timeout(base::Minutes(kJobStuckTimeoutMin));
   return job_stuck_begin_time_ + job_stuck_timeout < base::TimeTicks::Now();
 }
 
@@ -794,9 +793,9 @@ HRESULT BackgroundDownloader::CompleteJob() {
   if (FAILED(hr))
     return hr;
 
-  // Sanity check the post-conditions of a successful download, including
-  // the file and job invariants. The byte counts for a job and its file
-  // must match as a job only contains one file.
+  // Check the post-conditions of a successful download, including the file and
+  // job invariants. The byte counts for a job and its file must match as a job
+  // only contains one file.
   DCHECK(progress.Completed);
   DCHECK_EQ(progress.BytesTotal, progress.BytesTransferred);
 
@@ -878,7 +877,7 @@ void BackgroundDownloader::CleanupStaleJobs() {
   static base::Time last_sweep;
 
   const base::TimeDelta time_delta(
-      base::TimeDelta::FromDays(kPurgeStaleJobsIntervalBetweenChecksDays));
+      base::Days(kPurgeStaleJobsIntervalBetweenChecksDays));
   const base::Time current_time(base::Time::Now());
   if (last_sweep + time_delta > current_time)
     return;

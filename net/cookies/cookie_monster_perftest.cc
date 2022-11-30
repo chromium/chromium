@@ -1,13 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +20,7 @@
 #include "net/cookies/parsed_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -62,7 +62,7 @@ perf_test::PerfResultReporter SetUpCookieMonsterReporter(
 
 class CookieMonsterTest : public testing::Test {
  public:
-  CookieMonsterTest() {}
+  CookieMonsterTest() = default;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -71,7 +71,7 @@ class CookieMonsterTest : public testing::Test {
 
 class CookieTestCallback {
  public:
-  CookieTestCallback() : has_run_(false) {}
+  CookieTestCallback() = default;
 
  protected:
   void WaitForCallback() {
@@ -87,7 +87,7 @@ class CookieTestCallback {
 
   void Run() { has_run_ = true; }
 
-  bool has_run_;
+  bool has_run_ = false;
 };
 
 class SetCookieCallback : public CookieTestCallback {
@@ -95,8 +95,9 @@ class SetCookieCallback : public CookieTestCallback {
   void SetCookie(CookieMonster* cm,
                  const GURL& gurl,
                  const std::string& cookie_line) {
-    auto cookie = CanonicalCookie::Create(gurl, cookie_line, base::Time::Now(),
-                                          base::nullopt /* server_time */);
+    auto cookie = CanonicalCookie::Create(
+        gurl, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     cm->SetCanonicalCookieAsync(
         std::move(cookie), gurl, options_,
         base::BindOnce(&SetCookieCallback::Run, base::Unretained(this)));
@@ -116,7 +117,7 @@ class GetCookieListCallback : public CookieTestCallback {
  public:
   const CookieList& GetCookieList(CookieMonster* cm, const GURL& gurl) {
     cm->GetCookieListWithOptionsAsync(
-        gurl, options_,
+        gurl, options_, CookiePartitionKeyCollection(),
         base::BindOnce(&GetCookieListCallback::Run, base::Unretained(this)));
     WaitForCallback();
     return cookie_list_;
@@ -216,7 +217,7 @@ TEST_F(CookieMonsterTest, TestAddCookieOnManyHosts) {
   std::string cookie(kCookieLine);
   std::vector<GURL> gurls;  // just wanna have ffffuunnn
   for (int i = 0; i < kNumCookies; ++i) {
-    gurls.push_back(GURL(base::StringPrintf("https://a%04d.izzle", i)));
+    gurls.emplace_back(base::StringPrintf("https://a%04d.izzle", i));
   }
 
   SetCookieCallback setCookieCallback;
@@ -350,7 +351,7 @@ TEST_F(CookieMonsterTest, TestDomainLine) {
 }
 
 TEST_F(CookieMonsterTest, TestImport) {
-  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
   GetCookieListCallback getCookieListCallback;
 
@@ -371,7 +372,7 @@ TEST_F(CookieMonsterTest, TestImport) {
 
   store->SetLoadExpectation(true, std::move(initial_cookies));
 
-  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), nullptr));
+  auto cm = std::make_unique<CookieMonster>(store.get(), nullptr);
 
   // Import will happen on first access.
   GURL gurl("www.foo.com");
@@ -387,7 +388,7 @@ TEST_F(CookieMonsterTest, TestImport) {
 }
 
 TEST_F(CookieMonsterTest, TestGetKey) {
-  std::unique_ptr<CookieMonster> cm(new CookieMonster(nullptr, nullptr));
+  auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   auto reporter = SetUpCookieMonsterReporter("baseline_story");
   base::ElapsedTimer get_key_timer;
   for (int i = 0; i < kNumCookies; i++)

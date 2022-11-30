@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/drive/service/drive_service_interface.h"
@@ -24,6 +24,9 @@ namespace drive_backend {
 class DriveServiceWrapper : public base::SupportsWeakPtr<DriveServiceWrapper> {
  public:
   explicit DriveServiceWrapper(drive::DriveServiceInterface* drive_service);
+
+  DriveServiceWrapper(const DriveServiceWrapper&) = delete;
+  DriveServiceWrapper& operator=(const DriveServiceWrapper&) = delete;
 
   void AddNewDirectory(const std::string& parent_resource_id,
                        const std::string& directory_title,
@@ -77,10 +80,8 @@ class DriveServiceWrapper : public base::SupportsWeakPtr<DriveServiceWrapper> {
                      google_apis::FileListCallback callback);
 
  private:
-  drive::DriveServiceInterface* drive_service_;
+  raw_ptr<drive::DriveServiceInterface> drive_service_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DriveServiceWrapper);
 };
 
 }  // namespace drive_backend

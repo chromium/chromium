@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ void SlowTraceSource::StartDataRequest(
                                base::Unretained(this), std::move(callback)));
 }
 
-std::string SlowTraceSource::GetMimeType(const std::string& path) {
+std::string SlowTraceSource::GetMimeType(const GURL& url) {
   return "application/zip";
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 
+namespace ash {
 namespace {
 
 const char* const kMetricEnrollment = "Enterprise.Enrollment";
@@ -24,12 +26,12 @@ const char* const kMetricEnrollmentForcedManualFallback =
 const char* const kMetricEnrollmentForcedInitialManualFallback =
     "Enterprise.EnrollmentForcedInitialManualFallback";
 const char* const kMetricEnrollmentRecovery = "Enterprise.EnrollmentRecovery";
-const char* const kMetricEnrollmentConfiguration =
-    "Enterprise.EnrollmentConfiguration";
+const char* const kMetricEnrollmentRollbackAttestation =
+    "Enterprise.EnrollmentRollbackAttestation";
+const char* const kMetricEnrollmentRollbackManualFallback =
+    "Enterprise.EnrollmentRollbackManualFallback";
 
 }  // namespace
-
-namespace chromeos {
 
 void EnrollmentUMA(policy::MetricEnrollment sample,
                    policy::EnrollmentConfig::Mode mode) {
@@ -38,7 +40,6 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
     case policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
     case policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED:
     case policy::EnrollmentConfig::MODE_SERVER_ADVERTISED:
-    case policy::EnrollmentConfig::MODE_OFFLINE_DEMO:
       base::UmaHistogramSparse(kMetricEnrollment, sample);
       break;
     case policy::EnrollmentConfig::MODE_ATTESTATION:
@@ -67,16 +68,20 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
           kMetricEnrollmentForcedInitialManualFallback, sample);
       break;
     case policy::EnrollmentConfig::MODE_RECOVERY:
-    case policy::EnrollmentConfig::MODE_ENROLLED_ROLLBACK:
       base::UmaHistogramSparse(kMetricEnrollmentRecovery, sample);
       break;
-    case policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN:
-      base::UmaHistogramSparse(kMetricEnrollmentConfiguration, sample);
+    case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED:
+      base::UmaHistogramSparse(kMetricEnrollmentRollbackAttestation, sample);
       break;
+    case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
+      base::UmaHistogramSparse(kMetricEnrollmentRollbackManualFallback, sample);
+      break;
+    case policy::EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
+    case policy::EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:
     case policy::EnrollmentConfig::MODE_NONE:
       NOTREACHED();
       break;
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

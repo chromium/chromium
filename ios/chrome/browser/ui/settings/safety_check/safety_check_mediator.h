@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,11 +27,11 @@ class SyncSetupService;
 @interface SafetyCheckMediator : NSObject <SafetyCheckServiceDelegate>
 
 // Designated initializer. All the parameters should not be null.
-// |userPrefService|: Preference service to access safe browsing state.
-// |passwordCheckManager|: Password check manager to enable use of the password
+// `userPrefService`: Preference service to access safe browsing state.
+// `passwordCheckManager`: Password check manager to enable use of the password
 // check service.
-// |authService|: Authentication service to check users authentication status.
-// |syncService|: Sync service to check sync and sync encryption status.
+// `authService`: Authentication service to check users authentication status.
+// `syncService`: Sync service to check sync and sync encryption status.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                    passwordCheckManager:
                        (scoped_refptr<IOSChromePasswordCheckManager>)
@@ -41,6 +41,9 @@ class SyncSetupService;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Starts a safety check if one is not currently running.
+- (void)startCheckIfNotRunning;
 
 // The consumer for the Safety Check mediator.
 @property(nonatomic, weak) id<SafetyCheckConsumer> consumer;

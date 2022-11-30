@@ -1,14 +1,14 @@
 # Chromium C++ style guide
 
 _For other languages, please see the
-[Chromium style guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
+[Chromium style guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
 Chromium follows the [Google C++ Style
 Guide](https://google.github.io/styleguide/cppguide.html) unless an exception
 is listed below.
 
 A checkout should give you
-[clang-format](https://chromium.googlesource.com/chromium/src/+/master/docs/clang_format.md)
+[clang-format](https://chromium.googlesource.com/chromium/src/+/main/docs/clang_format.md)
 to automatically format C++ code. By policy, Clang's formatting of code should
 always be accepted in code reviews.
 
@@ -21,28 +21,39 @@ Blink code in `third_party/blink` uses [Blink style](blink-c++.md).
 
 ## Modern C++ features
 
-Google style
+Google and Chromium style
 [targets C++17](https://google.github.io/styleguide/cppguide.html#C++_Version).
-Chromium targets C++14; [C++17 support](https://crbug.com/752720) is not
-expected before
-[mid-2021](https://blog.chromium.org/2020/01/moving-forward-from-chrome-apps.html).
 Additionally, some features of supported C++ versions remain forbidden. The
 status of Chromium's C++ support is covered in more detail in
-[Modern C++ use in Chromium](https://chromium-cpp.appspot.com/).
+[Modern C++ use in Chromium](c++-features.md).
 
 ## Naming
 
   * "Chromium" is the name of the project, not the product, and should never
     appear in code, variable names, API names etc. Use "Chrome" instead.
 
-## Test-only Code
+## Tests and Test-only Code
 
   * Functions used only for testing should be restricted to test-only usages
     with the testing suffixes supported by
-    [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/master/PRESUBMIT.py).
+    [PRESUBMIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
     `ForTesting` is the conventional suffix although similar patterns, such as
     `ForTest`, are also accepted. These suffixes are checked at presubmit time
     to ensure the functions are called only by test files.
+  * Classes used only for testing should be in a GN build target that is
+    marked `testonly=true`. Tests can depend on such targets, but production
+    code can not.
+  * While test files generally appear alongside the production code they test,
+    support code for `testonly` targets should be placed in a `test/` subdirectory.
+    For example, see `//mojo/core/core_unittest.cc` and
+    `//mojo/core/test/mojo_test_base.cc`. For test classes used across multiple
+    directories, it might make sense to move them into a nested `test` namespace for
+    clarity.
+  * Despite the Google C++ style guide
+    [deprecating](https://google.github.io/styleguide/cppguide.html#File_Names)
+    the `_unittest.cc` suffix for unit test files, in Chromium we still use this
+    suffix to distinguish unit tests from browser tests, which are written in
+    files with the `_browsertest.cc` suffix.
 
 ## Code formatting
 
@@ -128,18 +139,25 @@ Place platform-specific #includes in their own section below the "normal"
   #include <algorithm>
 
   #include "base/strings/utf_string_conversions.h"
+  #include "build/build_config.h"
   #include "chrome/common/render_messages.h"
 
-  #if defined(OS_WIN)
+  #if BUILDFLAG(IS_WIN)
   #include <windows.h>
   #include "base/win/com_init_util.h"
-  #elif defined(OS_POSIX)
+  #elif BUILDFLAG(IS_POSIX)
   #include "base/posix/global_descriptors.h"
   #endif
 ```
 
 ## Types
 
+  * Refer to the [Mojo style
+    guide](https://chromium.googlesource.com/chromium/src/+/main/docs/security/mojo.md)
+    when working with types that will be passed across network or process
+    boundaries. For example, explicitly-sized integral types must be used for
+    safety, since the sending and receiving ends may not have been compiled
+    with the same sizes for things like `int` and `size_t`.
   * Use `size_t` for object and allocation sizes, object counts, array and
     pointer offsets, vector indices, and so on. This prevents casts when
     dealing with STL APIs, and if followed consistently across the codebase,
@@ -149,7 +167,11 @@ Place platform-specific #includes in their own section below the "normal"
     these cases, continue to use `size_t` in public-facing function
     declarations, and continue to use unsigned types internally (e.g.
     `uint32_t`).
-  * Follow [Google C++ casting
+  * Follow the [integer semantics
+    guide](https://chromium.googlesource.com/chromium/src/+/main/docs/security/integer-semantics.md)
+    for all arithmetic conversions and calculations used in memory management
+    or passed across network or process boundaries. In other circumstances,
+    follow [Google C++ casting
     conventions](https://google.github.io/styleguide/cppguide.html#Casting)
     to convert arithmetic types when you know the conversion is safe. Use
     `checked_cast<T>` (from `base/numerics/safe_conversions.h`) when you need to
@@ -157,11 +179,6 @@ Place platform-specific #includes in their own section below the "normal"
     `saturated_cast<T>` if you instead wish to clamp out-of-range values.
     `CheckedNumeric` is an ergonomic way to perform safe arithmetic and casting
     in many cases.
-  * When passing values across network or process boundaries, use
-    explicitly-sized types for safety, since the sending and receiving ends may
-    not have been compiled with the same sizes for things like `int` and
-    `size_t`. However, to the greatest degree possible, avoid letting these
-    sized types bleed through the APIs of the layers in question.
   * The Google Style Guide [bans
     UTF-16](https://google.github.io/styleguide/cppguide.html#Non-ASCII_Characters).
     For various reasons, Chromium uses UTF-16 extensively. Use `std::u16string`
@@ -209,6 +226,27 @@ scoped_refptr<T>&` instead of `T*`, or return `T*` instead of
 `scoped_refptr<T>` (to avoid refcount churn pre-C++11). Try to clean up such
 code when you find it, or at least not make such usage any more widespread.
 
+## Non-owning pointers in class fields
+
+Use `const raw_ref<T>` or `raw_ptr<T>` for class and struct fields in place of a
+raw C++ reference `T&` or pointer `T*` whenever possible, except in paths that include
+`/renderer/` or `blink/public/web/`.  These a non-owning smart pointers that
+have improved memory-safety over raw pointers and references, and can prevent
+exploitation of a significant percentage of Use-after-Free bugs.
+
+Prefer `const raw_ref<T>` whenever the held pointer will never be null, and it's
+ok to drop the `const` if the internal reference can be reassigned to point to a
+different `T`. Use `raw_ptr<T>` in order to express that the pointer _can_ be
+null. Only `raw_ptr<T>` can be default-constructed, since `raw_ref<T>` disallows
+nullness.
+
+Using `raw_ref<T>` or `raw_ptr<T>` may not be possible in rare cases for
+[performance reasons](../../base/memory/raw_ptr.md#Performance). Additionally,
+`raw_ptr<T>` doesn’t support some C++ scenarios (e.g. `constexpr`, ObjC
+pointers).  Tooling will help to encourage use of these types in the future. See
+[raw_ptr.md](../../base/memory/raw_ptr.md#When-to-use-raw_ptr_T) for how to add
+exclusions.
+
 ## Forward declarations vs. #includes
 
 Unlike the Google style guide, Chromium style prefers forward declarations to
@@ -227,21 +265,16 @@ All files in Chromium start with a common license header. That header should
 look like this:
 
 ```c++
-// Copyright $YEAR The Chromium Authors. All rights reserved.
+// Copyright $YEAR The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 ```
 
 Some important notes about this header:
-  * There is no `(c)` after `Copyright`.
   * `$YEAR` should be set to the current year at the time a file is created, and
     not changed thereafter.
-  * For files specific to Chromium OS, replace the word Chromium with the phrase
-    Chromium OS.
-  * If the style changes, don't bother to update existing files to comply with
-    the new style. For the same reason, don't just blindly copy an existing
-    file's header when creating a new file, since the existing file may use an
-    outdated style.
+  * For files specific to ChromiumOS, replace the word Chromium with the phrase
+    ChromiumOS.
   * The Chromium project hosts mirrors of some upstream open-source projects.
     When contributing to these portions of the repository, retain the existing
     file headers.
@@ -304,6 +337,28 @@ these:
     `DCHECK()` can be used to document that a pointer is never null, and doing
     so as early as possible can help with debugging, though our styleguide now
     recommends using a reference instead of a pointer when it cannot be null.
+
+## Test-only code paths in production code
+
+Try to avoid test-only code paths in production code. Such code paths make
+production code behave differently in tests. This makes both tests and
+production code hard to reason about. Consider dependency injection, fake
+classes, etc to avoid such code paths.
+
+However, if a test-only path in production code cannot be avoided, instrument
+that code path with `CHECK_IS_TEST();` to assert that the code is only run in
+tests.
+
+```c++
+// `profile_manager` may not be available in tests.
+if (!profile_manager) {
+  CHECK_IS_TEST();
+  return std::string();
+}
+```
+
+`CHECK_IS_TEST();` will crash outside of tests. This asserts that the test-only
+code path is not accidentally or maliciously taken in production.
 
 ## Miscellany
 

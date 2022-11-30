@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// A ByteString is an array of binary data that in C++ is typemapped to a
+// std::string. Mojo string primitives should be well-formed UTF-8, but
+// many C++ APIs store binary data in std::string rather than
+// std::vector<uint8_t>. The ByteString type is an adaptor that transfers
+// binary std::string data using an array<uint8> over Mojo. If creating a
+// new API, do not use this; instead, store binary data in
+// std::vector<uint8_t> rather than std::string, and use array<uint8> for
+// Mojo APIs.
+struct ByteString {
+  array<uint8> data;
+};

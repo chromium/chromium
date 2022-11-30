@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "content/common/content_export.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/host/resource_message_filter.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
@@ -25,7 +23,7 @@ struct PP_NetAddress_Private;
 
 namespace net {
 class AddressList;
-}
+}  // namespace net
 
 namespace ppapi {
 struct HostPortPair;
@@ -39,13 +37,18 @@ namespace content {
 
 class BrowserPpapiHostImpl;
 
-class CONTENT_EXPORT PepperHostResolverMessageFilter
+class PepperHostResolverMessageFilter
     : public ppapi::host::ResourceMessageFilter,
       public network::ResolveHostClientBase {
  public:
   PepperHostResolverMessageFilter(BrowserPpapiHostImpl* host,
                                   PP_Instance instance,
                                   bool private_api);
+
+  PepperHostResolverMessageFilter(const PepperHostResolverMessageFilter&) =
+      delete;
+  PepperHostResolverMessageFilter& operator=(
+      const PepperHostResolverMessageFilter&) = delete;
 
  protected:
   ~PepperHostResolverMessageFilter() override;
@@ -65,13 +68,14 @@ class CONTENT_EXPORT PepperHostResolverMessageFilter
                        const PP_HostResolver_Private_Hint& hint);
 
   // network::mojom::ResolveHostClient overrides.
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   void OnLookupFinished(int net_result,
-                        const base::Optional<net::AddressList>& addresses,
+                        const absl::optional<net::AddressList>& addresses,
                         const ppapi::host::ReplyMessageContext& bound_info);
   void SendResolveReply(int32_t result,
                         const std::string& canonical_name,
@@ -94,8 +98,6 @@ class CONTENT_EXPORT PepperHostResolverMessageFilter
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
 
   ppapi::host::ReplyMessageContext host_resolve_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperHostResolverMessageFilter);
 };
 
 }  // namespace content

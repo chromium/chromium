@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,12 +18,10 @@ source_set("test") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/favicon_base",
     "//testing/gmock",
     "//ui/events/platform",
+    "//ui/gfx",
     "//url",
   ]
-
-  if (use_x11) {
-    deps += [ "//ui/events/platform/x11" ]
-  }
 }

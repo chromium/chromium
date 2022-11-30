@@ -1,32 +1,27 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
 
-class DemoSetupScreen;
-
 // Interface of the demo mode setup screen view.
-class DemoSetupScreenView {
+class DemoSetupScreenView : public base::SupportsWeakPtr<DemoSetupScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"demo-setup"};
+  inline constexpr static StaticOobeScreenId kScreenId{"demo-setup",
+                                                       "DemoSetupScreen"};
 
   virtual ~DemoSetupScreenView();
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Sets view and screen.
-  virtual void Bind(DemoSetupScreen* screen) = 0;
 
   // Updates current setup step.
   virtual void SetCurrentSetupStep(
@@ -47,32 +42,35 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
  public:
   using TView = DemoSetupScreenView;
 
-  explicit DemoSetupScreenHandler(JSCallsContainer* js_calls_container);
+  DemoSetupScreenHandler();
+
+  DemoSetupScreenHandler(const DemoSetupScreenHandler&) = delete;
+  DemoSetupScreenHandler& operator=(const DemoSetupScreenHandler&) = delete;
+
   ~DemoSetupScreenHandler() override;
 
   // DemoSetupScreenView:
   void Show() override;
-  void Hide() override;
-  void Bind(DemoSetupScreen* screen) override;
   void SetCurrentSetupStep(
       DemoSetupController::DemoSetupStep current_step) override;
   void OnSetupFailed(const DemoSetupController::DemoSetupError& error) override;
   void OnSetupSucceeded() override;
 
   // BaseScreenHandler:
-  void Initialize() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 
   // BaseWebUIHandler:
-  void GetAdditionalParameters(base::DictionaryValue* parameters) override;
-
- private:
-  DemoSetupScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupScreenHandler);
+  void GetAdditionalParameters(base::Value::Dict* parameters) override;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::DemoSetupScreenHandler;
+using ::chromeos::DemoSetupScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_

@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/content_widget_extension/content_widget_view.h"
 
-#include "base/check.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
+#import "base/check.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -51,7 +51,7 @@ const int kRows = 2;
 // Sets up the widget UI in compact mode.
 - (void)createUI;
 
-// Arranges |tiles| horizontally in a view and returns the view.
+// Arranges `tiles` horizontally in a view and returns the view.
 - (UIView*)createRowFromTiles:(NSArray<MostVisitedTileView*>*)tiles;
 
 // Returns the height to use for the first row, depending on the display mode.
@@ -61,7 +61,7 @@ const int kRows = 2;
 // be shown).
 - (CGFloat)secondRowHeight;
 
-// Opens the |mostVisitedTile|'s url, using the delegate.
+// Opens the `mostVisitedTile`'s url, using the delegate.
 - (void)openURLFromMostVisited:(MostVisitedTileView*)mostVisitedTile;
 
 @end

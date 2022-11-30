@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,7 +37,7 @@ LocalPresentationManager::GetOrCreateLocalPresentation(
 
 void LocalPresentationManager::RegisterLocalPresentationController(
     const PresentationInfo& presentation_info,
-    const content::GlobalFrameRoutingId& render_frame_host_id,
+    const content::GlobalRenderFrameHostId& render_frame_host_id,
     mojo::PendingRemote<blink::mojom::PresentationConnection>
         controller_connection_remote,
     mojo::PendingReceiver<blink::mojom::PresentationConnection>
@@ -51,7 +52,7 @@ void LocalPresentationManager::RegisterLocalPresentationController(
 
 void LocalPresentationManager::UnregisterLocalPresentationController(
     const std::string& presentation_id,
-    const content::GlobalFrameRoutingId& render_frame_host_id) {
+    const content::GlobalRenderFrameHostId& render_frame_host_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = local_presentations_.find(presentation_id);
   if (it == local_presentations_.end())
@@ -109,7 +110,7 @@ LocalPresentationManager::LocalPresentation::LocalPresentation(
 LocalPresentationManager::LocalPresentation::~LocalPresentation() {}
 
 void LocalPresentationManager::LocalPresentation::RegisterController(
-    const content::GlobalFrameRoutingId& render_frame_host_id,
+    const content::GlobalRenderFrameHostId& render_frame_host_id,
     mojo::PendingRemote<blink::mojom::PresentationConnection>
         controller_connection_remote,
     mojo::PendingReceiver<blink::mojom::PresentationConnection>
@@ -129,7 +130,7 @@ void LocalPresentationManager::LocalPresentation::RegisterController(
 }
 
 void LocalPresentationManager::LocalPresentation::UnregisterController(
-    const content::GlobalFrameRoutingId& render_frame_host_id) {
+    const content::GlobalRenderFrameHostId& render_frame_host_id) {
   pending_controllers_.erase(render_frame_host_id);
 }
 

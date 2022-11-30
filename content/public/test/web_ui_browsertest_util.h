@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,31 +9,34 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
-struct TestUntrustedDataSourceCSP {
-  TestUntrustedDataSourceCSP();
-  TestUntrustedDataSourceCSP(const TestUntrustedDataSourceCSP& other);
-  ~TestUntrustedDataSourceCSP();
+struct TestUntrustedDataSourceHeaders {
+  TestUntrustedDataSourceHeaders();
+  TestUntrustedDataSourceHeaders(const TestUntrustedDataSourceHeaders& other);
+  ~TestUntrustedDataSourceHeaders();
 
-  base::Optional<std::string> child_src = base::nullopt;
-  base::Optional<std::string> script_src = base::nullopt;
-  base::Optional<std::string> default_src = base::nullopt;
+  absl::optional<std::string> child_src = absl::nullopt;
+  absl::optional<std::string> script_src = absl::nullopt;
+  absl::optional<std::string> default_src = absl::nullopt;
   // Trusted Types is enabled by default for TestUntrustedDataSource.
   // Setting this to true will disable Trusted Types.
   bool no_trusted_types = false;
   bool no_xfo = false;
-  base::Optional<std::vector<std::string>> frame_ancestors = base::nullopt;
+  absl::optional<std::vector<std::string>> frame_ancestors = absl::nullopt;
+  absl::optional<network::mojom::CrossOriginOpenerPolicyValue>
+      cross_origin_opener_policy = absl::nullopt;
 };
 
 // Adds a DataSource for chrome-untrusted://|host| URLs.
-void AddUntrustedDataSource(BrowserContext* browser_context,
-                            const std::string& host,
-                            base::Optional<TestUntrustedDataSourceCSP>
-                                content_security_policy = base::nullopt);
+void AddUntrustedDataSource(
+    BrowserContext* browser_context,
+    const std::string& host,
+    absl::optional<TestUntrustedDataSourceHeaders> headers = absl::nullopt);
 
 // Returns chrome-untrusted://|host_and_path| as a GURL.
 GURL GetChromeUntrustedUIURL(const std::string& host_and_path);

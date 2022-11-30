@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"
 #include "snapshot/win/pe_image_resource_reader.h"
@@ -288,7 +288,7 @@ bool PEImageReader::VSFixedFileInfo(
       version_info.wType != 0 ||
       wcsncmp(version_info.szKey,
               L"VS_VERSION_INFO",
-              base::size(version_info.szKey)) != 0) {
+              std::size(version_info.szKey)) != 0) {
     LOG(WARNING) << "unexpected VS_VERSIONINFO in "
                  << module_subrange_reader_.name();
     return false;

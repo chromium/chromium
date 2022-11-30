@@ -19,17 +19,16 @@
 #endif
 
 #include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include <time.h>
+
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#include <stdarg.h>
 
 #include <libxml/xmlmemory.h>
 #include <libxml/tree.h>
@@ -42,7 +41,7 @@
 #include "imports.h"
 #include "transform.h"
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
 #define XSLT_WIN32_PERFORMANCE_COUNTER
 #endif
 
@@ -948,17 +947,19 @@ xsltDocumentSortFunction(xmlNodeSetPtr list) {
 }
 
 /**
- * xsltComputeSortResult:
+ * xsltComputeSortResultiInternal:
  * @ctxt:  a XSLT process context
  * @sort:  node list
+ * @xfrm:  Transform strings according to locale
  *
  * reorder the current node list accordingly to the set of sorting
  * requirement provided by the array of nodes.
  *
  * Returns a ordered XPath nodeset or NULL in case of error.
  */
-xmlXPathObjectPtr *
-xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
+static xmlXPathObjectPtr *
+xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
+                              int xfrm) {
 #ifdef XSLT_REFACTORED
     xsltStyleItemSortPtr comp;
 #else
@@ -1045,7 +1046,7 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
 		}
 	    } else {
 		if (res->type == XPATH_STRING) {
-		    if (comp->locale != (xsltLocale)0) {
+		    if ((xfrm) && (comp->locale != (xsltLocale)0)) {
 			xmlChar *str = res->stringval;
 			res->stringval = (xmlChar *) xsltStrxfrm(comp->locale, str);
 			xmlFree(str);
@@ -1073,6 +1074,21 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
     ctxt->xpathCtxt->namespaces = oldNamespaces;
 
     return(results);
+}
+
+/**
+ * xsltComputeSortResult:
+ * @ctxt:  a XSLT process context
+ * @sort:  node list
+ *
+ * reorder the current node list accordingly to the set of sorting
+ * requirement provided by the array of nodes.
+ *
+ * Returns a ordered XPath nodeset or NULL in case of error.
+ */
+xmlXPathObjectPtr *
+xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
+    return xsltComputeSortResultInternal(ctxt, sort, /* xfrm */ 0);
 }
 
 /**
@@ -1175,7 +1191,8 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 
     len = list->nodeNr;
 
-    resultsTab[0] = xsltComputeSortResult(ctxt, sorts[0]);
+    resultsTab[0] = xsltComputeSortResultInternal(ctxt, sorts[0],
+                                                  /* xfrm */ 1);
     for (i = 1;i < XSLT_MAX_SORT;i++)
 	resultsTab[i] = NULL;
 
@@ -1246,8 +1263,10 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 			 * full set, this might be optimized ... or not
 			 */
 			if (resultsTab[depth] == NULL)
-			    resultsTab[depth] = xsltComputeSortResult(ctxt,
-				                        sorts[depth]);
+			    resultsTab[depth] =
+                                xsltComputeSortResultInternal(ctxt,
+                                                              sorts[depth],
+                                                              /* xfrm */ 1);
 			res = resultsTab[depth];
 			if (res == NULL)
 			    break;
@@ -1813,6 +1832,141 @@ xsltSaveResultToString(xmlChar **doc_txt_ptr, int * doc_txt_len,
 #endif
     (void)xmlOutputBufferClose(buf);
     return 0;
+}
+
+/**
+ * xsltGetSourceNodeFlags:
+ * @node:  Node from source document
+ *
+ * Returns the flags for a source node.
+ */
+int
+xsltGetSourceNodeFlags(xmlNodePtr node) {
+    /*
+     * Squeeze the bit flags into the upper bits of
+     *
+     * - 'int properties' member in struct _xmlDoc
+     * - 'xmlAttributeType atype' member in struct _xmlAttr
+     * - 'unsigned short extra' member in struct _xmlNode
+     */
+    switch (node->type) {
+        case XML_DOCUMENT_NODE:
+        case XML_HTML_DOCUMENT_NODE:
+            return ((xmlDocPtr) node)->properties >> 27;
+
+        case XML_ATTRIBUTE_NODE:
+            return ((xmlAttrPtr) node)->atype >> 27;
+
+        case XML_ELEMENT_NODE:
+        case XML_TEXT_NODE:
+        case XML_CDATA_SECTION_NODE:
+        case XML_PI_NODE:
+        case XML_COMMENT_NODE:
+            return node->extra >> 12;
+
+        default:
+            return 0;
+    }
+}
+
+/**
+ * xsltSetSourceNodeFlags:
+ * @node:  Node from source document
+ * @flags:  Flags
+ *
+ * Sets the specified flags to 1.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
+                       int flags) {
+    if (node->doc == ctxt->initialContextDoc)
+        ctxt->sourceDocDirty = 1;
+
+    switch (node->type) {
+        case XML_DOCUMENT_NODE:
+        case XML_HTML_DOCUMENT_NODE:
+            ((xmlDocPtr) node)->properties |= flags << 27;
+            return 0;
+
+        case XML_ATTRIBUTE_NODE:
+            ((xmlAttrPtr) node)->atype |= flags << 27;
+            return 0;
+
+        case XML_ELEMENT_NODE:
+        case XML_TEXT_NODE:
+        case XML_CDATA_SECTION_NODE:
+        case XML_PI_NODE:
+        case XML_COMMENT_NODE:
+            node->extra |= flags << 12;
+            return 0;
+
+        default:
+            return -1;
+    }
+}
+
+/**
+ * xsltClearSourceNodeFlags:
+ * @node:  Node from source document
+ * @flags:  Flags
+ *
+ * Sets the specified flags to 0.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
+    switch (node->type) {
+        case XML_DOCUMENT_NODE:
+        case XML_HTML_DOCUMENT_NODE:
+            ((xmlDocPtr) node)->properties &= ~(flags << 27);
+            return 0;
+
+        case XML_ATTRIBUTE_NODE:
+            ((xmlAttrPtr) node)->atype &= ~(flags << 27);
+            return 0;
+
+        case XML_ELEMENT_NODE:
+        case XML_TEXT_NODE:
+        case XML_CDATA_SECTION_NODE:
+        case XML_PI_NODE:
+        case XML_COMMENT_NODE:
+            node->extra &= ~(flags << 12);
+            return 0;
+
+        default:
+            return -1;
+    }
+}
+
+/**
+ * xsltGetPSVIPtr:
+ * @cur:  Node
+ *
+ * Returns a pointer to the psvi member of a node or NULL on error.
+ */
+void **
+xsltGetPSVIPtr(xmlNodePtr cur) {
+    switch (cur->type) {
+        case XML_DOCUMENT_NODE:
+        case XML_HTML_DOCUMENT_NODE:
+            return &((xmlDocPtr) cur)->psvi;
+
+        case XML_ATTRIBUTE_NODE:
+            return &((xmlAttrPtr) cur)->psvi;
+
+        case XML_ELEMENT_NODE:
+        case XML_TEXT_NODE:
+        case XML_CDATA_SECTION_NODE:
+        case XML_PI_NODE:
+        case XML_COMMENT_NODE:
+            return &cur->psvi;
+
+        default:
+            return NULL;
+    }
 }
 
 #ifdef WITH_PROFILER

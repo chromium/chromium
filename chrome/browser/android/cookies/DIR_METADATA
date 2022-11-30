@@ -1,1 +1,1 @@
-os: ANDROID
+mixins: "//net/cookies/COMMON_METADATA"

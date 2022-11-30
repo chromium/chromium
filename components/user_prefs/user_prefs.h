@@ -1,11 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_USER_PREFS_USER_PREFS_H_
 #define COMPONENTS_USER_PREFS_USER_PREFS_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/user_prefs/user_prefs_export.h"
 
@@ -20,6 +20,9 @@ namespace user_prefs {
 // base::SupportsUserData using the UserPrefs::Set() function.
 class USER_PREFS_EXPORT UserPrefs : public base::SupportsUserData::Data {
  public:
+  UserPrefs(const UserPrefs&) = delete;
+  UserPrefs& operator=(const UserPrefs&) = delete;
+
   ~UserPrefs() override;
 
   // Retrieves the PrefService for a given context, or null if none is attached.
@@ -33,9 +36,7 @@ class USER_PREFS_EXPORT UserPrefs : public base::SupportsUserData::Data {
   explicit UserPrefs(PrefService* prefs);
 
   // Non-owning; owned by embedder.
-  PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserPrefs);
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace user_prefs

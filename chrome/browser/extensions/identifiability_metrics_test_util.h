@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
 }
 
 namespace extensions {
@@ -53,6 +54,11 @@ class IdentifiabilityMetricsTestHelper {
   // currently hasn't been tested with this method.
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr>
   NavigateToBlankAndWaitForMetrics(content::WebContents* contents,
+                                   base::RunLoop* run_loop);
+
+  // Similar to the above, but uses RenderFrameHost.
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr>
+  NavigateToBlankAndWaitForMetrics(content::RenderFrameHost* render_frame_host,
                                    base::RunLoop* run_loop);
 
   // Makes sure that |contents| has a non-extension identifiability event

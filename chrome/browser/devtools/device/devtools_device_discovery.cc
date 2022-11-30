@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
-#include "net/base/escape.h"
 
 using content::BrowserThread;
 using content::DevToolsAgentHost;
@@ -46,8 +46,7 @@ const char kWebViewSocketPrefix[] = "webview_devtools_remote";
 
 static void ScheduleTaskDefault(base::OnceClosure task) {
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, std::move(task),
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMs));
+      FROM_HERE, std::move(task), base::Milliseconds(kPollingIntervalMs));
 }
 
 // ProtocolCommand ------------------------------------------------------------
@@ -60,6 +59,9 @@ class ProtocolCommand
                   const std::string& target_path,
                   const std::string& command);
 
+  ProtocolCommand(const ProtocolCommand&) = delete;
+  ProtocolCommand& operator=(const ProtocolCommand&) = delete;
+
  private:
   void OnSocketOpened() override;
   void OnFrameRead(const std::string& message) override;
@@ -68,8 +70,6 @@ class ProtocolCommand
 
   const std::string command_;
   std::unique_ptr<AndroidDeviceManager::AndroidWebSocket> web_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolCommand);
 };
 
 ProtocolCommand::ProtocolCommand(
@@ -101,6 +101,9 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
  public:
   explicit WebSocketProxy(content::DevToolsExternalAgentProxy* proxy)
       : socket_opened_(false), proxy_(proxy) {}
+
+  WebSocketProxy(const WebSocketProxy&) = delete;
+  WebSocketProxy& operator=(const WebSocketProxy&) = delete;
 
   void WebSocketCreated(AndroidDeviceManager::AndroidWebSocket* web_socket) {
     web_socket_.reset(web_socket);
@@ -140,7 +143,6 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   std::vector<std::string> pending_messages_;
   std::unique_ptr<AndroidDeviceManager::AndroidWebSocket> web_socket_;
   content::DevToolsExternalAgentProxy* proxy_;
-  DISALLOW_COPY_AND_ASSIGN(WebSocketProxy);
 };
 
 class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
@@ -153,6 +155,10 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       const std::string& target_path,
       const std::string& type,
       base::Value* value);
+
+  AgentHostDelegate(const AgentHostDelegate&) = delete;
+  AgentHostDelegate& operator=(const AgentHostDelegate&) = delete;
+
   ~AgentHostDelegate() override;
 
  private:
@@ -194,7 +200,6 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
   std::map<content::DevToolsExternalAgentProxy*,
            std::unique_ptr<WebSocketProxy>>
       proxies_;
-  DISALLOW_COPY_AND_ASSIGN(AgentHostDelegate);
 };
 
 static std::string GetStringProperty(const base::Value& value,
@@ -277,7 +282,7 @@ AgentHostDelegate::AgentHostDelegate(
       remote_id_(value ? GetStringProperty(*value, "id") : ""),
       frontend_url_(value ? GetFrontendURLFromValue(*value, browser_version)
                           : ""),
-      title_(value ? base::UTF16ToUTF8(net::UnescapeForHTML(
+      title_(value ? base::UTF16ToUTF8(base::UnescapeForHTML(
                          base::UTF8ToUTF16(GetStringProperty(*value, "title"))))
                    : ""),
       description_(value ? GetStringProperty(*value, "description") : ""),
@@ -457,7 +462,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
   if (result < 0)
     return;
   // Parse version, append to package name if available,
-  base::Optional<base::Value> value = base::JSONReader::Read(response);
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (value && value->is_dict()) {
     const std::string* browser_name = value->FindStringKey("Browser");
     if (browser_name) {
@@ -487,9 +492,9 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (result < 0)
     return;
-  base::Optional<base::Value> value = base::JSONReader::Read(response);
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (value && value->is_list()) {
-    for (base::Value& page_value : value->GetList()) {
+    for (base::Value& page_value : value->GetListDeprecated()) {
       if (page_value.is_dict())
         browser->pages_.push_back(new RemotePage(device, browser->browser_id_,
                                                  browser->version_,

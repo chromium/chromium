@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -18,7 +19,7 @@ namespace webapps {
 
 // Handles the logic of parsing the web app origin association file from a
 // string as described in the "PWAs as URL Handlers" explainer:
-// https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+// https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
 class WebAppOriginAssociationParser {
  public:
   WebAppOriginAssociationParser();
@@ -35,10 +36,10 @@ class WebAppOriginAssociationParser {
  private:
   std::vector<mojom::AssociatedWebAppPtr> ParseAssociatedWebApps(
       const base::Value& root_dict);
-  base::Optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
+  absl::optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
       const base::Value& app_dict);
-  base::Optional<GURL> ParseManifestURL(const base::Value& app_dict);
-  base::Optional<std::vector<std::string>> ParsePaths(
+  absl::optional<GURL> ParseManifestURL(const base::Value& app_dict);
+  absl::optional<std::vector<std::string>> ParsePaths(
       const base::Value& app_details_dict,
       const std::string& key);
   void AddErrorInfo(const std::string& error_msg,

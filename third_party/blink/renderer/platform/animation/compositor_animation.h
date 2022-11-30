@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/worklet_animation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,7 +23,6 @@ class AnimationCurve;
 namespace blink {
 
 class CompositorAnimationDelegate;
-class CompositorKeyframeModel;
 
 // A compositor representation for Animation.
 class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
@@ -38,6 +36,8 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
       std::unique_ptr<cc::AnimationEffectTimings> effect_timings);
 
   explicit CompositorAnimation(scoped_refptr<cc::Animation>);
+  CompositorAnimation(const CompositorAnimation&) = delete;
+  CompositorAnimation& operator=(const CompositorAnimation&) = delete;
   ~CompositorAnimation() override;
 
   cc::Animation* CcAnimation() const;
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
   void DetachElement();
   bool IsElementAttached() const;
 
-  void AddKeyframeModel(std::unique_ptr<CompositorKeyframeModel>);
+  void AddKeyframeModel(std::unique_ptr<cc::KeyframeModel>);
   void RemoveKeyframeModel(int keyframe_model_id);
   void PauseKeyframeModel(int keyframe_model_id, base::TimeDelta time_offset);
   void AbortKeyframeModel(int keyframe_model_id);
@@ -83,12 +83,10 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
                                base::TimeTicks animation_start_time,
                                std::unique_ptr<gfx::AnimationCurve>) override;
   void NotifyLocalTimeUpdated(
-      base::Optional<base::TimeDelta> local_time) override;
+      absl::optional<base::TimeDelta> local_time) override;
 
   scoped_refptr<cc::Animation> animation_;
   CompositorAnimationDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorAnimation);
 };
 
 }  // namespace blink

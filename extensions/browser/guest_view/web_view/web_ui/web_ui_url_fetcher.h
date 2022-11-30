@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -31,6 +30,10 @@ class WebUIURLFetcher {
                   int render_frame_id,
                   const GURL& url,
                   WebUILoadFileCallback callback);
+
+  WebUIURLFetcher(const WebUIURLFetcher&) = delete;
+  WebUIURLFetcher& operator=(const WebUIURLFetcher&) = delete;
+
   ~WebUIURLFetcher();
 
   void Start();
@@ -43,8 +46,6 @@ class WebUIURLFetcher {
   GURL url_;
   WebUILoadFileCallback callback_;
   std::unique_ptr<network::SimpleURLLoader> fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIURLFetcher);
 };
 
 #endif  // EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_UI_WEB_UI_URL_FETCHER_H_

@@ -1,26 +1,27 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
 
-#include "base/check.h"
-#include "components/omnibox/common/omnibox_features.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#import "base/check.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,6 +31,14 @@ namespace {
 const CGFloat kTextTopMargin = 6;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
+const CGFloat kTopGradientColorOpacity = 0.85;
+const CGFloat kTextSpacingActionsEnabled = 2.0f;
+// In Variation 2, the images and the text in the popup don't align with the
+// omnibox image. If Variation 2 becomes default, probably we don't need the
+// fancy layout guide setup and can get away with simple margins.
+const CGFloat kImageOffsetVariation2 = 8.0f;
+const CGFloat kTextOffsetVariation2 = 8.0f;
+const CGFloat kTrailingButtonPointSizeVariation2 = 17.0f;
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
@@ -39,7 +48,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 // The suggestion that this cell is currently displaying.
 @property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
-// Whether the cell is currently dispalying in incognito mode or not.
+// Whether the cell is currently displaying in incognito mode or not.
 @property(nonatomic, assign) BOOL incognito;
 
 // Stack view containing all text labels.
@@ -75,10 +84,19 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   if (self) {
     _incognito = NO;
 
-    self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.selectedBackgroundView.backgroundColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kTableViewRowHighlightColor], _incognito,
-        [UIColor colorNamed:kTableViewRowHighlightDarkColor]);
+    if (IsOmniboxActionsEnabled()) {
+      self.selectedBackgroundView = [[GradientView alloc]
+          initWithTopColor:
+              [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
+                  colorWithAlphaComponent:kTopGradientColorOpacity]
+               bottomColor:
+                   [UIColor
+                       colorNamed:@"omnibox_suggestion_row_highlight_color"]];
+    } else {
+      self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+      self.selectedBackgroundView.backgroundColor =
+          [UIColor colorNamed:kTableViewRowHighlightColor];
+    }
 
     _textTruncatingLabel =
         [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
@@ -92,6 +110,9 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _textStackView.axis = UILayoutConstraintAxisVertical;
     _textStackView.alignment = UIStackViewAlignmentLeading;
+    if (IsOmniboxActionsEnabled()) {
+      _textStackView.spacing = kTextSpacingActionsEnabled;
+    }
 
     _detailTruncatingLabel =
         [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
@@ -118,10 +139,12 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
 
-    self.backgroundColor = UIColor.clearColor;
-    if (@available(iOS 13.4, *)) {
-        [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
+    self.backgroundColor =
+        IsOmniboxActionsVisualTreatment2()
+            ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+            : UIColor.clearColor;
+
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;
 }
@@ -130,12 +153,19 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   [super didMoveToWindow];
 
   if (self.window) {
+    // Setup the layout when the view has a window.
+    if (self.contentView.subviews.count == 0) {
+      [self setupLayout];
+    }
+    if (self.suggestion.isAppendable || self.suggestion.isTabMatch) {
+      [self setupTrailingButtonLayout];
+    }
     [self attachToLayoutGuides];
   }
 }
 
 - (void)willTransitionToState:(UITableViewCellStateMask)state {
-  // |UITableViewCellStateDefaultMask| is actually 0, so it must be checked
+  // `UITableViewCellStateDefaultMask` is actually 0, so it must be checked
   // manually, and can't be checked with bitwise AND.
   if (state == UITableViewCellStateDefaultMask) {
     for (NSLayoutConstraint* constraint in self
@@ -150,6 +180,26 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     }
     [self freezeLayoutGuidePositions];
   }
+}
+
+#pragma mark - UITableViewCell
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+  [super setHighlighted:highlighted animated:animated];
+
+  if (!IsOmniboxActionsEnabled()) {
+    return;
+  }
+
+  UIColor* textColor = highlighted ? [UIColor whiteColor] : nil;
+  self.textTruncatingLabel.textColor = textColor;
+  self.detailTruncatingLabel.textColor = textColor;
+  self.detailAnswerLabel.textColor = textColor;
+
+  self.leadingIconView.highlighted = highlighted;
+  self.trailingButton.tintColor =
+      highlighted ? [UIColor whiteColor] : [UIColor colorNamed:kBlueColor];
+  [self setupWithCurrentData];
 }
 
 #pragma mark - Property setter/getters
@@ -222,7 +272,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     [self.separator.trailingAnchor
         constraintEqualToAnchor:self.contentView.trailingAnchor],
     [self.separator.heightAnchor
-        constraintEqualToConstant:1.0f / UIScreen.mainScreen.scale],
+        constraintEqualToConstant:1.0f / self.window.screen.scale],
     [self.separator.leadingAnchor
         constraintEqualToAnchor:self.textStackView.leadingAnchor],
   ]];
@@ -264,7 +314,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   // The text stack view is attached to both ends of the layout gude. This is
   // because it needs to switch directions if the device is in LTR mode and the
   // user types in RTL. Furthermore, because the layout guide is added to the
-  // main view, its direction will not change if the |semanticContentAttribute|
+  // main view, its direction will not change if the `semanticContentAttribute`
   // of this cell or the omnibox changes.
   // However, the text should still extend all the way to cell's trailing edge.
   // To do this, constrain the text to the layout guide using a low priority
@@ -274,7 +324,10 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   NSLayoutConstraint* stackViewToLayoutGuideLeading =
       [self.textStackView.leadingAnchor
-          constraintEqualToAnchor:textLayoutGuide.leadingAnchor];
+          constraintEqualToAnchor:textLayoutGuide.leadingAnchor
+                         constant:IsOmniboxActionsVisualTreatment2()
+                                      ? kTextOffsetVariation2
+                                      : 0];
   NSLayoutConstraint* stackViewToLayoutGuideTrailing =
       [self.textStackView.trailingAnchor
           constraintEqualToAnchor:textLayoutGuide.trailingAnchor];
@@ -291,9 +344,23 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   // These constraints need to be removed when freezing the position of these
   // views. See -freezeLayoutGuidePositions for the reason why.
+
+  CGFloat iconXOffset = 0;
+  if (IsOmniboxActionsVisualTreatment2() && !IsRegularXRegularSizeClass(self)) {
+    // Inset the icons in variation 2, except in reg x reg size class where the
+    // alignment works well already. Flip the inset on RTL as it's not flipped
+    // automatically.
+    BOOL isRTL =
+        [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
+                    self.omniboxSemanticContentAttribute] ==
+        UIUserInterfaceLayoutDirectionRightToLeft;
+    iconXOffset = isRTL ? -kImageOffsetVariation2 : kImageOffsetVariation2;
+  }
+
   self.nonDeletingLayoutGuideConstraints = @[
     [self.leadingIconView.centerXAnchor
-        constraintEqualToAnchor:imageLayoutGuide.centerXAnchor],
+        constraintEqualToAnchor:imageLayoutGuide.centerXAnchor
+                       constant:iconXOffset],
     stackViewToLayoutGuideLeading,
     stackViewToLayoutGuideTrailing,
   ];
@@ -398,54 +465,74 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 // layout the cell correctly for that data.
 - (void)setupWithAutocompleteSuggestion:(id<AutocompleteSuggestion>)suggestion
                               incognito:(BOOL)incognito {
-  // Setup the view layout the first time the cell is setup.
-  if (self.contentView.subviews.count == 0) {
-    [self setupLayout];
-  }
   self.suggestion = suggestion;
   self.incognito = incognito;
 
-  // While iOS 12 is still supported, the background color needs to be reset
-  // when the incognito mode changes. Once iOS 12 is no longer supported,
-  // the color should only have to be set once.
-  if (@available(iOS 13, *)) {
-    // Empty because condition should be if (!@available(iOS 13, *)).
-  } else {
-    self.selectedBackgroundView.backgroundColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kTableViewRowHighlightColor], self.incognito,
-        [UIColor colorNamed:kTableViewRowHighlightDarkColor]);
+  [self setupWithCurrentData];
+}
+
+// Returns the input string but painted white when the blue and white
+// highlighting is enabled in pedals. Returns the original string otherwise.
+- (NSAttributedString*)highlightedAttributedStringWithString:
+    (NSAttributedString*)string {
+  if (!IsOmniboxActionsEnabled()) {
+    return string;
   }
+  NSMutableAttributedString* mutableString =
+      [[NSMutableAttributedString alloc] initWithAttributedString:string];
+  [mutableString addAttribute:NSForegroundColorAttributeName
+                        value:[UIColor whiteColor]
+                        range:NSMakeRange(0, string.length)];
+  return mutableString;
+}
+
+- (void)setupWithCurrentData {
+  id<AutocompleteSuggestion> suggestion = self.suggestion;
 
   self.separator.backgroundColor =
       self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
                      : [UIColor.blackColor colorWithAlphaComponent:0.12];
 
-  self.textTruncatingLabel.attributedText = self.suggestion.text;
+  self.textTruncatingLabel.attributedText =
+      self.highlighted
+          ? [self highlightedAttributedStringWithString:suggestion.text]
+          : suggestion.text;
 
   // URLs have have special layout requirements.
   self.detailTruncatingLabel.displayAsURL = suggestion.isURL;
-  UILabel* detailLabel = self.suggestion.hasAnswer ? self.detailAnswerLabel
-                                                   : self.detailTruncatingLabel;
-  if ([self.suggestion.detailText length] > 0) {
+  UILabel* detailLabel = suggestion.hasAnswer ? self.detailAnswerLabel
+                                              : self.detailTruncatingLabel;
+  if (suggestion.detailText.length > 0) {
     [self.textStackView addArrangedSubview:detailLabel];
-    detailLabel.attributedText = self.suggestion.detailText;
-    if (self.suggestion.hasAnswer) {
-      detailLabel.numberOfLines = self.suggestion.numberOfLines;
+    detailLabel.attributedText =
+        self.highlighted
+            ? [self highlightedAttributedStringWithString:suggestion.detailText]
+            : suggestion.detailText;
+    if (suggestion.hasAnswer) {
+      detailLabel.numberOfLines = suggestion.numberOfLines;
     }
   }
 
-  [self.leadingIconView setOmniboxIcon:self.suggestion.icon];
+  [self.leadingIconView setOmniboxIcon:suggestion.icon];
 
-  if (self.suggestion.isAppendable || self.suggestion.isTabMatch) {
+  if (suggestion.isAppendable || suggestion.isTabMatch) {
     [self setupTrailingButton];
+  }
+
+  if (IsOmniboxActionsEnabled()) {
+    self.leadingIconView.highlighted = self.highlighted;
+    self.trailingButton.tintColor = self.highlighted
+                                        ? [UIColor whiteColor]
+                                        : [UIColor colorNamed:kBlueColor];
   }
 }
 
 // Setup the trailing button. This includes both setting up the button's layout
 // and popuplating it with the correct image and color.
 - (void)setupTrailingButton {
-  [self setupTrailingButtonLayout];
-
+  if (self.window) {
+    [self setupTrailingButtonLayout];
+  }
   // Show append button for search history/search suggestions or
   // switch-to-open-tab as the right control element (aka an accessory element
   // of a table view cell).
@@ -462,25 +549,40 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   self.accessibilityCustomActions = @[ trailingButtonAction ];
 
   UIImage* trailingButtonImage = nil;
-  if (self.suggestion.isTabMatch) {
-    trailingButtonImage = [UIImage imageNamed:@"omnibox_popup_tab_match"];
+  if (IsOmniboxActionsVisualTreatment2()) {
+    UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+        configurationWithPointSize:kTrailingButtonPointSizeVariation2
+                            weight:UIImageSymbolWeightMedium];
+
+    trailingButtonImage = self.suggestion.isTabMatch
+                              ? DefaultSymbolWithConfiguration(
+                                    @"arrow.right.circle", configuration)
+                              : DefaultSymbolWithConfiguration(
+                                    @"arrow.up.backward", configuration);
     trailingButtonImage =
         trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
-    self.trailingButton.accessibilityIdentifier =
-        kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
   } else {
-    int trailingButtonResourceID = 0;
-    trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
-    trailingButtonImage = NativeReversableImage(trailingButtonResourceID, YES);
+    if (self.suggestion.isTabMatch) {
+      trailingButtonImage = [UIImage imageNamed:@"omnibox_popup_tab_match"];
+      trailingButtonImage =
+          trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
+    } else {
+      int trailingButtonResourceID = 0;
+      trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
+      trailingButtonImage =
+          NativeReversableImage(trailingButtonResourceID, YES);
+    }
   }
   trailingButtonImage = [trailingButtonImage
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
   [self.trailingButton setImage:trailingButtonImage
                        forState:UIControlStateNormal];
-  self.trailingButton.tintColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kBlueColor], self.incognito,
-      [UIColor colorNamed:kBlueDarkColor]);
+  self.trailingButton.tintColor = [UIColor colorNamed:kBlueColor];
+  if (self.suggestion.isTabMatch) {
+    self.trailingButton.accessibilityIdentifier =
+        kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
+  }
 }
 
 - (NSString*)accessibilityLabel {

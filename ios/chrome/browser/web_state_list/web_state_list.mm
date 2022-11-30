@@ -1,17 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
-#include <algorithm>
-#include <utility>
+#import <algorithm>
+#import <utility>
 
-#include "base/auto_reset.h"
-#include "base/check_op.h"
+#import "base/auto_reset.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -38,6 +39,10 @@ bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
 class WebStateList::WebStateWrapper {
  public:
   explicit WebStateWrapper(std::unique_ptr<web::WebState> web_state);
+
+  WebStateWrapper(const WebStateWrapper&) = delete;
+  WebStateWrapper& operator=(const WebStateWrapper&) = delete;
+
   ~WebStateWrapper();
 
   web::WebState* web_state() const { return web_state_.get(); }
@@ -60,7 +65,7 @@ class WebStateList::WebStateWrapper {
   bool ShouldResetOpenerOnActiveWebStateChange() const;
   void SetShouldResetOpenerOnActiveWebStateChange(bool should_reset_opener);
 
-  // Returns whether |opener| spawned the wrapped WebState. If |use_group| is
+  // Returns whether `opener` spawned the wrapped WebState. If `use_group` is
   // true, also use the opener navigation index to detect navigation changes
   // during the same session.
   bool WasOpenedBy(const web::WebState* opener,
@@ -71,8 +76,6 @@ class WebStateList::WebStateWrapper {
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
   bool should_reset_opener_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateWrapper);
 };
 
 WebStateList::WebStateWrapper::WebStateWrapper(
@@ -130,8 +133,7 @@ void WebStateList::WebStateWrapper::SetShouldResetOpenerOnActiveWebStateChange(
 }
 
 WebStateList::WebStateList(WebStateListDelegate* delegate)
-    : delegate_(delegate),
-      order_controller_(std::make_unique<WebStateListOrderController>(this)) {
+    : delegate_(delegate) {
   DCHECK(delegate_);
 }
 
@@ -296,7 +298,8 @@ int WebStateList::InsertWebStateImpl(int index,
   }
 
   if (!IsInsertionFlagSet(insertion_flags, INSERT_FORCE_INDEX)) {
-    index = order_controller_->DetermineInsertionIndex(opener.opener);
+    WebStateListOrderController order_controller(*this);
+    index = order_controller.DetermineInsertionIndex(opener.opener);
     if (index < 0 || count() < index)
       index = count();
   }
@@ -398,9 +401,10 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   // Update the active index to prevent observer from seeing an invalid WebState
   // as the active one but only send the WebStateActivatedAt notification after
   // the WebStateDetachedAt one.
+  WebStateListOrderController order_controller(*this);
   const bool active_web_state_was_closed = (index == active_index_);
   active_index_ =
-      order_controller_->DetermineNewActiveIndex(active_index_, index);
+      order_controller.DetermineNewActiveIndex(active_index_, {index});
 
   ClearOpenersReferencing(index);
   std::unique_ptr<web::WebState> detached_web_state =
@@ -515,6 +519,14 @@ void WebStateList::NotifyIfActiveWebStateChanged(
   web::WebState* new_web_state = GetActiveWebState();
   if (old_web_state == new_web_state)
     return;
+
+  if (new_web_state) {
+    // Do not trigger a CheckForOverRealization here, as it's expected
+    // that many WebStates may realize actions like side swipe or quickly
+    // multiple tabs.
+    web::IgnoreOverRealizationCheck();
+    new_web_state->ForceRealized();
+  }
 
   for (auto& observer : observers_) {
     observer.WebStateActivatedAt(this, old_web_state, new_web_state,

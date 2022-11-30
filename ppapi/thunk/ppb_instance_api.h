@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_THUNK_INSTANCE_API_H_
-#define PPAPI_THUNK_INSTANCE_API_H_
+#ifndef PPAPI_THUNK_PPB_INSTANCE_API_H_
+#define PPAPI_THUNK_PPB_INSTANCE_API_H_
 
 #include <stdint.h>
 
@@ -22,7 +22,6 @@
 #include "ppapi/c/ppb_text_input_controller.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/shared_impl/api_id.h"
-#include "ppapi/shared_impl/resource.h"
 #include "ppapi/shared_impl/singleton_resource_id.h"
 
 // Windows headers interfere with this file.
@@ -73,17 +72,6 @@ class PPB_Instance_API {
                              PP_LogLevel log_level,
                              PP_Var source,
                              PP_Var value) = 0;
-
-  // Find.
-  virtual void SetPluginToHandleFindRequests(PP_Instance instance) = 0;
-  virtual void NumberOfFindResultsChanged(PP_Instance instance,
-                                          int32_t total,
-                                          PP_Bool final_result) = 0;
-  virtual void SelectedFindResultChanged(PP_Instance instance,
-                                         int32_t index) = 0;
-  virtual void SetTickmarks(PP_Instance instance,
-                            const PP_Rect* tickmarks,
-                            uint32_t count) = 0;
 
   // Fullscreen.
   virtual PP_Bool IsFullscreen(PP_Instance instance) = 0;
@@ -141,7 +129,7 @@ class PPB_Instance_API {
   // Testing and URLUtil.
   virtual PP_Var GetDocumentURL(PP_Instance instance,
                                 PP_URLComponents_Dev* components) = 0;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // URLUtil.
   virtual PP_Var ResolveRelativeToDocument(
       PP_Instance instance,
@@ -154,7 +142,7 @@ class PPB_Instance_API {
                                       PP_URLComponents_Dev* components) = 0;
   virtual PP_Var GetPluginReferrerURL(PP_Instance instance,
                                       PP_URLComponents_Dev* components) = 0;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   static const ApiID kApiID = API_ID_PPB_INSTANCE;
 };
@@ -162,4 +150,4 @@ class PPB_Instance_API {
 }  // namespace thunk
 }  // namespace ppapi
 
-#endif  // PPAPI_THUNK_INSTANCE_API_H_
+#endif  // PPAPI_THUNK_PPB_INSTANCE_API_H_

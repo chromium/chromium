@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,17 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/background_fetch/background_fetch_metrics.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/background_fetch/background_fetch_registration_notifier.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -69,7 +67,7 @@ void BackgroundFetchRegistrationServiceImpl::MatchRequests(
     blink::mojom::CacheQueryOptionsPtr cache_query_options,
     bool match_all,
     MatchRequestsCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!background_fetch_context_) {
     // Return without running the callback because this case happens only when
     // the browser is shutting down.
@@ -85,10 +83,10 @@ void BackgroundFetchRegistrationServiceImpl::MatchRequests(
 }
 
 void BackgroundFetchRegistrationServiceImpl::UpdateUI(
-    const base::Optional<std::string>& title,
+    const absl::optional<std::string>& title,
     const SkBitmap& icon,
     UpdateUICallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!background_fetch_context_) {
     // Return without running the callback because this case happens only when
     // the browser is shutting down.
@@ -103,14 +101,14 @@ void BackgroundFetchRegistrationServiceImpl::UpdateUI(
 
   // Wrap the icon in an optional for clarity.
   auto optional_icon =
-      icon.isNull() ? base::nullopt : base::Optional<SkBitmap>(icon);
+      icon.isNull() ? absl::nullopt : absl::optional<SkBitmap>(icon);
 
   background_fetch_context_->UpdateUI(registration_id_, title, optional_icon,
                                       std::move(callback));
 }
 
 void BackgroundFetchRegistrationServiceImpl::Abort(AbortCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!background_fetch_context_) {
     // Return without running the callback because this case happens only when
     // the browser is shutting down.
@@ -122,7 +120,7 @@ void BackgroundFetchRegistrationServiceImpl::Abort(AbortCallback callback) {
 void BackgroundFetchRegistrationServiceImpl::AddRegistrationObserver(
     mojo::PendingRemote<blink::mojom::BackgroundFetchRegistrationObserver>
         observer) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!background_fetch_context_)
     return;
   background_fetch_context_->AddRegistrationObserver(

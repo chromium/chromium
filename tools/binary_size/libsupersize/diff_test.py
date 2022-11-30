@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -40,7 +40,7 @@ def _CreateSizeInfo(aliases=None, containers=None):
     containers = [
         models.Container('', metadata=metadata, section_sizes=section_sizes)
     ]
-  models.Container.AssignShortNames(containers)
+  models.BaseContainer.AssignShortNames(containers)
   TEXT = models.SECTION_TEXT
   symbols = [
       _MakeSym(models.SECTION_DEX_METHOD, 10, 'a', 'com.Foo#bar()'),

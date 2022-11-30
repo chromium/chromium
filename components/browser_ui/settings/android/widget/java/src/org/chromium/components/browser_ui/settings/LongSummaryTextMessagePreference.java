@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,11 @@ public class LongSummaryTextMessagePreference extends TextMessagePreference {
      */
     public LongSummaryTextMessagePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setLayoutResource(R.layout.long_summary_text_message_preference);
     }
-
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-
         TextView summaryView = (TextView) holder.findViewById(android.R.id.summary);
         summaryView.setMaxLines(100);
     }

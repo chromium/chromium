@@ -1,0 +1,28 @@
+# Copyright 2022 The Chromium Authors.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+assert(!is_android)
+assert(!is_chromeos)
+
+build_webui("build") {
+  grd_prefix = "app_home"
+
+  static_files = [ "app_home.html" ]
+
+  web_component_files = [ "app_list.ts" ]
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/app_home:mojo_bindings_webui_js" ]
+
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/app_home/app_home.mojom-webui.js" ]
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+}

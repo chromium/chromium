@@ -1,38 +1,37 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
 
-#include "base/atomic_sequence_num.h"
-#include "base/check_op.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/time/time.h"
-#include "components/grit/dev_ui_components_resources.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#import "base/atomic_sequence_num.h"
+#import "base/check_op.h"
+#import "base/memory/ref_counted_memory.h"
+#import "base/time/time.h"
+#import "components/grit/dev_ui_components_resources.h"
+#import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "components/security_interstitials/core/ssl_error_options_mask.h"
-#include "components/security_interstitials/core/unsafe_resource.h"
-#include "crypto/rsa_private_key.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "components/security_interstitials/core/ssl_error_options_mask.h"
+#import "components/security_interstitials/core/unsafe_resource.h"
+#import "crypto/rsa_private_key.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
-#import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
-#include "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
+#import "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
+#import "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
-#include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
-#import "ios/web/public/security/web_interstitial_delegate.h"
-#include "ios/web/public/web_state.h"
-#include "ios/web/public/webui/url_data_source_ios.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "net/base/url_util.h"
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/webui/url_data_source_ios.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "net/base/url_util.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,21 +50,19 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
   std::string cert_der;
   if (!net::x509_util::CreateKeyAndSelfSignedCert(
           "CN=Error", static_cast<uint32_t>(serial_number.GetNext()),
-          base::Time::Now() - base::TimeDelta::FromMinutes(5),
-          base::Time::Now() + base::TimeDelta::FromMinutes(5), &unused_key,
-          &cert_der)) {
+          base::Time::Now() - base::Minutes(5),
+          base::Time::Now() + base::Minutes(5), &unused_key, &cert_der)) {
     return nullptr;
   }
 
-  return net::X509Certificate::CreateFromBytes(cert_der.data(),
-                                               cert_der.size());
+  return net::X509Certificate::CreateFromBytes(
+      base::as_bytes(base::make_span(cert_der)));
 }
 
 }
 
-std::unique_ptr<web::WebInterstitialDelegate> CreateSslBlockingPageDelegate(
-    web::WebState* web_state,
-    const GURL& url) {
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
   DCHECK_EQ(kChromeInterstitialSslPath, url.path());
   // Fake parameters for SSL blocking page.
   GURL request_url("https://example.com");
@@ -122,7 +119,7 @@ std::unique_ptr<web::WebInterstitialDelegate> CreateSslBlockingPageDelegate(
 
   return std::make_unique<IOSSSLBlockingPage>(
       web_state, cert_error, ssl_info, request_url, options_mask,
-      base::Time::NowFromSystemTime(), base::OnceCallback<void(bool)>(),
+      base::Time::NowFromSystemTime(),
       std::make_unique<security_interstitials::IOSBlockingPageControllerClient>(
           web_state,
           std::make_unique<
@@ -131,8 +128,8 @@ std::unique_ptr<web::WebInterstitialDelegate> CreateSslBlockingPageDelegate(
           GetApplicationContext()->GetApplicationLocale()));
 }
 
-std::unique_ptr<web::WebInterstitialDelegate>
-CreateCaptivePortalBlockingPageDelegate(web::WebState* web_state) {
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateCaptivePortalBlockingPage(web::WebState* web_state) {
   GURL landing_url("https://captive.portal/login");
   GURL request_url("https://google.com");
 
@@ -140,7 +137,7 @@ CreateCaptivePortalBlockingPageDelegate(web::WebState* web_state) {
   reporting_info.metric_prefix = "ssl_nonoverridable";
 
   return std::make_unique<IOSCaptivePortalBlockingPage>(
-      web_state, request_url, landing_url, base::OnceCallback<void(bool)>(),
+      web_state, request_url, landing_url,
       new security_interstitials::IOSBlockingPageControllerClient(
           web_state,
           std::make_unique<
@@ -149,9 +146,8 @@ CreateCaptivePortalBlockingPageDelegate(web::WebState* web_state) {
           GetApplicationContext()->GetApplicationLocale()));
 }
 
-std::unique_ptr<web::WebInterstitialDelegate>
-CreateSafeBrowsingBlockingPageDelegate(web::WebState* web_state,
-                                       const GURL& url) {
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   safe_browsing::SBThreatType threat_type =
       safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
@@ -193,7 +189,7 @@ CreateSafeBrowsingBlockingPageDelegate(web::WebState* web_state,
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
-  resource.web_state_getter = web_state->CreateDefaultGetter();
+  resource.weak_web_state = web_state->GetWeakPtr();
 
   return SafeBrowsingBlockingPage::Create(resource);
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_WIN_H_
 
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
+
+#include "base/no_destructor.h"
 
 namespace performance_manager {
 namespace mechanism {
@@ -15,6 +17,9 @@ namespace mechanism {
 // should be used via the WorkingSetTrimmer::GetIntsance() method.
 class WorkingSetTrimmerWin : public WorkingSetTrimmer {
  public:
+  WorkingSetTrimmerWin(const WorkingSetTrimmerWin&) = delete;
+  WorkingSetTrimmerWin& operator=(const WorkingSetTrimmerWin&) = delete;
+
   ~WorkingSetTrimmerWin() override;
 
   bool PlatformSupportsWorkingSetTrim() override;
@@ -27,8 +32,6 @@ class WorkingSetTrimmerWin : public WorkingSetTrimmer {
   // directly, it should always be retrieved via
   // WorkingSetTrimmer::GetIntsance().
   WorkingSetTrimmerWin();
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerWin);
 };
 
 }  // namespace mechanism

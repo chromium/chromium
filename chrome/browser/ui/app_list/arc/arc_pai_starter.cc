@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,23 +9,28 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/event_constants.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kMinRetryTime = base::TimeDelta::FromMinutes(2);
-constexpr base::TimeDelta kMaxRetryTime = base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kMinRetryTime = base::Minutes(10);
+constexpr base::TimeDelta kMaxRetryTime = base::Minutes(60);
 
 }  // namespace
 
@@ -51,7 +56,12 @@ ArcPaiStarter::~ArcPaiStarter() {
 // static
 std::unique_ptr<ArcPaiStarter> ArcPaiStarter::CreateIfNeeded(Profile* profile) {
   if (profile->GetPrefs()->GetBoolean(prefs::kArcPaiStarted))
-    return std::unique_ptr<ArcPaiStarter>();
+    return nullptr;
+
+  // No PAI is expected for managed user.
+  if (arc::policy_util::IsAccountManaged(profile))
+    return nullptr;
+
   return std::make_unique<ArcPaiStarter>(profile);
 }
 
@@ -97,19 +107,6 @@ void ArcPaiStarter::MaybeStartPai() {
 
   arc::mojom::AppInstance* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->app(), StartPaiFlow);
-
-  if (!app_instance) {
-    app_instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
-        StartPaiFlowDeprecated);
-    // this should always be set because PAI can be started only in case Play
-    // Store app is ready which means app_instance is connected.
-    DCHECK(app_instance);
-    VLOG(1) << "Start deprecated PAI flow";
-    app_instance->StartPaiFlowDeprecated();
-    OnPaiDone();
-    return;
-  }
 
   VLOG(1) << "Start PAI flow";
   pending_ = true;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -476,7 +475,7 @@ String GetUACounterStyleRuleText(const AtomicString& name) {
   builder.Append("{");
   builder.Append(GetUACounterStyleRules().at(name));
   builder.Append("}");
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace

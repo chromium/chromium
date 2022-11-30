@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/url_data_source.h"
@@ -23,6 +22,10 @@ namespace chromeos {
 class ImageSource : public content::URLDataSource {
  public:
   ImageSource();
+
+  ImageSource(const ImageSource&) = delete;
+  ImageSource& operator=(const ImageSource&) = delete;
+
   ~ImageSource() override;
 
   // content::URLDataSource implementation.
@@ -32,7 +35,7 @@ class ImageSource : public content::URLDataSource {
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback got_data_callback) override;
 
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
 
  private:
   // Continuation from StartDataRequest().
@@ -48,8 +51,6 @@ class ImageSource : public content::URLDataSource {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ImageSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageSource);
 };
 
 }  // namespace chromeos

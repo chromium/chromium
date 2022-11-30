@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -18,28 +17,21 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Launches web dialog during OOBE/Login with specified URL and title.
 class LoginWebDialog : public ui::WebDialogDelegate {
  public:
-  // Delegate class to get notifications from the dialog.
-  class Delegate {
-   public:
-    // Called when dialog has been closed.
-    virtual void OnDialogClosed();
-
-   protected:
-    virtual ~Delegate() {}
-  };
-
   // If `parent_window` is null then the dialog is placed in the modal dialog
   // container on the primary display.
   LoginWebDialog(content::BrowserContext* browser_context,
-                 Delegate* delegate,
                  gfx::NativeWindow parent_window,
                  const std::u16string& title,
                  const GURL& url);
+
+  LoginWebDialog(const LoginWebDialog&) = delete;
+  LoginWebDialog& operator=(const LoginWebDialog&) = delete;
+
   ~LoginWebDialog() override;
 
   void Show();
@@ -71,7 +63,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   bool HandleOpenURLFromTab(content::WebContents* source,
                             const content::OpenURLParams& params,
@@ -84,20 +76,17 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   content::BrowserContext* const browser_context_;
   gfx::NativeWindow parent_window_;
   gfx::NativeWindow dialog_window_;
-  // Notifications receiver.
-  Delegate* const delegate_;
 
   std::u16string title_;
   const GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginWebDialog);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::LoginWebDialog;
+// TODO(https://crbug.com/1164001): remove when the chrome/browser/chromeos/
+// source migration is finished.
+namespace chromeos {
+using ::ash::LoginWebDialog;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_WEB_DIALOG_H_

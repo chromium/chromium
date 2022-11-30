@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ void OpenedFrameTracker::Trace(Visitor* visitor) const {
 }
 
 bool OpenedFrameTracker::IsEmpty() const {
-  return opened_frames_.IsEmpty();
+  return opened_frames_.empty();
 }
 
 void OpenedFrameTracker::Add(Frame* frame) {
@@ -33,9 +33,14 @@ void OpenedFrameTracker::Remove(Frame* frame) {
 void OpenedFrameTracker::TransferTo(Frame* opener) const {
   // Copy the set of opened frames, since changing the owner will mutate this
   // set.
-  HeapHashSet<WeakMember<Frame>> frames(opened_frames_);
+  HeapHashSet<Member<Frame>> frames(opened_frames_);
   for (const auto& frame : frames)
     frame->SetOpenerDoNotNotify(opener);
+}
+
+void OpenedFrameTracker::Dispose() {
+  TransferTo(nullptr);
+  DCHECK(IsEmpty());
 }
 
 }  // namespace blink

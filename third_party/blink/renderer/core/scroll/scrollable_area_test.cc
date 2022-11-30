@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,8 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
@@ -51,9 +52,12 @@ class ScrollbarThemeWithMockInvalidation : public ScrollbarThemeOverlayMock {
 
 }  // namespace
 
-class ScrollableAreaTest : public testing::Test {};
+class ScrollableAreaTest : public testing::Test,
+                           public PaintTestConfigurations {};
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollableAreaTest);
+
+TEST_P(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -61,11 +65,10 @@ TEST_F(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
       MockScrollableArea::Create(ScrollOffset(0, 100));
   scrollable_area->SetScrollOffset(ScrollOffset(0, 10000),
                                    mojom::blink::ScrollType::kCompositor);
-  EXPECT_EQ(100.0,
-            scrollable_area->GetScrollAnimator().CurrentOffset().Height());
+  EXPECT_EQ(100.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
 }
 
-TEST_F(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
+TEST_P(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -107,32 +110,7 @@ TEST_F(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, ScrollbarLayerInvalidation) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  ScopedMockOverlayScrollbars mock_overlay_scrollbars;
-
-  MockScrollableArea* scrollable_area =
-      MockScrollableArea::Create(ScrollOffset(0, 100));
-  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-  layer->SetIsDrawable(true);
-  layer->SetBounds(gfx::Size(111, 222));
-
-  EXPECT_CALL(*scrollable_area, LayerForHorizontalScrollbar())
-      .WillRepeatedly(Return(layer.get()));
-
-  auto* scrollbar = MakeGarbageCollected<Scrollbar>(
-      scrollable_area, kHorizontalScrollbar, nullptr, nullptr);
-  EXPECT_TRUE(layer->update_rect().IsEmpty());
-  scrollbar->SetNeedsPaintInvalidation(kNoPart);
-  EXPECT_FALSE(layer->update_rect().IsEmpty());
-
-  // Forced GC in order to finalize objects depending on the mock object.
-  ThreadState::Current()->CollectAllGarbageForTesting();
-}
-
-TEST_F(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
+TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -177,121 +155,19 @@ TEST_F(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, InvalidatesCompositedScrollbarsIfPartsNeedRepaint) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  ScrollbarThemeWithMockInvalidation theme;
-  MockScrollableArea* scrollable_area =
-      MockScrollableArea::Create(ScrollOffset(100, 100));
-  Scrollbar* horizontal_scrollbar = Scrollbar::CreateForTesting(
-      scrollable_area, kHorizontalScrollbar, &theme);
-  horizontal_scrollbar->ClearTrackNeedsRepaint();
-  horizontal_scrollbar->ClearThumbNeedsRepaint();
-  Scrollbar* vertical_scrollbar =
-      Scrollbar::CreateForTesting(scrollable_area, kVerticalScrollbar, &theme);
-  vertical_scrollbar->ClearTrackNeedsRepaint();
-  vertical_scrollbar->ClearThumbNeedsRepaint();
-  EXPECT_CALL(*scrollable_area, HorizontalScrollbar())
-      .WillRepeatedly(Return(horizontal_scrollbar));
-  EXPECT_CALL(*scrollable_area, VerticalScrollbar())
-      .WillRepeatedly(Return(vertical_scrollbar));
-
-  // Composited scrollbars only need repainting when parts become invalid
-  // (e.g. if the track changes appearance when the thumb reaches the end).
-  scoped_refptr<cc::Layer> layer_for_horizontal_scrollbar = cc::Layer::Create();
-  layer_for_horizontal_scrollbar->SetIsDrawable(true);
-  layer_for_horizontal_scrollbar->SetBounds(gfx::Size(10, 10));
-  scoped_refptr<cc::Layer> layer_for_vertical_scrollbar = cc::Layer::Create();
-  layer_for_vertical_scrollbar->SetIsDrawable(true);
-  layer_for_vertical_scrollbar->SetBounds(gfx::Size(10, 10));
-  EXPECT_CALL(*scrollable_area, LayerForHorizontalScrollbar())
-      .WillRepeatedly(Return(layer_for_horizontal_scrollbar.get()));
-  EXPECT_CALL(*scrollable_area, LayerForVerticalScrollbar())
-      .WillRepeatedly(Return(layer_for_vertical_scrollbar.get()));
-  ASSERT_TRUE(scrollable_area->HasLayerForHorizontalScrollbar());
-  ASSERT_TRUE(scrollable_area->HasLayerForVerticalScrollbar());
-  EXPECT_CALL(theme, ShouldRepaintAllPartsOnInvalidation())
-      .WillRepeatedly(Return(false));
-
-  EXPECT_TRUE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_TRUE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-
-  // First, we'll scroll horizontally, and the theme will require repainting
-  // the back button (i.e. the track).
-  EXPECT_CALL(theme, PartsToInvalidateOnThumbPositionChange(_, _, _))
-      .WillOnce(Return(kBackButtonStartPart));
-  scrollable_area->SetScrollOffset(ScrollOffset(50, 0),
-                                   mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_FALSE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_TRUE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-  EXPECT_TRUE(horizontal_scrollbar->TrackNeedsRepaint());
-  EXPECT_FALSE(horizontal_scrollbar->ThumbNeedsRepaint());
-  layer_for_horizontal_scrollbar->ResetUpdateRectForTesting();
-  horizontal_scrollbar->ClearTrackNeedsRepaint();
-
-  // Next, we'll scroll vertically, but invalidate the thumb.
-  EXPECT_CALL(theme, PartsToInvalidateOnThumbPositionChange(_, _, _))
-      .WillOnce(Return(kThumbPart));
-  scrollable_area->SetScrollOffset(ScrollOffset(50, 50),
-                                   mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_TRUE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(vertical_scrollbar->TrackNeedsRepaint());
-  EXPECT_TRUE(vertical_scrollbar->ThumbNeedsRepaint());
-  layer_for_vertical_scrollbar->ResetUpdateRectForTesting();
-  vertical_scrollbar->ClearThumbNeedsRepaint();
-
-  // Next we'll scroll in both, but the thumb position moving requires no
-  // invalidations. Nonetheless the GraphicsLayer should be invalidated,
-  // because we still need to update the underlying layer (though no
-  // rasterization will be required).
-  EXPECT_CALL(theme, PartsToInvalidateOnThumbPositionChange(_, _, _))
-      .Times(2)
-      .WillRepeatedly(Return(kNoPart));
-  scrollable_area->SetScrollOffset(ScrollOffset(70, 70),
-                                   mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_FALSE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(horizontal_scrollbar->TrackNeedsRepaint());
-  EXPECT_FALSE(horizontal_scrollbar->ThumbNeedsRepaint());
-  EXPECT_FALSE(vertical_scrollbar->TrackNeedsRepaint());
-  EXPECT_FALSE(vertical_scrollbar->ThumbNeedsRepaint());
-
-  // Forced GC in order to finalize objects depending on the mock object.
-  ThreadState::Current()->CollectAllGarbageForTesting();
-}
-
-TEST_F(ScrollableAreaTest, RecalculatesScrollbarOverlayIfBackgroundChanges) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  MockScrollableArea* scrollable_area =
-      MockScrollableArea::Create(ScrollOffset(0, 100));
-
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            scrollable_area->GetScrollbarOverlayColorTheme());
-  scrollable_area->RecalculateScrollbarOverlayColorTheme(Color(34, 85, 51));
-  EXPECT_EQ(kScrollbarOverlayColorThemeLight,
-            scrollable_area->GetScrollbarOverlayColorTheme());
-  scrollable_area->RecalculateScrollbarOverlayColorTheme(Color(236, 143, 185));
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            scrollable_area->GetScrollbarOverlayColorTheme());
-}
-
-TEST_F(ScrollableAreaTest, ScrollableAreaDidScroll) {
+TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(100, 100));
-  scrollable_area->DidScroll(FloatPoint(40, 51));
+  scrollable_area->DidCompositorScroll(gfx::PointF(40, 51));
 
-  EXPECT_EQ(40, scrollable_area->ScrollOffsetInt().Width());
-  EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().Height());
+  EXPECT_EQ(40, scrollable_area->ScrollOffsetInt().x());
+  EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().y());
 }
 
-TEST_F(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
+TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   MockAnimatingScrollableArea* scrollable_area =
@@ -305,7 +181,7 @@ TEST_F(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
     scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                      mojom::blink::ScrollType::kProgrammatic,
                                      mojom::blink::ScrollBehavior::kSmooth);
-    EXPECT_EQ(100, scrollable_area->GetScrollOffset().Height());
+    EXPECT_EQ(100, scrollable_area->GetScrollOffset().y());
   }
   Mock::VerifyAndClearExpectations(scrollable_area);
   // Enable animations. A smooth programmatic scroll should now schedule an
@@ -318,14 +194,14 @@ TEST_F(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
                                      mojom::blink::ScrollType::kProgrammatic,
                                      mojom::blink::ScrollBehavior::kSmooth);
     // Offset is unchanged.
-    EXPECT_EQ(100, scrollable_area->GetScrollOffset().Height());
+    EXPECT_EQ(100, scrollable_area->GetScrollOffset().y());
   }
 }
 
 // Scrollbars in popups shouldn't fade out since they aren't composited and thus
 // they don't appear on hover so users without a wheel can't scroll if they fade
 // out.
-TEST_F(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
+TEST_P(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -333,11 +209,13 @@ TEST_F(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));
+  EXPECT_CALL(*scrollable_area, UsesCompositedScrolling())
+      .WillRepeatedly(Return(false));
   scrollable_area->SetIsPopup();
 
   ScrollbarThemeOverlayMock& theme =
       (ScrollbarThemeOverlayMock&)scrollable_area->GetPageScrollbarTheme();
-  theme.SetOverlayScrollbarFadeOutDelay(base::TimeDelta::FromSeconds(1));
+  theme.SetOverlayScrollbarFadeOutDelay(base::Seconds(1));
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       scrollable_area, kHorizontalScrollbar, &theme);
 
@@ -353,7 +231,7 @@ TEST_F(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
+TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -367,14 +245,14 @@ TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
       mojom::blink::ScrollBehavior::kSmooth,
       ScrollableArea::ScrollCallback(
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().Height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->CancelProgrammaticScrollAnimation();
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().Height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_TRUE(finished);
 }
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
+TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -388,11 +266,11 @@ TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
       mojom::blink::ScrollBehavior::kInstant,
       ScrollableArea::ScrollCallback(
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
-  EXPECT_EQ(100, scrollable_area->GetScrollAnimator().CurrentOffset().Height());
+  EXPECT_EQ(100, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_TRUE(finished);
 }
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
+TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -406,14 +284,38 @@ TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
       mojom::blink::ScrollBehavior::kSmooth,
       ScrollableArea::ScrollCallback(
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().Height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->UpdateCompositorScrollAnimations();
   scrollable_area->ServiceScrollAnimations(1);
-  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().Height());
+  EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->ServiceScrollAnimations(1000000);
-  EXPECT_EQ(9.0, scrollable_area->GetScrollAnimator().CurrentOffset().Height());
+  EXPECT_EQ(9.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
+  EXPECT_TRUE(finished);
+}
+
+TEST_P(ScrollableAreaTest, ScrollBackToInitialPosition) {
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
+      platform;
+
+  MockScrollableArea* scrollable_area =
+      MockScrollableArea::Create(ScrollOffset(0, 100));
+  EXPECT_CALL(*scrollable_area, ScheduleAnimation())
+      .WillRepeatedly(Return(true));
+  bool finished = false;
+  scrollable_area->SetScrollOffset(
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+      mojom::blink::ScrollBehavior::kSmooth,
+      ScrollableArea::ScrollCallback(
+          base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   mojom::blink::ScrollBehavior::kSmooth);
+  scrollable_area->UpdateCompositorScrollAnimations();
+  scrollable_area->ServiceScrollAnimations(1);
+  scrollable_area->ServiceScrollAnimations(1000000);
+  EXPECT_EQ(0, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(finished);
 }
 

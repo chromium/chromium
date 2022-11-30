@@ -1,7 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "net/cert/internal/system_trust_store.h"
 
 #include <cert.h>
@@ -9,12 +10,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/system_trust_store_nss.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -49,6 +49,10 @@ namespace {
 class SystemTrustStoreNSSTest : public ::testing::Test {
  public:
   SystemTrustStoreNSSTest() : test_root_certs_(TestRootCerts::GetInstance()) {}
+
+  SystemTrustStoreNSSTest(const SystemTrustStoreNSSTest&) = delete;
+  SystemTrustStoreNSSTest& operator=(const SystemTrustStoreNSSTest&) = delete;
+
   ~SystemTrustStoreNSSTest() override = default;
 
   void SetUp() override {
@@ -86,32 +90,12 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
   crypto::ScopedTestNSSDB test_nssdb_;
   crypto::ScopedTestNSSDB other_test_nssdb_;
 
-  TestRootCerts* test_root_certs_;
+  raw_ptr<TestRootCerts> test_root_certs_;
 
   scoped_refptr<X509Certificate> root_cert_;
   scoped_refptr<ParsedCertificate> parsed_root_cert_;
   ScopedCERTCertificate nss_root_cert_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTrustStoreNSSTest);
 };
-
-// Tests that SystemTrustStore respects TestRootCerts.
-TEST_F(SystemTrustStoreNSSTest, TrustTestRootCerts) {
-  std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStore();
-
-  EXPECT_TRUE(test_root_certs_->Add(root_cert_.get()));
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
-
-  test_root_certs_->Clear();
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
-}
 
 // Tests that SystemTrustStore created for NSS with a user-slot restriction
 // allows certificates stored on the specified user slot to be trusted.
@@ -122,9 +106,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
 }
 
@@ -138,9 +122,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(other_test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
 }
 
@@ -148,13 +132,13 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
 // certificate stored on user slots.
 TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
   std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStoreNSSWithNoUserSlots();
+      CreateSslSystemTrustStoreNSSWithUserSlotRestriction(nullptr);
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
 }
 

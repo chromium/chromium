@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -22,6 +22,8 @@ class CommandBufferHelper;
 class GPU_EXPORT RingBuffer {
  public:
   typedef uint32_t Offset;
+
+  RingBuffer() = delete;
 
   // Creates a RingBuffer.
   // Parameters:
@@ -35,6 +37,9 @@ class GPU_EXPORT RingBuffer {
              uint32_t size,
              CommandBufferHelper* helper,
              void* base);
+
+  RingBuffer(const RingBuffer&) = delete;
+  RingBuffer& operator=(const RingBuffer&) = delete;
 
   ~RingBuffer();
 
@@ -130,7 +135,7 @@ class GPU_EXPORT RingBuffer {
   void FreeOldestBlock();
   uint32_t GetLargestFreeSizeNoWaitingInternal();
 
-  CommandBufferHelper* helper_;
+  raw_ptr<CommandBufferHelper> helper_;
 
   // Used blocks are added to the end, blocks are freed from the beginning.
   Container blocks_;
@@ -155,9 +160,7 @@ class GPU_EXPORT RingBuffer {
   uint32_t num_used_blocks_ = 0;
 
   // The physical address that corresponds to base_offset.
-  void* base_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RingBuffer);
+  raw_ptr<void> base_;
 };
 
 }  // namespace gpu

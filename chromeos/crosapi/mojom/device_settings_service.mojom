@@ -1,0 +1,119 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Optional int64 field.
+[Stable]
+struct NullableInt64 {
+  int64 value;
+};
+
+// Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
+[Stable]
+struct UsbDetachableAllowlist {
+  array<UsbDeviceId> usb_device_ids@0;
+};
+
+// Copy of UsbDeviceIdInclusiveProto from chrome_device_policy.proto.
+[Stable]
+struct UsbDeviceId {
+  // USB Vendor Identifier (aka idVendor).
+  bool has_vendor_id@0;
+  int32 vendor_id@1;
+  // USB Product Identifier (aka idProduct).
+  bool has_product_id@2;
+  int32 product_id@3;
+};
+
+// All the device settings data that are needed in Lacros should be here.
+//
+// Next MinVersion: 4
+[Stable]
+struct DeviceSettings {
+  // The value of AttestationForContentProtectionEnabled device setting.
+  OptionalBool attestation_for_content_protection_enabled@0;
+
+  // The value of DeviceSystemWideTracingEnabled device policy.
+  OptionalBool device_system_wide_tracing_enabled@1;
+
+  // The value of UsbDetachableAllowlist device policy.
+  UsbDetachableAllowlist? usb_detachable_allow_list@2;
+
+  // The value of DeviceEphemeralUsersEnabled device policy.
+  [MinVersion=1] OptionalBool device_ephemeral_users_enabled@3;
+
+  // The value of DeviceRestrictedManagedGuestSessionEnabled device policy.
+  [MinVersion=2]
+  OptionalBool device_restricted_managed_guest_session_enabled@4;
+
+  // The value of ReportDeviceNetworkStatus device policy.
+  [MinVersion=3]
+  OptionalBool report_device_network_status@5;
+
+  // The value of ReportDeviceUploadFrequency device policy.
+  [MinVersion=3]
+  NullableInt64? report_upload_frequency@6;
+
+  // The value of ReportDeviceNetworkTelemetryCollectionRateMs device policy.
+  [MinVersion=3]
+  NullableInt64? report_device_network_telemetry_collection_rate_ms@7;
+
+  [Stable]
+  enum OptionalBool {
+    kUnset,
+    kFalse,
+    kTrue,
+  };
+};
+
+// Interface for device settings observers. Implemented by lacros-chrome. Used
+// by ash-chrome to send device settings updates.
+[Stable, Uuid="c2d2367e-1179-42ca-97ab-426a0c3cd265"]
+interface DeviceSettingsObserver {
+  // Called when device settings have changed.
+  UpdateDeviceSettings@0(DeviceSettings device_settings);
+};
+
+// This interface is implemented by Ash-Chrome.
+// It includes the device policy and other device settings configurable by the
+// user that are needed in Lacros.
+[Stable, Uuid="7ce66db5-5d91-4b45-b7aa-4fcfd8a53985"]
+interface DeviceSettingsService {
+  // Adds an observer for device settings updates.
+  AddDeviceSettingsObserver@0(pending_remote<DeviceSettingsObserver> observer);
+
+  // Returns all the device policy from Ash for display purpose. The
+  // `device_policy` is a dictionary containing policy data and `legend_data`
+  // is a dictionary containing legend data - that is the data displayed at the
+  // top of the page describing the status of device policy.
+  [MinVersion=2]
+  GetDevicePolicy@2() => (mojo_base.mojom.DictionaryValue device_policy,
+                          mojo_base.mojom.DictionaryValue legend_data);
+
+  // Identical to the above but deprecated since it is not correctly typed.
+  // The returned values are either dictionaries or a null value.
+  // TODO(https://crbug.com/1340434): Remove the deprecated overload.
+  [MinVersion=1]
+  GetDevicePolicyDeprecated@1() => (mojo_base.mojom.Value device_policy,
+                                    mojo_base.mojom.Value legend_data);
+
+  // Returns the reporting sources by the device and whether the plugin_vm
+  // data collection is enabled.
+  // TODO(igorcov@): Investigate if it's reasonable to include the
+  // |plugin_vm_data_collection_enabled| into the |report_sources|.
+  [MinVersion=3]
+  GetDeviceReportSources@3() => (mojo_base.mojom.ListValue report_sources,
+                                 bool plugin_vm_data_collection_enabled);
+
+  // Returns true if the device is deprovisioned; false otherwise. The result
+  // can be used to immediately halt certain operations like metric collection
+  // and reporting.
+  // TODO (https://crbug.com/1362108): Remove once fixed so we can reuse the
+  // methods above to derive this information.
+  [MinVersion=4]
+  IsDeviceDeprovisioned@4() => (bool is_deprovisioned);
+};

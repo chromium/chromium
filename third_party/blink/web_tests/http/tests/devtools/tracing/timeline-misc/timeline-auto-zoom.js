@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test auto zoom feature of the timeline.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -151,11 +151,11 @@
     }
   ];
 
-  UI.panels.timeline._setModel(PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
+  UI.panels.timeline.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
 
-  var overview = UI.panels.timeline._overviewPane;
-  var startTime = overview._windowStartTime;
-  var endTime = overview._windowEndTime;
+  var overview = UI.panels.timeline.overviewPane;
+  var startTime = overview.windowStartTime;
+  var endTime = overview.windowEndTime;
   TestRunner.assertGreaterOrEqual(startTime, 1010);
   TestRunner.assertGreaterOrEqual(2000, startTime);
   TestRunner.assertGreaterOrEqual(endTime, 4200);

@@ -1,8 +1,9 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/nacl/config.gni")
+import("//components/nacl/toolchain.gni")
 
 component("platform") {
   output_name = "mojo_cpp_platform"
@@ -12,6 +13,7 @@ component("platform") {
     "platform_channel_endpoint.h",
     "platform_channel_server_endpoint.h",
     "platform_handle.h",
+    "platform_handle_internal.h",
   ]
 
   sources = [
@@ -21,7 +23,7 @@ component("platform") {
     "platform_handle.cc",
   ]
 
-  if (is_posix && !is_mac && (!is_nacl || is_nacl_nonsfi)) {
+  if (is_posix && !is_mac && !is_nacl) {
     public += [ "socket_utils_posix.h" ]
     sources += [ "socket_utils_posix.cc" ]
   }
@@ -31,8 +33,11 @@ component("platform") {
     "//mojo/public/c/system:headers",
   ]
 
-  if (is_posix && !is_nacl && !is_mac) {
+  deps = []
+
+  if (is_posix && !is_nacl && !is_minimal_toolchain && !is_mac) {
     sources += [ "named_platform_channel_posix.cc" ]
+    deps += [ "//net" ]
   }
 
   if (is_mac) {

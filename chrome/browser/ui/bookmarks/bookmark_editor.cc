@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/strings/grit/components_strings.h"
 
 using bookmarks::BookmarkModel;
@@ -21,7 +21,7 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
                                   const BookmarkEditor::EditDetails& details,
                                   const std::u16string& new_title,
                                   const GURL& new_url) {
-  const BookmarkNode* node;
+  const BookmarkNode* node = nullptr;
   // When create the new one to right-clicked folder, add it to the next to the
   // folder's position. Because |details.index| has a index of the folder when
   // it was right-clicked, it might cause out of range exception when another
@@ -33,24 +33,47 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
        details.index.value() <= child_count)
           ? details.index.value()
           : child_count;
-  if (details.type == BookmarkEditor::EditDetails::NEW_URL) {
-    node = model->AddURL(parent, insert_index, new_title, new_url);
-  } else if (details.type == BookmarkEditor::EditDetails::NEW_FOLDER) {
-    node = model->AddFolder(parent, insert_index, new_title);
-    for (size_t i = 0; i < details.urls.size(); ++i) {
-      model->AddURL(node, node->children().size(), details.urls[i].second,
-                    details.urls[i].first);
+  switch (details.type) {
+    case BookmarkEditor::EditDetails::NEW_URL:
+      node = model->AddNewURL(parent, insert_index, new_title, new_url);
+      break;
+    case BookmarkEditor::EditDetails::NEW_FOLDER: {
+      node = model->AddFolder(parent, insert_index, new_title);
+      for (const auto& bookmark_data : details.bookmark_data.children) {
+        if (bookmark_data.url.has_value()) {
+          model->AddURL(node, node->children().size(), bookmark_data.title,
+                        bookmark_data.url.value());
+        } else {
+          const BookmarkNode* nested_node = model->AddFolder(
+              node, node->children().size(), bookmark_data.title);
+          for (auto& child : bookmark_data.children) {
+            // We do not expect to create new folders more than 2 levels deep.
+            DCHECK(child.url.has_value());
+            model->AddURL(nested_node, nested_node->children().size(),
+                          child.title, child.url.value());
+          }
+          model->SetDateFolderModified(node, base::Time::Now());
+        }
+      }
+      model->SetDateFolderModified(parent, base::Time::Now());
+
+      break;
     }
-    model->SetDateFolderModified(parent, base::Time::Now());
-  } else {
-    NOTREACHED();
-    return NULL;
+    case BookmarkEditor::EditDetails::EXISTING_NODE:
+      NOTREACHED();
   }
 
   return node;
 }
 
 }  // namespace
+
+BookmarkEditor::EditDetails::BookmarkData::BookmarkData() = default;
+
+BookmarkEditor::EditDetails::BookmarkData::BookmarkData(
+    BookmarkData const& other) = default;
+
+BookmarkEditor::EditDetails::BookmarkData::~BookmarkData() = default;
 
 BookmarkEditor::EditDetails::EditDetails(Type node_type) : type(node_type) {}
 
@@ -83,9 +106,9 @@ int BookmarkEditor::EditDetails::GetWindowTitleId() const {
           IDS_BOOKMARK_EDITOR_TITLE;
       break;
     case EditDetails::NEW_FOLDER:
-      dialog_title = urls.empty() ?
-          IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW :
-          IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE;
+      dialog_title = bookmark_data.children.empty()
+                         ? IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW
+                         : IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE;
       break;
     default:
       NOTREACHED();
@@ -110,8 +133,8 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::AddNodeInFolder(
   EditDetails details(NEW_URL);
   details.parent_node = parent_node;
   details.index = index;
-  details.url = url;
-  details.title = title;
+  details.bookmark_data.url = url;
+  details.bookmark_data.title = title;
   return details;
 }
 
@@ -126,7 +149,7 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::AddFolder(
 
 BookmarkEditor::EditDetails::EditDetails(const EditDetails& other) = default;
 
-BookmarkEditor::EditDetails::~EditDetails() {}
+BookmarkEditor::EditDetails::~EditDetails() = default;
 
 // static
 const BookmarkNode* BookmarkEditor::ApplyEditsWithNoFolderChange(
@@ -144,8 +167,9 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithNoFolderChange(
   DCHECK(node);
 
   if (node->is_url())
-    model->SetURL(node, new_url);
-  model->SetTitle(node, new_title);
+    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, new_title,
+                  bookmarks::metrics::BookmarkEditSource::kUser);
 
   return node;
 }
@@ -168,8 +192,9 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithPossibleFolderChange(
   if (new_parent != node->parent())
     model->Move(node, new_parent, new_parent->children().size());
   if (node->is_url())
-    model->SetURL(node, new_url);
-  model->SetTitle(node, new_title);
+    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, new_title,
+                  bookmarks::metrics::BookmarkEditSource::kUser);
 
   return node;
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 
 #include <algorithm>
 #include <utility>
-#include "base/optional.h"
+
 #include "base/strings/string_piece.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -19,18 +20,19 @@ constexpr char kHeaderName[] = "cross-origin-embedder-policy";
 constexpr char kReportOnlyHeaderName[] =
     "cross-origin-embedder-policy-report-only";
 
-std::pair<mojom::CrossOriginEmbedderPolicyValue, base::Optional<std::string>>
+// [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
+std::pair<mojom::CrossOriginEmbedderPolicyValue, absl::optional<std::string>>
 Parse(base::StringPiece header_value) {
   using Item = net::structured_headers::Item;
   const auto item = net::structured_headers::ParseItem(header_value);
   if (!item || item->item.Type() != net::structured_headers::Item::kTokenType) {
     return {
         mojom::CrossOriginEmbedderPolicyValue::kNone,
-        base::nullopt,
+        absl::nullopt,
     };
   }
 
-  base::Optional<std::string> endpoint;
+  absl::optional<std::string> endpoint;
   for (const auto& it : item->params) {
     if (it.first == "report-to" && it.second.Type() == Item::kStringType)
       endpoint = it.second.GetString();
@@ -43,18 +45,16 @@ Parse(base::StringPiece header_value) {
     };
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kCrossOriginEmbedderPolicyCredentialless) &&
-      item->item.GetString() == "cors-or-credentialless") {
+  if (item->item.GetString() == "credentialless") {
     return {
-        mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless,
+        mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
         std::move(endpoint),
     };
   }
 
   return {
       mojom::CrossOriginEmbedderPolicyValue::kNone,
-      base::nullopt,
+      absl::nullopt,
   };
 }
 

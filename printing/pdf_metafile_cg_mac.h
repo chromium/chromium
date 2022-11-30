@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "printing/metafile.h"
 
 namespace printing {
 
 // This class creates a graphics context that renders into a PDF data stream.
-class PRINTING_EXPORT PdfMetafileCg : public Metafile {
+class COMPONENT_EXPORT(PRINTING_METAFILE) PdfMetafileCg : public Metafile {
  public:
   PdfMetafileCg();
   PdfMetafileCg(const PdfMetafileCg&) = delete;
@@ -34,6 +35,8 @@ class PRINTING_EXPORT PdfMetafileCg : public Metafile {
 
   uint32_t GetDataSize() const override;
   bool GetData(void* dst_buffer, uint32_t dst_buffer_size) const override;
+  bool ShouldCopySharedMemoryRegionData() const override;
+  mojom::MetafileDataType GetDataType() const override;
 
   gfx::Rect GetPageBounds(unsigned int page_number) const override;
   unsigned int GetPageCount() const override;
@@ -49,7 +52,7 @@ class PRINTING_EXPORT PdfMetafileCg : public Metafile {
                   bool fit_to_page) const override;
 
  private:
-  // Returns a CGPDFDocumentRef version of |pdf_data_|.
+  // Returns a CGPDFDocumentRef version of `pdf_data_`.
   CGPDFDocumentRef GetPDFDocument() const;
 
   // Context for rendering to the pdf.
@@ -58,7 +61,7 @@ class PRINTING_EXPORT PdfMetafileCg : public Metafile {
   // PDF backing store.
   base::ScopedCFTypeRef<CFMutableDataRef> pdf_data_;
 
-  // Lazily-created CGPDFDocument representation of |pdf_data_|.
+  // Lazily-created CGPDFDocument representation of `pdf_data_`.
   mutable base::ScopedCFTypeRef<CGPDFDocumentRef> pdf_doc_;
 
   // Whether or not a page is currently open.

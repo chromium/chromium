@@ -182,8 +182,6 @@ var propertyInfo = [
     ["onunload", "object"],
     ["opener", "object"],
 
-    ["defaultStatus", "string"],
-    ["defaultstatus", "string"],
     ["name", "string"],
     ["status", "string"],
 

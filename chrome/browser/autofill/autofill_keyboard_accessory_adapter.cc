@@ -1,16 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 
 #include <numeric>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -26,9 +28,15 @@ std::u16string CreateLabel(const Suggestion& suggestion) {
       suggestion.additional_label.substr(0, kMaxBulletCount);
   // The label contains the signon_realm or is empty. The additional_label can
   // never be empty since it must contain a password.
-  if (suggestion.label.empty())
+  if (suggestion.labels.empty() || suggestion.labels[0][0].value.empty())
     return password;
-  return suggestion.label + kLabelSeparator + password;
+
+  // TODO(crbug.com/1313616): Re-consider whether using DCHECK is an appropriate
+  // way to explicitly regulate what information should be populated for the
+  // interface.
+  DCHECK_EQ(suggestion.labels.size(), 1U);
+  DCHECK_EQ(suggestion.labels[0].size(), 1U);
+  return suggestion.labels[0][0].value + kLabelSeparator + password;
 }
 
 }  // namespace
@@ -52,15 +60,17 @@ void AutofillKeyboardAccessoryAdapter::Hide() {
 }
 
 void AutofillKeyboardAccessoryAdapter::OnSelectedRowChanged(
-    base::Optional<int> previous_row_selection,
-    base::Optional<int> current_row_selection) {}
+    absl::optional<int> previous_row_selection,
+    absl::optional<int> current_row_selection) {}
 
 void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
+  TRACE_EVENT0("passwords",
+               "AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged");
   DCHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
   DCHECK(view_) << "OnSuggestionsChanged called before a View was set!";
 
   labels_.clear();
-  front_element_ = base::nullopt;
+  front_element_ = absl::nullopt;
   for (int i = 0; i < GetLineCount(); ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
     if (suggestion.frontend_id != POPUP_ITEM_ID_CLEAR_FORM) {
@@ -68,17 +78,23 @@ void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
       continue;
     }
     DCHECK(!front_element_.has_value()) << "Additional front item at: " << i;
-    front_element_ = base::Optional<int>(i);
+    front_element_ = absl::optional<int>(i);
     // If there is a special popup item, just reuse the previously used label.
-    labels_.push_back(controller_->GetSuggestionLabelAt(i));
+    std::vector<std::vector<Suggestion::Text>> suggestion_labels =
+        controller_->GetSuggestionLabelsAt(i);
+    if (suggestion_labels.empty()) {
+      labels_.emplace_back();
+    } else {
+      labels_.emplace_back(std::move(suggestion_labels[0][0].value));
+    }
   }
 
   view_->Show();
 }
 
-base::Optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
+absl::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
   NOTIMPLEMENTED() << "See https://crbug.com/985927";
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // AutofillPopupController implementation.
@@ -98,17 +114,23 @@ const autofill::Suggestion& AutofillKeyboardAccessoryAdapter::GetSuggestionAt(
   return controller_->GetSuggestionAt(OffsetIndexFor(row));
 }
 
-const std::u16string& AutofillKeyboardAccessoryAdapter::GetSuggestionValueAt(
+std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMainTextAt(
     int row) const {
-  DCHECK(controller_) << "Call GetSuggestionValueAt only from its owner!";
-  return controller_->GetSuggestionValueAt(OffsetIndexFor(row));
+  DCHECK(controller_) << "Call GetSuggestionMainTextAt only from its owner!";
+  return controller_->GetSuggestionMainTextAt(OffsetIndexFor(row));
 }
 
-const std::u16string& AutofillKeyboardAccessoryAdapter::GetSuggestionLabelAt(
+std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMinorTextAt(
     int row) const {
+  DCHECK(controller_) << "Call GetSuggestionMinorTextAt only from its owner!";
+  return controller_->GetSuggestionMinorTextAt(OffsetIndexFor(row));
+}
+
+std::vector<std::vector<Suggestion::Text>>
+AutofillKeyboardAccessoryAdapter::GetSuggestionLabelsAt(int row) const {
   DCHECK(controller_) << "Call GetSuggestionLabelAt only from its owner!";
   DCHECK(static_cast<size_t>(row) < labels_.size());
-  return labels_[OffsetIndexFor(row)];
+  return {{Suggestion::Text(labels_[OffsetIndexFor(row)])}};
 }
 
 PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
@@ -138,25 +160,25 @@ bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(int index) {
 }
 
 void AutofillKeyboardAccessoryAdapter::SetSelectedLine(
-    base::Optional<int> selected_line) {
+    absl::optional<int> selected_line) {
   if (!controller_)
     return;
   if (!selected_line.has_value()) {
-    controller_->SetSelectedLine(base::nullopt);
+    controller_->SetSelectedLine(absl::nullopt);
     return;
   }
   controller_->SetSelectedLine(OffsetIndexFor(selected_line.value()));
 }
 
-base::Optional<int> AutofillKeyboardAccessoryAdapter::selected_line() const {
+absl::optional<int> AutofillKeyboardAccessoryAdapter::selected_line() const {
   if (!controller_ || !controller_->selected_line().has_value())
-    return base::nullopt;
+    return absl::nullopt;
   for (int i = 0; i < GetLineCount(); ++i) {
     if (OffsetIndexFor(i) == controller_->selected_line().value()) {
       return i;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // AutofillPopupViewDelegate implementation

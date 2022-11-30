@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,13 +9,6 @@ import("//build/config/compiler/compiler.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  header_dir = "third_party/blink/renderer/platform/wtf"
-
-  flags = [ "USE_V8_OILPAN=$enable_blink_heap_use_v8_oilpan" ]
-}
 
 visibility = [
   ":*",
@@ -43,10 +36,7 @@ config("wtf_config") {
 }
 
 component("wtf") {
-  configs += [ "//build/config/compiler:noshadowing" ]
-
   sources = [
-    "allocator/allocator.cc",
     "allocator/allocator.h",
     "allocator/partition_allocator.cc",
     "allocator/partition_allocator.h",
@@ -54,6 +44,8 @@ component("wtf") {
     "allocator/partitions.h",
     "assertions.cc",
     "assertions.h",
+    "atomic_operations.cc",
+    "atomic_operations.h",
     "bit_field.h",
     "bloom_filter.h",
     "casting.h",
@@ -61,6 +53,14 @@ component("wtf") {
     "container_annotations.h",
     "cross_thread_copier.cc",
     "cross_thread_copier.h",
+    "cross_thread_copier_base.h",
+    "cross_thread_copier_gfx.h",
+    "cross_thread_copier_gpu.h",
+    "cross_thread_copier_media.h",
+    "cross_thread_copier_mojo.h",
+    "cross_thread_copier_public.h",
+    "cross_thread_copier_skia.h",
+    "cross_thread_copier_std.h",
     "cross_thread_functional.h",
     "date_math.cc",
     "date_math.h",
@@ -74,6 +74,7 @@ component("wtf") {
     "dynamic_annotations.h",
     "forward.h",
     "functional.h",
+    "gc_plugin_ignore.h",
     "get_ptr.h",
     "hash_counted_set.h",
     "hash_functions.h",
@@ -86,8 +87,6 @@ component("wtf") {
     "hash_traits.h",
     "leak_annotations.h",
     "linked_hash_set.h",
-    "list_hash_set.h",
-    "lru_cache.h",
     "math_extras.h",
     "pod_arena.h",
     "pod_free_list_arena.h",
@@ -113,11 +112,13 @@ component("wtf") {
     "text/atomic_string.cc",
     "text/atomic_string.h",
     "text/atomic_string_cf.cc",
+    "text/atomic_string_encoding.h",
     "text/atomic_string_hash.h",
     "text/atomic_string_table.cc",
     "text/atomic_string_table.h",
     "text/base64.cc",
     "text/base64.h",
+    "text/case_folding_hash.h",
     "text/case_map.cc",
     "text/case_map.h",
     "text/character_names.h",
@@ -173,17 +174,18 @@ component("wtf") {
     "text/text_stream.cc",
     "text/text_stream.h",
     "text/unicode.h",
+    "text/unicode_string.h",
     "text/utf8.cc",
     "text/utf8.h",
     "text/wtf_string.cc",
     "text/wtf_string.h",
-    "thread_restriction_verifier.h",
+    "text/wtf_uchar.h",
     "thread_safe_ref_counted.h",
     "thread_specific.h",
     "threading.cc",
     "threading.h",
+    "threading_primitives.cc",
     "threading_primitives.h",
-    "tree_node.h",
     "type_traits.h",
     "uuid.cc",
     "uuid.h",
@@ -206,14 +208,11 @@ component("wtf") {
 
   public_configs = [
     ":wtf_config",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//third_party/blink/renderer:features",
   ]
 
   deps = [
-    ":buildflags",
+    "//base/allocator:buildflags",
     "//build:chromeos_buildflags",
 
     # TODO(tkent): WTF should not depend on it.
@@ -227,9 +226,7 @@ component("wtf") {
     "//third_party/icu",
   ]
 
-  if (enable_blink_heap_use_v8_oilpan) {
-    public_deps += [ "//v8:cppgc_headers" ]
-  }
+  public_deps += [ "//v8:cppgc_headers" ]
 
   # Rules changing the |sources| list are temporarily commented out, until
   # those files are actually moved to here.
@@ -241,9 +238,11 @@ component("wtf") {
     ]
   }
 
-  if (is_win) {
-    sources += [ "threading_win.cc" ]
+  if (!is_mac && (current_cpu == "x86" || current_cpu == "x64")) {
+    sources += [ "text/ascii_fast_path.cc" ]
+  }
 
+  if (is_win) {
     cflags = [ "/wd4068" ]  # Unknown pragma.
 
     # Inject Visual Studio debug visualizers for our types into all targets
@@ -255,8 +254,6 @@ component("wtf") {
       # in generated build files.
       "//tools/win/DebugVisualizers/blink.natvis",
     ]
-  } else {
-    sources += [ "threading_pthreads.cc" ]
   }
 
   if (is_android) {
@@ -290,11 +287,13 @@ source_set("wtf_unittests_sources") {
   testonly = true
 
   sources = [
-    "allocator/atomic_operations_test.cc",
+    "allocator/allocator_test.cc",
     "allocator/partitions_test.cc",
     "ascii_ctype_test.cc",
     "assertions_test.cc",
+    "atomic_operations_test.cc",
     "bit_field_test.cc",
+    "bloom_filter_test.cc",
     "cross_thread_functional_test.cc",
     "decimal_test.cc",
     "deque_test.cc",
@@ -304,8 +303,6 @@ source_set("wtf_unittests_sources") {
     "hash_map_test.cc",
     "hash_set_test.cc",
     "linked_hash_set_test.cc",
-    "list_hash_set_test.cc",
-    "lru_cache_test.cc",
     "math_extras_test.cc",
     "pod_arena_test.cc",
     "pod_arena_test_helpers.h",
@@ -337,15 +334,11 @@ source_set("wtf_unittests_sources") {
     "text/text_encoding_test.cc",
     "text/wtf_string_test.cc",
     "threading_primitives_test.cc",
-    "tree_node_test.cc",
     "type_traits_test.cc",
     "uuid_test.cc",
     "vector_backed_linked_list_test.cc",
     "vector_test.cc",
   ]
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   if (is_win) {
     cflags = [ "/wd4068" ]  # Unknown pragma.

@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,9 +10,14 @@ for more details about the presubmit API built into depot_tools.
 
 import os
 
+USE_PYTHON3 = True
+
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
 CRBUG_PATTERN = r'crbug\.com/\d+$'
+INCLUDE_PATTERN = r'^#include'
+PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
+IOS_PACKAGE_PATTERN = r'^ios'
 ARC_COMPILE_GUARD = [
     '#if !defined(__has_feature) || !__has_feature(objc_arc)',
     '#error "This file requires ARC support."',
@@ -20,94 +25,175 @@ ARC_COMPILE_GUARD = [
 ]
 
 def IsSubListOf(needle, hay):
-  """Returns whether there is a slice of |hay| equal to |needle|."""
-  for i, line in enumerate(hay):
-    if line == needle[0]:
-      if needle == hay[i:i+len(needle)]:
-        return True
-  return False
+    """Returns whether there is a slice of |hay| equal to |needle|."""
+    for i, line in enumerate(hay):
+        if line == needle[0]:
+            if needle == hay[i:i + len(needle)]:
+                return True
+    return False
+
 
 def _CheckARCCompilationGuard(input_api, output_api):
-  """ Checks whether new objc files have proper ARC compile guards."""
-  files_without_headers = []
-  for f in input_api.AffectedFiles():
-    if f.Action() != 'A':
-      continue
+    """ Checks whether new objc files have proper ARC compile guards."""
+    files_without_headers = []
+    for f in input_api.AffectedFiles():
+        if f.Action() != 'A':
+            continue
 
-    _, ext = os.path.splitext(f.LocalPath())
-    if ext not in ('.m', '.mm'):
-      continue
+        _, ext = os.path.splitext(f.LocalPath())
+        if ext not in ('.m', '.mm'):
+            continue
 
-    if not IsSubListOf(ARC_COMPILE_GUARD, f.NewContents()):
-      files_without_headers.append(f.LocalPath())
+        if not IsSubListOf(ARC_COMPILE_GUARD, f.NewContents()):
+            files_without_headers.append(f.LocalPath())
 
-  if not files_without_headers:
-    return []
+    if not files_without_headers:
+        return []
 
-  plural_suffix = '' if len(files_without_headers) == 1 else 's'
-  error_message = '\n'.join([
-      'Found new Objective-C implementation file%(plural)s without compile'
-      ' guard%(plural)s. Please use the following compile guard'
-      ':' % {'plural': plural_suffix}
-  ] + ARC_COMPILE_GUARD + files_without_headers) + '\n'
+    plural_suffix = '' if len(files_without_headers) == 1 else 's'
+    error_message = '\n'.join([
+        'Found new Objective-C implementation file%(plural)s without compile'
+        ' guard%(plural)s. Please use the following compile guard'
+        ':' % {
+            'plural': plural_suffix
+        }
+    ] + ARC_COMPILE_GUARD + files_without_headers) + '\n'
 
-  return [output_api.PresubmitError(error_message)]
+    return [output_api.PresubmitError(error_message)]
 
 
 def _CheckNullabilityAnnotations(input_api, output_api):
-  """ Checks whether there are nullability annotations in ios code."""
-  nullability_regex = input_api.re.compile(NULLABILITY_PATTERN)
+    """ Checks whether there are nullability annotations in ios code."""
+    nullability_regex = input_api.re.compile(NULLABILITY_PATTERN)
 
-  errors = []
-  for f in input_api.AffectedFiles():
-    for line_num, line in f.ChangedContents():
-      if nullability_regex.search(line):
-        errors.append('%s:%s' % (f.LocalPath(), line_num))
-  if not errors:
-    return []
+    errors = []
+    for f in input_api.AffectedFiles():
+        for line_num, line in f.ChangedContents():
+            if nullability_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
 
-  plural_suffix = '' if len(errors) == 1 else 's'
-  error_message = ('Found Nullability annotation%(plural)s. '
-      'Prefer DCHECKs in ios code to check for nullness:'
-       % {'plural': plural_suffix})
+    plural_suffix = '' if len(errors) == 1 else 's'
+    error_message = ('Found Nullability annotation%(plural)s. '
+                     'Prefer DCHECKs in ios code to check for nullness:' % {
+                         'plural': plural_suffix
+                     })
 
-  return [output_api.PresubmitPromptWarning(error_message, items=errors)]
+    return [output_api.PresubmitPromptWarning(error_message, items=errors)]
 
 
 def _CheckBugInToDo(input_api, output_api):
-  """ Checks whether TODOs in ios code are identified by a bug number."""
-  errors = []
-  for f in input_api.AffectedFiles():
-    for line_num, line in f.ChangedContents():
-      if _HasToDoWithNoBug(input_api, line):
-        errors.append('%s:%s' % (f.LocalPath(), line_num))
-  if not errors:
-    return []
+    """ Checks whether TODOs in ios code are identified by a bug number."""
+    errors = []
+    for f in input_api.AffectedFiles():
+        for line_num, line in f.ChangedContents():
+            if _HasToDoWithNoBug(input_api, line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
 
-  plural_suffix = '' if len(errors) == 1 else 's'
-  error_message = '\n'.join([
-      'Found TO''DO%(plural)s without bug number%(plural)s (expected format is '
-      '\"TO''DO(crbug.com/######)\":' % {'plural': plural_suffix}
-  ] + errors) + '\n'
+    plural_suffix = '' if len(errors) == 1 else 's'
+    error_message = '\n'.join([
+        'Found TO'
+        'DO%(plural)s without bug number%(plural)s (expected format '
+        'is \"TO'
+        'DO(crbug.com/######)\":' % {
+            'plural': plural_suffix
+        }
+    ] + errors) + '\n'
 
-  return [output_api.PresubmitError(error_message)]
+    return [output_api.PresubmitError(error_message)]
+
+
+def _CheckHasNoIncludeDirectives(input_api, output_api):
+    """ Checks that #include preprocessor directives are not present."""
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not _IsInIosPackage(input_api, f.LocalPath()):
+            continue
+        _, ext = os.path.splitext(f.LocalPath())
+        if ext != '.mm':
+            continue
+        for line_num, line in f.ChangedContents():
+            if _HasIncludeDirective(input_api, line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
+
+    singular_plural = 'it' if len(errors) == 1 else 'them'
+    plural_suffix = '' if len(errors) == 1 else 's'
+    error_message = '\n'.join([
+        'Found usage of `#include` preprocessor directive%(plural)s! Please, '
+        'replace %(singular_plural)s with `#import` preprocessor '
+        'directive%(plural)s instead. '
+        'Consider replacing all existing `#include` with `#import` (if any) in '
+        'this file for the code clean up. See '
+        'https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main'
+        '/styleguide/objective-c/objective-c.md'
+        '#import-and-include-in-the-directory for more details. '
+        '\n\nAffected file%(plural)s:' % {
+            'plural': plural_suffix,
+            'singular_plural': singular_plural
+        }
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitError(error_message)]
+
+
+def _CheckHasNoPipeInComment(input_api, output_api):
+    """ Checks that comments don't contain pipes."""
+    pipe_regex = input_api.re.compile(PIPE_IN_COMMENT_PATTERN)
+
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not _IsInIosPackage(input_api, f.LocalPath()):
+            continue
+        for line_num, line in f.ChangedContents():
+            if pipe_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
+    error_message = '\n'.join([
+        'Please use backticks "`" instead of pipes "|" if you need to quote'
+        ' variable names and symbols in comments.\n'
+        'Found potential uses of pipes in:'
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(error_message)]
+
+
+def _IsInIosPackage(input_api, path):
+    """ Returns True if path is within ios package"""
+    ios_package_regex = input_api.re.compile(IOS_PACKAGE_PATTERN)
+
+    return ios_package_regex.search(path)
+
+
+def _HasIncludeDirective(input_api, line):
+    """ Returns True if #include is found in the line"""
+    include_regex = input_api.re.compile(INCLUDE_PATTERN)
+
+    return include_regex.search(line)
 
 
 def _HasToDoWithNoBug(input_api, line):
-  """ Returns True if TODO is not identified by a bug number."""
-  todo_regex = input_api.re.compile(TODO_PATTERN)
-  crbug_regex = input_api.re.compile(CRBUG_PATTERN)
+    """ Returns True if TODO is not identified by a bug number."""
+    todo_regex = input_api.re.compile(TODO_PATTERN)
+    crbug_regex = input_api.re.compile(CRBUG_PATTERN)
 
-  todo_match = todo_regex.search(line)
-  if not todo_match:
-    return False
-  crbug_match = crbug_regex.match(todo_match.group(1))
-  return not crbug_match
+    todo_match = todo_regex.search(line)
+    if not todo_match:
+        return False
+    crbug_match = crbug_regex.match(todo_match.group(1))
+    return not crbug_match
 
 
 def CheckChangeOnUpload(input_api, output_api):
-  results = []
-  results.extend(_CheckBugInToDo(input_api, output_api))
-  results.extend(_CheckNullabilityAnnotations(input_api, output_api))
-  results.extend(_CheckARCCompilationGuard(input_api, output_api))
-  return results
+    results = []
+    results.extend(_CheckBugInToDo(input_api, output_api))
+    results.extend(_CheckNullabilityAnnotations(input_api, output_api))
+    results.extend(_CheckARCCompilationGuard(input_api, output_api))
+    results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
+    results.extend(_CheckHasNoPipeInComment(input_api, output_api))
+    return results

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom-shared.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
@@ -39,10 +40,11 @@ struct StructTraits<ax::mojom::AssistantNodeDataView,
       const std::unique_ptr<ui::AssistantNode>& node) {
     return node->children_indices;
   }
-  static gfx::Rect rect(const std::unique_ptr<ui::AssistantNode>& node) {
+  static const gfx::Rect& rect(const std::unique_ptr<ui::AssistantNode>& node) {
     return node->rect;
   }
-  static std::u16string text(const std::unique_ptr<ui::AssistantNode>& node) {
+  static const std::u16string& text(
+      const std::unique_ptr<ui::AssistantNode>& node) {
     return node->text;
   }
   static float text_size(const std::unique_ptr<ui::AssistantNode>& node) {
@@ -66,15 +68,15 @@ struct StructTraits<ax::mojom::AssistantNodeDataView,
   static bool line_through(const std::unique_ptr<ui::AssistantNode>& node) {
     return node->line_through;
   }
-  static base::Optional<gfx::Range> selection(
+  static const absl::optional<gfx::Range>& selection(
       const std::unique_ptr<ui::AssistantNode>& node) {
     return node->selection;
   }
-  static std::string class_name(
+  static const std::string& class_name(
       const std::unique_ptr<ui::AssistantNode>& node) {
     return node->class_name;
   }
-  static base::Optional<std::string> role(
+  static const absl::optional<std::string>& role(
       const std::unique_ptr<ui::AssistantNode>& node) {
     return node->role;
   }

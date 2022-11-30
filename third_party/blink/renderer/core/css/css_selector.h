@@ -24,17 +24,21 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_
 
 #include <memory>
+#include <utility>
+
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/toggle_root.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
 
 class CSSParserContext;
 class CSSSelectorList;
-class Node;
+class Document;
 
 // This class represents a simple selector for a StyleRule.
 
@@ -94,13 +98,16 @@ class CORE_EXPORT CSSSelector {
  public:
   CSSSelector();
   CSSSelector(const CSSSelector&);
+  CSSSelector(CSSSelector&&);
   explicit CSSSelector(const QualifiedName&, bool tag_is_implicit = false);
 
   ~CSSSelector();
 
   String SelectorText() const;
 
-  bool operator==(const CSSSelector&) const;
+  CSSSelector& operator=(const CSSSelector&) = delete;
+  bool operator==(const CSSSelector&) const = delete;
+  bool operator!=(const CSSSelector&) const = delete;
 
   static constexpr unsigned kIdSpecificity = 0x010000;
   static constexpr unsigned kClassLikeSpecificity = 0x000100;
@@ -157,65 +164,77 @@ class CORE_EXPORT CSSSelector {
     // matching a ::part in shadow-including descendant tree for #host in
     // "#host::part(button)".
     kShadowPart,
+
+    // leftmost "Space" combinator of relative selector
+    kRelativeDescendant,
+    // leftmost > combinator of relative selector
+    kRelativeChild,
+    // leftmost + combinator of relative selector
+    kRelativeDirectAdjacent,
+    // leftmost ~ combinator of relative selector
+    kRelativeIndirectAdjacent
   };
 
   enum PseudoType {
-    kPseudoUnknown,
-    kPseudoEmpty,
-    kPseudoFirstChild,
-    kPseudoFirstOfType,
-    kPseudoLastChild,
-    kPseudoLastOfType,
-    kPseudoOnlyChild,
-    kPseudoOnlyOfType,
-    kPseudoFirstLine,
-    kPseudoFirstLetter,
-    kPseudoNthChild,
-    kPseudoNthOfType,
-    kPseudoNthLastChild,
-    kPseudoNthLastOfType,
-    kPseudoPart,
-    kPseudoState,
-    kPseudoLink,
-    kPseudoVisited,
+    kPseudoActive,
+    kPseudoAfter,
     kPseudoAny,
-    kPseudoIs,
-    kPseudoWhere,
     kPseudoAnyLink,
-    kPseudoWebkitAnyLink,
     kPseudoAutofill,
     kPseudoAutofillPreviewed,
     kPseudoAutofillSelected,
-    kPseudoHover,
+    kPseudoBackdrop,
+    kPseudoBefore,
+    kPseudoChecked,
+    kPseudoCornerPresent,
+    kPseudoDecrement,
+    kPseudoDefault,
+    kPseudoDisabled,
+    kPseudoDoubleButton,
     kPseudoDrag,
+    kPseudoEmpty,
+    kPseudoEnabled,
+    kPseudoEnd,
+    kPseudoFileSelectorButton,
+    kPseudoFirstChild,
+    kPseudoFirstLetter,
+    kPseudoFirstLine,
+    kPseudoFirstOfType,
+    kPseudoFirstPage,
     kPseudoFocus,
     kPseudoFocusVisible,
     kPseudoFocusWithin,
-    kPseudoActive,
-    kPseudoChecked,
-    kPseudoEnabled,
     kPseudoFullPageMedia,
-    kPseudoDefault,
-    kPseudoDisabled,
-    kPseudoOptional,
-    kPseudoPlaceholderShown,
-    kPseudoRequired,
-    kPseudoReadOnly,
-    kPseudoReadWrite,
-    kPseudoValid,
-    kPseudoInvalid,
+    kPseudoHorizontal,
+    kPseudoHover,
+    kPseudoIncrement,
     kPseudoIndeterminate,
-    kPseudoTarget,
-    kPseudoBefore,
-    kPseudoAfter,
+    kPseudoInvalid,
+    kPseudoIs,
+    kPseudoLang,
+    kPseudoLastChild,
+    kPseudoLastOfType,
+    kPseudoLeftPage,
+    kPseudoLink,
     kPseudoMarker,
     kPseudoModal,
-    kPseudoBackdrop,
-    kPseudoLang,
+    kPseudoNoButton,
     kPseudoNot,
+    kPseudoNthChild,
+    kPseudoNthLastChild,
+    kPseudoNthLastOfType,
+    kPseudoNthOfType,
+    kPseudoOnlyChild,
+    kPseudoOnlyOfType,
+    kPseudoOptional,
+    kPseudoPart,
     kPseudoPlaceholder,
-    kPseudoFileSelectorButton,
+    kPseudoPlaceholderShown,
+    kPseudoReadOnly,
+    kPseudoReadWrite,
+    kPseudoRequired,
     kPseudoResizer,
+    kPseudoRightPage,
     kPseudoRoot,
     kPseudoScope,
     kPseudoScrollbar,
@@ -224,31 +243,33 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollbarThumb,
     kPseudoScrollbarTrack,
     kPseudoScrollbarTrackPiece,
-    kPseudoWindowInactive,
-    kPseudoCornerPresent,
-    kPseudoDecrement,
-    kPseudoIncrement,
-    kPseudoHorizontal,
-    kPseudoVertical,
-    kPseudoStart,
-    kPseudoEnd,
-    kPseudoDoubleButton,
-    kPseudoSingleButton,
-    kPseudoNoButton,
     kPseudoSelection,
-    kPseudoLeftPage,
-    kPseudoRightPage,
-    kPseudoFirstPage,
+    kPseudoSelectorFragmentAnchor,
+    kPseudoSingleButton,
+    kPseudoStart,
+    kPseudoState,
+    kPseudoTarget,
+    kPseudoUnknown,
+    kPseudoValid,
+    kPseudoVertical,
+    kPseudoVisited,
+    kPseudoWebKitAutofill,
+    kPseudoWebkitAnyLink,
+    kPseudoWhere,
+    kPseudoWindowInactive,
     // TODO(foolip): When the unprefixed Fullscreen API is enabled, merge
     // kPseudoFullScreen and kPseudoFullscreen into one. (kPseudoFullscreen is
     // controlled by the FullscreenUnprefixed REF, but is otherwise an alias.)
     kPseudoFullScreen,
     kPseudoFullScreenAncestor,
     kPseudoFullscreen,
+    kPseudoPaused,
     kPseudoPictureInPicture,
+    kPseudoPlaying,
     kPseudoInRange,
     kPseudoOutOfRange,
     kPseudoXrOverlay,
+    kPseudoToggle,
     // Pseudo elements in UA ShadowRoots. Available in any stylesheets.
     kPseudoWebKitCustomElement,
     // Pseudo elements in UA ShadowRoots. Available only in UA stylesheets.
@@ -266,17 +287,32 @@ class CORE_EXPORT CSSSelector {
     kPseudoListBox,
     kPseudoMultiSelectFocus,
     kPseudoHostHasAppearance,
-    kPseudoPopupOpen,
+    kPseudoOpen,
+    kPseudoPopupOpeningOrOpen,
     kPseudoSlotted,
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
     kPseudoTargetText,
     kPseudoDir,
+    kPseudoHighlight,
     kPseudoSpellingError,
     kPseudoGrammarError,
+    kPseudoHas,
+    kPseudoRelativeAnchor,
+
+    // The following selectors are used to target pseudo elements created for
+    // DocumentTransition.
+    // See
+    // https://github.com/WICG/shared-element-transitions/blob/main/explainer.md
+    // for details.
+    kPseudoPageTransition,
+    kPseudoPageTransitionContainer,
+    kPseudoPageTransitionImageWrapper,
+    kPseudoPageTransitionOutgoingImage,
+    kPseudoPageTransitionIncomingImage,
   };
 
-  enum class AttributeMatchType {
+  enum class AttributeMatchType : int {
     kCaseSensitive,
     kCaseInsensitive,
     kCaseSensitiveAlways,
@@ -290,10 +326,10 @@ class CORE_EXPORT CSSSelector {
                         const CSSParserContext&,
                         bool has_arguments,
                         CSSParserMode);
-  void UpdatePseudoPage(const AtomicString&);
-
-  static PseudoType ParsePseudoType(const AtomicString&, bool has_arguments);
-  static PseudoId ParsePseudoId(const String&, const Node*);
+  void UpdatePseudoPage(const AtomicString&, const Document*);
+  static PseudoType NameToPseudoType(const AtomicString&,
+                                     bool has_arguments,
+                                     const Document* document);
   static PseudoId GetPseudoId(PseudoType);
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
@@ -314,6 +350,7 @@ class CORE_EXPORT CSSSelector {
   // http://www.w3.org/TR/css3-selectors/#attrnmsp
   const QualifiedName& Attribute() const;
   AttributeMatchType AttributeMatch() const;
+  bool IsCaseSensitiveAttribute() const;
   // Returns the argument of a parameterized selector. For example, :lang(en-US)
   // would have an argument of en-US.
   // Note that :nth-* selectors don't store an argument and just store the
@@ -327,6 +364,18 @@ class CORE_EXPORT CSSSelector {
   const Vector<AtomicString>* PartNames() const {
     return has_rare_data_ ? data_.rare_data_->part_names_.get() : nullptr;
   }
+  const ToggleRoot::State* ToggleValue() const {
+    return has_rare_data_ ? data_.rare_data_->toggle_value_.get() : nullptr;
+  }
+  bool ContainsPseudoInsideHasPseudoClass() const {
+    return has_rare_data_ ? data_.rare_data_->bits_.has_.contains_pseudo_
+                          : false;
+  }
+  bool ContainsComplexLogicalCombinationsInsideHasPseudoClass() const {
+    return has_rare_data_ ? data_.rare_data_->bits_.has_
+                                .contains_complex_logical_combinations_
+                          : false;
+  }
 
 #ifndef NDEBUG
   void Show() const;
@@ -339,14 +388,17 @@ class CORE_EXPORT CSSSelector {
   void SetArgument(const AtomicString&);
   void SetSelectorList(std::unique_ptr<CSSSelectorList>);
   void SetPartNames(std::unique_ptr<Vector<AtomicString>>);
+  void SetToggle(const AtomicString& name,
+                 std::unique_ptr<ToggleRoot::State>&& value);
+  void SetContainsPseudoInsideHasPseudoClass();
+  void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 
   void SetNth(int a, int b);
   bool MatchNth(unsigned count) const;
 
-  bool IsAdjacentSelector() const {
-    return relation_ == kDirectAdjacent || relation_ == kIndirectAdjacent;
+  static bool IsAdjacentRelation(RelationType relation) {
+    return relation == kDirectAdjacent || relation == kIndirectAdjacent;
   }
-  bool IsUAShadowSelector() const { return relation_ == kUAShadow; }
   bool IsAttributeSelector() const {
     return match_ >= kFirstAttributeSelectorMatch;
   }
@@ -374,11 +426,6 @@ class CORE_EXPORT CSSSelector {
     is_last_in_selector_list_ = is_last;
   }
 
-  bool IsLastInOriginalList() const { return is_last_in_original_list_; }
-  void SetLastInOriginalList(bool is_last) {
-    is_last_in_original_list_ = is_last;
-  }
-
   bool IsLastInTagHistory() const { return is_last_in_tag_history_; }
   void SetLastInTagHistory(bool is_last) { is_last_in_tag_history_ = is_last; }
 
@@ -402,9 +449,10 @@ class CORE_EXPORT CSSSelector {
   bool IsTreeAbidingPseudoElement() const;
   bool IsAllowedAfterPart() const;
 
-  bool HasSlottedPseudo() const;
   // Returns true if the immediately preceeding simple selector is ::part.
   bool FollowsPart() const;
+  // Returns true if the immediately preceeding simple selector is ::slotted.
+  bool FollowsSlotted() const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);
 
@@ -417,7 +465,6 @@ class CORE_EXPORT CSSSelector {
   unsigned has_rare_data_ : 1;
   unsigned is_for_page_ : 1;
   unsigned tag_is_implicit_ : 1;
-  unsigned is_last_in_original_list_ : 1;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -428,9 +475,6 @@ class CORE_EXPORT CSSSelector {
   unsigned SpecificityForOneSelector() const;
   unsigned SpecificityForPage() const;
   const CSSSelector* SerializeCompound(StringBuilder&) const;
-
-  // Hide.
-  CSSSelector& operator=(const CSSSelector&) = delete;
 
   struct RareData : public RefCounted<RareData> {
     static scoped_refptr<RareData> Create(const AtomicString& value) {
@@ -449,23 +493,37 @@ class CORE_EXPORT CSSSelector {
         int a_;  // Used for :nth-*
         int b_;  // Used for :nth-*
       } nth_;
-      AttributeMatchType
-          attribute_match_;  // used for attribute selector (with value)
+
+      struct {
+        AttributeMatchType
+            attribute_match_;  // used for attribute selector (with value)
+        bool is_case_sensitive_attribute_;
+      } attr_;
+
+      struct {
+        // Used for :has() with pseudos in its argument. e.g. :has(:hover)
+        bool contains_pseudo_;
+
+        // Used for :has() with logical combinations (:is(), :where(), :not())
+        // containing complex selector in its argument. e.g. :has(:is(.a .b))
+        bool contains_complex_logical_combinations_;
+      } has_;
     } bits_;
     QualifiedName attribute_;  // used for attribute selector
-    AtomicString argument_;    // Used for :contains, :lang, :nth-*
+    AtomicString argument_;    // Used for :contains, :lang, :nth-*, :toggle()
     std::unique_ptr<CSSSelectorList>
         selector_list_;  // Used for :-webkit-any and :not
     std::unique_ptr<Vector<AtomicString>>
         part_names_;  // Used for ::part() selectors.
+    std::unique_ptr<ToggleRoot::State> toggle_value_;  // used for :toggle()
 
    private:
     RareData(const AtomicString& value);
   };
   void CreateRareData();
 
-  // The type tag for DataUnion is actually inferred from multiple state variables in the
-  // containing CSSSelector using the following rules.
+  // The type tag for DataUnion is actually inferred from multiple state
+  // variables in the containing CSSSelector using the following rules.
   //
   //  if (match_ == kTag) {
   //     /* data_.tag_q_name_ is valid */
@@ -475,10 +533,10 @@ class CORE_EXPORT CSSSelector {
   //     /* data_.value_ is valid */
   //  }
   //
-  // Note that it is important to placement-new and explicitly destruct the fields when
-  // shifting between types tags for a DataUnion! Otherwise there will be undefined
-  // behavior! This luckily only happens when transitioning from a normal |value_| to
-  // a |rare_data_|.
+  // Note that it is important to placement-new and explicitly destruct the
+  // fields when shifting between types tags for a DataUnion! Otherwise there
+  // will be undefined behavior! This luckily only happens when transitioning
+  // from a normal |value_| to a |rare_data_|.
   union DataUnion {
     enum ConstructUninitializedTag { kConstructUninitialized };
     explicit DataUnion(ConstructUninitializedTag) {}
@@ -506,7 +564,13 @@ inline const QualifiedName& CSSSelector::Attribute() const {
 inline CSSSelector::AttributeMatchType CSSSelector::AttributeMatch() const {
   DCHECK(IsAttributeSelector());
   DCHECK(has_rare_data_);
-  return data_.rare_data_->bits_.attribute_match_;
+  return data_.rare_data_->bits_.attr_.attribute_match_;
+}
+
+inline bool CSSSelector::IsCaseSensitiveAttribute() const {
+  DCHECK(IsAttributeSelector());
+  DCHECK(has_rare_data_);
+  return data_.rare_data_->bits_.attr_.is_case_sensitive_attribute_;
 }
 
 inline bool CSSSelector::IsASCIILower(const AtomicString& value) {
@@ -542,7 +606,6 @@ inline CSSSelector::CSSSelector()
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(false),
-      is_last_in_original_list_(false),
       data_(DataUnion::kConstructEmptyValue) {}
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
@@ -555,7 +618,6 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(tag_is_implicit),
-      is_last_in_original_list_(false),
       data_(tag_q_name) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)
@@ -567,7 +629,6 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       has_rare_data_(o.has_rare_data_),
       is_for_page_(o.is_for_page_),
       tag_is_implicit_(o.tag_is_implicit_),
-      is_last_in_original_list_(o.is_last_in_original_list_),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);
@@ -575,6 +636,26 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
     new (&data_.rare_data_) scoped_refptr<RareData>(o.data_.rare_data_);
   } else {
     new (&data_.value_) AtomicString(o.data_.value_);
+  }
+}
+
+inline CSSSelector::CSSSelector(CSSSelector&& o)
+    : relation_(o.relation_),
+      match_(o.match_),
+      pseudo_type_(o.pseudo_type_),
+      is_last_in_selector_list_(o.is_last_in_selector_list_),
+      is_last_in_tag_history_(o.is_last_in_tag_history_),
+      has_rare_data_(o.has_rare_data_),
+      is_for_page_(o.is_for_page_),
+      tag_is_implicit_(o.tag_is_implicit_),
+      data_(DataUnion::kConstructUninitialized) {
+  if (o.match_ == kTag) {
+    new (&data_.tag_q_name_) QualifiedName(std::move(o.data_.tag_q_name_));
+  } else if (o.has_rare_data_) {
+    new (&data_.rare_data_)
+        scoped_refptr<RareData>(std::move(o.data_.rare_data_));
+  } else {
+    new (&data_.value_) AtomicString(std::move(o.data_.value_));
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -49,15 +50,10 @@ WaylandTest::WaylandTest()
 WaylandTest::~WaylandTest() {}
 
 void WaylandTest::SetUp() {
-  // TODO(1096425): remove this once Ozone is default on Linux. This is required
-  // to be able to run ozone_unittests locally without passing
-  // --enable-features=UseOzonePlatform explicitly. linux-ozone-rel bot does
-  // that automatically through changes done to "variants", which is also
-  // convenient to have locally so that we don't need to worry about that (it's
-  // the Wayland DragAndDrop that relies on the feature).
-  feature_list_.InitWithFeatures(
-      {features::kUseOzonePlatform, ui::kWaylandOverlayDelegation}, {});
-  ASSERT_TRUE(features::IsUsingOzonePlatform());
+  disabled_features_.push_back(ui::kWaylandSurfaceSubmissionInPixelCoordinates);
+  disabled_features_.push_back(features::kWaylandScreenCoordinatesEnabled);
+
+  feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
 
   if (DeviceDataManager::HasInstance()) {
     // Another instance may have already been set before.
@@ -69,14 +65,14 @@ void WaylandTest::SetUp() {
   ASSERT_TRUE(server_.Start(GetParam()));
   ASSERT_TRUE(connection_->Initialize());
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
+  connection_->wayland_output_manager()->InitWaylandScreen(screen_.get());
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&widget_));
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(0, 0, 800, 600);
   properties.type = PlatformWindowType::kWindow;
-  window_ = WaylandWindow::Create(&delegate_, connection_.get(),
-                                  std::move(properties));
-  window_->set_update_visual_size_immediately(true);
+  window_ = delegate_.CreateWaylandWindow(connection_.get(),
+                                          std::move(properties), true, true);
   ASSERT_NE(widget_, gfx::kNullAcceleratedWidget);
 
   window_->Show(false);
@@ -87,7 +83,7 @@ void WaylandTest::SetUp() {
   // Pause the server after it has responded to all incoming events.
   server_.Pause();
 
-  auto id = window_->root_surface()->GetSurfaceId();
+  auto id = window_->root_surface()->get_surface_id();
   surface_ = server_.GetObject<wl::MockSurface>(id);
   ASSERT_TRUE(surface_);
 
@@ -122,25 +118,42 @@ void WaylandTest::Sync() {
   server_.Pause();
 }
 
+void WaylandTest::SetPointerFocusedWindow(WaylandWindow* window) {
+  connection_->wayland_window_manager()->SetPointerFocusedWindow(window);
+}
+
+void WaylandTest::SetKeyboardFocusedWindow(WaylandWindow* window) {
+  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(window);
+}
+
 void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
-                                     int width,
-                                     int height,
+                                     const gfx::Size& size,
                                      uint32_t serial,
                                      struct wl_array* states) {
+  const int32_t width = size.width();
+  const int32_t height = size.height();
   // In xdg_shell_v6+, both surfaces send serial configure event and toplevel
   // surfaces send other data like states, heights and widths.
   // Please note that toplevel surfaces may not exist if the surface was created
   // for the popup role.
-  if (GetParam() == kXdgShellV6) {
+  if (GetParam().shell_version == wl::ShellVersion::kV6) {
     if (xdg_surface->xdg_toplevel()) {
       zxdg_toplevel_v6_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                       width, height, states);
+    } else {
+      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+      zxdg_popup_v6_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                                   width, height);
     }
     zxdg_surface_v6_send_configure(xdg_surface->resource(), serial);
   } else {
     if (xdg_surface->xdg_toplevel()) {
       xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                   width, height, states);
+    } else {
+      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+      xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                               width, height);
     }
     xdg_surface_send_configure(xdg_surface->resource(), serial);
   }
@@ -148,7 +161,12 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
 
 void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
-  SendConfigureEvent(xdg_surface, 0, 0, 1, state.get());
+  SendConfigureEvent(xdg_surface, {0, 0}, 1, state.get());
+}
+
+void WaylandTest::InitializeSurfaceAugmenter() {
+  server_.EnsureSurfaceAugmenter();
+  Sync();
 }
 
 }  // namespace ui

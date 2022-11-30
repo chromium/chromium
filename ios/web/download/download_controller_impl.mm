@@ -1,16 +1,22 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/download/download_controller_impl.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
+#import "ios/web/download/data_url_download_task.h"
+#import "ios/web/download/download_native_task_bridge.h"
+#import "ios/web/download/download_native_task_impl.h"
 #import "ios/web/download/download_session_cookie_storage.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/download/download_session_task_impl.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_controller_delegate.h"
-#import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/http/http_request_headers.h"
+#import "net/http/http_request_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,12 +40,16 @@ DownloadController* DownloadController::FromBrowserState(
       browser_state->GetUserData(&kDownloadControllerKey));
 }
 
-DownloadControllerImpl::DownloadControllerImpl() = default;
+DownloadControllerImpl::DownloadControllerImpl()
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})) {}
 
 DownloadControllerImpl::~DownloadControllerImpl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  for (DownloadTaskImpl* task : alive_tasks_)
-    task->ShutDown();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (DownloadTask* task : alive_tasks_) {
+    task->RemoveObserver(this);
+    task->Cancel();
+  }
 
   if (delegate_)
     delegate_->OnDownloadControllerDestroyed(this);
@@ -55,62 +65,69 @@ void DownloadControllerImpl::CreateDownloadTask(
     const std::string& content_disposition,
     int64_t total_bytes,
     const std::string& mime_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!delegate_)
     return;
 
-  auto task = std::make_unique<DownloadTaskImpl>(
+  if (original_url.SchemeIs(url::kDataScheme)) {
+    OnDownloadCreated(std::make_unique<DataUrlDownloadTask>(
+        web_state, original_url, http_method, content_disposition, total_bytes,
+        mime_type, identifier, task_runner_));
+  } else {
+    OnDownloadCreated(std::make_unique<DownloadSessionTaskImpl>(
+        web_state, original_url, http_method, content_disposition, total_bytes,
+        mime_type, identifier, task_runner_));
+  }
+}
+
+void DownloadControllerImpl::CreateNativeDownloadTask(
+    WebState* web_state,
+    NSString* identifier,
+    const GURL& original_url,
+    NSString* http_method,
+    const std::string& content_disposition,
+    int64_t total_bytes,
+    const std::string& mime_type,
+    DownloadNativeTaskBridge* download) API_AVAILABLE(ios(15)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!delegate_) {
+    [download cancel];
+    return;
+  }
+
+  OnDownloadCreated(std::make_unique<DownloadNativeTaskImpl>(
       web_state, original_url, http_method, content_disposition, total_bytes,
-      mime_type, identifier, this);
-  alive_tasks_.insert(task.get());
-  delegate_->OnDownloadCreated(this, web_state, std::move(task));
+      mime_type, identifier, task_runner_, download));
 }
 
 void DownloadControllerImpl::SetDelegate(DownloadControllerDelegate* delegate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_ = delegate;
 }
 
 DownloadControllerDelegate* DownloadControllerImpl::GetDelegate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delegate_;
 }
 
-void DownloadControllerImpl::OnTaskDestroyed(DownloadTaskImpl* task) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+void DownloadControllerImpl::OnDownloadDestroyed(DownloadTask* task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = alive_tasks_.find(task);
   DCHECK(it != alive_tasks_.end());
+  task->RemoveObserver(this);
   alive_tasks_.erase(it);
 }
 
-NSURLSession* DownloadControllerImpl::CreateSession(
-    NSString* identifier,
-    NSArray<NSHTTPCookie*>* cookies,
-    id<NSURLSessionDataDelegate> delegate,
-    NSOperationQueue* delegate_queue) {
-  NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
-      backgroundSessionConfigurationWithIdentifier:identifier];
-  configuration.HTTPCookieStorage = [[DownloadSessionCookieStorage alloc] init];
-  configuration.HTTPCookieStorage.cookieAcceptPolicy =
-      [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy;
-  // Cookies have to be set in session configuration before the session is
-  // created. Once the session is created, the configuration object can't be
-  // edited and configuration property will return a copy of the originally used
-  // configuration.
-  for (NSHTTPCookie* cookie in cookies) {
-    // Cookies copied from the internal WebSiteDataStore cookie store, so
-    // there will be no duplications or invalid cookies.
-    [configuration.HTTPCookieStorage setCookie:cookie];
-  }
-  std::string user_agent = GetWebClient()->GetUserAgent(UserAgentType::MOBILE);
-  configuration.HTTPAdditionalHeaders = @{
-    base::SysUTF8ToNSString(net::HttpRequestHeaders::kUserAgent) :
-        base::SysUTF8ToNSString(user_agent),
-  };
+void DownloadControllerImpl::OnDownloadCreated(
+    std::unique_ptr<DownloadTaskImpl> task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(task);
+  alive_tasks_.insert(task.get());
+  task->AddObserver(this);
 
-  return [NSURLSession sessionWithConfiguration:configuration
-                                       delegate:delegate
-                                  delegateQueue:delegate_queue];
+  DCHECK(task->GetWebState());
+  WebState* web_state = task->GetWebState();
+  delegate_->OnDownloadCreated(this, web_state, std::move(task));
 }
 
 }  // namespace web

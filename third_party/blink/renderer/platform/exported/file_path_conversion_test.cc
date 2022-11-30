@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,17 @@ TEST(FilePathConversionTest, convert) {
             FilePathToWebString(base::FilePath(FILE_PATH_LITERAL("path"))));
   EXPECT_EQ(test8bit_latin1.Utf8(), FilePathToWebString(path_latin1).Utf8());
   EXPECT_EQ(test16bit_utf16.Utf8(), FilePathToWebString(path_utf16).Utf8());
+
+  // Conversions for invalid file paths should fail.
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_TRUE(
+      FilePathToWebString(base::FilePath(FILE_PATH_LITERAL("foo\337bar")))
+          .IsEmpty());
+#else
+  EXPECT_FALSE(
+      FilePathToWebString(base::FilePath(FILE_PATH_LITERAL("foo\337bar")))
+          .IsEmpty());
+#endif
 }
 
 }  // namespace blink

@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome_browser_certificate_transparency;
+
+import "certificate_transparency.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Certificate transparency configuration as used by Chrome.
+message CTConfig {
+  // Emergency switch to disable all CT enforcement.
+  bool disable_ct_enforcement = 1;
+  // Logs Chrome should recognize.
+  CTLogList log_list = 2;
+  // A list of the leaf hashes for the most popular SCTs encountered in Chrome
+  // recently. Sorted lexicographically.
+  repeated bytes popular_scts = 3;
+}

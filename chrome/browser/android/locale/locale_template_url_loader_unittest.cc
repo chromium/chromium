@@ -1,10 +1,12 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/android/locale/locale_template_url_loader.h"
 
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,6 +49,10 @@ class LocaleTemplateUrlLoaderTest : public testing::Test {
  public:
   LocaleTemplateUrlLoaderTest() {}
 
+  LocaleTemplateUrlLoaderTest(const LocaleTemplateUrlLoaderTest&) = delete;
+  LocaleTemplateUrlLoaderTest& operator=(const LocaleTemplateUrlLoaderTest&) =
+      delete;
+
   void SetUp() override;
   void TearDown() override;
   LocaleTemplateUrlLoader* loader() { return loader_.get(); }
@@ -58,13 +64,11 @@ class LocaleTemplateUrlLoaderTest : public testing::Test {
       task_environment_;  // To set up BrowserThreads.
   std::unique_ptr<LocaleTemplateUrlLoader> loader_;
   std::unique_ptr<TemplateURLServiceTestUtil> test_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleTemplateUrlLoaderTest);
 };
 
 void LocaleTemplateUrlLoaderTest::SetUp() {
-  test_util_.reset(new TemplateURLServiceTestUtil);
-  loader_.reset(new MockLocaleTemplateUrlLoader("jp", model()));
+  test_util_ = std::make_unique<TemplateURLServiceTestUtil>();
+  loader_ = std::make_unique<MockLocaleTemplateUrlLoader>("jp", model());
 }
 
 void LocaleTemplateUrlLoaderTest::TearDown() {
@@ -74,8 +78,8 @@ void LocaleTemplateUrlLoaderTest::TearDown() {
 
 TEST_F(LocaleTemplateUrlLoaderTest, AddLocalSearchEngines) {
   test_util()->VerifyLoad();
-  auto naver = base::ASCIIToUTF16("naver.com");
-  auto keyword_so = base::ASCIIToUTF16("so.com");
+  std::u16string naver = u"naver.com";
+  std::u16string keyword_so = u"so.com";
   ASSERT_EQ(nullptr, model()->GetTemplateURLForKeyword(naver));
   ASSERT_EQ(nullptr, model()->GetTemplateURLForKeyword(keyword_so));
 
@@ -96,8 +100,8 @@ TEST_F(LocaleTemplateUrlLoaderTest, RemoveLocalSearchEngines) {
   test_util()->VerifyLoad();
   ASSERT_TRUE(loader()->LoadTemplateUrls(nullptr));
   // Make sure locale engines are loaded.
-  auto keyword_naver = base::ASCIIToUTF16("naver.com");
-  auto keyword_so = base::ASCIIToUTF16("so.com");
+  std::u16string keyword_naver = u"naver.com";
+  std::u16string keyword_so = u"so.com";
   ASSERT_EQ(TemplateURLPrepopulateData::naver.id,
             model()->GetTemplateURLForKeyword(keyword_naver)->prepopulate_id());
   ASSERT_EQ(TemplateURLPrepopulateData::so_360.id,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,26 +19,30 @@ namespace {
 // Sets the values of |scheme| and |protocol| based on |service_type|.
 void SetSchemeAndProtocol(const std::string& service_type,
                           std::string& scheme_out,
-                          chromeos::ScanProtocol& protocol_out) {
+                          ScanProtocol& protocol_out) {
   if (service_type == ZeroconfScannerDetector::kEsclsServiceType) {
     scheme_out = "https";
-    protocol_out = chromeos::ScanProtocol::kEscls;
+    protocol_out = ScanProtocol::kEscls;
   } else if (service_type == ZeroconfScannerDetector::kEsclServiceType) {
     scheme_out = "http";
-    protocol_out = chromeos::ScanProtocol::kEscl;
+    protocol_out = ScanProtocol::kEscl;
+  } else if (service_type ==
+             ZeroconfScannerDetector::kGenericScannerServiceType) {
+    protocol_out = ScanProtocol::kLegacyNetwork;
   } else {
     NOTREACHED() << "Zeroconf scanner with unknown service type: "
                  << service_type;
   }
 }
 
-// Creates a device name compatible with the sane-airscan backend. Returns the
+// Creates a device name compatible with the given backend. Returns the
 // name on success and an empty string on failure.
 std::string CreateDeviceName(const std::string& name,
                              const std::string& scheme,
                              const std::string& rs,
                              const net::IPAddress& ip_address,
-                             int port) {
+                             int port,
+                             const std::string& backend_prefix) {
   std::string path;
   if (rs == "none")
     path = "eSCL/";
@@ -61,32 +65,38 @@ std::string CreateDeviceName(const std::string& name,
                << url.possibly_invalid_spec();
     return "";
   }
-
-  return base::StringPrintf("airscan:escl:%s:%s", sanitized_name.c_str(),
-                            url.spec().c_str());
+  return base::StringPrintf("%s:%s:%s", backend_prefix.c_str(),
+                            sanitized_name.c_str(), url.spec().c_str());
 }
 
 }  // namespace
 
-base::Optional<chromeos::Scanner> CreateSaneAirscanScanner(
-    const std::string& name,
-    const std::string& service_type,
-    const std::string& rs,
-    const net::IPAddress& ip_address,
-    int port,
-    bool usable) {
+absl::optional<Scanner> CreateSaneScanner(const std::string& name,
+                                          const std::string& service_type,
+                                          const std::string& rs,
+                                          const net::IPAddress& ip_address,
+                                          int port,
+                                          bool usable) {
   std::string scheme;
-  chromeos::ScanProtocol protocol = chromeos::ScanProtocol::kUnknown;
+  ScanProtocol protocol = ScanProtocol::kUnknown;
   SetSchemeAndProtocol(service_type, scheme, protocol);
-  const std::string device_name =
-      CreateDeviceName(name, scheme, rs, ip_address, port);
+  std::string device_name = "";
+  // If the name contains "EPSON" and is a generic service type, use the
+  // "epsonds:net" backend.
+  if (service_type == ZeroconfScannerDetector::kGenericScannerServiceType &&
+      base::StartsWith(name, "EPSON"))
+    device_name = base::StringPrintf("%s:%s", "epsonds:net",
+                                     ip_address.ToString().c_str());
+  else if (service_type != ZeroconfScannerDetector::kGenericScannerServiceType)
+    device_name =
+        CreateDeviceName(name, scheme, rs, ip_address, port, "airscan:escl");
   if (device_name.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
-  chromeos::Scanner scanner;
+  Scanner scanner;
   scanner.display_name = name;
   scanner.device_names[protocol].emplace(
-      chromeos::ScannerDeviceName(device_name, usable));
+      ScannerDeviceName(device_name, usable));
   scanner.ip_addresses.insert(ip_address);
   return scanner;
 }

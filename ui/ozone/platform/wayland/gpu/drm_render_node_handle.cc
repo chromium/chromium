@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,16 @@
 
 namespace ui {
 
+namespace {
+
+struct DrmVersionDeleter {
+  void operator()(drmVersion* version) const { drmFreeVersion(version); }
+};
+
+typedef std::unique_ptr<drmVersion, DrmVersionDeleter> ScopedDrmVersionPtr;
+
+}  // namespace
+
 DrmRenderNodeHandle::DrmRenderNodeHandle() = default;
 
 DrmRenderNodeHandle::~DrmRenderNodeHandle() = default;
@@ -20,8 +30,8 @@ bool DrmRenderNodeHandle::Initialize(const base::FilePath& path) {
   if (drm_fd.get() < 0)
     return false;
 
-  drmVersionPtr drm_version = drmGetVersion(drm_fd.get());
-  if (!drm_version) {
+  ScopedDrmVersionPtr version(drmGetVersion(drm_fd.get()));
+  if (!version) {
     LOG(FATAL) << "Can't get version for device: '" << path << "'";
     return false;
   }

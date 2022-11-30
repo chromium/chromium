@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,18 @@ group("linux") {
 # is applied to all targets. It is here to separate out the logic that is
 # Linux-only. This is not applied to Android, but is applied to ChromeOS.
 config("compiler") {
+  if (current_cpu == "arm64") {
+    import("//build/config/arm.gni")
+    cflags = []
+    asmflags = []
+    if (arm_control_flow_integrity == "standard") {
+      cflags += [ "-mbranch-protection=standard" ]
+      asmflags += [ "-mbranch-protection=standard" ]
+    } else if (arm_control_flow_integrity == "pac") {
+      cflags += [ "-mbranch-protection=pac-ret" ]
+      asmflags += [ "-mbranch-protection=pac-ret" ]
+    }
+  }
 }
 
 # This is included by reference in the //build/config/compiler:runtime_library
@@ -28,8 +40,7 @@ config("runtime_library") {
     defines = [ "OS_CHROMEOS" ]
   }
 
-  if ((!(is_chromeos_ash || is_chromeos_lacros) ||
-       default_toolchain != "//build/toolchain/cros:target") &&
+  if ((!is_chromeos || default_toolchain != "//build/toolchain/cros:target") &&
       (!use_custom_libcxx || current_cpu == "mipsel")) {
     libs = [ "atomic" ]
   }
@@ -56,13 +67,4 @@ if (use_glib) {
       "GLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_40",
     ]
   }
-}
-
-# Ensures all exported symbols are added to the dynamic symbol table.  This is
-# necessary to expose Chrome's custom operator new() and operator delete() (and
-# other memory-related symbols) to libraries.  Otherwise, they might
-# (de)allocate memory on a different heap, which would spell trouble if pointers
-# to heap-allocated memory are passed over shared library boundaries.
-config("export_dynamic") {
-  ldflags = [ "-rdynamic" ]
 }

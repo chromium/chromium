@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,13 +8,13 @@ static_library("renderer") {
     "no_state_prefetch_client.h",
     "no_state_prefetch_helper.cc",
     "no_state_prefetch_helper.h",
+    "no_state_prefetch_utils.cc",
+    "no_state_prefetch_utils.h",
     "prerender_observer.h",
     "prerender_observer_list.cc",
     "prerender_observer_list.h",
     "prerender_render_frame_observer.cc",
     "prerender_render_frame_observer.h",
-    "prerender_utils.cc",
-    "prerender_utils.h",
   ]
 
   deps = [

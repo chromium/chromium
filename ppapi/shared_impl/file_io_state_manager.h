@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define PPAPI_SHARED_IMPL_FILE_IO_STATE_MANAGER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 
@@ -19,6 +18,10 @@ namespace ppapi {
 class PPAPI_SHARED_EXPORT FileIOStateManager {
  public:
   FileIOStateManager();
+
+  FileIOStateManager(const FileIOStateManager&) = delete;
+  FileIOStateManager& operator=(const FileIOStateManager&) = delete;
+
   ~FileIOStateManager();
 
   enum OperationType {
@@ -59,8 +62,6 @@ class PPAPI_SHARED_EXPORT FileIOStateManager {
 
   // Set to true when the file has been successfully opened.
   bool file_open_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOStateManager);
 };
 
 }  // namespace ppapi

@@ -1,11 +1,12 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom") {
+mojom("fuchsia_media_resource_provider") {
   sources = [ "fuchsia_media_resource_provider.mojom" ]
+  deps = [ "//media/mojo/mojom" ]
 
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
@@ -19,19 +20,14 @@ mojom("mojom") {
         move_only = true
       },
       {
-        mojom = "media.mojom.AudioConsumerRequest"
-        cpp = "::fidl::InterfaceRequest<::fuchsia::media::AudioConsumer>"
-        move_only = true
-      },
-      {
-        mojom = "media.mojom.AudioCapturerRequest"
-        cpp = "::fidl::InterfaceRequest<::fuchsia::media::AudioCapturer>"
+        mojom = "media.mojom.StreamProcessorRequest"
+        cpp = "::fidl::InterfaceRequest<::fuchsia::media::StreamProcessor>"
         move_only = true
       },
     ]
     traits_headers = [ "fuchsia_media_resource_provider_mojom_traits.h" ]
     traits_public_deps = [
-      "//fuchsia/mojom:traits",
+      "//mojo/public/cpp/base/fuchsia:traits",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm",
     ]

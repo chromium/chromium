@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_WINDOW_AGENT_H_
 
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-
-namespace v8 {
-class Isolate;
-}
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -19,7 +17,7 @@ namespace blink {
 //
 // The instance holds per-agent data in addition to the base Agent, that is also
 // shared by associated Documents.
-class WindowAgent final : public Agent {
+class WindowAgent final : public Agent, public AgentGroupScheduler::Agent {
  public:
   // Normally you don't want to call this constructor; instead, use
   // WindowAgentFactory::GetAgentForOrigin() so you can get the agent shared
@@ -29,16 +27,42 @@ class WindowAgent final : public Agent {
   // other frames. Use this constructor only if:
   //   - An appropriate instance of WindowAgentFactory is not available
   //     (this should only happen in tests).
-  explicit WindowAgent(v8::Isolate* isolate);
+  explicit WindowAgent(
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+
+  // Normally you don't want to call this constructor; instead, use
+  // WindowAgentFactory::GetAgentForOrigin() so you can get the agent shared
+  // on the same-site frames. (Same as the constructor above.)
+  //
+  // This constructor calls WindowAgent::WindowAgent(isolate), but also stores
+  // the state of origin agent clustering.
+  WindowAgent(scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+              bool is_origin_agent_cluster,
+              bool origin_agent_cluster_left_as_default);
 
   ~WindowAgent() override;
 
+  // Agent overrides.
   void Trace(Visitor*) const override;
+  bool IsWindowAgent() const override;
+
+  // AgentGroupScheduler::Agent overrides.
+  void PerformMicrotaskCheckpoint() override;
+  void SchedulerDestroyed() override;
+
+  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler();
 
  private:
+  // Note clients may attach per-agent data via Supplementable.
+  // MutationObservers are attached this way.
   // TODO(keishi): Move per-agent data here with the correct granularity.
-  // E.g. ActiveMutationObservers and CustomElementReactionStack should move
-  // here.
+  // E.g. CustomElementReactionStack should move here.
+  scheduler::WebAgentGroupScheduler* agent_group_scheduler_ = nullptr;
+};
+
+template <>
+struct DowncastTraits<WindowAgent> {
+  static bool AllowFrom(const Agent& agent) { return agent.IsWindowAgent(); }
 };
 
 }  // namespace blink

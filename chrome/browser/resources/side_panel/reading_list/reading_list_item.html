@@ -1,0 +1,127 @@
+<style include="mwb-element-shared-style">
+  /* TODO(corising): Add dark mode support for buttons and hover/focus states
+   * (crbug/1147457).*/
+  :host(:focus) {
+    outline: none;
+  }
+
+  .button-container {
+    display: flex;
+    margin-inline-start: calc(var(--mwb-icon-size) / 2);
+    overflow: hidden;
+    width: 0;
+  }
+
+  :host(:is(.hovered, :focus-within)) .button-container {
+    overflow: visible;
+    width: auto;
+  }
+
+  .favicon {
+    background-repeat: no-repeat;
+    background-size: var(--mwb-icon-size);
+    flex-shrink: 0;
+    height: var(--mwb-icon-size);
+    margin-inline-end: var(--mwb-list-item-horizontal-margin);
+    width: var(--mwb-icon-size);
+  }
+
+  .text-container {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .primary-text,
+  .secondary-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .primary-text {
+    color: var(--cr-primary-text-color);
+    font-size: var(--mwb-primary-text-font-size);
+    margin-bottom: 3px;
+  }
+
+  .secondary-text {
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: var(--mwb-secondary-text-font-size);
+  }
+
+  .secondary-text span {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .secondary-text .url {
+    /* Flip so the ellipsis appears at the front. */
+    direction: rtl;
+    padding-inline-start: 3px;
+  }
+
+  :host-context([dir='rtl']) .secondary-text .url {
+    padding-inline-end: 3px;
+    padding-inline-start: 0;
+  }
+
+  .secondary-text .time {
+    flex-shrink: 0;
+    padding-inline-start: 3px;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: transparent;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-margin-end: 0;
+  }
+
+  :host-context([dir='rtl']) #updateStatusButton {
+    /* Prevent checkmark from flipping in RTL. */
+    transform: none;
+  }
+
+  :host(:is(.hovered, :focus-within) ) cr-icon-button {
+    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host(:is(.hovered, :focus-within) ) cr-icon-button {
+      --cr-icon-button-ripple-opacity: 0.15;
+    }
+  }
+
+  #deleteButton {
+    margin-inline-start: calc(var(--cr-icon-button-size) / 2);
+  }
+</style>
+
+<div class="favicon" style="background-image:[[getFaviconUrl_(data.url.url)]]">
+</div>
+<div class="text-container">
+  <div class="primary-text">[[data.title]]</div>
+  <div class="secondary-text">
+    <span class="url">[[data.displayUrl]]</span> -
+    <span class="time">[[data.displayTimeSinceUpdate]]</span>
+  </div>
+</div>
+<div class="button-container">
+  <cr-icon-button id="updateStatusButton" disable-ripple
+      aria-label="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
+          '$i18n{tooltipMarkAsRead}', data.read)]]"
+      iron-icon="[[getUpdateStatusButtonIcon_('cr:check-circle',
+          'read-later:check-circle-outline', data.read)]]"
+      noink="[[!buttonRipples]]" no-ripple-on-focus
+      on-click="onUpdateStatusClick_"
+      title="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
+          '$i18n{tooltipMarkAsRead}', data.read)]]">
+  </cr-icon-button>
+  <cr-icon-button id="deleteButton" aria-label="$i18n{tooltipDelete}"
+      iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
+      on-click="onItemDeleteClick_" title="$i18n{tooltipDelete}">
+  </cr-icon-button>
+</div>

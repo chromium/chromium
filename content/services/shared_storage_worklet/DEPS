@@ -1,0 +1,9 @@
+include_rules = [
+  "+gin",
+  "+services/network/public",
+  "+third_party/blink/public/common/mime_util",
+  "+v8",
+  "+services/network/test",
+  "+components/services/storage/shared_storage/public/mojom",
+  "+third_party/blink/public/common/shared_storage/shared_storage_utils.h",
+]

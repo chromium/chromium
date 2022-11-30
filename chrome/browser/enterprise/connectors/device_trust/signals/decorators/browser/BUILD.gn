@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_signals_decorator_unittest.cc" ]
+
+  deps = [
+    "//chrome/browser",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
+    "//components/device_signals/core/common",
+    "//components/enterprise:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}

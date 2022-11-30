@@ -26,6 +26,7 @@
 #include <random>
 #include <string>
 #include <thread>  // NOLINT(build/c++11)
+#include <type_traits>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -852,7 +853,7 @@ TEST(Mutex, MutexReaderDecrementBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 // held and then destroyed (w/o unlocking).
 #ifdef ABSL_HAVE_THREAD_SANITIZER
 // TSAN reports errors when locked Mutexes are destroyed.
-TEST(Mutex, DISABLED_LockedMutexDestructionBug) NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, DISABLED_LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #else
 TEST(Mutex, LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #endif
@@ -868,33 +869,6 @@ TEST(Mutex, LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
       }
     }
   }
-}
-
-// --------------------------------------------------------
-// Test for bug with pattern of readers using a condvar.  The bug was that if a
-// reader went to sleep on a condition variable while one or more other readers
-// held the lock, but there were no waiters, the reader count (held in the
-// mutex word) would be lost.  (This is because Enqueue() had at one time
-// always placed the thread on the Mutex queue.  Later (CL 4075610), to
-// tolerate re-entry into Mutex from a Condition predicate, Enqueue() was
-// changed so that it could also place a thread on a condition-variable.  This
-// introduced the case where Enqueue() returned with an empty queue, and this
-// case was handled incorrectly in one place.)
-
-static void ReaderForReaderOnCondVar(absl::Mutex *mu, absl::CondVar *cv,
-                                     int *running) {
-  std::random_device dev;
-  std::mt19937 gen(dev());
-  std::uniform_int_distribution<int> random_millis(0, 15);
-  mu->ReaderLock();
-  while (*running == 3) {
-    absl::SleepFor(absl::Milliseconds(random_millis(gen)));
-    cv->WaitWithTimeout(mu, absl::Milliseconds(random_millis(gen)));
-  }
-  mu->ReaderUnlock();
-  mu->Lock();
-  (*running)--;
-  mu->Unlock();
 }
 
 struct True {
@@ -943,6 +917,33 @@ TEST(Mutex, FunctorCondition) {
     value = 0;
     EXPECT_TRUE(c.Eval());
   }
+}
+
+// --------------------------------------------------------
+// Test for bug with pattern of readers using a condvar.  The bug was that if a
+// reader went to sleep on a condition variable while one or more other readers
+// held the lock, but there were no waiters, the reader count (held in the
+// mutex word) would be lost.  (This is because Enqueue() had at one time
+// always placed the thread on the Mutex queue.  Later (CL 4075610), to
+// tolerate re-entry into Mutex from a Condition predicate, Enqueue() was
+// changed so that it could also place a thread on a condition-variable.  This
+// introduced the case where Enqueue() returned with an empty queue, and this
+// case was handled incorrectly in one place.)
+
+static void ReaderForReaderOnCondVar(absl::Mutex *mu, absl::CondVar *cv,
+                                     int *running) {
+  std::random_device dev;
+  std::mt19937 gen(dev());
+  std::uniform_int_distribution<int> random_millis(0, 15);
+  mu->ReaderLock();
+  while (*running == 3) {
+    absl::SleepFor(absl::Milliseconds(random_millis(gen)));
+    cv->WaitWithTimeout(mu, absl::Milliseconds(random_millis(gen)));
+  }
+  mu->ReaderUnlock();
+  mu->Lock();
+  (*running)--;
+  mu->Unlock();
 }
 
 static bool IntIsZero(int *x) { return *x == 0; }
@@ -1153,7 +1154,7 @@ TEST(Mutex, DeadlockDetectorStressTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 
 #ifdef ABSL_HAVE_THREAD_SANITIZER
 // TSAN reports errors when locked Mutexes are destroyed.
-TEST(Mutex, DISABLED_DeadlockIdBug) NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, DISABLED_DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #else
 TEST(Mutex, DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #endif
@@ -1701,6 +1702,32 @@ TEST(Mutex, MuTime) {
   int threads = 10;  // Use a fixed thread count of 10
   int iterations = 1;
   EXPECT_EQ(RunTest(&TestMuTime, threads, iterations, 1), threads * iterations);
+}
+
+TEST(Mutex, SignalExitedThread) {
+  // The test may expose a race when Mutex::Unlock signals a thread
+  // that has already exited.
+#if defined(__wasm__) || defined(__asmjs__)
+  constexpr int kThreads = 1;  // OOMs under WASM
+#else
+  constexpr int kThreads = 100;
+#endif
+  std::vector<std::thread> top;
+  for (unsigned i = 0; i < 2 * std::thread::hardware_concurrency(); i++) {
+    top.emplace_back([&]() {
+      for (int i = 0; i < kThreads; i++) {
+        absl::Mutex mu;
+        std::thread t([&]() {
+          mu.Lock();
+          mu.Unlock();
+        });
+        mu.Lock();
+        mu.Unlock();
+        t.join();
+      }
+    });
+  }
+  for (auto &th : top) th.join();
 }
 
 }  // namespace

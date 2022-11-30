@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -90,8 +90,8 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
       }
 
       if (found_from_x || found_to_x) {
-        min_y = std::min(min_y, result->DeprecatedInkBounds().Y());
-        max_y = std::max(max_y, result->DeprecatedInkBounds().MaxY());
+        min_y = std::min(min_y, result->DeprecatedInkBounds().y());
+        max_y = std::max(max_y, result->DeprecatedInkBounds().bottom());
       }
 
       if (found_from_x && found_to_x)

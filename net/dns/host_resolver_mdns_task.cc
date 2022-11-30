@@ -1,19 +1,24 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/dns/host_resolver_mdns_task.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/dns_query_type.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
 
@@ -122,18 +127,20 @@ class HostResolverMdnsTask::Transaction {
   std::unique_ptr<MDnsTransaction> async_transaction_;
 
   // Back pointer. Expected to destroy |this| before destroying itself.
-  HostResolverMdnsTask* const task_;
+  const raw_ptr<HostResolverMdnsTask> task_;
 };
 
-HostResolverMdnsTask::HostResolverMdnsTask(
-    MDnsClient* mdns_client,
-    const std::string& hostname,
-    const std::vector<DnsQueryType>& query_types)
-    : mdns_client_(mdns_client), hostname_(hostname) {
-  DCHECK(!query_types.empty());
-  for (DnsQueryType query_type : query_types) {
+HostResolverMdnsTask::HostResolverMdnsTask(MDnsClient* mdns_client,
+                                           std::string hostname,
+                                           DnsQueryTypeSet query_types)
+    : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
+  DCHECK(!query_types.Empty());
+  DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
+
+  static constexpr DnsQueryTypeSet kUnwantedQueries(DnsQueryType::HTTPS);
+
+  for (DnsQueryType query_type : Difference(query_types, kUnwantedQueries))
     transactions_.emplace_back(query_type, this);
-  }
 }
 
 HostResolverMdnsTask::~HostResolverMdnsTask() {
@@ -161,12 +168,11 @@ HostCache::Entry HostResolverMdnsTask::GetResults() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!transactions_.empty());
   DCHECK(!completion_closure_);
-  DCHECK(std::all_of(transactions_.begin(), transactions_.end(),
-                     [](const Transaction& t) { return t.IsDone(); }));
+  DCHECK(base::ranges::all_of(transactions_,
+                              [](const Transaction& t) { return t.IsDone(); }));
 
   auto found_error =
-      std::find_if(transactions_.begin(), transactions_.end(),
-                   [](const Transaction& t) { return t.IsError(); });
+      base::ranges::find_if(transactions_, &Transaction::IsError);
   if (found_error != transactions_.end()) {
     return found_error->results();
   }
@@ -202,23 +208,16 @@ HostCache::Entry HostResolverMdnsTask::ParseResult(
       // Not supported.
       // TODO(ericorth@chromium.org): Consider support for HTTPS in mDNS if it
       // is ever decided to support HTTPS via non-DoH.
-    case DnsQueryType::INTEGRITY:
-      // INTEGRITY queries are not expected to be useful in mDNS, so they're not
-      // supported.
       NOTREACHED();
       return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
     case DnsQueryType::A:
       return HostCache::Entry(
-          OK,
-          AddressList(
-              IPEndPoint(parsed->rdata<net::ARecordRdata>()->address(), 0)),
-          HostCache::Entry::SOURCE_UNKNOWN);
+          OK, {IPEndPoint(parsed->rdata<net::ARecordRdata>()->address(), 0)},
+          /*aliases=*/{}, HostCache::Entry::SOURCE_UNKNOWN);
     case DnsQueryType::AAAA:
       return HostCache::Entry(
-          OK,
-          AddressList(
-              IPEndPoint(parsed->rdata<net::AAAARecordRdata>()->address(), 0)),
-          HostCache::Entry::SOURCE_UNKNOWN);
+          OK, {IPEndPoint(parsed->rdata<net::AAAARecordRdata>()->address(), 0)},
+          /*aliases=*/{}, HostCache::Entry::SOURCE_UNKNOWN);
     case DnsQueryType::TXT:
       return HostCache::Entry(OK, parsed->rdata<net::TxtRecordRdata>()->texts(),
                               HostCache::Entry::SOURCE_UNKNOWN);
@@ -235,14 +234,14 @@ void HostResolverMdnsTask::CheckCompletion(bool post_needed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Finish immediately if any transactions completed with an error.
-  if (std::any_of(transactions_.begin(), transactions_.end(),
-                  [](const Transaction& t) { return t.IsError(); })) {
+  if (base::ranges::any_of(transactions_,
+                           [](const Transaction& t) { return t.IsError(); })) {
     Complete(post_needed);
     return;
   }
 
-  if (std::all_of(transactions_.begin(), transactions_.end(),
-                  [](const Transaction& t) { return t.IsDone(); })) {
+  if (base::ranges::all_of(transactions_,
+                           [](const Transaction& t) { return t.IsDone(); })) {
     Complete(post_needed);
     return;
   }

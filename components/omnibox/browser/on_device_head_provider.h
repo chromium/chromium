@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/on_device_head_model.h"
@@ -59,7 +58,7 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
   // matches the given AutocompleteInput.
   void DoSearch(std::unique_ptr<OnDeviceHeadProviderParams> params);
   // SearchDone: called after DoSearch, fills |matches_| with the suggestions
-  // fetches by DoSearch and then calls OnProviderUpdate.
+  // fetches by DoSearch and then calls NotifyListeners.
   void SearchDone(std::unique_ptr<OnDeviceHeadProviderParams> params);
 
   // Helper functions to read model filename from the static
@@ -73,8 +72,7 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
       const size_t provider_max_matches,
       std::unique_ptr<OnDeviceHeadProviderParams> params);
 
-  AutocompleteProviderClient* client_;
-  AutocompleteProviderListener* listener_;
+  raw_ptr<AutocompleteProviderClient> client_;
 
   // The task runner dedicated for on device head model operations which is
   // added to offload expensive operations out of the UI sequence.

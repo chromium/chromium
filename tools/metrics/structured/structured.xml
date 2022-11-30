@@ -4,6 +4,8 @@
   <owner>charleszhao@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for recording CrOSActions.
   </summary>
@@ -192,6 +194,8 @@
 <project name="LauncherUsage">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     See event summary.
   </summary>
@@ -252,9 +256,162 @@
   </event>
 </project>
 
+<project name="NeutrinoDevices">
+  <owner>pdyson@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for recording events to monitor the creation of Neutrino Devices.
+  </summary>
+
+  <event name="ClientIdChanged">
+    <summary>
+      Records the client id being changed to a new value. This does not include
+      when the client id is cleared (see ClientIdCleared below).
+    </summary>
+    <metric name="InitialClientId" type="hmac-string">
+      <summary>
+        The client id before it is changed.
+      </summary>
+    </metric>
+    <metric name="FinalClientId" type="hmac-string">
+      <summary>
+        The client id after it is changed.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceInstallation" type="int">
+      <summary>
+        The time since installation. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceMetricsEnabled" type="int">
+      <summary>
+        The time since metrics enabled. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+    <metric name="Location" type="int">
+      <summary>
+        An integer indicating the location in the code. This can be used to perform
+        a partial stack trace to see which code was executed in the lead up to the
+        client id being changed.
+      </summary>
+    </metric>
+    <metric name="DaysSinceKeyRotation" type="int">
+      <summary>
+        The number of days since the key was rotated.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="ClientIdCleared">
+    <summary>
+      Records when the client id is cleared.
+    </summary>
+    <metric name="InitialClientId" type="hmac-string">
+      <summary>
+        The client id before it is changed.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceInstallation" type="int">
+      <summary>
+        The time since installation. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+    <metric name="Log2TimeSinceMetricsEnabled" type="int">
+      <summary>
+        The time since metrics enabled. Recorded as the integer floor of the log
+        base 2 of the time duration measured in days. Negative values indicate
+        periods shorter than one day.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Enrollment">
+    <summary>
+      Records the enrollment status, either managed or unmanaged.
+    </summary>
+    <metric name="ClientId" type="hmac-string">
+      <summary>
+        The client id.
+      </summary>
+    </metric>
+    <metric name="Location" type="int">
+      <summary>
+        An integer indicating the location in the code. This can be used to perform
+        a partial stack trace to see which code was executed in the lead up to the
+        client id being changed.
+      </summary>
+    </metric>
+    <metric name="IsManagedDevice" type="int">
+      <summary>
+        Whether the device is managed. 1: Managed, 0: Unmanaged.
+      </summary>
+    </metric>
+    <metric name="IsManagedPolicy" type="int">
+      <summary>
+        Whether the metrics reporting policy is managed. 1: Managed, 0:
+        Unmanaged.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CodePoint">
+    <summary>
+      Records that execution reached a particular point in the code.
+    </summary>
+    <metric name="ClientId" type="hmac-string">
+      <summary>
+        The client id.
+      </summary>
+    </metric>
+    <metric name="Location" type="int">
+      <summary>
+        An integer indicating the location in the code. This can be used to perform
+        a partial stack trace to see which code was executed in the lead up to the
+        client id being changed.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="StructuredMetrics">
+  <owner>jongahn@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Structured Metrics is a logging framework for events. This project is used
+    for monitoring the framework itself.
+  </summary>
+
+  <event name="Initialization">
+    <summary>
+      Records metadata about initialization of Structured Metrics and will be
+      recorded immediately after initialization is successful. Will be sent once
+      per initialization during browser process initialization.
+    </summary>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform for which the client is initialized on. 0: Uninitialized, 1:
+        ASH_CHROME, 2: LACROS_CHROME.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
-  <id>none</id>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -278,7 +435,9 @@
 
 <project name="TestProjectTwo">
   <owner>tby@chromium.org</owner>
-  <id>none</id>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -301,6 +460,69 @@
     <metric name="TestMetricThree" type="hmac-string">
       <summary>
         A per-user keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectThree">
+  <owner>tby@chromium.org</owner>
+  <id>uma</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventFour">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFour" type="int">
+      <summary>
+        An unhashed value, recorded as-is.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectFour">
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventFive">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFive" type="hmac-string">
+      <summary>
+        A per-device keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectFive">
+  <owner>tby@chromium.org</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventSix">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricSix" type="raw-string">
+      <summary>
+        A unhashed string value.
       </summary>
     </metric>
   </event>

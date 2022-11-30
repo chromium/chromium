@@ -1,10 +1,9 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -33,6 +32,9 @@ class DesktopViewInputTest : public View {
  public:
   DesktopViewInputTest() = default;
 
+  DesktopViewInputTest(const DesktopViewInputTest&) = delete;
+  DesktopViewInputTest& operator=(const DesktopViewInputTest&) = delete;
+
   void OnGestureEvent(ui::GestureEvent* event) override {
     received_gesture_event_ = true;
     return View::OnGestureEvent(event);
@@ -45,8 +47,6 @@ class DesktopViewInputTest : public View {
 
  private:
   bool received_gesture_event_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopViewInputTest);
 };
 
 views::Widget* CreateWidget() {

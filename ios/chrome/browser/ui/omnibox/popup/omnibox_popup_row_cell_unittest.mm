@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,18 +19,20 @@
 @property(nonatomic, assign) BOOL supportsDeletion;
 @property(nonatomic, assign) BOOL hasAnswer;
 @property(nonatomic, assign) BOOL isURL;
-@property(nonatomic, assign, getter=isAppendable) BOOL appendable;
-@property(nonatomic, strong) UIImage* suggestionTypeIcon;
+@property(nonatomic, assign) BOOL isAppendable;
 @property(nonatomic, assign) BOOL isTabMatch;
+@property(nonatomic, assign) BOOL isClipboardMatch;
 @property(nonatomic, strong) NSAttributedString* text;
 @property(nonatomic, strong) NSAttributedString* detailText;
 @property(nonatomic, assign) NSInteger numberOfLines;
-@property(nonatomic, assign) BOOL hasImage;
-@property(nonatomic, assign) GURL imageURL;
-@property(nonatomic, assign) GURL faviconPageURL;
 @property(nonatomic, strong) id<OmniboxIcon> icon;
 @property(nonatomic, assign) BOOL isTailSuggestion;
 @property(nonatomic, assign) NSString* commonPrefix;
+@property(nonatomic, assign) id<OmniboxPedal, OmniboxIcon> pedal;
+@property(nonatomic, strong) NSAttributedString* omniboxPreviewText;
+@property(nonatomic, strong) UIImage* matchTypeIcon;
+@property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+@property(nonatomic, strong) CrURL* destinationUrl;
 @end
 
 @implementation FakeAutocompleteMatch

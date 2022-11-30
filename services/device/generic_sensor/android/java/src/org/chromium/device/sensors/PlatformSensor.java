@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,17 @@ package org.chromium.device.sensors;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+
+import androidx.annotation.GuardedBy;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.mojom.ReportingMode;
+import org.chromium.device.mojom.SensorType;
 
 import java.util.List;
 
@@ -35,8 +40,14 @@ public class PlatformSensor implements SensorEventListener {
     private static final double SENSOR_FREQUENCY_NORMAL = 5.0d;
 
     /**
+     * Lock protecting access to mNativePlatformSensorAndroid.
+     */
+    private final Object mLock = new Object();
+
+    /**
      * Identifier of device::PlatformSensorAndroid instance.
      */
+    @GuardedBy("mLock")
     private long mNativePlatformSensorAndroid;
 
     /**
@@ -68,37 +79,70 @@ public class PlatformSensor implements SensorEventListener {
     /**
      * Creates new PlatformSensor.
      *
-     * @param sensorType type of the sensor to be constructed. @see android.hardware.Sensor.TYPE_*
-     * @param readingCount number of sensor reading values required from the sensor.
      * @param provider object that shares SensorManager and polling thread Handler with sensors.
+     * @param sensorType type of the sensor to be constructed. @see android.hardware.Sensor.TYPE_*
+     * @param nativePlatformSensorAndroid identifier of device::PlatformSensorAndroid instance.
      */
+    @CalledByNative
     public static PlatformSensor create(
-            int sensorType, int readingCount, PlatformSensorProvider provider) {
-        List<Sensor> sensors = provider.getSensorManager().getSensorList(sensorType);
+            PlatformSensorProvider provider, int type, long nativePlatformSensorAndroid) {
+        SensorManager sensorManager = provider.getSensorManager();
+        if (sensorManager == null) return null;
+
+        List<Sensor> sensors;
+        int readingCount;
+        switch (type) {
+            case SensorType.AMBIENT_LIGHT:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_LIGHT);
+                readingCount = 1;
+                break;
+            case SensorType.ACCELEROMETER:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+                readingCount = 3;
+                break;
+            case SensorType.LINEAR_ACCELERATION:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
+                readingCount = 3;
+                break;
+            case SensorType.GRAVITY:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_GRAVITY);
+                readingCount = 3;
+                break;
+            case SensorType.GYROSCOPE:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_GYROSCOPE);
+                readingCount = 3;
+                break;
+            case SensorType.MAGNETOMETER:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
+                readingCount = 3;
+                break;
+            case SensorType.ABSOLUTE_ORIENTATION_QUATERNION:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+                readingCount = 4;
+                break;
+            case SensorType.RELATIVE_ORIENTATION_QUATERNION:
+                sensors = sensorManager.getSensorList(Sensor.TYPE_GAME_ROTATION_VECTOR);
+                readingCount = 4;
+                break;
+            default:
+                return null;
+        }
+
         if (sensors.isEmpty()) return null;
-        return new PlatformSensor(sensors.get(0), readingCount, provider);
+        return new PlatformSensor(
+                sensors.get(0), readingCount, provider, nativePlatformSensorAndroid);
     }
 
     /**
      * Constructor.
      */
-    protected PlatformSensor(Sensor sensor, int readingCount, PlatformSensorProvider provider) {
+    protected PlatformSensor(Sensor sensor, int readingCount, PlatformSensorProvider provider,
+            long nativePlatformSensorAndroid) {
         mReadingCount = readingCount;
         mProvider = provider;
         mSensor = sensor;
-        mMinDelayUsec = mSensor.getMinDelay();
-    }
-
-    /**
-     * Initializes PlatformSensor, called by native code.
-     *
-     * @param nativePlatformSensorAndroid identifier of device::PlatformSensorAndroid instance.
-     * @param buffer shared buffer that is used to return data to the client.
-     */
-    @CalledByNative
-    protected void initPlatformSensorAndroid(long nativePlatformSensorAndroid) {
-        assert nativePlatformSensorAndroid != 0;
         mNativePlatformSensorAndroid = nativePlatformSensorAndroid;
+        mMinDelayUsec = mSensor.getMinDelay();
     }
 
     /**
@@ -167,6 +211,38 @@ public class PlatformSensor implements SensorEventListener {
         return sensorStarted;
     }
 
+    /**
+     * Requests sensor to start polling for data.
+     */
+    @CalledByNative
+    protected void startSensor2(double frequency) {
+        // If we already polling hw with same frequency, do not restart the sensor.
+        if (mCurrentPollingFrequency == frequency) return;
+
+        // Unregister old listener if polling frequency has changed.
+        unregisterListener();
+
+        mProvider.sensorStarted(this);
+        boolean sensorStarted;
+        try {
+            sensorStarted = mProvider.getSensorManager().registerListener(
+                    this, mSensor, getSamplingPeriod(frequency), mProvider.getHandler());
+        } catch (RuntimeException e) {
+            // This can fail due to internal framework errors. https://crbug.com/884190
+            Log.w(TAG, "Failed to register sensor listener.", e);
+            sensorStarted = false;
+        }
+
+        if (!sensorStarted) {
+            stopSensor();
+            synchronized (mLock) {
+                sensorError();
+            }
+        } else {
+            mCurrentPollingFrequency = frequency;
+        }
+    }
+
     private void unregisterListener() {
         // Do not unregister if current polling frequency is 0, not polling for data.
         if (mCurrentPollingFrequency == 0) return;
@@ -200,8 +276,12 @@ public class PlatformSensor implements SensorEventListener {
      */
     @CalledByNative
     protected void sensorDestroyed() {
-        stopSensor();
-        mNativePlatformSensorAndroid = 0;
+        if (!DeviceFeatureList.isEnabled(DeviceFeatureList.ASYNC_SENSOR_CALLS)) {
+            stopSensor();
+        }
+        synchronized (mLock) {
+            mNativePlatformSensorAndroid = 0;
+        }
     }
 
     /**
@@ -214,6 +294,7 @@ public class PlatformSensor implements SensorEventListener {
     /**
      * Notifies native device::PlatformSensorAndroid when there is an error.
      */
+    @GuardedBy("mLock")
     protected void sensorError() {
         PlatformSensorJni.get().notifyPlatformSensorError(
                 mNativePlatformSensorAndroid, PlatformSensor.this);
@@ -222,6 +303,7 @@ public class PlatformSensor implements SensorEventListener {
     /**
      * Updates reading at native device::PlatformSensorAndroid.
      */
+    @GuardedBy("mLock")
     protected void updateSensorReading(
             double timestamp, double value1, double value2, double value3, double value4) {
         PlatformSensorJni.get().updatePlatformSensorReading(mNativePlatformSensorAndroid,
@@ -233,32 +315,37 @@ public class PlatformSensor implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (mNativePlatformSensorAndroid == 0) {
-            Log.w(TAG, "Should not get sensor events after PlatformSensorAndroid is destroyed.");
-            return;
-        }
+        // Acquire mLock to ensure that mNativePlatformSensorAndroid is not reset between this check
+        // and when it is used.
+        synchronized (mLock) {
+            if (mNativePlatformSensorAndroid == 0) {
+                Log.w(TAG,
+                        "Should not get sensor events after PlatformSensorAndroid is destroyed.");
+                return;
+            }
 
-        if (event.values.length < mReadingCount) {
-            sensorError();
-            stopSensor();
-            return;
-        }
+            if (event.values.length < mReadingCount) {
+                sensorError();
+                stopSensor();
+                return;
+            }
 
-        double timestamp = event.timestamp * SECONDS_IN_NANOSECOND;
-        switch (event.values.length) {
-            case 1:
-                updateSensorReading(timestamp, event.values[0], 0.0, 0.0, 0.0);
-                break;
-            case 2:
-                updateSensorReading(timestamp, event.values[0], event.values[1], 0.0, 0.0);
-                break;
-            case 3:
-                updateSensorReading(
-                        timestamp, event.values[0], event.values[1], event.values[2], 0.0);
-                break;
-            default:
-                updateSensorReading(timestamp, event.values[0], event.values[1], event.values[2],
-                        event.values[3]);
+            double timestamp = event.timestamp * SECONDS_IN_NANOSECOND;
+            switch (event.values.length) {
+                case 1:
+                    updateSensorReading(timestamp, event.values[0], 0.0, 0.0, 0.0);
+                    break;
+                case 2:
+                    updateSensorReading(timestamp, event.values[0], event.values[1], 0.0, 0.0);
+                    break;
+                case 3:
+                    updateSensorReading(
+                            timestamp, event.values[0], event.values[1], event.values[2], 0.0);
+                    break;
+                default:
+                    updateSensorReading(timestamp, event.values[0], event.values[1],
+                            event.values[2], event.values[3]);
+            }
         }
     }
 

@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/shortcuts_database.h"
 
 #include <string>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/guid.h"
@@ -18,7 +19,6 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "ui/base/page_transition_types.h"
-
 
 // Helpers --------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ void BindShortcutToStatement(const ShortcutsDatabase::Shortcut& shortcut,
   s->BindInt(9, base::checked_cast<int>(shortcut.match_core.transition));
   s->BindInt(10, base::checked_cast<int>(shortcut.match_core.type));
   s->BindString16(11, shortcut.match_core.keyword);
-  s->BindInt64(12, shortcut.last_access_time.ToInternalValue());
+  s->BindTime(12, shortcut.last_access_time);
   s->BindInt(13, shortcut.number_of_hits);
 }
 
@@ -76,7 +76,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // or hardware issues, not coding errors at the client level, so displaying
     // the error would probably lead to confusion.  The ignored call signals the
     // test-expectation framework that the error was handled.
-    ignore_result(sql::Database::IsExpectedSqliteError(extended_error));
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
 
@@ -222,7 +222,7 @@ bool ShortcutsDatabase::DeleteAllShortcuts() {
   if (!db_.Execute("DELETE FROM omni_box_shortcuts"))
     return false;
 
-  ignore_result(db_.Execute("VACUUM"));
+  std::ignore = db_.Execute("VACUUM");
   return true;
 }
 
@@ -249,8 +249,9 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
       continue;
 
     const int page_transition_integer = s.ColumnInt(9);
-    if (!ui::PageTransitionIsValidType(page_transition_integer))
+    if (!ui::IsValidPageTransitionType(page_transition_integer)) {
       continue;
+    }
     ui::PageTransition transition =
         ui::PageTransitionFromInt(page_transition_integer);
 
@@ -269,7 +270,7 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
                                 transition,               // transition
                                 type,                     // type
                                 s.ColumnString16(11)),    // keyword
-            base::Time::FromInternalValue(s.ColumnInt64(12)),
+            s.ColumnTime(12),
             // last_access_time
             s.ColumnInt(13))));  // number_of_hits
   }

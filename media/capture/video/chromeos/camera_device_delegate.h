@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 #include <queue>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
@@ -20,13 +18,13 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 
 namespace media {
 
 class Camera3AController;
-class CameraAppDeviceImpl;
 class CameraHalDelegate;
 class RequestManager;
 
@@ -56,21 +54,21 @@ struct ResultMetadata {
   ResultMetadata();
   ~ResultMetadata();
 
-  base::Optional<uint8_t> ae_mode;
-  base::Optional<int32_t> ae_compensation;
-  base::Optional<uint8_t> af_mode;
-  base::Optional<uint8_t> awb_mode;
-  base::Optional<int32_t> brightness;
-  base::Optional<int32_t> contrast;
-  base::Optional<int64_t> exposure_time;
-  base::Optional<float> focus_distance;
-  base::Optional<int32_t> pan;
-  base::Optional<int32_t> saturation;
-  base::Optional<int32_t> sensitivity;
-  base::Optional<int32_t> sharpness;
-  base::Optional<int32_t> tilt;
-  base::Optional<int32_t> zoom;
-  base::Optional<gfx::Rect> scaler_crop_region;
+  absl::optional<uint8_t> ae_mode;
+  absl::optional<int32_t> ae_compensation;
+  absl::optional<uint8_t> af_mode;
+  absl::optional<uint8_t> awb_mode;
+  absl::optional<int32_t> brightness;
+  absl::optional<int32_t> contrast;
+  absl::optional<int64_t> exposure_time;
+  absl::optional<float> focus_distance;
+  absl::optional<int32_t> pan;
+  absl::optional<int32_t> saturation;
+  absl::optional<int32_t> sensitivity;
+  absl::optional<int32_t> sharpness;
+  absl::optional<int32_t> tilt;
+  absl::optional<int32_t> zoom;
+  absl::optional<gfx::Rect> scaler_crop_region;
 };
 
 // Returns true if the given stream type is an input stream.
@@ -117,10 +115,15 @@ class CAPTURE_EXPORT StreamCaptureInterface {
 class CAPTURE_EXPORT CameraDeviceDelegate final
     : public CaptureMetadataDispatcher::ResultMetadataObserver {
  public:
+  CameraDeviceDelegate() = delete;
+
   CameraDeviceDelegate(
       VideoCaptureDeviceDescriptor device_descriptor,
-      scoped_refptr<CameraHalDelegate> camera_hal_delegate,
+      CameraHalDelegate* camera_hal_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
+
+  CameraDeviceDelegate(const CameraDeviceDelegate&) = delete;
+  CameraDeviceDelegate& operator=(const CameraDeviceDelegate&) = delete;
 
   ~CameraDeviceDelegate() final;
 
@@ -160,7 +163,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   // Reconfigure streams for picture taking and recording.
   void OnFlushed(bool require_photo,
-                 base::Optional<gfx::Size> new_blob_resolution,
+                 absl::optional<gfx::Size> new_blob_resolution,
                  int32_t result);
 
   // Callback method for the Close Mojo IPC call.  This method resets the Mojo
@@ -186,7 +189,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // |client_| the capture has started by calling OnStarted, and proceeds to
   // ConstructDefaultRequestSettings.
   void ConfigureStreams(bool require_photo,
-                        base::Optional<gfx::Size> new_blob_resolution);
+                        absl::optional<gfx::Size> new_blob_resolution);
   void OnConfiguredStreams(
       gfx::Size blob_resolution,
       int32_t result,
@@ -214,7 +217,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   void OnConstructedDefaultStillCaptureRequestSettings(
       cros::mojom::CameraMetadataPtr settings);
 
-  gfx::Size GetBlobResolution(base::Optional<gfx::Size> new_blob_resolution);
+  gfx::Size GetBlobResolution(absl::optional<gfx::Size> new_blob_resolution);
 
   // StreamCaptureInterface implementations.  These methods are called by
   // |stream_buffer_manager_| on |ipc_task_runner_|.
@@ -229,7 +232,9 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // metadata by |range_name| and current value of |current|.
   mojom::RangePtr GetControlRangeByVendorTagName(
       const std::string& range_name,
-      const base::Optional<int32_t>& current);
+      const absl::optional<int32_t>& current);
+
+  bool ShouldUseBlobVideoSnapshot();
 
   // CaptureMetadataDispatcher::ResultMetadataObserver implementation.
   void OnResultMetadataAvailable(
@@ -243,7 +248,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // Current configured resolution of BLOB stream.
   gfx::Size current_blob_resolution_;
 
-  const scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
+  CameraHalDelegate* camera_hal_delegate_;
 
   // Map client type to video capture parameter.
   base::flat_map<ClientType, VideoCaptureParams> chrome_capture_params_;
@@ -270,7 +275,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   std::queue<base::OnceClosure> on_reconfigured_callbacks_;
 
-  base::WeakPtr<CameraAppDeviceImpl> camera_app_device_;
+  uint32_t device_api_version_;
 
   // States of SetPhotoOptions
   bool is_set_awb_mode_;
@@ -302,8 +307,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   gfx::Rect active_array_size_;
 
   base::WeakPtrFactory<CameraDeviceDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CameraDeviceDelegate);
 };
 
 }  // namespace media

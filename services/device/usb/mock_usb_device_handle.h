@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -142,7 +143,7 @@ class MockUsbDeviceHandle : public UsbDeviceHandle {
   ~MockUsbDeviceHandle() override;
 
  private:
-  UsbDevice* device_;
+  raw_ptr<UsbDevice> device_;
 };
 
 }  // namespace device

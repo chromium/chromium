@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/disk_cache.h"
@@ -19,7 +20,7 @@ namespace disk_cache {
 
 // Experiment to increase the cache size to see the impact on various
 // performance metrics.
-NET_EXPORT_PRIVATE extern const base::Feature kChangeDiskCacheSizeExperiment;
+NET_EXPORT_PRIVATE BASE_DECLARE_FEATURE(kChangeDiskCacheSizeExperiment);
 
 // Moves the cache files from the given path to another location.
 // Fails if the destination exists already, or if it doesn't have
@@ -35,12 +36,19 @@ NET_EXPORT_PRIVATE bool MoveCache(const base::FilePath& from_path,
 NET_EXPORT_PRIVATE void DeleteCache(const base::FilePath& path,
                                     bool remove_folder);
 
-// Deletes a cache file.
-NET_EXPORT_PRIVATE bool DeleteCacheFile(const base::FilePath& name);
+// Deletes the given directory recursively, asynchronously. `callback` will
+// called with whether the operation succeeded.
+// This is done by:
+//  1. Renaming the directory to another directory,
+//  2. Calling `callback` with the result, and
+//  3. Deleting the directory.
+// This means the caller won't know the result of 3.
+NET_EXPORT_PRIVATE void CleanupDirectory(
+    const base::FilePath& path,
+    base::OnceCallback<void(bool)> callback);
 
-// Renames cache directory synchronously and fires off a background cleanup
-// task. Used by cache creator itself or by backends for self-restart on error.
-bool DelayedCacheCleanup(const base::FilePath& full_path);
+// This runs 1. (see the above comments) synchronously.
+bool CleanupDirectorySync(const base::FilePath& path);
 
 // Returns the preferred max cache size given the available disk space and
 // cache type.

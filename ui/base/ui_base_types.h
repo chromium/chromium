@@ -1,17 +1,26 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_UI_BASE_TYPES_H_
 #define UI_BASE_UI_BASE_TYPES_H_
 
-#include "base/component_export.h"
+#include <cstdint>
+
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
-class Event;
-
+// This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
+// full restore, and read from disk by a possibly newer version of chrome. This
+// means that it's ok to add new values, but existing values should never be
+// changed or removed.
+//
 // Window "show" state.
+// TODO: Add snapped window state to immersive fullscreen state to
+// WindowShowState. Those are ChromeOS specific window states but we should make
+// it available here as well as Lacros also needs to know those states.
 enum WindowShowState {
   // A default un-set state.
   SHOW_STATE_DEFAULT = 0,
@@ -22,6 +31,30 @@ enum WindowShowState {
   SHOW_STATE_FULLSCREEN = 5,
   SHOW_STATE_END = 6  // The end of show state enum.
 };
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Specifies which edges of the window are tiled.
+//
+// Wayland can notify the application if certain edge of the window is
+// "tiled": https://wayland.app/protocols/xdg-shell#xdg_toplevel:enum:state.
+// Chromium should not draw frame decorations for the tiled edges.
+struct WindowTiledEdges {
+  bool left{false};
+  bool right{false};
+  bool top{false};
+  bool bottom{false};
+
+  bool operator==(const WindowTiledEdges& other) const {
+    return left == other.left && right == other.right && top == other.top &&
+           bottom == other.bottom;
+  }
+
+  bool operator!=(const WindowTiledEdges& other) const {
+    return left != other.left || right != other.right || top != other.top ||
+           bottom != other.bottom;
+  }
+};
+#endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
 // Dialog button identifiers used to specify which buttons to show the user.
 enum DialogButton {
@@ -34,16 +67,18 @@ enum DialogButton {
 // Specifies the type of modality applied to a window. Different modal
 // treatments may be handled differently by the window manager.
 enum ModalType {
-  MODAL_TYPE_NONE   = 0,  // Window is not modal.
+  MODAL_TYPE_NONE = 0,    // Window is not modal.
   MODAL_TYPE_WINDOW = 1,  // Window is modal to its transient parent.
-  MODAL_TYPE_CHILD  = 2,  // Window is modal to a child of its transient parent.
+  MODAL_TYPE_CHILD = 2,   // Window is modal to a child of its transient parent.
   MODAL_TYPE_SYSTEM = 3   // Window is modal to all other windows.
 };
 
-// The class of window and its overall z-order. Not all platforms provide this
-// level of z-order granularity. For such platforms, which only provide a
+// The class of window and its overall z-order. Only the Mac provides this
+// level of z-order granularity. For other platforms, which only provide a
 // distinction between "normal" and "always on top" windows, any of the values
-// here that aren't |kNormal| are treated equally as "always on top".
+// here that aren't `kNormal` are treated equally as "always on top".
+// TODO(crbug.com/1358586): For non-desktop widgets on Linux and Windows,
+// this z-order currently does not have any effect.
 enum class ZOrderLevel {
   // The default level for windows.
   kNormal = 0,
@@ -94,8 +129,60 @@ enum MenuSourceType {
   MENU_SOURCE_TYPE_LAST = MENU_SOURCE_ADJUST_SELECTION_RESET
 };
 
-COMPONENT_EXPORT(UI_BASE)
-MenuSourceType GetMenuSourceTypeForEvent(const ui::Event& event);
+// Menu types that are used to position menu windows correctly.
+enum class MenuType {
+  // A context menu opened either via a right click or a long tap.
+  kRootContextMenu = 0,
+
+  // A root non-context menu. Example: The three dot menu.
+  kRootMenu,
+
+  // A child menu opened by clicking on a nested menu entry of either
+  // |kRootContextMenu| or |kRootParentMenu|.
+  kChildMenu,
+};
+
+// Where an owned anchored window should be anchored to. Used by such backends
+// as Wayland, which doesn't provide clients with on screen coordinates, but
+// rather forces them to position children windows relative to toplevel windows.
+// They use anchor bounds, anchor position, gravity and constraints to
+// reposition such windows if the originally intended position caused the
+// surface to be constrained.
+enum class OwnedWindowAnchorPosition {
+  kNone,
+  kTop,
+  kBottom,
+  kLeft,
+  kRight,
+  kTopLeft,
+  kBottomLeft,
+  kTopRight,
+  kBottomRight,
+};
+
+// What direction an owned window should be positioned relatively to its anchor.
+enum class OwnedWindowAnchorGravity {
+  kNone,
+  kTop,
+  kBottom,
+  kLeft,
+  kRight,
+  kTopLeft,
+  kBottomLeft,
+  kTopRight,
+  kBottomRight,
+};
+
+// How an owned window can be resized/repositioned by a system compositor.
+enum class OwnedWindowConstraintAdjustment : uint32_t {
+  kAdjustmentNone = 0,
+  kAdjustmentSlideX = 1 << 0,
+  kAdjustmentSlideY = 1 << 1,
+  kAdjustmentFlipX = 1 << 2,
+  kAdjustmentFlipY = 1 << 3,
+  kAdjustmentResizeX = 1 << 4,
+  kAdjustmentRezizeY = 1 << 5,
+};
 
 }  // namespace ui
 

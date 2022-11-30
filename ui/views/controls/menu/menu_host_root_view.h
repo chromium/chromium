@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_HOST_ROOT_VIEW_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_HOST_ROOT_VIEW_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/root_view.h"
 
 namespace views {
@@ -24,6 +24,9 @@ class MenuHostRootView : public internal::RootView {
   METADATA_HEADER(MenuHostRootView);
 
   MenuHostRootView(Widget* widget, SubmenuView* submenu);
+
+  MenuHostRootView(const MenuHostRootView&) = delete;
+  MenuHostRootView& operator=(const MenuHostRootView&) = delete;
 
   void ClearSubmenu() { submenu_ = nullptr; }
 
@@ -52,9 +55,7 @@ class MenuHostRootView : public internal::RootView {
   MenuController* GetMenuControllerForInputEvents();
 
   // The SubmenuView we contain.
-  SubmenuView* submenu_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuHostRootView);
+  raw_ptr<SubmenuView> submenu_;
 };
 
 }  // namespace views

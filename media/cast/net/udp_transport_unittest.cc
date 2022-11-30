@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/cast/net/udp_transport_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -30,6 +30,9 @@ class MockPacketReceiver final : public UdpTransportReceiver {
   MockPacketReceiver(const base::RepeatingClosure& callback)
       : packet_callback_(callback) {}
 
+  MockPacketReceiver(const MockPacketReceiver&) = delete;
+  MockPacketReceiver& operator=(const MockPacketReceiver&) = delete;
+
   bool ReceivedPacket(std::unique_ptr<Packet> packet) {
     packet_ = std::move(packet);
     packet_callback_.Run();
@@ -39,7 +42,7 @@ class MockPacketReceiver final : public UdpTransportReceiver {
   // UdpTransportReceiver implementation.
   void OnPacketReceived(const std::vector<uint8_t>& packet) override {
     EXPECT_GT(packet.size(), 0u);
-    packet_.reset(new Packet(packet));
+    packet_ = std::make_unique<Packet>(packet);
     packet_callback_.Run();
   }
 
@@ -53,8 +56,6 @@ class MockPacketReceiver final : public UdpTransportReceiver {
  private:
   base::RepeatingClosure packet_callback_;
   std::unique_ptr<Packet> packet_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPacketReceiver);
 };
 
 void SendPacket(UdpTransportImpl* transport, Packet packet) {
@@ -86,6 +87,9 @@ class UdpTransportImplTest : public ::testing::Test {
     recv_transport_->SetSendBufferSize(65536);
   }
 
+  UdpTransportImplTest(const UdpTransportImplTest&) = delete;
+  UdpTransportImplTest& operator=(const UdpTransportImplTest&) = delete;
+
   ~UdpTransportImplTest() override = default;
 
  protected:
@@ -95,9 +99,6 @@ class UdpTransportImplTest : public ::testing::Test {
 
   // A receiver side transport to receiver/send packets from/to sender.
   std::unique_ptr<UdpTransportImpl> recv_transport_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UdpTransportImplTest);
 };
 
 // Test the sending/receiving functions as a PacketSender.

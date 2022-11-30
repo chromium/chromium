@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that elements hidden by "Show more" limit are revealed properly.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <div>
@@ -25,7 +25,7 @@
 
   const containerNode = await ElementsTestRunner.nodeWithIdPromise('data');
   var containerTreeElement = ElementsTestRunner.firstElementsTreeOutline().findTreeElement(containerNode);
-  containerTreeElement._expandedChildrenLimit = 5;
+  containerTreeElement.expandedChildrenLimitInternal = 5;
   containerTreeElement.reveal();
   containerTreeElement.expand();
   TestRunner.deprecatedRunAfterPendingDispatches(step2);

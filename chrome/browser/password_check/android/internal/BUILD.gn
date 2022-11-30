@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -69,11 +69,16 @@ android_library("internal_java") {
     ":java_resources",
     ":public_factory_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/feedback/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_check/android:public_ui_java",
     "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/android/favicon:java",
@@ -82,8 +87,10 @@ android_library("internal_java") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -119,14 +126,13 @@ android_library("internal_java") {
 android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
+    "//chrome/browser/password_check/android:java_resources",
     "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
   ]
 
   sources = [
     "java/res/drawable-night/password_check_positive.xml",
-    "java/res/drawable/ic_autofill_assistant_white_24dp.xml",
-    "java/res/drawable/ic_check_circle_filled_green_24dp.xml",
     "java/res/drawable/password_check_positive.xml",
     "java/res/layout/password_check_compromised_credential_item.xml",
     "java/res/layout/password_check_compromised_credential_with_script_item.xml",

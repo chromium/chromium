@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2017 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <!-- Do not replace this with TextViewWithCompoundDrawables
      https://crbug.com/1053448 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,7 +19,7 @@
         android:id="@+id/menu_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:tint="@color/default_icon_color_secondary" />
+        app:tint="@color/default_icon_color_secondary_tint_list" />
 
     <TextView
         android:id="@+id/menu_item_text"
@@ -33,6 +35,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:tint="@color/default_icon_color_secondary" />
+        app:tint="@color/default_icon_color_secondary_tint_list" />
 
 </LinearLayout>

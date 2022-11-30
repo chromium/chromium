@@ -1,0 +1,6 @@
+Name: indoc
+URL: https://crates.io/crates/indoc
+Description: Indented document literals
+Version: 1.0.3
+Security Critical: no
+License: Apache 2.0

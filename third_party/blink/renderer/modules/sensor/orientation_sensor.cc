@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/sensor/orientation_sensor.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_dommatrix_float32array_float64array.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -11,10 +12,10 @@ using device::mojom::blink::SensorType;
 
 namespace blink {
 
-base::Optional<Vector<double>> OrientationSensor::quaternion() {
+absl::optional<Vector<double>> OrientationSensor::quaternion() {
   reading_dirty_ = false;
   if (!hasReading())
-    return base::nullopt;
+    return absl::nullopt;
   const auto& quat = GetReading().orientation_quat;
   return Vector<double>({quat.x, quat.y, quat.z, quat.w});
 }
@@ -99,16 +100,21 @@ void OrientationSensor::PopulateMatrixInternal(
 }
 
 void OrientationSensor::populateMatrix(
-    Float32ArrayOrFloat64ArrayOrDOMMatrix& matrix,
+    const V8RotationMatrixType* target_buffer,
     ExceptionState& exception_state) {
-  if (matrix.IsFloat32Array())
-    PopulateMatrixInternal(matrix.GetAsFloat32Array().Get(), exception_state);
-  else if (matrix.IsFloat64Array())
-    PopulateMatrixInternal(matrix.GetAsFloat64Array().Get(), exception_state);
-  else if (matrix.IsDOMMatrix())
-    PopulateMatrixInternal(matrix.GetAsDOMMatrix(), exception_state);
-  else
-    NOTREACHED() << "Unexpected rotation matrix type.";
+  switch (target_buffer->GetContentType()) {
+    case V8RotationMatrixType::ContentType::kDOMMatrix:
+      PopulateMatrixInternal(target_buffer->GetAsDOMMatrix(), exception_state);
+      break;
+    case V8RotationMatrixType::ContentType::kFloat32Array:
+      PopulateMatrixInternal(target_buffer->GetAsFloat32Array().Get(),
+                             exception_state);
+      break;
+    case V8RotationMatrixType::ContentType::kFloat64Array:
+      PopulateMatrixInternal(target_buffer->GetAsFloat64Array().Get(),
+                             exception_state);
+      break;
+  }
 }
 
 bool OrientationSensor::isReadingDirty() const {

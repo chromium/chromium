@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Váratlan hiba történt. Kérjük, jelentse a problémát a fejlesztőknek.</translation>
 <translation id="1697532407822776718">Máris elkészült!</translation>
 <translation id="1742469581923031760">Csatlakozás…</translation>
+<translation id="177040763384871009">Ha azt szeretné, hogy a linkek, amelyekre a távoli eszközön rákattintanak, az ügyfélgép böngészőjében nyíljanak meg, módosítania kell a rendszer böngészőjét a következőre: „<ph name="URL_FORWARDER_NAME" />”.</translation>
 <translation id="177096447311351977">Kliens csatorna-IP-je: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Törlés</translation>
 <translation id="2009755455353575666">Sikertelen kapcsolódás</translation>
@@ -24,7 +25,7 @@ Az engedély megadásához kattintson az alábbi „<ph name="BUTTON_NAME" />”
 Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti négyzet, távolítsa el a jelölését, majd jelölje be újra.</translation>
 <translation id="225614027745146050">Üdvözöljük</translation>
 <translation id="2320166752086256636">Billentyűzet elrejtése</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Minden jog fenntartva.</translation>
+<translation id="2329392777730037872">Nem sikerült megnyitni a következő URL-t az ügyfélnél: <ph name="URL" />.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2366718077645204424">A gazdagép nem érhető el. Ez valószínűleg az Ön által használt hálózat konfigurációja miatt van.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Legutóbb észlelve az interneten: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="2599300881200251572">Ez a szolgáltatás engedélyezi a bejövő kapcsolatokat a Chrome távoliasztal-szolgáltatás klienseitől.</translation>
 <translation id="2647232381348739934">Chromoting szolgáltatás</translation>
 <translation id="2676780859508944670">Feldolgozás…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Minden jog fenntartva.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Probléma volt a hitelesítéssel. Jelentkezzen be újra.</translation>
 <translation id="2803375539583399270">PIN-kód megadása</translation>
@@ -55,6 +57,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Tudnivalók</translation>
 <translation id="3776024066357219166">A Chrome távoliasztal-szolgáltatás munkamenet véget ért.</translation>
+<translation id="3858860766373142691">Név</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3905196214175737742">A gazdagép tulajdonosi domainje érvénytelen.</translation>
 <translation id="3931191050278863510">Gazdagép leállítva.</translation>
@@ -67,14 +70,16 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="4176825807642096119">Elérési kód</translation>
 <translation id="4227991223508142681">Gazdagép-ellátási segédprogram</translation>
 <translation id="4240294130679914010">Chromoting gazdagép eltávolítóprogramja</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL-továbbító</translation>
 <translation id="4277736576214464567">A hozzáférési kód érvénytelen. Kérjük, próbálja újra.</translation>
 <translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
+<translation id="4372650392690220936">Copyright 2022 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="4405930547258349619">Alapkönyvtár</translation>
 <translation id="443560535555262820">Kisegítő lehetőségek beállításainak megnyitása</translation>
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
-<translation id="4512952200932940229">Copyright 2021 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="4513946894732546136">Visszajelzés</translation>
 <translation id="4563926062592110512">Kliens leválasztva: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">A(z) <ph name="URL_FORWARDER_NAME" /> nincs helyesen konfigurálva. Válasszon másik alapértelmezett böngészőt, majd engedélyezze újra az URL-ek továbbítását.</translation>
 <translation id="4635770493235256822">Távoli eszközök</translation>
 <translation id="4660011489602794167">Billentyűzet megjelenítése</translation>
 <translation id="4703799847237267011">Chromoting munkamenete befejeződött.</translation>
@@ -87,6 +92,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="4867841927763172006">PrtScn küldése</translation>
 <translation id="4974476491460646149">Megszakítva a kapcsolat a következővel: <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Előbb be kell állítania számítógépén a távoli hozzáférést.</translation>
+<translation id="4987330545941822761">A Chrome távoliasztal-szolgáltatás nem tudja meghatározni az URL-ek helyi megnyitásához szükséges böngészőt. Válassza ki a böngészőt az alábbi listáról.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Biztosan szeretné letiltani a távoli kapcsolatokat a(z) <ph name="HOSTNAME" /> gazdagéppel?</translation>
 <translation id="5170982930780719864">Érvénytelen gazdagép-azonosító</translation>
@@ -94,7 +100,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
-<translation id="5327248766486351172">Név</translation>
 <translation id="533625276787323658">Nincs mihez csatlakozni.</translation>
 <translation id="5397086374758643919">Chrome távoliasztal-szolgáltatási gazdagép eltávolítóprogramja</translation>
 <translation id="5419418238395129586">Utoljára online: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="5750083143895808682">Bejelentkezve mint <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Újrakapcsolódás</translation>
 <translation id="5810269635982033450">A képernyő érintőpadként viselkedik</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hozzáférési engedélyt kért az Ön képernyője megtekintésére illetve az egér és a billentyűzet vezérlésére. Nyomja meg a(z) „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />” gombot, ha nem várta ezt a kérelmet. A „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />” megnyomásával engedélyezheti a kapcsolatot, ha erre készen áll.</translation>
 <translation id="5823658491130719298">Nyissa meg a Chrome böngészőt azon a számítógépen, amelyhez távolról hozzá szeretne férni, majd látogasson el a következő oldalra: <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Megjelenítési beállítások</translation>
 <translation id="6033507038939587647">A billentyűzet beállításai</translation>
@@ -121,6 +127,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="6612717000975622067">Ctrl-Alt-Del küldése</translation>
 <translation id="6654753848497929428">Megosztás</translation>
 <translation id="677755392401385740">Gazdagép elindítva a következő felhasználó számára: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Segédalkalmazás URL-ek <ph name="PRODUCT_NAME" />-kliensben való megnyitásához</translation>
 <translation id="6939719207673461467">Billentyűzet megjelenítése/elrejtése.</translation>
 <translation id="6963936880795878952">A távoli számítógéphez való csatlakozás ideiglenesen le van tiltva, mert valaki érvénytelen PIN-kóddal próbált csatlakozni hozzá. Kérjük, próbálja újra később.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -133,17 +140,19 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="7144878232160441200">Újra</translation>
 <translation id="7312846573060934304">A gazdagép offline állapotban van.</translation>
 <translation id="7319983568955948908">Megosztás leállítása</translation>
+<translation id="7359298090707901886">A kiválasztott böngésző nem használható az URL-ek helyi számítógépen való megnyitására.</translation>
 <translation id="7401733114166276557">Chrome távoliasztal-szolgáltatás</translation>
 <translation id="7434397035092923453">Hozzáférés megtagadva a következő klienstől: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Kliens csatlakoztatva: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Másik fiók választása</translation>
+<translation id="7535110896613603182">Alapértelmezett appbeállítások megnyitása</translation>
 <translation id="7628469622942688817">PIN-kód megjegyzése az eszközön.</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7665369617277396874">Fiók hozzáadása</translation>
 <translation id="7678209621226490279">Rögzítés balra</translation>
 <translation id="7693372326588366043">Gazdagépek listájának frissítése</translation>
-<translation id="7714222945760997814">Jelentés</translation>
+<translation id="7714222945760997814">Bejelentés</translation>
 <translation id="7868137160098754906">Kérjük, adja meg a PIN kódot a távoli számítógéphez.</translation>
 <translation id="7895403300744144251">A távoli számítógép biztonsági házirendjei nem engedélyeznek kapcsolatokat a fiókja felől.</translation>
 <translation id="7936528439960309876">Rögzítés jobbra</translation>
@@ -161,6 +170,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 Az engedély megadásához kattintson az alábbi „<ph name="BUTTON_NAME" />” gombra. Az ekkor megnyíló „Kisegítő lehetőségek” beállításait tartalmazó panelen jelölje be a(z) „<ph name="SERVICE_SCRIPT_NAME" />” melletti négyzetet.
 
 Ha már be van jelölve a(z) „<ph name="SERVICE_SCRIPT_NAME" />” melletti négyzet, távolítsa el a jelölését, majd jelölje be újra.</translation>
+<translation id="8305209735512572429">Webes hitelesítés távoli elérési folyamata</translation>
 <translation id="8383794970363966105">A Chromoting használatához adjon hozzá eszközéhez egy Google-fiókot.</translation>
 <translation id="8386846956409881180">A gazdagép beállítása érvénytelen OAuth hitelesítési adatokkal történt.</translation>
 <translation id="8397385476380433240">Engedély megadása a következőnek: <ph name="PRODUCT_NAME" /></translation>

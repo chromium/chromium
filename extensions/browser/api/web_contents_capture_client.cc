@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,12 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
   if (!view)
     return FAILURE_REASON_VIEW_INVISIBLE;
 
-  if (!IsScreenshotEnabled(web_contents))
+  // Check for screenshot capture restrictions.
+  ScreenshotAccess screenshot_access = GetScreenshotAccess(web_contents);
+  if (screenshot_access == ScreenshotAccess::kDisabledByPreferences)
     return FAILURE_REASON_SCREEN_SHOTS_DISABLED;
+  if (screenshot_access == ScreenshotAccess::kDisabledByDlp)
+    return FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP;
 
   // The default format and quality setting used when encoding jpegs.
   const api::extension_types::ImageFormat kDefaultFormat =
@@ -49,7 +53,7 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
   if (image_details) {
     if (image_details->format != api::extension_types::IMAGE_FORMAT_NONE)
       image_format_ = image_details->format;
-    if (image_details->quality.get())
+    if (image_details->quality)
       image_quality_ = *image_details->quality;
   }
 

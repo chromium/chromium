@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_cache.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-extension.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 using blink::WebCache;
 

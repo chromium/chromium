@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_METRICS_NETWORK_QUALITY_ESTIMATOR_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_METRICS_NETWORK_QUALITY_ESTIMATOR_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
@@ -19,6 +18,12 @@ class NetworkQualityEstimatorProviderImpl
       public network::NetworkQualityTracker::EffectiveConnectionTypeObserver {
  public:
   NetworkQualityEstimatorProviderImpl();
+
+  NetworkQualityEstimatorProviderImpl(
+      const NetworkQualityEstimatorProviderImpl&) = delete;
+  NetworkQualityEstimatorProviderImpl& operator=(
+      const NetworkQualityEstimatorProviderImpl&) = delete;
+
   ~NetworkQualityEstimatorProviderImpl() override;
 
  private:
@@ -42,8 +47,6 @@ class NetworkQualityEstimatorProviderImpl
 
   base::WeakPtrFactory<NetworkQualityEstimatorProviderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorProviderImpl);
 };
 
 }  // namespace metrics

@@ -4,7 +4,9 @@
 # 5 minutes. This approach helps our team to load-balance incoming reviews.
 # Googlers can read more about this at go/gwsq-gerrit.
 
+elainechien@chromium.org
 ellyjones@chromium.org
+kerenzhu@chromium.org
 kylixrd@chromium.org
 msw@chromium.org
 pbos@chromium.org
@@ -13,7 +15,6 @@ robliao@chromium.org
 sky@chromium.org
 tapted@chromium.org
 tluk@chromium.org
-weili@chromium.org
 
 # Prefer avi@, ellyjones@, lgrey@, or tapted@ for mac specific changes.
 per-file *_mac.*=avi@chromium.org
@@ -23,6 +24,8 @@ per-file *.mm=avi@chromium.org
 per-file *_mac.*=lgrey@chromium.org
 per-file *_cocoa.*=lgrey@chromium.org
 per-file *.mm=lgrey@chromium.org
+
+per-file *_win.*=davidbienvenu@chromium.org
 
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*

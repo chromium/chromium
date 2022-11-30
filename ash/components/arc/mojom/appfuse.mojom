@@ -1,0 +1,27 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Next Method ID: 3
+interface AppfuseHost {
+  // Mounts a new appfuse file system and returns a filtered /dev/fuse FD
+  // associated with the mounted file system.
+  Mount@0(uint32 uid, int32 mount_id) => (handle? fd);
+
+  // Unmounts the specified appfuse file system.
+  Unmount@1(uint32 uid, int32 mount_id) => (bool success);
+
+  // Opens a file under the specified appfuse file system.
+  OpenFile@2(uint32 uid, int32 mount_id, int32 file_id, int32 flags) =>
+      (handle? fd);
+};
+
+// Next Method ID: 1
+interface AppfuseInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<AppfuseHost> host_remote) => ();
+};

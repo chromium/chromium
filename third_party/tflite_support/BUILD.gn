@@ -1,0 +1,161 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+config("tflite_support_config") {
+  include_dirs = [
+    "src",
+    "src/tensorflow_lite_support",
+  ]
+}
+
+proto_library("tflite_support_proto") {
+  proto_in_dir = "src"
+  sources = [
+    "src/tensorflow_lite_support/cc/task/core/proto/base_options.proto",
+    "src/tensorflow_lite_support/cc/task/core/proto/external_file.proto",
+    "src/tensorflow_lite_support/cc/task/text/proto/bert_nl_classifier_options.proto",
+    "src/tensorflow_lite_support/cc/task/text/proto/nl_classifier_options.proto",
+    "src/tensorflow_lite_support/cc/task/vision/proto/bounding_box.proto",
+    "src/tensorflow_lite_support/cc/task/vision/proto/class.proto",
+    "src/tensorflow_lite_support/cc/task/vision/proto/classifications.proto",
+    "src/tensorflow_lite_support/cc/task/vision/proto/image_classifier_options.proto",
+  ]
+  cc_generator_options = "lite=true:"
+
+  import_dirs = [ "//third_party/tflite/src" ]
+  proto_deps = [ "//third_party/tflite:tflite-config-proto" ]
+}
+
+config("tflite_support_flags") {
+  cflags = [
+    "-Wno-comment",
+    "-Wno-extern-c-compat",
+    "-Wno-implicit-function-declaration",
+    "-Wno-sign-compare",
+    "-Wno-ignored-attributes",
+    "-Wno-deprecated-declarations",
+    "-Wno-unused-variable",
+  ]
+  if (!is_win) {
+    cflags_cc = [ "-frtti" ]
+  } else {
+    cflags_cc = [ "/GR" ]
+  }
+}
+
+flatbuffer("metadata_schema") {
+  sources = [ "src/tensorflow_lite_support/metadata/metadata_schema.fbs" ]
+
+  # Disable warnings as the flatbuffer uses snakecase for sentencePiece which
+  # now causes a warning message with flatc.
+  args = [ "--no-warnings" ]
+}
+
+static_library("tflite_support") {
+  sources = [
+    "src/tensorflow_lite_support/cc/common.cc",
+    "src/tensorflow_lite_support/cc/common.h",
+    "src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc",
+    "src/tensorflow_lite_support/cc/port/default/tflite_wrapper.h",
+    "src/tensorflow_lite_support/cc/port/status_macros.h",
+    "src/tensorflow_lite_support/cc/port/statusor.h",
+    "src/tensorflow_lite_support/cc/task/core/base_task_api.h",
+    "src/tensorflow_lite_support/cc/task/core/category.h",
+    "src/tensorflow_lite_support/cc/task/core/error_reporter.cc",
+    "src/tensorflow_lite_support/cc/task/core/error_reporter.h",
+    "src/tensorflow_lite_support/cc/task/core/external_file_handler.cc",
+    "src/tensorflow_lite_support/cc/task/core/external_file_handler.h",
+    "src/tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h",
+    "src/tensorflow_lite_support/cc/task/core/task_api_factory.cc",
+    "src/tensorflow_lite_support/cc/task/core/task_api_factory.h",
+    "src/tensorflow_lite_support/cc/task/core/task_utils.cc",
+    "src/tensorflow_lite_support/cc/task/core/task_utils.h",
+    "src/tensorflow_lite_support/cc/task/core/tflite_engine.cc",
+    "src/tensorflow_lite_support/cc/task/core/tflite_engine.h",
+    "src/tensorflow_lite_support/cc/task/processor/bert_preprocessor.cc",
+    "src/tensorflow_lite_support/cc/task/processor/bert_preprocessor.h",
+    "src/tensorflow_lite_support/cc/task/processor/image_preprocessor.cc",
+    "src/tensorflow_lite_support/cc/task/processor/image_preprocessor.h",
+    "src/tensorflow_lite_support/cc/task/processor/processor.cc",
+    "src/tensorflow_lite_support/cc/task/processor/processor.h",
+    "src/tensorflow_lite_support/cc/task/processor/regex_preprocessor.cc",
+    "src/tensorflow_lite_support/cc/task/processor/regex_preprocessor.h",
+    "src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc",
+    "src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.h",
+    "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc",
+    "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h",
+    "src/tensorflow_lite_support/cc/task/text/proto/nl_classifier_options_proto_inc.h",
+    "src/tensorflow_lite_support/cc/task/text/utils/bert_utils.cc",
+    "src/tensorflow_lite_support/cc/task/text/utils/bert_utils.h",
+    "src/tensorflow_lite_support/cc/task/vision/core/classification_head.cc",
+    "src/tensorflow_lite_support/cc/task/vision/core/classification_head.h",
+    "src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.cc",
+    "src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h",
+    "src/tensorflow_lite_support/cc/task/vision/core/label_map_item.cc",
+    "src/tensorflow_lite_support/cc/task/vision/core/label_map_item.h",
+    "src/tensorflow_lite_support/cc/task/vision/image_classifier.cc",
+    "src/tensorflow_lite_support/cc/task/vision/image_classifier.h",
+    "src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.cc",
+    "src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h",
+    "src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc",
+    "src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.h",
+    "src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc",
+    "src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.h",
+    "src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc",
+    "src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.h",
+    "src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc",
+    "src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.h",
+    "src/tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.cc",
+    "src/tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.h",
+    "src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.cc",
+    "src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.h",
+    "src/tensorflow_lite_support/cc/text/tokenizers/tokenizer.h",
+    "src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc",
+    "src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.h",
+    "src/tensorflow_lite_support/cc/utils/common_utils.cc",
+    "src/tensorflow_lite_support/cc/utils/common_utils.h",
+    "src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc",
+    "src/tensorflow_lite_support/metadata/cc/metadata_extractor.h",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h",
+  ]
+
+  deps = [
+    ":metadata_schema",
+    ":tflite_support_proto",
+    "//base",
+    "//third_party/flatbuffers",
+    "//third_party/libyuv",
+    "//third_party/libzip",
+    "//third_party/smhasher:murmurhash2",
+    "//third_party/tensorflow-text",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite-config-proto",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/utf",
+    "//third_party/zlib:minizip",
+  ]
+
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/re2",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+
+    # Must be after no_chromium_code for warning flags to be ordered correctly.
+    ":tflite_support_flags",
+  ]
+
+  public_configs = [ ":tflite_support_config" ]
+}

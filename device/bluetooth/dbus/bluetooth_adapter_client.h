@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/dbus/bluez_dbus_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class ObjectProxy;
@@ -39,6 +38,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
   // method.
   struct DiscoveryFilter {
     DiscoveryFilter();
+
+    DiscoveryFilter(const DiscoveryFilter&) = delete;
+    DiscoveryFilter& operator=(const DiscoveryFilter&) = delete;
+
     ~DiscoveryFilter();
 
     // Copy content of |filter| into this filter
@@ -48,9 +51,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
     std::unique_ptr<int16_t> rssi;
     std::unique_ptr<uint16_t> pathloss;
     std::unique_ptr<std::string> transport;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DiscoveryFilter);
   };
 
   // Represent an error sent through DBus.
@@ -136,6 +136,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
                                         const std::string& property_name) {}
   };
 
+  BluetoothAdapterClient(const BluetoothAdapterClient&) = delete;
+  BluetoothAdapterClient& operator=(const BluetoothAdapterClient&) = delete;
+
   ~BluetoothAdapterClient() override;
 
   // Adds and removes observers for events on all local bluetooth
@@ -168,7 +171,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
   // Callback used by adapter methods to indicate that a response was
   // received with an optional Error in case an error occurred.
   using ResponseCallback =
-      base::OnceCallback<void(const base::Optional<Error>&)>;
+      base::OnceCallback<void(const absl::optional<Error>&)>;
 
   // Starts a device discovery on the adapter with object path |object_path|.
   virtual void StartDiscovery(const dbus::ObjectPath& object_path,
@@ -225,7 +228,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
   // |address_type| will create a BR/EDR device.
   virtual void ConnectDevice(const dbus::ObjectPath& object_path,
                              const std::string& address,
-                             const base::Optional<AddressType>& address_type,
+                             const absl::optional<AddressType>& address_type,
                              ConnectDeviceCallback callback,
                              ErrorCallback error_callback) = 0;
 
@@ -238,9 +241,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
 
  protected:
   BluetoothAdapterClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterClient);
 };
 
 }  // namespace bluez

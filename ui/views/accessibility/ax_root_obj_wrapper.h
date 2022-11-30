@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
@@ -41,9 +42,10 @@ class VIEWS_EXPORT AXRootObjWrapper : public views::AXAuraObjWrapper,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+  display::ScopedOptionalDisplayObserver display_observer_{this};
   ui::AXUniqueId unique_id_;
 
-  views::AXAuraObjCache::Delegate* delegate_;
+  raw_ptr<views::AXAuraObjCache::Delegate> delegate_;
 };
 
 #endif  // UI_VIEWS_ACCESSIBILITY_AX_ROOT_OBJ_WRAPPER_H_

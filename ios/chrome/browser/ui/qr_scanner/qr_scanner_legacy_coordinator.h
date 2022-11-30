@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,14 @@
 // QRScannerLegacyCoordinator presents the public interface for the QR scanner
 // feature.
 @interface QRScannerLegacyCoordinator : ChromeCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+
+// The view controller this coordinator was initialized with.
+@property(weak, nonatomic) UIViewController* baseViewController;
 
 @end
 

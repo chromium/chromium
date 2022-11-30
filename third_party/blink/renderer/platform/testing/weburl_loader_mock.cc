@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ void WebURLLoaderMock::ServeAsynchronousRequest(
     WebURLLoaderTestDelegate* delegate,
     const WebURLResponse& response,
     const WebData& data,
-    const base::Optional<WebURLError>& error) {
+    const absl::optional<WebURLError>& error) {
   if (!client_)
     return;
 
@@ -60,7 +60,8 @@ void WebURLLoaderMock::ServeAsynchronousRequest(
   data.ForEachSegment([this, &delegate, &self](const char* segment,
                                                size_t segment_size,
                                                size_t segment_offset) {
-    delegate->DidReceiveData(client_, segment, segment_size);
+    delegate->DidReceiveData(client_, segment,
+                             base::checked_cast<int>(segment_size));
     // DidReceiveData() may clear the |self| weak ptr.  We stop iterating
     // when that happens.
     return self;
@@ -82,9 +83,10 @@ WebURL WebURLLoaderMock::ServeRedirect(
 
   bool report_raw_headers = false;
   bool follow = client_->WillFollowRedirect(
-      redirect_url, net::SiteForCookies::FromUrl(redirect_url), WebString(),
-      network::mojom::ReferrerPolicy::kDefault, method, redirect_response,
-      report_raw_headers, nullptr /* removed_headers */);
+      redirect_url, net::SiteForCookies::FromUrl(GURL(redirect_url)),
+      WebString(), network::mojom::ReferrerPolicy::kDefault, method,
+      redirect_response, report_raw_headers, nullptr /* removed_headers */,
+      false /* insecure_scheme_was_upgraded */);
   // |this| might be deleted in willFollowRedirect().
   if (!self)
     return redirect_url;
@@ -98,13 +100,12 @@ WebURL WebURLLoaderMock::ServeRedirect(
 void WebURLLoaderMock::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-    int requestor_id,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
     WebURLLoaderClient* client,
     WebURLResponse& response,
-    base::Optional<WebURLError>& error,
+    absl::optional<WebURLError>& error,
     WebData& data,
     int64_t& encoded_data_length,
     int64_t& encoded_body_length,
@@ -119,7 +120,6 @@ void WebURLLoaderMock::LoadSynchronously(
 void WebURLLoaderMock::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-    int requestor_id,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
@@ -135,8 +135,8 @@ void WebURLLoaderMock::Cancel() {
   factory_->CancelLoad(this);
 }
 
-void WebURLLoaderMock::SetDefersLoading(DeferType deferred) {
-  is_deferred_ = (deferred != DeferType::kNotDeferred);
+void WebURLLoaderMock::Freeze(WebLoaderFreezeMode mode) {
+  is_deferred_ = (mode != WebLoaderFreezeMode::kNone);
   // Ignores setDefersLoading(false) safely.
   if (!is_deferred_)
     return;

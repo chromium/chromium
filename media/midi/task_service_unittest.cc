@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -57,6 +58,9 @@ class TaskServiceClient {
     DCHECK(task_service);
   }
 
+  TaskServiceClient(const TaskServiceClient&) = delete;
+  TaskServiceClient& operator=(const TaskServiceClient&) = delete;
+
   bool Bind() { return task_service()->BindInstance(); }
 
   bool Unbind() { return task_service()->UnbindInstance(); }
@@ -84,7 +88,7 @@ class TaskServiceClient {
     task_service()->PostBoundDelayedTask(
         runner_id,
         base::BindOnce(&TaskServiceClient::SignalEvent, base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
   }
 
   void WaitTask() { wait_task_event_->Wait(); }
@@ -114,16 +118,17 @@ class TaskServiceClient {
   }
 
   base::Lock lock_;
-  TaskService* task_service_;
+  raw_ptr<TaskService> task_service_;
   std::unique_ptr<base::WaitableEvent> wait_task_event_;
   size_t count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskServiceClient);
 };
 
 class MidiTaskServiceTest : public ::testing::Test {
  public:
   MidiTaskServiceTest() = default;
+
+  MidiTaskServiceTest(const MidiTaskServiceTest&) = delete;
+  MidiTaskServiceTest& operator=(const MidiTaskServiceTest&) = delete;
 
  protected:
   TaskService* task_service() { return &task_service_; }
@@ -145,8 +150,6 @@ class MidiTaskServiceTest : public ::testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<base::ThreadTaskRunnerHandle> thread_task_runner_handle_;
   TaskService task_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiTaskServiceTest);
 };
 
 // Tests if posted tasks without calling BindInstance() are ignored.

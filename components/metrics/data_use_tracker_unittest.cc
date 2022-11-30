@@ -1,10 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/metrics/data_use_tracker.h"
 
-#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -23,18 +23,21 @@ class TestDataUsePrefService : public TestingPrefServiceSimple {
  public:
   TestDataUsePrefService() { DataUseTracker::RegisterPrefs(registry()); }
 
+  TestDataUsePrefService(const TestDataUsePrefService&) = delete;
+  TestDataUsePrefService& operator=(const TestDataUsePrefService&) = delete;
+
   void ClearDataUsePrefs() {
     ClearPref(metrics::prefs::kUserCellDataUse);
     ClearPref(metrics::prefs::kUmaCellDataUse);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDataUsePrefService);
 };
 
 class FakeDataUseTracker : public DataUseTracker {
  public:
   FakeDataUseTracker(PrefService* local_state) : DataUseTracker(local_state) {}
+
+  FakeDataUseTracker(const FakeDataUseTracker&) = delete;
+  FakeDataUseTracker& operator=(const FakeDataUseTracker&) = delete;
 
   bool GetUmaWeeklyQuota(int* uma_weekly_quota_bytes) const override {
     *uma_weekly_quota_bytes = 200;
@@ -55,9 +58,6 @@ class FakeDataUseTracker : public DataUseTracker {
   std::string GetCurrentMeasurementDateAsString() const override {
     return kTodayStr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDataUseTracker);
 };
 
 // Sets up data usage prefs with mock values so that UMA traffic is above the
@@ -103,24 +103,16 @@ TEST(DataUseTrackerTest, CheckUpdateUsagePref) {
   FakeDataUseTracker data_use_tracker(&local_state);
   local_state.ClearDataUsePrefs();
 
-  int user_pref_value = 0;
-  int uma_pref_value = 0;
-
   data_use_tracker.UpdateMetricsUsagePrefsInternal(2 * 100, true, false);
-  local_state.GetDictionary(prefs::kUserCellDataUse)
-      ->GetInteger(kTodayStr, &user_pref_value);
-  EXPECT_EQ(2 * 100, user_pref_value);
-  local_state.GetDictionary(prefs::kUmaCellDataUse)
-      ->GetInteger(kTodayStr, &uma_pref_value);
-  EXPECT_EQ(0, uma_pref_value);
+  EXPECT_EQ(2 * 100,
+            local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
+  EXPECT_FALSE(local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 
   data_use_tracker.UpdateMetricsUsagePrefsInternal(100, true, true);
-  local_state.GetDictionary(prefs::kUserCellDataUse)
-      ->GetInteger(kTodayStr, &user_pref_value);
-  EXPECT_EQ(3 * 100, user_pref_value);
-  local_state.GetDictionary(prefs::kUmaCellDataUse)
-      ->GetInteger(kTodayStr, &uma_pref_value);
-  EXPECT_EQ(100, uma_pref_value);
+  EXPECT_EQ(3 * 100,
+            local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
+  EXPECT_EQ(100,
+            local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 }
 
 TEST(DataUseTrackerTest, CheckRemoveExpiredEntries) {
@@ -130,36 +122,25 @@ TEST(DataUseTrackerTest, CheckRemoveExpiredEntries) {
   SetPrefTestValuesOverRatio(&local_state);
   data_use_tracker.RemoveExpiredEntries();
 
-  int user_pref_value = 0;
-  int uma_pref_value = 0;
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUserCellDataUse).FindInt(kExpiredDateStr1));
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kExpiredDateStr1));
 
-  local_state.GetDictionary(prefs::kUserCellDataUse)
-      ->GetInteger(kExpiredDateStr1, &user_pref_value);
-  EXPECT_EQ(0, user_pref_value);
-  local_state.GetDictionary(prefs::kUmaCellDataUse)
-      ->GetInteger(kExpiredDateStr1, &uma_pref_value);
-  EXPECT_EQ(0, uma_pref_value);
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUserCellDataUse).FindInt(kExpiredDateStr2));
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kExpiredDateStr2));
 
-  local_state.GetDictionary(prefs::kUserCellDataUse)
-      ->GetInteger(kExpiredDateStr2, &user_pref_value);
-  EXPECT_EQ(0, user_pref_value);
-  local_state.GetDictionary(prefs::kUmaCellDataUse)
-      ->GetInteger(kExpiredDateStr2, &uma_pref_value);
-  EXPECT_EQ(0, uma_pref_value);
+  EXPECT_EQ(2 * 100,
+            local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
+  EXPECT_EQ(50, local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 
-  local_state.GetDictionary(prefs::kUserCellDataUse)
-      ->GetInteger(kTodayStr, &user_pref_value);
-  EXPECT_EQ(2 * 100, user_pref_value);
-  local_state.GetDictionary(prefs::kUmaCellDataUse)
-      ->GetInteger(kTodayStr, &uma_pref_value);
-  EXPECT_EQ(50, uma_pref_value);
-
-  local_state.GetDictionary(prefs::kUserCellDataUse)
-      ->GetInteger(kYesterdayStr, &user_pref_value);
-  EXPECT_EQ(2 * 100, user_pref_value);
-  local_state.GetDictionary(prefs::kUmaCellDataUse)
-      ->GetInteger(kYesterdayStr, &uma_pref_value);
-  EXPECT_EQ(50, uma_pref_value);
+  EXPECT_EQ(
+      2 * 100,
+      local_state.GetDict(prefs::kUserCellDataUse).FindInt(kYesterdayStr));
+  EXPECT_EQ(50,
+            local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kYesterdayStr));
 }
 
 TEST(DataUseTrackerTest, CheckComputeTotalDataUse) {

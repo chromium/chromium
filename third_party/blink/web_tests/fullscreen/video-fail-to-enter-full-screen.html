@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <p>This tests that the video should not be rendered in full screen if requestFullScreen() fails.</p>
 <video id="video" width="300"></video>
-<script>
-    if (window.internals)
-      runPixelTests = internals.runtimeFlags.forceOverlayFullscreenVideoEnabled;
-</script>
 <script src="full-screen-test.js"></script>
 <script src="../media/media-controls.js"></script>
 <script>

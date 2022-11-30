@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -35,6 +34,9 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
                     }];
     UpdateFindBarControllerFromPasteboard();
   }
+
+  FindBarPlatformHelperMac(const FindBarPlatformHelperMac&) = delete;
+  FindBarPlatformHelperMac& operator=(const FindBarPlatformHelperMac&) = delete;
 
   ~FindBarPlatformHelperMac() override {
     [[NSNotificationCenter defaultCenter]
@@ -86,8 +88,6 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
   }
 
   id find_pasteboard_notification_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelperMac);
 };
 
 }  // namespace

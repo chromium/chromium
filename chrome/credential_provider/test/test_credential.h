@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_CREDENTIAL_PROVIDER_TEST_TEST_CREDENTIAL_H_
 #define CHROME_CREDENTIAL_PROVIDER_TEST_TEST_CREDENTIAL_H_
 
-#include <atlbase.h>
-#include <atlcom.h>
+#include "base/win/atl.h"
+
 #include <atlcomcli.h>
 #include <credentialprovider.h>
 
@@ -197,8 +197,7 @@ HRESULT CTestCredentialBase<T>::SetGaiaFullNameOverride(
 
 template <class T>
 HRESULT CTestCredentialBase<T>::WaitForGls() {
-  return !gls_process_started_ ||
-                 gls_done_.TimedWait(base::TimeDelta::FromSeconds(30))
+  return !gls_process_started_ || gls_done_.TimedWait(base::Seconds(30))
              ? S_OK
              : HRESULT_FROM_WIN32(WAIT_TIMEOUT);
 }

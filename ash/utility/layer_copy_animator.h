@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,8 +46,8 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
                            AnimationCallback callback);
 
   // Called when a layer is copied. This is public to deal with the shutdown
-  // scenario.
-  void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer);
+  // scenario. This is virtual for testing purpose.
+  virtual void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer);
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
@@ -66,7 +66,9 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
 
  private:
   void RunAnimation();
-  void CancelAndDelete();
+  void FinishAndDelete(bool abort);
+  void EnsureFakeSequence();
+  void NotifyWithFakeSequence(bool abort);
 
   aura::Window* window_;
   ui::LayerAnimationObserver* observer_ = nullptr;

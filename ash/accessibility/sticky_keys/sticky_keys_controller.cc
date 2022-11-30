@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
+
+#include <memory>
 
 #include "ash/accessibility/sticky_keys/sticky_keys_overlay.h"
 #include "ui/aura/window.h"
@@ -38,7 +40,7 @@ ui::EventRewriteStatus RewriteUpdate(
   if (!released && !flags_rewritten)
     return ui::EVENT_REWRITE_CONTINUE;
 
-  *rewritten_event = ui::Event::Clone(event);
+  *rewritten_event = event.Clone();
   if (mod_down_flags & ~event.flags()) {
     (*rewritten_event)->set_flags(event.flags() | mod_down_flags);
   }
@@ -64,14 +66,18 @@ void StickyKeysController::Enable(bool enabled) {
     // Reset key handlers when activating sticky keys to ensure all
     // the handlers' states are reset.
     if (enabled_) {
-      shift_sticky_key_.reset(new StickyKeysHandler(ui::EF_SHIFT_DOWN));
-      alt_sticky_key_.reset(new StickyKeysHandler(ui::EF_ALT_DOWN));
-      altgr_sticky_key_.reset(new StickyKeysHandler(ui::EF_ALTGR_DOWN));
-      ctrl_sticky_key_.reset(new StickyKeysHandler(ui::EF_CONTROL_DOWN));
-      mod3_sticky_key_.reset(new StickyKeysHandler(ui::EF_MOD3_DOWN));
-      search_sticky_key_.reset(new StickyKeysHandler(ui::EF_COMMAND_DOWN));
+      shift_sticky_key_ =
+          std::make_unique<StickyKeysHandler>(ui::EF_SHIFT_DOWN);
+      alt_sticky_key_ = std::make_unique<StickyKeysHandler>(ui::EF_ALT_DOWN);
+      altgr_sticky_key_ =
+          std::make_unique<StickyKeysHandler>(ui::EF_ALTGR_DOWN);
+      ctrl_sticky_key_ =
+          std::make_unique<StickyKeysHandler>(ui::EF_CONTROL_DOWN);
+      mod3_sticky_key_ = std::make_unique<StickyKeysHandler>(ui::EF_MOD3_DOWN);
+      search_sticky_key_ =
+          std::make_unique<StickyKeysHandler>(ui::EF_COMMAND_DOWN);
 
-      overlay_.reset(new StickyKeysOverlay());
+      overlay_ = std::make_unique<StickyKeysOverlay>();
       overlay_->SetModifierVisible(ui::EF_ALTGR_DOWN, altgr_enabled_);
       overlay_->SetModifierVisible(ui::EF_MOD3_DOWN, mod3_enabled_);
     } else if (overlay_) {
@@ -88,6 +94,13 @@ void StickyKeysController::SetModifiersEnabled(bool mod3_enabled,
     overlay_->SetModifierVisible(ui::EF_ALTGR_DOWN, altgr_enabled_);
     overlay_->SetModifierVisible(ui::EF_MOD3_DOWN, mod3_enabled_);
   }
+}
+
+void StickyKeysController::UpdateStickyKeysOverlayBoundsIfNeeded() {
+  if (!enabled_)
+    return;
+
+  overlay_->UpdateBoundsIfVisible();
 }
 
 StickyKeysOverlay* StickyKeysController::GetOverlayForTest() {
@@ -342,7 +355,7 @@ bool StickyKeysHandler::HandleDisabledState(const ui::KeyEvent& event) {
         preparing_to_enable_ = false;
         scroll_delta_ = 0;
         current_state_ = STICKY_KEY_STATE_ENABLED;
-        modifier_up_event_.reset(new ui::KeyEvent(event));
+        modifier_up_event_ = std::make_unique<ui::KeyEvent>(event);
         return true;
       }
       return false;

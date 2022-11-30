@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<title>setting too-large width after captureStream() does not produce invalid frames</title>
+<link rel="help" href="https://crbug.com/1178292">
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script>
+'use strict';
+
+const maxSize = 32767;
+
+// Setting the canvas width or height too large when there is a canvas capture
+// stream does not cause the stream to have frames exceeding Chrome's internal
+// limits.
+promise_test(async t => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 160;
+  canvas.height = 160;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'green';
+  const stream = canvas.captureStream(0);
+  const track = stream.getVideoTracks()[0];
+
+  const intervalId = setInterval(() => {
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    track.requestFrame();
+  }, 50);
+  t.add_cleanup(() => { clearInterval(intervalId); });
+
+  const video = document.createElement('video');
+  video.srcObject = stream;
+  t.add_cleanup(() => { video.src = ''; });
+  let frameCount = 0;
+  let callbackId;
+  const newFrame = (ts, metadata) => {
+    assert_less_than_equal(metadata.width, maxSize);
+    assert_less_than_equal(metadata.height, maxSize);
+    frameCount++;
+    callbackId = video.requestVideoFrameCallback(newFrame);
+  };
+  callbackId = video.requestVideoFrameCallback(newFrame);
+  t.add_cleanup(() => { video.cancelVideoFrameCallback(callbackId); });
+  await video.play();
+
+  await t.step_wait(() => {
+    return frameCount > 0;
+  }, 'await first frame');
+
+  // Now generate frames that are too large.
+  canvas.width = maxSize + 1;
+  // The video element should stop getting frames, but there may still be frames in the pipeline.
+  // Wait for them to flush out.
+  await t.step_wait(() => {
+    const flushed = frameCount === 0;
+    frameCount = 0;
+    return flushed;
+  }, 'await old frames to be flushed out', 1000, 200);
+
+  // Should not see any new frames when canvas is too large.
+  // Since we're asserting that something *doesn't* happen, we need to use step_timeout.
+  await new Promise(resolve => t.step_timeout(resolve, 5000));
+  assert_equals(frameCount, 0, 'frames seen when canvas is too large');
+
+  // Should resume frames after canvas size becomes valid again.
+  frameCount = 0;
+  canvas.width = 160;
+  await t.step_wait(() => frameCount > 0, 'await resume of frames');
+});
+</script>

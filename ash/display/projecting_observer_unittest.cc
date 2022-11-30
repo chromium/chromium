@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,9 @@ class ProjectingObserverTest : public testing::Test {
     chromeos::PowerManagerClient::Shutdown();
   }
 
+  ProjectingObserverTest(const ProjectingObserverTest&) = delete;
+  ProjectingObserverTest& operator=(const ProjectingObserverTest&) = delete;
+
   ~ProjectingObserverTest() override = default;
 
  protected:
@@ -63,9 +66,6 @@ class ProjectingObserverTest : public testing::Test {
   }
 
   std::unique_ptr<ProjectingObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProjectingObserverTest);
 };
 
 TEST_F(ProjectingObserverTest, CheckNoDisplay) {

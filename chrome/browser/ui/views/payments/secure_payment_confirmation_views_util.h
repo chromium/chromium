@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,26 @@
 #include <memory>
 #include <string>
 
-
-class SkBitmap;
+#include "base/callback_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class Label;
 class ProgressBar;
 class View;
 class ImageView;
+class StyledLabel;
 }  // namespace views
+
+namespace gfx {
+class ImageSkia;
+}
 
 namespace payments {
 
-// Height of the header icon.
+// Height of the header icons.
 constexpr int kHeaderIconHeight = 148;
+constexpr int kShoppingCartHeaderIconHeight = 114;
 
 // Padding above the header icon.
 constexpr int kHeaderIconTopPadding = 12;
@@ -38,21 +44,14 @@ constexpr int kDescriptionLineHeight = 20;
 // Insets of the body content.
 constexpr int kBodyInsets = 8;
 
+// Insets of the secondary small text, e.g., the opt-out footer.
+constexpr int kSecondarySmallTextInsets = 16;
+
 // Extra inset between the body content and the dialog buttons.
 constexpr int kBodyExtraInset = 16;
 
-// Size of the instrument icon.
-constexpr int kInstrumentIconWidth = 32;
-constexpr int kInstrumentIconHeight = 20;
-
 // Height of each payment information row.
 constexpr int kPaymentInfoRowHeight = 48;
-
-int GetSecurePaymentConfirmationHeaderWidth();
-
-// Creates the view for the SPC fingerprint header icon.
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationIconView(
-    bool dark_mode);
 
 // Creates the view for the SPC progress bar.
 std::unique_ptr<views::ProgressBar>
@@ -66,9 +65,9 @@ CreateSecurePaymentConfirmationProgressBarView();
 // |                   icon                   |
 // +------------------------------------------+
 std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
-    bool dark_mode,
     int progress_bar_id,
-    int header_icon_id);
+    int header_icon_id,
+    bool use_cart_image = false);
 
 // Creates the label view for the SPC title text.
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
@@ -76,7 +75,20 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
 
 /// Creates the image view for the SPC instrument icon.
 std::unique_ptr<views::ImageView>
-CreateSecurePaymentConfirmationInstrumentIconView(const SkBitmap& bitmap);
+CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& bitmap);
+
+// Formats the merchant label by combining the name and origin for display.
+std::u16string FormatMerchantLabel(
+    const absl::optional<std::u16string>& merchant_name,
+    const absl::optional<std::u16string>& merchant_origin);
+
+// Creates a label with a link to allow the user to delete their payment related
+// data from the relying party.
+std::unique_ptr<views::StyledLabel> CreateSecurePaymentConfirmationOptOutView(
+    const std::u16string& relying_party_id,
+    const std::u16string& opt_out_label,
+    const std::u16string& opt_out_link_label,
+    base::RepeatingClosure on_click);
 
 }  // namespace payments
 

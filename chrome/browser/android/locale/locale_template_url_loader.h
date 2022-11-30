@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_LOCALE_LOCALE_TEMPLATE_URL_LOADER_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url.h"
 
 using base::android::JavaParamRef;
@@ -23,6 +23,9 @@ class LocaleTemplateUrlLoader {
   void OverrideDefaultSearchProvider(JNIEnv* env);
   void SetGoogleAsDefaultSearch(JNIEnv* env);
 
+  LocaleTemplateUrlLoader(const LocaleTemplateUrlLoader&) = delete;
+  LocaleTemplateUrlLoader& operator=(const LocaleTemplateUrlLoader&) = delete;
+
   virtual ~LocaleTemplateUrlLoader();
 
  protected:
@@ -37,9 +40,7 @@ class LocaleTemplateUrlLoader {
   std::vector<int> prepopulate_ids_;
 
   // Pointer to the TemplateUrlService for the main profile.
-  TemplateURLService* template_url_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleTemplateUrlLoader);
+  raw_ptr<TemplateURLService> template_url_service_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_LOCALE_LOCALE_TEMPLATE_URL_LOADER_H_

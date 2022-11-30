@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define MEDIA_BASE_ENCRYPTION_SCHEME_H_
 
 #include <iosfwd>
+#include <string>
 
 #include "media/base/media_export.h"
 
@@ -19,6 +20,10 @@ enum class EncryptionScheme {
   kCbcs,  // 'cbcs' pattern encryption using AES-CBC mode.
   kMaxValue = kCbcs
 };
+
+// For logging use only.
+MEDIA_EXPORT std::string GetEncryptionSchemeName(
+    EncryptionScheme encryption_scheme);
 
 // For logging use only.
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -24,7 +24,7 @@ namespace device {
 // AuthenticatorGetAssertion command.
 class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialDescriptor {
  public:
-  static base::Optional<PublicKeyCredentialDescriptor> CreateFromCBORValue(
+  static absl::optional<PublicKeyCredentialDescriptor> CreateFromCBORValue(
       const cbor::Value& cbor);
 
   PublicKeyCredentialDescriptor();
@@ -43,26 +43,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialDescriptor {
   bool operator==(const PublicKeyCredentialDescriptor& other) const;
   ~PublicKeyCredentialDescriptor();
 
-  CredentialType credential_type() const { return credential_type_; }
-  const std::vector<uint8_t>& id() const { return id_; }
-  const base::flat_set<FidoTransportProtocol>& transports() const {
-    return transports_;
-  }
+  CredentialType credential_type;
+  std::vector<uint8_t> id;
+  base::flat_set<FidoTransportProtocol> transports;
 
-  void SetCredentialTypeForTesting(CredentialType type) {
-    credential_type_ = type;
-  }
-  std::vector<uint8_t>& GetIdForTesting() { return id_; }
-  base::flat_set<FidoTransportProtocol>& GetTransportsForTesting() {
-    return transports_;
-  }
-
- private:
-  CredentialType credential_type_;
-  std::vector<uint8_t> id_;
-  base::flat_set<FidoTransportProtocol> transports_;
+  // had_other_keys is true if, when parsed from CBOR, this descriptor
+  // contained keys other than 'id' and 'type'. This is only used for testing
+  // that we don't repeat crbug.com/1270757.
+  bool had_other_keys = false;
 };
 
+COMPONENT_EXPORT(DEVICE_FIDO)
 cbor::Value AsCBOR(const PublicKeyCredentialDescriptor&);
 
 }  // namespace device

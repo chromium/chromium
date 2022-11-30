@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 
 namespace blink {
 
@@ -63,43 +63,30 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
   // true, it doesn't return false at any point after. The converse is not true.
   bool IsActive() const;
 
-  // Returns true if |surface| is allowed to be sampled. Be sure to check
-  // ShouldSample before actually collecting a sample.
-  //
-  // Will always return false if IsActive() is false. I.e. If the study is
-  // inactive, all surfaces are considered to be blocked. Hence it is sufficient
-  // to call this function directly instead of calling IsActive() before it.
-  bool IsSurfaceAllowed(IdentifiableSurface surface) const;
-
-  // Returns true if |type| is allowed to be sampled. Be sure to check
-  // ShouldSample before actually collecting a sample.
-  //
-  // Will always return false if IsActive() is false. I.e. If the study is
-  // inactive, all surface types are considered to be blocked. Hence it is
-  // sufficient to call this function directly instead of calling IsActive()
-  // before it.
-  bool IsTypeAllowed(IdentifiableSurface::Type type) const;
-
   // Returns true if |surface| should be sampled.
   //
-  // Will always return false if IsActive() is false or if IsSurfaceAllowed() is
-  // false. I.e. If the study is inactive, all surfaces are considered to be
-  // blocked. Hence it is sufficient to call this function directly instead of
-  // calling IsActive() before it.
-  bool ShouldSample(IdentifiableSurface surface) const;
+  // Will always return false if IsActive() is false. If the study is inactive,
+  // all surfaces are considered to be blocked. Hence it is sufficient to call
+  // this function directly instead of calling IsActive() before it.
+  bool ShouldSampleSurface(IdentifiableSurface surface) const;
 
   // Returns true if |type| should be sampled.
   //
-  // Will always return false if IsActive() is false or if IsTypeAllowed() is
-  // false. I.e. If the study is inactive, all surface types are considered to
-  // be blocked. Hence it is sufficient to call this function directly instead
-  // of calling IsActive() before it.
-  bool ShouldSample(IdentifiableSurface::Type type) const;
+  // Will always return false if IsActive() is false. If the study is inactive,
+  // all surface types are considered to be blocked. Hence it is sufficient to
+  // call this function directly instead of calling IsActive() before it.
+  bool ShouldSampleType(IdentifiableSurface::Type type) const;
 
   // Convenience method for determining whether the surface constructable from
-  // the type (|kWebFeature|) and the |feature| is allowed. See IsSurfaceAllowed
-  // for more detail.
-  bool IsWebFeatureAllowed(mojom::WebFeature feature) const;
+  // the type (|kWebFeature|) and the |feature| is allowed. See
+  // ShouldSampleSurface for more detail.
+  bool ShouldSampleWebFeature(mojom::WebFeature feature) const;
+
+  // Returns true if surfaces should be actively sampled.
+  bool ShouldActivelySample() const;
+
+  // Returns the font families which should be actively sampled.
+  std::vector<std::string> FontFamiliesToActivelySample() const;
 
   // Only used for testing. Resets internal state and violates API contracts
   // made above about the lifetime of IdentifiabilityStudySettings*.

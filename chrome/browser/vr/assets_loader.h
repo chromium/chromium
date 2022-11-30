@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 class SingleThreadTaskRunner;
 class Version;
 }  // namespace base
@@ -56,7 +56,7 @@ class VR_BASE_EXPORT AssetsLoader {
   // Tells VR assets that a new VR assets component version is ready for use.
   void OnComponentReady(const base::Version& version,
                         const base::FilePath& install_dir,
-                        std::unique_ptr<base::DictionaryValue> manifest);
+                        base::Value manifest);
 
   // Loads asset files and calls |on_loaded| passing the loaded asset files.
   // |on_loaded| will be called on the caller's thread. Component must be ready

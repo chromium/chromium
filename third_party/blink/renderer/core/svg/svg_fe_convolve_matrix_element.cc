@@ -30,18 +30,19 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
 template <>
-const SVGEnumerationMap& GetEnumerationMap<EdgeModeType>() {
+CORE_EXPORT const SVGEnumerationMap&
+GetEnumerationMap<FEConvolveMatrix::EdgeModeType>() {
   static const SVGEnumerationMap::Entry enum_items[] = {
-      {EDGEMODE_DUPLICATE, "duplicate"},
-      {EDGEMODE_WRAP, "wrap"},
-      {EDGEMODE_NONE, "none"},
+      {FEConvolveMatrix::EDGEMODE_DUPLICATE, "duplicate"},
+      {FEConvolveMatrix::EDGEMODE_WRAP, "wrap"},
+      {FEConvolveMatrix::EDGEMODE_NONE, "none"},
   };
   static const SVGEnumerationMap entries(enum_items);
   return entries;
@@ -88,10 +89,11 @@ SVGFEConvolveMatrixElement::SVGFEConvolveMatrixElement(Document& document)
                                                        svg_names::kDivisorAttr,
                                                        1)),
       in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)),
-      edge_mode_(MakeGarbageCollected<SVGAnimatedEnumeration<EdgeModeType>>(
+      edge_mode_(MakeGarbageCollected<
+                 SVGAnimatedEnumeration<FEConvolveMatrix::EdgeModeType>>(
           this,
           svg_names::kEdgeModeAttr,
-          EDGEMODE_DUPLICATE)),
+          FEConvolveMatrix::EDGEMODE_DUPLICATE)),
       kernel_matrix_(MakeGarbageCollected<SVGAnimatedNumberList>(
           this,
           svg_names::kKernelMatrixAttr)),
@@ -153,23 +155,23 @@ void SVGFEConvolveMatrixElement::Trace(Visitor* visitor) const {
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
 
-IntSize SVGFEConvolveMatrixElement::MatrixOrder() const {
+gfx::Size SVGFEConvolveMatrixElement::MatrixOrder() const {
   if (!order_->IsSpecified())
-    return IntSize(3, 3);
-  return IntSize(orderX()->CurrentValue()->Value(),
-                 orderY()->CurrentValue()->Value());
+    return gfx::Size(3, 3);
+  return gfx::Size(orderX()->CurrentValue()->Value(),
+                   orderY()->CurrentValue()->Value());
 }
 
-IntPoint SVGFEConvolveMatrixElement::TargetPoint() const {
-  IntSize order = MatrixOrder();
-  IntPoint target(target_x_->CurrentValue()->Value(),
-                  target_y_->CurrentValue()->Value());
+gfx::Point SVGFEConvolveMatrixElement::TargetPoint() const {
+  gfx::Size order = MatrixOrder();
+  gfx::Point target(target_x_->CurrentValue()->Value(),
+                    target_y_->CurrentValue()->Value());
   // The spec says the default value is: targetX = floor ( orderX / 2 ))
   if (!target_x_->IsSpecified())
-    target.SetX(order.Width() / 2);
+    target.set_x(order.width() / 2);
   // The spec says the default value is: targetY = floor ( orderY / 2 ))
   if (!target_y_->IsSpecified())
-    target.SetY(order.Height() / 2);
+    target.set_y(order.height() / 2);
   return target;
 }
 
@@ -178,8 +180,8 @@ float SVGFEConvolveMatrixElement::ComputeDivisor() const {
     return divisor_->CurrentValue()->Value();
   float divisor_value = 0;
   SVGNumberList* kernel_matrix = kernel_matrix_->CurrentValue();
-  size_t kernel_matrix_size = kernel_matrix->length();
-  for (size_t i = 0; i < kernel_matrix_size; ++i)
+  uint32_t kernel_matrix_size = kernel_matrix->length();
+  for (uint32_t i = 0; i < kernel_matrix_size; ++i)
     divisor_value += kernel_matrix->at(i)->Value();
   return divisor_value ? divisor_value : 1;
 }
@@ -196,7 +198,7 @@ bool SVGFEConvolveMatrixElement::SetFilterEffectAttribute(
     return convolve_matrix->SetBias(bias_->CurrentValue()->Value());
   if (attr_name == svg_names::kTargetXAttr ||
       attr_name == svg_names::kTargetYAttr)
-    return convolve_matrix->SetTargetOffset(TargetPoint());
+    return convolve_matrix->SetTargetOffset(TargetPoint().OffsetFromOrigin());
   if (attr_name == svg_names::kPreserveAlphaAttr)
     return convolve_matrix->SetPreserveAlpha(
         preserve_alpha_->CurrentValue()->Value());
@@ -237,7 +239,7 @@ FilterEffect* SVGFEConvolveMatrixElement::Build(
 
   auto* effect = MakeGarbageCollected<FEConvolveMatrix>(
       filter, MatrixOrder(), ComputeDivisor(), bias_->CurrentValue()->Value(),
-      TargetPoint(), edge_mode_->CurrentEnumValue(),
+      TargetPoint().OffsetFromOrigin(), edge_mode_->CurrentEnumValue(),
       preserve_alpha_->CurrentValue()->Value(),
       kernel_matrix_->CurrentValue()->ToFloatVector());
   effect->InputEffects().push_back(input1);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,26 +9,39 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
+import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -37,6 +50,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Unit tests for MessageQueueManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class MessageQueueManagerTest {
     private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
         @Override
@@ -50,15 +64,29 @@ public class MessageQueueManagerTest {
 
     private class EmptyMessageStateHandler implements MessageStateHandler {
         @Override
-        public void show() {}
+        public Animator show(int fromIndex, int toIndex) {
+            return new AnimatorSet();
+        }
 
         @Override
-        public void hide(boolean animate, Runnable hiddenCallback) {
-            hiddenCallback.run();
+        public Animator hide(int fromIndex, int toIndex, boolean animate) {
+            return new AnimatorSet();
         }
 
         @Override
         public void dismiss(@DismissReason int dismissReason) {}
+
+        @Override
+        public int getMessageIdentifier() {
+            return MessageIdentifier.TEST_MESSAGE;
+        }
+    }
+
+    private static class ActiveMockWebContents extends MockWebContents {
+        @Override
+        public @Visibility int getVisibility() {
+            return Visibility.VISIBLE;
+        }
     }
 
     private static class InactiveMockWebContents extends MockWebContents {
@@ -82,10 +110,30 @@ public class MessageQueueManagerTest {
 
     private static final int SCOPE_TYPE = MessageScopeType.NAVIGATION;
     private static final ScopeKey SCOPE_INSTANCE_ID =
-            new ScopeKey(SCOPE_TYPE, new MockWebContents());
+            new ScopeKey(SCOPE_TYPE, new ActiveMockWebContents());
 
     private static final ScopeKey SCOPE_INSTANCE_ID_A =
-            new ScopeKey(SCOPE_TYPE, new MockWebContents());
+            new ScopeKey(SCOPE_TYPE, new ActiveMockWebContents());
+
+    private MessageAnimationCoordinator mAnimationCoordinator;
+
+    @Before
+    public void setUp() {
+        var testValues = new TestValues();
+        testValues.addFeatureFlagOverride(
+                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false);
+        FeatureList.setTestValues(testValues);
+        MessageContainer container = Mockito.mock(MessageContainer.class);
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            runnable.run();
+            return null;
+        })
+                .when(container)
+                .runAfterInitialMessageLayout(any(Runnable.class));
+        mAnimationCoordinator = new MessageAnimationCoordinator(container, Animator::start);
+        UmaRecorderHolder.resetForTesting();
+    }
 
     /**
      * Tests lifecycle of a single message:
@@ -95,21 +143,27 @@ public class MessageQueueManagerTest {
     @Test
     @SmallTest
     public void testEnqueueMessage() {
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        verify(m1).show();
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        Assert.assertEquals(1, getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
         queueManager.dismissMessage(m1, DismissReason.TIMER);
-        verify(m1).hide(anyBoolean(), any());
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m1).dismiss(DismissReason.TIMER);
+        Assert.assertEquals(
+                1, getDismissReasonForTesting(MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
 
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        verify(m2).show();
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        Assert.assertEquals(2, getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
+        verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
         queueManager.dismissMessage(m2, DismissReason.TIMER);
-        verify(m2).hide(anyBoolean(), any());
+        Assert.assertEquals(
+                2, getDismissReasonForTesting(MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
+        verify(m2).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m2).dismiss(DismissReason.TIMER);
     }
 
@@ -119,17 +173,20 @@ public class MessageQueueManagerTest {
     @Test
     @SmallTest
     public void testDismissAllMessages() {
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m3, m3, SCOPE_TYPE, SCOPE_INSTANCE_ID_A);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
 
         queueManager.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
+        Assert.assertEquals(3,
+                getDismissReasonForTesting(
+                        MessageIdentifier.TEST_MESSAGE, DismissReason.ACTIVITY_DESTROYED));
         verify(m1).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m2).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m3).dismiss(DismissReason.ACTIVITY_DESTROYED);
@@ -138,29 +195,61 @@ public class MessageQueueManagerTest {
                 queueManager.getMessagesForTesting().isEmpty());
     }
 
+    @Test
+    @SmallTest
+    public void testMessageShouldShow() {
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+
+        queueManager.setDelegate(mEmptyDelegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        when(m1.shouldShow())
+                .thenReturn(true, true,
+                        true, // This is called by #getNextMessage after a message is shown.
+                        true, false);
+
+        // m1#shouldShow will be invoked and will return true.
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+
+        // The enqueued message should be chosen as a candidate to be shown.
+        // m1#shouldShow will be invoked and will return true.
+        MessageState messageState = queueManager.getNextMessage();
+        Assert.assertNotNull("Next message candidate should not be null.", messageState);
+
+        // The enqueued message should not be chosen as a candidate to be shown.
+        // m1#shouldShow will be invoked and will return false.
+        messageState = queueManager.getNextMessage();
+        Assert.assertNull("Next message candidate should be null.", messageState);
+
+        verify(m1, times(5)).shouldShow();
+
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+        verify(m1).dismiss(DismissReason.TIMER);
+    }
+
     /**
      * Tests that, with multiple enqueued messages, only one message is shown at a time.
      */
     @Test
     @SmallTest
     public void testOneMessageShownAtATime() {
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
 
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
-        verify(m1).show();
-        verify(m2, never()).show();
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m2, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.dismissMessage(m1, DismissReason.TIMER);
-        verify(m1).hide(anyBoolean(), any());
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m1).dismiss(DismissReason.TIMER);
-        verify(m2).show();
+        verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
     }
 
     /**
@@ -170,22 +259,25 @@ public class MessageQueueManagerTest {
     @Test
     @SmallTest
     public void testDismissBeforeShow() {
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
+        when(m1.shouldShow()).thenReturn(true);
+        when(m2.shouldShow()).thenReturn(true);
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        verify(m1).show();
-        verify(m2, never()).show();
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m2, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.dismissMessage(m2, DismissReason.TIMER);
-        verify(m2).dismiss(DismissReason.TIMER);
 
+        verify(m2).dismiss(DismissReason.TIMER);
         queueManager.dismissMessage(m1, DismissReason.TIMER);
-        verify(m2, never()).show();
-        verify(m2, never()).hide(anyBoolean(), any());
+        Assert.assertNull(queueManager.getNextMessage());
+        verify(m2, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m2, never()).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
     /**
@@ -195,14 +287,14 @@ public class MessageQueueManagerTest {
     @Test(expected = IllegalStateException.class)
     @SmallTest
     public void testEnqueueDuplicateKey() {
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
         Object key = new Object();
 
-        queueManager.enqueueMessage(m1, key, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, key, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, key, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, key, SCOPE_INSTANCE_ID, false);
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
     }
@@ -213,10 +305,10 @@ public class MessageQueueManagerTest {
     @Test
     @SmallTest
     public void testDismissMessageTwice() {
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1, times(1)).dismiss(DismissReason.TIMER);
@@ -230,23 +322,23 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testSuspendAndResumeQueue() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(delegate);
         int token = queueManager.suspend();
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(delegate, never()).onStartShowing(any());
         verify(delegate, never()).onFinishHiding();
-        verify(m1, never()).show();
-        verify(m1, never()).hide(anyBoolean(), any());
+        verify(m1, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m1, never()).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
         queueManager.resume(token);
         verify(delegate).onStartShowing(any());
-        verify(m1).show();
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.suspend();
         verify(delegate).onFinishHiding();
-        verify(m1).hide(anyBoolean(), any());
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
     /**
@@ -257,21 +349,21 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testDismissOnSuspend() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(delegate);
         queueManager.suspend();
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(delegate, never()).onStartShowing(any());
         verify(delegate, never()).onFinishHiding();
-        verify(m1, never()).show();
-        verify(m1, never()).hide(anyBoolean(), any());
+        verify(m1, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m1, never()).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(delegate, never()).onStartShowing(any());
         verify(delegate, never()).onFinishHiding();
-        verify(m1, never()).show();
-        verify(m1, never()).hide(anyBoolean(), any());
+        verify(m1, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m1, never()).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
     /**
@@ -284,26 +376,27 @@ public class MessageQueueManagerTest {
         // TODO(crbug.com/1163290): cover more various scenarios, such as re-activating scopes
         //                          which have been destroyed.
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(delegate);
         final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
         final ScopeKey inactiveScopeKey2 = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, inactiveScopeKey2);
+        queueManager.enqueueMessage(m1, m1, inactiveScopeKey2, false);
 
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, inactiveScopeKey);
+        queueManager.enqueueMessage(m2, m2, inactiveScopeKey, false);
 
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey, ChangeType.ACTIVE));
         verify(m1, never().description("A message should not be shown on another scope instance."))
-                .show();
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
         verify(m1,
                 never().description(
                         "A message should never have been shown or hidden before its target scope is activated."))
-                .hide(anyBoolean(), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
-        verify(m2, description("A message should show on its target scope instance.")).show();
+        verify(m2, description("A message should show on its target scope instance."))
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey, ChangeType.INACTIVE));
@@ -313,14 +406,14 @@ public class MessageQueueManagerTest {
         verify(m2,
                 description(
                         "The message should hide when its target scope instance is deactivated."))
-                .hide(anyBoolean(), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m1,
                 description("The message should show when its target scope instance is activated."))
-                .show();
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
         verify(m1,
                 never().description(
                         "The message should stay on the screen when its target scope instance is activated."))
-                .hide(anyBoolean(), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
     /**
@@ -332,47 +425,47 @@ public class MessageQueueManagerTest {
     public void testMessageOnMultipleScopeTypes() {
         // DO not mock WindowAndroid on L
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(delegate);
         final ScopeKey navScopeKey =
-                new ScopeKey(MessageScopeType.NAVIGATION, new MockWebContents());
+                new ScopeKey(MessageScopeType.NAVIGATION, new ActiveMockWebContents());
         final ScopeKey windowScopeKey =
-                new ScopeKey(MessageScopeType.WEB_CONTENTS, new MockWindowAndroidWebContents());
+                new ScopeKey(new MockWindowAndroidWebContents().getTopLevelNativeWindow());
 
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, MessageScopeType.NAVIGATION, navScopeKey);
+        queueManager.enqueueMessage(m1, m1, navScopeKey, false);
 
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m2, m2, MessageScopeType.WINDOW, windowScopeKey);
+        queueManager.enqueueMessage(m2, m2, windowScopeKey, false);
 
         verify(m1, description("A message should be shown when the associated scope is active"))
-                .show();
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
         verify(m1,
                 never().description(
                         "The message should not be hidden when its scope is still active"))
-                .hide(anyBoolean(), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
         verify(m2,
                 never().description("The message should not be visible when its scope is inactive"))
-                .show();
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.onScopeChange(new MessageScopeChange(
                 MessageScopeType.NAVIGATION, navScopeKey, ChangeType.DESTROY));
 
         verify(m1, description("The message should be hidden when its scope is inactive"))
-                .hide(anyBoolean(), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
         verify(m1, description("The message should be dismissed when its scope is destroyed"))
                 .dismiss(anyInt());
 
         verify(m2, description("A message should be shown when the associated scope is active"))
-                .show();
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.onScopeChange(new MessageScopeChange(
                 MessageScopeType.WINDOW, windowScopeKey, ChangeType.DESTROY));
 
         verify(m2, description("The message should be hidden when its scope is inactive"))
-                .hide(anyBoolean(), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
         verify(m2, description("The message should be dismissed when its scope is destroyed"))
                 .dismiss(anyInt());
@@ -385,27 +478,17 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testMessageAnimationTransitionOnScopeChange() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(delegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE, true));
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
 
         verify(m1,
                 description(
                         "A message should be hidden with animation when animationTransition is set true."))
-                .hide(eq(true), any());
-
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE, false));
-
-        verify(m1,
-                description(
-                        "A message should be hidden without animation when animationTransition is set false."))
-                .hide(eq(false), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), eq(true));
     }
 
     /**
@@ -415,24 +498,94 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testMessageDismissedOnScopeDestroy() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(delegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(m1,
                 description("The message should show when its target scope instance is activated."))
-                .show();
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.DESTROY));
         verify(m1,
                 description("The message should hide when its target scope instance is destroyed."))
-                .hide(anyBoolean(), any());
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m1,
                 description(
                         "Message should be dismissed when its target scope instance is destroyed."))
                 .dismiss(anyInt());
+    }
+
+    /**
+     * Test that callback can be correctly called if #hide is called without #show called before.
+     */
+    @Test
+    @SmallTest
+    public void testShowHideMultipleTimes() {
+        MessageQueueDelegate delegate = Mockito.spy(MessageQueueDelegate.class);
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(delegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+
+        // Show and hide twice.
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(delegate).onStartShowing(runnableCaptor.capture());
+        Runnable onShow = runnableCaptor.getValue();
+        verify(m1, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        // Become inactive before onStartShowing is finished.
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
+        verify(m1, never()).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+        onShow.run();
+        verify(m1, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
+        runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(delegate, times(2)).onStartShowing(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.DESTROY));
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testSuspendDuringOnStartingShow() {
+        MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(delegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+
+        // Hide
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+
+        // Re-assign a delegate so that onStartShowing will not trigger callback at once.
+        delegate = Mockito.spy(MessageQueueDelegate.class);
+        queueManager.setDelegate(delegate);
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
+        // Suspend queue before onStartShowing is finished.
+        queueManager.suspend();
+
+        verify(m1,
+                times(1).description(
+                        "Message should not show again before onStartShowing is finished"))
+                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m1, times(1).description("Message should not call #hide if it is not shown before"))
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
     /**
@@ -442,25 +595,25 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testScopeChangeControllerInvoked() {
         ScopeChangeController controller = Mockito.mock(ScopeChangeController.class);
-        MessageQueueManager queueManager = new MessageQueueManager();
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setScopeChangeControllerForTesting(controller);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(controller,
                 description(
                         "ScopeChangeController should be notified when the queue of scope gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID);
 
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         verify(controller,
                 times(1).description(
                         "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID);
 
-        queueManager.enqueueMessage(m3, m3, SCOPE_TYPE, SCOPE_INSTANCE_ID_A);
+        queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
         verify(controller,
                 times(1).description(
                         "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
@@ -490,5 +643,69 @@ public class MessageQueueManagerTest {
                 description(
                         "ScopeChangeController should be notified when the queue of scope is empty."))
                 .lastMessageDismissed(SCOPE_INSTANCE_ID);
+    }
+
+    /**
+     * Test that the higher priority message is displayed when being enqueued.
+     */
+    @Test
+    @SmallTest
+    public void testEnqueueHigherPriorityMessage() {
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(mEmptyDelegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, true);
+        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+        verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        queueManager.dismissMessage(m2, DismissReason.TIMER);
+        verify(m2).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+        verify(m2).dismiss(DismissReason.TIMER);
+        verify(m1, times(2)).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+    }
+
+    /**
+     * Test that {@link MessageQueueManager#getNextMessages()} returns correct list.
+     */
+    @Test
+    @SmallTest
+    public void testGetNextTwoMessages() {
+        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(mEmptyDelegate);
+        var messages = queueManager.getNextMessages();
+        Assert.assertArrayEquals(new MessageState[] {null, null}, messages.toArray());
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        messages = queueManager.getNextMessages();
+        Assert.assertEquals(m1, messages.get(0).handler);
+        Assert.assertNull(messages.get(1));
+
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        messages = queueManager.getNextMessages();
+        Assert.assertEquals(m1, messages.get(0).handler);
+        Assert.assertEquals(m2, messages.get(1).handler);
+
+        MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID, true);
+        messages = queueManager.getNextMessages();
+        Assert.assertEquals(m3, messages.get(0).handler);
+        Assert.assertEquals(m1, messages.get(1).handler);
+    }
+
+    static int getEnqueuedMessageCountForTesting(@MessageIdentifier int messageIdentifier) {
+        return RecordHistogram.getHistogramValueCountForTesting(
+                MessagesMetrics.getEnqueuedHistogramNameForTesting(), messageIdentifier);
+    }
+
+    static int getDismissReasonForTesting(
+            @MessageIdentifier int messageIdentifier, @DismissReason int dismissReason) {
+        String histogramName = MessagesMetrics.getDismissHistogramNameForTesting(messageIdentifier);
+        return RecordHistogram.getHistogramValueCountForTesting(histogramName, dismissReason);
     }
 }

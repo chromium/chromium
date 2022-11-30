@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,27 +11,26 @@
 #include <unistd.h>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "sandbox/linux/tests/test_utils.h"
 #include "sandbox/linux/tests/unit_tests.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
-
 namespace syscall_broker {
 
 class BrokerFilePermissionTester {
  public:
+  BrokerFilePermissionTester(const BrokerFilePermissionTester&) = delete;
+  BrokerFilePermissionTester& operator=(const BrokerFilePermissionTester&) =
+      delete;
+
   static bool ValidatePath(const char* path) {
     return BrokerFilePermission::ValidatePath(path);
   }
   static const char* GetErrorMessage() {
     return BrokerFilePermission::GetErrorMessageForTests();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrokerFilePermissionTester);
 };
 
 namespace {
@@ -300,7 +299,5 @@ TEST(BrokerFilePermission, ValidatePath) {
 }
 
 }  // namespace
-
 }  // namespace syscall_broker
-
 }  // namespace sandbox

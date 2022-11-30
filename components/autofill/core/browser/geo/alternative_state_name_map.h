@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,15 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/proto/states.pb.h"
-
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
+
 // AlternativeStateNameMap encapsulates mappings from state names in the
 // profiles to their localized and the abbreviated names.
 //
@@ -88,7 +88,7 @@ class AlternativeStateNameMap {
   // Calls |GetCanonicalStateName()| member method of AlternativeStateNameMap
   // and returns the canonical state name corresponding to |country_code| and
   // |state_name| if present.
-  static base::Optional<AlternativeStateNameMap::CanonicalStateName>
+  static absl::optional<AlternativeStateNameMap::CanonicalStateName>
   GetCanonicalStateName(const std::string& country_code,
                         const std::u16string& state_name);
 
@@ -101,15 +101,15 @@ class AlternativeStateNameMap {
   // (|country_code|, |state_name|).
   // |is_state_name_normalized| denotes whether the |state_name| has been
   // normalized or not.
-  base::Optional<CanonicalStateName> GetCanonicalStateName(
+  absl::optional<CanonicalStateName> GetCanonicalStateName(
       const CountryCode& country_code,
       const StateName& state_name,
       bool is_state_name_normalized = false) const;
 
   // Returns the value present in |localized_state_names_map_| corresponding
   // to (|country_code|, |state_string_from_profile|). In case, the entry does
-  // not exist in the map, base::nullopt is returned.
-  base::Optional<StateEntry> GetEntry(
+  // not exist in the map, absl::nullopt is returned.
+  absl::optional<StateEntry> GetEntry(
       const CountryCode& country_code,
       const StateName& state_string_from_profile) const;
 

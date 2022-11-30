@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright 2021 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<view class="org.chromium.chrome.browser.bookmarks.PowerBookmarkTagChipList"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:id="@+id/power_bookmark_tag_chip_list"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />

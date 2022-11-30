@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "ash/login/ui/login_detachable_base_model.h"
 #include "ash/public/cpp/lock_screen_widget_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -64,22 +65,28 @@ LockScreen::LockScreen(ScreenType type) : type_(type) {
   }
 
   tray_action_observation_.Observe(Shell::Get()->tray_action());
-  saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::LOGIN_SECONDARY) {
+    saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
+  }
 }
 
 LockScreen::~LockScreen() {
   widget_.reset();
 
-  ui::Clipboard::DestroyClipboardForCurrentThread();
-  if (saved_clipboard_)
-    ui::Clipboard::SetClipboardForCurrentThread(std::move(saved_clipboard_));
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::LOGIN_SECONDARY) {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    if (saved_clipboard_)
+      ui::Clipboard::SetClipboardForCurrentThread(std::move(saved_clipboard_));
+  }
 }
 
 std::unique_ptr<views::View> LockScreen::MakeContentsView() {
   auto initial_note_action_state =
       Shell::Get()->tray_action()->GetLockScreenNoteState();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kShowLoginDevOverlay)) {
+          switches::kShowLoginDevOverlay)) {
     auto debug_view =
         std::make_unique<LockDebugView>(initial_note_action_state, type_);
     contents_view_ = debug_view->lock();
@@ -140,7 +147,7 @@ void LockScreen::Destroy() {
   Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())
           ->shelf_widget()
-          ->login_shelf_view());
+          ->GetLoginShelfView());
 
   delete instance_;
   instance_ = nullptr;
@@ -156,6 +163,10 @@ void LockScreen::FocusPreviousUser() {
 
 void LockScreen::ShowParentAccessDialog() {
   contents_view_->ShowParentAccessDialog();
+}
+
+void LockScreen::SetHasKioskApp(bool has_kiosk_apps) {
+  contents_view_->SetHasKioskApp(has_kiosk_apps);
 }
 
 void LockScreen::OnLockScreenNoteStateChanged(mojom::TrayActionState state) {

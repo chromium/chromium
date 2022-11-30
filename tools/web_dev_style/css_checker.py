@@ -1,4 +1,4 @@
-# Copyright 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools, and see
-https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md
+https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
 for the rules we're checking against here.
 """
 
@@ -109,9 +109,9 @@ class CSSChecker(object):
       # TODO(dbeam): make this smart enough to detect issues in mixins.
       strip_rule = lambda t: _remove_disable(t).strip()
       for rule in re.finditer(r'{(.*?)}', contents, re.DOTALL):
-        semis = map(strip_rule, rule.group(1).split(';'))[:-1]
-        rules = filter(lambda r: ': ' in r, semis)
-        props = map(lambda r: r[0:r.find(':')], rules)
+        semis = [strip_rule(r) for r in rule.group(1).split(';')][:-1]
+        rules = [r for r in semis if ': ' in r]
+        props = [r[0:r.find(':')] for r in rules]
         if props != sorted(props):
           errors.append('    %s;\n' % (';\n    '.join(rules)))
       return errors
@@ -286,10 +286,30 @@ class CSSChecker(object):
       return errors
 
     def one_selector_per_line(contents):
-      any_reg = re.compile(r"""
-          :(?:-webkit-)?any\(.*?\)  # :-webkit-any(a, b, i) selector
-          """,
-          re.DOTALL | re.VERBOSE)
+      # Ignore all patterns nested in :any(), :is().
+      any_reg = re.compile(
+          r"""
+          :(?:
+          (?:-webkit-)?any     # :-webkit-any(a, b, i) selector
+          |is                  # :is(...) selector
+          )\(
+          """, re.DOTALL | re.VERBOSE)
+      # Iteratively remove nested :is(), :any() patterns from |contents|.
+      while True:
+        m = re.search(any_reg, contents)
+        if m is None:
+          break
+        start, end = m.span()
+        # Find corresponding right parenthesis.
+        pcount = 1
+        while end < len(contents) and pcount > 0:
+          if contents[end] == '(':
+            pcount += 1
+          elif contents[end] == ')':
+            pcount -= 1
+          end += 1
+        contents = contents[:start] + contents[end:]
+
       multi_sels_reg = re.compile(r"""
           (?:}\s*)?            # ignore 0% { blah: blah; }, from @keyframes
           ([^,]+,(?=[^{}]+?{)  # selector junk {, not in a { rule }
@@ -297,7 +317,7 @@ class CSSChecker(object):
           """,
           re.MULTILINE | re.VERBOSE)
       errors = []
-      for b in re.finditer(multi_sels_reg, re.sub(any_reg, '', contents)):
+      for b in re.finditer(multi_sels_reg, contents):
         errors.append('    ' + b.group(1).strip().splitlines()[-1:][0])
       return errors
 

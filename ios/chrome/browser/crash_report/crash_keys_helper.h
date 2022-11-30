@@ -1,25 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_KEYS_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_KEYS_HELPER_H_
 
-#include <string>
 
 @class NSString;
 @class NSArray;
 
 namespace crash_keys {
 
-// Key for breadcrumbs attached to crash reports.
-extern const char kBreadcrumbsProductDataKey[];
-
-// Sets a key if |background| is true, unset if false. This will allow tracking
+// Sets a key if `background` is true, unset if false. This will allow tracking
 // of crashes that occur when the app is backgrounded.
 void SetCurrentlyInBackground(bool background);
 
-// Sets a key if |signedIn| is true, unset if false. The key indicates that the
+// Sets a key if `signedIn` is true, unset if false. The key indicates that the
 // user is signed-in.
 void SetCurrentlySignedIn(bool signedIn);
 
@@ -63,6 +59,12 @@ void SetCurrentHorizontalSizeClass(int horizontalSizeClass);
 // values from 0 to 2).
 void SetCurrentUserInterfaceStyle(int userInterfaceStyle);
 
+// Sets the number of connected scenes. Only reported if not 1.
+void SetConnectedScenesCount(int connectedScenes);
+
+// Sets the number of foreground scenes. Only reported if not 1.
+void SetForegroundScenesCount(int connectedScenes);
+
 // Sets a key in browser_state dictionary to store the count of regular tabs.
 void SetRegularTabCount(int tabCount);
 
@@ -74,8 +76,8 @@ void SetIncognitoTabCount(int tabCount);
 void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress);
 
 // Sets a key to help debug a crash when animating from grid to visible tab.
-// |to_view_controller| is the view controller about to be presented. The
-// remaining parameters relate to the |to_view_controller|.
+// `to_view_controller` is the view controller about to be presented. The
+// remaining parameters relate to the `to_view_controller`.
 void SetGridToVisibleTabAnimation(NSString* to_view_controller,
                                   NSString* presenting_view_controller,
                                   NSString* presented_view_controller,
@@ -84,9 +86,6 @@ void SetGridToVisibleTabAnimation(NSString* to_view_controller,
 // Removes the key to help debug a crash when animating from grid to visible
 // tab.
 void RemoveGridToVisibleTabAnimation();
-
-// Sets a key with the given |breadcrumbs| events.
-void SetBreadcrumbEvents(NSString* breadcrumbs);
 
 // Sets a key in browser to store the playback state of media player (audio or
 // video). This function records a new start. This function is called for each

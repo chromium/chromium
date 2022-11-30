@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,9 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 #include "gpu/command_buffer/service/context_group.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
-#include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/gles2_conform_support/egl/config.h"
 #include "gpu/gles2_conform_support/egl/display.h"
 #include "gpu/gles2_conform_support/egl/surface.h"
@@ -173,15 +172,6 @@ const gpu::Capabilities& Context::GetCapabilities() const {
   return capabilities_;
 }
 
-int32_t Context::CreateImage(ClientBuffer buffer, size_t width, size_t height) {
-  NOTREACHED();
-  return -1;
-}
-
-void Context::DestroyImage(int32_t id) {
-  NOTREACHED();
-}
-
 void Context::SignalQuery(uint32_t query, base::OnceClosure callback) {
   NOTREACHED();
 }
@@ -239,10 +229,6 @@ bool Context::CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) {
   return false;
 }
 
-void Context::SetDisplayTransform(gfx::OverlayTransform transform) {
-  NOTREACHED();
-}
-
 void Context::ApplyCurrentContext(gl::GLSurface* current_surface) {
   DCHECK(HasService());
   // The current_surface will be the same as
@@ -269,8 +255,8 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
   scoped_refptr<gpu::gles2::ContextGroup> group(new gpu::gles2::ContextGroup(
       gpu_preferences, true, &mailbox_manager_, nullptr /* memory_tracker */,
       &translator_cache_, &completeness_cache_, feature_info, true,
-      &image_manager_, nullptr /* image_factory */,
-      nullptr /* progress_reporter */, gpu_feature_info, &discardable_manager_,
+      nullptr /* image_factory */, nullptr /* progress_reporter */,
+      gpu_feature_info, &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_));
 
   auto command_buffer = std::make_unique<gpu::CommandBufferDirect>();

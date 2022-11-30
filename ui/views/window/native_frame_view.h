@@ -1,12 +1,12 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_WINDOW_NATIVE_FRAME_VIEW_H_
 #define UI_VIEWS_WINDOW_NATIVE_FRAME_VIEW_H_
 
-#include "base/macros.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -40,7 +40,7 @@ class VIEWS_EXPORT NativeFrameView : public NonClientFrameView {
 
  private:
   // Our containing frame.
-  Widget* frame_;
+  raw_ptr<Widget> frame_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NativeFrameView, NonClientFrameView)

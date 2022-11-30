@@ -1,0 +1,70 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/typescript/ts_library.gni")
+
+assert(is_chromeos_ash, "Sample System Web App is ash-chrome only")
+assert(!is_official_build,
+       "Sample System Web App is only built for unofficial builds")
+
+cur_dir = rebase_path(".", "//")
+
+mojom("trusted") {
+  sources = [ "sample_system_web_app_ui.mojom" ]
+
+  public_deps = [
+    ":shared",
+    "//mojo/public/mojom/base",
+  ]
+  webui_module_path = "/$cur_dir"
+}
+
+mojom("shared") {
+  sources = [ "sample_system_web_app_shared_ui.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/$cur_dir"
+}
+
+mojom("untrusted") {
+  sources = [ "sample_system_web_app_untrusted_ui.mojom" ]
+
+  public_deps = [
+    ":shared",
+    "//mojo/public/mojom/base",
+  ]
+  webui_module_path = "/" + rebase_path(".", "//")
+}
+
+# Builds a TS library for generated Mojo files that can be depended on by
+# downstream TS clients. In particular, we need d.ts files to be generated from
+# the JS files so that downstream TS clients get type information.
+# TODO(crbug.com/1002798): Mojo should generate this ts_library() from actual
+# TS files rather than creating d.ts files from the generated JS files.
+ts_library("mojom_ts") {
+  mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
+  root_dir = mojom_gen_dir
+  out_dir = "$mojom_gen_dir/tsc"
+  tsconfig_base = "../tsconfig_base.json"
+  in_files = [
+    "sample_system_web_app_untrusted_ui.mojom-webui.js",
+    "sample_system_web_app_ui.mojom-webui.js",
+    "sample_system_web_app_shared_ui.mojom-webui.js",
+  ]
+
+  # Targets that generate the above .mojom-webui.js files.
+  extra_deps = [
+    ":shared_webui_js",
+    ":trusted_webui_js",
+    ":untrusted_webui_js",
+
+    # Required for Mojo's bindings.js resolution.
+    "//ui/webui/resources:generate_definitions",
+  ]
+
+  # Generates d.ts files which allows this library to be depended upon.
+  composite = true
+}

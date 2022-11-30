@@ -1,19 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_REQUEST_QUEUE_GENERATOR_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_REQUEST_QUEUE_GENERATOR_H_
 
-#include <memory>
-#include <queue>
-
-#include "base/callback_forward.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
-#include "components/enterprise/browser/reporting/report_request_definition.h"
-#include "components/enterprise/browser/reporting/report_type.h"
+#include "components/enterprise/browser/reporting/report_request.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_reporting {
@@ -25,9 +19,6 @@ class ReportingDelegateFactory;
 // TODO(crbug.com/1103732): Unit tests for this class are still in
 // chrome/browser/enterprise/reporting.
 class ReportRequestQueueGenerator {
-  using ReportRequest = definition::ReportRequest;
-  using ReportRequests = std::queue<std::unique_ptr<ReportRequest>>;
-
  public:
   explicit ReportRequestQueueGenerator(
       ReportingDelegateFactory* delegate_factory);
@@ -45,16 +36,14 @@ class ReportRequestQueueGenerator {
 
   // Generate a queue of requests including full profile info based on given
   // basic request.
-  ReportRequests Generate(ReportType report_type,
-                          const ReportRequest& basic_request);
+  ReportRequestQueue Generate(const ReportRequest& basic_request);
 
  private:
   // Generate request with full profile info at |profile_index| according to
   // |basic_request|, then store it into |requests|.
   void GenerateProfileReportWithIndex(int profile_index,
-                                      ReportType report_type,
                                       const ReportRequest& basic_request,
-                                      ReportRequests* requests);
+                                      ReportRequestQueue* requests);
 
  private:
   size_t maximum_report_size_;

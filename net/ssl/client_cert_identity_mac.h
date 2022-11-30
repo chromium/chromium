@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,10 @@ class NET_EXPORT_PRIVATE ClientCertIdentityMac : public ClientCertIdentity {
                         base::ScopedCFTypeRef<SecIdentityRef> sec_identity);
   ~ClientCertIdentityMac() override;
 
+  SecIdentityRef sec_identity_ref() const { return identity_.get(); }
+
   void AcquirePrivateKey(base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
                              private_key_callback) override;
-  SecIdentityRef sec_identity_ref() const override;
 
  private:
   base::ScopedCFTypeRef<SecIdentityRef> identity_;

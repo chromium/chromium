@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,6 +103,40 @@ TEST(PaintPreviewCompositorCollectionTest,
   // Ensure this doesn't crash even if the collection is out of scope (thus all
   // the receivers are deleted).
   compositor->SetRootFrameUrl(GURL("https://www.foo.com"));
+}
+
+TEST(PaintPreviewCompositorCollectionTest, MemoryPressure) {
+  base::test::TaskEnvironment task_environment;
+
+  base::UnguessableToken token;
+  auto create_cb = base::BindOnce(
+      [](base::UnguessableToken* out_token,
+         const base::UnguessableToken& token) { *out_token = token; },
+      base::Unretained(&token));
+  ASSERT_TRUE(token.is_empty());
+  mojo::Remote<mojom::PaintPreviewCompositor> compositor;
+  {
+    mojo::Remote<mojom::PaintPreviewCompositorCollection> collection;
+    PaintPreviewCompositorCollectionImpl collection_instance(
+        collection.BindNewPipeAndPassReceiver(), false, nullptr);
+    task_environment.RunUntilIdle();
+    EXPECT_TRUE(collection.is_bound());
+    EXPECT_TRUE(collection.is_connected());
+    // Moderate will just purge caches. They aren't needed as urgently.
+    collection_instance.OnMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+    task_environment.RunUntilIdle();
+    EXPECT_TRUE(collection.is_bound());
+    EXPECT_TRUE(collection.is_connected());
+
+    // Critial will not kill process as browser side will do this.
+    collection_instance.OnMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    task_environment.RunUntilIdle();
+    EXPECT_TRUE(collection.is_bound());
+    EXPECT_TRUE(collection.is_connected());
+  }
+  task_environment.RunUntilIdle();
 }
 
 }  // namespace paint_preview

@@ -15,3 +15,15 @@ export function getOppositeOrientation() {
   const isPortrait = currentOrientation.includes("portrait");
   return isPortrait ? "landscape" : "portrait";
 }
+
+export function makeCleanup(initialOrientation = screen.orientation?.type.split(/-/)[0]) {
+  return async () => {
+    if (initialOrientation) {
+      await screen.orientation.lock(initialOrientation);
+    }
+    screen.orientation.unlock();
+    requestAnimationFrame(async () => {
+      await document.exitFullscreen();
+    });
+  }
+}

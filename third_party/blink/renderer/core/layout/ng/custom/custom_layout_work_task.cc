@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_work_task.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_intrinsic_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
@@ -135,14 +136,15 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
   if (child.IsLayoutNGCustom())
     builder.SetCustomLayoutData(std::move(constraint_data_));
   auto space = builder.ToConstraintSpace();
-  auto result = To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);
+  auto* result =
+      To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);
 
   NGBoxFragment fragment(parent_space.GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
   resolver_->Resolve(MakeGarbageCollected<CustomLayoutFragment>(
-      child_, token_, std::move(result), fragment.Size(), fragment.Baseline(),
-      resolver_->GetScriptState()->GetIsolate()));
+      child_, token_, std::move(result), fragment.Size(),
+      fragment.FirstBaseline(), resolver_->GetScriptState()->GetIsolate()));
 }
 
 void CustomLayoutWorkTask::RunIntrinsicSizesTask(

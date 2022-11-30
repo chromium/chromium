@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,8 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
             .email,
         email);
   } else {
-    identity_test_env_.MakePrimaryAccountAvailable(email);
+    identity_test_env_.MakePrimaryAccountAvailable(email,
+                                                   signin::ConsentLevel::kSync);
   }
 }
 
@@ -59,8 +60,10 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
 PasswordForm SyncUsernameTestBase::SimpleGaiaForm(const char* username) {
   PasswordForm form;
   form.signon_realm = "https://accounts.google.com";
+  form.url = GURL("https://accounts.google.com");
   form.username_value = ASCIIToUTF16(username);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 
@@ -68,8 +71,10 @@ PasswordForm SyncUsernameTestBase::SimpleGaiaForm(const char* username) {
 PasswordForm SyncUsernameTestBase::SimpleNonGaiaForm(const char* username) {
   PasswordForm form;
   form.signon_realm = "https://site.com";
+  form.url = GURL("https://site.com");
   form.username_value = ASCIIToUTF16(username);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 
@@ -81,13 +86,16 @@ PasswordForm SyncUsernameTestBase::SimpleNonGaiaForm(const char* username,
   form.username_value = ASCIIToUTF16(username);
   form.url = GURL(origin);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 
 void SyncUsernameTestBase::SetSyncingPasswords(bool syncing_passwords) {
-  sync_service_.SetPreferredDataTypes(
-      syncing_passwords ? syncer::ModelTypeSet(syncer::PASSWORDS)
-                        : syncer::ModelTypeSet());
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncing_passwords ? syncer::UserSelectableTypeSet(
+                                        syncer::UserSelectableType::kPasswords)
+                                  : syncer::UserSelectableTypeSet());
 }
 
 }  // namespace password_manager

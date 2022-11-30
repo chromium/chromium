@@ -1,18 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/device_api/device_attribute_api.h"
+
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/hostname_handler.h"
 #include "chromeos/system/statistics_provider.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace device_attribute_api {
@@ -21,9 +22,16 @@ namespace {
 
 using Result = blink::mojom::DeviceAttributeResult;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kNotAffiliatedErrorMessage[] =
+    "This web API is not allowed if the current profile is not affiliated.";
+
+const char kNotAllowedOriginErrorMessage[] =
+    "The current origin cannot use this web API because it is not allowed by "
+    "the DeviceAttributesAllowedForOrigins policy.";
+
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kNotSupportedPlatformErrorMessage[] =
-    "This restricted web API is not supported on the current platform.";
+    "This web API is not supported on the current platform.";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -35,7 +43,7 @@ void AdaptLacrosResult(
         Result::NewErrorMessage(lacros_result->get_error_message()));
   } else if (lacros_result->get_contents().empty()) {
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   } else {
     std::move(callback).Run(
         Result::NewAttribute(lacros_result->get_contents()));
@@ -45,19 +53,31 @@ void AdaptLacrosResult(
 
 }  // namespace
 
+void ReportNotAffiliatedError(
+    base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {
+  std::move(callback).Run(Result::NewErrorMessage(kNotAffiliatedErrorMessage));
+}
+
+void ReportNotAllowedError(
+    base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {
+  std::move(callback).Run(
+      Result::NewErrorMessage(kNotAllowedOriginErrorMessage));
+}
+
 void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
+                                    ->browser_policy_connector_ash()
                                     ->GetDirectoryApiID();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDirectoryDeviceId(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -68,18 +88,16 @@ void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
 
 void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
-                                    ->GetHostnameHandler()
-                                    ->GetDeviceHostname();
-  if (attribute.empty())
-    std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
-  else
-    std::move(callback).Run(Result::NewAttribute(attribute));
+  const absl::optional<std::string> attribute =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->GetDeviceNamePolicyHandler()
+          ->GetHostnameChosenByAdministrator();
+  std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceHostname(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -95,12 +113,13 @@ void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback) {
           ->GetEnterpriseMachineID();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceSerialNumber(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -113,16 +132,17 @@ void GetAnnotatedAssetId(
     DeviceAPIService::GetAnnotatedAssetIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
+                                    ->browser_policy_connector_ash()
                                     ->GetDeviceAssetID();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceAssetId(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -135,16 +155,17 @@ void GetAnnotatedLocation(
     DeviceAPIService::GetAnnotatedLocationCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
+                                    ->browser_policy_connector_ash()
                                     ->GetDeviceAnnotatedLocation();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceAnnotatedLocation(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,9 @@ namespace leveldb_proto {
 // Static metrics recording helper functions for ProtoLevelDBWrapper.
 //
 // When adding database clients that require UMA metrics recording, ensure that
-// the client name is added as a suffix in histograms.xml for the appropriate
-// ProtoDB.* metrics.
+// the client name is added as a LevelDBClient variant in
+// //tools/metrics/histograms/metadata/leveldb_proto/histograms.xml for the
+// appropriate ProtoDB.* metrics.
 class ProtoLevelDBWrapperMetrics {
  public:
   static void RecordInit(const std::string& client,

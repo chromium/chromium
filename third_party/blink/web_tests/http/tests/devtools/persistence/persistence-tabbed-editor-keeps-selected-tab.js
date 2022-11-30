@@ -1,16 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Verify that tab keeps selected as the persistence binding comes in.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.addScriptTag('resources/foo.js');
   await TestRunner.showPanel('sources');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   var fsEntry = BindingsTestRunner.addFooJSFile(fs);
   fs.root.addFile('bar.js', 'window.bar = ()=>\'bar\';');
   await fs.reportCreatedPromise();
@@ -30,13 +30,13 @@
   TestRunner.completeTest();
 
   function dumpTabs(title) {
-    var tabbedPane = UI.panels.sources._sourcesView._editorContainer._tabbedPane;
-    var tabs = tabbedPane._tabs;
+    var tabbedPane = UI.panels.sources.sourcesView().editorContainer.tabbedPane;
+    var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {
       var text = (i + 1) + ': ';
       text += tabs[i].title;
-      if (tabs[i] === tabbedPane._currentTab)
+      if (tabs[i] === tabbedPane.currentTab)
         text += ' [selected]';
       TestRunner.addResult('    ' + text);
     }

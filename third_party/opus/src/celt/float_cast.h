@@ -99,7 +99,7 @@ static OPUS_INLINE opus_int32 float2int(float x) {return _mm_cvt_ss2si(_mm_set_s
                 return intgr ;
         }
 
-#elif defined(HAVE_LRINTF)
+#elif defined(HAVE_LRINTF) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
 /*      These defines enable functionality introduced with the 1999 ISO C
 **      standard. They must be defined before the inclusion of math.h to
@@ -117,7 +117,7 @@ static OPUS_INLINE opus_int32 float2int(float x) {return _mm_cvt_ss2si(_mm_set_s
 #include <math.h>
 #define float2int(x) lrintf(x)
 
-#elif (defined(HAVE_LRINT))
+#elif defined(HAVE_LRINT) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
 #define _ISOC9X_SOURCE 1
 #define _ISOC99_SOURCE 1

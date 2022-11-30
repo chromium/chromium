@@ -1,211 +1,52 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//android_webview/system_webview_apk_tmpl.gni")
+import("//build/config/android/abi.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/icu/config.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 
-android_assets("weblayer_shell_assets") {
+generate_wrapper("run_browserfragment_shell") {
   testonly = true
-
-  sources = [ "$root_out_dir/weblayer_shell.pak" ]
-  disable_compression = true
-  deps = [ "//weblayer/shell:shell_pak" ]
-}
-
-android_resources("weblayer_shell_resources") {
-  sources = [
-    "shell_apk/res/drawable-mdpi/avatar_sunglasses.png",
-    "shell_apk/res/layout/alt_shell_browser_controls.xml",
-    "shell_apk/res/layout/bottom_controls.xml",
-    "shell_apk/res/layout/main.xml",
-    "shell_apk/res/layout/shell_browser_controls.xml",
-    "shell_apk/res/menu/app_menu.xml",
-    "shell_apk/res/menu/controls_menu.xml",
-    "shell_apk/res/values/strings.xml",
-    "shell_apk/res/values/styles.xml",
-  ]
-}
-
-android_library("weblayer_shell_java") {
-  testonly = true
-  resources_package = "org.chromium.weblayer.shell"
-
-  # The google_play_services_base_java dependency is necessary for the
-  # google_play_services_version definition in the manifest.
-  deps = [
-    ":weblayer_shell_resources",
-    "$google_play_services_package:google_play_services_base_java",
-    "//base:base_java",
-    "//components/strictmode/android:java",
-    "//third_party/android_deps:android_support_v4_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//weblayer/public/java",
-  ]
-  sources = [
-    "shell_apk/src/org/chromium/weblayer/shell/InstrumentationActivity.java",
-    "shell_apk/src/org/chromium/weblayer/shell/TelemetryActivity.java",
-    "shell_apk/src/org/chromium/weblayer/shell/WebLayerShellActivity.java",
-  ]
-}
-
-template("weblayer_shell_apk_helper") {
-  _weblayer_shell_manifest =
-      "$target_gen_dir/manifest_$target_name/AndroidManifest.xml"
-  _manifest_target = target_name + "_manifest"
-
-  jinja_template(_manifest_target) {
-    input = "shell_apk/AndroidManifest.xml"
-    output = _weblayer_shell_manifest
-    if (defined(invoker.weblayer_package)) {
-      variables = [ "weblayer_package=" + invoker.weblayer_package ]
-    }
-  }
-
-  android_apk(target_name + "_apk") {
-    testonly = true
-
-    deps = [
-      ":$_manifest_target",
-      ":weblayer_shell_assets",
-      ":weblayer_shell_java",
-    ]
-    apk_name = invoker.apk_name
-    android_manifest = _weblayer_shell_manifest
-    min_sdk_version = 21
-    target_sdk_version = 28
-    android_manifest_dep = ":$_manifest_target"
-
-    command_line_flags_file = "weblayer-command-line"
-    proguard_enabled = !is_java_debug
-
-    # Add a native lib so the ABI is compatible with the implementation APK.
-    native_lib_placeholders = [ "libdummy.so" ]
-  }
-}
-
-weblayer_shell_apk_helper("weblayer_shell") {
-  weblayer_package = "org.chromium.weblayer.support"
-  apk_name = "WebLayerShell"
-}
-
-weblayer_shell_apk_helper("weblayer_shell_system_webview") {
-  apk_name = "WebLayerShellSystemWebView"
-}
-
-generate_wrapper("run_weblayer_shell") {
-  testonly = true
-  wrapper_script = "$root_out_dir/bin/run_weblayer_shell"
+  wrapper_script = "$root_out_dir/bin/run_browserfragment_shell"
   executable = "//weblayer/tools/run_weblayer_shell.py"
   executable_args = [
     "--shell-apk-path",
-    "@WrappedPath(apks/WebLayerShell.apk)",
+    "@WrappedPath(apks/BFShellSandbox.apk)",
+    "--support-apk-path",
+    "@WrappedPath(apks/BFSandbox.apk)",
     "--support-apk-path",
     "@WrappedPath(apks/WebLayerSupport.apk)",
   ]
 
   deps = [
-    ":weblayer_shell_apk",
+    ":browser_sandbox_apk",
+    ":browserfragment_shell_sandbox_apk",
     ":weblayer_support_apk",
   ]
 }
 
-generate_wrapper("run_weblayer_shell_trichrome") {
+generate_wrapper("run_browserfragment_shell_local") {
   testonly = true
-  wrapper_script = "$root_out_dir/bin/run_weblayer_shell_trichrome"
+  wrapper_script = "$root_out_dir/bin/run_browserfragment_shell_local"
   executable = "//weblayer/tools/run_weblayer_shell.py"
   executable_args = [
     "--shell-apk-path",
-    "@WrappedPath(apks/WebLayerShellSystemWebView.apk)",
+    "@WrappedPath(apks/BFShellLocal.apk)",
     "--support-apk-path",
-    "@WrappedPath(apks/TrichromeLibrary.apk)",
-    "--switch-webview-to",
-    "@WrappedPath(apks/TrichromeWebView.apk)",
+    "@WrappedPath(apks/WebLayerSupport.apk)",
   ]
 
   deps = [
-    ":weblayer_shell_system_webview_apk",
-    "//android_webview:trichrome_webview_apk",
-    "//chrome/android:trichrome_library_apk",
-  ]
-}
-
-if (enable_chrome_android_internal) {
-  generate_wrapper("run_weblayer_shell_monochrome") {
-    testonly = true
-    wrapper_script = "$root_out_dir/bin/run_weblayer_shell_monochrome"
-    executable = "//weblayer/tools/run_weblayer_shell.py"
-    executable_args = [
-      "--shell-apk-path",
-      "@WrappedPath(apks/WebLayerShellSystemWebView.apk)",
-      "--switch-webview-to",
-      "@WrappedPath(apks/Monochrome.apk)",
-    ]
-
-    deps = [
-      ":weblayer_shell_system_webview_apk",
-      "//clank/java:monochrome_apk",
-    ]
-  }
-
-  generate_wrapper("run_weblayer_shell_webview_google") {
-    testonly = true
-    wrapper_script = "$root_out_dir/bin/run_weblayer_shell_webview_google"
-    executable = "//weblayer/tools/run_weblayer_shell.py"
-    executable_args = [
-      "--shell-apk-path",
-      "@WrappedPath(apks/WebLayerShellSystemWebView.apk)",
-      "--switch-webview-to",
-      "@WrappedPath(apks/SystemWebViewGoogle.apk)",
-    ]
-
-    deps = [
-      ":weblayer_shell_system_webview_apk",
-      "//clank/android_webview:system_webview_google_apk",
-    ]
-  }
-
-  generate_wrapper("run_weblayer_shell_trichrome_google") {
-    testonly = true
-    wrapper_script = "$root_out_dir/bin/run_weblayer_shell_trichrome_google"
-    executable = "//weblayer/tools/run_weblayer_shell.py"
-    executable_args = [
-      "--shell-apk-path",
-      "@WrappedPath(apks/WebLayerShellSystemWebView.apk)",
-      "--support-apk-path",
-      "@WrappedPath(apks/TrichromeLibraryGoogle.apk)",
-      "--switch-webview-to",
-      "@WrappedPath(apks/TrichromeWebViewGoogle.apk)",
-    ]
-
-    deps = [
-      ":weblayer_shell_system_webview_apk",
-      "//clank/android_webview:trichrome_webview_google_apk",
-      "//clank/java:trichrome_library_google_apk",
-    ]
-  }
-}
-
-generate_wrapper("run_weblayer_shell_webview") {
-  testonly = true
-  wrapper_script = "$root_out_dir/bin/run_weblayer_shell_webview"
-  executable = "//weblayer/tools/run_weblayer_shell.py"
-  executable_args = [
-    "--shell-apk-path",
-    "@WrappedPath(apks/WebLayerShellSystemWebView.apk)",
-    "--switch-webview-to",
-    "@WrappedPath(apks/SystemWebView.apk)",
-  ]
-
-  deps = [
-    ":weblayer_shell_system_webview_apk",
-    "//android_webview:system_webview_apk",
+    ":browser_sandbox_apk",
+    ":browserfragment_shell_local_apk",
+    ":weblayer_support_apk",
   ]
 }
 
@@ -228,7 +69,6 @@ android_apk("weblayer_support_apk") {
     "//android_webview:locale_pak_assets",
     "//android_webview:pak_file_assets",
     "//android_webview:weblayer_webview_assets",
-    "//base:base_java",
     "//weblayer:locale_pak_assets",
     "//weblayer/browser/java",
     "//weblayer/browser/java:test_java",
@@ -244,17 +84,29 @@ android_apk("weblayer_support_apk") {
     "//net/android:net_java",
   ]
 
-  # default upstream safebrowsing related classes
-  deps += [ "//weblayer/browser/java:gms_bridge_upstream_impl_java" ]
+  # default upstream classes
+  deps += [ "//weblayer/browser/java:upstream_java" ]
 
   # Add the Chromium linker for WebView compatibility support on L-M.
   deps += [ "//base/android/linker:chromium_android_linker" ]
   loadable_modules =
       [ "$root_out_dir/libchromium_android_linker$shlib_extension" ]
 
+  if (enable_arcore) {
+    _libarcore_dir = get_label_info(
+                         "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
+                         "target_out_dir") + "/com_google_ar_core_java/jni"
+    loadable_modules +=
+        [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
+    deps += [
+      "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar",
+      "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
+    ]
+  }
+
   apk_name = "WebLayerSupport"
   android_manifest = weblayer_support_manifest
-  min_sdk_version = 21
+  min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   android_manifest_dep = ":weblayer_support_manifest"
   shared_resources = true
@@ -263,28 +115,109 @@ android_apk("weblayer_support_apk") {
 
   product_config_java_packages = [ weblayer_product_config_java_package ]
 
-  native_lib_version_rule = "//build/util:chrome_version_json"
-  _native_lib_file =
-      rebase_path("$root_gen_dir/CHROME_VERSION.json", root_build_dir)
-  native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-
   shared_libraries = [ "//weblayer:libweblayer_test" ]
 }
 
-script_test("weblayer_shell_wpt") {
-  script = "//testing/scripts/run_android_wpt.py"
-  args = [
-    "--product=android_weblayer",
-    "--weblayer-shell=apks/WebLayerShell.apk",
-    "--weblayer-support=apks/WebLayerSupport.apk",
-    "--webdriver-binary=clang_x64/chromedriver",
-    "-v",
+android_resources("browserfragment_shell_resources") {
+  sources = [
+    "browserfragment_shell_apk/res/layout/main.xml",
+    "browserfragment_shell_apk/res/values/strings.xml",
+    "browserfragment_shell_apk/res/values/styles.xml",
   ]
-  data_deps = [
-    ":weblayer_shell_apk",
-    ":weblayer_support_apk",
-    "//build/android:test_runner_py",
-    "//chrome/test/chromedriver:chromedriver($host_toolchain)",
-    "//third_party/blink/tools:wpt_tests_android_isolate",
+}
+
+android_library("browserfragment_shell_java") {
+  testonly = true
+  resources_package = "org.chromium.browserfragment.shell"
+
+  sources = [ "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/BrowserFragmentShellActivity.java" ]
+
+  deps = [
+    ":browserfragment_service_provider_resources",
+    ":browserfragment_shell_resources",
+    "//base:base_java",
+    "//third_party/android_deps:com_google_guava_guava_android_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//weblayer/public/java:browserfragment_java",
+    "//weblayer/public/java:service_provider_java",
   ]
+}
+
+template("browserfragment_shell_apk_helper") {
+  _browserfragment_shell_manifest =
+      "$target_gen_dir/manifest_$target_name/AndroidManifest.xml"
+  _manifest_target = target_name + "_manifest"
+
+  jinja_template(_manifest_target) {
+    input = "browserfragment_shell_apk/AndroidManifest.xml"
+    output = _browserfragment_shell_manifest
+    if (defined(invoker.browser_process_mode)) {
+      variables = [ "browser_process_mode=" + invoker.browser_process_mode ]
+    }
+  }
+  android_apk(target_name + "_apk") {
+    testonly = true
+    apk_name = invoker.apk_name
+
+    # Test runner does not support having "additional apks" that are incremental.
+    never_incremental = true
+
+    deps = [
+      ":$_manifest_target",
+      ":browserfragment_shell_java",
+    ]
+
+    android_manifest = _browserfragment_shell_manifest
+    android_manifest_dep = ":$_manifest_target"
+    min_sdk_version = default_min_sdk_version
+    target_sdk_version = 28
+  }
+}
+
+browserfragment_shell_apk_helper("browserfragment_shell_local") {
+  browser_process_mode = "local"
+  apk_name = "BFShellLocal"
+}
+
+browserfragment_shell_apk_helper("browserfragment_shell_sandbox") {
+  browser_process_mode = "sandbox"
+  apk_name = "BFShellSandbox"
+}
+
+browserfragment_services_manifest =
+    "$target_gen_dir/service_provider/AndroidManifest.xml"
+
+jinja_template("browserfragment_services_manifest") {
+  input = "service_provider/AndroidManifest.xml"
+  output = browserfragment_services_manifest
+}
+
+android_resources("browserfragment_service_provider_resources") {
+  testonly = true
+  android_manifest = browserfragment_services_manifest
+  android_manifest_dep = ":browserfragment_services_manifest"
+
+  deps = [ ":browserfragment_services_manifest" ]
+}
+
+# TODO(swestphal): Make this an AAR when BrowserProcess service can run in isolated process.
+android_apk("browser_sandbox_apk") {
+  testonly = true
+
+  # Test runner does not support having "additional apks" that are incremental.
+  never_incremental = true
+
+  deps = [
+    ":browserfragment_service_provider_resources",
+    "//weblayer/public/java:browserfragment_interfaces_java",
+    "//weblayer/public/java:service_provider_java",
+  ]
+
+  apk_name = "BFSandbox"
+  android_manifest = browserfragment_services_manifest
+  android_manifest_dep = ":browserfragment_services_manifest"
+  min_sdk_version = default_min_sdk_version
+  target_sdk_version = 28
+  shared_resources = true
 }

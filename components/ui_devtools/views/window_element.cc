@@ -1,14 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/window_element.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
+#include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/aura/window_tree_host_platform.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ui_devtools {
@@ -16,7 +23,7 @@ namespace {
 
 int GetIndexOfChildInParent(aura::Window* window) {
   const aura::Window::Windows& siblings = window->parent()->children();
-  auto it = std::find(siblings.begin(), siblings.end(), window);
+  auto it = base::ranges::find(siblings, window);
   DCHECK(it != siblings.end());
   return std::distance(siblings.begin(), it);
 }
@@ -26,7 +33,7 @@ int GetIndexOfChildInParent(aura::Window* window) {
 WindowElement::WindowElement(aura::Window* window,
                              UIElementDelegate* ui_element_delegate,
                              UIElement* parent)
-    : UIElement(UIElementType::WINDOW, ui_element_delegate, parent),
+    : UIElementWithMetaData(UIElementType::WINDOW, ui_element_delegate, parent),
       window_(window) {
   if (window)
     window_->AddObserver(this);
@@ -67,44 +74,10 @@ void WindowElement::OnWindowBoundsChanged(aura::Window* window,
   delegate()->OnUIElementBoundsChanged(this);
 }
 
-std::vector<UIElement::ClassProperties>
-WindowElement::GetCustomPropertiesForMatchedStyle() const {
-  std::vector<UIElement::ClassProperties> ret;
-  std::vector<UIElement::UIProperty> cur_properties;
-
-  ui::Layer* layer = window_->layer();
-  if (layer) {
-    AppendLayerPropertiesMatchedStyle(layer, &cur_properties);
-    ret.emplace_back("Layer", cur_properties);
-    cur_properties.clear();
-  }
-
-  gfx::Rect bounds;
-  GetBounds(&bounds);
-  cur_properties.emplace_back("x", base::NumberToString(bounds.x()));
-  cur_properties.emplace_back("y", base::NumberToString(bounds.y()));
-  cur_properties.emplace_back("width", base::NumberToString(bounds.width()));
-  cur_properties.emplace_back("height", base::NumberToString(bounds.height()));
-
-  std::string state_str =
-      aura::Window::OcclusionStateToString(window_->occlusion_state());
-  // change OcclusionState::UNKNOWN to UNKNOWN
-  state_str = state_str.substr(state_str.find("::") + 2);
-  cur_properties.emplace_back("occlusion-state", state_str);
-  cur_properties.emplace_back("is-visible",
-                              window_->IsVisible() ? "true" : "false");
-  cur_properties.emplace_back("surface",
-                              window_->GetSurfaceId().is_valid()
-                                  ? window_->GetSurfaceId().ToString()
-                                  : "none");
-  cur_properties.emplace_back("capture",
-                              window_->HasCapture() ? "true" : "false");
-  cur_properties.emplace_back(
-      "is-activatable", wm::CanActivateWindow(window_) ? "true" : "false");
-
-  ret.emplace_back("Window", cur_properties);
-  return ret;
-}
+// TODO (kylixrd@): Still need to add support for the following property.
+//
+//  cur_properties.emplace_back(
+//      "is-activatable", wm::CanActivateWindow(window_) ? "true" : "false");
 
 void WindowElement::GetBounds(gfx::Rect* bounds) const {
   *bounds = window_->bounds();
@@ -163,6 +136,37 @@ void WindowElement::InitSources() {
     AddSource("ui/compositor/layer.h", 0);
   }
   AddSource("ui/aura/window.h", 0);
+}
+
+bool WindowElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
+  ui::KeyEvent key_event = ConvertToUIKeyEvent(event);
+  // Key events are processed differently based on classes. Character events are
+  // routed to the text input client while key stroke events are propragated
+  // through the normal event flow. The IME flow is bypassed.
+  if (key_event.is_char()) {
+    ui::InputMethod* input_method = window_->GetHost()->GetInputMethod();
+    DCHECK(input_method);
+    if (input_method->GetTextInputClient()) {
+      input_method->GetTextInputClient()->InsertChar(key_event);
+    } else {
+      return false;
+    }
+  } else {
+    window_->GetHost()->DispatchKeyEventPostIME(&key_event);
+  }
+  return true;
+}
+
+ui::metadata::ClassMetaData* WindowElement::GetClassMetaData() const {
+  return window_->GetClassMetaData();
+}
+
+void* WindowElement::GetClassInstance() const {
+  return window_;
+}
+
+ui::Layer* WindowElement::GetLayer() const {
+  return window_->layer();
 }
 
 }  // namespace ui_devtools

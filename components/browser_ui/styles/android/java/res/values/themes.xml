@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Theme overlays -->
+
+    <!-- Fullscreen -->
+    <style name="Base.ThemeOverlay.BrowserUI.Fullscreen" parent="">
+        <!-- android:windowContentTransitions is set to true in Theme.Chromium.WithWindowAnimation,
+             which causes a cryptic crash in EditorDialog. See: https://crbug.com/1254821. -->
+        <item name="android:windowContentTransitions">false</item>
+    </style>
+    <style name="ThemeOverlay.BrowserUI.Fullscreen"
+        parent="Base.ThemeOverlay.BrowserUI.Fullscreen" />
+
+    <!-- Color overlays -->
+
+    <!-- Indirection to allow downstream to add attributes. -->
+    <style name="ColorOverlay" parent="Base.ColorOverlay"/>
+    <!-- TODO(https://crbug.com/1216642): Inconsistent naming style. Remove
+         after downstream stops using. -->
+    <style name="Base.ColorOverlay" parent="ColorOverlay.BrowserUi"/>
+    <style name="ColorOverlay.BrowserUi" parent="ColorOverlay.BrowserUi.DayNight">
+        <item name="android:colorBackground">@color/baseline_neutral_0</item>
+        <item name="colorError">@color/baseline_error_600</item>
+        <item name="colorOnBackground">@color/baseline_neutral_900</item>
+        <item name="colorOnPrimary">@color/baseline_primary_0</item>
+        <item name="colorOnSurface">@color/baseline_neutral_900</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_50</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorSurface">@color/baseline_neutral_0</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
+
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
+        <item name="elevationOverlayEnabled">true</item>
+    </style>
+    <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
+        <item name="android:textColorPrimary">@color/default_text_color_list</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
+    </style>
+
+    <!-- Applied to the SettingsActivity's AppBarLayout to disable the
+         liftOnScroll color-fill effect. -->
+    <style name="ThemeOverlay.Settings.DisableElevationOverlay" parent="">
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+    <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+        <item name="elevationOverlayColor">?attr/colorPrimary</item>
+        <item name="elevationOverlayAccentColor">@android:color/transparent</item>
+    </style>
+    <!-- TODO(skym): Move this into ThemeOverlay.BrowserUI.DynamicColors instead. -->
+    <!-- Applied after the dynamic colors to override the undesired overrides done by the dynamic
+         color overlay, e.g. android:textColorHighlight. -->
+    <style name="ThemeOverlay.DynamicColorOverrides" parent="">
+        <!-- android:textColorHighlight applied by Material3 is too dark, so we override it with our
+             own color state list to specify a lower alpha. -->
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+        <!-- android:textColorHint applied by Material3 is too faint, so we override it with our own
+             color state list. -->
+        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
+    </style>
+    <style name="ThemeOverlay.DynamicButtons" parent="">
+        <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
+        <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
+        <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
+        <item name="globalLinkTextColor">?attr/colorPrimary</item>
+        <item name="globalClickableSpanColor">?attr/colorPrimary</item>
+    </style>
+</resources>

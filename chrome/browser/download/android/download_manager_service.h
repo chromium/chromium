@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,9 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/download/android/download_open_source.h"
 #include "chrome/browser/download/download_manager_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -50,6 +49,10 @@ class DownloadManagerService
       download::DownloadItem* item);
 
   DownloadManagerService();
+
+  DownloadManagerService(const DownloadManagerService&) = delete;
+  DownloadManagerService& operator=(const DownloadManagerService&) = delete;
+
   ~DownloadManagerService() override;
 
   // Called to Initialize this object. If |is_profile_added| is false,
@@ -123,15 +126,6 @@ class DownloadManagerService
                       const JavaParamRef<jobject>& callback,
                       const JavaParamRef<jobject>& j_profile_key);
 
-  // Called to change the download schedule of a download item that has GUID
-  // equal to |id|.
-  void ChangeSchedule(JNIEnv* env,
-                      const JavaParamRef<jobject>& obj,
-                      const JavaParamRef<jstring>& id,
-                      jboolean only_on_wifi,
-                      jlong start_time,
-                      const JavaParamRef<jobject>& j_profile_key);
-
   // Returns whether or not the given download can be opened by the browser.
   bool IsDownloadOpenableInBrowser(JNIEnv* env,
                                    jobject obj,
@@ -201,10 +195,33 @@ class DownloadManagerService
       const JavaParamRef<jstring>& jdownload_guid,
       jboolean download_started);
 
+  // Open the download page the given profile, and the source of the opening
+  // action is |download_open_source|.
+  void OpenDownloadsPage(Profile* profile,
+                         DownloadOpenSource download_open_source);
+
  private:
   // For testing.
   friend class DownloadManagerServiceTest;
   friend struct base::DefaultSingletonTraits<DownloadManagerService>;
+
+  enum DownloadAction { RESUME, RETRY, PAUSE, CANCEL, REMOVE, UNKNOWN };
+
+  // Holds params provided to the download function calls.
+  struct DownloadActionParams {
+    explicit DownloadActionParams(DownloadAction download_action);
+    DownloadActionParams(DownloadAction download_action, bool user_gesture);
+    DownloadActionParams(const DownloadActionParams& other);
+
+    ~DownloadActionParams() = default;
+
+    DownloadAction action;
+    bool has_user_gesture;
+  };
+
+  using PendingDownloadActions = std::map<std::string, DownloadActionParams>;
+  using Coordinators =
+      std::map<ProfileKey*, download::SimpleDownloadManagerCoordinator*>;
 
   // Helper function to start the download resumption.
   void ResumeDownloadInternal(const std::string& download_guid,
@@ -270,21 +287,6 @@ class DownloadManagerService
 
   std::vector<ProfileKey*> profiles_with_pending_get_downloads_actions_;
 
-  enum DownloadAction { RESUME, RETRY, PAUSE, CANCEL, REMOVE, UNKNOWN };
-
-  // Holds params provided to the download function calls.
-  struct DownloadActionParams {
-    explicit DownloadActionParams(DownloadAction download_action);
-    DownloadActionParams(DownloadAction download_action, bool user_gesture);
-    DownloadActionParams(const DownloadActionParams& other);
-
-    ~DownloadActionParams() = default;
-
-    DownloadAction action;
-    bool has_user_gesture;
-  };
-
-  using PendingDownloadActions = std::map<std::string, DownloadActionParams>;
   PendingDownloadActions pending_actions_;
 
   void EnqueueDownloadAction(const std::string& download_guid,
@@ -292,12 +294,10 @@ class DownloadManagerService
 
   ResumeCallback resume_callback_for_testing_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 
-  std::map<ProfileKey*, download::SimpleDownloadManagerCoordinator*>
-      coordinators_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerService);
+  Coordinators coordinators_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_MANAGER_SERVICE_H_

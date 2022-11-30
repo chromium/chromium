@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/common/api/bluetooth/bluetooth_manifest_data.h"
 
+#include <memory>
 #include <utility>
 
 #include "extensions/common/api/bluetooth/bluetooth_manifest_permission.h"
@@ -62,10 +63,9 @@ std::unique_ptr<BluetoothManifestData> BluetoothManifestData::FromValue(
   std::unique_ptr<BluetoothManifestPermission> permission =
       BluetoothManifestPermission::FromValue(value, error);
   if (!permission)
-    return std::unique_ptr<BluetoothManifestData>();
+    return nullptr;
 
-  return std::unique_ptr<BluetoothManifestData>(
-      new BluetoothManifestData(std::move(permission)));
+  return std::make_unique<BluetoothManifestData>(std::move(permission));
 }
 
 BluetoothPermissionRequest::BluetoothPermissionRequest(

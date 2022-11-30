@@ -1,0 +1,105 @@
+// Copyright 2013 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/field_types.h"
+
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+TEST(FieldTypesTest, IsValidServerFieldType) {
+  const std::set<ServerFieldType> kValidFieldTypes{
+      NO_SERVER_DATA,
+      UNKNOWN_TYPE,
+      EMPTY_TYPE,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST,
+      NAME_MIDDLE_INITIAL,
+      NAME_FULL,
+      NAME_SUFFIX,
+      EMAIL_ADDRESS,
+      PHONE_HOME_NUMBER,
+      PHONE_HOME_NUMBER_PREFIX,
+      PHONE_HOME_NUMBER_SUFFIX,
+      PHONE_HOME_CITY_CODE,
+      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+      PHONE_HOME_WHOLE_NUMBER,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY,
+      CREDIT_CARD_NAME_FULL,
+      CREDIT_CARD_NUMBER,
+      CREDIT_CARD_EXP_MONTH,
+      CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_4_DIGIT_YEAR,
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+      CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+      CREDIT_CARD_TYPE,
+      CREDIT_CARD_VERIFICATION_CODE,
+      COMPANY_NAME,
+      FIELD_WITH_DEFAULT_VALUE,
+      MERCHANT_EMAIL_SIGNUP,
+      MERCHANT_PROMO_CODE,
+      PASSWORD,
+      ACCOUNT_CREATION_PASSWORD,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_LINE3,
+      NOT_ACCOUNT_CREATION_PASSWORD,
+      USERNAME,
+      USERNAME_AND_EMAIL_ADDRESS,
+      NEW_PASSWORD,
+      PROBABLY_NEW_PASSWORD,
+      NOT_NEW_PASSWORD,
+      CREDIT_CARD_NAME_FIRST,
+      CREDIT_CARD_NAME_LAST,
+      PHONE_HOME_EXTENSION,
+      CONFIRMATION_PASSWORD,
+      AMBIGUOUS_TYPE,
+      SEARCH_TERM,
+      PRICE,
+      NOT_PASSWORD,
+      SINGLE_USERNAME,
+      NOT_USERNAME,
+      UPI_VPA,
+      IBAN_VALUE,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_OTHER_SUBUNIT,
+      NAME_LAST_FIRST,
+      NAME_LAST_CONJUNCTION,
+      NAME_LAST_SECOND,
+      NAME_HONORIFIC_PREFIX,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_ADDRESS,
+      ADDRESS_HOME_ADDRESS_WITH_NAME,
+      ADDRESS_HOME_FLOOR,
+      NAME_FULL_WITH_HONORIFIC_PREFIX,
+      BIRTHDATE_DAY,
+      BIRTHDATE_MONTH,
+      BIRTHDATE_4_DIGIT_YEAR,
+  };
+  ServerFieldType kInvalidValue = static_cast<ServerFieldType>(123456);
+  ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
+  for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {
+    ServerFieldType raw_value = static_cast<ServerFieldType>(i);
+    EXPECT_EQ(ToSafeServerFieldType(raw_value, kInvalidValue),
+              kValidFieldTypes.count(raw_value) ? raw_value : kInvalidValue);
+  }
+}
+
+}  // namespace autofill

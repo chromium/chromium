@@ -1,8 +1,10 @@
-pwnall@chromium.org
-mek@chromium.org
+# Primary
+asully@chromium.org
+
+# Secondary
+ayui@chromium.org
+estade@chromium.org
 
 per-file sqlite_persistent_cookie_store*=file://net/cookies/OWNERS
 per-file sqlite_persistent_reporting_and_nel_store*=file://net/reporting/OWNERS
 per-file sqlite_persistent_reporting_and_nel_store*=file://net/network_error_logging/OWNERS
-
-# Component: Internals>Storage

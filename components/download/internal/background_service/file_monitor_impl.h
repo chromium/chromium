@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/internal/background_service/model.h"
 #include "components/download/internal/background_service/stats.h"
@@ -28,15 +27,18 @@ class FileMonitorImpl : public FileMonitor {
  public:
   FileMonitorImpl(
       const base::FilePath& download_file_dir,
-      const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner,
-      base::TimeDelta file_keep_alive_time);
+      const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner);
+
+  FileMonitorImpl(const FileMonitorImpl&) = delete;
+  FileMonitorImpl& operator=(const FileMonitorImpl&) = delete;
+
   ~FileMonitorImpl() override;
 
   // FileMonitor implementation.
   void Initialize(InitCallback callback) override;
-  void DeleteUnknownFiles(
-      const Model::EntryList& known_entries,
-      const std::vector<DriverEntry>& known_driver_entries) override;
+  void DeleteUnknownFiles(const Model::EntryList& known_entries,
+                          const std::vector<DriverEntry>& known_driver_entries,
+                          base::OnceClosure completion_callback) override;
   void CleanupFilesForCompletedEntries(
       const Model::EntryList& entries,
       base::OnceClosure completion_callback) override;
@@ -50,8 +52,6 @@ class FileMonitorImpl : public FileMonitor {
 
   scoped_refptr<base::SequencedTaskRunner> file_thread_task_runner_;
   base::WeakPtrFactory<FileMonitorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileMonitorImpl);
 };
 
 }  // namespace download

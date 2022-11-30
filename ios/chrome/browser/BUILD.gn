@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,57 +10,26 @@ import("//ios/chrome/features.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-source_set("chrome_paths") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "chrome_paths.h",
-    "chrome_paths.mm",
-    "chrome_paths_internal.h",
-  ]
-
-  deps = [
-    "//base",
-    "//build:branding_buildflags",
-    "//components/gcm_driver",
-  ]
-}
-
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "application_context.cc",
-    "application_context.h",
-    "arch_util.cc",
-    "arch_util.h",
     "browser_about_rewriter.cc",
     "browser_about_rewriter.h",
     "chrome_browser_provider_observer_bridge.h",
     "chrome_browser_provider_observer_bridge.mm",
     "chrome_constants.cc",
     "chrome_constants.h",
-    "chrome_root_coordinator.h",
-    "chrome_root_coordinator.mm",
-    "chrome_url_util.h",
-    "chrome_url_util.mm",
-    "file_metadata_util.h",
-    "file_metadata_util.mm",
-    "install_time_util.h",
-    "install_time_util.mm",
     "installation_notifier.h",
     "installation_notifier.mm",
-    "ios_chrome_field_trials.cc",
-    "ios_chrome_field_trials.h",
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
-    "notification_promo.cc",
-    "notification_promo.h",
   ]
 
   deps = [
-    ":settings_resources",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
+    "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/feature_engagement",
     "//components/flags_ui",
@@ -74,7 +43,7 @@ source_set("browser") {
     "//components/net_log",
     "//components/ntp_tiles",
     "//components/omnibox/browser",
-    "//components/password_manager/core/common:common",
+    "//components/password_manager/core/common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/proxy_config",
@@ -86,7 +55,6 @@ source_set("browser") {
     "//components/strings",
     "//components/sync",
     "//components/translate/core/browser",
-    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//components/url_formatter",
     "//components/variations/net",
@@ -94,25 +62,27 @@ source_set("browser") {
     "//components/version_info",
     "//components/webdata_services",
     "//google_apis",
-    "//ios/chrome/app/strings",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/complex_tasks",
-    "//ios/chrome/browser/download",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/itunes_urls",
+    "//ios/chrome/browser/resources:settings_resources",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/first_run:field_trial",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
+    "//ios/chrome/browser/url",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/common",
     "//ios/components/io_thread",
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public",
@@ -121,77 +91,51 @@ source_set("browser") {
     "//url",
   ]
   public_deps = [
-    ":chrome_paths",
-    ":chrome_url_constants",
-    ":pref_names",
     ":utils",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/prefs:pref_names",
   ]
   allow_circular_includes_from = [
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/browser_state",
   ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "Foundation.framework",
+  ]
 }
 
 source_set("utils") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "chrome_switches.cc",
-    "chrome_switches.h",
-    "procedural_block_types.h",
-    "system_flags.h",
-    "system_flags.mm",
-  ]
+  sources = [ "procedural_block_types.h" ]
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//components/autofill/core/common",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/variations",
     "//ios/chrome/browser/browsing_data:feature_flags",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
-  ]
-}
-
-source_set("chrome_url_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "chrome_url_constants.cc",
-    "chrome_url_constants.h",
-  ]
-
-  deps = [
-    "//base",
-    "//ios/components/webui:url_constants",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("pref_names") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "pref_names.cc",
-    "pref_names.h",
   ]
 }
 
 source_set("browser_impl") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "application_context_impl.h",
-    "application_context_impl.mm",
-    "ios_chrome_main_parts.h",
-    "ios_chrome_main_parts.mm",
+    "ios_thread_profiler.cc",
+    "ios_thread_profiler.h",
   ]
   deps = [
     ":browser",
     "//base",
     "//base/allocator:buildflags",
     "//components/breadcrumbs/core",
+    "//components/breadcrumbs/core:feature_flags",
     "//components/component_updater",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/crash/core/common:crash_key_lib",
     "//components/crash/core/common:reporter_running_ios",
     "//components/flags_ui",
     "//components/gcm_driver",
@@ -200,53 +144,70 @@ source_set("browser_impl") {
     "//components/language/core/browser",
     "//components/metrics",
     "//components/metrics:child_call_stack_profile_builder",
+    "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/metrics_services_manager",
     "//components/net_log",
     "//components/network_time",
     "//components/open_from_clipboard",
     "//components/prefs",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//components/sessions",
+    "//components/signin/public/identity_manager",
     "//components/translate/core/browser",
     "//components/ukm",
-    "//components/ukm/ios:features",
     "//components/update_client",
     "//components/variations",
     "//components/variations/field_trial_config",
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/application_context:application_context_impl",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/component_updater",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/crash_report/breadcrumbs:application_breadcrumbs_logger",
-    "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/flags",
+    "//ios/chrome/browser/flags:client_side",
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/metrics:expired_histograms_array",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/open_from_clipboard",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/segmentation_platform",
     "//ios/chrome/browser/send_tab_to_self",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/text_selection",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/update_client",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",
+    "//ios/components/security_interstitials/safe_browsing",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/push_notification:push_notification_api",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
     "//ios/web",
     "//ios/web/public/init",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//rlz/buildflags",
     "//services/network:network_service",
     "//ui/base",
+    "//ui/display",
   ]
 
   if (enable_rlz) {
@@ -261,42 +222,14 @@ source_set("browser_impl") {
   }
 }
 
-tweak_info_plist("experimental_info_plist") {
-  info_plists = [ "resources/Settings.bundle/Experimental.plist" ]
-  if (ios_enable_metrickit) {
-    info_plists += [ "resources/Settings.bundle/ExperimentalMetricKit.plist" ]
-  }
-  if (ios_enable_sandbox_dump) {
-    info_plists += [ "resources/Settings.bundle/ExperimentalSandboxDump.plist" ]
-  }
-  info_plists += [
-    "resources/Settings.bundle/ExperimentalFlags.plist",
-    "resources/Settings.bundle/ExperimentalBlank.plist",
-  ]
-}
-
-bundle_data("settings_resources_experimental_plist") {
-  public_deps = [ ":experimental_info_plist" ]
-  sources = get_target_outputs(":experimental_info_plist")
-  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/Experimental.plist" ]
-}
-
-bundle_data("settings_resources") {
-  public_deps = [ ":settings_resources_experimental_plist" ]
-  sources = [ "resources/Settings.bundle/Root.plist" ]
-  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browser_about_rewriter_unittest.cc",
     "chrome_browser_provider_observer_bridge_unittest.mm",
-    "chrome_url_util_unittest.mm",
-    "install_time_util_unittest.mm",
     "installation_notifier_unittest.mm",
-    "notification_promo_unittest.cc",
+    "url/url_util_unittest.mm",
   ]
   deps = [
     ":browser",
@@ -306,6 +239,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/variations",
+    "//ios/chrome/browser/url",
+    "//ios/chrome/browser/url:constants",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",

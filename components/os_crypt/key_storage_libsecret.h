@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,28 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/os_crypt/key_storage_linux.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Specialisation of KeyStorageLinux that uses Libsecret.
 class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLibsecret : public KeyStorageLinux {
  public:
-  KeyStorageLibsecret() = default;
+  explicit KeyStorageLibsecret(std::string application_name);
+
+  KeyStorageLibsecret(const KeyStorageLibsecret&) = delete;
+  KeyStorageLibsecret& operator=(const KeyStorageLibsecret&) = delete;
+
   ~KeyStorageLibsecret() override = default;
 
  protected:
   // KeyStorageLinux
   bool Init() override;
-  base::Optional<std::string> GetKeyImpl() override;
+  absl::optional<std::string> GetKeyImpl() override;
 
  private:
-  base::Optional<std::string> AddRandomPasswordInLibsecret();
+  absl::optional<std::string> AddRandomPasswordInLibsecret();
 
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageLibsecret);
+  const std::string application_name_;
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KEY_STORAGE_LIBSECRET_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -30,9 +29,9 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/permission_broker/permission_broker_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using device::HidDeviceFilter;
 using device::mojom::UsbDeviceFilterPtr;
@@ -150,7 +149,7 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       remaining_initial_devices_++;
 
     auto device_info = std::make_unique<UsbDeviceInfo>(device.Clone());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auto* device_manager = UsbDeviceManager::Get(browser_context());
     DCHECK(device_manager);
     device_manager->CheckAccess(
@@ -160,7 +159,7 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 #else
     AddCheckedDevice(std::move(device_info), initial_enumeration,
                      /*allowed=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void AddCheckedDevice(std::unique_ptr<UsbDeviceInfo> device_info,
@@ -292,11 +291,27 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
     }
   }
 
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device) override {
+    for (const auto& device_info : devices_) {
+      auto* hid_device_info =
+          reinterpret_cast<HidDeviceInfo*>(device_info.get());
+      if (hid_device_info->device()->guid == device->guid) {
+        // The device is already present in |devices_|. Update its device
+        // information.
+        hid_device_info->device() = std::move(device);
+        return;
+      }
+    }
+
+    // The device was not previously added to |devices_|, possibly due to
+    // filters or protected collections. Try adding it again.
+    MaybeAddDevice(std::move(device), /*initial_enumeration=*/false);
+  }
+
   void OnDevicesEnumerated(
       std::vector<device::mojom::HidDeviceInfoPtr> devices) {
     for (auto& device : devices)
       MaybeAddDevice(std::move(device), /*initial_enumeration=*/true);
-    ;
   }
 
   bool HasUnprotectedCollections(const device::mojom::HidDeviceInfo& device) {
@@ -320,6 +335,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       remaining_initial_devices_++;
 
     auto device_info = std::make_unique<HidDeviceInfo>(std::move(device));
+    // TODO(huangs): Enable this for Lacros (crbug.com/1217124).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PermissionBrokerClient::Get()->CheckPathAccess(
         device_info.get()->device()->device_node,

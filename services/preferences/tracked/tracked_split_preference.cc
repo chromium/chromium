@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,9 +49,9 @@ bool TrackedSplitPreference::EnforceAndReport(
     base::DictionaryValue* pref_store_contents,
     PrefHashStoreTransaction* transaction,
     PrefHashStoreTransaction* external_validation_transaction) const {
-  base::DictionaryValue* dict_value = NULL;
+  base::DictionaryValue* dict_value = nullptr;
   if (!pref_store_contents->GetDictionary(pref_path_, &dict_value) &&
-      pref_store_contents->Get(pref_path_, NULL)) {
+      pref_store_contents->FindPath(pref_path_)) {
     // There should be a dictionary or nothing at |pref_path_|.
     NOTREACHED();
     return false;
@@ -90,10 +90,10 @@ bool TrackedSplitPreference::EnforceAndReport(
 
       for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
            it != invalid_keys.end(); ++it) {
-        dict_value->Remove(*it, NULL);
+        dict_value->RemoveKey(*it);
       }
     } else {
-      pref_store_contents->RemovePath(pref_path_, NULL);
+      pref_store_contents->RemovePath(pref_path_);
     }
     was_reset = true;
   }

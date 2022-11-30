@@ -1,0 +1,70 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="support-tool-shared cr-input-style">
+  :host {
+    block-size: fit-content;
+    display: block;
+    margin-inline-start: 40px;
+    margin-top: 72px;
+    width: fit-content;
+  }
+
+  .data-collector-list {
+    /* Using negative margin to cancel out the padding of the top-most item if
+    the list to set the spacing between items to 8px.*/
+    margin-top: -8px;
+  }
+
+  #info-text {
+    color: var(--cr-secondary-text-color);
+    display: inline;
+  }
+
+  .navigation-buttons {
+    margin-inline-start: 12px;
+    margin-top: -8px;
+  }
+</style>
+
+<h1 tabindex="0">Get a Support Tool link</h1>
+<div class="support-tool-title">Support Case ID</div>
+<cr-input id="caseIdInput" class="support-case-id" value="{{caseId_}}"
+  spellcheck="false" maxlength="20" aria-label="Support Case ID">
+</cr-input>
+<div id="data-sources-title" class="support-tool-title" tabindex="0">
+  Data sources to collect
+</div>
+<div class="data-collector-list" aria-labelledby="data-sources-title">
+  <template is="dom-repeat" items="[[dataCollectors_]]">
+    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
+        on-change="onDataCollectorItemChange_" tabindex="0">
+      [[item.name]]
+    </cr-checkbox>
+  </template>
+</div>
+
+<div class="support-tool-title" tabindex="0">Get a link</div>
+<div>
+  <p id="info-text">
+    Copy and send this link to the user to collect the logs.
+  </p>
+  <cr-button id="copyURLButton" class="navigation-buttons action-button"
+      on-click="onCopyURLClick_" disabled="[[buttonDisabled_]]">
+    Copy link
+  </cr-button>
+</div>
+<cr-toast id="copyToast" duration="5000" tabindex="0"
+    aria-labelledby="link-copied-message">
+  <span id="link-copied-message">Link copied</span>
+</cr-toast>
+<cr-toast id="errorMessageToast" duration="0" tabindex="0"
+    aria-labelledby="error-message">
+  <span id="error-message">[[errorMessage_]]</span>
+  <cr-button on-click="onErrorMessageToastCloseClicked_">
+    Dismiss
+  </cr-button>
+</cr-toast>

@@ -21,7 +21,6 @@ Polymer({
   _template: html`
     <style>
       :host {
-        border-radius: inherit;
         bottom: 0;
         display: block;
         left: 0;

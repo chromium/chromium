@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #include <initializer_list>
 
+#include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -40,8 +40,8 @@ bool IsPreflightError(network::mojom::CorsError error_code) {
     case network::mojom::CorsError::kPreflightInvalidAllowCredentials:
     case network::mojom::CorsError::kPreflightInvalidStatus:
     case network::mojom::CorsError::kPreflightDisallowedRedirect:
-    case network::mojom::CorsError::kPreflightMissingAllowExternal:
-    case network::mojom::CorsError::kPreflightInvalidAllowExternal:
+    case network::mojom::CorsError::kPreflightMissingAllowPrivateNetwork:
+    case network::mojom::CorsError::kPreflightInvalidAllowPrivateNetwork:
       return true;
     default:
       return false;
@@ -79,8 +79,9 @@ String GetErrorString(const network::CorsErrorStatus& status,
       "fetch the resource with CORS disabled.";
 
   using CorsError = network::mojom::CorsError;
-  const StringView hint(status.failed_parameter.data(),
-                        SafeCast<wtf_size_t>(status.failed_parameter.size()));
+  const StringView hint(
+      status.failed_parameter.data(),
+      base::checked_cast<wtf_size_t>(status.failed_parameter.size()));
 
   const char* resource_kind_raw =
       Resource::ResourceTypeToString(resource_type, initiator_name);
@@ -187,20 +188,20 @@ String GetErrorString(const network::CorsErrorStatus& status,
     case CorsError::kPreflightDisallowedRedirect:
       builder.Append("Redirect is not allowed for a preflight request.");
       break;
-    case CorsError::kPreflightMissingAllowExternal:
-      builder.Append(
-          "No 'Access-Control-Allow-External' header was present in the "
-          "preflight response for this external request (This is an "
-          "experimental header which is defined in "
-          "'https://wicg.github.io/cors-rfc1918/').");
+    case CorsError::kPreflightMissingAllowPrivateNetwork:
+      Append(builder, {"No 'Access-Control-Allow-Private-Network' header "
+                       "was present in the preflight response for this private "
+                       "network request targeting the `",
+                       ShortAddressSpace(status.target_address_space),
+                       "` address space."});
       break;
-    case CorsError::kPreflightInvalidAllowExternal:
+    case CorsError::kPreflightInvalidAllowPrivateNetwork:
       Append(builder,
-             {"The 'Access-Control-Allow-External' header in the preflight "
-              "response for this external request had a value of '",
-              hint,
-              "',  not 'true' (This is an experimental header which is defined "
-              "in 'https://wicg.github.io/cors-rfc1918/')."});
+             {"The 'Access-Control-Allow-Private-Network' header in the "
+              "preflight response for this private network request targeting "
+              "the `",
+              ShortAddressSpace(status.target_address_space),
+              "` address space had a value of '", hint, "',  not 'true'."});
       break;
     case CorsError::kInvalidAllowMethodsPreflightResponse:
       builder.Append(
@@ -227,6 +228,16 @@ String GetErrorString(const network::CorsErrorStatus& status,
                        "' contains a username and password, which is "
                        "disallowed for cross-origin requests."});
       break;
+    case CorsError::kInvalidPrivateNetworkAccess:
+      Append(builder, {"Request had a target IP address space of `",
+                       ShortAddressSpace(status.target_address_space),
+                       "` yet the resource is in address space `",
+                       ShortAddressSpace(status.resource_address_space), "`."});
+      break;
+    case CorsError::kUnexpectedPrivateNetworkAccess:
+      Append(builder, {"Request had no target IP address space, yet the "
+                       "resource is in address space `",
+                       ShortAddressSpace(status.resource_address_space), "`."});
   }
   return builder.ToString();
 }

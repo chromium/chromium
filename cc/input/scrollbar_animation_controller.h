@@ -1,11 +1,14 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_INPUT_SCROLLBAR_ANIMATION_CONTROLLER_H_
 #define CC_INPUT_SCROLLBAR_ANIMATION_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -24,6 +27,7 @@ class CC_EXPORT ScrollbarAnimationControllerClient {
   virtual void SetNeedsAnimateForScrollbarAnimation() = 0;
   virtual void DidChangeScrollbarVisibility() = 0;
   virtual ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const = 0;
+  virtual bool IsFluentScrollbar() const = 0;
 
  protected:
   virtual ~ScrollbarAnimationControllerClient() {}
@@ -61,6 +65,8 @@ class CC_EXPORT ScrollbarAnimationController {
   ~ScrollbarAnimationController();
 
   bool ScrollbarsHidden() const;
+  bool visibility_changed() const { return visibility_changed_; }
+  void ClearVisibilityChanged() { visibility_changed_ = false; }
 
   bool Animate(base::TimeTicks now);
 
@@ -77,9 +83,8 @@ class CC_EXPORT ScrollbarAnimationController {
   void DidMouseLeave();
   void DidMouseMove(const gfx::PointF& device_viewport_point);
 
-  // Called when Blink wants to show the scrollbars (via
-  // ScrollableArea::showOverlayScrollbars).
-  void DidRequestShowFromMainThread();
+  // Called when we want to show the scrollbars.
+  void DidRequestShow();
 
   void UpdateTickmarksVisibility(bool show);
 
@@ -91,7 +96,8 @@ class CC_EXPORT ScrollbarAnimationController {
 
   ScrollbarSet Scrollbars() const;
 
-  static constexpr float kMouseMoveDistanceToTriggerFadeIn = 30.0f;
+  SingleScrollbarAnimationControllerThinning& GetScrollbarAnimationController(
+      ScrollbarOrientation) const;
 
  private:
   // Describes whether the current animation should FadeIn or FadeOut.
@@ -109,9 +115,6 @@ class CC_EXPORT ScrollbarAnimationController {
                                base::TimeDelta fade_duration,
                                base::TimeDelta thinning_duration,
                                float initial_opacity);
-
-  SingleScrollbarAnimationControllerThinning& GetScrollbarAnimationController(
-      ScrollbarOrientation) const;
 
   // Any scrollbar state update would show scrollbar hen post the delay fade out
   // if needed.
@@ -133,7 +136,7 @@ class CC_EXPORT ScrollbarAnimationController {
 
   void ApplyOpacityToScrollbars(float opacity);
 
-  ScrollbarAnimationControllerClient* client_;
+  raw_ptr<ScrollbarAnimationControllerClient> client_;
 
   base::TimeTicks last_awaken_time_;
 
@@ -154,10 +157,15 @@ class CC_EXPORT ScrollbarAnimationController {
 
   const bool show_scrollbars_on_scroll_gesture_;
   const bool need_thinning_animation_;
+  // Controls whether an overlay scrollbar should fade in/out. Should be True
+  // for Aura overlay scrollbars and False for Fluent overlay scrollbars.
+  const bool need_fade_animation_;
 
   bool is_mouse_down_;
 
   bool tickmarks_showing_;
+
+  bool visibility_changed_ = false;
 
   std::unique_ptr<SingleScrollbarAnimationControllerThinning>
       vertical_controller_;

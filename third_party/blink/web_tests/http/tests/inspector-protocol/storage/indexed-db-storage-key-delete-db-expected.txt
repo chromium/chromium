@@ -1,0 +1,8 @@
+Tests that deleting database works for IndexedDB with storageKey
+
+Open database
+database created successfuly
+
+Delete database
+database deleted
+

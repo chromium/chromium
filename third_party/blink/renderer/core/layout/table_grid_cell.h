@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_GRID_CELL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_GRID_CELL_H_
 
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -27,10 +29,11 @@ class TableGridCell {
 
  public:
   // We can't inline the constructor and destructor because cells_ needs full
-  // definition of LayoutTableCell, and we can't include LayoutTableCell.h
+  // definition of LayoutTableCell, and we can't include layout_table_cell.h
   // from this file due to circular includes.
   TableGridCell();
   ~TableGridCell();
+  void Trace(Visitor*) const;
 
   // This is the LayoutTableCell covering this TableGridCell that is on top of
   // the others (aka the last LayoutTableCell in DOM order for this
@@ -50,8 +53,8 @@ class TableGridCell {
 
   bool HasCells() const { return cells_.size() > 0; }
 
-  Vector<LayoutTableCell*, 1>& Cells() { return cells_; }
-  const Vector<LayoutTableCell*, 1>& Cells() const { return cells_; }
+  HeapVector<Member<LayoutTableCell>, 1>& Cells() { return cells_; }
+  const HeapVector<Member<LayoutTableCell>, 1>& Cells() const { return cells_; }
 
   bool InColSpan() const { return in_col_span_; }
   void SetInColSpan(bool in_col_span) { in_col_span_ = in_col_span; }
@@ -61,12 +64,23 @@ class TableGridCell {
   // Due to colspan / rowpsan, it is possible to have overlapping cells
   // (see class comment about an example).
   // This Vector is sorted in DOM order.
-  Vector<LayoutTableCell*, 1> cells_;
+  HeapVector<Member<LayoutTableCell>, 1> cells_;
 
   // True for columns after the first in a colspan.
   bool in_col_span_ = false;
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct VectorTraits<blink::TableGridCell>
+    : VectorTraitsBase<blink::TableGridCell> {
+  STATIC_ONLY(VectorTraits);
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_GRID_CELL_H_

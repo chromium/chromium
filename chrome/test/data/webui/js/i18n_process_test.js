@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Tests for ui/webui/resources/js/i18n_template_no_process.js
+// Tests for chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js
 
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -30,8 +30,8 @@ I18nProcessTest.prototype = {
    * @override
    */
   extraLibraries: [
-    '//ui/webui/resources/js/i18n_template_no_process.js',
-    '//ui/webui/resources/js/load_time_data.js',
+    '//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js',
+    '//ui/webui/resources/js/load_time_data_deprecated.js',
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
   ],
@@ -75,13 +75,13 @@ TEST_F('I18nProcessTest', 'All', function() {
     });
 
     test('fragment', function() {
-      var span = document.createElement('span');
+      const span = document.createElement('span');
       span.setAttribute('i18n-content', 'content');
 
-      var docFrag = document.createDocumentFragment();
+      const docFrag = document.createDocumentFragment();
       docFrag.appendChild(span);
 
-      var div = document.createElement('div');
+      const div = document.createElement('div');
       docFrag.appendChild(div);
 
       i18nTemplate.process(docFrag, loadTimeData);
@@ -99,8 +99,8 @@ TEST_F('I18nProcessTest', 'All', function() {
     });
 
     test('templates', function() {
-      var outerDocFrag = document.querySelector('template').content;
-      var innerDocFrag = outerDocFrag.querySelector('template').content;
+      const outerDocFrag = document.querySelector('template').content;
+      const innerDocFrag = outerDocFrag.querySelector('template').content;
       assertNotEquals('', innerDocFrag.querySelector('div').textContent);
     });
   });

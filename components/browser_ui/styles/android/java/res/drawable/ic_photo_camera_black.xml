@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="20dp"
+    android:viewportWidth="128"
+    android:viewportHeight="80"
+    android:tint="@macro/default_icon_color">
+
+    <path
+        android:fillType="evenOdd"
+        android:strokeWidth="1"
+        android:pathData="M 0 0 L 128 0 L 128 80 L 0 80 Z" />
+    <path
+        android:fillColor="@android:color/black"
+        android:fillType="evenOdd"
+        android:strokeWidth="1"
+        android:pathData="M 63.8 27 C 70.8692447978 27 76.6 32.7307552022 76.6 39.8 C 76.6 46.8692447978 70.8692447978 52.6 63.8 52.6 C 56.7307552022 52.6 51 46.8692447978 51 39.8 C 51 32.7307552022 56.7307552022 27 63.8 27 Z" />
+    <path
+        android:fillColor="@android:color/black"
+        android:fillType="evenOdd"
+        android:strokeWidth="1"
+        android:pathData="M52,0 L44.68,8 L32,8 C27.6,8 24,11.6 24,16 L24,64 C24,68.4 27.6,72 32,72 L96,72
+C100.4,72 104,68.4 104,64 L104,16 C104,11.6 100.4,8 96,8 L83.32,8 L76,0 L52,0 Z
+M64,60 C52.96,60 44,51.04 44,40 C44,28.96 52.96,20 64,20 C75.04,20 84,28.96
+84,40 C84,51.04 75.04,60 64,60 Z" />
+</vector>

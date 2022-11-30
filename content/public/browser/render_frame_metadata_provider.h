@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_FRAME_METADATA_PROVIDER_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_FRAME_METADATA_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -43,22 +42,24 @@ class CONTENT_EXPORT RenderFrameMetadataProvider {
     // to pass in Viz.
     virtual void OnLocalSurfaceIdChanged(
         const cc::RenderFrameMetadata& metadata) = 0;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     virtual void OnRootScrollOffsetChanged(
-        const gfx::Vector2dF& root_scroll_offset) {}
+        const gfx::PointF& root_scroll_offset) {}
 #endif
   };
 
   RenderFrameMetadataProvider() = default;
+
+  RenderFrameMetadataProvider(const RenderFrameMetadataProvider&) = delete;
+  RenderFrameMetadataProvider& operator=(const RenderFrameMetadataProvider&) =
+      delete;
+
   virtual ~RenderFrameMetadataProvider() = default;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
   virtual const cc::RenderFrameMetadata& LastRenderFrameMetadata() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataProvider);
 };
 
 }  // namespace content

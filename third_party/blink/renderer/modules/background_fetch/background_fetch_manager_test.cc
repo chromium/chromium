@@ -1,15 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_manager.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/request_or_usv_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/request_or_usv_string_or_request_or_usv_string_sequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_request_requestorusvstringsequence_usvstring.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -24,7 +23,8 @@ class BackgroundFetchManagerTest : public testing::Test {
   // declarations necessary in the BackgroundFetchManager.
   Vector<mojom::blink::FetchAPIRequestPtr> CreateFetchAPIRequestVector(
       V8TestingScope& scope,
-      const RequestOrUSVStringOrRequestOrUSVStringSequence& requests) {
+      const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests
+  ) {
     bool has_requests_with_body;
     return BackgroundFetchManager::CreateFetchAPIRequestVector(
         scope.GetScriptState(), requests, scope.GetExceptionState(),
@@ -32,25 +32,13 @@ class BackgroundFetchManagerTest : public testing::Test {
   }
 };
 
-TEST_F(BackgroundFetchManagerTest, NullValue) {
-  V8TestingScope scope;
-
-  RequestOrUSVStringOrRequestOrUSVStringSequence requests;
-
-  Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
-      CreateFetchAPIRequestVector(scope, requests);
-  ASSERT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
-            ESErrorType::kTypeError);
-}
-
 TEST_F(BackgroundFetchManagerTest, SingleUSVString) {
   V8TestingScope scope;
 
   KURL image_url("https://www.example.com/my_image.png");
 
-  RequestOrUSVStringOrRequestOrUSVStringSequence requests =
-      RequestOrUSVStringOrRequestOrUSVStringSequence::FromUSVString(
+  auto* requests =
+      MakeGarbageCollected<V8UnionRequestInfoOrRequestOrUSVStringSequence>(
           image_url.GetString());
 
   Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
@@ -75,8 +63,9 @@ TEST_F(BackgroundFetchManagerTest, SingleRequest) {
   ASSERT_FALSE(scope.GetExceptionState().HadException());
   ASSERT_TRUE(request);
 
-  RequestOrUSVStringOrRequestOrUSVStringSequence requests =
-      RequestOrUSVStringOrRequestOrUSVStringSequence::FromRequest(request);
+  auto* requests =
+      MakeGarbageCollected<V8UnionRequestInfoOrRequestOrUSVStringSequence>(
+          request);
 
   Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
       CreateFetchAPIRequestVector(scope, requests);
@@ -94,10 +83,10 @@ TEST_F(BackgroundFetchManagerTest, Sequence) {
   KURL icon_url("https://www.example.com/my_icon.jpg");
   KURL cat_video_url("https://www.example.com/my_cat_video.avi");
 
-  RequestOrUSVString image_request =
-      RequestOrUSVString::FromUSVString(image_url.GetString());
-  RequestOrUSVString icon_request =
-      RequestOrUSVString::FromUSVString(icon_url.GetString());
+  auto* image_request =
+      MakeGarbageCollected<V8UnionRequestOrUSVString>(image_url.GetString());
+  auto* icon_request =
+      MakeGarbageCollected<V8UnionRequestOrUSVString>(icon_url.GetString());
 
   RequestInit* request_init = RequestInit::Create();
   request_init->setMethod("DELETE");
@@ -107,17 +96,17 @@ TEST_F(BackgroundFetchManagerTest, Sequence) {
   ASSERT_FALSE(scope.GetExceptionState().HadException());
   ASSERT_TRUE(request);
 
-  RequestOrUSVString cat_video_request =
-      RequestOrUSVString::FromRequest(request);
+  auto* cat_video_request =
+      MakeGarbageCollected<V8UnionRequestOrUSVString>(request);
 
-  HeapVector<RequestOrUSVString> request_sequence;
+  HeapVector<Member<V8UnionRequestOrUSVString>> request_sequence;
   request_sequence.push_back(image_request);
   request_sequence.push_back(icon_request);
   request_sequence.push_back(cat_video_request);
 
-  RequestOrUSVStringOrRequestOrUSVStringSequence requests =
-      RequestOrUSVStringOrRequestOrUSVStringSequence::
-          FromRequestOrUSVStringSequence(request_sequence);
+  auto* requests =
+      MakeGarbageCollected<V8UnionRequestInfoOrRequestOrUSVStringSequence>(
+          request_sequence);
 
   Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
       CreateFetchAPIRequestVector(scope, requests);
@@ -137,34 +126,10 @@ TEST_F(BackgroundFetchManagerTest, Sequence) {
 TEST_F(BackgroundFetchManagerTest, SequenceEmpty) {
   V8TestingScope scope;
 
-  HeapVector<RequestOrUSVString> request_sequence;
-  RequestOrUSVStringOrRequestOrUSVStringSequence requests =
-      RequestOrUSVStringOrRequestOrUSVStringSequence::
-          FromRequestOrUSVStringSequence(request_sequence);
-
-  Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
-      CreateFetchAPIRequestVector(scope, requests);
-  ASSERT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
-            ESErrorType::kTypeError);
-}
-
-TEST_F(BackgroundFetchManagerTest, SequenceWithNullValue) {
-  V8TestingScope scope;
-
-  KURL image_url("https://www.example.com/my_image.png");
-
-  RequestOrUSVString null_request;
-  RequestOrUSVString image_request =
-      RequestOrUSVString::FromUSVString(image_url.GetString());
-
-  HeapVector<RequestOrUSVString> request_sequence;
-  request_sequence.push_back(image_request);
-  request_sequence.push_back(null_request);
-
-  RequestOrUSVStringOrRequestOrUSVStringSequence requests =
-      RequestOrUSVStringOrRequestOrUSVStringSequence::
-          FromRequestOrUSVStringSequence(request_sequence);
+  HeapVector<Member<V8UnionRequestOrUSVString>> request_sequence;
+  auto* requests =
+      MakeGarbageCollected<V8UnionRequestInfoOrRequestOrUSVStringSequence>(
+          request_sequence);
 
   Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
       CreateFetchAPIRequestVector(scope, requests);
@@ -184,7 +149,8 @@ TEST_F(BackgroundFetchManagerTest, BlobsExtracted) {
   RequestInit* request_init = RequestInit::Create();
   request_init->setMethod("POST");
   request_init->setBody(blink::ScriptValue(
-      scope.GetIsolate(), ToV8(body_text, scope.GetScriptState())));
+      scope.GetIsolate(),
+      ToV8Traits<IDLString>::ToV8(scope.GetScriptState(), body_text)));
   Request* image_request =
       Request::Create(scope.GetScriptState(), image_url.GetString(),
                       request_init, scope.GetExceptionState());
@@ -193,17 +159,18 @@ TEST_F(BackgroundFetchManagerTest, BlobsExtracted) {
   ASSERT_TRUE(image_request->HasBody());
 
   // Create second request without a body.
-  RequestOrUSVString icon_request =
-      RequestOrUSVString::FromUSVString(icon_url.GetString());
+  auto* icon_request =
+      MakeGarbageCollected<V8UnionRequestOrUSVString>(icon_url.GetString());
 
   // Create a request sequence with both requests.
-  HeapVector<RequestOrUSVString> request_sequence;
-  request_sequence.push_back(RequestOrUSVString::FromRequest(image_request));
+  HeapVector<Member<V8UnionRequestOrUSVString>> request_sequence;
+  request_sequence.push_back(
+      MakeGarbageCollected<V8UnionRequestOrUSVString>(image_request));
   request_sequence.push_back(icon_request);
 
-  RequestOrUSVStringOrRequestOrUSVStringSequence requests =
-      RequestOrUSVStringOrRequestOrUSVStringSequence::
-          FromRequestOrUSVStringSequence(request_sequence);
+  auto* requests =
+      MakeGarbageCollected<V8UnionRequestInfoOrRequestOrUSVStringSequence>(
+          request_sequence);
 
   // Extract the blobs.
   Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =

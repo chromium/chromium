@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,8 +35,11 @@ class URLLoaderFactoryGetter
  public:
   CONTENT_EXPORT URLLoaderFactoryGetter();
 
+  URLLoaderFactoryGetter(const URLLoaderFactoryGetter&) = delete;
+  URLLoaderFactoryGetter& operator=(const URLLoaderFactoryGetter&) = delete;
+
   // Initializes this object on the UI thread. The |partition| is used to
-  // initialize the URLLoaderFactories for the network service, AppCache, and
+  // initialize the URLLoaderFactories for the network service, and
   // ServiceWorkers, and will be cached to recover from connection error.
   // After Initialize(), you can get URLLoaderFactories from this
   // getter.
@@ -144,15 +147,14 @@ class URLLoaderFactoryGetter
   // Only accessed on IO thread.
   mojo::Remote<network::mojom::URLLoaderFactory> network_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> network_factory_corb_enabled_;
-  network::mojom::URLLoaderFactory* test_factory_ = nullptr;
-  network::mojom::URLLoaderFactory* test_factory_corb_enabled_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> test_factory_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> test_factory_corb_enabled_ =
+      nullptr;
 
   // Used to re-create |network_factory_| when connection error happens. Can
   // only be accessed on UI thread. Must be cleared by |StoragePartitionImpl|
   // when it's going away.
-  StoragePartitionImpl* partition_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryGetter);
+  raw_ptr<StoragePartitionImpl> partition_ = nullptr;
 };
 
 }  // namespace content

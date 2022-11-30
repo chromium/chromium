@@ -1,10 +1,15 @@
 oshima@chromium.org
 
-# For Input (keyboard, mouse, touch)
-mukai@chromium.org
+# For Graphics
+fangzhoug@chromium.org
+jshargo@chromium.org
 
-# For graphics (surface/buffer change)
-malaykeshav@chromium.org
+# For Input (keyboard, mouse, touch, data_device)
+yhanada@chromium.org
 
-# Not working on chromium anymore, but kept just in case we need his review.
-dcastagna@chromium.org
+# For text_input and keyboard.
+hidehiko@chromium.org
+
+# For extended-drag.
+per-file extended_drag*=nickdiego@igalia.com
+per-file wayland/zcr_extended_drag*=nickdiego@igalia.com

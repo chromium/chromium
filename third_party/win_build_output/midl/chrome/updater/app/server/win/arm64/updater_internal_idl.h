@@ -7,7 +7,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for gen/chrome/updater/app/server/win/updater_internal_idl.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -43,6 +43,14 @@
 #pragma once
 #endif
 
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
+#endif
+
 /* Forward Declarations */ 
 
 #ifndef __IUpdaterInternalCallback_FWD_DEFINED__
@@ -59,16 +67,28 @@ typedef interface IUpdaterInternal IUpdaterInternal;
 #endif 	/* __IUpdaterInternal_FWD_DEFINED__ */
 
 
-#ifndef __UpdaterInternalClass_FWD_DEFINED__
-#define __UpdaterInternalClass_FWD_DEFINED__
+#ifndef __UpdaterInternalUserClass_FWD_DEFINED__
+#define __UpdaterInternalUserClass_FWD_DEFINED__
 
 #ifdef __cplusplus
-typedef class UpdaterInternalClass UpdaterInternalClass;
+typedef class UpdaterInternalUserClass UpdaterInternalUserClass;
 #else
-typedef struct UpdaterInternalClass UpdaterInternalClass;
+typedef struct UpdaterInternalUserClass UpdaterInternalUserClass;
 #endif /* __cplusplus */
 
-#endif 	/* __UpdaterInternalClass_FWD_DEFINED__ */
+#endif 	/* __UpdaterInternalUserClass_FWD_DEFINED__ */
+
+
+#ifndef __UpdaterInternalSystemClass_FWD_DEFINED__
+#define __UpdaterInternalSystemClass_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class UpdaterInternalSystemClass UpdaterInternalSystemClass;
+#else
+typedef struct UpdaterInternalSystemClass UpdaterInternalSystemClass;
+#endif /* __cplusplus */
+
+#endif 	/* __UpdaterInternalSystemClass_FWD_DEFINED__ */
 
 
 #ifndef __IUpdaterInternal_FWD_DEFINED__
@@ -121,18 +141,22 @@ EXTERN_C const IID IID_IUpdaterInternalCallback;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdaterInternalCallback * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdaterInternalCallback * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterInternalCallback * This);
         
+        DECLSPEC_XFGVIRT(IUpdaterInternalCallback, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterInternalCallback * This,
             /* [in] */ LONG result);
@@ -204,22 +228,27 @@ EXTERN_C const IID IID_IUpdaterInternal;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdaterInternal * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdaterInternal * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterInternal * This);
         
+        DECLSPEC_XFGVIRT(IUpdaterInternal, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterInternal * This,
             /* [in] */ IUpdaterInternalCallback *callback);
         
+        DECLSPEC_XFGVIRT(IUpdaterInternal, InitializeUpdateService)
         HRESULT ( STDMETHODCALLTYPE *InitializeUpdateService )( 
             IUpdaterInternal * This,
             /* [in] */ IUpdaterInternalCallback *callback);
@@ -276,12 +305,20 @@ EXTERN_C const IID IID_IUpdaterInternal;
 
 EXTERN_C const IID LIBID_UpdaterInternalLib;
 
-EXTERN_C const CLSID CLSID_UpdaterInternalClass;
+EXTERN_C const CLSID CLSID_UpdaterInternalUserClass;
 
 #ifdef __cplusplus
 
 class DECLSPEC_UUID("1F87FE2F-D6A9-4711-9D11-8187705F8457")
-UpdaterInternalClass;
+UpdaterInternalUserClass;
+#endif
+
+EXTERN_C const CLSID CLSID_UpdaterInternalSystemClass;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("4556BA55-517E-4F03-8016-331A43C269C9")
+UpdaterInternalSystemClass;
 #endif
 #endif /* __UpdaterInternalLib_LIBRARY_DEFINED__ */
 

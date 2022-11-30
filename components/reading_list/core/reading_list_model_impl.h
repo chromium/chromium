@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "components/keyed_service/core/keyed_service.h"
+#include "base/memory/raw_ptr.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -22,8 +22,7 @@ class PrefService;
 
 // Concrete implementation of a reading list model using in memory lists.
 class ReadingListModelImpl : public ReadingListModel,
-                             public ReadingListStoreDelegate,
-                             public KeyedService {
+                             public ReadingListStoreDelegate {
  public:
   using ReadingListEntries = std::map<GURL, ReadingListEntry>;
 
@@ -36,9 +35,10 @@ class ReadingListModelImpl : public ReadingListModel,
                        PrefService* pref_service,
                        base::Clock* clock_);
 
-  ReadingListModelImpl();
-
   syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
+
+  ReadingListModelImpl(const ReadingListModelImpl&) = delete;
+  ReadingListModelImpl& operator=(const ReadingListModelImpl&) = delete;
 
   ~ReadingListModelImpl() override;
 
@@ -67,6 +67,11 @@ class ReadingListModelImpl : public ReadingListModel,
 
   bool IsUrlSupported(const GURL& url) override;
 
+  const ReadingListEntry& AddEntry(
+      const GURL& url,
+      const std::string& title,
+      reading_list::EntrySource source,
+      base::TimeDelta estimated_read_time) override;
   const ReadingListEntry& AddEntry(const GURL& url,
                                    const std::string& title,
                                    reading_list::EntrySource source) override;
@@ -74,6 +79,8 @@ class ReadingListModelImpl : public ReadingListModel,
   void SetReadStatus(const GURL& url, bool read) override;
 
   void SetEntryTitle(const GURL& url, const std::string& title) override;
+  void SetEstimatedReadTime(const GURL& url,
+                            base::TimeDelta estimated_read_time) override;
   void SetEntryDistilledState(
       const GURL& url,
       ReadingListEntry::DistillationState state) override;
@@ -101,14 +108,16 @@ class ReadingListModelImpl : public ReadingListModel,
    public:
     explicit ScopedReadingListBatchUpdate(ReadingListModelImpl* model);
 
+    ScopedReadingListBatchUpdate(const ScopedReadingListBatchUpdate&) = delete;
+    ScopedReadingListBatchUpdate& operator=(
+        const ScopedReadingListBatchUpdate&) = delete;
+
     ~ScopedReadingListBatchUpdate() override;
 
     void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
 
    private:
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> storage_token_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedReadingListBatchUpdate);
   };
 
  protected:
@@ -145,15 +154,13 @@ class ReadingListModelImpl : public ReadingListModel,
   // Set the unseen flag to true.
   void SetUnseenFlag();
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   std::unique_ptr<ReadingListModelStorage> storage_layer_;
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   bool has_unseen_;
   bool loaded_;
 
   base::WeakPtrFactory<ReadingListModelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelImpl);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_IMPL_H_

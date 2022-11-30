@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,8 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -24,15 +22,16 @@
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "crypto/secure_hash.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_common_callbacks.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -55,7 +54,7 @@ void CreateTemporaryDriveDownloadFile(const base::FilePath& drive_directory,
 }
 
 // 2xx and 3xx error codes indicate success, the rest indicate failure.
-bool ErrorCodeIndicatesFailure(google_apis::DriveApiErrorCode error_code) {
+bool ErrorCodeIndicatesFailure(google_apis::ApiErrorCode error_code) {
   switch (error_code) {
     case google_apis::HTTP_SUCCESS:
     case google_apis::HTTP_CREATED:
@@ -69,10 +68,10 @@ bool ErrorCodeIndicatesFailure(google_apis::DriveApiErrorCode error_code) {
   }
 }
 
-// Converts a DriveApiErrorCode to the closest equivalent FailureReason.
+// Converts a ApiErrorCode to the closest equivalent FailureReason.
 // Do not call with 2xx and 3xx error codes.
 plugin_vm::PluginVmInstaller::FailureReason ConvertToFailureReason(
-    google_apis::DriveApiErrorCode error_code) {
+    google_apis::ApiErrorCode error_code) {
   using FailureReason = plugin_vm::PluginVmInstaller::FailureReason;
 
   switch (error_code) {
@@ -80,7 +79,7 @@ plugin_vm::PluginVmInstaller::FailureReason ConvertToFailureReason(
     case google_apis::HTTP_NOT_FOUND:
     case google_apis::HTTP_CONFLICT:
     case google_apis::HTTP_GONE:
-    case google_apis::DRIVE_PARSE_ERROR:
+    case google_apis::PARSE_ERROR:
     case google_apis::DRIVE_FILE_ERROR:
       return FailureReason::INVALID_IMAGE_URL;
     case google_apis::HTTP_UNAUTHORIZED:
@@ -91,14 +90,14 @@ plugin_vm::PluginVmInstaller::FailureReason ConvertToFailureReason(
     case google_apis::HTTP_NOT_IMPLEMENTED:
     case google_apis::HTTP_BAD_GATEWAY:
     case google_apis::HTTP_SERVICE_UNAVAILABLE:
-    case google_apis::DRIVE_OTHER_ERROR:
-    case google_apis::DRIVE_NOT_READY:
+    case google_apis::OTHER_ERROR:
+    case google_apis::NOT_READY:
     case google_apis::DRIVE_NO_SPACE:
     case google_apis::DRIVE_RESPONSE_TOO_LARGE:
       return FailureReason::DOWNLOAD_FAILED_UNKNOWN;
-    case google_apis::DRIVE_CANCELLED:
+    case google_apis::CANCELLED:
       return FailureReason::DOWNLOAD_FAILED_ABORTED;
-    case google_apis::DRIVE_NO_CONNECTION:
+    case google_apis::NO_CONNECTION:
       return FailureReason::DOWNLOAD_FAILED_NETWORK;
     default:
       NOTREACHED();
@@ -125,7 +124,7 @@ PluginVmDriveImageDownloadService::PluginVmDriveImageDownloadService(
       IdentityManagerFactory::GetForProfile(profile);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
@@ -133,7 +132,7 @@ PluginVmDriveImageDownloadService::PluginVmDriveImageDownloadService(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  GURL base_url(google_apis::DriveApiUrlGenerator::kBaseUrlForProduction);
+  GURL base_url(GaiaUrls::GetInstance()->google_apis_origin_url());
   GURL base_thumbnail_url(
       google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction);
   drive_service_ = std::make_unique<drive::DriveAPIService>(
@@ -211,7 +210,7 @@ void PluginVmDriveImageDownloadService::SetDownloadDirectoryForTesting(
 }
 
 void PluginVmDriveImageDownloadService::DownloadActionCallback(
-    google_apis::DriveApiErrorCode error_code,
+    google_apis::ApiErrorCode error_code,
     const base::FilePath& file_path) {
   if (ErrorCodeIndicatesFailure(error_code)) {
     LOG(ERROR) << "PluginVM image download from Drive failed with error code: "
@@ -233,7 +232,7 @@ void PluginVmDriveImageDownloadService::DownloadActionCallback(
 }
 
 void PluginVmDriveImageDownloadService::GetContentCallback(
-    google_apis::DriveApiErrorCode error_code,
+    google_apis::ApiErrorCode error_code,
     std::unique_ptr<std::string> content,
     bool first_chunk) {
   if (ErrorCodeIndicatesFailure(error_code)) {

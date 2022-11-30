@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,36 +14,44 @@
 
 namespace device {
 
-#if defined(OS_WIN)
-const base::Feature kWebAuthUseNativeWinApi{"WebAuthenticationUseNativeWinApi",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kWebAuthUseNativeWinApi,
+             "WebAuthenticationUseNativeWinApi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
-extern const base::Feature kWebAuthCableServerLink {
-  // This feature is default-enabled in the same cases as |kWebAuthCable|.
-  "WebAuthenticationCableServerLink",
+BASE_FEATURE(kWebAuthCableExtensionAnywhere,
+             "WebAuthenticationCableExtensionAnywhere",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-// If updating this, also update kWebAuthCable.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kWebAuthCrosPlatformAuthenticator,
+             "WebAuthenticationCrosPlatformAuthenticator",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-extern const base::Feature kWebAuthPhoneSupport{
-    "WebAuthenticationPhoneSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kU2fPermissionPrompt,
+             "U2fPermissionPrompt",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-extern const base::Feature kWebAuthCableExtensionAnywhere{
-    "WebAuthenticationCableExtensionAnywhere",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
+             "WebAuthenticationGoogleCorpRemoteDesktopClientPrivilege",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kWebAuthCrosPlatformAuthenticator{
-    "WebAuthenticationCrosPlatformAuthenticator",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kWebAuthPasskeysUI,
+             "WebAuthenticationPasskeysUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAuthnNewDiscoverableCredentialsUi,
+             "WebAuthenticationNewDiscoverableCredentialsUi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR,
+             "WebAuthenticationNoEmptyDisplayNameCBOR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag,
+             "WebAuthenticationNonDiscoverableMakeCredentialQRFlag",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace device

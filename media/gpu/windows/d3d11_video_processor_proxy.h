@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <cstdint>
 
 #include "base/memory/ref_counted.h"
-#include "media/base/status.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -26,7 +26,7 @@ class MEDIA_GPU_EXPORT VideoProcessorProxy
   VideoProcessorProxy(ComD3D11VideoDevice video_device,
                       ComD3D11DeviceContext d3d11_device_context);
 
-  virtual Status Init(uint32_t width, uint32_t height);
+  virtual D3D11Status Init(uint32_t width, uint32_t height);
 
   // TODO(tmathmeyer) implement color space modification.
 

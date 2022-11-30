@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 
@@ -22,6 +20,9 @@ struct ImportedBookmarkEntry;
 class IEImporter : public Importer {
  public:
   IEImporter();
+
+  IEImporter(const IEImporter&) = delete;
+  IEImporter& operator=(const IEImporter&) = delete;
 
   // Importer:
   void StartImport(const importer::SourceProfile& source_profile,
@@ -75,8 +76,6 @@ class IEImporter : public Importer {
   // IE does not have source path. It's used in unit tests only for providing a
   // fake source and it's used if importing old Edge favorites on Windows 10.
   base::FilePath source_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(IEImporter);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_IE_IMPORTER_WIN_H_

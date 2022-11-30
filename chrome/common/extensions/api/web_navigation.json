@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,41 +30,60 @@
             "name": "details",
             "description": "Information about the frame to retrieve information about.",
             "properties": {
-              "tabId": { "type": "integer", "minimum": 0, "description": "The ID of the tab in which the frame is." },
+              "tabId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the tab in which the frame is." },
               "processId": {
                 "type": "integer",
                 "optional": true,
                 "deprecated": "Frames are now uniquely identified by their tab ID and frame ID; the process ID is no longer needed and therefore ignored.",
                 "description": "The ID of the process that runs the renderer for this tab."
               },
-              "frameId": { "type": "integer", "minimum": 0, "description": "The ID of the frame in the given tab." }
+              "frameId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the frame in the given tab." },
+              "documentId": { "type": "string", "optional": true, "description": "The UUID of the document. If the frameId and/or tabId are provided they will be validated to match the document found by provided document ID." }
             }
-          },
-          {
-            "type": "function", "name": "callback", "parameters": [
-              {
-                "type": "object",
-                "name": "details",
-                "optional": true,
-                "description": "Information about the requested frame, null if the specified frame ID and/or tab ID are invalid.",
-                "properties": {
-                  "errorOccurred": {
-                    "type": "boolean",
-                    "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
-                  },
-                  "url": {
-                    "type": "string",
-                    "description": "The URL currently associated with this frame, if the frame identified by the frameId existed at one point in the given tab. The fact that an URL is associated with a given frameId does not imply that the corresponding frame still exists."
-                  },
-                  "parentFrameId": {
-                    "type": "integer",
-                    "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "object",
+              "name": "details",
+              "optional": true,
+              "description": "Information about the requested frame, null if the specified frame ID and/or tab ID are invalid.",
+              "properties": {
+                "errorOccurred": {
+                  "type": "boolean",
+                  "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The URL currently associated with this frame, if the frame identified by the frameId existed at one point in the given tab. The fact that an URL is associated with a given frameId does not imply that the corresponding frame still exists."
+                },
+                "parentFrameId": {
+                  "type": "integer",
+                  "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
+                },
+                "documentId": {
+                  "type": "string",
+                  "description": "A UUID of the document loaded."
+                },
+                "parentDocumentId": {
+                  "type": "string",
+                  "optional": true,
+                  "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."
+                },
+                "documentLifecycle": {
+                  "$ref": "extensionTypes.DocumentLifecycle",
+                  "description": "The lifecycle the document is in."
+                },
+                "frameType": {
+                  "$ref": "extensionTypes.FrameType",
+                  "description": "The type of frame the navigation occurred in."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "getAllFrames",
@@ -78,43 +97,61 @@
             "properties": {
               "tabId": { "type": "integer", "minimum": 0, "description": "The ID of the tab." }
             }
-          },
-          {
-            "type": "function", "name": "callback", "parameters": [
-              {
-                "name": "details",
-                "type": "array",
-                "description": "A list of frames in the given tab, null if the specified tab ID is invalid.",
-                "optional": true,
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "errorOccurred": {
-                      "type": "boolean",
-                      "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
-                    },
-                    "processId": {
-                      "type": "integer",
-                      "description": "The ID of the process that runs the renderer for this frame."
-                    },
-                    "frameId": {
-                      "type": "integer",
-                      "description": "The ID of the frame. 0 indicates that this is the main frame; a positive value indicates the ID of a subframe."
-                    },
-                    "parentFrameId": {
-                      "type": "integer",
-                      "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
-                    },
-                    "url": {
-                      "type": "string",
-                      "description": "The URL currently associated with this frame."
-                    }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "details",
+              "type": "array",
+              "description": "A list of frames in the given tab, null if the specified tab ID is invalid.",
+              "optional": true,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "errorOccurred": {
+                    "type": "boolean",
+                    "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
+                  },
+                  "processId": {
+                    "type": "integer",
+                    "description": "The ID of the process that runs the renderer for this frame."
+                  },
+                  "frameId": {
+                    "type": "integer",
+                    "description": "The ID of the frame. 0 indicates that this is the main frame; a positive value indicates the ID of a subframe."
+                  },
+                  "parentFrameId": {
+                    "type": "integer",
+                    "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "The URL currently associated with this frame."
+                  },
+                  "documentId": {
+                    "type": "string",
+                    "description": "A UUID of the document loaded."
+                  },
+                  "parentDocumentId": {
+                    "type": "string",
+                    "optional": true,
+                    "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."
+                  },
+                  "documentLifecycle": {
+                    "$ref": "extensionTypes.DocumentLifecycle",
+                    "description": "The lifecycle the document is in."
+                  },
+                  "frameType": {
+                    "$ref": "extensionTypes.FrameType",
+                    "description": "The type of frame the navigation occurred in."
                   }
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ],
     "events": [
@@ -144,7 +181,10 @@
               },
               "frameId": {"type": "integer", "description": "0 indicates the navigation happens in the tab content window; a positive value indicates navigation in a subframe. Frame IDs are unique for a given tab and process."},
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
-              "timeStamp": {"type": "number", "description": "The time when the browser was about to start the navigation, in milliseconds since the epoch."}
+              "timeStamp": {"type": "number", "description": "The time when the browser was about to start the navigation, in milliseconds since the epoch."},
+              "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."},
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in."},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in."}
             }
           }
         ]
@@ -173,7 +213,11 @@
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
               "transitionType": {"$ref": "TransitionType", "description": "Cause of the navigation."},
               "transitionQualifiers": {"type": "array", "description": "A list of transition qualifiers.", "items": {"$ref": "TransitionQualifier"}},
-              "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."}
+              "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."},
+              "documentId": {"type": "string", "description": "A UUID of the document loaded."},
+              "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."},
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in."},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in."}
             }
           }
         ]
@@ -200,7 +244,11 @@
               "processId": {"type": "integer", "description": "The ID of the process that runs the renderer for this frame."},
               "frameId": {"type": "integer", "description": "0 indicates the navigation happens in the tab content window; a positive value indicates navigation in a subframe. Frame IDs are unique within a tab."},
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
-              "timeStamp": {"type": "number", "description": "The time when the page's DOM was fully constructed, in milliseconds since the epoch."}
+              "timeStamp": {"type": "number", "description": "The time when the page's DOM was fully constructed, in milliseconds since the epoch."},
+              "documentId": {"type": "string", "description": "A UUID of the document loaded."},
+              "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."},
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in."},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in."}
             }
           }
         ]
@@ -227,7 +275,11 @@
               "processId": {"type": "integer", "description": "The ID of the process that runs the renderer for this frame."},
               "frameId": {"type": "integer", "description": "0 indicates the navigation happens in the tab content window; a positive value indicates navigation in a subframe. Frame IDs are unique within a tab."},
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
-              "timeStamp": {"type": "number", "description": "The time when the document finished loading, in milliseconds since the epoch."}
+              "timeStamp": {"type": "number", "description": "The time when the document finished loading, in milliseconds since the epoch."},
+              "documentId": {"type": "string", "description": "A UUID of the document loaded."},
+              "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."},
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in."},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in."}
             }
           }
         ]
@@ -259,7 +311,11 @@
               "frameId": {"type": "integer", "description": "0 indicates the navigation happens in the tab content window; a positive value indicates navigation in a subframe. Frame IDs are unique within a tab."},
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
               "error": {"type": "string", "description": "The error description."},
-              "timeStamp": {"type": "number", "description": "The time when the error occurred, in milliseconds since the epoch."}
+              "timeStamp": {"type": "number", "description": "The time when the error occurred, in milliseconds since the epoch."},
+              "documentId": {"type": "string", "description": "A UUID of the document loaded."},
+              "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."},
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in."},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in."}
             }
           }
         ]
@@ -315,7 +371,11 @@
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
               "transitionType": {"$ref": "TransitionType", "description": "Cause of the navigation."},
               "transitionQualifiers": {"type": "array", "description": "A list of transition qualifiers.", "items": {"$ref": "TransitionQualifier"}},
-              "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."}
+              "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."},
+              "documentId": {"type": "string", "description": "A UUID of the document loaded."},
+              "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."},
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in."},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in."}
             }
           }
         ]
@@ -360,7 +420,11 @@
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
               "transitionType": {"$ref": "TransitionType", "description": "Cause of the navigation."},
               "transitionQualifiers": {"type": "array", "description": "A list of transition qualifiers.", "items": {"$ref": "TransitionQualifier"}},
-              "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."}
+              "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."},
+              "documentId": {"type": "string", "description": "A UUID of the document loaded."},
+              "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent."},
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in."},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in."}
             }
           }
         ]

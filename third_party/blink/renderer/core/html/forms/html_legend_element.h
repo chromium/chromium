@@ -37,6 +37,7 @@ class HTMLLegendElement final : public HTMLElement {
   HTMLFormElement* form() const;
 
  private:
+  void DetachLayoutTree(bool performing_reattach) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 };
 

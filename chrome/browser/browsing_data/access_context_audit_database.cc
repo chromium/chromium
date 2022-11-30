@@ -1,19 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "components/browsing_data/core/features.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -40,7 +45,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // or hardware issues, not coding errors at the client level, so displaying
     // the error would probably lead to confusion.  The ignored call signals the
     // test-expectation framework that the error was handled.
-    ignore_result(sql::Database::IsExpectedSqliteError(extended_error));
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
 
@@ -52,16 +57,9 @@ void DatabaseErrorCallback(sql::Database* db,
 // Returns true if a cookie table already exists in |db|, but is missing the
 // is_persistent field.
 bool CookieTableMissingIsPersistent(sql::Database* db) {
-  const char kSelectCookieTable[] =
-      "SELECT sql FROM sqlite_master WHERE name = 'cookies' AND type = 'table'";
-  sql::Statement statement(db->GetUniqueStatement(kSelectCookieTable));
-
-  // Unable to step implies cookies table does not exist.
-  if (!statement.Step())
+  if (!db->DoesTableExist("cookies"))
     return false;
-
-  std::string cookies_schema = statement.ColumnString(0);
-  return cookies_schema.find("is_persistent") == std::string::npos;
+  return !db->DoesColumnExist("cookies", "is_persistent");
 }
 
 // Removes all cookie records in |db| with is_persistent = false.
@@ -204,6 +202,11 @@ bool AccessContextAuditDatabase::InitializeSchema() {
   if (!db_.Execute(kCreateCookiesTable))
     return false;
 
+  // When user controls to clear third-party data are enabled and a user
+  // deletes their history, we keep records of cross-site storage access but
+  // replace the top_frame_origin with an empty string. The empty strings
+  // get interpreted as opaque origins when we load data from the db into
+  // AccessRecords.
   const char kCreateStorageApiTable[] =
       "CREATE TABLE IF NOT EXISTS originStorageAPIs"
       "(top_frame_origin TEXT NOT NULL,"
@@ -295,9 +298,7 @@ void AccessContextAuditDatabase::AddRecords(
       insert_cookie.BindString(1, record.name);
       insert_cookie.BindString(2, record.domain);
       insert_cookie.BindString(3, record.path);
-      insert_cookie.BindInt64(
-          4,
-          record.last_access_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      insert_cookie.BindTime(4, record.last_access_time);
       insert_cookie.BindBool(5, record.is_persistent);
 
       if (!insert_cookie.Run())
@@ -305,12 +306,13 @@ void AccessContextAuditDatabase::AddRecords(
 
       insert_cookie.Reset(true);
     } else {
-      insert_storage_api.BindString(0, record.top_frame_origin.Serialize());
+      insert_storage_api.BindString(0,
+                                    record.top_frame_origin.opaque()
+                                        ? ""
+                                        : record.top_frame_origin.Serialize());
       insert_storage_api.BindInt(1, static_cast<int>(record.type));
       insert_storage_api.BindString(2, record.origin.Serialize());
-      insert_storage_api.BindInt64(
-          3,
-          record.last_access_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      insert_storage_api.BindTime(3, record.last_access_time);
 
       if (!insert_storage_api.Run())
         return;
@@ -366,6 +368,60 @@ void AccessContextAuditDatabase::RemoveAllRecords() {
   transaction.Commit();
 }
 
+namespace {
+
+bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
+  return net::registry_controlled_domains::SameDomainOrHost(
+      origin1, origin2,
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+std::vector<AccessContextAuditDatabase::AccessRecord>
+SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
+    const std::vector<AccessContextAuditDatabase::AccessRecord>&
+        storage_records) {
+  std::map<std::tuple<url::Origin, AccessContextAuditDatabase::StorageAPIType>,
+           base::Time>
+      storage_to_last_access_map;
+  for (const auto& record : storage_records) {
+    if (!IsSameSite(record.top_frame_origin, record.origin)) {
+      auto key = std::make_tuple(record.origin, record.type);
+      auto it = storage_to_last_access_map.find(key);
+      // We check the map to see if we have a cross-site storage access record
+      // for the storage origin and type. Since this may coalesce multiple
+      // cross-site storage records into one, we want to record the most recent
+      // cross-site storage access time.
+      if (it == storage_to_last_access_map.end() ||
+          it->second < record.last_access_time) {
+        storage_to_last_access_map[key] = record.last_access_time;
+      }
+    }
+  }
+  std::vector<AccessContextAuditDatabase::AccessRecord> result;
+  for (const auto& item : storage_to_last_access_map) {
+    result.emplace_back(url::Origin(),
+                        /* type= */ std::get<1>(item.first),
+                        /* storage_origin= */ std::get<0>(item.first),
+                        /* last_access_time= */ item.second);
+  }
+  return result;
+}
+
+}  // namespace
+
+void AccessContextAuditDatabase::RemoveAllRecordsHistory() {
+  std::vector<AccessContextAuditDatabase::AccessRecord>
+      cross_site_storage_records;
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
+    cross_site_storage_records =
+        SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
+            GetStorageRecords());
+  }
+  RemoveAllRecords();
+  AddRecords(cross_site_storage_records);
+}
+
 void AccessContextAuditDatabase::RemoveAllRecordsForTimeRange(base::Time begin,
                                                               base::Time end) {
   sql::Transaction transaction(&db_);
@@ -376,9 +432,8 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTimeRange(base::Time begin,
       "DELETE FROM cookies WHERE access_utc BETWEEN ? AND ?";
   sql::Statement remove_cookies(
       db_.GetCachedStatement(SQL_FROM_HERE, kRemoveCookieRecords));
-  remove_cookies.BindInt64(0,
-                           begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  remove_cookies.BindInt64(1, end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  remove_cookies.BindTime(0, begin);
+  remove_cookies.BindTime(1, end);
   if (!remove_cookies.Run())
     return;
 
@@ -386,14 +441,27 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTimeRange(base::Time begin,
       "DELETE FROM originStorageAPIs WHERE access_utc BETWEEN ? AND ?";
   sql::Statement remove_storage_apis(
       db_.GetCachedStatement(SQL_FROM_HERE, kRemoveStorageApiRecords));
-  remove_storage_apis.BindInt64(
-      0, begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  remove_storage_apis.BindInt64(
-      1, end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  remove_storage_apis.BindTime(0, begin);
+  remove_storage_apis.BindTime(1, end);
   if (!remove_storage_apis.Run())
     return;
 
   transaction.Commit();
+}
+
+void AccessContextAuditDatabase::RemoveAllRecordsForTimeRangeHistory(
+    base::Time begin,
+    base::Time end) {
+  std::vector<AccessContextAuditDatabase::AccessRecord>
+      cross_site_storage_records;
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
+    cross_site_storage_records =
+        SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
+            GetStorageRecordsForTimeRange(begin, end));
+  }
+  RemoveAllRecordsForTimeRange(begin, end);
+  AddRecords(cross_site_storage_records);
 }
 
 void AccessContextAuditDatabase::RemoveSessionOnlyRecords(
@@ -511,6 +579,19 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins(
   if (!transaction.Begin())
     return;
 
+  // If user controls to remove cross-site cookies are enabled, we need to keep
+  // track of cross-site storage access records. We need to clear storage for
+  // these origins so that they cannot be used to recover the cross-site cookies
+  // after they are removed.
+  std::vector<AccessContextAuditDatabase::AccessRecord>
+      cross_site_storage_records;
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
+    cross_site_storage_records =
+        SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
+            GetStorageRecordsForTopFrameOrigins(origins));
+  }
+
   // Remove all records with a top frame origin present in |origins| from both
   // the cookies and storage API tables.
   const char kRemoveTopFrameFromCookies[] =
@@ -535,7 +616,10 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins(
     remove_cookies.Reset(true);
   }
 
-  transaction.Commit();
+  if (!transaction.Commit())
+    return;
+
+  AddRecords(cross_site_storage_records);
 }
 
 std::vector<AccessContextAuditDatabase::AccessRecord>
@@ -552,14 +636,31 @@ AccessContextAuditDatabase::GetCookieRecords() {
     records.emplace_back(
         url::Origin::Create(GURL(select_cookies.ColumnString(0))),
         select_cookies.ColumnString(1), select_cookies.ColumnString(2),
-        select_cookies.ColumnString(3),
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(select_cookies.ColumnInt64(4))),
+        select_cookies.ColumnString(3), select_cookies.ColumnTime(4),
         select_cookies.ColumnBool(5));
   }
 
   return records;
 }
+
+namespace {
+
+AccessContextAuditDatabase::AccessRecord StorageAccessRecordFromStatement(
+    sql::Statement& statement) {
+  return AccessContextAuditDatabase::AccessRecord(
+      // If the top-frame origin is empty string, that means we deleted the
+      // top_frame_origin of a cross-site access record. In this case we set the
+      // AccessRecord's top_frame_origin to an opaque origin.
+      statement.ColumnString(0) == ""
+          ? url::Origin()
+          : url::Origin::Create(GURL(statement.ColumnString(0))),
+      static_cast<AccessContextAuditDatabase::StorageAPIType>(
+          statement.ColumnInt(1)),
+      url::Origin::Create(GURL(statement.ColumnString(2))),
+      statement.ColumnTime(3));
+}
+
+}  // namespace
 
 std::vector<AccessContextAuditDatabase::AccessRecord>
 AccessContextAuditDatabase::GetStorageRecords() {
@@ -572,13 +673,50 @@ AccessContextAuditDatabase::GetStorageRecords() {
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageApiRecords));
 
   while (select_storage_api.Step()) {
-    records.emplace_back(
-        url::Origin::Create(GURL(select_storage_api.ColumnString(0))),
-        static_cast<StorageAPIType>(select_storage_api.ColumnInt(1)),
-        url::Origin::Create(GURL(select_storage_api.ColumnString(2))),
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(
-                select_storage_api.ColumnInt64(3))));
+    records.emplace_back(StorageAccessRecordFromStatement(select_storage_api));
+  }
+
+  return records;
+}
+
+std::vector<AccessContextAuditDatabase::AccessRecord>
+AccessContextAuditDatabase::GetStorageRecordsForTopFrameOrigins(
+    const std::vector<url::Origin>& origins) {
+  std::vector<AccessContextAuditDatabase::AccessRecord> records;
+
+  const char kSelectStorageApiRecords[] =
+      "SELECT top_frame_origin, type, origin, access_utc FROM "
+      "originStorageAPIs WHERE top_frame_origin = ?";
+  sql::Statement select_storage_api(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageApiRecords));
+
+  for (const auto& origin : origins) {
+    select_storage_api.BindString(0, origin.Serialize());
+    while (select_storage_api.Step()) {
+      records.emplace_back(
+          StorageAccessRecordFromStatement(select_storage_api));
+    }
+    select_storage_api.Reset(true);
+  }
+
+  return records;
+}
+
+std::vector<AccessContextAuditDatabase::AccessRecord>
+AccessContextAuditDatabase::GetStorageRecordsForTimeRange(base::Time begin,
+                                                          base::Time end) {
+  std::vector<AccessContextAuditDatabase::AccessRecord> records;
+
+  const char kSelectStorageApiRecords[] =
+      "SELECT top_frame_origin, type, origin, access_utc FROM "
+      "originStorageAPIs WHERE access_utc BETWEEN ? AND ?";
+  sql::Statement select_storage_api(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageApiRecords));
+
+  select_storage_api.BindTime(0, begin);
+  select_storage_api.BindTime(1, end);
+  while (select_storage_api.Step()) {
+    records.emplace_back(StorageAccessRecordFromStatement(select_storage_api));
   }
 
   return records;
@@ -597,7 +735,7 @@ AccessContextAuditDatabase::GetAllRecords() {
 
 void AccessContextAuditDatabase::RemoveStorageApiRecords(
     const std::set<StorageAPIType>& storage_api_types,
-    base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     base::Time begin,
     base::Time end) {
   sql::Transaction transaction(&db_);
@@ -615,10 +753,8 @@ void AccessContextAuditDatabase::RemoveStorageApiRecords(
       "AND ?";
   sql::Statement select_storage_api(
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginAndType));
-  select_storage_api.BindInt64(
-      0, begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  select_storage_api.BindInt64(1,
-                               end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  select_storage_api.BindTime(0, begin);
+  select_storage_api.BindTime(1, end);
 
   // Filter the returned records based on the provided parameters, maintaining
   // a list of origin and storage type pairs for removal from the database.
@@ -628,7 +764,8 @@ void AccessContextAuditDatabase::RemoveStorageApiRecords(
     auto origin = url::Origin::Create(GURL(select_storage_api.ColumnString(0)));
     auto type = static_cast<StorageAPIType>(select_storage_api.ColumnInt(1));
     if (storage_api_types.count(type) &&
-        (!origin_matcher || origin_matcher.Run(origin))) {
+        (!storage_key_matcher ||
+         storage_key_matcher.Run(blink::StorageKey(origin)))) {
       origin_type_pairs_for_removal.emplace_back(origin, type);
     }
   }

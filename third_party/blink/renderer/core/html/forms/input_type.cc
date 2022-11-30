@@ -70,7 +70,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
@@ -106,7 +106,7 @@ namespace blink {
 
 InputType* InputType::Create(HTMLInputElement& element,
                              const AtomicString& type_name) {
-  if (type_name.IsEmpty())
+  if (type_name.empty())
     return MakeGarbageCollected<TextInputType>(element);
 
 #define INPUT_TYPE_FACTORY(input_type, class_name) \
@@ -120,7 +120,7 @@ InputType* InputType::Create(HTMLInputElement& element,
 
 const AtomicString& InputType::NormalizeTypeName(
     const AtomicString& type_name) {
-  if (type_name.IsEmpty())
+  if (type_name.empty())
     return input_type_names::kText;
 
   AtomicString type_name_lower = type_name.LowerASCII();
@@ -144,17 +144,81 @@ bool InputType::IsTextField() const {
   return false;
 }
 
+template <typename T>
+bool ValidateInputType(const T& input_type, const String& value) {
+  if (!input_type.CanSetStringValue()) {
+    NOTREACHED();
+    return false;
+  }
+  return !input_type.TypeMismatchFor(value) &&
+         !input_type.StepMismatch(value) && !input_type.RangeUnderflow(value) &&
+         !input_type.RangeOverflow(value) &&
+         !input_type.PatternMismatch(value) && !input_type.ValueMissing(value);
+}
+
+// Do not use virtual function for performance reason.
+bool InputType::IsValidValue(const String& value) const {
+  switch (type_) {
+    case Type::kButton:
+      return ValidateInputType(To<ButtonInputType>(*this), value);
+    case Type::kCheckbox:
+      return ValidateInputType(To<CheckboxInputType>(*this), value);
+    case Type::kColor:
+      return ValidateInputType(To<ColorInputType>(*this), value);
+    case Type::kDate:
+      return ValidateInputType(To<DateInputType>(*this), value);
+    case Type::kDateTimeLocal:
+      return ValidateInputType(To<DateTimeLocalInputType>(*this), value);
+    case Type::kEmail:
+      return ValidateInputType(To<EmailInputType>(*this), value);
+    case Type::kFile:
+      return ValidateInputType(To<FileInputType>(*this), value);
+    case Type::kHidden:
+      return ValidateInputType(To<HiddenInputType>(*this), value);
+    case Type::kImage:
+      return ValidateInputType(To<ImageInputType>(*this), value);
+    case Type::kMonth:
+      return ValidateInputType(To<MonthInputType>(*this), value);
+    case Type::kNumber:
+      return ValidateInputType(To<NumberInputType>(*this), value);
+    case Type::kPassword:
+      return ValidateInputType(To<PasswordInputType>(*this), value);
+    case Type::kRadio:
+      return ValidateInputType(To<RadioInputType>(*this), value);
+    case Type::kRange:
+      return ValidateInputType(To<RangeInputType>(*this), value);
+    case Type::kReset:
+      return ValidateInputType(To<ResetInputType>(*this), value);
+    case Type::kSearch:
+      return ValidateInputType(To<SearchInputType>(*this), value);
+    case Type::kSubmit:
+      return ValidateInputType(To<SubmitInputType>(*this), value);
+    case Type::kTelephone:
+      return ValidateInputType(To<TelephoneInputType>(*this), value);
+    case Type::kTime:
+      return ValidateInputType(To<TimeInputType>(*this), value);
+    case Type::kURL:
+      return ValidateInputType(To<URLInputType>(*this), value);
+    case Type::kWeek:
+      return ValidateInputType(To<WeekInputType>(*this), value);
+    case Type::kText:
+      return ValidateInputType(To<TextInputType>(*this), value);
+  }
+  NOTREACHED();
+  return false;
+}
+
 bool InputType::ShouldSaveAndRestoreFormControlState() const {
   return true;
 }
 
 bool InputType::IsFormDataAppendable() const {
   // There is no form data unless there's a name for non-image types.
-  return !GetElement().GetName().IsEmpty();
+  return !GetElement().GetName().empty();
 }
 
 void InputType::AppendToFormData(FormData& form_data) const {
-  form_data.AppendFromElement(GetElement().GetName(), GetElement().value());
+  form_data.AppendFromElement(GetElement().GetName(), GetElement().Value());
 }
 
 String InputType::ResultForDialogSubmit() const {
@@ -165,7 +229,7 @@ double InputType::ValueAsDate() const {
   return DateComponents::InvalidMilliseconds();
 }
 
-void InputType::SetValueAsDate(const base::Optional<base::Time>&,
+void InputType::SetValueAsDate(const absl::optional<base::Time>&,
                                ExceptionState& exception_state) const {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kInvalidStateError,
@@ -187,7 +251,7 @@ void InputType::SetValueAsDouble(double double_value,
 void InputType::SetValueAsDecimal(const Decimal& new_value,
                                   TextFieldEventBehavior event_behavior,
                                   ExceptionState&) const {
-  GetElement().setValue(Serialize(new_value), event_behavior);
+  GetElement().SetValue(Serialize(new_value), event_behavior);
 }
 
 void InputType::ReadingChecked() const {}
@@ -198,7 +262,39 @@ bool InputType::SupportsValidation() const {
   return true;
 }
 
-bool InputType::TypeMismatchFor(const String&) const {
+// Do not use virtual function for performance reason.
+bool InputType::TypeMismatchFor(const String& value) const {
+  switch (type_) {
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+      return To<BaseTemporalInputType>(*this).TypeMismatchFor(value);
+    case Type::kColor:
+      return To<ColorInputType>(*this).TypeMismatchFor(value);
+    case Type::kEmail:
+      return To<EmailInputType>(*this).TypeMismatchFor(value);
+    case Type::kRange:
+      return To<RangeInputType>(*this).TypeMismatchFor(value);
+    case Type::kURL:
+      return To<URLInputType>(*this).TypeMismatchFor(value);
+    case Type::kNumber:
+    case Type::kButton:
+    case Type::kCheckbox:
+    case Type::kFile:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kPassword:
+    case Type::kRadio:
+    case Type::kReset:
+    case Type::kSearch:
+    case Type::kSubmit:
+    case Type::kTelephone:
+    case Type::kText:
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 
@@ -211,7 +307,39 @@ bool InputType::SupportsRequired() const {
   return SupportsValidation();
 }
 
-bool InputType::ValueMissing(const String&) const {
+// Do not use virtual function for performance reason.
+bool InputType::ValueMissing(const String& value) const {
+  switch (type_) {
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+      return To<BaseTemporalInputType>(*this).ValueMissing(value);
+    case Type::kCheckbox:
+      return To<CheckboxInputType>(*this).ValueMissing(value);
+    case Type::kFile:
+      return To<FileInputType>(*this).ValueMissing(value);
+    case Type::kRadio:
+      return To<RadioInputType>(*this).ValueMissing(value);
+    case Type::kEmail:
+    case Type::kPassword:
+    case Type::kSearch:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+    case Type::kNumber:
+      return To<TextFieldInputType>(*this).ValueMissing(value);
+    case Type::kColor:
+    case Type::kRange:
+    case Type::kButton:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kReset:
+    case Type::kSubmit:
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 
@@ -225,7 +353,35 @@ bool InputType::TooShort(const String&,
   return false;
 }
 
-bool InputType::PatternMismatch(const String&) const {
+// Do not use virtual function for performance reason.
+bool InputType::PatternMismatch(const String& value) const {
+  switch (type_) {
+    case Type::kEmail:
+    case Type::kPassword:
+    case Type::kSearch:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+      return To<BaseTextInputType>(*this).PatternMismatch(value);
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+    case Type::kCheckbox:
+    case Type::kFile:
+    case Type::kRadio:
+    case Type::kNumber:
+    case Type::kColor:
+    case Type::kRange:
+    case Type::kButton:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kReset:
+    case Type::kSubmit:
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 
@@ -372,7 +528,7 @@ String InputType::ValueMissingText() const {
 
 std::pair<String, String> InputType::ValidationMessage(
     const InputTypeView& input_type_view) const {
-  const String value = GetElement().value();
+  const String value = GetElement().Value();
 
   // The order of the following checks is meaningful. e.g. We'd like to show the
   // badInput message even if the control has other validation errors.
@@ -501,12 +657,41 @@ Locale& InputType::GetLocale() const {
   return GetElement().GetLocale();
 }
 
+// Do not use virtual function for performance reason.
 bool InputType::CanSetStringValue() const {
-  return true;
+  switch (type_) {
+    case Type::kRadio:
+    case Type::kCheckbox:
+      return To<BaseCheckableInputType>(*this).CanSetStringValue();
+    case Type::kFile:
+      return To<FileInputType>(*this).CanSetStringValue();
+    case Type::kEmail:
+    case Type::kPassword:
+    case Type::kSearch:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+    case Type::kNumber:
+    case Type::kColor:
+    case Type::kRange:
+    case Type::kButton:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kReset:
+    case Type::kSubmit:
+      return true;
+  }
+  NOTREACHED();
+  return false;
 }
 
 bool InputType::IsKeyboardFocusable() const {
-  return GetElement().IsFocusable();
+  return GetElement().IsBaseElementFocusable();
 }
 
 bool InputType::MayTriggerVirtualKeyboard() const {
@@ -603,7 +788,7 @@ String InputType::LocalizeValue(const String& proposed_value) const {
 }
 
 String InputType::VisibleValue() const {
-  return GetElement().value();
+  return GetElement().Value();
 }
 
 String InputType::SanitizeValue(const String& proposed_value) const {
@@ -654,8 +839,41 @@ bool InputType::IsCheckable() {
   return false;
 }
 
+// Do not use virtual function for performance reason.
 bool InputType::IsSteppable() const {
+  switch (type_) {
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+    case Type::kNumber:
+    case Type::kRange:
+      return true;
+    case Type::kButton:
+    case Type::kCheckbox:
+    case Type::kColor:
+    case Type::kEmail:
+    case Type::kFile:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kPassword:
+    case Type::kRadio:
+    case Type::kReset:
+    case Type::kSearch:
+    case Type::kSubmit:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+      return false;
+  }
+  NOTREACHED();
   return false;
+}
+
+HTMLFormControlElement::PopupTriggerSupport InputType::SupportsPopupTriggering()
+    const {
+  return HTMLFormControlElement::PopupTriggerSupport::kNone;
 }
 
 bool InputType::ShouldRespectHeightAndWidthAttributes() {
@@ -836,7 +1054,7 @@ void InputType::StepUp(double n, ExceptionState& exception_state) {
                                       "This form element is not steppable.");
     return;
   }
-  const Decimal current = ParseToNumber(GetElement().value(), 0);
+  const Decimal current = ParseToNumber(GetElement().Value(), 0);
   ApplyStep(current, n, kRejectAny, TextFieldEventBehavior::kDispatchNoEvent,
             exception_state);
 }
@@ -900,7 +1118,7 @@ void InputType::StepUpFromLayoutObject(int n) {
   else
     sign = 0;
 
-  Decimal current = ParseToNumberOrNaN(GetElement().value());
+  Decimal current = ParseToNumberOrNaN(GetElement().Value());
   if (!current.IsFinite()) {
     current = DefaultValueForStepUp();
     const Decimal next_diff = step * n;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/task/task.h"
@@ -23,6 +22,10 @@ class UpdateRequestTask : public Task {
   UpdateRequestTask(RequestQueueStore* store,
                     int64_t request_id,
                     RequestQueueStore::UpdateCallback callback);
+
+  UpdateRequestTask(const UpdateRequestTask&) = delete;
+  UpdateRequestTask& operator=(const UpdateRequestTask&) = delete;
+
   ~UpdateRequestTask() override;
 
  protected:
@@ -49,14 +52,13 @@ class UpdateRequestTask : public Task {
 
  private:
   // Store that this task updates. Not owned.
-  RequestQueueStore* store_;
+  raw_ptr<RequestQueueStore> store_;
   // Request ID of the request to be started.
   int64_t request_id_;
   // Callback to complete the task.
   RequestQueueStore::UpdateCallback callback_;
 
   base::WeakPtrFactory<UpdateRequestTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequestTask);
 };
 
 }  // namespace offline_pages

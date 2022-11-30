@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,10 @@ enum class TouchDeviceEnabledSource {
 class ASH_EXPORT TouchDevicesController : public SessionObserver {
  public:
   TouchDevicesController();
+
+  TouchDevicesController(const TouchDevicesController&) = delete;
+  TouchDevicesController& operator=(const TouchDevicesController&) = delete;
+
   ~TouchDevicesController() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test);
@@ -94,8 +98,6 @@ class ASH_EXPORT TouchDevicesController : public SessionObserver {
   // active user pref service changed. The goal is to record the initial state
   // of the feature.
   base::OnceCallback<void(PrefService* prefs)> uma_record_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchDevicesController);
 };
 
 }  // namespace ash

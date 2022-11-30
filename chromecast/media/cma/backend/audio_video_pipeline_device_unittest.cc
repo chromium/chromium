@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -55,7 +54,7 @@ class AudioVideoPipelineDeviceTest;
 
 namespace {
 
-const base::TimeDelta kMonitorLoopDelay = base::TimeDelta::FromMilliseconds(20);
+const base::TimeDelta kMonitorLoopDelay = base::Milliseconds(20);
 // Call Start() with an initial PTS of 0.5 seconds, to test the behaviour if
 // we push buffers with a PTS before the start PTS. In this case the backend
 // should report the PTS as no later than the last pushed buffers.
@@ -103,6 +102,10 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
 class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
  public:
   explicit BufferFeeder(base::OnceClosure eos_cb);
+
+  BufferFeeder(const BufferFeeder&) = delete;
+  BufferFeeder& operator=(const BufferFeeder&) = delete;
+
   ~BufferFeeder() override {}
 
   static std::unique_ptr<BufferFeeder> LoadAudio(MediaPipelineBackend* backend,
@@ -166,8 +169,6 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
   VideoConfig video_config_;
   int64_t last_pushed_pts_;
   std::unique_ptr<::media::AudioTimestampHelper> timestamp_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferFeeder);
 };
 
 }  // namespace
@@ -184,6 +185,11 @@ class AudioVideoPipelineDeviceTest : public testing::Test {
   };
 
   AudioVideoPipelineDeviceTest();
+
+  AudioVideoPipelineDeviceTest(const AudioVideoPipelineDeviceTest&) = delete;
+  AudioVideoPipelineDeviceTest& operator=(const AudioVideoPipelineDeviceTest&) =
+      delete;
+
   ~AudioVideoPipelineDeviceTest() override;
 
   MediaPipelineBackend* backend() const { return backend_.get(); }
@@ -263,8 +269,6 @@ class AudioVideoPipelineDeviceTest : public testing::Test {
   // Pause settings
   std::vector<PauseInfo> pause_pattern_;
   size_t pause_pattern_idx_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioVideoPipelineDeviceTest);
 };
 
 namespace {
@@ -806,7 +810,7 @@ void AudioVideoPipelineDeviceTest::MonitorLoop() {
   }
 
   int64_t pts = backend_->GetCurrentPts();
-  base::TimeDelta media_time = base::TimeDelta::FromMicroseconds(pts);
+  base::TimeDelta media_time = base::Microseconds(pts);
   if (sync_type_ == MediaPipelineDeviceParams::kModeSyncPts) {
     // Check that the current PTS is no more than 100ms past the last pushed
     // PTS.
@@ -888,7 +892,7 @@ void AudioVideoPipelineDeviceTest::MonitorLoop() {
       media_time >= pause_time_ + pause_pattern_[pause_pattern_idx_].delay) {
     // Do Pause
     backend_->Pause();
-    pause_time_ = base::TimeDelta::FromMicroseconds(backend_->GetCurrentPts());
+    pause_time_ = base::Microseconds(backend_->GetCurrentPts());
     RunPlaybackChecks();
 
     LOG(INFO) << "Pausing at " << pause_time_.InMilliseconds() << "ms for "
@@ -914,12 +918,10 @@ void AudioVideoPipelineDeviceTest::MonitorLoop() {
 
 void AudioVideoPipelineDeviceTest::OnPauseCompleted() {
   // Make sure the media time didn't move during that time.
-  base::TimeDelta media_time =
-      base::TimeDelta::FromMicroseconds(backend_->GetCurrentPts());
+  base::TimeDelta media_time = base::Microseconds(backend_->GetCurrentPts());
 
   // Make sure that the PTS did not advance too much while paused.
-  EXPECT_LT(media_time,
-            pause_time_ + base::TimeDelta::FromMilliseconds(kPausePtsSlackMs));
+  EXPECT_LT(media_time, pause_time_ + base::Milliseconds(kPausePtsSlackMs));
 
 #if defined(ENABLE_VIDEO_WITH_MIXED_AUDIO)
   // Do AV sync checks.
@@ -934,10 +936,9 @@ void AudioVideoPipelineDeviceTest::OnPauseCompleted() {
       backend_for_mixer->video_decoder() &&
       backend_for_mixer->MonotonicClockNow() > playback_start_time + 50000) {
     // Check the audio time.
-    base::TimeDelta audio_time = base::TimeDelta::FromMicroseconds(
-        backend_for_mixer->audio_decoder()->GetCurrentPts());
-    EXPECT_LT(audio_time, pause_time_ + base::TimeDelta::FromMilliseconds(
-                                            kPausePtsSlackMs));
+    base::TimeDelta audio_time =
+        base::Microseconds(backend_for_mixer->audio_decoder()->GetCurrentPts());
+    EXPECT_LT(audio_time, pause_time_ + base::Milliseconds(kPausePtsSlackMs));
 
     // Check the video time.
     int64_t timestamp = 0;
@@ -948,10 +949,9 @@ void AudioVideoPipelineDeviceTest::OnPauseCompleted() {
         << backend_for_mixer->MonotonicClockNow()
         << " playback should have started at=" << playback_start_time;
 
-    base::TimeDelta video_time = base::TimeDelta::FromMicroseconds(pts);
+    base::TimeDelta video_time = base::Microseconds(pts);
 
-    EXPECT_LT(video_time, pause_time_ + base::TimeDelta::FromMilliseconds(
-                                            kPausePtsSlackMs));
+    EXPECT_LT(video_time, pause_time_ + base::Milliseconds(kPausePtsSlackMs));
   }
 #endif
 
@@ -1067,8 +1067,7 @@ TEST_F(AudioVideoPipelineDeviceTest, WebmPlaybackWithPause) {
     return;
   set_sync_type(MediaPipelineDeviceParams::kModeSyncPts);
   // Setup to pause for 100ms every 500ms
-  AddPause(base::TimeDelta::FromMilliseconds(500),
-           base::TimeDelta::FromMilliseconds(100));
+  AddPause(base::Milliseconds(500), base::Milliseconds(100));
 
   ConfigureForVideoOnly("bear-640x360.webm", false /* raw_h264 */);
   Start();
@@ -1232,8 +1231,7 @@ TEST_F(AudioVideoPipelineDeviceTest, WebmPlaybackWithPause_WithEffectsStreams) {
     return;
   set_sync_type(MediaPipelineDeviceParams::kModeSyncPts);
   // Setup to pause for 100ms every 500ms
-  AddPause(base::TimeDelta::FromMilliseconds(500),
-           base::TimeDelta::FromMilliseconds(100));
+  AddPause(base::Milliseconds(500), base::Milliseconds(100));
 
   ConfigureForVideoOnly("bear-640x360.webm", false /* raw_h264 */);
   AddEffectsStreams();

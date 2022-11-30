@@ -36,7 +36,6 @@
   }
 </style>
 <print-preview-header id="header" destination="[[destination]]"
-    cloud-print-error-message="[[cloudPrintErrorMessage]]"
     error="[[error]]" sheet-count="[[sheetCount_]]" state="[[state]]"
     settings="[[settings]]" managed="[[controlsManaged]]">
 </print-preview-header>
@@ -49,7 +48,7 @@
       disabled="[[controlsDisabled_]]"
       available class="settings-section">
   </print-preview-destination-settings>
-<if expr="chromeos">
+<if expr="is_chromeos">
   <print-preview-pin-settings state="[[state]]" settings="[[settings]]"
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.pin.available]]" class="settings-section">
@@ -122,7 +121,7 @@
         hidden$="[[!settings.vendorItems.available]]"
         class="settings-section">
     </print-preview-advanced-options-settings>
-<if expr="not chromeos">
+<if expr="not is_chromeos">
     <print-preview-link-container destination="[[destination]]"
         app-kiosk-mode="[[isInAppKioskMode_]]"
         disabled="[[controlsDisabled_]]">

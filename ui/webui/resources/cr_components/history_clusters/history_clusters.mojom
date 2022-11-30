@@ -1,0 +1,237 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module history_clusters.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// Represents a search query related to a visit to the search results page.
+struct SearchQuery {
+  // Text of the search query.
+  string query;
+  // URL of the search query page.
+  url.mojom.Url url;
+};
+
+// Each MatchPosition is the [begin, end) positions of a match within a string.
+// Equivalent to MatchPosition in components/query_parser/snippet.h.
+struct MatchPosition {
+  uint32 begin;
+  uint32 end;
+};
+
+// Available annotations for a visit.
+enum Annotation {
+  // Indicates that the visited URL was added to the bookmarks or was already
+  // bookmarked.
+  kBookmarked,
+  // Indicates that the visited URL was added to a tab group or was already in a
+  // tab group.
+  kTabGrouped,
+  // Indicates that the visited URL was the search results page of the default
+  // search provider.
+  kSearchResultsPage,
+};
+
+/**
+ * The following enums must be kept in sync with their respective variants in
+ * //tools/metrics/histograms/metadata/history/histograms.xml and
+ * //components/history_clusters/core/cluster_metrics_utils.h
+ */
+
+// Actions that can be performed on clusters.
+enum ClusterAction {
+  kDeleted,
+  kOpenedInTabGroup,
+  kRelatedSearchClicked,
+  kRelatedVisitsVisibilityToggled,
+  kVisitClicked,
+};
+
+// Actions that can be performed on related search items.
+enum RelatedSearchAction {
+  kClicked,
+};
+
+// Actions that can be performed on visits.
+enum VisitAction {
+  kClicked,
+  kDeleted,
+};
+
+// Types of visits that can be shown and acted on.
+enum VisitType {
+  kSRP,
+  kNonSRP
+};
+
+// Raw visit data needed to properly do deletion of all the duplicates.
+struct RawVisitData {
+  url.mojom.Url url;
+  mojo_base.mojom.Time visit_time;
+};
+
+// Represents the most recent visit to a URL within a Cluster. Visits for which
+// there are more recent visits to the same (or a qualifying near-duplicate) URL
+// within the Cluster are omitted.
+// However, the time of the least recent visit as well as the raw URLs of those
+// duplicative visits are preserved for deletion purposes.
+struct URLVisit {
+  // Normalized URL of the visited webpage. Only Search Results Page urls will
+  // be normalized for now; This is because SRP visits for the same search terms
+  // have slightly different URLs due to various query params such as the AQS.
+  url.mojom.Url normalized_url;
+
+  // String version of the URL suitable for display. This has been stripped of
+  // extraneous details like the scheme, and has IDN hostnames pre-converted.
+  // The actual URL formatting is similar to the omnibox popup.
+  string url_for_display;
+
+  // Title of the visited webpage.
+  string page_title;
+
+  // The positions within the `page_title` and `url_for_display` that match the
+  // search terms. Used for bolding in the WebUI.
+  array<MatchPosition> title_match_positions;
+  array<MatchPosition> url_for_display_match_positions;
+
+  // Raw visit data that's not displayed by the UI, but needed to do proper
+  // deletion. Visits with no duplicates will have an empty `duplicates` array.
+  RawVisitData raw_visit_data;
+  array<RawVisitData> duplicates;
+
+  // Localized string of approximate `last_visit_time`, e.g., "2 days ago".
+  string relative_date;
+
+  // Annotations for this visit.
+  array<Annotation> annotations;
+
+  // Whether a related visit is initially hidden.
+  bool hidden;
+
+  // A key-value dictionary of additional debug info to show. This is not
+  // visible in production, and used for development only. Disabled by default,
+  // but can be enabled by the 'JourneysUserVisibleDebug' flag.
+  map<string, string> debug_info;
+};
+
+// Represents a cluster of visits generated from device history by the browser
+// and displayed in chrome://history/journeys. Contains cluster-level metadata
+// (e.g., last_visit_time) derived from the metadata of constituent visits.
+struct Cluster {
+  // Cluster identifier. See //components/history/core/browser/history_types.h
+  int64 id;
+
+  // A flat list of all the visits in the cluster. The first one is the
+  // "top visit" if the UI needs to specially display a "top visit".
+  array<URLVisit> visits;
+
+  // An optional label for the whole cluster. If this is not defined or empty,
+  // the first visit should be displayed prominently instead.
+  string? label;
+
+  // The positions within `label` that match the search terms. Used for bolding
+  // in the WebUI.
+  array<MatchPosition> label_match_positions;
+
+  // Search queries related to this cluster's visits.
+  array<SearchQuery> related_searches;
+
+  // Additional debug string to show. This is not visible in production, and
+  // used for development only. Disabled by default, but can be enabled by the
+  // 'JourneysUserVisibleDebug' flag.
+  string? debug_info;
+};
+
+// Represents a set of Clusters returned by the browser in response to a request
+// for Clusters related to a given query or within a given timespan.
+struct QueryResult {
+  // The query string the Clusters were matched against.
+  string query;
+
+  // The Clusters in the result set in reverse chronological order. This is
+  // always non-zero length, unless `continuation_end_time` is also null,
+  // indicating that we have exhausted History.
+  array<history_clusters.mojom.Cluster> clusters;
+
+  // True if there is another page of clusters that the UI can request.
+  bool can_load_more;
+
+  // True if this result is in response to a "load more" continuation request.
+  bool is_continuation;
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Opens the history cluster specified by url
+  OpenHistoryCluster(url.mojom.Url url,
+      ui.mojom.ClickModifiers click_modifiers);
+
+  // The ClustersBrowserProxy singleton calls this when it's first initialized.
+  SetPage(pending_remote<Page> page);
+
+  // Shows a context menu for a history cluster item.
+  ShowContextMenuForURL(url.mojom.Url url, gfx.mojom.Point point);
+
+  // Notify the backend that the side panel UI is ready to be shown.
+  ShowSidePanelUI();
+
+  // Toggles the visibility of the History Clusters. The returned Promise echos
+  // the given value for `visible`. The page uses the returned value to update
+  // its state once the request is fulfilled by the browser.
+  ToggleVisibility(bool visible) => (bool visible);
+
+  // Queries for clusters matching `query`. If true, `recluster` forces
+  // reclustering as if `persist_clusters_in_history_db` were false.
+  StartQueryClusters(string query, bool recluster);
+
+  // Asks the service for more clusters. Call this when the user has scrolled
+  // to the bottom of the page. `query` is passed through for sanity checking.
+  LoadMoreClusters(string query);
+
+  // Requests to remove all visits to the specified URLs in the specified
+  // timespan in `visits`. This includes the less recent visits to the same set
+  // of URLs whose information is preserved in `visits`. The returned Promise
+  // resolves with whether the request succeeded in the History backend layer.
+  RemoveVisits(array<URLVisit> visits) => (bool success);
+
+  // Requests to open the URLs in `visits` in a new tab group.
+  OpenVisitUrlsInTabGroup(array<URLVisit> visits);
+
+  // Records visit actions.
+  RecordVisitAction(VisitAction visit_action,
+                    uint32 visit_index,
+                    VisitType visit_type);
+
+  // Records related search click action.
+  RecordRelatedSearchAction(RelatedSearchAction action, uint32 visit_index);
+
+  // Records cluster actions.
+  RecordClusterAction(ClusterAction cluster_action, uint32 cluster_index);
+
+  // Records that the journeys visibility was toggled.
+  RecordToggledVisibility(bool visible);
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Called with the results of the last call to `QueryClusters()`. `result`
+  // contains the freshest Clusters in reverse chronological order, along with
+  // continuation query params meant to be used in the follow-up request to load
+  // older Clusters.
+  OnClustersQueryResult(QueryResult result);
+
+  // Called with the set of removed visits when the last accepted call to
+  // `RemoveVisits()` succeeds. `removed_visits` will be used to update the UI.
+  OnVisitsRemoved(array<URLVisit> removed_visits);
+
+  // Called when History is deleted from a different tab.
+  OnHistoryDeleted();
+
+  // Called when the user needs to set `query` for the existing WebUI surface.
+  OnQueryChangedByUser(string query);
+};

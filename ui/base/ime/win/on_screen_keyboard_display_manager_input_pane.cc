@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/com_init_util.h"
@@ -25,6 +24,9 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
   explicit VirtualKeyboardInputPane(
       const scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : main_task_runner_(task_runner) {}
+
+  VirtualKeyboardInputPane(const VirtualKeyboardInputPane&) = delete;
+  VirtualKeyboardInputPane& operator=(const VirtualKeyboardInputPane&) = delete;
 
   void InitVirtualKeyboardInputPaneInstance(
       base::WeakPtr<OnScreenKeyboardDisplayManagerInputPane>
@@ -202,8 +204,6 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   base::WeakPtr<OnScreenKeyboardDisplayManagerInputPane>
       keyboard_input_pane_weak_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardInputPane);
 };
 
 OnScreenKeyboardDisplayManagerInputPane::

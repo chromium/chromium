@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,8 @@
 
 FocusTabAfterNavigationHelper::FocusTabAfterNavigationHelper(
     content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<FocusTabAfterNavigationHelper>(*contents) {}
 
 FocusTabAfterNavigationHelper::~FocusTabAfterNavigationHelper() = default;
 
@@ -47,7 +48,7 @@ bool FocusTabAfterNavigationHelper::ShouldFocusTabContents(
     return false;
 
   // Don't focus content after subframe navigations.
-  if (!navigation->IsInMainFrame())
+  if (!navigation->IsInPrimaryMainFrame())
     return false;
 
   // Browser-initiated navigations (e.g. typing in an omnibox) are taken care of
@@ -90,4 +91,4 @@ bool FocusTabAfterNavigationHelper::IsNtpURL(const GURL& url) {
   return search::IsNTPOrRelatedURL(url, profile);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FocusTabAfterNavigationHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FocusTabAfterNavigationHelper);

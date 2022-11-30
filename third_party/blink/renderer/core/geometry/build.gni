@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,3 +21,5 @@ blink_core_sources_geometry = [
   "dom_rect_read_only.h",
   "geometry_util.h",
 ]
+
+blink_core_tests_geometry = [ "dom_matrix_test.cc" ]

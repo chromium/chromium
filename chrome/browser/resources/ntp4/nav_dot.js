@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/cr/ui/drag_wrapper.m.js';
+import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 
 import {getCardSlider, saveAppPageName} from './new_tab.js';
 import {getCurrentlyDraggingTile, setCurrentDropEffect, TilePage} from './tile_page.js';
@@ -119,7 +119,7 @@ NavDot.prototype = {
    * @param {Event} e The KeyboardEvent.
    */
   onKeyDown_(e) {
-    if (e.key == 'Enter') {
+    if (e.key === 'Enter') {
       this.onClick_(e);
       e.stopPropagation();
     }
@@ -134,7 +134,7 @@ NavDot.prototype = {
     this.switchToPage();
     // The explicit focus call is necessary because of overriding the default
     // handling in onInputMouseDown_.
-    if (this.ownerDocument.activeElement != this.input_) {
+    if (this.ownerDocument.activeElement !== this.input_) {
       this.focus();
     }
 
@@ -160,7 +160,7 @@ NavDot.prototype = {
    * @private
    */
   onInputMouseDown_(e) {
-    if (this.ownerDocument.activeElement != this.input_) {
+    if (this.ownerDocument.activeElement !== this.input_) {
       e.preventDefault();
     }
   },
@@ -224,7 +224,7 @@ NavDot.prototype = {
   doDrop(e) {
     e.stopPropagation();
     const tile = getCurrentlyDraggingTile();
-    if (tile && tile.tilePage != this.page_) {
+    if (tile && tile.tilePage !== this.page_) {
       this.page_.appendDraggingTile();
     }
     // TODO(estade): handle non-tile drags.

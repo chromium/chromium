@@ -1,8 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-dictionary TextUpdateEventInit {
+// The initial parameters for the textupdate event.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#textupdateevent
+
+dictionary TextUpdateEventInit : EventInit {
     unsigned long updateRangeStart;
     unsigned long updateRangeEnd;
     DOMString updateText;

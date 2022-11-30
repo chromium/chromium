@@ -1,0 +1,40 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+
+assert(is_chromeos_ash)
+
+# Use this target for adding new unit tests. To add a unit test to this target,
+# create a "unit_tests" source_set in your service and add it as a dependency
+# here.
+#
+# Unit tests are generally preferred over service tests as they are simpler to
+# create and maintain. Check out service_manager::TestConnectorFactory for an
+# easy way to test your services.
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//ash:test_support",
+    "//chromeos/ash/services/assistant:tests",
+    "//chromeos/ash/services/bluetooth_config:unit_tests",
+    "//chromeos/ash/services/cellular_setup:unit_tests",
+    "//chromeos/ash/services/chromebox_for_meetings/public/cpp:unit_tests",
+    "//chromeos/ash/services/cros_healthd/private/cpp:unit_tests",
+    "//chromeos/ash/services/cros_healthd/public/cpp:unit_tests",
+    "//chromeos/ash/services/federated/public/cpp:unit_tests",
+    "//chromeos/ash/services/hotspot_config:unit_tests",
+    "//chromeos/ash/services/nearby/public/cpp:unit_tests",
+    "//chromeos/ash/services/quick_pair:unit_tests",
+    "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
+  ]
+
+  if (enable_cros_libassistant) {
+    deps += [
+      "//chromeos/ash/services/libassistant:unit_tests",
+      "//chromeos/ash/services/libassistant/grpc:unit_tests",
+    ]
+  }
+}

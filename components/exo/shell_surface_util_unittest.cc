@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/exo/shell_surface_util.h"
 
+#include "components/exo/buffer.h"
+#include "components/exo/display.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/exo_test_base.h"
@@ -66,7 +68,7 @@ TEST_F(ShellSurfaceUtilTest, TargetForKeyboardFocus) {
   auto* child_surface = test::ShellSurfaceBuilder::AddChildSurface(
       root_surface, {10, 10, 10, 10});
 
-  EXPECT_EQ(child_surface,
+  EXPECT_EQ(root_surface,
             GetTargetSurfaceForKeyboardFocus(child_surface->window()));
   EXPECT_EQ(root_surface,
             GetTargetSurfaceForKeyboardFocus(root_surface->window()));
@@ -74,6 +76,26 @@ TEST_F(ShellSurfaceUtilTest, TargetForKeyboardFocus) {
             GetTargetSurfaceForKeyboardFocus(shell_surface->host_window()));
   EXPECT_EQ(root_surface, GetTargetSurfaceForKeyboardFocus(
                               shell_surface->GetWidget()->GetNativeWindow()));
+}
+
+// No explicit verifications are needed for this test as this test just tries to
+// catch potential crashes.
+TEST_F(ShellSurfaceUtilTest, ClientControlledTargetForKeyboardFocus) {
+  Display display;
+  auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
+                           .BuildClientControlledShellSurface();
+
+  shell_surface->set_delegate(
+      std::make_unique<test::ClientControlledShellSurfaceDelegate>(
+          shell_surface.get(), true));
+  shell_surface->SetMinimized();
+  auto* surface = shell_surface->root_surface();
+  surface->Commit();
+
+  shell_surface->GetWidget()->Hide();
+  shell_surface->OnSurfaceCommit();
+
+  shell_surface->GetWidget()->GetNativeWindow()->Focus();
 }
 
 }  // namespace

@@ -1,3 +1,4 @@
+dom@chromium.org
 haraken@chromium.org
 
 per-file browser_exposed_child_interfaces.cc=set noparent

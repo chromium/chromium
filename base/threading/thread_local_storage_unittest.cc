@@ -1,21 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/threading/thread_local_storage.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#include <process.h>
-#endif
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#include <process.h>
 // Ignore warnings about ptr->int conversions that we use when
 // storing ints into ThreadLocalStorage.
 #pragma warning(disable : 4311 4312)
@@ -23,7 +20,7 @@
 
 namespace base {
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 namespace internal {
 
@@ -37,7 +34,7 @@ class ThreadLocalStorageTestInternal {
 
 }  // namespace internal
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace {
 
@@ -59,6 +56,9 @@ class ThreadLocalStorageRunner : public DelegateSimpleThread::Delegate {
   explicit ThreadLocalStorageRunner(int* tls_value_ptr)
       : tls_value_ptr_(tls_value_ptr) {}
 
+  ThreadLocalStorageRunner(const ThreadLocalStorageRunner&) = delete;
+  ThreadLocalStorageRunner& operator=(const ThreadLocalStorageRunner&) = delete;
+
   ~ThreadLocalStorageRunner() override = default;
 
   void Run() override {
@@ -78,15 +78,14 @@ class ThreadLocalStorageRunner : public DelegateSimpleThread::Delegate {
   }
 
  private:
-  int* tls_value_ptr_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalStorageRunner);
+  raw_ptr<int> tls_value_ptr_;
 };
 
 
 void ThreadLocalStorageCleanup(void *value) {
-  int *ptr = reinterpret_cast<int*>(value);
+  int *ptr = static_cast<int*>(value);
   // Destructors should never be called with a NULL.
-  ASSERT_NE(reinterpret_cast<int*>(NULL), ptr);
+  ASSERT_NE(nullptr, ptr);
   if (*ptr == kFinalTlsValue)
     return;  // We've been called enough times.
   ASSERT_LT(kFinalTlsValue, *ptr);
@@ -96,7 +95,7 @@ void ThreadLocalStorageCleanup(void *value) {
   TLSSlot().Set(value);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 constexpr intptr_t kDummyValue = 0xABCD;
 constexpr size_t kKeyCount = 20;
 
@@ -106,6 +105,10 @@ constexpr size_t kKeyCount = 20;
 class UseTLSDuringDestructionRunner {
  public:
   UseTLSDuringDestructionRunner() = default;
+
+  UseTLSDuringDestructionRunner(const UseTLSDuringDestructionRunner&) = delete;
+  UseTLSDuringDestructionRunner& operator=(
+      const UseTLSDuringDestructionRunner&) = delete;
 
   // The order in which pthread_key destructors are called is not well defined.
   // Hopefully, by creating 10 both before and after initializing TLS on the
@@ -134,7 +137,7 @@ class UseTLSDuringDestructionRunner {
  private:
   struct TLSState {
     pthread_key_t key;
-    bool* teardown_works_correctly;
+    raw_ptr<bool> teardown_works_correctly;
   };
 
   // The POSIX TLS destruction API takes as input a single C-function, which is
@@ -180,8 +183,6 @@ class UseTLSDuringDestructionRunner {
   static base::ThreadLocalStorage::Slot slot_;
   bool teardown_works_correctly_ = false;
   TLSState tls_states_[kKeyCount];
-
-  DISALLOW_COPY_AND_ASSIGN(UseTLSDuringDestructionRunner);
 };
 
 base::ThreadLocalStorage::Slot UseTLSDuringDestructionRunner::slot_;
@@ -193,7 +194,7 @@ void* UseTLSTestThreadRun(void* input) {
   return nullptr;
 }
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace
 
@@ -253,7 +254,7 @@ TEST(ThreadLocalStorageTest, TLSReclaim) {
   }
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Unlike POSIX, Windows does not iterate through the OS TLS to cleanup any
 // values there. Instead a per-module thread destruction function is called.
 // However, it is not possible to perform a check after this point (as the code
@@ -269,6 +270,6 @@ TEST(ThreadLocalStorageTest, UseTLSDuringDestruction) {
 
   EXPECT_TRUE(runner.teardown_works_correctly());
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace base

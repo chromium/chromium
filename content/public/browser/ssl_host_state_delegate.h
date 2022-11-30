@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 #define CONTENT_PUBLIC_BROWSER_SSL_HOST_STATE_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "net/cert/x509_certificate.h"
 
 namespace content {
 
-class WebContents;
+class StoragePartition;
 
 // The SSLHostStateDelegate encapulates the host-specific state for SSL errors.
 // For example, SSLHostStateDelegate remembers whether the user has whitelisted
@@ -47,7 +46,7 @@ class SSLHostStateDelegate {
   virtual void AllowCert(const std::string&,
                          const net::X509Certificate& cert,
                          int error,
-                         WebContents* web_contents) = 0;
+                         StoragePartition* storage_partition) = 0;
 
   // Clear allow preferences matched by |host_filter|. If the filter is null,
   // clear all preferences.
@@ -58,7 +57,7 @@ class SSLHostStateDelegate {
   virtual CertJudgment QueryPolicy(const std::string& host,
                                    const net::X509Certificate& cert,
                                    int error,
-                                   WebContents* web_contents) = 0;
+                                   StoragePartition* storage_partition) = 0;
 
   // Records that a host has run insecure content of the given |content_type|.
   virtual void HostRanInsecureContent(const std::string& host,
@@ -71,16 +70,26 @@ class SSLHostStateDelegate {
                                          int child_id,
                                          InsecureContentType content_type) = 0;
 
+  // Allowlists site so it can be loaded over HTTP when HTTPS-First Mode is
+  // enabled.
+  virtual void AllowHttpForHost(const std::string& host,
+                                StoragePartition* storage_partition) = 0;
+
+  // Returns whether site is allowed to load over HTTP when HTTPS-First Mode is
+  // enabled.
+  virtual bool IsHttpAllowedForHost(const std::string& host,
+                                    StoragePartition* storage_partition) = 0;
+
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
   virtual void RevokeUserAllowExceptions(const std::string& host) = 0;
 
-  // Returns whether the user has allowed a certificate error exception for
-  // |host|. This does not mean that *all* certificate errors are allowed, just
-  // that there exists an exception. To see if a particular certificate and
-  // error combination exception is allowed, use QueryPolicy().
+  // Returns whether the user has allowed a certificate error exception or
+  // HTTP exception for |host|. This does not mean that *all* certificate errors
+  // are allowed, just that there exists an exception. To see if a particular
+  // certificate and error combination exception is allowed, use QueryPolicy().
   virtual bool HasAllowException(const std::string& host,
-                                 WebContents* web_contents) = 0;
+                                 StoragePartition* storage_partition) = 0;
 
  protected:
   virtual ~SSLHostStateDelegate() {}

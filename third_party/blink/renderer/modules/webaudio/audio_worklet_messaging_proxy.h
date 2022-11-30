@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,13 +63,14 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
   WorkerThread* GetBackingWorkerThread();
 
   // Create a Worklet backing thread based on constraints:
-  // 1. AudioContext && top-level frame (or RT thread flag): RT priority thread
+  // 1. AudioContext && outermost main frame (or RT thread flag): RT priority
+  // thread
   // 2. AudioContext && sub frame: DISPLAY priority thread
   // 3. OfflineAudioContext: BACKGROUND priority thread
   static std::unique_ptr<WorkerThread> CreateWorkletThreadWithConstraints(
       WorkerReportingProxy&,
       const bool has_realtime_constraint,
-      const bool is_top_level_frame);
+      const bool is_outermost_main_frame);
 
   void Trace(Visitor*) const override;
 

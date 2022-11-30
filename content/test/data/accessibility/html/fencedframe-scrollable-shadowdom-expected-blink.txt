@@ -1,0 +1,15 @@
+rootWebArea scrollable=true
+++genericContainer ignored
+++++genericContainer
+++++++group name='Scrollable iframe'
+++++++++iframe
+++++++++++rootWebArea scrollable=true
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='visible text'
+++++++++++++++++++++inlineTextBox name='visible text'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='hidden from viewport'
+++++++++++++++++++++inlineTextBox name='hidden from viewport'

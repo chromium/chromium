@@ -4,7 +4,6 @@
 <translation id="130631256467250065">Endringene trer i kraft neste gang du starter enheten på nytt.</translation>
 <translation id="275588974610408078">Krasjrapportering er ikke tilgjengelig i Chromium.</translation>
 <translation id="3064346599913645280">Du ser på en sikker Chromium-side</translation>
-<translation id="3550966579244642892">Chromium OS har ikke vært gjennom den innledende konfigurasjonen.</translation>
 <translation id="358997566136285270">Chromium-logo</translation>
 <translation id="4365115785552740256">Chromium er gjort mulig av åpen kilde-prosjektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annen <ph name="BEGIN_LINK_OSS" />åpen kilde-programvare<ph name="END_LINK_OSS" />.</translation>
 <translation id="4559775032954821361">Gå til
@@ -20,6 +19,7 @@
 <translation id="4622039161600275920">Denne siden er blokkert av Chromium</translation>
 <translation id="48558539577516920">Tillat at Chromium bruker nettverket, i brannmur- eller
           antivirusinnstillingene dine.</translation>
+<translation id="4918837013875648434">ChromiumOS har ikke vært gjennom den innledende konfigurasjonen.</translation>
 <translation id="580822234363523061">Gå til
           Chromium-menyen &gt;
           <ph name="SETTINGS_TITLE" />

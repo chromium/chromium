@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,8 @@ void AwContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->local_schemes.push_back(url::kContentScheme);
   schemes->secure_schemes.push_back(
       android_webview::kAndroidWebViewVideoPosterScheme);
+  schemes->csp_bypassing_schemes.push_back(
+      android_webview::kAndroidWebViewVideoPosterScheme);
   schemes->allow_non_standard_schemes_in_origins = true;
 }
 
@@ -44,7 +46,7 @@ std::u16string AwContentClient::GetLocalizedString(int message_id) {
 
 base::StringPiece AwContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   // TODO(boliu): Used only by WebKit, so only bundle those resources for
   // Android WebView.
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
@@ -53,6 +55,11 @@ base::StringPiece AwContentClient::GetDataResource(
 
 base::RefCountedMemory* AwContentClient::GetDataResourceBytes(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+      resource_id);
+}
+
+std::string AwContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       resource_id);
 }
 
@@ -75,7 +82,7 @@ void AwContentClient::ExposeInterfacesToBrowser(
   // This creates a process-wide heap_profiling::ProfilingClient that listens
   // for requests from the HeapProfilingService to start profiling the current
   // process.
-  binders->Add(
+  binders->Add<heap_profiling::mojom::ProfilingClient>(
       base::BindRepeating(
           [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
                  receiver) {

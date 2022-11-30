@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,32 +6,42 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 // Up to 10 minutes, with 100 buckets.
-#define PAGE_LOAD_HISTOGRAM(name, sample)                           \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                          \
-                             base::TimeDelta::FromMilliseconds(10), \
-                             base::TimeDelta::FromMinutes(10), 100)
+#define PAGE_LOAD_HISTOGRAM(name, sample)                          \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Minutes(10), 100)
 
 // Up to 1 hour, with 100 buckets.
-#define PAGE_LOAD_LONG_HISTOGRAM(name, sample)                      \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                          \
-                             base::TimeDelta::FromMilliseconds(10), \
-                             base::TimeDelta::FromHours(1), 100)
+#define PAGE_LOAD_LONG_HISTOGRAM(name, sample)                     \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Hours(1), 100)
 
 // Records |bytes| to |histogram_name| in kilobytes (i.e., bytes / 1024).
 #define PAGE_BYTES_HISTOGRAM(histogram_name, bytes) \
   UMA_HISTOGRAM_CUSTOM_COUNTS(                      \
       histogram_name, static_cast<int>((bytes) / 1024), 1, 500 * 1024, 50)
 
+// Up to 1 minute with 50 buckets.
+#define INPUT_DELAY_HISTOGRAM(name, sample)                       \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Seconds(60), 50)
+
 #define PAGE_RESOURCE_COUNT_HISTOGRAM UMA_HISTOGRAM_COUNTS_10000
 
 namespace page_load_metrics {
+
+class PageLoadMetricsObserverDelegate;
+
+namespace mojom {
+class PageLoadTiming;
+}
 
 // Reasons a page load can be aborted.
 enum PageAbortReason {
@@ -89,6 +99,12 @@ struct PageAbortInfo {
   const base::TimeDelta time_to_abort;
 };
 
+// UMA histogram function for logging the max cumulative shift score. Adjusts
+// the layout shift score to 10000x for better bucketing at the low end in UMA.
+void UmaMaxCumulativeShiftScoreHistogram10000x(
+    const std::string& name,
+    const page_load_metrics::NormalizedCLSData& normalized_cls_data);
+
 // Returns true if:
 // - We have timing information for the event.
 // - The page load started while the page was in the foreground.
@@ -100,11 +116,20 @@ struct PageAbortInfo {
 // consider the event to be logged in the foreground histogram since any
 // background specific handling would not yet have been applied to that event.
 bool WasStartedInForegroundOptionalEventInForeground(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
+    const PageLoadMetricsObserverDelegate& delegate);
+
+// Returns true if:
+// - We have timing information for the event.
+// - The page load was prerendered, and was later activated by a navigation that
+//   started in the foreground.
+// - The event occurred prior to the page being moved to the background.
+bool WasActivatedInForegroundOptionalEventInForeground(
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate);
 
 bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate,
     size_t index);
 
@@ -114,12 +139,52 @@ bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore
 // - Moved to the foreground prior to the event.
 // - Not moved back to the background prior to the event.
 bool WasStartedInBackgroundOptionalEventInForeground(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate);
 
 // Returns true if |delegate| started in the foreground or became foregrounded
 // at some point in time.
 bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate);
+
+// Returns (navigation start origined) "non prerendering background start" if
+// it exists, or nullopt. Here, "non prerendering background start" is the
+// minimum timing `x` satisfying:
+//
+// - The page is background at `x`; and
+// - `x` as TimeDelta is greater than or equal to navigation start (resp.
+//   activation start) if the page is not prerendered (resp. is prerendered).
+//
+// Note that this can be different from the return value of
+// `PageLoadMetricsObserverDelegate::GetTimeToFirstBackground`.
+absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
+    const PageLoadMetricsObserverDelegate& delegate);
+
+// Returns true iff event occurred in prerendered before activation or before
+// background start.
+//
+// Precondition: `HasInvalidActivationStart` must not hold.
+// In this case, arbitrary value will be returned.
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event);
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event);
+
+// Corrects an event with navigation start origin as navigation/activation
+// start origin.
+//
+// If the page is not prerendered, returns the event as is. If the page is
+// prerendered, returns activation start origined time delta. Negative values
+// are truncated as zero.
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event);
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event);
 
 PageAbortInfo GetPageAbortInfo(const PageLoadMetricsObserverDelegate& delegate);
 
@@ -131,7 +196,7 @@ PageAbortInfo GetPageAbortInfo(const PageLoadMetricsObserverDelegate& delegate);
 // * the render process hosting the page goes away
 // * a new navigation which later commits is initiated in the same tab
 // * the tab hosting the page is backgrounded
-base::Optional<base::TimeDelta> GetInitialForegroundDuration(
+absl::optional<base::TimeDelta> GetInitialForegroundDuration(
     const PageLoadMetricsObserverDelegate& delegate,
     base::TimeTicks app_background_time);
 
@@ -180,6 +245,21 @@ int64_t LayoutShiftUkmValue(float shift_score);
 
 // Adjusts the layout shift score for UMA.
 int32_t LayoutShiftUmaValue(float shift_score);
+
+// Adjusts the layout shift score to 10000x for better bucketing at the low end
+// in UMA.
+int32_t LayoutShiftUmaValue10000(float shift_score);
+
+// Helper function that determines the final status for a page visit for a given
+// PageLoadTiming, records it to the appropriate UKM metric and UMA histogram,
+// and returns the status in case the caller needs to use it elsewhere.
+// A 'Page Visit' is a user perceived visit to a page, regardless of how the
+// page was navigated to. See the UserPerceivedPageVisit event in
+// tools/metrics/ukm.xml.
+PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const PageLoadMetricsObserverDelegate& delegate,
+    ukm::SourceId source_id);
 
 }  // namespace page_load_metrics
 

@@ -16,3 +16,44 @@
         margin-top: 15px !important;
     }
 }
+
+#parent-div {
+    width: 100px;
+    container-type: size;
+}
+
+@container (min-width: 50px) {
+    #inspected {
+        padding-right: 10px;
+    }
+}
+
+@supports (display: grid) or (display: inline-grid) {
+    #inspected {
+        display: grid;
+    }
+}
+
+@layer base {
+    #inspected {
+        background-color: blue;
+    }
+    @layer nested {
+        body {
+            background-color: green;
+        }
+    }
+}
+
+
+@scope (html) {
+    #inspected {
+        color: red;
+    }
+}
+
+@scope (html) to (.child-div) {
+    #inspected {
+      color: lightcyan;
+    }
+  }

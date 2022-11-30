@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,13 @@ extern const char kLibchromettsPath[];
 
 // The location of read-write text-to-speech data.
 extern const char kTempDataDirectory[];
+
+// Default sample rate for audio playback.
+extern const int kDefaultSampleRate;
+
+// Default buffer size for audio playback.
+extern const int kDefaultBufferSize;
+
 }  // namespace tts
 }  // namespace chromeos
 

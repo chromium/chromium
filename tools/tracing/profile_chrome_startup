@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+#
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""
+This executable script runs perfetto traces on the specified device.
+See the README.md file for more information.
+"""
+
+import os
+import sys
+import optparse
+
+import adb_profile_chrome_startup
+import symbolize_trace
+import flag_utils
+import display_in_browser
+
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__),
+                                os.pardir, os.pardir, 'third_party',
+                                'catapult', 'systrace'))
+
+from systrace import util
+from profile_chrome import chrome_startup_tracing_agent
+
+
+def _CreateOptionParser():
+  parser = optparse.OptionParser(description='Record Perfetto tracing profiles '
+                                 'from Android browsers startup. See '
+                                 'http://dev.chromium.org'
+                                 '/developers/how-tos/trace-event-profiling-'
+                                 'tool for detailed instructions for '
+                                 'profiling.', usage='%prog [options]',
+                                prog='tools/tracing/profile_chrome_startup',
+                                conflict_handler='resolve')
+
+  parser.add_option_group(flag_utils.GeneralOptions(parser))
+  parser.add_option_group(flag_utils.ProfileOptions(parser))
+  parser.add_option_group(chrome_startup_tracing_agent.add_options(parser))
+  parser.add_option_group(flag_utils.SymbolizeOptions(parser))
+
+  return parser
+
+
+def _SetupFlags(options):
+  flag_utils.SetupLogging(options.verbosity)
+  flag_utils.SetupProfilingCategories(options)
+
+
+def main():
+  parser = _CreateOptionParser()
+  options, _ = parser.parse_args()
+
+  _SetupFlags(options)
+
+  # Run Tracing
+  trace_file = None
+  if options.platform.lower() == 'android':
+    # TODO(crbug/1239748): Fix manual tracing. Setting flag --time=0 stalls and fails
+    # to download the collected trace.
+    trace_file = adb_profile_chrome_startup.ProfileChrome(options)
+  else:
+    raise Exception('Platform "%s" is not supported. '
+                    'Specify platform with the --platform flag.'
+                    % (options.platform))
+
+  print('Wrote unsymbolized trace to {path}'.format(
+          path=os.path.abspath(trace_file)))
+
+  # Symbolize Trace
+  if not options.skip_symbolize:
+    if options.trace_format is None or options.trace_format.lower() != 'proto':
+      raise Exception('Symbolization is currently only supported for protos.')
+    symbolize_trace.SymbolizeTrace(trace_file=trace_file, options=options)
+
+  if options.view:
+    trace = options.output_file
+    if not trace or not os.path.isfile(trace):
+      trace = trace_file
+
+    if trace and os.path.isfile(trace):
+      display_in_browser.DisplayInBrowser(trace, options.trace_format)
+    else:
+      flag_utils.GetTraceLogger().warning(
+          'Trace is not found, so not opening in browser.')
+
+if __name__ == '__main__':
+  sys.exit(main())

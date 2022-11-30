@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,10 @@ class DiscardBeforeUnloadHelper : public content::WebContentsObserver {
   static void HasBeforeUnloadHandler(content::WebContents* contents,
                                      HasBeforeUnloadHandlerCallback&& callback);
 
+  DiscardBeforeUnloadHelper(const DiscardBeforeUnloadHelper&) = delete;
+  DiscardBeforeUnloadHelper& operator=(const DiscardBeforeUnloadHelper&) =
+      delete;
+
   ~DiscardBeforeUnloadHelper() override;
 
  private:
@@ -55,8 +59,6 @@ class DiscardBeforeUnloadHelper : public content::WebContentsObserver {
   std::unique_ptr<DiscardBeforeUnloadHelper> self_;
 
   HasBeforeUnloadHandlerCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardBeforeUnloadHelper);
 };
 
 void DiscardBeforeUnloadHelper::HasBeforeUnloadHandler(

@@ -1,12 +1,11 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
 
-from . import model, modification, test_common, test_config
-
-mock = test_common.import_mock()
+from . import model, modification, test_config
 
 
 def plist_read(*args):
@@ -19,10 +18,6 @@ def plist_read(*args):
             'KSProductID': 'test.ksproduct',
             'KSChannelID-full': '-full',
         },
-        '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/XPCServices/AlertNotificationService.xpc/Contents/Info.plist':
-            {
-                'CFBundleIdentifier': bundle_id + '.AlertNotificationService'
-            },
         '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Info.plist':
             {
                 'CFBundleIdentifier': bundle_id + '.AlertNotificationService'
@@ -414,15 +409,8 @@ class TestModification(unittest.TestCase):
         kwargs['write_file'].assert_called_once_with(
             '/$W/App Product Canary.app/Contents/PkgInfo', 'APPLMooo')
 
-        self.assertEqual(9, kwargs['write_plist'].call_count)
+        self.assertEqual(8, kwargs['write_plist'].call_count)
         kwargs['write_plist'].assert_has_calls([
-            mock.call(
-                {
-                    'CFBundleIdentifier':
-                        'test.signing.bundle_id.canary.AlertNotificationService'
-                },
-                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/XPCServices/AlertNotificationService.xpc/Contents/Info.plist',
-                'xml1'),
             mock.call(
                 {
                     'CFBundleIdentifier':
@@ -461,3 +449,89 @@ class TestModification(unittest.TestCase):
         ])
 
         self.assertFalse(self._is_framework_unchanged(kwargs))
+
+    def test_get_task_allow_no_channel_customize(self, read_plist, **kwargs):
+        dist = model.Distribution()
+        self.config = test_config.TestConfigInjectGetTaskAllow()
+        config = dist.to_config(self.config)
+
+        modification.customize_distribution(self.paths, dist, config)
+
+        self.assertEqual(5, kwargs['write_plist'].call_count)
+        kwargs['write_plist'].assert_has_calls([
+            mock.call(
+                {
+                    'CFBundleDisplayName': 'Product',
+                    'CFBundleIdentifier': config.base_bundle_id,
+                    'CFBundleName': 'Product',
+                    'KSProductID': 'test.ksproduct',
+                    'KSChannelID-full': '-full'
+                }, '/$W/App Product.app/Contents/Info.plist', 'xml1'),
+            mock.call(
+                {
+                    'com.apple.security.get-task-allow': True,
+                    'com.apple.application-identifier': config.base_bundle_id
+                }, '/$W/app-entitlements.plist', 'xml1'),
+            mock.call({'com.apple.security.get-task-allow': True},
+                      '/$W/helper-gpu-entitlements.plist', 'xml1'),
+            mock.call({'com.apple.security.get-task-allow': True},
+                      '/$W/helper-plugin-entitlements.plist', 'xml1'),
+            mock.call({'com.apple.security.get-task-allow': True},
+                      '/$W/helper-renderer-entitlements.plist', 'xml1'),
+        ])
+
+    def test_get_task_allow_customize_channel(self, read_plist, **kwargs):
+        dist = model.Distribution(
+            channel='canary',
+            app_name_fragment='Canary',
+            product_dirname='Acme/Product Canary',
+            creator_code='Mooo',
+            channel_customize=True)
+        self.config = test_config.TestConfigInjectGetTaskAllow()
+        config = dist.to_config(self.config)
+
+        modification.customize_distribution(self.paths, dist, config)
+
+        self.assertEqual(8, kwargs['write_plist'].call_count)
+        kwargs['write_plist'].assert_has_calls([
+            mock.call(
+                {
+                    'CFBundleIdentifier':
+                        'test.signing.bundle_id.canary.AlertNotificationService'
+                },
+                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Info.plist',
+                'xml1'),
+            mock.call({
+                'CFBundleDisplayName': 'Product Canary'
+            }, '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Resources/base.lproj/InfoPlist.strings',
+                      'binary1'),
+            mock.call(
+                {
+                    'CFBundleDisplayName': 'Product Canary',
+                    'CFBundleIdentifier': config.base_bundle_id,
+                    'CFBundleExecutable': config.app_product,
+                    'CFBundleName': 'Product Canary',
+                    'KSProductID': 'test.ksproduct.canary',
+                    'KSChannelID': 'canary',
+                    'KSChannelID-full': 'canary-full',
+                    'CrProductDirName': 'Acme/Product Canary',
+                    'CFBundleSignature': 'Mooo'
+                }, '/$W/App Product Canary.app/Contents/Info.plist', 'xml1'),
+            mock.call(
+                {
+                    'com.apple.security.get-task-allow':
+                        True,
+                    'com.apple.application-identifier':
+                        'test.signing.bundle_id.canary'
+                }, '/$W/app-entitlements.plist', 'xml1'),
+            mock.call({'com.apple.security.get-task-allow': True},
+                      '/$W/helper-gpu-entitlements.plist', 'xml1'),
+            mock.call({'com.apple.security.get-task-allow': True},
+                      '/$W/helper-plugin-entitlements.plist', 'xml1'),
+            mock.call({'com.apple.security.get-task-allow': True},
+                      '/$W/helper-renderer-entitlements.plist', 'xml1'),
+            mock.call({
+                'pfm_domain': 'test.signing.bundle_id.canary'
+            }, '/$W/App Product Canary.app/Contents/Resources/test.signing.bundle_id.canary.manifest/Contents/Resources/test.signing.bundle_id.canary.manifest',
+                      'xml1')
+        ])

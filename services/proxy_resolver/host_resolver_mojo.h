@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,16 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "net/dns/host_cache.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"
+#include "services/proxy_resolver/proxy_host_resolver_cache.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace proxy_resolver {
@@ -32,32 +32,35 @@ class HostResolverMojo : public ProxyHostResolver {
     virtual void ResolveDns(
         const std::string& hostname,
         net::ProxyResolveDnsOperation operation,
-        const net::NetworkIsolationKey& network_isolation_key,
+        const net::NetworkAnonymizationKey& network_anonymization_key,
         mojo::PendingRemote<mojom::HostResolverRequestClient> client) = 0;
   };
 
   // |impl| must outlive |this|.
   explicit HostResolverMojo(Impl* impl);
+
+  HostResolverMojo(const HostResolverMojo&) = delete;
+  HostResolverMojo& operator=(const HostResolverMojo&) = delete;
+
   ~HostResolverMojo() override;
 
   // ProxyHostResolver overrides.
   std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkIsolationKey& network_isolation_key) override;
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   class Job;
   class RequestImpl;
 
-  Impl* const impl_;
+  const raw_ptr<Impl> impl_;
 
-  std::unique_ptr<net::HostCache> host_cache_;
-  base::WeakPtrFactory<net::HostCache> host_cache_weak_factory_;
+  ProxyHostResolverCache host_cache_;
+  base::WeakPtrFactory<ProxyHostResolverCache> host_cache_weak_factory_{
+      &host_cache_};
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolverMojo);
 };
 
 }  // namespace proxy_resolver

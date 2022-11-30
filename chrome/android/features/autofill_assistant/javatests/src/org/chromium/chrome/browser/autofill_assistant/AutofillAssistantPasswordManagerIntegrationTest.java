@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,30 +13,31 @@ import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addSetValueSteps;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.GeneratePasswordForFormFieldProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.PasswordManagerValue;
+import org.chromium.chrome.browser.autofill_assistant.proto.PasswordManagerValue.CredentialType;
 import org.chromium.chrome.browser.autofill_assistant.proto.PresaveGeneratedPasswordProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SaveGeneratedPasswordProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.TextValue;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordChangeLauncher;
-import org.chromium.chrome.browser.password_manager.PasswordManagerClientBridgeForTesting;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -50,35 +51,14 @@ import java.util.Collections;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantPasswordManagerIntegrationTest {
-    @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "form_target_website.html";
+    @Rule
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(
+            new AutofillAssistantCustomTabTestRule(mTestRule, "form_target_website.html"));
 
     private WebContents getWebContents() {
         return mTestRule.getWebContents();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(
-                AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
-                        mTestRule.getTestServer().getURL(TEST_PAGE),
-                        /* startImmediately = */ true));
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PasswordManagerClientBridgeForTesting.setLeakDialogWasShownForTesting(
-                                getWebContents(), true));
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PasswordManagerClientBridgeForTesting.setLeakDialogWasShownForTesting(
-                                getWebContents(), false));
     }
 
     /**
@@ -91,7 +71,26 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> PasswordChangeLauncher.start(getWebContents().getTopLevelNativeWindow(),
-                                getWebContents().getLastCommittedUrl(), username));
+                                getWebContents().getLastCommittedUrl(), username,
+                                /*skipLogin=*/false));
+    }
+
+    private static TextValue buildUsernameValue() {
+        return TextValue.newBuilder()
+                .setPasswordManagerValue(PasswordManagerValue.newBuilder().setCredentialType(
+                        CredentialType.USERNAME))
+                .build();
+    }
+
+    private static TextValue buildPasswordValue() {
+        return TextValue.newBuilder()
+                .setPasswordManagerValue(PasswordManagerValue.newBuilder().setCredentialType(
+                        CredentialType.PASSWORD))
+                .build();
+    }
+
+    private static TextValue buildClientMemoryValue(String clientMemoryKey) {
+        return TextValue.newBuilder().setClientMemoryKey(clientMemoryKey).build();
     }
 
     /**
@@ -104,82 +103,49 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         // Sets username
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
-                                                           .setUseUsername(true))
-                                         .setElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#username"))))
-                         .build());
+        addSetValueSteps(toCssSelector("#username"), buildUsernameValue(), list);
         // Generates new password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setGeneratePasswordForFormField(
                                  GeneratePasswordForFormFieldProto.newBuilder()
                                          .setMemoryKey("memory-key")
-                                         .setElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#new-password"))))
+                                         .setElement(toCssSelector("#new-password")))
                          .build());
 
         // Presaves generated password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPresaveGeneratedPassword(
                                  PresaveGeneratedPasswordProto.newBuilder().setMemoryKey(
                                          "memory-key"))
                          .build());
 
         // Sets new password
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
-                                                           .setClientMemoryKey("memory-key"))
-                                         .setElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#new-password"))))
-                         .build());
+        addSetValueSteps(
+                toCssSelector("#new-password"), buildClientMemoryValue("memory-key"), list);
 
         // Sets password confirmation
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
-                                                           .setClientMemoryKey("memory-key"))
-                                         .setElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#password-conf"))))
-                         .build());
+        addSetValueSteps(
+                toCssSelector("#password-conf"), buildClientMemoryValue("memory-key"), list);
 
         // Saves generated password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSaveGeneratedPassword(
                                  SaveGeneratedPasswordProto.newBuilder().setMemoryKey("memory-key"))
                          .build());
 
         // Fills login password field with saved password
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
-                                                           .setUsePassword(true))
-                                         .setElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#login-password"))))
-                         .build());
+        addSetValueSteps(toCssSelector("#login-password"), buildPasswordValue(), list);
 
         // Shows prompt
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Password generation")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 

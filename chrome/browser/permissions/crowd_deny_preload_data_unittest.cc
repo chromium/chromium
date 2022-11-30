@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,10 @@ class CrowdDenyPreloadDataTest : public testing::Test {
   using SiteReputation = chrome_browser_crowd_deny::SiteReputation;
 
   CrowdDenyPreloadDataTest() {}
+
+  CrowdDenyPreloadDataTest(const CrowdDenyPreloadDataTest&) = delete;
+  CrowdDenyPreloadDataTest& operator=(const CrowdDenyPreloadDataTest&) = delete;
+
   ~CrowdDenyPreloadDataTest() override = default;
 
  protected:
@@ -139,8 +143,6 @@ class CrowdDenyPreloadDataTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
   CrowdDenyPreloadData preload_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrowdDenyPreloadDataTest);
 };
 
 TEST_F(CrowdDenyPreloadDataTest, NoData) {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kOobeErrorScreensCounterPrefix[] = "OOBE.NetworkErrorShown.";
@@ -61,8 +60,8 @@ void StoreTimeOnErrorScreenToHistogram(const std::string& screen_name,
   // This comes from UMA_HISTOGRAM_MEDIUM_TIMES macros. Can't use it because of
   // non const histogram name.
   base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
-      histogram_name, base::TimeDelta::FromMilliseconds(kTimeMinInMS),
-      base::TimeDelta::FromMinutes(kTimeMaxInMinutes), kTimeBucketCount,
+      histogram_name, base::Milliseconds(kTimeMinInMS),
+      base::Minutes(kTimeMaxInMinutes), kTimeBucketCount,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 
   histogram->AddTime(time_delta);
@@ -119,4 +118,4 @@ ErrorScreensHistogramHelper::~ErrorScreensHistogramHelper() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

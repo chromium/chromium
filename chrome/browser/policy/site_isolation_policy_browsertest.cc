@@ -1,17 +1,16 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/stl_util.h"
+#include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -24,11 +23,18 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "url/gurl.h"
 
-class SiteIsolationPolicyBrowserTest : public InProcessBrowserTest {
+class SiteIsolationPolicyBrowserTest : public PlatformBrowserTest {
+ public:
+  SiteIsolationPolicyBrowserTest(const SiteIsolationPolicyBrowserTest&) =
+      delete;
+  SiteIsolationPolicyBrowserTest& operator=(
+      const SiteIsolationPolicyBrowserTest&) = delete;
+
  protected:
-  SiteIsolationPolicyBrowserTest() {}
+  SiteIsolationPolicyBrowserTest() = default;
 
   struct Expectations {
     const char* url;
@@ -36,7 +42,7 @@ class SiteIsolationPolicyBrowserTest : public InProcessBrowserTest {
   };
 
   void CheckExpectations(Expectations* expectations, size_t count) {
-    content::BrowserContext* context = browser()->profile();
+    content::BrowserContext* context = chrome_test_utils::GetProfile(this);
     for (size_t i = 0; i < count; ++i) {
       const GURL url(expectations[i].url);
       auto instance = content::SiteInstance::CreateForURL(context, url);
@@ -61,15 +67,18 @@ class SiteIsolationPolicyBrowserTest : public InProcessBrowserTest {
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SiteIsolationPolicyBrowserTest);
 };
 
 template <bool policy_value>
 class SitePerProcessPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
+ public:
+  SitePerProcessPolicyBrowserTest(const SitePerProcessPolicyBrowserTest&) =
+      delete;
+  SitePerProcessPolicyBrowserTest& operator=(
+      const SitePerProcessPolicyBrowserTest&) = delete;
+
  protected:
-  SitePerProcessPolicyBrowserTest() {}
+  SitePerProcessPolicyBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     // We setup the policy here, because the policy must be 'live' before
@@ -77,15 +86,14 @@ class SitePerProcessPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
     // to the renderer via a command-line. Setting the policy in the test
     // itself or in SetUpOnMainThread works for update-able policies, but
     // is too late for this one.
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     policy::PolicyMap values;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const char* kPolicyName = policy::key::kSitePerProcessAndroid;
 #else
     const char* kPolicyName = policy::key::kSitePerProcess;
@@ -95,9 +103,6 @@ class SitePerProcessPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
                base::Value(policy_value), nullptr);
     provider_.UpdateChromePolicy(values);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessPolicyBrowserTest);
 };
 
 typedef SitePerProcessPolicyBrowserTest<true>
@@ -105,9 +110,46 @@ typedef SitePerProcessPolicyBrowserTest<true>
 typedef SitePerProcessPolicyBrowserTest<false>
     SitePerProcessPolicyBrowserTestDisabled;
 
-class IsolateOriginsPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
+// Ensure that --disable-site-isolation-trials and/or
+// --disable-site-isolation-for-enterprise-policy do not override policies.
+class NoOverrideSitePerProcessPolicyBrowserTest
+    : public SitePerProcessPolicyBrowserTestEnabled {
+ public:
+  NoOverrideSitePerProcessPolicyBrowserTest(
+      const NoOverrideSitePerProcessPolicyBrowserTest&) = delete;
+  NoOverrideSitePerProcessPolicyBrowserTest& operator=(
+      const NoOverrideSitePerProcessPolicyBrowserTest&) = delete;
+
  protected:
-  IsolateOriginsPolicyBrowserTest() {}
+  NoOverrideSitePerProcessPolicyBrowserTest() = default;
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+#if BUILDFLAG(IS_ANDROID)
+    command_line->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
+#endif
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestEnabled, Simple) {
+  Expectations expectations[] = {
+      {"https://foo.com/noodles.html", true},
+      {"http://foo.com/", true},
+      {"http://example.org/pumpkins.html", true},
+  };
+  CheckExpectations(expectations, std::size(expectations));
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+// The policy is not supported on Android
+class IsolateOriginsPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
+ public:
+  IsolateOriginsPolicyBrowserTest(const IsolateOriginsPolicyBrowserTest&) =
+      delete;
+  IsolateOriginsPolicyBrowserTest& operator=(
+      const IsolateOriginsPolicyBrowserTest&) = delete;
+
+ protected:
+  IsolateOriginsPolicyBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     // We setup the policy here, because the policy must be 'live' before
@@ -115,10 +157,9 @@ class IsolateOriginsPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
     // to the renderer via a command-line. Setting the policy in the test
     // itself or in SetUpOnMainThread works for update-able policies, but
     // is too late for this one.
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     policy::PolicyMap values;
@@ -129,36 +170,7 @@ class IsolateOriginsPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
         nullptr);
     provider_.UpdateChromePolicy(values);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolateOriginsPolicyBrowserTest);
 };
-
-// Ensure that --disable-site-isolation-trials and/or
-// --disable-site-isolation-for-enterprise-policy do not override policies.
-class NoOverrideSitePerProcessPolicyBrowserTest
-    : public SitePerProcessPolicyBrowserTestEnabled {
- protected:
-  NoOverrideSitePerProcessPolicyBrowserTest() {}
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kDisableSiteIsolation);
-#if defined(OS_ANDROID)
-    command_line->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
-#endif
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoOverrideSitePerProcessPolicyBrowserTest);
-};
-
-IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestEnabled, Simple) {
-  Expectations expectations[] = {
-      {"https://foo.com/noodles.html", true},
-      {"http://foo.com/", true},
-      {"http://example.org/pumpkins.html", true},
-  };
-  CheckExpectations(expectations, base::size(expectations));
-}
 
 IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
   // Verify that the policy present at browser startup is correctly applied.
@@ -168,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
       {"https://policy1.example.org/pumpkins.html", true},
       {"http://policy2.example.com/index.php", true},
   };
-  CheckIsolatedOriginExpectations(expectations, base::size(expectations));
+  CheckIsolatedOriginExpectations(expectations, std::size(expectations));
 
   // Simulate updating the policy at "browser runtime".
   policy::PolicyMap values;
@@ -192,15 +204,16 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
       {"https://policy3.example.org/pumpkins.html", true},
       {"http://policy4.example.com/index.php", true},
   };
-  CheckIsolatedOriginExpectations(expectations2, base::size(expectations2));
+  CheckIsolatedOriginExpectations(expectations2, std::size(expectations2));
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(NoOverrideSitePerProcessPolicyBrowserTest, Simple) {
   Expectations expectations[] = {
       {"https://foo.com/noodles.html", true},
       {"http://example.org/pumpkins.html", true},
   };
-  CheckExpectations(expectations, base::size(expectations));
+  CheckExpectations(expectations, std::size(expectations));
 }
 
 // After https://crbug.com/910273 was fixed, enterprise policy can only be used
@@ -208,19 +221,21 @@ IN_PROC_BROWSER_TEST_F(NoOverrideSitePerProcessPolicyBrowserTest, Simple) {
 // SitePerProcessPolicyBrowserTestFieldTrialTest tests should not be run on any
 // other platform.  Note that browser_tests won't run on Android until
 // https://crbug.com/611756 is fixed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class SitePerProcessPolicyBrowserTestFieldTrialTest
     : public SitePerProcessPolicyBrowserTestDisabled {
  public:
   SitePerProcessPolicyBrowserTestFieldTrialTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kSitePerProcess);
   }
-  ~SitePerProcessPolicyBrowserTestFieldTrialTest() override {}
+  SitePerProcessPolicyBrowserTestFieldTrialTest(
+      const SitePerProcessPolicyBrowserTestFieldTrialTest&) = delete;
+  SitePerProcessPolicyBrowserTestFieldTrialTest& operator=(
+      const SitePerProcessPolicyBrowserTestFieldTrialTest&) = delete;
+  ~SitePerProcessPolicyBrowserTestFieldTrialTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessPolicyBrowserTestFieldTrialTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestFieldTrialTest, Simple) {
@@ -246,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestFieldTrialTest, Simple) {
       {"https://foo.com/noodles.html", false},
       {"http://example.org/pumpkins.html", false},
   };
-  CheckExpectations(expectations, base::size(expectations));
+  CheckExpectations(expectations, std::size(expectations));
 }
 #endif
 
@@ -255,9 +270,12 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest, NoPolicyNoTrialsFlags) {
   // without an explicit enterprise policy).
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableSiteIsolation));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableSiteIsolationForPolicy));
-#endif
+  EXPECT_EQ(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
+            base::FeatureList::IsEnabled(features::kSitePerProcess));
+#else
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+#endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,12 +24,23 @@
 
 namespace content {
 
-using AncestorThrottleNavigationTest = RenderViewHostTestHarness;
+class AncestorThrottleNavigationTest : public RenderViewHostTestHarness {
+ public:
+  AncestorThrottleNavigationTest() {
+    scoped_feature_list.InitAndEnableFeature(features::kEmbeddingRequiresOptIn);
+  }
+  ~AncestorThrottleNavigationTest() override = default;
+
+  AncestorThrottleNavigationTest(const AncestorThrottleNavigationTest& other) =
+      delete;
+  AncestorThrottleNavigationTest& operator=(
+      const AncestorThrottleNavigationTest& other) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
 
 TEST_F(AncestorThrottleNavigationTest, EmbeddingOptInRequirement) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kEmbeddingRequiresOptIn);
-
   // Set up the main frame. We'll add nested frames to it in the tests below.
   NavigateAndCommit(GURL("https://www.example.org"));
   auto* main_frame = static_cast<TestRenderFrameHost*>(main_rfh());

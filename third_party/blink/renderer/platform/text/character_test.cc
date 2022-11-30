@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -412,7 +412,7 @@ TEST(CharacterTest, TransformedIsUprightInMixedVertical) {
 }
 
 TEST(CharacterTest, IsVerticalMathCharacter) {
-  // https://mathml-refresh.github.io/mathml-core/#stretchy-operator-axis
+  // https://w3c.github.io/mathml-core/#stretchy-operator-axis
   const UChar stretchy_operator_with_inline_axis[]{
       0x003D, 0x005E, 0x005F, 0x007E, 0x00AF, 0x02C6, 0x02C7, 0x02C9, 0x02CD,
       0x02DC, 0x02F7, 0x0302, 0x0332, 0x203E, 0x20D0, 0x20D1, 0x20D6, 0x20D7,
@@ -433,11 +433,11 @@ TEST(CharacterTest, IsVerticalMathCharacter) {
     } else if (test_char == kArabicMathematicalOperatorHahWithDal) {
       EXPECT_FALSE(Character::IsVerticalMathCharacter(test_char));
     } else {
-      bool in_vertical = !std::binary_search(
-          stretchy_operator_with_inline_axis,
-          stretchy_operator_with_inline_axis +
-              base::size(stretchy_operator_with_inline_axis),
-          test_char);
+      bool in_vertical =
+          !std::binary_search(stretchy_operator_with_inline_axis,
+                              stretchy_operator_with_inline_axis +
+                                  std::size(stretchy_operator_with_inline_axis),
+                              test_char);
       EXPECT_TRUE(Character::IsVerticalMathCharacter(test_char) == in_vertical);
     }
   }

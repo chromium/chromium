@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -41,7 +42,7 @@ class MockCrashEndpoint {
   Report WaitForReport();
 
   // Returns the last report received, if any.
-  const base::Optional<Report>& last_report() const { return last_report_; }
+  const absl::optional<Report>& last_report() const { return last_report_; }
 
   // Clears last report so that WaitForReport will wait for another report.
   // Does not clear report_count() or all_reports().
@@ -72,9 +73,9 @@ class MockCrashEndpoint {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
 
-  net::test_server::EmbeddedTestServer* test_server_;
+  raw_ptr<net::test_server::EmbeddedTestServer> test_server_;
   std::unique_ptr<Client> client_;
-  base::Optional<Report> last_report_;
+  absl::optional<Report> last_report_;
   std::vector<Report> all_reports_;
   int report_count_ = 0;
   bool consented_ = true;

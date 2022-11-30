@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html crossorigin>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="x-shader/x-vertex" id="vertex">
+#version 100
+uniform mat4 overflow;
+
+void main() {
+  gl_Position = overflow * vec4(0.11, 0.22, 0.33, 1.0);
+}
+</script>
+<script type="x-shader/x-fragment" id="fragment">
+#version 100
+void main() {
+  gl_FragColor = vec4(0.11, 0.22, 0.33, 1.0);
+}
+</script>
+</head>
+<body>
+  <canvas id="canvas1" width="64px" height="64px">
+  </canvas>
+  <script>
+test(() => {
+  const kWasmPage = 1 << 16;
+  const kNumPages = 33000;
+  const kMemSizeInBytes =  kNumPages * kWasmPage;
+  const kMemSizeInWords = kMemSizeInBytes / 4;
+
+  // Maximum allowed size of an ArrayBuffer as defined by partition alloc.
+  const kArrayBufferSizeLimitInBytes = 2145386496;
+  let mem;
+  try {
+    mem = new WebAssembly.Memory({initial: kNumPages, maximum: kNumPages});
+  } catch (e) {
+    // We failed to allocate the WebAssembly memory. We can just return.
+    assert_equals(e.constructor, RangeError);
+    assert_equals(e.message,
+      "WebAssembly.Memory(): could not allocate memory");
+    return;
+  }
+  let canvas = document.getElementById("canvas1");
+  let gl = canvas.getContext("webgl2");
+  let vertexShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertexShader, document.querySelector("#vertex").innerHTML);
+  gl.compileShader(vertexShader);
+
+  let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragmentShader, document.querySelector("#fragment").innerHTML);
+  gl.compileShader(fragmentShader);
+
+  let program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+
+  overflow = gl.getUniformLocation(program, "overflow");
+  gl.useProgram(program);
+
+  let fData = new Float32Array(mem.buffer, 8);
+  let iData = new Int32Array(mem.buffer, 8);
+  let uData = new Uint32Array(mem.buffer, 8);
+  let u8Data = new Uint8Array(mem.buffer, 8);
+
+  const kTooBigBufferData = (kArrayBufferSizeLimitInBytes / 4) + 32;
+  let tooBigView = new Uint32Array(mem.buffer, 8, kTooBigBufferData);
+
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+  gl.bufferData(gl.ARRAY_BUFFER, tooBigView, gl.STATIC_READ);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.bufferData(gl.ARRAY_BUFFER, mem.buffer, gl.STATIC_READ);
+  assert_not_equals(gl.getError(), gl.NO_ERROR);
+
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, tooBigView);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, mem.buffer);
+  assert_not_equals(gl.getError(), gl.NO_ERROR);
+
+  gl.bufferData(gl.ARRAY_BUFFER, iData, gl.STATIC_READ, 16, 1296);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.bufferData(gl.ARRAY_BUFFER, iData, gl.STATIC_READ, 16, kTooBigBufferData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, iData, 16, 1296);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, iData, 16, kTooBigBufferData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.getBufferSubData(gl.ARRAY_BUFFER, 0, iData, 16, 1296);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.getBufferSubData(gl.ARRAY_BUFFER, 0, iData, 16, kTooBigBufferData);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  // TODO(crbug.com/1353652): Make the following `uniform*` operations pass.
+  gl.uniform1fv(overflow, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform2fv(overflow, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform3fv(overflow, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform4fv(overflow, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+
+  gl.uniform1iv(overflow, iData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform2iv(overflow, iData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform3iv(overflow, iData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform4iv(overflow, iData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+
+  gl.uniform1uiv(overflow, uData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform2uiv(overflow, uData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform3uiv(overflow, uData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniform4uiv(overflow, uData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+
+  gl.uniformMatrix2fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix3fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix4fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix2x3fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix3x2fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix2x4fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix4x2fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix3x4fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.uniformMatrix4x3fv(overflow, false, fData, 16, 1296);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+
+  const kTooBigInWords = kMemSizeInWords - 32;
+
+  gl.uniform1fv(overflow, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform2fv(overflow, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform3fv(overflow, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform4fv(overflow, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.uniform1iv(overflow, iData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform2iv(overflow, iData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform3iv(overflow, iData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform4iv(overflow, iData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.uniform1uiv(overflow, uData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform2uiv(overflow, uData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform3uiv(overflow, uData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniform4uiv(overflow, uData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.uniformMatrix2fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix3fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix4fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix2x3fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix3x2fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix2x4fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix4x2fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix3x4fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.uniformMatrix4x3fv(overflow, false, fData, 16, kTooBigInWords);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+
+  gl.vertexAttrib1fv(0, fData);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.vertexAttrib2fv(0, fData);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.vertexAttrib3fv(0, fData);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.vertexAttrib4fv(0, fData);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.vertexAttribI4iv(0, iData);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.vertexAttribI4uiv(0, uData);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+
+  const clear_offset = kMemSizeInWords - 100;
+  gl.clearBufferfv(gl.COLOR, 0, fData);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.clearBufferfv(gl.COLOR, 0, fData, clear_offset);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  // TODO(crbug.com/1353652): Make the following `clearBuffer*` operations pass.
+  gl.clearBufferiv(gl.COLOR, 0, iData);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.clearBufferiv(gl.COLOR, 0, iData, clear_offset);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.clearBufferuiv(gl.COLOR, 0, uData);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+  gl.clearBufferuiv(gl.COLOR, 0, uData, clear_offset);
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+
+  // The read data (8x12=96) should still fit in.
+  const read_offset = kMemSizeInWords - 100;
+  const too_big_width = 16895999;
+  const too_big_height = 32;
+  assert_greater_than(too_big_width * too_big_height,
+                      kArrayBufferSizeLimitInBytes / 4);
+  gl.readPixels(0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE, u8Data);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.readPixels(0, 0, too_big_width, too_big_height, gl.RGBA, gl.UNSIGNED_BYTE, u8Data);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+  gl.readPixels(0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE, u8Data, 16);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.readPixels(0, 0, 8, 12, gl.RGBA, gl.UNSIGNED_BYTE, u8Data, read_offset);
+  assert_equals(gl.getError(), gl.NO_ERROR);
+  gl.readPixels(0, 0, too_big_width, too_big_height, gl.RGBA, gl.UNSIGNED_BYTE, u8Data, 4);
+  assert_equals(gl.getError(), gl.INVALID_VALUE);
+}, "Test that webgl accepts a small view of ArrayBuffer bigger than 2GB.");
+  </script>
+</body>
+</html>

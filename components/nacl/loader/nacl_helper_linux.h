@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ enum NaClZygoteIPCCommand {
 // The next set of constants define global Linux file descriptors.
 // For communications between NaCl loader and browser.
 // See also content/common/zygote_main_linux.cc and
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux/zygote.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/zygote.md
 
 // For communications between NaCl loader and zygote.
 #define kNaClZygoteDescriptor 3

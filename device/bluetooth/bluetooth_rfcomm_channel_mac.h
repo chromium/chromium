@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_channel_mac.h"
 
 @class BluetoothRfcommChannelDelegate;
@@ -27,6 +26,11 @@ class BluetoothRfcommChannelMac : public BluetoothChannelMac {
   // NOTE: The |channel| is expected to already be retained.
   BluetoothRfcommChannelMac(BluetoothSocketMac* socket,
                             IOBluetoothRFCOMMChannel* channel);
+
+  BluetoothRfcommChannelMac(const BluetoothRfcommChannelMac&) = delete;
+  BluetoothRfcommChannelMac& operator=(const BluetoothRfcommChannelMac&) =
+      delete;
+
   ~BluetoothRfcommChannelMac() override;
 
   // Opens a new RFCOMM channel with Channel ID |channel_id| to the target
@@ -61,8 +65,6 @@ class BluetoothRfcommChannelMac : public BluetoothChannelMac {
 
   // The delegate for the native channel.
   base::scoped_nsobject<BluetoothRfcommChannelDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRfcommChannelMac);
 };
 
 }  // namespace device

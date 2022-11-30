@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-forward.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -52,33 +52,30 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
   ~MojoURLLoaderClient() override;
 
-  // Set the defer status. If loading is deferred, received messages are not
-  // dispatched to clients until it is set not deferred.
-  void SetDefersLoading(WebURLLoader::DeferType value);
+  // Freezes the loader. See blink/renderer/platform/loader/README.md for the
+  // general concept of "freezing" in the loading module. See
+  // blink/public/platform/web_loader_freezing_mode.h for `mode`.
+  void Freeze(WebLoaderFreezeMode mode);
 
   // network::mojom::URLLoaderClient implementation
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override;
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason);
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
   bool CanContinueBufferingWhileInBackForwardCache();
-  bool IsDeferredWithBackForwardCache() {
-    return deferred_state_ ==
-           blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache;
-  }
+  WebLoaderFreezeMode freeze_mode() const { return freeze_mode_; }
 
  private:
   class BodyBuffer;
@@ -109,17 +106,13 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   bool has_received_response_head_ = false;
   bool has_received_response_body_ = false;
   bool has_received_complete_ = false;
-  WebURLLoader::DeferType deferred_state_ =
-      WebURLLoader::DeferType::kNotDeferred;
+  WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
   int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
   WebResourceRequestSender* const resource_request_sender_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;
   KURL last_loaded_url_;
   WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper_;
-
-  // For UMA.
-  base::TimeTicks on_receive_response_time_;
 
   base::WeakPtrFactory<MojoURLLoaderClient> weak_factory_{this};
 };

@@ -1,7 +1,0 @@
-include_rules = [
-  "+chromeos/grit/chromeos_resources.h",
-  "+chromeos/services/multidevice_setup/public/mojom",
-  "+content/public/browser",
-  "+device/bluetooth",
-  "+ui/webui",
-]

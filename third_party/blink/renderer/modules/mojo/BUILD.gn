@@ -1,0 +1,17 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("mojo") {
+  sources = [
+    "mojo_file_system_access.cc",
+    "mojo_file_system_access.h",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/modules/file_system_access",
+  ]
+}

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Page descriptors shouldn't be exposed to CSS Style declarations assert_equals: computed style should not have size property expected (undefined) undefined but got (string) ""
+Harness: the test ran to completion.
+

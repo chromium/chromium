@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 
 namespace download {
 
-extern const base::Feature kDownloadServiceFeature;
-
-// Incognito support of download service. No database or file IO is allowed if
-// this feature is enabled. The download data will be saved to blob.
-extern const base::Feature kDownloadServiceIncognito;
+// Used to set configuration of download service through Finch. This is not used
+// to turn on/off the feature.
+BASE_DECLARE_FEATURE(kDownloadServiceFeature);
 
 }  // namespace download
 

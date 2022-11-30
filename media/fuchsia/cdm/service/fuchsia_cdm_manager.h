@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,11 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/provision_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -36,12 +35,14 @@ class FuchsiaCdmManager {
   using CreateKeySystemCallbackMap =
       base::flat_map<std::string, CreateKeySystemCallback>;
 
+  static FuchsiaCdmManager* GetInstance();
+
   // |cdm_data_quota_bytes| is currently only applied once, when the manager is
   // created.
   FuchsiaCdmManager(
       CreateKeySystemCallbackMap create_key_system_callbacks_by_name,
       base::FilePath cdm_data_path,
-      base::Optional<uint64_t> cdm_data_quota_bytes);
+      absl::optional<uint64_t> cdm_data_quota_bytes);
 
   ~FuchsiaCdmManager();
 
@@ -76,13 +77,13 @@ class FuchsiaCdmManager {
       fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
           request,
       base::FilePath storage_path,
-      base::Optional<base::File::Error> storage_creation_error);
+      absl::optional<base::File::Error> storage_creation_error);
   void OnKeySystemClientError(const std::string& key_system_name);
 
   // A map of callbacks to create KeySystem channels indexed by their EME name.
   const CreateKeySystemCallbackMap create_key_system_callbacks_by_name_;
   const base::FilePath cdm_data_path_;
-  const base::Optional<uint64_t> cdm_data_quota_bytes_;
+  const absl::optional<uint64_t> cdm_data_quota_bytes_;
 
   // Used for operations on the CDM data directory.
   const scoped_refptr<base::SequencedTaskRunner> storage_task_runner_;

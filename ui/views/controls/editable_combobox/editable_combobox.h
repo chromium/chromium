@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,14 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -76,6 +77,9 @@ class VIEWS_EXPORT EditableCombobox
                             int text_style = kDefaultTextStyle,
                             bool display_arrow = true);
 
+  EditableCombobox(const EditableCombobox&) = delete;
+  EditableCombobox& operator=(const EditableCombobox&) = delete;
+
   ~EditableCombobox() override;
 
   void SetModel(std::unique_ptr<ui::ComboboxModel> model);
@@ -106,8 +110,9 @@ class VIEWS_EXPORT EditableCombobox
 
   // Accessors of private members for tests.
   ui::ComboboxModel* GetComboboxModelForTest() { return combobox_model_.get(); }
-  int GetItemCountForTest();
-  std::u16string GetItemForTest(int index);
+  size_t GetItemCountForTest();
+  std::u16string GetItemForTest(size_t index);
+  ui::ImageModel GetIconForTest(size_t index);
   MenuRunner* GetMenuRunnerForTest() { return menu_runner_.get(); }
   Textfield* GetTextfieldForTest() { return textfield_; }
 
@@ -118,7 +123,7 @@ class VIEWS_EXPORT EditableCombobox
   void CloseMenu();
 
   // Called when an item is selected from the menu.
-  void OnItemSelected(int index);
+  void OnItemSelected(size_t index);
 
   // Notifies listener of new content and updates the menu items to show.
   void HandleNewContent(const std::u16string& new_content);
@@ -149,8 +154,8 @@ class VIEWS_EXPORT EditableCombobox
   void OnLayoutIsAnimatingChanged(views::AnimatingLayoutManager* source,
                                   bool is_animating) override;
 
-  Textfield* textfield_;
-  Button* arrow_ = nullptr;
+  raw_ptr<Textfield> textfield_;
+  raw_ptr<Button> arrow_ = nullptr;
   std::unique_ptr<ui::ComboboxModel> combobox_model_;
 
   // The EditableComboboxMenuModel used by |menu_runner_|.
@@ -189,8 +194,6 @@ class VIEWS_EXPORT EditableCombobox
   bool dropdown_blocked_for_animation_ = false;
 
   base::ScopedObservation<View, ViewObserver> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EditableCombobox);
 };
 
 }  // namespace views

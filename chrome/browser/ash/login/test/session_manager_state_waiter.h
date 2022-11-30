@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,12 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_MANAGER_STATE_WAITER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace test {
 
 // Waits for the primary user's session to start, or returns immediately if a
@@ -27,8 +25,12 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
  public:
   // If `target_state` is null, SessionStateWaiter will simply wait until a
   // session starts.
-  explicit SessionStateWaiter(base::Optional<session_manager::SessionState>
-                                  target_state = base::nullopt);
+  explicit SessionStateWaiter(absl::optional<session_manager::SessionState>
+                                  target_state = absl::nullopt);
+
+  SessionStateWaiter(const SessionStateWaiter&) = delete;
+  SessionStateWaiter& operator=(const SessionStateWaiter&) = delete;
+
   ~SessionStateWaiter() override;
 
   void Wait();
@@ -38,15 +40,24 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
   void OnUserSessionStarted(bool is_primary_user) override;
 
  private:
-  base::Optional<session_manager::SessionState> target_state_;
+  absl::optional<session_manager::SessionState> target_state_;
   base::OnceClosure session_state_callback_;
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(SessionStateWaiter);
+  bool done_ = false;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::SessionStateWaiter;
+namespace test {
+using ::ash::test::WaitForPrimaryUserSessionStart;
+}  // namespace test
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_MANAGER_STATE_WAITER_H_

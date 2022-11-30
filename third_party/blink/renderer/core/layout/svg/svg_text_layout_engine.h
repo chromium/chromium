@@ -49,7 +49,7 @@ class SVGTextLayoutEngine {
   STACK_ALLOCATED();
 
  public:
-  SVGTextLayoutEngine(const Vector<LayoutSVGInlineText*>&);
+  explicit SVGTextLayoutEngine(const HeapVector<Member<LayoutSVGInlineText>>&);
   SVGTextLayoutEngine(const SVGTextLayoutEngine&) = delete;
   SVGTextLayoutEngine& operator=(const SVGTextLayoutEngine&) = delete;
   ~SVGTextLayoutEngine();
@@ -78,19 +78,20 @@ class SVGTextLayoutEngine {
   void AdvanceToNextLogicalCharacter(const SVGTextMetrics&);
 
   // Logical iteration state.
-  const Vector<LayoutSVGInlineText*>& descendant_text_nodes_;
+  const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes_;
   unsigned current_logical_text_node_index_;
   unsigned logical_character_offset_;
   unsigned logical_metrics_list_offset_;
 
-  Vector<SVGInlineTextBox*> line_layout_boxes_;
+  HeapVector<Member<SVGInlineTextBox>> line_layout_boxes_;
 
   SVGTextFragment current_text_fragment_;
   SVGInlineTextMetricsIterator visual_metrics_iterator_;
-  FloatPoint text_position_;
+  gfx::PointF text_position_;
   bool is_vertical_text_;
   bool in_path_layout_;
   bool text_length_spacing_in_effect_;
+  bool last_text_box_was_in_text_path_;
 
   // Text on path layout
   std::unique_ptr<PathPositionMapper> text_path_;
@@ -103,4 +104,4 @@ class SVGTextLayoutEngine {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ENGINE_H_

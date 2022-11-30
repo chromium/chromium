@@ -1,0 +1,56 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/url.mojom";
+// EventDispatch is a one-per-renderer-processs interface that is responsible
+// for triggering API events that extensions have registered listeners for in
+// the renderer (either the extension process renderer, for extension-origin
+// pages, or a web renderer, for content script listeners).
+// The interface is implemented in //extensions/renderer code, and is
+// called on the browser side by the EventRouter.
+interface EventDispatcher {
+    // Sent to the renderer to dispatch an event to a listener.
+    DispatchEvent(DispatchEventParams params,
+                  mojo_base.mojom.ListValue event_args);
+};
+
+struct EventFilteringInfo {
+  url.mojom.Url? url;
+
+  string? service_type;
+
+  // TODO(yoichio): Use nullable when https://crbug.com/657632 is fixed.
+  bool has_instance_id;
+  int32 instance_id;
+
+  string? window_type;
+
+  // TODO(yoichio): Use nullable when https://crbug.com/657632 is fixed.
+  bool has_window_exposed_by_default;
+  bool window_exposed_by_default;
+};
+
+struct DispatchEventParams {
+  // If this event is for a service worker, then this is the worker thread
+  // id. Otherwise, this is 0.
+  int32 worker_thread_id;
+
+  // The id of the extension to dispatch the event to.
+  string extension_id;
+
+  // The name of the event to dispatch.
+  string event_name;
+
+  // The id of the event for use in the EventAck response message.
+  int32 event_id;
+
+  // Whether or not the event is part of a user gesture.
+  bool is_user_gesture;
+
+  // Additional filtering info for the event.
+  EventFilteringInfo filtering_info;
+};

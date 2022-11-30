@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++RadioGroup actions:[AX_FOCUS] bundle:[chromeRole="radioGroup", roleDescription="radio group"]
+++++RadioButton stateDescription:"Not checked. In group, option 1 of 2" checkable clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", roleDescription="radio button"]
+++++RadioButton stateDescription:"Not checked. In group, option 2 of 2" checkable clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", roleDescription="radio button"]

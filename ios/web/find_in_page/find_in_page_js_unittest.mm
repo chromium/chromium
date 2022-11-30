@@ -1,18 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/run_loop.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#include "ios/web/js_messaging/web_frame_impl.h"
+#import "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -21,7 +21,7 @@
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
-#include "testing/gtest_mac.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -68,7 +68,7 @@ class FindInPageJsTest : public WebTestWithWebState {
     });
   }
 
-  // Returns all web frames for |web_state()|.
+  // Returns all web frames for `web_state()`.
   std::set<WebFrameImpl*> all_web_frames() {
     std::set<WebFrameImpl*> frames;
     for (WebFrame* frame :
@@ -77,7 +77,7 @@ class FindInPageJsTest : public WebTestWithWebState {
     }
     return frames;
   }
-  // Returns main frame for |web_state_|.
+  // Returns main frame for `web_state_`.
   WebFrameInternal* main_web_frame() {
     WebFrame* main_frame =
         web_state()->GetWebFramesManager()->GetMainWebFrame();
@@ -94,7 +94,7 @@ TEST_F(FindInPageJsTest, FindText) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
@@ -122,7 +122,33 @@ TEST_F(FindInPageJsTest, FindTextNoResults) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
+  __block bool message_received = false;
+  std::vector<base::Value> params;
+  params.push_back(base::Value(kFindStringFoo));
+  params.push_back(base::Value(kPumpSearchTimeout));
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
+        ASSERT_TRUE(result);
+        ASSERT_TRUE(result->is_double());
+        double count = result->GetDouble();
+        ASSERT_EQ(0.0, count);
+        message_received = true;
+      }),
+      kCallJavascriptFunctionTimeout);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return message_received;
+  }));
+}
+
+// Tests that FindInPage doesn't search in noscript elements.
+TEST_F(FindInPageJsTest, FindTextIgnoresNoscript) {
+  ASSERT_TRUE(LoadHtml("<body><noscript>foo</noscript></body>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  const base::TimeDelta kCallJavascriptFunctionTimeout =
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
@@ -151,7 +177,7 @@ TEST_F(FindInPageJsTest, FindIFrameText) {
   ASSERT_TRUE(WaitForWebFramesCount(2));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   std::set<WebFrameImpl*> all_frames = all_web_frames();
   __block bool message_received = false;
   WebFrameInternal* child_frame = nullptr;
@@ -186,7 +212,7 @@ TEST_F(FindInPageJsTest, FindWhiteSpace) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(" "));
@@ -213,7 +239,7 @@ TEST_F(FindInPageJsTest, FindAcrossMultipleNodes) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindString12345));
@@ -240,7 +266,7 @@ TEST_F(FindInPageJsTest, FindHighlightMatch) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
@@ -288,7 +314,7 @@ TEST_F(FindInPageJsTest, FindHighlightSeparateMatches) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
@@ -360,7 +386,7 @@ TEST_F(FindInPageJsTest, FindHighlightMatchAtInvalidIndex) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
@@ -404,7 +430,7 @@ TEST_F(FindInPageJsTest, SearchForNonAscii) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value("école"));
@@ -437,7 +463,7 @@ TEST_F(FindInPageJsTest, CheckFindInPageScrollsToMatch) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value("foo"));
@@ -486,7 +512,7 @@ TEST_F(FindInPageJsTest, StopFindInPage) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   // Do a search to ensure match highlighting is cleared properly.
   __block bool message_received = false;
   std::vector<base::Value> params;
@@ -544,7 +570,7 @@ TEST_F(FindInPageJsTest, HiddenMatch) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
@@ -595,7 +621,7 @@ TEST_F(FindInPageJsTest, HiddenMatchBecomesVisible) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
@@ -648,7 +674,7 @@ TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
   ASSERT_TRUE(WaitForWebFramesCount(1));
 
   const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
+      kWaitForJSCompletionTimeout;
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));

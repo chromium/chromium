@@ -1134,8 +1134,8 @@ Lcbc_enc_loop:
 	st1	{v0.16b}, [x4]	// write ivec
 
 	ldp	x29,x30,[sp],#16
-	AARCH64_VALIDATE_LINK_REGISTER
 Lcbc_abort:
+	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
 

@@ -1,19 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <map>
 #include <memory>
 
-#include "ash/components/audio/cras_audio_handler.h"
-#include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "content/public/test/browser_test.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -26,6 +25,10 @@ using ::ash::AccessibilityManager;
 class SoundsManagerTestImpl : public audio::SoundsManager {
  public:
   SoundsManagerTestImpl() = default;
+
+  SoundsManagerTestImpl(const SoundsManagerTestImpl&) = delete;
+  SoundsManagerTestImpl& operator=(const SoundsManagerTestImpl&) = delete;
+
   ~SoundsManagerTestImpl() override {}
 
   bool Initialize(SoundKey key, const base::StringPiece& /* data */) override {
@@ -51,13 +54,15 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
  private:
   std::map<SoundKey, bool> is_sound_initialized_;
   std::map<SoundKey, int> num_play_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoundsManagerTestImpl);
 };
 
 class VolumeControllerTest : public InProcessBrowserTest {
  public:
   VolumeControllerTest() {}
+
+  VolumeControllerTest(const VolumeControllerTest&) = delete;
+  VolumeControllerTest& operator=(const VolumeControllerTest&) = delete;
+
   ~VolumeControllerTest() override {}
 
   void SetUpOnMainThread() override {
@@ -81,24 +86,34 @@ class VolumeControllerTest : public InProcessBrowserTest {
 
  protected:
   ash::CrasAudioHandler* audio_handler_;  // Not owned.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VolumeControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeUpAndDown) {
   // Set initial value as 50%
   const int kInitVolume = 50;
   audio_handler_->SetOutputVolumePercent(kInitVolume);
+  int current_volume = audio_handler_->GetOutputVolumePercent();
+  EXPECT_EQ(current_volume, kInitVolume);
 
-  EXPECT_EQ(audio_handler_->GetOutputVolumePercent(), kInitVolume);
-
+  current_volume = audio_handler_->GetOutputVolumePercent();
   VolumeUp();
-  EXPECT_LT(kInitVolume, audio_handler_->GetOutputVolumePercent());
+  // number_of_volume_step = 25 mean we split volume into 25 level,
+  // and The volume goes up one level each for VolumeUp/VolumeDown event.
+  // For initial value is 48 - 51 volume will increase to 52,
+  // because 48 - 51 share same level,
+  // VolumeUp will increase to the min volume of next level, which is 52
+  // Original behavior will set volume to 54
+  EXPECT_LT(current_volume, audio_handler_->GetOutputVolumePercent());
+
+  current_volume = audio_handler_->GetOutputVolumePercent();
   VolumeDown();
-  EXPECT_EQ(kInitVolume, audio_handler_->GetOutputVolumePercent());
+  // VolumeUp will decrease to the min volume of previous level, which is 48
+  // Original behavior will set volume to 50
+  EXPECT_GT(current_volume, audio_handler_->GetOutputVolumePercent());
+
+  current_volume = audio_handler_->GetOutputVolumePercent();
   VolumeDown();
-  EXPECT_GT(kInitVolume, audio_handler_->GetOutputVolumePercent());
+  EXPECT_GT(current_volume, audio_handler_->GetOutputVolumePercent());
 }
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeDownToZero) {
@@ -156,7 +171,12 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerTest, Mutes) {
 
 class VolumeControllerSoundsTest : public VolumeControllerTest {
  public:
-  VolumeControllerSoundsTest() : sounds_manager_(NULL) {}
+  VolumeControllerSoundsTest() : sounds_manager_(nullptr) {}
+
+  VolumeControllerSoundsTest(const VolumeControllerSoundsTest&) = delete;
+  VolumeControllerSoundsTest& operator=(const VolumeControllerSoundsTest&) =
+      delete;
+
   ~VolumeControllerSoundsTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -176,8 +196,6 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
 
  private:
   SoundsManagerTestImpl* sounds_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeControllerSoundsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {
@@ -229,15 +247,18 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, EdgeCases) {
 class VolumeControllerSoundsDisabledTest : public VolumeControllerSoundsTest {
  public:
   VolumeControllerSoundsDisabledTest() {}
+
+  VolumeControllerSoundsDisabledTest(
+      const VolumeControllerSoundsDisabledTest&) = delete;
+  VolumeControllerSoundsDisabledTest& operator=(
+      const VolumeControllerSoundsDisabledTest&) = delete;
+
   ~VolumeControllerSoundsDisabledTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     VolumeControllerSoundsTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kDisableVolumeAdjustSound);
+    command_line->AppendSwitch(ash::switches::kDisableVolumeAdjustSound);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VolumeControllerSoundsDisabledTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsDisabledTest, VolumeAdjustSounds) {

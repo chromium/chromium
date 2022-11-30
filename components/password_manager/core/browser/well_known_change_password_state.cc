@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/optional.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using password_manager::WellKnownChangePasswordState;
@@ -29,8 +30,8 @@ namespace {
 std::unique_ptr<network::SimpleURLLoader>
 CreateResourceRequestToWellKnownNonExistingResourceFor(
     const GURL& url,
-    base::Optional<url::Origin> request_initiator,
-    base::Optional<network::ResourceRequest::TrustedParams> trusted_params) {
+    absl::optional<url::Origin> request_initiator,
+    absl::optional<network::ResourceRequest::TrustedParams> trusted_params) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = CreateWellKnownNonExistingResourceURL(url);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -81,8 +82,8 @@ WellKnownChangePasswordState::~WellKnownChangePasswordState() = default;
 void WellKnownChangePasswordState::FetchNonExistingResource(
     network::SharedURLLoaderFactory* url_loader_factory,
     const GURL& url,
-    base::Optional<url::Origin> request_initiator,
-    base::Optional<network::ResourceRequest::TrustedParams> trusted_params) {
+    absl::optional<url::Origin> request_initiator,
+    absl::optional<network::ResourceRequest::TrustedParams> trusted_params) {
   url_loader_ = CreateResourceRequestToWellKnownNonExistingResourceFor(
       url, std::move(request_initiator), std::move(trusted_params));
   // Binding the callback to |this| is safe, because the State exists until

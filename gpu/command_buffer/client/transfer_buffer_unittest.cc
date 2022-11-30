@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,15 +63,16 @@ class TransferBufferTest : public testing::Test {
 };
 
 void TransferBufferTest::SetUp() {
-  command_buffer_.reset(new StrictMock<MockClientCommandBufferMockFlush>());
+  command_buffer_ =
+      std::make_unique<StrictMock<MockClientCommandBufferMockFlush>>();
 
-  helper_.reset(new CommandBufferHelper(command_buffer()));
+  helper_ = std::make_unique<CommandBufferHelper>(command_buffer());
   ASSERT_EQ(helper_->Initialize(kCommandBufferSizeBytes),
             gpu::ContextResult::kSuccess);
 
   transfer_buffer_id_ = command_buffer()->GetNextFreeTransferBufferId();
 
-  transfer_buffer_.reset(new TransferBuffer(helper_.get()));
+  transfer_buffer_ = std::make_unique<TransferBuffer>(helper_.get());
 }
 
 void TransferBufferTest::TearDown() {
@@ -89,14 +90,11 @@ void TransferBufferTest::TearDown() {
   transfer_buffer_.reset();
 }
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const int32_t TransferBufferTest::kNumCommandEntries;
 const int32_t TransferBufferTest::kCommandBufferSizeBytes;
 const uint32_t TransferBufferTest::kStartingOffset;
 const uint32_t TransferBufferTest::kAlignment;
 const uint32_t TransferBufferTest::kTransferBufferSize;
-#endif
 
 TEST_F(TransferBufferTest, Basic) {
   Initialize();
@@ -275,7 +273,8 @@ class TransferBufferExpandContractTest : public testing::Test {
 };
 
 void TransferBufferExpandContractTest::SetUp() {
-  command_buffer_.reset(new StrictMock<MockClientCommandBufferCanFail>());
+  command_buffer_ =
+      std::make_unique<StrictMock<MockClientCommandBufferCanFail>>();
   command_buffer_->SetTokenForSetGetBuffer(0);
 
   EXPECT_CALL(*command_buffer(),
@@ -285,7 +284,7 @@ void TransferBufferExpandContractTest::SetUp() {
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
       .RetiresOnSaturation();
 
-  helper_.reset(new CommandBufferHelper(command_buffer()));
+  helper_ = std::make_unique<CommandBufferHelper>(command_buffer());
   ASSERT_EQ(helper_->Initialize(kCommandBufferSizeBytes),
             gpu::ContextResult::kSuccess);
 
@@ -298,7 +297,7 @@ void TransferBufferExpandContractTest::SetUp() {
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
       .RetiresOnSaturation();
 
-  transfer_buffer_.reset(new TransferBuffer(helper_.get()));
+  transfer_buffer_ = std::make_unique<TransferBuffer>(helper_.get());
   ASSERT_TRUE(transfer_buffer_->Initialize(
       kStartTransferBufferSize, kStartingOffset, kMinTransferBufferSize,
       kMaxTransferBufferSize, kAlignment));
@@ -324,8 +323,6 @@ void TransferBufferExpandContractTest::TearDown() {
   transfer_buffer_.reset();
 }
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const int32_t TransferBufferExpandContractTest::kNumCommandEntries;
 const int32_t TransferBufferExpandContractTest::kCommandBufferSizeBytes;
 const uint32_t TransferBufferExpandContractTest::kStartingOffset;
@@ -333,7 +330,6 @@ const uint32_t TransferBufferExpandContractTest::kAlignment;
 const uint32_t TransferBufferExpandContractTest::kStartTransferBufferSize;
 const uint32_t TransferBufferExpandContractTest::kMaxTransferBufferSize;
 const uint32_t TransferBufferExpandContractTest::kMinTransferBufferSize;
-#endif
 
 TEST_F(TransferBufferExpandContractTest, ExpandWithSmallAllocations) {
   int32_t token = helper_->InsertToken();

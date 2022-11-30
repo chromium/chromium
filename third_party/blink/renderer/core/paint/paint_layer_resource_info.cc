@@ -45,7 +45,6 @@ void PaintLayerResourceInfo::ResourceContentChanged(SVGResource*) {
   LayoutObject& layout_object = layer_->GetLayoutObject();
   layout_object.SetShouldDoFullPaintInvalidation();
   layer_->SetNeedsCompositingInputsUpdate();
-  layout_object.InvalidateClipPathCache();
   // The effect paint property nodes depend on SVG filters so we need
   // to update these properties when filter resources change.
   layout_object.SetNeedsPaintPropertyUpdate();

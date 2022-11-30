@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -30,9 +31,8 @@ FakeP2PSocketDelegate::~FakeP2PSocketDelegate() {
 }
 
 void FakeP2PSocketDelegate::DestroySocket(P2PSocket* socket) {
-  auto it = std::find_if(
-      sockets_to_be_destroyed_.begin(), sockets_to_be_destroyed_.end(),
-      [&socket](const auto& x) { return socket == x.get(); });
+  auto it = base::ranges::find(sockets_to_be_destroyed_, socket,
+                               &std::unique_ptr<P2PSocket>::get);
   CHECK(it != sockets_to_be_destroyed_.end());
   sockets_to_be_destroyed_.erase(it);
 }
@@ -203,10 +203,6 @@ bool FakeSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
   return false;
 }
 
-void FakeSocket::GetConnectionAttempts(net::ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t FakeSocket::GetTotalReceivedBytes() const {
   NOTIMPLEMENTED();
   return 0;
@@ -221,18 +217,6 @@ FakeSocketClient::FakeSocketClient(
 }
 
 FakeSocketClient::~FakeSocketClient() {}
-
-void FakeSocketClient::IncomingTcpConnection(
-    const net::IPEndPoint& endpoint,
-    mojo::PendingRemote<network::mojom::P2PSocket> socket,
-    mojo::PendingReceiver<network::mojom::P2PSocketClient> client_receiver) {
-  accepted_.push_back(
-      std::make_pair(std::move(socket), std::move(client_receiver)));
-}
-
-void FakeSocketClient::CloseAccepted() {
-  accepted_.clear();
-}
 
 void CreateRandomPacket(std::vector<int8_t>* packet) {
   size_t size = kStunHeaderSize + rand() % 1000;

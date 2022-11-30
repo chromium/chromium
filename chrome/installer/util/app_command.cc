@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -55,7 +54,7 @@ bool AppCommand::Initialize(const base::win::RegKey& key) {
 
   command_line_.swap(cmd_line);
 
-  for (size_t i = 0; i < base::size(kNameBoolVars); ++i) {
+  for (size_t i = 0; i < std::size(kNameBoolVars); ++i) {
     DWORD value = 0;  // Set default to false.
     // Note: ReadValueDW only modifies out param on success.
     key.ReadValueDW(kNameBoolVars[i].name, &value);
@@ -79,7 +78,7 @@ void AppCommand::AddWorkItems(HKEY predefined_root,
                                command_line_, true)
       ->set_log_message("setting AppCommand CommandLine registry value");
 
-  for (size_t i = 0; i < base::size(kNameBoolVars); ++i) {
+  for (size_t i = 0; i < std::size(kNameBoolVars); ++i) {
     const wchar_t* var_name = kNameBoolVars[i].name;
     bool var_data = this->*(kNameBoolVars[i].data);
 

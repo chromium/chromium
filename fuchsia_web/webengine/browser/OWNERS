@@ -1,0 +1,6 @@
+# For Mojo/IPC security review.
+per-file web_engine_browser_interface_binders.*=set noparent
+per-file web_engine_browser_interface_binders.*=file://ipc/SECURITY_OWNERS
+
+per-file *_type_converter*.*=set noparent
+per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

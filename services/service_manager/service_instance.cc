@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/service_manager/public/cpp/constants.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
@@ -19,9 +20,10 @@
 #include "services/service_manager/service_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/service_process_launcher.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace service_manager {
 
@@ -96,8 +98,8 @@ bool AllowsInterface(const Manifest::RequiredCapabilityMap& source_requirements,
   for (const auto& capability : required_capabilities) {
     auto it = target_capabilities.find(capability);
     if (it != target_capabilities.end()) {
-      for (const auto& interface_name : it->second)
-        allowed_interfaces.insert(interface_name);
+      for (const auto& interface : it->second)
+        allowed_interfaces.insert(interface);
     }
   }
 
@@ -128,7 +130,7 @@ ServiceInstance::~ServiceInstance() {
 }
 
 void ServiceInstance::SetPID(base::ProcessId pid) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // iOS does not support base::Process and simply passes 0 here, so elide
   // this check on that platform.
   if (pid == base::kNullProcessId) {
@@ -153,10 +155,10 @@ void ServiceInstance::StartWithRemote(
   service_manager_->NotifyServiceCreated(*this);
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 bool ServiceInstance::StartWithProcessHost(
     std::unique_ptr<ServiceProcessHost> host,
-    sandbox::policy::SandboxType sandbox_type) {
+    sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!service_remote_);
   DCHECK(!process_host_);
 
@@ -184,7 +186,7 @@ bool ServiceInstance::StartWithProcessHost(
   StartWithRemote(std::move(remote));
   return true;
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 void ServiceInstance::BindProcessMetadataReceiver(
     mojo::PendingReceiver<mojom::ProcessMetadata> receiver) {
@@ -332,7 +334,7 @@ void ServiceInstance::HandleServiceOrConnectorDisconnection() {
 
 bool ServiceInstance::CanConnectToOtherInstance(
     const ServiceFilter& target_filter,
-    const base::Optional<std::string>& target_interface_name) {
+    const absl::optional<std::string>& target_interface_name) {
   if (target_filter.service_name().empty()) {
     DLOG(ERROR) << "ServiceFilter has no service name.";
     return false;
@@ -389,7 +391,7 @@ void ServiceInstance::BindInterface(
     mojom::BindInterfacePriority priority,
     BindInterfaceCallback callback) {
   if (!CanConnectToOtherInstance(target_filter, interface_name)) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -401,7 +403,7 @@ void ServiceInstance::BindInterface(
       target_instance->MaybeAcceptConnectionRequest(
           *this, interface_name, std::move(receiving_pipe), priority);
   if (!allowed) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -423,8 +425,8 @@ void ServiceInstance::QueryService(const std::string& service_name,
 void ServiceInstance::WarmService(const ServiceFilter& target_filter,
                                   WarmServiceCallback callback) {
   if (!CanConnectToOtherInstance(target_filter,
-                                 base::nullopt /* interface_name */)) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+                                 absl::nullopt /* interface_name */)) {
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -432,7 +434,7 @@ void ServiceInstance::WarmService(const ServiceFilter& target_filter,
       service_manager_->FindOrCreateMatchingTargetInstance(*this,
                                                            target_filter);
   if (!target_instance) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -447,7 +449,7 @@ void ServiceInstance::RegisterServiceInstance(
     RegisterServiceInstanceCallback callback) {
   auto target_filter = ServiceFilter::ForExactIdentity(identity);
   if (!CanConnectToOtherInstance(target_filter,
-                                 base::nullopt /* interface_name */)) {
+                                 absl::nullopt /* interface_name */)) {
     std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED);
     return;
   }

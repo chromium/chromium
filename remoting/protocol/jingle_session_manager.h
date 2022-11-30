@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session_manager.h"
@@ -34,6 +34,10 @@ class JingleSessionManager : public SessionManager,
                              public SignalStrategy::Listener {
  public:
   explicit JingleSessionManager(SignalStrategy* signal_strategy);
+
+  JingleSessionManager(const JingleSessionManager&) = delete;
+  JingleSessionManager& operator=(const JingleSessionManager&) = delete;
+
   ~JingleSessionManager() override;
 
   // SessionManager interface.
@@ -63,7 +67,7 @@ class JingleSessionManager : public SessionManager,
   // Called by JingleSession when it is being destroyed.
   void SessionDestroyed(JingleSession* session);
 
-  SignalStrategy* signal_strategy_ = nullptr;
+  raw_ptr<SignalStrategy> signal_strategy_ = nullptr;
   IncomingSessionCallback incoming_session_callback_;
   std::unique_ptr<CandidateSessionConfig> protocol_config_;
 
@@ -73,8 +77,6 @@ class JingleSessionManager : public SessionManager,
   SessionsMap sessions_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(JingleSessionManager);
 };
 
 }  // namespace protocol

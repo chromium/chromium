@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser.sms;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -41,18 +43,16 @@ public class SmsProviderGms {
     private WindowAndroid mWindow;
     private Wrappers.SmsRetrieverClientWrapper mClient;
 
-    private SmsProviderGms(long smsProviderGmsAndroid, @GmsBackend int backend) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public SmsProviderGms(long smsProviderGmsAndroid, @GmsBackend int backend,
+            boolean isVerificationBackendAvailable) {
         mSmsProviderGmsAndroid = smsProviderGmsAndroid;
         mBackend = backend;
-
         mContext = new Wrappers.WebOTPServiceContext(ContextUtils.getApplicationContext(), this);
 
-        boolean isVerificationBackendAvailable =
-                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                        mContext, MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND)
-                == ConnectionResult.SUCCESS;
-        if (isVerificationBackendAvailable
-                && (mBackend == GmsBackend.AUTO || mBackend == GmsBackend.VERIFICATION)) {
+        // Creates an mVerificationReceiver regardless of the backend to support requests from
+        // remote devices.
+        if (isVerificationBackendAvailable) {
             mVerificationReceiver = new SmsVerificationReceiver(this, mContext);
         }
 
@@ -63,11 +63,36 @@ public class SmsProviderGms {
         Log.i(TAG, "construction successfull %s, %s", mVerificationReceiver, mUserConsentReceiver);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setUserConsentReceiverForTesting(SmsUserConsentReceiver userConsentReceiver) {
+        mUserConsentReceiver = userConsentReceiver;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setVerificationReceiverForTesting(SmsVerificationReceiver verificationReceiver) {
+        mVerificationReceiver = verificationReceiver;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public SmsUserConsentReceiver getUserConsentReceiverForTesting() {
+        return mUserConsentReceiver;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public SmsVerificationReceiver getVerificationReceiverForTesting() {
+        return mVerificationReceiver;
+    }
+
     // Methods that are called by native implementation
     @CalledByNative
     private static SmsProviderGms create(long smsProviderGmsAndroid, @GmsBackend int backend) {
         Log.d(TAG, "Creating SmsProviderGms");
-        return new SmsProviderGms(smsProviderGmsAndroid, backend);
+        boolean isVerificationBackendAvailable =
+                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+                        ContextUtils.getApplicationContext(),
+                        MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND)
+                == ConnectionResult.SUCCESS;
+        return new SmsProviderGms(smsProviderGmsAndroid, backend, isVerificationBackendAvailable);
     }
 
     @CalledByNative
@@ -77,7 +102,8 @@ public class SmsProviderGms {
     }
 
     @CalledByNative
-    private void listen(WindowAndroid window, boolean isLocalRequest) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void listen(WindowAndroid window, boolean isLocalRequest) {
         mWindow = window;
 
         // Using the verification receiver is preferable but also start user consent receiver in
@@ -89,22 +115,39 @@ public class SmsProviderGms {
         // If the SMS retrieval request is made from a remote device, e.g. desktop, we only proceed
         // with the verification receiver because the user consent receiver introduces too much user
         // friction. In addition, we do not apply the fallback logic in such case.
-        if (mVerificationReceiver != null) mVerificationReceiver.listen(window, isLocalRequest);
-        if (mUserConsentReceiver != null && isLocalRequest) mUserConsentReceiver.listen(window);
+        boolean shouldUseVerificationReceiver = mVerificationReceiver != null
+                && (!isLocalRequest || mBackend != GmsBackend.USER_CONSENT);
+        boolean shouldUseUserConsentReceiver = mUserConsentReceiver != null && isLocalRequest
+                && mBackend != GmsBackend.VERIFICATION && window != null;
+        if (shouldUseVerificationReceiver) mVerificationReceiver.listen(isLocalRequest);
+        if (shouldUseUserConsentReceiver) mUserConsentReceiver.listen(window);
     }
 
-    public void destoryUserConsentReceiver() {
+    /**
+     * Destroys the user consent receiver if the verification receiver succeeded with a local
+     * request.
+     *
+     * @param isLocalRequest Represents whether this request is from local device or not
+     */
+    public void verificationReceiverSucceeded(boolean isLocalRequest) {
+        if (!isLocalRequest) return;
         Log.d(TAG, "DestroyUserConsentReceiver");
         if (mUserConsentReceiver != null) mUserConsentReceiver.destroy();
     }
 
-    public void destoryVerificationReceiver() {
+    /**
+     * Destroys the verification receiver if it failed with a local request.
+     *
+     * @param isLocalRequest Represents whether this request is from local device or not
+     */
+    public void verificationReceiverFailed(boolean isLocalRequest) {
+        if (!isLocalRequest) return;
         Log.d(TAG, "DestroyVerificationReceiver");
         if (mVerificationReceiver != null) mVerificationReceiver.destroy();
     }
 
     void onMethodNotAvailable(boolean isLocalRequest) {
-        assert (mBackend == GmsBackend.AUTO || mBackend == GmsBackend.VERIFICATION);
+        assert (mBackend != GmsBackend.USER_CONSENT || !isLocalRequest);
 
         // Note on caching method availability status: It is possible to cache the fact that calling
         // into verification backend has failed and avoid trying it again on subsequent calls. But

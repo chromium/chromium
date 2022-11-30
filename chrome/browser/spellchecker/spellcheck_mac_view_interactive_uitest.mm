@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,8 @@ IN_PROC_BROWSER_TEST_F(SpellCheckMacViewInteractiveUiTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   SEL show_guess_panel = NSSelectorFromString(@"showGuessPanel:");
   [web_contents->GetRenderWidgetHostView()->GetNativeView().GetNativeNSView()
@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(SpellCheckMacViewInteractiveUiTest,
   test_helper.RunUntilBind();
   spellcheck::SpellCheckMockPanelHost* host =
       test_helper.GetSpellCheckMockPanelHostForProcess(
-          web_contents->GetMainFrame()->GetProcess());
+          web_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_TRUE(host->SpellingPanelVisible());
 }
 #endif

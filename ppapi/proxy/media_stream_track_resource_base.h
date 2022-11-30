@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/media_stream_buffer_manager.h"
@@ -25,6 +24,10 @@ class PPAPI_PROXY_EXPORT MediaStreamTrackResourceBase
                                const std::string& id);
 
   MediaStreamTrackResourceBase(Connection connection, PP_Instance instance);
+
+  MediaStreamTrackResourceBase(const MediaStreamTrackResourceBase&) = delete;
+  MediaStreamTrackResourceBase& operator=(const MediaStreamTrackResourceBase&) =
+      delete;
 
   ~MediaStreamTrackResourceBase() override;
 
@@ -64,8 +67,6 @@ class PPAPI_PROXY_EXPORT MediaStreamTrackResourceBase
   std::string id_;
 
   bool has_ended_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamTrackResourceBase);
 };
 
 }  // namespace proxy

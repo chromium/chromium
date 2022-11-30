@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -99,9 +99,9 @@ void SVGMarkerElement::Trace(Visitor* visitor) const {
 }
 
 AffineTransform SVGMarkerElement::ViewBoxToViewTransform(
-    const FloatSize& viewport_size) const {
+    const gfx::SizeF& viewport_size) const {
   return SVGFitToViewBox::ViewBoxToViewTransform(
-      viewBox()->CurrentValue()->Value(), preserveAspectRatio()->CurrentValue(),
+      viewBox()->CurrentValue()->Rect(), preserveAspectRatio()->CurrentValue(),
       viewport_size);
 }
 
@@ -160,7 +160,7 @@ void SVGMarkerElement::setOrientToAngle(SVGAngleTearOff* angle) {
 
 LayoutObject* SVGMarkerElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return new LayoutSVGResourceMarker(this);
+  return MakeGarbageCollected<LayoutSVGResourceMarker>(this);
 }
 
 bool SVGMarkerElement::SelfHasRelativeLengths() const {

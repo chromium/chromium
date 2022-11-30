@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/storage_monitor/removable_storage_observer.h"
@@ -70,6 +68,10 @@ class MediaFileSystemRegistry
       public MediaGalleriesPreferences::GalleryChangeObserver {
  public:
   MediaFileSystemRegistry();
+
+  MediaFileSystemRegistry(const MediaFileSystemRegistry&) = delete;
+  MediaFileSystemRegistry& operator=(const MediaFileSystemRegistry&) = delete;
+
   ~MediaFileSystemRegistry() override;
 
   // Passes to |callback| the list of media filesystem IDs and paths for a
@@ -106,7 +108,8 @@ class MediaFileSystemRegistry
 
   // Map an extension to the ExtensionGalleriesHost.
   typedef std::map<std::string /*extension_id*/,
-                   scoped_refptr<ExtensionGalleriesHost>> ExtensionHostMap;
+                   std::unique_ptr<ExtensionGalleriesHost>>
+      ExtensionHostMap;
   // Map a profile and extension to the ExtensionGalleriesHost.
   typedef std::map<Profile*, ExtensionHostMap> ExtensionGalleriesHostMap;
   // Map a profile to a shutdown notification subscription.
@@ -140,8 +143,6 @@ class MediaFileSystemRegistry
   std::unique_ptr<MediaFileSystemContext> file_system_context_;
 
   std::unique_ptr<GalleryWatchManager> gallery_watch_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemRegistry);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_FILE_SYSTEM_REGISTRY_H_

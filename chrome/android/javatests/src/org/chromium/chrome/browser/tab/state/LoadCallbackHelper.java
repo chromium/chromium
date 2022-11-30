@@ -1,29 +1,31 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tab.state;
 import org.chromium.base.test.util.CallbackHelper;
 
+import java.nio.ByteBuffer;
+
 /**
- * Stores a byte array and notifies when said byte array acquisition is complete
+ * Stores a ByteBuffer and notifies when said ByteBuffer acquisition is complete
  */
 public class LoadCallbackHelper extends CallbackHelper {
-    private byte[] mRes;
+    private ByteBuffer mRes;
 
     /**
-     * Called when byte array is acquired
-     * @param res byte array acquired
+     * Called when ByteBuffer is acquired
+     * @param res ByteBuffer acquired
      */
-    public void notifyCalled(byte[] res) {
+    public void notifyCalled(ByteBuffer res) {
         mRes = res;
         notifyCalled();
     }
 
     /**
-     * @return byte array acquired during callback
+     * @return ByteBuffer acquired during callback
      */
-    public byte[] getRes() {
+    public ByteBuffer getRes() {
         return mRes;
     }
 }

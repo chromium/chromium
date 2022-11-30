@@ -1,0 +1,48 @@
+<html>
+  <body>
+    <audio></audio>
+    <script>
+      var audio = document.querySelector('audio'),
+      mediaSource = new MediaSource();
+      audio.src = URL.createObjectURL(mediaSource);
+
+      audio.onended = function() { document.title = 'ended'; }
+      audio.onerror = function() { document.title = 'media element error'; }
+
+      // Play two files with different sample rate to force mid-stream
+      // re-initialization.
+      var files = ["bear-44.1kHz.webm", "bear-48kHz.webm"];
+
+      mediaSource.addEventListener('sourceopen', function() {
+        var index = 0;
+        var sourceBuffer = mediaSource.addSourceBuffer('audio/webm;codecs="vorbis"');
+        sourceBuffer.addEventListener('updateend', function (_) {
+          if (++index == files.length) {
+            mediaSource.endOfStream();
+            return;
+          }
+          loadFile(sourceBuffer, index);
+        });
+
+        loadFile(sourceBuffer, index);
+      });
+
+      function loadFile(sourceBuffer, index) {
+        var xhr = new XMLHttpRequest;
+        xhr.open('GET', './' + files[index]);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function() {
+            if (this.status != 200) {
+              console.error('Failed to fetch the file ' + files[index]);
+              return;
+            }
+            sourceBuffer.timestampOffset = index;
+            sourceBuffer.appendBuffer(this.response);
+        };
+        xhr.send();
+      }
+
+      audio.play();
+    </script>
+  </body>
+</html>

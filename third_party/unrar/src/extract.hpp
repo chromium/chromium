@@ -65,6 +65,7 @@ class CmdExtract
 
 #if defined(CHROMIUM_UNRAR)
     int64 GetCurrentFileSize() { return DataIO.CurUnpWrite; }
+    bool IsMissingNextVolume() { return DataIO.NextVolumeMissing; }
 #endif
 };
 

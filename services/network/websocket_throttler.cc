@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,9 +49,9 @@ base::TimeDelta WebSocketPerProcessThrottler::CalculateDelay() const {
   int64_t s =
       num_previous_succeeded_connections_ + num_current_succeeded_connections_;
   int p = num_pending_connections_;
-  return base::TimeDelta::FromMilliseconds(
-      base::RandInt(1000, 5000) *
-      (1 << std::min(p + f / (s + 1), INT64_C(16))) / 65536);
+  return base::Milliseconds(base::RandInt(1000, 5000) *
+                            (1 << std::min(p + f / (s + 1), INT64_C(16))) /
+                            65536);
 }
 
 WebSocketPerProcessThrottler::PendingConnection
@@ -94,11 +94,11 @@ base::TimeDelta WebSocketThrottler::CalculateDelay(int process_id) const {
   return it->second->CalculateDelay();
 }
 
-base::Optional<WebSocketThrottler::PendingConnection>
+absl::optional<WebSocketThrottler::PendingConnection>
 WebSocketThrottler::IssuePendingConnectionTracker(int process_id) {
   if (process_id == mojom::kBrowserProcessId) {
     // The browser process is not throttled.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto it = per_process_throttlers_.find(process_id);
@@ -110,8 +110,8 @@ WebSocketThrottler::IssuePendingConnectionTracker(int process_id) {
   }
 
   if (!throttling_period_timer_.IsRunning()) {
-    throttling_period_timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(2),
-                                   this, &WebSocketThrottler::OnTimer);
+    throttling_period_timer_.Start(FROM_HERE, base::Minutes(2), this,
+                                   &WebSocketThrottler::OnTimer);
   }
   return it->second->IssuePendingConnectionTracker();
 }

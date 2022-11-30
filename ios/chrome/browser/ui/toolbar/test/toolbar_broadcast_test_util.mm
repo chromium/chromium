@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/test/test_toolbar_ui_observer.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,7 +48,7 @@ void VerifyToolbarUIBroadcast(ToolbarUIState* toolbar_ui,
                               bool should_broadcast) {
   ASSERT_TRUE(toolbar_ui);
   ASSERT_TRUE(broadcaster);
-  // Create an observer and modifier for |ui_state|.
+  // Create an observer and modifier for `ui_state`.
   TestToolbarUIObserver* observer = [[TestToolbarUIObserver alloc] init];
   observer.broadcaster = broadcaster;
   TestToolbarUIStateModifier modifier(toolbar_ui);
@@ -64,6 +64,6 @@ void VerifyToolbarUIBroadcast(ToolbarUIState* toolbar_ui,
     EXPECT_TRUE(AreCGFloatsEqual(observer.expandedHeight,
                                  modifier.original_expanded_height()));
   }
-  // Stop observing |broadcaster|.
+  // Stop observing `broadcaster`.
   observer.broadcaster = nil;
 }

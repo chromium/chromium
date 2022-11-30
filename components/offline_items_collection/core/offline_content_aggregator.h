@@ -1,16 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OFFLINE_ITEMS_COLLETION_CORE_OFFLINE_CONTENT_AGGREGATOR_H_
-#define COMPONENTS_OFFLINE_ITEMS_COLLETION_CORE_OFFLINE_CONTENT_AGGREGATOR_H_
+#ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_CONTENT_AGGREGATOR_H_
+#define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_CONTENT_AGGREGATOR_H_
 
 #include <map>
 #include <set>
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
@@ -39,6 +38,10 @@ class OfflineContentAggregator : public OfflineContentProvider,
                                  public KeyedService {
  public:
   OfflineContentAggregator();
+
+  OfflineContentAggregator(const OfflineContentAggregator&) = delete;
+  OfflineContentAggregator& operator=(const OfflineContentAggregator&) = delete;
+
   ~OfflineContentAggregator() override;
 
   // Creates a unique namespace with the given prefix. Should be called to get
@@ -81,21 +84,19 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void RenameItem(const ContentId& id,
                   const std::string& name,
                   RenameCallback callback) override;
-  void ChangeSchedule(const ContentId& id,
-                      base::Optional<OfflineItemSchedule> schedule) override;
 
  private:
   // OfflineContentProvider::Observer implementation.
   void OnItemsAdded(const OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override;
+                     const absl::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
   void OnGetAllItemsDone(OfflineContentProvider* provider,
                          const OfflineItemList& items);
   void OnGetItemByIdDone(SingleItemCallback callback,
-                         const base::Optional<OfflineItem>& item);
+                         const absl::optional<OfflineItem>& item);
 
   // Stores a map of name_space -> OfflineContentProvider.  These
   // OfflineContentProviders are all aggregated by this class and exposed to the
@@ -111,10 +112,8 @@ class OfflineContentAggregator : public OfflineContentProvider,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OfflineContentAggregator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentAggregator);
 };
 
 }  // namespace offline_items_collection
 
-#endif  // COMPONENTS_OFFLINE_ITEMS_COLLETION_CORE_OFFLINE_CONTENT_AGGREGATOR_H_
+#endif  // COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_CONTENT_AGGREGATOR_H_

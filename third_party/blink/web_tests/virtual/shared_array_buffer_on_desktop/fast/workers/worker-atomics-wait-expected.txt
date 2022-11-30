@@ -1,0 +1,6 @@
+Test that Atomics.wait is not allowed on the main thread.
+
+PASS: Calling Atomics.wait on the main thread throws.
+PASS: Atomics.wait is allowed in a worker.
+DONE
+

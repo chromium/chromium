@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
 
@@ -24,6 +24,10 @@ class BluetoothPairingBlueZ {
   BluetoothPairingBlueZ(
       BluetoothDeviceBlueZ* device,
       device::BluetoothDevice::PairingDelegate* pairing_delegate);
+
+  BluetoothPairingBlueZ(const BluetoothPairingBlueZ&) = delete;
+  BluetoothPairingBlueZ& operator=(const BluetoothPairingBlueZ&) = delete;
+
   ~BluetoothPairingBlueZ();
 
   // Indicates whether the device is currently pairing and expecting a
@@ -121,11 +125,11 @@ class BluetoothPairingBlueZ {
       bluez::BluetoothAgentServiceProvider::Delegate::Status status);
 
   // The underlying BluetoothDeviceBlueZ that owns this pairing context.
-  BluetoothDeviceBlueZ* device_;
+  raw_ptr<BluetoothDeviceBlueZ> device_;
 
   // UI Pairing Delegate to make method calls on, this must live as long as
   // the object capturing the PairingContext.
-  device::BluetoothDevice::PairingDelegate* pairing_delegate_;
+  raw_ptr<device::BluetoothDevice::PairingDelegate> pairing_delegate_;
 
   // Flag to indicate whether any pairing delegate method has been called
   // during pairing. Used to determine whether we need to log the
@@ -142,8 +146,6 @@ class BluetoothPairingBlueZ {
       passkey_callback_;
   bluez::BluetoothAgentServiceProvider::Delegate::ConfirmationCallback
       confirmation_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPairingBlueZ);
 };
 
 }  // namespace bluez

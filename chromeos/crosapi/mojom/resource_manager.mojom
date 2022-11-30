@@ -1,0 +1,38 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Memory pressure level corresponding to MemoryPressureLevel in
+// base/memory/memory_pressure_listener.h
+[Stable, Extensible]
+enum MemoryPressureLevel {
+  kNone = 0,
+  kModerate = 1,
+  kCritical = 2,
+};
+
+// Memory pressure status.
+[Stable]
+struct MemoryPressure {
+  MemoryPressureLevel level@0;
+
+  // The amount of memory to reclaim to reduce the memory pressure level.
+  uint64 reclaim_target_kb@1;
+};
+
+// Interface for memory pressure observers. Implemented by lacros-chrome. Used
+// by ash-chrome to send memory pressure status.
+[Stable, Uuid="51b994bb-278f-4df3-9393-2732f2a0dcb3"]
+interface MemoryPressureObserver {
+  // Called when memory pressure status changes.
+  MemoryPressure@0(MemoryPressure pressure);
+};
+
+// Interface to manage chrome resource, e.g. Memory. Implemented by ash-chrome.
+[Stable, Uuid="3908db1e-304d-4615-a331-f2f262745bc3"]
+interface ResourceManager {
+  // Adds an observer for memory pressure status.
+  AddMemoryPressureObserver@0(pending_remote<MemoryPressureObserver> observer);
+};

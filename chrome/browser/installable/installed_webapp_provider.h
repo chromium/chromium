@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -21,6 +20,10 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
   using RuleList = std::vector<std::pair<GURL, ContentSetting>>;
 
   InstalledWebappProvider();
+
+  InstalledWebappProvider(const InstalledWebappProvider&) = delete;
+  InstalledWebappProvider& operator=(const InstalledWebappProvider&) = delete;
+
   ~InstalledWebappProvider() override;
 
   // ProviderInterface implementations.
@@ -28,21 +31,17 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
       ContentSettingsType content_type,
       bool incognito) const override;
 
-  bool SetWebsiteSetting(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      std::unique_ptr<base::Value>&& value,
-      const content_settings::ContentSettingConstraints& constraints = {})
-      override;
+  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
+                         const ContentSettingsPattern& secondary_pattern,
+                         ContentSettingsType content_type,
+                         base::Value&& value,
+                         const content_settings::ContentSettingConstraints&
+                             constraints = {}) override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
 
   void Notify(ContentSettingsType content_type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstalledWebappProvider);
 };
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_

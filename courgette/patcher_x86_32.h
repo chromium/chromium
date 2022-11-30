@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "courgette/courgette_flow.h"
 #include "courgette/ensemble.h"
 #include "courgette/region.h"
@@ -25,6 +24,9 @@ class PatcherX86_32 : public TransformationPatcher {
         base_offset_(0),
         base_length_(0) {
   }
+
+  PatcherX86_32(const PatcherX86_32&) = delete;
+  PatcherX86_32& operator=(const PatcherX86_32&) = delete;
 
   Status Init(SourceStream* parameter_stream) {
     if (!parameter_stream->ReadVarint32(&base_offset_))
@@ -79,8 +81,6 @@ class PatcherX86_32 : public TransformationPatcher {
 
   uint32_t base_offset_;
   uint32_t base_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatcherX86_32);
 };
 
 }  // namespace courgette

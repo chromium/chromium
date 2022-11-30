@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 #include "client/crashpad_client.h"
 
 #include <dlfcn.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/syscall.h>
@@ -23,9 +24,11 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
 #include "client/crash_report_database.h"
+#include "client/crashpad_info.h"
 #include "client/simulate_crash.h"
 #include "gtest/gtest.h"
 #include "snapshot/annotation_snapshot.h"
@@ -49,7 +52,7 @@
 #include "util/posix/signals.h"
 #include "util/thread/thread.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/set_abort_message.h>
 #include "dlfcn_internal.h"
 
@@ -73,21 +76,30 @@ struct StartHandlerForSelfTestOptions {
   bool set_first_chance_handler;
   bool crash_non_main_thread;
   bool client_uses_signals;
+  bool gather_indirectly_referenced_memory;
   CrashType crash_type;
 };
 
 class StartHandlerForSelfTest
     : public testing::TestWithParam<
-          std::tuple<bool, bool, bool, bool, CrashType>> {
+          std::tuple<bool, bool, bool, bool, bool, CrashType>> {
  public:
   StartHandlerForSelfTest() = default;
+
+  StartHandlerForSelfTest(const StartHandlerForSelfTest&) = delete;
+  StartHandlerForSelfTest& operator=(const StartHandlerForSelfTest&) = delete;
+
   ~StartHandlerForSelfTest() = default;
 
   void SetUp() override {
+    // MSAN requires that padding bytes have been initialized for structs that
+    // are written to files.
+    memset(&options_, 0, sizeof(options_));
     std::tie(options_.start_handler_at_crash,
              options_.set_first_chance_handler,
              options_.crash_non_main_thread,
              options_.client_uses_signals,
+             options_.gather_indirectly_referenced_memory,
              options_.crash_type) = GetParam();
   }
 
@@ -95,13 +107,7 @@ class StartHandlerForSelfTest
 
  private:
   StartHandlerForSelfTestOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForSelfTest);
 };
-
-bool HandleCrashSuccessfully(int, siginfo_t*, ucontext_t*) {
-  return true;
-}
 
 bool InstallHandler(CrashpadClient* client,
                     bool start_at_crash,
@@ -132,7 +138,7 @@ constexpr char kTestAnnotationValue[] = "value_of_annotation";
 constexpr char kTestAttachmentName[] = "test_attachment";
 constexpr char kTestAttachmentContent[] = "attachment_content";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr char kTestAbortMessage[] = "test abort message";
 #endif
 
@@ -145,11 +151,33 @@ void ValidateAttachment(const CrashReportDatabase::UploadReport* report) {
             0);
 }
 
-void ValidateDump(const CrashReportDatabase::UploadReport* report) {
+void ValidateExtraMemory(const StartHandlerForSelfTestOptions& options,
+                         const ProcessSnapshotMinidump& minidump) {
+  // Verify that if we have an exception, then the code around the instruction
+  // pointer is included in the extra memory.
+  const ExceptionSnapshot* exception = minidump.Exception();
+  if (exception == nullptr)
+    return;
+  uint64_t pc = exception->Context()->InstructionPointer();
+  std::vector<const MemorySnapshot*> snippets = minidump.ExtraMemory();
+  bool pc_found = false;
+  for (const MemorySnapshot* snippet : snippets) {
+    uint64_t start = snippet->Address();
+    uint64_t end = start + snippet->Size();
+    if (pc >= start && pc < end) {
+      pc_found = true;
+      break;
+    }
+  }
+  EXPECT_EQ(pc_found, options.gather_indirectly_referenced_memory);
+}
+
+void ValidateDump(const StartHandlerForSelfTestOptions& options,
+                  const CrashReportDatabase::UploadReport* report) {
   ProcessSnapshotMinidump minidump_snapshot;
   ASSERT_TRUE(minidump_snapshot.Initialize(report->Reader()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This part of the test requires Q. The API level on Q devices will be 28
   // until the API is finalized, so we can't check API level yet. For now, test
   // for the presence of a libc symbol which was introduced in Q.
@@ -161,6 +189,8 @@ void ValidateDump(const CrashReportDatabase::UploadReport* report) {
   }
 #endif
   ValidateAttachment(report);
+
+  ValidateExtraMemory(options, minidump_snapshot);
 
   for (const ModuleSnapshot* module : minidump_snapshot.Modules()) {
     for (const AnnotationSnapshot& annotation : module->AnnotationObjects()) {
@@ -189,30 +219,42 @@ int RecurseInfinitely(int* ptr) {
 }
 #pragma clang diagnostic pop
 
+sigjmp_buf do_crash_sigjmp_env;
+
+bool HandleCrashSuccessfully(int, siginfo_t*, ucontext_t*) {
+  siglongjmp(do_crash_sigjmp_env, 1);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code-return"
+  return true;
+#pragma clang diagnostic pop
+}
+
 void DoCrash(const StartHandlerForSelfTestOptions& options,
              CrashpadClient* client) {
+  if (sigsetjmp(do_crash_sigjmp_env, 1) != 0) {
+    return;
+  }
+
   switch (options.crash_type) {
     case CrashType::kSimulated:
-      if (options.set_first_chance_handler) {
-        client->SetFirstChanceExceptionHandler(HandleCrashSuccessfully);
-      }
       CRASHPAD_SIMULATE_CRASH();
       break;
 
     case CrashType::kBuiltinTrap:
       __builtin_trap();
-      break;
 
     case CrashType::kInfiniteRecursion:
       int val = 42;
       exit(RecurseInfinitely(&val));
-      break;
   }
 }
 
 class ScopedAltSignalStack {
  public:
   ScopedAltSignalStack() = default;
+
+  ScopedAltSignalStack(const ScopedAltSignalStack&) = delete;
+  ScopedAltSignalStack& operator=(const ScopedAltSignalStack&) = delete;
 
   ~ScopedAltSignalStack() {
     if (stack_mem_.is_valid()) {
@@ -244,8 +286,6 @@ class ScopedAltSignalStack {
 
  private:
   ScopedMmap stack_mem_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAltSignalStack);
 };
 
 class CrashThread : public Thread {
@@ -253,6 +293,9 @@ class CrashThread : public Thread {
   CrashThread(const StartHandlerForSelfTestOptions& options,
               CrashpadClient* client)
       : client_signal_stack_(), options_(options), client_(client) {}
+
+  CrashThread(const CrashThread&) = delete;
+  CrashThread& operator=(const CrashThread&) = delete;
 
  private:
   void ThreadMain() override {
@@ -271,8 +314,6 @@ class CrashThread : public Thread {
   ScopedAltSignalStack client_signal_stack_;
   const StartHandlerForSelfTestOptions& options_;
   CrashpadClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashThread);
 };
 
 CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
@@ -306,6 +347,11 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
         client_handler, SA_ONSTACK, &old_actions));
   }
 
+  if (options.gather_indirectly_referenced_memory) {
+    CrashpadInfo::GetCrashpadInfo()->set_gather_indirectly_referenced_memory(
+        TriState::kEnabled, 1024 * 1024 * 4);
+  }
+
   base::FilePath handler_path = TestPaths::Executable().DirName().Append(
       FILE_PATH_LITERAL("crashpad_handler"));
 
@@ -326,7 +372,11 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
     return EXIT_FAILURE;
   }
 
-#if defined(OS_ANDROID)
+  if (options.set_first_chance_handler) {
+    client.SetFirstChanceExceptionHandler(HandleCrashSuccessfully);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
   if (android_set_abort_message) {
     android_set_abort_message(kTestAbortMessage);
   }
@@ -348,19 +398,26 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
   StartHandlerForSelfInChildTest(const StartHandlerForSelfTestOptions& options)
       : MultiprocessExec(), options_(options) {
     SetChildTestMainFunction("StartHandlerForSelfTestChild");
-    switch (options.crash_type) {
-      case CrashType::kSimulated:
-        // kTerminationNormal, EXIT_SUCCESS
-        break;
-      case CrashType::kBuiltinTrap:
-        SetExpectedChildTerminationBuiltinTrap();
-        break;
-      case CrashType::kInfiniteRecursion:
-        SetExpectedChildTermination(TerminationReason::kTerminationSignal,
-                                    SIGSEGV);
-        break;
+    if (!options.set_first_chance_handler) {
+      switch (options.crash_type) {
+        case CrashType::kSimulated:
+          // kTerminationNormal, EXIT_SUCCESS
+          break;
+        case CrashType::kBuiltinTrap:
+          SetExpectedChildTerminationBuiltinTrap();
+          break;
+        case CrashType::kInfiniteRecursion:
+          SetExpectedChildTermination(TerminationReason::kTerminationSignal,
+                                      SIGSEGV);
+          break;
+      }
     }
   }
+
+  StartHandlerForSelfInChildTest(const StartHandlerForSelfInChildTest&) =
+      delete;
+  StartHandlerForSelfInChildTest& operator=(
+      const StartHandlerForSelfInChildTest&) = delete;
 
  private:
   void MultiprocessParent() override {
@@ -404,29 +461,25 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
     reports.clear();
     ASSERT_EQ(database->GetPendingReports(&reports),
               CrashReportDatabase::kNoError);
-    ASSERT_EQ(reports.size(), options_.set_first_chance_handler ? 0u : 1u);
 
-    if (options_.set_first_chance_handler) {
+    bool report_expected = !options_.set_first_chance_handler ||
+                           options_.crash_type == CrashType::kSimulated;
+    ASSERT_EQ(reports.size(), report_expected ? 1u : 0u);
+
+    if (!report_expected) {
       return;
     }
 
     std::unique_ptr<const CrashReportDatabase::UploadReport> report;
     ASSERT_EQ(database->GetReportForUploading(reports[0].uuid, &report),
               CrashReportDatabase::kNoError);
-    ValidateDump(report.get());
+    ValidateDump(options_, report.get());
   }
 
   StartHandlerForSelfTestOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForSelfInChildTest);
 };
 
 TEST_P(StartHandlerForSelfTest, StartHandlerInChild) {
-  if (Options().set_first_chance_handler &&
-      Options().crash_type != CrashType::kSimulated) {
-    // TODO(jperaza): test first chance handlers with real crashes.
-    return;
-  }
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(UNDEFINED_SANITIZER)
   if (Options().crash_type == CrashType::kInfiniteRecursion) {
@@ -444,6 +497,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
+                     testing::Bool(),
                      testing::Values(CrashType::kSimulated,
                                      CrashType::kBuiltinTrap,
                                      CrashType::kInfiniteRecursion)));
@@ -452,6 +506,11 @@ INSTANTIATE_TEST_SUITE_P(
 class StartHandlerForClientTest {
  public:
   StartHandlerForClientTest() = default;
+
+  StartHandlerForClientTest(const StartHandlerForClientTest&) = delete;
+  StartHandlerForClientTest& operator=(const StartHandlerForClientTest&) =
+      delete;
+
   ~StartHandlerForClientTest() = default;
 
   bool Initialize(bool sanitize) {
@@ -515,6 +574,9 @@ class StartHandlerForClientTest {
   // more privileged, process.
   class SandboxedHandler {
    public:
+    SandboxedHandler(const SandboxedHandler&) = delete;
+    SandboxedHandler& operator=(const SandboxedHandler&) = delete;
+
     static SandboxedHandler* Get() {
       static SandboxedHandler* instance = new SandboxedHandler();
       return instance;
@@ -567,22 +629,22 @@ class StartHandlerForClientTest {
 
     FileHandle client_sock_;
     bool sanitize_;
-
-    DISALLOW_COPY_AND_ASSIGN(SandboxedHandler);
   };
 
   ScopedTempDir temp_dir_;
   ScopedFileHandle client_sock_;
   ScopedFileHandle server_sock_;
   bool sanitize_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForClientTest);
 };
 
 // Tests starting the handler for a child process.
 class StartHandlerForChildTest : public Multiprocess {
  public:
   StartHandlerForChildTest() = default;
+
+  StartHandlerForChildTest(const StartHandlerForChildTest&) = delete;
+  StartHandlerForChildTest& operator=(const StartHandlerForChildTest&) = delete;
+
   ~StartHandlerForChildTest() = default;
 
   bool Initialize(bool sanitize) {
@@ -609,8 +671,6 @@ class StartHandlerForChildTest : public Multiprocess {
   }
 
   StartHandlerForClientTest test_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForChildTest);
 };
 
 TEST(CrashpadClient, StartHandlerForChild) {

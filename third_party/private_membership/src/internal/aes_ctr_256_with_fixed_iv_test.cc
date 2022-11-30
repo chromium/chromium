@@ -15,6 +15,7 @@
 #include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
 
 #include <memory>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -27,7 +28,7 @@ namespace private_membership {
 namespace {
 
 using ::rlwe::testing::StatusIs;
-using testing::HasSubstr;
+using ::testing::HasSubstr;
 
 std::string GetRandomBytes(size_t length) {
   std::unique_ptr<uint8_t[]> buf(new uint8_t[length]);
@@ -35,7 +36,7 @@ std::string GetRandomBytes(size_t length) {
   // OpenSSL documentation says that it returns 1 on success, 0 otherwise. We
   // use BoringSSL, so we don't check the return value.
   RAND_bytes(buf.get(), length);
-  return std::string(reinterpret_cast<const char *>(buf.get()), length);
+  return std::string(reinterpret_cast<const char*>(buf.get()), length);
 }
 
 TEST(AesCtr256WithFixedIVTest, TestEncryptDecrypt) {

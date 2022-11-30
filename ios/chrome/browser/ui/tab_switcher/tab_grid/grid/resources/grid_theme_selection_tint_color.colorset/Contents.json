@@ -8,11 +8,11 @@
       "idiom" : "universal",
       "color" : {
         "color-space" : "display-p3",
-                "components" : {
-                  "red" : "0x8A",
-                  "alpha" : "1.000",
-                  "blue" : "0xF9",
-                  "green" : "0xB4"
+        "components" : {
+          "alpha" : "1.000",
+          "red" : "0x8A",
+          "green" : "0xB4",
+          "blue" : "0xF9"
         }
       }
     },
@@ -27,10 +27,10 @@
       "color" : {
         "color-space" : "display-p3",
         "components" : {
-          "red" : "0x8A",
           "alpha" : "1.000",
-          "blue" : "0xF9",
-          "green" : "0xB4"
+          "red" : "0x8A",
+          "green" : "0xB4",
+          "blue" : "0xF9"
         }
       }
     }

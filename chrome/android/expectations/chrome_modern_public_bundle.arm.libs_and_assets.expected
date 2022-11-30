@@ -86,5 +86,5 @@ apk_path=assets/locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/locales/zu.pak, compress=False, alignment=4
 apk_path=assets/resources.pak, compress=False, alignment=4
 apk_path=assets/snapshot_blob_32.bin, compress=False, alignment=4
-apk_path=assets/webapk7.dex, compress=True, alignment=0
+apk_path=assets/webapk8.dex, compress=True, alignment=0
 apk_path=assets/webapk_dex_version.txt, compress=True, alignment=0

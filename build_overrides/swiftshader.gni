@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,3 @@ swiftshader_standalone = false
 
 # Path to SwiftShader
 swiftshader_dir = "//third_party/swiftshader"
-
-# Paths to SwiftShader dependencies
-swiftshader_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"

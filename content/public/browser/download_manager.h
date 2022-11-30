@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -35,8 +35,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
@@ -47,6 +46,7 @@
 #include "content/common/content_export.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -55,6 +55,7 @@ namespace content {
 
 class BrowserContext;
 class DownloadManagerDelegate;
+class StoragePartitionConfig;
 
 // Browser's download manager: manages all downloads and destination view.
 class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
@@ -143,10 +144,10 @@ class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const StoragePartitionConfig& storage_partition_config,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
-      const base::Optional<url::Origin>& request_initiator,
+      const absl::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -162,8 +163,8 @@ class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>&
-          received_slices) = 0;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) = 0;
 
   // Enum to describe which dependency was initialized in PostInitialization.
   enum DownloadInitializationDependency {
@@ -210,6 +211,25 @@ class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
   // Called to get an ID for a new download. |callback| may be called
   // synchronously.
   virtual void GetNextId(GetNextIdCallback callback) = 0;
+
+  // Called to convert between a StoragePartitionConfig and a serialized
+  // proto::EmbedderDownloadData. The serialized proto::EmbedderDownloadData is
+  // written to the downloads database.
+  virtual std::string StoragePartitionConfigToSerializedEmbedderDownloadData(
+      const StoragePartitionConfig& storage_partition_config) = 0;
+  virtual StoragePartitionConfig
+  SerializedEmbedderDownloadDataToStoragePartitionConfig(
+      const std::string& serialized_embedder_download_data) = 0;
+
+  // Called to get the proper StoragePartitionConfig that corresponds to the
+  // given site URL. This method is used in DownloadHistory to convert download
+  // history entries containing just site URLs to DownloadItem objects that no
+  // longer use site URL. The download history database is not able to migrate
+  // away from site URL because it is shared by all platforms, therefore it
+  // cannot reference StoragePartitionConfig since it is a content class.
+  // See https://crbug.com/1258193 for more details.
+  virtual StoragePartitionConfig GetStoragePartitionConfigForSiteUrl(
+      const GURL& site_url) = 0;
 };
 
 }  // namespace content

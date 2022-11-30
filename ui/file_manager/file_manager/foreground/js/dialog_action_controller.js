@@ -1,30 +1,30 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {LaunchParam} from './launch_param.m.js';
-// #import {NamingController} from './naming_controller.m.js';
-// #import {FileFilter} from './directory_contents.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {DialogFooter} from './ui/dialog_footer.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
-// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.m.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {$} from 'chrome://resources/js/util.m.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// clang-format on
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {Command} from './ui/command.js';
+import {$} from 'chrome://resources/js/util.js';
+
+import {DialogType} from '../../common/js/dialog_type.js';
+import {metrics} from '../../common/js/metrics.js';
+import {str, UserCanceledError, util} from '../../common/js/util.js';
+import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {LaunchParam} from './launch_param.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {NamingController} from './naming_controller.js';
+import {DialogFooter} from './ui/dialog_footer.js';
 
 /**
  * Controler for handling behaviors of the Files app opened as a file/folder
  * selection dialog.
  */
-/* #export */ class DialogActionController {
+export class DialogActionController {
   /**
    * @param {!DialogType} dialogType Dialog type.
    * @param {!DialogFooter} dialogFooter Dialog footer.
@@ -99,7 +99,7 @@
     this.onFileTypeFilterChanged_();
 
     this.newFolderCommand_ =
-        /** @type {cr.ui.Command} */ ($('new-folder'));
+        /** @type {Command} */ ($('new-folder'));
     this.newFolderCommand_.addEventListener(
         'disabledChange', this.updateNewFolderButton_.bind(this));
   }
@@ -107,7 +107,7 @@
   /**
    * @private
    */
-  processOKActionForSaveDialog_() {
+  async processOKActionForSaveDialog_() {
     const selection = this.fileSelectionHandler_.selection;
 
     // If OK action is clicked when a directory is selected, open the directory.
@@ -125,21 +125,20 @@
       throw new Error('Missing filename!');
     }
 
-    this.namingController_.validateFileNameForSaving(filename)
-        .then(url => {
-          // TODO(mtomasz): Clean this up by avoiding constructing a URL
-          //                via string concatenation.
-          this.selectFilesAndClose_({
-            urls: [url],
-            multiple: false,
-            filterIndex: this.dialogFooter_.selectedFilterIndex
-          });
-        })
-        .catch(error => {
-          if (error instanceof Error) {
-            console.error(error.stack && error);
-          }
-        });
+    try {
+      const url =
+          await this.namingController_.validateFileNameForSaving(filename);
+
+      this.selectFilesAndClose_({
+        urls: [url],
+        multiple: false,
+        filterIndex: this.dialogFooter_.selectedFilterIndex,
+      });
+    } catch (error) {
+      if (!(error instanceof UserCanceledError)) {
+        console.warn(error);
+      }
+    }
   }
 
   /**
@@ -169,7 +168,7 @@
       const singleSelection = {
         urls: [url],
         multiple: false,
-        filterIndex: this.dialogFooter_.selectedFilterIndex
+        filterIndex: this.dialogFooter_.selectedFilterIndex,
       };
       this.selectFilesAndClose_(singleSelection);
       return;
@@ -186,7 +185,7 @@
     for (let i = 0; i < selectedIndexes.length; i++) {
       const entry = dm.item(selectedIndexes[i]);
       if (!entry) {
-        console.error('Error locating selected file at index: ' + i);
+        console.warn('Error locating selected file at index: ' + i);
         continue;
       }
 
@@ -223,7 +222,7 @@
     const singleSelection = {
       urls: [files[0]],
       multiple: false,
-      filterIndex: this.dialogFooter_.selectedFilterIndex
+      filterIndex: this.dialogFooter_.selectedFilterIndex,
     };
     this.selectFilesAndClose_(singleSelection);
   }

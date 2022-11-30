@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/proxy_lookup_client.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -39,7 +41,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   MOCK_METHOD(void,
               LookUpProxyForURL,
               (const GURL& url,
-               const net::NetworkIsolationKey& network_isolation_key,
+               const net::NetworkAnonymizationKey& network_isolation_key,
                mojo::PendingRemote<::network::mojom::ProxyLookupClient>
                    proxy_lookup_client),
               (override));
@@ -51,14 +53,14 @@ class MockNetworkContext : public network::TestNetworkContext {
  private:
   void LookUpProxyForURLInternal(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_isolation_key,
       mojo::PendingRemote<::network::mojom::ProxyLookupClient>
           proxy_lookup_client) {
     mojo::Remote<::network::mojom::ProxyLookupClient> client(
         std::move(proxy_lookup_client));
     if (proxy_presence_table_.count(url) == 0) {
       client->OnProxyLookupComplete(net::ERR_FAILED,
-                                    /*proxy_info=*/base::nullopt);
+                                    /*proxy_info=*/absl::nullopt);
       return;
     }
     net::ProxyInfo proxy_info;

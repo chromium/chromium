@@ -1,16 +1,20 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/toplevel_window_event_handler.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/multitask_menu_nudge_controller.h"
+#include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -44,7 +48,7 @@ bool CanStartTwoFingerMove(aura::Window* window,
   // the tab strip is full and hitting the caption area is difficult. We check
   // the window type and the state type so that we do not steal touches from the
   // web contents.
-  if (window->type() != aura::client::WINDOW_TYPE_NORMAL ||
+  if (window->GetType() != aura::client::WINDOW_TYPE_NORMAL ||
       !WindowState::Get(window) ||
       !WindowState::Get(window)->IsNormalOrSnapped()) {
     return false;
@@ -68,8 +72,11 @@ void ShowResizeShadow(aura::Window* window, int component) {
   // Don't show resize shadow if
   // 1) the window is not toplevel.
   // 2) the device is in tablet mode.
+  // 3) the window is not resizable.
   if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-      window != window->GetToplevelWindow()) {
+      window != window->GetToplevelWindow() ||
+      ((window->GetProperty(aura::client::kResizeBehaviorKey) &
+        aura::client::kResizeBehaviorCanResize) == 0)) {
     return;
   }
 
@@ -82,8 +89,10 @@ void ShowResizeShadow(aura::Window* window, int component) {
 void HideResizeShadow(aura::Window* window) {
   ResizeShadowController* resize_shadow_controller =
       Shell::Get()->resize_shadow_controller();
-  if (resize_shadow_controller)
+  if (resize_shadow_controller &&
+      window->GetProperty(kResizeShadowTypeKey) == ResizeShadowType::kUnlock) {
     resize_shadow_controller->HideShadow(window);
+  }
 }
 
 // Called once the drag completes.
@@ -110,6 +119,10 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
   ScopedWindowResizer(ToplevelWindowEventHandler* handler,
                       std::unique_ptr<WindowResizer> resizer,
                       bool grab_capture);
+
+  ScopedWindowResizer(const ScopedWindowResizer&) = delete;
+  ScopedWindowResizer& operator=(const ScopedWindowResizer&) = delete;
+
   ~ScopedWindowResizer() override;
 
   // Returns true if the drag moves the window and does not resize.
@@ -136,8 +149,6 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
 
   // Set to true if OnWindowDestroying() is received.
   bool window_destroying_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowResizer);
 };
 
 ToplevelWindowEventHandler::ScopedWindowResizer::ScopedWindowResizer(
@@ -197,11 +208,9 @@ void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
 ToplevelWindowEventHandler::ToplevelWindowEventHandler()
     : first_finger_hittest_(HTNOWHERE) {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
 
@@ -316,7 +325,8 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   if (window_resizer_ && !in_gesture_drag_)
     return;
 
-  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target)
+  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target &&
+      !target->bounds().IsEmpty())
     return;
 
   if (event->details().touch_points() > 2) {
@@ -447,7 +457,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     case ui::ET_SCROLL_FLING_START:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SWIPE:
       HandleFlingOrSwipe(event);
       return;
@@ -597,8 +607,9 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  if (toplevel->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(AppType::BROWSER)) {
+  auto app_type = toplevel->GetProperty(aura::client::kAppType);
+  if (app_type == static_cast<int>(AppType::BROWSER) ||
+      app_type == static_cast<int>(AppType::LACROS)) {
     return nullptr;
   }
 
@@ -634,7 +645,9 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
     int window_component,
     ::wm::WindowMoveSource source,
     bool grab_capture) {
-  if (window_resizer_)
+  // Do not allow resizing if there is already one in progress or if the
+  // window's state is not managed by the window manager.
+  if (window_resizer_ || !WindowState::Get(window))
     return false;
 
   std::unique_ptr<WindowResizer> resizer(
@@ -722,10 +735,16 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
   if (!window_resizer_)
     return;
   gfx::PointF location_in_parent = event->location_f();
-  aura::Window::ConvertPointToTarget(target, target->parent(),
-                                     &location_in_parent);
+  aura::Window::ConvertPointToTarget(
+      target, window_resizer_->resizer()->GetTarget()->parent(),
+      &location_in_parent);
   window_resizer_->resizer()->Drag(location_in_parent, event->flags());
   event->StopPropagation();
+
+  // Dragging may change the window that has capture, invalidating
+  // `window_resizer_`.
+  if (window_resizer_ && window_resizer_->IsResize())
+    Shell::Get()->multitask_menu_nudge_controller()->MaybeShowNudge(target);
 }
 
 void ToplevelWindowEventHandler::HandleMouseMoved(aura::Window* target,

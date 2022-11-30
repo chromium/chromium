@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Site A Foo</title>
+    <script src="/webapps_integration/test_utils.js"></script>
+    <script>
+      // If a "manifest=/path/to/manifest.json" query argument is provided to
+      // the URL accessing this page, that path is injected as the manifest tag.
+      // Otherwise, "basic.json" is used as the manifest tag.
+      addManifestLinkTag();
+    </script>
+</head>
+<body onload="startWorker('../service_worker.js', { scope: '/webapps_integration/standalone/' })">
+  <h1>Site A Foo</h1>
+  Service worker returns a response object if it's offline, so the page
+  supports the offline environment.
+</body>
+</html>

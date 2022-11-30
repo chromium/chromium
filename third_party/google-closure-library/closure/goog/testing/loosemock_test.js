@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.LooseMockTest');
 goog.setTestOnly();
@@ -41,6 +33,10 @@ testSuite({
     mock = new LooseMock(obj);
   },
 
+  /**
+     @suppress {strictMissingProperties,missingProperties} suppression added to
+     enable type checking
+   */
   testSimpleExpectations() {
     mock.a(5);
     mock.b();
@@ -71,6 +67,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testMultipleExpectations() {
     mock.a().$returns(1);
     mock.a().$returns(2);
@@ -80,6 +80,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties,missingProperties} suppression added to
+     enable type checking
+   */
   testMultipleExpectationArgs() {
     mock.a('asdf').$anyTimes();
     mock.a('qwer').$anyTimes();
@@ -105,6 +109,10 @@ testSuite({
     goog.bind(mock.$verify, mock);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSameMethodOutOfOrder() {
     mock.a('foo').$returns(1);
     mock.a('bar').$returns(2);
@@ -113,6 +121,10 @@ testSuite({
     assertEquals(1, mock.a('foo'));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSameMethodDifferentReturnValues() {
     mock.a('foo').$returns(1).$times(2);
     mock.a('foo').$returns(3);
@@ -122,12 +134,20 @@ testSuite({
     assertEquals(2, mock.a('bar'));
     assertEquals(1, mock.a('foo'));
     assertEquals(3, mock.a('foo'));
-    assertThrowsJsUnitException(() => {
-      mock.a('foo');
-      mock.$verify();
-    });
+    assertThrowsJsUnitException(/**
+                                   @suppress {strictMissingProperties}
+                                   suppression added to enable type checking
+                                 */
+                                () => {
+                                  mock.a('foo');
+                                  mock.$verify();
+                                });
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSameMethodBrokenExpectations() {
     // This is a weird corner case.
     // No way to ever make this verify no matter what you call after replaying,
@@ -154,6 +174,10 @@ testSuite({
     assertThrowsJsUnitException(goog.bind(mock.$verify, mock));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSameMethodMultipleAnyTimes() {
     mock.a('foo').$returns(1).$anyTimes();
     mock.a('foo').$returns(2).$anyTimes();
@@ -165,6 +189,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties,missingProperties} suppression added to
+     enable type checking
+   */
   testFailingFast() {
     mock.a().$anyTimes();
     mock.$replay();
@@ -180,11 +208,19 @@ testSuite({
     mock.a();
     mock.b();
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     const e = assertThrowsJsUnitException(goog.bind(mock.a, mock));
 
     assertContains('Too many calls to a', e.message);
   },
 
+  /**
+     @suppress {strictMissingProperties,missingProperties} suppression added to
+     enable type checking
+   */
   testTimes() {
     mock.a().$times(3);
     mock.b().$times(2);
@@ -197,6 +233,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties,missingProperties} suppression added to
+     enable type checking
+   */
   testFailingSlow() {
     // not enough
     mock.a().$times(3);
@@ -226,6 +266,10 @@ testSuite({
     assertThrowsJsUnitException(goog.bind(mock.$verify, mock));
   },
 
+  /**
+     @suppress {strictMissingProperties,missingProperties} suppression added to
+     enable type checking
+   */
   testArgsAndReturns() {
     mock.a('asdf').$atLeastOnce().$returns(5);
     mock.b('qwer').$times(2).$returns(3);
@@ -238,6 +282,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testThrows() {
     mock.a().$throws('exception!');
     mock.$replay();
@@ -245,6 +293,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDoes() {
     mock.a(1, 2).$does((a, b) => a + b);
     mock.$replay();
@@ -252,6 +304,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties,missingProperties} suppression added to
+     enable type checking
+   */
   testIgnoresExtraCalls() {
     mock = new LooseMock(RealObject, true);
     mock.a();
@@ -261,6 +317,10 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSkipAnyTimes() {
     mock = new LooseMock(RealObject);
     mock.a(1).$anyTimes();
@@ -272,42 +332,78 @@ testSuite({
     mock.$verify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testErrorMessageForBadArgs() {
     mock.a();
     mock.$anyTimes();
 
     mock.$replay();
 
-    const e = assertThrowsJsUnitException(() => {
-      mock.a('a');
-    });
+    const e =
+        assertThrowsJsUnitException(/**
+                                       @suppress {strictMissingProperties}
+                                       suppression added to enable type checking
+                                     */
+                                    () => {
+                                      mock.a('a');
+                                    });
 
     assertContains('Bad arguments to a()', e.message);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitAndVerify() {
     mock.a();
     mock.$replay();
 
-    setTimeout(() => {
-      mock.a();
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mock.a();
+               },
+               0);
     await mock.$waitAndVerify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitAndVerify_Multiple() {
     mock.a().$times(2);
     mock.$replay();
 
-    setTimeout(() => {
-      mock.a();
-    }, 0);
-    setTimeout(() => {
-      mock.a();
-    }, 50);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mock.a();
+               },
+               0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mock.a();
+               },
+               50);
     await mock.$waitAndVerify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitAndVerify_Never() {
     mock.a().$never();
     mock.$replay();
@@ -315,6 +411,10 @@ testSuite({
     await mock.$waitAndVerify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitAndVerify_Synchronous() {
     mock.a();
     mock.$replay();
@@ -323,33 +423,55 @@ testSuite({
     await mock.$waitAndVerify();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitAndVerify_Exception() {
     mock.a();
     mock.$replay();
 
     setTimeout(() => {
-      assertThrowsJsUnitException(() => {
-        mock.a(false);
-      });
+      assertThrowsJsUnitException(/**
+                                     @suppress {strictMissingProperties}
+                                     suppression added to enable type checking
+                                   */
+                                  () => {
+                                    mock.a(false);
+                                  });
     }, 0);
     await assertRejects(mock.$waitAndVerify());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   async testWaitAndVerify_Reset() {
     mock.a();
     mock.$replay();
 
-    setTimeout(() => {
-      mock.a();
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mock.a();
+               },
+               0);
     await mock.$waitAndVerify();
     mock.$reset();
     mock.a();
     mock.$replay();
 
-    setTimeout(() => {
-      mock.a();
-    }, 0);
+    setTimeout(/**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+               () => {
+                 mock.a();
+               },
+               0);
     await mock.$waitAndVerify();
   },
 });

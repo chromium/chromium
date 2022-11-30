@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ void MockOfflineContentProvider::NotifyOnItemRemoved(const ContentId& id) {
 
 void MockOfflineContentProvider::NotifyOnItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   NotifyItemUpdated(item, update_delta);
 }
 
@@ -63,7 +63,7 @@ void MockOfflineContentProvider::GetAllItems(MultipleItemCallback callback) {
 
 void MockOfflineContentProvider::GetItemById(const ContentId& id,
                                              SingleItemCallback callback) {
-  base::Optional<OfflineItem> result;
+  absl::optional<OfflineItem> result;
   for (auto item : items_) {
     if (item.id == id) {
       result = item;

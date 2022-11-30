@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,10 +39,10 @@ std::mt19937 RandomEngine() {
 }
 
 std::vector<uint8_t> RandomData(size_t size, std::mt19937* engine) {
-  std::uniform_int_distribution<uint8_t> dist(0, 255);
+  std::uniform_int_distribution<uint32_t> dist(0, 255);
   std::vector<uint8_t> data(size);
   for (size_t i = 0; i < size; ++i)
-    data[i] = dist(*engine);
+    data[i] = static_cast<uint8_t>(dist(*engine));
 
   return data;
 }
@@ -96,7 +96,7 @@ std::pair<int64_t, int64_t> WriteReadData(int size,
     // Sleeping, as posix_fadvise() is asynchronous. On the other hand, we
     // don't need to sleep for too long, as all the pages are already clean
     // after the fsync() above, so no writeback is required here.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
   }
 
   // Read.
@@ -155,8 +155,8 @@ void RandomlyReadWrite(std::atomic<bool>* should_stop,
         static_cast<char*>(base::AlignedAlloc(kPageSize, kPageSize)));
 
     while (!should_stop->load()) {
-      int i = dist(engine);
-      int offset = i * kPageSize;
+      int random = dist(engine);
+      int offset = random * kPageSize;
       int size_read = f.Read(offset, page_buffer.get(), kPageSize);
       CHECK_EQ(size_read, kPageSize);
 
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
     std::string path = base::StringPrintf("%s-noisy_neighbor-%d", filename, i);
     noisy_neighbors.emplace_back(
         [=]() { RandomlyReadWrite(should_stop_ptr, path, i); });
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+    base::PlatformThread::Sleep(base::Seconds(2));
   }
 
   for (int i = 0; i < 12; i++) {  // Max 1 << 11 pages = 8MiB.

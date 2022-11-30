@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="figure", hasImage="true", roleDescription="graphic"]
+++++Image text:"This is a green box." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/greenbox.png"]
+++++View text:"Fig.1 - A green Box" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="figcaption"]

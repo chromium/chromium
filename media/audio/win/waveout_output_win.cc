@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,7 +149,7 @@ bool PCMWaveOutAudioOutputStream::Open() {
 }
 
 void PCMWaveOutAudioOutputStream::SetupBuffers() {
-  buffers_.reset(new char[BufferSize() * num_buffers_]);
+  buffers_ = std::make_unique<char[]>(BufferSize() * num_buffers_);
   for (int ix = 0; ix != num_buffers_; ++ix) {
     WAVEHDR* buffer = GetBuffer(ix);
     buffer->lpData = reinterpret_cast<char*>(buffer) + sizeof(WAVEHDR);
@@ -332,9 +332,9 @@ void PCMWaveOutAudioOutputStream::QueueNextPacket(WAVEHDR *buffer) {
   // TODO(fbarchard): Handle used 0 by queueing more.
 
   // TODO(sergeyu): Specify correct hardware delay for |delay|.
-  const base::TimeDelta delay = base::TimeDelta::FromMicroseconds(
-      pending_bytes_ * base::Time::kMicrosecondsPerSecond /
-      format_.Format.nAvgBytesPerSec);
+  const base::TimeDelta delay =
+      base::Microseconds(pending_bytes_ * base::Time::kMicrosecondsPerSecond /
+                         format_.Format.nAvgBytesPerSec);
   int frames_filled =
       callback_->OnMoreData(delay, base::TimeTicks::Now(), 0, audio_bus_.get());
   uint32_t used = frames_filled * audio_bus_->channels() *

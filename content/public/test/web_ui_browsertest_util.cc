@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/web_contents.h"
@@ -57,7 +58,7 @@ struct WebUIControllerConfig {
   bool disable_xfo = false;
   bool disable_trusted_types = false;
   std::vector<std::string> requestable_schemes;
-  base::Optional<std::vector<std::string>> frame_ancestors;
+  absl::optional<std::vector<std::string>> frame_ancestors;
 };
 
 class TestWebUIController : public WebUIController {
@@ -73,7 +74,8 @@ class TestWebUIController : public WebUIController {
       web_ui_impl->AddRequestableScheme(scheme.c_str());
     }
 
-    WebUIDataSource* data_source = WebUIDataSource::Create(base_url.host());
+    WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
+        web_ui->GetWebContents()->GetBrowserContext(), base_url.host());
     data_source->SetRequestFilter(
         base::BindRepeating([](const std::string& path) { return true; }),
         base::BindRepeating(&GetResource));
@@ -89,9 +91,6 @@ class TestWebUIController : public WebUIController {
       data_source->DisableDenyXFrameOptions();
     if (config.disable_trusted_types)
       data_source->DisableTrustedTypesCSP();
-
-    WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                         data_source);
   }
   TestWebUIController(const TestWebUIController&) = delete;
   void operator=(const TestWebUIController&) = delete;
@@ -99,45 +98,67 @@ class TestWebUIController : public WebUIController {
 
 }  // namespace
 
-TestUntrustedDataSourceCSP::TestUntrustedDataSourceCSP() = default;
-TestUntrustedDataSourceCSP::TestUntrustedDataSourceCSP(
-    const TestUntrustedDataSourceCSP& other) = default;
-TestUntrustedDataSourceCSP::~TestUntrustedDataSourceCSP() = default;
+TestUntrustedDataSourceHeaders::TestUntrustedDataSourceHeaders() = default;
+TestUntrustedDataSourceHeaders::TestUntrustedDataSourceHeaders(
+    const TestUntrustedDataSourceHeaders& other) = default;
+TestUntrustedDataSourceHeaders::~TestUntrustedDataSourceHeaders() = default;
 
-void AddUntrustedDataSource(BrowserContext* browser_context,
-                            const std::string& host,
-                            base::Optional<TestUntrustedDataSourceCSP> csp) {
-  auto* untrusted_data_source =
-      WebUIDataSource::Create(GetChromeUntrustedUIURL(host).spec());
+void AddUntrustedDataSource(
+    BrowserContext* browser_context,
+    const std::string& host,
+    absl::optional<TestUntrustedDataSourceHeaders> headers) {
+  auto* untrusted_data_source = WebUIDataSource::CreateAndAdd(
+      browser_context, GetChromeUntrustedUIURL(host).spec());
   untrusted_data_source->SetRequestFilter(
       base::BindRepeating([](const std::string& path) { return true; }),
       base::BindRepeating(&GetResource));
-  if (csp.has_value()) {
-    if (csp->child_src.has_value()) {
+  if (headers.has_value()) {
+    if (headers->child_src.has_value()) {
       untrusted_data_source->OverrideContentSecurityPolicy(
-          network::mojom::CSPDirectiveName::ChildSrc, csp->child_src.value());
+          network::mojom::CSPDirectiveName::ChildSrc,
+          headers->child_src.value());
     }
-    if (csp->script_src.has_value()) {
+    if (headers->script_src.has_value()) {
       untrusted_data_source->OverrideContentSecurityPolicy(
-          network::mojom::CSPDirectiveName::ScriptSrc, csp->script_src.value());
+          network::mojom::CSPDirectiveName::ScriptSrc,
+          headers->script_src.value());
     }
-    if (csp->default_src.has_value()) {
+    if (headers->default_src.has_value()) {
       untrusted_data_source->OverrideContentSecurityPolicy(
           network::mojom::CSPDirectiveName::DefaultSrc,
-          csp->default_src.value());
+          headers->default_src.value());
     }
-    if (csp->no_trusted_types)
+    if (headers->no_trusted_types)
       untrusted_data_source->DisableTrustedTypesCSP();
-    if (csp->no_xfo)
+    if (headers->no_xfo)
       untrusted_data_source->DisableDenyXFrameOptions();
-    if (csp->frame_ancestors.has_value()) {
-      for (const auto& frame_ancestor : csp->frame_ancestors.value()) {
+    if (headers->frame_ancestors.has_value()) {
+      for (const auto& frame_ancestor : headers->frame_ancestors.value()) {
         untrusted_data_source->AddFrameAncestor(GURL(frame_ancestor));
       }
     }
+    if (headers->cross_origin_opener_policy.has_value()) {
+      switch (headers->cross_origin_opener_policy.value()) {
+        case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
+          break;
+        case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
+          untrusted_data_source->OverrideCrossOriginOpenerPolicy("same-origin");
+          break;
+        case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+          untrusted_data_source->OverrideCrossOriginOpenerPolicy("same-origin");
+          untrusted_data_source->OverrideCrossOriginEmbedderPolicy(
+              "require-corp");
+          break;
+        case network::mojom::CrossOriginOpenerPolicyValue::
+            kSameOriginAllowPopups:
+        case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
+        case network::mojom::CrossOriginOpenerPolicyValue::
+            kRestrictPropertiesPlusCoep:
+          NOTIMPLEMENTED();
+          break;
+      }
+    }
   }
-
-  WebUIDataSource::Add(browser_context, untrusted_data_source);
 }
 
 // static

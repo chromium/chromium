@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/ntp_snippets/remote/proto/ntp_snippets.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,8 +59,11 @@ MATCHER_P(PointeeEq, ptr_to_expected, "") {
 
 class RemoteSuggestionsDatabaseTest : public testing::Test {
  public:
-  RemoteSuggestionsDatabaseTest()
-      : suggestion_db_(nullptr), image_db_(nullptr) {}
+  RemoteSuggestionsDatabaseTest() = default;
+
+  RemoteSuggestionsDatabaseTest(const RemoteSuggestionsDatabaseTest&) = delete;
+  RemoteSuggestionsDatabaseTest& operator=(
+      const RemoteSuggestionsDatabaseTest&) = delete;
 
   void CreateDatabase() {
     // The FakeDBs are owned by |db_|, so clear our pointers before resetting
@@ -108,12 +111,10 @@ class RemoteSuggestionsDatabaseTest : public testing::Test {
   std::map<std::string, SnippetImageProto> image_db_storage_;
 
   // Owned by |db_|.
-  FakeDB<SnippetProto>* suggestion_db_;
-  FakeDB<SnippetImageProto>* image_db_;
+  raw_ptr<FakeDB<SnippetProto>> suggestion_db_ = nullptr;
+  raw_ptr<FakeDB<SnippetImageProto>> image_db_ = nullptr;
 
   std::unique_ptr<RemoteSuggestionsDatabase> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsDatabaseTest);
 };
 
 TEST_F(RemoteSuggestionsDatabaseTest, Init) {

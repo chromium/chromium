@@ -1,10 +1,13 @@
 <style include="cr-shared-style">
   :host {
-    --ntp-theme-shortcut-background-color: rgb(229, 231, 232);
-    --ntp-theme-text-color: var(--google-grey-800);
     --ntp-theme-text-shadow: none;
     --ntp-one-google-bar-height: 56px;
     --ntp-search-box-width: 337px;
+    --ntp-module-width: var(--ntp-search-box-width);
+    --ntp-module-layout-width: var(--ntp-search-box-width);
+    --ntp-module-border-radius: 5px;
+    --ntp-protected-icon-background-color: transparent;
+    --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
   }
 
   @media (min-width: 560px) {
@@ -19,15 +22,37 @@
     }
   }
 
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --ntp-theme-shortcut-background-color: var(--google-grey-refresh-100);
-      --ntp-theme-text-color: white;
+  :host([modules-redesigned-enabled_]) {
+    --ntp-module-border-radius: 24px;
+    --ntp-module-layout-width: 360px;
+    --ntp-module-width: 360px;
+  }
+
+  :host([modules-redesigned-layout-enabled_]) {
+    --ntp-module-layout-width: 360px;
+  }
+
+  @media (min-width: 960px) {
+    :host([modules-redesigned-layout-enabled_]) {
+      --ntp-module-layout-width: 780px;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    :host([modules-redesigned-layout-enabled_]) {
+      --ntp-module-layout-width: 1170px;
     }
   }
 
   :host([show-background-image_]) {
     --ntp-theme-text-shadow: 0 0 16px rgba(0, 0, 0, .3);
+  }
+
+  :host([show-background-image_][remove-scrim_]) {
+    --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
+        0px 0px 4px rgba(0, 0, 0, 0.3), 0px 0px 16px rgba(0, 0, 0, 0.2);
+    --ntp-protected-icon-background-color: rgba(0, 0, 0, .1);
+    --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .2);
   }
 
   #oneGoogleBar {
@@ -37,32 +62,15 @@
     width: 100%;
   }
 
-  #oneGoogleBarOverlayBackdrop {
-    background: rgba(0, 0, 0, .6);
-    display: none;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 999;
-  }
-
-  #oneGoogleBarOverlayBackdrop[show] {
-    display: block;
-  }
-
   #content {
     align-items: center;
     display: flex;
     flex-direction: column;
     height: calc(100vh - var(--ntp-one-google-bar-height));
     min-width: fit-content;  /* Prevents OneGoogleBar cutoff at 500% zoom. */
+    padding-top: var(--ntp-one-google-bar-height);
     position: relative;
     z-index: 1;
-  }
-
-  :host([iframe-one-google-bar-enabled_]) #content {
-    padding-top: var(--ntp-one-google-bar-height);
   }
 
   #logo {
@@ -70,44 +78,44 @@
     z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
   }
 
-  ntp-realbox {
+  #realboxContainer {
+    display: inherit;
     margin-bottom: 16px;
+    position: relative;
   }
 
-  ntp-realbox,
-  ntp-module-wrapper {
+  ntp-modules {
     flex-shrink: 0;
-    width: var(--ntp-search-box-width);
+    width: var(--ntp-module-layout-width);
+  }
+
+  ntp-middle-slot-promo {
+    max-width: var(--ntp-search-box-width);
   }
 
   ntp-realbox {
     visibility: hidden;
+    width: var(--ntp-search-box-width);
   }
 
   ntp-realbox[shown] {
     visibility: visible;
   }
 
-  ntp-most-visited[dark] {
-    --icon-button-color-active: var(--google-grey-refresh-300);
-    --icon-button-color: white;
-    --tile-hover-color: rgba(255, 255, 255, .1);
+  cr-most-visited {
+    --most-visited-focus-shadow: var(--ntp-focus-shadow);
+    --most-visited-text-color: var(--color-new-tab-page-most-visited-foreground);
+    --most-visited-text-shadow: var(--ntp-theme-text-shadow);
   }
 
   /* ~ because the dom-if results in a template between the middle-slot-promo
-     and the first ntp-module-wrapper. */
-  ntp-middle-slot-promo:not([hidden]) ~ ntp-module-wrapper,
-  ntp-module-wrapper + ntp-module-wrapper {
+     and ntp-modules. */
+  ntp-middle-slot-promo:not([hidden]) ~ ntp-modules {
     margin-top: 16px;
   }
 
-  :host(:not([promo-and-modules-loaded_])) ntp-middle-slot-promo,
-  :host(:not([promo-and-modules-loaded_])) ntp-module-wrapper {
-    display: none;
-  }
-
   #customizeButtonContainer {
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     border-radius: calc(.5 * var(--cr-button-height));
     bottom: 16px;
     position: fixed;
@@ -122,11 +130,11 @@
   }
 
   :host([show-background-image_]) #customizeButtonContainer {
-    background-color: transparent;
+    background-color: var(--ntp-protected-icon-background-color);
   }
 
   :host([show-background-image_]) #customizeButtonContainer:hover {
-    background-color: rgba(255, 255, 255, .1);
+    background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
   #customizeButton {
@@ -175,10 +183,38 @@
     }
   }
 
+  @media (max-width: 970px) {
+    :host([modules-shown-to-user]) #customizeButton {
+      padding: 0;
+    }
+
+    :host([modules-shown-to-user]) #customizeIcon {
+      margin: 0;
+    }
+
+    :host([modules-shown-to-user]) #customizeText {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1020px) {
+    :host([modules-fre-shown]) #customizeButton {
+      padding: 0;
+    }
+
+    :host([modules-fre-shown]) #customizeIcon {
+      margin: 0;
+    }
+
+    :host([modules-fre-shown]) #customizeText {
+      display: none;
+    }
+  }
+
   #themeAttribution {
     align-self: flex-start;
     bottom: 16px;
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     margin-inline-start: 16px;
     position: fixed;
   }
@@ -186,13 +222,22 @@
   #backgroundImageAttribution {
     border-radius: 8px;
     bottom: 16px;
-    color: var(--ntp-theme-text-color);
+    color: var(--color-new-tab-page-attribution-foreground);
     line-height: 20px;
     max-width: 50vw;
     padding: 8px;
     position: fixed;
     text-shadow: var(--ntp-theme-text-shadow);
     z-index: -1;
+  }
+
+  :host([remove-scrim_]) #backgroundImageAttribution {
+    background-color: var(--ntp-protected-icon-background-color);
+    text-shadow: none;
+  }
+
+  :host([remove-scrim_]) #backgroundImageAttribution:hover {
+    background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
   :host-context([dir='ltr']) #backgroundImageAttribution {
@@ -217,7 +262,7 @@
     -webkit-mask-image: url(icons/link.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--ntp-theme-text-color);
+    background-color: var(--color-new-tab-page-attribution-foreground);
     height: 16px;
     margin-inline-end: 8px;
     width: 16px;
@@ -247,16 +292,26 @@
   svg {
     position: fixed;
   }
+
+  ntp-lens-upload-dialog {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 101;
+  }
 </style>
-<div id="content"
-    style="--ntp-theme-text-color: [[rgbaOrInherit_(theme_.shortcutTextColor)]];
-        --ntp-theme-shortcut-background-color:
-              [[rgbaOrInherit_(theme_.shortcutBackgroundColor)]];
+<div id="content" style="
+        --color-new-tab-page-attribution-foreground: [[rgbaOrInherit_(theme_.textColor)]];
+        --color-new-tab-page-most-visited-foreground: [[rgbaOrInherit_(theme_.textColor)]];
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
-  <template is="dom-if" if="[[showIframedOneGoogleBar_]]">
-    <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
-        hidden$="[[!oneGoogleBarLoaded_]]">
-    </ntp-iframe>
+  <template is="dom-if" if="[[lazyRender_]]">
+    <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
+      <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
+          hidden$="[[!oneGoogleBarLoaded_]]"
+          allow="camera [[oneGoogleBarIframeOrigin_]]; display-capture [[oneGoogleBarIframeOrigin_]]"> <!-- presubmit: ignore-long-line -->
+      </ntp-iframe>
+    </template>
   </template>
   <!-- TODO(crbug.com/1168361): Instead of hidden$="[[!logoEnabled_]]" it would
        be nicer to use a dom-if. However, that breaks
@@ -266,38 +321,43 @@
       dark="[[theme_.isDark]]" background-color="[[backgroundColor_]]"
       hidden$="[[!logoEnabled_]]">
   </ntp-logo>
-  <ntp-realbox id="realbox" on-open-voice-search="onOpenVoiceSearch_"
-      theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]">
-  </ntp-realbox>
+  <div id="realboxContainer">
+    <ntp-realbox id="realbox" is-dark="[[theme_.isDark]]"
+        on-open-lens-search="onOpenLensSearch_"
+        on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]">
+    </ntp-realbox>
+    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+      <ntp-lens-upload-dialog id="lensUploadDialog" 
+          on-close-lens-search="onCloseLensSearch_">
+      </ntp-lens-upload-dialog>
+    </template>
+  </div>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">
-        <ntp-most-visited id="mostVisited" dark$="[[theme_.isDark]]"
-            use-white-add-icon$="[[theme_.shortcutUseWhiteAddIcon]]"
-            use-title-pill$="[[theme_.shortcutUseTitlePill]]">
-        </ntp-most-visited>
+        <cr-most-visited id="mostVisited" theme="[[theme_.mostVisited]]">
+        </cr-most-visited>
       </template>
       <template is="dom-if" if="[[middleSlotPromoEnabled_]]">
         <ntp-middle-slot-promo
-            on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
+            on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_"
+            hidden="[[!promoAndModulesLoaded_]]">
         </ntp-middle-slot-promo>
       </template>
-      <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
-          on-dom-change="onModulesLoaded_">
-        <ntp-module-wrapper descriptor="[[item]]"
-            on-dismiss-module="onDismissModule_"
-            on-disable-module="onDisableModule_"
+      <template is="dom-if" if="[[modulesEnabled_]]">
+        <ntp-modules id="modules"
+            modules-fre-shown="{{modulesFreShown}}"
+            modules-shown-to-user="{{modulesShownToUser}}"
             on-customize-module="onCustomizeModule_"
-            hidden="[[moduleDisabled_(item.id,
-                                      dismissedModules_.*,
-                                      disabledModules_)]]">
-        </ntp-module-wrapper>
+            on-modules-loaded="onModulesLoaded_"
+            hidden="[[!promoAndModulesLoaded_]]">
+        </ntp-modules>
       </template>
       <a id="backgroundImageAttribution"
           href="[[backgroundImageAttributionUrl_]]"
           hidden="[[!backgroundImageAttribution1_]]">
         <div id="backgroundImageAttribution1Container">
-          <div id="linkIcon"></div>
+          <div id="linkIcon" hidden="[[!backgroundImageAttributionUrl_]]"></div>
           <div id="backgroundImageAttribution1">
             [[backgroundImageAttribution1_]]
           </div>
@@ -309,8 +369,9 @@
       </a>
       <!-- cr-button has a transparent background. This leads to incorrect
            results when a custom background is set. Therefore, wrap customize
-           button in container to enfore solid background color. -->
-      <div id="customizeButtonContainer">
+           button in container to enforce solid background color. -->
+      <div id="customizeButtonContainer"
+          hidden="[[customizeChromeSidePanelShowing_]]">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}">
           <div id="customizeIcon"></div>
@@ -334,7 +395,8 @@
     </ntp-voice-search-overlay>
   </template>
 </dom-if>
-<template is="dom-if" if="[[showCustomizeDialog_]]" restamp>
+<template id="customizeDialogIf" is="dom-if" if="[[showCustomizeDialog_]]"
+    restamp>
   <ntp-customize-dialog
       on-close="onCustomizeDialogClose_"
       theme="[[theme_]]"
@@ -342,19 +404,6 @@
       selected-page="[[selectedCustomizeDialogPage_]]">
   </ntp-customize-dialog>
 </template>
-<dom-if if="[[lazyRender_]]" restamp>
-  <template>
-    <cr-toast id="removeModuleToast" duration="10000">
-      <div id="removeModuleToastMessage">[[removedModuleData_.message]]</div>
-      <cr-button id="undoRemoveModuleButton"
-          aria-label="$i18n{undoDescription}"
-          on-click="onUndoRemoveModuleButtonClick_">
-        $i18n{undo}
-      </cr-button>
-    </cr-toast>
-  </template>
-</dom-if>
-<div id="oneGoogleBarOverlayBackdrop"></div>
 <svg>
   <defs>
     <clipPath id="oneGoogleBarClipPath">

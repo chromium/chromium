@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/output_device_info.h"
@@ -30,6 +28,9 @@ class FakeAudioRendererSink : public AudioRendererSink {
   FakeAudioRendererSink();
 
   explicit FakeAudioRendererSink(const AudioParameters& hardware_params);
+
+  FakeAudioRendererSink(const FakeAudioRendererSink&) = delete;
+  FakeAudioRendererSink& operator=(const FakeAudioRendererSink&) = delete;
 
   void Initialize(const AudioParameters& params,
                   RenderCallback* callback) override;
@@ -66,11 +67,9 @@ class FakeAudioRendererSink : public AudioRendererSink {
   void ChangeState(State new_state);
 
   State state_;
-  RenderCallback* callback_;
+  raw_ptr<RenderCallback> callback_;
   OutputDeviceInfo output_device_info_;
   bool is_optimized_for_hw_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioRendererSink);
 };
 
 }  // namespace media

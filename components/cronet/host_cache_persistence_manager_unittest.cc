@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_cache.h"
-#include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cronet {
@@ -38,11 +39,10 @@ class HostCachePersistenceManagerTest : public testing::Test {
   void WriteToCache(const std::string& host) {
     net::HostCache::Key key(host, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
-                            net::NetworkIsolationKey());
-    net::HostCache::Entry entry(net::OK, net::AddressList(),
+                            net::NetworkAnonymizationKey());
+    net::HostCache::Entry entry(net::OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
-    cache_->Set(key, entry, base::TimeTicks::Now(),
-                base::TimeDelta::FromSeconds(1));
+    cache_->Set(key, entry, base::TimeTicks::Now(), base::Seconds(1));
   }
 
   // Reads the current value of the pref from the TestingPrefServiceSimple
@@ -52,11 +52,9 @@ class HostCachePersistenceManagerTest : public testing::Test {
   // correctness.
   void CheckPref(size_t expected_size) {
     const base::Value* value = pref_service_->GetUserPref(kPrefName);
-    base::Value list(base::Value::Type::LIST);
-    if (value)
-      list = base::Value(value->GetList());
     net::HostCache temp_cache(10);
-    temp_cache.RestoreFromListValue(base::Value::AsListValue(list));
+    if (value)
+      temp_cache.RestoreFromListValue(value->GetList());
     ASSERT_EQ(expected_size, temp_cache.size());
   }
 
@@ -65,29 +63,26 @@ class HostCachePersistenceManagerTest : public testing::Test {
   void InitializePref() {
     net::HostCache temp_cache(10);
 
-    net::HostCache::Key key1("1", net::DnsQueryType::UNSPECIFIED, 0,
+    net::HostCache::Key key1("1.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
-                             net::NetworkIsolationKey());
-    net::HostCache::Key key2("2", net::DnsQueryType::UNSPECIFIED, 0,
+                             net::NetworkAnonymizationKey());
+    net::HostCache::Key key2("2.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
-                             net::NetworkIsolationKey());
-    net::HostCache::Key key3("3", net::DnsQueryType::UNSPECIFIED, 0,
+                             net::NetworkAnonymizationKey());
+    net::HostCache::Key key3("3.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
-                             net::NetworkIsolationKey());
-    net::HostCache::Entry entry(net::OK, net::AddressList(),
+                             net::NetworkAnonymizationKey());
+    net::HostCache::Entry entry(net::OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
 
-    temp_cache.Set(key1, entry, base::TimeTicks::Now(),
-                   base::TimeDelta::FromSeconds(1));
-    temp_cache.Set(key2, entry, base::TimeTicks::Now(),
-                   base::TimeDelta::FromSeconds(1));
-    temp_cache.Set(key3, entry, base::TimeTicks::Now(),
-                   base::TimeDelta::FromSeconds(1));
+    temp_cache.Set(key1, entry, base::TimeTicks::Now(), base::Seconds(1));
+    temp_cache.Set(key2, entry, base::TimeTicks::Now(), base::Seconds(1));
+    temp_cache.Set(key3, entry, base::TimeTicks::Now(), base::Seconds(1));
 
-    base::ListValue value;
-    temp_cache.GetAsListValue(&value, false /* include_stale */,
-                              net::HostCache::SerializationType::kRestorable);
-    pref_service_->Set(kPrefName, value);
+    base::Value::List list;
+    temp_cache.GetList(list, false /* include_stale */,
+                       net::HostCache::SerializationType::kRestorable);
+    pref_service_->SetList(kPrefName, std::move(list));
   }
 
   static const char kPrefName[];
@@ -107,65 +102,65 @@ const char HostCachePersistenceManagerTest::kPrefName[] = "net.test";
 // Make a single change to the HostCache and make sure that it's written
 // when the timer expires. Then repeat.
 TEST_F(HostCachePersistenceManagerTest, SeparateWrites) {
-  MakePersistenceManager(base::TimeDelta::FromSeconds(60));
+  MakePersistenceManager(base::Seconds(60));
 
-  WriteToCache("1");
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(59));
+  WriteToCache("1.test");
+  task_runner_->FastForwardBy(base::Seconds(59));
   CheckPref(0);
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   CheckPref(1);
 
-  WriteToCache("2");
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(59));
+  WriteToCache("2.test");
+  task_runner_->FastForwardBy(base::Seconds(59));
   CheckPref(1);
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   CheckPref(2);
 }
 
 // Write to the HostCache multiple times and make sure that all changes
 // are written to prefs at the appropriate times.
 TEST_F(HostCachePersistenceManagerTest, MultipleWrites) {
-  MakePersistenceManager(base::TimeDelta::FromSeconds(300));
+  MakePersistenceManager(base::Seconds(300));
 
-  WriteToCache("1");
-  WriteToCache("2");
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(299));
+  WriteToCache("1.test");
+  WriteToCache("2.test");
+  task_runner_->FastForwardBy(base::Seconds(299));
   CheckPref(0);
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   CheckPref(2);
 
-  WriteToCache("3");
-  WriteToCache("4");
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(299));
+  WriteToCache("3.test");
+  WriteToCache("4.test");
+  task_runner_->FastForwardBy(base::Seconds(299));
   CheckPref(2);
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   CheckPref(4);
 }
 
 // Make changes to the HostCache at different times and ensure that the writes
 // to prefs are batched as expected.
 TEST_F(HostCachePersistenceManagerTest, BatchedWrites) {
-  MakePersistenceManager(base::TimeDelta::FromMilliseconds(100));
+  MakePersistenceManager(base::Milliseconds(100));
 
-  WriteToCache("1");
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("2");
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("3");
+  WriteToCache("1.test");
+  task_runner_->FastForwardBy(base::Milliseconds(30));
+  WriteToCache("2.test");
+  task_runner_->FastForwardBy(base::Milliseconds(30));
+  WriteToCache("3.test");
   CheckPref(0);
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(40));
+  task_runner_->FastForwardBy(base::Milliseconds(40));
   CheckPref(3);
 
   // Add a delay in between batches.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_runner_->FastForwardBy(base::Milliseconds(50));
 
-  WriteToCache("4");
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("5");
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("6");
+  WriteToCache("4.test");
+  task_runner_->FastForwardBy(base::Milliseconds(30));
+  WriteToCache("5.test");
+  task_runner_->FastForwardBy(base::Milliseconds(30));
+  WriteToCache("6.test");
   CheckPref(3);
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(40));
+  task_runner_->FastForwardBy(base::Milliseconds(40));
   CheckPref(6);
 }
 
@@ -176,7 +171,7 @@ TEST_F(HostCachePersistenceManagerTest, InitAfterPrefs) {
   InitializePref();
   CheckPref(3);
 
-  MakePersistenceManager(base::TimeDelta::FromSeconds(1));
+  MakePersistenceManager(base::Seconds(1));
   task_runner_->RunUntilIdle();
   ASSERT_EQ(3u, cache_->size());
 }
@@ -184,7 +179,7 @@ TEST_F(HostCachePersistenceManagerTest, InitAfterPrefs) {
 // Set the pref after the HostCachePersistenceManager is created, and make
 // sure it gets picked up by the HostCache.
 TEST_F(HostCachePersistenceManagerTest, InitBeforePrefs) {
-  MakePersistenceManager(base::TimeDelta::FromSeconds(1));
+  MakePersistenceManager(base::Seconds(1));
   ASSERT_EQ(0u, cache_->size());
 
   CheckPref(0);

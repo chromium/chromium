@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -143,6 +143,15 @@ NGInlineItemSegments::Iterator NGInlineItemSegments::Ranges(
   return Iterator(start_offset, end_offset, segment);
 }
 
+void NGInlineItemSegments::ComputeSegments(
+    RunSegmenter* segmenter,
+    RunSegmenter::RunSegmenterRange* range) {
+  segments_.Shrink(0);
+  do {
+    segments_.emplace_back(*range);
+  } while (segmenter->Consume(range));
+}
+
 unsigned NGInlineItemSegments::AppendMixedFontOrientation(
     const String& text_content,
     unsigned start_offset,
@@ -206,7 +215,8 @@ void NGInlineItemSegments::Split(unsigned index, unsigned offset) {
                    NGInlineItemSegment(end_offset, segment.segment_data_));
 }
 
-void NGInlineItemSegments::ComputeItemIndex(const Vector<NGInlineItem>& items) {
+void NGInlineItemSegments::ComputeItemIndex(
+    const HeapVector<NGInlineItem>& items) {
   DCHECK_EQ(items.back().EndOffset(), EndOffset());
   unsigned segment_index = 0;
   const NGInlineItemSegment* segment = segments_.begin();

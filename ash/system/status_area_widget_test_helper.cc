@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/system/status_area_widget.h"
 #include "base/run_loop.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 
 namespace ash {
 
@@ -70,6 +71,11 @@ void StatusAreaWidgetTestHelper::WaitForAnimationEnd(
   AnimationEndObserver observer(status_area_widget->GetLayer()->GetAnimator());
   observer.WaitForAnimationEnd();
   status_area_widget->GetLayer()->GetAnimator()->StopAnimating();
+}
+
+void StatusAreaWidgetTestHelper::WaitForLayerAnimationEnd(ui::Layer* layer) {
+  AnimationEndObserver observer(layer->GetAnimator());
+  observer.WaitForAnimationEnd();
 }
 
 }  // namespace ash

@@ -1,9 +1,11 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/dcheck_always_on.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sysroot.gni")
+import("//build/config/ui.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
 clang_toolchain("clang_ppc64") {
@@ -15,7 +17,6 @@ clang_toolchain("clang_ppc64") {
 }
 
 clang_toolchain("clang_arm") {
-  toolprefix = "arm-linux-gnueabihf-"
   toolchain_args = {
     current_cpu = "arm"
     current_os = "linux"
@@ -23,7 +24,6 @@ clang_toolchain("clang_arm") {
 }
 
 clang_toolchain("clang_arm64") {
-  toolprefix = "aarch64-linux-gnu-"
   toolchain_args = {
     current_cpu = "arm64"
     current_os = "linux"
@@ -46,7 +46,7 @@ gcc_toolchain("arm64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
   }
 }
@@ -67,7 +67,7 @@ gcc_toolchain("arm") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
   }
 }
@@ -78,30 +78,6 @@ clang_toolchain("clang_x86") {
 
   toolchain_args = {
     current_cpu = "x86"
-    current_os = "linux"
-  }
-}
-
-clang_toolchain("clang_x86_v8_arm") {
-  toolchain_args = {
-    current_cpu = "x86"
-    v8_current_cpu = "arm"
-    current_os = "linux"
-  }
-}
-
-clang_toolchain("clang_x86_v8_mipsel") {
-  toolchain_args = {
-    current_cpu = "x86"
-    v8_current_cpu = "mipsel"
-    current_os = "linux"
-  }
-}
-
-clang_toolchain("clang_x86_v8_mips") {
-  toolchain_args = {
-    current_cpu = "x86"
-    v8_current_cpu = "mips"
     current_os = "linux"
   }
 }
@@ -123,7 +99,7 @@ gcc_toolchain("x86") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
   }
 }
@@ -138,35 +114,68 @@ clang_toolchain("clang_x64") {
   }
 }
 
-clang_toolchain("clang_x64_v8_arm64") {
+template("clang_v8_toolchain") {
+  clang_toolchain(target_name) {
+    toolchain_args = {
+      current_os = "linux"
+      forward_variables_from(invoker.toolchain_args, "*")
+    }
+  }
+}
+
+clang_v8_toolchain("clang_x86_v8_arm") {
+  toolchain_args = {
+    current_cpu = "x86"
+    v8_current_cpu = "arm"
+  }
+}
+
+clang_v8_toolchain("clang_x86_v8_mipsel") {
+  toolchain_args = {
+    current_cpu = "x86"
+    v8_current_cpu = "mipsel"
+  }
+}
+
+clang_v8_toolchain("clang_x86_v8_mips") {
+  toolchain_args = {
+    current_cpu = "x86"
+    v8_current_cpu = "mips"
+  }
+}
+
+clang_v8_toolchain("clang_x64_v8_arm64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "arm64"
-    current_os = "linux"
   }
 }
 
-clang_toolchain("clang_x64_v8_mips64el") {
+clang_v8_toolchain("clang_x64_v8_mips64el") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "mips64el"
-    current_os = "linux"
   }
 }
 
-clang_toolchain("clang_x64_v8_mips64") {
+clang_v8_toolchain("clang_x64_v8_mips64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "mips64"
-    current_os = "linux"
   }
 }
 
-clang_toolchain("clang_x64_v8_riscv64") {
+clang_v8_toolchain("clang_x64_v8_riscv64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "riscv64"
-    current_os = "linux"
+  }
+}
+
+clang_v8_toolchain("clang_x64_v8_loong64") {
+  toolchain_args = {
+    current_cpu = "x64"
+    v8_current_cpu = "loong64"
   }
 }
 
@@ -182,8 +191,25 @@ clang_toolchain("ash_clang_x64") {
     # This turns off all of the LaCrOS-specific flags.
     also_build_ash_chrome = false
     chromeos_is_browser_only = false
-    ozone_platform = "x11"
-    ozone_platform_wayland = false
+    use_clang_coverage = false
+  }
+}
+
+# In an ash build, this toolchain is intended to be used as an alternate
+# toolchain to build lacros-Chrome in a subdirectory.
+clang_toolchain("lacros_clang_x64") {
+  toolchain_args = {
+    # This turns the toolchain into the "Lacros" build
+    current_os = "chromeos"
+    target_os = "chromeos"
+    current_cpu = current_cpu
+
+    # This turns on the LaCrOS-specific flag.
+    also_build_lacros_chrome = false
+    chromeos_is_browser_only = true
+    use_clang_coverage = false
+    dcheck_always_on = false
+    symbol_level = 1
   }
 }
 
@@ -204,7 +230,7 @@ gcc_toolchain("x64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
   }
 }
@@ -239,7 +265,7 @@ gcc_toolchain("mipsel") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
     use_goma = false
   }
@@ -261,9 +287,18 @@ gcc_toolchain("mips64el") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
     use_goma = false
+  }
+}
+
+clang_toolchain("clang_riscv64") {
+  enable_linker_map = true
+  toolchain_args = {
+    current_cpu = "riscv64"
+    current_os = "linux"
+    is_clang = true
   }
 }
 
@@ -307,7 +342,7 @@ gcc_toolchain("s390x") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
   }
 }
@@ -326,7 +361,7 @@ gcc_toolchain("ppc64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
   }
 }
@@ -347,7 +382,7 @@ gcc_toolchain("mips") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
     is_clang = false
   }
 }
@@ -368,7 +403,32 @@ gcc_toolchain("mips64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
+    use_remoteexec = false
+    is_clang = false
+  }
+}
+
+clang_toolchain("clang_loong64") {
+  toolchain_args = {
+    current_cpu = "loong64"
+    current_os = "linux"
+  }
+}
+
+gcc_toolchain("loong64") {
+  toolprefix = "loongarch64-unknown-linux-gnu"
+
+  cc = "${toolprefix}-gcc"
+  cxx = "${toolprefix}-g++"
+
+  readelf = "${toolprefix}-readelf"
+  nm = "${toolprefix}-nm"
+  ar = "${toolprefix}-ar"
+  ld = cxx
+
+  toolchain_args = {
+    current_cpu = "loong64"
+    current_os = "linux"
     is_clang = false
   }
 }

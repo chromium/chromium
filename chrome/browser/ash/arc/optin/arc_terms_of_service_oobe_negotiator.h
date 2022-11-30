@@ -1,12 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_OOBE_NEGOTIATOR_H_
 #define CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_OOBE_NEGOTIATOR_H_
 
-#include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_negotiator.h"
+#include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 
 namespace chromeos {
@@ -18,9 +19,16 @@ namespace arc {
 // Handles the Terms-of-service agreement user action via OOBE OptIn UI.
 class ArcTermsOfServiceOobeNegotiator
     : public ArcTermsOfServiceNegotiator,
-      public chromeos::ArcTermsOfServiceScreenViewObserver {
+      public chromeos::ArcTermsOfServiceScreenViewObserver,
+      public chromeos::ConsolidatedConsentScreen::Observer {
  public:
   ArcTermsOfServiceOobeNegotiator();
+
+  ArcTermsOfServiceOobeNegotiator(const ArcTermsOfServiceOobeNegotiator&) =
+      delete;
+  ArcTermsOfServiceOobeNegotiator& operator=(
+      const ArcTermsOfServiceOobeNegotiator&) = delete;
+
   ~ArcTermsOfServiceOobeNegotiator() override;
 
   // Injects ARC OOBE screen handler in unit tests, where OOBE UI is not
@@ -40,6 +48,10 @@ class ArcTermsOfServiceOobeNegotiator
   void OnAccept(bool review_arc_settings) override;
   void OnViewDestroyed(chromeos::ArcTermsOfServiceScreenView* view) override;
 
+  // chromeos::ConsolidatedConsentScreen::Observer:
+  void OnConsolidatedConsentAccept() override;
+  void OnConsolidatedConsentScreenDestroyed() override;
+
   // ArcTermsOfServiceNegotiator:
   void StartNegotiationImpl() override;
 
@@ -51,7 +63,9 @@ class ArcTermsOfServiceOobeNegotiator
   // StartNegotiationImpl(), and reset in HandleTermsAccepted().
   chromeos::ArcTermsOfServiceScreenView* screen_view_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceOobeNegotiator);
+  base::ScopedObservation<chromeos::ConsolidatedConsentScreen,
+                          chromeos::ConsolidatedConsentScreen::Observer>
+      consolidated_consent_observation_{this};
 };
 
 }  // namespace arc

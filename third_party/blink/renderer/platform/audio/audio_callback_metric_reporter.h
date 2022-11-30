@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ struct AudioCallbackMetric {
 
 class AudioCallbackMetricReporter {
  public:
-  AudioCallbackMetricReporter() {}
+  AudioCallbackMetricReporter() = default;
 
   // Must be called after WebAudioDevice is created, because we need the
   // platform parameters like callback buffer size and hardware sample rate.

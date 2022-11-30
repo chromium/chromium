@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,11 +55,13 @@ class ExtensionUntrustedWebUITest : public ExtensionApiTest {
     // Run the test.
     ResultCatcher catcher;
 
-    ui_test_utils::NavigateToURL(
-        browser(), GURL("chrome-untrusted://api-test/title1.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("chrome-untrusted://api-test/title1.html")));
 
-    content::RenderFrameHost* rfh =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* rfh = browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetPrimaryMainFrame();
     ASSERT_TRUE(rfh);
     content::ExecuteScriptAsync(rfh, script);
 

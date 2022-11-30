@@ -1,15 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "gpu/command_buffer/service/framebuffer_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
-#include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_mock.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
@@ -47,14 +50,12 @@ class FramebufferManagerTest : public GpuServiceTest {
       : manager_(1, 1, nullptr),
         feature_info_(new FeatureInfo()),
         discardable_manager_(GpuPreferences()) {
-    texture_manager_.reset(new TextureManager(
+    texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_));
-    renderbuffer_manager_.reset(new RenderbufferManager(nullptr,
-                                                        kMaxRenderbufferSize,
-                                                        kMaxSamples,
-                                                        feature_info_.get()));
+        kUseDefaultTextures, nullptr, &discardable_manager_);
+    renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
+        nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
   ~FramebufferManagerTest() override {
     manager_.Destroy(false);
@@ -127,14 +128,12 @@ class FramebufferInfoTestBase : public GpuServiceTest {
                  &framebuffer_completeness_cache_),
         feature_info_(new FeatureInfo()),
         discardable_manager_(GpuPreferences()) {
-    texture_manager_.reset(new TextureManager(
+    texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_));
-    renderbuffer_manager_.reset(new RenderbufferManager(nullptr,
-                                                        kMaxRenderbufferSize,
-                                                        kMaxSamples,
-                                                        feature_info_.get()));
+        kUseDefaultTextures, nullptr, &discardable_manager_);
+    renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
+        nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
   ~FramebufferInfoTestBase() override {
     manager_.Destroy(false);
@@ -157,10 +156,11 @@ class FramebufferInfoTestBase : public GpuServiceTest {
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(gl_.get(),
         extensions, "", gl_version, context_type_);
     feature_info_->InitializeForTesting(context_type_);
-    decoder_.reset(
-        new MockGLES2Decoder(&client_, &command_buffer_service_, &outputter_));
+    decoder_ = std::make_unique<MockGLES2Decoder>(
+        &client_, &command_buffer_service_, &outputter_);
     manager_.CreateFramebuffer(kClient1Id, kService1Id);
-    error_state_.reset(new ::testing::StrictMock<gles2::MockErrorState>());
+    error_state_ =
+        std::make_unique<::testing::StrictMock<gles2::MockErrorState>>();
     framebuffer_ = manager_.GetFramebuffer(kClient1Id);
     ASSERT_TRUE(framebuffer_ != nullptr);
   }
@@ -168,7 +168,7 @@ class FramebufferInfoTestBase : public GpuServiceTest {
   ContextType context_type_;
   FramebufferCompletenessCache framebuffer_completeness_cache_;
   FramebufferManager manager_;
-  Framebuffer* framebuffer_;
+  raw_ptr<Framebuffer> framebuffer_;
   scoped_refptr<FeatureInfo> feature_info_;
   ServiceDiscardableManager discardable_manager_;
   std::unique_ptr<TextureManager> texture_manager_;
@@ -1087,7 +1087,7 @@ TEST_F(FramebufferInfoTest, DrawBuffers) {
               framebuffer_->GetDrawBuffer(i));
   }
 
-  for (size_t ii = 0; ii < base::size(kTextureClientId); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTextureClientId); ++ii) {
     texture_manager_->CreateTexture(
         kTextureClientId[ii], kTextureServiceId[ii]);
     scoped_refptr<TextureRef> texture(
@@ -1190,7 +1190,7 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
       GL_FLOAT,
       GL_UNSIGNED_INT};
 
-  for (size_t ii = 0; ii < base::size(kTextureClientId); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTextureClientId); ++ii) {
     texture_manager_->CreateTexture(
         kTextureClientId[ii], kTextureServiceId[ii]);
     scoped_refptr<TextureRef> texture(

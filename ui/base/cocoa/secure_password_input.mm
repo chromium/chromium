@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@ int g_password_input_counter = 0;
 // https://developer.apple.com/library/content/technotes/tn2150/_index.html
 void SetPasswordInputEnabled(bool enabled) {
   if (enabled) {
-    DCHECK(!IsSecureEventInputEnabled());
     EnableSecureEventInput();
 
     CFArrayRef inputSources = TISCreateASCIICapableInputSourceList();
@@ -29,7 +28,6 @@ void SetPasswordInputEnabled(bool enabled) {
                            sizeof(CFArrayRef), &inputSources);
     CFRelease(inputSources);
   } else {
-    DCHECK(IsSecureEventInputEnabled());
     TSMRemoveDocumentProperty(0, kTSMDocumentEnabledInputSourcesPropertyTag);
 
     DisableSecureEventInput();

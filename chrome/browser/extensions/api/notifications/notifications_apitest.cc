@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,22 +27,22 @@
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "content/public/browser/notification_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -58,57 +58,6 @@ namespace utils = extension_function_test_utils;
 
 namespace {
 
-// A class that waits for a |chrome.test.sendMessage| call, ignores the message,
-// and writes down the user gesture status of the message.
-class UserGestureCatcher : public content::NotificationObserver {
- public:
-  UserGestureCatcher() : waiting_(false) {
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                   content::NotificationService::AllSources());
-  }
-
-  ~UserGestureCatcher() override {}
-
-  bool GetNextResult() {
-    if (results_.empty()) {
-      waiting_ = true;
-      content::RunMessageLoop();
-      waiting_ = false;
-    }
-
-    if (!results_.empty()) {
-      bool ret = results_.front();
-      results_.pop_front();
-      return ret;
-    }
-    NOTREACHED();
-    return false;
-  }
-
- private:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    results_.push_back(
-        static_cast<content::Source<extensions::TestSendMessageFunction> >(
-            source)
-            .ptr()
-            ->user_gesture());
-    if (waiting_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
-
-  content::NotificationRegistrar registrar_;
-
-  // A sequential list of user gesture notifications from the test extension(s).
-  base::circular_deque<bool> results_;
-
-  // True if we're in a nested run loop waiting for results from
-  // the extension.
-  bool waiting_;
-};
-
 enum class WindowState {
   FULLSCREEN,
   NORMAL
@@ -116,22 +65,28 @@ enum class WindowState {
 
 class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
+  explicit NotificationsApiTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~NotificationsApiTest() override = default;
+  NotificationsApiTest(const NotificationsApiTest&) = delete;
+  NotificationsApiTest& operator=(const NotificationsApiTest&) = delete;
+
   const Extension* LoadExtensionAndWait(
       const std::string& test_name) {
     base::FilePath extdir = test_data_dir_.AppendASCII(test_name);
-    content::WindowedNotificationObserver page_created(
-        extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::NotificationService::AllSources());
+    extensions::ExtensionHostTestHelper host_helper(profile());
+    host_helper.RestrictToType(
+        extensions::mojom::ViewType::kExtensionBackgroundPage);
     const extensions::Extension* extension = LoadExtension(extdir);
     if (extension) {
-      page_created.Wait();
+      host_helper.WaitForDocumentElementAvailable();
     }
     return extension;
   }
 
   const Extension* LoadAppWithWindowState(
       const std::string& test_name, WindowState window_state) {
-    const char* window_state_string = NULL;
+    const char* window_state_string = nullptr;
     switch (window_state) {
       case WindowState::FULLSCREEN:
         window_state_string = "fullscreen";
@@ -146,7 +101,8 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     const extensions::Extension* extension = LoadExtension(extdir);
     EXPECT_TRUE(extension);
 
-    ExtensionTestMessageListener launched_listener("launched", true);
+    ExtensionTestMessageListener launched_listener("launched",
+                                                   ReplyBehavior::kWillReply);
     LaunchPlatformApp(extension);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
     launched_listener.Reply(create_window_options);
@@ -162,7 +118,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     if (iter != app_windows.end())
       return *iter;
 
-    return NULL;
+    return nullptr;
   }
 
   ExtensionNotificationDisplayHelper* GetDisplayHelper() {
@@ -210,10 +166,9 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   void LaunchPlatformApp(const Extension* extension) {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(apps::AppLaunchParams(
-            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::NEW_WINDOW,
-            apps::mojom::AppLaunchSource::kSourceTest));
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+            extension->id(), apps::LaunchContainer::kLaunchContainerNone,
+            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
@@ -224,12 +179,13 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 class NotificationsApiTestWithBackgroundType
     : public NotificationsApiTest,
       public testing::WithParamInterface<ContextType> {
- protected:
-  bool RunTest(const char* name) {
-    return RunExtensionTest(
-        {.name = name},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
+ public:
+  NotificationsApiTestWithBackgroundType() : NotificationsApiTest(GetParam()) {}
+  ~NotificationsApiTestWithBackgroundType() override = default;
+  NotificationsApiTestWithBackgroundType(
+      const NotificationsApiTestWithBackgroundType&) = delete;
+  NotificationsApiTestWithBackgroundType& operator=(
+      const NotificationsApiTestWithBackgroundType&) = delete;
 };
 
 }  // namespace
@@ -242,19 +198,26 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
-  ASSERT_TRUE(RunTest("notifications/api/basic_usage")) << message_;
+  ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestEvents) {
-  ASSERT_TRUE(RunTest("notifications/api/events")) << message_;
+// Flaky on TSan, see crbug.com/1304777.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TestEvents DISABLED_TestEvents
+#else
+#define MAYBE_TestEvents TestEvents
+#endif
+IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
+                       MAYBE_TestEvents) {
+  ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestCSP) {
-  ASSERT_TRUE(RunTest("notifications/api/csp")) << message_;
+  ASSERT_TRUE(RunExtensionTest("notifications/api/csp")) << message_;
 }
 
 // Native notifications don't support (or use) observers.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/by_user");
@@ -293,29 +256,29 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
                        TestPartialUpdate) {
-  ASSERT_TRUE(RunTest("notifications/api/partial_update")) << message_;
+  ASSERT_TRUE(RunExtensionTest("notifications/api/partial_update")) << message_;
   const extensions::Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  const char kNewTitle[] = "Changed!";
-  const char kNewMessage[] = "Too late! The show ended yesterday";
+  const char16_t kNewTitle[] = u"Changed!";
+  const char16_t kNewMessage[] = u"Too late! The show ended yesterday";
   int kNewPriority = 2;
-  const char kButtonTitle[] = "NewButton";
+  const char16_t kButtonTitle[] = u"NewButton";
 
   message_center::Notification* notification =
       GetNotificationForExtension(extension);
   ASSERT_TRUE(notification);
 
-  EXPECT_EQ(base::ASCIIToUTF16(kNewTitle), notification->title());
-  EXPECT_EQ(base::ASCIIToUTF16(kNewMessage), notification->message());
+  EXPECT_EQ(kNewTitle, notification->title());
+  EXPECT_EQ(kNewMessage, notification->message());
   EXPECT_EQ(kNewPriority, notification->priority());
   EXPECT_TRUE(notification->silent());
   EXPECT_EQ(1u, notification->buttons().size());
-  EXPECT_EQ(base::ASCIIToUTF16(kButtonTitle), notification->buttons()[0].title);
+  EXPECT_EQ(kButtonTitle, notification->buttons()[0].title);
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
@@ -336,9 +299,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
         extensions::api_test_utils::NONE));
 
     EXPECT_EQ(base::Value::Type::STRING, result->type());
-    std::string permission_level;
-    EXPECT_TRUE(result->GetAsString(&permission_level));
-    EXPECT_EQ("granted", permission_level);
+    EXPECT_TRUE(result->is_string());
+    EXPECT_EQ("granted", result->GetString());
   }
 
   // Get permission level for the extension whose notifications are disabled.
@@ -359,9 +321,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
         extensions::api_test_utils::NONE));
 
     EXPECT_EQ(base::Value::Type::STRING, result->type());
-    std::string permission_level;
-    EXPECT_TRUE(result->GetAsString(&permission_level));
-    EXPECT_EQ("denied", permission_level);
+    EXPECT_TRUE(result->is_string());
+    EXPECT_EQ("denied", result->GetString());
   }
 }
 
@@ -394,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestOnPermissionLevelChanged) {
 }
 
 // Native notifications don't support (nor use) observers.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestUserGesture) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/user_gesture");
@@ -405,32 +366,39 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestUserGesture) {
   ASSERT_TRUE(notification);
 
   {
-    UserGestureCatcher catcher;
-
+    ExtensionTestMessageListener listener;
     // Action button event.
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::EXTENSION, notification->id(),
-        0 /* action_index */, base::nullopt /* reply */);
-    EXPECT_TRUE(catcher.GetNextResult());
+        0 /* action_index */, absl::nullopt /* reply */);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    EXPECT_TRUE(listener.had_user_gesture());
+  }
 
+  {
+    ExtensionTestMessageListener listener;
     // Click event.
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::EXTENSION, notification->id(),
-        base::nullopt /* action_index */, base::nullopt /* reply */);
-    EXPECT_TRUE(catcher.GetNextResult());
+        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    EXPECT_TRUE(listener.had_user_gesture());
+  }
 
+  {
+    ExtensionTestMessageListener listener;
     // Close event.
     display_service_tester_->RemoveNotification(
         NotificationHandler::Type::EXTENSION, notification->id(),
         true /* by_user */, false /* silent */);
-    EXPECT_TRUE(catcher.GetNextResult());
-
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    EXPECT_TRUE(listener.had_user_gesture());
     // Note that |notification| no longer points to valid memory.
   }
 
   ASSERT_FALSE(GetNotificationForExtension(extension));
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestRequireInteraction) {
   const extensions::Extension* extension =
@@ -445,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestRequireInteraction) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayNormal) {
-  ExtensionTestMessageListener notification_created_listener("created", false);
+  ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension = LoadAppWithWindowState(
       "notifications/api/basic_app", WindowState::NORMAL);
   ASSERT_TRUE(extension) << message_;
@@ -467,9 +435,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayNormal) {
 
 // Full screen related tests don't run on Mac as native notifications full
 // screen decisions are done by the OS directly.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayFullscreen) {
-  ExtensionTestMessageListener notification_created_listener("created", false);
+  ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension = LoadAppWithWindowState(
       "notifications/api/basic_app", WindowState::FULLSCREEN);
   ASSERT_TRUE(extension) << message_;
@@ -496,16 +464,19 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayFullscreen) {
 
 // The Fake OSX fullscreen window doesn't like drawing a second fullscreen
 // window when another is visible.
+// Disabled since this tests constantly fails on windows 7.
+// http://crbug.com/1202553
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayMultiFullscreen) {
   // Start a fullscreen app, and then start another fullscreen app on top of the
   // first. Notifications from the first should not be displayed because it is
   // not the app actually displaying on the screen.
-  ExtensionTestMessageListener notification_created_listener("created", false);
+  ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension1 = LoadAppWithWindowState(
       "notifications/api/notification_on_blur", WindowState::FULLSCREEN);
   ASSERT_TRUE(extension1) << message_;
 
-  ExtensionTestMessageListener window_visible_listener("visible", false);
+  ExtensionTestMessageListener window_visible_listener("visible");
   const Extension* extension2 = LoadAppWithWindowState(
       "notifications/api/other_app", WindowState::FULLSCREEN);
   ASSERT_TRUE(extension2) << message_;
@@ -526,12 +497,12 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayMultiFullscreen) {
   EXPECT_EQ(message_center::FullscreenVisibility::NONE,
             notification->fullscreen_visibility());
 }
-
+#endif
 // Verify that a notification is actually displayed when the app window that
 // creates it is fullscreen.
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest,
                        TestShouldDisplayPopupNotification) {
-  ExtensionTestMessageListener notification_created_listener("created", false);
+  ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension = LoadAppWithWindowState(
       "notifications/api/basic_app", WindowState::FULLSCREEN);
   ASSERT_TRUE(extension) << message_;
@@ -555,10 +526,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest,
   EXPECT_EQ(message_center::FullscreenVisibility::OVER_USER,
             notification->fullscreen_visibility());
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
-  ExtensionTestMessageListener notification_created_listener("created", false);
+  ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension = LoadAppWithWindowState(
       "notifications/api/basic_app", WindowState::NORMAL);
   ASSERT_TRUE(extension) << message_;

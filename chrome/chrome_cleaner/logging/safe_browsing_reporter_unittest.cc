@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/http/mock_http_agent_factory.h"
 #include "chrome/chrome_cleaner/logging/test_utils.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
@@ -33,6 +34,9 @@ using ::testing::Return;
 
 class SafeBrowsingReporterTest : public testing::Test {
  public:
+  SafeBrowsingReporterTest(const SafeBrowsingReporterTest&) = delete;
+  SafeBrowsingReporterTest& operator=(const SafeBrowsingReporterTest&) = delete;
+
   // SafeBrowsingReporter::OnResultCallback:
   void OnReportUploadResult(base::OnceClosure run_loop_quit,
                             SafeBrowsingReporter::Result result,
@@ -89,9 +93,6 @@ class SafeBrowsingReporterTest : public testing::Test {
   // Confirm the execution of |OnReportUploadResult| and that |result_| and
   // |response_string_| are valid.
   bool report_upload_result_called_{false};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingReporterTest);
 };
 
 TEST_F(SafeBrowsingReporterTest, Success) {

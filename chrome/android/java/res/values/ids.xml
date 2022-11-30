@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <resources>
@@ -15,7 +15,6 @@
     <item name="tabswitcher_multiple_drawable" type="id"/>
     <item name="tabswitcher_single_drawable" type="id"/>
     <item name="custom_tab_bottom_bar_wrapper" type="id"/>
-    <item name="default_search_engine_dialog_options" type="id"/>
 
     <!-- Media playback notification -->
     <item type="id" name="media_playback_notification" />
@@ -49,8 +48,10 @@
 
     <!-- Link Group -->
     <item type="id" name="contextmenu_open_in_new_tab" />
+    <item type="id" name="contextmenu_open_in_new_tab_in_group" />
     <item type="id" name="contextmenu_open_in_incognito_tab" />
     <item type="id" name="contextmenu_open_in_other_window" />
+    <item type="id" name="contextmenu_open_in_new_window" />
     <item type="id" name="contextmenu_open_in_ephemeral_tab" />
     <item type="id" name="contextmenu_copy_link_address" />
     <item type="id" name="contextmenu_copy_link_text" />
@@ -80,6 +81,11 @@
     <item type="id" name="contextmenu_add_to_contacts" />
     <item type="id" name="contextmenu_copy" />
 
+    <!-- Shared Highlighting Group -->
+    <item type="id" name="contextmenu_share_highlight" />
+    <item type="id" name="contextmenu_remove_highlight" />
+    <item type="id" name="contextmenu_learn_more" />
+
     <!-- Other Group -->
     <item type="id" name="contextmenu_save_video" />
 
@@ -94,14 +100,13 @@
     <item type="id" name="context_menu_delegate" />
 
     <!-- NTP-->
+    <item type="id" name="ntp_feed_header_menu_item_manage" />
     <item type="id" name="ntp_feed_header_menu_item_activity" />
     <item type="id" name="ntp_feed_header_menu_item_interest" />
     <item type="id" name="ntp_feed_header_menu_item_reactions" />
+    <item type="id" name="ntp_feed_header_menu_item_autoplay" />
     <item type="id" name="ntp_feed_header_menu_item_learn" />
     <item type="id" name="ntp_feed_header_menu_item_toggle_switch" />
-
-    <!-- Enhanced Protection Promo -->
-    <item type="id" name="enhanced_protection_promo" />
 
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />

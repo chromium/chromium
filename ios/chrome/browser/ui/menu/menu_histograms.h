@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,19 @@ enum class MenuScenario {
   kContextMenuImage = 7,
   kContextMenuImageLink = 8,
   kContextMenuLink = 9,
-  kMaxValue = kContextMenuLink,
+  kTabGridEntry = 10,
+  kTabGridAddTo = 11,
+  kTabGridEdit = 12,
+  kToolbarMenu = 13,
+  kTabGridSearchResult = 14,
+  kThumbStrip = 15,
+  kMaxValue = kThumbStrip,
 };
 
-// Records a menu shown histogram metric for the |scenario|.
+// Records a menu shown histogram metric for the `scenario`.
 void RecordMenuShown(MenuScenario scenario);
 
-// Retrieves a histogram name for the given menu |scenario|'s actions.
+// Retrieves a histogram name for the given menu `scenario`'s actions.
 const char* GetActionsHistogramName(MenuScenario scenario);
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_HISTOGRAMS_H_

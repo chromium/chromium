@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -17,22 +18,26 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
+#import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_presentation.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_edit_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
-#import "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/generate_qr_code_command.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -48,22 +53,10 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
-
-namespace {
-
-class MockWebState : public web::FakeWebState {
- public:
-  MockWebState() : web::FakeWebState() {
-    SetNavigationManager(std::make_unique<web::FakeNavigationManager>());
-  }
-
-  MOCK_METHOD2(ExecuteJavaScript,
-               void(const std::u16string&, JavaScriptResultCallback));
-};
-
-}  // namespace
 
 // Test fixture for testing SharingCoordinator.
 class SharingCoordinatorTest : public BookmarkIOSUnitTest {
@@ -71,7 +64,8 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTest {
   SharingCoordinatorTest()
       : base_view_controller_([[UIViewController alloc] init]),
         fake_origin_view_([[UIView alloc] init]),
-        test_scenario_(ActivityScenario::TabShareButton) {
+        test_scenario_(ActivityScenario::TabShareButton),
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
 
@@ -81,6 +75,13 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:snackbar_handler_
                      forProtocol:@protocol(SnackbarCommands)];
+
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(BookmarksCommands))
+                     forProtocol:@protocol(BookmarksCommands)];
+
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
@@ -89,50 +90,12 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTest {
         WebStateList::INSERT_ACTIVATE, WebStateOpener());
   }
 
-  // Validates that |trigger_block| gets a Edit Bookmark VC to be presented,
-  // and that |delegate| controls its dismissal.
-  void ValidateEditBookmark(ProceduralBlock trigger_block,
-                            id<BookmarkEditCoordinatorDelegate> delegate) {
-    id vc_partial_mock = OCMPartialMock(base_view_controller_);
-    __block BookmarkEditViewController* bookmarkEditVC;
-    [[vc_partial_mock expect]
-        presentViewController:[OCMArg checkWithBlock:^BOOL(
-                                          UIViewController* viewController) {
-          if ([viewController
-                  isKindOfClass:[TableViewNavigationController class]]) {
-            TableViewNavigationController* navController =
-                (TableViewNavigationController*)viewController;
-            if ([navController.tableViewController
-                    isKindOfClass:[BookmarkEditViewController class]]) {
-              bookmarkEditVC = (BookmarkEditViewController*)
-                                   navController.tableViewController;
-              return YES;
-            }
-            return NO;
-          }
-          return NO;
-        }]
-                     animated:YES
-                   completion:nil];
-
-    trigger_block();
-
-    [vc_partial_mock verify];
-
-    [[vc_partial_mock expect] dismissViewControllerAnimated:YES completion:nil];
-
-    // Dismiss the ViewController.
-    ASSERT_NE(nil, bookmarkEditVC);
-    [bookmarkEditVC dismiss];
-
-    [vc_partial_mock verify];
-  }
-
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
   UIView* fake_origin_view_;
   id snackbar_handler_;
   ActivityScenario test_scenario_;
+  SceneState* scene_state_;
 };
 
 // Tests that the start method shares the current page and ends up presenting
@@ -141,16 +104,22 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   // Create a test web state.
   GURL test_url = GURL("https://example.com");
   base::Value url_value = base::Value(test_url.spec());
-  auto test_web_state = std::make_unique<MockWebState>();
+  auto test_web_state = std::make_unique<web::FakeWebState>();
+  test_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
   test_web_state->SetCurrentURL(test_url);
   test_web_state->SetBrowserState(browser_->GetBrowserState());
 
-  EXPECT_CALL(*test_web_state, ExecuteJavaScript(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [&](const std::u16string& javascript,
-              base::OnceCallback<void(const base::Value*)> callback) {
-            std::move(callback).Run(&url_value);
-          }));
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+  test_web_state->SetWebFramesManager(std::move(frames_manager));
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(test_url);
+  web::FakeWebFrame* main_frame_ptr = main_frame.get();
+  frames_manager_ptr->AddWebFrame(std::move(main_frame));
+
+  main_frame_ptr->AddResultForExecutedJs(
+      &url_value, activity_services::kCanonicalURLScript);
 
   AppendNewWebState(std::move(test_web_state));
 
@@ -163,15 +132,13 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
                           params:params
                       originView:fake_origin_view_];
 
-  // Pointer to allow us to grab the VC instance in our validation callback.
-  __block UIActivityViewController* activityViewController;
-
+  __block bool completion_handler_called = false;
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          activityViewController = (UIActivityViewController*)viewController;
+          completion_handler_called = true;
           return YES;
         }
         return NO;
@@ -181,7 +148,10 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
   [coordinator start];
 
-  [vc_partial_mock verify];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return completion_handler_called;
+  }));
 
   // Verify that the positioning is correct.
   auto activityHandler =
@@ -191,14 +161,9 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   EXPECT_TRUE(
       CGRectEqualToRect(fake_origin_view_.bounds, activityHandler.sourceRect));
 
-  // Verify that the presentation protocol works too.
-  id activity_vc_partial_mock = OCMPartialMock(activityViewController);
-  [[activity_vc_partial_mock expect] dismissViewControllerAnimated:YES
-                                                        completion:nil];
-
   [activityHandler activityServiceDidEndPresenting];
 
-  [activity_vc_partial_mock verify];
+  [vc_partial_mock verify];
 }
 
 // Tests that the coordinator handles the QRGenerationCommands protocol.
@@ -244,15 +209,11 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
                           params:params
                       originView:fake_origin_view_];
 
-  // Pointer to allow us to grab the VC instance in our validation callback.
-  __block UIActivityViewController* activityViewController;
-
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          activityViewController = (UIActivityViewController*)viewController;
           return YES;
         }
         return NO;
@@ -263,88 +224,4 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
   [coordinator start];
 
   [vc_partial_mock verify];
-}
-
-// Tests that the coordinator can handle adding a new bookmark, and the edit
-// action is hooked-up properly.
-TEST_F(SharingCoordinatorTest, AddBookmark_EditViaSnackbar) {
-  @autoreleasepool {
-    ActivityParams* params =
-        [[ActivityParams alloc] initWithScenario:test_scenario_];
-    SharingCoordinator* coordinator = [[SharingCoordinator alloc]
-        initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()
-                            params:params
-                        originView:fake_origin_view_];
-
-    __block ProceduralBlock edit_action = nil;
-    [[snackbar_handler_ expect]
-        showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
-                                        MDCSnackbarMessage* message) {
-          edit_action = message.action.handler;
-          return YES;
-        }]];
-
-    GURL test_url("https://wwww.chromium.org");
-    NSString* test_title = @"Test Title";
-    BookmarkPageCommand* command =
-        [[BookmarkPageCommand alloc] initWithURL:test_url title:test_title];
-
-    ASSERT_EQ(nil,
-              bookmark_model_->GetMostRecentlyAddedUserNodeForURL(command.URL));
-
-    auto handler = static_cast<id<BookmarksCommands>>(coordinator);
-    [handler bookmarkPage:command];
-
-    const BookmarkNode* bookmark =
-        bookmark_model_->GetMostRecentlyAddedUserNodeForURL(command.URL);
-
-    ASSERT_NE(nil, bookmark);
-    EXPECT_EQ(test_url, bookmark->url());
-    EXPECT_EQ(base::SysNSStringToUTF16(test_title), bookmark->GetTitle());
-
-    [snackbar_handler_ verify];
-    ASSERT_NE(nil, edit_action);
-
-    // Verify snackbar message's Edit action.
-    auto bookmark_delegate =
-        static_cast<id<BookmarkEditCoordinatorDelegate>>(coordinator);
-
-    ValidateEditBookmark(edit_action, bookmark_delegate);
-  }
-}
-
-// Tests that the coordinator can handle editing an existing bookmark via the
-// bookmarkPage command.
-TEST_F(SharingCoordinatorTest, EditExistingBookmark) {
-  @autoreleasepool {
-    ActivityParams* params =
-        [[ActivityParams alloc] initWithScenario:test_scenario_];
-    SharingCoordinator* coordinator = [[SharingCoordinator alloc]
-        initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()
-                            params:params
-                        originView:fake_origin_view_];
-
-    const BookmarkNode* bookmark =
-        AddBookmark(bookmark_model_->mobile_node(), @"Some Other Title");
-
-    NSString* test_title = @"Test Title";
-    BookmarkPageCommand* command =
-        [[BookmarkPageCommand alloc] initWithURL:bookmark->url()
-                                           title:test_title];
-
-    ASSERT_EQ(bookmark,
-              bookmark_model_->GetMostRecentlyAddedUserNodeForURL(command.URL));
-
-    auto handler = static_cast<id<BookmarksCommands>>(coordinator);
-
-    ProceduralBlock trigger = ^{
-      [handler bookmarkPage:command];
-    };
-    auto bookmark_delegate =
-        static_cast<id<BookmarkEditCoordinatorDelegate>>(coordinator);
-
-    ValidateEditBookmark(trigger, bookmark_delegate);
-  }
 }

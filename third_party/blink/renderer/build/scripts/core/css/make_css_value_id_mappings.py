@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -133,7 +133,8 @@ class CSSValueIDMappingsWriter(make_style_builder.StyleBuilderWriter):
 
         for property_ in self.css_properties.properties_including_aliases:
             include_paths.update(property_['include_paths'])
-            if property_['field_template'] == 'multi_keyword':
+            if property_['field_template'] in ('multi_keyword',
+                                               'bitset_keyword'):
                 mappings[property_['type_name']] = {
                     'default_value':
                     property_['default_value'],

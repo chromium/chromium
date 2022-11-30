@@ -1,20 +1,23 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 
 class WarningBadgeService;
 
-class WarningBadgeServiceFactory : public BrowserContextKeyedServiceFactory {
+class WarningBadgeServiceFactory : public ProfileKeyedServiceFactory {
  public:
+  WarningBadgeServiceFactory(const WarningBadgeServiceFactory&) = delete;
+  WarningBadgeServiceFactory& operator=(const WarningBadgeServiceFactory&) =
+      delete;
+
   static WarningBadgeService* GetForBrowserContext(
       content::BrowserContext* context);
   static WarningBadgeServiceFactory* GetInstance();
@@ -28,11 +31,7 @@ class WarningBadgeServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory implementation
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WarningBadgeServiceFactory);
 };
 
 }  // namespace extensions

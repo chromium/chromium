@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,15 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
-#include "base/trace_event/trace_event.h"
-#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_delegate.h"
+
+namespace base {
+namespace trace_event {
+class TraceConfig;
+}
+class FilePath;
+}  // namespace base
 
 namespace content {
 

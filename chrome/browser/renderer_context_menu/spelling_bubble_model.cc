@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -13,6 +15,7 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
@@ -23,10 +26,9 @@ using content::WebContents;
 
 SpellingBubbleModel::SpellingBubbleModel(Profile* profile,
                                          WebContents* web_contents)
-    : profile_(profile), web_contents_(web_contents) {}
+    : profile_(profile), web_contents_(web_contents->GetWeakPtr()) {}
 
-SpellingBubbleModel::~SpellingBubbleModel() {
-}
+SpellingBubbleModel::~SpellingBubbleModel() = default;
 
 std::u16string SpellingBubbleModel::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_SPELLING_BUBBLE_TITLE);
@@ -64,7 +66,13 @@ void SpellingBubbleModel::OpenHelpPage() {
   OpenURLParams params(GetHelpPageURL(), Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params);
+  if (web_contents_) {
+    web_contents_->OpenURL(params);
+    return;
+  }
+  // The web contents used to open this dialog have been destroyed.
+  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
+  browser->OpenURL(params);
 }
 
 void SpellingBubbleModel::SetPref(bool enabled) {

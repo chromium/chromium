@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ namespace content {
 network::mojom::CookieManager* GetCookieManager(
     BrowserContext* browser_context) {
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   return storage_partition->GetCookieManagerForBrowserProcess();
 }
 
@@ -39,7 +39,7 @@ void CreateCookieForTest(
   bool result_out;
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       cookie_name, "1", cookie_domain, "/", base::Time(), base::Time(),
-      base::Time(), is_cookie_secure, false, same_site,
+      base::Time(), base::Time(), is_cookie_secure, false, same_site,
       net::COOKIE_PRIORITY_LOW, false);
   GetCookieManager(browser_context)
       ->SetCanonicalCookie(

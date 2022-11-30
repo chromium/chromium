@@ -6,4 +6,5 @@ include_rules = [
   "+ui/base/data_transfer_policy",
   "+ui/base/test",
   "+ui/gfx/image",
+  "+ui/gfx/skia_util.h",
 ]

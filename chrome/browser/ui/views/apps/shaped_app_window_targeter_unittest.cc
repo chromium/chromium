@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
@@ -24,9 +23,11 @@ using extensions::AppWindow;
 
 class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
  public:
-  ShapedAppWindowTargeterTest()
-      : web_view_(NULL) {
-  }
+  ShapedAppWindowTargeterTest() : web_view_(nullptr) {}
+
+  ShapedAppWindowTargeterTest(const ShapedAppWindowTargeterTest&) = delete;
+  ShapedAppWindowTargeterTest& operator=(const ShapedAppWindowTargeterTest&) =
+      delete;
 
   ~ShapedAppWindowTargeterTest() override {}
 
@@ -69,8 +70,6 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   views::WebView web_view_;
   std::unique_ptr<views::Widget> widget_;
   ChromeNativeAppWindowViewsAura app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapedAppWindowTargeterTest);
 };
 
 TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {

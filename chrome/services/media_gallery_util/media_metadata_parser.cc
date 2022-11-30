@@ -1,15 +1,16 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/services/media_gallery_util/media_metadata_parser.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "media/base/data_source.h"
 #include "media/filters/audio_video_metadata_extractor.h"
@@ -57,14 +58,11 @@ chrome::mojom::MediaMetadataPtr ParseAudioVideoMetadata(
   metadata->title = extractor.title();
   metadata->track = extractor.track();
 
-  for (auto it = extractor.stream_infos().begin();
-       it != extractor.stream_infos().end(); ++it) {
+  for (const auto& it : extractor.stream_infos()) {
     chrome::mojom::MediaStreamInfoPtr stream_info =
-        chrome::mojom::MediaStreamInfo::New(
-            it->type, base::Value(base::Value::Type::DICTIONARY));
-    for (auto tag_it = it->tags.begin(); tag_it != it->tags.end(); ++tag_it) {
-      stream_info->additional_properties.SetKey(tag_it->first,
-                                                base::Value(tag_it->second));
+        chrome::mojom::MediaStreamInfo::New(it.type, base::Value::Dict());
+    for (const auto& tag : it.tags) {
+      stream_info->additional_properties.Set(tag.first, tag.second);
     }
     metadata->raw_tags.push_back(std::move(stream_info));
   }
@@ -121,7 +119,7 @@ void MediaMetadataParser::Start(MetadataCallback callback) {
 
   auto* images = new std::vector<metadata::AttachedImage>();
 
-  media_thread_.reset(new base::Thread("media_thread"));
+  media_thread_ = std::make_unique<base::Thread>("media_thread");
   CHECK(media_thread_->Start());
 
   base::PostTaskAndReplyWithResult(

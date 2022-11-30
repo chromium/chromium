@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/single_object_invalidation_set.h"
+#include "components/invalidation/public/single_topic_invalidation_set.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 
@@ -83,10 +84,12 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
   DCHECK_EQ(STARTED, state_);
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  VLOG(2) << "Received remote command invalidation";
+
   if (!invalidation_service_enabled_)
     LOG(WARNING) << "Unexpected invalidation received.";
 
-  const invalidation::SingleObjectInvalidationSet& list =
+  const invalidation::SingleTopicInvalidationSet& list =
       invalidation_map.ForTopic(topic_);
   if (list.IsEmpty()) {
     NOTREACHED();
@@ -117,9 +120,10 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
     return;
 
   // Create the Topic based on the policy data.
-  // If the policy does not specify the Topic, then unregister.
+  // If the policy does not specify the Topic, then unsubscribe and unregister.
   invalidation::Topic topic;
   if (!policy || !GetRemoteCommandTopicFromPolicy(*policy, &topic)) {
+    UnsubscribeFromTopics();
     Unregister();
     return;
   }
@@ -151,12 +155,26 @@ void RemoteCommandsInvalidator::Register(const invalidation::Topic& topic) {
 
 void RemoteCommandsInvalidator::Unregister() {
   if (is_registered_) {
-    CHECK(invalidation_service_->UpdateInterestedTopics(
-        this, invalidation::TopicSet()));
     invalidation_service_->UnregisterInvalidationHandler(this);
     is_registered_ = false;
     UpdateInvalidationsEnabled();
   }
+}
+
+void RemoteCommandsInvalidator::UnsubscribeFromTopics() {
+  base::ScopedObservation<
+      invalidation::InvalidationService, invalidation::InvalidationHandler,
+      &invalidation::InvalidationService::RegisterInvalidationHandler,
+      &invalidation::InvalidationService::UnregisterInvalidationHandler>
+      temporary_registration(this);
+
+  // Invalidator cannot unset its topics without being registered. Let's quickly
+  // register and unregister to do just that.
+  if (!is_registered_)
+    temporary_registration.Observe(invalidation_service_);
+
+  CHECK(invalidation_service_->UpdateInterestedTopics(
+      this, invalidation::TopicSet()));
 }
 
 void RemoteCommandsInvalidator::UpdateInvalidationsEnabled() {

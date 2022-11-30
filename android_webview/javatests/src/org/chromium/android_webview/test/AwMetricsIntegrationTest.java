@@ -1,17 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.android_webview.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
+import org.hamcrest.Description;
+import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,23 +26,30 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
-import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.metrics.AndroidMetricsLogUploader;
+import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
+import org.chromium.components.metrics.InstallerPackageType;
 import org.chromium.components.metrics.MetricsSwitches;
+import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
+import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.ChromeComponent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Integration test to verify WebView's metrics implementation. This isn't a great spot to verify
@@ -58,63 +72,30 @@ public class AwMetricsIntegrationTest {
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private TestAwContentsClient mContentsClient;
-    private TestPlatformServiceBridge mPlatformServiceBridge;
+    private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
 
     // Some short interval, arbitrarily chosen.
     private static final long UPLOAD_INTERVAL_MS = 10;
-
-    private static class TestPlatformServiceBridge extends PlatformServiceBridge {
-        private final BlockingQueue<byte[]> mQueue;
-
-        public TestPlatformServiceBridge() {
-            mQueue = new LinkedBlockingQueue<>();
-        }
-
-        @Override
-        public boolean canUseGms() {
-            return true;
-        }
-
-        @Override
-        public void queryMetricsSetting(Callback<Boolean> callback) {
-            ThreadUtils.assertOnUiThread();
-            callback.onResult(true /* enabled */);
-        }
-
-        @Override
-        public void logMetrics(byte[] data) {
-            mQueue.add(data);
-        }
-
-        /**
-         * Gets the latest metrics log we've received.
-         */
-        public ChromeUserMetricsExtension waitForNextMetricsLog() throws Exception {
-            byte[] data = AwActivityTestRule.waitForNextQueueElement(mQueue);
-            return ChromeUserMetricsExtension.parseFrom(data);
-        }
-
-        /**
-         * Asserts there are no more metrics logs queued up.
-         */
-        public void assertNoMetricsLogs() throws Exception {
-            // Assert the size is zero (rather than the queue is empty), so if this fails we have
-            // some hint as to how many logs were queued up.
-            Assert.assertEquals("Expected no metrics logs to be in the queue", 0, mQueue.size());
-        }
-    }
 
     @Before
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
-        // Kick off the metrics consent-fetching process. TestPlatformServiceBridge mocks out user
-        // consent for when we query it with AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(),
-        // so metrics consent is guaranteed to be granted.
-        mPlatformServiceBridge = new TestPlatformServiceBridge();
+        // Kick off the metrics consent-fetching process. MetricsTestPlatformServiceBridge mocks out
+        // user consent for when we query it with
+        // AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(), so metrics consent is guaranteed
+        // to be granted.
+        mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Explicitly send the data to PlatformServiceBridge and avoid sending the data via
+            // MetricsUploadService to avoid unexpected failures due to service connections, IPCs
+            // ... etc in tests as testing the service behaviour is outside the scope of these
+            // integeration tests.
+            AndroidMetricsLogUploader.setUploader(
+                    (byte[] data) -> { PlatformServiceBridge.getInstance().logMetrics(data); });
+
             // Need to configure the metrics delay first, because
             // handleMinidumpsAndSetMetricsConsent() triggers MetricsService initialization. The
             // first upload for each test case will be triggered with minimal latency, and
@@ -139,10 +120,10 @@ public class AwMetricsIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testMetadata_basicInfo() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
-        Assert.assertEquals(ChromeUserMetricsExtension.Product.ANDROID_WEBVIEW,
+        assertEquals(ChromeUserMetricsExtension.Product.ANDROID_WEBVIEW,
                 ChromeUserMetricsExtension.Product.forNumber(log.getProduct()));
-        Assert.assertTrue("Should have some client_id", log.hasClientId());
-        Assert.assertTrue("Should have some session_id", log.hasSessionId());
+        assertTrue("Should have some client_id", log.hasClientId());
+        assertTrue("Should have some session_id", log.hasSessionId());
     }
 
     @Test
@@ -151,9 +132,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_buildInfo() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some build_timestamp", systemProfile.hasBuildTimestamp());
-        Assert.assertTrue("Should have some app_version", systemProfile.hasAppVersion());
-        Assert.assertTrue("Should have some channel", systemProfile.hasChannel());
+        assertTrue("Should have some build_timestamp", systemProfile.hasBuildTimestamp());
+        assertTrue("Should have some app_version", systemProfile.hasAppVersion());
+        assertTrue("Should have some channel", systemProfile.hasChannel());
     }
 
     @Test
@@ -162,21 +143,16 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_miscellaneousSystemProfileInfo() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some uma_enabled_date", systemProfile.hasUmaEnabledDate());
-        Assert.assertTrue("Should have some install_date", systemProfile.hasInstallDate());
+        assertTrue("Should have some uma_enabled_date", systemProfile.hasUmaEnabledDate());
+        assertTrue("Should have some install_date", systemProfile.hasInstallDate());
         // Don't assert application_locale's value, because we don't want to enforce capitalization
         // requirements on the metrics service (ex. in case it switches from "en-US" to "en-us" for
         // some reason).
-        Assert.assertTrue(
-                "Should have some application_locale", systemProfile.hasApplicationLocale());
+        assertTrue("Should have some application_locale", systemProfile.hasApplicationLocale());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Assert.assertEquals(
-                    ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
-        }
-        Assert.assertTrue(
-                "Should have some low_entropy_source", systemProfile.hasLowEntropySource());
-        Assert.assertTrue(
+        assertEquals(ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
+        assertTrue("Should have some low_entropy_source", systemProfile.hasLowEntropySource());
+        assertTrue(
                 "Should have some old_low_entropy_source", systemProfile.hasOldLowEntropySource());
     }
 
@@ -186,9 +162,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_osData() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertEquals("Android", systemProfile.getOs().getName());
-        Assert.assertTrue("Should have some os.version", systemProfile.getOs().hasVersion());
-        Assert.assertTrue("Should have some os.build_fingerprint",
+        assertEquals("Android", systemProfile.getOs().getName());
+        assertTrue("Should have some os.version", systemProfile.getOs().hasVersion());
+        assertTrue("Should have some os.build_fingerprint",
                 systemProfile.getOs().hasBuildFingerprint());
     }
 
@@ -198,9 +174,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareMiscellaneous() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.system_ram_mb",
+        assertTrue("Should have some hardware.system_ram_mb",
                 systemProfile.getHardware().hasSystemRamMb());
-        Assert.assertTrue("Should have some hardware.hardware_class",
+        assertTrue("Should have some hardware.hardware_class",
                 systemProfile.getHardware().hasHardwareClass());
     }
 
@@ -210,13 +186,13 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareScreen() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.screen_count",
+        assertTrue("Should have some hardware.screen_count",
                 systemProfile.getHardware().hasScreenCount());
-        Assert.assertTrue("Should have some hardware.primary_screen_width",
+        assertTrue("Should have some hardware.primary_screen_width",
                 systemProfile.getHardware().hasPrimaryScreenWidth());
-        Assert.assertTrue("Should have some hardware.primary_screen_height",
+        assertTrue("Should have some hardware.primary_screen_height",
                 systemProfile.getHardware().hasPrimaryScreenHeight());
-        Assert.assertTrue("Should have some hardware.primary_screen_scale_factor",
+        assertTrue("Should have some hardware.primary_screen_scale_factor",
                 systemProfile.getHardware().hasPrimaryScreenScaleFactor());
     }
 
@@ -226,15 +202,15 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareCpu() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.cpu_architecture",
+        assertTrue("Should have some hardware.cpu_architecture",
                 systemProfile.getHardware().hasCpuArchitecture());
-        Assert.assertTrue("Should have some hardware.cpu.vendor_name",
+        assertTrue("Should have some hardware.cpu.vendor_name",
                 systemProfile.getHardware().getCpu().hasVendorName());
-        Assert.assertTrue("Should have some hardware.cpu.signature",
+        assertTrue("Should have some hardware.cpu.signature",
                 systemProfile.getHardware().getCpu().hasSignature());
-        Assert.assertTrue("Should have some hardware.cpu.num_cores",
+        assertTrue("Should have some hardware.cpu.num_cores",
                 systemProfile.getHardware().getCpu().hasNumCores());
-        Assert.assertTrue("Should have some hardware.cpu.is_hypervisor",
+        assertTrue("Should have some hardware.cpu.is_hypervisor",
                 systemProfile.getHardware().getCpu().hasIsHypervisor());
     }
 
@@ -244,11 +220,11 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareGpu() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.gpu.driver_version",
+        assertTrue("Should have some hardware.gpu.driver_version",
                 systemProfile.getHardware().getGpu().hasDriverVersion());
-        Assert.assertTrue("Should have some hardware.gpu.gl_vendor",
+        assertTrue("Should have some hardware.gpu.gl_vendor",
                 systemProfile.getHardware().getGpu().hasGlVendor());
-        Assert.assertTrue("Should have some hardware.gpu.gl_renderer",
+        assertTrue("Should have some hardware.gpu.gl_renderer",
                 systemProfile.getHardware().getGpu().hasGlRenderer());
     }
 
@@ -258,9 +234,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareDrive() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.app_drive.has_seek_penalty",
+        assertTrue("Should have some hardware.app_drive.has_seek_penalty",
                 systemProfile.getHardware().getAppDrive().hasHasSeekPenalty());
-        Assert.assertTrue("Should have some hardware.user_data_drive.has_seek_penalty",
+        assertTrue("Should have some hardware.user_data_drive.has_seek_penalty",
                 systemProfile.getHardware().getUserDataDrive().hasHasSeekPenalty());
     }
 
@@ -270,18 +246,91 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_network() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some network.connection_type_is_ambiguous",
+        assertTrue("Should have some network.connection_type_is_ambiguous",
                 systemProfile.getNetwork().hasConnectionTypeIsAmbiguous());
-        Assert.assertTrue("Should have some network.connection_type",
+        assertTrue("Should have some network.connection_type",
                 systemProfile.getNetwork().hasConnectionType());
-        Assert.assertTrue("Should have some network.wifi_phy_layer_protocol_is_ambiguous",
+        assertTrue("Should have some network.wifi_phy_layer_protocol_is_ambiguous",
                 systemProfile.getNetwork().hasWifiPhyLayerProtocolIsAmbiguous());
-        Assert.assertTrue("Should have some network.wifi_phy_layer_protocol",
+        assertTrue("Should have some network.wifi_phy_layer_protocol",
                 systemProfile.getNetwork().hasWifiPhyLayerProtocol());
-        Assert.assertTrue("Should have some network.min_effective_connection_type",
+        assertTrue("Should have some network.min_effective_connection_type",
                 systemProfile.getNetwork().hasMinEffectiveConnectionType());
-        Assert.assertTrue("Should have some network.max_effective_connection_type",
+        assertTrue("Should have some network.max_effective_connection_type",
                 systemProfile.getNetwork().hasMaxEffectiveConnectionType());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_pageLoad() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            assertEquals("Should have correct stability histogram kPageLoad count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.PAGE_LOAD));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_rendererLaunchCount() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            assertEquals("Should have correct stability histogram kRendererLaunch count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @OnlyRunIn(MULTI_PROCESS) // This functionality is specific to the OOP-renderer
+    public void testMetadata_stability_rendererCrashCount() throws Throwable {
+        TestAwContentsClient.RenderProcessGoneHelper helper =
+                mContentsClient.getRenderProcessGoneHelper();
+        helper.setResponse(true); // Don't automatically kill the browser process.
+
+        // Ensure that the renderer has started.
+        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        // Crash the renderer and wait for onRenderProcessGone to be called.
+        int callCount = helper.getCallCount();
+        mRule.loadUrlAsync(mAwContents, "chrome://crash");
+        helper.waitForCallback(
+                callCount, 1, CallbackHelper.WAIT_TIMEOUT_SECONDS * 5, TimeUnit.SECONDS);
+
+        assertEquals("Should have correct stability histogram kRendererCrash count", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Stability.Counts2", StabilityEventType.RENDERER_CRASH));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_browserLaunchCount() throws Throwable {
+        // This should be triggered simply by initializing the MetricsService. This should be logged
+        // (and persisted) even before we start collecting the first metrics log.
+        assertEquals("Should have correct stability histogram kLaunch count", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Stability.Counts2", StabilityEventType.LAUNCH));
     }
 
     @Test
@@ -293,7 +342,7 @@ public class AwMetricsIntegrationTest {
         // assert total count == 0), because this would race with the initial metrics log.
         mPlatformServiceBridge.waitForNextMetricsLog();
 
-        Assert.assertEquals(
+        assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("MemoryAndroid.LowRamDevice"));
     }
 
@@ -306,7 +355,7 @@ public class AwMetricsIntegrationTest {
         // assert total count == 0), because this would race with the initial metrics log.
         mPlatformServiceBridge.waitForNextMetricsLog();
 
-        Assert.assertEquals(
+        assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("UMA.SamplingRatePerMille"));
     }
 
@@ -319,9 +368,106 @@ public class AwMetricsIntegrationTest {
         // do not assert total count == 0), because this would race with the initial metrics log.
         mPlatformServiceBridge.waitForNextMetricsLog();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Accessibility.Android.ScreenReader.EveryReport"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_appPackageName() throws Throwable {
+        final String appPackageName = ContextUtils.getApplicationContext().getPackageName();
+
+        mRule.runOnUiThread(() -> {
+            AwBrowserProcess.setWebViewPackageName(appPackageName);
+            AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(
+                    InstallerPackageType.GOOGLE_PLAY_STORE);
+            // A valid version string and non expired date means the app package name should be
+            // recorded.
+            AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
+                    /* allowlistComponentVersion= */ "123.456.78.9",
+                    /* allowlistExpiryDateMs= */ System.currentTimeMillis()
+                            + TimeUnit.DAYS.toMillis(1));
+        });
+
+        // Disregard the first UMA log because it's recorded before loading the allowlist.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // Load a blank page to indicate to the MetricsService that the app is "in use" and
+        // it's OK to upload the next record.
+        mRule.loadUrlAsync(mAwContents, "about:blank");
+
+        // Disregard the second UMA log as well because it is also created very early on
+        // (since we have "fast startup for testing" enabled), and is very likely to have
+        // been opened before the allowlist was loaded.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // Load a blank page to indicate to the MetricsService that the app is "in use" and
+        // it's OK to upload the next record.
+        mRule.loadUrlAsync(mAwContents, "about:blank");
+
+        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
+        SystemProfileProto systemProfile = log.getSystemProfile();
+        assertEquals(appPackageName, systemProfile.getAppPackageName());
+    }
+
+    private static TypeSafeMatcher<ChromeComponent> matchesChromeComponent(
+            ChromeComponent expected) {
+        return new TypeSafeMatcher<ChromeComponent>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(expected.toString());
+            }
+
+            @Override
+            protected void describeMismatchSafely(
+                    ChromeComponent item, Description mismatchDescription) {
+                mismatchDescription.appendText("Doesn't match " + item.toString());
+            }
+
+            @Override
+            public boolean matchesSafely(ChromeComponent item) {
+                return expected.getComponentId() == item.getComponentId()
+                        && expected.getVersion().equals(item.getVersion())
+                        && expected.getOmahaFingerprint() == item.getOmahaFingerprint();
+            }
+        };
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_chromeComponents() throws Throwable {
+        final String allowlistComponentVersion = "123.456.78.9";
+        // A fake expiry date, the allowlist component info should be recorded regardless of the
+        // expiry date.
+        final long allowlistExpiryDateMs = 1234567891011L;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
+                    allowlistComponentVersion, allowlistExpiryDateMs);
+        });
+
+        // Ignore the first log because it will likely be recorded before setting the allowlist
+        // version above.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // The start of a page load should be enough to indicate to the MetricsService that the app
+        // is "in use" and it's OK to upload the next record.
+        mRule.loadUrlAsync(mAwContents, "about:blank");
+        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
+        SystemProfileProto systemProfile = log.getSystemProfile();
+
+        assertEquals(
+                "Should have exactly one component", systemProfile.getChromeComponentCount(), 1);
+        ChromeComponent expectedAllowlistComponent =
+                ChromeComponent.newBuilder()
+                        .setComponentId(
+                                SystemProfileProto.ComponentId.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST)
+                        .setVersion(allowlistComponentVersion)
+                        .build();
+        assertThat(systemProfile.getChromeComponentList(),
+                contains(matchesChromeComponent(expectedAllowlistComponent)));
     }
 
     @Test
@@ -353,7 +499,7 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @OnlyRunIn(MULTI_PROCESS) // This test is specific to the OOP-renderer
+    @OnlyRunIn(MULTI_PROCESS) // This functionality is specific to the OOP-renderer
     public void testRendererHistograms() throws Throwable {
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
@@ -394,9 +540,50 @@ public class AwMetricsIntegrationTest {
                     embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
             helper.waitForCallback(finalMetricsCollectedCount, 2);
 
-            Assert.assertEquals(1,
+            assertEquals(1,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             "Android.SeccompStatus.RendererSandbox"));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE})
+    public void testScreenCoverageReporting() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            mRule.loadUrlAsync(mAwContents,
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            // We need to wait for log collection because the histogram is recorded during
+            // MetricsProvider::ProvideCurrentSessionData().
+            mPlatformServiceBridge.waitForNextMetricsLog();
+
+            final String histogramName = "Android.WebView.VisibleScreenCoverage.Global";
+
+            // The histogram records whole seconds that the WebView has been on screen, we need to
+            // leave enough time for something to be recorded.
+            CriteriaHelper.pollUiThread(() -> {
+                int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+                Criteria.checkThat("There were no samples recorded", totalSamples, Matchers.not(0));
+            });
+
+            int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+
+            int zeroBucketSamples =
+                    RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
+            assertNotEquals("There should be at least one sample in a non-zero bucket",
+                    zeroBucketSamples, totalSamples);
+
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assertEquals(1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                mAwContents.onDetachedFromWindow();
+                assertEquals(0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+            });
         } finally {
             embeddedTestServer.stopAndDestroyServer();
         }

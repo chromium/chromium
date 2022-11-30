@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,9 @@ class TLSSocket : public ResumableTCPSocket {
             mojo::ScopedDataPipeProducerHandle send_stream,
             const std::string& owner_extension_id);
 
+  TLSSocket(const TLSSocket&) = delete;
+  TLSSocket& operator=(const TLSSocket&) = delete;
+
   ~TLSSocket() override;
 
   // Fails.
@@ -78,12 +81,10 @@ class TLSSocket : public ResumableTCPSocket {
   void OnReadComplete(int result, scoped_refptr<net::IOBuffer> io_buffer);
 
   mojo::Remote<network::mojom::TLSClientSocket> tls_socket_;
-  base::Optional<net::IPEndPoint> local_addr_;
-  base::Optional<net::IPEndPoint> peer_addr_;
+  absl::optional<net::IPEndPoint> local_addr_;
+  absl::optional<net::IPEndPoint> peer_addr_;
   std::unique_ptr<MojoDataPump> mojo_data_pump_;
   ReadCompletionCallback read_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSSocket);
 };
 
 }  // namespace extensions

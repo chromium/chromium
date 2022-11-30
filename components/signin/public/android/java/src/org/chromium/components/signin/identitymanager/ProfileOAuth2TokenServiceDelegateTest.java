@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
 
@@ -26,16 +25,18 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
-import org.chromium.components.signin.AccountTrackerService;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -96,47 +97,21 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     private final CustomGetAccessTokenCallback mTokenCallback = new CustomGetAccessTokenCallback();
 
     @Spy
-    private final FakeAccountManagerFacade mAccountManagerFacade =
-            new FakeAccountManagerFacade(null);
+    private final FakeAccountManagerFacade mAccountManagerFacade = new FakeAccountManagerFacade();
 
     private ProfileOAuth2TokenServiceDelegate mDelegate;
 
     @Before
     public void setUp() {
         mocker.mock(ProfileOAuth2TokenServiceDelegateJni.TEST_HOOKS, mNativeMock);
-        mDelegate = ProfileOAuth2TokenServiceDelegate.create(
-                NATIVE_DELEGATE, mAccountTrackerServiceMock, mAccountManagerFacade);
+        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+        mDelegate =
+                new ProfileOAuth2TokenServiceDelegate(NATIVE_DELEGATE, mAccountTrackerServiceMock);
     }
 
     @Test
     @SmallTest
-    public void testGetAccountsNoAccountsRegistered() {
-        Assert.assertArrayEquals(new String[] {}, mDelegate.getSystemAccountNames());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetAccountsOneAccountRegistered() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
-        Assert.assertArrayEquals(new String[] {ACCOUNT.name}, mDelegate.getSystemAccountNames());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetAccountsTwoAccountsRegistered() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
-        final Account account2 = AccountUtils.createAccountFromName("bar@gmail.com");
-        mAccountManagerFacade.addAccount(account2);
-
-        final List<String> accounts = Arrays.asList(mDelegate.getSystemAccountNames());
-        Assert.assertEquals("There should be two registered account", 2, accounts.size());
-        Assert.assertTrue("The list should contain " + ACCOUNT, accounts.contains(ACCOUNT.name));
-        Assert.assertTrue("The list should contain " + account2, accounts.contains(account2.name));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetOAuth2AccessTokenOnSuccess() {
+    public void testGetOAuth2AccessTokenOnSuccess() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
         final AccessTokenData expectedToken = mAccountManagerFacade.getAccessToken(ACCOUNT, scope);
@@ -148,7 +123,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
-    public void testGetOAuth2AccessTokenOnFailure() {
+    public void testGetOAuth2AccessTokenOnFailure() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
         doReturn(null).when(mAccountManagerFacade).getAccessToken(any(Account.class), anyString());
@@ -162,27 +137,33 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenAccountIsNotOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com")); });
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Test is flaky, see crbug.com/1291110")
     public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name)); });
     }
 
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenCacheIsNotPopulated() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        when(mAccountManagerFacade.isCachePopulated()).thenReturn(false);
-        Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            doReturn(new Promise<List<Account>>()).when(mAccountManagerFacade).getAccounts();
+            Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+        });
     }
 
     @Test
     @SmallTest
     public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
+        mAccountManagerFacade.addAccount(ACCOUNT);
         doAnswer(invocation -> {
             Runnable runnable = invocation.getArgument(0);
             runnable.run();
@@ -192,6 +173,8 @@ public class ProfileOAuth2TokenServiceDelegateTest {
                 .seedAccountsIfNeeded(any(Runnable.class));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> { mDelegate.seedAndReloadAccountsWithPrimaryAccount(null); });
-        verify(mNativeMock).reloadAllAccountsWithPrimaryAccountAfterSeeding(NATIVE_DELEGATE, null);
+        verify(mNativeMock)
+                .reloadAllAccountsWithPrimaryAccountAfterSeeding(
+                        NATIVE_DELEGATE, null, new String[] {ACCOUNT.name});
     }
 }

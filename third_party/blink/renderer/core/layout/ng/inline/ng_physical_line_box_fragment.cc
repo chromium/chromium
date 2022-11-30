@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGPhysicalLineBoxFragment : NGPhysicalContainerFragment {
+struct SameSizeAsNGPhysicalLineBoxFragment : NGPhysicalFragment {
   FontHeight metrics;
 };
 
@@ -26,38 +26,46 @@ ASSERT_SIZE(NGPhysicalLineBoxFragment, SameSizeAsNGPhysicalLineBoxFragment);
 
 }  // namespace
 
-scoped_refptr<const NGPhysicalLineBoxFragment>
-NGPhysicalLineBoxFragment::Create(NGLineBoxFragmentBuilder* builder) {
-  // We store the children list inline in the fragment as a flexible
-  // array. Therefore, we need to make sure to allocate enough space for
-  // that array here, which requires a manual allocation + placement new.
-  // The initialization of the array is done by NGPhysicalContainerFragment;
-  // we pass the buffer as a constructor argument.
-  void* data = ::WTF::Partitions::FastMalloc(
-      sizeof(NGPhysicalLineBoxFragment) +
-          builder->children_.size() * sizeof(NGLink),
-      ::WTF::GetStringWithTypeName<NGPhysicalLineBoxFragment>());
-  new (data) NGPhysicalLineBoxFragment(PassKey(), builder);
-  return base::AdoptRef(static_cast<NGPhysicalLineBoxFragment*>(data));
+const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
+    NGLineBoxFragmentBuilder* builder) {
+  DCHECK_EQ(builder->children_.size(), 0u);
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), builder);
+}
+
+const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Clone(
+    const NGPhysicalLineBoxFragment& other) {
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), other);
 }
 
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
     PassKey key,
     NGLineBoxFragmentBuilder* builder)
-    : NGPhysicalContainerFragment(builder,
-                                  builder->GetWritingMode(),
-                                  children_,
-                                  kFragmentLineBox,
-                                  builder->line_box_type_),
+    : NGPhysicalFragment(builder,
+                         builder->GetWritingMode(),
+                         kFragmentLineBox,
+                         builder->line_box_type_),
       metrics_(builder->metrics_) {
   // A line box must have a metrics unless it's an empty line box.
   DCHECK(!metrics_.IsEmpty() || IsEmptyLineBox());
-  base_or_resolved_direction_ = static_cast<unsigned>(builder->base_direction_);
+  base_direction_ = static_cast<unsigned>(builder->base_direction_);
   has_hanging_ = builder->hang_inline_size_ != 0;
   has_propagated_descendants_ = has_floating_descendants_for_paint_ ||
                                 HasOutOfFlowPositionedDescendants() ||
                                 builder->unpositioned_list_marker_;
 }
+
+NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
+    PassKey key,
+    const NGPhysicalLineBoxFragment& other)
+    : NGPhysicalFragment(other), metrics_(other.metrics_) {
+  base_direction_ = other.base_direction_;
+  has_hanging_ = other.has_hanging_;
+  has_propagated_descendants_ = other.has_propagated_descendants_;
+}
+
+NGPhysicalLineBoxFragment::~NGPhysicalLineBoxFragment() = default;
+
+void NGPhysicalLineBoxFragment::Dispose() {}
 
 FontHeight NGPhysicalLineBoxFragment::BaselineMetrics() const {
   // TODO(kojii): Computing other baseline types than the used one is not
@@ -95,18 +103,6 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflow(
     TextHeightType height_type) const {
   const WritingMode container_writing_mode = container_style.GetWritingMode();
   PhysicalRect overflow;
-  for (const auto& child : PostLayoutChildren()) {
-    PhysicalRect child_scroll_overflow =
-        child->ScrollableOverflowForPropagation(container, height_type);
-    child_scroll_overflow.offset += child.Offset();
-
-    if (UNLIKELY(has_hanging_ && !child->IsFloatingOrOutOfFlowPositioned())) {
-      AdjustScrollableOverflowForHanging(LocalRect(), container_writing_mode,
-                                         &child_scroll_overflow);
-    }
-    overflow.Unite(child_scroll_overflow);
-  }
-
   // Make sure we include the inline-size of the line-box in the overflow.
   AddInlineSizeToOverflow(LocalRect(), container_writing_mode, &overflow);
 
@@ -139,6 +135,10 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
 bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
   const auto* break_token = To<NGInlineBreakToken>(BreakToken());
   return break_token && !break_token->IsForcedBreak();
+}
+
+void NGPhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
+  NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

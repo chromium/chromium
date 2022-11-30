@@ -6,6 +6,7 @@
   "permissions": ["webRequest", "<all_urls>"],
   "incognito": "spanning",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   }
 }

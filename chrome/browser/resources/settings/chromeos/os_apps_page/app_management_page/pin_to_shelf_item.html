@@ -1,24 +1,11 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="toggle_row.html">
-<link rel="import" href="util.html">
-<link rel="import" href="browser_proxy.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="../../metrics_recorder.html">
-
-<dom-module id="app-management-pin-to-shelf-item">
-  <template>
-    <style>
-      :host(:not([disabled])) {
-        cursor: pointer;
-      }
-    </style>
-    <app-management-toggle-row
-        id="toggle-row"
-        label="$i18n{appManagementPinToShelfLabel}"
-        managed="[[isManaged_(app)]]"
-        value="[[getValue_(app)]]">
-    </app-management-toggle-row>
-  </template>
-  <script src="pin_to_shelf_item.js"></script>
-</dom-module>
+<style>
+  :host(:not([disabled])) {
+    cursor: pointer;
+  }
+</style>
+<app-management-toggle-row
+    id="toggle-row"
+    label="$i18n{appManagementPinToShelfLabel}"
+    managed="[[isManaged_(app)]]"
+    value="[[getValue_(app)]]">
+</app-management-toggle-row>

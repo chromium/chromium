@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -26,6 +26,7 @@
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
 #include "net/nqe/effective_connection_type.h"
+#include "services/network/is_browser_initiated.h"
 #include "services/network/resource_scheduler/resource_scheduler_params_manager.h"
 
 namespace base {
@@ -68,6 +69,23 @@ namespace network {
 // the URLRequest.
 class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
  public:
+  class ClientId final {
+   public:
+    explicit constexpr ClientId(uint64_t id) : id_(id) {}
+    ~ClientId() = default;
+
+    void Increment() { ++id_; }
+    bool operator<(const ClientId& that) const { return id_ < that.id_; }
+    bool operator==(const ClientId& that) const { return id_ == that.id_; }
+
+    constexpr ClientId AddForTesting(uint64_t n) const {
+      return ClientId(id_ + n);
+    }
+
+   private:
+    uint64_t id_;
+  };
+
   class ScheduledResourceRequest {
    public:
     ScheduledResourceRequest();
@@ -84,14 +102,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   };
 
   explicit ResourceScheduler(const base::TickClock* tick_clock = nullptr);
+
+  ResourceScheduler(const ResourceScheduler&) = delete;
+  ResourceScheduler& operator=(const ResourceScheduler&) = delete;
+
   virtual ~ResourceScheduler();
 
   // Requests that this ResourceScheduler schedule, and eventually loads, the
   // specified |url_request|. Caller should delete the returned ResourceThrottle
   // when the load completes or is canceled, before |url_request| is deleted.
   virtual std::unique_ptr<ScheduledResourceRequest> ScheduleRequest(
-      int child_id,
-      int route_id,
+      ClientId client_id,
       bool is_async,
       net::URLRequest* url_request);
 
@@ -100,12 +121,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   // Called when a renderer is created. |network_quality_estimator| is allowed
   // to be null.
   virtual void OnClientCreated(
-      int child_id,
-      int route_id,
+      ClientId client_id,
+      IsBrowserInitiated is_browser_initiated,
       net::NetworkQualityEstimator* network_quality_estimator);
 
   // Called when a renderer is destroyed.
-  virtual void OnClientDeleted(int child_id, int route_id);
+  virtual void OnClientDeleted(ClientId client_id);
 
   // Counts the number of active resource scheduler clients.
   // A client is active when it has at least one request either in the pending
@@ -157,18 +178,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
                     const ScheduledResourceRequestImpl* b) const;
   };
 
-  using ClientId = int64_t;
   using ClientMap = std::map<ClientId, std::unique_ptr<Client>>;
   using RequestSet = std::set<ScheduledResourceRequestImpl*>;
 
   // Called when a ScheduledResourceRequest is destroyed.
   void RemoveRequest(ScheduledResourceRequestImpl* request);
 
-  // Returns the client ID for the given |child_id| and |route_id| combo.
-  ClientId MakeClientId(int child_id, int route_id) const;
-
-  // Returns the client for the given |child_id| and |route_id| combo.
-  Client* GetClient(int child_id, int route_id);
+  // Returns the client for the given `client_id`.
+  Client* GetClient(ClientId client_id);
 
   // May start the timer that dispatches long queued requests
   void StartLongQueuedRequestsDispatchTimerIfNeeded();
@@ -181,7 +198,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   RequestSet unowned_requests_;
 
   // Guaranteed to be non-null.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Timer to dispatch requests that may have been queued for too long.
   base::OneShotTimer long_queued_requests_dispatch_timer_;
@@ -195,8 +212,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceScheduler);
 };
 
 }  // namespace network

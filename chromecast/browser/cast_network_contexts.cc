@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_http_user_agent_settings.h"
-#include "chromecast/common/cast_content_client.h"
+#include "chromecast/common/user_agent.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/browser_context.h"
@@ -26,13 +28,27 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace chromecast {
 namespace shell {
 
 namespace {
+
 constexpr char kCookieStoreFile[] = "Cookies";
+
+ContentSettingPatternSource CreateContentSetting(
+    const std::string& primary_pattern,
+    const std::string& secondary_pattern,
+    ContentSetting setting) {
+  return ContentSettingPatternSource(
+      ContentSettingsPattern::FromString(primary_pattern),
+      ContentSettingsPattern::FromString(secondary_pattern),
+      base::Value(setting), std::string(), /*incognito=*/false);
+}
+
 }  // namespace
 
 // SharedURLLoaderFactory backed by a CastNetworkContexts and its system
@@ -44,6 +60,10 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
       : network_context_(network_context) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
+
+  URLLoaderFactoryForSystem(const URLLoaderFactoryForSystem&) = delete;
+  URLLoaderFactoryForSystem& operator=(const URLLoaderFactoryForSystem&) =
+      delete;
 
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -84,8 +104,6 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
 
   SEQUENCE_CHECKER(sequence_checker_);
   CastNetworkContexts* network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForSystem);
 };
 
 CastNetworkContexts::CastNetworkContexts(
@@ -144,6 +162,13 @@ CastNetworkContexts::GetSystemSharedURLLoaderFactory() {
   return system_shared_url_loader_factory_;
 }
 
+void CastNetworkContexts::SetAllowedDomainsForPersistentCookies(
+    std::vector<std::string> allowed_domains_list) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  allowed_domains_for_persistent_cookies_ = std::move(allowed_domains_list);
+}
+
 void CastNetworkContexts::ConfigureNetworkContextParams(
     content::BrowserContext* context,
     bool in_memory,
@@ -178,7 +203,7 @@ void CastNetworkContexts::OnLocaleUpdate() {
   GetSystemContext()->SetAcceptLanguage(accept_language);
 
   auto* browser_context = CastBrowserProcess::GetInstance()->browser_context();
-  content::BrowserContext::GetDefaultStoragePartition(browser_context)
+  browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->SetAcceptLanguage(accept_language);
 }
@@ -200,10 +225,15 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
 
   auto* browser_context = CastBrowserProcess::GetInstance()->browser_context();
   DCHECK(browser_context);
-  network_context_params->cookie_path =
-      browser_context->GetPath().Append(kCookieStoreFile);
+  network_context_params->file_paths =
+      network::mojom::NetworkContextFilePaths::New();
+  network_context_params->file_paths->data_directory =
+      browser_context->GetPath();
+  network_context_params->file_paths->cookie_database_name =
+      base::FilePath(kCookieStoreFile);
   network_context_params->restore_old_session_cookies = false;
   network_context_params->persist_session_cookies = true;
+  network_context_params->cookie_manager_params = CreateCookieManagerParams();
 
   // Disable idle sockets close on memory pressure, if instructed by DCS. On
   // memory constrained devices:
@@ -227,12 +257,47 @@ CastNetworkContexts::CreateSystemNetworkContextParams() {
       network::mojom::NetworkContextParams::New();
   ConfigureDefaultNetworkContextParams(network_context_params.get());
 
-  network_context_params->context_name = std::string("system");
-
   network_context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
 
   return network_context_params;
+}
+
+network::mojom::CookieManagerParamsPtr
+CastNetworkContexts::CreateCookieManagerParams() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto params = network::mojom::CookieManagerParams::New();
+  if (allowed_domains_for_persistent_cookies_.empty()) {
+    // Don't restrict persistent cookie access if no allowlist is set.
+    return params;
+  }
+
+  ContentSettingsForOneType settings;
+  ContentSettingsForOneType settings_for_storage_access;
+
+  // Grant cookie and storage access to domains in the allowlist.
+  for (const auto& domain : allowed_domains_for_persistent_cookies_) {
+    auto allow_setting = CreateContentSetting(
+        /*primary_pattern=*/base::StrCat({"[*.]", domain}),
+        /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_ALLOW);
+    settings.push_back(allow_setting);
+    settings_for_storage_access.push_back(std::move(allow_setting));
+  }
+
+  // Restrict cookie access to session only and block storage access for
+  // domains not in the allowlist.
+  // Note: storage access control depends on the feature |kStorageAccessAPI|
+  // which has not been enabled by default in chromium.
+  settings.push_back(CreateContentSetting(
+      /*primary_pattern=*/"*",
+      /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_SESSION_ONLY));
+  settings_for_storage_access.push_back(CreateContentSetting(
+      /*primary_pattern=*/"*",
+      /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_BLOCK));
+  params->settings = std::move(settings);
+  params->settings_for_storage_access = std::move(settings_for_storage_access);
+  return params;
 }
 
 void CastNetworkContexts::AddProxyToNetworkContextParams(

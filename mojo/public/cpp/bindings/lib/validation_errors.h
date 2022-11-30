@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "mojo/public/cpp/bindings/lib/validation_context.h"
 
 namespace mojo {
 
 class Message;
 
 namespace internal {
+
+class ValidationContext;
 
 enum ValidationError {
   // There is no validation error.
@@ -98,12 +98,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
     ScopedSuppressValidationErrorLoggingForTests {
  public:
   ScopedSuppressValidationErrorLoggingForTests();
+
+  ScopedSuppressValidationErrorLoggingForTests(
+      const ScopedSuppressValidationErrorLoggingForTests&) = delete;
+  ScopedSuppressValidationErrorLoggingForTests& operator=(
+      const ScopedSuppressValidationErrorLoggingForTests&) = delete;
+
   ~ScopedSuppressValidationErrorLoggingForTests();
 
  private:
   const bool was_suppressed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSuppressValidationErrorLoggingForTests);
 };
 
 // Only used by validation tests and when there is only one thread doing message
@@ -112,6 +116,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
     ValidationErrorObserverForTesting {
  public:
   explicit ValidationErrorObserverForTesting(base::RepeatingClosure callback);
+
+  ValidationErrorObserverForTesting(const ValidationErrorObserverForTesting&) =
+      delete;
+  ValidationErrorObserverForTesting& operator=(
+      const ValidationErrorObserverForTesting&) = delete;
+
   ~ValidationErrorObserverForTesting();
 
   ValidationError last_error() const { return last_error_; }
@@ -123,8 +133,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
  private:
   ValidationError last_error_;
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidationErrorObserverForTesting);
 };
 
 // Used only by MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING. Don't use it directly.
@@ -140,6 +148,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
     SerializationWarningObserverForTesting {
  public:
   SerializationWarningObserverForTesting();
+
+  SerializationWarningObserverForTesting(
+      const SerializationWarningObserverForTesting&) = delete;
+  SerializationWarningObserverForTesting& operator=(
+      const SerializationWarningObserverForTesting&) = delete;
+
   ~SerializationWarningObserverForTesting();
 
   ValidationError last_warning() const { return last_warning_; }
@@ -147,8 +161,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 
  private:
   ValidationError last_warning_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializationWarningObserverForTesting);
 };
 
 // Used to record that Deserialize() of a Mojo string failed because it was not

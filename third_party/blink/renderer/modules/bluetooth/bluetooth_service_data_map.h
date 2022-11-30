@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_SERVICE_DATA_MAP_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_unsigned_long.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -15,7 +14,7 @@ namespace blink {
 
 class BluetoothServiceDataMap final
     : public ScriptWrappable,
-      public Maplike<String, Member<DOMDataView>> {
+      public Maplike<String, IDLString, Member<DOMDataView>, DOMDataView> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,9 +30,9 @@ class BluetoothServiceDataMap final
   uint32_t size() const { return parameter_map_.size(); }
 
  private:
-  PairIterable<String, Member<DOMDataView>>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<String, IDLString, Member<DOMDataView>, DOMDataView>::
+      IterationSource*
+      StartIteration(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
                    Member<DOMDataView>&,
@@ -44,4 +43,4 @@ class BluetoothServiceDataMap final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_SERVICE_DATA_MAP_H_

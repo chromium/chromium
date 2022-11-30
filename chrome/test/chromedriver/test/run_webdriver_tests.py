@@ -1,18 +1,19 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """WPT WebDriver tests runner."""
 
-import pytest
-import os
 import argparse
-import sys
 import json
+import logging
+import os
+import sys
 import tempfile
 import time
-import logging
 import zlib
+
+import pytest
 
 _log = logging.getLogger(__name__)
 
@@ -35,8 +36,8 @@ sys.path.insert(0, BLINK_TOOLS_ABS_PATH)
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.common import CHROMIUM_WPT_DIR
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.typ_types import ResultType
 
@@ -90,7 +91,7 @@ def prepare_filtered_tests(isolated_script_test_filter, finder, shard, port):
   filter_list = isolated_script_test_filter.split('::')
   filtered_tests = [get_relative_subtest_path(
       test, finder, shard, port) for test in filter_list]
-  return filter(None, filtered_tests)
+  return [_f for _f in filtered_tests if _f]
 
 def get_relative_subtest_path(external_test_path, finder, shard, port):
   test_name, subtest_suffix = port.split_webdriver_test_name(
@@ -173,9 +174,12 @@ class SubtestResultRecorder(object):
 
 def set_up_config(path_finder, chromedriver_server):
   # These envs are used to create a WebDriver session in the fixture.py file.
-  os.environ["WD_HOST"] = chromedriver_server.GetHost()
-  os.environ["WD_PORT"] = str(chromedriver_server.GetPort())
-  os.environ["WD_CAPABILITIES"] = json.dumps({
+  config_path = os.path.join(tempfile.mkdtemp(), "wd_config.json")
+  os.environ["WDSPEC_CONFIG_FILE"] = config_path
+
+  wd_host = chromedriver_server.GetHost()
+  wd_port = str(chromedriver_server.GetPort())
+  wd_capabilities = {
       "goog:chromeOptions": {
           "w3c": True,
           "prefs": {
@@ -192,21 +196,31 @@ def set_up_config(path_finder, chromedriver_server):
           ]
 
       }
-  })
+  }
+  config = {
+    "host": wd_host,
+    "port": wd_port,
+    "capabilities": wd_capabilities
+  }
 
   # Port numbers are defined at
   # https://cs.chromium.org/chromium/src/third_party/blink/tools
   # /blinkpy/web_tests/servers/wptserve.py?l=23&rcl=375b34c6ba64
   # 5d00c1413e4c6106c7bb74581c85
-  os.environ["WD_SERVER_CONFIG"] = json.dumps({
-    "doc_root": path_finder.path_from_chromium_base(CHROMIUM_WPT_DIR),
+  server_config_dict = {
+    "doc_root": path_finder.path_from_chromium_base(RELATIVE_WPT_TESTS),
     "browser_host": "web-platform.test",
     "domains": {"": {"": "web-platform.test",
                      "www": "www.web-platform.test",
                      "www.www": "www.www.web-platform.test",
                      "www1": "www1.web-platform.test",
                      "www2": "www2.web-platform.test"}},
-    "ports": {"ws": [9001], "wss": [9444], "http": [8001], "https": [8444]}})
+    "ports": {"ws": [9001], "wss": [9444], "http": [8001], "https": [8444]}}
+  config["wptserve"] = server_config_dict
+
+  with open(config_path, "w") as f:
+    json.dump(config, f)
+
 
 def run_test(path, path_finder, port, skipped_tests=[]):
   abs_path = os.path.abspath(path)

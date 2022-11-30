@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "components/metrics/metrics_log.h"
 
 namespace metrics {
@@ -23,6 +20,10 @@ class MetricsLogStore;
 class MetricsLogManager {
  public:
   MetricsLogManager();
+
+  MetricsLogManager(const MetricsLogManager&) = delete;
+  MetricsLogManager& operator=(const MetricsLogManager&) = delete;
+
   ~MetricsLogManager();
 
   // Makes |log| the current_log. This should only be called if there is not a
@@ -56,8 +57,6 @@ class MetricsLogManager {
 
   // A paused, previously-current log.
   std::unique_ptr<MetricsLog> paused_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsLogManager);
 };
 
 }  // namespace metrics

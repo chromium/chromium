@@ -1,6 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {EventHandler} from '../common/event_handler.js';
 
 import {Commands} from './commands.js';
 import {Navigator} from './navigator.js';
@@ -19,13 +21,37 @@ export class SwitchAccess {
   static initialize() {
     SwitchAccess.instance = new SwitchAccess();
 
-    chrome.automation.getDesktop((desktop) => {
-      // Navigator must be initialized first.
-      Navigator.initializeSingletonInstance(desktop);
+    chrome.automation.getDesktop(desktop => {
+      chrome.automation.getFocus(focus => {
+        // Focus is available. Finish init without waiting for further events.
+        // Disallow web view nodes, which indicate a root web area is still
+        // loading and pending focus.
+        if (focus && focus.role !== chrome.automation.RoleType.WEB_VIEW) {
+          SwitchAccess.finishInit_(desktop);
+          return;
+        }
 
-      Commands.initialize();
-      KeyboardRootNode.startWatchingVisibility();
-      PreferenceManager.initialize();
+        // Wait for the focus to be sent. If |focus| was undefined, this is
+        // guaranteed. Otherwise, also set a timed callback to ensure we do
+        // eventually init.
+        let callbackId = 0;
+        const listener = maybeEvent => {
+          if (maybeEvent &&
+              maybeEvent.target.role === chrome.automation.RoleType.WEB_VIEW) {
+            return;
+          }
+
+          desktop.removeEventListener(
+              chrome.automation.EventType.FOCUS, listener, false);
+          clearTimeout(callbackId);
+
+          SwitchAccess.finishInit_(desktop);
+        };
+
+        desktop.addEventListener(
+            chrome.automation.EventType.FOCUS, listener, false);
+        callbackId = setTimeout(listener, 5000);
+      });
     });
   }
 
@@ -38,7 +64,7 @@ export class SwitchAccess {
     this.enableImprovedTextInput_ = false;
 
     chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-switch-access-text', (result) => {
+        'enable-experimental-accessibility-switch-access-text', result => {
           this.enableImprovedTextInput_ = result;
         });
 
@@ -86,7 +112,7 @@ export class SwitchAccess {
         desktop, chrome.automation.EventType.CHILDREN_CHANGED,
         null /** callback */);
 
-    const onEvent = (event) => {
+    const onEvent = event => {
       if (event.target.matches(findParams)) {
         // If the event target is the node we're looking for, we've found it.
         eventHandler.stop();
@@ -121,5 +147,18 @@ export class SwitchAccess {
         'Accessibility.CrosSwitchAccess.Error',
         /** @type {number} */ (errorType), errorTypeCountForUMA);
     return new Error(errorString);
+  }
+
+  /**
+   * @param {!chrome.automation.AutomationNode} desktop
+   * @private
+   */
+  static finishInit_(desktop) {
+    // Navigator must be initialized first.
+    Navigator.initializeSingletonInstance(desktop);
+
+    Commands.initialize();
+    KeyboardRootNode.startWatchingVisibility();
+    PreferenceManager.initialize();
   }
 }

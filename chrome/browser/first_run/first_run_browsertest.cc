@@ -1,14 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -18,7 +19,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunBrowserTest, SetShouldShowWelcomePage) {
   EXPECT_FALSE(ShouldShowWelcomePage());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // A generic test class to be subclassed by test classes testing specific
@@ -68,6 +68,11 @@ namespace {
 class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
  public:
   FirstRunMasterPrefsBrowserTestBase() {}
+
+  FirstRunMasterPrefsBrowserTestBase(
+      const FirstRunMasterPrefsBrowserTestBase&) = delete;
+  FirstRunMasterPrefsBrowserTestBase& operator=(
+      const FirstRunMasterPrefsBrowserTestBase&) = delete;
 
  protected:
   void SetUp() override {
@@ -95,7 +100,7 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
   }
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     // Suppress first run dialog since it blocks test progress.
@@ -104,14 +109,12 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
 #endif
 
   void SetInitialPreferencesForTest(const char text[]) {
-    text_.reset(new std::string(text));
+    text_ = std::make_unique<std::string>(text);
   }
 
  private:
   base::FilePath prefs_file_;
   std::unique_ptr<std::string> text_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsBrowserTestBase);
 };
 
 template<const char Text[]>
@@ -120,14 +123,16 @@ class FirstRunMasterPrefsBrowserTestT
  public:
   FirstRunMasterPrefsBrowserTestT() {}
 
+  FirstRunMasterPrefsBrowserTestT(const FirstRunMasterPrefsBrowserTestT&) =
+      delete;
+  FirstRunMasterPrefsBrowserTestT& operator=(
+      const FirstRunMasterPrefsBrowserTestT&) = delete;
+
  protected:
   void SetUp() override {
     SetInitialPreferencesForTest(Text);
     FirstRunMasterPrefsBrowserTestBase::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsBrowserTestT);
 };
 
 // Returns the true expected import state, derived from the original
@@ -143,7 +148,7 @@ int MaskExpectedImportState(int expected_import_state) {
       run_loop.QuitClosure());
   run_loop.Run();
   int source_profile_count = importer_list->count();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the importer's DetectIEProfiles() will always add to the count.
   // Internet Explorer always exists and always has something to import.
   EXPECT_GT(source_profile_count, 0);
@@ -216,7 +221,8 @@ typedef FirstRunMasterPrefsBrowserTestT<kImportNothing>
 IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportNothing,
                        ImportNothingAndShowNewTabPage) {
   EXPECT_EQ(AUTO_IMPORT_CALLED, auto_import_state());
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   content::WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(WaitForLoadStop(tab));
 }
@@ -228,21 +234,20 @@ const char kWithTrackedPrefs[] =
     "  \"homepage_is_newtabpage\": false\n"
     "}\n";
 // A test fixture that will run in a first run scenario with master_preferences
-// set to kWithTrackedPrefs. Parameterizable on the SettingsEnforcement
-// experiment to be forced.
+// set to kWithTrackedPrefs.
 class FirstRunMasterPrefsWithTrackedPreferences
-    : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs>,
-      public testing::WithParamInterface<std::string> {
+    : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs> {
  public:
   FirstRunMasterPrefsWithTrackedPreferences() {}
+
+  FirstRunMasterPrefsWithTrackedPreferences(
+      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
+  FirstRunMasterPrefsWithTrackedPreferences& operator=(
+      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunMasterPrefsBrowserTestT::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kForceFieldTrials,
-        std::string(chrome_prefs::internals::kSettingsEnforcementTrialName) +
-            "/" + GetParam() + "/");
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -252,12 +257,9 @@ class FirstRunMasterPrefsWithTrackedPreferences
     // order to be able to test all SettingsEnforcement groups.
     chrome_prefs::DisableDomainCheckForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsWithTrackedPreferences);
 };
 
-IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,
+IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsWithTrackedPreferences,
                        TrackedPreferencesSurviveFirstRun) {
   const PrefService* user_prefs = browser()->profile()->GetPrefs();
   EXPECT_EQ("example.com", user_prefs->GetString(prefs::kHomePage));
@@ -268,21 +270,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,
   // true.
   const base::Value* default_homepage_is_ntp_value =
       user_prefs->GetDefaultPrefValue(prefs::kHomePageIsNewTabPage);
-  bool default_homepage_is_ntp = false;
-  EXPECT_TRUE(
-      default_homepage_is_ntp_value->GetAsBoolean(&default_homepage_is_ntp));
-  EXPECT_TRUE(default_homepage_is_ntp);
+  ASSERT_TRUE(default_homepage_is_ntp_value->is_bool());
+  EXPECT_TRUE(default_homepage_is_ntp_value->GetBool());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    FirstRunMasterPrefsWithTrackedPreferencesInstance,
-    FirstRunMasterPrefsWithTrackedPreferences,
-    testing::Values(
-        chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement,
-        chrome_prefs::internals::kSettingsEnforcementGroupEnforceAlways,
-        chrome_prefs::internals::kSettingsEnforcementGroupEnforceAlwaysWithDSE,
-        chrome_prefs::internals::
-            kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE));
 
 #define COMPRESSED_SEED_TEST_VALUE                                             \
   "H4sIAAAAAAAA/+LSME4xsTAySjYzSDQ1S01KSk1KMUg1SjI1Tk4yMjI2NDMzTzEySjRPMxA6xs" \
@@ -317,6 +307,12 @@ class FirstRunMasterPrefsVariationsSeedTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         variations::switches::kDisableFieldTrialTestingConfig);
   }
+
+  FirstRunMasterPrefsVariationsSeedTest(
+      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
+  FirstRunMasterPrefsVariationsSeedTest& operator=(
+      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
+
   ~FirstRunMasterPrefsVariationsSeedTest() override = default;
 
   void SetUp() override {
@@ -359,8 +355,6 @@ class FirstRunMasterPrefsVariationsSeedTest
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
     return user_data_dir.AppendASCII("FirstRunMasterPrefsVariationsSeedTest");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsVariationsSeedTest);
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
@@ -372,8 +366,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
                                  variations::prefs::kVariationsSeedSignature));
 
   // Verify variations loaded in VariationsService by metrics.
-  histogram_tester_.ExpectUniqueSample("Variations.SeedLoadResult",
-                                       variations::StoreSeedResult::SUCCESS, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.SeedLoadResult", variations::StoreSeedResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "Variations.LoadSeedSignature",
       variations::VerifySignatureResult::VALID_SIGNATURE, 1);
@@ -384,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
 // tests do not pass on other platforms due to the provisional client id logic
 // in metrics_state_manager.cc. See the comment there for details.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // The trial and groups encoded in the above seed.
 constexpr char kTrialName[] = "UMA-Uniformity-Trial-10-Percent";
@@ -414,12 +408,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, SecondRun) {
   // corresponding test file.
   EXPECT_EQ(group_name, ReadTrialGroupFromTestFile());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(FirstRunMasterPrefsVariationsSeedTests,
                          FirstRunMasterPrefsVariationsSeedTest,
                          testing::Bool());
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace first_run

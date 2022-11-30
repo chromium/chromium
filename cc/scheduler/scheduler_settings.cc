@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/scheduler/scheduler_settings.h"
+
+#include <utility>
 
 #include "base/trace_event/traced_value.h"
 
@@ -25,12 +27,9 @@ SchedulerSettings::AsValue() const {
                     maximum_number_of_failed_draws_before_draw_is_forced);
   state->SetBoolean("using_synchronous_renderer_compositor",
                     using_synchronous_renderer_compositor);
-  state->SetBoolean("enable_impl_latency_recovery",
-                    enable_impl_latency_recovery);
-  state->SetBoolean("enable_main_latency_recovery",
-                    enable_main_latency_recovery);
   state->SetBoolean("wait_for_all_pipeline_stages_before_draw",
                     wait_for_all_pipeline_stages_before_draw);
+  state->SetBoolean("disable_frame_rate_limit", disable_frame_rate_limit);
   return std::move(state);
 }
 

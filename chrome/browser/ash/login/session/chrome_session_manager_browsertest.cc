@@ -1,17 +1,20 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/session/chrome_session_manager.h"
+
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/ash/login/session/chrome_session_manager.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -20,21 +23,32 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/stub_install_attributes.h"
-#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 
-namespace chromeos {
+#if BUILDFLAG(ENABLE_RLZ)
+#include "chrome/browser/ash/login/session/user_session_initializer.h"
+#include "chrome/browser/google/google_brand_chromeos.h"
+#include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/user_manager/user_names.h"
+#endif  // BUILDFLAG(ENABLE_RLZ)
+
+namespace ash {
+namespace system {
+namespace {
+// TODO(https://crbug.com/1164001): remove when moved to ash::
+using ::chromeos::system::kRlzBrandCodeKey;
+using ::chromeos::system::ScopedFakeStatisticsProvider;
+}  // namespace
+}  // namespace system
 
 namespace {
 
@@ -42,6 +56,10 @@ namespace {
 class UserAddingScreenWaiter : public UserAddingScreen::Observer {
  public:
   UserAddingScreenWaiter() { UserAddingScreen::Get()->AddObserver(this); }
+
+  UserAddingScreenWaiter(const UserAddingScreenWaiter&) = delete;
+  UserAddingScreenWaiter& operator=(const UserAddingScreenWaiter&) = delete;
+
   ~UserAddingScreenWaiter() override {
     UserAddingScreen::Get()->RemoveObserver(this);
   }
@@ -61,8 +79,6 @@ class UserAddingScreenWaiter : public UserAddingScreen::Observer {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreenWaiter);
 };
 
 }  // anonymous namespace
@@ -70,6 +86,10 @@ class UserAddingScreenWaiter : public UserAddingScreen::Observer {
 class ChromeSessionManagerTest : public LoginManagerTest {
  public:
   ChromeSessionManagerTest() = default;
+
+  ChromeSessionManagerTest(const ChromeSessionManagerTest&) = delete;
+  ChromeSessionManagerTest& operator=(const ChromeSessionManagerTest&) = delete;
+
   ~ChromeSessionManagerTest() override {}
 
   // LoginManagerTest:
@@ -80,12 +100,9 @@ class ChromeSessionManagerTest : public LoginManagerTest {
   }
 
  protected:
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSessionManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeSessionManagerTest, OobeNewUser) {
@@ -123,8 +140,9 @@ class ChromeSessionManagerExistingUsersTest : public ChromeSessionManagerTest {
   LoginManagerMixin login_manager_{&mixin_host_};
 };
 
+// http://crbug.com/1338401
 IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
-                       LoginExistingUsers) {
+                       DISABLED_LoginExistingUsers) {
   // Verify that session state is LOGIN_PRIMARY with existing user data dir.
   session_manager::SessionManager* manager =
       session_manager::SessionManager::Get();
@@ -162,6 +180,142 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
   for (size_t i = 0; i < users.size(); ++i) {
     EXPECT_EQ(users[i].account_id, manager->sessions()[i].user_account_id);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
+                       CheckPastingBehavior) {
+  const auto& users = login_manager_.users();
+  LoginUser(users[0].account_id);
+  auto* session_controller = ash::Shell::Get()->session_controller();
+
+  // Write a text in the clipboard during active session.
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_controller->GetSessionState());
+  const std::u16string session_clipboard_text = u"active session text";
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteText(session_clipboard_text);
+
+  // Reach the secondary login screen.
+  UserAddingScreen::Get()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(session_manager::SessionState::LOGIN_SECONDARY,
+            session_controller->GetSessionState());
+
+  // Check that the text can still be pasted: secondary login screen clipboard
+  // should be the same than the active session one since we can return to
+  // active session by selecting Cancel.
+  std::u16string clipboard_text;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_EQ(clipboard_text, session_clipboard_text);
+
+  // Go back to active session, with another user.
+  UserAddingScreenWaiter waiter;
+  AddUser(users[1].account_id);
+  waiter.Wait();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_controller->GetSessionState());
+
+  // Check that the new active session clipboard is empty.
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_TRUE(clipboard_text.empty());
+
+  // Write a text in the new active session clipboard.
+  const std::u16string other_session_clipboard_text =
+      u"other active session text";
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteText(other_session_clipboard_text);
+
+  // Lock the screen.
+  ScreenLockerTester locker_tester;
+  locker_tester.Lock();
+  EXPECT_EQ(session_manager::SessionState::LOCKED,
+            session_controller->GetSessionState());
+
+  // Check that the clipboard is empty, for security reasons.
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_TRUE(clipboard_text.empty());
+
+  // Go back to the active session.
+  locker_tester.UnlockWithPassword(users[1].account_id, "password");
+  locker_tester.WaitForUnlock();
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_controller->GetSessionState());
+
+  // Check that the clipboard has been restored.
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_EQ(clipboard_text, other_session_clipboard_text);
+}
+
+class ChromeSessionManagerRmaTest : public ChromeSessionManagerTest {
+ public:
+  ChromeSessionManagerRmaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kShimlessRMAFlow}, {});
+  }
+
+  // LoginManagerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeSessionManagerTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kLaunchRma);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaTest, DeviceInRma) {
+  // Verify that session state is RMA.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::RMA, manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
+}
+
+class ChromeSessionManagerRmaNotAllowedTest
+    : public ChromeSessionManagerRmaTest {
+ public:
+  ChromeSessionManagerRmaNotAllowedTest() = default;
+  // LoginManagerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeSessionManagerRmaTest::SetUpCommandLine(command_line);
+    // Block RMA with kRmaNotAllowed switch.
+    command_line->AppendSwitch(switches::kRmaNotAllowed);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaNotAllowedTest,
+                       RmaNotAllowedBlocksRma) {
+  // Verify that session state is not RMA, even though kLaunchRma switch was
+  // passed.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::OOBE, manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
+}
+
+class ChromeSessionManagerRmaSafeModeTest : public ChromeSessionManagerRmaTest {
+ public:
+  ChromeSessionManagerRmaSafeModeTest() = default;
+  // LoginManagerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeSessionManagerRmaTest::SetUpCommandLine(command_line);
+    // Block RMA with when kSafeMode switch is present.
+    command_line->AppendSwitch(switches::kSafeMode);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaSafeModeTest, SafeModeBlocksRma) {
+  // Verify that session state is not RMA, even though kLaunchRma switch was
+  // passed.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::OOBE, manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
 }
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -237,6 +391,9 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
  public:
   GuestSessionRlzTest() : is_locked_(GetParam()) {}
 
+  GuestSessionRlzTest(const GuestSessionRlzTest&) = delete;
+  GuestSessionRlzTest& operator=(const GuestSessionRlzTest&) = delete;
+
  protected:
   StubInstallAttributes* stub_install_attributes() {
     return scoped_stub_install_attributes_->Get();
@@ -260,12 +417,11 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kGuestSession);
+    command_line->AppendSwitch(switches::kGuestSession);
     command_line->AppendSwitch(::switches::kIncognito);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "hash");
+    command_line->AppendSwitchASCII(switches::kLoginProfile, "hash");
     command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
-        user_manager::GuestAccountId().GetUserEmail());
+        switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
   }
 
   // Test instance parameters.
@@ -274,8 +430,6 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
   std::unique_ptr<system::ScopedFakeStatisticsProvider>
       scoped_fake_statistics_provider_;
   std::unique_ptr<ScopedStubInstallAttributes> scoped_stub_install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestSessionRlzTest);
 };
 
 IN_PROC_BROWSER_TEST_P(GuestSessionRlzTest, DeviceIsLocked) {
@@ -297,4 +451,4 @@ INSTANTIATE_TEST_SUITE_P(GuestSessionRlzTest,
 
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
-}  // namespace chromeos
+}  // namespace ash

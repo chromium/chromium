@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "content/renderer/java/gin_java_bridge_object.h"
 #include "content/renderer/java/gin_java_bridge_value_converter.h"
+#include "v8/include/v8-exception.h"
 
 namespace content {
 
@@ -51,24 +52,25 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     return v8::Undefined(args->isolate());
   }
 
-  content::GinJavaBridgeObject* object = NULL;
+  content::GinJavaBridgeObject* object = nullptr;
   if (!args->GetHolder(&object) || !object) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
         args->isolate(), kMethodInvocationOnNonInjectedObjectDisallowed)));
     return v8::Undefined(args->isolate());
   }
 
-  base::ListValue arguments;
+  base::Value::List arguments;
   {
     v8::HandleScope handle_scope(args->isolate());
     v8::Local<v8::Context> context = args->isolate()->GetCurrentContext();
     v8::Local<v8::Value> val;
     while (args->GetNext(&val)) {
       std::unique_ptr<base::Value> arg(converter_->FromV8Value(val, context));
-      if (arg.get())
-        arguments.Append(std::move(arg));
-      else
-        arguments.Append(std::make_unique<base::Value>());
+      if (arg) {
+        arguments.Append(base::Value::FromUniquePtrValue(std::move(arg)));
+      } else {
+        arguments.Append(base::Value());
+      }
     }
   }
 

@@ -1,17 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_SETTINGS_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -58,6 +57,9 @@ class FontTagValuePair {
 template <typename T>
 class FontSettings {
  public:
+  FontSettings(const FontSettings&) = delete;
+  FontSettings& operator=(const FontSettings&) = delete;
+
   void Append(const T& feature) { list_.push_back(feature); }
   wtf_size_t size() const { return list_.size(); }
   const T& operator[](wtf_size_t index) const { return list_[index]; }
@@ -102,8 +104,6 @@ class FontSettings {
 
  private:
   Vector<T, 0> list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontSettings);
 };
 
 using FontFeature = FontTagValuePair<int>;
@@ -112,12 +112,13 @@ using FontVariationAxis = FontTagValuePair<float>;
 class PLATFORM_EXPORT FontFeatureSettings
     : public FontSettings<FontFeature>,
       public RefCounted<FontFeatureSettings> {
-  DISALLOW_COPY_AND_ASSIGN(FontFeatureSettings);
-
  public:
   static scoped_refptr<FontFeatureSettings> Create() {
     return base::AdoptRef(new FontFeatureSettings());
   }
+
+  FontFeatureSettings(const FontFeatureSettings&) = delete;
+  FontFeatureSettings& operator=(const FontFeatureSettings&) = delete;
 
  private:
   FontFeatureSettings() = default;
@@ -126,12 +127,13 @@ class PLATFORM_EXPORT FontFeatureSettings
 class PLATFORM_EXPORT FontVariationSettings
     : public FontSettings<FontVariationAxis>,
       public RefCounted<FontVariationSettings> {
-  DISALLOW_COPY_AND_ASSIGN(FontVariationSettings);
-
  public:
   static scoped_refptr<FontVariationSettings> Create() {
     return base::AdoptRef(new FontVariationSettings());
   }
+
+  FontVariationSettings(const FontVariationSettings&) = delete;
+  FontVariationSettings& operator=(const FontVariationSettings&) = delete;
 
   unsigned GetHash() const;
 

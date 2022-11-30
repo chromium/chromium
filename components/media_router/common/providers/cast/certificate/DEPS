@@ -1,0 +1,7 @@
+include_rules = [
+  "+crypto",
+  "+net",
+  "+third_party/boringssl/src/include",
+  "+third_party/openscreen/src/cast/common/certificate/proto",
+  "+third_party/openscreen/src/cast/common/public",
+]

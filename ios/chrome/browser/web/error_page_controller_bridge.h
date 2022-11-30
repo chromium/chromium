@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ class ErrorPageControllerBridge
   ErrorPageControllerBridge(web::WebState* web_state);
 
   // Handler for "errorPageController.*" JavaScript command.
-  void OnErrorPageCommand(const base::DictionaryValue& message,
+  void OnErrorPageCommand(const base::Value& message,
                           const GURL& url,
                           bool user_is_interacting,
                           web::WebFrame* sender_frame);

@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app;
+
+// A proto representing the "launch_handler" manifest field.
+// This mirrors ManifestLaunchHandler in:
+// third_party/blink/public/mojom/manifest/manifest.mojom
+message LaunchHandlerProto {
+  enum DeprecatedRouteTo {
+    UNSPECIFIED_ROUTE = 0;
+    AUTO_ROUTE = 1;
+    NEW_CLIENT = 2;
+    EXISTING_CLIENT = 3;
+    EXISTING_CLIENT_NAVIGATE = 4;
+    EXISTING_CLIENT_RETAIN = 5;
+  }
+
+  enum DeprecatedNavigateExistingClient {
+    UNSPECIFIED_NAVIGATE = 0;
+    ALWAYS = 1;
+    NEVER = 2;
+  }
+
+  enum ClientMode {
+    UNSPECIFIED_CLIENT_MODE = 0;
+    AUTO = 1;
+    NAVIGATE_NEW = 2;
+    NAVIGATE_EXISTING = 3;
+    FOCUS_EXISTING = 4;
+  }
+
+  optional DeprecatedRouteTo route_to = 1 [deprecated = true];
+  optional DeprecatedNavigateExistingClient navigate_existing_client = 2
+      [deprecated = true];
+  optional ClientMode client_mode = 3;
+}

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <limits>
 #include <string>
 #include <tuple>
-#include <vector>
 
 #include "base/containers/span.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"

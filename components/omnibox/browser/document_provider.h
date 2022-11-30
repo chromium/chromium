@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -13,8 +13,11 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
@@ -95,8 +98,9 @@ class DocumentProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForAsyncMatches);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForSyncMatches);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, StartCallsStop);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Logging);
 
-  using MatchesCache = base::MRUCache<GURL, AutocompleteMatch>;
+  using MatchesCache = base::LRUCache<GURL, AutocompleteMatch>;
 
   DocumentProvider(AutocompleteProviderClient* client,
                    AutocompleteProviderListener* listener,
@@ -176,27 +180,6 @@ class DocumentProvider : public AutocompleteProvider {
                                             const std::string& mimetype,
                                             const std::string& owner);
 
-  // Don't request doc suggestions for inputs shorter than |min_query_length_|
-  // or longer than |max_query_length_|. A value of -1 indicates no limit. These
-  // help limit the load on backend servers.
-  const size_t min_query_length_;
-  const size_t max_query_length_;
-  // Hide doc suggestions for inputs shorter than |min_query_show_length_| or
-  // longer than |max_query_show_length_|. A value of -1 indicates no limit.
-  // These help analyze experiments by allowing observing the effect of changing
-  // |min(max)_query_length_| while keeping data populations consistent.
-  const size_t min_query_show_length_;
-  const size_t max_query_show_length_;
-  // Don't log doc suggestions for inputs shorter than |min_query_log_length_|
-  // or longer than |max_query_log_length_| (i.e. don't trigger
-  // field_trial_triggered and field_trial_triggered_in_session). A value of -1
-  // indicates no limit. These help analyze experiments by restricting data
-  // populations to avoid noise when only interested in a range of input
-  // lengths. E.g. experimenting with |max_query_show_length_| would affect only
-  // the small subset of long queries.
-  const size_t min_query_log_length_;
-  const size_t max_query_log_length_;
-
   // Whether a field trial has triggered for this query and this session,
   // respectively. Works similarly to BaseSearchProvider, though this class does
   // not inherit from it.
@@ -208,10 +191,7 @@ class DocumentProvider : public AutocompleteProvider {
   bool backoff_for_session_;
 
   // Client for accessing TemplateUrlService, prefs, etc.
-  AutocompleteProviderClient* client_;
-
-  // Listener to notify when results are available.
-  AutocompleteProviderListener* listener_;
+  raw_ptr<AutocompleteProviderClient> client_;
 
   // Saved when starting a new autocomplete request so that it can be retrieved
   // when responses return asynchronously.
@@ -219,6 +199,12 @@ class DocumentProvider : public AutocompleteProvider {
 
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;
+
+  // The time `Run()` was invoked. Used for histogram logging.
+  base::TimeTicks time_run_invoked_;
+  // The time `OnDocumentSuggestionsLoaderAvailable()` was invoked and the
+  // remote request was sent. Used for histogram logging.
+  base::TimeTicks time_request_sent_;
 
   // Because the drive server is async and may intermittently provide a
   // particular suggestion for consecutive inputs, without caching, doc

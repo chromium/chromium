@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,6 @@ syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
 package cryptohome;
-
-// Note: Backwards-incompatible changes of this file might break rollback
-// (go/rollback-data-restore).
 
 message SerializedInstallAttributes {
   message Attribute {

@@ -1,17 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_CONTEXTUAL_SEARCH_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_CONTEXTUAL_SEARCH_LAYER_H_
 
-#include <memory>
-
 #include "chrome/browser/android/compositor/layer/overlay_panel_layer.h"
 
 namespace cc {
 class Layer;
-class NinePatchLayer;
 class SolidColorLayer;
 class UIResourceLayer;
 }
@@ -47,33 +44,25 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      int open_tab_icon_resource_id,
                      int close_icon_resource_id,
                      int progress_bar_background_resource_id,
+                     int progress_bar_background_tint,
                      int progress_bar_resource_id,
+                     int progress_bar_tint,
                      int search_promo_resource_id,
-                     int bar_banner_ripple_resource_id,
-                     int bar_banner_text_resource_id,
                      float dp_to_px,
                      const scoped_refptr<cc::Layer>& content_layer,
                      bool search_promo_visible,
                      float search_promo_height,
                      float search_promo_opacity,
                      int search_promo_background_color,
-                     // Panel Help
-                     int panel_help_resource_id,
-                     bool panel_help_visible,
-                     float panel_help_height,
-                     float panel_help_opacity,
-                     int panel_help_container_background_color,
                      // Related Searches
-                     int related_searches_resource_id,
-                     bool related_searches_visible,
-                     float related_searches_height,
-                     // Banner etc
-                     bool search_bar_banner_visible,
-                     float search_bar_banner_height,
-                     float search_bar_banner_padding,
-                     float search_bar_banner_ripple_width,
-                     float search_bar_banner_ripple_opacity,
-                     float search_bar_banner_text_opacity,
+                     int related_searches_in_content_resource_id,
+                     bool related_searches_in_content_visible,
+                     float related_searches_in_content_height,
+                     int related_searches_in_bar_resource_id,
+                     bool related_searches_in_bar_visible,
+                     float related_searches_in_bar_height,
+                     float related_searches_in_bar_redundant_padding,
+                     // Panel position etc
                      float search_panel_x,
                      float search_panel_y,
                      float search_panel_width,
@@ -150,14 +139,10 @@ class ContextualSearchLayer : public OverlayPanelLayer {
   scoped_refptr<cc::UIResourceLayer> search_provider_icon_layer_;
   scoped_refptr<cc::UIResourceLayer> thumbnail_layer_;
   scoped_refptr<cc::UIResourceLayer> quick_action_icon_layer_;
-  scoped_refptr<cc::UIResourceLayer> panel_help_;
-  scoped_refptr<cc::SolidColorLayer> panel_help_container_;
   scoped_refptr<cc::UIResourceLayer> search_promo_;
   scoped_refptr<cc::SolidColorLayer> search_promo_container_;
-  scoped_refptr<cc::UIResourceLayer> related_searches_;
-  scoped_refptr<cc::SolidColorLayer> bar_banner_container_;
-  scoped_refptr<cc::NinePatchLayer> bar_banner_ripple_;
-  scoped_refptr<cc::UIResourceLayer> bar_banner_text_;
+  scoped_refptr<cc::UIResourceLayer> related_searches_in_bar_;
+  scoped_refptr<cc::UIResourceLayer> related_searches_in_content_;
   scoped_refptr<cc::UIResourceLayer> search_caption_;
   scoped_refptr<cc::UIResourceLayer> text_layer_;
   scoped_refptr<cc::SolidColorLayer> touch_highlight_layer_;

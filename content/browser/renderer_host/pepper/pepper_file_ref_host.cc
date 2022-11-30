@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 
+#include <memory>
 #include <string>
 
 #include "content/browser/renderer_host/pepper/pepper_external_file_ref_backend.h"
@@ -74,10 +75,9 @@ PepperFileRefHost::PepperFileRefHost(BrowserPpapiHost* host,
     return;
   }
 
-  backend_.reset(new PepperInternalFileRefBackend(host->GetPpapiHost(),
-                                                  render_process_id,
-                                                  file_system_host->AsWeakPtr(),
-                                                  path));
+  backend_ = std::make_unique<PepperInternalFileRefBackend>(
+      host->GetPpapiHost(), render_process_id, file_system_host->AsWeakPtr(),
+      path);
 }
 
 PepperFileRefHost::PepperFileRefHost(BrowserPpapiHost* host,
@@ -97,8 +97,8 @@ PepperFileRefHost::PepperFileRefHost(BrowserPpapiHost* host,
     return;
   }
 
-  backend_.reset(new PepperExternalFileRefBackend(
-      host->GetPpapiHost(), render_process_id, external_path));
+  backend_ = std::make_unique<PepperExternalFileRefBackend>(
+      host->GetPpapiHost(), render_process_id, external_path);
 }
 
 PepperFileRefHost::~PepperFileRefHost() {}

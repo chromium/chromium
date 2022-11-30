@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -53,11 +53,11 @@
 #include <math.h>
 #include <sys/sysctl.h>
 
+#include <iterator>
 #include <memory>
 
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 
 struct SuddenMotionSensor::GenericMacbookSensor {
   // Name of device to be read.
@@ -339,7 +339,7 @@ bool SuddenMotionSensor::Init() {
 
   // Look for the current model in the supported sensor list.
   base::ScopedCFTypeRef<CFDataRef> board_id_data;
-  const int kNumSensors = base::size(kSupportedSensors);
+  const int kNumSensors = std::size(kSupportedSensors);
 
   for (int i = 0; i < kNumSensors; ++i) {
     // Check if the supported sensor model name is a prefix

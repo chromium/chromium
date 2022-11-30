@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,13 @@ void MetricsLogManager::BeginLoggingWithLog(std::unique_ptr<MetricsLog> log) {
 
 void MetricsLogManager::FinishCurrentLog(MetricsLogStore* log_store) {
   DCHECK(current_log_);
+  current_log_->RecordLogWrittenByAppVersionIfNeeded();
   current_log_->CloseLog();
   std::string log_data;
   current_log_->GetEncodedLog(&log_data);
   if (!log_data.empty()) {
     log_store->StoreLog(log_data, current_log_->log_type(),
-                        base::make_optional(current_log_->samples_count()));
+                        current_log_->log_metadata());
   }
   current_log_.reset();
 }

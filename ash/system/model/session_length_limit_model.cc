@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ void SessionLengthLimitModel::Update() {
   base::Time session_start_time = session->session_start_time();
   if (!time_limit.is_zero() && !session_start_time.is_null()) {
     const base::TimeDelta expiring_soon_threshold(
-        base::TimeDelta::FromMinutes(kExpiringSoonThresholdInMinutes));
+        base::Minutes(kExpiringSoonThresholdInMinutes));
     remaining_session_time_ =
         std::max(time_limit - (base::Time::Now() - session_start_time),
                  base::TimeDelta());
@@ -66,10 +66,8 @@ void SessionLengthLimitModel::Update() {
     if (!timer_)
       timer_ = std::make_unique<base::RepeatingTimer>();
     if (!timer_->IsRunning()) {
-      timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kTimerIntervalInMilliseconds), this,
-          &SessionLengthLimitModel::Update);
+      timer_->Start(FROM_HERE, base::Milliseconds(kTimerIntervalInMilliseconds),
+                    this, &SessionLengthLimitModel::Update);
     }
   } else {
     remaining_session_time_ = base::TimeDelta();

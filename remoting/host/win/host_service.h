@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -32,6 +32,9 @@ class WtsTerminalObserver;
 class HostService : public WtsTerminalMonitor {
  public:
   static HostService* GetInstance();
+
+  HostService(const HostService&) = delete;
+  HostService& operator=(const HostService&) = delete;
 
   // This function parses the command line and selects the action routine.
   bool InitWithCommandLine(const base::CommandLine* command_line);
@@ -98,7 +101,7 @@ class HostService : public WtsTerminalMonitor {
 
     // Points to the observer receiving notifications about the WTS terminal
     // identified by |terminal_id|.
-    WtsTerminalObserver* observer;
+    raw_ptr<WtsTerminalObserver> observer;
   };
 
   // The list of observers receiving session notifications.
@@ -126,8 +129,6 @@ class HostService : public WtsTerminalMonitor {
 
   // Singleton.
   friend struct base::DefaultSingletonTraits<HostService>;
-
-  DISALLOW_COPY_AND_ASSIGN(HostService);
 };
 
 }  // namespace remoting

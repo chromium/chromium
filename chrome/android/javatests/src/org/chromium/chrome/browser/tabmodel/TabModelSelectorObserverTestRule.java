@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,6 +67,14 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     private void initialize() {
         mSelector = new TabModelSelectorBase(null, EmptyTabModelFilter::new, false) {
             @Override
+            public void requestToShowTab(Tab tab, int type) {}
+
+            @Override
+            public boolean isSessionRestoreInProgress() {
+                return false;
+            }
+
+            @Override
             public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
                     boolean incognito) {
                 return null;
@@ -105,11 +113,6 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
             }
 
             @Override
-            public boolean closeAllTabsRequest(boolean incognito) {
-                return false;
-            }
-
-            @Override
             public boolean isReparentingInProgress() {
                 return false;
             }
@@ -120,8 +123,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 NO_RESTORE_TYPE, delegate);
 
         mIncognitoTabModel = new TabModelSelectorTestIncognitoTabModel(
-                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
-                tabContentManager, nextTabPolicySupplier, asyncTabParamsManager, delegate);
+                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true),
+                orderController, tabContentManager, nextTabPolicySupplier, asyncTabParamsManager,
+                delegate);
 
         mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
     }
@@ -167,9 +171,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 TabModelOrderController orderController, TabContentManager tabContentManager,
                 NextTabPolicySupplier nextTabPolicySupplier,
                 AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
-            super(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
-                    tabContentManager, nextTabPolicySupplier, asyncTabParamsManager,
-                    NO_RESTORE_TYPE, modelDelegate);
+            super(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true),
+                    orderController, tabContentManager, nextTabPolicySupplier,
+                    asyncTabParamsManager, NO_RESTORE_TYPE, modelDelegate);
         }
 
         @Override

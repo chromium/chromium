@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,26 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
+#include "chrome/browser/mac/key_window_notifier.h"
 
 namespace apps {
 class AppShimManager;
 }  // namespace apps
 
 namespace device {
-class GeolocationSystemPermissionManager;
+class GeolocationManager;
 }  // namespace device
 
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
  public:
   BrowserProcessPlatformPart();
+
+  BrowserProcessPlatformPart(const BrowserProcessPlatformPart&) = delete;
+  BrowserProcessPlatformPart& operator=(const BrowserProcessPlatformPart&) =
+      delete;
+
   ~BrowserProcessPlatformPart() override;
 
   // Overridden from BrowserProcessPlatformPartBase:
@@ -33,15 +37,15 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   AppShimListener* app_shim_listener();
   apps::AppShimManager* app_shim_manager();
-  device::GeolocationSystemPermissionManager* location_permission_manager();
+  device::GeolocationManager* geolocation_manager();
+
+  KeyWindowNotifier& key_window_notifier() { return key_window_notifier_; }
 
   void SetGeolocationManagerForTesting(
-      std::unique_ptr<device::GeolocationSystemPermissionManager>
-          fake_location_manager);
+      std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
 
  protected:
-  std::unique_ptr<device::GeolocationSystemPermissionManager>
-      location_permission_manager_;
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 
  private:
   std::unique_ptr<apps::AppShimManager> app_shim_manager_;
@@ -49,7 +53,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   // Hosts the IPC channel factory that App Shims connect to on Mac.
   scoped_refptr<AppShimListener> app_shim_listener_;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPart);
+  KeyWindowNotifier key_window_notifier_;
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_MAC_H_

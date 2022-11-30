@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,11 @@ class MediaPlayerRendererWebContentsObserver
     : public WebContentsObserver,
       public WebContentsUserData<MediaPlayerRendererWebContentsObserver> {
  public:
+  MediaPlayerRendererWebContentsObserver(
+      const MediaPlayerRendererWebContentsObserver&) = delete;
+  MediaPlayerRendererWebContentsObserver& operator=(
+      const MediaPlayerRendererWebContentsObserver&) = delete;
+
   ~MediaPlayerRendererWebContentsObserver() override;
 
   void AddMediaPlayerRenderer(MediaPlayerRenderer* player);
@@ -38,8 +43,6 @@ class MediaPlayerRendererWebContentsObserver
   base::flat_set<MediaPlayerRenderer*> players_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerRendererWebContentsObserver);
 };
 
 }  // namespace content

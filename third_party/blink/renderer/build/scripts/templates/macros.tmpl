@@ -2,7 +2,7 @@
     FIXME: Do we need to put license blocks in generated files?
 #}
 {% macro license() %}
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {%- endmacro %}
@@ -77,12 +77,6 @@ case {{ length }}:
 {% if predicate %}{{str}}{% endif %}
 {%- endmacro %}
 
-
-{# See //docs/lacros.md for details on these Chrome OS defines. #}
-{%- macro platform_define(platform) -%}
-{%- if platform|lower == 'chromeos' -%}
-(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
-{%- else -%}
-defined(OS_{{platform | upper}})
-{%- endif -%}
+{%- macro platform_buildflag(platform) -%}
+BUILDFLAG(IS_{{platform | upper}})
 {%- endmacro -%}

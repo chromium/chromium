@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
@@ -20,11 +22,6 @@
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace extensions {
 class AutomationEventRouterInterface;
@@ -44,6 +41,9 @@ class AutomationManagerAura : public ui::AXActionHandler,
                               public views::AXEventObserver,
                               public extensions::AutomationEventRouterObserver {
  public:
+  AutomationManagerAura(const AutomationManagerAura&) = delete;
+  AutomationManagerAura& operator=(const AutomationManagerAura&) = delete;
+
   // Get the single instance of this class.
   static AutomationManagerAura* GetInstance();
 
@@ -71,9 +71,12 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // views::AXEventObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
+  void OnVirtualViewEvent(views::AXVirtualView* virtual_view,
+                          ax::mojom::Event event_type) override;
 
   // AutomationEventRouterObserver:
   void AllAutomationExtensionsGone() override;
+  void ExtensionListenerAdded() override;
 
   void set_automation_event_router_interface(
       extensions::AutomationEventRouterInterface* router) {
@@ -85,16 +88,15 @@ class AutomationManagerAura : public ui::AXActionHandler,
     cache_ = std::move(cache);
   }
 
-  // TODO(https://crbug.com/1185764): Figure out an appropriate design for
-  // Lacros a11y that does not require exposing the root tree id.
-  ui::AXTreeID get_root_tree_id_deprecated() { return tree_->tree_id(); }
-
  private:
   friend class base::NoDestructor<AutomationManagerAura>;
 
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, ScrollView);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, TableView);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, WebAppearsOnce);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, EventFromAction);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
+                           GetFocusOnChildTree);
 
   AutomationManagerAura();
   ~AutomationManagerAura() override;
@@ -133,27 +135,27 @@ class AutomationManagerAura : public ui::AXActionHandler,
     int id;
     ax::mojom::Event event_type;
     int action_request_id;
-    bool is_performing_action;
+    ax::mojom::Action currently_performing_action;
   };
 
   std::vector<Event> pending_events_;
 
   // The handler for AXEvents (e.g. the extensions subsystem in production, or
   // a fake for tests).
-  extensions::AutomationEventRouterInterface*
+  raw_ptr<extensions::AutomationEventRouterInterface>
       automation_event_router_interface_ = nullptr;
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;
 
   std::unique_ptr<views::AXAuraObjCache> cache_;
 
-  bool is_performing_action_ = false;
+  ax::mojom::Action currently_performing_action_ = ax::mojom::Action::kNone;
 
   base::ScopedObservation<extensions::AutomationEventRouter,
                           extensions::AutomationEventRouterObserver>
       automation_event_router_observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AutomationManagerAura);
+  bool send_window_state_on_enable_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_AURA_ACCESSIBILITY_AUTOMATION_MANAGER_AURA_H_

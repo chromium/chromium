@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_FACTORY_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_FACTORY_MAC_H_
 
-#include "base/macros.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
 namespace media {
@@ -17,16 +16,19 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryMac
     : public VideoCaptureDeviceFactory {
  public:
   VideoCaptureDeviceFactoryMac();
+
+  VideoCaptureDeviceFactoryMac(const VideoCaptureDeviceFactoryMac&) = delete;
+  VideoCaptureDeviceFactoryMac& operator=(const VideoCaptureDeviceFactoryMac&) =
+      delete;
+
   ~VideoCaptureDeviceFactoryMac() override;
 
   static void SetGetDevicesInfoRetryCount(int count);
   static int GetGetDevicesInfoRetryCount();
 
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryMac);
 };
 
 }  // namespace media

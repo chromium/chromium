@@ -1,13 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_NAVIGATION_CLIENT_H_
 #define CONTENT_RENDERER_NAVIGATION_CLIENT_H_
 
+#include "content/common/frame.mojom.h"
 #include "content/common/navigation_client.mojom.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 
 namespace content {
 
@@ -20,54 +24,78 @@ class NavigationClient : mojom::NavigationClient {
 
   // mojom::NavigationClient implementation:
   void CommitNavigation(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
-      base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+      absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ControllerServiceWorkerInfoPtr
           controller_service_worker_info,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
+      const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
+      const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
+      mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojom::CookieManagerInfoPtr cookie_manager_info,
+      mojom::StorageInfoPtr storage_info,
+      blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons,
       CommitNavigationCallback callback) override;
   void CommitFailedNavigation(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       bool has_stale_copy_in_cache,
       int error_code,
       int extended_error_code,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<std::string>& error_page_content,
+      const absl::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
+      const blink::DocumentToken& document_token,
       blink::mojom::PolicyContainerPtr policy_container,
+      mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
       CommitFailedNavigationCallback callback) override;
 
   void Bind(mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver);
 
   // See NavigationState::was_initiated_in_this_frame for details.
-  void MarkWasInitiatedInThisFrame();
   bool was_initiated_in_this_frame() const {
     return was_initiated_in_this_frame_;
   }
 
+  // Sets up a NavigationClient for a renderer-initiated navigation initiated
+  // in this frame. This includes setting `was_initiated_in_this_frame_` to
+  // true and setting up a task to send a navigation-cancellation-window-ended
+  // notification to the browser.
+  void SetUpRendererInitiatedNavigation(
+      mojo::PendingRemote<mojom::NavigationRendererCancellationListener>
+          renderer_cancellation_listener_remote);
+
  private:
   // OnDroppedNavigation is bound from BeginNavigation till CommitNavigation.
   // During this period, it is called when the interface pipe is closed from the
-  // browser side, leading to the ongoing navigation cancelation.
+  // browser side, leading to the ongoing navigation cancellation.
   void OnDroppedNavigation();
   void SetDisconnectionHandler();
   void ResetDisconnectionHandler();
 
+  // The window of time in which the renderer can cancel this navigation had
+  // ended, so notify the browser about it.
+  void NotifyNavigationCancellationWindowEnded();
+
   mojo::AssociatedReceiver<mojom::NavigationClient> navigation_client_receiver_{
       this};
+  mojo::Remote<mojom::NavigationRendererCancellationListener>
+      renderer_cancellation_listener_remote_;
   RenderFrameImpl* render_frame_;
+  // See NavigationState::was_initiated_in_this_frame for details.
   bool was_initiated_in_this_frame_ = false;
+
+  base::WeakPtrFactory<NavigationClient> weak_ptr_factory_{this};
 };
 
 }  // namespace content

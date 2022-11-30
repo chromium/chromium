@@ -1,0 +1,19 @@
+// Copyright 2015 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 16,
+FLIPS_IN_RTL,
+MOVE_TO, 3, 16,
+R_LINE_TO, 11, -8,
+LINE_TO, 3, 0,
+R_V_LINE_TO, 16,
+CLOSE
+
+CANVAS_DIMENSIONS, 8,
+FLIPS_IN_RTL,
+MOVE_TO, 2, 8,
+R_LINE_TO, 5, -4,
+R_LINE_TO, -5, -4,
+R_V_LINE_TO, 8,
+CLOSE

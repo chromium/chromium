@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -19,6 +21,10 @@
 #include "media/base/audio_power_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
 
 using ::testing::InvokeWithoutArgs;
 
@@ -46,8 +52,11 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
  public:
   AudioStreamMonitorTest() {
     // Start |clock_| at non-zero.
-    clock_.Advance(base::TimeDelta::FromSeconds(1000000));
+    clock_.Advance(base::Seconds(1000000));
   }
+
+  AudioStreamMonitorTest(const AudioStreamMonitorTest&) = delete;
+  AudioStreamMonitorTest& operator=(const AudioStreamMonitorTest&) = delete;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -120,13 +129,10 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   }
 
   // A small time step useful for testing the passage of time.
-  static base::TimeDelta one_time_step() {
-    return base::TimeDelta::FromSeconds(1) / 15;
-  }
+  static base::TimeDelta one_time_step() { return base::Seconds(1) / 15; }
 
   static base::TimeDelta holding_period() {
-    return base::TimeDelta::FromMilliseconds(
-        AudioStreamMonitor::kHoldOnMilliseconds);
+    return base::Milliseconds(AudioStreamMonitor::kHoldOnMilliseconds);
   }
 
   void StartMonitoring(int render_process_id,
@@ -156,7 +162,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   WebContents* web_contents() { return monitor_->web_contents_; }
 
  protected:
-  AudioStreamMonitor* monitor_;
+  raw_ptr<AudioStreamMonitor> monitor_;
 
  private:
   void ExpectWasRecentlyAudible() const {
@@ -167,10 +173,13 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     EXPECT_FALSE(monitor_->WasRecentlyAudible());
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Instantiate LacrosService for WakeLock support.
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
+#endif
+
   MockWebContentsDelegate mock_web_contents_delegate_;
   base::SimpleTestTickClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioStreamMonitorTest);
 };
 
 TEST_F(AudioStreamMonitorTest, MonitorsWhenProvidedAStream) {
@@ -374,7 +383,7 @@ TEST_F(AudioStreamMonitorTest, RenderProcessGone) {
 }
 
 TEST_F(AudioStreamMonitorTest, RenderFrameGone) {
-  RenderFrameHost* render_frame_host = web_contents()->GetMainFrame();
+  RenderFrameHost* render_frame_host = web_contents()->GetPrimaryMainFrame();
   int render_process_id = render_frame_host->GetProcess()->GetID();
   int render_frame_id = render_frame_host->GetRoutingID();
 
@@ -386,6 +395,66 @@ TEST_F(AudioStreamMonitorTest, RenderFrameGone) {
   monitor_->RenderFrameDeleted(render_frame_host);
   ExpectIsMonitoring(render_process_id, render_frame_id, kStreamId, false);
   ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, true);
+}
+
+TEST_F(AudioStreamMonitorTest, OneAudibleClient) {
+  ExpectNotCurrentlyAudible();
+
+  ExpectRecentlyAudibleChangeNotification(true);
+  ExpectCurrentlyAudibleChangeNotification(true);
+  auto registration = monitor_->RegisterAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  ExpectCurrentlyAudibleChangeNotification(false);
+  registration.reset();
+  ExpectNotCurrentlyAudible();
+}
+
+TEST_F(AudioStreamMonitorTest, MultipleAudibleClients) {
+  ExpectNotCurrentlyAudible();
+
+  // Add one client and the tab becomes audible.
+  ExpectRecentlyAudibleChangeNotification(true);
+  ExpectCurrentlyAudibleChangeNotification(true);
+  auto registration1 = monitor_->RegisterAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // Add another client and the tab remains audible.
+  auto registration2 = monitor_->RegisterAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // Removes one client and the tab remains audible.
+  registration1.reset();
+  ExpectIsCurrentlyAudible();
+
+  // Removes another client and the tab is not audible.
+  ExpectCurrentlyAudibleChangeNotification(false);
+  registration2.reset();
+  ExpectNotCurrentlyAudible();
+}
+
+TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
+  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
+  ExpectNotCurrentlyAudible();
+
+  // Add one client and the tab becomes audible.
+  ExpectRecentlyAudibleChangeNotification(true);
+  ExpectCurrentlyAudibleChangeNotification(true);
+  auto registration = monitor_->RegisterAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // The stream becomes audible and the tab remains audible.
+  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, true);
+  ExpectIsCurrentlyAudible();
+
+  // Remove the client and the tab remains audible.
+  registration.reset();
+  ExpectIsCurrentlyAudible();
+
+  // The stream becomes not audible and the tab is not audible.
+  ExpectCurrentlyAudibleChangeNotification(false);
+  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
+  ExpectNotCurrentlyAudible();
 }
 
 }  // namespace content

@@ -1,0 +1,6 @@
+Name: bindgen
+URL: https://crates.io/crates/bindgen
+Description: Automatically generates Rust FFI bindings to C and C++ libraries.
+Version: 0.60.1
+Security Critical: no
+License: BSD 3-Clause

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "ui/gfx/animation/slide_animation.h"
 
 namespace ash {
@@ -246,7 +246,7 @@ int PaginationModel::CalculateTargetPage(int delta) const {
   else if (target_page > end_page && selected_page_ == end_page)
     end_page = total_pages_;
 
-  return base::ClampToRange(target_page, start_page, end_page);
+  return base::clamp(target_page, start_page, end_page);
 }
 
 base::TimeDelta PaginationModel::GetTransitionAnimationSlideDuration() const {
@@ -271,6 +271,7 @@ void PaginationModel::StartTransitionAnimation(const Transition& transition) {
   if (!duration.is_zero())
     transition_animation_->SetSlideDuration(duration);
 
+  is_transition_started_ = true;
   NotifyTransitionStarted();
   transition_animation_->Show();
 }
@@ -288,9 +289,11 @@ void PaginationModel::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void PaginationModel::AnimationEnded(const gfx::Animation* animation) {
-  // Do not notify transition end for the reverting animation.
-  if (!IsRevertingCurrentTransition())
+  // Ensure that each TransitionStarted() has only one TransitionEnded().
+  if (is_transition_started_) {
+    is_transition_started_ = false;
     NotifyTransitionEnded();
+  }
 
   // Save |pending_selected_page_| because SelectPage resets it.
   int next_target = pending_selected_page_;

@@ -1,6 +1,13 @@
 {%- macro enum_def(enum, top_level) -%}
 public {{ 'static ' if not top_level }}final class {{enum|name}} {
     private static final boolean IS_EXTENSIBLE = {% if enum.extensible %}true{% else %}false{% endif %};
+    @IntDef({
+{% for field in enum.fields %}
+        {{enum|name}}.{{field|name}}
+{%-   if not loop.last %},
+{%-   endif %}
+{%- endfor %}})
+    public @interface EnumType {}
 {% for field in enum.fields %}
     public static final int {{field|name}} = {{field.numeric_value}};
 {%- endfor %}

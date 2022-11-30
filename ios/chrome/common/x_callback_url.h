@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
-// Returns true if |url| is compliant with the x-callback-url specs.
+// Returns true if `url` is compliant with the x-callback-url specs.
 bool IsXCallbackURL(const GURL& url);
 
 // Returns a GURL compliant with the x-callback-url specs (simple version with
@@ -21,7 +21,7 @@ GURL CreateXCallbackURL(base::StringPiece scheme, base::StringPiece action);
 
 // Returns a GURL compliant with the x-callback-url specs.
 // See http://x-callback-url.com/specifications/ for specifications.
-// |scheme| must not be empty, all other parameters may be.
+// `scheme` must not be empty, all other parameters may be.
 GURL CreateXCallbackURLWithParameters(
     base::StringPiece scheme,
     base::StringPiece action,
@@ -30,7 +30,7 @@ GURL CreateXCallbackURLWithParameters(
     const GURL& cancel_url,
     const std::map<std::string, std::string>& parameters);
 
-// Extract query parameters from an x-callback-url URL. |x_callback_url| must
+// Extract query parameters from an x-callback-url URL. `x_callback_url` must
 // be compliant with the x-callback-url specs.
 std::map<std::string, std::string> ExtractQueryParametersFromXCallbackURL(
     const GURL& x_callback_url);

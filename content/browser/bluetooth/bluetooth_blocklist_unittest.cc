@@ -1,13 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 using device::BluetoothUUID;
+using DataPrefix = content::BluetoothBlocklist::DataPrefix;
+using ManufacturerId = device::BluetoothDevice::ManufacturerId;
 
 namespace content {
 
@@ -445,7 +449,7 @@ TEST_F(BluetoothBlocklistTest, RemoveExcludedUuids_Matching) {
 
 TEST_F(BluetoothBlocklistTest, VerifyDefaultBlocklistSize) {
   // REMINDER: ADD new blocklist items to tests below for each exclusion type.
-  EXPECT_EQ(14u, list_.size());
+  EXPECT_EQ(15u, list_.size());
 }
 
 TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeList) {
@@ -457,6 +461,7 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeList) {
   EXPECT_TRUE(
       list_.IsExcluded(BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("00060000")));
+  EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fff9")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fffd")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fde2")));
   EXPECT_FALSE(list_.IsExcluded(BluetoothUUID("2a02")));
@@ -481,6 +486,7 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeReadList) {
   EXPECT_TRUE(list_.IsExcludedFromReads(
       BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("00060000")));
+  EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fff9")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fffd")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fde2")));
   EXPECT_FALSE(list_.IsExcludedFromReads(BluetoothUUID("2a02")));
@@ -505,6 +511,7 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeWriteList) {
   EXPECT_TRUE(list_.IsExcludedFromWrites(
       BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("00060000")));
+  EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fff9")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fffd")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fde2")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("2a02")));
@@ -518,6 +525,198 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeWriteList) {
       BluetoothUUID("bad2ddcf-60db-45cd-bef9-fd72b153cf7c")));
   EXPECT_FALSE(list_.IsExcludedFromWrites(
       BluetoothUUID("bad3ec61-3cc3-4954-9702-7977df514114")));
+}
+
+TEST_F(BluetoothBlocklistTest, NonExcludedManufacturerDataFilter) {
+  list_.Add(/*company_identifier=*/0x1,
+            /*prefix=*/{{0x01, 0x3f}, {0x00, 0x00}});
+
+  // filter is not a strict subset, data different.
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x1);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0x3f));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0xff));
+    EXPECT_FALSE(
+        list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+
+  // filter is not a strict subset, filter length is shorter.
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x1);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x01, 0x3f));
+    EXPECT_FALSE(
+        list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+
+  // filter is not a strict subset, filter mask is not a subset of blocked data
+  // mask.
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x1);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x01, 0x0f));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0xff));
+    EXPECT_FALSE(
+        list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+
+  // filter is not a strict subset, filter length is longer but filter mask is
+  // not a subset of blocked data mask.
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x1);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x01, 0x0f));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0xff));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x03, 0xff));
+    EXPECT_FALSE(
+        list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+
+  // Different company_identifier
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x2);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x01, 0xff));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0xff));
+    EXPECT_FALSE(
+        list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+}
+
+TEST_F(BluetoothBlocklistTest, ExcludedManufacturerDataFilter) {
+  list_.Add(/*company_identifier=*/0x1,
+            /*prefix=*/{{0x01, 0x3f}, {0x00, 0x00}});
+
+  // filter is a strict subset, filter length is the same.
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x1);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x01, 0x3f));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0xff));
+    EXPECT_TRUE(list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+
+  // filter is a strict subset, filter length is longer.
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x1);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x01, 0x3f));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0xff));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x03, 0xff));
+    EXPECT_TRUE(list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+
+  // filter is a strict subset, filter mask is subset of blocked data mask.
+  {
+    blink::mojom::WebBluetoothCompanyPtr company_identifier =
+        blink::mojom::WebBluetoothCompany::New(0x1);
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr>
+        manufacturer_data_filter;
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x01, 0xff));
+    manufacturer_data_filter.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(0x02, 0xff));
+    EXPECT_TRUE(list_.IsExcluded(company_identifier, manufacturer_data_filter));
+  }
+}
+
+TEST_F(BluetoothBlocklistTest, ExcludedManufacturerData) {
+  list_.Add(/*company_identifier=*/0x1,
+            /*prefix=*/{{0x01, 0x0f}});
+
+  // Data prefix matches.
+  {
+    device::BluetoothDevice::ManufacturerId manufacturer_id = 0x1;
+    device::BluetoothDevice::ManufacturerData manufacturer_data = {
+        0x1,
+        0x39,
+    };
+    EXPECT_TRUE(list_.IsExcluded(manufacturer_id, manufacturer_data));
+  }
+
+  // Data pattern matches.
+  list_.ResetToDefaultValuesForTest();
+  list_.Add(/*company_identifier=*/0x1,
+            /*prefix=*/{{0x01, 0x0f}, {0x00, 0x00}});
+  {
+    device::BluetoothDevice::ManufacturerId manufacturer_id = 0x1;
+    device::BluetoothDevice::ManufacturerData manufacturer_data = {
+        0x1,
+        0x39,
+    };
+    EXPECT_TRUE(list_.IsExcluded(manufacturer_id, manufacturer_data));
+  }
+}
+
+TEST_F(BluetoothBlocklistTest, NonExcludedManufacturerData) {
+  list_.Add(/*company_identifier=*/0x1,
+            /*prefix=*/{{0x01, 0x0f}, {0x00, 0x00}});
+
+  // Data prefix not doesn't match.
+  {
+    device::BluetoothDevice::ManufacturerId manufacturer_id = 0x1;
+    device::BluetoothDevice::ManufacturerData manufacturer_data = {
+        0x2,
+        0x47,
+    };
+    EXPECT_FALSE(list_.IsExcluded(manufacturer_id, manufacturer_data));
+  }
+
+  // Manufacturer data is shorter.
+  {
+    device::BluetoothDevice::ManufacturerId manufacturer_id = 0x1;
+    device::BluetoothDevice::ManufacturerData manufacturer_data = {
+        0x1,
+    };
+    EXPECT_FALSE(list_.IsExcluded(manufacturer_id, manufacturer_data));
+  }
+
+  // Empty manufacturer data.
+  {
+    device::BluetoothDevice::ManufacturerId manufacturer_id = 0x1;
+    device::BluetoothDevice::ManufacturerData manufacturer_data;
+    EXPECT_FALSE(list_.IsExcluded(manufacturer_id, manufacturer_data));
+  }
+
+  // Different manufacturer id.
+  {
+    device::BluetoothDevice::ManufacturerId manufacturer_id = 0x2;
+    device::BluetoothDevice::ManufacturerData manufacturer_data = {
+        0x1,
+        0x47,
+    };
+    EXPECT_FALSE(list_.IsExcluded(manufacturer_id, manufacturer_data));
+  }
 }
 
 }  // namespace content

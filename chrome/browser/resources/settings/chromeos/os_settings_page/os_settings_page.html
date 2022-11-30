@@ -1,291 +1,260 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-page-styles cr-hidden-style settings-shared">
+  :host([is-subpage-animating]) {
+    /* Prevent an unwanted horizontal scrollbar when transitioning back from
+      * a sub-page. */
+    overflow: hidden;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="../../search_settings.html">
-<link rel="import" href="../os_page_visibility.html">
-<link rel="import" href="main_page_behavior.html">
-<link rel="import" href="settings_idle_load.html">
-<link rel="import" href="../os_apps_page/android_apps_browser_proxy.html">
-<link rel="import" href="../os_apps_page/os_apps_page.html">
-<link rel="import" href="../os_people_page/os_people_page.html">
-<link rel="import" href="../os_privacy_page/os_privacy_page.html">
-<link rel="import" href="../os_printing_page/os_printing_page.html">
-<link rel="import" href="../os_search_page/os_search_page.html">
-<link rel="import" href="../personalization_page/personalization_page.html">
-<link rel="import" href="../../settings_page/settings_section.html">
-<link rel="import" href="../../settings_page_css.html">
-<link rel="import" href="../bluetooth_page/bluetooth_page.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../device_page/device_page.html">
-<link rel="import" href="../internet_page/internet_page.html">
-<link rel="import" href="../kerberos_page/kerberos_page.html">
-<link rel="import" href="../multidevice_page/multidevice_page.html">
-<link rel="import" href="../on_startup_page/on_startup_page.html">
-<link rel="import" href="chrome://resources/html/assert.html">
+  .banner {
+    align-items: center;
+    background-color: var(--cros-bg-color);
+    border: var(--cr-hairline);
+    border-radius: var(--cr-card-border-radius);
+    display: flex;
+    margin-bottom: var(--cr-section-vertical-margin);
+    margin-top: var(--cr-section-vertical-margin);
+  }
 
-<dom-module id="os-settings-page">
-  <template>
-    <style include="settings-page-styles cr-hidden-style settings-shared">
-      :host([is-subpage-animating]) {
-        /* Prevent an unwanted horizontal scrollbar when transitioning back from
-         * a sub-page. */
-        overflow: hidden;
-      }
+  .eol-warning-icon {
+    align-items: center;
+    background:
+      rgba(var(--cros-icon-color-warning-rgb), var(--cros-second-tone-opacity));
+    border-radius: 50%;
+    display: flex;
+    flex: 0 0 auto;
+    height: 40px;
+    justify-content: center;
+    margin-inline-end: var(--cr-section-padding);
+    width: 40px;
+  }
 
-      .banner {
-        align-items: center;
-        background-color: var(--cros-bg-color);
-        border: var(--cr-hairline);
-        border-radius: var(--cr-card-border-radius);
-        display: flex;
-        margin-bottom: var(--cr-section-vertical-margin);
-        margin-top: var(--cr-section-vertical-margin);
-      }
+  .eol-warning-icon iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-warning);
+    margin: 0;
+  }
 
-      .eol-warning-icon {
-        align-items: center;
-        background: var(--google-yellow-50);
-        border-radius: 50%;
-        display: flex;
-        height: 40px;
-        justify-content: center;
-        margin-inline-end: var(--cr-section-padding);
-        width: 40px;
-      }
+  #advancedToggle {
+    --ink-color: currentColor;
+    align-items: center;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: currentColor;
+    display: flex;
+    font-weight: 400;
+    margin-bottom: 3px;
+    margin-top: 12px;  /* Part of a 48px spacer (33px + 12px + 3px). */
+    min-height: 32px;
+    padding: 0 12px;
+  }
 
-      .eol-warning-icon iron-icon {
-        margin: 0;
-      }
+  :host-context(.focus-outline-visible) #advancedToggle:focus {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
 
-      #advancedToggle {
-        --ink-color: currentColor;
-        align-items: center;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        color: currentColor;
-        display: flex;
-        font-weight: 400;
-        margin-bottom: 3px;
-        margin-top: 12px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-        min-height: 32px;
-        padding: 0 12px;
-      }
+  #openInNewBrowserSettingsIcon {
+    fill: var(--cros-link-color);
+    margin-inline-start: 0;
+  }
 
-      :host-context(.focus-outline-visible) #advancedToggle:focus {
-        font-weight: 600;
-      }
+  #secondaryUserIcon {
+    align-items: center;
+    background: rgba(
+      var(--cros-icon-color-prominent-rgb), var(--cros-second-tone-opacity));
+    border-radius: 50%;
+    display: flex;
+    flex: 0 0 auto;
+    height: 40px;
+    justify-content: center;
+    margin-inline-end: var(--cr-section-padding);
+    width: 40px;
+  }
 
-      #openInNewBrowserSettingsIcon {
-        fill: var(--cros-link-color);
-        margin-inline-start: 0;
-      }
+  #secondaryUserIcon iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    margin: 0;
+  }
 
-      #secondaryUserIcon {
-        background-color : var(--cros-user-icon-color-secondary);
-        background-image: url(chrome://theme/IDR_SECONDARY_USER_SETTINGS);
-        background-position: center;
-        background-repeat: no-repeat;
-        height: 55px;
-        margin: 18px;
-        width: 58px;
-      }
+  #toggleContainer {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    font: inherit;
+    justify-content: center;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding: 0;
+  }
 
-      #toggleContainer {
-        align-items: center;
-        color: var(--cros-text-color-primary);
-        display: flex;
-        font: inherit;
-        justify-content: center;
-        margin-bottom: 0;
-        margin-top: 0;
-        padding: 0;
-      }
+  #toggleSpacer {
+    padding-top: 33px;  /* Part of a 48px spacer (33px + 12px + 3px). */
+  }
 
-      #toggleSpacer {
-        padding-top: 33px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-      }
-
-      iron-icon {
-        margin-inline-start: 16px;
-      }
-    </style>
-    <template is="dom-if" if="[[showBasicPage_(
-        currentRoute_, inSearchMode, hasExpandedSection_)]]">
-      <div id="basicPage">
-        <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
-            hasExpandedSection_, showUpdateRequiredEolBanner_)]]">
-          <div id="updateRequiredEolBanner"
-              class="settings-box two-line banner">
-            <div class="eol-warning-icon">
-              <iron-icon icon="cr20:banner-warning"></iron-icon>
-            </div>
-            <settings-localized-link id="bannerText" class="start"
-                localized-string="$i18n{updateRequiredEolBannerText}">
-            </settings-localized-link>
-            <cr-icon-button title="$i18n{close}" id="closeUpdateRequiredEol"
-                class="icon-clear" on-click="onCloseEolBannerClicked_"
-                aria-describedby="bannerText">
-            </cr-icon-button>
-          </div>
-        </template>
-        <div id="secondaryUserBanner" class="banner"
-            hidden="[[!showSecondaryUserBanner_]]">
-          <div id="secondaryUserIcon"></div>
-          <div class="flex">$i18n{secondaryUserBannerText}</div>
+  iron-icon {
+    margin-inline-start: 16px;
+  }
+</style>
+<template is="dom-if" if="[[showBasicPage_(
+    currentRoute_, hasExpandedSection_)]]">
+  <div id="basicPage">
+    <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
+        hasExpandedSection_, showUpdateRequiredEolBanner_)]]">
+      <div id="updateRequiredEolBanner"
+          class="settings-box two-line banner">
+        <div class="eol-warning-icon">
+          <iron-icon icon="cr20:banner-warning"></iron-icon>
         </div>
-        <settings-section page-title="$i18n{internetPageTitle}"
-            section="internet">
-          <settings-internet-page prefs="{{prefs}}">
-          </settings-internet-page>
-        </settings-section>
-        <settings-section page-title="$i18n{bluetoothPageTitle}"
-            section="bluetooth">
-          <settings-bluetooth-page prefs="{{prefs}}">
-          </settings-bluetooth-page>
-        </settings-section>
-        <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-          <settings-section page-title="$i18n{multidevicePageTitle}"
-              section="multidevice">
-            <settings-multidevice-page prefs="{{prefs}}">
-            </settings-multidevice-page>
-          </settings-section>
-        </template>
-        <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-          <settings-section page-title="$i18n{osPeoplePageTitle}"
-              section="osPeople">
-            <os-settings-people-page prefs="{{prefs}}"
-                page-visibility="[[pageVisibility]]">
-            </os-settings-people-page>
-          </settings-section>
-        </template>
-        <template is="dom-if" if="[[showKerberosSection]]" restamp>
-          <settings-section page-title="$i18n{kerberosPageTitle}"
-              section="kerberos">
-            <settings-kerberos-page></settings-kerberos-page>
-          </settings-section>
-        </template>
-        <settings-section page-title="$i18n{devicePageTitle}"
-            section="device">
-          <settings-device-page prefs="{{prefs}}"
-              show-crostini="[[showCrostini]]">
-          </settings-device-page>
-        </settings-section>
-        <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-          <settings-section page-title="$i18n{personalizationPageTitle}"
-              section="personalization">
-            <settings-personalization-page prefs="{{prefs}}">
-            </settings-personalization-page>
-          </settings-section>
-        </template>
-        <settings-section page-title="$i18n{osSearchPageTitle}"
-            section="osSearch">
-          <os-settings-search-page prefs="{{prefs}}">
-          </os-settings-search-page>
-        </settings-section>
-        <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-          <settings-section page-title="$i18n{privacyPageTitle}"
-              section="osPrivacy">
-            <os-settings-privacy-page prefs="{{prefs}}">
-            </os-settings-privacy-page>
-          </settings-section>
-        </template>
-        <settings-section page-title="$i18n{appsPageTitle}" section="apps">
-          <os-settings-apps-page
-              prefs="{{prefs}}"
-              android-apps-info="[[androidAppsInfo]]"
-              have-play-store-app="[[havePlayStoreApp]]"
-              show-android-apps="[[showAndroidApps]]"
-              show-plugin-vm="[[showPluginVm]]">
-          </os-settings-apps-page>
-        </settings-section>
-        <template is="dom-if" if="[[showStartup]]">
-          <settings-section page-title="$i18n{onStartupPageTitle}"
-              section="onstartup">
-            <settings-on-startup-page prefs="{{prefs}}">
-            </settings-on-startup-page>
-          </settings-section>
-        </template>
+        <localized-link id="bannerText" class="start"
+            localized-string="$i18n{updateRequiredEolBannerText}">
+        </localized-link>
+        <cr-icon-button title="$i18n{close}" id="closeUpdateRequiredEol"
+            class="icon-clear" on-click="onCloseEolBannerClicked_"
+            aria-describedby="bannerText">
+        </cr-icon-button>
       </div>
     </template>
-
-    <template is="dom-if" if="[[showAdvancedToggle_(
-        inSearchMode, hasExpandedSection_)]]">
-      <div id="toggleSpacer"></div>
-      <h2 id="toggleContainer">
-        <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
-            aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
-          <span>$i18n{advancedPageTitle}</span>
-          <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded)]]">
-          </iron-icon>
-        </cr-button>
-      </h2>
+    <div id="secondaryUserBanner" class="settings-box two-line banner"
+        hidden="[[!showSecondaryUserBanner_]]">
+      <div id="secondaryUserIcon">
+        <iron-icon icon="os-settings:social-group"></iron-icon>
+      </div>
+      <div class="flex">$i18n{secondaryUserBannerText}</div>
+    </div>
+    <settings-section page-title="$i18n{internetPageTitle}"
+        section="internet">
+      <settings-internet-page prefs="{{prefs}}">
+      </settings-internet-page>
+    </settings-section>
+    <settings-section page-title="$i18n{bluetoothPageTitle}"
+        section="bluetooth">
+      <os-settings-bluetooth-page prefs="{{prefs}}">
+      </os-settings-bluetooth-page>
+    </settings-section>
+    <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+      <settings-section page-title="$i18n{multidevicePageTitle}"
+          section="multidevice">
+        <settings-multidevice-page prefs="{{prefs}}">
+        </settings-multidevice-page>
+      </settings-section>
     </template>
+    <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+      <settings-section page-title="$i18n{osPeoplePageTitle}"
+          section="osPeople">
+        <os-settings-people-page prefs="{{prefs}}"
+            page-visibility="[[pageVisibility]]">
+        </os-settings-people-page>
+      </settings-section>
+    </template>
+    <template is="dom-if" if="[[showKerberosSection]]" restamp>
+      <settings-section page-title="$i18n{kerberosPageTitle}"
+          section="kerberos">
+        <settings-kerberos-page></settings-kerberos-page>
+      </settings-section>
+    </template>
+    <settings-section page-title="$i18n{devicePageTitle}"
+        section="device">
+      <settings-device-page prefs="{{prefs}}"
+          show-crostini="[[showCrostini]]">
+      </settings-device-page>
+    </settings-section>
+    <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+      <settings-section page-title="$i18n{personalizationPageTitle}"
+          section="personalization">
+        <settings-personalization-page prefs="{{prefs}}">
+        </settings-personalization-page>
+      </settings-section>
+    </template>
+    <settings-section page-title="$i18n{osSearchPageTitle}"
+        section="osSearch">
+      <os-settings-search-page prefs="{{prefs}}">
+      </os-settings-search-page>
+    </settings-section>
+    <settings-section page-title="$i18n{privacyPageTitle}"
+        section="osPrivacy">
+      <os-settings-privacy-page prefs="{{prefs}}">
+      </os-settings-privacy-page>
+    </settings-section>
+    <settings-section page-title="$i18n{appsPageTitle}" section="apps">
+      <os-settings-apps-page
+          prefs="{{prefs}}"
+          android-apps-info="[[androidAppsInfo]]"
+          have-play-store-app="[[havePlayStoreApp]]"
+          show-android-apps="[[showAndroidApps]]"
+          show-arcvm-manage-usb="[[showArcvmManageUsb]]"
+          show-plugin-vm="[[showPluginVm]]"
+          show-startup="[[showStartup]]">
+      </os-settings-apps-page>
+    </settings-section>
+    <template is="dom-if" if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
+      <settings-section page-title="$i18n{a11yPageTitle}"
+          section="osAccessibility">
+        <os-settings-a11y-page prefs="{{prefs}}">
+        </os-settings-a11y-page>
+      </settings-section>
+    </template>
+  </div>
+</template>
 
-    <settings-idle-load id="advancedPageTemplate"
-        url="chromeos/lazy_load.html">
-      <template>
-        <div id="advancedPage" hidden$="[[!showAdvancedPage_(
-            currentRoute_, inSearchMode, hasExpandedSection_,
-            advancedToggleExpanded)]]">
-          <settings-section page-title="$i18n{dateTimePageTitle}"
-              section="dateTime">
-            <settings-date-time-page prefs="{{prefs}}">
-            </settings-date-time-page>
-          </settings-section>
-          <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
-            <settings-section page-title="$i18n{privacyPageTitle}"
-                section="osPrivacy">
-              <os-settings-privacy-page prefs="{{prefs}}">
-              </os-settings-privacy-page>
-            </settings-section>
-          </template>
-          <settings-section page-title="$i18n{osLanguagesPageTitle}"
-              section="osLanguages">
-            <os-settings-languages-section prefs="{{prefs}}">
-            </os-settings-languages-section>
-          </settings-section>
-          <template is="dom-if" if="[[!isGuestMode_]]">
-            <settings-section page-title="$i18n{filesPageTitle}"
-                section="files">
-              <os-settings-files-page prefs="{{prefs}}">
-              </os-settings-files-page>
-            </settings-section>
-          </template>
-          <settings-section page-title="$i18n{printingPageTitle}"
-              section="osPrinting">
-            <os-settings-printing-page prefs="{{prefs}}">
-            </os-settings-printing-page>
-          </settings-section>
-          <template is="dom-if" if="[[showCrostini]]" restamp>
-            <settings-section page-title="$i18n{crostiniPageTitle}"
-                section="crostini">
-              <settings-crostini-page prefs="{{prefs}}"
-                  allow-crostini="[[allowCrostini_]]">
-              </settings-crostini-page>
-            </settings-section>
-          </template>
-          <settings-section page-title="$i18n{a11yPageTitle}"
-              section="osAccessibility">
-            <os-settings-a11y-page prefs="{{prefs}}">
-            </os-settings-a11y-page>
-          </settings-section>
-          <template is="dom-if" if="[[showReset]]">
-            <settings-section page-title="$i18n{resetPageTitle}"
-                section="osReset">
-              <os-settings-reset-page></os-settings-reset-page>
-            </settings-section>
-          </template>
-        </div>
+<template is="dom-if" if="[[!hasExpandedSection_]]">
+  <div id="toggleSpacer"></div>
+  <h2 id="toggleContainer">
+    <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
+        aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
+      <span>$i18n{advancedPageTitle}</span>
+      <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded)]]">
+      </iron-icon>
+    </cr-button>
+  </h2>
+</template>
+
+<settings-idle-load id="advancedPageTemplate"
+    url="chromeos/lazy_load.html">
+  <template>
+    <div id="advancedPage" hidden$="[[!showAdvancedPage_(
+        currentRoute_, hasExpandedSection_,
+        advancedToggleExpanded)]]">
+      <settings-section page-title="$i18n{dateTimePageTitle}"
+          section="dateTime">
+        <settings-date-time-page prefs="{{prefs}}">
+        </settings-date-time-page>
+      </settings-section>
+      <settings-section page-title="$i18n{osLanguagesPageTitle}"
+          section="osLanguages">
+        <os-settings-languages-section prefs="{{prefs}}">
+        </os-settings-languages-section>
+      </settings-section>
+      <template is="dom-if" if="[[!isGuestMode_]]">
+        <settings-section page-title="$i18n{filesPageTitle}"
+            section="files">
+          <os-settings-files-page prefs="{{prefs}}">
+          </os-settings-files-page>
+        </settings-section>
       </template>
-    </settings-idle-load>
+      <settings-section page-title="$i18n{printingPageTitle}"
+          section="osPrinting">
+        <os-settings-printing-page prefs="{{prefs}}">
+        </os-settings-printing-page>
+      </settings-section>
+      <settings-section page-title="$i18n{crostiniPageTitle}"
+          section="crostini">
+        <settings-crostini-page prefs="{{prefs}}"
+            allow-crostini="[[allowCrostini_]]"
+            show-crostini="[[showCrostini]]">
+        </settings-crostini-page>
+      </settings-section>
+      <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
+        <settings-section page-title="$i18n{a11yPageTitle}"
+            section="osAccessibility">
+          <os-settings-a11y-page prefs="{{prefs}}">
+          </os-settings-a11y-page>
+        </settings-section>
+      </template>
+      <template is="dom-if" if="[[showReset]]">
+        <settings-section page-title="$i18n{resetPageTitle}"
+            section="osReset">
+          <os-settings-reset-page></os-settings-reset-page>
+        </settings-section>
+      </template>
+    </div>
   </template>
-  <script src="os_settings_page.js"></script>
-</dom-module>
+</settings-idle-load>

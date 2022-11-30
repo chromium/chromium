@@ -1,0 +1,6 @@
+[document web] tag:#document
+++[section] tag:body
+++++[image] name='Has two simple children' tag:svg
+++++[document frame] name='Has two focusable children' tag:svg
+++++++[panel] tag:svg
+++++++[panel] tag:svg

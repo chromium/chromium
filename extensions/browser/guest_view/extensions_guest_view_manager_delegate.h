@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_EXTENSIONS_GUEST_VIEW_MANAGER_DELEGATE_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_EXTENSIONS_GUEST_VIEW_MANAGER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 
 namespace content {
@@ -29,10 +30,11 @@ class ExtensionsGuestViewManagerDelegate
                      int instance_id) override;
   bool IsGuestAvailableToContext(guest_view::GuestViewBase* guest) override;
   bool IsOwnedByExtension(guest_view::GuestViewBase* guest) override;
-  void RegisterAdditionalGuestViewTypes() override;
+  void RegisterAdditionalGuestViewTypes(
+      guest_view::GuestViewManager* manager) override;
 
  private:
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace extensions

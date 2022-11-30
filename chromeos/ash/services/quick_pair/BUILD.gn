@@ -1,0 +1,103 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+source_set("quick_pair") {
+  sources = [
+    "fast_pair_data_parser.cc",
+    "fast_pair_data_parser.h",
+    "fast_pair_decryption.cc",
+    "fast_pair_decryption.h",
+    "quick_pair_process.cc",
+    "quick_pair_process.h",
+    "quick_pair_process_manager.cc",
+    "quick_pair_process_manager.h",
+    "quick_pair_process_manager_impl.cc",
+    "quick_pair_process_manager_impl.h",
+    "quick_pair_process_shutdown_controller.cc",
+    "quick_pair_process_shutdown_controller.h",
+    "quick_pair_service.cc",
+    "quick_pair_service.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//chromeos/ash/services/quick_pair/public/cpp",
+    "//chromeos/ash/services/quick_pair/public/mojom",
+    "//crypto:crypto",
+    "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_quick_pair_process_manager.cc",
+    "mock_quick_pair_process_manager.h",
+    "quick_pair_process_manager.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair/public/cpp",
+    "//chromeos/ash/services/quick_pair/public/mojom",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fast_pair_data_parser_unittest.cc",
+    "fast_pair_decryption_unittest.cc",
+    "quick_pair_process_manager_impl_unittest.cc",
+    "quick_pair_process_shutdown_controller_unittest.cc",
+    "quick_pair_process_unittest.cc",
+    "quick_pair_service_unittest.cc",
+  ]
+
+  deps = [
+    ":quick_pair",
+    "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/fast_pair_handshake",
+    "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair/public/cpp",
+    "//chromeos/ash/services/quick_pair/public/cpp:unit_tests",
+    "//chromeos/ash/services/quick_pair/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("fast_pair_data_parser_fuzzer") {
+  sources = [ "fast_pair_data_parser_fuzzer.cc" ]
+  deps = [
+    ":quick_pair",
+    "//ash/quick_pair/common",
+    "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair/public/mojom",
+    "//device/bluetooth/public/cpp",
+    "//mojo/core/embedder",
+  ]
+}
+
+fuzzer_test("fast_pair_decryption_fuzzer") {
+  sources = [ "fast_pair_decryption_fuzzer.cc" ]
+  deps = [
+    ":quick_pair",
+    "//ash:test_support",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/fast_pair_handshake",
+    "//base/test:test_support",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
 
@@ -51,24 +50,25 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
 // property of the window.
 sync_pb::SessionTab SessionTabToSyncData(
     const sessions::SessionTab& tab,
-    base::Optional<sync_pb::SessionWindow::BrowserType> browser_type);
+    absl::optional<sync_pb::SyncEnums::BrowserType> browser_type);
 
 // A Sync wrapper for a SessionWindow.
 struct SyncedSessionWindow {
   SyncedSessionWindow();
+
+  SyncedSessionWindow(const SyncedSessionWindow&) = delete;
+  SyncedSessionWindow& operator=(const SyncedSessionWindow&) = delete;
+
   ~SyncedSessionWindow();
 
   // Convert this object into its sync protocol buffer equivalent.
   sync_pb::SessionWindow ToSessionWindowProto() const;
 
   // Type of the window. See session_specifics.proto.
-  sync_pb::SessionWindow::BrowserType window_type;
+  sync_pb::SyncEnums::BrowserType window_type;
 
   // The SessionWindow this object wraps.
   sessions::SessionWindow wrapped_window;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncedSessionWindow);
 };
 
 // Defines a synced session for use by session sync. A synced session is a
@@ -76,6 +76,10 @@ struct SyncedSessionWindow {
 // about the device being synced.
 struct SyncedSession {
   SyncedSession();
+
+  SyncedSession(const SyncedSession&) = delete;
+  SyncedSession& operator=(const SyncedSession&) = delete;
+
   ~SyncedSession();
 
   // Unique tag for each session.
@@ -96,9 +100,6 @@ struct SyncedSession {
   // Convert this object to its protocol buffer equivalent. Shallow conversion,
   // does not create SessionTab protobufs.
   sync_pb::SessionHeader ToSessionHeaderProto() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncedSession);
 };
 
 }  // namespace sync_sessions

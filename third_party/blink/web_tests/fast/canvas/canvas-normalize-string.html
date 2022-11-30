@@ -39,7 +39,7 @@ if (window.testRunner)
     testRunner.dumpAsText();
 
 var c=document.getElementById("myCanvas");
-var ctx=c.getContext("2d");
+var ctx=c.getContext("2d", {willReadFrequently: true});
 
 var yCo = 30;
 var testFlag = false;

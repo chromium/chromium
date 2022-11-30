@@ -1,0 +1,46 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grd") {
+  grd_prefix = "internals"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  input_files = [ "internals.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (!is_android) {
+    deps = [ "user_education:build_grdp" ]
+    grdp_files = [ "$target_gen_dir/user_education/resources.grdp" ]
+  } else {
+    deps = [
+      "lens:build_grdp",
+      "notifications:build_grdp",
+    ]
+    grdp_files = [
+      "$target_gen_dir/lens/resources.grdp",
+      "$target_gen_dir/notifications/resources.grdp",
+    ]
+  }
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/internals_resources.h",
+    "grit/internals_resources_map.cc",
+    "grit/internals_resources_map.h",
+    "internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

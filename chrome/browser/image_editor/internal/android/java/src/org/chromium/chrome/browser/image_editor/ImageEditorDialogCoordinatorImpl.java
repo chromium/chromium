@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Upstream implementation for ImageEditorDialogCoordinator. Does nothing. Actual implementation
@@ -16,6 +16,6 @@ import org.chromium.chrome.browser.tab.Tab;
  */
 public class ImageEditorDialogCoordinatorImpl implements ImageEditorDialogCoordinator {
     @Override
-    public void launchEditor(Activity activity, Bitmap image, Tab tab,
+    public void launchEditor(Activity activity, Bitmap image, WindowAndroid windowAndroid,
             ChromeOptionShareCallback chromeOptionShareCallback) {}
 }

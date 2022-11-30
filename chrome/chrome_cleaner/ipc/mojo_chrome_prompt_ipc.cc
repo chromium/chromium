@@ -1,17 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/chrome_cleaner/ipc/mojo_chrome_prompt_ipc.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -101,12 +103,14 @@ void MojoChromePromptIPC::InitializeChromePromptPtr() {
   mojo::ScopedMessagePipeHandle message_pipe_handle =
       incoming_invitation.ExtractMessagePipe(chrome_mojo_pipe_token_);
 
-  chrome_prompt_service_.reset(new chrome_cleaner::mojom::ChromePromptPtr);
-  chrome_prompt_service_->Bind(chrome_cleaner::mojom::ChromePromptPtrInfo(
-      std::move(message_pipe_handle), 0));
+  mojo::PendingRemote<chrome_cleaner::mojom::ChromePrompt> pending_remote(
+      std::move(message_pipe_handle), /*version=*/0);
+  chrome_prompt_service_ =
+      std::make_unique<mojo::Remote<chrome_cleaner::mojom::ChromePrompt>>(
+          std::move(pending_remote));
   // No need to retain this object, since it will live until the process
   // finishes.
-  chrome_prompt_service_->set_connection_error_handler(base::BindOnce(
+  chrome_prompt_service_->set_disconnect_handler(base::BindOnce(
       &MojoChromePromptIPC::OnConnectionError, base::Unretained(this)));
   state_ = State::kWaitingForScanResults;
 }
@@ -127,7 +131,7 @@ void MojoChromePromptIPC::PromptUserCheckVersion(
     // deleted.
     (*chrome_prompt_service_)
         ->PromptUser(std::move(files_to_delete), std::move(registry_keys),
-                     base::nullopt, std::move(callback));
+                     absl::nullopt, std::move(callback));
   }
 }
 
@@ -155,14 +159,11 @@ void MojoChromePromptIPC::RunPromptUserTask(
       base::BindOnce(&MojoChromePromptIPC::OnChromeResponseReceived,
                      base::Unretained(this), std::move(callback));
 
-  const auto& version_callback = base::BindRepeating(
-      &MojoChromePromptIPC::PromptUserCheckVersion, base::Unretained(this),
-      std::move(files_to_delete), std::move(registry_keys),
-      // Uses the AdaptCallbackForRepeating because we are bound by the mojo API
-      // to use a RepeatingCallback even though this only should be called once.
-      std::move(extension_ids),
-      AdaptCallbackForRepeating(std::move(response_callback)));
-  (*chrome_prompt_service_).QueryVersion(version_callback);
+  (*chrome_prompt_service_)
+      .QueryVersion(base::BindOnce(
+          &MojoChromePromptIPC::PromptUserCheckVersion, base::Unretained(this),
+          std::move(files_to_delete), std::move(registry_keys),
+          std::move(extension_ids), std::move(response_callback)));
 }
 
 }  // namespace chrome_cleaner

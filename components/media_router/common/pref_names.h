@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 namespace media_router {
 namespace prefs {
 
-extern const char kMediaRouterCloudServicesPrefSet[];
-extern const char kMediaRouterEnableCloudServices[];
+extern const char kMediaRouterCastAllowAllIPs[];
 extern const char kMediaRouterMediaRemotingEnabled[];
+extern const char kMediaRouterReceiverIdHashToken[];
+extern const char kMediaRouterShowCastSessionsStartedByOtherDevices[];
 extern const char kMediaRouterTabMirroringSources[];
 
 }  // namespace prefs

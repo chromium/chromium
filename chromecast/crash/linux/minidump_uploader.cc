@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/pref_names.h"
@@ -216,12 +216,22 @@ bool MinidumpUploader::DoWork() {
     LOG(INFO) << "Uploading crash to " << upload_location_;
     CastCrashdumpData crashdump_data;
     crashdump_data.product = kProductName;
-    crashdump_data.version = GetVersionString();
+    crashdump_data.version = GetVersionString(
+        dump.params().cast_release_version, dump.params().cast_build_number);
     crashdump_data.guid = client_id;
     crashdump_data.ptime = uptime_stream.str();
     crashdump_data.comments = comment.str();
     crashdump_data.minidump_pathname = dump_path.value();
     crashdump_data.crash_server = upload_location_;
+
+    // set upload_file parameter based on exec_name
+    std::string upload_filename;
+    if (dump.params().exec_name == "kernel") {
+      upload_filename = "upload_file_ramoops";
+    } else {
+      upload_filename = "upload_file_minidump";
+    }
+    crashdump_data.upload_filename = std::move(upload_filename);
 
     // Depending on if a testing CastCrashdumpUploader object has been set,
     // assign |g| as a reference to the correct object.
@@ -269,8 +279,14 @@ bool MinidumpUploader::DoWork() {
     if (!dump.params().reason.empty()) {
       g.SetParameter("reason", dump.params().reason);
     }
+    if (!dump.params().exec_name.empty()) {
+      g.SetParameter("exec_name", dump.params().exec_name);
+    }
     if (!dump.params().stadia_session_id.empty()) {
       g.SetParameter("stadia_session_id", dump.params().stadia_session_id);
+    }
+    if (!dump.params().signature.empty()) {
+      g.SetParameter("signature", dump.params().signature);
     }
     if (!dump.params().extra_info.empty()) {
       std::vector<std::string> pairs = base::SplitString(dump.params().extra_info,

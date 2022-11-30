@@ -1,92 +1,63 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":android_apps_browser_proxy.m",
-    ":android_apps_subpage.m",
-    ":os_apps_page.m",
+    ":android_apps_browser_proxy",
+    ":android_apps_subpage",
+    ":os_apps_page",
   ]
 }
 
-js_library("android_apps_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/android_apps_browser_proxy.m.js" ]
+js_library("android_apps_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("android_apps_subpage.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/android_apps_subpage.m.js" ]
+js_library("android_apps_subpage") {
   deps = [
-    ":android_apps_browser_proxy.m",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    ":android_apps_browser_proxy",
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "..:prefs_behavior",
+    "..:route_observer_behavior",
     "../..:router",
-    "../../prefs:prefs_behavior",
+    "//ash/webui/common/resources:focus_without_ink_js",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+    "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":android_apps_subpage_module" ]
 }
 
-js_library("os_apps_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/os_apps_page.m.js" ]
+js_library("os_apps_page") {
   deps = [
-    ":android_apps_browser_proxy.m",
-    ":android_apps_subpage.m",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    ":android_apps_browser_proxy",
+    ":android_apps_subpage",
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "..:prefs_behavior",
     "../../:router",
-    "../../prefs:prefs_behavior",
-    "../../settings_page:settings_animated_pages",
-    "../localized_link:localized_link.m",
-    "./app_management_page:constants.m",
-    "./app_management_page:store_client.m",
+    "./app_management_page:store_client",
+    "./app_notifications_page:mojo_interface_provider",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  extra_deps = [ ":os_apps_page_module" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":android_apps_subpage_module",
-    ":modulize",
-    ":os_apps_page_module",
+  externs_list = [
+    "$externs_path/metrics_private.js",
+    "../settings_controls_types.js",
   ]
 }
 
-polymer_modulizer("android_apps_subpage") {
-  js_file = "android_apps_subpage.js"
-  html_file = "android_apps_subpage.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("os_apps_page") {
-  js_file = "os_apps_page.js"
-  html_file = "os_apps_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-import("//ui/webui/resources/tools/js_modulizer.gni")
-
-js_modulizer("modulize") {
-  input_files = [ "android_apps_browser_proxy.js" ]
-  namespace_rewrites = os_settings_namespace_rewrites
+html_to_js("web_components") {
+  js_files = [
+    "android_apps_subpage.js",
+    "os_apps_page.js",
+  ]
 }

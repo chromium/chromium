@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -12,12 +13,12 @@
 #include "base/containers/circular_deque.h"
 #include "base/format_macros.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
@@ -34,10 +35,14 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/filters/android/media_codec_audio_decoder.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "media/filters/mac/audio_toolbox_audio_decoder.h"
 #endif
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -53,21 +58,8 @@ namespace media {
 
 namespace {
 
-#define SKIP_TEST_IF_NOT_SUPPORTED() \
-  do {                               \
-    if (!IsSupported())              \
-      return;                        \
-  } while (0)
-
 // The number of packets to read and then decode from each file.
 const size_t kDecodeRuns = 3;
-
-enum TestAudioDecoderType {
-  FFMPEG,
-#if defined(OS_ANDROID)
-  MEDIA_CODEC,
-#endif
-};
 
 struct DecodedBufferExpectations {
   int64_t timestamp;
@@ -96,83 +88,91 @@ void SetDiscardPadding(AVPacket* packet,
                        DecoderBuffer* buffer,
                        double samples_per_second) {
   // Discard negative timestamps.
-  if (buffer->timestamp() + buffer->duration() < base::TimeDelta()) {
+  if ((buffer->timestamp() + buffer->duration()).is_negative()) {
     buffer->set_discard_padding(
         std::make_pair(kInfiniteDuration, base::TimeDelta()));
     return;
   }
-  if (buffer->timestamp() < base::TimeDelta()) {
+  if (buffer->timestamp().is_negative()) {
     buffer->set_discard_padding(
         std::make_pair(-buffer->timestamp(), base::TimeDelta()));
     return;
   }
 
   // If the timestamp is positive, try to use FFmpeg's discard data.
-  int skip_samples_size = 0;
+  size_t skip_samples_size = 0;
   const uint32_t* skip_samples_ptr =
       reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
           packet, AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));
   if (skip_samples_size < 4)
     return;
-  buffer->set_discard_padding(std::make_pair(
-      base::TimeDelta::FromSecondsD(base::ByteSwapToLE32(*skip_samples_ptr) /
-                                    samples_per_second),
-      base::TimeDelta()));
+  buffer->set_discard_padding(
+      std::make_pair(base::Seconds(base::ByteSwapToLE32(*skip_samples_ptr) /
+                                   samples_per_second),
+                     base::TimeDelta()));
 }
 
 }  // namespace
 
 class AudioDecoderTest
-    : public TestWithParam<std::tuple<TestAudioDecoderType, TestParams>> {
+    : public TestWithParam<std::tuple<AudioDecoderType, TestParams>> {
  public:
   AudioDecoderTest()
       : decoder_type_(std::get<0>(GetParam())),
         params_(std::get<1>(GetParam())),
         pending_decode_(false),
         pending_reset_(false),
-        last_decode_status_(DecodeStatus::DECODE_ERROR) {
+        last_decode_status_(DecoderStatus::Codes::kFailed) {
     switch (decoder_type_) {
-      case FFMPEG:
-        decoder_.reset(new FFmpegAudioDecoder(
-            task_environment_.GetMainThreadTaskRunner(), &media_log_));
+      case AudioDecoderType::kFFmpeg:
+        decoder_ = std::make_unique<FFmpegAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
-#if defined(OS_ANDROID)
-      case MEDIA_CODEC:
-        decoder_.reset(new MediaCodecAudioDecoder(
-            task_environment_.GetMainThreadTaskRunner()));
+#if BUILDFLAG(IS_ANDROID)
+      case AudioDecoderType::kMediaCodec:
+        decoder_ = std::make_unique<MediaCodecAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner());
+        break;
+#elif BUILDFLAG(IS_MAC)
+      case AudioDecoderType::kAudioToolbox:
+        decoder_ = std::make_unique<AudioToolboxAudioDecoder>();
         break;
 #endif
+      default:
+        EXPECT_TRUE(false) << "Decoder is not supported by this test.";
+        break;
     }
   }
+
+  AudioDecoderTest(const AudioDecoderTest&) = delete;
+  AudioDecoderTest& operator=(const AudioDecoderTest&) = delete;
 
   virtual ~AudioDecoderTest() {
     EXPECT_FALSE(pending_decode_);
     EXPECT_FALSE(pending_reset_);
   }
 
+  void SetUp() override {
+    if (!IsSupported())
+      GTEST_SKIP() << "Unsupported platform.";
+  }
+
  protected:
   bool IsSupported() const {
-#if defined(OS_ANDROID)
-    if (decoder_type_ == MEDIA_CODEC) {
-      if (!MediaCodecUtil::IsMediaCodecAvailable()) {
-        VLOG(0) << "Could not run test - no MediaCodec on device.";
-        return false;
-      }
-      if (params_.codec == kCodecOpus &&
-          base::android::BuildInfo::GetInstance()->sdk_int() <
-              base::android::SDK_VERSION_LOLLIPOP) {
-        VLOG(0) << "Could not run test - Opus is not supported";
-        return false;
-      }
+#if BUILDFLAG(IS_MAC)
+    if (decoder_type_ == AudioDecoderType::kAudioToolbox) {
+      if (__builtin_available(macOS 10.15, *))
+        return true;  // Annoyingly !__builtin_available() doesn't work.
+      return false;
     }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
     return true;
   }
 
   void DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     ASSERT_FALSE(pending_decode_);
     pending_decode_ = true;
-    last_decode_status_ = DecodeStatus::DECODE_ERROR;
+    last_decode_status_ = DecoderStatus::Codes::kFailed;
 
     base::RunLoop run_loop;
     decoder_->Decode(
@@ -189,12 +189,14 @@ class AudioDecoderTest
   // different TestParams.
   void set_params(const TestParams& params) { params_ = params; }
 
+  void SetReinitializeParams();
+
   void Initialize() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
-    protocol_.reset(
-        new InMemoryUrlProtocol(data_->data(), data_->data_size(), false));
-    reader_.reset(new AudioFileReader(protocol_.get()));
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(
+        data_->data(), data_->data_size(), false);
+    reader_ = std::make_unique<AudioFileReader>(protocol_.get());
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
 
     // Load the first packet and check its timestamp.
@@ -212,11 +214,11 @@ class AudioDecoderTest
         reader_->codec_context_for_testing(), EncryptionScheme::kUnencrypted,
         &config));
 
-#if defined(OS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-    // MEDIA_CODEC type requires config->extra_data() for AAC codec. For ADTS
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+    // MediaCodec type requires config->extra_data() for AAC codec. For ADTS
     // streams we need to extract it with a separate procedure.
-    if (decoder_type_ == MEDIA_CODEC && params_.codec == kCodecAAC &&
-        config.extra_data().empty()) {
+    if (decoder_type_ == AudioDecoderType::kMediaCodec &&
+        params_.codec == AudioCodec::kAAC && config.extra_data().empty()) {
       int sample_rate;
       ChannelLayout channel_layout;
       std::vector<uint8_t> extra_data;
@@ -224,7 +226,7 @@ class AudioDecoderTest
                     packet.data, packet.size, nullptr, &sample_rate,
                     &channel_layout, nullptr, nullptr, &extra_data),
                 0);
-      config.Initialize(kCodecAAC, kSampleFormatS16, channel_layout,
+      config.Initialize(AudioCodec::kAAC, kSampleFormatS16, channel_layout,
                         sample_rate, extra_data, EncryptionScheme::kUnencrypted,
                         base::TimeDelta(), 0);
       ASSERT_FALSE(config.extra_data().empty());
@@ -248,7 +250,7 @@ class AudioDecoderTest
                                    bool success) {
     decoder_->Initialize(config, nullptr,
                          base::BindOnce(
-                             [](bool success, Status status) {
+                             [](bool success, DecoderStatus status) {
                                EXPECT_EQ(status.is_ok(), success);
                              },
                              success),
@@ -273,8 +275,10 @@ class AudioDecoderTest
 
     // Don't set discard padding for Opus, it already has discard behavior set
     // based on the codec delay in the AudioDecoderConfig.
-    if (decoder_type_ == FFMPEG && params_.codec != kCodecOpus)
+    if (decoder_type_ == AudioDecoderType::kFFmpeg &&
+        params_.codec != AudioCodec::kOpus) {
       SetDiscardPadding(&packet, buffer.get(), params_.samples_per_second);
+    }
 
     // DecodeBuffer() shouldn't need the original packet since it uses the copy.
     av_packet_unref(&packet);
@@ -301,7 +305,7 @@ class AudioDecoderTest
     decoded_audio_.push_back(std::move(buffer));
   }
 
-  void DecodeFinished(base::OnceClosure quit_closure, Status status) {
+  void DecodeFinished(base::OnceClosure quit_closure, DecoderStatus status) {
     EXPECT_TRUE(pending_decode_);
     EXPECT_FALSE(pending_reset_);
     pending_decode_ = false;
@@ -338,28 +342,12 @@ class AudioDecoderTest
     return base::MD5DigestToBase16(digest);
   }
 
-  // Android MediaCodec returns wrong timestamps (shifted one frame forward)
-  // for AAC before Android L. Skip the timestamp check in this situation.
-  bool SkipBufferTimestampCheck() const {
-#if defined(OS_ANDROID)
-    return (base::android::BuildInfo::GetInstance()->sdk_int() <
-            base::android::SDK_VERSION_LOLLIPOP) &&
-           decoder_type_ == MEDIA_CODEC && params_.codec == kCodecAAC;
-#else
-    return false;
-#endif
-  }
-
   void ExpectDecodedAudio(size_t i, const std::string& exact_hash) {
     CHECK_LT(i, decoded_audio_.size());
     const scoped_refptr<AudioBuffer>& buffer = decoded_audio_[i];
 
     const DecodedBufferExpectations& sample_info = params_.expectations[i];
-
-    // Android MediaCodec returns wrong timestamps (shifted one frame forward)
-    // for AAC before Android L. Ignore sample_info.timestamp in this situation.
-    if (!SkipBufferTimestampCheck())
-      EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
+    EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
     EXPECT_EQ(sample_info.duration, buffer->duration().InMicroseconds());
     EXPECT_FALSE(buffer->end_of_stream());
 
@@ -389,10 +377,12 @@ class AudioDecoderTest
   const scoped_refptr<AudioBuffer>& decoded_audio(size_t i) {
     return decoded_audio_[i];
   }
-  const Status& last_decode_status() const { return last_decode_status_; }
+  const DecoderStatus& last_decode_status() const {
+    return last_decode_status_;
+  }
 
  private:
-  const TestAudioDecoderType decoder_type_;
+  const AudioDecoderType decoder_type_;
 
   // Current TestParams used to initialize the test and decoder. The initial
   // valie is std::get<1>(GetParam()). Could be overridden by set_param() so
@@ -409,12 +399,10 @@ class AudioDecoderTest
   std::unique_ptr<AudioDecoder> decoder_;
   bool pending_decode_;
   bool pending_reset_;
-  Status last_decode_status_;
+  DecoderStatus last_decode_status_ = DecoderStatus::Codes::kOk;
 
   base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
   base::TimeDelta start_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderTest);
 };
 
 const DecodedBufferExpectations kBearOpusExpectations[] = {
@@ -426,10 +414,10 @@ const DecodedBufferExpectations kBearOpusExpectations[] = {
 // Test params to test decoder reinitialization. Choose opus because it is
 // supported on all platforms we test on.
 const TestParams kReinitializeTestParams = {
-    kCodecOpus, "bear-opus.ogg", kBearOpusExpectations,
-    24,         48000,           CHANNEL_LAYOUT_STEREO};
+    AudioCodec::kOpus,    "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
+    CHANNEL_LAYOUT_STEREO};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 const DecodedBufferExpectations kSfxAdtsMcExpectations[] = {
     {0, 23219, "-1.80,-1.49,-0.23,1.11,1.54,-0.11,"},
@@ -445,17 +433,37 @@ const DecodedBufferExpectations kHeAacMcExpectations[] = {
 #endif  // defined(USE_PROPRIETARY_CODECS)
 
 const TestParams kMediaCodecTestParams[] = {
-    {kCodecOpus, "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
+    {AudioCodec::kOpus, "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
      CHANNEL_LAYOUT_STEREO},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {kCodecAAC, "sfx.adts", kSfxAdtsMcExpectations, 0, 44100,
+    {AudioCodec::kAAC, "sfx.adts", kSfxAdtsMcExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
-    {kCodecAAC, "bear-audio-implicit-he-aac-v2.aac", kHeAacMcExpectations, 0,
-     24000, CHANNEL_LAYOUT_MONO},
+    {AudioCodec::kAAC, "bear-audio-implicit-he-aac-v2.aac",
+     kHeAacMcExpectations, 0, 24000, CHANNEL_LAYOUT_MONO},
 #endif  // defined(USE_PROPRIETARY_CODECS)
 };
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+const DecodedBufferExpectations kNoiseXheAAcExpectations[] = {
+    {0, 42666, "6.09,2.44,-4.73,4.06,6.47,1.29,"},
+    {42666, 42666, "-5.16,0.94,3.14,2.52,5.26,-0.24,"},
+    {85333, 42666, "7.90,-0.09,-3.65,1.41,-4.26,-1.32,"},
+};
+const DecodedBufferExpectations kNoiseMonoXheAAcExpectations[] = {
+    {0, 34829, "-1.94,-1.64,-0.37,0.94,1.36,-0.26,"},
+    {34829, 34829, "-1.43,-1.14,0.13,1.43,1.86,0.24,"},
+    {69659, 34829, "-1.13,-0.84,0.42,1.71,2.14,0.53,"},
+};
+
+const TestParams kAudioToolboxTestParams[] = {
+    {AudioCodec::kAAC, "noise-xhe-aac.mp4", kNoiseXheAAcExpectations, 0, 48000,
+     CHANNEL_LAYOUT_STEREO},
+    {AudioCodec::kAAC, "noise-xhe-aac-mono.mp4", kNoiseMonoXheAAcExpectations,
+     0, 29400, CHANNEL_LAYOUT_MONO},
+};
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 const DecodedBufferExpectations kSfxMp3Expectations[] = {
     {0, 1065, "2.81,3.99,4.53,4.10,3.08,2.46,"},
@@ -516,78 +524,78 @@ const DecodedBufferExpectations kSfxOpusExpectations[] = {
 #endif
 
 const TestParams kFFmpegTestParams[] = {
-    {kCodecMP3, "sfx.mp3", kSfxMp3Expectations, 0, 44100, CHANNEL_LAYOUT_MONO},
+    {AudioCodec::kMP3, "sfx.mp3", kSfxMp3Expectations, 0, 44100,
+     CHANNEL_LAYOUT_MONO},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {kCodecAAC, "sfx.adts", kSfxAdtsExpectations, 0, 44100,
+    {AudioCodec::kAAC, "sfx.adts", kSfxAdtsExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
 #endif
-    {kCodecFLAC, "sfx-flac.mp4", kSfxFlacExpectations, 0, 44100,
+    {AudioCodec::kFLAC, "sfx-flac.mp4", kSfxFlacExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
-    {kCodecFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
+    {AudioCodec::kFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
-    {kCodecPCM, "sfx_f32le.wav", kSfxWaveExpectations, 0, 44100,
+    {AudioCodec::kPCM, "sfx_f32le.wav", kSfxWaveExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
-    {kCodecPCM, "4ch.wav", kFourChannelWaveExpectations, 0, 44100,
+    {AudioCodec::kPCM, "4ch.wav", kFourChannelWaveExpectations, 0, 44100,
      CHANNEL_LAYOUT_QUAD},
-    {kCodecVorbis, "sfx.ogg", kSfxOggExpectations, 0, 44100,
+    {AudioCodec::kVorbis, "sfx.ogg", kSfxOggExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
     // Note: bear.ogv is incorrectly muxed such that valid samples are given
     // negative timestamps, this marks them for discard per the ogg vorbis spec.
-    {kCodecVorbis, "bear.ogv", kBearOgvExpectations, -704, 44100,
+    {AudioCodec::kVorbis, "bear.ogv", kBearOgvExpectations, -704, 44100,
      CHANNEL_LAYOUT_STEREO},
-    {kCodecOpus, "sfx-opus.ogg", kSfxOpusExpectations, -312, 48000,
+    {AudioCodec::kOpus, "sfx-opus.ogg", kSfxOpusExpectations, -312, 48000,
      CHANNEL_LAYOUT_MONO},
-    {kCodecOpus, "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
+    {AudioCodec::kOpus, "bear-opus.ogg", kBearOpusExpectations, 24, 48000,
      CHANNEL_LAYOUT_STEREO},
 };
 
+void AudioDecoderTest::SetReinitializeParams() {
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // AudioToolbox only supports xHE-AAC, so we can't use the Opus params. We can
+  // instead just swap between the two test parameter sets.
+  if (decoder_type_ == AudioDecoderType::kAudioToolbox) {
+    set_params(params_.channel_layout ==
+                       kAudioToolboxTestParams[0].channel_layout
+                   ? kAudioToolboxTestParams[1]
+                   : kAudioToolboxTestParams[0]);
+    return;
+  }
+#endif
+
+  set_params(kReinitializeTestParams);
+}
+
 TEST_P(AudioDecoderTest, Initialize) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
 }
 
 TEST_P(AudioDecoderTest, Reinitialize_AfterInitialize) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
-
-  // Use a different TestParams to reinitialize the decoder.
-  set_params(kReinitializeTestParams);
-
-  SKIP_TEST_IF_NOT_SUPPORTED();
+  SetReinitializeParams();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
 TEST_P(AudioDecoderTest, Reinitialize_AfterDecode) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
-
-  // Use a different TestParams to reinitialize the decoder.
-  set_params(kReinitializeTestParams);
-
-  SKIP_TEST_IF_NOT_SUPPORTED();
+  SetReinitializeParams();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
 TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   Reset();
-
-  // Use a different TestParams to reinitialize the decoder.
-  set_params(kReinitializeTestParams);
-
-  SKIP_TEST_IF_NOT_SUPPORTED();
+  SetReinitializeParams();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
 // Verifies decode audio as well as the Decode() -> Reset() sequence.
 TEST_P(AudioDecoderTest, ProduceAudioSamples) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
   // Run the test multiple times with a seek back to the beginning in between.
@@ -628,20 +636,17 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
 }
 
 TEST_P(AudioDecoderTest, Decode) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   EXPECT_TRUE(last_decode_status().is_ok());
 }
 
 TEST_P(AudioDecoderTest, Reset) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Reset();
 }
 
 TEST_P(AudioDecoderTest, NoTimestamp) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
   buffer->set_timestamp(kNoTimestamp);
@@ -651,13 +656,21 @@ TEST_P(AudioDecoderTest, NoTimestamp) {
 
 INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,
-                         Combine(Values(FFMPEG), ValuesIn(kFFmpegTestParams)));
+                         Combine(Values(AudioDecoderType::kFFmpeg),
+                                 ValuesIn(kFFmpegTestParams)));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(MediaCodec,
                          AudioDecoderTest,
-                         Combine(Values(MEDIA_CODEC),
+                         Combine(Values(AudioDecoderType::kMediaCodec),
                                  ValuesIn(kMediaCodecTestParams)));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+INSTANTIATE_TEST_SUITE_P(AudioToolbox,
+                         AudioDecoderTest,
+                         Combine(Values(AudioDecoderType::kAudioToolbox),
+                                 ValuesIn(kAudioToolboxTestParams)));
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace media

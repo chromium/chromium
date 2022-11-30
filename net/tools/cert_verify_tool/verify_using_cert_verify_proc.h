@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,12 @@ class FilePath;
 namespace net {
 class CertVerifyProc;
 class CRLSet;
+class CertVerifyResult;
 }
 
 struct CertInput;
+
+void PrintCertVerifyResult(const net::CertVerifyResult& result);
 
 // Verifies |target_der_cert| using |cert_verify_proc|. Returns true if the
 // certificate verified successfully, false if it failed to verify or there was

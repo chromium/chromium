@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor.h"
@@ -45,7 +44,6 @@ std::unique_ptr<AppLaunchPredictor> CreatePredictor(
 // Save |proto| to |predictor_filename|.
 void SaveToDiskOnWorkerThread(const base::FilePath& predictor_filename,
                               const AppLaunchPredictorProto& proto) {
-
   std::string proto_str;
   if (!proto.SerializeToString(&proto_str)) {
     LOG(ERROR)
@@ -95,13 +93,8 @@ AppSearchResultRanker::AppSearchResultRanker(const base::FilePath& profile_path,
                                              bool is_ephemeral_user)
     : predictor_filename_(
           profile_path.AppendASCII(kAppLaunchPredictorFilename)) {
-  if (!app_list_features::IsZeroStateAppsRankerEnabled()) {
-    LOG(ERROR) << "AppSearchResultRanker: ZeroStateAppsRanker is not enabled.";
+  if (!app_list_features::IsZeroStateAppsRankerEnabled())
     return;
-  }
-  // TODO(charleszhao): remove these logs once the test review is done.
-  LOG(ERROR) << "AppSearchResultRanker::AppSearchResultRankerPredictorName "
-             << app_list_features::AppSearchResultRankerPredictorName();
   predictor_ =
       CreatePredictor(app_list_features::AppSearchResultRankerPredictorName());
 
@@ -161,8 +154,6 @@ void AppSearchResultRanker::OnLoadFromDiskComplete(
     predictor_.swap(predictor);
   }
   load_from_disk_completed_ = true;
-  LOG(ERROR) << "AppSearchResultRanker::OnLoadFromDiskComplete "
-             << predictor_->GetPredictorName();
 }
 
 }  // namespace app_list

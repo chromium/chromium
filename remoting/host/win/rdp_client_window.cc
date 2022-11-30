@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_local.h"
 #include "base/win/scoped_bstr.h"
@@ -38,8 +37,7 @@ constexpr BYTE kKeyPressedFlag = 0x80;
 
 constexpr int kKeyboardStateLength = 256;
 
-constexpr base::TimeDelta kReapplyResolutionPeriod =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kReapplyResolutionPeriod = base::Milliseconds(250);
 
 // We want to try to reapply resolution changes for ~5 seconds (20 * 250ms).
 constexpr int kMaxResolutionReapplyAttempts = 20;
@@ -76,7 +74,7 @@ HWND FindWindowRecursively(HWND parent, const std::wstring& class_name) {
     while (child != nullptr) {
       // See if the window class name matches |class_name|.
       WCHAR name[kMaxWindowClassLength];
-      int length = GetClassName(child, name, base::size(name));
+      int length = GetClassName(child, name, std::size(name));
       if (std::wstring(name, length) == class_name)
         return child;
 
@@ -104,6 +102,9 @@ class RdpClientWindow::WindowHook
  public:
   static scoped_refptr<WindowHook> Create();
 
+  WindowHook(const WindowHook&) = delete;
+  WindowHook& operator=(const WindowHook&) = delete;
+
  private:
   friend class base::RefCounted<WindowHook>;
 
@@ -114,8 +115,6 @@ class RdpClientWindow::WindowHook
       int code, WPARAM wparam, LPARAM lparam);
 
   HHOOK hook_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowHook);
 };
 
 RdpClientWindow::RdpClientWindow(const net::IPEndPoint& server_endpoint,
@@ -404,7 +403,8 @@ void RdpClientWindow::OnDestroy() {
   apply_resolution_timer_.Stop();
 }
 
-HRESULT RdpClientWindow::OnAuthenticationWarningDisplayed() {
+STDMETHODIMP
+RdpClientWindow::OnAuthenticationWarningDisplayed() {
   LOG(WARNING) << "RDP: authentication warning is about to be shown.";
 
   // Hook window activation to cancel any modal UI shown by the RDP control.
@@ -414,21 +414,22 @@ HRESULT RdpClientWindow::OnAuthenticationWarningDisplayed() {
   return S_OK;
 }
 
-HRESULT RdpClientWindow::OnAuthenticationWarningDismissed() {
+STDMETHODIMP
+RdpClientWindow::OnAuthenticationWarningDismissed() {
   LOG(WARNING) << "RDP: authentication warning has been dismissed.";
 
   window_activate_hook_ = nullptr;
   return S_OK;
 }
 
-HRESULT RdpClientWindow::OnConnected() {
+STDMETHODIMP RdpClientWindow::OnConnected() {
   VLOG(1) << "RDP: successfully connected to " << server_endpoint_.ToString();
 
   NotifyConnected();
   return S_OK;
 }
 
-HRESULT RdpClientWindow::OnLoginComplete() {
+STDMETHODIMP RdpClientWindow::OnLoginComplete() {
   VLOG(1) << "RDP: user successfully logged in.";
 
   user_logged_in_ = true;
@@ -447,7 +448,7 @@ HRESULT RdpClientWindow::OnLoginComplete() {
   return S_OK;
 }
 
-HRESULT RdpClientWindow::OnDisconnected(long reason) {
+STDMETHODIMP RdpClientWindow::OnDisconnected(long reason) {
   if (reason == kDisconnectReasonNoInfo ||
       reason == kDisconnectReasonLocalNotError ||
       reason == kDisconnectReasonRemoteByUser ||
@@ -483,7 +484,7 @@ HRESULT RdpClientWindow::OnDisconnected(long reason) {
   return S_OK;
 }
 
-HRESULT RdpClientWindow::OnFatalError(long error_code) {
+STDMETHODIMP RdpClientWindow::OnFatalError(long error_code) {
   LOG(ERROR) << "RDP: an error occured: error_code="
              << error_code;
 
@@ -491,7 +492,7 @@ HRESULT RdpClientWindow::OnFatalError(long error_code) {
   return S_OK;
 }
 
-HRESULT RdpClientWindow::OnConfirmClose(VARIANT_BOOL* allow_close) {
+STDMETHODIMP RdpClientWindow::OnConfirmClose(VARIANT_BOOL* allow_close) {
   *allow_close = VARIANT_TRUE;
 
   NotifyDisconnected();

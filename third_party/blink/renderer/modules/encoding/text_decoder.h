@@ -32,11 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCODING_TEXT_DECODER_H_
 
 #include <memory>
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
+
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decoder_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -44,8 +44,6 @@
 namespace blink {
 
 class ExceptionState;
-
-typedef ArrayBufferOrArrayBufferView BufferSource;
 
 class TextDecoder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -62,7 +60,9 @@ class TextDecoder final : public ScriptWrappable {
   String encoding() const;
   bool fatal() const { return fatal_; }
   bool ignoreBOM() const { return ignore_bom_; }
-  String decode(const BufferSource&, const TextDecodeOptions*, ExceptionState&);
+  String decode(const V8BufferSource* input,
+                const TextDecodeOptions* options,
+                ExceptionState& exception_state);
   String decode(ExceptionState&);
 
  private:

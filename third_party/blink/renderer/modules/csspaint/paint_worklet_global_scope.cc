@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -59,7 +60,7 @@ bool ParseInputArguments(v8::Local<v8::Context> context,
         return false;
 
       for (const auto& type : argument_types) {
-        base::Optional<CSSSyntaxDefinition> syntax_definition =
+        absl::optional<CSSSyntaxDefinition> syntax_definition =
             CSSSyntaxStringParser(type).Parse();
         if (!syntax_definition) {
           exception_state->ThrowTypeError("Invalid argument types.");
@@ -125,14 +126,19 @@ PaintWorkletGlobalScope::PaintWorkletGlobalScope(
     : WorkletGlobalScope(std::move(creation_params),
                          reporting_proxy,
                          frame,
-                         /*create_microtask_queue=*/false) {}
+                         /*create_microtask_queue=*/
+                         base::FeatureList::IsEnabled(
+                             scheduler::kMicrotaskQueuePerPaintWorklet)) {}
 
 PaintWorkletGlobalScope::PaintWorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerThread* thread)
     : WorkletGlobalScope(std::move(creation_params),
                          thread->GetWorkerReportingProxy(),
-                         thread) {}
+                         thread,
+                         /*create_microtask_queue=*/
+                         base::FeatureList::IsEnabled(
+                             scheduler::kMicrotaskQueuePerPaintWorklet)) {}
 
 PaintWorkletGlobalScope::~PaintWorkletGlobalScope() = default;
 
@@ -147,6 +153,12 @@ void PaintWorkletGlobalScope::Dispose() {
         ScriptController()->GetScriptState());
   }
   WorkletGlobalScope::Dispose();
+
+  if (WTF::IsMainThread()) {
+    // For off-the-main-thread paint worklet, this will be called in
+    // WorkerThread::PrepareForShutdownOnWorkerThread().
+    NotifyContextDestroyed();
+  }
 }
 
 void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
@@ -157,7 +169,7 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
 
   RegisterWithProxyClientIfNeeded();
 
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     exception_state.ThrowTypeError("The empty string is not a valid name.");
     return;
   }
@@ -219,7 +231,7 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
   auto* definition = MakeGarbageCollected<CSSPaintDefinition>(
       ScriptController()->GetScriptState(), paint_ctor, paint,
       native_invalidation_properties, custom_invalidation_properties,
-      input_argument_types, context_settings);
+      input_argument_types, context_settings, this);
   paint_definitions_.Set(name, definition);
 
   if (!WTF::IsMainThread()) {
@@ -236,7 +248,8 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
 
 CSSPaintDefinition* PaintWorkletGlobalScope::FindDefinition(
     const String& name) {
-  return paint_definitions_.at(name);
+  auto it = paint_definitions_.find(name);
+  return it != paint_definitions_.end() ? it->value : nullptr;
 }
 
 double PaintWorkletGlobalScope::devicePixelRatio() const {

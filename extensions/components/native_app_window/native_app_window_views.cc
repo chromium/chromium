@@ -1,9 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
+#include "base/bind.h"
+#include "base/observer_list.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -11,9 +13,9 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/draggable_region.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -24,6 +26,7 @@
 namespace native_app_window {
 
 NativeAppWindowViews::NativeAppWindowViews() {
+  set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
@@ -39,6 +42,17 @@ void NativeAppWindowViews::Init(
       create_params.GetContentMaximumSize(gfx::Insets()));
   Observe(app_window_->web_contents());
 
+  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
+  // through WidgetDelegate::DeleteDelegate(). It's not clear to me how this
+  // ends up destructed, but the below preserves a previous DialogDelegate
+  // override that did not end with a direct `delete this;`.
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](NativeAppWindowViews* dialog) {
+        dialog->widget_->RemoveObserver(dialog);
+        dialog->app_window_->OnNativeClose();
+      },
+      this));
   web_view_ = AddChildView(std::make_unique<views::WebView>(nullptr));
   web_view_->SetWebContents(app_window_->web_contents());
 
@@ -196,15 +210,14 @@ bool NativeAppWindowViews::ShouldShowWindowTitle() const {
   return false;
 }
 
+bool NativeAppWindowViews::ShouldSaveWindowPlacement() const {
+  return true;
+}
+
 void NativeAppWindowViews::SaveWindowPlacement(const gfx::Rect& bounds,
                                                ui::WindowShowState show_state) {
   views::WidgetDelegate::SaveWindowPlacement(bounds, show_state);
   app_window_->OnNativeWindowChanged();
-}
-
-void NativeAppWindowViews::DeleteDelegate() {
-  widget_->RemoveObserver(this);
-  app_window_->OnNativeClose();
 }
 
 bool NativeAppWindowViews::ShouldDescendIntoChildForEventHandling(
@@ -245,7 +258,7 @@ void NativeAppWindowViews::OnWidgetActivationChanged(views::Widget* widget,
 
 void NativeAppWindowViews::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetParent())
+  if (render_frame_host->GetParentOrOuterDocument())
     return;
 
   if (app_window_->requested_alpha_enabled() && CanHaveAlphaEnabled()) {

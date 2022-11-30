@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
@@ -143,6 +143,17 @@ void ThreadIdNameManager::RemoveName(PlatformThreadHandle::Handle handle,
     return;
 
   thread_id_to_handle_.erase(id_to_handle_iter);
+}
+
+std::vector<PlatformThreadId> ThreadIdNameManager::GetIds() {
+  AutoLock locked(lock_);
+
+  std::vector<PlatformThreadId> ids;
+  ids.reserve(thread_id_to_handle_.size());
+  for (const auto& iter : thread_id_to_handle_)
+    ids.push_back(iter.first);
+
+  return ids;
 }
 
 }  // namespace base

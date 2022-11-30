@@ -1,0 +1,51 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("link_preview") {
+  sources = [
+    "link_preview_coordinator.h",
+    "link_preview_coordinator.mm",
+    "link_preview_mediator.h",
+    "link_preview_mediator.mm",
+  ]
+  deps = [
+    ":link_preview_ui",
+    "//components/url_formatter",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/history:tab_helper",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/ntp:constants",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("link_preview_ui") {
+  sources = [
+    "link_preview_consumer.h",
+    "link_preview_view_controller.h",
+    "link_preview_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/gfx",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("constants") {
+  sources = [
+    "link_preview_constants.h",
+    "link_preview_constants.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

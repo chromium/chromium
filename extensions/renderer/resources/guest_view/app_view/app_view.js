@@ -1,9 +1,7 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var $CSSStyleDeclaration =
-    require('safeMethods').SafeMethods.$CSSStyleDeclaration;
 var $Document = require('safeMethods').SafeMethods.$Document;
 var $HTMLElement = require('safeMethods').SafeMethods.$HTMLElement;
 var $Node = require('safeMethods').SafeMethods.$Node;
@@ -23,11 +21,11 @@ AppViewImpl.prototype.getErrorNode = function() {
     this.errorNode = $Document.createElement(document, 'div');
     $HTMLElement.innerText.set(this.errorNode, 'Unable to connect to app.');
     var style = $HTMLElement.style.get(this.errorNode);
-    $CSSStyleDeclaration.setProperty(style, 'position', 'absolute');
-    $CSSStyleDeclaration.setProperty(style, 'left', '0px');
-    $CSSStyleDeclaration.setProperty(style, 'top', '0px');
-    $CSSStyleDeclaration.setProperty(style, 'width', '100%');
-    $CSSStyleDeclaration.setProperty(style, 'height', '100%');
+    $Object.defineProperty(style, 'position', {value: 'absolute'});
+    $Object.defineProperty(style, 'left', {value: '0px'});
+    $Object.defineProperty(style, 'top', {value: '0px'});
+    $Object.defineProperty(style, 'width', {value: '100%'});
+    $Object.defineProperty(style, 'height', {value: '100%'});
     $Node.appendChild(this.shadowRoot, this.errorNode);
   }
   return this.errorNode;

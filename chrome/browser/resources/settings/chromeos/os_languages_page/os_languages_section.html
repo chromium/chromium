@@ -1,161 +1,94 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared"></style>
 
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="input_page.html">
-<link rel="import" href="os_languages_page.html">
-<link rel="import" href="os_languages_page_v2.html">
-<link rel="import" href="smart_inputs_page.html">
-<link rel="import" href="input_method_options_page.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../languages_page/languages.html">
-<link rel="import" href="manage_input_methods_page.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../../settings_vars_css.html">
+<!-- Data model. -->
+<settings-languages languages="{{languages}}" prefs="{{prefs}}"
+    language-helper="{{languageHelper}}">
+</settings-languages>
 
-<dom-module id="os-settings-languages-section">
-  <template>
-    <style include="settings-shared"></style>
+<!-- Top-level settings section. -->
+<settings-animated-pages id="pages" section="osLanguages"
+    focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <cr-link-row
+        id="languagesPageTrigger"
+        label="$i18n{languagesPageTitle}"
+        sub-label="[[getLanguageDisplayName_(
+            languages.prospectiveUILanguage, languageHelper)]]"
+        on-click="onLanguagesV2Click_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <cr-link-row
+        class="hr"
+        id="inputPageTrigger"
+        label="[[inputPageTitle_]]"
+        sub-label="[[getInputMethodDisplayName_(
+          languages.inputMethods.currentId, languageHelper)]]"
+        on-click="onInputClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <template is="dom-if" if="[[smartInputsEnabled_]]">
+      <cr-link-row
+          class="hr"
+          id="smartInputsSubpageTrigger"
+          label="$i18n{smartInputsTitle}"
+          on-click="onSmartInputsClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+  </div>
 
-    <!-- Data model. -->
-    <settings-languages languages="{{languages}}" prefs="{{prefs}}"
-        language-helper="{{languageHelper}}">
-    </settings-languages>
-
-    <!-- Top-level settings section. -->
-    <settings-animated-pages id="pages" section="osLanguages"
-        focus-config="[[focusConfig_]]">
-      <div route-path="default">
-        <template is="dom-if" if="[[!languageSettingsV2Enabled_]]">
-          <cr-link-row
-              id="languagesSubpageTrigger"
-              label="$i18n{osLanguagesPageTitle}"
-              sub-label="[[getSubLabel_(languages.prospectiveUILanguage,
-                  languages.inputMethods.currentId, languageHelper)]]"
-              on-click="onLanguagesTap_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <template is="dom-if" if="[[languageSettingsV2Enabled_]]">
-            <cr-link-row
-                id="languagesPageTrigger"
-                label="$i18n{languagesPageTitle}"
-                sub-label="[[getLanguageDisplayName_(
-                    languages.prospectiveUILanguage, languageHelper)]]"
-                on-click="onLanguagesV2Click_"
-                role-description="$i18n{subpageArrowRoleDescription}">
-            </cr-link-row>
-            <cr-link-row
-                class="hr"
-                id="inputPageTrigger"
-                label="$i18n{inputPageTitle}"
-                sub-label="[[getInputMethodDisplayName_(
-                  languages.inputMethods.currentId, languageHelper)]]"
-                on-click="onInputClick_"
-                role-description="$i18n{subpageArrowRoleDescription}">
-            </cr-link-row>
-        </template>
-        <template is="dom-if" if="[[smartInputsEnabled_]]">
-          <cr-link-row
-              class="hr"
-              id="smartInputsSubpageTrigger"
-              label="$i18n{smartInputsTitle}"
-              on-click="onSmartInputsClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-      </div>
-
-      <!-- "Language and input" sub-page. -->
-      <template is="dom-if" route-path="/osLanguages/details">
-        <settings-subpage
-            associated-control="[[$$('#languagesSubpageTrigger')]]"
-            page-title="$i18n{osLanguagesPageTitle}">
-          <os-settings-languages-page
-              focus-config="[[focusConfig_]]"
-              language-helper="{{languageHelper}}"
-              languages="{{languages}}"
-              prefs="{{prefs}}">
-          </os-settings-languages-page>
-        </settings-subpage>
-      </template>
-
-      <!-- "Languages" page. -->
-      <template is="dom-if" route-path="/osLanguages/languages">
-        <settings-subpage
-            associated-control="[[$$('#languagesPageTrigger')]]"
-            page-title="$i18n{languagesPageTitle}">
-          <os-settings-languages-page-v2
-              language-helper="[[languageHelper]]"
-              languages="[[languages]]"
-              prefs="{{prefs}}">
-          </os-settings-languages-page-v2>
-        </settings-subpage>
-      </template>
-
-      <!-- "Input" page. -->
-      <template is="dom-if" route-path="/osLanguages/input">
-        <settings-subpage
-            associated-control="[[$$('#inputPageTrigger')]]"
-            page-title="$i18n{inputPageTitle}">
-          <os-settings-input-page language-helper="[[languageHelper]]"
-              languages="[[languages]]" prefs="{{prefs}}"
-              focus-config="[[focusConfig_]]">
-          </os-settings-input-page>
-        </settings-subpage>
-      </template>
-
-      <!-- "Smart inputs" sub-page. -->
-      <template is="dom-if" route-path="/osLanguages/smartInputs">
-        <settings-subpage
-            associated-control="[[$$('#smartInputsSubpageTrigger')]]"
-            page-title="$i18n{smartInputsTitle}">
-          <os-settings-smart-inputs-page prefs="{{prefs}}">
-          </os-settings-smart-inputs-page>
-        </settings-subpage>
-      </template>
-
-      <!-- "Manage input methods" sub-sub-page. -->
-      <template is="dom-if" route-path="/osLanguages/inputMethods">
-        <!-- TODO(crbug.com/950007): Associate control with the sub-subpage
-             trigger button from os-settings-language-page's shadow dom. -->
-        <settings-subpage
-            associated-control="[[$$('#languagesSubpageTrigger')]]"
-            page-title="$i18n{manageInputMethodsPageTitle}">
-          <settings-manage-input-methods-page
-              language-helper="[[languageHelper]]"
-              languages="{{languages}}"
-              prefs="{{prefs}}">
-          </settings-manage-input-methods-page>
-        </settings-subpage>
-      </template>
-
-      <!-- "Input method settings" sub-sub-page. -->
-      <template is="dom-if" route-path="/osLanguages/inputMethodOptions">
-        <!-- TODO(crbug.com/950007): Associate control with the sub-subpage
-              trigger button from os-settings-language-page's shadow dom. -->
-        <settings-subpage
-            associated-control="[[$$('#languagesSubpageTrigger')]]">
-          <settings-input-method-options-page
-              language-helper="[[languageHelper]]"
-              prefs="{{prefs}}">
-          </settings-input-method-options-page>
-        </settings-subpage>
-      </template>
-
-      <!-- "Customize spell check" sub-sub-page. -->
-      <template is="dom-if" route-path="/osLanguages/editDictionary">
-        <settings-subpage
-            associated-control="[[$$('#editDictionarySubpageTrigger')]]"
-            page-title="$i18n{editDictionaryLabel}">
-          <os-settings-edit-dictionary-page></os-settings-edit-dictionary-page>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
+  <!-- "Languages" page. -->
+  <template is="dom-if" route-path="/osLanguages/languages">
+    <settings-subpage page-title="$i18n{languagesPageTitle}">
+      <os-settings-languages-page-v2
+          language-helper="[[languageHelper]]"
+          languages="[[languages]]"
+          prefs="{{prefs}}">
+      </os-settings-languages-page-v2>
+    </settings-subpage>
   </template>
-  <script src="os_languages_section.js"></script>
-</dom-module>
+
+  <!-- "Input" page. -->
+  <template is="dom-if" route-path="/osLanguages/input">
+    <settings-subpage page-title="[[inputPageTitle_]]">
+      <os-settings-input-page language-helper="[[languageHelper]]"
+          languages="[[languages]]" prefs="{{prefs}}"
+          focus-config="[[focusConfig_]]">
+      </os-settings-input-page>
+    </settings-subpage>
+  </template>
+
+  <!-- "Smart inputs" sub-page. -->
+  <template is="dom-if" route-path="/osLanguages/smartInputs">
+    <settings-subpage page-title="$i18n{smartInputsTitle}">
+      <os-settings-smart-inputs-page prefs="{{prefs}}">
+      </os-settings-smart-inputs-page>
+    </settings-subpage>
+  </template>
+
+  <!-- "Input method settings" sub-sub-page. -->
+  <template is="dom-if" route-path="/osLanguages/inputMethodOptions">
+    <settings-subpage>
+      <settings-input-method-options-page
+          language-helper="[[languageHelper]]"
+          prefs="{{prefs}}">
+      </settings-input-method-options-page>
+    </settings-subpage>
+  </template>
+
+  <!-- "Customize spell check" sub-sub-page. -->
+  <template is="dom-if" route-path="/osLanguages/editDictionary">
+    <settings-subpage page-title="$i18n{editDictionaryLabel}">
+      <os-settings-edit-dictionary-page></os-settings-edit-dictionary-page>
+    </settings-subpage>
+  </template>
+
+  <!-- "Japanese Manage User dictionary" sub-sub-page. -->
+  <template is="dom-if" route-path="/osLanguages/japaneseManageUserDictionary">
+    <settings-subpage page-title="$i18n{japaneseManageUserDictionaryLabel}">
+      <os-settings-japanese-manage-user-dictionary-page>
+      </os-settings-japanese-manage-user-dictionary-page>
+    </settings-subpage>
+  </template>
+
+</settings-animated-pages>

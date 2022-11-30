@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -49,17 +49,15 @@ constexpr char kImageData[] = "data";
 
 const char kImageFetcherEventHistogramName[] = "ImageFetcher.Events";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL ImageUrl() {
-  return GURL("http://gstatic.img.com/foo.jpg");
-}
-
 }  // namespace
 
 class ReducedModeImageFetcherTest : public testing::Test {
  public:
   ReducedModeImageFetcherTest() {}
+
+  ReducedModeImageFetcherTest(const ReducedModeImageFetcherTest&) = delete;
+  ReducedModeImageFetcherTest& operator=(const ReducedModeImageFetcherTest&) =
+      delete;
 
   ~ReducedModeImageFetcherTest() override {
     reduced_mode_image_fetcher_.reset();
@@ -89,12 +87,12 @@ class ReducedModeImageFetcherTest : public testing::Test {
         base::SequencedTaskRunnerHandle::Get());
 
     // Use an initial request to start the cache up.
-    image_cache_->SaveImage(ImageUrl().spec(), kImageData,
+    image_cache_->SaveImage(kImageUrl.spec(), kImageData,
                             /* needs_transcoding */ false,
-                            /* expiration_interval */ base::nullopt);
+                            /* expiration_interval */ absl::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-    image_cache_->DeleteImage(ImageUrl().spec());
+    image_cache_->DeleteImage(kImageUrl.spec());
     RunUntilIdle();
 
     shared_factory_ =
@@ -120,7 +118,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
     EXPECT_CALL(data_callback, Run(kImageData, _));
     reduced_mode_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), ImageFetcherCallback(),
+        kImageUrl, data_callback.Get(), ImageFetcherCallback(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -143,6 +141,9 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
   MOCK_METHOD2(OnImageLoaded, void(bool, std::string));
 
+ protected:
+  GURL kImageUrl{"http://gstatic.img.com/foo.jpg"};
+
  private:
   std::unique_ptr<ImageFetcher> image_fetcher_;
   std::unique_ptr<ImageFetcher> cached_image_fetcher_;
@@ -154,28 +155,26 @@ class ReducedModeImageFetcherTest : public testing::Test {
   base::SimpleTestClock clock_;
   TestingPrefServiceSimple test_prefs_;
   base::ScopedTempDir data_dir_;
-  FakeDB<CachedImageMetadataProto>* db_;
+  raw_ptr<FakeDB<CachedImageMetadataProto>> db_;
   std::map<std::string, CachedImageMetadataProto> metadata_store_;
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReducedModeImageFetcherTest);
 };
 
 TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {
   // Save the image that needs transcoding in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageData,
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ true,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();
 }
 
 TEST_F(ReducedModeImageFetcherTest, FetchImageFromCache) {
   // Save the image that doesn't need transcoding in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageData,
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();
 }
 

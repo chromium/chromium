@@ -1,20 +1,51 @@
-#!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+"""Launches //tools/checkbins/checkbins.py for trybots.
+
+To run locally on `out/release`, create /tmp/config.json
+
+{
+  "checkout": "."
+}
+
+python3 testing/scripts/checkbins.py \
+  --paths /tmp/config.json \
+  --build-config-fs release run \
+  --output -
+"""
 
 import json
 import os
 import sys
 
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
-import common
+WIN_PY3_TARGETS = ['python3.exe', 'python3.bat']
 
+
+def with_python3():
+  if sys.version_info.major >= 3:
+    return sys.executable
+  # `env` should have worked on other platforms.
+  if sys.platform == 'win32':
+    # non-exhaustive, we expect depot_tools somewhere.
+    for d in os.environ['PATH'].split(';'):
+      for maybe_py3 in WIN_PY3_TARGETS:
+        if os.path.exists(os.path.join(d, maybe_py3)):
+          return os.path.join(d, maybe_py3)
+  raise Exception("Cannot find python3 to launch checkbins.py")
 
 def main_run(args):
+  print(sys.executable)
   with common.temporary_file() as tempfile_path:
     rc = common.run_command([
-        sys.executable,
+        with_python3(),
         os.path.join(common.SRC_DIR, 'tools', 'checkbins', 'checkbins.py'),
         '--verbose',
         '--json', tempfile_path,
@@ -24,10 +55,8 @@ def main_run(args):
     with open(tempfile_path) as f:
       checkbins_results = json.load(f)
 
-  json.dump({
-      'valid': True,
-      'failures': checkbins_results,
-  }, args.output)
+  common.record_local_script_results(
+      'checkbins', args.output, checkbins_results, True)
 
   return rc
 

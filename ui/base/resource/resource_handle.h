@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "ui/base/resource/data_pack_export.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedStaticMemory;
@@ -47,7 +47,14 @@ class UI_DATA_PACK_EXPORT ResourceHandle {
 
   // The scale of images in this resource pack relative to images in the 1x
   // resource pak.
-  virtual ScaleFactor GetScaleFactor() const = 0;
+  virtual ResourceScaleFactor GetResourceScaleFactor() const = 0;
+
+#if DCHECK_IS_ON()
+  // Checks to see if any resource in this DataPack already exists in the list
+  // of resources.
+  virtual void CheckForDuplicateResources(
+      const std::vector<std::unique_ptr<ResourceHandle>>& packs) = 0;
+#endif
 };
 
 }  // namespace ui

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,7 +32,8 @@ MockRenderViewContextMenu::MockMenuItem::operator=(const MockMenuItem& other) =
 MockRenderViewContextMenu::MockRenderViewContextMenu(bool incognito)
     : observer_(nullptr),
       original_profile_(TestingProfile::Builder().Build()),
-      profile_(incognito ? original_profile_->GetPrimaryOTRProfile()
+      profile_(incognito ? original_profile_->GetPrimaryOTRProfile(
+                               /*create_if_needed=*/true)
                          : original_profile_.get()) {}
 
 MockRenderViewContextMenu::~MockRenderViewContextMenu() {}
@@ -135,7 +135,7 @@ void MockRenderViewContextMenu::AppendSubMenuItems(ui::MenuModel* model) {
   // them. This works in non-mock because of toolkit_delegate_ in RVCMBase.
   // TODO(yusukes,lazyboy): This is a hack. RVCMProxy should neither directly
   // know about but submenu items nor it should update them.
-  for (int i = 0; i < model->GetItemCount(); ++i) {
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
     MockMenuItem sub_item;
     sub_item.command_id = model->GetCommandIdAt(i);
     sub_item.enabled = model->IsEnabledAt(i);
@@ -182,7 +182,6 @@ void MockRenderViewContextMenu::RemoveMenuItem(int command_id) {
   if (new_end == old_end) {
     FAIL() << "Menu observer is trying to remove a menu item it doesn't own."
            << " command_id: " << command_id;
-    return;
   }
 
   items_.erase(new_end, old_end);
@@ -191,22 +190,18 @@ void MockRenderViewContextMenu::RemoveMenuItem(int command_id) {
 void MockRenderViewContextMenu::RemoveAdjacentSeparators() {}
 
 void MockRenderViewContextMenu::RemoveSeparatorBeforeMenuItem(int command_id) {
-  auto iter = std::find_if(
-      items_.begin(), items_.end(),
-      [command_id](const auto& item) { return item.command_id == command_id; });
+  auto iter = base::ranges::find(items_, command_id, &MockMenuItem::command_id);
 
   if (iter == items_.end()) {
     FAIL() << "Menu observer is trying to remove a separator before a "
               "non-existent item."
            << " command_id: " << command_id;
-    return;
   }
 
   if (iter == items_.begin()) {
     FAIL() << "Menu observer is trying to remove a separator before a "
               "the first menu item."
            << " command_id: " << command_id;
-    return;
   }
 
   items_.erase(iter - 1);

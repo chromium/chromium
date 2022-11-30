@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,34 +8,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
-
-// A test implementation of ServiceWorkerDataPipeStateNotifier.
-class FakeServiceWorkerDataPipeStateNotifier
-    : public mojom::ServiceWorkerDataPipeStateNotifier {
- public:
-  FakeServiceWorkerDataPipeStateNotifier();
-  ~FakeServiceWorkerDataPipeStateNotifier() override;
-
-  mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier>
-  BindNewPipeAndPassRemote();
-
-  int32_t WaitUntilComplete();
-
- private:
-  // mojom::ServiceWorkerDataPipeStateNotifier implementations:
-  void OnComplete(int32_t status) override;
-
-  base::Optional<int32_t> complete_status_;
-  base::OnceClosure on_complete_callback_;
-  mojo::Receiver<mojom::ServiceWorkerDataPipeStateNotifier> receiver_{this};
-};
 
 namespace test {
 

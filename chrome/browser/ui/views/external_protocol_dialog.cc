@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/pref_names.h"
@@ -22,13 +22,14 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 using content::WebContents;
@@ -36,7 +37,7 @@ using content::WebContents;
 namespace {
 
 std::u16string GetMessageTextForOrigin(
-    const base::Optional<url::Origin>& origin) {
+    const absl::optional<url::Origin>& origin) {
   if (!origin || origin->opaque())
     return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_MESSAGE);
   return l10n_util::GetStringFUTF16(
@@ -46,38 +47,41 @@ std::u16string GetMessageTextForOrigin(
 
 }  // namespace
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // static
 void ExternalProtocolHandler::RunExternalProtocolDialog(
     const GURL& url,
     WebContents* web_contents,
     ui::PageTransition ignored_page_transition,
     bool ignored_has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin) {
+    bool ignored_is_in_fenced_frame_tree,
+    const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr initiator_document,
+    const std::u16string& program_name) {
   DCHECK(web_contents);
 
-  std::u16string program_name =
-      shell_integration::GetApplicationNameForProtocol(url);
   if (program_name.empty()) {
     // ShellExecute won't do anything. Don't bother warning the user.
     return;
   }
 
   // Windowing system takes ownership.
-  new ExternalProtocolDialog(web_contents, url, program_name,
-                             initiating_origin);
+  new ExternalProtocolDialog(web_contents, url, program_name, initiating_origin,
+                             std::move(initiator_document));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 ExternalProtocolDialog::ExternalProtocolDialog(
     WebContents* web_contents,
     const GURL& url,
     const std::u16string& program_name,
-    const base::Optional<url::Origin>& initiating_origin)
-    : content::WebContentsObserver(web_contents),
+    const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr initiator_document)
+    : web_contents_(web_contents->GetWeakPtr()),
       url_(url),
       program_name_(program_name),
-      initiating_origin_(initiating_origin) {
+      initiating_origin_(initiating_origin),
+      initiator_document_(std::move(initiator_document)) {
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringFUTF16(
@@ -100,8 +104,8 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       new views::MessageBoxView(GetMessageTextForOrigin(initiating_origin_));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -117,7 +121,7 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       profile->GetPrefs()->GetBoolean(
           prefs::kExternalProtocolDialogShowAlwaysOpenCheckbox) &&
       ExternalProtocolHandler::MayRememberAllowDecisionsForThisOrigin(
-          base::OptionalOrNullptr(initiating_origin_));
+          base::OptionalToPtr(initiating_origin_));
 
   if (show_remember_selection_checkbox) {
     message_box_view_->SetCheckBoxLabel(l10n_util::GetStringFUTF16(
@@ -129,7 +133,6 @@ ExternalProtocolDialog::ExternalProtocolDialog(
   }
 
   constrained_window::ShowWebModalDialogViews(this, web_contents);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTERNAL_PROTOCOL);
 }
 
 ExternalProtocolDialog::~ExternalProtocolDialog() = default;
@@ -155,7 +158,7 @@ void ExternalProtocolDialog::OnDialogAccepted() {
   ExternalProtocolHandler::RecordHandleStateMetrics(
       remember, ExternalProtocolHandler::DONT_BLOCK);
 
-  if (!web_contents()) {
+  if (!web_contents_) {
     // Dialog outlasted the WebContents.
     return;
   }
@@ -163,14 +166,15 @@ void ExternalProtocolDialog::OnDialogAccepted() {
   if (remember) {
     DCHECK(initiating_origin_);
     Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
     ExternalProtocolHandler::SetBlockState(url_.scheme(), *initiating_origin_,
                                            ExternalProtocolHandler::DONT_BLOCK,
                                            profile);
   }
 
-  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url_, web_contents());
+  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
+      url_, web_contents_.get(), initiator_document_);
 }
 
 views::View* ExternalProtocolDialog::GetContentsView() {

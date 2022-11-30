@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,9 @@
 #include <string>
 #include <tuple>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
-
-class SkBitmap;
 
 namespace color_utils {
 
@@ -98,15 +96,6 @@ GFX_EXPORT bool IsHSLShiftMeaningful(const HSL& hsl);
 //    1 = full lightness (make all pixels white).
 GFX_EXPORT SkColor HSLShift(SkColor color, const HSL& shift);
 
-// Builds a histogram based on the Y' of the Y'UV representation of this image.
-GFX_EXPORT void BuildLumaHistogram(const SkBitmap& bitmap, int histogram[256]);
-
-// Calculates how "boring" an image is. The boring score is the
-// 0,1 ranged percentage of pixels that are the most common
-// luma. Higher boring scores indicate that a higher percentage of a
-// bitmap are all the same brightness.
-GFX_EXPORT double CalculateBoringScore(const SkBitmap& bitmap);
-
 // Returns a blend of the supplied colors, ranging from |background| (for
 // |alpha| == 0) to |foreground| (for |alpha| == 255). The alpha channels of
 // the supplied colors are also taken into account, so the returned color may
@@ -156,7 +145,7 @@ GFX_EXPORT SkColor PickContrastingColor(SkColor foreground1,
 GFX_EXPORT BlendResult BlendForMinContrast(
     SkColor default_foreground,
     SkColor background,
-    base::Optional<SkColor> high_contrast_foreground = base::nullopt,
+    absl::optional<SkColor> high_contrast_foreground = absl::nullopt,
     float contrast_ratio = kMinimumReadableContrastRatio);
 
 // Invert a color.
@@ -169,11 +158,29 @@ GFX_EXPORT SkColor GetSysSkColor(int which);
 // surface.
 GFX_EXPORT SkColor DeriveDefaultIconColor(SkColor text_color);
 
+// Gets a Google color that matches the hue of `color` and contrasts similarly
+// against `background_color`, subject to being at least `min_contrast`. If
+// `color` isn't very saturated, grey will be used instead.  Even if `color` is
+// saturated, if there are no sufficiently-contrasting colors of a matching hue,
+// will fall back to white/grey 900.
+GFX_EXPORT SkColor PickGoogleColor(SkColor color,
+                                   SkColor background_color,
+                                   float min_contrast);
+
+// Like the version above, but tries to contrast sufficiently with both
+// `background_color_a` and `background_color_b` simultaneously.
+GFX_EXPORT SkColor PickGoogleColor(SkColor color,
+                                   SkColor background_color_a,
+                                   SkColor background_color_b,
+                                   float min_contrast);
+
 // Creates an rgba string for an SkColor. For example: 'rgba(255,0,255,0.5)'.
 GFX_EXPORT std::string SkColorToRgbaString(SkColor color);
+GFX_EXPORT std::string SkColor4fToRgbaString(SkColor4f color);
 
 // Creates an rgb string for an SkColor. For example: '255,0,255'.
 GFX_EXPORT std::string SkColorToRgbString(SkColor color);
+GFX_EXPORT std::string SkColor4fToRgbString(SkColor4f color);
 
 // Sets the darkest available color to |color|.  Returns the previous darkest
 // color.

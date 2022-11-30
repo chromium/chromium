@@ -94,6 +94,19 @@ class GridTrackSize {
   const GridLength& MinTrackBreadth() const { return min_track_breadth_; }
   const GridLength& MaxTrackBreadth() const { return max_track_breadth_; }
 
+  const GridLength& MinOrFitContentTrackBreadth() const {
+    if (IsFitContent())
+      return fit_content_track_breadth_;
+
+    return min_track_breadth_;
+  }
+  const GridLength& MaxOrFitContentTrackBreadth() const {
+    if (IsFitContent())
+      return fit_content_track_breadth_;
+
+    return max_track_breadth_;
+  }
+
   GridTrackSizeType GetType() const { return type_; }
 
   bool IsContentSized() const {
@@ -101,6 +114,13 @@ class GridTrackSize {
            max_track_breadth_.IsContentSized();
   }
   bool IsFitContent() const { return type_ == kFitContentTrackSizing; }
+  bool HasPercentage() const {
+    if (IsFitContent())
+      return FitContentTrackBreadth().HasPercentage();
+
+    return MinTrackBreadth().HasPercentage() ||
+           MaxTrackBreadth().HasPercentage();
+  }
 
   bool operator==(const GridTrackSize& other) const {
     return type_ == other.type_ &&

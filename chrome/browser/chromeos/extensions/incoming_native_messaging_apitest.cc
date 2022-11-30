@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
@@ -21,6 +20,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/test/result_catcher.h"
 #include "ipc/ipc_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +55,12 @@ class MockNativeMessageHost : public extensions::NativeMessageHost {
 // initiated by the native application.
 class ExtensionIncomingNativeMessagingTest
     : public extensions::ExtensionApiTest {
+ public:
+  ExtensionIncomingNativeMessagingTest(
+      const ExtensionIncomingNativeMessagingTest&) = delete;
+  ExtensionIncomingNativeMessagingTest& operator=(
+      const ExtensionIncomingNativeMessagingTest&) = delete;
+
  protected:
   ExtensionIncomingNativeMessagingTest() = default;
   ~ExtensionIncomingNativeMessagingTest() override = default;
@@ -69,7 +75,8 @@ class ExtensionIncomingNativeMessagingTest
       std::unique_ptr<extensions::NativeMessageHost> native_message_host) {
     auto* const message_service = extensions::MessageService::Get(profile());
     const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                     1 /* port_number */, true /* is_opener */);
+                                     1 /* port_number */, true /* is_opener */,
+                                     extensions::SerializationFormat::kJson);
     auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
         message_service->GetChannelDelegate(), port_id,
         std::move(native_message_host));
@@ -82,8 +89,6 @@ class ExtensionIncomingNativeMessagingTest
 
  private:
   const extensions::Extension* extension_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIncomingNativeMessagingTest);
 };
 
 // Tests that the extension receives the onConnectNative event when the native

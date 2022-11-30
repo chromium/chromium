@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -24,6 +26,9 @@ namespace {
 class TestOverviewDelegate : public OverviewDelegate {
  public:
   TestOverviewDelegate() = default;
+
+  TestOverviewDelegate(const TestOverviewDelegate&) = delete;
+  TestOverviewDelegate& operator=(const TestOverviewDelegate&) = delete;
 
   ~TestOverviewDelegate() override {
     // Destroy widgets that may be still animating if shell shuts down soon
@@ -49,14 +54,16 @@ class TestOverviewDelegate : public OverviewDelegate {
 
  private:
   std::vector<std::unique_ptr<DelayedAnimationObserver>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverviewDelegate);
 };
 
 class CleanupAnimationObserverTest : public AshTestBase,
                                      public views::WidgetObserver {
  public:
   CleanupAnimationObserverTest() = default;
+
+  CleanupAnimationObserverTest(const CleanupAnimationObserverTest&) = delete;
+  CleanupAnimationObserverTest& operator=(const CleanupAnimationObserverTest&) =
+      delete;
 
   ~CleanupAnimationObserverTest() override {
     if (widget_)
@@ -91,8 +98,6 @@ class CleanupAnimationObserverTest : public AshTestBase,
   }
 
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CleanupAnimationObserverTest);
 };
 
 }  // namespace
@@ -115,8 +120,7 @@ TEST_F(CleanupAnimationObserverTest, CreateAnimateComplete) {
   {
     ui::ScopedLayerAnimationSettings animation_settings(
         widget_window->layer()->GetAnimator());
-    animation_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(1000));
+    animation_settings.SetTransitionDuration(base::Milliseconds(1000));
     animation_settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
@@ -149,8 +153,7 @@ TEST_F(CleanupAnimationObserverTest, CreateAnimateShutdown) {
         ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     ui::ScopedLayerAnimationSettings animation_settings(
         widget_window->layer()->GetAnimator());
-    animation_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(1000));
+    animation_settings.SetTransitionDuration(base::Milliseconds(1000));
     animation_settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 

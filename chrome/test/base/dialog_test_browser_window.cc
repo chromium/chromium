@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/base/dialog_test_browser_window.h"
 
+#include <memory>
 #include <utility>
 
 #include "build/build_config.h"
@@ -17,11 +18,11 @@ using web_modal::WebContentsModalDialogHost;
 using web_modal::ModalDialogHostObserver;
 
 DialogTestBrowserWindow::DialogTestBrowserWindow() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Create a dummy Widget on Mac for parenting dialogs. On Aura, just parent
   // using the WebContents since creating a Widget here requires an Aura
   // RootWindow for context and it's tricky to get one here.
-  host_window_.reset(new views::Widget);
+  host_window_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   host_window_->Init(std::move(params));
@@ -53,11 +54,12 @@ gfx::Point DialogTestBrowserWindow::GetDialogPosition(const gfx::Size& size) {
 }
 
 gfx::Size DialogTestBrowserWindow::GetMaximumDialogSize() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Zero-size windows aren't allowed on Mac.
   return gfx::Size(1, 1);
-#endif
+#else
   return gfx::Size();
+#endif
 }
 
 void DialogTestBrowserWindow::AddObserver(ModalDialogHostObserver* observer) {

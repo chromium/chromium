@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #import "ios/web/common/user_agent.h"
+#import "ios/web/public/navigation/https_upgrade_type.h"
 #import "ios/web/public/ui/page_display_state.h"
 #include "ui/base/page_transition_types.h"
 
@@ -94,8 +95,8 @@ class NavigationItem : public base::SupportsUserData {
   virtual ui::PageTransition GetTransitionType() const = 0;
 
   // The favicon data and tracking information. See web::FaviconStatus.
-  virtual const FaviconStatus& GetFavicon() const = 0;
-  virtual FaviconStatus& GetFavicon() = 0;
+  virtual const FaviconStatus& GetFaviconStatus() const = 0;
+  virtual void SetFaviconStatus(const FaviconStatus& favicon_status) = 0;
 
   // All the SSL flags and state. See web::SSLStatus.
   virtual const SSLStatus& GetSSL() const = 0;
@@ -119,15 +120,25 @@ class NavigationItem : public base::SupportsUserData {
   virtual void SetUserAgentType(UserAgentType type) = 0;
   virtual UserAgentType GetUserAgentType() const = 0;
 
-  // |true| if this item is the result of a POST request with data.
+  // `true` if this item is the result of a POST request with data.
   virtual bool HasPostData() const = 0;
 
   // Returns the item's current http request headers.
   virtual NSDictionary* GetHttpRequestHeaders() const = 0;
 
-  // Adds headers from |additional_headers| to the item's http request headers.
+  // Adds headers from `additional_headers` to the item's http request headers.
   // Existing headers with the same key will be overridden.
   virtual void AddHttpRequestHeaders(NSDictionary* additional_headers) = 0;
+
+  // Returns the type of the HTTPS upgrade that was applied to this navigation.
+  // If the navigation wasn't upgraded to HTTPS, returns kNone.
+  virtual HttpsUpgradeType GetHttpsUpgradeType() const = 0;
+  // Sets the type of the HTTPS upgrade that was applied to this navigation. If
+  // no upgrade was applied, should be kNone. This function is called from
+  // NavigationManager. Once this value is set, it's never reset. Navigations
+  // defaulting to https but fail to load end up creating new navigations with
+  // this value cleared.
+  virtual void SetHttpsUpgradeType(HttpsUpgradeType https_upgrade_type) = 0;
 };
 
 }  // namespace web

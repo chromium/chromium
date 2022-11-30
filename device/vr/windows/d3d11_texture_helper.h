@@ -1,23 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H
-#define DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H
+#ifndef DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H_
+#define DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H_
 
 #include <D3D11_1.h>
 #include <DXGI1_4.h>
 #include <wrl.h>
 
 #include "base/win/scoped_handle.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace device {
 
+class XRCompositorCommon;
+
 class D3D11TextureHelper {
  public:
-  D3D11TextureHelper();
+  explicit D3D11TextureHelper(XRCompositorCommon* compositor);
   ~D3D11TextureHelper();
 
   void Reset();
@@ -31,9 +34,11 @@ class D3D11TextureHelper {
 
   bool CompositeToBackBuffer();
   void SetSourceTexture(base::win::ScopedHandle texture_handle,
+                        const gpu::SyncToken& sync_token,
                         gfx::RectF left,
                         gfx::RectF right);
   bool SetOverlayTexture(base::win::ScopedHandle texture_handle,
+                         const gpu::SyncToken& sync_token,
                          gfx::RectF left,
                          gfx::RectF right);
 
@@ -58,6 +63,7 @@ class D3D11TextureHelper {
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler_;
     Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
+    gpu::SyncToken sync_token_;
     gfx::RectF left_;   // 0 to 1 in each direction
     gfx::RectF right_;  // 0 to 1 in each direction
     bool submitted_this_frame_ = false;
@@ -100,6 +106,8 @@ class D3D11TextureHelper {
     LayerData overlay_;
   };
 
+  const raw_ptr<XRCompositorCommon> compositor_;
+
   bool overlay_visible_ = true;
   bool source_visible_ = true;
 
@@ -117,4 +125,4 @@ class D3D11TextureHelper {
 };
 }  // namespace device
 
-#endif  // DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H
+#endif  // DEVICE_VR_WINDOWS_D3D11_TEXTURE_HELPER_H_

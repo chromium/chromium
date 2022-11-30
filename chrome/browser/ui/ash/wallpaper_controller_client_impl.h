@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,46 @@
 
 #include <memory>
 
-#include "ash/public/cpp/wallpaper_controller.h"
-#include "ash/public/cpp/wallpaper_controller_client.h"
-#include "ash/public/cpp/wallpaper_types.h"
-#include "base/macros.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "url/gurl.h"
 
 class AccountId;
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
+namespace {
+class WallpaperControllerClientImplTest;
+}
+
 // Handles chrome-side wallpaper control alongside the ash-side controller.
-class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
+class WallpaperControllerClientImpl
+    : public ash::WallpaperControllerClient,
+      public file_manager::VolumeManagerObserver,
+      public session_manager::SessionManagerObserver {
  public:
   WallpaperControllerClientImpl();
-  virtual ~WallpaperControllerClientImpl();
+
+  WallpaperControllerClientImpl(const WallpaperControllerClientImpl&) = delete;
+  WallpaperControllerClientImpl& operator=(
+      const WallpaperControllerClientImpl&) = delete;
+
+  ~WallpaperControllerClientImpl() override;
 
   // Initializes and connects to ash.
   void Init();
@@ -34,44 +60,79 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
 
   static WallpaperControllerClientImpl* Get();
 
-  // Returns files identifier for the |account_id|.
-  std::string GetFilesId(const AccountId& account_id) const;
+  // ash::WallpaperControllerClient:
+  void OpenWallpaperPicker() override;
+  void SetDefaultWallpaper(
+      const AccountId& account_id,
+      bool show_wallpaper,
+      ash::WallpaperController::SetWallpaperCallback callback) override;
+  void FetchDailyRefreshWallpaper(
+      const std::string& collection_id,
+      DailyWallpaperUrlFetchedCallback callback) override;
+  void FetchImagesForCollection(
+      const std::string& collection_id,
+      FetchImagesForCollectionCallback callback) override;
+  void FetchGooglePhotosPhoto(const AccountId& account_id,
+                              const std::string& id,
+                              FetchGooglePhotosPhotoCallback callback) override;
+  void FetchDailyGooglePhotosPhoto(
+      const AccountId& account_id,
+      const std::string& album_id,
+      FetchGooglePhotosPhotoCallback callback) override;
+  void FetchGooglePhotosAccessToken(
+      const AccountId& account_id,
+      FetchGooglePhotosAccessTokenCallback callback) override;
+  void SaveWallpaperToDriveFs(
+      const AccountId& account_id,
+      const base::FilePath& origin,
+      base::OnceCallback<void(bool)> wallpaper_saved_callback) override;
+  base::FilePath GetWallpaperPathFromDriveFs(
+      const AccountId& account_id) override;
+  void GetFilesId(const AccountId& account_id,
+                  base::OnceCallback<void(const std::string&)>
+                      files_id_callback) const override;
+  bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
+
+  // file_manager::VolumeManagerObserver:
+  void OnVolumeMounted(ash::MountError error_code,
+                       const file_manager::Volume& volume) override;
+
+  // session_manager::SessionManagerObserver implementation.
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Wrappers around the ash::WallpaperController interface.
   void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const std::string& file_name,
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,
-                          bool preview_mode);
+                          bool preview_mode,
+                          const std::string& file_path = "");
+  void SetOnlineWallpaper(
+      const ash::OnlineWallpaperParams& params,
+      ash::WallpaperController::SetWallpaperCallback callback);
+  void SetGooglePhotosWallpaper(
+      const ash::GooglePhotosWallpaperParams& params,
+      ash::WallpaperController::SetWallpaperCallback callback);
   void SetOnlineWallpaperIfExists(
-      const AccountId& account_id,
-      const std::string& url,
-      ash::WallpaperLayout layout,
-      bool preview_mode,
-      ash::WallpaperController::SetOnlineWallpaperIfExistsCallback callback);
+      const ash::OnlineWallpaperParams& params,
+      ash::WallpaperController::SetWallpaperCallback callback);
   void SetOnlineWallpaperFromData(
-      const AccountId& account_id,
+      const ash::OnlineWallpaperParams& params,
       const std::string& image_data,
-      const std::string& url,
-      ash::WallpaperLayout layout,
-      bool preview_mode,
-      ash::WallpaperController::SetOnlineWallpaperFromDataCallback callback);
-  void SetDefaultWallpaper(const AccountId& account_id, bool show_wallpaper);
+      ash::WallpaperController::SetWallpaperCallback callback);
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path);
   void SetPolicyWallpaper(const AccountId& account_id,
                           std::unique_ptr<std::string> data);
   bool SetThirdPartyWallpaper(const AccountId& account_id,
-                              const std::string& wallpaper_files_id,
                               const std::string& file_name,
                               ash::WallpaperLayout layout,
                               const gfx::ImageSkia& image);
   void ConfirmPreviewWallpaper();
   void CancelPreviewWallpaper();
-  void UpdateCustomWallpaperLayout(const AccountId& account_id,
-                                   ash::WallpaperLayout layout);
+  void UpdateCurrentWallpaperLayout(const AccountId& account_id,
+                                    ash::WallpaperLayout layout);
   void ShowUserWallpaper(const AccountId& account_id);
   void ShowSigninWallpaper();
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path);
@@ -87,13 +148,16 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   void AddObserver(ash::WallpaperControllerObserver* observer);
   void RemoveObserver(ash::WallpaperControllerObserver* observer);
   gfx::ImageSkia GetWallpaperImage();
-  const std::vector<SkColor>& GetWallpaperColors();
   bool IsWallpaperBlurred();
   bool IsActiveUserWallpaperControlledByPolicy();
-  ash::WallpaperInfo GetActiveUserWallpaperInfo();
+  absl::optional<ash::WallpaperInfo> GetActiveUserWallpaperInfo();
   bool ShouldShowWallpaperSetting();
+  // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
+  // either by built-in Wallpaper app or a third party extension/app.
+  void RecordWallpaperSourceUMA(const ash::WallpaperType type);
 
  private:
+  friend class WallpaperControllerClientImplTest;
   // Initialize the controller for this client and some wallpaper directories.
   void InitController();
 
@@ -102,16 +166,46 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   // shown right after boot, regardless of when the login screen is available.
   void ShowWallpaperOnLoginScreen();
 
-  // ash::WallpaperControllerClient:
-  void OpenWallpaperPicker() override;
-  void MaybeClosePreviewWallpaper() override;
-
   void DeviceWallpaperImageFilePathChanged();
 
   // Returns true if user names should be shown on the login screen.
   bool ShouldShowUserNamesOnLogin() const;
 
   base::FilePath GetDeviceWallpaperImageFilePath();
+
+  // Passes |collection_id| to wallpaper controller on main task runner.
+  void SetDailyRefreshCollectionId(const AccountId& account_id,
+                                   const std::string& collection_id);
+
+  void OnDailyImageInfoFetched(DailyWallpaperUrlFetchedCallback callback,
+                               bool success,
+                               const backdrop::Image& image,
+                               const std::string& next_resume_token);
+  void OnFetchImagesForCollection(
+      FetchImagesForCollectionCallback callback,
+      std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher> fetcher,
+      bool success,
+      const std::string& collection_id,
+      const std::vector<backdrop::Image>& images);
+
+  void OnGooglePhotosPhotoFetched(
+      FetchGooglePhotosPhotoCallback callback,
+      ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
+          response);
+
+  void OnGooglePhotosDailyAlbumFetched(
+      const AccountId& account_id,
+      FetchGooglePhotosPhotoCallback callback,
+      ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
+          response);
+
+  void OnGooglePhotosTokenFetched(
+      FetchGooglePhotosAccessTokenCallback callback,
+      std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
+
+  void ObserveVolumeManagerForAccountId(const AccountId& account_id);
 
   // WallpaperController interface in ash.
   ash::WallpaperController* wallpaper_controller_;
@@ -126,9 +220,25 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   // wallpaper should be shown.
   base::CallbackListSubscription show_user_names_on_signin_subscription_;
 
-  base::WeakPtrFactory<WallpaperControllerClientImpl> weak_factory_{this};
+  std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
+      surprise_me_image_fetcher_;
 
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientImpl);
+  std::map<AccountId,
+           std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>>
+      google_photos_photos_fetchers_;
+
+  base::ScopedMultiSourceObservation<file_manager::VolumeManager,
+                                     file_manager::VolumeManagerObserver>
+      volume_manager_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
+  base::WeakPtrFactory<WallpaperControllerClientImpl> weak_factory_{this};
+  base::WeakPtrFactory<WallpaperControllerClientImpl> storage_weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_WALLPAPER_CONTROLLER_CLIENT_IMPL_H_

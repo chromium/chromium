@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define COMPONENTS_PASSWORD_MANAGER_IOS_SHARED_PASSWORD_CONTROLLER_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
-#include "components/password_manager/core/browser/password_manager_interface.h"
+#include "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/password_manager/ios/password_manager_driver_bridge.h"
@@ -19,7 +19,6 @@
 
 namespace password_manager {
 class PasswordManagerClient;
-class PasswordManagerDriver;
 }  // namespace password_manager
 
 @class FormSuggestion;
@@ -31,10 +30,6 @@ class PasswordManagerDriver;
 // The PasswordManagerClient owned by the delegate.
 @property(nonatomic, readonly)
     password_manager::PasswordManagerClient* passwordManagerClient;
-
-// The PasswordManagerClient owned by the delegate.
-@property(nonatomic, readonly)
-    password_manager::PasswordManagerDriver* passwordManagerDriver;
 
 // Called to inform the delegate that it should prompt the user for a decision
 // on whether or not to use the |generatedPotentialPassword|.
@@ -73,6 +68,7 @@ class PasswordManagerDriver;
                                      passwordManager
                       formHelper:(PasswordFormHelper*)formHelper
                 suggestionHelper:(PasswordSuggestionHelper*)suggestionHelper
+                    driverHelper:(PasswordControllerDriverHelper*)driverHelper
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

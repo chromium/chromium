@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,11 +19,6 @@
 // UITableViewHeaderFooterView that displays a text label.
 @interface TableViewTextHeaderFooterView : UITableViewHeaderFooterView
 @property(nonatomic, readwrite, strong) UILabel* subtitleLabel;
-// Color used on the highlight animation.
-@property(nonatomic, readwrite, strong) UIColor* highlightColor;
-// Animates a change in the backgroundView color and then changes it back to the
-// original backGround color in order to simulate a selection highlight.
-- (void)animateHighlight;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_TEXT_HEADER_FOOTER_ITEM_H_

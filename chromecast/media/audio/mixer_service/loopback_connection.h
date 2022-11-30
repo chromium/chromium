@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/mixer_service/loopback_interrupt_reason.h"
 #include "chromecast/media/audio/mixer_service/mixer_connection.h"
@@ -53,6 +52,10 @@ class LoopbackConnection : public MixerConnection,
   // For testing only.
   LoopbackConnection(Delegate* delegate,
                      std::unique_ptr<MixerSocket> connected_socket_for_test);
+
+  LoopbackConnection(const LoopbackConnection&) = delete;
+  LoopbackConnection& operator=(const LoopbackConnection&) = delete;
+
   ~LoopbackConnection() override;
 
   // Initiates connection to the mixer service. Delegate methods can be called
@@ -75,8 +78,6 @@ class LoopbackConnection : public MixerConnection,
   media::SampleFormat format_ = kUnknownSampleFormat;
   int sample_rate_ = 0;
   int num_channels_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackConnection);
 };
 
 }  // namespace mixer_service

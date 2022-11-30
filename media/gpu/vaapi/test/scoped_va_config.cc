@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <va/va.h>
+#include "media/gpu/vaapi/test/scoped_va_config.h"
+
 #include <va/va_str.h>
 
 #include "media/gpu/vaapi/test/macros.h"
-#include "media/gpu/vaapi/test/scoped_va_config.h"
+#include "media/gpu/vaapi/test/vaapi_device.h"
 
 namespace media {
 namespace vaapi_test {

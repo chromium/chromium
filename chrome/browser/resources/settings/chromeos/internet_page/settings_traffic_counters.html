@@ -1,0 +1,62 @@
+<style include="internet-shared settings-shared iron-flex md-select">
+  #data-usage-wrapper {
+    align-items: center;
+    display: flex;
+  }
+</style>
+<template is="dom-if" if="[[trafficCountersAvailable_]]">
+  <div class="settings-box single-column stretch indented first">
+    <div id="data-usage-wrapper">
+      <div class="start settings-box-text" aria-hidden="true">
+        <div id="dataUsageLabel" class="label" aria-hidden="true">
+          [[date_]]
+        </div>
+        <div id="dataUsageSubLabel" class="secondary label" aria-hidden="true">
+          [[value_]]
+        </div>
+      </div>
+    </div>
+    <div id="data-usage-wrapper">
+      <div class="start settings-box-text" aria-hidden="true">
+        <div id="resetDataUsageLabel">
+          [[i18n('TrafficCountersDataUsageResetLabel')]]
+        </div>
+      </div>
+      <div class="separator"></div>
+      <cr-button id="resetDataUsageButton"
+          aria-labelledby="resetDataUsageLabel"
+          on-click="onResetDataUsageClick_">
+        [[i18n('TrafficCountersDataUsageResetButtonLabel')]]
+      </cr-button>
+    </div>
+    <div id="data-usage-wrapper">
+      <div class="start settings-box-text" aria-hidden="true">
+        <div id="autoDataUsageResetLabel">
+          [[i18n('TrafficCountersDataUsageEnableAutoResetLabel')]]
+        </div>
+        <div class="secondary" id="autoDataUsageResetSubLabel">
+          [[i18n('TrafficCountersDataUsageEnableAutoResetSublabel')]]
+        </div>
+      </div>
+      <div class="separator"></div>
+      <cr-toggle id="autoDataUsageResetToggle" checked="[[autoReset_]]"
+          aria-labelledby="autoDataUsageResetLabel"
+          aria-describedby="autoDataUsageResetSubLabel"
+          on-change="onAutoDataUsageResetToggle_">
+      </cr-toggle>
+    </div>
+    <template is="dom-if" if="[[autoReset_]]" restamp>
+      <div id="data-usage-wrapper">
+        <div class="start settings-box-text" aria-hidden="true">
+          <div id="daySelectionLabel">
+            [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthLabel')]]
+          </div>
+        </div>
+        <div class="separator"></div>
+        <cr-input id="daySelectionInput" type="number" value="{{resetDay_}}"
+            max="31" min="1" on-change="onResetDaySelected_">
+        </cr-input>
+      </div>
+    </template>
+  </div>
+</template>

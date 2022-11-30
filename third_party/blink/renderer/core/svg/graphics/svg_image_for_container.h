@@ -28,10 +28,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -60,60 +60,74 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
  public:
   static scoped_refptr<SVGImageForContainer> Create(
       SVGImage* image,
-      const FloatSize& target_size,
+      const gfx::SizeF& target_size,
+      float zoom,
+      const KURL& url,
+      mojom::blink::PreferredColorScheme preferred_color_scheme) {
+    gfx::SizeF container_size_without_zoom =
+        gfx::ScaleSize(target_size, 1 / zoom);
+    return base::AdoptRef(new SVGImageForContainer(
+        image, container_size_without_zoom, zoom, url, preferred_color_scheme));
+  }
+
+  static scoped_refptr<SVGImageForContainer> Create(
+      SVGImage* image,
+      const gfx::SizeF& target_size,
       float zoom,
       const KURL& url) {
-    FloatSize container_size_without_zoom(target_size);
-    container_size_without_zoom.Scale(1 / zoom);
+    gfx::SizeF container_size_without_zoom =
+        gfx::ScaleSize(target_size, 1 / zoom);
     return base::AdoptRef(new SVGImageForContainer(
         image, container_size_without_zoom, zoom, url));
   }
 
-  IntSize Size() const override;
-  FloatSize SizeAsFloat(RespectImageOrientationEnum) const override;
+  gfx::Size SizeWithConfig(SizeConfig) const override;
+  gfx::SizeF SizeWithConfigAsFloat(SizeConfig) const override;
 
   bool HasIntrinsicSize() const override { return image_->HasIntrinsicSize(); }
 
-  bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix) override;
+  bool ApplyShader(cc::PaintFlags&,
+                   const SkMatrix& local_matrix,
+                   const gfx::RectF& src_rect,
+                   const ImageDrawOptions& draw_options) override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const gfx::RectF& dest_rect,
+            const gfx::RectF& src_rect,
+            const ImageDrawOptions&) override;
 
   // FIXME: Implement this to be less conservative.
   bool CurrentFrameKnownToBeOpaque() override { return false; }
+
+  bool IsSVGImageForContainer() const override { return true; }
 
   PaintImage PaintImageForCurrentFrame() override;
 
  protected:
   void DrawPattern(GraphicsContext&,
-                   const FloatRect&,
-                   const FloatSize&,
-                   const FloatPoint&,
-                   SkBlendMode,
-                   const FloatRect&,
-                   const FloatSize& repeat_spacing,
-                   RespectImageOrientationEnum) override;
+                   const cc::PaintFlags&,
+                   const gfx::RectF& dest_rect,
+                   const ImageTilingInfo&,
+                   const ImageDrawOptions& draw_options) override;
 
  private:
+  SVGImageForContainer(
+      SVGImage* image,
+      const gfx::SizeF& container_size,
+      float zoom,
+      const KURL& url,
+      mojom::blink::PreferredColorScheme preferred_color_scheme);
+
   SVGImageForContainer(SVGImage* image,
-                       const FloatSize& container_size,
+                       const gfx::SizeF& container_size,
                        float zoom,
-                       const KURL& url)
-      : image_(image),
-        container_size_(container_size),
-        zoom_(zoom),
-        url_(url) {}
+                       const KURL& url);
 
   void DestroyDecodedData() override {}
 
   SVGImage* image_;
-  const FloatSize container_size_;
+  const gfx::SizeF container_size_;
   const float zoom_;
   const KURL url_;
 };

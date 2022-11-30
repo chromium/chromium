@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,11 +41,13 @@ class CaptureServiceReceiver {
 
     // Called when internal error occurs.
     virtual void OnCaptureError() = 0;
+
+    // Called when there is metadata.
+    virtual void OnCaptureMetadata(const char* data, size_t size) = 0;
   };
 
   // The timeout for a connecting socket to stop waiting and report error.
-  static constexpr base::TimeDelta kConnectTimeout =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kConnectTimeout = base::Seconds(1);
 
   CaptureServiceReceiver(capture_service::StreamInfo request_stream_info,
                          Delegate* delegate);

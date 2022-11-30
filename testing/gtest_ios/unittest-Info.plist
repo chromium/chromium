@@ -11,7 +11,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.gtest.${GTEST_BUNDLE_ID_SUFFIX:rfc1034identifier}</string>
+	<string>${BUNDLE_IDENTIFIER}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -51,6 +51,10 @@
 	<key>NSAllowsArbitraryLoads</key>
 	<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This test needs to request access to your camera.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This test needs to request access to your microphone.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchImages</key>
@@ -173,5 +177,26 @@
 	</array>
 	<key>SSOAuthURLScheme</key>
 	<string>${IOS_BUNDLE_ID_PREFIX}.sso.${PRODUCT_NAME:rfc1034identifier}</string>
+  <key>UIApplicationSceneManifest</key>
+  <dict>
+          <key>UIApplicationSupportsMultipleScenes</key>
+          <true/>
+          <key>UISceneConfigurations</key>
+          <dict>
+                  <key>UIWindowSceneSessionRoleApplication</key>
+                  <array>
+                          <dict>
+                                  <key>UISceneClassName</key>
+                                  <string>UIWindowScene</string>
+                                  <key>UISceneDelegateClassName</key>
+                                  <string>ChromeUnitTestSceneDelegate</string>
+                                  <key>UISceneConfigurationName</key>
+                                  <string>Default Configuration</string>
+                                  <key>UILaunchStoryboardName</key>
+                                  <string>LaunchScreen</string>
+                          </dict>
+                  </array>
+          </dict>
+  </dict>
 </dict>
 </plist>

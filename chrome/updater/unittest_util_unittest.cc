@@ -1,33 +1,95 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/unittest_util.h"
 
-#include "base/version.h"
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
+#include "base/path_service.h"
+#include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace updater {
+#if BUILDFLAG(IS_WIN)
+#include "chrome/updater/win/test/test_executables.h"
+#endif
 
-TEST(UnitTestUtil, UpdateServiceState) {
-  UpdateService::UpdateState state1;
-  UpdateService::UpdateState state2 = state1;
+namespace updater::test {
 
-  // Ignore version in the comparison, if both versions are not set.
-  EXPECT_EQ(state1, state2);
+TEST(UnitTestUtil, Processes) {
+#if BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(IsProcessRunning(kTestProcessExecutableName));
 
-  state1.next_version = base::Version("1.0");
-  EXPECT_NE(state1, state2);
+  std::vector<base::Process> long_running;
+  long_running.push_back(LongRunningProcess(nullptr));
+  long_running.push_back(LongRunningProcess(nullptr));
+  for (const base::Process& p : long_running) {
+    EXPECT_TRUE(p.IsValid());
+  }
+  EXPECT_TRUE(IsProcessRunning(kTestProcessExecutableName));
 
-  state2.next_version = base::Version("1.0");
-  EXPECT_EQ(state1, state2);
+  constexpr int kExitCode = 12345;
+  EXPECT_FALSE(WaitForProcessesToExit(kTestProcessExecutableName,
+                                      base::Milliseconds(1)));
+  EXPECT_TRUE(KillProcesses(kTestProcessExecutableName, kExitCode));
+  EXPECT_TRUE(WaitForProcessesToExit(kTestProcessExecutableName,
+                                     TestTimeouts::action_timeout()));
+  EXPECT_FALSE(IsProcessRunning(kTestProcessExecutableName));
 
-  state2.state = UpdateService::UpdateState::State::kUpdateError;
-  EXPECT_NE(state1, state2);
-  EXPECT_STREQ(::testing::PrintToString(state1).c_str(),
-               "UpdateState {app_id: , state: unknown, next_version: 1.0, "
-               "downloaded_bytes: -1, total_bytes: -1, install_progress: -1, "
-               "error_category: none, error_code: 0, extra_code1: 0}");
+  for (const base::Process& p : long_running) {
+    int exit_code = 0;
+    EXPECT_TRUE(
+        p.WaitForExitWithTimeout(TestTimeouts::tiny_timeout(), &exit_code));
+    EXPECT_EQ(exit_code, kExitCode);
+  }
+#else
+  // Test the state of the process for the unit test process itself.
+  base::FilePath::StringType unit_test = []() {
+    base::FilePath unit_test_executable;
+    base::PathService::Get(base::FILE_EXE, &unit_test_executable);
+    return unit_test_executable.BaseName().value();
+  }();
+  EXPECT_TRUE(IsProcessRunning(unit_test));
+  EXPECT_FALSE(WaitForProcessesToExit(unit_test, base::Milliseconds(1)));
+#endif  // IS_WIN
 }
 
-}  // namespace updater
+TEST(UnitTestUtil, GetTestName) {
+  EXPECT_EQ(GetTestName(), "UnitTestUtil.GetTestName");
+}
+
+// Enable the test to print the effective values for the test timeouts when
+// debugging timeout issues.
+TEST(UnitTestUtil, DISABLED_PrintTestTimeouts) {
+  VLOG(0) << "action-timeout:"
+          << TestTimeouts::action_timeout().InMilliseconds()
+          << ", action-max-timeout:"
+          << TestTimeouts::action_max_timeout().InMilliseconds()
+          << ", test-launcher-timeout:"
+          << TestTimeouts::test_launcher_timeout().InMilliseconds();
+}
+
+TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
+  EXPECT_FALSE(DeleteFileAndEmptyParentDirectories(absl::nullopt));
+
+  const base::FilePath path_not_found(FILE_PATH_LITERAL("path-not-found"));
+  EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(path_not_found));
+
+  // Create and delete the following path "some_dir/dir_in_dir/file_in_dir".
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath dir_in_dir;
+  EXPECT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("UnitTestUtil"), &dir_in_dir));
+  base::FilePath file_in_dir;
+  EXPECT_TRUE(CreateTemporaryFileInDir(dir_in_dir, &file_in_dir));
+  EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(file_in_dir));
+  EXPECT_FALSE(base::DirectoryExists(temp_dir.GetPath()));
+}
+
+}  // namespace updater::test

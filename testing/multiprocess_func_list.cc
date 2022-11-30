@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 namespace multi_process_function_list {
 
 namespace {
+
+ChildProcessTestRunner g_test_runner = nullptr;
 
 struct ProcessFunctions {
   ProcessFunctions() : main(NULL), setup(NULL) {}
@@ -40,7 +42,18 @@ AppendMultiProcessTest::AppendMultiProcessTest(
       ProcessFunctions(main_func_ptr, setup_func_ptr);
 }
 
+void SetChildProcessTestRunner(ChildProcessTestRunner runner) {
+  g_test_runner = runner;
+}
+
 int InvokeChildProcessTest(const std::string& test_name) {
+  if (g_test_runner) {
+    return g_test_runner(test_name);
+  }
+  return InvokeChildProcessTestMain(test_name);
+}
+
+int InvokeChildProcessTestMain(const std::string& test_name) {
   MultiProcessTestMap& func_lookup_table = GetMultiprocessFuncMap();
   MultiProcessTestMap::iterator it = func_lookup_table.find(test_name);
   if (it != func_lookup_table.end()) {

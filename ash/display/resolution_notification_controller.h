@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include "ash/ash_export.h"
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,6 +28,12 @@ class ASH_EXPORT ResolutionNotificationController
       public WindowTreeHostManager::Observer {
  public:
   ResolutionNotificationController();
+
+  ResolutionNotificationController(const ResolutionNotificationController&) =
+      delete;
+  ResolutionNotificationController& operator=(
+      const ResolutionNotificationController&) = delete;
+
   ~ResolutionNotificationController() override;
 
   // If |display_id| is not the internal display and |source| is |kSourceUser|
@@ -54,16 +59,18 @@ class ASH_EXPORT ResolutionNotificationController
   // |accept_callback| will be called when the user accepts the resoltion change
   // by closing the notification bubble or clicking on the accept button (if
   // any).
-  bool PrepareNotificationAndSetDisplayMode(
+  [[nodiscard]] bool PrepareNotificationAndSetDisplayMode(
       int64_t display_id,
       const display::ManagedDisplayMode& old_resolution,
       const display::ManagedDisplayMode& new_resolution,
-      mojom::DisplayConfigSource source,
-      base::OnceClosure accept_callback) WARN_UNUSED_RESULT;
+      crosapi::mojom::DisplayConfigSource source,
+      base::OnceClosure accept_callback);
 
   DisplayChangeDialog* dialog_for_testing() const {
     return confirmation_dialog_.get();
   }
+
+  bool ShouldShowDisplayChangeDialog() const;
 
  private:
   friend class ResolutionNotificationControllerTest;
@@ -91,11 +98,11 @@ class ASH_EXPORT ResolutionNotificationController
 
   std::unique_ptr<ResolutionChangeInfo> change_info_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   base::WeakPtr<DisplayChangeDialog> confirmation_dialog_;
 
   base::WeakPtrFactory<ResolutionNotificationController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResolutionNotificationController);
 };
 
 }  // namespace ash

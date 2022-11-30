@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,11 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
+#include "base/values.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -21,6 +23,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/common/api/bluetooth_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothSocket;
@@ -58,7 +61,7 @@ class BluetoothSocketAsyncApiFunction : public ExtensionFunction {
   std::unordered_set<int>* GetSocketIds();
 
  private:
-  ApiResourceManager<BluetoothApiSocket>* manager_;
+  raw_ptr<ApiResourceManager<BluetoothApiSocket>> manager_;
 };
 
 class BluetoothSocketCreateFunction : public BluetoothSocketAsyncApiFunction {
@@ -67,13 +70,14 @@ class BluetoothSocketCreateFunction : public BluetoothSocketAsyncApiFunction {
 
   BluetoothSocketCreateFunction();
 
+  BluetoothSocketCreateFunction(const BluetoothSocketCreateFunction&) = delete;
+  BluetoothSocketCreateFunction& operator=(
+      const BluetoothSocketCreateFunction&) = delete;
+
  protected:
   ~BluetoothSocketCreateFunction() override;
 
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketCreateFunction);
 };
 
 class BluetoothSocketUpdateFunction : public BluetoothSocketAsyncApiFunction {
@@ -82,14 +86,15 @@ class BluetoothSocketUpdateFunction : public BluetoothSocketAsyncApiFunction {
 
   BluetoothSocketUpdateFunction();
 
+  BluetoothSocketUpdateFunction(const BluetoothSocketUpdateFunction&) = delete;
+  BluetoothSocketUpdateFunction& operator=(
+      const BluetoothSocketUpdateFunction&) = delete;
+
  protected:
   ~BluetoothSocketUpdateFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketUpdateFunction);
 };
 
 class BluetoothSocketSetPausedFunction
@@ -100,14 +105,16 @@ class BluetoothSocketSetPausedFunction
 
   BluetoothSocketSetPausedFunction();
 
+  BluetoothSocketSetPausedFunction(const BluetoothSocketSetPausedFunction&) =
+      delete;
+  BluetoothSocketSetPausedFunction& operator=(
+      const BluetoothSocketSetPausedFunction&) = delete;
+
  protected:
   ~BluetoothSocketSetPausedFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketSetPausedFunction);
 };
 
 class BluetoothSocketListenFunction : public BluetoothSocketAsyncApiFunction {
@@ -118,10 +125,10 @@ class BluetoothSocketListenFunction : public BluetoothSocketAsyncApiFunction {
   virtual void CreateService(
       scoped_refptr<device::BluetoothAdapter> adapter,
       const device::BluetoothUUID& uuid,
-      const base::Optional<std::string>& name,
+      const absl::optional<std::string>& name,
       device::BluetoothAdapter::CreateServiceCallback callback,
       device::BluetoothAdapter::CreateServiceErrorCallback error_callback) = 0;
-  virtual std::unique_ptr<base::ListValue> CreateResults() = 0;
+  virtual base::Value::List CreateResults() = 0;
 
   virtual int socket_id() const = 0;
   virtual const std::string& uuid() const = 0;
@@ -137,7 +144,7 @@ class BluetoothSocketListenFunction : public BluetoothSocketAsyncApiFunction {
   virtual void OnCreateService(scoped_refptr<device::BluetoothSocket> socket);
   virtual void OnCreateServiceError(const std::string& message);
 
-  BluetoothSocketEventDispatcher* socket_event_dispatcher_ = nullptr;
+  raw_ptr<BluetoothSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
 };
 
 class BluetoothSocketListenUsingRfcommFunction
@@ -155,11 +162,11 @@ class BluetoothSocketListenUsingRfcommFunction
   bool CreateParams() override;
   void CreateService(scoped_refptr<device::BluetoothAdapter> adapter,
                      const device::BluetoothUUID& uuid,
-                     const base::Optional<std::string>& name,
+                     const absl::optional<std::string>& name,
                      device::BluetoothAdapter::CreateServiceCallback callback,
                      device::BluetoothAdapter::CreateServiceErrorCallback
                          error_callback) override;
-  std::unique_ptr<base::ListValue> CreateResults() override;
+  base::Value::List CreateResults() override;
 
  protected:
   ~BluetoothSocketListenUsingRfcommFunction() override;
@@ -183,11 +190,11 @@ class BluetoothSocketListenUsingL2capFunction
   bool CreateParams() override;
   void CreateService(scoped_refptr<device::BluetoothAdapter> adapter,
                      const device::BluetoothUUID& uuid,
-                     const base::Optional<std::string>& name,
+                     const absl::optional<std::string>& name,
                      device::BluetoothAdapter::CreateServiceCallback callback,
                      device::BluetoothAdapter::CreateServiceErrorCallback
                          error_callback) override;
-  std::unique_ptr<base::ListValue> CreateResults() override;
+  base::Value::List CreateResults() override;
 
  protected:
   ~BluetoothSocketListenUsingL2capFunction() override;
@@ -220,7 +227,7 @@ class BluetoothSocketAbstractConnectFunction :
   virtual void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
   std::unique_ptr<bluetooth_socket::Connect::Params> params_;
-  BluetoothSocketEventDispatcher* socket_event_dispatcher_ = nullptr;
+  raw_ptr<BluetoothSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
 };
 
 class BluetoothSocketConnectFunction :
@@ -246,6 +253,11 @@ class BluetoothSocketDisconnectFunction
 
   BluetoothSocketDisconnectFunction();
 
+  BluetoothSocketDisconnectFunction(const BluetoothSocketDisconnectFunction&) =
+      delete;
+  BluetoothSocketDisconnectFunction& operator=(
+      const BluetoothSocketDisconnectFunction&) = delete;
+
  protected:
   ~BluetoothSocketDisconnectFunction() override;
 
@@ -254,8 +266,6 @@ class BluetoothSocketDisconnectFunction
 
  private:
   virtual void OnSuccess();
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketDisconnectFunction);
 };
 
 class BluetoothSocketCloseFunction : public BluetoothSocketAsyncApiFunction {
@@ -264,14 +274,15 @@ class BluetoothSocketCloseFunction : public BluetoothSocketAsyncApiFunction {
 
   BluetoothSocketCloseFunction();
 
+  BluetoothSocketCloseFunction(const BluetoothSocketCloseFunction&) = delete;
+  BluetoothSocketCloseFunction& operator=(const BluetoothSocketCloseFunction&) =
+      delete;
+
  protected:
   ~BluetoothSocketCloseFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketCloseFunction);
 };
 
 class BluetoothSocketSendFunction : public BluetoothSocketAsyncApiFunction {
@@ -279,6 +290,10 @@ class BluetoothSocketSendFunction : public BluetoothSocketAsyncApiFunction {
   DECLARE_EXTENSION_FUNCTION("bluetoothSocket.send", BLUETOOTHSOCKET_SEND)
 
   BluetoothSocketSendFunction();
+
+  BluetoothSocketSendFunction(const BluetoothSocketSendFunction&) = delete;
+  BluetoothSocketSendFunction& operator=(const BluetoothSocketSendFunction&) =
+      delete;
 
  protected:
   ~BluetoothSocketSendFunction() override;
@@ -294,8 +309,6 @@ class BluetoothSocketSendFunction : public BluetoothSocketAsyncApiFunction {
   std::unique_ptr<bluetooth_socket::Send::Params> params_;
   scoped_refptr<net::IOBuffer> io_buffer_;
   size_t io_buffer_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketSendFunction);
 };
 
 class BluetoothSocketGetInfoFunction : public BluetoothSocketAsyncApiFunction {
@@ -304,14 +317,16 @@ class BluetoothSocketGetInfoFunction : public BluetoothSocketAsyncApiFunction {
 
   BluetoothSocketGetInfoFunction();
 
+  BluetoothSocketGetInfoFunction(const BluetoothSocketGetInfoFunction&) =
+      delete;
+  BluetoothSocketGetInfoFunction& operator=(
+      const BluetoothSocketGetInfoFunction&) = delete;
+
  protected:
   ~BluetoothSocketGetInfoFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketGetInfoFunction);
 };
 
 class BluetoothSocketGetSocketsFunction

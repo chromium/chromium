@@ -9,16 +9,6 @@
 // TODO(ayui): Split and add extensive testing for each endpoint after endpoints
 // are fully implemented.
 promise_test(async testCase => {
-  const bucket = await navigator.storageBuckets.open(
-      'bucket_name', { persisted: true });
-  testCase.add_cleanup(async () => {
-    await navigator.storageBuckets.delete('bucket_name');
-  });
-  const persisted = await bucket.persisted();
-  assert_true(persisted);
-}, 'persisted() should retrieve bucket persisted state');
-
-promise_test(async testCase => {
   const bucket = await navigator.storageBuckets.open('bucket_name');
   testCase.add_cleanup(async () => {
     await navigator.storageBuckets.delete('bucket_name');

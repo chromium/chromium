@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -27,6 +26,8 @@ class FakeAsyncPolicyLoader : public AsyncPolicyLoader {
  public:
   explicit FakeAsyncPolicyLoader(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+  FakeAsyncPolicyLoader(const FakeAsyncPolicyLoader&) = delete;
+  FakeAsyncPolicyLoader& operator=(const FakeAsyncPolicyLoader&) = delete;
 
   // Implementation of virtual methods from AsyncPolicyLoader base class.
   std::unique_ptr<PolicyBundle> Load() override;
@@ -45,8 +46,6 @@ class FakeAsyncPolicyLoader : public AsyncPolicyLoader {
 
  private:
   PolicyBundle policy_bundle_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAsyncPolicyLoader);
 };
 
 }  // namespace policy

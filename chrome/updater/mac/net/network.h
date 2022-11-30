@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,16 @@
 
 #include "base/threading/thread_checker.h"
 #include "components/update_client/network.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
+struct PolicyServiceProxyConfiguration;
+
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
-  NetworkFetcherFactory();
+  explicit NetworkFetcherFactory(absl::optional<PolicyServiceProxyConfiguration>
+                                     policy_service_proxy_configuration);
   NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
   NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
 

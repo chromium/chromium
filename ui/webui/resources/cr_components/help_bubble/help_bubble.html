@@ -1,0 +1,279 @@
+<style include="cr-hidden-style">
+  :host {
+    border-radius: 8px;
+    box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15), 0 2px 3px rgba(60, 64, 67, 0.3);
+    position: absolute;
+    z-index: 1;
+  }
+
+  #arrow {
+    --help-bubble-arrow-size: 11.3px;
+    --help-bubble-arrow-size-half: calc(var(--help-bubble-arrow-size) / 2);
+    --help-bubble-arrow-diameter: 16px; /* approx. */
+    --help-bubble-arrow-radius: calc(var(--help-bubble-arrow-diameter) / 2);
+    --help-bubble-arrow-edge-offset: 22px;
+    --help-bubble-arrow-offset: calc(var(--help-bubble-arrow-edge-offset) + var(--help-bubble-arrow-radius));
+    --help-bubble-arrow-border-radius: 2px;
+    position: absolute;
+  }
+
+  /* #inner-arrow is rotated and positioned in a container to simplify positioning */
+  #inner-arrow {
+    background-color: var(--help-bubble-background);
+    height: var(--help-bubble-arrow-size);
+    left: calc(0px - var(--help-bubble-arrow-size-half));
+    position: absolute;
+    top: calc(0px - var(--help-bubble-arrow-size-half));
+    transform: rotate(45deg);
+    width: var(--help-bubble-arrow-size);
+    z-index: -1;
+  }
+
+  #arrow.bottom-edge {
+    bottom: 0;
+  }
+
+  #arrow.bottom-edge #inner-arrow {
+    border-bottom-right-radius: var(--help-bubble-arrow-border-radius);
+  }
+
+  #arrow.top-edge {
+    top: 0;
+  }
+
+  #arrow.top-edge #inner-arrow {
+    border-top-left-radius: var(--help-bubble-arrow-border-radius);
+  }
+
+  #arrow.right-edge {
+    right: 0;
+  }
+
+  #arrow.right-edge #inner-arrow {
+    border-top-right-radius: var(--help-bubble-arrow-border-radius);
+  }
+
+  #arrow.left-edge {
+    left: 0;
+  }
+
+  #arrow.left-edge #inner-arrow {
+    border-bottom-left-radius: var(--help-bubble-arrow-border-radius);
+  }
+
+  #arrow.top-position {
+    top: var(--help-bubble-arrow-offset);
+  }
+
+  #arrow.vertical-center-position {
+    top: 50%;
+  }
+
+  #arrow.bottom-position {
+    bottom: var(--help-bubble-arrow-offset);
+  }
+
+  #arrow.left-position {
+    left: var(--help-bubble-arrow-offset);
+  }
+
+  #arrow.horizontal-center-position {
+    left: 50%;
+  }
+
+  #arrow.right-position {
+    right: var(--help-bubble-arrow-offset);
+  }
+
+  #topContainer {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #progress {
+    display: inline-block;
+    flex: auto;
+  }
+
+  #progress div {
+    --help-bubble-progress-size: 8px;
+    background-color: var(--help-bubble-text-color);
+    border: 1px solid var(--help-bubble-text-color);
+    border-radius: 50%;
+    display: inline-block;
+    height: var(--help-bubble-progress-size);
+    margin-inline-end: var(--help-bubble-element-spacing);
+    margin-top: 5px;
+    width: var(--help-bubble-progress-size);
+  }
+
+  #progress .total-progress {
+    background-color: var(--help-bubble-background);
+  }
+
+  #topBody,
+  #mainBody {
+    flex: 1;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    line-height: 20px;
+    margin: 0;
+  }
+
+  #title {
+    flex: 1;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0;
+  }
+
+  /* Note: help bubbles have the same color treatment in both light and dark
+   * themes, which is why the values below do not change based on theme
+   * preference. */
+  .help-bubble {
+    --help-bubble-background: var(--google-blue-700);
+    --help-bubble-element-spacing: 8px;
+    --help-bubble-text-color: var(--google-grey-200);
+    background-color: var(--help-bubble-background);
+    border-radius: 8px;
+    color: var(--help-bubble-text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 20px;
+    position: relative;
+    /*
+     * actual width is 340px when adding padding
+     * cannot use 'box-sizing: border-box' here because size calculation in js
+     */
+    width: 300px;
+  }
+
+  #main {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: var(--help-bubble-element-spacing);
+  }
+
+  #middleRowSpacer {
+    margin-inline-start: 32px;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--help-bubble-text-color);
+    --cr-icon-button-hover-background-color:
+      rgba(var(--google-blue-300-rgb), .3);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    --cr-icon-button-stroke-color: var(--help-bubble-text-color);
+    box-sizing: border-box;
+    display: block;
+    flex: none;
+    float: right;
+    height: var(--cr-icon-button-size);
+    margin: 0;
+    margin-inline-start: var(--help-bubble-element-spacing);
+    order: 2;
+    width: var(--cr-icon-button-size);
+  }
+
+  cr-icon-button:focus {
+    border: 2px solid var(--help-bubble-text-color);
+  }
+
+  #bodyIcon {
+    --body-icon-button-size: 24px;
+    --iron-icon-height: 18px;
+    --iron-icon-width: 18px;
+    background-color: var(--help-bubble-text-color);
+    border-radius: 50%;
+    box-sizing: border-box;
+    color: var(--help-bubble-background);
+    height: var(--body-icon-button-size);
+    margin-inline-end: var(--help-bubble-element-spacing);
+    padding: 3px;
+    text-align: center;
+    width: var(--body-icon-button-size);
+  }
+
+  #buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  cr-button {
+    --text-color: var(--help-bubble-text-color);
+    border-color: var(--help-bubble-text-color);
+  }
+
+  cr-button:not(:first-child) {
+    margin-inline-start: var(--help-bubble-element-spacing);
+  }
+
+  cr-button:focus {
+    border-color: var(--help-bubble-background);
+    box-shadow: 0 0 0 2px var(--help-bubble-text-color);
+  }
+
+  cr-button.default-button {
+    --text-color: var(--help-bubble-background);
+    background-color: var(--help-bubble-text-color);
+  }
+
+  cr-button.default-button:focus {
+    border: 2px solid var(--help-bubble-background);
+    box-shadow: 0 0 0 1px var(--help-bubble-text-color);
+  }
+</style>
+
+<div class="help-bubble" role="alertdialog" aria-modal="true"
+  aria-labelledby="title" aria-describedby="body">
+  <div id="topContainer">
+    <div id="bodyIcon" hidden$="[[!shouldShowBodyIcon_(bodyIconName)]]"
+      aria-label$="[[bodyIconAltText]]">
+      <iron-icon icon="iph:[[bodyIconName]]"></iron-icon>
+    </div>
+    <div id="progress" hidden$="[[!progress]]" role="progressbar"
+      aria-valuenow$="[[progress.current]]" aria-valuemin="1"
+      aria-valuemax$="[[progress.total]]">
+      <template is="dom-repeat" items="[[progressData_]]">
+        <div class$="[[getProgressClass_(index)]]"></div>
+      </template>
+    </div>
+    <h1 id="title" hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
+      [[titleText]]
+    </h1>
+    <p id="topBody" hidden$="[[!shouldShowBodyInTopContainer_(progress, titleText)]]">
+      [[bodyText]]
+    </p>
+    <cr-icon-button id="close" iron-icon="cr:close"
+      hidden$="[[!shouldShowCloseButton_(buttons, forceCloseButton)]]"
+      aria-label$="[[closeButtonAltText]]"
+      on-click="dismiss_" tabindex$="[[closeButtonTabIndex]]"
+    >
+    </cr-icon-button>
+  </div>
+  <div id="main" hidden$="[[!shouldShowBodyInMain_(progress, titleText)]]">
+    <div id="middleRowSpacer" hidden$="[[!shouldShowBodyIcon_(bodyIconName)]]"></div>
+    <p id="mainBody">[[bodyText]]</p>
+  </div>
+  <div id="buttons" hidden$="[[!buttons.length]]">
+    <template is="dom-repeat" items="[[buttons]]" sort="buttonSortFunc_">
+      <cr-button id$="[[getButtonId_(itemsIndex)]]"
+        tabindex$="[[getButtonTabIndex_(itemsIndex, item.isDefault)]]"
+        class$="[[getButtonClass_(item.isDefault)]]"
+        on-click="onButtonClick_" role="button"
+        aria-label="[[item.text]]">[[item.text]]</cr-button>
+    </template>
+  </div>
+  <div id="arrow" class$="[[getArrowClass_(position)]]">
+    <div id="inner-arrow"></div>
+  </div>
+</div>

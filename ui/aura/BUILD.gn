@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,6 +13,7 @@ component("aura") {
     "client/capture_delegate.h",
     "client/cursor_client.h",
     "client/cursor_client_observer.h",
+    "client/cursor_shape_client.h",
     "client/default_capture_client.h",
     "client/drag_drop_client.h",
     "client/drag_drop_client_observer.h",
@@ -31,6 +32,7 @@ component("aura") {
     "env_input_state_controller.h",
     "env_observer.h",
     "event_injector.h",
+    "host_frame_rate_throttler.h",
     "input_state_lookup.h",
     "layout_manager.h",
     "null_window_targeter.h",
@@ -59,6 +61,7 @@ component("aura") {
     "client/capture_client.cc",
     "client/cursor_client.cc",
     "client/cursor_client_observer.cc",
+    "client/cursor_shape_client.cc",
     "client/default_capture_client.cc",
     "client/drag_drop_client.cc",
     "client/drag_drop_delegate.cc",
@@ -73,6 +76,7 @@ component("aura") {
     "env.cc",
     "env_input_state_controller.cc",
     "event_injector.cc",
+    "host_frame_rate_throttler.cc",
     "input_state_lookup.cc",
     "layout_manager.cc",
     "native_window_occlusion_tracker.cc",
@@ -123,6 +127,7 @@ component("aura") {
     "//ui/events",
     "//ui/events:dom_keyboard_layout",
     "//ui/events:events_base",
+    "//ui/events:keyboard_hook",
     "//ui/events/platform",
     "//ui/gfx",
     "//ui/gfx:gfx_switches",
@@ -133,10 +138,11 @@ component("aura") {
   ]
 
   public_deps = [
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
+    "//ui/base/metadata",
     "//ui/compositor",
   ]
 
@@ -149,20 +155,11 @@ component("aura") {
     ]
   }
 
-  if (use_x11) {
-    public_deps += [ "//ui/base/x" ]
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/platform_window/x11",
-    ]
-  }
-
   if (is_win) {
     sources -= [ "input_state_lookup.cc" ]
 
     deps += [
       "//ipc",
-      "//ui/base/cursor",
       "//ui/platform_window/win",
     ]
   }
@@ -179,8 +176,6 @@ component("aura") {
     public += [ "screen_ozone.h" ]
     sources += [ "screen_ozone.cc" ]
   }
-
-  configs += [ "//build/config/compiler:noshadowing" ]
 }
 
 static_library("test_support") {
@@ -220,9 +215,6 @@ static_library("test_support") {
     "test/window_test_api.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [
     ":aura",
 
@@ -238,12 +230,11 @@ static_library("test_support") {
     "//skia",
     "//testing/gtest",
     "//ui/base:test_support",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime/init",
     "//ui/compositor:test_support",
     "//ui/display",
-    "//ui/display/manager",
     "//ui/events",
     "//ui/events:events_base",
     "//ui/events:test_support",
@@ -255,23 +246,6 @@ static_library("test_support") {
 
   if (is_win) {
     sources += [ "test/ui_controls_factory_aurawin.cc" ]
-  }
-
-  if (is_linux || is_chromeos) {
-    sources += [ "test/ui_controls_factory_aura_linux.cc" ]
-  }
-
-  if (use_x11) {
-    sources += [
-      "test/ui_controls_aurax11.cc",
-      "test/ui_controls_aurax11.h",
-      "test/x11_event_sender.h",
-    ]
-
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
   }
 
   if (use_ozone) {
@@ -316,10 +290,6 @@ executable("aura_demo") {
     "//ui/gl",
     "//ui/gl/init",
   ]
-
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 }
 
 test("aura_unittests") {
@@ -376,8 +346,10 @@ test("aura_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/present_view.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+    ]
   }
 
   data_deps = [ "//third_party/mesa_headers" ]
@@ -396,6 +368,7 @@ source_set("aura_interactive_ui_tests") {
       "//base/test:test_support",
       "//mojo/core/embedder",
       "//testing/gtest",
+      "//ui/base:test_support",
       "//ui/base/ime/init",
       "//ui/display:display",
       "//ui/gfx",

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,28 +15,16 @@ typedef struct {
   BOOL isVisible;
   // Is YES if keyboard is or becoming undocked from bottom of screen.
   BOOL isUndocked;
-  // Is YES if keyboard is or becoming split in more than one piece.
-  BOOL isSplit;
   // Is YES if a hardware keyboard is in use and only the top part of the
   // software keyboard is showing.
   BOOL isHardware;
-  // Is YES if a picker (iPhone only) is currently displayed instead of
-  // keyboard.
-  BOOL isPicker;
 } KeyboardState;
 
 // Delegate informed about the visible/hidden state of the keyboard.
 @protocol KeyboardObserverHelperConsumer <NSObject>
 
-// Indicates that |UIKeyboardWillHideNotification| was posted but the keyboard
-// was not hidden. For example, this can happen when jumping between fields.
-// Deprecated. This is not needed on iOS 13 and will be deleted once support for
-// iOS 12 is removed.
-- (void)keyboardDidStayOnScreen API_DEPRECATED("Not needed on iOS >12",
-                                               ios(11.0, 13.0));
-
 // Indicates that the keyboard state changed, at least on one of the
-// |KeyboardState| aspects.
+// `KeyboardState` aspects.
 - (void)keyboardWillChangeToState:(KeyboardState)keyboardState;
 
 @end
@@ -44,28 +32,25 @@ typedef struct {
 // Helper to observe the keyboard and report updates.
 @interface KeyboardObserverHelper : NSObject
 
-// Keyboard's UIView based on some known, undocumented classes. |nil| if the
-// keyboard is not present or found.
-// This can break on any iOS update to keyboard architecture.
-@property(class, readonly, nonatomic) UIView* keyboardView;
+// Singleton for KeyboardObserverHelper.
++ (instancetype)sharedKeyboardObserver;
 
-// Best layout guide for the keyboard including the prediction part of it. |nil|
-// if the keyboard is not present or found.
-// This can break on any iOS update to keyboard architecture.
-@property(class, readonly, nonatomic) id<EdgeLayoutGuideProvider>
-    keyboardLayoutGuide;
+- (instancetype)init NS_UNAVAILABLE;
 
-// Flag that indicates if the keyboard is on screen.
-// TODO(crbug.com/974226): look into deprecating keyboardOnScreen for
-// isKeyboardVisible.
-@property(nonatomic, readonly, getter=isKeyboardOnScreen) BOOL keyboardOnScreen;
+// Adds consumer of KeyboardObserverHelper.
+- (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer;
 
-// The consumer to inform of the keyboard state changes.
-@property(nonatomic, weak) id<KeyboardObserverHelperConsumer> consumer;
+// Flag that indicates if the keyboard is visible.
+@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
 
-// Current keyboard state.
-@property(nonatomic, readonly, getter=getKeyboardState)
-    KeyboardState keyboardState;
+// Returns keyboard's height if it covers the full width of the display,
+// otherwise returns 0. Note: This includes the keyboard accessory's height.
+// See also: `keyboardScreen`.
+@property(nonatomic, readonly) CGFloat visibleKeyboardHeight;
+
+// Screen where the keyboard is displayed. For use in multi-screen set-ups, like
+// Stage Manager.
++ (UIScreen*)keyboardScreen;
 
 @end
 

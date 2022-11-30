@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -33,29 +34,28 @@ void PlatformEventDispatcher::RemoveController(
   DCHECK(controllers_.Contains(controller));
 
   controllers_.erase(controller);
-  if (!is_dispatching_ && controllers_.IsEmpty()) {
+  if (!is_dispatching_ && controllers_.empty()) {
     StopListening();
     is_listening_ = false;
   }
 }
 
 void PlatformEventDispatcher::NotifyControllers() {
-  if (controllers_.IsEmpty())
+  if (controllers_.empty())
     return;
 
   {
     base::AutoReset<bool> change_is_dispatching(&is_dispatching_, true);
     // HashSet |controllers_| can be updated during an iteration, and it stops
     // the iteration.  Thus we store it into a Vector to access all elements.
-    HeapVector<Member<PlatformEventController>> snapshot_vector;
-    CopyToVector(controllers_, snapshot_vector);
+    HeapVector<Member<PlatformEventController>> snapshot_vector(controllers_);
     for (PlatformEventController* controller : snapshot_vector) {
       if (controllers_.Contains(controller))
         controller->DidUpdateData();
     }
   }
 
-  if (controllers_.IsEmpty()) {
+  if (controllers_.empty()) {
     StopListening();
     is_listening_ = false;
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,7 +24,7 @@ namespace net {
 class HostResolver;
 class HostPortPair;
 class NetLog;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace network {
@@ -49,11 +49,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   // mojom::HostResolver pipe, eg because it is handling ResolveHost requests
   // made directly on NetworkContext.
   HostResolver(net::HostResolver* internal_resolver, net::NetLog* net_log);
+
+  HostResolver(const HostResolver&) = delete;
+  HostResolver& operator=(const HostResolver&) = delete;
+
   ~HostResolver() override;
 
   void ResolveHost(
-      const net::HostPortPair& host,
-      const net::NetworkIsolationKey& network_isolation_key,
+      mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojom::ResolveHostParametersPtr optional_parameters,
       mojo::PendingRemote<mojom::ResolveHostClient> response_client) override;
   void MdnsListen(const net::HostPortPair& host,
@@ -82,12 +86,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   std::set<std::unique_ptr<HostResolverMdnsListener>, base::UniquePtrComparator>
       listeners_;
 
-  net::HostResolver* const internal_resolver_;
-  net::NetLog* const net_log_;
+  const raw_ptr<net::HostResolver> internal_resolver_;
+  const raw_ptr<net::NetLog> net_log_;
 
   base::WeakPtrFactory<HostResolver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolver);
 };
 
 }  // namespace network

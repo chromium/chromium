@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_FailsTypeCheck) {
       l10n_util::GetStringFUTF16(IDS_POLICY_TYPE_ERROR,
                                  base::ASCIIToUTF16(base::Value::GetTypeName(
                                      base::Value::Type::INTEGER))),
-      errors().begin()->second);
+      errors().begin()->second.message);
 }
 
 TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_Unspecified) {
@@ -81,7 +81,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_UnknownValue) {
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_POLICY_OUT_OF_RANGE_ERROR,
                 base::ASCIIToUTF16(base::NumberToString(impossible_value))),
-            errors().begin()->second);
+            errors().begin()->second.message);
 }
 
 TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_HomePage) {
@@ -93,7 +93,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_HomePage) {
   EXPECT_TRUE(CheckPolicySettings());
   ASSERT_EQ(1U, errors().size());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_POLICY_VALUE_DEPRECATED),
-            errors().begin()->second);
+            errors().begin()->second.message);
 }
 
 TEST_F(RestoreOnStartupPolicyHandlerTest,
@@ -108,10 +108,10 @@ TEST_F(RestoreOnStartupPolicyHandlerTest,
   EXPECT_TRUE(CheckPolicySettings());
   ASSERT_EQ(1U, errors().size());
   EXPECT_EQ(key::kCookiesSessionOnlyForUrls, errors().begin()->first);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_POLICY_OVERRIDDEN,
-                base::ASCIIToUTF16(key::kRestoreOnStartup)),
-            errors().begin()->second);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_POLICY_OVERRIDDEN,
+                                 base::ASCIIToUTF16(key::kRestoreOnStartup)),
+      errors().begin()->second.message);
 }
 
 TEST_F(RestoreOnStartupPolicyHandlerTest, ApplyPolicySettings_NotHomePage) {
@@ -139,6 +139,16 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_URLs) {
   // Specify the URLs value.
   SetPolicyValue(key::kRestoreOnStartup,
                  base::Value(SessionStartupPref::kPrefValueURLs));
+  // Checking should succeed with no errors.
+  EXPECT_TRUE(CheckPolicySettings());
+  EXPECT_TRUE(errors().empty());
+}
+
+TEST_F(RestoreOnStartupPolicyHandlerTest,
+       CheckPolicySettings_RestoreLastSessionAndURLs) {
+  // Specify the LastAndURLs value.
+  SetPolicyValue(key::kRestoreOnStartup,
+                 base::Value(SessionStartupPref::kPrefValueLastAndURLs));
   // Checking should succeed with no errors.
   EXPECT_TRUE(CheckPolicySettings());
   EXPECT_TRUE(errors().empty());

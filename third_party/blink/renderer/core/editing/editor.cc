@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/editor.h"
 
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
@@ -85,7 +86,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -360,6 +361,10 @@ bool Editor::DeleteSelectionAfterDraggingWithEvents(
   if (frame_->GetDocument()->GetFrame() != frame_)
     return false;
 
+  // No DOM mutation if EditContext is active.
+  if (frame_->GetInputMethodController().GetActiveEditContext())
+    return true;
+
   if (should_delete && drag_source->isConnected()) {
     DeleteSelectionWithSmartDelete(delete_mode,
                                    InputEvent::InputType::kDeleteByDrag,
@@ -393,6 +398,10 @@ bool Editor::ReplaceSelectionAfterDraggingWithEvents(
   // remaining actions;
   if (frame_->GetDocument()->GetFrame() != frame_)
     return false;
+
+  // No DOM mutation if EditContext is active.
+  if (frame_->GetInputMethodController().GetActiveEditContext())
+    return true;
 
   if (should_insert && drop_target->isConnected())
     ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type);
@@ -455,8 +464,7 @@ Editor::Editor(LocalFrame& frame)
       should_style_with_css_(false),
       kill_ring_(std::make_unique<KillRing>()),
       are_marked_text_matches_highlighted_(false),
-      default_paragraph_separator_(EditorParagraphSeparator::kIsDiv),
-      overwrite_mode_enabled_(false) {}
+      default_paragraph_separator_(EditorParagraphSeparator::kIsDiv) {}
 
 Editor::~Editor() = default;
 
@@ -680,7 +688,7 @@ void Editor::AddToKillRing(const EphemeralRange& range) {
   should_start_new_kill_ring_sequence_ = false;
 }
 
-EphemeralRange Editor::RangeForPoint(const IntPoint& frame_point) const {
+EphemeralRange Editor::RangeForPoint(const gfx::Point& frame_point) const {
   const PositionWithAffinity position_with_affinity =
       GetFrame().PositionForPoint(PhysicalOffset(frame_point));
   if (position_with_affinity.IsNull())
@@ -692,7 +700,7 @@ EphemeralRange Editor::RangeForPoint(const IntPoint& frame_point) const {
   if (previous.IsNotNull()) {
     const EphemeralRange previous_character_range =
         MakeRange(previous, position);
-    const IntRect rect = FirstRectForRange(previous_character_range);
+    const gfx::Rect rect = FirstRectForRange(previous_character_range);
     if (rect.Contains(frame_point))
       return EphemeralRange(previous_character_range);
   }
@@ -700,12 +708,34 @@ EphemeralRange Editor::RangeForPoint(const IntPoint& frame_point) const {
   const VisiblePosition next = NextPositionOf(position);
   const EphemeralRange next_character_range = MakeRange(position, next);
   if (next_character_range.IsNotNull()) {
-    const IntRect rect = FirstRectForRange(next_character_range);
+    const gfx::Rect rect = FirstRectForRange(next_character_range);
     if (rect.Contains(frame_point))
       return EphemeralRange(next_character_range);
   }
 
   return EphemeralRange();
+}
+
+EphemeralRange Editor::RangeBetweenPoints(const gfx::Point& start_point,
+                                          const gfx::Point& end_point) const {
+  const PositionWithAffinity start_position =
+      GetFrame().PositionForPoint(PhysicalOffset(start_point));
+  if (start_position.IsNull())
+    return EphemeralRange();
+  const VisiblePosition start_visible_position =
+      CreateVisiblePosition(start_position);
+  if (start_visible_position.IsNull())
+    return EphemeralRange();
+
+  const PositionWithAffinity end_position =
+      GetFrame().PositionForPoint(PhysicalOffset(end_point));
+  if (end_position.IsNull())
+    return EphemeralRange();
+  const VisiblePosition end_visible_position =
+      CreateVisiblePosition(end_position);
+  if (end_visible_position.IsNull())
+    return EphemeralRange();
+  return MakeRange(start_visible_position, end_visible_position);
 }
 
 void Editor::ComputeAndSetTypingStyle(CSSPropertyValueSet* style,
@@ -721,13 +751,15 @@ void Editor::ComputeAndSetTypingStyle(CSSPropertyValueSet* style,
   else
     typing_style_ = MakeGarbageCollected<EditingStyle>(style);
 
-  typing_style_->PrepareToApplyAt(
-      GetFrame()
-          .Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .VisibleStart()
-          .DeepEquivalent(),
-      EditingStyle::kPreserveWritingDirection);
+  const Position& position = GetFrame()
+                                 .Selection()
+                                 .ComputeVisibleSelectionInDOMTreeDeprecated()
+                                 .VisibleStart()
+                                 .DeepEquivalent();
+  if (position.IsNull())
+    return;
+  typing_style_->PrepareToApplyAt(position,
+                                  EditingStyle::kPreserveWritingDirection);
 
   // Handle block styles, substracting these from the typing style.
   EditingStyle* block_style =
@@ -815,7 +847,7 @@ Range* Editor::FindRangeOfString(
     const EphemeralRangeInFlatTree& reference_range,
     FindOptions options,
     bool* wrapped_around) {
-  if (target.IsEmpty())
+  if (target.empty())
     return nullptr;
 
   // Start from an edge of the reference range. Which edge is used depends on
@@ -885,9 +917,13 @@ void Editor::SetMarkedTextMatchesAreHighlighted(bool flag) {
 
 void Editor::RespondToChangedSelection() {
   GetSpellChecker().RespondToChangedSelection();
-  frame_->Client()->DidChangeSelection(
-      !GetFrameSelection().GetSelectionInDOMTree().IsRange());
+  SyncSelection(blink::SyncCondition::kNotForced);
   SetStartNewKillRingSequence(true);
+}
+
+void Editor::SyncSelection(SyncCondition force_sync) {
+  frame_->Client()->DidChangeSelection(
+      !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
 }
 
 SpellChecker& Editor::GetSpellChecker() const {
@@ -901,11 +937,6 @@ FrameSelection& Editor::GetFrameSelection() const {
 void Editor::SetMark() {
   mark_ = GetFrameSelection().ComputeVisibleSelectionInDOMTree();
   mark_is_directional_ = GetFrameSelection().IsDirectional();
-}
-
-void Editor::ToggleOverwriteModeEnabled() {
-  overwrite_mode_enabled_ = !overwrite_mode_enabled_;
-  GetFrameSelection().SetShouldShowBlockCursor(overwrite_mode_enabled_);
 }
 
 void Editor::ReplaceSelection(const String& text) {

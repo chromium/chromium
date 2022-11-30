@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 // Delegate protocol for PopupMenuTableViewController.
 @protocol PopupMenuTableViewControllerDelegate
 
-// Informs the delegate that |item| was selected with |origin| as the point of
+// Informs the delegate that `item` was selected with `origin` as the point of
 // origin of the action.
 - (void)popupMenuTableViewController:(PopupMenuTableViewController*)sender
                        didSelectItem:(TableViewItem<PopupMenuItem>*)item

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -80,10 +79,14 @@ class PermissionsData {
                   Manifest::Type manifest_type,
                   mojom::ManifestLocation location,
                   std::unique_ptr<const PermissionSet> initial_permissions);
+
+  PermissionsData(const PermissionsData&) = delete;
+  PermissionsData& operator=(const PermissionsData&) = delete;
+
   virtual ~PermissionsData();
 
   // Returns true if the extension is a COMPONENT extension or is on the
-  // whitelist of extensions that can script all pages.
+  // allowlist of extensions that can script all pages.
   // NOTE: This is static because it is used during extension initialization,
   // before the extension has an associated PermissionsData object.
   static bool CanExecuteScriptEverywhere(const ExtensionId& extension_id,
@@ -107,6 +110,10 @@ class PermissionsData {
   // construction, since extensions are initialized across multiple threads.
   void BindToCurrentThread() const;
 
+  // Sets the current context ID for the extension. Must be called on the
+  // same thread this is bound to, if any.
+  void SetContextId(int context_id) const;
+
   // Sets the runtime permissions of the given |extension| to |active| and
   // |withheld|.
   void SetPermissions(std::unique_ptr<const PermissionSet> active,
@@ -124,7 +131,7 @@ class PermissionsData {
   // which URLs extensions can interact with. A default policy can be set with
   // SetDefaultPolicyHostRestrictions. A policy specific to this extension
   // can be set with SetPolicyHostRestrictions.
-  void SetUsesDefaultHostRestrictions(int context_id) const;
+  void SetUsesDefaultHostRestrictions() const;
 
   // Applies profile dependent restrictions from enterprise policy limiting
   // which URLs all extensions can interact with. This restriction can
@@ -133,6 +140,11 @@ class PermissionsData {
       int context_id,
       const URLPatternSet& default_policy_blocked_hosts,
       const URLPatternSet& default_policy_allowed_hosts);
+
+  // Sets the sites that are explicitly allowed or blocked by the user.
+  static void SetUserHostRestrictions(int context_id,
+                                      URLPatternSet user_blocked_hosts,
+                                      URLPatternSet user_allowed_hosts);
 
   // Updates the tab-specific permissions of |tab_id| to include those from
   // |permissions|.
@@ -148,9 +160,10 @@ class PermissionsData {
   // Note this does not include APIs with no corresponding permission, like
   // "runtime" or "browserAction".
   // TODO(mpcomplete): drop the "API" from these names, it's confusing.
-  bool HasAPIPermission(APIPermission::ID permission) const;
+  bool HasAPIPermission(mojom::APIPermissionID permission) const;
   bool HasAPIPermission(const std::string& permission_name) const;
-  bool HasAPIPermissionForTab(int tab_id, APIPermission::ID permission) const;
+  bool HasAPIPermissionForTab(int tab_id,
+                              mojom::APIPermissionID permission) const;
   bool CheckAPIPermissionWithParam(
       mojom::APIPermissionID permission,
       const APIPermission::CheckParam* param) const;
@@ -245,30 +258,36 @@ class PermissionsData {
     return *withheld_permissions_unsafe_;
   }
 
-  // Returns list of hosts this extension may not interact with by policy.
+  // Returns the default list of hosts that the enterprise policy has explicitly
+  // blocked or allowed extensions to run on.
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
   static URLPatternSet GetDefaultPolicyBlockedHosts(int context_id);
-
-  // Returns list of hosts this extension may interact with regardless of
-  // what is defined by policy_blocked_hosts().
-  // This should only be used for 1. Serialization when initializing renderers
-  // or 2. Called from utility methods above. For all other uses, call utility
-  // methods instead (e.g. CanAccessPage()).
   static URLPatternSet GetDefaultPolicyAllowedHosts(int context_id);
 
-  // Returns list of hosts this extension may not interact with by policy.
+  // Returns the list of hosts that the user has explicitly allowed or blocked
+  // all extensions from running on. As with the policy host restrictions above,
+  // accessing these should only be done for serialization and to update
+  // other services; otherwise, rely on methods like `CanAccessPage()`.
+  static URLPatternSet GetUserAllowedHosts(int context_id);
+  static URLPatternSet GetUserBlockedHosts(int context_id);
+
+  // Returns the list of user-restricted hosts that applies to the associated
+  // extension. This looks at the associated context ID and also at whether the
+  // user is allowed to apply settings to the extension (which is disallowed
+  // for e.g. policy-installed extensions). As above, accessing these should
+  // only be done for serialization and to update other services; otherwise,
+  // rely on methods like `CanAccessPage()`.
+  URLPatternSet GetUserBlockedHosts() const;
+
+  // Returns list of hosts for *this* extension that enterprise policy has
+  // explicitly blocked or allowed extensions to run on. If the extension uses
+  // the default set, this will fall back to `GetDefaultPolicy*Hosts()`.
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
   URLPatternSet policy_blocked_hosts() const;
-
-  // Returns list of hosts this extension may interact with regardless of
-  // what is defined by policy_blocked_hosts().
-  // This should only be used for 1. Serialization when initializing renderers
-  // or 2. Called from utility methods above. For all other uses, call utility
-  // methods instead (e.g. CanAccessPage()).
   URLPatternSet policy_allowed_hosts() const;
 
   // Check if a specific URL is blocked by policy from extension use at runtime.
@@ -341,16 +360,18 @@ class PermissionsData {
   mutable URLPatternSet policy_allowed_hosts_unsafe_;
 
   // An identifier for the context associated with the PermissionsData.
-  // It required in order to properly map the context to the right default
-  // policy hosts.
-  // The context_id is empty if the default policy hosts are not used.
-  mutable base::Optional<int> context_id_;
+  // This is required in order to properly map the context to the right default
+  // default policy-level and user-level settings.
+  // If empty, these settings are ignored. This should mostly only be the case
+  // in unittests.
+  mutable absl::optional<int> context_id_;
+
+  // Whether the extension uses the default policy host restrictions.
+  mutable bool uses_default_policy_host_restrictions_ = true;
 
   mutable TabPermissionsMap tab_specific_permissions_;
 
   mutable std::unique_ptr<base::ThreadChecker> thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsData);
 };
 
 }  // namespace extensions

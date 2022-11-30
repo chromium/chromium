@@ -1,15 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/translate/translate_internals/translate_internals_handler.h"
 
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -51,20 +53,20 @@ TranslateInternalsHandler::TranslateInternalsHandler() {
 TranslateInternalsHandler::~TranslateInternalsHandler() = default;
 
 // static.
-void TranslateInternalsHandler::GetLanguages(base::DictionaryValue* dict) {
-  DCHECK(dict);
+base::Value::Dict TranslateInternalsHandler::GetLanguages() {
+  base::Value::Dict dict;
 
   const std::string app_locale =
       translate::TranslateDownloadManager::GetInstance()->application_locale();
   std::vector<std::string> language_codes;
   l10n_util::GetAcceptLanguagesForLocale(app_locale, &language_codes);
 
-  for (auto it = language_codes.begin(); it != language_codes.end(); ++it) {
-    const std::string& lang_code = *it;
+  for (auto& lang_code : language_codes) {
     std::u16string lang_name =
         l10n_util::GetDisplayNameForLocale(lang_code, app_locale, false);
-    dict->SetString(lang_code, lang_name);
+    dict.Set(lang_code, lang_name);
   }
+  return dict;
 }
 
 void TranslateInternalsHandler::RegisterMessageCallbacks() {
@@ -88,27 +90,27 @@ void TranslateInternalsHandler::RegisterMessageCallbacks() {
 
 void TranslateInternalsHandler::AddLanguageDetectionDetails(
     const translate::LanguageDetectionDetails& details) {
-  base::DictionaryValue dict;
-  dict.SetDouble("time", details.time.ToJsTime());
-  dict.SetString("url", details.url.spec());
-  dict.SetString("content_language", details.content_language);
-  dict.SetString("model_detected_language", details.model_detected_language);
-  dict.SetBoolean("is_model_reliable", details.is_model_reliable);
-  dict.SetDouble("model_reliability_score", details.model_reliability_score);
-  dict.SetBoolean("has_notranslate", details.has_notranslate);
-  dict.SetString("html_root_language", details.html_root_language);
-  dict.SetString("adopted_language", details.adopted_language);
-  dict.SetString("content", details.contents);
-  dict.SetString("detection_model_version", details.detection_model_version);
+  base::Value::Dict dict;
+  dict.Set("time", details.time.ToJsTime());
+  dict.Set("url", details.url.spec());
+  dict.Set("content_language", details.content_language);
+  dict.Set("model_detected_language", details.model_detected_language);
+  dict.Set("is_model_reliable", details.is_model_reliable);
+  dict.Set("model_reliability_score", details.model_reliability_score);
+  dict.Set("has_notranslate", details.has_notranslate);
+  dict.Set("html_root_language", details.html_root_language);
+  dict.Set("adopted_language", details.adopted_language);
+  dict.Set("content", details.contents);
+  dict.Set("detection_model_version", details.detection_model_version);
   SendMessageToJs("languageDetectionInfoAdded", dict);
 }
 
 void TranslateInternalsHandler::OnTranslateError(
     const translate::TranslateErrorDetails& details) {
-  base::DictionaryValue dict;
-  dict.SetDouble("time", details.time.ToJsTime());
-  dict.SetString("url", details.url.spec());
-  dict.SetInteger("error", details.error);
+  base::Value::Dict dict;
+  dict.Set("time", details.time.ToJsTime());
+  dict.Set("url", details.url.spec());
+  dict.Set("error", base::to_underlying(details.error));
   SendMessageToJs("translateErrorDetailsAdded", dict);
 }
 
@@ -116,80 +118,73 @@ void TranslateInternalsHandler::OnTranslateInit(
     const translate::TranslateInitDetails& details) {
   if (!GetTranslateClient()->IsTranslatableURL(details.url))
     return;
-  base::DictionaryValue dict;
-  dict.SetKey("time", base::Value(details.time.ToJsTime()));
-  dict.SetKey("url", base::Value(details.url.spec()));
+  base::Value::Dict dict;
+  dict.Set("time", details.time.ToJsTime());
+  dict.Set("url", details.url.spec());
 
-  dict.SetKey("page_language_code", base::Value(details.page_language_code));
-  dict.SetKey("target_lang", base::Value(details.target_lang));
+  dict.Set("page_language_code", details.page_language_code);
+  dict.Set("target_lang", details.target_lang);
 
-  dict.SetKey("can_auto_translate",
-              base::Value(details.decision.can_auto_translate()));
-  dict.SetKey("can_show_ui", base::Value(details.decision.can_show_ui()));
-  dict.SetKey("can_auto_href_translate",
-              base::Value(details.decision.can_auto_href_translate()));
-  dict.SetKey("can_show_href_translate_ui",
-              base::Value(details.decision.can_show_href_translate_ui()));
-  dict.SetKey(
-      "can_show_predefined_language_translate_ui",
-      base::Value(
-          details.decision.can_show_predefined_language_translate_ui()));
-  dict.SetKey("should_suppress_from_ranker",
-              base::Value(details.decision.should_suppress_from_ranker()));
-  dict.SetKey("is_triggering_possible",
-              base::Value(details.decision.IsTriggeringPossible()));
-  dict.SetKey("should_auto_translate",
-              base::Value(details.decision.ShouldAutoTranslate()));
-  dict.SetKey("should_show_ui", base::Value(details.decision.ShouldShowUI()));
+  dict.Set("can_auto_translate", details.decision.can_auto_translate());
+  dict.Set("can_show_ui", details.decision.can_show_ui());
+  dict.Set("can_auto_href_translate",
+           details.decision.can_auto_href_translate());
+  dict.Set("can_show_href_translate_ui",
+           details.decision.can_show_href_translate_ui());
+  dict.Set("can_show_predefined_language_translate_ui",
+           details.decision.can_show_predefined_language_translate_ui());
+  dict.Set("should_suppress_from_ranker",
+           details.decision.should_suppress_from_ranker());
+  dict.Set("is_triggering_possible", details.decision.IsTriggeringPossible());
+  dict.Set("should_auto_translate", details.decision.ShouldAutoTranslate());
+  dict.Set("should_show_ui", details.decision.ShouldShowUI());
 
-  dict.SetKey("auto_translate_target",
-              base::Value(details.decision.auto_translate_target));
-  dict.SetKey("href_translate_target",
-              base::Value(details.decision.href_translate_target));
-  dict.SetKey("predefined_translate_target",
-              base::Value(details.decision.predefined_translate_target));
+  dict.Set("auto_translate_target", details.decision.auto_translate_target);
+  dict.Set("href_translate_target", details.decision.href_translate_target);
+  dict.Set("predefined_translate_target",
+           details.decision.predefined_translate_target);
 
-  dict.SetKey("ui_shown", base::Value(details.ui_shown));
+  dict.Set("ui_shown", details.ui_shown);
   SendMessageToJs("translateInitDetailsAdded", dict);
 }
 
 void TranslateInternalsHandler::OnTranslateEvent(
     const translate::TranslateEventDetails& details) {
-  base::DictionaryValue dict;
-  dict.SetDouble("time", details.time.ToJsTime());
-  dict.SetString("filename", details.filename);
-  dict.SetInteger("line", details.line);
-  dict.SetString("message", details.message);
+  base::Value::Dict dict;
+  dict.Set("time", details.time.ToJsTime());
+  dict.Set("filename", details.filename);
+  dict.Set("line", details.line);
+  dict.Set("message", details.message);
   SendMessageToJs("translateEventDetailsAdded", dict);
 }
 
-void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue* args) {
+void TranslateInternalsHandler::OnRemovePrefItem(
+    const base::Value::List& args) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
-  std::string pref_name;
-  if (!args->GetString(0, &pref_name))
+  if (!args[0].is_string())
     return;
 
+  const std::string& pref_name = args[0].GetString();
   if (pref_name == "blocked_languages") {
-    std::string language;
-    if (!args->GetString(1, &language))
+    if (!args[1].is_string())
       return;
+    const std::string& language = args[1].GetString();
     translate_prefs->UnblockLanguage(language);
-  } else if (pref_name == "site_blacklist") {
-    std::string site;
-    if (!args->GetString(1, &site))
+  } else if (pref_name == "site_blocklist") {
+    if (!args[1].is_string())
       return;
+    const std::string& site = args[1].GetString();
     translate_prefs->RemoveSiteFromNeverPromptList(site);
-  } else if (pref_name == "whitelists") {
-    std::string from, to;
-    if (!args->GetString(1, &from))
+  } else if (pref_name == "allowlists") {
+    if (!args[1].is_string())
       return;
-    if (!args->GetString(2, &to))
+    if (!args[2].is_string())
       return;
+    const std::string& from = args[1].GetString();
+    const std::string& to = args[2].GetString();
     translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(from, to);
-  } else if (pref_name == "too_often_denied") {
-    translate_prefs->ResetDenialState();
   } else {
     return;
   }
@@ -198,65 +193,67 @@ void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue* args) {
 }
 
 void TranslateInternalsHandler::OnSetRecentTargetLanguage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
-  std::string new_value;
-  if (!args->GetString(0, &new_value))
+  if (!args[0].is_string())
     return;
 
+  const std::string& new_value = args[0].GetString();
   translate_prefs->SetRecentTargetLanguage(new_value);
 
   SendPrefsToJs();
 }
 
-void TranslateInternalsHandler::OnOverrideCountry(const base::ListValue* args) {
-  std::string country;
-  if (args->GetString(0, &country)) {
+void TranslateInternalsHandler::OnOverrideCountry(
+    const base::Value::List& args) {
+  if (args[0].is_string()) {
+    const std::string& country = args[0].GetString();
     variations::VariationsService* variations_service = GetVariationsService();
     SendCountryToJs(
         variations_service->OverrideStoredPermanentCountry(country));
   }
 }
 
-void TranslateInternalsHandler::OnRequestInfo(const base::ListValue* /*args*/) {
+void TranslateInternalsHandler::OnRequestInfo(
+    const base::Value::List& /*args*/) {
   SendPrefsToJs();
   SendSupportedLanguagesToJs();
   SendCountryToJs(false);
 }
 
-void TranslateInternalsHandler::SendMessageToJs(const std::string& message,
-                                                const base::Value& value) {
+void TranslateInternalsHandler::SendMessageToJs(
+    base::StringPiece message,
+    const base::Value::Dict& value) {
   const char func[] = "cr.webUIListenerCallback";
   base::Value message_data(message);
-  std::vector<const base::Value*> args{&message_data, &value};
+  base::ValueView args[] = {message_data, value};
   CallJavascriptFunction(func, args);
 }
 
 void TranslateInternalsHandler::SendPrefsToJs() {
   PrefService* prefs = GetTranslateClient()->GetPrefs();
 
-  base::DictionaryValue dict;
-
   static const char* const keys[] = {
-      language::prefs::kFluentLanguages,
+      language::prefs::kAcceptLanguages,
+      prefs::kBlockedLanguages,
       prefs::kOfferTranslateEnabled,
-      translate::TranslatePrefs::kPrefTranslateRecentTarget,
-      translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
-      translate::TranslatePrefs::kPrefNeverPromptSitesWithTime,
       prefs::kPrefAlwaysTranslateList,
+      prefs::kPrefTranslateRecentTarget,
+      translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
+      prefs::kPrefNeverPromptSitesWithTime,
       translate::TranslatePrefs::kPrefTranslateDeniedCount,
       translate::TranslatePrefs::kPrefTranslateIgnoredCount,
       translate::TranslatePrefs::kPrefTranslateAcceptedCount,
-      translate::TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage,
-      translate::TranslatePrefs::kPrefTranslateTooOftenDeniedForLanguage,
-      language::prefs::kAcceptLanguages,
   };
+
+  base::Value::Dict dict;
   for (const char* key : keys) {
     const PrefService::Preference* pref = prefs->FindPreference(key);
     if (pref)
-      dict.SetKey(key, pref->GetValue()->Clone());
+      dict.Set(translate::TranslatePrefs::MapPreferenceName(key),
+               pref->GetValue()->Clone());
   }
 
   SendMessageToJs("prefsUpdated", dict);
@@ -273,13 +270,13 @@ void TranslateInternalsHandler::SendSupportedLanguagesToJs() {
   base::Time last_updated =
       translate::TranslateDownloadManager::GetSupportedLanguagesLastUpdated();
 
-  auto languages_list = std::make_unique<base::ListValue>();
-  for (const std::string& lang : languages)
-    languages_list->AppendString(lang);
+  base::Value::List languages_list;
+  for (std::string& lang : languages)
+    languages_list.Append(std::move(lang));
 
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   dict.Set("languages", std::move(languages_list));
-  dict.SetDouble("last_updated", last_updated.ToJsTime());
+  dict.Set("last_updated", last_updated.ToJsTime());
   SendMessageToJs("supportedLanguagesUpdated", dict);
 }
 
@@ -292,11 +289,11 @@ void TranslateInternalsHandler::SendCountryToJs(bool was_updated) {
   country = variations_service->GetStoredPermanentCountry();
   overridden_country = variations_service->GetOverriddenPermanentCountry();
 
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   if (!country.empty()) {
-    dict.SetString("country", country);
-    dict.SetBoolean("update", was_updated);
-    dict.SetBoolean("overridden", !overridden_country.empty());
+    dict.Set("country", country);
+    dict.Set("update", was_updated);
+    dict.Set("overridden", !overridden_country.empty());
   }
   SendMessageToJs("countryUpdated", dict);
 }

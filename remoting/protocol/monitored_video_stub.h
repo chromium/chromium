@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,12 @@
 #define REMOTING_PROTOCOL_MONITORED_VIDEO_STUB_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "remoting/protocol/video_stub.h"
 
-namespace base {
-class ThreadChecker;
-} // namespace base
-
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // MonitoredVideoStub is responsible for notifying the event handler if no
 // frames have been received within |connectivity_check_delay|.
@@ -38,6 +33,10 @@ class MonitoredVideoStub : public VideoStub {
       VideoStub* video_stub,
       base::TimeDelta connectivity_check_delay,
       const ChannelStateCallback& callback);
+
+  MonitoredVideoStub(const MonitoredVideoStub&) = delete;
+  MonitoredVideoStub& operator=(const MonitoredVideoStub&) = delete;
+
   ~MonitoredVideoStub() override;
 
   // VideoStub implementation.
@@ -48,16 +47,14 @@ class MonitoredVideoStub : public VideoStub {
   void OnConnectivityCheckTimeout();
   void NotifyChannelState(bool connected);
 
-  VideoStub* video_stub_;
+  raw_ptr<VideoStub> video_stub_;
   ChannelStateCallback callback_;
-  base::ThreadChecker thread_checker_;
   bool is_connected_;
   base::DelayTimer connectivity_check_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(MonitoredVideoStub);
+  THREAD_CHECKER(thread_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MONITORED_VIDEO_STUB_H_

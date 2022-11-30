@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,15 @@ bool ExternalDataFetcher::Equals(const ExternalDataFetcher* first,
 
 void ExternalDataFetcher::Fetch(FetchCallback callback) const {
   if (manager_)
-    manager_->Fetch(policy_, std::move(callback));
+    manager_->Fetch(policy_, std::string(), std::move(callback));
+  else
+    std::move(callback).Run(nullptr, base::FilePath());
+}
+
+void ExternalDataFetcher::Fetch(const std::string& field_name,
+                                FetchCallback callback) const {
+  if (manager_)
+    manager_->Fetch(policy_, field_name, std::move(callback));
   else
     std::move(callback).Run(nullptr, base::FilePath());
 }

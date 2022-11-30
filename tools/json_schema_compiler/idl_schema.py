@@ -1,5 +1,5 @@
-#! /usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -575,9 +575,8 @@ def Load(filename):
   Python dictionary in a format that the JSON schema compiler expects to see.
   '''
 
-  f = open(filename, 'r')
-  contents = f.read()
-  f.close()
+  with open(filename, 'rb') as handle:
+    contents = handle.read().decode('utf-8')
 
   return Process(contents, filename)
 
@@ -605,6 +604,10 @@ def Main():
       print(json.dumps(schema, indent=2))
   else:
     contents = sys.stdin.read()
+    for i, char in enumerate(contents):
+      if not char.isascii():
+        raise Exception('Non-ascii character "%s" (ord %d) found at offset %d.'
+                        % (char, ord(char), i))
     idl = idl_parser.IDLParser().ParseData(contents, '<stdin>')
     schema = IDLSchema(idl).process()
     print(json.dumps(schema, indent=2))

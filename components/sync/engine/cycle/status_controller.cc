@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,20 @@
 
 namespace syncer {
 
-StatusController::StatusController() {}
+StatusController::StatusController() = default;
 
-StatusController::~StatusController() {}
+StatusController::~StatusController() = default;
 
-const ModelTypeSet StatusController::get_updates_request_types() const {
-  return model_neutral_.get_updates_request_types;
+ModelTypeSet StatusController::get_updated_types() const {
+  return model_neutral_.updated_types;
 }
 
-void StatusController::set_get_updates_request_types(ModelTypeSet value) {
-  model_neutral_.get_updates_request_types = value;
+void StatusController::add_updated_type(ModelType type) {
+  model_neutral_.updated_types.Put(type);
+}
+
+void StatusController::clear_updated_types() {
+  model_neutral_.updated_types.Clear();
 }
 
 void StatusController::increment_num_updates_downloaded_by(int value) {
@@ -28,11 +32,6 @@ void StatusController::increment_num_updates_downloaded_by(int value) {
 void StatusController::increment_num_tombstone_updates_downloaded_by(
     int value) {
   model_neutral_.num_tombstone_updates_downloaded_total += value;
-}
-
-void StatusController::increment_num_reflected_updates_downloaded_by(
-    int value) {
-  model_neutral_.num_reflected_updates_downloaded_total += value;
 }
 
 void StatusController::UpdateStartTime() {
@@ -51,28 +50,8 @@ void StatusController::increment_num_successful_commits() {
   model_neutral_.num_successful_commits++;
 }
 
-void StatusController::increment_num_updates_applied_by(int value) {
-  model_neutral_.num_updates_applied += value;
-}
-
-void StatusController::increment_num_encryption_conflicts_by(int value) {
-  model_neutral_.num_encryption_conflicts += value;
-}
-
-void StatusController::increment_num_hierarchy_conflicts_by(int value) {
-  model_neutral_.num_hierarchy_conflicts += value;
-}
-
 void StatusController::increment_num_server_conflicts() {
   model_neutral_.num_server_conflicts++;
-}
-
-void StatusController::increment_num_local_overwrites() {
-  model_neutral_.num_local_overwrites++;
-}
-
-void StatusController::increment_num_server_overwrites() {
-  model_neutral_.num_server_overwrites++;
 }
 
 void StatusController::set_last_get_key_result(const SyncerError result) {
@@ -92,36 +71,12 @@ SyncerError StatusController::last_get_key_result() const {
   return model_neutral_.last_get_key_result;
 }
 
-int StatusController::num_updates_applied() const {
-  return model_neutral_.num_updates_applied;
-}
-
-int StatusController::num_server_overwrites() const {
-  return model_neutral_.num_server_overwrites;
-}
-
-int StatusController::num_local_overwrites() const {
-  return model_neutral_.num_local_overwrites;
-}
-
-int StatusController::num_encryption_conflicts() const {
-  return model_neutral_.num_encryption_conflicts;
-}
-
-int StatusController::num_hierarchy_conflicts() const {
-  return model_neutral_.num_hierarchy_conflicts;
-}
-
 int StatusController::num_server_conflicts() const {
   return model_neutral_.num_server_conflicts;
 }
 
 int StatusController::TotalNumConflictingItems() const {
-  int sum = 0;
-  sum += num_encryption_conflicts();
-  sum += num_hierarchy_conflicts();
-  sum += num_server_conflicts();
-  return sum;
+  return num_server_conflicts();
 }
 
 }  // namespace syncer

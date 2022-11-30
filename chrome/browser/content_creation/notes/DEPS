@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/browser_ui/share",
+  "+components/content_creation/notes",
+  "+components/keyed_service/core",
+  "+components/image_fetcher",
+]

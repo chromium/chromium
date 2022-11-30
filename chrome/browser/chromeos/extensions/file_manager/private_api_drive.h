@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,9 +14,10 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-forward.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 
 namespace google_apis {
@@ -96,7 +97,7 @@ class FileManagerPrivateSearchDriveFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnSearchDriveFs(std::unique_ptr<base::ListValue> results);
+  void OnSearchDriveFs(absl::optional<base::Value::List> results);
 
   base::TimeTicks operation_start_;
   bool is_offline_;
@@ -125,7 +126,7 @@ class FileManagerPrivateSearchDriveMetadataFunction
 
  private:
   void OnSearchDriveFs(const std::string& query_text,
-                       std::unique_ptr<base::ListValue> results);
+                       absl::optional<base::Value::List> results);
 
   base::TimeTicks operation_start_;
   SearchType search_type_;
@@ -165,7 +166,7 @@ class FileManagerPrivateInternalGetDownloadUrlFunction
 
   // Callback with an |access_token|, called by
   // drive::DriveReadonlyTokenFetcher.
-  void OnTokenFetched(google_apis::DriveApiErrorCode code,
+  void OnTokenFetched(google_apis::ApiErrorCode code,
                       const std::string& access_token);
 
   ResponseAction RunAsyncForDriveFs(
@@ -187,6 +188,32 @@ class FileManagerPrivateNotifyDriveDialogResultFunction
 
  protected:
   ~FileManagerPrivateNotifyDriveDialogResultFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.pollDriveHostedFilePinStates method.
+class FileManagerPrivatePollDriveHostedFilePinStatesFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.pollDriveHostedFilePinStates",
+                             FILEMANAGERPRIVATE_POLLDRIVEHOSTEDFILEPINSTATES)
+
+ protected:
+  ~FileManagerPrivatePollDriveHostedFilePinStatesFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.openManageSyncSettings method.
+class FileManagerPrivateOpenManageSyncSettingsFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.openManageSyncSettings",
+                             FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS)
+
+ protected:
+  ~FileManagerPrivateOpenManageSyncSettingsFunction() override = default;
 
   ResponseAction Run() override;
 };

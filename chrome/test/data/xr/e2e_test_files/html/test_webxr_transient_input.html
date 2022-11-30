@@ -13,8 +13,6 @@ input such a user tapping on the canvas for an inline session.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       var selectStartCount = 0;
       var selectEndCount = 0;
       var selectCount = 0;
@@ -24,11 +22,15 @@ input such a user tapping on the canvas for an inline session.
       var finishAfterEachInput = true;
 
       gl = webglCanvas.getContext('webgl', { xrCompatible: true });
+      webglCanvas.onclick = null;
 
       var inputSourceAdded = false;
       function onInputSourcesChange() {
         // Toggle whether or not we are "inside" a pair of input events
         inputSourceAdded = !inputSourceAdded;
+        console.log(
+            'Input sources changed for iteration' + currentIteration +
+            ', input source added: ' + inputSourceAdded);
         if (!inputSourceAdded) {
           // If we closed this out, let's ensure we got all of the
           // events that we expect.
@@ -55,6 +57,7 @@ input such a user tapping on the canvas for an inline session.
         assert_true(selectStartCount == selectCount,
                     'selectstart fired before select');
         selectStartCount++;
+        console.log('Select started, total count: ' + selectStartCount);
       }
 
       function onSelect() {
@@ -65,6 +68,7 @@ input such a user tapping on the canvas for an inline session.
         assert_true(selectCount == selectEndCount,
                     'select fired after selectend');
         selectCount++;
+        console.log('Select, total count: ' + selectCount);
       }
 
       function onSelectEnd() {
@@ -75,6 +79,7 @@ input such a user tapping on the canvas for an inline session.
                     'selectend fired after selectstart');
         assert_true(selectEndCount == selectCount,
                     'selectend fired before select');
+        console.log('Select ended, total count: ' + selectEndCount);
       }
 
       function stepSetupListeners(numIterations) {

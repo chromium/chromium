@@ -1,13 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://nearby/shared/nearby_page_template.m.js';
-// #import {waitAfterNextRender, isChildVisible} from '../../test_util.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
+import {NearbyPageTemplateElement} from 'chrome://nearby/shared/nearby_page_template.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {isChildVisible} from '../../test_util.js';
 
 suite('nearby-page-template', function() {
   /** @type {!NearbyPageTemplateElement} */
@@ -27,12 +28,14 @@ suite('nearby-page-template', function() {
    * @return {boolean} Returns true if the element is visible in the shadow dom.
    */
   function isVisible(selector) {
-    return test_util.isChildVisible(element, selector, false);
+    return isChildVisible(element, selector, false);
   }
 
   test('No buttons shown by default', async function() {
-    assertEquals('', element.$$('#pageTitle').innerHTML.trim());
-    assertEquals('', element.$$('#pageSubTitle').innerHTML.trim());
+    assertEquals(
+        '', element.shadowRoot.querySelector('#pageTitle').innerHTML.trim());
+    assertEquals(
+        '', element.shadowRoot.querySelector('#pageSubTitle').innerHTML.trim());
     assertFalse(isVisible('#utilityButton'));
     assertFalse(isVisible('#actionButton'));
     assertFalse(isVisible('#cancelButton'));
@@ -46,10 +49,14 @@ suite('nearby-page-template', function() {
     element.cancelButtonLabel = 'cancel';
     element.actionButtonLabel = 'action';
 
-    await test_util.waitAfterNextRender(element);
+    await waitAfterNextRender(element);
 
-    assertEquals('title', element.$$('#pageTitle').innerHTML.trim());
-    assertEquals('subTitle', element.$$('#pageSubTitle').innerHTML.trim());
+    assertEquals(
+        'title',
+        element.shadowRoot.querySelector('#pageTitle').innerHTML.trim());
+    assertEquals(
+        'subTitle',
+        element.shadowRoot.querySelector('#pageSubTitle').innerHTML.trim());
     assertTrue(isVisible('#utilityButton'));
     assertTrue(isVisible('#actionButton'));
     assertTrue(isVisible('#cancelButton'));
@@ -59,21 +66,24 @@ suite('nearby-page-template', function() {
     let utilityTriggered = false;
     element.addEventListener(
         element.utilityButtonEventName, () => utilityTriggered = true);
-    element.$$('#utilityButton').click();
+    element.shadowRoot.querySelector('#utilityButton').click();
     assertTrue(utilityTriggered);
 
     /** @type {boolean} */
     let cancelTriggered = false;
-    element.addEventListener(
-        element.cancelButtonEventName, () => cancelTriggered = true);
-    element.$$('#cancelButton').click();
+    // Nearby Share app always expects |event.detail| to be defined
+    element.addEventListener(element.cancelButtonEventName, event => {
+      cancelTriggered = true;
+      assertTrue(!!event.detail);
+    });
+    element.shadowRoot.querySelector('#cancelButton').click();
     assertTrue(cancelTriggered);
 
     /** @type {boolean} */
     let actionTrigger = false;
     element.addEventListener(
         element.actionButtonEventName, () => actionTrigger = true);
-    element.$$('#actionButton').click();
+    element.shadowRoot.querySelector('#actionButton').click();
     assertTrue(actionTrigger);
   });
 
@@ -85,10 +95,14 @@ suite('nearby-page-template', function() {
     element.actionButtonLabel = 'action';
     element.closeOnly = true;
 
-    await test_util.waitAfterNextRender(element);
+    await waitAfterNextRender(element);
 
-    assertEquals('title', element.$$('#pageTitle').innerHTML.trim());
-    assertEquals('subTitle', element.$$('#pageSubTitle').innerHTML.trim());
+    assertEquals(
+        'title',
+        element.shadowRoot.querySelector('#pageTitle').innerHTML.trim());
+    assertEquals(
+        'subTitle',
+        element.shadowRoot.querySelector('#pageSubTitle').innerHTML.trim());
     assertFalse(isVisible('#utilityButton'));
     assertFalse(isVisible('#actionButton'));
     assertFalse(isVisible('#cancelButton'));
@@ -97,7 +111,7 @@ suite('nearby-page-template', function() {
     /** @type {boolean} */
     let closeTrigger = false;
     element.addEventListener('close', () => closeTrigger = true);
-    element.$$('#closeButton').click();
+    element.shadowRoot.querySelector('#closeButton').click();
     assertTrue(closeTrigger);
   });
 
@@ -107,14 +121,17 @@ suite('nearby-page-template', function() {
     element.utilityButtonLabel = 'utility';
 
     // Open-in-new icon not shown by default.
-    await test_util.waitAfterNextRender(element);
-    assertFalse(!!element.$$('#utilityButton #openInNewIcon'));
+    await waitAfterNextRender(element);
+    assertFalse(
+        !!element.shadowRoot.querySelector('#utilityButton #openInNewIcon'));
 
     element.utilityButtonOpenInNew = true;
-    await test_util.waitAfterNextRender(element);
-    assertTrue(!!element.$$('#utilityButton #openInNewIcon'));
+    await waitAfterNextRender(element);
+    assertTrue(
+        !!element.shadowRoot.querySelector('#utilityButton #openInNewIcon'));
     assertEquals(
         'cr:open-in-new',
-        element.$$('#utilityButton #openInNewIcon').getAttribute('icon'));
+        element.shadowRoot.querySelector('#utilityButton #openInNewIcon')
+            .getAttribute('icon'));
   });
 });

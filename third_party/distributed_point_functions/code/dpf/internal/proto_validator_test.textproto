@@ -1,0 +1,108 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# proto-file dpf/distributed_point_function.proto
+# proto-message: EvaluationContext
+
+parameters {
+  log_domain_size: 4
+  value_type {
+    integer {
+      bitsize: 32
+    }
+  }
+  security_parameter: 44
+}
+parameters {
+  log_domain_size: 6
+  value_type {
+    integer {
+      bitsize: 32
+    }
+  }
+  security_parameter: 46
+}
+parameters {
+  log_domain_size: 8
+  value_type {
+    integer {
+      bitsize: 32
+    }
+  }
+  security_parameter: 48
+}
+key {
+  seed {
+    high: 11559904407150645412
+    low: 10793182457266619527
+  }
+  correction_words {
+    seed {
+      high: 17231204231811741091
+      low: 13184625655696690000
+    }
+    control_left: true
+  }
+  correction_words {
+    seed {
+      high: 3072212389250066354
+      low: 1361245143349174348
+    }
+  }
+  correction_words {
+    seed {
+      high: 2882988684359810666
+      low: 16992210518729579018
+    }
+    control_right: true
+    value_correction: {
+      integer: {
+        value_uint64: 536412310
+      }
+    }
+  }
+  correction_words {
+    seed {
+      high: 4993590839844520517
+      low: 13033365507284852634
+    }
+    control_right: true
+  }
+  correction_words {
+    seed {
+      high: 10673753674550143002
+      low: 3019916643383017704
+    }
+    control_left: true
+    control_right: true
+    value_correction: {
+      integer: {
+        value_uint64: 841224518
+      }
+    }
+  }
+  correction_words {
+    seed {
+      high: 2423099213299230757
+      low: 12788496417753523946
+    }
+    control_right: true
+  }
+  last_level_value_correction: {
+    integer: {
+      value_uint64: 8471844854
+    }
+  }
+}
+previous_hierarchy_level: -1

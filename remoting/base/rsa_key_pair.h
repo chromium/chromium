@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace crypto {
@@ -24,6 +23,9 @@ class RsaKeyPair : public base::RefCountedThreadSafe<RsaKeyPair> {
 
   // Loads a private key from a base64-encoded string. Returns true on success.
   static scoped_refptr<RsaKeyPair> FromString(const std::string& key_base64);
+
+  RsaKeyPair(const RsaKeyPair&) = delete;
+  RsaKeyPair& operator=(const RsaKeyPair&) = delete;
 
   // Returns a base64 encoded string representing the private key.
   std::string ToString() const;
@@ -47,8 +49,6 @@ class RsaKeyPair : public base::RefCountedThreadSafe<RsaKeyPair> {
   virtual ~RsaKeyPair();
 
   std::unique_ptr<crypto::RSAPrivateKey> key_;
-
-  DISALLOW_COPY_AND_ASSIGN(RsaKeyPair);
 };
 
 }  // namespace remoting

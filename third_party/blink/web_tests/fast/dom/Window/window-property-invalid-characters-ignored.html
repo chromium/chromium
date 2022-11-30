@@ -7,7 +7,7 @@ jsTestIsAsync = true;
 
 if (window.testRunner) {
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 description("Tests that Unicode characters that changes the string length when lower cased still works.");

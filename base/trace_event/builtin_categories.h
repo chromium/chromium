@@ -1,20 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_TRACE_EVENT_BUILTIN_CATEGORIES_H_
 #define BASE_TRACE_EVENT_BUILTIN_CATEGORIES_H_
 
+#include <cstddef>
+#include <iterator>
+
 #include "base/base_export.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing_buildflags.h"
+#include "build/build_config.h"
 
 // List of builtin category names. If you want to use a new category name in
 // your code and you get a static assert, this is the right place to register
 // the name. If the name is going to be used only for testing, please add it to
-// |kIgnoredCategoriesForTesting| instead.
+// |kCategoriesForTesting| instead.
 //
 // Since spaces aren't allowed, use '_' to separate words in category names
 // (e.g., "content_capture").
@@ -31,31 +33,34 @@
   X("accessibility")                                                     \
   X("AccountFetcherService")                                             \
   X("android_webview")                                                   \
+  /* Actions on Google Hardware, used in Google-internal code. */        \
   X("aogh")                                                              \
   X("audio")                                                             \
   X("base")                                                              \
   X("benchmark")                                                         \
   X("blink")                                                             \
-  X("blink.bindings")                                                    \
   X("blink.animations")                                                  \
+  X("blink.bindings")                                                    \
   X("blink.console")                                                     \
-  X("blink_gc")                                                          \
   X("blink.net")                                                         \
-  X("blink_style")                                                       \
+  X("blink.resource")                                                    \
   X("blink.user_timing")                                                 \
   X("blink.worker")                                                      \
+  X("blink_style")                                                       \
   X("Blob")                                                              \
   X("browser")                                                           \
   X("browsing_data")                                                     \
   X("CacheStorage")                                                      \
   X("Calculators")                                                       \
   X("CameraStream")                                                      \
+  X("cppgc")                                                             \
   X("camera")                                                            \
   X("cast_app")                                                          \
   X("cast_perf_test")                                                    \
   X("cast.mdns")                                                         \
   X("cast.mdns.socket")                                                  \
   X("cast.stream")                                                       \
+  X("catan_investigation")                                               \
   X("cc")                                                                \
   X("cc.debug")                                                          \
   X("cdp.perf")                                                          \
@@ -64,6 +69,7 @@
   X("compositor")                                                        \
   X("content")                                                           \
   X("content_capture")                                                   \
+  X("delegated_ink_trails")                                              \
   X("device")                                                            \
   X("devtools")                                                          \
   X("devtools.contrast")                                                 \
@@ -78,16 +84,19 @@
   X("evdev")                                                             \
   X("event")                                                             \
   X("exo")                                                               \
+  X("extensions")                                                        \
   X("explore_sites")                                                     \
   X("FileSystem")                                                        \
   X("file_system_provider")                                              \
+  X("fledge")                                                            \
   X("fonts")                                                             \
   X("GAMEPAD")                                                           \
   X("gpu")                                                               \
   X("gpu.angle")                                                         \
   X("gpu.capture")                                                       \
-  X("gpu.memory")                                                        \
   X("headless")                                                          \
+  /* Traces for //components/history. */                                 \
+  X("history")                                                           \
   X("hwoverlays")                                                        \
   X("identity")                                                          \
   X("ime")                                                               \
@@ -129,30 +138,32 @@
   X("ppapi")                                                             \
   X("ppapi_proxy")                                                       \
   X("print")                                                             \
+  X("raf_investigation")                                                 \
   X("rail")                                                              \
   X("renderer")                                                          \
   X("renderer_host")                                                     \
   X("renderer.scheduler")                                                \
   X("RLZ")                                                               \
+  X("ServiceWorker")                                                     \
+  X("SiteEngagement")                                                    \
   X("safe_browsing")                                                     \
+  X("scheduler")                                                         \
   X("screenlock_monitor")                                                \
+  X("segmentation_platform")                                             \
   X("sequence_manager")                                                  \
   X("service_manager")                                                   \
-  X("ServiceWorker")                                                     \
   X("sharing")                                                           \
   X("shell")                                                             \
   X("shortcut_viewer")                                                   \
   X("shutdown")                                                          \
-  X("SiteEngagement")                                                    \
   X("skia")                                                              \
   X("sql")                                                               \
   X("stadia_media")                                                      \
   X("stadia_rtc")                                                        \
   X("startup")                                                           \
   X("sync")                                                              \
-  X("sync_lock_contention")                                              \
+  X("system_apps")                                                       \
   X("test_gpu")                                                          \
-  X("thread_pool")                                                       \
   X("toplevel")                                                          \
   X("toplevel.flow")                                                     \
   X("ui")                                                                \
@@ -170,17 +181,19 @@
   X("WebCore")                                                           \
   X("webrtc")                                                            \
   X("xr")                                                                \
+  X(TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("audio"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))                          \
+  X(TRACE_DISABLED_BY_DEFAULT("base"))                                   \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"))                    \
-  X(TRACE_DISABLED_BY_DEFAULT("blink_gc"))                               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.image_decoding"))                   \
   X(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"))                     \
+  X(TRACE_DISABLED_BY_DEFAULT("identifiability"))                        \
   X(TRACE_DISABLED_BY_DEFAULT("cc"))                                     \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug"))                               \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.cdp-perf"))                      \
@@ -191,6 +204,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.now"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("content.verbose"))                        \
   X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))                           \
+  X(TRACE_DISABLED_BY_DEFAULT("cppgc"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                      \
@@ -199,6 +213,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking")) \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers"))               \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))              \
+  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.stack"))                \
   X(TRACE_DISABLED_BY_DEFAULT("file"))                                   \
   X(TRACE_DISABLED_BY_DEFAULT("fonts"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"))                          \
@@ -224,7 +239,6 @@
   X(TRACE_DISABLED_BY_DEFAULT("power"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("sandbox"))                                \
   X(TRACE_DISABLED_BY_DEFAULT("sequence_manager"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("sequence_manager.verbose_snapshots"))     \
@@ -242,6 +256,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("v8.gc"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("v8.gc_stats"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("v8.ic_stats"))                            \
+  X(TRACE_DISABLED_BY_DEFAULT("v8.inspector"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime"))                             \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats_sampling"))              \
@@ -264,6 +279,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("xr.debug"))
 
 #define INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(X)                        \
+  X("android_webview,toplevel")                                               \
   X("base,toplevel")                                                          \
   X("benchmark,drm")                                                          \
   X("benchmark,latencyInfo,rail")                                             \
@@ -271,13 +287,14 @@
   X("benchmark,rail")                                                         \
   X("benchmark,uma")                                                          \
   X("benchmark,viz")                                                          \
-  X("blink.animations,devtools.timeline,benchmark,rail")                      \
   X("blink,benchmark")                                                        \
   X("blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))  \
+  X("blink,blink.resource")                                                   \
   X("blink,blink_style")                                                      \
   X("blink,devtools.timeline")                                                \
   X("blink,loading")                                                          \
   X("blink,rail")                                                             \
+  X("blink.animations,devtools.timeline,benchmark,rail")                      \
   X("blink.user_timing,rail")                                                 \
   X("blink_gc,devtools.timeline")                                             \
   X("browser,content,navigation")                                             \
@@ -286,16 +303,23 @@
   X("browser,startup")                                                        \
   X("category1,category2")                                                    \
   X("cc,benchmark")                                                           \
+  X("cc,benchmark,input")                                                     \
+  X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("cc,input")                                                               \
+  X("cc,raf_investigation")                                                   \
   X("cc," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                     \
+  X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("content,navigation")                                                     \
   X("devtools.timeline,rail")                                                 \
   X("drm,hwoverlays")                                                         \
   X("dwrite,fonts")                                                           \
   X("fonts,ui")                                                               \
   X("gpu,benchmark")                                                          \
+  X("gpu,benchmark,android_webview")                                          \
+  X("gpu,benchmark,webview")                                                  \
   X("gpu,startup")                                                            \
   X("gpu,toplevel.flow")                                                      \
+  X("gpu.angle,startup")                                                      \
   X("inc2,inc")                                                               \
   X("inc,inc2")                                                               \
   X("input,benchmark")                                                        \
@@ -305,6 +329,7 @@
   X("input,views")                                                            \
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \
+  X("Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))          \
   X("loading,rail")                                                           \
   X("loading,rail,devtools.timeline")                                         \
   X("media,gpu")                                                              \
@@ -318,8 +343,11 @@
   X("shutdown,viz")                                                           \
   X("startup,benchmark,rail")                                                 \
   X("startup,rail")                                                           \
+  X("toplevel,viz")                                                           \
   X("ui,input")                                                               \
   X("ui,latency")                                                             \
+  X("ui,toplevel")                                                            \
+  X("v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"))                            \
   X("v8,devtools.timeline")                                                   \
   X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
   X("viz,benchmark")                                                          \
@@ -328,7 +356,9 @@
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items") "," \
       TRACE_DISABLED_BY_DEFAULT("cc.debug.picture") "," \
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))                 \
+  X(TRACE_DISABLED_BY_DEFAULT("v8.inspector") "," TRACE_DISABLED_BY_DEFAULT(  \
+      "v8.stack_trace"))
 
 #define INTERNAL_TRACE_INIT_CATEGORY_NAME(name) name,
 
@@ -388,23 +418,17 @@ static_assert(!StrEqConstexpr("abc", "ab"), "strings should not be equal");
 // TODO(skyostil): Remove after migrating to the Perfetto client API.
 class BASE_EXPORT BuiltinCategories {
  public:
+  BuiltinCategories() = delete;
+  BuiltinCategories(const BuiltinCategories&) = delete;
+  BuiltinCategories& operator=(const BuiltinCategories&) = delete;
+
   // Returns a built-in category name at |index| in the registry.
   static constexpr const char* At(size_t index) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    return perfetto::internal::kCategories[index].name;
-#else
     return kBuiltinCategories[index];
-#endif
   }
 
   // Returns the amount of built-in categories in the registry.
-  static constexpr size_t Size() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    return perfetto::internal::kCategoryCount;
-#else
-    return base::size(kBuiltinCategories);
-#endif
-  }
+  static constexpr size_t Size() { return std::size(kBuiltinCategories); }
 
   // Where in the builtin category list to start when populating the
   // about://tracing UI.
@@ -417,7 +441,7 @@ class BASE_EXPORT BuiltinCategories {
   // All trace categories are checked against this. A static_assert is triggered
   // if at least one category fails this check.
   static constexpr bool IsAllowedCategory(const char* category) {
-#if defined(OS_WIN) && defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
     return true;
 #else
     return IsBuiltinCategory(category) ||
@@ -508,16 +532,14 @@ class BASE_EXPORT BuiltinCategories {
   // Returns whether |category| is used only for testing.
   static constexpr bool IsCategoryForTesting(const char* category) {
     return IsStringInArray(category, kCategoriesForTesting,
-                           base::size(kCategoriesForTesting));
+                           std::size(kCategoriesForTesting));
   }
 
   // Returns whether |category| is registered in the builtin list.
   static constexpr bool IsBuiltinCategory(const char* category) {
     return IsStringInArray(category, kBuiltinCategories,
-                           base::size(kBuiltinCategories));
+                           std::size(kBuiltinCategories));
   }
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BuiltinCategories);
 };
 
 }  // namespace trace_event

@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.download;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -19,6 +18,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -145,7 +145,7 @@ public class DownloadCollectionBridge {
      * @return True on success, or false otherwise.
      */
     @CalledByNative
-    @TargetApi(29)
+    @RequiresApi(29)
     public static boolean copyFileToIntermediateUri(
             final String sourcePath, final String destinationUri) {
         try {
@@ -190,7 +190,7 @@ public class DownloadCollectionBridge {
             cursor = resolver.query(Uri.parse(intermediateUri),
                     new String[] {MediaColumns.MIME_TYPE}, null, null, null);
             if (cursor != null && cursor.getCount() != 0 && cursor.moveToNext()) {
-                mimeType = cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE));
+                mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.MIME_TYPE));
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to get mimeType.", e);
@@ -265,7 +265,7 @@ public class DownloadCollectionBridge {
      * @return an array of download Uri and display name pair.
      */
     @CalledByNative
-    @TargetApi(29)
+    @RequiresApi(29)
     private static DisplayNameInfo[] getDisplayNamesForDownloads() {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor = null;
@@ -277,9 +277,9 @@ public class DownloadCollectionBridge {
             List<DisplayNameInfo> infos = new ArrayList<DisplayNameInfo>();
             while (cursor.moveToNext()) {
                 String displayName =
-                        cursor.getString(cursor.getColumnIndex(MediaColumns.DISPLAY_NAME));
+                        cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));
                 Uri downloadUri = ContentUris.withAppendedId(
-                        uri, cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
+                        uri, cursor.getInt(cursor.getColumnIndexOrThrow(BaseColumns._ID)));
                 infos.add(new DisplayNameInfo(downloadUri.toString(), displayName));
             }
             return infos.toArray(new DisplayNameInfo[0]);
@@ -300,10 +300,10 @@ public class DownloadCollectionBridge {
 
     /**
      * Gets the content URI of the download that has the given file name.
-     * @param pendingUri name of the file.
+     * @param fileName name of the file.
      * @return Uri of the download with the given display name.
      */
-    @TargetApi(29)
+    @RequiresApi(29)
     public static Uri getDownloadUriForFileName(String fileName) {
         Cursor cursor = null;
         try {
@@ -314,7 +314,7 @@ public class DownloadCollectionBridge {
             if (cursor == null) return null;
             if (cursor.moveToNext()) {
                 return ContentUris.withAppendedId(
-                        uri, cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
+                        uri, cursor.getInt(cursor.getColumnIndexOrThrow(BaseColumns._ID)));
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to check file name existence.", e);
@@ -360,7 +360,7 @@ public class DownloadCollectionBridge {
      * @param referrer Referrer of the download.
      * @return PendingParams needed for creating the PendingSession.
      */
-    @TargetApi(29)
+    @RequiresApi(29)
     private static PendingParams createPendingParams(final String fileName, final String mimeType,
             final String originalUrl, final String referrer) {
         Uri downloadsUri = Downloads.EXTERNAL_CONTENT_URI;
@@ -428,7 +428,7 @@ public class DownloadCollectionBridge {
                     new String[] {MediaColumns.DISPLAY_NAME}, null, null, null);
             if (cursor == null || cursor.getCount() == 0) return null;
             if (cursor.moveToNext()) {
-                return cursor.getString(cursor.getColumnIndex(MediaColumns.DISPLAY_NAME));
+                return cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to get display name for download.", e);

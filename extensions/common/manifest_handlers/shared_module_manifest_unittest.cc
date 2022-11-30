@@ -1,8 +1,7 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/stl_util.h"
 #include "base/version.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -80,7 +79,7 @@ TEST_F(SharedModuleManifestTest, ExportParseErrors) {
                "Error at key 'export.allowlist'. Type is invalid. Expected "
                "list, found string."),
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(SharedModuleManifestTest, SharedModuleStaticFunctions) {
@@ -128,7 +127,7 @@ TEST_F(SharedModuleManifestTest, ImportParseErrors) {
       Testcase("shared_module_import_invalid_version.json",
                "Invalid value for 'import[0].minimum_version'."),
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 }  // namespace extensions

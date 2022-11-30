@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,15 @@ class AutofillField;
 
 namespace rationalization_util {
 
-// Helper function that rationalizes phone numbers fields in the given
-// vector of fields. The vector of fields are expected to have all fields
-// for a certain section.
+// Helper function that rationalizes phone numbers fields in the vector of
+// fields. It ensures that only a single phone number is autofilled in a
+// section as part of a form fill operation. If the section contains multiple
+// phone numbers, set_only_fill_when_focused(true) is called on the remaining
+// fields.
+//
+// The vector of fields are expected to contain all fields of a certain section.
 void RationalizePhoneNumberFields(
-    std::vector<AutofillField*>& fields_in_section);
+    const std::vector<AutofillField*>& fields_in_section);
 
 }  // namespace rationalization_util
 }  // namespace autofill

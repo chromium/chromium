@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "gpu/command_buffer/common/gles2_utils_export.h"
 
@@ -250,6 +249,9 @@ class GLES2_UTILS_EXPORT GLSLArrayName {
  public:
   explicit GLSLArrayName(const std::string& name);
 
+  GLSLArrayName(const GLSLArrayName&) = delete;
+  GLSLArrayName& operator=(const GLSLArrayName&) = delete;
+
   // Returns true if the string is an array reference.
   bool IsArrayName() const { return element_index_ >= 0; }
   // Returns the name with the possible last array index specifier removed.
@@ -266,7 +268,6 @@ class GLES2_UTILS_EXPORT GLSLArrayName {
  private:
   std::string base_name_;
   int element_index_;
-  DISALLOW_COPY_AND_ASSIGN(GLSLArrayName);
 };
 
 }  // namespace gles2

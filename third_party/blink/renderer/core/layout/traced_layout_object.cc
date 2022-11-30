@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,8 @@ void DumpToTracedValue(const LayoutObject& object,
   // FIXME: When the fixmes in LayoutTreeAsText::writeLayoutObject() are
   // fixed, deduplicate it with this.
   if (trace_geometry) {
-    traced_value->SetDouble("absX", object.AbsoluteBoundingBoxRect().X());
-    traced_value->SetDouble("absY", object.AbsoluteBoundingBoxRect().Y());
+    traced_value->SetDouble("absX", object.AbsoluteBoundingBoxRect().x());
+    traced_value->SetDouble("absY", object.AbsoluteBoundingBoxRect().y());
     PhysicalRect rect = object.DebugRect();
     traced_value->SetDouble("relX", rect.X());
     traced_value->SetDouble("relY", rect.Y());

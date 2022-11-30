@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ios/web/public/download/download_task.h"
 
 namespace web {
@@ -41,10 +40,12 @@ class DownloadControllerDelegate {
       DownloadController* download_controller) {}
 
   DownloadControllerDelegate() = default;
-  virtual ~DownloadControllerDelegate() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadControllerDelegate);
+  DownloadControllerDelegate(const DownloadControllerDelegate&) = delete;
+  DownloadControllerDelegate& operator=(const DownloadControllerDelegate&) =
+      delete;
+
+  virtual ~DownloadControllerDelegate() = default;
 };
 
 }  // namespace web

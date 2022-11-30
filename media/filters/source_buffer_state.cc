@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,10 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
 #include "media/base/media_tracks.h"
@@ -29,7 +32,7 @@ enum {
 
 namespace {
 
-TimeDelta EndTimestamp(const StreamParser::BufferQueue& queue) {
+base::TimeDelta EndTimestamp(const StreamParser::BufferQueue& queue) {
   return queue.back()->timestamp() + queue.back()->duration();
 }
 
@@ -71,7 +74,7 @@ unsigned GetMSEBufferSizeLimitIfExists(base::StringPiece switch_string) {
 
 // List of time ranges for each SourceBuffer.
 // static
-Ranges<TimeDelta> SourceBufferState::ComputeRangesIntersection(
+Ranges<base::TimeDelta> SourceBufferState::ComputeRangesIntersection(
     const RangesList& active_ranges,
     bool ended) {
   // TODO(servolk): Perhaps this can be removed in favor of blink implementation
@@ -84,13 +87,13 @@ Ranges<TimeDelta> SourceBufferState::ComputeRangesIntersection(
   // Step 1: If activeSourceBuffers.length equals 0 then return an empty
   //  TimeRanges object and abort these steps.
   if (active_ranges.empty())
-    return Ranges<TimeDelta>();
+    return Ranges<base::TimeDelta>();
 
   // Step 2: Let active ranges be the ranges returned by buffered for each
   //  SourceBuffer object in activeSourceBuffers.
   // Step 3: Let highest end time be the largest range end time in the active
   //  ranges.
-  TimeDelta highest_end_time;
+  base::TimeDelta highest_end_time;
   for (const auto& range : active_ranges) {
     if (!range.size())
       continue;
@@ -100,15 +103,15 @@ Ranges<TimeDelta> SourceBufferState::ComputeRangesIntersection(
 
   // Step 4: Let intersection ranges equal a TimeRange object containing a
   //  single range from 0 to highest end time.
-  Ranges<TimeDelta> intersection_ranges;
-  intersection_ranges.Add(TimeDelta(), highest_end_time);
+  Ranges<base::TimeDelta> intersection_ranges;
+  intersection_ranges.Add(base::TimeDelta(), highest_end_time);
 
   // Step 5: For each SourceBuffer object in activeSourceBuffers run the
   //  following steps:
   for (const auto& range : active_ranges) {
     // Step 5.1: Let source ranges equal the ranges returned by the buffered
     //  attribute on the current SourceBuffer.
-    Ranges<TimeDelta> source_ranges = range;
+    Ranges<base::TimeDelta> source_ranges = range;
 
     // Step 5.2: If readyState is "ended", then set the end time on the last
     //  range in source ranges to highest end time.
@@ -190,24 +193,24 @@ void SourceBufferState::SetGroupStartTimestampIfInSequenceMode(
 }
 
 void SourceBufferState::SetTracksWatcher(
-    const Demuxer::MediaTracksUpdatedCB& tracks_updated_cb) {
+    Demuxer::MediaTracksUpdatedCB tracks_updated_cb) {
   DCHECK(!init_segment_received_cb_);
   DCHECK(tracks_updated_cb);
-  init_segment_received_cb_ = tracks_updated_cb;
+  init_segment_received_cb_ = std::move(tracks_updated_cb);
 }
 
 void SourceBufferState::SetParseWarningCallback(
     SourceBufferParseWarningCB parse_warning_cb) {
   // Give the callback to |frame_processor_|; none of these warnings are
   // currently emitted elsewhere.
-  frame_processor_->SetParseWarningCallback(parse_warning_cb);
+  frame_processor_->SetParseWarningCallback(std::move(parse_warning_cb));
 }
 
 bool SourceBufferState::Append(const uint8_t* data,
                                size_t length,
-                               TimeDelta append_window_start,
-                               TimeDelta append_window_end,
-                               TimeDelta* timestamp_offset) {
+                               base::TimeDelta append_window_start,
+                               base::TimeDelta append_window_end,
+                               base::TimeDelta* timestamp_offset) {
   append_in_progress_ = true;
   DCHECK(timestamp_offset);
   DCHECK(!timestamp_offset_during_append_);
@@ -232,9 +235,9 @@ bool SourceBufferState::Append(const uint8_t* data,
 
 bool SourceBufferState::AppendChunks(
     std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
-    TimeDelta append_window_start,
-    TimeDelta append_window_end,
-    TimeDelta* timestamp_offset) {
+    base::TimeDelta append_window_start,
+    base::TimeDelta append_window_end,
+    base::TimeDelta* timestamp_offset) {
   append_in_progress_ = true;
   DCHECK(timestamp_offset);
   DCHECK(!timestamp_offset_during_append_);
@@ -255,8 +258,8 @@ bool SourceBufferState::AppendChunks(
   return result;
 }
 
-void SourceBufferState::ResetParserState(TimeDelta append_window_start,
-                                         TimeDelta append_window_end,
+void SourceBufferState::ResetParserState(base::TimeDelta append_window_start,
+                                         base::TimeDelta append_window_end,
                                          base::TimeDelta* timestamp_offset) {
   DCHECK(timestamp_offset);
   DCHECK(!timestamp_offset_during_append_);
@@ -272,9 +275,9 @@ void SourceBufferState::ResetParserState(TimeDelta append_window_start,
   media_segment_has_data_for_track_.clear();
 }
 
-void SourceBufferState::Remove(TimeDelta start,
-                               TimeDelta end,
-                               TimeDelta duration) {
+void SourceBufferState::Remove(base::TimeDelta start,
+                               base::TimeDelta end,
+                               base::TimeDelta duration) {
   for (const auto& it : audio_streams_) {
     it.second->Remove(start, end, duration);
   }
@@ -365,8 +368,9 @@ void SourceBufferState::OnMemoryPressure(
   }
 }
 
-Ranges<TimeDelta> SourceBufferState::GetBufferedRanges(TimeDelta duration,
-                                                       bool ended) const {
+Ranges<base::TimeDelta> SourceBufferState::GetBufferedRanges(
+    base::TimeDelta duration,
+    bool ended) const {
   RangesList ranges_list;
   for (const auto& it : audio_streams_)
     ranges_list.push_back(it.second->GetBufferedRanges(duration));
@@ -380,8 +384,8 @@ Ranges<TimeDelta> SourceBufferState::GetBufferedRanges(TimeDelta duration,
   return ComputeRangesIntersection(ranges_list, ended);
 }
 
-TimeDelta SourceBufferState::GetHighestPresentationTimestamp() const {
-  TimeDelta max_pts;
+base::TimeDelta SourceBufferState::GetHighestPresentationTimestamp() const {
+  base::TimeDelta max_pts;
 
   for (const auto& it : audio_streams_) {
     max_pts = std::max(max_pts, it.second->GetHighestPresentationTimestamp());
@@ -398,8 +402,8 @@ TimeDelta SourceBufferState::GetHighestPresentationTimestamp() const {
   return max_pts;
 }
 
-TimeDelta SourceBufferState::GetMaxBufferedDuration() const {
-  TimeDelta max_duration;
+base::TimeDelta SourceBufferState::GetMaxBufferedDuration() const {
+  base::TimeDelta max_duration;
 
   for (const auto& it : audio_streams_) {
     max_duration = std::max(max_duration, it.second->GetBufferedDuration());
@@ -444,7 +448,7 @@ void SourceBufferState::AbortReads() {
   }
 }
 
-void SourceBufferState::Seek(TimeDelta seek_time) {
+void SourceBufferState::Seek(base::TimeDelta seek_time) {
   for (const auto& it : audio_streams_) {
     it.second->Seek(seek_time);
   }
@@ -472,7 +476,7 @@ void SourceBufferState::CompletePendingReadIfPossible() {
   }
 }
 
-void SourceBufferState::OnSetDuration(TimeDelta duration) {
+void SourceBufferState::OnSetDuration(base::TimeDelta duration) {
   for (const auto& it : audio_streams_) {
     it.second->OnSetDuration(duration);
   }
@@ -584,12 +588,12 @@ void SourceBufferState::InitializeParser(const std::string& expected_codecs) {
   std::vector<VideoCodec> expected_vcodecs;
   for (const auto& codec_id : expected_codecs_parsed) {
     AudioCodec acodec = StringToAudioCodec(codec_id);
-    if (acodec != kUnknownAudioCodec) {
+    if (acodec != AudioCodec::kUnknown) {
       expected_audio_codecs_.push_back(acodec);
       continue;
     }
     VideoCodec vcodec = StringToVideoCodec(codec_id);
-    if (vcodec != kUnknownVideoCodec) {
+    if (vcodec != VideoCodec::kUnknown) {
       expected_video_codecs_.push_back(vcodec);
       continue;
     }
@@ -659,8 +663,8 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << audio_config.AsHumanReadableString();
       DCHECK(audio_config.IsValidConfig());
 
-      const auto& it = std::find(expected_acodecs.begin(),
-                                 expected_acodecs.end(), audio_config.codec());
+      const auto& it =
+          base::ranges::find(expected_acodecs, audio_config.codec());
       if (it == expected_acodecs.end()) {
         MEDIA_LOG(ERROR, media_log_) << "Audio stream codec "
                                      << GetCodecName(audio_config.codec())
@@ -682,19 +686,19 @@ bool SourceBufferState::OnNewConfigs(
             std::vector<AudioDecoderConfig>{audio_config});
       } else {
         if (audio_streams_.size() > 1) {
-          auto it = audio_streams_.find(track_id);
-          if (it != audio_streams_.end())
-            stream = it->second;
+          auto stream_it = audio_streams_.find(track_id);
+          if (stream_it != audio_streams_.end())
+            stream = stream_it->second;
         } else {
           // If there is only one audio track then bytestream id might change in
           // a new init segment. So update our state and notify frame processor.
-          const auto& it = audio_streams_.begin();
-          if (it != audio_streams_.end()) {
-            stream = it->second;
-            if (it->first != track_id) {
-              track_id_changes[it->first] = track_id;
+          const auto& stream_it = audio_streams_.begin();
+          if (stream_it != audio_streams_.end()) {
+            stream = stream_it->second;
+            if (stream_it->first != track_id) {
+              track_id_changes[stream_it->first] = track_id;
               audio_streams_[track_id] = stream;
-              audio_streams_.erase(it->first);
+              audio_streams_.erase(stream_it->first);
             }
           }
         }
@@ -715,33 +719,20 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << video_config.AsHumanReadableString();
       DCHECK(video_config.IsValidConfig());
 
-      if (video_config.codec() == kCodecHEVC) {
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-        // On ChromeOS, HEVC is only supported through EME, so require the
-        // config to be for an encrypted track if on ChromeOS. Even so,
-        // conditionally allow clear HEVC on ChromeOS if cmdline has test
-        // override.
-        if (video_config.encryption_scheme() ==
-                EncryptionScheme::kUnencrypted &&
-            !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kEnableClearHevcForTesting)) {
-          MEDIA_LOG(ERROR, media_log_)
-              << "MSE playback of HEVC on ChromeOS is only supported via "
-                 "platform decryptor, but the provided HEVC track is not "
-                 "encrypted.";
-          return false;
-        }
-#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#else
-        NOTREACHED()
-            << "MSE parser must not emit HEVC tracks on build configurations "
-               "that do not support HEVC playback via platform.";
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+      // Only encrypted Dolby Vision (DV) is supported, so require the config
+      // to be for an encrypted track.
+      if (video_config.codec() == VideoCodec::kDolbyVision &&
+          !video_config.is_encrypted()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "MSE playback of DolbyVision is only supported via platform "
+               "decryptor, but the provided DV track is not encrypted.";
+        return false;
       }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
-      const auto& it = std::find(expected_vcodecs.begin(),
-                                 expected_vcodecs.end(), video_config.codec());
+      const auto& it =
+          base::ranges::find(expected_vcodecs, video_config.codec());
       if (it == expected_vcodecs.end()) {
         MEDIA_LOG(ERROR, media_log_) << "Video stream codec "
                                      << GetCodecName(video_config.codec())
@@ -764,19 +755,19 @@ bool SourceBufferState::OnNewConfigs(
             std::vector<VideoDecoderConfig>{video_config});
       } else {
         if (video_streams_.size() > 1) {
-          auto it = video_streams_.find(track_id);
-          if (it != video_streams_.end())
-            stream = it->second;
+          auto stream_it = video_streams_.find(track_id);
+          if (stream_it != video_streams_.end())
+            stream = stream_it->second;
         } else {
           // If there is only one video track then bytestream id might change in
           // a new init segment. So update our state and notify frame processor.
-          const auto& it = video_streams_.begin();
-          if (it != video_streams_.end()) {
-            stream = it->second;
-            if (it->first != track_id) {
-              track_id_changes[it->first] = track_id;
+          const auto& stream_it = video_streams_.begin();
+          if (stream_it != video_streams_.end()) {
+            stream = stream_it->second;
+            if (stream_it->first != track_id) {
+              track_id_changes[stream_it->first] = track_id;
               video_streams_[track_id] = stream;
-              video_streams_.erase(it->first);
+              video_streams_.erase(stream_it->first);
             }
           }
         }
@@ -969,27 +960,26 @@ bool SourceBufferState::OnNewBuffers(
   DCHECK(timestamp_offset_during_append_);
   DCHECK(parsing_media_segment_);
 
-  for (const auto& it : buffer_queue_map) {
-    const StreamParser::BufferQueue& bufq = it.second;
-    DCHECK(!bufq.empty());
-    media_segment_has_data_for_track_[it.first] = true;
+  for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+    DCHECK(!buffer_queue.empty());
+    media_segment_has_data_for_track_[track_id] = true;
   }
 
-  const TimeDelta timestamp_offset_before_processing =
+  const base::TimeDelta timestamp_offset_before_processing =
       *timestamp_offset_during_append_;
 
   // Calculate the new timestamp offset for audio/video tracks if the stream
   // parser corresponds to MSE MIME type with 'Generate Timestamps Flag' set
   // true.
-  TimeDelta predicted_timestamp_offset = timestamp_offset_before_processing;
+  base::TimeDelta predicted_timestamp_offset =
+      timestamp_offset_before_processing;
   if (generate_timestamps_flag()) {
-    TimeDelta min_end_timestamp = kNoTimestamp;
-    for (const auto& it : buffer_queue_map) {
-      const StreamParser::BufferQueue& bufq = it.second;
-      DCHECK(!bufq.empty());
+    base::TimeDelta min_end_timestamp = kNoTimestamp;
+    for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+      DCHECK(!buffer_queue.empty());
       if (min_end_timestamp == kNoTimestamp ||
-          EndTimestamp(bufq) < min_end_timestamp) {
-        min_end_timestamp = EndTimestamp(bufq);
+          EndTimestamp(buffer_queue) < min_end_timestamp) {
+        min_end_timestamp = EndTimestamp(buffer_queue);
         DCHECK_NE(kNoTimestamp, min_end_timestamp);
       }
     }

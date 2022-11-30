@@ -1,62 +1,69 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/threading/platform_thread.h"
 
-#include <memory>
-
-#include "base/feature_list.h"
+#include "base/no_destructor.h"
+#include "base/task/current_thread.h"
+#include "base/threading/thread_local_storage.h"
 
 namespace base {
 
 namespace {
 
-// Whether thread priorities should be used. When disabled,
-// PlatformThread::SetCurrentThreadPriority() no-ops.
-const Feature kThreadPrioritiesFeature{"ThreadPriorities",
-                                       FEATURE_ENABLED_BY_DEFAULT};
+// Returns ThreadLocalStorage slot used to store type of the current thread.
+// The value is stored as an integer value converted to a pointer. 1 is added to
+// the integer value in order to distinguish the case when the TLS slot is not
+// initialized.
+base::ThreadLocalStorage::Slot* GetThreadTypeTlsSlot() {
+  static base::NoDestructor<base::ThreadLocalStorage::Slot> tls_slot;
+  return tls_slot.get();
+}
 
-// Whether thread priorities should be used.
-//
-// PlatformThread::SetCurrentThreadPriority() doesn't query the state of the
-// feature directly because FeatureList initialization is not always
-// synchronized with PlatformThread::SetCurrentThreadPriority().
-std::atomic<bool> g_use_thread_priorities(true);
+void SaveThreadTypeToTls(ThreadType thread_type) {
+  GetThreadTypeTlsSlot()->Set(
+      reinterpret_cast<void*>(static_cast<uintptr_t>(thread_type) + 1));
+}
+
+ThreadType GetThreadTypeFromTls() {
+  uintptr_t value = reinterpret_cast<uintptr_t>(GetThreadTypeTlsSlot()->Get());
+
+  // Thread type is set to kNormal by default.
+  if (value == 0)
+    return ThreadType::kDefault;
+
+  DCHECK_LE(value - 1, static_cast<uintptr_t>(ThreadType::kMaxValue));
+  return static_cast<ThreadType>(value - 1);
+}
 
 }  // namespace
 
 // static
-void PlatformThread::SetCurrentThreadPriority(ThreadPriority priority) {
-  if (g_use_thread_priorities.load())
-    SetCurrentThreadPriorityImpl(priority);
+void PlatformThread::SetCurrentThreadType(ThreadType thread_type) {
+  MessagePumpType message_pump_type = MessagePumpType::DEFAULT;
+  if (CurrentIOThread::IsSet()) {
+    message_pump_type = MessagePumpType::IO;
+  }
+#if !BUILDFLAG(IS_NACL)
+  else if (CurrentUIThread::IsSet()) {
+    message_pump_type = MessagePumpType::UI;
+  }
+#endif
+  internal::SetCurrentThreadType(thread_type, message_pump_type);
 }
 
-TimeDelta PlatformThread::GetRealtimePeriod(Delegate* delegate) {
-  if (g_use_thread_priorities.load())
-    return delegate->GetRealtimePeriod();
-  return TimeDelta();
-}
-
-TimeDelta PlatformThread::Delegate::GetRealtimePeriod() {
-  return TimeDelta();
+// static
+ThreadType PlatformThread::GetCurrentThreadType() {
+  return GetThreadTypeFromTls();
 }
 
 namespace internal {
 
-void InitializeThreadPrioritiesFeature() {
-  // A DCHECK is triggered on FeatureList initialization if the state of a
-  // feature has been checked before. To avoid triggering this DCHECK in unit
-  // tests that call this before initializing the FeatureList, only check the
-  // state of the feature if the FeatureList is initialized.
-  if (FeatureList::GetInstance() &&
-      !FeatureList::IsEnabled(kThreadPrioritiesFeature)) {
-    g_use_thread_priorities.store(false);
-  }
-
-#if defined(OS_APPLE)
-  PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
-#endif
+void SetCurrentThreadType(ThreadType thread_type,
+                          MessagePumpType pump_type_hint) {
+  SetCurrentThreadTypeImpl(thread_type, pump_type_hint);
+  SaveThreadTypeToTls(thread_type);
 }
 
 }  // namespace internal

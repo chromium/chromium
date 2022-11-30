@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 // displayed for the remote tabs page.
 @interface TabGridEmptyStateView : UIView <GridEmptyView>
 
-// Initializes view with |page|, which changes the displayed text.
+// Initializes view with `page`, which changes the displayed text.
 - (instancetype)initWithPage:(TabGridPage)page NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

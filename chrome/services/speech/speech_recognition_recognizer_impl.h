@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/services/speech/cloud_speech_recognition_client.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "base/time/time.h"
+#include "components/soda/constants.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -19,24 +20,31 @@ class SodaClient;
 }  // namespace soda
 
 namespace speech {
-class SpeechRecognitionServiceImpl;
 
 class SpeechRecognitionRecognizerImpl
     : public media::mojom::SpeechRecognitionRecognizer {
  public:
   using OnRecognitionEventCallback =
-      base::RepeatingCallback<void(const std::string& result,
-                                   const bool is_final)>;
+      base::RepeatingCallback<void(media::SpeechRecognitionResult event)>;
+
   using OnLanguageIdentificationEventCallback = base::RepeatingCallback<void(
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level)>;
+
+  using OnSpeechRecognitionStoppedCallback = base::RepeatingCallback<void()>;
+
   SpeechRecognitionRecognizerImpl(
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
-      base::WeakPtr<SpeechRecognitionServiceImpl>
-          speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
+
+  SpeechRecognitionRecognizerImpl(const SpeechRecognitionRecognizerImpl&) =
+      delete;
+  SpeechRecognitionRecognizerImpl& operator=(
+      const SpeechRecognitionRecognizerImpl&) = delete;
+
   ~SpeechRecognitionRecognizerImpl() override;
 
   static const char kCaptionBubbleVisibleHistogramName[];
@@ -46,8 +54,7 @@ class SpeechRecognitionRecognizerImpl
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
-      base::WeakPtr<SpeechRecognitionServiceImpl>
-          speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
 
@@ -62,6 +69,11 @@ class SpeechRecognitionRecognizerImpl
     return language_identification_event_callback_;
   }
 
+  OnSpeechRecognitionStoppedCallback speech_recognition_stopped_callback()
+      const {
+    return speech_recognition_stopped_callback_;
+  }
+
   // Convert the audio buffer into the appropriate format and feed the raw audio
   // into the speech recognition instance.
   void SendAudioToSpeechRecognitionService(
@@ -69,31 +81,48 @@ class SpeechRecognitionRecognizerImpl
 
   void OnSpeechRecognitionError();
 
+  void MarkDone() override;
+
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(
       media::mojom::AudioDataS16Ptr buffer);
 
   // Return the transcribed audio from the recognition event back to the caller
   // via the recognition event client.
-  void OnRecognitionEvent(const std::string& result, const bool is_final);
+  void OnRecognitionEvent(media::SpeechRecognitionResult event);
+
   void OnLanguageIdentificationEvent(
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level);
 
- private:
-  void OnCaptionBubbleClosed() final;
+  void OnRecognitionStoppedCallback();
 
-  void AudioReceivedAfterBubbleClosed(base::TimeDelta duration) final;
+  media::mojom::SpeechRecognitionOptionsPtr options_;
+
+ private:
+  void OnLanguageChanged(const std::string& language) final;
+
+  void ResetSodaWithNewLanguage(base::FilePath config_path,
+                                speech::LanguageCode language_code,
+                                bool config_exists);
   void RecordDuration();
 
+  // Called as a response to sending a SpeechRecognitionEvent to the client
+  // remote.
+  void OnSpeechRecognitionRecognitionEventCallback(bool success);
+
+  // Called when the client host is disconnected. Halts future speech
+  // recognition.
+  void OnClientHostDisconnected();
+
+  // Reset and initialize the SODA client.
+  void ResetSoda();
+
   // The remote endpoint for the mojo pipe used to return transcribed audio from
-  // the speech recognition service back to the renderer.
+  // the speech recognition service to the browser process.
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> client_remote_;
 
-  bool enable_soda_ = false;
   std::unique_ptr<soda::SodaClient> soda_client_;
-
-  std::unique_ptr<CloudSpeechRecognitionClient> cloud_client_;
 
   // The callback that is eventually executed on a speech recognition event
   // which passes the transcribed audio back to the caller via the speech
@@ -102,15 +131,22 @@ class SpeechRecognitionRecognizerImpl
 
   OnLanguageIdentificationEventCallback language_identification_event_callback_;
 
+  OnSpeechRecognitionStoppedCallback speech_recognition_stopped_callback_;
+
   base::FilePath config_path_;
+  int sample_rate_ = 0;
+  int channel_count_ = 0;
+  LanguageCode language_ = LanguageCode::kNone;
 
   base::TimeDelta caption_bubble_visible_duration_;
   base::TimeDelta caption_bubble_hidden_duration_;
-  bool caption_bubble_closed_ = false;
+
+  // Whether the client is still requesting speech recognition.
+  bool is_client_requesting_speech_recognition_ = true;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<SpeechRecognitionRecognizerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionRecognizerImpl);
 };
 
 }  // namespace speech

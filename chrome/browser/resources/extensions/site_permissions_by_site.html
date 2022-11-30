@@ -1,0 +1,31 @@
+<style include="cr-shared-style cr-icons shared-style">
+  #container {
+    box-sizing: border-box;
+  }
+
+  .cr-title-text {
+    margin-inline-start: 16px;
+  }
+
+  #site-groups {
+    margin: 0 var(--cr-section-padding);
+  }
+</style>
+<div class="page-container" id="container">
+  <div class="page-content">
+    <div class="page-header">
+      <cr-icon-button class="icon-arrow-back no-overlap" id="closeButton"
+          on-click="onCloseButtonClick_">
+      </cr-icon-button>
+      <span class="cr-title-text">$i18n{sitePermissionsAllSitesPageTitle}</span>
+    </div>
+    <div id="site-groups">
+      <template is="dom-repeat" items="[[siteGroups_]]">
+        <site-permissions-site-group data="[[item]]" delegate="[[delegate]]"
+            extensions="[[extensions]]"
+            list-index="[[index]]">
+        </site-permissions-site-group>
+      </template>
+    </div>
+  </div>
+</div>

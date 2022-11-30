@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Misc styles -->
+    <style name="LocationBarButton">
+        <item name="android:background">@null</item>
+    </style>
+    <style name="LocationBarActionButton" parent="LocationBarButton">
+        <item name="android:layout_width">@dimen/location_bar_action_icon_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="tint">@color/default_icon_color_tint_list</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+    <style name="ToolbarButton">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_width">@dimen/toolbar_button_width</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:scaleType">center</item>
+    </style>
+    <style name="ToolbarMenuButton" parent="ToolbarButton">
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+    <style name="BottomToolbarButton" parent="ToolbarButton">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+    <style name="SplitToolbarButton" parent="BottomToolbarButton">
+        <item name="android:layout_height">@dimen/split_toolbar_button_height</item>
+        <item name="android:layout_width">@dimen/split_toolbar_button_width</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow" />
+</resources>

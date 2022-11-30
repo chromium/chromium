@@ -1,12 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/reading_list/reading_list_distiller_page_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_distiller_page_factory.h"
 
-#include "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
-#include "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
+#import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
+#import "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

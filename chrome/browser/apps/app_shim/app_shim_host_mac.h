@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/thread_checker.h"
@@ -65,6 +66,16 @@ class AppShimHost : public chrome::mojom::AppShimHost {
     // Invoked when a profile is selected from the menu bar.
     virtual void OnShimSelectedProfile(AppShimHost* host,
                                        const base::FilePath& profile_path) = 0;
+
+    // Invoked by the shim host when the shim opens a url, e.g, clicking a link
+    // in mail.
+    virtual void OnShimOpenedUrls(AppShimHost* host,
+                                  const std::vector<GURL>& urls) = 0;
+
+    // Invoked by the shim host when the app should be opened with an override
+    // url (e.g. user clicks on an item in the application dock menu).
+    virtual void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                              const GURL& override_url) = 0;
   };
 
   AppShimHost(Client* client,
@@ -101,6 +112,8 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   // Return the app shim interface. Virtual for tests.
   virtual chrome::mojom::AppShim* GetAppShim() const;
 
+  void SetOnShimConnectedForTesting(base::OnceClosure closure);
+
  protected:
   void ChannelError(uint32_t custom_reason, const std::string& description);
 
@@ -120,9 +133,11 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   void ReopenApp() override;
   void FilesOpened(const std::vector<base::FilePath>& files) override;
   void ProfileSelectedFromMenu(const base::FilePath& profile_path) override;
+  void UrlsOpened(const std::vector<GURL>& urls) override;
+  void OpenAppWithOverrideUrl(const GURL& override_url) override;
 
   // Weak, owns |this|.
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
   mojo::Receiver<chrome::mojom::AppShimHost> host_receiver_{this};
   mojo::Remote<chrome::mojom::AppShim> app_shim_;
@@ -138,6 +153,7 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   std::unique_ptr<remote_cocoa::ApplicationHost> remote_cocoa_application_host_;
 
   std::string app_id_;
+  base::OnceClosure on_shim_connected_for_testing_;
   base::FilePath profile_path_;
   const bool uses_remote_views_;
 

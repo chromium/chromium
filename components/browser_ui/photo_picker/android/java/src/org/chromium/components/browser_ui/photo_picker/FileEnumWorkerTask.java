@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,6 +121,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
 
         String whereClause = directoryColumnName + " LIKE ? OR " + directoryColumnName
                 + " LIKE ? OR " + directoryColumnName + " LIKE ? OR " + directoryColumnName
+                + " LIKE ? OR " + directoryColumnName + " LIKE ? OR " + directoryColumnName
                 + " LIKE ?";
         String additionalClause = "";
         if (mIncludeImages) {
@@ -136,22 +137,31 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
 
         String cameraDir = getCameraDirectory();
         String picturesDir = Environment.DIRECTORY_PICTURES;
+        String moviesDir = Environment.DIRECTORY_MOVIES;
         String downloadsDir = Environment.DIRECTORY_DOWNLOADS;
         // Files downloaded from the user's Google Photos library go to a Restored folder.
         String restoredDir = Environment.DIRECTORY_DCIM + "/Restored";
+        // On some devices, such as Samsung and Redmi, the Screenshots folder is located under
+        // DCIM/Screenshots, as opposed to DCIM/Pictures/Screenshots.
+        String screenshotsDir = Environment.DIRECTORY_DCIM + "/Screenshots";
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             cameraDir = Environment.getExternalStoragePublicDirectory(cameraDir).toString();
             picturesDir = Environment.getExternalStoragePublicDirectory(picturesDir).toString();
+            moviesDir = Environment.getExternalStoragePublicDirectory(moviesDir).toString();
             downloadsDir = Environment.getExternalStoragePublicDirectory(downloadsDir).toString();
             restoredDir = Environment.getExternalStoragePublicDirectory(restoredDir).toString();
+            screenshotsDir =
+                    Environment.getExternalStoragePublicDirectory(screenshotsDir).toString();
         }
 
         String[] whereArgs = new String[] {
                 // Include:
                 cameraDir + "%",
                 picturesDir + "%",
+                moviesDir + "%",
                 downloadsDir + "%",
                 restoredDir + "%",
+                screenshotsDir + "%",
         };
 
         final String orderBy = MediaStore.MediaColumns.DATE_ADDED + " DESC";

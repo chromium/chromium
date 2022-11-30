@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetcher.h"
 
+#include "services/network/public/cpp/header_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -39,8 +40,6 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
     ModuleType expected_module_type,
     HeapVector<Member<ConsoleMessage>>* error_messages) {
   DCHECK(error_messages);
-  DCHECK_EQ(resource->GetScriptType(), mojom::blink::ScriptType::kModule);
-
   if (resource) {
     SubresourceIntegrityHelper::GetConsoleMessages(
         resource->IntegrityReportInfo(), error_messages);
@@ -55,7 +54,8 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
 
   const auto& response = resource->GetResponse();
   // <spec step="9">... response's status is not an ok status</spec>
-  if (response.IsHTTP() && !cors::IsOkStatus(response.HttpStatusCode())) {
+  if (response.IsHTTP() &&
+      !network::IsSuccessfulStatus(response.HttpStatusCode())) {
     return false;
   }
 
@@ -75,43 +75,29 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
     return true;
   }
   // <spec step="13">If type is a JSON MIME type, then:</spec>
-  if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
-      expected_module_type == ModuleType::kJSON &&
+  if (expected_module_type == ModuleType::kJSON &&
       MIMETypeRegistry::IsJSONMimeType(response.HttpContentType())) {
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CSSModulesEnabled() &&
-      expected_module_type == ModuleType::kCSS &&
+  if (expected_module_type == ModuleType::kCSS &&
       MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
           response.HttpContentType())) {
     return true;
   }
 
-  String message;
-  if (base::FeatureList::IsEnabled(blink::features::kJSONModules) ||
-      RuntimeEnabledFeatures::CSSModulesEnabled()) {
-    message =
-        "Failed to load module script: Expected a " +
-        ModuleScriptCreationParams::ModuleTypeToString(expected_module_type) +
-        " module script but the server responded with a MIME type of \"" +
-        resource->GetResponse().HttpContentType() +
-        "\". Strict MIME type checking is enforced for module scripts per HTML "
-        "spec.";
-  } else {
-    message =
-        "Failed to load module script: The server responded with a "
-        "non-JavaScript "
-        "MIME type of \"" +
-        resource->GetResponse().HttpContentType() +
-        "\". Strict MIME type checking is enforced for module scripts per HTML "
-        "spec.";
-  }
+  String message =
+      "Failed to load module script: Expected a " +
+      ModuleScriptCreationParams::ModuleTypeToString(expected_module_type) +
+      " module script but the server responded with a MIME type of \"" +
+      resource->GetResponse().HttpContentType() +
+      "\". Strict MIME type checking is enforced for module scripts per HTML "
+      "spec.";
 
   error_messages->push_back(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kError, message,
-      response.CurrentRequestUrl().GetString(), /*loader=*/nullptr,
+      response.ResponseUrl().GetString(), /*loader=*/nullptr,
       resource->InspectorId()));
   return false;
 }

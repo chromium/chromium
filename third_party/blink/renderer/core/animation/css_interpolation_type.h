@@ -1,17 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_INTERPOLATION_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_INTERPOLATION_TYPE_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 
-class CSSCustomPropertyDeclaration;
 class ComputedStyle;
 class PropertyRegistration;
 class StyleResolverState;
@@ -99,7 +99,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
       ConversionCheckers&) const;
 
   InterpolationValue MaybeConvertCustomPropertyDeclaration(
-      const CSSCustomPropertyDeclaration&,
+      const CSSValue&,
       const InterpolationEnvironment&,
       ConversionCheckers&) const;
 

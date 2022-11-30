@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ void GLES2InterfaceStub::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {}
 void GLES2InterfaceStub::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                                   GLsizei count) {}
 void GLES2InterfaceStub::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {}
+void GLES2InterfaceStub::ShallowFlushCHROMIUM() {}
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

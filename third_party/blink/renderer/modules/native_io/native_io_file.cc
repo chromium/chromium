@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
+#include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
@@ -19,65 +20,197 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_native_io_read_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_native_io_write_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_error.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_file_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
 namespace blink {
 
-namespace {
-
-// Extracts the read/write operation size from the buffer size.
-int OperationSize(const DOMArrayBufferView& buffer) {
-  // On 32-bit platforms, clamp operation sizes to 2^31-1.
-  return base::saturated_cast<int>(buffer.byteLength());
-}
-
-}  // namespace
-
-struct NativeIOFile::FileState {
-  explicit FileState(base::File file) : file(std::move(file)) {}
+// State and logic for performing file I/O off the JavaScript thread.
+//
+// Instances are allocated on the PartitionAlloc heap. Instances cannot be
+// garbage-collected, because garbage collected heaps get deallocated when the
+// underlying threads are terminated, and we need a guarantee that each
+// instance remains alive while it is used by a thread performing file I/O.
+//
+// Instances are initially constructed on a Blink thread that executes
+// JavaScript, which can be Blink's main thread, or a worker thread. Afterwards,
+// instances are (mostly*) only accessed on dedicated threads that do blocking
+// file I/O.
+//
+// Mostly*: On macOS < 10.15, SetLength() synchronously accesses FileState on
+// the JavaScript thread. This could be fixed with extra thread hopping. We're
+// not currently planning to invest in the fix.
+class NativeIOFile::FileState
+    : public base::RefCountedThreadSafe<NativeIOFile::FileState> {
+ public:
+  explicit FileState(base::File file) : file_(std::move(file)) {
+    DCHECK(file_.IsValid());
+  }
 
   FileState(const FileState&) = delete;
   FileState& operator=(const FileState&) = delete;
 
   ~FileState() = default;
 
+  // Returns true until Close() is called. Returns false afterwards.
+  //
+  // On macOS < 10.15, returns false between a TakeFile() call and the
+  // corresponding SetFile() call.
+  bool IsValid() {
+    DCHECK(!IsMainThread());
+
+    base::AutoLock auto_lock(lock_);
+    return file_.IsValid();
+  }
+
+  void Close() {
+    DCHECK(!IsMainThread());
+
+    base::AutoLock auto_lock(lock_);
+    DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
+
+    file_.Close();
+  }
+
+  // Returns {length, base::File::FILE_OK} in case of success.
+  // Returns {invalid number, error} in case of failure.
+  std::pair<int64_t, base::File::Error> GetLength() {
+    DCHECK(!IsMainThread());
+
+    base::AutoLock auto_lock(lock_);
+    DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
+
+    int64_t length = file_.GetLength();
+    base::File::Error error =
+        (length < 0) ? file_.GetLastFileError() : base::File::FILE_OK;
+
+    return {length, error};
+  }
+
+  // Returns {expected_length, base::File::FILE_OK} in case of success.
+  // Returns {actual file length, error} in case of failure.
+  std::pair<int64_t, base::File::Error> SetLength(int64_t expected_length) {
+    DCHECK(!IsMainThread());
+    DCHECK_GE(expected_length, 0);
+
+    base::AutoLock auto_lock(lock_);
+    DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
+
+    bool success = file_.SetLength(expected_length);
+    base::File::Error error =
+        success ? base::File::FILE_OK : file_.GetLastFileError();
+    int64_t actual_length = success ? expected_length : file_.GetLength();
+
+    return {actual_length, error};
+  }
+
+#if BUILDFLAG(IS_MAC)
+  // Used to implement browser-side SetLength() on macOS < 10.15.
+  base::File TakeFile() {
+    base::AutoLock auto_lock(lock_);
+    DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
+
+    return std::move(file_);
+  }
+
+  // Used to implement browser-side SetLength() on macOS < 10.15.
+  void SetFile(base::File file) {
+    base::AutoLock auto_lock(lock_);
+    DCHECK(!file_.IsValid()) << __func__ << " called on valid file";
+
+    file_ = std::move(file);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  // Returns {read byte count, base::File::FILE_OK} in case of success.
+  // Returns {invalid number, error} in case of failure.
+  std::pair<int, base::File::Error> Read(NativeIODataBuffer* buffer,
+                                         int64_t file_offset,
+                                         int read_size) {
+    DCHECK(!IsMainThread());
+    DCHECK(buffer);
+    DCHECK_GE(file_offset, 0);
+    DCHECK_GE(read_size, 0);
+
+    base::AutoLock auto_lock(lock_);
+    DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
+
+    int read_bytes = file_.Read(file_offset, buffer->Data(), read_size);
+    base::File::Error error =
+        (read_bytes < 0) ? file_.GetLastFileError() : base::File::FILE_OK;
+
+    return {read_bytes, error};
+  }
+
+  // Returns {0, write_size, base::File::FILE_OK} in case of success.
+  // Returns {actual file length, written bytes, base::File::OK} in case of a
+  // short write.
+  // Returns {actual file length, invalid number, error} in case of failure.
+  std::tuple<int64_t, int, base::File::Error> Write(NativeIODataBuffer* buffer,
+                                                    int64_t file_offset,
+                                                    int write_size) {
+    DCHECK(!IsMainThread());
+    DCHECK(buffer);
+    DCHECK_GE(file_offset, 0);
+    DCHECK_GE(write_size, 0);
+
+    base::AutoLock auto_lock(lock_);
+    DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
+
+    int written_bytes = file_.Write(file_offset, buffer->Data(), write_size);
+    base::File::Error error =
+        (written_bytes < 0) ? file_.GetLastFileError() : base::File::FILE_OK;
+    int64_t actual_file_length_on_failure = 0;
+    if (written_bytes < write_size || error != base::File::FILE_OK) {
+      actual_file_length_on_failure = file_.GetLength();
+      if (actual_file_length_on_failure < 0 && error != base::File::FILE_OK)
+        error = file_.GetLastFileError();
+    }
+
+    return {actual_file_length_on_failure, written_bytes, error};
+  }
+
+  base::File::Error Flush() {
+    DCHECK(!IsMainThread());
+
+    base::AutoLock auto_lock(lock_);
+    DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
+
+    bool success = file_.Flush();
+    return success ? base::File::FILE_OK : file_.GetLastFileError();
+  }
+
+ private:
   // Lock coordinating cross-thread access to the state.
-  WTF::Mutex mutex;
+  base::Lock lock_;
+
   // The file on disk backing this NativeIOFile.
-  //
-  // The mutex is there to protect us against using the file after it was
-  // closed, and against OS-specific behavior around concurrent file access. It
-  // should never cause the main (JS) thread to block. This is because the mutex
-  // is only taken on the main thread in CloseBackingFile(), which is called
-  // when the NativeIOFile is destroyed (which implies there's no pending I/O
-  // operation, because all I/O operations hold onto a Persistent<NativeIOFile>)
-  // and when the mojo pipe is closed, which currently only happens when the JS
-  // context is being torn down.
-  //
-  // TODO(rstz): Is it possible and worthwhile to remove the mutex and rely
-  // exclusively on |NativeIOFile::io_pending_|, or remove
-  // |NativeIOFile::io_pending_| in favor of the mutex (might be harder)?
-  base::File file GUARDED_BY(mutex);
+  base::File file_ GUARDED_BY(lock_);
 };
 
 NativeIOFile::NativeIOFile(
@@ -87,7 +220,7 @@ NativeIOFile::NativeIOFile(
     NativeIOCapacityTracker* capacity_tracker,
     ExecutionContext* execution_context)
     : file_length_(backing_file_length),
-      file_state_(std::make_unique<FileState>(std::move(backing_file))),
+      file_state_(base::MakeRefCounted<FileState>(std::move(backing_file))),
       // TODO(pwnall): Get a dedicated queue when the specification matures.
       resolver_task_runner_(
           execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
@@ -95,12 +228,12 @@ NativeIOFile::NativeIOFile(
       capacity_tracker_(capacity_tracker) {
   DCHECK_GE(backing_file_length, 0);
   DCHECK(capacity_tracker);
-  backend_file_.set_disconnect_handler(
-      WTF::Bind(&NativeIOFile::OnBackendDisconnect, WrapWeakPersistent(this)));
+  backend_file_.set_disconnect_handler(WTF::BindOnce(
+      &NativeIOFile::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
 
 NativeIOFile::~NativeIOFile() {
-  // Needed to avoid having the base::File destructor close the file descriptor
+  // Needed to avoid having the FileState destructor close the file descriptor
   // synchronously on the main thread.
   CloseBackingFile();
 }
@@ -120,6 +253,9 @@ ScriptPromise NativeIOFile::close(ScriptState* script_state) {
   queued_close_resolver_ = resolver;
 
   if (!io_pending_) {
+    DCHECK(file_state_)
+        << "file_state_ nulled out without setting closed_ or io_pending_";
+
     // Pretend that a close() promise was queued behind an I/O operation, and
     // the operation just finished. This is less logic than handling the
     // non-queued case separately.
@@ -144,18 +280,15 @@ ScriptPromise NativeIOFile::getLength(ScriptState* script_state,
                                "The file was already closed"));
     return ScriptPromise();
   }
-  io_pending_ = true;
+  DCHECK(file_state_)
+      << "file_state_ nulled out without setting closed_ or io_pending_";
 
+  io_pending_ = true;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  // CrossThreadUnretained() is safe here because the NativeIOFile::FileState
-  // instance is owned by this NativeIOFile, which is also passed to the task
-  // via WrapCrossThreadPersistent. Therefore, the FileState instance is
-  // guaranteed to remain alive during the task's execution.
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoGetLength, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          CrossThreadUnretained(file_state_.get()),
+                          WrapCrossThreadPersistent(resolver), file_state_,
                           resolver_task_runner_));
   return resolver->Promise();
 }
@@ -181,6 +314,9 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
                                "The file was already closed"));
     return ScriptPromise();
   }
+  DCHECK(file_state_)
+      << "file_state_ nulled out without setting closed_ or io_pending_";
+
   int64_t expected_length = base::as_signed(new_length);
 
   DCHECK_GE(expected_length, 0);
@@ -207,11 +343,11 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
     }
     file_length_ = expected_length;
   }
-  io_pending_ = true;
 
+  io_pending_ = true;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
   // syscalls issued from renderers. For this reason, base::File::SetLength()
   // fails in the renderer. We work around this problem by calling ftruncate()
@@ -223,40 +359,27 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
     // To preserve this invariant, we pass this file's handle to the browser
     // process during the SetLength() mojo call, and the browser passes it back
     // when the call completes.
-    {
-      WTF::MutexLocker locker(file_state_->mutex);
-      backend_file_->SetLength(
-          expected_length, std::move(file_state_->file),
-          WTF::Bind(&NativeIOFile::DidSetLengthIpc, WrapPersistent(this),
-                    WrapPersistent(resolver)));
-    }
+    base::File file = file_state_->TakeFile();
+    backend_file_->SetLength(
+        expected_length, std::move(file),
+        WTF::BindOnce(&NativeIOFile::DidSetLengthIpc, WrapPersistent(this),
+                      WrapPersistent(resolver)));
     return resolver->Promise();
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-  // CrossThreadUnretained() is safe here because the NativeIOFile::FileState
-  // instance is owned by this NativeIOFile, which is also passed to the task
-  // via WrapCrossThreadPersistent. Therefore, the FileState instance is
-  // guaranteed to remain alive during the task's execution.
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoSetLength, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          CrossThreadUnretained(file_state_.get()),
+                          WrapCrossThreadPersistent(resolver), file_state_,
                           resolver_task_runner_, expected_length));
   return resolver->Promise();
 }
 
 ScriptPromise NativeIOFile::read(ScriptState* script_state,
-                                 MaybeShared<DOMArrayBufferView> buffer,
+                                 NotShared<DOMArrayBufferView> buffer,
                                  uint64_t file_offset,
                                  ExceptionState& exception_state) {
-  if (!buffer->IsShared()) {
-    exception_state.ThrowTypeError(
-        "The I/O buffer must be backed by a SharedArrayBuffer");
-    return ScriptPromise();
-  }
-
   if (io_pending_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -270,44 +393,44 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
                                "The file was already closed"));
     return ScriptPromise();
   }
+  DCHECK(file_state_)
+      << "file_state_ nulled out without setting closed_ or io_pending_";
+
+  // TODO(pwnall): This assignment should move right before the
+  // worker_pool::PostTask() call.
+  //
+  // `io_pending_` should only be set to true when we know for sure we'll post a
+  // task that eventually results in getting `io_pending_` set back to false.
+  // Having `io_pending_` set to true in an early return case (rejecting with an
+  // exception) leaves the NativeIOFile "stuck" in a state where all future I/O
+  // method calls will reject.
   io_pending_ = true;
 
-  int read_size = OperationSize(*buffer);
-  char* read_buffer = static_cast<char*>(buffer->BaseAddressMaybeShared());
-  DOMSharedArrayBuffer* read_buffer_keepalive = buffer->BufferShared();
+  int read_size = NativeIOOperationSize(*buffer);
+
+  std::unique_ptr<NativeIODataBuffer> result_buffer_data =
+      NativeIODataBuffer::Create(script_state, buffer);
+  if (!result_buffer_data) {
+    exception_state.ThrowTypeError("Could not transfer buffer");
+    return ScriptPromise();
+  }
+  DCHECK(result_buffer_data->IsValid());
+  DCHECK(buffer->IsDetached());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  // The first CrossThreadUnretained() is safe here because the
-  // NativeIOFile::FileState instance is owned by this NativeIOFile, which is
-  // also passed to the task via WrapCrossThreadPersistent. Therefore, the
-  // FileState instance is guaranteed to remain alive during the task's
-  // execution.
-  //
-  // The second CrossThreadUnretained() is safe here because the read buffer is
-  // backed by a DOMSharedArrayBuffer that is also passed to the task via
-  // WrapCrossThreadPersistent. Therefore, the buffer is guaranteed to remain
-  // alive during the task's execution.
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(
-          &DoRead, WrapCrossThreadPersistent(this),
-          WrapCrossThreadPersistent(resolver),
-          WrapCrossThreadPersistent(read_buffer_keepalive),
-          CrossThreadUnretained(file_state_.get()), resolver_task_runner_,
-          CrossThreadUnretained(read_buffer), file_offset, read_size));
+      CrossThreadBindOnce(&DoRead, WrapCrossThreadPersistent(this),
+                          WrapCrossThreadPersistent(resolver), file_state_,
+                          resolver_task_runner_, std::move(result_buffer_data),
+                          file_offset, read_size));
   return resolver->Promise();
 }
 
 ScriptPromise NativeIOFile::write(ScriptState* script_state,
-                                  MaybeShared<DOMArrayBufferView> buffer,
+                                  NotShared<DOMArrayBufferView> buffer,
                                   uint64_t file_offset,
                                   ExceptionState& exception_state) {
-  if (!buffer->IsShared()) {
-    exception_state.ThrowTypeError(
-        "The I/O buffer must be backed by a SharedArrayBuffer");
-    return ScriptPromise();
-  }
-
   if (io_pending_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -321,8 +444,10 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
                                "The file was already closed"));
     return ScriptPromise();
   }
+  DCHECK(file_state_)
+      << "file_state_ nulled out without setting closed_ or io_pending_";
 
-  int write_size = OperationSize(*buffer);
+  int write_size = NativeIOOperationSize(*buffer);
   int64_t write_end_offset;
   if (!base::CheckAdd(file_offset, write_size)
            .AssignIfValid(&write_end_offset)) {
@@ -354,31 +479,32 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
     file_length_ = write_end_offset;
   }
 
+  // TODO(pwnall): This assignment should move right before the
+  // worker_pool::PostTask() call.
+  //
+  // `io_pending_` should only be set to true when we know for sure we'll post a
+  // task that eventually results in getting `io_pending_` set back to false.
+  // Having `io_pending_` set to true in an early return case (rejecting with an
+  // exception) leaves the NativeIOFile "stuck" in a state where all future I/O
+  // method calls will reject.
   io_pending_ = true;
 
-  const char* write_data =
-      static_cast<const char*>(buffer->BaseAddressMaybeShared());
-  DOMSharedArrayBuffer* read_buffer_keepalive = buffer->BufferShared();
+  std::unique_ptr<NativeIODataBuffer> result_buffer_data =
+      NativeIODataBuffer::Create(script_state, buffer);
+  if (!result_buffer_data) {
+    exception_state.ThrowTypeError("Could not transfer buffer");
+    return ScriptPromise();
+  }
+  DCHECK(result_buffer_data->IsValid());
+  DCHECK(buffer->IsDetached());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  // The first CrossThreadUnretained() is safe here because the
-  // NativeIOFile::FileState instance is owned by this NativeIOFile, which is
-  // also passed to the task via WrapCrossThreadPersistent. Therefore, the
-  // FileState instance is guaranteed to remain alive during the task's
-  // execution.
-  //
-  // The second CrossThreadUnretained() is safe here because the write data is
-  // backed by a DOMSharedArrayBuffer that is also passed to the task via
-  // WrapCrossThreadPersistent. Therefore, the data is guaranteed to remain
-  // alive during the task's execution.
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(
-          &DoWrite, WrapCrossThreadPersistent(this),
-          WrapCrossThreadPersistent(resolver),
-          WrapCrossThreadPersistent(read_buffer_keepalive),
-          CrossThreadUnretained(file_state_.get()), resolver_task_runner_,
-          CrossThreadUnretained(write_data), file_offset, write_size));
+      CrossThreadBindOnce(&DoWrite, WrapCrossThreadPersistent(this),
+                          WrapCrossThreadPersistent(resolver), file_state_,
+                          resolver_task_runner_, std::move(result_buffer_data),
+                          file_offset, write_size));
   return resolver->Promise();
 }
 
@@ -400,18 +526,15 @@ ScriptPromise NativeIOFile::flush(ScriptState* script_state,
                                "The file was already closed"));
     return ScriptPromise();
   }
-  io_pending_ = true;
+  DCHECK(file_state_)
+      << "file_state_ nulled out without setting closed_ or io_pending_";
 
+  io_pending_ = true;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  // CrossThreadUnretained() is safe here because the NativeIOFile::FileState
-  // instance is owned by this NativeIOFile, which is also passed to the task
-  // via WrapCrossThreadPersistent. Therefore, the FileState instance is
-  // guaranteed to remain alive during the task's execution.
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoFlush, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          CrossThreadUnretained(file_state_.get()),
+                          WrapCrossThreadPersistent(resolver), file_state_,
                           resolver_task_runner_));
   return resolver->Promise();
 }
@@ -439,28 +562,29 @@ void NativeIOFile::DispatchQueuedClose() {
   ScriptPromiseResolver* resolver = queued_close_resolver_;
   queued_close_resolver_ = nullptr;
 
+  scoped_refptr<FileState> file_state = std::move(file_state_);
+  DCHECK(!file_state_);
+
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoClose, WrapCrossThreadPersistent(this),
                           WrapCrossThreadPersistent(resolver),
-                          CrossThreadUnretained(file_state_.get()),
-                          resolver_task_runner_));
+                          std::move(file_state), resolver_task_runner_));
 }
 
 // static
 void NativeIOFile::DoClose(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    NativeIOFile::FileState* file_state,
+    scoped_refptr<NativeIOFile::FileState> file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
+  DCHECK(file_state);
+  DCHECK(file_state->IsValid())
+      << "File I/O operation queued after file closed";
+  DCHECK(resolver_task_runner);
 
-  {
-    WTF::MutexLocker locker(file_state->mutex);
-    DCHECK(file_state->file.IsValid())
-        << "file I/O operation queued after file closed";
-    file_state->file.Close();
-  }
+  file_state->Close();
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
@@ -482,28 +606,24 @@ void NativeIOFile::DidClose(
     resolver->Resolve();
     return;
   }
-  backend_file_->Close(
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver.Get())));
+  backend_file_->Close(WTF::BindOnce(
+      [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+      WrapPersistent(resolver.Get())));
 }
 
 // static
 void NativeIOFile::DoGetLength(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    NativeIOFile::FileState* file_state,
+    scoped_refptr<NativeIOFile::FileState> file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
-  base::File::Error get_length_error;
-  int64_t length = -1;
-  {
-    WTF::MutexLocker mutex_locker(file_state->mutex);
-    DCHECK(file_state->file.IsValid())
-        << "file I/O operation queued after file closed";
-    length = file_state->file.GetLength();
-    get_length_error = (length < 0) ? file_state->file.GetLastFileError()
-                                    : base::File::FILE_OK;
-  }
+  DCHECK(file_state);
+  DCHECK(file_state->IsValid())
+      << "File I/O operation queued after file closed";
+  DCHECK(resolver_task_runner);
+
+  auto [length, get_length_error] = file_state->GetLength();
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
@@ -519,7 +639,6 @@ void NativeIOFile::DidGetLength(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   if (get_length_error == base::File::FILE_OK) {
@@ -550,22 +669,18 @@ void NativeIOFile::DidGetLength(
 void NativeIOFile::DoSetLength(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    NativeIOFile::FileState* file_state,
+    scoped_refptr<NativeIOFile::FileState> file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
     int64_t expected_length) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
+  DCHECK(file_state);
+  DCHECK(file_state->IsValid())
+      << "File I/O operation queued after file closed";
+  DCHECK(resolver_task_runner);
+  DCHECK_GE(expected_length, 0);
 
-  base::File::Error set_length_error;
-  int64_t actual_length;
-  {
-    WTF::MutexLocker mutex_locker(file_state->mutex);
-    DCHECK(file_state->file.IsValid())
-        << "file I/O operation queued after file closed";
-    bool success = file_state->file.SetLength(expected_length);
-    set_length_error =
-        success ? base::File::FILE_OK : file_state->file.GetLastFileError();
-    actual_length = success ? expected_length : file_state->file.GetLength();
-  }
+  auto [actual_length, set_length_error] =
+      file_state->SetLength(expected_length);
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
@@ -621,17 +736,14 @@ void NativeIOFile::DidSetLengthIo(
   resolver->Resolve();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void NativeIOFile::DidSetLengthIpc(
     ScriptPromiseResolver* resolver,
     base::File backing_file,
     int64_t actual_length,
     mojom::blink::NativeIOErrorPtr set_length_error) {
   DCHECK(backing_file.IsValid()) << "browser returned closed file";
-  {
-    WTF::MutexLocker locker(file_state_->mutex);
-    file_state_->file = std::move(backing_file);
-  }
+  file_state_->SetFile(std::move(backing_file));
   ScriptState* script_state = resolver->GetScriptState();
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
@@ -676,45 +788,50 @@ void NativeIOFile::DidSetLengthIpc(
 
   resolver->Resolve();
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 void NativeIOFile::DoRead(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    CrossThreadPersistent<DOMSharedArrayBuffer> read_buffer_keepalive,
-    NativeIOFile::FileState* file_state,
+    scoped_refptr<NativeIOFile::FileState> file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
-    char* read_buffer,
+    std::unique_ptr<NativeIODataBuffer> result_buffer_data,
     uint64_t file_offset,
     int read_size) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
+  DCHECK(file_state);
+  DCHECK(file_state->IsValid())
+      << "File I/O operation queued after file closed";
+  DCHECK(resolver_task_runner);
+  DCHECK(result_buffer_data);
+  DCHECK(result_buffer_data->IsValid());
+  DCHECK_GE(read_size, 0);
+#if DCHECK_IS_ON()
+  DCHECK_LE(static_cast<size_t>(read_size), result_buffer_data->DataLength());
+#endif  // DCHECK_IS_ON()
 
-  int read_bytes;
-  base::File::Error read_error;
-  {
-    WTF::MutexLocker mutex_locker(file_state->mutex);
-    DCHECK(file_state->file.IsValid())
-        << "file I/O operation queued after file closed";
-    read_bytes = file_state->file.Read(file_offset, read_buffer, read_size);
-    read_error = (read_bytes < 0) ? file_state->file.GetLastFileError()
-                                  : base::File::FILE_OK;
-  }
+  auto [read_bytes, read_error] =
+      file_state->Read(result_buffer_data.get(), file_offset, read_size);
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
       CrossThreadBindOnce(&NativeIOFile::DidRead, std::move(native_io_file),
-                          std::move(resolver), read_bytes, read_error));
+                          std::move(resolver), std::move(result_buffer_data),
+                          read_bytes, read_error));
 }
 
 void NativeIOFile::DidRead(
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    std::unique_ptr<NativeIODataBuffer> result_buffer_data,
     int read_bytes,
     base::File::Error read_error) {
+  DCHECK(result_buffer_data);
+  DCHECK(result_buffer_data->IsValid());
+
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;
@@ -729,53 +846,54 @@ void NativeIOFile::DidRead(
   }
   DCHECK_EQ(read_error, base::File::FILE_OK)
       << "Error set but positive number of bytes read.";
-  resolver->Resolve(read_bytes);
+  NativeIOReadResult* read_result = MakeGarbageCollected<NativeIOReadResult>();
+  read_result->setBuffer(result_buffer_data->Take());
+  read_result->setReadBytes(read_bytes);
+  resolver->Resolve(read_result);
 }
 
 // static
 void NativeIOFile::DoWrite(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    CrossThreadPersistent<DOMSharedArrayBuffer> write_data_keepalive,
-    NativeIOFile::FileState* file_state,
+    scoped_refptr<NativeIOFile::FileState> file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
-    const char* write_data,
+    std::unique_ptr<NativeIODataBuffer> result_buffer_data,
     uint64_t file_offset,
     int write_size) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
+  DCHECK(file_state);
+  DCHECK(file_state->IsValid())
+      << "File I/O operation queued after file closed";
+  DCHECK(resolver_task_runner);
+  DCHECK(result_buffer_data);
+  DCHECK(result_buffer_data->IsValid());
+  DCHECK_GE(write_size, 0);
+#if DCHECK_IS_ON()
+  DCHECK_LE(static_cast<size_t>(write_size), result_buffer_data->DataLength());
+#endif  // DCHECK_IS_ON()
 
-  int written_bytes;
-  int64_t actual_file_length_on_failure = 0;
-  base::File::Error write_error;
-  {
-    WTF::MutexLocker mutex_locker(file_state->mutex);
-    DCHECK(file_state->file.IsValid())
-        << "file I/O operation queued after file closed";
-    written_bytes = file_state->file.Write(file_offset, write_data, write_size);
-    write_error = (written_bytes < 0) ? file_state->file.GetLastFileError()
-                                      : base::File::FILE_OK;
-    if (written_bytes < write_size || write_error != base::File::FILE_OK) {
-      actual_file_length_on_failure = file_state->file.GetLength();
-      if (actual_file_length_on_failure < 0 &&
-          write_error != base::File::FILE_OK) {
-        write_error = file_state->file.GetLastFileError();
-      }
-    }
-  }
+  auto [actual_file_length_on_failure, written_bytes, write_error] =
+      file_state->Write(result_buffer_data.get(), file_offset, write_size);
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
       CrossThreadBindOnce(&NativeIOFile::DidWrite, std::move(native_io_file),
-                          std::move(resolver), written_bytes, write_error,
-                          write_size, actual_file_length_on_failure));
+                          std::move(resolver), std::move(result_buffer_data),
+                          written_bytes, write_error, write_size,
+                          actual_file_length_on_failure));
 }
 
 void NativeIOFile::DidWrite(
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    std::unique_ptr<NativeIODataBuffer> result_buffer_data,
     int written_bytes,
     base::File::Error write_error,
     int write_size,
     int64_t actual_file_length_on_failure) {
+  DCHECK(result_buffer_data);
+  DCHECK(result_buffer_data->IsValid());
+
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -816,26 +934,25 @@ void NativeIOFile::DidWrite(
     return;
   }
   DCHECK_EQ(write_error, base::File::FILE_OK);
-
-  resolver->Resolve(written_bytes);
+  NativeIOWriteResult* write_result =
+      MakeGarbageCollected<NativeIOWriteResult>();
+  write_result->setBuffer(result_buffer_data->Take());
+  write_result->setWrittenBytes(written_bytes);
+  resolver->Resolve(write_result);
 }
 
 // static
 void NativeIOFile::DoFlush(
     CrossThreadPersistent<NativeIOFile> native_io_file,
     CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    NativeIOFile::FileState* file_state,
+    scoped_refptr<NativeIOFile::FileState> file_state,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
-  base::File::Error flush_error;
-  {
-    WTF::MutexLocker mutex_locker(file_state->mutex);
-    DCHECK(file_state->file.IsValid())
-        << "file I/O operation queued after file closed";
-    bool success = file_state->file.Flush();
-    flush_error =
-        success ? base::File::FILE_OK : file_state->file.GetLastFileError();
-  }
+  DCHECK(file_state);
+  DCHECK(file_state->IsValid())
+      << "File I/O operation queued after file closed";
+
+  base::File::Error flush_error = file_state->Flush();
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
@@ -849,7 +966,6 @@ void NativeIOFile::DidFlush(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;
@@ -865,20 +981,23 @@ void NativeIOFile::DidFlush(
 
 void NativeIOFile::CloseBackingFile() {
   closed_ = true;
-  file_state_->mutex.lock();
-  base::File backing_file = std::move(file_state_->file);
-  file_state_->mutex.unlock();
 
-  if (!backing_file.IsValid()) {
+  if (!file_state_) {
     // Avoid posting a cross-thread task if the file is already closed. This is
     // the expected path.
     return;
   }
 
-  worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce([](base::File file) { file.Close(); },
-                          std::move(backing_file)));
+  scoped_refptr<FileState> file_state = std::move(file_state_);
+  DCHECK(!file_state_);
+
+  worker_pool::PostTask(FROM_HERE, {base::MayBlock()},
+                        CrossThreadBindOnce(
+                            [](scoped_refptr<FileState> file_state) {
+                              DCHECK(file_state);
+                              file_state->Close();
+                            },
+                            std::move(file_state)));
 }
 
 }  // namespace blink

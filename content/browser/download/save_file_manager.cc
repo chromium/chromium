@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -18,6 +20,7 @@
 #include "content/browser/download/save_package.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -29,14 +32,16 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -50,6 +55,7 @@ static SaveFileManager* g_save_file_manager = nullptr;
 class SaveFileManager::SimpleURLLoaderHelper
     : public network::SimpleURLLoaderStreamConsumer {
  public:
+  using URLLoaderCompleteCallback = base::OnceCallback<void(bool success)>;
   static std::unique_ptr<SimpleURLLoaderHelper> CreateAndStartDownload(
       std::unique_ptr<network::ResourceRequest> resource_request,
       SaveItemId save_item_id,
@@ -58,12 +64,16 @@ class SaveFileManager::SimpleURLLoaderHelper
       int render_frame_routing_id,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
-      SaveFileManager* save_file_manager) {
+      SaveFileManager* save_file_manager,
+      URLLoaderCompleteCallback on_complete_cb) {
     return std::unique_ptr<SimpleURLLoaderHelper>(new SimpleURLLoaderHelper(
         std::move(resource_request), save_item_id, save_package_id,
         render_process_id, render_frame_routing_id, annotation_tag,
-        url_loader_factory, save_file_manager));
+        url_loader_factory, save_file_manager, std::move(on_complete_cb)));
   }
+
+  SimpleURLLoaderHelper(const SimpleURLLoaderHelper&) = delete;
+  SimpleURLLoaderHelper& operator=(const SimpleURLLoaderHelper&) = delete;
 
   ~SimpleURLLoaderHelper() override = default;
 
@@ -76,10 +86,12 @@ class SaveFileManager::SimpleURLLoaderHelper
       int render_frame_routing_id,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
-      SaveFileManager* save_file_manager)
+      SaveFileManager* save_file_manager,
+      URLLoaderCompleteCallback on_complete_cb)
       : save_file_manager_(save_file_manager),
         save_item_id_(save_item_id),
-        save_package_id_(save_package_id) {
+        save_package_id_(save_package_id),
+        on_complete_cb_(std::move(on_complete_cb)) {
     GURL url = resource_request->url;
     url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                    annotation_tag);
@@ -118,15 +130,13 @@ class SaveFileManager::SimpleURLLoaderHelper
     download::GetDownloadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&SaveFileManager::UpdateSaveProgress, save_file_manager_,
-                       save_item_id_, string_piece.as_string()));
+                       save_item_id_, std::string(string_piece)));
     std::move(resume).Run();
   }
 
   void OnComplete(bool success) override {
     download::GetDownloadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SaveFileManager::SaveFinished, save_file_manager_,
-                       save_item_id_, save_package_id_, success));
+        FROM_HERE, base::BindOnce(std::move(on_complete_cb_), success));
   }
 
   void OnRetry(base::OnceClosure start_retry) override {
@@ -134,12 +144,11 @@ class SaveFileManager::SimpleURLLoaderHelper
     NOTREACHED();
   }
 
-  SaveFileManager* save_file_manager_;
+  raw_ptr<SaveFileManager> save_file_manager_;
   SaveItemId save_item_id_;
   SavePackageId save_package_id_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderHelper);
+  URLLoaderCompleteCallback on_complete_cb_;
 };
 
 SaveFileManager::SaveFileManager() {
@@ -188,17 +197,20 @@ SavePackage* SaveFileManager::LookupPackage(SaveItemId save_item_id) {
 }
 
 // Call from SavePackage for starting a saving job
-void SaveFileManager::SaveURL(SaveItemId save_item_id,
-                              const GURL& url,
-                              const Referrer& referrer,
-                              int render_process_host_id,
-                              int render_view_routing_id,
-                              int render_frame_routing_id,
-                              SaveFileCreateInfo::SaveFileSource save_source,
-                              const base::FilePath& file_full_path,
-                              BrowserContext* context,
-                              StoragePartition* storage_partition,
-                              SavePackage* save_package) {
+void SaveFileManager::SaveURL(
+    SaveItemId save_item_id,
+    const GURL& url,
+    const Referrer& referrer,
+    int render_process_host_id,
+    int render_view_routing_id,
+    int render_frame_routing_id,
+    SaveFileCreateInfo::SaveFileSource save_source,
+    const base::FilePath& file_full_path,
+    BrowserContext* context,
+    StoragePartition* storage_partition,
+    SavePackage* save_package,
+    const std::string& client_guid,
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Insert started saving job to tracking list.
@@ -265,8 +277,7 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
       factory = factory_remote.get();
     } else if (url.SchemeIsFile()) {
       factory_remote.Bind(FileURLLoaderFactory::Create(
-          context->GetPath(),
-          BrowserContext::GetSharedCorsOriginAccessList(context),
+          context->GetPath(), context->GetSharedCorsOriginAccessList(),
           base::TaskPriority::USER_VISIBLE));
       factory = factory_remote.get();
     } else if (url.SchemeIsFileSystem() && rfh) {
@@ -276,7 +287,8 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
           rfh->GetSiteInstance()->GetPartitionDomain(storage_partition_impl);
       factory_remote.Bind(CreateFileSystemURLLoaderFactory(
           rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
-          storage_partition->GetFileSystemContext(), partition_domain));
+          storage_partition->GetFileSystemContext(), partition_domain,
+          static_cast<RenderFrameHostImpl*>(rfh)->storage_key()));
       factory = factory_remote.get();
     } else if (rfh && url.SchemeIs(content::kChromeUIScheme)) {
       factory_remote.Bind(CreateWebUIURLLoaderFactory(rfh, url.scheme(), {}));
@@ -285,11 +297,18 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
       factory = storage_partition->GetURLLoaderFactoryForBrowserProcess().get();
     }
 
+    base::OnceCallback<void(bool /*success*/)> save_finished_cb =
+        base::BindOnce(&SaveFileManager::OnURLLoaderComplete, this,
+                       save_item_id, save_package->id(),
+                       context->IsOffTheRecord() ? GURL() : url,
+                       context->IsOffTheRecord() ? GURL() : referrer.url,
+                       client_guid, std::move(remote_quarantine));
+
     url_loader_helpers_[save_item_id] =
         SimpleURLLoaderHelper::CreateAndStartDownload(
             std::move(request), save_item_id, save_package->id(),
             render_process_host_id, render_frame_routing_id, traffic_annotation,
-            factory, this);
+            factory, this, std::move(save_finished_cb));
   } else {
     // We manually start the save job.
     auto info = std::make_unique<SaveFileCreateInfo>(
@@ -342,6 +361,36 @@ void SaveFileManager::SendCancelRequest(SaveItemId save_item_id) {
   download::GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SaveFileManager::CancelSave, this, save_item_id));
+}
+
+void SaveFileManager::OnURLLoaderComplete(
+    SaveItemId save_item_id,
+    SavePackageId save_package_id,
+    const GURL& url,
+    const GURL& referrer_url,
+    const std::string& client_guid,
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+    bool is_success) {
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  SaveFile* save_file = LookupSaveFile(save_item_id);
+  if (!is_success || !save_file) {
+    SaveFinished(save_item_id, save_package_id, is_success);
+    return;
+  }
+
+  save_file->AnnotateWithSourceInformation(
+      client_guid, url, referrer_url, std::move(remote_quarantine),
+      base::BindOnce(&SaveFileManager::OnQuarantineComplete, this, save_item_id,
+                     save_package_id));
+}
+
+void SaveFileManager::OnQuarantineComplete(
+    SaveItemId save_item_id,
+    SavePackageId save_package_id,
+    download::DownloadInterruptReason result) {
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  SaveFinished(save_item_id, save_package_id,
+               result == download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 
 // Notifications sent from the IO thread and run on the file thread:
@@ -546,6 +595,28 @@ void SaveFileManager::RemoveSavedFileFromFileMap(
       save_file_map_.erase(it);
     }
   }
+}
+
+void SaveFileManager::GetSaveFilePaths(
+    const std::vector<std::pair<SaveItemId, base::FilePath>>&
+        ids_and_final_paths,
+    base::OnceCallback<void(base::flat_map<base::FilePath, base::FilePath>)>
+        callback) {
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  base::flat_map<base::FilePath, base::FilePath> tmp_paths_and_final_paths;
+
+  for (const auto& id_and_final_path : ids_and_final_paths) {
+    auto it = save_file_map_.find(id_and_final_path.first);
+    if (it != save_file_map_.end() && !it->second->FullPath().empty() &&
+        !id_and_final_path.second.empty()) {
+      tmp_paths_and_final_paths.insert(
+          {it->second->FullPath(), id_and_final_path.second});
+    }
+  }
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                std::move(tmp_paths_and_final_paths)));
 }
 
 }  // namespace content

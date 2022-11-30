@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,23 @@
 #include <string>
 #include <vector>
 
+#include "base/pickle.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/skia_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace ui {
 namespace {
@@ -27,17 +38,29 @@ std::vector<std::string> UTF8Types(std::vector<std::u16string> types) {
 
 }  // namespace
 
-class ClipboardNonBackedTest : public testing::Test {
+// Base class for tests of `ClipboardNonBacked`.
+class ClipboardNonBackedTestBase : public testing::Test {
  public:
-  ClipboardNonBackedTest() = default;
-  ClipboardNonBackedTest(const ClipboardNonBackedTest&) = delete;
-  ClipboardNonBackedTest& operator=(const ClipboardNonBackedTest&) = delete;
-  ~ClipboardNonBackedTest() override = default;
+  explicit ClipboardNonBackedTestBase(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
+                          time_source) {}
 
   ClipboardNonBacked* clipboard() { return &clipboard_; }
 
+ protected:
+  base::test::TaskEnvironment task_environment_;
+
  private:
   ClipboardNonBacked clipboard_;
+};
+
+// Base class for tests of `ClipboardNonBacked` which use system time.
+class ClipboardNonBackedTest : public ClipboardNonBackedTestBase {
+ public:
+  ClipboardNonBackedTest()
+      : ClipboardNonBackedTestBase(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
 };
 
 // Verifies that GetClipboardData() returns the same instance of ClipboardData
@@ -92,9 +115,7 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
 // Tests that site bookmark URLs are accessed as text, and
 // IsFormatAvailable('text/uri-list') is only true for files.
 TEST_F(ClipboardNonBackedTest, TextURIList) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kClipboardFilenames}, {});
-  EXPECT_EQ("text/uri-list", ClipboardFormatType::GetFilenamesType().GetName());
+  EXPECT_EQ("text/uri-list", ClipboardFormatType::FilenamesType().GetName());
 
   auto data = std::make_unique<ClipboardData>();
   data->set_bookmark_url("http://example.com");
@@ -103,28 +124,301 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
 
-  // With bookmark data, available types should be only 'text/plain'.
+  // Bookmark data uses mime type 'text/plain'.
   EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
   EXPECT_FALSE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
-  // With filenames data, available types should be 'text/uri-list'.
+  // Filenames data uses mime type 'text/uri-list'.
   data = std::make_unique<ClipboardData>();
   data->set_filenames({FileInfo(base::FilePath("/path"), base::FilePath())});
   clipboard()->WriteClipboardData(std::move(data));
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
   EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
-  EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                               ClipboardBuffer::kCopyPaste,
                                               /*data_dst=*/nullptr));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+
+  // Filenames data uses mime type 'text/uri-list', but clients can also set
+  // 'text/uri-list' as one of the custom data types. When it is set as a custom
+  // type, it will be returned from ReadAvailableTypes(), but
+  // IsFormatAvailable(FilenamesType()) is false.
+  data = std::make_unique<ClipboardData>();
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/uri-list"] = u"data";
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(custom_data, &pickle);
+  data->SetCustomData(
+      ui::ClipboardFormatType::WebCustomDataType().Serialize(),
+      std::string(static_cast<const char*>(pickle.data()), pickle.size()));
+  clipboard()->WriteClipboardData(std::move(data));
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 }
+
+// Tests that bitmaps written to the clipboard are read out encoded as a PNG.
+TEST_F(ClipboardNonBackedTest, ImageEncoding) {
+  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
+
+  auto data = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  data->SetBitmapData(test_bitmap);
+  clipboard()->WriteClipboardData(std::move(data));
+
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+
+  // Asynchronously read out the image as a PNG. It should be the encoded
+  // version of the bitmap we wrote above.
+  std::vector<uint8_t> png;
+  base::RunLoop loop;
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        png = png_data;
+        loop.Quit();
+      }));
+  loop.Run();
+
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
+}
+
+// Tests that consecutive calls to read an image from the clipboard only results
+// in the image being encoded once.
+TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
+  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
+
+  auto data = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  data->SetBitmapData(test_bitmap);
+  clipboard()->WriteClipboardData(std::move(data));
+
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+
+  std::vector<std::vector<uint8_t>> pngs;
+  base::RunLoop loop;
+  // Read from the clipboard many times in a row.
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+        // Read operations should be ordered. This callback will be called last.
+        loop.Quit();
+      }));
+  loop.Run();
+
+  ASSERT_EQ(pngs.size(), 3u);
+  EXPECT_EQ(pngs[0], pngs[1]);
+  EXPECT_EQ(pngs[0], pngs[2]);
+
+  // The bitmap should only have been encoded once.
+  EXPECT_EQ(clipboard()->NumImagesEncodedForTesting(), 1);
+
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(pngs[0].data(), pngs[0].size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
+}
+
+// Tests that consecutive calls to read an image from the clipboard only results
+// in the image being encoded once, but if another image is placed on the
+// clipboard, this image is appropriately encoded.
+TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
+  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
+
+  auto data = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  data->SetBitmapData(test_bitmap);
+
+  auto data2 = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap2 = gfx::test::CreateBitmap(4, 3);
+  data2->SetBitmapData(test_bitmap2);
+
+  clipboard()->WriteClipboardData(std::move(data));
+
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+
+  std::vector<std::vector<uint8_t>> pngs;
+  base::RunLoop loop;
+  // Read from the clipboard many times in a row.
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+
+  // Write a different image to the clipboard.
+  clipboard()->WriteClipboardData(std::move(data2));
+
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+        // Read operations should be ordered. This callback will be called last.
+        loop.Quit();
+      }));
+  loop.Run();
+
+  ASSERT_EQ(pngs.size(), 3u);
+  EXPECT_EQ(pngs[0], pngs[1]);
+  EXPECT_NE(pngs[0], pngs[2]);
+
+  // The first bitmap should only have been encoded once, but the second bitmap
+  // should have been encoded separately.
+  EXPECT_EQ(clipboard()->NumImagesEncodedForTesting(), 2);
+
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(pngs[0].data(), pngs[0].size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
+  gfx::PNGCodec::Decode(pngs[2].data(), pngs[2].size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap2));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Base class for tests of `ClipboardNonBacked` which use mock time.
+class ClipboardNonBackedMockTimeTest : public ClipboardNonBackedTestBase {
+ public:
+  ClipboardNonBackedMockTimeTest()
+      : ClipboardNonBackedTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+// Verifies that `ClipboardNonBacked` records the time interval between commit
+// and read of the same `ClipboardData`.
+TEST_F(ClipboardNonBackedMockTimeTest,
+       RecordsTimeIntervalBetweenCommitAndRead) {
+  // Cache clipboard for the current thread.
+  auto* clipboard = ClipboardNonBacked::GetForCurrentThread();
+  ASSERT_TRUE(clipboard);
+
+  // Write clipboard data to the clipboard.
+  ScopedClipboardWriter(ClipboardBuffer::kCopyPaste).WriteText(u"");
+  auto* clipboard_data = clipboard->GetClipboardData(/*data_dst=*/nullptr);
+  ASSERT_TRUE(clipboard_data);
+  ASSERT_TRUE(clipboard_data->commit_time().has_value());
+  EXPECT_EQ(clipboard_data->commit_time().value(), base::Time::Now());
+
+  // This test will verify expectations for every kind of clipboard data read.
+  std::vector<base::RepeatingClosure> test_cases = {{
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadAsciiText(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadBookmark(
+            /*data_dst=*/nullptr,
+            /*title=*/std::make_unique<std::u16string>().get(),
+            /*url=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadCustomData(
+            ClipboardBuffer::kCopyPaste,
+            /*type=*/std::u16string(), /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::u16string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadData(ui::ClipboardFormatType(),
+                            /*data_dst=*/nullptr,
+                            /*result=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadFilenames(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::vector<ui::FileInfo>>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadHTML(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*markup=*/std::make_unique<std::u16string>().get(),
+            /*src_url=*/std::make_unique<std::string>().get(),
+            /*fragment_start=*/std::make_unique<uint32_t>().get(),
+            /*fragment_end=*/std::make_unique<uint32_t>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadPng(ClipboardBuffer::kCopyPaste,
+                           /*data_dst=*/nullptr,
+                           /*callback=*/base::DoNothing());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadRTF(ClipboardBuffer::kCopyPaste,
+                           /*data_dst=*/nullptr,
+                           /*result=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadSvg(ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                           /*result=*/std::make_unique<std::u16string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadText(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::u16string>().get());
+      }),
+  }};
+
+  // Read clipboard data and verify histogram expectations.
+  constexpr base::TimeDelta kTimeDelta = base::Seconds(10);
+  constexpr char kHistogram[] = "Clipboard.TimeIntervalBetweenCommitAndRead";
+  for (size_t i = 1u; i <= test_cases.size(); ++i) {
+    base::HistogramTester histogram_tester;
+    histogram_tester.ExpectUniqueTimeSample(kHistogram, i * kTimeDelta, 0u);
+    task_environment_.FastForwardBy(kTimeDelta);
+    test_cases.at(i - 1u).Run();
+    histogram_tester.ExpectUniqueTimeSample(kHistogram, i * kTimeDelta, 1u);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

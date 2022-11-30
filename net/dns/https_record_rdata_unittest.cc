@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,6 @@ TEST(HttpsRecordRdataTest, ParsesAlias) {
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
   ASSERT_TRUE(rdata);
-  EXPECT_FALSE(rdata->IsMalformed());
 
   AliasFormHttpsRecordRdata expected("chromium.org");
   EXPECT_TRUE(rdata->IsEqual(&expected));
@@ -107,14 +106,13 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
   ASSERT_TRUE(rdata);
-  EXPECT_FALSE(rdata->IsMalformed());
 
   IPAddress expected_ipv6;
   ASSERT_TRUE(expected_ipv6.AssignFromIPLiteral("2001:4860:4860::8888"));
   ServiceFormHttpsRecordRdata expected(
       1 /* priority */, "chromium.org", std::set<uint16_t>({1, 2, 3, 4, 5, 6}),
       std::vector<std::string>({"foo", "bar"}) /* alpn_ids */,
-      false /* default_alpn */, base::Optional<uint16_t>(46) /* port */,
+      false /* default_alpn */, absl::optional<uint16_t>(46) /* port */,
       std::vector<IPAddress>({IPAddress(8, 8, 8, 8)}) /* ipv4_hint */,
       "hello" /* ech_config */,
       std::vector<IPAddress>({expected_ipv6}) /* ipv6_hint */,
@@ -151,51 +149,31 @@ TEST(HttpsRecordRdataTest, RejectCorruptRdata) {
 
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
-  ASSERT_TRUE(rdata);
-
-  EXPECT_TRUE(rdata->IsMalformed());
+  EXPECT_FALSE(rdata);
 }
 
 TEST(HttpsRecordRdataTest, AliasIsEqualRejectsWrongType) {
   AliasFormHttpsRecordRdata alias("alias.name.test");
   ServiceFormHttpsRecordRdata service(
       1u /* priority */, "service.name.test", {} /* mandatory_keys */,
-      {} /* alpn_ids */, true /* default_alpn */, base::nullopt /* port */,
+      {} /* alpn_ids */, true /* default_alpn */, absl::nullopt /* port */,
       {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
       {} /* unparsed_params */);
-  MalformedHttpsRecordRdata malformed;
 
   EXPECT_TRUE(alias.IsEqual(&alias));
   EXPECT_FALSE(alias.IsEqual(&service));
-  EXPECT_FALSE(alias.IsEqual(&malformed));
 }
 
 TEST(HttpsRecordRdataTest, ServiceIsEqualRejectsWrongType) {
   AliasFormHttpsRecordRdata alias("alias.name.test");
   ServiceFormHttpsRecordRdata service(
       1u /* priority */, "service.name.test", {} /* mandatory_keys */,
-      {} /* alpn_ids */, true /* default_alpn */, base::nullopt /* port */,
+      {} /* alpn_ids */, true /* default_alpn */, absl::nullopt /* port */,
       {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
       {} /* unparsed_params */);
-  MalformedHttpsRecordRdata malformed;
 
   EXPECT_FALSE(service.IsEqual(&alias));
   EXPECT_TRUE(service.IsEqual(&service));
-  EXPECT_FALSE(service.IsEqual(&malformed));
-}
-
-TEST(HttpsRecordRdataTest, MalformedIsEqualRejectsWrongType) {
-  AliasFormHttpsRecordRdata alias("alias.name.test");
-  ServiceFormHttpsRecordRdata service(
-      1u /* priority */, "service.name.test", {} /* mandatory_keys */,
-      {} /* alpn_ids */, true /* default_alpn */, base::nullopt /* port */,
-      {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
-      {} /* unparsed_params */);
-  MalformedHttpsRecordRdata malformed;
-
-  EXPECT_FALSE(malformed.IsEqual(&alias));
-  EXPECT_FALSE(malformed.IsEqual(&service));
-  EXPECT_TRUE(malformed.IsEqual(&malformed));
 }
 
 }  // namespace

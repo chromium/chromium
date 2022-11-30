@@ -1,16 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_DATA_PIPE_BYTES_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_DATA_PIPE_BYTES_CONSUMER_H_
 
-#include <memory>
-
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -87,7 +87,7 @@ class PLATFORM_EXPORT DataPipeBytesConsumer final : public BytesConsumer {
   InternalState state_ = InternalState::kWaiting;
   Error error_;
   uint64_t num_read_bytes_ = 0;
-  base::Optional<uint64_t> total_size_;
+  absl::optional<uint64_t> total_size_;
   bool is_in_two_phase_read_ = false;
   bool has_pending_notification_ = false;
   bool has_pending_complete_ = false;

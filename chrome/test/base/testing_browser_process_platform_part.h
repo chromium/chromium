@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,9 @@ class TestingBrowserProcessPlatformPart : public BrowserProcessPlatformPart {
   TestingBrowserProcessPlatformPart& operator=(
       const TestingBrowserProcessPlatformPart&) = delete;
   ~TestingBrowserProcessPlatformPart() override;
-#if defined(OS_MAC)
-  void SetLocationPermissionManager(
-      std::unique_ptr<device::GeolocationSystemPermissionManager>
-          location_permission_manager);
+#if BUILDFLAG(IS_MAC)
+  void SetGeolocationManager(
+      std::unique_ptr<device::GeolocationManager> geolocation_manager);
 #endif
 };
 

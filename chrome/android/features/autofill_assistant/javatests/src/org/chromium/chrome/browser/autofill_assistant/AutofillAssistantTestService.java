@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionsResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.GetUserDataResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportsScriptResponseProto;
+import org.chromium.components.autofill_assistant.AutofillAssistantDependencyInjector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +34,7 @@ import java.util.List;
 @JNINamespace("autofill_assistant")
 public class AutofillAssistantTestService
         implements AutofillAssistantService,
-                   AutofillAssistantServiceInjector.NativeServiceProvider {
+                   AutofillAssistantDependencyInjector.NativeServiceProvider {
     public enum ScriptsReturnMode {
         ONE_BY_ONE,
         ALL_AT_ONCE,
@@ -46,6 +48,7 @@ public class AutofillAssistantTestService
     private @Nullable List<ProcessedActionProto> mProcessedActions;
     private int mNextActionsCounter;
     private int mCurrentScriptIndex;
+    private GetUserDataResponseProto mUserData;
 
     /** Default constructor which disables animations. */
     AutofillAssistantTestService(List<AutofillAssistantTestScript> scripts) {
@@ -56,7 +59,7 @@ public class AutofillAssistantTestService
     AutofillAssistantTestService(
             List<AutofillAssistantTestScript> scripts, ScriptsReturnMode scriptsReturnMode) {
         this(scripts,
-                (ClientSettingsProto) ClientSettingsProto.newBuilder()
+                ClientSettingsProto.newBuilder()
                         .setIntegrationTestSettings(
                                 ClientSettingsProto.IntegrationTestSettings.newBuilder()
                                         .setDisableHeaderAnimations(true)
@@ -83,7 +86,7 @@ public class AutofillAssistantTestService
      * in order to take effect!
      */
     void scheduleForInjection() {
-        AutofillAssistantServiceInjector.setServiceToInject(this);
+        AutofillAssistantDependencyInjector.setServiceToInject(this);
     }
 
     /**
@@ -92,6 +95,13 @@ public class AutofillAssistantTestService
      */
     void setNextActions(List<ActionProto> nextActions) {
         mNextActions = nextActions;
+    }
+
+    /**
+     * Sets the user data that will be returned with the next GetUserData request.
+     */
+    void setUserData(GetUserDataResponseProto userData) {
+        mUserData = userData;
     }
 
     @Override
@@ -149,7 +159,7 @@ public class AutofillAssistantTestService
         mProcessedActions = processedActions;
         mNextActionsCounter++;
         ActionsResponseProto responseProto =
-                (ActionsResponseProto) ActionsResponseProto.newBuilder()
+                ActionsResponseProto.newBuilder()
                         .addAllActions(mNextActions)
                         .setGlobalPayload(ByteString.copyFrom(globalPayload))
                         .setScriptPayload(ByteString.copyFrom(scriptPayload))
@@ -216,6 +226,20 @@ public class AutofillAssistantTestService
         return getNextActions(globalPayload, scriptPayload, actions).toByteArray();
     }
 
+    @CalledByNative
+    private byte[] getUserDataNative() {
+        byte[] returnValue = mUserData.toByteArray();
+        // Null the user data such that a next (unexpected) request fails to respond. If multiple
+        // requests are required, set new user data or consider adding code to allow for repeated
+        // calls.
+        mUserData = null;
+        return returnValue;
+    }
+
+    @CalledByNative
+    private byte[] reportProgressNative() {
+        return new byte[0];
+    }
     @NativeMethods
     interface Natives {
         long javaServiceCreate(AutofillAssistantTestService service);

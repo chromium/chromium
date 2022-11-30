@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "ui/compositor/compositor.h"
@@ -31,6 +29,11 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
     : public PlatformWindowDelegate {
  public:
   StubPlatformWindowDelegate() {}
+
+  StubPlatformWindowDelegate(const StubPlatformWindowDelegate&) = delete;
+  StubPlatformWindowDelegate& operator=(const StubPlatformWindowDelegate&) =
+      delete;
+
   ~StubPlatformWindowDelegate() override {}
 
   gfx::AcceleratedWidget widget() const { return widget_; }
@@ -41,7 +44,8 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
   void DispatchEvent(Event* event) override {}
   void OnCloseRequest() override {}
   void OnClosed() override {}
-  void OnWindowStateChanged(PlatformWindowState new_state) override {}
+  void OnWindowStateChanged(PlatformWindowState old_state,
+                            PlatformWindowState new_state) override {}
   void OnLostCapture() override {}
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override {
     widget_ = widget;
@@ -55,8 +59,6 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-
-  DISALLOW_COPY_AND_ASSIGN(StubPlatformWindowDelegate);
 };
 
 TestCompositorHostOzone::TestCompositorHostOzone(
@@ -67,11 +69,7 @@ TestCompositorHostOzone::TestCompositorHostOzone(
                   context_factory,
                   base::ThreadTaskRunnerHandle::Get(),
                   false /* enable_pixel_canvas */),
-      window_delegate_(std::make_unique<StubPlatformWindowDelegate>()) {
-#if defined(OS_FUCHSIA)
-  ui::PlatformWindowInitProperties::allow_null_view_token_for_test = true;
-#endif
-}
+      window_delegate_(std::make_unique<StubPlatformWindowDelegate>()) {}
 
 TestCompositorHostOzone::~TestCompositorHostOzone() {
   // |window_| should be destroyed earlier than |window_delegate_| as it refers
@@ -99,16 +97,11 @@ ui::Compositor* TestCompositorHostOzone::GetCompositor() {
   return &compositor_;
 }
 
-// To avoid multiple definitions when use_x11 && use_ozone is true, disable this
-// factory method for OS_LINUX as Linux has a factory method that decides what
-// screen to use based on IsUsingOzonePlatform feature flag.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
 // static
 TestCompositorHost* TestCompositorHost::Create(
     const gfx::Rect& bounds,
     ui::ContextFactory* context_factory) {
   return new TestCompositorHostOzone(bounds, context_factory);
 }
-#endif
 
 }  // namespace ui

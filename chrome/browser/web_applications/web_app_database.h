@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,16 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class ModelError;
@@ -59,31 +60,31 @@ class WebAppDatabase {
   // Exposed for testing.
   static std::unique_ptr<WebApp> ParseWebApp(const AppId& app_id,
                                              const std::string& value);
+  // Exposed for testing.
+  static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);
 
   bool is_opened() const { return opened_; }
 
  private:
-  static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);
-
   void OnDatabaseOpened(RegistryOpenedCallback callback,
-                        const base::Optional<syncer::ModelError>& error,
+                        const absl::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::ModelTypeStore> store);
 
   void OnAllDataRead(
       RegistryOpenedCallback callback,
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
   void OnAllMetadataRead(
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
       RegistryOpenedCallback callback,
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataWritten(CompletionCallback callback,
-                     const base::Optional<syncer::ModelError>& error);
+                     const absl::optional<syncer::ModelError>& error);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  AbstractWebAppDatabaseFactory* const database_factory_;
+  const raw_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   ReportErrorCallback error_callback_;
 
   // Database is opened if store is created and all data read.

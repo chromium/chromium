@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,27 +6,27 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/x/x11_cursor.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
+namespace {
 
-TEST(X11CursorFactoryTest, InvisibleRefcount) {
+using mojom::CursorType;
+
+}  // namespace
+
+TEST(X11CursorFactoryTest, InvisibleCursor) {
   X11CursorFactory factory;
 
   // Building an image cursor with an invalid SkBitmap should return the
-  // invisible cursor in X11. The invisible cursor instance should have more
-  // than a single reference since the factory should hold a reference and
-  // CreateImageCursor should return an incremented refcount.
-  auto* invisible_cursor = static_cast<X11Cursor*>(
-      factory.CreateImageCursor({}, SkBitmap(), gfx::Point()));
-  ASSERT_FALSE(invisible_cursor->HasOneRef());
-
-  // Release our refcount on the cursor
-  factory.UnrefImageCursor(invisible_cursor);
-
-  // The invisible cursor should still exist.
-  EXPECT_TRUE(invisible_cursor->HasOneRef());
+  // invisible cursor in X11.
+  auto invisible_cursor =
+      factory.CreateImageCursor({}, SkBitmap(), gfx::Point());
+  ASSERT_NE(invisible_cursor, nullptr);
+  EXPECT_EQ(invisible_cursor, factory.GetDefaultCursor(CursorType::kNone));
 }
 
 }  // namespace ui

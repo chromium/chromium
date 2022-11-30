@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,7 +108,7 @@ void DemoHost::EmbedClients(DemoClient* embedder_client,
         FROM_HERE,
         base::BindOnce(&DemoHost::EmbedClients, base::Unretained(this),
                        embedded_client.get(), gfx::Rect(125, 125, 150, 150)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
   embedded_clients_.push_back(std::move(embedded_client));
 }
@@ -163,7 +163,7 @@ void DemoHost::Initialize(
       FROM_HERE,
       base::BindOnce(&DemoHost::EmbedClients, base::Unretained(this),
                      root_client_.get(), gfx::Rect(50, 50, 300, 300)),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void DemoHost::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {}

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,10 @@
 
 #include <unordered_set>
 
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "components/feature_engagement/internal/condition_validator.h"
 #include "components/feature_engagement/public/feature_list.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 class AvailabilityModel;
@@ -36,6 +33,10 @@ class EventModel;
 class OnceConditionValidator : public ConditionValidator {
  public:
   OnceConditionValidator();
+
+  OnceConditionValidator(const OnceConditionValidator&) = delete;
+  OnceConditionValidator& operator=(const OnceConditionValidator&) = delete;
+
   ~OnceConditionValidator() override;
 
   // ConditionValidator implementation.
@@ -45,22 +46,30 @@ class OnceConditionValidator : public ConditionValidator {
       const EventModel& event_model,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
+      const Configuration* configuration,
       uint32_t current_day) const override;
   void NotifyIsShowing(
       const base::Feature& feature,
       const FeatureConfig& config,
       const std::vector<std::string>& all_feature_names) override;
   void NotifyDismissed(const base::Feature& feature) override;
+  void SetPriorityNotification(
+      const absl::optional<std::string>& feature) override;
+  absl::optional<std::string> GetPendingPriorityNotification() override;
+  void AllowMultipleFeaturesForTesting(bool allow_multiple_features);
 
  private:
   // Contains all features that have met conditions within the current session.
   std::unordered_set<std::string> shown_features_;
 
-  // Which feature that is currently being shown, or nullptr if nothing is
-  // currently showing.
-  std::string currently_showing_feature_;
+  // Which features that are currently being shown.
+  std::unordered_set<std::string> currently_showing_features_;
 
-  DISALLOW_COPY_AND_ASSIGN(OnceConditionValidator);
+  // Pending priority notification to be shown if any.
+  absl::optional<std::string> pending_priority_notification_;
+
+  // Whether to allow multiple features shown at the same time.
+  bool allows_multiple_features_ = false;
 };
 
 }  // namespace feature_engagement

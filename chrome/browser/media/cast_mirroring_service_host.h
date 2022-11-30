@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/offscreen_tab.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"
@@ -54,13 +53,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
       content::WebContents* target_contents,
       mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
 
-  // TODO(crbug.com/809249): Remove when the extension-based implementation of
-  // the Cast MRP is removed.
-  static void GetForDesktop(
-      content::WebContents* initiator_contents,
-      const std::string& desktop_stream_id,
-      mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
-
   static void GetForDesktop(
       const content::DesktopMediaID& media_id,
       mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
@@ -73,6 +65,9 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
   // |source_media_id| indicates the mirroring source.
   explicit CastMirroringServiceHost(content::DesktopMediaID source_media_id);
+
+  CastMirroringServiceHost(const CastMirroringServiceHost&) = delete;
+  CastMirroringServiceHost& operator=(const CastMirroringServiceHost&) = delete;
 
   ~CastMirroringServiceHost() override;
 
@@ -127,9 +122,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // OffscreenTab::Owner implementation.
-  void RequestMediaAccessPermission(
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override;
   void DestroyTab(OffscreenTab* tab) override;
 
   // Creates and starts a new OffscreenTab.
@@ -142,7 +134,7 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   content::DesktopMediaID source_media_id_;
 
   // The receiver to this mojom::ResourceProvider implementation.
-  mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver{this};
+  mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver_{this};
 
   // Connection to the remote mojom::MirroringService implementation.
   mojo::Remote<mojom::MirroringService> mirroring_service_;
@@ -167,8 +159,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<OffscreenTab> offscreen_tab_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  DISALLOW_COPY_AND_ASSIGN(CastMirroringServiceHost);
 };
 
 }  // namespace mirroring

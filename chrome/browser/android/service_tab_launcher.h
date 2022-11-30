@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 
 namespace content {
@@ -27,6 +26,9 @@ class ServiceTabLauncher {
  public:
   // Returns the singleton instance of the service tab launcher.
   static ServiceTabLauncher* GetInstance();
+
+  ServiceTabLauncher(const ServiceTabLauncher&) = delete;
+  ServiceTabLauncher& operator=(const ServiceTabLauncher&) = delete;
 
   // Launches a new tab when we're in a Service rather than in an Activity.
   // |callback| will be invoked with the resulting content::WebContents* when
@@ -47,8 +49,6 @@ class ServiceTabLauncher {
   ~ServiceTabLauncher();
 
   base::IDMap<std::unique_ptr<TabLaunchedCallback>> tab_launched_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTabLauncher);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SERVICE_TAB_LAUNCHER_H_

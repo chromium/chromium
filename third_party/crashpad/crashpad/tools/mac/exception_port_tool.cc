@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@
 
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
-#include "base/strings/stringprintf.h"
 #include "tools/tool_support.h"
 #include "util/mach/bootstrap.h"
 #include "util/mach/exception_ports.h"
@@ -66,6 +64,9 @@ class MachSendRightPool {
       : send_rights_() {
   }
 
+  MachSendRightPool(const MachSendRightPool&) = delete;
+  MachSendRightPool& operator=(const MachSendRightPool&) = delete;
+
   ~MachSendRightPool() {
     for (mach_port_t send_right : send_rights_) {
       kern_return_t kr = mach_port_deallocate(mach_task_self(), send_right);
@@ -95,8 +96,6 @@ class MachSendRightPool {
 
  private:
   std::vector<mach_port_t> send_rights_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachSendRightPool);
 };
 
 struct ExceptionHandlerDescription {
@@ -312,6 +311,7 @@ bool SetExceptionPort(const ExceptionHandlerDescription* description,
 }
 
 void Usage(const std::string& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %s [OPTION]... [COMMAND [ARG]...]\n"
 "View and change Mach exception ports, and run COMMAND if supplied.\n"
@@ -344,6 +344,7 @@ void Usage(const std::string& me) {
 "The default DESCRIPTION is\n"
 "  target=task,mask=CRASH,behavior=DEFAULT|MACH,flavor=NONE,handler=NULL\n",
           me.c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 

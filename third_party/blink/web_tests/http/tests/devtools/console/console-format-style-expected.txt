@@ -12,33 +12,33 @@ Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: b
 Styled text #3: contain: paint; display: inline-block; max-width: 100%; color: red;
 console-format-style.js:17 www.google.com
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue;
-Styled text #1: -webkit-text-stroke: 0px !important; text-decoration: underline !important; color: rgb(84, 84, 84) !important; background-color: rgb(255, 255, 255) !important;
+Styled text #1: NO STYLES DEFINED
 console-format-style.js:18 www.google.com
 onload @ console-format-style.js:18
 (anonymous) @ console-format-style.js:22
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue; background: blue;
-Styled text #1: -webkit-text-stroke: 0px !important; text-decoration: underline !important; color: rgb(84, 84, 84) !important; background-color: rgb(255, 251, 229) !important;
+Styled text #1: NO STYLES DEFINED
 console-format-style.js:19 www.google.com
 onload @ console-format-style.js:19
 (anonymous) @ console-format-style.js:22
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue; background: blue;
-Styled text #1: -webkit-text-stroke: 0px !important; text-decoration: underline !important; color: rgb(84, 84, 84) !important; background-color: rgb(255, 240, 240) !important;
+Styled text #1: NO STYLES DEFINED
 console-format-style.js:20 12345678
-Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: black;
-Styled text #1: contain: paint; display: inline-block; max-width: 100%; color: red;
-Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: darkgray;
-Styled text #3: contain: paint; display: inline-block; max-width: 100%;
-Styled text #4: contain: paint; display: inline-block; max-width: 100%; background: black;
-Styled text #5: contain: paint; display: inline-block; max-width: 100%; background: red;
-Styled text #6: contain: paint; display: inline-block; max-width: 100%; background: darkgray;
-Styled text #7: contain: paint; display: inline-block; max-width: 100%;
+Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-black);
+Styled text #1: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-red);
+Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-darkgray);
+Styled text #3: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred);
+Styled text #4: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-black);
+Styled text #5: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-red);
+Styled text #6: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-darkgray);
+Styled text #7: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-lightred);
 console-format-style.js:21 11.1a22.2b33.3
-Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: black;
-Styled text #1: contain: paint; display: inline-block; max-width: 100%; color: red;
-Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: darkgray;
-Styled text #3: contain: paint; display: inline-block; max-width: 100%;
-Styled text #4: contain: paint; display: inline-block; max-width: 100%; background: black;
-Styled text #5: contain: paint; display: inline-block; max-width: 100%; background: red;
-Styled text #6: contain: paint; display: inline-block; max-width: 100%; background: darkgray;
-Styled text #7: contain: paint; display: inline-block; max-width: 100%;
+Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-black);
+Styled text #1: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-red);
+Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-darkgray);
+Styled text #3: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred);
+Styled text #4: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-black);
+Styled text #5: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-red);
+Styled text #6: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-darkgray);
+Styled text #7: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-lightred);
 

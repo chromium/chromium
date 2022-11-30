@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "chromeos/login/auth/user_context.h"
+#include "base/timer/wall_clock_timer.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -22,7 +21,7 @@ namespace base {
 class Clock;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Enforces a limit on the length of time for which a user authenticated via
 // Gaia without SAML or with SAML can use offline authentication against a
@@ -32,18 +31,17 @@ class OfflineSigninLimiter : public KeyedService,
                              public base::PowerSuspendObserver,
                              public session_manager::SessionManagerObserver {
  public:
+  OfflineSigninLimiter(const OfflineSigninLimiter&) = delete;
+  OfflineSigninLimiter& operator=(const OfflineSigninLimiter&) = delete;
+
   // Called when the user successfully authenticates. `auth_flow` indicates
   // the type of authentication flow that the user went through.
   void SignedIn(UserContext::AuthFlow auth_flow);
 
-  // Allows a mock timer to be substituted for testing purposes.
-  void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer);
+  base::WallClockTimer* GetTimerForTesting();
 
   // KeyedService:
   void Shutdown() override;
-
-  // base::PowerObserver:
-  void OnResume() override;
 
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
@@ -54,7 +52,7 @@ class OfflineSigninLimiter : public KeyedService,
 
   // `profile` and `clock` must remain valid until Shutdown() is called. If
   // `clock` is NULL, the shared base::DefaultClock instance will be used.
-  OfflineSigninLimiter(Profile* profile, base::Clock* clock);
+  OfflineSigninLimiter(Profile* profile, const base::Clock* clock);
   ~OfflineSigninLimiter() override;
 
   // Recalculates the amount of time remaining until online login should be
@@ -62,31 +60,43 @@ class OfflineSigninLimiter : public KeyedService,
   // has expired already, sets the flag enforcing online login immediately.
   void UpdateLimit();
 
+  // Recalculates the amount of time remaining until online login through the
+  // lock screen should be forced and sets the
+  // `offline_lock_screen_signin_limit_timer_` accordingly. If the limit has
+  // expired already, sets the flag enforcing online re-authentication
+  // immediately.
+  void UpdateLockScreenLimit();
+
   // Convenience method to get the time limit for SAML and no-SAML flows
   // taking into consideration a possible override from the command line.
   // Returns nullopt if it is an invalid time.
-  base::Optional<base::TimeDelta> GetGaiaSamlTimeLimit();
-  base::Optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
-  base::Optional<base::TimeDelta> GetTimeLimitOverrideForTesting();
+  absl::optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
+  absl::optional<base::TimeDelta> GetGaiaSamlTimeLimit();
+  absl::optional<base::TimeDelta> GetGaiaNoSamlLockScreenTimeLimit();
+  absl::optional<base::TimeDelta> GetGaiaSamlLockScreenTimeLimit();
+  absl::optional<base::TimeDelta> GetTimeLimitOverrideForTesting();
 
   // Sets the flag enforcing online login. This will cause the user's next login
   // to use online authentication against GAIA.
   void ForceOnlineLogin();
 
+  // Enforces online reauthentication on the lock screen.
+  void ForceOnlineLockScreenReauth();
+
   // Stores the last online login time and offline login time limit
   void UpdateOnlineSigninData(base::Time time,
-                              base::Optional<base::TimeDelta> limit);
+                              absl::optional<base::TimeDelta> limit);
 
   Profile* profile_;
-  base::Clock* clock_;
+  const base::Clock* clock_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  std::unique_ptr<base::OneShotTimer> offline_signin_limit_timer_;
+  std::unique_ptr<base::WallClockTimer> offline_signin_limit_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiter);
+  std::unique_ptr<base::WallClockTimer> offline_lock_screen_signin_limit_timer_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_H_

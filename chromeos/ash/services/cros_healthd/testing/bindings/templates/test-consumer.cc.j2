@@ -1,0 +1,171 @@
+{%- import "method-macro.cc.j2" as method_macro %}
+
+{%- set class_name = "%sTestConsumer"|format(interface.mojom_name) %}
+
+std::unique_ptr<{{class_name}}> {{class_name}}::Create(
+    ::ash::cros_healthd::connectivity::Context* context) {
+  return std::unique_ptr<{{class_name}}>(new {{class_name}}(context));
+}
+
+{{class_name}}::{{class_name}}(
+    ::ash::cros_healthd::connectivity::Context* context)
+  : context_(context) {
+{%- for method in interface.methods %}
+  {{method_macro.define_data_generator(
+      method.mojom_name ~ "__", "context", method.parameters)}}
+{%- endfor %}
+}
+
+void {{class_name}}::Bind(::mojo::PendingRemote<{{
+    interface.mojom_name}}> remote) {
+  remote_.reset();
+  remote_.Bind(std::move(remote));
+}
+
+::mojo::PendingReceiver<{{interface.mojom_name}}> {{class_name}}::Generate() {
+  has_next_ = false;
+  remote_.reset();
+  return remote_.BindNewPipeAndPassReceiver();
+}
+
+base::OnceCallback<void({{class_name}}::CheckCallback)>
+{{class_name}}::CheckClosure() {
+  return base::BindOnce(&{{class_name}}::Check, weak_factory_.GetWeakPtr());
+}
+
+{%  for method in interface.methods %}
+{#- Step1: Call remote method and wait for it finished. #}
+void {{class_name}}::CheckStep1__{{method.mojom_name}}(CheckCallback callback) {
+  auto next_callback =
+      base::BindOnce(&{{class_name}}::CheckStep2__{{method.mojom_name}},
+                     weak_factory_.GetWeakPtr(),
+                     std::move(callback));
+
+{%-   if method.response_parameters == None %}
+  context_->remote_state()->WaitLastCall(std::move(next_callback));
+  CHECK(remote_.is_connected());
+  remote_.set_disconnect_handler(
+    context_->remote_state()->GetFulfillLastCallCallbackClosure());
+  remote_->{{method.mojom_name}}({{method_macro.generate_params(
+      method.mojom_name ~ "__", method.parameters)}});
+{%-   else %}
+  auto [next_callback1, next_callback2] =
+    base::SplitOnceCallback(std::move(next_callback));
+  CHECK(remote_.is_connected());
+  remote_.set_disconnect_handler(std::move(next_callback1));
+  auto response_callback = base::BindOnce([]({{
+    method_macro.declare_params("", method.response_parameters)}}
+  ){
+{%-      for param in method.response_parameters %}
+{%-        if param.kind is PendingReceiverKind or
+              param.kind is PendingRemoteKind  %}
+    CHECK(false) <<
+        "Checking interface through response parameters are not supported.";
+{%-        endif %}
+{%-      endfor %}
+    LOG(ERROR) << "{{method.mojom_name}} callback!";
+  }).Then(std::move(next_callback2));
+
+  remote_->{{method.mojom_name}}({{method_macro.generate_params(
+    method.mojom_name ~ "__", method.parameters)}}
+    {%- if method.parameters %}, {% endif -%}
+    std::move(response_callback)
+  );
+{%-   endif %}
+}
+
+{#  Step2: Checks sub-interfaces. #}
+void {{class_name}}::CheckStep2__{{method.mojom_name}}(CheckCallback callback) {
+{#- If the remote was disconnected, connection error had occurred. #}
+  if (!remote_.is_connected()) {
+    LOG(ERROR) << "Check failed because connection error occurred. Failed on: "
+               <<"{{interface.mojom_name}}::{{method.mojom_name}}.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto callback_0 = base::BindOnce(
+    &{{class_name}}::CheckStep3__{{method.mojom_name}},
+    weak_factory_.GetWeakPtr());
+
+{#  Do the checking of TestConsumer. The next action will be run only if the #}
+{#- previous one succeeded. #}
+{%    for param in method.parameters | reverse | selectattr(
+                                            "kind", "PendingReceiverKind")  %}
+  auto callback_{{loop.index}} = base::BindOnce(
+    &::ash::cros_healthd::connectivity::RunOrReturn,
+    /*return_value=*/false,
+    /*get_result=*/{{
+      method.mojom_name}}__{{param.mojom_name}}__generator__->CheckClosure(),
+    /*run_callback=*/std::move(callback_{{loop.index - 1}}));
+{%-     if loop.last %}
+  auto callback_last = std::move(callback_{{loop.index}});
+{%-     endif %}
+{%-   else %}
+  auto callback_last = std::move(callback_0);
+{%-   endfor %}
+  std::move(callback_last).Run(std::move(callback));
+}
+
+{#  Step3: Checks if need to do another check. If any parameter or
+    response_parameter need to be checked, do the check again. #}
+void {{class_name}}::CheckStep3__{{method.mojom_name}}(CheckCallback callback) {
+{%-   if method.parameters %}
+  if ({{method_macro.params_has_next(
+        method.mojom_name ~"__", method.parameters)}}) {
+    CheckStep1__{{method.mojom_name}}(std::move(callback));
+    return;
+  }
+{%-   endif %}
+{%-   if method.response_parameters == None %}
+  std::move(callback).Run(true);
+{%-   else %}
+  ::ash::cros_healthd::connectivity::RunOrReturn(
+    /*return_value=*/true,
+    /*get_result=*/context_->remote_state()->GetLastCallHasNextClosure(),
+    /*run_callback=*/base::BindOnce(
+      &{{class_name}}::CheckStep1__{{method.mojom_name}},
+      weak_factory_.GetWeakPtr()),
+    std::move(callback));
+{%-   endif %}
+}
+{%  endfor %}
+
+void {{class_name}}::SetCheckResult(CheckCallback callback, bool res) {
+  check_reentry_status_ = false;
+  check_result_ = res;
+  std::move(callback).Run(res);
+}
+
+void {{class_name}}::Check(CheckCallback callback) {
+  if (check_result_.has_value()) {
+    std::move(callback).Run(check_result_.value());
+    return;
+  }
+
+  CHECK(!check_reentry_status_)
+    << "Check is call before the last run finished.";
+  check_reentry_status_ = true;
+  auto callback_0 = base::BindOnce(
+      [](CheckCallback callback){ std::move(callback).Run(true); });
+
+{#  Check each method of this interface. The next action will be run only if
+    the previous one succeeded. #}
+{%- for method in interface.methods | reverse %}
+  auto callback_{{loop.index}} = base::BindOnce(
+    &::ash::cros_healthd::connectivity::RunOrReturn,
+    /*return_value=*/false,
+    /*get_result=*/base::BindOnce(
+      &{{class_name}}::CheckStep1__{{method.mojom_name}},
+      weak_factory_.GetWeakPtr()),
+    /*run_callback=*/std::move(callback_{{loop.index - 1}}));
+{%-   if loop.last %}
+  auto callback_last = std::move(callback_{{loop.index}});
+{%-   endif %}
+{%- else %}
+  auto callback_last = std::move(callback_0);
+{%  endfor %}
+  std::move(callback_last).Run(base::BindOnce(
+      &{{class_name}}::SetCheckResult, weak_factory_.GetWeakPtr(),
+      std::move(callback)));
+}

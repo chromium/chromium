@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "tools/tool_support.h"
 #include "util/file/file_reader.h"
 #include "util/file/file_writer.h"
@@ -34,6 +35,7 @@ namespace crashpad {
 namespace {
 
 void Usage(const base::FilePath& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %" PRFilePath " [OPTION]...\n"
 "Send an HTTP POST request.\n"
@@ -45,6 +47,7 @@ void Usage(const base::FilePath& me) {
 "      --help              display this help and exit\n"
 "      --version           output version information and exit\n",
           me.value().c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 
@@ -205,12 +208,12 @@ int HTTPUploadMain(int argc, char* argv[]) {
 }  // namespace
 }  // namespace crashpad
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 int main(int argc, char* argv[]) {
   return crashpad::HTTPUploadMain(argc, argv);
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(argc, argv, crashpad::HTTPUploadMain);
 }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

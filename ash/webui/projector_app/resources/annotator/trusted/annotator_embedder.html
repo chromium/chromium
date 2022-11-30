@@ -1,0 +1,24 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="annotator_embedder.css">
+    <script type="module" src="common/message_types.js"></script>
+    <script type="module" src="annotator_browser_proxy.js"></script>
+    <script type="module" src="trusted_annotator_comm_factory.js"></script>
+    <script type="module" src="annotator_embedder_impl.js"></script>
+  </head>
+  <body>
+    <iframe
+      class="marker-iframe"
+      src="chrome-untrusted://projector-annotator"
+      allow="cross-origin-isolated">
+    </iframe>
+    <annotator-embedder-impl></annotator-embedder-impl>
+  </body>
+</html>

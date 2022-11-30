@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/shape_detection/text_detection_impl_mac.h"
 
 #import <AppKit/AppKit.h>
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -33,7 +35,7 @@ class TextDetectionImplMacTest : public ::testing::Test {
   }
   MOCK_METHOD1(Detection, void(size_t));
 
-  API_AVAILABLE(macosx(10.11)) std::unique_ptr<TextDetectionImplMac> impl_;
+  std::unique_ptr<TextDetectionImplMac> impl_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -47,7 +49,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
     return;
   }
 
-  impl_.reset(new TextDetectionImplMac);
+  impl_ = std::make_unique<TextDetectionImplMac>();
   base::ScopedCFTypeRef<CGColorSpaceRef> rgb_colorspace(
       CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
 
@@ -56,7 +58,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       nullptr, width, height, 8 /* bitsPerComponent */,
       width * 4 /* rowBytes */, rgb_colorspace,
-      kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
+      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
 
   // Draw a white background.
   CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
@@ -65,8 +67,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   // Create a line of Helvetica 16 text, and draw it in the |context|.
   base::scoped_nsobject<NSFont> helvetica([NSFont fontWithName:@"Helvetica"
                                                           size:16]);
-  NSDictionary* attributes = [NSDictionary
-      dictionaryWithObjectsAndKeys:helvetica, kCTFontAttributeName, nil];
+  NSDictionary* attributes = @{(id)kCTFontAttributeName : helvetica};
 
   base::scoped_nsobject<NSAttributedString> info([[NSAttributedString alloc]
       initWithString:@"https://www.chromium.org"

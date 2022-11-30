@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,6 +46,10 @@
     if (message)
       this._testRunner.log(message);
     this._testRunner.completeTest();
+  }
+
+  setSilentFrameStoppedLoading(silent = true) {
+    this.silentFrameStoppedLoading = silent;
   }
 
   async startInterceptionTest(requestInterceptedDict, numConsoleLogsToWaitFor, interceptionStage = 'Request') {
@@ -130,7 +134,9 @@
       // completion a bit.
       setTimeout(() => {
         frameStoppedLoading = true;
-        this._log(this._getNextId(), 'Page.frameStoppedLoading');
+        if (!this.silentFrameStoppedLoading) {
+          this._log(this._getNextId(), 'Page.frameStoppedLoading');
+        }
         maybeCompleteTest();
       }, 0);
     });

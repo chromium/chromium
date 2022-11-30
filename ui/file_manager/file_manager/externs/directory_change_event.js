@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
  * as JS module, Closure fails to compile as externs.
  */
 
-// #import {FakeEntry} from './files_app_entry_interfaces.m.js';
+import {FakeEntry} from './files_app_entry_interfaces.js';
 
-/* #export */ class DirectoryChangeEvent extends Event {
+export class DirectoryChangeEvent extends Event {
   /** @param {string} eventName */
   constructor(eventName) {
     super(eventName);

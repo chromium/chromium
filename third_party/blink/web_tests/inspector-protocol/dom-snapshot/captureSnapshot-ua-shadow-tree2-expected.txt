@@ -268,12 +268,19 @@ Tests that DOMSnapshot skips UA shadow root when traversing the DOM tree
                     [12] : 6
                     [13] : 6
                 ]
+                pseudoIdentifier : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
                 pseudoType : {
                     index : [
                     ]
                     value : [
                     ]
                 }
+                shadowRootType : <object>
                 textValue : {
                     index : [
                     ]

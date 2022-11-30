@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ class InheritedFontVariationSettingsChecker final
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
-    return DataEquivalent(
+    return ValuesEquivalent(
         settings_.get(),
         state.ParentStyle()->GetFontDescription().VariationSettings());
   }
@@ -199,11 +199,11 @@ void CSSFontVariationSettingsInterpolationType::ApplyStandardPropertyValue(
   scoped_refptr<FontVariationSettings> settings =
       FontVariationSettings::Create();
   wtf_size_t length = numbers.length();
-  // Do clampTo here, which follows the same logic as ConsumeFontVariationTag.
+  // Do ClampTo here, which follows the same logic as ConsumeFontVariationTag.
   for (wtf_size_t i = 0; i < length; ++i) {
     settings->Append(FontVariationAxis(
         tags[i],
-        clampTo<float>(To<InterpolableNumber>(numbers.Get(i))->Value())));
+        ClampTo<float>(To<InterpolableNumber>(numbers.Get(i))->Value())));
   }
   state.GetFontBuilder().SetVariationSettings(settings);
 }

@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import("//chrome/common/features.gni")
+
+assert(enable_extensions)
+
+schema_sources_ = [
+  "diagnostics.idl",
+  "telemetry.idl",
+]
+
+chromeos_system_extensions_api_schema_sources =
+    get_path_info(schema_sources_, "abspath")
+
+chromeos_system_extensions_api_root_namespace = "chromeos::api::%(namespace)s"
+
+chromeos_system_extensions_api_schema_include_rules =
+    "chrome/common/chromeos/extensions/api:extensions::api::%(namespace)s"

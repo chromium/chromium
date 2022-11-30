@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,9 @@ struct ProxyRules {
 // These fields mirror those of net::ProxyConfig.
 struct ProxyConfig {
   bool auto_detect;
+  // If true, indicates that the ProxyConfig object was created from system
+  // settings.
+  bool from_system;
   // Note that a |BigString| is used rather than a |url.mojom.Url|, since
   // |url.mojom.Url| imposes a smaller limit on URL size than GURL, and
   // ProxyConfig::pac_url may contain large data: URLs that exceed this limit.

@@ -34,6 +34,54 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Reset First Follow</string>
+			<key>Key</key>
+			<string>ResetFirstFollow</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Always show First Follow</string>
+			<key>Key</key>
+			<string>AlwaysShowFirstFollow</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Feed Signin Promo</string>
+			<key>Key</key>
+			<string>ForceFeedSigninPromo</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Always show Follow IPH</string>
+			<key>Key</key>
+			<string>AlwaysShowFollowIPH</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>Feed Refresh Settings</string>
+			<key>File</key>
+			<string>ExperimentalFeedRefresh</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>UI Settings</string>
@@ -62,32 +110,6 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Force What&apos;s New Promo</string>
-			<key>Key</key>
-			<string>WhatsNewPromoStatus</string>
-			<key>DefaultValue</key>
-			<integer>0</integer>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>4</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Default</string>
-				<string>Tip Command Test</string>
-				<string>Tip Move to Dock Promo</string>
-				<string>Tip Review Updated ToS</string>
-				<string>Set Default Browser Promo</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
 			<string>Force Language</string>
 			<key>Key</key>
 			<string>UILanguageOverride</string>
@@ -110,6 +132,26 @@
 				<string>French</string>
 				<string>Hebrew</string>
 				<string>Hindi</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Force Promo</string>
+			<key>Key</key>
+			<string>NextPromoForDisplayOverride</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>promos_manager::Promo::AppStoreRating</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Disabled (No Promos Forced)</string>
+				<string>App Store Rating</string>
 			</array>
 		</dict>
 		<dict>
@@ -176,6 +218,24 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable SyncDisabled</string>
+			<key>Key</key>
+			<string>EnableSyncDisabledPolicy</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>SyncTypesListDisabled</string>
+			<key>File</key>
+			<string>ExperimentalSyncTypesListDisabled</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Incognito Mode</string>
@@ -198,6 +258,52 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Signin Mode</string>
+			<key>Key</key>
+			<string>BrowserSignin</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>Disable browser sign-in</string>
+				<string>Enable browser sign-in</string>
+				<string>Force browser sign-in</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>UMA Reporting</string>
+			<key>Key</key>
+			<string>MetricsReportingEnabled</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>UMA Reporting Forced</string>
+				<string>UMA Reporting Disabled</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
 			<string>CBCM Enrollment Token</string>
@@ -210,31 +316,43 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSGroupSpecifier</string>
+			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Google App Ecosystem</string>
+			<string>Restrict accounts to pattern</string>
+			<key>Key</key>
+			<string>RestrictAccountsToPatterns</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Gaia Environment</string>
+			<string>NTP Location</string>
 			<key>Key</key>
-			<string>GAIAEnvironment</string>
+			<string>NTPLocation</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>Values</key>
-			<array>
-				<string></string>
-				<string>Staging</string>
-				<string>Test</string>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Prod</string>
-				<string>Staging</string>
-				<string>Test</string>
-			</array>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Disallow Chrome Data In Backups</string>
+			<key>Key</key>
+			<string>DisallowChromeDataInBackups</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Google App Ecosystem</string>
 		</dict>
 		<dict>
 			<key>Type</key>

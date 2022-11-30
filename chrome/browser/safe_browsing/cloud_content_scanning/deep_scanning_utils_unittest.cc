@@ -1,15 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 
+#include <limits>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "components/crash/core/common/crash_buildflags.h"
+#include "components/crash/core/common/crash_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -28,11 +32,23 @@ constexpr BinaryUploadService::Result kAllBinaryUploadServiceResults[]{
     BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE,
 };
 
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
+constexpr std::pair<ScanningCrashKey, const char*> kAllCrashKeys[] = {
+    {ScanningCrashKey::PENDING_FILE_UPLOADS, "pending-file-upload-scans"},
+    {ScanningCrashKey::PENDING_FILE_DOWNLOADS, "pending-file-download-scans"},
+    {ScanningCrashKey::PENDING_TEXT_UPLOADS, "pending-text-upload-scans"},
+    {ScanningCrashKey::PENDING_PRINTS, "pending-print-scans"},
+    {ScanningCrashKey::TOTAL_FILE_UPLOADS, "total-file-upload-scans"},
+    {ScanningCrashKey::TOTAL_FILE_DOWNLOADS, "total-file-download-scans"},
+    {ScanningCrashKey::TOTAL_TEXT_UPLOADS, "total-text-upload-scans"},
+    {ScanningCrashKey::TOTAL_PRINTS, "total-print-scans"}};
+#endif  // !BUILDFLAG(USE_CRASH_KEY_STUBS)
+
 constexpr int64_t kTotalBytes = 1000;
 
-constexpr base::TimeDelta kDuration = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDuration = base::Seconds(10);
 
-constexpr base::TimeDelta kInvalidDuration = base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kInvalidDuration = base::Seconds(0);
 
 }  // namespace
 
@@ -70,7 +86,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(DeepScanAccessPoint::DOWNLOAD,
                                      DeepScanAccessPoint::UPLOAD,
                                      DeepScanAccessPoint::DRAG_AND_DROP,
-                                     DeepScanAccessPoint::PASTE),
+                                     DeepScanAccessPoint::PASTE,
+                                     DeepScanAccessPoint::PRINT,
+                                     DeepScanAccessPoint::FILE_TRANSFER),
                      testing::ValuesIn(kAllBinaryUploadServiceResults)));
 
 TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
@@ -83,7 +101,7 @@ TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
   RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
                         SimpleContentAnalysisResponseForTesting(
                             /*dlp_success*/ true,
-                            /*malware_success*/ base::nullopt));
+                            /*malware_success*/ absl::nullopt));
   for (const std::string& verdict : {"malware", "uws", "safe"}) {
     enterprise_connectors::ContentAnalysisResponse response;
     auto* malware_result = response.add_results();
@@ -231,28 +249,71 @@ TEST_P(DeepScanningUtilsUMATest, InvalidDuration) {
       histograms().GetTotalCountsForPrefix("SafeBrowsing.DeepScan.").size());
 }
 
-class DeepScanningUtilsFileTypeSupportedTest : public testing::Test {
- protected:
-  std::vector<base::FilePath::StringType> UnsupportedDlpFileTypes() {
-    return {FILE_PATH_LITERAL(".these"), FILE_PATH_LITERAL(".types"),
-            FILE_PATH_LITERAL(".are"), FILE_PATH_LITERAL(".not"),
-            FILE_PATH_LITERAL(".supported")};
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
+class DeepScanningUtilsCrashKeysTest
+    : public testing::TestWithParam<std::pair<ScanningCrashKey, const char*>> {
+ public:
+  void SetUp() override {
+    crash_reporter::ResetCrashKeysForTesting();
+    crash_reporter::InitializeCrashKeysForTesting();
   }
 
-  base::FilePath FilePath(const base::FilePath::StringType& type) {
-    return base::FilePath(FILE_PATH_LITERAL("foo") + type);
-  }
+  void TearDown() override { crash_reporter::ResetCrashKeysForTesting(); }
+
+  ScanningCrashKey key_enum() { return std::get<0>(GetParam()); }
+
+  const char* key_string() { return std::get<1>(GetParam()); }
 };
 
-TEST_F(DeepScanningUtilsFileTypeSupportedTest, DLP) {
-  // With a DLP-only scan, only the types returned by SupportedDlpFileTypes()
-  // will be supported, and other types will fail.
-  for (const base::FilePath::StringType& type : SupportedDlpFileTypes()) {
-    EXPECT_TRUE(FileTypeSupportedForDlp(FilePath(type)));
-  }
-  for (const base::FilePath::StringType& type : UnsupportedDlpFileTypes()) {
-    EXPECT_FALSE(FileTypeSupportedForDlp(FilePath(type)));
-  }
+INSTANTIATE_TEST_SUITE_P(,
+                         DeepScanningUtilsCrashKeysTest,
+                         testing::ValuesIn(kAllCrashKeys));
+
+TEST_P(DeepScanningUtilsCrashKeysTest, SmallModifications) {
+  // The key implicitly starts at 0.
+  IncrementCrashKey(key_enum(), 1);
+  EXPECT_EQ("1", crash_reporter::GetCrashKeyValue(key_string()));
+
+  IncrementCrashKey(key_enum(), 1);
+  EXPECT_EQ("2", crash_reporter::GetCrashKeyValue(key_string()));
+
+  DecrementCrashKey(key_enum(), 1);
+  EXPECT_EQ("1", crash_reporter::GetCrashKeyValue(key_string()));
+
+  DecrementCrashKey(key_enum(), 1);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
 }
+
+TEST_P(DeepScanningUtilsCrashKeysTest, LargeModifications) {
+  // The key implicitly starts at 0.
+  IncrementCrashKey(key_enum(), 100);
+  EXPECT_EQ("100", crash_reporter::GetCrashKeyValue(key_string()));
+
+  IncrementCrashKey(key_enum(), 100);
+  EXPECT_EQ("200", crash_reporter::GetCrashKeyValue(key_string()));
+
+  DecrementCrashKey(key_enum(), 100);
+  EXPECT_EQ("100", crash_reporter::GetCrashKeyValue(key_string()));
+
+  DecrementCrashKey(key_enum(), 100);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
+}
+
+TEST_P(DeepScanningUtilsCrashKeysTest, InvalidModifications) {
+  // The crash key value cannot be negative.
+  DecrementCrashKey(key_enum(), 1);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
+  DecrementCrashKey(key_enum(), 100);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
+
+  // The crash key value is restricted to 6 digits. If a modification would
+  // exceed it, it is clamped so crashes will indicate that the key was set at a
+  // very high value.
+  IncrementCrashKey(key_enum(), 123456789);
+  EXPECT_EQ("999999", crash_reporter::GetCrashKeyValue(key_string()));
+  IncrementCrashKey(key_enum(), 123456789);
+  EXPECT_EQ("999999", crash_reporter::GetCrashKeyValue(key_string()));
+}
+#endif  // !BUILDFLAG(USE_CRASH_KEY_STUBS)
 
 }  // namespace safe_browsing

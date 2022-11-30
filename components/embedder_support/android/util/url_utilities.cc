@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,17 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "components/embedder_support/android/util_jni_headers/UrlUtilities_jni.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::ConvertJavaStringToUTF8;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -21,30 +24,8 @@ namespace embedder_support {
 
 namespace {
 
-static const char* const g_supported_schemes[] = {
-    "about", "data", "file", "http", "https", "inline", "javascript", nullptr};
-
-static const char* const g_downloadable_schemes[] = {
-    "data", "blob", "file", "filesystem", "http", "https", nullptr};
-
-static const char* const g_fallback_valid_schemes[] = {"http", "https",
-                                                       nullptr};
-
 GURL JNI_UrlUtilities_ConvertJavaStringToGURL(JNIEnv* env, jstring url) {
   return url ? GURL(ConvertJavaStringToUTF8(env, url)) : GURL();
-}
-
-bool CheckSchemeBelongsToList(JNIEnv* env,
-                              const GURL& gurl,
-                              const char* const* scheme_list) {
-  if (gurl.is_valid()) {
-    for (size_t i = 0; scheme_list[i]; i++) {
-      if (gurl.scheme() == scheme_list[i]) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 net::registry_controlled_domains::PrivateRegistryFilter GetRegistryFilter(
@@ -87,7 +68,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetDomainAndRegistry(
   net::registry_controlled_domains::PrivateRegistryFilter filter =
       GetRegistryFilter(include_private);
 
-  return base::android::ConvertUTF8ToJavaString(
+  return ConvertUTF8ToJavaString(
       env,
       net::registry_controlled_domains::GetDomainAndRegistry(gurl, filter));
 }
@@ -149,7 +130,8 @@ static jboolean JNI_UrlUtilities_IsUrlWithinScope(
     const JavaParamRef<jstring>& scope_url) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   GURL gscope_url = JNI_UrlUtilities_ConvertJavaStringToGURL(env, scope_url);
-  return gurl.GetOrigin() == gscope_url.GetOrigin() &&
+  return gurl.DeprecatedGetOriginAsURL() ==
+             gscope_url.DeprecatedGetOriginAsURL() &&
          base::StartsWith(gurl.path(), gscope_url.path(),
                           base::CompareCase::SENSITIVE);
 }
@@ -187,25 +169,38 @@ static jboolean JNI_UrlUtilities_UrlsFragmentsDiffer(
   return gurl.ref() != gurl2.ref();
 }
 
-static jboolean JNI_UrlUtilities_IsAcceptedScheme(
+static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_EscapeQueryParamValue(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
-  GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
-  return CheckSchemeBelongsToList(env, gurl, g_supported_schemes);
+    const JavaParamRef<jstring>& url,
+    jboolean use_plus) {
+  return ConvertUTF8ToJavaString(
+      env, base::EscapeQueryParamValue(
+               base::android::ConvertJavaStringToUTF8(url), use_plus));
 }
 
-static jboolean JNI_UrlUtilities_IsValidForIntentFallbackNavigation(
+static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetValueForKeyInQuery(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
-  GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
-  return CheckSchemeBelongsToList(env, gurl, g_fallback_valid_schemes);
+    const JavaParamRef<jobject>& j_url,
+    const JavaParamRef<jstring>& j_key) {
+  DCHECK(j_url);
+  DCHECK(j_key);
+  const std::string& key = ConvertJavaStringToUTF8(env, j_key);
+  std::string out;
+  if (!net::GetValueForKeyInQuery(*url::GURLAndroid::ToNativeGURL(env, j_url),
+                                  key, &out)) {
+    return ScopedJavaLocalRef<jstring>();
+  }
+  return base::android::ConvertUTF8ToJavaString(env, out);
 }
 
-static jboolean JNI_UrlUtilities_IsDownloadable(
+ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
     JNIEnv* env,
-    const JavaParamRef<jobject>& url) {
-  return CheckSchemeBelongsToList(
-      env, *url::GURLAndroid::ToNativeGURL(env, url), g_downloadable_schemes);
+    const JavaParamRef<jobject>& j_url) {
+  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL::Replacements remove_port;
+  remove_port.ClearPort();
+  return url::GURLAndroid::FromNativeGURL(env,
+                                          gurl->ReplaceComponents(remove_port));
 }
 
 }  // namespace embedder_support

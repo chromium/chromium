@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BODY_STREAM_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BODY_STREAM_BUFFER_H_
 
-#include <memory>
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
@@ -14,15 +13,15 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 
 namespace blink {
 
-class BytesUploader;
 class EncodedFormData;
 class ExceptionState;
 class ReadableStream;
@@ -59,6 +58,9 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
                    ScriptCachedMetadataHandler* cached_metadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
+  BodyStreamBuffer(const BodyStreamBuffer&) = delete;
+  BodyStreamBuffer& operator=(const BodyStreamBuffer&) = delete;
+
   ReadableStream* Stream() { return stream_; }
 
   // Callable only when neither locked nor disturbed.
@@ -67,7 +69,11 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   scoped_refptr<EncodedFormData> DrainAsFormData();
   void DrainAsChunkedDataPipeGetter(
       ScriptState*,
-      mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>);
+      mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>,
+      BytesUploader::Client* client);
+  // While loading is in progress, a SelfKeepAlive is used to prevent this
+  // object from being garbage collected. If the context is destroyed, the
+  // SelfKeepAlive is cleared. See https://crbug.com/1292744 for details.
   void StartLoading(FetchDataLoader*,
                     FetchDataLoader::Client* /* client */,
                     ExceptionState&);
@@ -76,7 +82,6 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   // UnderlyingSourceBase
   ScriptPromise pull(ScriptState*) override;
   ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
-  bool HasPendingActivity() const override;
   void ContextDestroyed() override;
 
   // BytesConsumer::Client
@@ -130,6 +135,7 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   void Abort();
   void Close();
   void GetError();
+  void RaiseOOMError();
   void CancelConsumer();
   void ProcessData();
   void EndLoading();
@@ -157,7 +163,8 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   // TODO(ricea): Remove remaining uses of |stream_broken_|.
   bool stream_broken_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(BodyStreamBuffer);
+  // Used to remain alive when there's a loader_.
+  SelfKeepAlive<BodyStreamBuffer> keep_alive_;
 };
 
 }  // namespace blink

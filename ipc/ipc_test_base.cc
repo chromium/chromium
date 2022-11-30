@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -20,8 +20,6 @@ IPCChannelMojoTestBase::~IPCChannelMojoTestBase() = default;
 
 void IPCChannelMojoTestBase::Init(const std::string& test_client_name) {
   handle_ = helper_.StartChild(test_client_name);
-  task_environment_ =
-      std::make_unique<base::test::SingleThreadTaskEnvironment>();
 }
 
 bool IPCChannelMojoTestBase::WaitForClientShutdown() {
@@ -29,8 +27,7 @@ bool IPCChannelMojoTestBase::WaitForClientShutdown() {
 }
 
 void IPCChannelMojoTestBase::TearDown() {
-  if (task_environment_)
-    base::RunLoop().RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 }
 
 void IPCChannelMojoTestBase::CreateChannel(IPC::Listener* listener) {

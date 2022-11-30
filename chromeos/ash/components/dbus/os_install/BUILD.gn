@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds cannot depend on //chromeos")
+
+component("os_install") {
+  defines = [ "IS_OS_INSTALL_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_os_install_client.cc",
+    "fake_os_install_client.h",
+    "os_install_client.cc",
+    "os_install_client.h",
+  ]
+}

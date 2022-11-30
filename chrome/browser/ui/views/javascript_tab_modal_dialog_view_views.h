@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -45,6 +46,13 @@ class JavaScriptTabModalDialogViewViews
   // views::View:
   void AddedToWidget() override;
 
+  // TODO(crbug.com/1330353): We cannot use unique_ptr because ownership of
+  // this object gets passed to Views.
+  static JavaScriptTabModalDialogViewViews* CreateAlertDialogForTesting(
+      Browser* browser,
+      std::u16string title,
+      std::u16string message);
+
  private:
   friend class JavaScriptDialog;
   friend class JavaScriptTabModalDialogManagerDelegateDesktop;
@@ -66,7 +74,7 @@ class JavaScriptTabModalDialogViewViews
   base::OnceClosure dialog_force_closed_callback_;
 
   // The message box view whose commands we handle.
-  views::MessageBoxView* message_box_view_;
+  raw_ptr<views::MessageBoxView> message_box_view_;
 
   base::WeakPtrFactory<JavaScriptTabModalDialogViewViews> weak_factory_{this};
 };

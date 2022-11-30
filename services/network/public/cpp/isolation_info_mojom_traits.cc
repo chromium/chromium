@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/isolation_info_mojom_traits.h"
 
 #include "base/notreached.h"
+#include "base/unguessable_token.h"
+#include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/cpp/crash_keys.h"
-#include "services/network/public/cpp/site_for_cookies_mojom_traits.h"
 
 namespace mojo {
 
@@ -47,11 +48,12 @@ network::mojom::IsolationInfoRequestType EnumTraits<
 
 bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     Read(network::mojom::IsolationInfoDataView data, net::IsolationInfo* out) {
-  base::Optional<url::Origin> top_frame_origin;
-  base::Optional<url::Origin> frame_origin;
+  absl::optional<url::Origin> top_frame_origin;
+  absl::optional<url::Origin> frame_origin;
+  absl::optional<base::UnguessableToken> nonce;
   net::SiteForCookies site_for_cookies;
   net::IsolationInfo::RequestType request_type;
-  base::Optional<std::vector<net::SchemefulSite>> mojo_party_context;
+  absl::optional<std::vector<net::SchemefulSite>> mojo_party_context;
 
   if (!data.ReadTopFrameOrigin(&top_frame_origin)) {
     network::debug::SetDeserializationCrashKeyString("isolation_top_origin");
@@ -61,13 +63,13 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     network::debug::SetDeserializationCrashKeyString("isolation_frame_origin");
     return false;
   }
-  if (!data.ReadSiteForCookies(&site_for_cookies) ||
+  if (!data.ReadNonce(&nonce) || !data.ReadSiteForCookies(&site_for_cookies) ||
       !data.ReadRequestType(&request_type) ||
       !data.ReadPartyContext(&mojo_party_context)) {
     return false;
   }
 
-  base::Optional<std::set<net::SchemefulSite>> party_context;
+  absl::optional<std::set<net::SchemefulSite>> party_context;
   if (mojo_party_context.has_value()) {
     party_context = std::set<net::SchemefulSite>(mojo_party_context->begin(),
                                                  mojo_party_context->end());
@@ -75,10 +77,11 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
       return false;
   }
 
-  base::Optional<net::IsolationInfo> isolation_info =
+  absl::optional<net::IsolationInfo> isolation_info =
       net::IsolationInfo::CreateIfConsistent(
           request_type, top_frame_origin, frame_origin, site_for_cookies,
-          data.opaque_and_non_transient(), std::move(party_context));
+          std::move(party_context),
+          nonce.has_value() ? &nonce.value() : nullptr);
   if (!isolation_info) {
     network::debug::SetDeserializationCrashKeyString("isolation_inconsistent");
     return false;

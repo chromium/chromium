@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,28 +22,18 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
-#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
 
-// Check Add Person pref.
-bool IsAddPersonEnabled() {
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-  return service->GetBoolean(prefs::kBrowserAddPersonEnabled);
-}
-
 NSString* GetProfileMenuTitle() {
-  const bool newPicker =
-      base::FeatureList::IsEnabled(features::kNewProfilePicker);
-  return l10n_util::GetNSStringWithFixup(
-      newPicker ? IDS_PROFILES_MENU_NAME : IDS_PROFILES_OPTIONS_GROUP_NAME);
+  return l10n_util::GetNSStringWithFixup(IDS_PROFILES_MENU_NAME);
 }
 
 }  // namespace
@@ -86,7 +76,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 
 @implementation ProfileMenuController
 
-- (id)initWithMainMenuItem:(NSMenuItem*)item {
+- (instancetype)initWithMainMenuItem:(NSMenuItem*)item {
   if ((self = [super init])) {
     _mainMenuItem = item;
 
@@ -115,11 +105,14 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (IBAction)editProfile:(id)sender {
-  _avatarMenu->EditProfile(_avatarMenu->GetActiveProfileIndex());
+  absl::optional<size_t> active_profile_index =
+      _avatarMenu->GetActiveProfileIndex();
+  DCHECK(active_profile_index);
+  _avatarMenu->EditProfile(*active_profile_index);
 }
 
 - (IBAction)newProfile:(id)sender {
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  _avatarMenu->AddNewProfile();
 }
 
 - (BOOL)insertItemsIntoMenu:(NSMenu*)menu
@@ -164,18 +157,15 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
-  // In guest mode, or if there is no loaded profile, chrome://settings isn't
-  // available, so disallow creating or editing a profile.
-  Profile* activeProfile = ProfileManager::GetLastUsedProfileIfLoaded();
-  if (!activeProfile || activeProfile->IsGuestSession()) {
-    if ([menuItem action] == @selector(newProfile:) ||
-        [menuItem action] == @selector(editProfile:)) {
-      return NO;
-    }
+  if (!_avatarMenu->ShouldShowAddNewProfileLink() &&
+      [menuItem action] == @selector(newProfile:)) {
+    return NO;
   }
 
-  if (!IsAddPersonEnabled() && [menuItem action] == @selector(newProfile:))
+  if (!_avatarMenu->ShouldShowEditProfileLink() &&
+      [menuItem action] == @selector(editProfile:)) {
     return NO;
+  }
 
   return YES;
 }
@@ -200,17 +190,12 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
                                         action:@selector(editProfile:)];
   [[self menu] addItem:item];
 
-  if (IsAddPersonEnabled()) {
+  if (_avatarMenu->ShouldShowAddNewProfileLink()) {
     [[self menu] addItem:[NSMenuItem separatorItem]];
 
-    const bool newPicker =
-        base::FeatureList::IsEnabled(features::kNewProfilePicker);
-    item = [self
-        createItemWithTitle:l10n_util::GetNSStringWithFixup(
-                                newPicker
-                                    ? IDS_PROFILES_ADD_PROFILE_LABEL
-                                    : IDS_PROFILES_CREATE_NEW_PROFILE_OPTION)
-                     action:@selector(newProfile:)];
+    item = [self createItemWithTitle:l10n_util::GetNSStringWithFixup(
+                                         IDS_PROFILES_ADD_PROFILE_LABEL)
+                              action:@selector(newProfile:)];
     [[self menu] addItem:item];
   }
 
@@ -224,9 +209,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   _avatarMenu->ActiveBrowserChanged(browser);
 
   // If |browser| is NULL, it may be because the current profile was deleted
-  // and there are no other loaded profiles. In this case, calling
-  // |avatarMenu_->GetActiveProfileIndex()| may result in a profile being
-  // loaded, which is inappropriate to do on the UI thread.
+  // and there are no other loaded profiles.
   //
   // An early return provides the desired behavior:
   //   a) If the profile was deleted, the menu would have been rebuilt and no

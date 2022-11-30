@@ -1,5 +1,10 @@
 Tests name sources in images and figures.
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 84
+    }
     domNode : figure#figure1
     ignored : false
     name : {
@@ -13,10 +18,6 @@ Tests name sources in images and figures.
                 type : attribute
             }
             [2] : {
-                nativeSource : figcaption
-                type : relatedElement
-            }
-            [3] : {
                 attribute : title
                 type : attribute
             }
@@ -25,6 +26,7 @@ Tests name sources in images and figures.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -33,6 +35,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 84
+    }
     domNode : figure#figure2
     ignored : false
     name : {
@@ -46,10 +53,6 @@ Tests name sources in images and figures.
                 type : attribute
             }
             [2] : {
-                nativeSource : figcaption
-                type : relatedElement
-            }
-            [3] : {
                 attribute : title
                 type : attribute
                 value : {
@@ -62,6 +65,7 @@ Tests name sources in images and figures.
         value : figure2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -70,9 +74,10 @@ Tests name sources in images and figures.
     }
 }
 {
-    description : {
-        type : computedString
-        value : figure3-title
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 84
     }
     domNode : figure#figure3
     ignored : false
@@ -87,25 +92,7 @@ Tests name sources in images and figures.
                 type : attribute
             }
             [2] : {
-                nativeSource : figcaption
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : figcaption3
-                        }
-                    ]
-                    type : nodeList
-                }
-                type : relatedElement
-                value : {
-                    type : computedString
-                    value : figcaption3
-                }
-            }
-            [3] : {
                 attribute : title
-                superseded : true
                 type : attribute
                 value : {
                     type : computedString
@@ -114,20 +101,21 @@ Tests name sources in images and figures.
             }
         ]
         type : computedString
-        value : figcaption3
+        value : figure3-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
-            name : labelledby
+            name : details
             value : {
                 relatedNodes : [
                     [0] : {
                         nodeResult : figcaption
-                        text : figcaption3
                     }
                 ]
-                type : nodeList
+                type : idrefList
+                value : 
             }
         }
     ]
@@ -137,6 +125,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 84
+    }
     description : {
         type : computedString
         value : figure4-title
@@ -162,24 +155,6 @@ Tests name sources in images and figures.
                 }
             }
             [2] : {
-                nativeSource : figcaption
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : figcaption4
-                        }
-                    ]
-                    type : nodeList
-                }
-                superseded : true
-                type : relatedElement
-                value : {
-                    type : computedString
-                    value : figcaption4
-                }
-            }
-            [3] : {
                 attribute : title
                 superseded : true
                 type : attribute
@@ -193,7 +168,20 @@ Tests name sources in images and figures.
         value : figure4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
+        [0] : {
+            name : details
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        nodeResult : figcaption
+                    }
+                ]
+                type : idrefList
+                value : 
+            }
+        }
     ]
     role : {
         type : role
@@ -201,6 +189,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 84
+    }
     description : {
         type : computedString
         value : figure5-title
@@ -242,24 +235,6 @@ Tests name sources in images and figures.
                 }
             }
             [2] : {
-                nativeSource : figcaption
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : figcaption5
-                        }
-                    ]
-                    type : nodeList
-                }
-                superseded : true
-                type : relatedElement
-                value : {
-                    type : computedString
-                    value : figcaption5
-                }
-            }
-            [3] : {
                 attribute : title
                 superseded : true
                 type : attribute
@@ -273,8 +248,21 @@ Tests name sources in images and figures.
         value : figure5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
+            name : details
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        nodeResult : figcaption
+                    }
+                ]
+                type : idrefList
+                value : 
+            }
+        }
+        [1] : {
             name : labelledby
             value : {
                 relatedNodes : [
@@ -294,6 +282,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
     domNode : img#img1
     ignored : false
     name : {
@@ -319,6 +312,7 @@ Tests name sources in images and figures.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -327,6 +321,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
     domNode : img#img2
     ignored : false
     name : {
@@ -356,6 +355,7 @@ Tests name sources in images and figures.
         value : img2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -364,6 +364,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
     description : {
         type : computedString
         value : img3-title
@@ -406,6 +411,7 @@ Tests name sources in images and figures.
         value : img3-alt
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -414,6 +420,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
     description : {
         type : computedString
         value : img4-title
@@ -465,6 +476,7 @@ Tests name sources in images and figures.
         value : img4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -473,6 +485,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
     description : {
         type : computedString
         value : img5-title
@@ -540,6 +557,7 @@ Tests name sources in images and figures.
         value : img5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : labelledby
@@ -561,6 +579,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 110
+    }
     domNode : div#link1
     ignored : false
     name : {
@@ -590,6 +613,7 @@ Tests name sources in images and figures.
         value : I like ice cream.
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -605,6 +629,11 @@ Tests name sources in images and figures.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
     domNode : svg#svg1
     ignored : false
     name : {
@@ -619,15 +648,6 @@ Tests name sources in images and figures.
             }
             [2] : {
                 nativeSource : title
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : svg1-title
-                        }
-                    ]
-                    type : nodeList
-                }
                 type : relatedElement
                 value : {
                     type : computedString
@@ -644,23 +664,12 @@ Tests name sources in images and figures.
         value : svg1-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
-        [0] : {
-            name : labelledby
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : title
-                        text : svg1-title
-                    }
-                ]
-                type : nodeList
-            }
-        }
     ]
     role : {
-        type : internalRole
-        value : SVGRoot
+        type : role
+        value : img
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 The Chromium Authors. All rights reserved.
+ * Copyright 2016 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -8,10 +8,36 @@
 
 var request;
 
+const bobPayMethod = Object.freeze({
+  supportedMethods: 'https://bobpay.com',
+});
+
+const kylePayMethod = Object.freeze({
+  supportedMethods: 'https://kylepay.com/webpay',
+});
+
+/**
+ * Launches the PaymentRequest UI that accepts url payment methods.
+ */
+function buyWithUrlMethods() { // eslint-disable-line no-unused-vars
+  buyWithMethods([bobPayMethod, kylePayMethod]);
+}
+
 /**
  * Launches the PaymentRequest UI that accepts credit cards.
  */
 function ccBuy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([{
+    supportedMethods: 'basic-card',
+    data: {supportedNetworks: ['visa']},
+  }]);
+}
+
+/**
+ * Launches the PaymentRequest UI that accepts the given methods.
+ * @param {Array<Object>} methods An array of payment method objects.
+ */
+ function buyWithMethods(methods) {
   try {
     var details = {
       total: {
@@ -32,10 +58,7 @@ function ccBuy() { // eslint-disable-line no-unused-vars
       }],
     };
     request = new PaymentRequest(
-        [{
-          supportedMethods: 'basic-card',
-          data: {supportedNetworks: ['visa']},
-        }],
+        methods,
         {
           total: {
             label: 'Total',
@@ -59,10 +82,8 @@ function ccBuy() { // eslint-disable-line no-unused-vars
         });
     request.show()
         .then(function(resp) {
-          return resp.complete('success');
-        })
-        .then(function() {
           print(JSON.stringify(resp, undefined, 2));
+          return resp.complete('success');
         })
         .catch(function(error) {
           print(error);
@@ -160,12 +181,14 @@ function androidPaySkipUiBuy() { // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI which accepts only an unsupported payment
  * method.
+ * @return {Promise<string>} - Either payment response as a JSON string or the
+ * error message.
  */
-function noSupported() { // eslint-disable-line no-unused-vars
+async function noSupportedPromise() { // eslint-disable-line no-unused-vars
   try {
-    request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{
-          supportedMethods: 'https://randompay.com',
+          supportedMethods: window.location.href + '/randompay',
         }],
         {
           total: {
@@ -188,18 +211,11 @@ function noSupported() { // eslint-disable-line no-unused-vars
         {
           requestShipping: true,
         });
-    request.show()
-        .then(function(resp) {
-          return resp.complete('success');
-        })
-        .then(function() {
-          print(JSON.stringify(resp, undefined, 2));
-        })
-        .catch(function(error) {
-          print(error);
-        });
+    const response = await request.show();
+    await response.complete('success');
+    return JSON.stringify(response);
   } catch (error) {
-    print(error.message);
+    return error.toString();
   }
 }
 

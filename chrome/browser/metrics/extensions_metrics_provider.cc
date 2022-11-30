@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -120,8 +121,7 @@ ExtensionState CheckForOffStore(const extensions::ExtensionSet& extensions,
                                 content::BrowserContext* context) {
   ExtensionState state = NO_EXTENSIONS;
   for (extensions::ExtensionSet::const_iterator it = extensions.begin();
-       it != extensions.end() && state < OFF_STORE;
-       ++it) {
+       it != extensions.end() && state < OFF_STORE; ++it) {
     // Combine the state of each extension, always favoring the higher state as
     // defined by the order of ExtensionState.
     state = std::max(state, IsOffStoreExtension(**it, verifier, context));
@@ -149,6 +149,9 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
       return ExtensionInstallProto::SHARED_MODULE;
     case Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
       return ExtensionInstallProto::LOGIN_SCREEN_EXTENSION;
+    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      // TODO(mgawad): introduce new CHROMEOS_SYSTEM_EXTENSION type.
+      return ExtensionInstallProto::EXTENSION;
     case Manifest::NUM_LOAD_TYPES:
       NOTREACHED();
       // Fall through.
@@ -187,11 +190,11 @@ ExtensionInstallProto::InstallLocation GetInstallLocation(
 
 ExtensionInstallProto::ActionType GetActionType(const Manifest& manifest) {
   // Arbitrary order; each of these is mutually exclusive.
-  if (manifest.HasKey(extensions::manifest_keys::kBrowserAction))
+  if (manifest.FindKey(extensions::manifest_keys::kBrowserAction))
     return ExtensionInstallProto::BROWSER_ACTION;
-  if (manifest.HasKey(extensions::manifest_keys::kPageAction))
+  if (manifest.FindKey(extensions::manifest_keys::kPageAction))
     return ExtensionInstallProto::PAGE_ACTION;
-  if (manifest.HasKey(extensions::manifest_keys::kSystemIndicator))
+  if (manifest.FindKey(extensions::manifest_keys::kSystemIndicator))
     return ExtensionInstallProto::SYSTEM_INDICATOR;
   return ExtensionInstallProto::NO_ACTION;
 }
@@ -213,7 +216,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 21),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 22),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -250,12 +253,12 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::CUSTODIAN_APPROVAL_REQUIRED},
       {extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY,
        ExtensionInstallProto::BLOCKED_BY_POLICY},
-      {extensions::disable_reason::DISABLE_REMOTELY_FOR_MALWARE,
-       ExtensionInstallProto::DISABLE_REMOTELY_FOR_MALWARE},
       {extensions::disable_reason::DISABLE_REINSTALL,
        ExtensionInstallProto::REINSTALL},
       {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
        ExtensionInstallProto::NOT_ALLOWLISTED},
+      {extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED,
+       ExtensionInstallProto::NOT_ASH_KEEPLISTED},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
@@ -280,20 +283,19 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
 ExtensionInstallProto::BlacklistState GetBlacklistState(
     const extensions::ExtensionId& id,
     extensions::ExtensionPrefs* prefs) {
-  extensions::BlocklistState state = prefs->GetExtensionBlocklistState(id);
+  extensions::BitMapBlocklistState state =
+      extensions::blocklist_prefs::GetExtensionBlocklistState(id, prefs);
   switch (state) {
-    case extensions::NOT_BLOCKLISTED:
+    case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
       return ExtensionInstallProto::NOT_BLACKLISTED;
-    case extensions::BLOCKLISTED_MALWARE:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE:
       return ExtensionInstallProto::BLACKLISTED_MALWARE;
-    case extensions::BLOCKLISTED_SECURITY_VULNERABILITY:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
       return ExtensionInstallProto::BLACKLISTED_SECURITY_VULNERABILITY;
-    case extensions::BLOCKLISTED_CWS_POLICY_VIOLATION:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
       return ExtensionInstallProto::BLACKLISTED_CWS_POLICY_VIOLATION;
-    case extensions::BLOCKLISTED_POTENTIALLY_UNWANTED:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
       return ExtensionInstallProto::BLACKLISTED_POTENTIALLY_UNWANTED;
-    case extensions::BLOCKLISTED_UNKNOWN:
-      return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
   }
   NOTREACHED();
   return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
@@ -318,7 +320,8 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_is_from_store(extension.from_webstore());
   install.set_updates_from_store(
       extension_management->UpdatesFromWebstore(extension));
-  install.set_is_from_bookmark(extension.from_bookmark());
+  // TODO(crbug.com/1065748): Remove this setter.
+  install.set_is_from_bookmark(false);
   install.set_is_converted_from_user_script(
       extension.converted_from_user_script());
   install.set_is_default_installed(extension.was_installed_by_default());
@@ -363,8 +366,7 @@ ExtensionsMetricsProvider::ExtensionsMetricsProvider(
   DCHECK(metrics_state_manager_);
 }
 
-ExtensionsMetricsProvider::~ExtensionsMetricsProvider() {
-}
+ExtensionsMetricsProvider::~ExtensionsMetricsProvider() = default;
 
 // static
 int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
@@ -383,7 +385,7 @@ ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
     return extensions::ExtensionRegistry::Get(profile)
         ->GenerateInstalledExtensionsSet();
   }
-  return std::unique_ptr<extensions::ExtensionSet>();
+  return nullptr;
 }
 
 uint64_t ExtensionsMetricsProvider::GetClientID() const {
@@ -467,8 +469,7 @@ void ExtensionsMetricsProvider::ProvideOccupiedBucketMetric(
 
   std::set<int> buckets;
   for (extensions::ExtensionSet::const_iterator it = extensions->begin();
-       it != extensions->end();
-       ++it) {
+       it != extensions->end(); ++it) {
     buckets.insert(HashExtension((*it)->id(), client_key));
   }
 

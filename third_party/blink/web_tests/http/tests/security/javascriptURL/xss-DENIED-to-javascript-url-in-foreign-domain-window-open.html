@@ -8,7 +8,7 @@
         {
             if (window.testRunner) {
                 testRunner.dumpAsText();
-                testRunner.setCanOpenWindows();
+                testRunner.setPopupBlockingEnabled(false);
                 testRunner.waitUntilDone();
             }
 

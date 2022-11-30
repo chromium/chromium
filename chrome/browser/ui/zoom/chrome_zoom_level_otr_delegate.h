@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_OTR_DELEGATE_H_
 #define CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_OTR_DELEGATE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -22,6 +22,11 @@ class ChromeZoomLevelOTRDelegate : public content::ZoomLevelDelegate {
  public:
   ChromeZoomLevelOTRDelegate(
       base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager);
+
+  ChromeZoomLevelOTRDelegate(const ChromeZoomLevelOTRDelegate&) = delete;
+  ChromeZoomLevelOTRDelegate& operator=(const ChromeZoomLevelOTRDelegate&) =
+      delete;
+
   ~ChromeZoomLevelOTRDelegate() override;
 
   // content::ZoomLevelDelegate
@@ -34,10 +39,8 @@ class ChromeZoomLevelOTRDelegate : public content::ZoomLevelDelegate {
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
   base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager_;
-  content::HostZoomMap* host_zoom_map_;
+  raw_ptr<content::HostZoomMap> host_zoom_map_;
   base::CallbackListSubscription zoom_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeZoomLevelOTRDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_OTR_DELEGATE_H_

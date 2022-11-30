@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/continue_window.h"
 
 #import <Cocoa/Cocoa.h>
@@ -11,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -21,10 +21,10 @@
  @private
   base::scoped_nsobject<NSMutableArray> _shades;
   base::scoped_nsobject<NSAlert> _continue_alert;
-  remoting::ContinueWindow* _continue_window;
+  raw_ptr<remoting::ContinueWindow> _continue_window;
 }
 
-- (id)initWithWindow:(remoting::ContinueWindow*)continue_window;
+- (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window;
 - (void)show;
 - (void)hide;
 - (void)onCancel:(id)sender;
@@ -38,6 +38,10 @@ namespace remoting {
 class ContinueWindowMac : public ContinueWindow {
  public:
   ContinueWindowMac();
+
+  ContinueWindowMac(const ContinueWindowMac&) = delete;
+  ContinueWindowMac& operator=(const ContinueWindowMac&) = delete;
+
   ~ContinueWindowMac() override;
 
  protected:
@@ -47,8 +51,6 @@ class ContinueWindowMac : public ContinueWindow {
 
  private:
   base::scoped_nsobject<ContinueWindowMacController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowMac);
 };
 
 ContinueWindowMac::ContinueWindowMac() {
@@ -89,7 +91,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
 
 @implementation ContinueWindowMacController
 
-- (id)initWithWindow:(remoting::ContinueWindow*)continue_window {
+- (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window {
   if ((self = [super init])) {
     _continue_window = continue_window;
   }
@@ -102,11 +104,11 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   _shades.reset([[NSMutableArray alloc] initWithCapacity:[screens count]]);
   for (NSScreen *screen in screens) {
     NSWindow* shade =
-      [[[NSWindow alloc] initWithContentRect:[screen frame]
-                                   styleMask:NSBorderlessWindowMask
-                                     backing:NSBackingStoreBuffered
-                                       defer:NO
-                                      screen:screen] autorelease];
+        [[[NSWindow alloc] initWithContentRect:[screen frame]
+                                     styleMask:NSWindowStyleMaskBorderless
+                                       backing:NSBackingStoreBuffered
+                                         defer:NO
+                                        screen:screen] autorelease];
     [shade setReleasedWhenClosed:NO];
     [shade setAlphaValue:0.8];
     [shade setOpaque:NO];

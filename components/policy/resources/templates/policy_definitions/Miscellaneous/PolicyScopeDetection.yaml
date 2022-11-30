@@ -1,0 +1,28 @@
+caption: Allow policy scope detection on <ph name="MAC_OS_NAME">macOS</ph>
+default: true
+deprecated: true
+desc: " Controls whether browser can detect mandatory policy scope on <ph name=\"\
+  MAC_OS_NAME\">macOS</ph> or not.\n\n      If the policy is set to Enabled or not\
+  \ set, each policy's scope will be determined by the scope of <ph name=\"MAC_OS_NAME\"\
+  >macOS</ph> managed profile.\n      If the policy is set to Disabled, all policies\
+  \ will be reconized as machine scope policy.\n\n      This policy is temporary in\
+  \ order to facilitate smooth transition to properly scoped policies on <ph name=\"\
+  MAC_OS_NAME\">macOS</ph> and will be removed in <ph name=\"PRODUCT_NAME\">$1<ex>Google\
+  \ Chrome</ex></ph> 107.\n\n      "
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Allow Policy scope detection.
+  value: true
+- caption: Block Policy scope detection.
+  value: false
+owners:
+- zmin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.mac:105-107
+tags: []
+type: main

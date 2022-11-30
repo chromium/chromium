@@ -1,12 +1,11 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/linux/pkg_config.gni")
 import("//ui/base/ui_features.gni")
 
-# Chromedriver uses this in X11 builds for StubKeyboardLayoutEngine.
-assert(use_ozone || use_x11)
+assert(use_ozone)
 
 if (use_xkbcommon) {
   pkg_config("xkbcommon") {
@@ -46,6 +45,8 @@ component("layout") {
       "xkb/xkb_key_code_converter.h",
       "xkb/xkb_keyboard_layout_engine.cc",
       "xkb/xkb_keyboard_layout_engine.h",
+      "xkb/xkb_modifier_converter.cc",
+      "xkb/xkb_modifier_converter.h",
     ]
 
     deps += [
@@ -63,6 +64,7 @@ source_set("unittests") {
     sources += [
       "keyboard_layout_engine_unittest.cc",
       "xkb/xkb_keyboard_layout_engine_unittest.cc",
+      "xkb/xkb_modifier_converter_unittest.cc",
     ]
     configs += [ ":xkbcommon" ]
   }
@@ -73,5 +75,21 @@ source_set("unittests") {
     "//testing/gtest",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/keycodes:xkb",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "keyboard_layout_engine_test_utils.cc",
+    "keyboard_layout_engine_test_utils.h",
+  ]
+
+  deps = [
+    ":layout",
+    "//base",
+    "//ui/base:features",
   ]
 }

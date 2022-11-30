@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,7 +11,7 @@ class ContentSettings(dict):
   """
 
   def __init__(self, table, device):
-    super(ContentSettings, self).__init__()
+    super().__init__()
     self._table = table
     self._device = device
 
@@ -23,7 +23,7 @@ class ContentSettings(dict):
       return 'f'
     if isinstance(value, int):
       return 'i'
-    if isinstance(value, long):
+    if isinstance(value, int):
       return 'l'
     if isinstance(value, str):
       return 's'

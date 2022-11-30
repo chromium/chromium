@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ RemoteChangeProcessorWrapper::RemoteChangeProcessorWrapper(
 void RemoteChangeProcessorWrapper::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,
     RemoteChangeProcessor::PrepareChangeCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_change_processor_->PrepareForProcessRemoteChange(url,
                                                           std::move(callback));
 }
@@ -28,7 +28,7 @@ void RemoteChangeProcessorWrapper::ApplyRemoteChange(
     const base::FilePath& local_path,
     const storage::FileSystemURL& url,
     SyncStatusCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_change_processor_->ApplyRemoteChange(change, local_path, url,
                                               std::move(callback));
 }
@@ -37,7 +37,7 @@ void RemoteChangeProcessorWrapper::FinalizeRemoteSync(
     const storage::FileSystemURL& url,
     bool clear_local_changes,
     base::OnceClosure completion_callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_change_processor_->FinalizeRemoteSync(url, clear_local_changes,
                                                std::move(completion_callback));
 }
@@ -46,7 +46,7 @@ void RemoteChangeProcessorWrapper::RecordFakeLocalChange(
     const storage::FileSystemURL& url,
     const FileChange& change,
     SyncStatusCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_change_processor_->RecordFakeLocalChange(url, change,
                                                   std::move(callback));
 }

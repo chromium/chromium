@@ -1,11 +1,11 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 #define REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
@@ -33,6 +33,10 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   // Initializes the module. |classes| and |classes_end| must outlive |this|.
   ChromotingModule(ATL::_ATL_OBJMAP_ENTRY* classes,
                    ATL::_ATL_OBJMAP_ENTRY* classes_end);
+
+  ChromotingModule(const ChromotingModule&) = delete;
+  ChromotingModule& operator=(const ChromotingModule&) = delete;
+
   ~ChromotingModule() override;
 
   // Returns the task runner used by the module. Returns nullptr if the task
@@ -57,10 +61,8 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   base::win::ScopedCOMInitializer com_initializer_;
 
   // Point to the vector of classes registered by this module.
-  ATL::_ATL_OBJMAP_ENTRY* classes_;
-  ATL::_ATL_OBJMAP_ENTRY* classes_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingModule);
+  raw_ptr<ATL::_ATL_OBJMAP_ENTRY> classes_;
+  raw_ptr<ATL::_ATL_OBJMAP_ENTRY> classes_end_;
 };
 
 } // namespace remoting

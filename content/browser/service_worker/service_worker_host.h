@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/buckets/bucket_context.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host.h"
@@ -22,83 +24,143 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
+#endif
 
 namespace content {
 
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
+struct ServiceWorkerVersionBaseInfo;
 
 // ServiceWorkerHost is the host of a service worker execution context in the
 // renderer process. One ServiceWorkerHost instance hosts one service worker
 // execution context instance.
 //
-// ServiceWorkerHost lives on the service worker core thread, since all nearly
-// all browser process service worker machinery lives on the service worker core
-// thread.
-class CONTENT_EXPORT ServiceWorkerHost {
+// Lives on the UI thread.
+class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
  public:
   ServiceWorkerHost(mojo::PendingAssociatedReceiver<
                         blink::mojom::ServiceWorkerContainerHost> host_receiver,
                     ServiceWorkerVersion* version,
                     base::WeakPtr<ServiceWorkerContextCore> context);
-  ~ServiceWorkerHost();
+
+  ServiceWorkerHost(const ServiceWorkerHost&) = delete;
+  ServiceWorkerHost& operator=(const ServiceWorkerHost&) = delete;
+
+  ~ServiceWorkerHost() override;
 
   int worker_process_id() const { return worker_process_id_; }
   ServiceWorkerVersion* version() const { return version_; }
+
+  service_manager::InterfaceProvider& remote_interfaces() {
+    return remote_interfaces_;
+  }
 
   // Completes initialization of this provider host. It is called once a
   // renderer process has been found to host the worker.
   void CompleteStartWorkerPreparation(
       int process_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-          broker_receiver);
+          broker_receiver,
+      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+          interface_provider_remote);
 
-  void CreateQuicTransportConnector(
-      mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver);
-  // Used only when EagerCacheStorageSetupForServiceWorkers is disabled.
+  void CreateWebTransportConnector(
+      mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
+  // Used when EagerCacheStorageSetupForServiceWorkers is disabled, or when
+  // setup for eager cache storage has failed.
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+
+#if !BUILDFLAG(IS_ANDROID)
+  void BindHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  void BindUsbService(
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
   content::ServiceWorkerContainerHost* container_host() {
     return container_host_.get();
   }
 
   net::NetworkIsolationKey GetNetworkIsolationKey() const;
+  net::NetworkAnonymizationKey GetNetworkAnonymizationKey() const;
+  const base::UnguessableToken& GetReportingSource() const;
+
+  StoragePartition* GetStoragePartition() const;
+
+  void CreateCodeCacheHost(
+      mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
+
+  void CreateBroadcastChannelProvider(
+      mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
+
+  void CreateBucketManagerHost(
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
 
   base::WeakPtr<ServiceWorkerHost> GetWeakPtr();
 
   void ReportNoBinderForInterface(const std::string& error);
+
+  // BucketContext:
+  blink::StorageKey GetBucketStorageKey() override;
+  blink::mojom::PermissionStatus GetPermissionStatus(
+      blink::PermissionType permission_type) override;
+  void BindCacheStorageForBucket(
+      const storage::BucketInfo& bucket,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
 
  private:
   int worker_process_id_ = ChildProcessHost::kInvalidUniqueID;
 
   // The service worker being hosted. Raw pointer is safe because the version
   // owns |this|.
-  ServiceWorkerVersion* const version_;
+  const raw_ptr<ServiceWorkerVersion> version_;
 
-  BrowserInterfaceBrokerImpl<ServiceWorkerHost, const ServiceWorkerVersionInfo&>
-      broker_{this};
+  // BrowserInterfaceBroker implementation through which this
+  // ServiceWorkerHost exposes worker-scoped Mojo services to the corresponding
+  // service worker in the renderer.
+  //
+  // The interfaces that can be requested from this broker are defined in the
+  // content/browser/browser_interface_binders.cc file, in the functions which
+  // take a `ServiceWorkerHost*` parameter.
+  BrowserInterfaceBrokerImpl<ServiceWorkerHost,
+                             const ServiceWorkerVersionBaseInfo&>
+      broker_;
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 
   std::unique_ptr<ServiceWorkerContainerHost> container_host_;
 
+  service_manager::InterfaceProvider remote_interfaces_{
+      base::ThreadTaskRunnerHandle::Get()};
+
+  // CodeCacheHost processes requests to fetch / write generated code for
+  // JavaScript / WebAssembly resources.
+  std::unique_ptr<CodeCacheHostImpl::ReceiverSet> code_cache_host_receivers_;
+
   mojo::AssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
       host_receiver_;
 
   base::WeakPtrFactory<ServiceWorkerHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHost);
 };
 
 }  // namespace content

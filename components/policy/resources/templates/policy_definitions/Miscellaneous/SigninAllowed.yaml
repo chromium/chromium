@@ -1,0 +1,28 @@
+caption: Allow sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+deprecated: true
+desc: "This policy is deprecated, consider using <ph name=\"BROWSER_SIGNIN_POLICY_NAME\"\
+  >BrowserSignin</ph> instead.\n\n      Allows the user to sign in to <ph name=\"\
+  PRODUCT_NAME\">$1<ex>Google Chrome</ex></ph>.\n\n      Setting this policy to Enabled\
+  \ will allow the user to sign in to <ph name=\"PRODUCT_NAME\">$1<ex>Google Chrome</ex></ph>.\n\
+  \      Setting this policy to Disabled will prevent sign in. It also blocks apps\
+  \ and extensions that use the chrome.identity API from functioning. To avoid that,\
+  \ use <ph name=\"SYNC_DISABLED_POLICY_NAME\">SyncDisabled</ph> instead.\n      "
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow users to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+  value: true
+- caption: Prevent users from signing in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+  value: false
+owners:
+- akuegel@chromium.org
+- zmin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:27-
+- android:38-
+tags: []
+type: main

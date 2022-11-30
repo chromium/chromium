@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include <random>
 #include <vector>
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-#if !defined(ADDRESS_SANITIZER) || !defined(OS_WIN)
+#if !defined(ADDRESS_SANITIZER) || !BUILDFLAG(IS_WIN)
 // Total allocation of 4GB will fail in 32 bit programs if allocations are
 // leaked.
 const int kIterations = 20;
@@ -136,7 +137,7 @@ class PagedArrayTest : public testing::Test {
 
 // AddressSanitizer on Windows adds additional memory overhead, which
 // causes these tests to go OOM and fail.
-#if !defined(ADDRESS_SANITIZER) || !defined(OS_WIN)
+#if !defined(ADDRESS_SANITIZER) || !BUILDFLAG(IS_WIN)
 TEST_F(PagedArrayTest, TestManyAllocationsDestructorFree) {
   for (int i = 0; i < kIterations; ++i) {
     courgette::PagedArray<int> a;
@@ -230,7 +231,6 @@ TEST_F(PagedArrayTest, TestIterator) {
 
 // Test generic read-write of itrators by sorting pseudo-random numbers.
 TEST_F(PagedArrayTest, TestSort) {
-  courgette::PagedArray<int> a;
   std::minstd_rand pseudo_rand_gen;  // Deterministic, using defaults.
   for (size_t size : kSizeList) {
     std::vector<int32_t> v(size);

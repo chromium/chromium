@@ -1,19 +1,23 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from telemetry import story
-from page_sets.desktop_ui import download_shelf_story, tab_search_story
+from page_sets.desktop_ui import \
+    new_tab_page_story, omnibox_story, \
+    side_search_story, tab_search_story, webui_tab_strip_story
+from page_sets.desktop_ui.ui_devtools_utils import IsMac
 
 
 class DesktopUIStorySet(story.StorySet):
   TAB_SEARCH_STORIES = [
       tab_search_story.TabSearchStoryTop10,
       tab_search_story.TabSearchStoryTop50,
-      tab_search_story.TabSearchStoryTop100,
       tab_search_story.TabSearchStoryTop10Loading,
+      tab_search_story.TabSearchStoryRecentlyClosed10,
+      tab_search_story.TabSearchStoryRecentlyClosed50,
+      tab_search_story.TabSearchStoryRecentlyClosed100,
       tab_search_story.TabSearchStoryTop50Loading,
-      tab_search_story.TabSearchStoryTop100Loading,
       tab_search_story.TabSearchStoryCloseAndOpen,
       tab_search_story.TabSearchStoryCloseAndOpenLoading,
       tab_search_story.TabSearchStoryScrollUpAndDown,
@@ -25,9 +29,27 @@ class DesktopUIStorySet(story.StorySet):
       tab_search_story.TabSearchStoryMeasureMemory3TabSearch,
   ]
 
-  DOWNLOAD_SHELF_STORIES = [
-      download_shelf_story.DownloadShelfStory1File,
-      download_shelf_story.DownloadShelfStory5File,
+  WEBUI_TAB_STRIP_STORIES = [
+      webui_tab_strip_story.WebUITabStripStoryCleanSlate,
+      webui_tab_strip_story.WebUITabStripStoryMeasureMemory,
+      webui_tab_strip_story.WebUITabStripStoryMeasureMemory2Window,
+      webui_tab_strip_story.WebUITabStripStoryTop10,
+      webui_tab_strip_story.WebUITabStripStoryTop10Loading,
+  ]
+
+  OMNIBOX_STORIES = [
+      omnibox_story.OmniboxStoryPedal,
+      omnibox_story.OmniboxStoryScopedSearch,
+      omnibox_story.OmniboxStorySearch,
+  ]
+
+  NEW_TAB_PAGE_STORIES = [
+      new_tab_page_story.NewTabPageStoryLoading,
+  ]
+
+  SIDE_SEARCH_STORIES = [
+      side_search_story.SideSearchStoryMeasureMemory,
+      side_search_story.SideSearchStoryNavigation,
   ]
 
   def __init__(self):
@@ -36,9 +58,35 @@ class DesktopUIStorySet(story.StorySet):
                          cloud_storage_bucket=story.PARTNER_BUCKET)
     for cls in self.TAB_SEARCH_STORIES:
       self.AddStory(
-          cls(self,
-              ['--enable-features=TabSearch', '--top-chrome-touch-ui=disabled'
-               ]))
+          cls(self, [
+              '--top-chrome-touch-ui=disabled',
+              '--enable-features=TabSearchUseMetricsReporter',
+          ]))
 
-    for cls in self.DOWNLOAD_SHELF_STORIES:
+    # WebUI Tab Strip is not available on Mac.
+    if not IsMac():
+      for cls in self.WEBUI_TAB_STRIP_STORIES:
+        self.AddStory(
+            cls(self, [
+                '--enable-features=WebUITabStrip',
+                '--top-chrome-touch-ui=enabled',
+            ]))
+
+    for cls in self.OMNIBOX_STORIES:
       self.AddStory(cls(self))
+
+    for cls in self.NEW_TAB_PAGE_STORIES:
+      self.AddStory(
+          cls(self, [
+              '--enable-features=NtpModules,\
+              NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake,\
+              NtpChromeCartModule:NtpChromeCartModuleDataParam/fake,\
+              NtpDriveModule:NtpDriveModuleDataParam/fake,\
+              NtpPhotosModule:NtpPhotosModuleDataParam/1',
+              '--signed-out-ntp-modules',
+          ]))
+
+    for cls in self.SIDE_SEARCH_STORIES:
+      self.AddStory(cls(self, [
+          '--enable-features=SideSearch',
+      ]))

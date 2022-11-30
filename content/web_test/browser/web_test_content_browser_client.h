@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,12 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
-#include "third_party/blink/public/mojom/clipboard/raw_clipboard.mojom.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting_automation.mojom-forward.h"
+#include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom-forward.h"
 
@@ -35,8 +37,6 @@ class FakeBluetoothChooserFactory;
 class FakeBluetoothDelegate;
 class MockBadgeService;
 class MockClipboardHost;
-class MockPlatformNotificationService;
-class MockRawClipboardHost;
 class WebTestBrowserContext;
 
 class WebTestContentBrowserClient : public ShellContentBrowserClient {
@@ -67,12 +67,10 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
-      const MainFunctionParams& parameters) override;
+      bool is_integration_test) override;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
-  std::unique_ptr<OverlayWindow> CreateWindowForPictureInPicture(
-      PictureInPictureWindowController* controller) override;
-  PlatformNotificationService* GetPlatformNotificationService(
-      content::BrowserContext* browser_context) override;
+  std::unique_ptr<VideoOverlayWindow> CreateWindowForVideoPictureInPicture(
+      VideoPictureInPictureWindowController* controller) override;
   bool CanCreateWindow(content::RenderFrameHost* opener,
                        const GURL& opener_url,
                        const GURL& opener_top_level_frame_url,
@@ -97,17 +95,21 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
       const content::GlobalRequestID& request_id,
-      bool is_main_frame,
+      bool is_request_for_primary_main_frame,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
       LoginAuthRequiredCallback auth_required_callback) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool PreSpawnChild(sandbox::TargetPolicy* policy,
-                     sandbox::policy::SandboxType sandbox_type,
+                     sandbox::mojom::Sandbox sandbox_type,
                      ChildSpawnFlags flags) override;
 #endif
   std::string GetAcceptLangs(BrowserContext* context) override;
+  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+                                 InterestGroupApiOperation operation,
+                                 const url::Origin& top_frame_origin,
+                                 const url::Origin& api_origin) override;
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
 
@@ -125,9 +127,6 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void BindClipboardHost(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
-  void BindRawClipboardHost(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::RawClipboardHost> receiver);
 
   void BindBadgeService(
       RenderFrameHost* render_frame_host,
@@ -140,12 +139,20 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       mojo::PendingReceiver<blink::test::mojom::StorageAccessAutomation>
           receiver);
 
+  void BindCookieManagerAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::CookieManagerAutomation>
+          receiver);
+
+  void BindAttributionReportingAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::AttributionReportingAutomation>
+          receiver);
+
   void BindWebTestControlHost(
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
 
-  std::unique_ptr<MockPlatformNotificationService>
-      mock_platform_notification_service_;
   bool block_popups_ = true;
   bool screen_orientation_changed_ = false;
 
@@ -153,8 +160,11 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   std::unique_ptr<FakeBluetoothChooserFactory> fake_bluetooth_chooser_factory_;
   std::unique_ptr<FakeBluetoothDelegate> fake_bluetooth_delegate_;
   std::unique_ptr<MockClipboardHost> mock_clipboard_host_;
-  std::unique_ptr<MockRawClipboardHost> mock_raw_clipboard_host_;
   std::unique_ptr<MockBadgeService> mock_badge_service_;
+  mojo::UniqueReceiverSet<blink::test::mojom::CookieManagerAutomation>
+      cookie_managers_;
+  mojo::UniqueReceiverSet<blink::test::mojom::AttributionReportingAutomation>
+      attribution_reporting_receivers_;
 };
 
 }  // namespace content

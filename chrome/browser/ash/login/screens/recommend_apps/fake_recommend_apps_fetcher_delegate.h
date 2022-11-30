@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 // Delegate interface used by RecommendAppsFetcher to report its results.
 class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
@@ -40,7 +40,7 @@ class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
   }
 
   // RecommendAppsFetcherDelegate:
-  void OnLoadSuccess(const base::Value& app_list) override;
+  void OnLoadSuccess(base::Value app_list) override;
   void OnLoadError() override;
   void OnParseResponseError() override;
 
@@ -61,6 +61,6 @@ class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
   base::OnceClosure result_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_

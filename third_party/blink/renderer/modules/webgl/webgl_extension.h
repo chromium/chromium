@@ -26,14 +26,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_EXTENSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_EXTENSION_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
+
+class WebGLExtension;
+class WebGLRenderingContextBase;
 
 class WebGLExtensionScopedContext final {
   STACK_ALLOCATED();
@@ -41,17 +42,22 @@ class WebGLExtensionScopedContext final {
  public:
   explicit WebGLExtensionScopedContext(WebGLExtension*);
 
+  WebGLExtensionScopedContext(const WebGLExtensionScopedContext&) = delete;
+  WebGLExtensionScopedContext& operator=(const WebGLExtensionScopedContext&) =
+      delete;
+
   bool IsLost() const { return !context_; }
   WebGLRenderingContextBase* Context() const { return context_; }
 
  private:
   WebGLRenderingContextBase* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLExtensionScopedContext);
 };
 
 class WebGLExtension : public ScriptWrappable {
  public:
+  WebGLExtension(const WebGLExtension&) = delete;
+  WebGLExtension& operator=(const WebGLExtension&) = delete;
+
   virtual WebGLExtensionName GetName() const = 0;
 
   // Lose this extension. Passing true = force loss. Some extensions
@@ -70,8 +76,6 @@ class WebGLExtension : public ScriptWrappable {
   friend WebGLExtensionScopedContext;
 
   WeakMember<WebGLRenderingContextBase> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLExtension);
 };
 
 }  // namespace blink

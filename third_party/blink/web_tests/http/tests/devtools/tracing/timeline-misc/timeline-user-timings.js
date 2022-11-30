@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test timeline aggregated details.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('timeline');
 
@@ -12,7 +12,7 @@
   const rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': 'metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -21,7 +21,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '__metadata',
+      'cat': 'metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -54,7 +54,7 @@
   ];
 
   const timeline = UI.panels.timeline;
-  timeline._setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
+  timeline.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   testEventTree('CallTree');
   testEventTree('BottomUp');
@@ -62,25 +62,25 @@
   TestRunner.completeTest();
 
   function getTreeView(type) {
-    timeline._flameChart._detailsView._tabbedPane.selectTab(type, true);
-    return timeline._flameChart._detailsView._tabbedPane.visibleView;
+    timeline.flameChart.detailsView.tabbedPane.selectTab(type, true);
+    return timeline.flameChart.detailsView.tabbedPane.visibleView;
   }
 
   function testEventTree(type) {
-    const flameChart = timeline._flameChart._mainFlameChart;
-    flameChart._selectGroup(flameChart._rawTimelineData.groups.findIndex(group => group.name === 'Timings'));
+    const flameChart = timeline.flameChart.mainFlameChart;
+    flameChart.selectGroup(flameChart.rawTimelineData.groups.findIndex(group => group.name === 'Timings'));
     TestRunner.addResult('');
     TestRunner.addResult(type);
     const tree = getTreeView(type);
     const rootNode = tree.dataGrid.rootNode();
     for (const node of rootNode.children)
-      printEventTree(1, node._profileNode, node._treeView);
+      printEventTree(1, node.profileNode, node.treeView);
   }
 
   function printEventTree(padding, node, treeView) {
     let name;
     if (node.isGroupNode()) {
-      name = treeView._displayInfoForGroupNode(node).name;
+      name = treeView.displayInfoForGroupNode(node).name;
     } else {
       name = node.event.name === TimelineModel.TimelineModel.RecordType.JSFrame ?
           UI.beautifyFunctionName(node.event.args['data']['functionName']) :

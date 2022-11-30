@@ -1,0 +1,23 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ml.model_loader.mojom;
+
+import "components/ml/mojom/web_platform_model.mojom";
+
+// Represents the Machine Learning service, corresponding to the `ML` interface
+// in the IDL definition.
+// This interface is used between the browser process and the renderer.
+interface MLService {
+  // Called by the renderer to ask the browser process to create a `ModelLoader`
+  // (see the `ModelLoader` interface). The browser process can handle this
+  // differently on different platforms.
+  //   - On Chrome OS, the browser process will forward this to the ml-service
+  //     daemon. And it will relay the returns from ml-service back to the
+  //     renderer.
+  //   - On non-supported platforms, the browser process will return
+  //     `CreateModelLoaderResult::kNotSupported` with `mojo::NullRemote`.
+  CreateModelLoader(CreateModelLoaderOptions options)
+      => (CreateModelLoaderResult result, pending_remote<ModelLoader>? remote);
+};

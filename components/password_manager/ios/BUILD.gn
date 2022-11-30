@@ -1,35 +1,43 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":account_select_fill_data",
+    ":password_manager_feature",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_util_feature",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common",
     "//components/security_state/ios",
     "//components/strings:components_strings_grit",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
     "//url",
   ]
 
   sources = [
-    "account_select_fill_data.cc",
-    "account_select_fill_data.h",
-    "js_password_manager.h",
-    "js_password_manager.mm",
+    "ios_password_manager_driver.h",
+    "ios_password_manager_driver.mm",
+    "ios_password_manager_driver_factory.h",
+    "ios_password_manager_driver_factory.mm",
+    "password_controller_driver_helper.h",
+    "password_controller_driver_helper.mm",
     "password_form_helper.h",
     "password_form_helper.mm",
     "password_generation_provider.h",
@@ -44,6 +52,44 @@ component("ios") {
   ]
 }
 
+source_set("password_manager_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":account_select_fill_data",
+    ":password_controller_js",
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util:form_util_feature",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [
+    "password_manager_java_script_feature.h",
+    "password_manager_java_script_feature.mm",
+  ]
+}
+
+source_set("account_select_fill_data") {
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
+    "//url",
+  ]
+
+  sources = [
+    "account_select_fill_data.cc",
+    "account_select_fill_data.h",
+  ]
+}
+
+optimize_js("password_controller_js") {
+  primary_script = "resources/password_controller.js"
+  sources = [ "resources/password_controller.js" ]
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
@@ -52,6 +98,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":account_select_fill_data",
     ":ios",
     "//base",
     "//components/autofill/core/common",
@@ -64,35 +111,36 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_select_fill_data_unittest.cc",
+    "ios_password_manager_driver_factory_unittest.mm",
+    "ios_password_manager_driver_unittest.mm",
+    "password_controller_driver_helper_unittest.mm",
     "password_form_helper_unittest.mm",
     "shared_password_controller_unittest.mm",
   ]
   deps = [
+    ":account_select_fill_data",
     ":ios",
-    ":test_bundle",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_util_feature",
+    "//components/autofill/ios/form_util:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common:features",
+    "//components/password_manager/ios:password_manager_feature",
+    "//components/ukm:test_support",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
-  ]
-}
-
-js_compile_bundle("test_bundle") {
-  closure_entry_point = "__crWeb.testBundle"
-  testonly = true
-  sources = [
-    "//components/autofill/ios/form_util/resources/fill.js",
-    "//components/autofill/ios/form_util/resources/form.js",
-    "resources/password_controller.js",
-    "resources/test_bundle.js",
   ]
 }

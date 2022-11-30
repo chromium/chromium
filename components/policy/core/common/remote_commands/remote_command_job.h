@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/policy/policy_export.h"
@@ -48,6 +46,9 @@ class POLICY_EXPORT RemoteCommandJob {
 
   using FinishedCallback = base::OnceClosure;
 
+  RemoteCommandJob(const RemoteCommandJob&) = delete;
+  RemoteCommandJob& operator=(const RemoteCommandJob&) = delete;
+
   virtual ~RemoteCommandJob();
 
   // Initialize from a RemoteCommand protobuf definition, must be called before
@@ -56,13 +57,11 @@ class POLICY_EXPORT RemoteCommandJob {
   // time. It must be consistent to the same parameter passed to Run() below.
   // In order to minimize the error while estimating the command issued time,
   // this method must be called immediately after the command is received from
-  // the server. |signed_command| is passed if we're using signed commands; its
-  // format is the raw serialized command inside of policy data proto plus its
-  // signature, and it's cached in case the actual command implementation needs
-  // to pass its signature on to some other system for verification.
+  // the server. |signed_command| contains the entire remote command and its
+  // signature, the way it was received from the server.
   bool Init(base::TimeTicks now,
             const enterprise_management::RemoteCommand& command,
-            const enterprise_management::SignedData* signed_command);
+            const enterprise_management::SignedData& signed_command);
 
   // Run the command asynchronously. |now| is the time used for marking the
   // execution start. |now_ticks| is the time which will be used for command
@@ -98,7 +97,6 @@ class POLICY_EXPORT RemoteCommandJob {
   base::TimeTicks issued_time() const { return issued_time_; }
   base::Time execution_started_time() const { return execution_started_time_; }
   Status status() const { return status_; }
-  bool has_signed_data() const { return signed_command_.has_value(); }
 
   // Returns whether execution of this command is finished.
   bool IsExecutionFinished() const;
@@ -151,8 +149,7 @@ class POLICY_EXPORT RemoteCommandJob {
   // The default implementation does nothing.
   virtual void TerminateImpl();
 
-  const base::Optional<enterprise_management::SignedData>& signed_command()
-      const {
+  const enterprise_management::SignedData& signed_command() const {
     return signed_command_;
   }
 
@@ -170,9 +167,8 @@ class POLICY_EXPORT RemoteCommandJob {
   // The time when the command started running.
   base::Time execution_started_time_;
 
-  // Serialized command inside policy data proto with signature in case of a
-  // signed command, otherwise empty.
-  base::Optional<enterprise_management::SignedData> signed_command_;
+  // Serialized command inside policy data proto with signature.
+  enterprise_management::SignedData signed_command_;
 
   std::unique_ptr<ResultPayload> result_payload_;
 
@@ -181,8 +177,6 @@ class POLICY_EXPORT RemoteCommandJob {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<RemoteCommandJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandJob);
 };
 
 }  // namespace policy

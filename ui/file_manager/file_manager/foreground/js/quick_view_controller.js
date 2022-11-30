@@ -1,39 +1,39 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {MetadataItem} from './metadata/metadata_item.m.js';
-// #import {FileTasks} from './file_tasks.m.js';
-// #import {FilesQuickView} from '../elements/files_quick_view.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {MetadataBoxController} from './metadata_box_controller.m.js';
-// #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
-// #import {TaskController} from './task_controller.m.js';
-// #import {QuickViewModel} from './quick_view_model.m.js';
-// #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {ThumbnailLoader} from './thumbnail_loader.m.js';
-// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.m.js';
-// #import {LoadImageResponseStatus, LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
-// #import {CommandHandler} from './file_manager_commands.m.js';
-// #import {FilesConfirmDialog} from './ui/files_confirm_dialog.m.js';
-// #import {constants} from './constants.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {QuickViewUma} from './quick_view_uma.m.js';
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// clang-format on
+import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {DialogType} from '../../common/js/dialog_type.js';
+import {FileType} from '../../common/js/file_type.js';
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+import {FilesQuickView} from '../elements/files_quick_view.js';
+
+import {constants} from './constants.js';
+import {CommandHandler} from './file_manager_commands.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {FileTasks, parseActionId} from './file_tasks.js';
+import {MetadataItem} from './metadata/metadata_item.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {MetadataBoxController} from './metadata_box_controller.js';
+import {QuickViewModel} from './quick_view_model.js';
+import {QuickViewUma} from './quick_view_uma.js';
+import {TaskController} from './task_controller.js';
+import {ThumbnailLoader} from './thumbnail_loader.js';
+import {FileListSelectionModel} from './ui/file_list_selection_model.js';
+import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
+import {ListContainer} from './ui/list_container.js';
+import {MultiMenuButton} from './ui/multi_menu_button.js';
 
 /**
  * Controller for QuickView.
  */
-/* #export */ class QuickViewController {
+export class QuickViewController {
   /**
    * This should be initialized with |init_| method.
    *
@@ -41,7 +41,7 @@
    * @param {!MetadataModel} metadataModel
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!ListContainer} listContainer
-   * @param {!cr.ui.MultiMenuButton} selectionMenuButton
+   * @param {!MultiMenuButton} selectionMenuButton
    * @param {!QuickViewModel} quickViewModel
    * @param {!TaskController} taskController
    * @param {!FileListSelectionModel} fileListSelectionModel
@@ -158,9 +158,7 @@
     this.quickView_ = quickView;
     this.quickView_.isModal = DialogType.isModal(this.dialogType_);
 
-    if (util.isFilesNg()) {
-      this.quickView_.setAttribute('files-ng', '');
-    }
+    this.quickView_.setAttribute('files-ng', '');
 
     this.metadataBoxController_.init(quickView);
 
@@ -182,22 +180,12 @@
 
   /**
    * Create quick view element.
-   * @return Promise<!FilesQuickView>
+   * @return {!FilesQuickView}
    * @private
    */
   createQuickView_() {
-    return new Promise((resolve, reject) => {
-      const quickView = document.querySelector('#quick-view');
-      // Workaround: Polymer.Base is only defined on Polymer2.
-      // For Polymer3 the QuickView is already imported at the top.
-      if (window.Polymer && window.Polymer.Base) {
-        /* #ignore */ Polymer.Base.importHref(
-            /* #ignore */ constants.FILES_QUICK_VIEW_HTML,
-            /* #ignore */ () => resolve(quickView), reject);
-      } else {
-        resolve(quickView);
-      }
-    });
+    return /** @type {!FilesQuickView} */ (
+        document.querySelector('#quick-view'));
   }
 
   /**
@@ -231,7 +219,9 @@
     if (event.key === ' ') {
       event.preventDefault();
       event.stopImmediatePropagation();
-      this.display_(QuickViewUma.WayToOpen.SPACE_KEY);
+      if (this.entries_.length > 0) {
+        this.display_(QuickViewUma.WayToOpen.SPACE_KEY);
+      }
     }
   }
 
@@ -382,18 +372,17 @@
    * @param {QuickViewUma.WayToOpen} wayToOpen The open quick view trigger.
    * @private
    */
-  display_(wayToOpen) {
+  async display_(wayToOpen) {
     // On opening Quick View, always reset the current selection index.
     this.currentSelection_ = 0;
 
     this.checkSelectMode_ = this.fileListSelectionModel_.getCheckSelectMode();
 
-    this.updateQuickView_().then(() => {
-      if (!this.quickView_.isOpened()) {
-        this.quickView_.open();
-        this.quickViewUma_.onOpened(this.entries_[0], wayToOpen);
-      }
-    });
+    await this.updateQuickView_();
+    if (!this.quickView_.isOpened()) {
+      this.quickView_.open();
+      this.quickViewUma_.onOpened(this.entries_[0], wayToOpen);
+    }
   }
 
   /**
@@ -445,12 +434,16 @@
    * @return {!Promise} Promise fulfilled after quick view is updated.
    * @private
    */
-  updateQuickView_() {
+  async updateQuickView_() {
     if (!this.quickView_) {
-      return this.createQuickView_()
-          .then(this.init_.bind(this))
-          .then(this.updateQuickView_.bind(this))
-          .catch(console.error);
+      try {
+        const quickView = this.createQuickView_();
+        this.init_(quickView);
+        return this.updateQuickView_();
+      } catch (error) {
+        console.warn(error);
+        return;
+      }
     }
 
     assert(this.entries_.length > 0);
@@ -462,23 +455,22 @@
       this.quickViewUma_.onEntryChanged(entry);
     });
 
-    return Promise
-        .all([
-          this.metadataModel_.get([entry], ['thumbnailUrl']),
-          this.taskController_.getEntryFileTasks(entry),
-          this.canDeleteEntry_(entry),
-        ])
-        .then(values => {
-          const items = /**@type{Array<MetadataItem>}*/ (values[0]);
-          const tasks = /**@type{!FileTasks}*/ (values[1]);
-          const canDelete = values[2];
-          return this.onMetadataLoaded_(entry, items, tasks, canDelete);
-        })
-        .catch(error => {
-          if (error) {
-            console.error(error.stack || error);
-          }
-        });
+    try {
+      const values = await Promise.all([
+        this.metadataModel_.get([entry], ['thumbnailUrl', 'modificationTime']),
+        this.taskController_.getEntryFileTasks(entry),
+        this.canDeleteEntry_(entry),
+      ]);
+
+      const items = /**@type{Array<MetadataItem>}*/ (values[0]);
+      const tasks = /**@type{!FileTasks}*/ (values[1]);
+      const canDelete = values[2];
+      return this.onMetadataLoaded_(entry, items, tasks, canDelete);
+    } catch (error) {
+      if (error) {
+        console.warn(error.stack || error);
+      }
+    }
   }
 
   /**
@@ -491,34 +483,39 @@
    * @param {Array<MetadataItem>} items
    * @param {!FileTasks} fileTasks
    * @param {boolean} canDelete
+   * @return {!Promise}
    * @private
    */
-  onMetadataLoaded_(entry, items, fileTasks, canDelete) {
+  async onMetadataLoaded_(entry, items, fileTasks, canDelete) {
     const tasks = fileTasks.getTaskItems();
 
-    return this.getQuickViewParameters_(entry, items, tasks, canDelete)
-        .then(params => {
-          if (this.quickViewModel_.getSelectedEntry() != entry) {
-            return;  // Bail: there's no point drawing a stale selection.
-          }
+    const params =
+        await this.getQuickViewParameters_(entry, items, tasks, canDelete);
+    if (this.quickViewModel_.getSelectedEntry() != entry) {
+      return;  // Bail: there's no point drawing a stale selection.
+    }
 
-          this.quickView_.setProperties({
-            type: params.type || '',
-            subtype: params.subtype || '',
-            filePath: params.filePath || '',
-            hasTask: params.hasTask || false,
-            canDelete: params.canDelete || false,
-            contentUrl: params.contentUrl || '',
-            videoPoster: params.videoPoster || '',
-            audioArtwork: params.audioArtwork || '',
-            autoplay: params.autoplay || false,
-            browsable: params.browsable || false,
-          });
+    const emptySourceContent = {
+      data: null,
+      dataType: '',
+    };
 
-          if (params.hasTask) {
-            this.tasks_ = fileTasks;
-          }
-        });
+    this.quickView_.setProperties({
+      type: params.type || '',
+      subtype: params.subtype || '',
+      filePath: params.filePath || '',
+      hasTask: params.hasTask || false,
+      canDelete: params.canDelete || false,
+      sourceContent: params.sourceContent || emptySourceContent,
+      videoPoster: params.videoPoster || emptySourceContent,
+      audioArtwork: params.audioArtwork || emptySourceContent,
+      autoplay: params.autoplay || false,
+      browsable: params.browsable || false,
+    });
+
+    if (params.hasTask) {
+      this.tasks_ = fileTasks;
+    }
   }
 
   /**
@@ -526,17 +523,19 @@
    * @param {Array<MetadataItem>} items
    * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks
    * @param {boolean} canDelete
-   * @return !Promise<!QuickViewParams>
+   * @return {!Promise<!QuickViewParams>}
    *
    * @private
    */
-  getQuickViewParameters_(entry, items, tasks, canDelete) {
-    const item = items[0];
+  async getQuickViewParameters_(entry, items, tasks, canDelete) {
     const typeInfo = FileType.getType(entry);
     const type = typeInfo.type;
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const label = util.getEntryLabel(locationInfo, entry);
     const entryIsOnDrive = locationInfo && locationInfo.isDriveBased;
+    const thumbnailUrl = items.length ? items[0].thumbnailUrl : undefined;
+    const modificationTime =
+        items.length ? items[0].modificationTime : undefined;
 
     /** @type {!QuickViewParams} */
     const params = {
@@ -558,141 +557,164 @@
     }
 
     if (!localFile) {
-      // Drive files: fetch their thumbnail if there is one.
-      if (item.thumbnailUrl) {
-        return this.loadThumbnailFromDrive_(item.thumbnailUrl).then(result => {
-          if (result.status === LoadImageResponseStatus.SUCCESS) {
-            if (params.type == 'video') {
-              params.videoPoster = result.data;
-            } else if (params.type == 'image') {
-              params.contentUrl = result.data;
-            } else {
-              // TODO(sashab): Rather than re-use 'image', create a new type
-              // here, e.g. 'thumbnail'.
-              params.type = 'image';
-              params.contentUrl = result.data;
-            }
+      // Drive files: Try to fetch their thumbnail or fallback to read the whole
+      // file.
+      if (thumbnailUrl) {
+        const result =
+            await this.loadThumbnailFromDrive_(thumbnailUrl, modificationTime);
+        if (result.status === LoadImageResponseStatus.SUCCESS) {
+          if (params.type == 'video') {
+            params.videoPoster = {
+              data: result.data,
+              dataType: 'url',
+            };
+          } else if (params.type == 'image') {
+            params.sourceContent = {
+              data: result.data,
+              dataType: 'url',
+            };
+          } else {
+            params.type = 'image';
+            params.sourceContent = {
+              data: result.data,
+              dataType: 'url',
+            };
           }
           return params;
-        });
+        } else {
+          console.warn(`Failed to fetch thumbnail: ${result.status}`);
+        }
       }
-
-      // We ask user to open it with external app.
-      return Promise.resolve(params);
     }
 
     if (type === 'raw') {
       // RAW files: fetch their ImageLoader thumbnail.
-      return this.loadRawFileThumbnailFromImageLoader_(entry)
-          .then(result => {
-            if (result.status === LoadImageResponseStatus.SUCCESS) {
-              params.contentUrl = result.data;
-              params.type = 'image';
-            }
-            return params;
-          })
-          .catch(e => {
-            console.error(e);
-            return params;
-          });
+      try {
+        const result = await this.loadRawFileThumbnailFromImageLoader_(entry);
+        if (result.status === LoadImageResponseStatus.SUCCESS) {
+          params.type = 'image';
+          params.sourceContent = {
+            data: result.data,
+            dataType: 'url',
+          };
+        } else {
+          console.warn(`Failed to fetch thumbnail: ${result.status}`);
+        }
+        return params;
+      } catch (error) {
+        console.warn(error);
+      }
+      return params;
     }
 
     if (type === '.folder') {
       return Promise.resolve(params);
     }
 
-    return new Promise((resolve, reject) => {
-             entry.file(resolve, reject);
-           })
-        .then(file => {
-          switch (type) {
-            case 'image':
-              if (QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_.indexOf(
-                      typeInfo.subtype) !== -1) {
-                params.contentUrl = '';
-              } else {
-                params.contentUrl = URL.createObjectURL(file);
-              }
-              return params;
-            case 'video':
-              params.contentUrl = URL.createObjectURL(file);
-              params.autoplay = true;
-              if (item.thumbnailUrl) {
-                params.videoPoster = item.thumbnailUrl;
-              }
-              return params;
-            case 'audio':
-              params.contentUrl = URL.createObjectURL(file);
-              params.autoplay = true;
-              return this.metadataModel_.get([entry], ['contentThumbnailUrl'])
-                  .then(items => {
-                    const item = items[0];
-                    if (item.contentThumbnailUrl) {
-                      params.audioArtwork = item.contentThumbnailUrl;
-                    }
-                    return params;
-                  });
-            case 'document':
-              if (typeInfo.subtype === 'HTML') {
-                params.contentUrl = URL.createObjectURL(file);
-                return params;
-              } else {
-                break;
-              }
-            case 'text':
-              if (typeInfo.subtype === 'TXT') {
-                return file
-                    .text()  // Convert file content to utf-8.
-                    .then(text => {
-                      return new Blob(
-                          [text], {type: 'text/plain;charset=utf-8'});
-                    })
-                    .then(blob => {
-                      params.contentUrl = URL.createObjectURL(blob);
-                      params.browsable = true;
-                      return params;
-                    })
-                    .catch(e => {
-                      console.error(e);
-                      return params;
-                    });
-              } else {
-                break;
-              }
+    try {
+      const file = await new Promise((resolve, reject) => {
+        entry.file(resolve, reject);
+      });
+
+      switch (type) {
+        case 'image':
+          if (QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_.indexOf(
+                  typeInfo.subtype) === -1) {
+            params.sourceContent = {
+              data: file,
+              dataType: 'blob',
+            };
           }
-
-          params.browsable = tasks.some(task => {
-            const verb = task.taskId.split('|')[2];
-            return ['view-in-browser', 'view-pdf'].includes(verb);
-          });
-
-          if (params.browsable) {
-            params.contentUrl = URL.createObjectURL(file);
-            if (params.subtype === 'PDF') {
-              params.contentUrl += '#view=FitH';
+          return params;
+        case 'video':
+          params.sourceContent = {
+            data: file,
+            dataType: 'blob',
+          };
+          params.autoplay = true;
+          if (thumbnailUrl) {
+            params.videoPoster = {
+              data: thumbnailUrl,
+              dataType: 'url',
+            };
+          }
+          return params;
+        case 'audio':
+          params.sourceContent = {
+            data: file,
+            dataType: 'blob',
+          };
+          params.autoplay = true;
+          const itemsContentThumnbnail =
+              await this.metadataModel_.get([entry], ['contentThumbnailUrl']);
+          const item = itemsContentThumnbnail[0];
+          if (item.contentThumbnailUrl) {
+            params.audioArtwork = {
+              data: item.contentThumbnailUrl,
+              dataType: 'url',
+            };
+          }
+          return params;
+        case 'document':
+          if (typeInfo.subtype === 'HTML') {
+            params.sourceContent = {
+              data: file,
+              dataType: 'blob',
+            };
+            return params;
+          }
+          break;
+        case 'text':
+          if (typeInfo.subtype === 'TXT') {
+            try {
+              const text = await file.text();  // Convert file content to utf-8.
+              const blob =
+                  await new Blob([text], {type: 'text/plain;charset=utf-8'});
+              params.sourceContent = {
+                data: blob,
+                dataType: 'blob',
+              };
+              params.browsable = true;
+            } catch (error) {
+              console.warn(error);
             }
+            return params;
           }
+          break;
+      }
 
-          return params;
-        })
-        .catch(e => {
-          console.error(e);
-          return params;
-        });
+      params.browsable = tasks.some(task => {
+        return ['view-in-browser', 'view-pdf'].includes(
+            parseActionId(task.descriptor.actionId));
+      });
+
+      if (params.browsable) {
+        params.sourceContent = {
+          data: file,
+          dataType: 'blob',
+        };
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    return params;
   }
 
   /**
    * Loads a thumbnail from Drive.
    *
    * @param {string} url Thumbnail url
-   * @return Promise<!LoadImageResponse>
+   * @param {Date|undefined} modificationTime File's modification time.
+   * @return {!Promise<!LoadImageResponse>}
    * @private
    */
-  loadThumbnailFromDrive_(url) {
-    return new Promise(resolve => {
-      ImageLoaderClient.getInstance().load(
-          LoadImageRequest.createForUrl(url), resolve);
-    });
+  async loadThumbnailFromDrive_(url, modificationTime) {
+    const client = ImageLoaderClient.getInstance();
+    const request = LoadImageRequest.createForUrl(url);
+    request.cache = true;
+    request.timestamp =
+        modificationTime ? modificationTime.valueOf() : undefined;
+    return new Promise(resolve => client.load(request, resolve));
   }
 
   /**
@@ -702,7 +724,7 @@
    * refresh the cached |entry| data with the most recent data.
    *
    * @param {!Entry} entry The RAW file entry.
-   * @return Promise<!LoadImageResponse>
+   * @return {!Promise<!LoadImageResponse>}
    * @private
    */
   loadRawFileThumbnailFromImageLoader_(entry) {
@@ -740,6 +762,7 @@ QuickViewController.LOCAL_VOLUME_TYPES_ = [
   VolumeManagerCommon.VolumeType.REMOVABLE,
   VolumeManagerCommon.VolumeType.ANDROID_FILES,
   VolumeManagerCommon.VolumeType.CROSTINI,
+  VolumeManagerCommon.VolumeType.GUEST_OS,
   VolumeManagerCommon.VolumeType.MEDIA_VIEW,
   VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
   VolumeManagerCommon.VolumeType.SMB,
@@ -753,19 +776,3 @@ QuickViewController.LOCAL_VOLUME_TYPES_ = [
 QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_ = [
   'TIFF',  // crbug.com/624109
 ];
-
-/**
- * @typedef {{
- *   type: string,
- *   subtype: string,
- *   filePath: string,
- *   hasTask: boolean,
- *   canDelete: boolean,
- *   contentUrl: (string|undefined),
- *   videoPoster: (string|undefined),
- *   audioArtwork: (string|undefined),
- *   autoplay: (boolean|undefined),
- *   browsable: (boolean|undefined),
- * }}
- */
-let QuickViewParams;

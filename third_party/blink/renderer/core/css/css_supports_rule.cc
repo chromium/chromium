@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 
 #include "third_party/blink/renderer/core/css/css_rule.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -42,12 +43,20 @@ String CSSSupportsRule::cssText() const {
   StringBuilder result;
 
   result.Append("@supports ");
-  result.Append(conditionText());
+  result.Append(ConditionTextInternal());
   result.Append(" {\n");
   AppendCSSTextForItems(result);
   result.Append('}');
 
-  return result.ToString();
+  return result.ReleaseString();
+}
+
+void CSSSupportsRule::SetConditionText(
+    const ExecutionContext* execution_context,
+    String value) {
+  CSSStyleSheet::RuleMutationScope mutation_scope(this);
+  To<StyleRuleSupports>(group_rule_.Get())
+      ->SetConditionText(execution_context, value);
 }
 
 }  // namespace blink

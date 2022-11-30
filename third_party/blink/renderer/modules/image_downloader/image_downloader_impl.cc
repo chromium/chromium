@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,7 +78,8 @@ SkBitmap ResizeImage(const SkBitmap& image, uint32_t max_image_size) {
 // size |max_image_size|. Returns the result if it is not empty. Otherwise,
 // find the smallest image in the array and resize it proportionally to fit
 // in a box of size |max_image_size|.
-// Sets |original_image_sizes| to the sizes of |images| before resizing.
+// Sets |original_image_sizes| to the sizes of |images| before resizing. Both
+// output vectors are guaranteed to have the same size.
 void FilterAndResizeImagesForMaximalSize(
     const WTF::Vector<SkBitmap>& unfiltered,
     uint32_t max_image_size,
@@ -87,7 +88,7 @@ void FilterAndResizeImagesForMaximalSize(
   images->clear();
   original_image_sizes->clear();
 
-  if (unfiltered.IsEmpty())
+  if (unfiltered.empty())
     return;
 
   if (max_image_size == 0)
@@ -159,35 +160,39 @@ void ImageDownloaderImpl::CreateMojoService(
   receiver_.Bind(std::move(receiver),
                  GetSupplementable()->GetTaskRunner(TaskType::kNetworking));
   receiver_.set_disconnect_handler(
-      WTF::Bind(&ImageDownloaderImpl::Dispose, WrapWeakPersistent(this)));
+      WTF::BindOnce(&ImageDownloaderImpl::Dispose, WrapWeakPersistent(this)));
 }
 
 // ImageDownloader methods:
 void ImageDownloaderImpl::DownloadImage(const KURL& image_url,
                                         bool is_favicon,
-                                        uint32_t preferred_size,
+                                        const gfx::Size& preferred_size,
                                         uint32_t max_bitmap_size,
                                         bool bypass_cache,
                                         DownloadImageCallback callback) {
   // Constrain the preferred size by the max bitmap size. This will prevent
   // resizing of the resulting image if the preferred size is used.
-  if (max_bitmap_size)
-    preferred_size = std::min(preferred_size, max_bitmap_size);
+  gfx::Size constrained_preferred_size(preferred_size);
+  uint32_t max_preferred_dimension =
+      std::max(preferred_size.width(), preferred_size.height());
+  if (max_bitmap_size && max_bitmap_size < max_preferred_dimension) {
+    float scale = float(max_bitmap_size) / max_preferred_dimension;
+    constrained_preferred_size = gfx::ScaleToFlooredSize(preferred_size, scale);
+  }
 
   auto download_callback =
-      WTF::Bind(&ImageDownloaderImpl::DidDownloadImage, WrapPersistent(this),
-                max_bitmap_size, std::move(callback));
+      WTF::BindOnce(&ImageDownloaderImpl::DidDownloadImage,
+                    WrapPersistent(this), max_bitmap_size, std::move(callback));
 
-  const gfx::Size preferred_dimensions(preferred_size, preferred_size);
   if (!image_url.ProtocolIsData()) {
-    FetchImage(image_url, is_favicon, preferred_dimensions, bypass_cache,
+    FetchImage(image_url, is_favicon, constrained_preferred_size, bypass_cache,
                std::move(download_callback));
     // Will complete asynchronously via ImageDownloaderImpl::DidFetchImage.
     return;
   }
 
   WTF::Vector<SkBitmap> result_images =
-      ImagesFromDataUrl(image_url, preferred_dimensions);
+      ImagesFromDataUrl(image_url, constrained_preferred_size);
   std::move(download_callback).Run(0, result_images);
 }
 
@@ -200,6 +205,8 @@ void ImageDownloaderImpl::DidDownloadImage(
   WTF::Vector<gfx::Size> result_original_image_sizes;
   FilterAndResizeImagesForMaximalSize(images, max_image_size, &result_images,
                                       &result_original_image_sizes);
+
+  DCHECK_EQ(result_images.size(), result_original_image_sizes.size());
 
   std::move(callback).Run(http_status_code, result_images,
                           result_original_image_sizes);
@@ -220,8 +227,9 @@ void ImageDownloaderImpl::FetchImage(const KURL& image_url,
           image_url, GetSupplementable(), is_favicon,
           bypass_cache ? blink::mojom::FetchCacheMode::kBypassCache
                        : blink::mojom::FetchCacheMode::kDefault,
-          WTF::Bind(&ImageDownloaderImpl::DidFetchImage, WrapPersistent(this),
-                    std::move(callback), preferred_size)));
+          WTF::BindOnce(&ImageDownloaderImpl::DidFetchImage,
+                        WrapPersistent(this), std::move(callback),
+                        preferred_size)));
 }
 
 void ImageDownloaderImpl::DidFetchImage(

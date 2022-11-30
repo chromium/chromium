@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,22 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger.pb.h"
 #include "extensions/browser/extension_registry.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace chromeos {
+class Profile;
+
+namespace ash {
 namespace power {
 namespace ml {
 class RecentEventsCounter;
 }  // namespace ml
 }  // namespace power
-}  // namespace chromeos
+}  // namespace ash
 
 namespace ukm {
 namespace builders {
@@ -39,16 +42,20 @@ namespace app_list {
 // using inference with the aggregated ML model.
 //
 // Logging is restricted to Arc apps with sync enabled, Chrome apps from the
-// app store, PWAs and bookmark apps. This class uses UKM for logging,
+// app store, PWAs. This class uses UKM for logging,
 // however, the metrics are not keyed by navigational urls. Instead, for Chrome
 // apps the keys are based upon the app id, for Arc apps the keys are based upon
-// a hash of the package name, and for PWAs and bookmark apps the keys are the
-// urls associated with the PWA/bookmark.
+// a hash of the package name, and for PWAs the keys are the
+// urls associated with the PWA.
 // At the time of app launch this class logs metrics about the app clicked on
 // and up to another 25 apps that were not clicked on, chosen at random.
 class AppLaunchEventLogger {
  public:
-  AppLaunchEventLogger();
+  explicit AppLaunchEventLogger(Profile* profile);
+
+  AppLaunchEventLogger(const AppLaunchEventLogger&) = delete;
+  AppLaunchEventLogger& operator=(const AppLaunchEventLogger&) = delete;
+
   virtual ~AppLaunchEventLogger();
 
   // Processes a click on an app in the suggestion chip or search box and logs
@@ -74,17 +81,15 @@ class AppLaunchEventLogger {
   static const char kShouldSync[];
 
  protected:
-  // Get the url used to launch a PWA or bookmark app.
-  virtual const GURL& GetLaunchWebURL(const extensions::Extension* extension);
   // Enforces logging policy, ensuring that the |app_features_map_| flags the
   // apps that are allowed to be logged. All apps are rechecked in case they
   // have been uninstalled since the previous check.
   void EnforceLoggingPolicy();
 
   // The arc apps installed on the device.
-  const base::DictionaryValue* arc_apps_ = nullptr;
+  const base::Value::Dict* arc_apps_ = nullptr;
   // The arc packages installed on the device.
-  const base::DictionaryValue* arc_packages_ = nullptr;
+  const base::Value::Dict* arc_packages_ = nullptr;
   // The Chrome extension registry.
   extensions::ExtensionRegistry* registry_ = nullptr;
 
@@ -110,7 +115,7 @@ class AppLaunchEventLogger {
   // Updates the app data following a click.
   void ProcessClick(const AppLaunchEvent& event, const base::Time& now);
   // Returns a source id. |arc_package_name| is only required for Arc apps,
-  // |pwa_url| is only required for PWAs and bookmark apps.
+  // |pwa_url| is only required for PWAs.
   ukm::SourceId GetSourceId(AppLaunchEvent_AppType app_type,
                             const std::string& app_id,
                             const std::string& arc_package_name,
@@ -134,29 +139,30 @@ class AppLaunchEventLogger {
   // A map from app id to a counter of the number of clicks in the last hour.
   // Has a time resolution one minute.
   base::flat_map<std::string,
-                 std::unique_ptr<chromeos::power::ml::RecentEventsCounter>>
+                 std::unique_ptr<ash::power::ml::RecentEventsCounter>>
       app_clicks_last_hour_;
   // A map from app id to a counter of the number of clicks in the last 24
   // hours. Has a time resolution of 15 minutes.
   base::flat_map<std::string,
-                 std::unique_ptr<chromeos::power::ml::RecentEventsCounter>>
+                 std::unique_ptr<ash::power::ml::RecentEventsCounter>>
       app_clicks_last_24_hours_;
 
   // The time this class was instantiated. Allows duration to be calculated.
   base::Time start_time_;
   // A counter for the click in the last hour. Has a time resolution of 1
   // minute.
-  const std::unique_ptr<chromeos::power::ml::RecentEventsCounter>
+  const std::unique_ptr<ash::power::ml::RecentEventsCounter>
       all_clicks_last_hour_;
   // A counter for the clicks in the last 24 hours. Has a time resolution of 15
   // minutes.
-  const std::unique_ptr<chromeos::power::ml::RecentEventsCounter>
+  const std::unique_ptr<ash::power::ml::RecentEventsCounter>
       all_clicks_last_24_hours_;
+
+  // profile_ can't be null during AppLaunchEventLogger's lifetime.
+  Profile* profile_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<AppLaunchEventLogger> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchEventLogger);
 };
 
 }  // namespace app_list

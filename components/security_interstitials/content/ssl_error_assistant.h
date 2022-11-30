@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/security_interstitials/content/ssl_error_assistant.pb.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -65,6 +65,9 @@ class SSLErrorAssistant {
  public:
   SSLErrorAssistant();
 
+  SSLErrorAssistant(const SSLErrorAssistant&) = delete;
+  SSLErrorAssistant& operator=(const SSLErrorAssistant&) = delete;
+
   ~SSLErrorAssistant();
 
   // Returns true if any of the SHA256 hashes in |ssl_info| is of a captive
@@ -81,7 +84,7 @@ class SSLErrorAssistant {
   // Returns a DynamicInterstitialInfo from |dynamic_interstitial_list_| that
   // matches with |ssl_info|. If there is no match, returns null. Loads
   // |dynamic_interstitial_list_| on the first use.
-  base::Optional<DynamicInterstitialInfo> MatchDynamicInterstitial(
+  absl::optional<DynamicInterstitialInfo> MatchDynamicInterstitial(
       const net::SSLInfo& ssl_info,
       bool is_overridable = false);
 
@@ -117,8 +120,6 @@ class SSLErrorAssistant {
   // Error assistant configuration.
   std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig>
       error_assistant_proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorAssistant);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_ERROR_ASSISTANT_H_

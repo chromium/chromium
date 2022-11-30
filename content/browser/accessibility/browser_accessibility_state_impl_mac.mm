@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,10 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/animation/animation.h"
-
-@interface NSWorkspace (Partials)
-
-@property(readonly) BOOL accessibilityDisplayShouldDifferentiateWithoutColor;
-@property(readonly) BOOL accessibilityDisplayShouldIncreaseContrast;
-@property(readonly) BOOL accessibilityDisplayShouldReduceTransparency;
-
-@end
-
-// Only available since 10.12.
-@interface NSWorkspace (AvailableSinceSierra)
-@property(readonly) BOOL accessibilityDisplayShouldReduceMotion;
-@end
 
 namespace content {
 
@@ -59,7 +47,6 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
 
  protected:
   void InitBackgroundTasks() override;
-  void UpdateHistogramsOnUIThread() override;
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
 };
@@ -69,25 +56,6 @@ void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SetupAccessibilityDisplayOptionsNotifier));
-}
-
-void BrowserAccessibilityStateImplMac::UpdateHistogramsOnUIThread() {
-  BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread();
-
-  NSWorkspace* workspace = [NSWorkspace sharedWorkspace];
-
-  SEL sel = @selector(accessibilityDisplayShouldReduceTransparency);
-  if ([workspace respondsToSelector:sel]) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Accessibility.Mac.ReduceTransparency",
-        workspace.accessibilityDisplayShouldReduceTransparency);
-  }
-
-  sel = @selector(accessibilityDisplayShouldReduceMotion);
-  if ([workspace respondsToSelector:sel]) {
-    UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ReduceMotion",
-                          workspace.accessibilityDisplayShouldReduceMotion);
-  }
 }
 
 void BrowserAccessibilityStateImplMac::UpdateHistogramsOnOtherThread() {

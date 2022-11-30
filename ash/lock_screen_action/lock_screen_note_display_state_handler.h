@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -32,13 +31,20 @@ class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
  public:
   explicit LockScreenNoteDisplayStateHandler(
       BacklightsForcedOffSetter* backlights_forced_off_setter);
+
+  LockScreenNoteDisplayStateHandler(const LockScreenNoteDisplayStateHandler&) =
+      delete;
+  LockScreenNoteDisplayStateHandler& operator=(
+      const LockScreenNoteDisplayStateHandler&) = delete;
+
   ~LockScreenNoteDisplayStateHandler() override;
 
   base::OneShotTimer* launch_timer_for_test() { return &launch_timer_; }
 
   // ScreenBacklightObserver:
   void OnBacklightsForcedOffChanged(bool backlights_forced_off) override;
-  void OnScreenStateChanged(ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ScreenBacklightState screen_backlight_state) override;
 
   // If lock screen note action is available, it requests a new lock screen note
   // with launch reason set to stylus eject.
@@ -86,8 +92,6 @@ class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
 
   base::WeakPtrFactory<LockScreenNoteDisplayStateHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteDisplayStateHandler);
 };
 
 }  // namespace ash

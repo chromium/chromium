@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,15 @@ bool StructTraits<gfx::mojom::MaskFilterInfoDataView, gfx::MaskFilterInfo>::
   gfx::RRectF bounds;
   if (!data.ReadRoundedCornerBounds(&bounds))
     return false;
-  *out = gfx::MaskFilterInfo(bounds);
+
+  absl::optional<gfx::LinearGradient> gradient_mask;
+  if (!data.ReadGradientMask(&gradient_mask))
+    return false;
+
+  if (gradient_mask && !gradient_mask->IsEmpty())
+    *out = gfx::MaskFilterInfo(bounds, gradient_mask.value());
+  else
+    *out = gfx::MaskFilterInfo(bounds);
   return true;
 }
 

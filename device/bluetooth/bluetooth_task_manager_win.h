@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,14 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_low_energy_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -55,6 +55,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   struct DEVICE_BLUETOOTH_EXPORT ServiceRecordState {
     ServiceRecordState();
+
+    ServiceRecordState(const ServiceRecordState&) = delete;
+    ServiceRecordState& operator=(const ServiceRecordState&) = delete;
+
     ~ServiceRecordState();
     // Properties common to Bluetooth Classic and LE devices.
     std::string name;
@@ -68,20 +72,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     // service must use service device path instead of resident device device
     // path.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ServiceRecordState);
   };
 
   struct DEVICE_BLUETOOTH_EXPORT DeviceState {
     DeviceState();
+
+    DeviceState(const DeviceState&) = delete;
+    DeviceState& operator=(const DeviceState&) = delete;
+
     ~DeviceState();
 
     bool is_bluetooth_classic() const { return path.empty(); }
 
     // Properties common to Bluetooth Classic and LE devices.
     std::string address;  // This uniquely identifies the device.
-    base::Optional<std::string> name;  // Friendly name
+    absl::optional<std::string> name;  // Friendly name
     bool visible;
     bool connected;
     bool authenticated;
@@ -90,9 +95,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     uint32_t bluetooth_class;
     // Properties specific to Bluetooth LE devices.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DeviceState);
   };
 
   class DEVICE_BLUETOOTH_EXPORT Observer {
@@ -115,6 +117,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   explicit BluetoothTaskManagerWin(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  BluetoothTaskManagerWin(const BluetoothTaskManagerWin&) = delete;
+  BluetoothTaskManagerWin& operator=(const BluetoothTaskManagerWin&) = delete;
 
   static scoped_refptr<BluetoothTaskManagerWin> CreateForTesting(
       std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
@@ -345,8 +350,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   // Wrapper around the Windows Bluetooth APIs. Owns the radio handle.
   std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper_;
   std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothTaskManagerWin);
 };
 
 }  // namespace device

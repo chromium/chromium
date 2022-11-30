@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/sync/base/model_type.h"
@@ -43,6 +43,10 @@ class BackendMigrator {
                   DataTypeManager* manager,
                   const base::RepeatingClosure& reconfigure_callback,
                   const base::RepeatingClosure& migration_done_callback);
+
+  BackendMigrator(const BackendMigrator&) = delete;
+  BackendMigrator& operator=(const BackendMigrator&) = delete;
+
   virtual ~BackendMigrator();
 
   // Starts a sequence of events that will disable and reenable |types|.
@@ -53,7 +57,7 @@ class BackendMigrator {
 
   State state() const;
 
-  // Called from ProfileSyncService to notify us of configure done.
+  // Called from SyncServiceImpl to notify us of configure done.
   // Note: We receive these notifications only when our state is not IDLE.
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result);
 
@@ -76,7 +80,7 @@ class BackendMigrator {
   void OnConfigureDoneImpl(const DataTypeManager::ConfigureResult& result);
 
   const std::string name_;
-  DataTypeManager* manager_;
+  raw_ptr<DataTypeManager> manager_;
 
   const base::RepeatingClosure reconfigure_callback_;
   const base::RepeatingClosure migration_done_callback_;
@@ -88,8 +92,6 @@ class BackendMigrator {
   ModelTypeSet to_migrate_;
 
   base::WeakPtrFactory<BackendMigrator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackendMigrator);
 };
 
 }  // namespace syncer

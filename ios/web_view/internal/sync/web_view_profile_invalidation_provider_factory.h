@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
@@ -34,6 +33,11 @@ class WebViewProfileInvalidationProviderFactory
 
   static WebViewProfileInvalidationProviderFactory* GetInstance();
 
+  WebViewProfileInvalidationProviderFactory(
+      const WebViewProfileInvalidationProviderFactory&) = delete;
+  WebViewProfileInvalidationProviderFactory& operator=(
+      const WebViewProfileInvalidationProviderFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewProfileInvalidationProviderFactory>;
 
@@ -45,8 +49,6 @@ class WebViewProfileInvalidationProviderFactory
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewProfileInvalidationProviderFactory);
 };
 
 }  // namespace ios_web_view

@@ -1,0 +1,56 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//remoting/build/config/remoting_build.gni")
+
+source_set("base") {
+  visibility = [
+    "//remoting/host/*",
+    "//remoting/test/*",
+    "//remoting/tools/*",
+  ]
+
+  public = [
+    "desktop_environment_options.h",
+    "host_exit_codes.h",
+    "process_util.h",
+    "screen_controls.h",
+    "screen_resolution.h",
+    "switches.h",
+    "username.h",
+  ]
+
+  sources = [
+    "desktop_environment_options.cc",
+    "host_exit_codes.cc",
+    "process_util.cc",
+    "screen_resolution.cc",
+    "switches.cc",
+    "username.cc",
+  ]
+
+  public_deps = [ "//remoting/base:logging" ]
+
+  deps = [
+    "//base",
+    "//remoting/base",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
+# The host/base portions of the remoting unit tests.
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "screen_resolution_unittest.cc" ]
+
+  configs += [ "//remoting/build/config:version" ]
+
+  deps = [
+    ":base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}

@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 #define CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
@@ -17,6 +16,10 @@
 class TestVersionUpdater : public VersionUpdater {
  public:
   TestVersionUpdater();
+
+  TestVersionUpdater(const TestVersionUpdater&) = delete;
+  TestVersionUpdater& operator=(const TestVersionUpdater&) = delete;
+
   ~TestVersionUpdater() override;
 
   void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
@@ -24,8 +27,8 @@ class TestVersionUpdater : public VersionUpdater {
   void SetReturnedStatus(Status status) { status_ = status; }
 
 // VersionUpdater implementation:
-#if defined(OS_MAC)
-  void PromoteUpdater() const override {}
+#if BUILDFLAG(IS_MAC)
+  void PromoteUpdater() override {}
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetChannel(const std::string& channel,
@@ -33,9 +36,14 @@ class TestVersionUpdater : public VersionUpdater {
   void GetChannel(bool get_current_channel, ChannelCallback callback) override {
   }
   void GetEolInfo(EolInfoCallback callback) override {}
+  void ToggleFeature(const std::string& feature, bool enable) override {}
+  void IsFeatureEnabled(const std::string& feature,
+                        IsFeatureEnabledCallback callback) override {}
+  bool IsManagedAutoUpdateEnabled() override;
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override {}
+  void ApplyDeferredUpdate() override {}
 #endif
 
  private:
@@ -46,8 +54,6 @@ class TestVersionUpdater : public VersionUpdater {
   std::string version_;
   int64_t update_size_ = 0;
   std::u16string message_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVersionUpdater);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_

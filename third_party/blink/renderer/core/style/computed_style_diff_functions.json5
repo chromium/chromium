@@ -35,7 +35,7 @@
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height", "max-height", "margin-top", "margin-left", "margin-right", "margin-bottom",
                   "left", "right", "top", "bottom", "padding-top",
                   "padding-left", "padding-right", "padding-bottom",
-                  "contain-intrinsic-size"],
+                  "contain-intrinsic-width", "contain-intrinsic-height"],
         methods_to_diff: [
           {
             method: "GetPosition()",
@@ -74,39 +74,33 @@
         fields_to_diff: ["padding-top", "padding-left", "padding-right",
                 "padding-bottom", "appearance", "-webkit-line-clamp",
                 "text-overflow", "shape-margin", "order", "-webkit-highlight",
-                "text-indent", "text-align-last", "TextIndentLine", "EffectiveZoom",
+                "text-indent", "text-align-last", "EffectiveZoom",
                 "word-break", "overflow-wrap", "-webkit-line-break",
-                "-webkit-text-security", "hyphens", "HyphenationLimitBefore",
-                "HyphenationLimitAfter", "-webkit-hyphenate-character",
+                "-webkit-text-security",
+                "hyphens", "hyphenate-character", "hyphenate-limit-chars",
                 "image-orientation", "-webkit-ruby-position",
-                "TextEmphasisMark", "-webkit-text-emphasis-position",
-                "TextEmphasisCustomMark", "text-justify", "text-orientation",
+                "TextEmphasisMark", "text-emphasis-position",
+                "TextEmphasisCustomMark", "text-orientation",
                 "text-combine-upright", "tab-size", "text-size-adjust",
                 "list-style-image", "line-height-step",
                 "-webkit-text-stroke-width", "line-height",
                 "-webkit-border-horizontal-spacing",
                 "-webkit-border-vertical-spacing", "TextAutosizingMultiplier",
-                "NamedGridColumnLines", "NamedGridRowLines", "OrderedNamedGridColumnLines",
-                "OrderedNamedGridRowLines", "AutoRepeatNamedGridColumnLines",
-                "AutoRepeatNamedGridRowLines", "AutoRepeatOrderedNamedGridColumnLines",
-                "AutoRepeatOrderedNamedGridRowLines", "ImplicitNamedGridColumnLines",
-                "ImplicitNamedGridRowLines", "NamedGridArea", "grid-auto-rows",
-                "grid-template-rows", "grid-template-columns", "grid-auto-columns", "row-gap",
-                "NamedGridAreaRowCount", "NamedGridAreaColumnCount",
-                "GridAutoRepeatColumns", "GridAutoRepeatRows", "GridAutoRepeatColumnsInsertionPoint",
-                "GridAutoRepeatRowsInsertionPoint", "grid-auto-flow", "GridAutoRepeatColumnsType",
-                "GridAutoRepeatRowsType", "-webkit-box-flex",
-                "-webkit-box-ordinal-group", "flex-basis",
+                "ImplicitNamedGridColumnLines","ImplicitNamedGridRowLines", "NamedGridArea",
+                "grid-auto-rows", "grid-template-rows", "grid-template-columns",
+                "grid-auto-columns", "row-gap", "NamedGridAreaRowCount",
+                "NamedGridAreaColumnCount", "grid-auto-flow",
+                "-webkit-box-flex", "-webkit-box-ordinal-group", "flex-basis",
                 "flex-shrink", "flex-grow", "flex-direction", "flex-wrap", "-webkit-box-align",
-                "-webkit-box-pack", "-webkit-box-orient",
+                "-webkit-box-decoration-break", "-webkit-box-pack", "-webkit-box-orient",
                 "grid-row-start", "grid-row-end", "grid-column-start", "grid-column-end",
-                "column-gap", "column-width", "column-rule-style",
-                "column-rule-width", "column-rule-color", "-internal-visited-column-rule-color",
+                "column-gap", "column-width",
                 "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
                 "cx", "cy", "d", "rx", "ry", "x", "y", "r", "alignment-baseline", "vector-effect",
-                "BaselineShiftType", "baseline-shift", "dominant-baseline", "text-anchor",
+                "BaselineShiftType", "baseline-shift", "dominant-baseline",
+                "CssDominantBaseline", "text-anchor",
                 "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
-                "marker-end", "marker-mid", "marker-start",],
+                "marker-end", "marker-mid", "marker-start", "scrollbar-width", "object-view-box"],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
@@ -230,9 +224,12 @@
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
-                "justify-self", "contain", "contain-intrinsic-size", "aspect-ratio",
-                "overflow-clip-margin", "-internal-align-self-block", "orphans",
-                "widows"],
+                "justify-self", "contain", "contain-intrinsic-width",
+                "contain-intrinsic-height", "container-type",
+                "content-visibility", "aspect-ratio", "overflow-clip-margin",
+                "-internal-align-self-block", "orphans", "widows",
+                "scrollbar-gutter", "break-after", "break-before",
+                "break-inside", "anchor-name"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
@@ -242,18 +239,25 @@
             method: "GetPosition()",
             field_dependencies: ["position"]
           },
+          {
+            method: "SkipsContents()",
+            field_dependencies: ["content-visibility"]
+          },
         ]
     },
     {
         name: "DiffNeedsPaintInvalidation",
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
+                "column-rule-style", "column-rule-width", "column-rule-color",
+                "-internal-visited-column-rule-color",
                 "-webkit-user-drag", "object-fit", "object-position",
                 "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask", "mask-type",
                 "stop-color", "stop-opacity", "flood-color", "flood-opacity",
                 "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
                 "color-interpolation", "color-interpolation-filters", "paint-order",
                 "fill", "fill-opacity", "stroke", "stroke-opacity",
-                "-internal-visited-stroke", "stroke-dashoffset"],
+                "-internal-visited-stroke", "stroke-dashoffset", "ColorSchemeForced",
+                "anchor-scroll"],
         methods_to_diff: [
           {
             method: "Visibility()",
@@ -268,10 +272,6 @@
             field_dependencies: ["InsideLink"]
           },
           {
-            method: "InternalVisitedBackgroundColor()",
-            field_dependencies: ["-internal-visited-background-color"]
-          },
-          {
             method: "Resize()",
             field_dependencies: ["resize"]
           },
@@ -280,8 +280,12 @@
             field_dependencies: ["color-scheme"]
           },
           {
-            method: "AccentColor()",
-            field_dependencies: ["accent-color"]
+            method: "AccentColorResolved()",
+            field_dependencies: ["accent-color", "color"]
+          },
+          {
+            method: "AnchorScroll()",
+            field_dependencies: ["anchor-scroll"],
           }
         ],
         predicates_to_test: [
@@ -364,20 +368,30 @@
                      "transform-box"],
     },
     {
+        // Diff of the transform property only. See
+        // |UpdatePropertySpecificDifferencesOtherTransform|.
         name: "UpdatePropertySpecificDifferencesTransform",
-        fields_to_diff: ["transform", "translate", "rotate",
+        fields_to_diff: ["transform"],
+    },
+    {
+        // Diff of transform-related properties other than the transform itself.
+        // Because HasTransform() is checked below, this will also check for
+        // changes to the existence of the transform property.
+        name: "UpdatePropertySpecificDifferencesOtherTransform",
+        fields_to_diff: ["translate", "rotate",
                     "scale", "offset-path", "offset-rotate", "transform-origin",
                      "offset-position", "offset-anchor", "offset-distance",
                      "perspective", "perspective-origin", "transform-box"],
         methods_to_diff: [
           {
             // It's possible for the old and new style transform data to be equivalent
-            // while hasTransform() differs, as it checks a number of conditions aside
+            // while HasTransform() differs, as it checks a number of conditions aside
             // from just the matrix, including but not limited to animation state.
             method: "HasTransform()",
             field_dependencies: ["transform", "offset-position",
-                    "HasCurrentTransformAnimation", "translate", "rotate",
-                    "scale"]
+                    "HasCurrentTranslateAnimation", "HasCurrentRotateAnimation",
+                    "HasCurrentScaleAnimation", "HasCurrentTransformAnimation",
+                    "translate", "rotate", "scale"]
           },
         ]
     },
@@ -447,7 +461,7 @@
           },
           {
             method: "TextEmphasisColor()",
-            field_dependencies: ["-webkit-text-emphasis-color"]
+            field_dependencies: ["text-emphasis-color"]
           },
           {
             method: "InternalVisitedTextFillColor()",

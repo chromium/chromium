@@ -1,30 +1,35 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 
+#include <surface-augmenter-client-protocol.h>
+
 #include <cstdint>
 
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace {
 
-gfx::Rect AdjustSubsurfaceBounds(const gfx::Rect& bounds_px,
-                                 const gfx::Rect& parent_bounds_px,
-                                 float ui_scale,
-                                 int32_t parent_buffer_scale) {
-  // TODO(fangzhoug): Verify the correctness of using ui_scale here, and in
-  // other ozone wayland files.
-  // Currently, the subsurface tree is at most 1 depth, gpu already sees buffer
-  // bounds in the root_surface-local coordinates. So translation is not
-  // needed for now.
-  const auto bounds_dip = gfx::ScaleToRoundedRect(bounds_px, 1.0 / ui_scale);
-  return gfx::ScaleToRoundedRect(bounds_dip, ui_scale / parent_buffer_scale);
+// Returns DIP bounds of the subsurface relative to the parent surface.
+gfx::RectF AdjustSubsurfaceBounds(const gfx::RectF& bounds_px,
+                                  const gfx::RectF& parent_bounds_px,
+                                  float buffer_scale) {
+  const auto bounds_dip = gfx::ScaleRect(bounds_px, 1.0f / buffer_scale);
+  const auto parent_bounds_dip =
+      gfx::ScaleRect(parent_bounds_px, 1.0f / buffer_scale);
+  return wl::TranslateBoundsToParentCoordinatesF(bounds_dip, parent_bounds_dip);
 }
+
+const wl_fixed_t kMinusOne = wl_fixed_from_int(-1);
 
 }  // namespace
 
@@ -47,7 +52,7 @@ WaylandSubsurface::WaylandSubsurface(WaylandConnection* connection,
 WaylandSubsurface::~WaylandSubsurface() = default;
 
 gfx::AcceleratedWidget WaylandSubsurface::GetWidget() const {
-  return wayland_surface_.GetWidget();
+  return wayland_surface_.get_widget();
 }
 
 void WaylandSubsurface::Show() {
@@ -59,32 +64,15 @@ void WaylandSubsurface::Hide() {
   if (!subsurface_)
     return;
 
+  // Remove it from the stack.
+  RemoveFromList();
+
+  augmented_subsurface_.reset();
   subsurface_.reset();
-  connection_->buffer_manager_host()->ResetSurfaceContents(wayland_surface());
 }
 
 bool WaylandSubsurface::IsVisible() const {
   return !!subsurface_;
-}
-
-void WaylandSubsurface::UpdateOpaqueRegion() {
-  gfx::Rect region_px =
-      enable_blend_ ? gfx::Rect() : gfx::Rect(bounds_px_.size());
-  wayland_surface()->SetOpaqueRegion(region_px);
-}
-
-void WaylandSubsurface::SetBounds(const gfx::Rect& bounds) {
-  if (bounds_px_ == bounds)
-    return;
-
-  bounds_px_ = bounds;
-  if (IsVisible()) {
-    // Translate location from screen to surface coordinates.
-    auto bounds_px =
-        AdjustSubsurfaceBounds(bounds_px_, parent_->GetBounds(),
-                               parent_->ui_scale(), parent_->buffer_scale());
-    wl_subsurface_set_position(subsurface_.get(), bounds_px.x(), bounds_px.y());
-  }
 }
 
 void WaylandSubsurface::CreateSubsurface() {
@@ -93,58 +81,102 @@ void WaylandSubsurface::CreateSubsurface() {
   wl_subcompositor* subcompositor = connection_->subcompositor();
   DCHECK(subcompositor);
   subsurface_ = wayland_surface()->CreateSubsurface(parent_->root_surface());
+  position_dip_ = {0, 0};
 
-  // Chromium positions quads in display::Display coordinates in physical
-  // pixels, but Wayland requires them to be in local surface coordinates a.k.a
-  // relative to parent window.
-  auto bounds_px =
-      AdjustSubsurfaceBounds(bounds_px_, parent_->GetBounds(),
-                             parent_->ui_scale(), parent_->buffer_scale());
+  // A new sub-surface is initially added as the top-most in the stack.
+  parent_->subsurface_stack_committed()->Append(this);
 
   DCHECK(subsurface_);
-  wl_subsurface_set_position(subsurface_.get(), bounds_px.x(), bounds_px.y());
   wl_subsurface_set_sync(subsurface_.get());
 
   // Subsurfaces don't need to trap input events. Its display rect is fully
   // contained in |parent_|'s. Setting input_region to empty allows |parent_| to
   // dispatch all of the input to platform window.
-  wl::Object<wl_region> region(
-      wl_compositor_create_region(connection_->compositor()));
-  wl_region_add(region.get(), 0, 0, 0, 0);
-  wl_surface_set_input_region(surface(), region.get());
+  gfx::Rect region_px;
+  wayland_surface()->set_input_region(&region_px);
 
-  connection_->buffer_manager_host()->SetSurfaceConfigured(wayland_surface());
+  if (connection_->surface_augmenter()) {
+    // |augmented_subsurface| might be null if the protocol's version is not
+    // high enough.
+    augmented_subsurface_ =
+        connection_->surface_augmenter()->CreateAugmentedSubSurface(
+            subsurface_.get());
+  }
 }
 
 void WaylandSubsurface::ConfigureAndShowSurface(
-    gfx::OverlayTransform transform,
-    const gfx::RectF& src_rect,
-    const gfx::Rect& bounds_rect,
-    bool enable_blend,
-    const WaylandSurface* reference_below,
-    const WaylandSurface* reference_above) {
-  wayland_surface()->SetBufferTransform(transform);
-  wayland_surface()->SetBufferScale(parent_->buffer_scale(), false);
-
-  auto old_bounds = bounds_px_;
-  SetBounds(bounds_rect);
-
-  if (old_bounds != bounds_px_ || enable_blend_ != enable_blend) {
-    enable_blend_ = enable_blend;
-    UpdateOpaqueRegion();
-  }
-
+    const gfx::RectF& bounds_px,
+    const gfx::RectF& parent_bounds_px,
+    const absl::optional<gfx::Rect>& clip_rect_px,
+    float buffer_scale,
+    WaylandSubsurface* new_below,
+    WaylandSubsurface* new_above) {
   Show();
 
-  DCHECK(!reference_above || !reference_below);
-  if (reference_below) {
-    wl_subsurface_place_above(subsurface_.get(), reference_below->surface());
-  } else if (reference_above) {
-    wl_subsurface_place_below(subsurface_.get(), reference_above->surface());
+  // Chromium positions quads in display::Display coordinates in physical
+  // pixels, but Wayland requires them to be in local surface coordinates a.k.a
+  // relative to parent window.
+  auto bounds_dip_in_parent_surface = AdjustSubsurfaceBounds(
+      bounds_px, parent_bounds_px,
+      connection_->surface_submission_in_pixel_coordinates() ? 1.f
+                                                             : buffer_scale);
+  if (bounds_dip_in_parent_surface.origin() != position_dip_) {
+    position_dip_ = bounds_dip_in_parent_surface.origin();
+    if (augmented_subsurface_) {
+      DCHECK(
+          connection_->surface_augmenter()->SupportsSubpixelAccuratePosition());
+      augmented_sub_surface_set_position(
+          augmented_subsurface_.get(),
+          wl_fixed_from_double(bounds_dip_in_parent_surface.x()),
+          wl_fixed_from_double(bounds_dip_in_parent_surface.y()));
+    } else {
+      gfx::Rect enclosed_rect_in_parent =
+          gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
+      wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
+                                 enclosed_rect_in_parent.y());
+    }
   }
 
-  wayland_surface()->SetViewportSource(src_rect);
-  wayland_surface()->SetViewportDestination(bounds_rect.size());
+  if (augmented_subsurface_ &&
+      connection_->surface_augmenter()->SupportsClipRect()) {
+    absl::optional<gfx::RectF> clip_dip_in_parent_surface;
+    if (clip_rect_px) {
+      clip_dip_in_parent_surface = AdjustSubsurfaceBounds(
+          gfx::RectF(*clip_rect_px), parent_bounds_px,
+          connection_->surface_submission_in_pixel_coordinates()
+              ? 1.f
+              : buffer_scale);
+    }
+    if (clip_dip_in_parent_surface != clip_dip_) {
+      clip_dip_ = clip_dip_in_parent_surface;
+      if (clip_dip_) {
+        augmented_sub_surface_set_clip_rect(
+            augmented_subsurface_.get(), wl_fixed_from_double(clip_dip_->x()),
+            wl_fixed_from_double(clip_dip_->y()),
+            wl_fixed_from_double(clip_dip_->width()),
+            wl_fixed_from_double(clip_dip_->height()));
+      } else {
+        // Call set_clip_rect with all values -1 to clear the clip rect.
+        augmented_sub_surface_set_clip_rect(augmented_subsurface_.get(),
+                                            kMinusOne, kMinusOne, kMinusOne,
+                                            kMinusOne);
+      }
+    }
+  }
+
+  // Setup the stacking order of this subsurface.
+  DCHECK(!new_above || !new_below);
+  if (new_below && new_below != previous()) {
+    DCHECK_EQ(parent_, new_below->parent_);
+    RemoveFromList();
+    InsertAfter(new_below);
+    wl_subsurface_place_above(subsurface_.get(), new_below->surface());
+  } else if (new_above && new_above != next()) {
+    DCHECK_EQ(parent_, new_above->parent_);
+    RemoveFromList();
+    InsertBefore(new_above);
+    wl_subsurface_place_below(subsurface_.get(), new_above->surface());
+  }
 }
 
 }  // namespace ui

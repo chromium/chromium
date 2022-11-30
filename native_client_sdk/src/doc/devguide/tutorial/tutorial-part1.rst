@@ -298,4 +298,4 @@ Next steps
   see what libraries have been ported for use with Native Client. If you port an
   open-source library for your own use, we recommend adding it to webports
   (see `How to check code into webports
-  <https://chromium.googlesource.com/webports/+/master/CONTRIBUTING.md>`_).
+  <https://chromium.googlesource.com/webports/+/main/CONTRIBUTING.md>`_).

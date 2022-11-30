@@ -1,17 +1,17 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGTableRow TR",
-      "bounds": [74, 21],
-      "backgroundColor": "#008000",
+      "position": [-1, -1],
+      "bounds": [75, 22],
       "invalidations": [
-        [0, 0, 37, 21]
+        [0, 0, 38, 22]
       ],
       "transform": 1
     }

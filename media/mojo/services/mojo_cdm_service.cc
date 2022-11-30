@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/cdm_context.h"
@@ -49,12 +49,11 @@ MojoCdmService::~MojoCdmService() {
 }
 
 void MojoCdmService::Initialize(CdmFactory* cdm_factory,
-                                const std::string& key_system,
                                 const CdmConfig& cdm_config,
                                 InitializeCB init_cb) {
   auto weak_this = weak_factory_.GetWeakPtr();
   cdm_factory->Create(
-      key_system, cdm_config,
+      cdm_config,
       base::BindRepeating(&MojoCdmService::OnSessionMessage, weak_this),
       base::BindRepeating(&MojoCdmService::OnSessionClosed, weak_this),
       base::BindRepeating(&MojoCdmService::OnSessionKeysChange, weak_this),
@@ -154,7 +153,7 @@ void MojoCdmService::OnCdmCreated(
   cdm_ = cdm;
   cdm_id_ = context_->RegisterCdm(this);
   DVLOG(1) << __func__ << ": CDM successfully registered with ID "
-           << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
+           << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id_));
 
   auto mojo_cdm_context = mojom::CdmContext::New();
   mojo_cdm_context->cdm_id = cdm_id();
@@ -182,10 +181,10 @@ void MojoCdmService::OnCdmCreated(
       mojo_cdm_context->decryptor = std::move(decryptor_remote);
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     mojo_cdm_context->requires_media_foundation_renderer =
         cdm_context->RequiresMediaFoundationRenderer();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   std::move(init_cb).Run(std::move(mojo_cdm_context), "");
@@ -220,10 +219,11 @@ void MojoCdmService::OnSessionExpirationUpdate(const std::string& session_id,
   }
 }
 
-void MojoCdmService::OnSessionClosed(const std::string& session_id) {
+void MojoCdmService::OnSessionClosed(const std::string& session_id,
+                                     CdmSessionClosedReason reason) {
   DVLOG(2) << __func__;
   if (client_) {
-    client_->OnSessionClosed(session_id);
+    client_->OnSessionClosed(session_id, reason);
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,32 @@
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password;
+
+// Called when user finished adding a new password credential.
+- (void)passwordDetailsViewController:
+            (PasswordDetailsTableViewController*)viewController
+                didAddPasswordDetails:(NSString*)username
+                             password:(NSString*)password;
+
+// Called on every keystroke to check whether duplicates exist before adding a
+// new credential.
+- (void)checkForDuplicates:(NSString*)username;
+
+// Called when an existing credential is to be displayed in the add credential
+// flow.
+- (void)showExistingCredential:(NSString*)username;
+
+// Called when the user cancels the add password view.
+- (void)didCancelAddPasswordDetails;
+
+// Called every time the text in the website field is updated.
+- (void)setWebsiteURL:(NSString*)website;
+
+// Returns whether the website URL has http(s) scheme and is valid or not.
+- (BOOL)isURLValid;
+
+// Called to check if the url is missing the top-level domain.
+- (BOOL)isTLDMissing;
 
 // Checks if the username is reused for the same domain.
 - (BOOL)isUsernameReused:(NSString*)newUsername;

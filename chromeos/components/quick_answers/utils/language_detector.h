@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,18 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 // Utility class for language detection.
 class LanguageDetector {
  public:
   using DetectLanguageCallback =
-      base::OnceCallback<void(base::Optional<std::string>)>;
+      base::OnceCallback<void(absl::optional<std::string>)>;
 
   explicit LanguageDetector(
       chromeos::machine_learning::mojom::TextClassifier* text_classifier);
@@ -42,19 +42,21 @@ class LanguageDetector {
   void FindLanguagesForSelectedTextCallback(
       const std::string& surrounding_text,
       DetectLanguageCallback callback,
-      std::vector<machine_learning::mojom::TextLanguagePtr> languages);
+      std::vector<chromeos::machine_learning::mojom::TextLanguagePtr>
+          languages);
 
   void FindLanguagesForSurroundingTextCallback(
       DetectLanguageCallback callback,
-      std::vector<machine_learning::mojom::TextLanguagePtr> languages);
+      std::vector<chromeos::machine_learning::mojom::TextLanguagePtr>
+          languages);
 
   // Owned by IntentGenerator.
-  chromeos::machine_learning::mojom::TextClassifier* text_classifier_ = nullptr;
+  raw_ptr<chromeos::machine_learning::mojom::TextClassifier> text_classifier_ =
+      nullptr;
 
   base::WeakPtrFactory<LanguageDetector> weak_factory_{this};
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_LANGUAGE_DETECTOR_H_

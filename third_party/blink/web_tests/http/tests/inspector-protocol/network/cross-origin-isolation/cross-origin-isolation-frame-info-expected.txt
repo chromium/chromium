@@ -1,6 +1,6 @@
 Verifies that we can successfully retrieve frame info from frame tree.
-{
-    adFrameType : none
+Frame: {
+    adFrameStatus : <object>
     crossOriginIsolatedContextType : Isolated
     domainAndRegistry : oopif.test
     gatedAPIFeatures : [

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_MARK_OPERATION_DONE_TASK_H_
 
 #include <string>
-#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -38,6 +38,10 @@ class MarkOperationDoneTask : public Task {
   MarkOperationDoneTask(PrefetchDispatcher* prefetch_dispatcher,
                         PrefetchStore* prefetch_store,
                         const std::string& operation_name);
+
+  MarkOperationDoneTask(const MarkOperationDoneTask&) = delete;
+  MarkOperationDoneTask& operator=(const MarkOperationDoneTask&) = delete;
+
   ~MarkOperationDoneTask() override;
 
   StoreResult store_result() const { return std::get<0>(result_); }
@@ -52,14 +56,12 @@ class MarkOperationDoneTask : public Task {
   void MarkOperationDone(int updated_entry_count);
   void Done(TaskResult result);
 
-  PrefetchDispatcher* prefetch_dispatcher_;
-  PrefetchStore* prefetch_store_;
+  raw_ptr<PrefetchDispatcher> prefetch_dispatcher_;
+  raw_ptr<PrefetchStore> prefetch_store_;
   std::string operation_name_;
   TaskResult result_ = std::make_pair(StoreResult::UNFINISHED, -1);
 
   base::WeakPtrFactory<MarkOperationDoneTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MarkOperationDoneTask);
 };
 
 }  // namespace offline_pages

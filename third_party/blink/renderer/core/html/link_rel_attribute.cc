@@ -31,7 +31,6 @@
 
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
 
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -45,7 +44,6 @@ LinkRelAttribute::LinkRelAttribute()
       is_link_preload_(false),
       is_link_prerender_(false),
       is_link_next_(false),
-      is_import_(false),
       is_manifest_(false),
       is_module_preload_(false),
       is_service_worker_(false),
@@ -54,7 +52,7 @@ LinkRelAttribute::LinkRelAttribute()
       is_web_bundle_(false) {}
 
 LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
-  if (rel.IsEmpty())
+  if (rel.empty())
     return;
   String rel_copy = rel;
   rel_copy.Replace('\n', ' ');
@@ -62,11 +60,7 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
   rel_copy.Split(' ', list);
   for (const String& link_type : list) {
     if (EqualIgnoringASCIICase(link_type, "stylesheet")) {
-      if (!is_import_)
-        is_style_sheet_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "import")) {
-      if (!is_style_sheet_)
-        is_import_ = true;
+      is_style_sheet_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "alternate")) {
       is_alternate_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "icon")) {

@@ -1,97 +1,216 @@
 <style>
   :host {
+    --emoji-picker-search-margins: 14px;
+    --emoji-picker-search-height: 40px;
+    --emoji-picker-top-bar-bottom-padding: 8px;
+    --v2-emoji-picker-top-bar-bottom-padding: 12px;
+    --v2-search-content-width:
+      calc(var(--v2-emoji-picker-width) - 2*var(--emoji-picker-side-padding));
     display: flex;
     flex-direction: column;
-    max-height: 100%;
-    width: 100%;
-  }
-  cr-search-field {
-    --cr-search-field-clear-icon-margin-end: 14px;
-    --cr-search-field-clear-icon-margin-end:14px;
-    --cr-search-field-clear-icon-size:20px;
-    --cr-search-field-input-border-bottom: none;
-    --cr-search-field-input-padding-bottom: 0;
-    --cr-search-field-clear-icon-size:20px;
-    --cr-search-field-input-border-bottom: none;
-    --cr-search-field-input-padding-bottom: 0;
-    --cr-search-field-input-padding-top: 0;
-    --cr-search-field-input-padding-top: 0;
-    --cr-search-field-input-width: calc(100% - 24px);
-    --cr-search-field-search-icon-padding: 0px 8px 0px 14px;
-    --cr-search-field-search-icon-size: 20px;
-    --cr-search-field-underline-display: none;
-    align-items: center;
-    background-color: var(--cr-separator-color);
-    border-radius: 41px;
-    height: 40px;
-    line-height: 40px;
-    margin-bottom: 8px;
-  }
-
-  cr-search-field::part(searchIcon) {
-    height: 20px;
-    padding: 0 8px 0 14px;
-    width: 20px;
-  }
-
-  #container {
-    flex-grow: 1;
     overflow-y: scroll;
   }
 
-  .result {
-    display: flex;
+  /* TODO(b/234673508): Remove the styles after removing emoji-buttons.
+   * Until then, this one needs to be kept inline with the one defined in
+   * emoji-group.
+   */
+  :host(:not([v2-enabled])) emoji-button {
+    --emoji-hover-background: transparent;
+    margin-inline-end: 12px;
   }
+
+  cr-search-field {
+    --cr-search-field-clear-icon-fill: var(--cros-icon-color-primary);
+    --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
+    --cr-search-field-clear-icon-size: 20px;
+    --cr-search-field-input-border-bottom: none;
+    --cr-search-field-input-min-height: var(--emoji-picker-search-height);
+    --cr-search-field-input-padding-bottom: 0;
+    --cr-search-field-input-padding-start: 8px;
+    --cr-search-field-input-padding-top: 0;
+    --cr-search-field-input-width: 100%;
+    --cr-search-field-placeholder-color: var(--cros-text-color-disabled);
+    --cr-search-field-search-icon-display: none;
+    --cr-search-field-search-icon-fill: var(--cros-text-color-secondary);
+    --cr-search-field-search-icon-inline-display: block;
+    --cr-search-field-search-icon-inline-margin-start:
+      var(--emoji-picker-search-margins);
+    --cr-search-field-underline-display: none;
+    align-items: center;
+    background-color: var(--cros-toolbar-search-bg-color);
+    border: 2px solid transparent;
+    border-radius: 40px;
+    height: var(--emoji-picker-search-height);
+  }
+
+  cr-search-field:focus-within {
+    border: 2px solid var(--cros-focus-ring-color);
+  }
+
+  :host([v2-enabled]) cr-search-field {
+    font-size: 13px;
+  }
+
+  .result {
+    border: 2px solid transparent;
+    border-radius: 40px;
+    display: flex;
+    margin-inline-end: var(--emoji-picker-search-margins);
+  }
+
   .result:focus,
   .result:active {
-    border-color: var(--cr-toggle-color);
-    border-radius: 4px;
+    border-color: var(--cros-focus-ring-color);
     border-style: solid;
     border-width: 2px;
     outline-style: none;
   }
 
-  emoji-button {
-    margin-inline-end: 12px;
+  .result:hover {
+    background-color: var(--cros-ripple-color);
   }
 
   .name {
     color: var(--cr-primary-text-color);
     font-size: 13px;
     line-height: var(--emoji-size);
+    user-select: none;
   }
 
   .sr-only {
     color: transparent;
     position: absolute;
+    user-select: none;
     z-index: -2;
+  }
+
+  .no-result {
+    color: var(--cros-button-label-color-secondary-disabled);
+    font-family: 'Google Sans';
+    left: 50%;
+    line-height: 24px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #search-shadow {
+    background-color: var(--cros-bg-color);
+    margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
+    margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
+    padding-bottom: var(--emoji-picker-top-bar-bottom-padding);
+    padding-inline-end: var(--emoji-picker-side-padding);
+    padding-inline-start: var(--emoji-picker-side-padding);
+    position: sticky;
+    top:0;
+    width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
+  }
+
+  :host([v2-enabled]) #search-shadow {
+    box-shadow: var(--cr-elevation-2);
+    display: flex;
+    margin-bottom: 7px;
+    padding-bottom: var(--v2-emoji-picker-top-bar-bottom-padding);
+    width: var(--v2-search-content-width);
+  }
+
+  #results {
+    flex-grow: 1;
+    margin-inline-end: var(--emoji-picker-side-padding);
+    overflow-y: scroll;
+    padding-bottom: var(--emoji-picker-bottom-padding);
+  }
+
+  :host([v2-enabled]) #results {
+    padding: 13px 2px 2px 2px;
+  }
+
+  #no-emoji-image {
+    display: block;
+  }
+
+  #category-button-group {
+    align-items: center;
+    display: flex;
+    /*
+     * TODO(b/213141035): Change to space-between when symbol category is
+     * re-introduced.
+     */
+    justify-content: space-evenly;
+    margin-inline-start: 20px;
+    width: 120px;
+  }
+
+  :host([v2-enabled]) #search {
+    width: 240px;
+  }
+
+  /* TODO(b/233133645): emoji-groups margins need to match the design. */
+  #search-results {
+    width: var(--v2-search-content-width);
   }
 </style>
 
-<cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
+<div id="search-shadow">
+  <cr-search-field id="search" label="Search Emojis" autofocus="true">
+  </cr-search-field>
+  <template is="dom-if" if="[[v2Enabled]]">
+    <div id="category-button-group">
+      <template is="dom-repeat" items="[[categoryMetadata]]">
+          <emoji-category-button
+            active="[[item.active]]"
+            name="[[item.name]]"
+            icon="[[item.icon]]"
+            search-active="[[searchNotEmpty(searchResults)]]">
+          </emoji-category-button>
+      </template>
+    </div>
+  </template>
+</div>
 
-<div id="container">
-
-  <template is="dom-if" if="[[search]]">
-
+<template is="dom-if" if="[[searchNotEmpty(searchResults)]]">
+  <div id="results" on-scroll="onSearchScroll">
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results
     </div>
-    <template is="dom-repeat" items="[[results]]">
-      <div class="result" tabindex="0" on-click="onResultClick">
-        <emoji-button tabindex="-1"
-            emoji="[[item.item.base.string]]"
-            variants="[[item.item.alternates]]">
-        </emoji-button>
-        <div class="name">[[item.item.base.name]]</div>
+    <!-- TODO(b/234673356): Merge this block into the V2 one. -->
+    <template is="dom-if"
+        if="[[shouldShowV1Results(searchResults, v2Enabled)]]">
+      <template is="dom-repeat" items="[[searchResults.0.emoji]]">
+        <div class="result" tabindex="0" on-click="onResultClick">
+          <emoji-button tabindex="-1"
+              emoji="[[item.base.string]]"
+              variants="[[item.alternates]]">
+          </emoji-button>
+          <div class="name">[[item.base.name]]</div>
+        </div>
+      </template>
+    </template>
+    <template is="dom-if" if="[[v2Enabled]]">
+      <div id="search-results">
+        <template is="dom-repeat" items="[[searchResults]]">
+          <emoji-group data="[[item.emoji]]" category$="[[item.category]]">
+          </emoji-group>
+        </template>
       </div>
     </template>
-    <template is="dom-if" if="[[!results.length]]">
+    <template is="dom-if"
+      if="[[!searchResults.length]]">
       <div class="no-result">
-        No results
+        <picture>
+          <source srcset="no_results_dark.svg"
+              media="(prefers-color-scheme: dark)">
+          <img src="no_results.svg" id = "no-emoji-image">
+        </picture>
+        <template is="dom-if" if="[[!v2Enabled]]">
+          No emoji found
+        </template>
+        <template is="dom-if" if="[[v2Enabled]]">
+          No result found
+        </template>
       </div>
     </template>
-
-  </template>
-
-</div>
+  </div>
+</template>

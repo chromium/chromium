@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 52: Uncaught Error: This should *NOT* be caught!
+CONSOLE ERROR: Uncaught Error: This should *NOT* be caught!
 Ensure that aborted VERSION_CHANGE transactions are completely rolled back
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

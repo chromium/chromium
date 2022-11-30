@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/payments/core/features.h"
 #include "url/gurl.h"
@@ -30,7 +28,7 @@ bool CanMakePaymentQuery::CanQuery(
   const auto& it = queries_.find(id);
   if (it == queries_.end()) {
     auto timer = std::make_unique<base::OneShotTimer>();
-    timer->Start(FROM_HERE, base::TimeDelta::FromMinutes(30),
+    timer->Start(FROM_HERE, base::Minutes(30),
                  base::BindOnce(&CanMakePaymentQuery::ExpireQuotaForFrameOrigin,
                                 weak_ptr_factory_.GetWeakPtr(), id));
     timers_.insert(std::make_pair(id, std::move(timer)));

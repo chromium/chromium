@@ -1,0 +1,15 @@
+import("//build/config/python.gni")
+
+testonly = true
+
+python_library("crx_smoke_tests_lib") {
+  pydeps_file =
+      "//android_webview/test/components/run_webview_component_smoketest.pydeps"
+  data = [
+    "//build/android/",
+    "//tools/android/",
+    "//android_webview/test/components/",
+    "//tools/perf/chrome_telemetry_build/binary_dependencies.json",
+  ]
+  data_deps = [ "//third_party/catapult:telemetry_chrome_test_support" ]
+}

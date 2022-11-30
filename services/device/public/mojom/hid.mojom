@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -347,6 +347,10 @@ struct HidDeviceInfo {
   [MinVersion=1] array<uint8>? protected_input_report_ids@14;
   [MinVersion=1] array<uint8>? protected_output_report_ids@15;
   [MinVersion=1] array<uint8>? protected_feature_report_ids@16;
+
+  // True if the device is excluded from access by the HID blocklist. It is
+  // based solely on |vendor_id| and |product_id| information.
+  [MinVersion=3] bool is_excluded_by_blocklist@17;
 };
 
 // A client interface for receiving a notification when HID devices are
@@ -359,6 +363,13 @@ interface HidManagerClient {
   // Notifies the client that a device is being removed; called before
   // removing the device from HidService.
   DeviceRemoved@1(HidDeviceInfo device_info);
+
+  // Notifies the client that the device info has been changed.
+  // * New collections may be added.
+  // * The maximum report sizes may be increased.
+  // * The protected report ID lists may have additional report IDs added.
+  // Other device information is not modified.
+  [MinVersion=2] DeviceChanged@2(HidDeviceInfo device_info);
 };
 
 // Provides an interface for enumerating available HID devices, registering for
@@ -388,10 +399,16 @@ interface HidManager {
   //
   // If |allow_protected_reports| is true, this connection is exempted from
   // the HID blocklist so that protected reports may be sent and received.
+  //
+  // If |allow_fido_reports| is true, this connection is allowed to send and
+  // receive protected reports contained within top-level collections with the
+  // kPageFido usage page even if those reports would be blocked by the HID
+  // blocklist.
   Connect@2(string device_guid,
           pending_remote<HidConnectionClient>? connection_client,
           pending_remote<HidConnectionWatcher>? watcher,
-          [MinVersion=1] bool allow_protected_reports)
+          [MinVersion=1] bool allow_protected_reports,
+          [MinVersion=2] bool allow_fido_reports)
       => (pending_remote<HidConnection>? connection);
 
   // Binds a HidManager endpoint.

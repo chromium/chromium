@@ -1,0 +1,23 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++LINK focusable label='Header 1 List element 1 List element 2 List element 3' actions='{DEFAULT}'
+++++++++UNKNOWN label='Header 1' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Header 1'
+++++++++++++UNKNOWN label='Header 1'
+++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++UNKNOWN label='%E2%80%A2 ' actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++STATIC_TEXT label='List element 1'
+++++++++++++++UNKNOWN label='List element 1'
+++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++UNKNOWN label='%E2%80%A2 ' actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++STATIC_TEXT label='List element 2'
+++++++++++++++UNKNOWN label='List element 2'
+++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++UNKNOWN label='%E2%80%A2 ' actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++STATIC_TEXT label='List element 3'
+++++++++++++++UNKNOWN label='List element 3'

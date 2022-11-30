@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_RENDERER_ACTIVITY_FILTERING_WEBSOCKET_HANDSHAKE_THROTTLE_H_
 #define CHROMECAST_RENDERER_ACTIVITY_FILTERING_WEBSOCKET_HANDSHAKE_THROTTLE_H_
 
-#include "base/macros.h"
 #include "chromecast/common/activity_url_filter.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
@@ -25,6 +24,12 @@ class ActivityFilteringWebSocketHandshakeThrottle
  public:
   explicit ActivityFilteringWebSocketHandshakeThrottle(
       ActivityUrlFilter* filter);
+
+  ActivityFilteringWebSocketHandshakeThrottle(
+      const ActivityFilteringWebSocketHandshakeThrottle&) = delete;
+  ActivityFilteringWebSocketHandshakeThrottle& operator=(
+      const ActivityFilteringWebSocketHandshakeThrottle&) = delete;
+
   ~ActivityFilteringWebSocketHandshakeThrottle() override;
 
   // blink::WebSocketHandshakeThrottle implementation:
@@ -34,8 +39,6 @@ class ActivityFilteringWebSocketHandshakeThrottle
 
  private:
   ActivityUrlFilter* const url_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityFilteringWebSocketHandshakeThrottle);
 };
 
 }  // namespace chromecast

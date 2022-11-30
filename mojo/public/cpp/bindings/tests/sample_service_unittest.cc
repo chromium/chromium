@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,7 +84,7 @@ FooPtr MakeFoo() {
                   std::move(extra_bars), std::move(data),
                   std::move(pipe.handle1), std::move(input_streams),
                   std::move(output_streams), std::move(array_of_array_of_bools),
-                  base::nullopt, base::nullopt);
+                  absl::nullopt, absl::nullopt);
 }
 
 // Check that the given |Foo| is identical to the one made by |MakeFoo()|.
@@ -201,7 +201,7 @@ void Print(int depth, const char* name, const std::vector<T>& array) {
 template <typename T>
 void Print(int depth,
            const char* name,
-           const base::Optional<std::vector<T>>& array) {
+           const absl::optional<std::vector<T>>& array) {
   if (array)
     Print(depth, name, *array);
   else

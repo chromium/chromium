@@ -1,99 +1,32 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/tiles/image_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/simple_thread.h"
 #include "base/threading/thread_checker_impl.h"
+#include "base/threading/thread_restrictions.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/test/cc_test_suite.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_decode_cache.h"
 #include "cc/test/test_paint_worklet_input.h"
 #include "cc/tiles/image_decode_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 namespace {
-
-class TestWorkerThread : public base::SimpleThread {
- public:
-  TestWorkerThread()
-      : base::SimpleThread("test_worker_thread"), condition_(&lock_) {}
-
-  void Run() override {
-    for (;;) {
-      base::OnceClosure task;
-      {
-        base::AutoLock hold(lock_);
-        if (shutdown_)
-          break;
-
-        if (queue_.empty()) {
-          condition_.Wait();
-          continue;
-        }
-
-        task = std::move(queue_.front());
-        queue_.erase(queue_.begin());
-      }
-      std::move(task).Run();
-    }
-  }
-
-  void Shutdown() {
-    base::AutoLock hold(lock_);
-    shutdown_ = true;
-    condition_.Signal();
-  }
-
-  void PostTask(base::OnceClosure task) {
-    base::AutoLock hold(lock_);
-    queue_.push_back(std::move(task));
-    condition_.Signal();
-  }
-
- private:
-  base::Lock lock_;
-  base::ConditionVariable condition_;
-  std::vector<base::OnceClosure> queue_;
-  bool shutdown_ = false;
-};
-
-class WorkerTaskRunner : public base::SequencedTaskRunner {
- public:
-  WorkerTaskRunner() { thread_.Start(); }
-
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    return PostDelayedTask(from_here, std::move(task), delay);
-  }
-
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    thread_.PostTask(std::move(task));
-    return true;
-  }
-
-  bool RunsTasksInCurrentSequence() const override { return false; }
-
- protected:
-  ~WorkerTaskRunner() override {
-    thread_.Shutdown();
-    thread_.Join();
-  }
-
-  TestWorkerThread thread_;
-};
 
 // Image decode cache with introspection!
 class TestableCache : public StubDecodeCache {
@@ -206,6 +139,7 @@ class BlockingTask : public TileTask {
     EXPECT_FALSE(HasCompleted());
     EXPECT_FALSE(thread_checker_.CalledOnValidThread());
     base::AutoLock hold(lock_);
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
     while (!can_run_)
       run_cv_.Wait();
     has_run_ = true;
@@ -241,14 +175,14 @@ int kDefaultTimeoutSeconds = 10;
 DrawImage CreateDiscardableDrawImage(gfx::Size size) {
   return DrawImage(CreateDiscardablePaintImage(size), false,
                    SkIRect::MakeWH(size.width(), size.height()),
-                   kNone_SkFilterQuality, SkMatrix::I(),
-                   PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
+                   PaintFlags::FilterQuality::kNone, SkM44(),
+                   PaintImage::kDefaultFrameIndex, TargetColorParams());
 }
 
 DrawImage CreateBitmapDrawImage(gfx::Size size) {
   return DrawImage(CreateBitmapImage(size), false,
                    SkIRect::MakeWH(size.width(), size.height()),
-                   kNone_SkFilterQuality, SkMatrix::I(),
+                   PaintFlags::FilterQuality::kNone, SkM44(),
                    PaintImage::kDefaultFrameIndex);
 }
 
@@ -260,16 +194,16 @@ class ImageControllerTest : public testing::Test {
   ~ImageControllerTest() override = default;
 
   void SetUp() override {
-    worker_task_runner_ = base::MakeRefCounted<WorkerTaskRunner>();
-    controller_.reset(
-        new ImageController(task_runner_.get(), worker_task_runner_));
+    controller_ = std::make_unique<ImageController>(
+        task_runner_,
+        base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits()));
     cache_ = TestableCache();
     controller_->SetImageDecodeCache(&cache_);
   }
 
   void TearDown() override {
     controller_.reset();
-    worker_task_runner_ = nullptr;
+    CCTestSuite::RunUntilIdle();
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
 
@@ -286,12 +220,11 @@ class ImageControllerTest : public testing::Test {
 
   // Convenience method to run the run loop with a timeout.
   void RunOrTimeout(base::RunLoop* run_loop) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ImageControllerTest::Timeout,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Unretained(run_loop)),
-        base::TimeDelta::FromSeconds(kDefaultTimeoutSeconds));
+    task_runner_->PostDelayedTask(FROM_HERE,
+                                  base::BindOnce(&ImageControllerTest::Timeout,
+                                                 weak_ptr_factory_.GetWeakPtr(),
+                                                 base::Unretained(run_loop)),
+                                  base::Seconds(kDefaultTimeoutSeconds));
     run_loop->Run();
   }
 
@@ -317,7 +250,6 @@ class ImageControllerTest : public testing::Test {
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  scoped_refptr<WorkerTaskRunner> worker_task_runner_;
   TestableCache cache_;
   std::unique_ptr<ImageController> controller_;
   DrawImage image_;
@@ -392,15 +324,15 @@ TEST_F(ImageControllerTest, QueueImageDecodeMultipleImages) {
   DecodeClient decode_client1;
   ImageController::ImageDecodeRequestId expected_id1 =
       controller()->QueueImageDecode(
-          image(), base::BindOnce(&DecodeClient::Callback,
-                                  base::Unretained(&decode_client1),
-                                  base::DoNothing::Once()));
+          image(),
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client1), base::DoNothing()));
   DecodeClient decode_client2;
   ImageController::ImageDecodeRequestId expected_id2 =
       controller()->QueueImageDecode(
-          image(), base::BindOnce(&DecodeClient::Callback,
-                                  base::Unretained(&decode_client2),
-                                  base::DoNothing::Once()));
+          image(),
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client2), base::DoNothing()));
   DecodeClient decode_client3;
   ImageController::ImageDecodeRequestId expected_id3 =
       controller()->QueueImageDecode(
@@ -444,15 +376,15 @@ TEST_F(ImageControllerTest, QueueImageDecodeMultipleImagesSameTask) {
   DecodeClient decode_client1;
   ImageController::ImageDecodeRequestId expected_id1 =
       controller()->QueueImageDecode(
-          image(), base::BindOnce(&DecodeClient::Callback,
-                                  base::Unretained(&decode_client1),
-                                  base::DoNothing::Once()));
+          image(),
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client1), base::DoNothing()));
   DecodeClient decode_client2;
   ImageController::ImageDecodeRequestId expected_id2 =
       controller()->QueueImageDecode(
-          image(), base::BindOnce(&DecodeClient::Callback,
-                                  base::Unretained(&decode_client2),
-                                  base::DoNothing::Once()));
+          image(),
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client2), base::DoNothing()));
   DecodeClient decode_client3;
   ImageController::ImageDecodeRequestId expected_id3 =
       controller()->QueueImageDecode(
@@ -473,16 +405,18 @@ TEST_F(ImageControllerTest, QueueImageDecodeMultipleImagesSameTask) {
   EXPECT_TRUE(task->HasCompleted());
 }
 
-TEST_F(ImageControllerTest, QueueImageDecodeChangeControllerWithTaskQueued) {
+// TODO(crbug.com/1336053): Re-enable this test
+TEST_F(ImageControllerTest,
+       DISABLED_QueueImageDecodeChangeControllerWithTaskQueued) {
   scoped_refptr<BlockingTask> task_one(new BlockingTask);
   cache()->SetTaskToUse(task_one);
 
   DecodeClient decode_client1;
   ImageController::ImageDecodeRequestId expected_id1 =
       controller()->QueueImageDecode(
-          image(), base::BindOnce(&DecodeClient::Callback,
-                                  base::Unretained(&decode_client1),
-                                  base::DoNothing::Once()));
+          image(),
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client1), base::DoNothing()));
 
   scoped_refptr<BlockingTask> task_two(new BlockingTask);
   cache()->SetTaskToUse(task_two);
@@ -645,15 +579,15 @@ TEST_F(ImageControllerTest, QueueImageDecodeLazyCancelImmediately) {
 
   ImageController::ImageDecodeRequestId expected_id1 =
       controller()->QueueImageDecode(
-          image(), base::BindOnce(&DecodeClient::Callback,
-                                  base::Unretained(&decode_client1),
-                                  base::DoNothing::Once()));
+          image(),
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client1), base::DoNothing()));
 
   ImageController::ImageDecodeRequestId expected_id2 =
       controller()->QueueImageDecode(
-          image(), base::BindOnce(&DecodeClient::Callback,
-                                  base::Unretained(&decode_client2),
-                                  base::DoNothing::Once()));
+          image(),
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client2), base::DoNothing()));
 
   // This needs a ref because it is lazy.
   EXPECT_EQ(2, cache()->number_of_refs());
@@ -690,14 +624,14 @@ TEST_F(ImageControllerTest, QueueImageDecodeNonLazyCancelImmediately) {
 
   ImageController::ImageDecodeRequestId expected_id1 =
       controller()->QueueImageDecode(
-          image1, base::BindOnce(&DecodeClient::Callback,
-                                 base::Unretained(&decode_client1),
-                                 base::DoNothing::Once()));
+          image1,
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client1), base::DoNothing()));
   ImageController::ImageDecodeRequestId expected_id2 =
       controller()->QueueImageDecode(
-          image2, base::BindOnce(&DecodeClient::Callback,
-                                 base::Unretained(&decode_client2),
-                                 base::DoNothing::Once()));
+          image2,
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client2), base::DoNothing()));
 
   // No ref needed here, because it is non-lazy.
   EXPECT_EQ(0, cache()->number_of_refs());

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "crypto/sha2.h"
 #include "net/base/backoff_entry.h"
@@ -119,6 +119,8 @@ class ExternalPolicyDataUpdater::FetchJob
            const std::string& key,
            const ExternalPolicyDataUpdater::Request& request,
            const ExternalPolicyDataUpdater::FetchSuccessCallback& callback);
+  FetchJob(const FetchJob&) = delete;
+  FetchJob& operator=(const FetchJob&) = delete;
   virtual ~FetchJob();
 
   const std::string& key() const;
@@ -138,7 +140,7 @@ class ExternalPolicyDataUpdater::FetchJob
   void Reschedule();
 
   // Always valid as long as |this| is alive.
-  ExternalPolicyDataUpdater* const updater_;
+  const raw_ptr<ExternalPolicyDataUpdater> updater_;
 
   const std::string key_;
   const ExternalPolicyDataUpdater::Request request_;
@@ -149,7 +151,7 @@ class ExternalPolicyDataUpdater::FetchJob
   // |updater_|'s OnJobSucceeded() or OnJobFailed() method in this case.
   // If the job is currently not running, |fetch_job_| is NULL and no callbacks
   // should be invoked.
-  ExternalPolicyDataFetcher::Job* fetch_job_ = nullptr;  // Not owned.
+  raw_ptr<ExternalPolicyDataFetcher::Job> fetch_job_ = nullptr;  // Not owned.
 
   // Some errors should trigger a limited number of retries, even with backoff.
   // This counts down the number of such retries to stop retrying once the limit
@@ -164,8 +166,6 @@ class ExternalPolicyDataUpdater::FetchJob
   net::BackoffEntry retry_soon_entry_{&kRetrySoonPolicy};
   net::BackoffEntry retry_later_entry_{&kRetryLaterPolicy};
   net::BackoffEntry retry_much_later_entry_{&kRetryMuchLaterPolicy};
-
-  DISALLOW_COPY_AND_ASSIGN(FetchJob);
 };
 
 ExternalPolicyDataUpdater::Request::Request() = default;

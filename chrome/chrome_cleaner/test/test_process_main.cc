@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ int main(int, char**) {
     int sleep_minutes = 0;
     if (base::StringToInt(value, &sleep_minutes) && sleep_minutes > 0) {
       LOG(INFO) << "Process is sleeping for " << sleep_minutes << " minutes";
-      ::Sleep(base::TimeDelta::FromMinutes(sleep_minutes).InMilliseconds());
+      ::Sleep(base::Minutes(sleep_minutes).InMilliseconds());
     } else {
       LOG(ERROR) << "Invalid sleep delay value " << value;
     }

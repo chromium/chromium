@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 #include <windows.h>
 
 #include "base/check.h"
+#include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
-#include "ui/events/events_export.h"
 #include "ui/events/keyboard_hook_base.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -25,18 +24,23 @@ namespace ui {
 // it key event data.  This method is used by both the low-level keyboard hook
 // and by unit tests which simulate the hooked behavior w/o actually installing
 // a hook (doing so would cause problems with test parallelization).
-class EVENTS_EXPORT KeyboardHookWinBase : public KeyboardHookBase {
+class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
+    : public KeyboardHookBase {
  public:
-  KeyboardHookWinBase(base::Optional<base::flat_set<DomCode>> dom_codes,
+  KeyboardHookWinBase(absl::optional<base::flat_set<DomCode>> dom_codes,
                       KeyEventCallback callback,
                       bool enable_hook_registration);
+
+  KeyboardHookWinBase(const KeyboardHookWinBase&) = delete;
+  KeyboardHookWinBase& operator=(const KeyboardHookWinBase&) = delete;
+
   ~KeyboardHookWinBase() override;
 
   // Create a KeyboardHookWinBase instance which does not register a
   // low-level hook and captures modifier keys.
   static std::unique_ptr<KeyboardHookWinBase>
   CreateModifierKeyboardHookForTesting(
-      base::Optional<base::flat_set<DomCode>> dom_codes,
+      absl::optional<base::flat_set<DomCode>> dom_codes,
       KeyEventCallback callback);
 
   // Create a KeyboardHookWinBase instance which does not register a
@@ -65,8 +69,6 @@ class EVENTS_EXPORT KeyboardHookWinBase : public KeyboardHookBase {
   const bool enable_hook_registration_ = true;
   HHOOK hook_ = nullptr;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHookWinBase);
 };
 
 }  // namespace ui

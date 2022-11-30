@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,14 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -40,12 +42,12 @@
 #include "media/audio/alsa/audio_manager_alsa.h"
 #endif  // defined(USE_ALSA)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/audio/mac/audio_manager_mac.h"
 #include "media/base/mac/audio_latency_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "media/audio/win/audio_manager_win.h"
 #endif
@@ -56,11 +58,12 @@
 #endif  // defined(USE_PULSEAUDIO)
 
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/audio/audio_devices_pref_handler_stub.h"
-#include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/cras/audio_manager_chromeos.h"
-#elif defined(USE_CRAS) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#elif defined(USE_CRAS) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "media/audio/cras/audio_manager_cras.h"
 #endif
 
@@ -105,8 +108,8 @@ struct TestAudioManagerFactory<std::nullptr_t> {
 };
 
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
-using chromeos::AudioNode;
-using chromeos::AudioNodeList;
+using ::ash::AudioNode;
+using ::ash::AudioNodeList;
 
 const int kDefaultSampleRate = 48000;
 
@@ -127,17 +130,20 @@ const uint64_t kJabraMic2StableDeviceId = 90002;
 const uint64_t kWebcamMicId = 40003;
 const uint64_t kWebcamMicStableDeviceId = 90003;
 
-const AudioNode kInternalSpeaker(false,
-                                 kInternalSpeakerId,
-                                 true,
-                                 kInternalSpeakerStableDeviceId,
-                                 kInternalSpeakerStableDeviceId ^ 0xFF,
-                                 "Internal Speaker",
-                                 "INTERNAL_SPEAKER",
-                                 "Speaker",
-                                 false,
-                                 0,
-                                 2);
+const AudioNode kInternalSpeaker(
+    false,
+    kInternalSpeakerId,
+    true,
+    kInternalSpeakerStableDeviceId,
+    kInternalSpeakerStableDeviceId ^ 0xFF,
+    "Internal Speaker",
+    "INTERNAL_SPEAKER",
+    "Speaker",
+    false,
+    0,
+    2,
+    0,
+    25);  // output nodes should get a valid number (>0)
 
 const AudioNode kInternalMic(true,
                              kInternalMicId,
@@ -149,31 +155,39 @@ const AudioNode kInternalMic(true,
                              "Internal Mic",
                              false,
                              0,
-                             1);
+                             1,
+                             1,   // EFFECT_TYPE_NOISE_CANCELLATION
+                             0);  // input nodes this value is invalid (0)
 
-const AudioNode kJabraSpeaker1(false,
-                               kJabraSpeaker1Id,
-                               true,
-                               kJabraSpeaker1StableDeviceId,
-                               kJabraSpeaker1StableDeviceId ^ 0xFF,
-                               "Jabra Speaker",
-                               "USB",
-                               "Jabra Speaker 1",
-                               false,
-                               0,
-                               2);  // expects CHANNEL_LAYOUT_STEREO
+const AudioNode kJabraSpeaker1(
+    false,
+    kJabraSpeaker1Id,
+    true,
+    kJabraSpeaker1StableDeviceId,
+    kJabraSpeaker1StableDeviceId ^ 0xFF,
+    "Jabra Speaker",
+    "USB",
+    "Jabra Speaker 1",
+    false,
+    0,
+    2,  // expects CHANNEL_LAYOUT_STEREO
+    0,
+    25);  // output nodes should get a valid number (>0)
 
-const AudioNode kJabraSpeaker2(false,
-                               kJabraSpeaker2Id,
-                               true,
-                               kJabraSpeaker2StableDeviceId,
-                               kJabraSpeaker2StableDeviceId ^ 0xFF,
-                               "Jabra Speaker",
-                               "USB",
-                               "Jabra Speaker 2",
-                               false,
-                               0,
-                               6);  // expects CHANNEL_LAYOUT_5_1
+const AudioNode kJabraSpeaker2(
+    false,
+    kJabraSpeaker2Id,
+    true,
+    kJabraSpeaker2StableDeviceId,
+    kJabraSpeaker2StableDeviceId ^ 0xFF,
+    "Jabra Speaker",
+    "USB",
+    "Jabra Speaker 2",
+    false,
+    0,
+    6,  // expects CHANNEL_LAYOUT_5_1
+    0,
+    25);  // output nodes should get a valid number (>0)
 
 const AudioNode kHDMIOutput(false,
                             kHDMIOutputId,
@@ -185,7 +199,9 @@ const AudioNode kHDMIOutput(false,
                             "HDA Intel MID",
                             false,
                             0,
-                            8);  // expects CHANNEL_LAYOUT_7_1
+                            8,  // expects CHANNEL_LAYOUT_7_1
+                            0,
+                            25);  // output nodes should get a valid number (>0)
 
 const AudioNode kJabraMic1(true,
                            kJabraMic1Id,
@@ -197,7 +213,9 @@ const AudioNode kJabraMic1(true,
                            "Jabra Mic 1",
                            false,
                            0,
-                           1);
+                           1,
+                           0,
+                           0);  // input nodes this value is invalid (0)
 
 const AudioNode kJabraMic2(true,
                            kJabraMic2Id,
@@ -209,7 +227,9 @@ const AudioNode kJabraMic2(true,
                            "Jabra Mic 2",
                            false,
                            0,
-                           1);
+                           1,
+                           0,
+                           0);  // input nodes this value is invalid (0)
 
 const AudioNode kUSBCameraMic(true,
                               kWebcamMicId,
@@ -221,7 +241,9 @@ const AudioNode kUSBCameraMic(true,
                               "Logitech Webcam",
                               false,
                               0,
-                              1);
+                              1,
+                              0,
+                              0);  // input nodes this value is invalid (0)
 #endif  // defined(USE_CRAS)
 
 const char kRealDefaultInputDeviceID[] = "input2";
@@ -262,7 +284,7 @@ class AudioManagerTest : public ::testing::Test {
  public:
   void HandleDefaultDeviceIDsTest() {
     AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                           CHANNEL_LAYOUT_STEREO, 48000, 2048);
+                           ChannelLayoutConfig::Stereo(), 48000, 2048);
 
     // Create a stream with the default device id "".
     AudioOutputStream* stream =
@@ -304,12 +326,12 @@ class AudioManagerTest : public ::testing::Test {
   void TearDown() override {
     CrasAudioHandler::Shutdown();
     audio_pref_handler_ = nullptr;
-    chromeos::CrasAudioClient::Shutdown();
+    ash::CrasAudioClient::Shutdown();
   }
 
   void SetUpCrasAudioHandlerWithTestingNodes(const AudioNodeList& audio_nodes) {
-    chromeos::CrasAudioClient::InitializeFake();
-    chromeos::FakeCrasAudioClient::Get()->SetAudioNodesForTesting(audio_nodes);
+    ash::CrasAudioClient::InitializeFake();
+    ash::FakeCrasAudioClient::Get()->SetAudioNodesForTesting(audio_nodes);
     audio_pref_handler_ = new ash::AudioDevicesPrefHandlerStub();
     CrasAudioHandler::Initialize(
         /*media_controller_manager*/ mojo::NullRemote(), audio_pref_handler_);
@@ -324,7 +346,8 @@ class AudioManagerTest : public ::testing::Test {
   }
 
   AudioParameters GetPreferredOutputStreamParameters(
-      ChannelLayout channel_layout, int32_t user_buffer_size = 0) {
+      const ChannelLayoutConfig& channel_layout_config,
+      int32_t user_buffer_size = 0) {
     // Generated AudioParameters should follow the same rule as in
     // AudioManagerCras::GetPreferredOutputStreamParameters().
     int sample_rate = kDefaultSampleRate;
@@ -332,15 +355,15 @@ class AudioManagerTest : public ::testing::Test {
     if (buffer_size == 0)  // Not user-provided.
       cras_audio_handler_->GetDefaultOutputBufferSize(&buffer_size);
     return AudioParameters(
-        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-        buffer_size,
+        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+        sample_rate, buffer_size,
         AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                               limits::kMaxAudioBufferSize));
   }
 #endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
-  AudioManagerTest() {
+  AudioManagerTest() : message_loop_(base::MessagePumpType::IO) {
     CreateAudioManagerForTesting();
   }
   ~AudioManagerTest() override { audio_manager_->Shutdown(); }
@@ -428,11 +451,8 @@ class AudioManagerTest : public ::testing::Test {
   // Helper method for (USE_CRAS) which returns |group_id| from |device_id|.
   std::string getGroupID(const AudioDeviceDescriptions& device_descriptions,
                          const std::string device_id) {
-    AudioDeviceDescriptions::const_iterator it =
-        std::find_if(device_descriptions.begin(), device_descriptions.end(),
-                     [&device_id](const auto& audio_device_desc) {
-                       return audio_device_desc.unique_id == device_id;
-                     });
+    AudioDeviceDescriptions::const_iterator it = base::ranges::find(
+        device_descriptions, device_id, &AudioDeviceDescription::unique_id);
 
     EXPECT_NE(it, device_descriptions.end());
     return it->group_id;
@@ -440,7 +460,7 @@ class AudioManagerTest : public ::testing::Test {
 #endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool InputDevicesAvailable() {
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
     // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
     // let any of them be opened or listed.
     return false;
@@ -569,18 +589,18 @@ TEST_F(AudioManagerTest, CheckOutputStreamParametersCras) {
   // should be reflected to the specific output device.
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kJabraSpeaker1Id));
-  golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_STEREO);
+  golden_params =
+      GetPreferredOutputStreamParameters(ChannelLayoutConfig::Stereo());
   EXPECT_TRUE(params.Equals(golden_params));
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kJabraSpeaker2Id));
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_5_1);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>());
   EXPECT_TRUE(params.Equals(golden_params));
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kHDMIOutputId));
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_7_1);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_7_1>());
   EXPECT_TRUE(params.Equals(golden_params));
 
   // Set user-provided audio buffer size by command line, then check the buffer
@@ -598,26 +618,30 @@ TEST_F(AudioManagerTest, CheckOutputStreamParametersCras) {
   params = device_info_accessor_->GetOutputStreamParameters(
       AudioDeviceDescription::kDefaultDeviceId);
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_STEREO, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_STEREO>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
   SetActiveOutputNode(kJabraSpeaker2Id);
   params = device_info_accessor_->GetOutputStreamParameters(
       AudioDeviceDescription::kDefaultDeviceId);
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_5_1, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
   SetActiveOutputNode(kHDMIOutputId);
   params = device_info_accessor_->GetOutputStreamParameters(
       AudioDeviceDescription::kDefaultDeviceId);
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_7_1, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_7_1>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
 
   // Check non-default device again.
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kJabraSpeaker1Id));
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_STEREO, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_STEREO>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
 }
 
@@ -740,7 +764,7 @@ TEST_F(AudioManagerTest, EnumerateOutputDevices) {
 // Run additional tests for Windows since enumeration can be done using
 // two different APIs. MMDevice is default for Vista and higher and Wave
 // is default for XP and lower.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Override default enumeration API and force usage of Windows MMDevice.
 // This test will only run on Windows Vista and higher.
@@ -759,7 +783,7 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesWinMMDevice) {
   device_info_accessor_->GetAudioOutputDeviceDescriptions(&device_descriptions);
   CheckDeviceDescriptions(device_descriptions);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(USE_PULSEAUDIO)
 // On Linux, there are two implementations available and both can
@@ -822,17 +846,17 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesAlsa) {
 #endif  // defined(USE_ALSA)
 
 TEST_F(AudioManagerTest, GetDefaultOutputStreamParameters) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
 
   AudioParameters params;
   GetDefaultOutputStreamParameters(&params);
   EXPECT_TRUE(params.IsValid());
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 TEST_F(AudioManagerTest, GetAssociatedOutputDeviceID) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable() && OutputDevicesAvailable());
 
   AudioDeviceDescriptions device_descriptions;
@@ -851,7 +875,7 @@ TEST_F(AudioManagerTest, GetAssociatedOutputDeviceID) {
   }
 
   EXPECT_TRUE(found_an_associated_device);
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 #endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -981,13 +1005,16 @@ TEST_F(AudioManagerTest, CheckMakeOutputStreamWithPreferredParameters) {
   stream->Close();
 }
 
-#if defined(OS_MAC) || defined(USE_CRAS)
+#if BUILDFLAG(IS_MAC) || defined(USE_CRAS)
 class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
  public:
   TestAudioSourceCallback(int expected_frames_per_buffer,
                           base::WaitableEvent* event)
       : expected_frames_per_buffer_(expected_frames_per_buffer),
         event_(event) {}
+
+  TestAudioSourceCallback(const TestAudioSourceCallback&) = delete;
+  TestAudioSourceCallback& operator=(const TestAudioSourceCallback&) = delete;
 
   ~TestAudioSourceCallback() override {}
 
@@ -1004,9 +1031,7 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
 
  private:
   const int expected_frames_per_buffer_;
-  base::WaitableEvent* event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAudioSourceCallback);
+  raw_ptr<base::WaitableEvent> event_;
 };
 
 // Test that we can create an AudioOutputStream with kMinAudioBufferSize and
@@ -1014,7 +1039,7 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
 TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   CreateAudioManagerForTesting<AudioManagerMac>();
 #elif defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   CreateAudioManagerForTesting<AudioManagerChromeOS>();
@@ -1027,7 +1052,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ASSERT_LT(default_params.frames_per_buffer(),
             media::limits::kMaxAudioBufferSize);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On OSX the preferred output buffer size is higher than the minimum
   // but users may request the minimum size explicitly.
   ASSERT_GT(default_params.frames_per_buffer(),

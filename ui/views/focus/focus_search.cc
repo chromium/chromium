@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace views {
 
 FocusSearch::FocusSearch(View* root, bool cycle, bool accessibility_mode)
     : root_(root), cycle_(cycle), accessibility_mode_(accessibility_mode) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   // On Mac, only the keyboard accessibility mode defined in FocusManager is
   // used. No special accessibility mode should be applicable for a
   // FocusTraversable.
@@ -191,9 +191,11 @@ View* FocusSearch::FindNextFocusableViewImpl(
   // First let's try the left child.
   if (can_go_down) {
     if (!starting_view->children().empty()) {
+      // This view might not be `IsFocusable` but the view is still passed
+      // down to evaluate if one of it's children `IsFocusable`.
+      View* view = starting_view->GetChildrenFocusList().front();
       View* v = FindNextFocusableViewImpl(
-          starting_view->children().front(),
-          StartingViewPolicy::kCheckStartingView, false, true,
+          view, StartingViewPolicy::kCheckStartingView, false, true,
           can_go_into_anchored_dialog, skip_group_id, seen_views,
           focus_traversable, focus_traversable_view);
       if (v || *focus_traversable)
@@ -311,7 +313,9 @@ View* FocusSearch::FindPreviousFocusableViewImpl(
     can_go_into_anchored_dialog =
         AnchoredDialogPolicy::kCanGoIntoAnchoredDialog;
     if (!starting_view->children().empty()) {
-      View* view = starting_view->children().back();
+      // This view might not be `IsFocusable` but the view is still passed
+      // down to evaluate if one of it's children `IsFocusable`.
+      View* view = starting_view->GetChildrenFocusList().back();
       View* v = FindPreviousFocusableViewImpl(
           view, StartingViewPolicy::kCheckStartingView, false, true,
           can_go_into_anchored_dialog, skip_group_id, seen_views,

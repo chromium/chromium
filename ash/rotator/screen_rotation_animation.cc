@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace ash {
 
@@ -37,8 +37,8 @@ ScreenRotationAnimation::ScreenRotationAnimation(ui::Layer* layer,
 
   // Use the target transform/bounds in case the layer is already animating.
   gfx::Transform current_transform = layer->GetTargetTransform();
-  interpolated_transform_.reset(
-      new ui::InterpolatedConstantTransform(current_transform));
+  interpolated_transform_ =
+      std::make_unique<ui::InterpolatedConstantTransform>(current_transform);
   interpolated_transform_->SetChild(std::move(rotation));
 }
 

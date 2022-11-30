@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,11 +55,6 @@ class ThemeColorPolicyHandlerTest : public testing::Test {
   void CheckInvalidValuePolicy(std::string&& policy_value) {
     base::Value theme_color_value(std::move(policy_value));
     CheckInvalidPolicy(theme_color_value);
-  }
-
-  void CheckInvalidTypePolicy(const base::Value& policy_value) {
-    EXPECT_FALSE(CheckPolicy(policy_value.Clone()));
-    EXPECT_NE(0U, errors_.size());
   }
 
   ThemeColorPolicyHandler handler_;

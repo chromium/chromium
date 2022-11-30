@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/public/mojom/oom_intervention/oom_intervention.mojom-blink.h"
@@ -27,11 +29,13 @@ class CONTROLLER_EXPORT OomInterventionImpl
     : public mojom::blink::OomIntervention,
       public MemoryUsageMonitor::Observer {
  public:
-  static void Create(
+  static void BindReceiver(
       mojo::PendingReceiver<mojom::blink::OomIntervention> receiver);
 
   OomInterventionImpl();
   ~OomInterventionImpl() override;
+
+  void Reset();
 
   // mojom::blink::OomIntervention:
   void StartDetection(
@@ -50,9 +54,12 @@ class CONTROLLER_EXPORT OomInterventionImpl
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest,
                            ContinueWatchingWithoutDetection);
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, V1DetectionAdsNavigation);
+  FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, MojoDisconnection);
 
   // Overridden by test.
   virtual MemoryUsageMonitor& MemoryUsageMonitorInstance();
+
+  void Bind(mojo::PendingReceiver<mojom::blink::OomIntervention> receiver);
 
   void Check(MemoryUsage);
 
@@ -69,9 +76,7 @@ class CONTROLLER_EXPORT OomInterventionImpl
   bool navigate_ads_enabled_ = false;
   bool purge_v8_memory_enabled_ = false;
   std::unique_ptr<ScopedPagePauser> pauser_;
-  OomInterventionMetrics metrics_at_intervention_;
-  int number_of_report_needed_ = 0;
-  TaskRunnerTimer<OomInterventionImpl> delayed_report_timer_;
+  mojo::Receiver<mojom::blink::OomIntervention> receiver_{this};
 };
 
 }  // namespace blink

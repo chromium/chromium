@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class UndoManagerObserver;
@@ -24,6 +23,10 @@ class UndoOperation;
 class UndoGroup {
  public:
   UndoGroup();
+
+  UndoGroup(const UndoGroup&) = delete;
+  UndoGroup& operator=(const UndoGroup&) = delete;
+
   ~UndoGroup();
 
   void AddOperation(std::unique_ptr<UndoOperation> operation);
@@ -45,8 +48,6 @@ class UndoGroup {
   // The resource string id describing the undo and redo action.
   int undo_label_id_;
   int redo_label_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(UndoGroup);
 };
 
 // UndoManager ----------------------------------------------------------------
@@ -56,6 +57,10 @@ class UndoGroup {
 class UndoManager {
  public:
   UndoManager();
+
+  UndoManager(const UndoManager&) = delete;
+  UndoManager& operator=(const UndoManager&) = delete;
+
   ~UndoManager();
 
   // Perform an undo or redo operation.
@@ -99,7 +104,7 @@ class UndoManager {
   void NotifyOnUndoManagerStateChange();
 
   // Handle the addition of |new_undo_group| to the active undo group container.
-  void AddUndoGroup(UndoGroup* new_undo_group);
+  void AddUndoGroup(std::unique_ptr<UndoGroup> new_undo_group);
 
   // Returns the undo or redo UndoGroup container that should store the next
   // change taking into account if an undo or redo is being executed.
@@ -128,8 +133,6 @@ class UndoManager {
   // processed.
   bool performing_undo_;
   bool performing_redo_;
-
-  DISALLOW_COPY_AND_ASSIGN(UndoManager);
 };
 
 #endif  // COMPONENTS_UNDO_UNDO_MANAGER_H_

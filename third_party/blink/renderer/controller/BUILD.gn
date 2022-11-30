@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,8 +26,11 @@ component("controller") {
     "//v8",
   ]
 
+  if (use_blink_extensions_chromeos) {
+    deps += [ "//third_party/blink/renderer/extensions/chromeos" ]
+  }
+
   configs += [
-    "//build/config/compiler:noshadowing",
     "//build/config/compiler:wexit_time_destructors",
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
@@ -42,6 +45,7 @@ component("controller") {
     "blink_initializer.h",
     "blink_leak_detector.cc",
     "blink_leak_detector.h",
+    "blink_shutdown.cc",
     "controller_export.h",
     "dev_tools_frontend_impl.cc",
     "dev_tools_frontend_impl.h",
@@ -103,6 +107,16 @@ component("controller") {
 
   configs -= [ "//build/config/compiler:default_symbols" ]
   configs += blink_symbols_config
+
+  # These targets are not necessary to build the Blink renderer, however, these
+  # targets are quite useful for Blink developers to get error if any when
+  # adding/editing *.idl files, especially because it's very easy to forget to
+  # add generated bindings files to the lists defined in
+  # generated_in_{core,modules}.gni. Hence, run the check scripts here.
+  deps += [
+    "//third_party/blink/renderer/bindings:check_generated_file_list",
+    "//third_party/blink/renderer/bindings:validate_web_idl",
+  ]
 }
 
 group("blink_unittests_data") {
@@ -128,12 +142,10 @@ test("blink_unittests") {
   data_deps = [
     ":blink_unittests_data",
     "//content/shell:pak",
-    "//testing/buildbot/filters:blink_unittests_filters",
   ]
 
   if (is_android) {
     deps += [
-      "//base:base_java",
       "//content/public/android:content_java",
       "//content/shell/android:content_shell_assets",
       "//net/android:net_java",
@@ -145,11 +157,13 @@ test("blink_unittests") {
   }
 
   if (is_fuchsia) {
+    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
     additional_manifest_fragments = [
-      "//build/config/fuchsia/test/font_capabilities.test-cmx",
-
-      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//build/config/fuchsia/test/network.shard.test-cml",
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     ]
   }
 }
@@ -163,7 +177,7 @@ source_set("blink_perf_tests_sources") {
   visibility = [ "*" ]
   testonly = true
 
-  sources = [ "tests/run_all_tests.cc" ]
+  sources = [ "tests/run_all_perftests.cc" ]
 
   deps = [
     ":controller",
@@ -192,6 +206,7 @@ source_set("blink_bindings_test_sources") {
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules/mediastream:test_support",
     "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform:test_support",
   ]

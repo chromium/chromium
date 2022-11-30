@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
@@ -25,6 +24,40 @@ load(
 package(default_visibility = ["//visibility:public"])
 
 licenses(["notice"])
+
+cc_library(
+    name = "any_invocable",
+    srcs = ["internal/any_invocable.h"],
+    hdrs = ["any_invocable.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:base_internal",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/meta:type_traits",
+        "//absl/utility",
+    ],
+)
+
+cc_test(
+    name = "any_invocable_test",
+    srcs = [
+        "any_invocable_test.cc",
+        "internal/any_invocable.h",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":any_invocable",
+        "//absl/base:base_internal",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/meta:type_traits",
+        "//absl/utility",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
 
 cc_library(
     name = "bind_front",
@@ -60,6 +93,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:base_internal",
+        "//absl/base:core_headers",
         "//absl/meta:type_traits",
     ],
 )
@@ -78,14 +112,15 @@ cc_test(
 )
 
 cc_test(
-    name = "function_ref_benchmark",
+    name = "function_type_benchmark",
     srcs = [
-        "function_ref_benchmark.cc",
+        "function_type_benchmark.cc",
     ],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
     visibility = ["//visibility:private"],
     deps = [
+        ":any_invocable",
         ":function_ref",
         "//absl/base:core_headers",
         "@com_github_google_benchmark//:benchmark_main",

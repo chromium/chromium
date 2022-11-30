@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 
-import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
+import {Feature, PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
 
 /** @interface */
 export class EmojiPickerApiProxy {
@@ -13,9 +13,21 @@ export class EmojiPickerApiProxy {
    *
    * @param {string} emoji
    * @param {boolean} isVariant
+   * @param {number} searchLength
    */
-  insertEmoji(emoji, isVariant) {}
+  insertEmoji(emoji, isVariant, searchLength) {}
+
+  /**
+   * @returns {Promise<{incognito:boolean}>}
+   */
+  isIncognitoTextField() {}
+
+  /**
+   * @returns {Promise<{featureList:!Array<!Feature>}>}
+   */
+  getFeatureList() {}
 }
+
 /** @implements {EmojiPickerApiProxy} */
 export class EmojiPickerApiProxyImpl {
   constructor() {
@@ -31,8 +43,18 @@ export class EmojiPickerApiProxyImpl {
     this.handler.showUI();
   }
   /** @override */
-  insertEmoji(emoji, isVariant) {
-    this.handler.insertEmoji(emoji, isVariant);
+  insertEmoji(emoji, isVariant, searchLength) {
+    this.handler.insertEmoji(emoji, isVariant, searchLength);
+  }
+
+  /** @override */
+  isIncognitoTextField() {
+    return this.handler.isIncognitoTextField();
+  }
+
+  /** @override */
+  getFeatureList() {
+    return this.handler.getFeatureList();
   }
 }
 

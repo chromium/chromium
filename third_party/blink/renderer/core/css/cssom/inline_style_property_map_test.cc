@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
     const CSSProperty& shorthand = CSSProperty::Get(property_id);
     if (!shorthand.IsShorthand())
+      continue;
+    if (shorthand.Exposure() == CSSExposure::kNone)
       continue;
     div->SetInlineStyleProperty(property_id, "var(--dummy)");
     const StylePropertyShorthand& longhands = shorthandForProperty(property_id);

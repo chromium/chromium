@@ -7,7 +7,7 @@
 </svg>
 <script>
 function handler(evnet) {
-    debug(dumpNodeList(event.path));
+    debug(dumpNodeList(event.composedPath()));
 }
 circle.addEventListener('click', handler);
 document.addEventListener('click', handler);

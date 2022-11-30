@@ -1,0 +1,101 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.help_app.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// The info needed to display one search result.
+struct SearchResult {
+  // Unique identifier for this concept.
+  string id;
+
+  // Localized title. Displayed directly in the UI as the main result text.
+  mojo_base.mojom.String16 title;
+
+  // Localized category. Displayed directly in the UI as secondary result text.
+  mojo_base.mojom.String16 main_category;
+
+  // The URL path containing the relevant content, which may or may not contain
+  // URL parameters. For example, if the help content is at
+  // chrome://help-app/help/sub/3399763/id/1282338#install-user, then the field
+  // would be "help/sub/3399763/id/1282338#install-user" for this page.
+  string url_path_with_parameters;
+
+  // Locale code. Leave unset for the system configured locale. The format is
+  // language[-country] (e.g., en-US).
+  string locale;
+
+  // Relevance score from the local search service. Higher is more relevant. The
+  // minimum is relevance 0. Most results should have a score less than 1, but
+  // greater than 1 is possible. Can use this to filter the list of search
+  // results if needed.
+  double relevance_score;
+};
+
+// The info needed to add one potential search result to the index.
+struct SearchConcept {
+  // Unique identifier for this concept.
+  string id;
+
+  // Localized title. Displayed directly in the UI as the main result text.
+  mojo_base.mojom.String16 title;
+
+  // Localized category. Displayed directly in the UI as secondary result text.
+  mojo_base.mojom.String16 main_category;
+
+  // List of localized tags used to make the search concept searchable.
+  array<mojo_base.mojom.String16> tags;
+
+  // The locale of the tags. This could be different from the locale of the
+  // other fields. Empty string means system locale. Same format as the locale
+  // field.
+  string tag_locale;
+
+  // The URL path containing the relevant content, which may or may not contain
+  // URL parameters. For example, if the help content is at
+  // chrome://help-app/help/sub/3399763/id/1282338#install-user, then the field
+  // would be "help/sub/3399763/id/1282338#install-user" for this page.
+  string url_path_with_parameters;
+
+  // Locale code. Leave unset for the system configured locale. The format is
+  // language[-country] (e.g., en-US) where the language is the 2 or 3 letter
+  // code from ISO-639.
+  string locale;
+};
+
+// Used to observe changes to search results.
+interface SearchResultsObserver {
+  // Called when the availability of one or more search results has changed.
+  // An example of when this gets called is when the search index first updates
+  // from empty to populated. Clients can use this function to ensure that they
+  // always show up to date search results.
+  OnSearchResultAvailabilityChanged();
+};
+
+// Provides help app search results. Implemented in the browser process;
+// intended to be called from the Launcher C++.
+interface SearchHandler {
+  // Searches help for the given query and returns a list of results, sorted
+  // from most relevant to least relevant. An empty array indicates no relevant
+  // results.
+  //
+  // This function returns an array with a maximum size of |max_num_results|,
+  // but the array may contain fewer elements if there are fewer results.
+  // Clients should never pass a value of 0 for |max_num_results|, since that
+  // would return an empty result array.
+  Search(mojo_base.mojom.String16 query,
+         uint32 max_num_results) =>
+             (array<SearchResult> results);
+
+  // Replaces the content in the launcher search index and metadata cache.
+  // Callbacks on completion. Note that the list of concepts and all the fields
+  // inside each concept come from an untrusted source:
+  // chrome-untrusted://help-app.
+  Update(array<SearchConcept> concepts) => ();
+
+  // Adds an observer of search results. Disconnected observers are discarded;
+  // to stop observing, close the connection.
+  Observe(pending_remote<SearchResultsObserver> observer);
+};

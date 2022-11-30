@@ -43,6 +43,7 @@
 
 namespace blink {
 
+class InterfaceRegistry;
 class WebServiceWorkerContextClient;
 class WebURL;
 struct WebEmbeddedWorkerStartData;
@@ -89,6 +90,7 @@ class BLINK_EXPORT WebEmbeddedWorker {
       CrossVariantMojoRemote<mojom::CacheStorageInterfaceBase> cache_storage,
       CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
           browser_interface_broker,
+      InterfaceRegistry* interface_registry,
       scoped_refptr<base::SingleThreadTaskRunner>
           initiator_thread_task_runner) = 0;
   virtual void TerminateWorkerContext() = 0;

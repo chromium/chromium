@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ namespace net_log {
 
 // Resource paths.
 // Must match the resource file names.
+extern const char kNetExportUICSS[];
 extern const char kNetExportUIJS[];
 
 // Message handlers.
@@ -21,7 +22,7 @@ extern const char kStopNetLogHandler[];
 
 // Other values.
 // Must match the constants used in the resource files.
-extern const char kOnExportNetLogInfoChanged[];
+extern const char kNetLogInfoChangedEvent[];
 
 }  // namespace net_log
 

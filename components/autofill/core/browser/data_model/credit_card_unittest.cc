@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,10 +18,12 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/grit/components_scaled_resources.h"
@@ -93,88 +94,66 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
-      kMidlineEllipsis + digits + base::i18n::kPopDirectionalFormatting;
-  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(digits));
+      CreditCard::GetMidlineEllipsisDots(4) + digits +
+      base::i18n::kPopDirectionalFormatting;
+  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
+                          digits, /*obfuscation_length=*/4));
 }
 
 // Tests credit card summary string generation.  This test simulates a variety
 // of different possible summary strings.  Variations occur based on the
 // existence of credit card number, month, and year fields.
-TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
+TEST(CreditCardTest, LabelSummary) {
   std::u16string valid_nickname = u"My Visa Card";
 
   // Case 0: empty credit card.
   CreditCard credit_card0(base::GenerateGUID(), "https://www.example.com/");
-  std::u16string summary0 = credit_card0.Label();
-  EXPECT_EQ(std::u16string(), summary0);
-  std::u16string obfuscated0 = credit_card0.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated0);
+  EXPECT_EQ(std::u16string(), credit_card0.Label());
 
   // Case 00: Empty credit card with empty strings.
   CreditCard credit_card00(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
-  std::u16string summary00 = credit_card00.Label();
-  EXPECT_EQ(std::u16string(u"John Dillinger"), summary00);
-  std::u16string obfuscated00 = credit_card00.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated00);
+  EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card00.Label());
 
   // Case 1: No credit card number.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
                           "1");
-  std::u16string summary1 = credit_card1.Label();
-  EXPECT_EQ(std::u16string(u"John Dillinger"), summary1);
-  std::u16string obfuscated1 = credit_card1.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated1);
+  EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card1.Label());
 
   // Case 1.1: No credit card number, but has nickname.
   CreditCard credit_card11(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
                           "1");
   credit_card11.SetNickname(valid_nickname);
-  std::u16string summary11 = credit_card11.Label();
-  EXPECT_EQ(valid_nickname, summary11);
-  std::u16string obfuscated11 = credit_card11.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated11);
+  EXPECT_EQ(valid_nickname, credit_card11.Label());
 
   // Case 2: No month.
   CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "", "2010", "1");
-  std::u16string summary2 = credit_card2.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            summary2);
-  std::u16string obfuscated2 = credit_card2.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated2);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card2.Label());
 
   // Case 3: No year.
   CreditCard credit_card3(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "5105 1051 0510 5100", "01", "", "1");
-  std::u16string summary3 = credit_card3.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            summary3);
-  std::u16string obfuscated3 = credit_card3.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated3);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card3.Label());
 
   // Case 4: Have everything except nickname.
   CreditCard credit_card4(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card4, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
-  std::u16string summary4 = credit_card4.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
-            summary4);
-  std::u16string obfuscated4 = credit_card4.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated4);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card4.Label());
 
   // Case 5: Very long credit card
   CreditCard credit_card5(base::GenerateGUID(), "https://www.example.com/");
@@ -182,26 +161,94 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
       &credit_card5, "John Dillinger",
       "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
       "1");
-  std::u16string summary5 = credit_card5.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
-            summary5);
-  std::u16string obfuscated5 = credit_card5.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated5);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card5.Label());
 
   // Case 6: Have everything including nickname.
   CreditCard credit_card6(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card6, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   credit_card6.SetNickname(valid_nickname);
-  std::u16string summary6 = credit_card6.Label();
   EXPECT_EQ(
-      valid_nickname +
-          UTF8ToUTF16(std::string("  ") +
-                      test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
-      summary6);
+      valid_nickname + UTF8ToUTF16(std::string("  ") +
+                                   test::ObfuscatedCardDigitsAsUTF8("5100") +
+                                   ", John Dillinger"),
+      credit_card6.Label());
+}
+
+TEST(CreditCardTest, NetworkAndLastFourDigits) {
+  std::u16string valid_nickname = u"My Visa Card";
+
+  // Case 0: empty credit card.
+  CreditCard credit_card0(base::GenerateGUID(), "https://www.example.com/");
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card0.NetworkAndLastFourDigits());
+
+  // Case 00: Empty credit card with empty strings.
+  CreditCard credit_card00(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card00.NetworkAndLastFourDigits());
+
+  // Case 1: No credit card number.
+  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
+                          "1");
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card1.NetworkAndLastFourDigits());
+
+  // Case 1.1: No credit card number, but has nickname.
+  CreditCard credit_card11(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
+                          "1");
+  credit_card11.SetNickname(valid_nickname);
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card11.NetworkAndLastFourDigits());
+
+  // Case 2: No month.
+  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
+                          "5105 1051 0510 5100", "", "2010", "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card2.NetworkAndLastFourDigits());
+
+  // Case 3: No year.
+  CreditCard credit_card3(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card3, "John Dillinger",
+                          "5105 1051 0510 5100", "01", "", "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card3.NetworkAndLastFourDigits());
+
+  // Case 4: Have everything except nickname.
+  CreditCard credit_card4(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card4, "John Dillinger",
+                          "5105 1051 0510 5100", "01", "2010", "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card4.NetworkAndLastFourDigits());
+
+  // Case 5: Very long credit card
+  CreditCard credit_card5(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(
+      &credit_card5, "John Dillinger",
+      "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
+      "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card5.NetworkAndLastFourDigits());
+
+  // Case 6: Have everything including nickname.
+  CreditCard credit_card6(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card6, "John Dillinger",
+                          "5105 1051 0510 5100", "01", "2010", "1");
+  credit_card6.SetNickname(valid_nickname);
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card6.NetworkAndLastFourDigits());
 }
 
 TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
@@ -225,146 +272,153 @@ TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
       credit_card2.NicknameAndLastFourDigitsForTesting());
 }
 
-TEST(CreditCardTest, CardIdentifierStringsForAutofillDisplay) {
+// Test that card identifier string falls back to issuer network when both
+// nickname and product description are unavailable.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_NoNicknameNoProductDescription) {
   base::test::ScopedFeatureList scoped_feature_list;
-  std::u16string valid_nickname = u"My Visa Card";
-  std::u16string invalid_nickname = u"Nickname length exceeds 25 characters";
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
 
-  // Case 1: Nickname name is invalid -> show network name.
-  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card1, "John Dillinger",
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  credit_card1.SetNickname(invalid_nickname);
-  EXPECT_FALSE(credit_card1.HasNonEmptyValidNickname());
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
-            credit_card1.CardIdentifierStringForAutofillDisplay());
-
-  // Case 2: Experiment is on and nickname is valid -> show nickname.
-  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
-                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
-                          "1");
-  credit_card2.SetNickname(valid_nickname);
-  EXPECT_TRUE(credit_card2.HasNonEmptyValidNickname());
-  EXPECT_EQ(
-      valid_nickname + UTF8ToUTF16(std::string("  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("5100")),
-      credit_card2.CardIdentifierStringForAutofillDisplay());
+            credit_card.CardIdentifierStringForAutofillDisplay());
 }
 
-TEST(CreditCardTest, CardIdentifierStringForIssuedCard) {
+// Test that card identifier string falls back to issuer network when nickname
+// is invalid and product description is unavailable.
+TEST(
+    CreditCardTest,
+    CardIdentifierStringsForAutofillDisplay_InvalidNicknameNoProductDescription) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Enable the flag.
   scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
-  // Case 1: Card Issuer set to GOOGLE with no nickname.
-  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
-  credit_card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
-  test::SetCreditCardInfo(&credit_card1, "John Dillinger",
+      features::kAutofillEnableCardProductName);
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED) +
-                UTF8ToUTF16(std::string(" Mastercard  ") +
+  credit_card.SetNickname(u"Nickname length exceeds 25 characters");
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card.CardIdentifierStringForAutofillDisplay());
+}
+
+// Test that card identifier string falls back to product description when
+// nickname is unavailable.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_NoNicknameWithProductDescription) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  std::u16string product_description = u"ABC bank XYZ card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  credit_card.set_product_description(product_description);
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(product_description +
+                UTF8ToUTF16(std::string("  ") +
                             test::ObfuscatedCardDigitsAsUTF8("5100")),
-            credit_card1.CardIdentifierStringForAutofillDisplay());
-
-  // Case 2: Card Issuer set to GOOGLE with nickname.
-  std::u16string valid_nickname = u"My Visa Card";
-  credit_card1.SetNickname(valid_nickname);
-  EXPECT_EQ(
-      valid_nickname + UTF8ToUTF16(std::string("  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("5100")),
-      credit_card1.CardIdentifierStringForAutofillDisplay());
-
-  // Case 3: Card Issuer set to ISSUER_UNKNOWN and no nickname.
-  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
-                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
-                          "1");
-  credit_card2.set_card_issuer(CreditCard::Issuer::ISSUER_UNKNOWN);
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            credit_card2.CardIdentifierStringForAutofillDisplay());
+            credit_card.CardIdentifierStringForAutofillDisplay());
 }
 
-TEST(CreditCardTest, CardIdentifierStringForIssuedCardExpOff) {
+// Test that card identifier string falls back to product description when
+// nickname is invalid.
+TEST(
+    CreditCardTest,
+    CardIdentifierStringsForAutofillDisplay_InvalidNicknameWithProductDescription) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Disable the flag.
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
-  // Case 1: Card Issuer set to GOOGLE with no nickname.
-  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
-  credit_card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
-  test::SetCreditCardInfo(&credit_card1, "John Dillinger",
-                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
-                          "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            credit_card1.CardIdentifierStringForAutofillDisplay());
-
-  // Case 2: Card Issuer set to GOOGLE with nickname.
-  std::u16string valid_nickname = u"My Visa Card";
-  credit_card1.SetNickname(valid_nickname);
-  EXPECT_EQ(
-      valid_nickname + UTF8ToUTF16(std::string("  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("5100")),
-      credit_card1.CardIdentifierStringForAutofillDisplay());
-
-  // Case 3: Card Issuer set to ISSUER_UNKNOWN and no nickname.
-  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
-                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
-                          "1");
-  credit_card2.set_card_issuer(CreditCard::Issuer::ISSUER_UNKNOWN);
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            credit_card2.CardIdentifierStringForAutofillDisplay());
-}
-
-TEST(CreditCardTest, CardIconStringForGoogleIssuedCard) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Enable the flag.
   scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
-  // Case 1: Card Issuer set to GOOGLE.
-  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
-  credit_card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
-  test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2020",
-                          "1");
-  EXPECT_EQ(kGoogleIssuedCard,
-            credit_card1.CardIconStringForAutofillSuggestion());
+      features::kAutofillEnableCardProductName);
 
-  // Case 2: Card Issuer set to ISSUER_UNKNOWN.
-  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
+  std::u16string product_description = u"ABC bank XYZ card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  credit_card2.set_card_issuer(CreditCard::Issuer::ISSUER_UNKNOWN);
-  EXPECT_EQ(kMasterCard, credit_card2.CardIconStringForAutofillSuggestion());
+  credit_card.SetNickname(u"Nickname length exceeds 25 characters");
+  credit_card.set_product_description(product_description);
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(product_description +
+                UTF8ToUTF16(std::string("  ") +
+                            test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card.CardIdentifierStringForAutofillDisplay());
 }
 
-TEST(CreditCardTest, CardIconStringForGoogleIssuedCardExpOff) {
+// Test that card identifier string shows nickname when it is valid.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_WithValidNickname) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Enable the flag.
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
-  // Case 1: Card Issuer set to GOOGLE.
-  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
-  credit_card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
-  test::SetCreditCardInfo(&credit_card1, "John Dillinger",
-                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
-                          "1");
-  EXPECT_EQ(kMasterCard, credit_card1.CardIconStringForAutofillSuggestion());
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
 
-  // Case 2: Card Issuer set to ISSUER_UNKNOWN.
-  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
+  std::u16string valid_nickname = u"My Visa Card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  credit_card2.set_card_issuer(CreditCard::Issuer::ISSUER_UNKNOWN);
-  EXPECT_EQ(kMasterCard, credit_card2.CardIconStringForAutofillSuggestion());
+  credit_card.SetNickname(valid_nickname);
+  credit_card.set_product_description(u"ABC bank XYZ card");
+  EXPECT_TRUE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(
+      valid_nickname + UTF8ToUTF16(std::string("  ") +
+                                   test::ObfuscatedCardDigitsAsUTF8("5100")),
+      credit_card.CardIdentifierStringForAutofillDisplay());
+}
+
+// Test that customized nickname takes precedence over credit card's nickname.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_WithCustomizedNickname) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  std::u16string customized_nickname = u"My grocery shopping Visa card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  credit_card.SetNickname(u"My Visa Card");
+  credit_card.set_product_description(u"ABC bank XYZ card");
+  EXPECT_TRUE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(
+      customized_nickname +
+          UTF8ToUTF16(std::string("  ") +
+                      test::ObfuscatedCardDigitsAsUTF8("5100")),
+      credit_card.CardIdentifierStringForAutofillDisplay(customized_nickname));
+}
+
+// Test that the card number is formatted as per the obfuscation length.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_WithObfuscationLength) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  int obfuscation_length = 2;
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  EXPECT_EQ(
+      UTF8ToUTF16(std::string("Mastercard  ") +
+                  test::ObfuscatedCardDigitsAsUTF8("5100", obfuscation_length)),
+      credit_card.CardIdentifierStringForAutofillDisplay(u"",
+                                                         obfuscation_length));
 }
 
 TEST(CreditCardTest, AssignmentOperator) {
@@ -559,6 +613,8 @@ INSTANTIATE_TEST_SUITE_P(
         SetExpirationDateFromStringTestCase{"05/45", 5, 2045},
         SetExpirationDateFromStringTestCase{"5/2045", 5, 2045},
         SetExpirationDateFromStringTestCase{"05/2045", 5, 2045},
+        SetExpirationDateFromStringTestCase{"05 / 45", 5, 2045},
+        SetExpirationDateFromStringTestCase{"05 / 2045", 5, 2045},
 
         // "-" separator.
         SetExpirationDateFromStringTestCase{"05-45", 5, 2045},
@@ -1314,7 +1370,7 @@ TEST(CreditCardTest, IsDeletable) {
   const base::Time kArbitraryTime = base::Time::FromDoubleT(1000000000);
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::TimeDelta::FromDays(1));
+                    base::Days(1));
 
   // Created a card that has not been used since over the deletion threshold.
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
@@ -1428,6 +1484,9 @@ const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
     {"19", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_2_DIGIT_YEAR}},
     {"01/2019", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
     {"01-2019", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
+    {"01/19", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
+    {"01-19", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
+    {"01 / 19", "01", "2019", LOCAL_CARD, {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
     {"01/2020", "01", "2019", LOCAL_CARD, ServerFieldTypeSet()},
     {"20", "01", "2019", LOCAL_CARD, ServerFieldTypeSet()},
     {"2021", "01", "2019", LOCAL_CARD, ServerFieldTypeSet()},
@@ -1713,70 +1772,116 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
   ASSERT_EQ(std::u16string(), card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(std::u16string()),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                std::u16string(), /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
                           "2010", "1");
   ASSERT_EQ(u"3489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"3489"),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                u"3489", /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
   ASSERT_EQ(u"3489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"3489"),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                u"3489", /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"489");
   ASSERT_EQ(u"489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"489"),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                u"489", /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
+}
+
+TEST(CreditCardTest, FullDigitsForDisplay) {
+  CreditCard card(base::GenerateGUID(), "https://www.example.com/");
+  ASSERT_EQ(std::u16string(), card.FullDigitsForDisplay());
+
+  test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
+                          "2010", "1");
+  ASSERT_EQ(u"5212 3412 3412 3489", card.FullDigitsForDisplay());
+
+  // Unstripped card number.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"5212-3412-3412-3489");
+  ASSERT_EQ(u"5212 3412 3412 3489", card.FullDigitsForDisplay());
+
+  // 15-digit card number stays the same.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"378282246310005");
+  ASSERT_EQ(u"378282246310005", card.FullDigitsForDisplay());
+
+  // 19-digit card number stays the same.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"4532261615476013542");
+  ASSERT_EQ(u"4532261615476013542", card.FullDigitsForDisplay());
+
+  // Ideally FullDigitsForDisplay shouldn't be invoked for masked cards.Test
+  // here just in case. Masked card stays the same.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
+  ASSERT_EQ(u"3489", card.FullDigitsForDisplay());
+}
+
+TEST(CreditCardTest, GetNonEmptyRawTypes) {
+  CreditCard credit_card(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "4234567890123456" /* Visa */, "01", "2999", "");
+
+  std::vector<ServerFieldType> expected_raw_types{
+      CREDIT_CARD_NAME_FULL,
+      CREDIT_CARD_NAME_FIRST,
+      CREDIT_CARD_NAME_LAST,
+      CREDIT_CARD_NUMBER,
+      CREDIT_CARD_TYPE,
+      CREDIT_CARD_EXP_MONTH,
+      CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_4_DIGIT_YEAR,
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
+
+  ServerFieldTypeSet non_empty_raw_types;
+  credit_card.GetNonEmptyRawTypes(&non_empty_raw_types);
+
+  EXPECT_THAT(non_empty_raw_types,
+              testing::UnorderedElementsAreArray(expected_raw_types));
 }
 
 // Verifies that a credit card should be updated.
 struct ShouldUpdateExpirationTestCase {
   bool should_update_expiration;
-  int month;
-  int year;
+  base::TimeDelta time_delta;
   CreditCard::RecordType record_type;
-  CreditCard::ServerStatus server_status;
 };
+
+constexpr base::TimeDelta kCurrent = base::Days(0);
+constexpr base::TimeDelta kOneYear = base::Days(365);
+constexpr base::TimeDelta kOneMonth = base::Days(31);
+
+void MonthAndYearFromDelta(const base::TimeDelta& time_delta,
+                           int& month,
+                           int& year) {
+  base::Time now = AutofillClock::Now();
+  autofill::TestAutofillClock test_clock;
+  test_clock.SetNow(now);
+  base::Time::Exploded exploded;
+  (now + time_delta).LocalExplode(&exploded);
+  month = exploded.month;
+  year = exploded.year;
+}
 
 class ShouldUpdateExpirationTest
     : public testing::TestWithParam<ShouldUpdateExpirationTestCase> {};
 
-class TestingTimes {
- public:
-  TestingTimes() {
-    now_ = AutofillClock::Now();
-    (now_ - base::TimeDelta::FromDays(365)).LocalExplode(&last_year_);
-    (now_ - base::TimeDelta::FromDays(31)).LocalExplode(&last_month_);
-    now_.LocalExplode(&current_);
-    (now_ + base::TimeDelta::FromDays(31)).LocalExplode(&next_month_);
-    (now_ + base::TimeDelta::FromDays(365)).LocalExplode(&next_year_);
-  }
-
-  base::Time now_;
-  base::Time::Exploded last_year_;
-  base::Time::Exploded last_month_;
-  base::Time::Exploded current_;
-  base::Time::Exploded next_month_;
-  base::Time::Exploded next_year_;
-};
-
-TestingTimes testingTimes;
-
 TEST_P(ShouldUpdateExpirationTest, ShouldUpdateExpiration) {
   auto test_case = GetParam();
   CreditCard card;
-  card.SetExpirationMonth(test_case.month);
-  card.SetExpirationYear(test_case.year);
+  int month, year;
+  MonthAndYearFromDelta(test_case.time_delta, month, year);
+  card.SetExpirationMonth(month);
+  card.SetExpirationYear(year);
   card.set_record_type(test_case.record_type);
-  if (card.record_type() != CreditCard::LOCAL_CARD)
-    card.SetServerStatus(test_case.server_status);
 
-  EXPECT_EQ(test_case.should_update_expiration,
-            card.ShouldUpdateExpiration(testingTimes.now_));
+  EXPECT_EQ(test_case.should_update_expiration, card.ShouldUpdateExpiration());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1784,93 +1889,137 @@ INSTANTIATE_TEST_SUITE_P(
     ShouldUpdateExpirationTest,
     testing::Values(
         // Cards that expired last year should always be updated.
-        ShouldUpdateExpirationTestCase{true, testingTimes.last_year_.month,
-                                       testingTimes.last_year_.year,
-                                       CreditCard::LOCAL_CARD},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
+        ShouldUpdateExpirationTestCase{true, -kOneYear, CreditCard::LOCAL_CARD},
+        ShouldUpdateExpirationTestCase{true, -kOneYear,
+                                       CreditCard::FULL_SERVER_CARD},
+        ShouldUpdateExpirationTestCase{true, -kOneYear,
+                                       CreditCard::MASKED_SERVER_CARD},
 
         // Cards that expired last month should always be updated.
-        ShouldUpdateExpirationTestCase{true, testingTimes.last_month_.month,
-                                       testingTimes.last_month_.year,
+        ShouldUpdateExpirationTestCase{true, -kOneMonth,
                                        CreditCard::LOCAL_CARD},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
+        ShouldUpdateExpirationTestCase{true, -kOneMonth,
+                                       CreditCard::FULL_SERVER_CARD},
+        ShouldUpdateExpirationTestCase{true, -kOneMonth,
+                                       CreditCard::MASKED_SERVER_CARD},
 
-        // Cards that expire this month should be updated only if the server
-        // status is EXPIRED.
-        ShouldUpdateExpirationTestCase{false, testingTimes.current_.month,
-                                       testingTimes.current_.year,
-                                       CreditCard::LOCAL_CARD},
-        ShouldUpdateExpirationTestCase{
-            false, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            false, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
+        // Cards that expire this month should not be updated.
+        ShouldUpdateExpirationTestCase{false, kCurrent, CreditCard::LOCAL_CARD},
+        ShouldUpdateExpirationTestCase{false, kCurrent,
+                                       CreditCard::FULL_SERVER_CARD},
+        ShouldUpdateExpirationTestCase{false, kCurrent,
+                                       CreditCard::MASKED_SERVER_CARD},
 
-        // Cards that expire next month should be updated only if the server
-        // status is EXPIRED.
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_month_.month,
-                                       testingTimes.next_month_.year,
+        // Cards that expire next month should not be updated.
+        ShouldUpdateExpirationTestCase{false, kOneMonth,
                                        CreditCard::LOCAL_CARD},
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_month_.month,
-                                       testingTimes.next_month_.year,
-                                       CreditCard::MASKED_SERVER_CARD,
-                                       CreditCard::OK},
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_month_.month,
-                                       testingTimes.next_month_.year,
-                                       CreditCard::FULL_SERVER_CARD,
-                                       CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_month_.month, testingTimes.next_month_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_month_.month, testingTimes.next_month_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
+        ShouldUpdateExpirationTestCase{false, kOneMonth,
+                                       CreditCard::MASKED_SERVER_CARD},
+        ShouldUpdateExpirationTestCase{false, kOneMonth,
+                                       CreditCard::FULL_SERVER_CARD},
 
-        // Cards that expire next year should be updated only if the server
-        // status is EXPIRED.
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_year_.month,
-                                       testingTimes.next_year_.year,
-                                       CreditCard::LOCAL_CARD},
-        ShouldUpdateExpirationTestCase{
-            false, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            false, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED}));
+        // Cards that expire next year should not be updated.
+        ShouldUpdateExpirationTestCase{false, kOneYear, CreditCard::LOCAL_CARD},
+        ShouldUpdateExpirationTestCase{false, kOneYear,
+                                       CreditCard::MASKED_SERVER_CARD},
+        ShouldUpdateExpirationTestCase{false, kOneYear,
+                                       CreditCard::FULL_SERVER_CARD}));
+
+#if BUILDFLAG(IS_ANDROID)
+class CreditCardTestForKeyboardAccessory : public testing::Test {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillKeyboardAccessory);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
+  const std::u16string digits = u"1235";
+  const std::u16string expected =
+      std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
+      CreditCard::GetMidlineEllipsisDots(2) + digits +
+      base::i18n::kPopDirectionalFormatting;
+
+  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
+                          digits, /*obfuscation_length=*/2));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+enum Expectation { GREATER, LESS };
+
+struct VirtualCardRankingTestCase {
+  const std::string guid_a;
+  const int use_count_a;
+  const base::Time use_date_a;
+  const std::string guid_b;
+  const int use_count_b;
+  const base::Time use_date_b;
+  Expectation expectation;
+};
+
+base::Time current_time = AutofillClock::Now();
+
+class VirtualCardRankingTest
+    : public testing::TestWithParam<VirtualCardRankingTestCase> {};
+
+TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
+  // Enable kAutofillEnableRankingFormula so that it uses new formula instead of
+  // frecency.
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kAutofillEnableRankingFormula);
+
+  auto test_case = GetParam();
+
+  CreditCard model_a = test::GetVirtualCard();
+  model_a.set_guid(test_case.guid_a);
+  model_a.set_use_count(test_case.use_count_a);
+  model_a.set_use_date(test_case.use_date_a);
+
+  TestAutofillDataModel model_b(test_case.guid_b, test_case.use_count_b,
+                                test_case.use_date_b);
+
+  EXPECT_EQ(test_case.expectation == GREATER,
+            model_a.HasGreaterRankingThan(&model_b, current_time));
+  EXPECT_NE(test_case.expectation == GREATER,
+            model_b.HasGreaterRankingThan(&model_a, current_time));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardTest,
+    VirtualCardRankingTest,
+    testing::Values(
+        // Same days since last use and use count, but model A is a virtual card
+        // and ranked higher.
+        VirtualCardRankingTestCase{"guid_a", 10, current_time, "guid_b", 10,
+                                   current_time, GREATER},
+        // Same days since last use and although model A has a smaller use
+        // count, it is a virtual card and ranked higher.
+        VirtualCardRankingTestCase{"guid_a", 1, current_time, "guid_b", 10,
+                                   current_time, GREATER},
+        // Model A has a larger use count but smaller days since last use. model
+        // A is ranked higher due to virtual card boost.
+        VirtualCardRankingTestCase{"guid_a", 10, current_time - base::Days(10),
+                                   "guid_b", 5, current_time, GREATER},
+        // Model A has a larger use count but also a much larger days since last
+        // use. Due to this, model B is ranked higher despite the virtual card
+        // boost and greater use count of model A.
+        VirtualCardRankingTestCase{"guid_a", 10, current_time - base::Days(40),
+                                   "guid_b", 3, current_time, LESS},
+        // Model A only has a use count of 1 but due to its virtual card bost
+        // and much smaller days since last use it is ranked higher than model
+        // B.
+        VirtualCardRankingTestCase{"guid_a", 1, current_time - base::Days(30),
+                                   "guid_b", 300, current_time - base::Days(90),
+                                   GREATER},
+        // Model B only has a use count of 1 but due to its much smaller day
+        // since last use it is ranked higher than model A despite its virtual
+        // card boost and much higher use count.
+        VirtualCardRankingTestCase{"guid_a", 300, current_time - base::Days(90),
+                                   "guid_b", 1, current_time - base::Days(30),
+                                   LESS}));
 
 }  // namespace autofill

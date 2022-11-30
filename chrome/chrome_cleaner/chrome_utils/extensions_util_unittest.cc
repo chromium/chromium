@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
@@ -108,7 +107,7 @@ TEST(ExtensionsUtilTest, GetNonWhitelistedDefaultExtensions) {
 
   const std::wstring expected_extension_ids[] = {kTestExtensionId1,
                                                  kTestExtensionId2};
-  ASSERT_EQ(base::size(expected_extension_ids), policies.size());
+  ASSERT_EQ(std::size(expected_extension_ids), policies.size());
   const std::wstring found_extension_ids[] = {policies[0].extension_id,
                                               policies[1].extension_id};
   EXPECT_THAT(expected_extension_ids,
@@ -212,7 +211,7 @@ TEST(ExtensionsUtilTest, GetMasterPreferencesExtensions) {
 
   const std::wstring expected_extension_ids[] = {kTestExtensionId6,
                                                  kTestExtensionId7};
-  ASSERT_EQ(base::size(expected_extension_ids), policies.size());
+  ASSERT_EQ(std::size(expected_extension_ids), policies.size());
   const std::wstring found_extension_ids[] = {policies[0].extension_id,
                                               policies[1].extension_id};
   EXPECT_THAT(expected_extension_ids,

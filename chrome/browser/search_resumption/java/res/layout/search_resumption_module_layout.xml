@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- A layout to show search suggestions. -->
+<org.chromium.chrome.browser.search_resumption.SearchResumptionModuleView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_resumption_module_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/search_resumption_module_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|start"
+        android:paddingTop="@dimen/search_resumption_module_header_padding_top"
+        android:paddingBottom="@dimen/search_resumption_module_header_padding_top"
+        android:paddingStart="@dimen/search_resumption_module_header_padding_start"
+        android:paddingEnd="@dimen/search_resumption_module_header_padding_start"
+        android:contentDescription="@string/search_resumption_module_title">
+
+        <TextView
+            android:id="@+id/header_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="@string/search_resumption_module_subtitle"
+            android:textAlignment="viewStart"
+            android:layout_toStartOf="@+id/header_option"
+            android:layout_alignParentStart="true"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
+
+        <ImageView
+            android:id="@+id/header_option"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/search_resumption_module_option_button_height"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/DefaultSearchProviderSuggestURLDesc"
+            android:src="@drawable/ic_expand_less_black_24dp"
+            app:tint="@color/default_icon_color_secondary_tint_list"/>
+    </RelativeLayout>
+
+    <org.chromium.chrome.browser.search_resumption.SearchResumptionTileContainerView
+        android:id="@+id/search_resumption_module_tiles_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/search_resumption_module_margin_bottom"
+        android:baselineAligned="false"
+        android:visibility="gone"
+        android:orientation="vertical">
+    </org.chromium.chrome.browser.search_resumption.SearchResumptionTileContainerView>
+</org.chromium.chrome.browser.search_resumption.SearchResumptionModuleView>

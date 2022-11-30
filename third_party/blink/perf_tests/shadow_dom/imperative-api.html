@@ -15,7 +15,7 @@
         for (let i = 0; i < 100; i++) {
           const slot1 = document.createElement("slot");
           shadow_root.appendChild(slot1);
-          slot1.assign([child1]);
+          slot1.assign(child1);
           child1.assignedSlot;
           slot1.assignedElements();
           slot1.remove();

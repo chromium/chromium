@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,17 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/gtest_prod_util.h"
 #include "base/trace_event/heap_profiler_allocation_context.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Define COUNT_RESIDENT_BYTES_SUPPORTED if platform supports counting of the
 // resident memory.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #define COUNT_RESIDENT_BYTES_SUPPORTED
 #endif
 
@@ -40,6 +40,7 @@ class UnguessableToken;
 
 namespace trace_event {
 
+class TraceEventMemoryOverhead;
 class TracedValue;
 
 // ProcessMemoryDump is as a strongly typed container which holds the dumps
@@ -76,18 +77,22 @@ class BASE_EXPORT ProcessMemoryDump {
   // |start_address| and |mapped_size|. |mapped_size| is specified in bytes. The
   // value returned is valid only if the given range is currently mmapped by the
   // process. The |start_address| must be page-aligned.
-  static base::Optional<size_t> CountResidentBytes(void* start_address,
+  static absl::optional<size_t> CountResidentBytes(void* start_address,
                                                    size_t mapped_size);
 
   // The same as above, but the given mapped range should belong to the
   // shared_memory's mapped region.
-  static base::Optional<size_t> CountResidentBytesInSharedMemory(
+  static absl::optional<size_t> CountResidentBytesInSharedMemory(
       void* start_address,
       size_t mapped_size);
 #endif
 
   explicit ProcessMemoryDump(const MemoryDumpArgs& dump_args);
   ProcessMemoryDump(ProcessMemoryDump&&);
+
+  ProcessMemoryDump(const ProcessMemoryDump&) = delete;
+  ProcessMemoryDump& operator=(const ProcessMemoryDump&) = delete;
+
   ~ProcessMemoryDump();
 
   ProcessMemoryDump& operator=(ProcessMemoryDump&&);
@@ -266,7 +271,7 @@ class BASE_EXPORT ProcessMemoryDump {
       int importance,
       bool is_weak);
 
-  MemoryAllocatorDump* GetBlackHoleMad();
+  MemoryAllocatorDump* GetBlackHoleMad(const std::string& absolute_name);
 
   UnguessableToken process_token_;
   AllocatorDumpsMap allocator_dumps_;
@@ -285,8 +290,6 @@ class BASE_EXPORT ProcessMemoryDump {
   // When set to true, the DCHECK(s) for invalid dump creations on the
   // background mode are disabled for testing.
   static bool is_black_hole_non_fatal_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryDump);
 };
 
 }  // namespace trace_event

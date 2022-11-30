@@ -86,11 +86,24 @@
     margin-bottom: 8px;
   }
 
-  #error-icon {
-    --iron-icon-fill-color: var(--error-color);
+  #allowlist-warning {
+    flex: 1;
+    margin-bottom: 8px;
+  }
+
+  .message-icon {
     height: 18px;
     margin-inline-end: 4px;
+    vertical-align: top;
     width: 18px;
+  }
+
+  #warnings .message-icon {
+    --iron-icon-fill-color: var(--error-color);
+  }
+
+  #allowlist-warning .message-icon {
+    --iron-icon-fill-color: var(--warning-color);
   }
 
   #extension-id {
@@ -174,11 +187,7 @@
   <div id="main">
     <div id="icon-wrapper">
       <img id="icon" src="[[data.iconUrl]]"
-          aria-describedby="a11yAssociation"
-          alt$="[[appOrExtension(
-              data.type,
-              '$i18nPolymer{appIcon}',
-              '$i18nPolymer{extensionIcon}')]]">
+          aria-describedby="a11yAssociation" alt="">
       <template is="dom-if"
           if="[[computeSourceIndicatorIcon_(data.*)]]">
         <div id="source-indicator">
@@ -213,13 +222,13 @@
         </div>
       </div>
       <div id="description" class="cr-secondary-text multiline-clippable-text"
-          hidden$="[[hasWarnings_(data.disableReasons.*, data.*)]]">
+          hidden$="[[!showDescription_(data.disableReasons.*, data.*)]]">
         [[data.description]]
       </div>
       <template is="dom-if"
-          if="[[hasWarnings_(data.disableReasons.*, data.*)]]">
+          if="[[hasSevereWarnings_(data.disableReasons.*, data.*)]]">
         <div id="warnings">
-          <iron-icon id="error-icon" icon="cr:error"></iron-icon>
+          <iron-icon class="message-icon" icon="cr:error"></iron-icon>
           <span id="runtime-warnings" aria-describedby="a11yAssociation"
               hidden$="[[!data.runtimeWarnings.length]]">
             <template is="dom-repeat" items="[[data.runtimeWarnings]]">
@@ -242,6 +251,20 @@
          --></span>
         </div>
       </template>
+      <template is="dom-if"
+          if="[[showAllowlistWarning_(data.disableReasons.*, data.*)]]">
+        <div id="allowlist-warning">
+          <iron-icon class="message-icon"
+              icon="extensions-icons:safebrowsing_warning">
+          </iron-icon>
+          <span class="cr-secondary-text" aria-describedby="a11yAssociation">
+            $i18n{itemAllowlistWarning}
+            <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank">
+              $i18n{learnMore}
+            </a>
+          </span>
+        </div>
+      </template>
       <template is="dom-if" if="[[inDevMode]]">
         <div id="extension-id" class="bounded-text cr-secondary-text">
           [[data.id]]
@@ -256,14 +279,14 @@
                 $i18n{itemInspectViews}
               </span>
               <a class="clippable-flex-text" is="action-link"
-                  title="[[computeFirstInspectTitle_(data.views)]]"
+                  title="[[computeFirstInspectTitle_(firstInspectView_)]]"
                   on-click="onInspectTap_">
-                [[computeFirstInspectLabel_(data.views)]]
+                [[computeFirstInspectLabel_(firstInspectView_)]]
               </a>
               <a is="action-link"
                   hidden$="[[computeExtraViewsHidden_(data.views)]]"
                   on-click="onExtraInspectTap_">
-                [[computeExtraInspectLabel_(data.views)]]
+                &nbsp;[[computeExtraInspectLabel_(data.views)]]
               </a>
             </div>
           </div>
@@ -277,7 +300,7 @@
           aria-describedby="a11yAssociation">
         $i18n{itemDetails}
       </cr-button>
-      <cr-button id="remove-button" on-click="onRemoveTap_"
+      <cr-button id="removeButton" on-click="onRemoveTap_"
           aria-describedby="a11yAssociation"
           hidden="[[data.mustRemainInstalled]]">
         $i18n{remove}

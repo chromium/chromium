@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -24,6 +23,10 @@ class AssetLinkData {
  public:
   AssetLinkData();
   AssetLinkData(AssetLinkData&& other) noexcept;
+
+  AssetLinkData(const AssetLinkData&) = delete;
+  AssetLinkData& operator=(const AssetLinkData&) = delete;
+
   ~AssetLinkData();
 
   AssetLinkData& operator=(AssetLinkData&& other);
@@ -36,8 +39,6 @@ class AssetLinkData {
  private:
   std::vector<GURL> includes_;
   std::vector<GURL> targets_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssetLinkData);
 };
 
 }  // namespace password_manager

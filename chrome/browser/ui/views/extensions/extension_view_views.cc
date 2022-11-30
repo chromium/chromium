@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,11 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
-
-#if defined(USE_AURA)
-#include "ui/base/cursor/cursor.h"
-#endif
 
 ExtensionViewViews::ExtensionViewViews(extensions::ExtensionViewHost* host)
     : views::WebView(host->browser() ? host->browser()->profile() : nullptr),
@@ -133,8 +130,8 @@ void ExtensionViewViews::OnLoaded() {
   ResizeDueToAutoResize(web_contents(), pending_preferred_size_);
 }
 
-gfx::NativeCursor ExtensionViewViews::GetCursor(const ui::MouseEvent& event) {
-  return gfx::kNullCursor;
+ui::Cursor ExtensionViewViews::GetCursor(const ui::MouseEvent& event) {
+  return ui::Cursor();
 }
 
 void ExtensionViewViews::PreferredSizeChanged() {

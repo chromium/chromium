@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@
 #include <ucontext.h>
 #include <unistd.h>
 
+#include <iterator>
+
 #include "base/bit_cast.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_architecture.h"
@@ -66,8 +66,9 @@ void InitializeContext(NativeCPUContext* context) {
 
 void ExpectContext(const CPUContext& actual, const NativeCPUContext& expected) {
   EXPECT_EQ(actual.architecture, kCPUArchitectureX86);
-  EXPECT_EQ(actual.x86->eax,
-            bit_cast<uint32_t>(expected.ucontext.uc_mcontext.gregs[REG_EAX]));
+  EXPECT_EQ(
+      actual.x86->eax,
+      base::bit_cast<uint32_t>(expected.ucontext.uc_mcontext.gregs[REG_EAX]));
   for (unsigned int byte_offset = 0; byte_offset < sizeof(actual.x86->fxsave);
        ++byte_offset) {
     SCOPED_TRACE(base::StringPrintf("byte offset = %u\n", byte_offset));
@@ -87,7 +88,7 @@ void InitializeContext(NativeCPUContext* context) {
 void ExpectContext(const CPUContext& actual, const NativeCPUContext& expected) {
   EXPECT_EQ(actual.architecture, kCPUArchitectureX86_64);
   EXPECT_EQ(actual.x86_64->rax,
-            bit_cast<uint64_t>(expected.uc_mcontext.gregs[REG_RAX]));
+            base::bit_cast<uint64_t>(expected.uc_mcontext.gregs[REG_RAX]));
   for (unsigned int byte_offset = 0;
        byte_offset < sizeof(actual.x86_64->fxsave);
        ++byte_offset) {
@@ -171,7 +172,7 @@ void InitializeContext(NativeCPUContext* context) {
   test_context->vfp.head.magic = VFP_MAGIC;
   test_context->vfp.head.size = sizeof(test_context->vfp);
   memset(&test_context->vfp.context, 'v', sizeof(test_context->vfp.context));
-  for (size_t reg = 0; reg < base::size(test_context->vfp.context.vfp.fpregs);
+  for (size_t reg = 0; reg < std::size(test_context->vfp.context.vfp.fpregs);
        ++reg) {
     test_context->vfp.context.vfp.fpregs[reg] = reg;
   }
@@ -219,7 +220,7 @@ struct TestCoprocessorContext {
 void InitializeContext(NativeCPUContext* context) {
   memset(context, 'x', sizeof(*context));
 
-  for (size_t index = 0; index < base::size(context->uc_mcontext.regs);
+  for (size_t index = 0; index < std::size(context->uc_mcontext.regs);
        ++index) {
     context->uc_mcontext.regs[index] = index;
   }
@@ -238,7 +239,7 @@ void InitializeContext(NativeCPUContext* context) {
   test_context->fpsimd.head.size = sizeof(test_context->fpsimd);
   test_context->fpsimd.fpsr = 1;
   test_context->fpsimd.fpcr = 2;
-  for (size_t reg = 0; reg < base::size(test_context->fpsimd.vregs); ++reg) {
+  for (size_t reg = 0; reg < std::size(test_context->fpsimd.vregs); ++reg) {
     test_context->fpsimd.vregs[reg] = reg;
   }
 
@@ -271,7 +272,7 @@ void ExpectContext(const CPUContext& actual, const NativeCPUContext& expected) {
 using NativeCPUContext = ucontext_t;
 
 void InitializeContext(NativeCPUContext* context) {
-  for (size_t reg = 0; reg < base::size(context->uc_mcontext.gregs); ++reg) {
+  for (size_t reg = 0; reg < std::size(context->uc_mcontext.gregs); ++reg) {
     context->uc_mcontext.gregs[reg] = reg;
   }
   memset(&context->uc_mcontext.fpregs, 44, sizeof(context->uc_mcontext.fpregs));
@@ -286,7 +287,7 @@ void ExpectContext(const CPUContext& actual, const NativeCPUContext& expected) {
 #define CPU_ARCH_NAME mips64
 #endif
 
-  for (size_t reg = 0; reg < base::size(expected.uc_mcontext.gregs); ++reg) {
+  for (size_t reg = 0; reg < std::size(expected.uc_mcontext.gregs); ++reg) {
     EXPECT_EQ(actual.CPU_ARCH_NAME->regs[reg], expected.uc_mcontext.gregs[reg]);
   }
 
@@ -321,7 +322,8 @@ TEST(ExceptionSnapshotLinux, SelfBasic) {
   ASSERT_TRUE(exception.Initialize(&process_reader,
                                    FromPointerCast<LinuxVMAddress>(&siginfo),
                                    FromPointerCast<LinuxVMAddress>(&context),
-                                   gettid()));
+                                   gettid(),
+                                   nullptr));
   EXPECT_EQ(exception.Exception(), static_cast<uint32_t>(siginfo.si_signo));
   EXPECT_EQ(exception.ExceptionInfo(), static_cast<uint32_t>(siginfo.si_code));
   EXPECT_EQ(exception.ExceptionAddress(),
@@ -332,6 +334,9 @@ TEST(ExceptionSnapshotLinux, SelfBasic) {
 class ScopedSigactionRestore {
  public:
   ScopedSigactionRestore() : old_action_(), signo_(-1), valid_(false) {}
+
+  ScopedSigactionRestore(const ScopedSigactionRestore&) = delete;
+  ScopedSigactionRestore& operator=(const ScopedSigactionRestore&) = delete;
 
   ~ScopedSigactionRestore() { Reset(); }
 
@@ -361,12 +366,14 @@ class ScopedSigactionRestore {
   struct sigaction old_action_;
   int signo_;
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSigactionRestore);
 };
 
 class RaiseTest {
  public:
+  RaiseTest() = delete;
+  RaiseTest(const RaiseTest&) = delete;
+  RaiseTest& operator=(const RaiseTest&) = delete;
+
   static void Run() {
     test_complete_ = false;
 
@@ -389,7 +396,8 @@ class RaiseTest {
     ASSERT_TRUE(exception.Initialize(&process_reader,
                                      FromPointerCast<LinuxVMAddress>(siginfo),
                                      FromPointerCast<LinuxVMAddress>(context),
-                                     gettid()));
+                                     gettid(),
+                                     nullptr));
 
     EXPECT_EQ(exception.Exception(), static_cast<uint32_t>(kSigno));
 
@@ -406,8 +414,6 @@ class RaiseTest {
 
   static constexpr uint32_t kSigno = SIGUSR1;
   static bool test_complete_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RaiseTest);
 };
 bool RaiseTest::test_complete_ = false;
 
@@ -418,6 +424,10 @@ TEST(ExceptionSnapshotLinux, Raise) {
 class TimerTest {
  public:
   TimerTest() : event_(), timer_(-1), test_complete_(false) { test_ = this; }
+
+  TimerTest(const TimerTest&) = delete;
+  TimerTest& operator=(const TimerTest&) = delete;
+
   ~TimerTest() { test_ = nullptr; }
 
   void Run() {
@@ -458,7 +468,8 @@ class TimerTest {
     ASSERT_TRUE(exception.Initialize(&process_reader,
                                      FromPointerCast<LinuxVMAddress>(siginfo),
                                      FromPointerCast<LinuxVMAddress>(context),
-                                     gettid()));
+                                     gettid(),
+                                     nullptr));
 
     EXPECT_EQ(exception.Exception(), static_cast<uint32_t>(kSigno));
 
@@ -479,8 +490,6 @@ class TimerTest {
 
   static constexpr uint32_t kSigno = SIGALRM;
   static TimerTest* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerTest);
 };
 TimerTest* TimerTest::test_;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
 #include "net/disk_cache/blockfile/storage_block.h"
@@ -72,6 +72,9 @@ class Rankings {
     explicit ScopedRankingsBlock(Rankings* rankings);
     ScopedRankingsBlock(Rankings* rankings, CacheRankingsBlock* node);
 
+    ScopedRankingsBlock(const ScopedRankingsBlock&) = delete;
+    ScopedRankingsBlock& operator=(const ScopedRankingsBlock&) = delete;
+
     ~ScopedRankingsBlock() {
       rankings_->FreeRankingsBlock(get());
     }
@@ -88,8 +91,7 @@ class Rankings {
     }
 
    private:
-    Rankings* rankings_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedRankingsBlock);
+    raw_ptr<Rankings> rankings_;
   };
 
   // If we have multiple lists, we have to iterate through all at the same time.
@@ -100,10 +102,14 @@ class Rankings {
 
     List list;                     // Which entry was returned to the user.
     CacheRankingsBlock* nodes[3];  // Nodes on the first three lists.
-    Rankings* my_rankings;
+    raw_ptr<Rankings> my_rankings;
   };
 
   Rankings();
+
+  Rankings(const Rankings&) = delete;
+  Rankings& operator=(const Rankings&) = delete;
+
   ~Rankings();
 
   bool Init(BackendImpl* backend, bool count_lists);
@@ -200,15 +206,13 @@ class Rankings {
   void IncrementCounter(List list);
   void DecrementCounter(List list);
 
-  bool init_;
+  bool init_ = false;
   bool count_lists_;
   Addr heads_[LAST_ELEMENT];
   Addr tails_[LAST_ELEMENT];
-  BackendImpl* backend_;
-  LruData* control_data_;  // Data related to the LRU lists.
+  raw_ptr<BackendImpl> backend_;
+  raw_ptr<LruData> control_data_;  // Data related to the LRU lists.
   IteratorList iterators_;
-
-  DISALLOW_COPY_AND_ASSIGN(Rankings);
 };
 
 }  // namespace disk_cache

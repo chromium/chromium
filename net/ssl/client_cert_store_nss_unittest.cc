@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,8 +91,8 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
   ASSERT_TRUE(base::ReadFileToString(
       GetTestCertsDirectory().AppendASCII("client_1.pk8"), &pkcs8_key));
 
-  std::unique_ptr<ClientCertStoreNSS> store(
-      new ClientCertStoreNSS(ClientCertStoreNSS::PasswordDelegateFactory()));
+  auto store = std::make_unique<ClientCertStoreNSS>(
+      ClientCertStoreNSS::PasswordDelegateFactory());
 
   // These test keys are RSA keys.
   std::vector<uint16_t> expected = SSLPrivateKey::DefaultAlgorithmPreferences(
@@ -101,8 +101,8 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
   {
     // Request certificates matching B CA, |client_1|'s issuer.
     auto request = base::MakeRefCounted<SSLCertRequestInfo>();
-    request->cert_authorities.push_back(std::string(
-        reinterpret_cast<const char*>(kAuthority1DN), sizeof(kAuthority1DN)));
+    request->cert_authorities.emplace_back(
+        reinterpret_cast<const char*>(kAuthority1DN), sizeof(kAuthority1DN));
 
     ClientCertIdentityList selected_identities;
     base::RunLoop loop;
@@ -135,9 +135,9 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
   {
     // Request certificates matching C Root CA, |client_1_ca|'s issuer.
     auto request = base::MakeRefCounted<SSLCertRequestInfo>();
-    request->cert_authorities.push_back(
-        std::string(reinterpret_cast<const char*>(kAuthorityRootDN),
-                    sizeof(kAuthorityRootDN)));
+    request->cert_authorities.emplace_back(
+        reinterpret_cast<const char*>(kAuthorityRootDN),
+        sizeof(kAuthorityRootDN));
 
     ClientCertIdentityList selected_identities;
     base::RunLoop loop;
@@ -200,8 +200,8 @@ TEST(ClientCertStoreNSSTest, SubjectPrintableStringContainingUTF8) {
 
   ASSERT_TRUE(ImportClientCertToSlot(cert.get(), test_db.slot()));
 
-  std::unique_ptr<ClientCertStoreNSS> store(
-      new ClientCertStoreNSS(ClientCertStoreNSS::PasswordDelegateFactory()));
+  auto store = std::make_unique<ClientCertStoreNSS>(
+      ClientCertStoreNSS::PasswordDelegateFactory());
 
   // These test keys are RSA keys.
   std::vector<uint16_t> expected = SSLPrivateKey::DefaultAlgorithmPreferences(
@@ -215,8 +215,8 @@ TEST(ClientCertStoreNSSTest, SubjectPrintableStringContainingUTF8) {
       0x6e, 0x74, 0x65, 0x72, 0x6e, 0x65, 0x74, 0x20, 0x57, 0x69, 0x64, 0x67,
       0x69, 0x74, 0x73, 0x20, 0x50, 0x74, 0x79, 0x20, 0x4c, 0x74, 0x64};
   auto request = base::MakeRefCounted<SSLCertRequestInfo>();
-  request->cert_authorities.push_back(std::string(
-      reinterpret_cast<const char*>(kAuthorityDN), sizeof(kAuthorityDN)));
+  request->cert_authorities.emplace_back(
+      reinterpret_cast<const char*>(kAuthorityDN), sizeof(kAuthorityDN));
 
   ClientCertIdentityList selected_identities;
   base::RunLoop loop;

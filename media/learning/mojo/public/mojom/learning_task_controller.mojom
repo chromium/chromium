@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ interface LearningTaskController {
           TargetValue? default_target);
 
   // Asynchronously predicts distribution for given |features|. |callback| will
-  // receive a base::nullopt prediction when model is not available.
+  // receive a absl::nullopt prediction when model is not available.
   PredictDistribution(array<FeatureValue> features)
       => (TargetHistogram? predicted);
 };

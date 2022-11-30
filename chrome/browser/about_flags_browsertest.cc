@@ -1,6 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "chrome/browser/about_flags.h"
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -9,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/unexpire_flags.h"
@@ -127,7 +128,7 @@ void WaitForExperimentalFeatures(content::WebContents* contents) {
   bool unused;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       contents,
-      "experimentalFeaturesReady.then(() => {"
+      "experimentalFeaturesReadyForTest.then(() => {"
       "  window.domAutomationController.send(true);"
       "});",
       &unused));
@@ -136,14 +137,17 @@ void WaitForExperimentalFeatures(content::WebContents* contents) {
 const std::vector<flags_ui::FeatureEntry> GetFeatureEntries(
     const std::string& unexpire_name) {
   std::vector<flags_ui::FeatureEntry> entries = {
-      {kFlagName, "name-1", "description-1", -1,
+      {kFlagName, "name-1", "description-1", static_cast<unsigned short>(-1),
        ORIGIN_LIST_VALUE_TYPE(kSwitchName, "")},
-      {kExpiredFlagName, "name-2", "description-2", -1,
+      {kExpiredFlagName, "name-2", "description-2",
+       static_cast<unsigned short>(-1),
        SINGLE_VALUE_TYPE(kExpiredFlagSwitchName)},
-      {kFlagWithOptionSelectorName, "name-3", "description-3", -1,
+      {kFlagWithOptionSelectorName, "name-3", "description-3",
+       static_cast<unsigned short>(-1),
        SINGLE_VALUE_TYPE(kFlagWithOptionSelectorSwitchName)}};
   flags_ui::FeatureEntry expiry_entry = {
-      unexpire_name.c_str(), "unexpire name", "unexpire desc", -1,
+      unexpire_name.c_str(), "unexpire name", "unexpire desc",
+      static_cast<unsigned short>(-1),
       SINGLE_VALUE_TYPE("unexpire-dummy-switch")};
   entries.push_back(expiry_entry);
   return entries;
@@ -185,7 +189,8 @@ class AboutFlagsBrowserTest : public InProcessBrowserTest,
   }
 
   void NavigateToFlagsPage() {
-    ui_test_utils::NavigateToURL(browser(), GURL("chrome://flags"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://flags")));
     WaitForExperimentalFeatures(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
@@ -332,7 +337,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(true));
 
 // Crashes on Win.  http://crbug.com/1108357
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ExpiryHidesFlag DISABLED_ExpiryHidesFlag
 #else
 #define MAYBE_ExpiryHidesFlag ExpiryHidesFlag

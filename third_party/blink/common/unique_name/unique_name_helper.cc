@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -55,7 +55,7 @@ class PendingChildFrameAdapter : public UniqueNameHelper::FrameAdapter {
   }
 
  private:
-  FrameAdapter* const parent_;
+  const raw_ptr<FrameAdapter> parent_;
 };
 
 constexpr char kFramePathPrefix[] = "<!--framePath /";
@@ -148,7 +148,7 @@ std::string AppendUniqueSuffix(const FrameAdapter* frame,
 std::string CalculateNameInternal(const FrameAdapter* frame,
                                   base::StringPiece name) {
   if (!name.empty() && frame->IsCandidateUnique(name) && name != "_blank")
-    return name.as_string();
+    return std::string(name);
 
   std::string candidate = GenerateCandidate(frame);
   if (frame->IsCandidateUnique(candidate))
@@ -163,9 +163,9 @@ std::string CalculateFrameHash(base::StringPiece name) {
 
   std::string hashed_name;
   uint8_t result[crypto::kSHA256Length];
-  crypto::SHA256HashString(name, result, base::size(result));
+  crypto::SHA256HashString(name, result, std::size(result));
   hashed_name += "<!--frameHash";
-  hashed_name += base::HexEncode(result, base::size(result));
+  hashed_name += base::HexEncode(result, std::size(result));
   hashed_name += "-->";
   return hashed_name;
 }
@@ -316,8 +316,8 @@ std::string UniqueNameHelper::ExtractStableNameForTesting(
     base::StringPiece unique_name) {
   size_t i = unique_name.rfind(kDynamicFrameMarker);
   if (i == std::string::npos)
-    return unique_name.as_string();
-  return unique_name.substr(0, i).as_string();
+    return std::string(unique_name);
+  return std::string(unique_name.substr(0, i));
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define SERVICES_AUDIO_LOCAL_MUTER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -27,13 +27,16 @@ class LocalMuter final : public media::mojom::LocalMuter,
   LocalMuter(LoopbackCoordinator* coordinator,
              const base::UnguessableToken& group_id);
 
+  LocalMuter(const LocalMuter&) = delete;
+  LocalMuter& operator=(const LocalMuter&) = delete;
+
   ~LocalMuter() final;
 
   const base::UnguessableToken& group_id() const { return group_id_; }
 
   // SetAllBindingsLostCallback() must be called before the first call to
   // AddBinding().
-  void SetAllBindingsLostCallback(base::OnceClosure callback);
+  void SetAllBindingsLostCallback(base::RepeatingClosure callback);
   void AddReceiver(
       mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver);
 
@@ -41,19 +44,19 @@ class LocalMuter final : public media::mojom::LocalMuter,
   void OnMemberJoinedGroup(LoopbackGroupMember* member) final;
   void OnMemberLeftGroup(LoopbackGroupMember* member) final;
 
+  bool HasReceivers() { return !receivers_.empty(); }
+
  private:
   // Runs the |all_bindings_lost_callback_| when |bindings_| becomes empty.
   void OnBindingLost();
 
-  LoopbackCoordinator* const coordinator_;
+  const raw_ptr<LoopbackCoordinator> coordinator_;
   const base::UnguessableToken group_id_;
 
   mojo::AssociatedReceiverSet<media::mojom::LocalMuter> receivers_;
-  base::OnceClosure all_bindings_lost_callback_;
+  base::RepeatingClosure all_bindings_lost_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMuter);
 };
 
 }  // namespace audio

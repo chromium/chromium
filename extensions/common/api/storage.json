@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,12 @@
     "description": "Use the <code>chrome.storage</code> API to store, retrieve, and track changes to user data.",
     "unprivileged": true,
     "types": [
+      {
+        "id": "AccessLevel",
+        "type": "string",
+        "enum": ["TRUSTED_CONTEXTS", "TRUSTED_AND_UNTRUSTED_CONTEXTS"],
+        "description": "The storage area's access level."
+      },
       {
         "id": "StorageChange",
         "type": "object",
@@ -145,6 +151,28 @@
               "parameters": [],
               "optional": true
             }
+          }, {
+            "name": "setAccessLevel",
+            "type": "function",
+            "description": "Sets the desired access level for the storage area. The default will be only trusted contexts.",
+            "parameters": [
+              {
+                "type": "object",
+                "name": "accessOptions",
+                "properties": {
+                  "accessLevel": {
+                    "$ref": "AccessLevel",
+                    "description": "The access level of the storage area."
+                  }
+                }
+              }
+            ],
+            "returns_async":  {
+              "name": "callback",
+              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [],
+              "optional": true
+            }
           }
         ],
         "events": [
@@ -231,6 +259,17 @@
         "$ref": "StorageArea",
         "description": "Items in the <code>managed</code> storage area are set by the domain administrator, and are read-only for the extension; trying to modify this namespace results in an error.",
         "value": [ "managed" ]
+      },
+      "session" : {
+        "$ref": "StorageArea",
+        "description": "Items in the <code>session</code> storage area are stored in-memory and will not be persisted to disk.",
+        "value": ["session"],
+        "properties": {
+          "QUOTA_BYTES": {
+            "value": 1048576,
+            "description": "The maximum amount (in bytes) of data that can be stored in memory, as measured by estimating the dynamically allocated memory usage of every value and key. Updates that would cause this limit to be exceeded fail immediately and set $(ref:runtime.lastError)."
+          }
+        }
       }
     }
   }

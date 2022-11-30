@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <if expr="enable_plugins">
+  <if expr="enable_pdf">
     <message name="IDS_PDF_DOWNLOAD_ORIGINAL" desc="The label for the menu option to download the original, unedited PDF document (without user's changes).">
       Without your changes
     </message>
@@ -97,6 +97,9 @@
     <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE" desc="Label for a landscape page orientation.">
       landscape
     </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_SQUARE" desc="Label for a square page that has neither portrait nor landscape orientation.">
+      square
+    </message>
     <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE" desc="Value for the page size of a PDF that lacks a uniform page size.">
       Varies
     </message>
@@ -110,9 +113,6 @@
       Yes
     </message>
 
-    <message name="IDS_PDF_TOOLTIP_ROTATE_CW" desc="Button tooltip for the button which rotates a PDF document clockwise">
-      Rotate clockwise
-    </message>
     <message name="IDS_PDF_TOOLTIP_ROTATE_CCW" desc="Button tooltip for the button which rotates a PDF document counterclockwise">
       Rotate counterclockwise
     </message>
@@ -165,19 +165,7 @@
     <message name="IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL" desc="aria-label describing a thumbnail by its corresponding PDF page number">
       Thumbnail for page <ph name="THUMBNAIL_PAGE"><ex>1</ex>$1</ph>
     </message>
-    <if expr="chromeos">
-      <message name="IDS_PDF_DISCARD_FORM_CHANGES" desc="Title for a dialog that informs the user that the changes they have made to a form will be lost if they continue">
-        Discard changes?
-      </message>
-      <message name="IDS_PDF_DISCARD_FORM_CHANGES_DETAIL" desc="Warning message in dialog that informs the user that the changes they have made to a form will be lost if they continue">
-        Form changes will be lost. Are you sure you want to continue?
-      </message>
-      <message name="IDS_PDF_KEEP_EDITING" desc="Button label for the button that lets the user return and keep editing the changes they made">
-        Keep editing
-      </message>
-      <message name="IDS_PDF_DISCARD" desc="Button label for the button that lets the user discard their unneeded changes">
-        Discard
-      </message>
+    <if expr="chromeos_ash">
       <message name="IDS_PDF_ANNOTATION_ANNOTATE" desc="Button tooltip for entering the 'Annotation mode' which allows writing, drawing and highlighting of the PDF document">
         Annotate
       </message>

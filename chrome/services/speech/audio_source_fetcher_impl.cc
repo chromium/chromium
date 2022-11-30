@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,46 +17,16 @@
 #include "media/base/channel_mixer.h"
 #include "media/base/limits.h"
 #include "media/mojo/common/media_type_converters.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/audio/public/cpp/device_factory.h"
 
 namespace speech {
 
-namespace {
-
-// Sample rate used by content::SpeechRecognizerImpl.
-// TODO(crbug.com/1173135): Get input stream parameters from the constructor
-// and remove these hard-coded constants.
-static constexpr int kAudioSampleRate = 16000;
-static constexpr int kFramesPerBuffer = 1024;
-
-media::AudioParameters GetAudioParameters(bool is_multichannel_supported) {
-  static_assert(kAudioSampleRate % 100 == 0,
-                "Audio sample rate is not divisible by 100");
-  return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                is_multichannel_supported
-                                    ? media::CHANNEL_LAYOUT_STEREO
-                                    : media::CHANNEL_LAYOUT_MONO,
-                                kAudioSampleRate, kFramesPerBuffer);
-}
-}  // namespace
-
 AudioSourceFetcherImpl::AudioSourceFetcherImpl(
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer)
     : speech_recognition_recognizer_(std::move(recognition_recognizer)),
-      is_started_(false) {
-  // TODO(crbug.com/1173135): Get input stream parameters and device ID from
-  // constructor. These can be found in the Browser process and passed here
-  // via mojom.
-  std::string device_id = media::AudioDeviceDescription::kDefaultDeviceId;
-  audio_capturer_source_ =
-      audio::CreateInputDevice(std::move(stream_factory), device_id,
-                               audio::DeadStreamDetection::kEnabled);
-  audio_parameters_ = GetAudioParameters(
-      SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
-  DCHECK(audio_capturer_source_);
-}
+      is_started_(false) {}
 
 AudioSourceFetcherImpl::~AudioSourceFetcherImpl() {
   Stop();
@@ -64,20 +34,42 @@ AudioSourceFetcherImpl::~AudioSourceFetcherImpl() {
 
 void AudioSourceFetcherImpl::Create(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> receiver,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AudioSourceFetcherImpl>(
-          std::move(stream_factory), std::move(recognition_recognizer)),
-      std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<AudioSourceFetcherImpl>(
+                                  std::move(recognition_recognizer)),
+                              std::move(receiver));
 }
 
-void AudioSourceFetcherImpl::Start() {
+void AudioSourceFetcherImpl::Start(
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+    const std::string& device_id,
+    const ::media::AudioParameters& audio_parameters) {
+  // If we've already started fetching audio from this device with these params,
+  // return early. Otherwise start over and reset.
+  if (is_started_) {
+    if (device_id == device_id_ && audio_parameters.Equals(audio_parameters_)) {
+      LOG(ERROR)
+          << "AudioSourceFetcher was already running, and was asked to restart "
+             "with the same device ID and audio parameters. Doing nothing.";
+      return;
+    } else {
+      Stop();
+    }
+  }
+
+  device_id_ = device_id;
+  audio_parameters_ = audio_parameters;
+  auto audio_log_remote = VLOG_IS_ON(1)
+                              ? audio_log_receiver_.BindNewPipeAndPassRemote()
+                              : mojo::NullRemote();
+  audio_capturer_source_ = audio::CreateInputDevice(
+      std::move(stream_factory), device_id_,
+      audio::DeadStreamDetection::kEnabled, std::move(audio_log_remote));
+  DCHECK(audio_capturer_source_);
+
   // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
   // Windows.
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  if (is_started_)
-    return;
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   is_started_ = true;
   // Initialize the AudioCapturerSource with |this| as the CaptureCallback,
   // get the parameters for the device ID, then start audio capture.
@@ -92,9 +84,11 @@ void AudioSourceFetcherImpl::Start() {
 void AudioSourceFetcherImpl::Stop() {
   if (GetAudioCapturerSource()) {
     GetAudioCapturerSource()->Stop();
+    audio_capturer_source_.reset();
   }
   send_audio_callback_.Reset();
   is_started_ = false;
+  speech_recognition_recognizer_->MarkDone();
 }
 
 void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
@@ -114,7 +108,9 @@ void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported()));
 }
 
-void AudioSourceFetcherImpl::OnCaptureError(const std::string& message) {
+void AudioSourceFetcherImpl::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
   speech_recognition_recognizer_->OnSpeechRecognitionError();
 }
 
@@ -125,8 +121,38 @@ void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
 }
 
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {
-  return audio_capturer_source_for_tests_ ? audio_capturer_source_for_tests_
-                                          : audio_capturer_source_.get();
+  return audio_capturer_source_for_tests_
+             ? audio_capturer_source_for_tests_.get()
+             : audio_capturer_source_.get();
+}
+
+void AudioSourceFetcherImpl::OnCreated(const media::AudioParameters& params,
+                                       const std::string& device_id) {
+  VLOG(1) << "Created fetcher for device " << device_id << " with params "
+          << params.AsHumanReadableString();
+}
+
+void AudioSourceFetcherImpl::OnStarted() {
+  VLOG(1) << "OnStarted for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnStopped() {
+  VLOG(1) << "OnStopped for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnClosed() {
+  VLOG(1) << "OnClosed for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnError() {
+  VLOG(1) << "OnError for " << device_id_;
+}
+void AudioSourceFetcherImpl::OnSetVolume(double volume) {
+  VLOG(1) << "Set volume for " << device_id_ << " to " << volume;
+}
+void AudioSourceFetcherImpl::OnLogMessage(const std::string& message) {
+  VLOG(1) << "Log Messages for " << device_id_ << ": " << message;
+}
+void AudioSourceFetcherImpl::OnProcessingStateChanged(
+    const std::string& message) {
+  VLOG(1) << "Processing State Changed for " << device_id_ << ": " << message;
 }
 
 }  // namespace speech

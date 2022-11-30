@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import("//build/config/python.gni")
 #
 template("generate_linker_version_script") {
   action_with_pydeps(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     script = "//build/android/gyp/generate_linker_version_script.py"
     outputs = [ invoker.linker_script ]
     inputs = []
@@ -23,6 +24,9 @@ template("generate_linker_version_script") {
 
     if (defined(invoker.export_java_symbols) && invoker.export_java_symbols) {
       args += [ "--export-java-symbols" ]
+      if (defined(invoker.testonly) && invoker.testonly) {
+        args += [ "--export-fortesting-java-symbols" ]
+      }
     }
 
     if (defined(invoker.export_feature_registrations) &&

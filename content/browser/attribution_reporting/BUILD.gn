@@ -1,0 +1,54 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("attribution_reporting_proto") {
+  sources = [ "attribution_reporting.proto" ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "attribution_reporting.mojom" ]
+  webui_module_path = "/"
+}
+
+mojom("internals_mojo_bindings") {
+  sources = [ "attribution_internals.mojom" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//url/mojom:url_mojom_origin",
+  ]
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "attribution_internals.mojom.AggregatableAttributionReportID"
+          cpp = "::content::AttributionReport::AggregatableAttributionData::Id"
+        },
+        {
+          mojom = "attribution_internals.mojom.EventLevelReportID"
+          cpp = "::content::AttributionReport::EventLevelData::Id"
+        },
+        {
+          mojom = "attribution_internals.mojom.ReportID"
+          cpp = "::content::AttributionReport::Id"
+        },
+      ]
+      traits_headers = [
+        "attribution_internals_mojom_traits.h",
+        "attribution_report.h",
+      ]
+      traits_sources = [ "attribution_internals_mojom_traits.cc" ]
+      traits_deps = [
+        ":attribution_reporting_proto",
+
+        # //content/common/aggregatable_report.mojom is transitively included.
+        "//content/common:mojo_bindings",
+      ]
+    },
+  ]
+}

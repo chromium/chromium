@@ -1,0 +1,54 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("price_notifications") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_view_coordinator.h",
+    "price_notifications_view_coordinator.mm",
+  ]
+
+  deps = [
+    ":price_notifications_ui",
+    "//base",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+  ]
+}
+
+source_set("price_notifications_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_table_view_controller.h",
+    "price_notifications_table_view_controller.mm",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/price_notifications/cells",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_constants.h",
+    "price_notifications_constants.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

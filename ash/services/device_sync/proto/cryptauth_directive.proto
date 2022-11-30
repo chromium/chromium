@@ -1,0 +1,113 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Contains messages sent from CryptAuth to clients who registered keys using
+// the v2 Enrollment protocol. The messages provide instructions to clients such
+// as how frequently to check in with CryptAuth via a SyncKeysRequest, how long
+// to wait between failed enrollment attempts, and what other keys are required
+// to cross-sign for a particular key.
+syntax = "proto3";
+
+package cryptauthv2;
+
+option optimize_for = LITE_RUNTIME;
+
+import "cryptauth_common.proto";
+
+// The policy to be handed down to the party which registered the public key
+// with the server. It is produced on the fly from current ServerSidePolicy
+// and PolicyConfig (PC).
+message KeyDirective {
+  // The specific policy which was used to generate this message.
+  PolicyReference policy_reference = 1;
+
+  // When rotating the current key, 'crossproof_key_name' keys should be used
+  // to cross sign. This is retrieved from PolicyConfig.crossproof_key_name .
+  repeated string crossproof_key_names = 2;
+
+  // The time when the key was enrolled/rotated (as observed by the server).
+  // This should be the same as ServerSidePolicy.enroll_time_millis .
+  int64 enroll_time_millis = 3;
+}
+
+// This contains the directives handed down to the party which registered the
+// public key with the server. These directives are aggregated from across all
+// the policies of the keys that have been registered by this first party.
+message ClientDirective {
+  // The specific policy which was used to generate this message.
+  PolicyReference policy_reference = 1;
+
+  // The first party should check in with the server after this period.
+  // The server may require the client (first party) to rotate the key
+  // (based on PolicyConfig.rotate_delay_millis from across all the policies
+  // of the registered keys).
+  // For each policy of a registered key a value is randomly drawn from
+  // [PC.checkin_delay_millis - PC.checkin_delay_millis_interval,
+  // PC.checkin_delay_millis + PC.checkin_delay_millis_interval].
+  // The minimum value from across all these values is used.
+  //
+  // Whenever such a time period is coming due, the client should check in
+  // all its keys with the server. The server tells the client which of those
+  // keys need to be rotated and the rotation process proceeds for all these
+  // keys (bundled together).
+  int64 checkin_delay_millis = 2;
+
+  // In case any call to CryptAuth v2 failed, the first party should retry
+  // at most these many times right away, without the need to wait at all.
+  // Passed in from PC.retry_attempts.
+  // For example, a value of 1 means one original request, and if failed, a
+  // single retry should follow.
+  int32 retry_attempts = 3;
+
+  // In case any call to CryptAuth v2 failed retry_attempts + 1 times, the first
+  // party should retry the call again after this time period. If this latter
+  // retry fails, the first party should wait this time period again then retry
+  // and repeat until the request succeeds.
+  // For each policy of a registered key a value is randomly drawn from
+  // [PC.retry_period_millis - PC.retry_period_millis_interval,
+  // PC.retry_period_millis + PC.retry_period_millis_interval].
+  // The maximum value from across all these values is used.
+  int64 retry_period_millis = 4;
+
+  // The timestamp when this policy was minted.
+  // This can help the client sync with the server's time.
+  // checkin_delay_millis and retry_period_millis are relative to this time.
+  // Without this timestamp, the client should act right away with regard to
+  // the *_millis fields (ie, schedule something at NOW + *_millis).
+  // With this timestamp (considering the times of both server and client are
+  // in sync), the client would have all the required information for
+  // a later action.
+  int64 create_time_millis = 5;
+
+  // Which other services should be invoked after this interaction is complete.
+  repeated InvokeNext invoke_next = 6;
+}
+
+// Instructing the client to invoke a specific service.
+message InvokeNext {
+  // Target service to be involved next.
+  TargetService service = 1;
+
+  // Key name to be processed for target service.
+  string key_name = 2;
+}
+
+// The policy to be handed down to a third party along with the corresponding
+// public key of the device it asked for. It is produced on the fly from current
+// PolicyConfig and ServerSidePolicy (defined in
+// java/com/google/security/cryptauth/v2/backend/common/policy/policy.proto).
+message ThirdPartyKeyDirective {
+  // The specific policy which was used to generate this message.
+  PolicyReference policy_reference = 1;
+
+  // The third party should not use this key after this timestamp.
+  // It should sync with CryptAuth for getting a fresh one after this timestamp.
+  // This should be consistent with what the latest first party directive states
+  // (in its create_time_millis field), combined with
+  // PolicyConfig.rotate_delay_millis .
+  int64 expire_time_millis = 2;
+
+  // The timestamp when this policy was distributed to the third party.
+  int64 distribute_time_millis = 3;
+}

@@ -1,8 +1,6 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include <tuple>
 
 #include "components/subresource_filter/content/browser/subresource_filter_test_harness.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -27,10 +25,7 @@ class SubresourceFilterConfigurationTest
 // time we should filter subresources is if we have ALL_SITES scope.
 TEST_P(SubresourceFilterConfigurationTest,
        DISABLED_NoList_UsuallyNoActivation) {
-  ActivationScope scope;
-  ActivationList activation_list;
-  ActivationLevel level;
-  std::tie(scope, activation_list, level) = GetParam();
+  auto [scope, activation_list, level] = GetParam();
   SCOPED_TRACE(::testing::Message("ActivationScope: ") << scope);
   SCOPED_TRACE(::testing::Message("ActivationList: ") << activation_list);
   SCOPED_TRACE(::testing::Message("ActivationLevel: ") << level);
@@ -45,10 +40,7 @@ TEST_P(SubresourceFilterConfigurationTest,
 }
 
 TEST_P(SubresourceFilterConfigurationTest, DISABLED_OneListActivation) {
-  ActivationScope scope;
-  ActivationList activation_list;
-  ActivationLevel level;
-  std::tie(scope, activation_list, level) = GetParam();
+  auto [scope, activation_list, level] = GetParam();
   SCOPED_TRACE(::testing::Message("ActivationScope: ") << scope);
   SCOPED_TRACE(::testing::Message("ActivationList: ") << activation_list);
   SCOPED_TRACE(::testing::Message("ActivationLevel: ") << level);

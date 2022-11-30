@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,18 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSink : public WebMediaStreamSink {
   // unless overridden.
   virtual double GetRequiredMinFramesPerSec() const;
 
+  // IsSecure indicates if this MediaStreamVideoSink is secure (i.e. meets
+  // output protection requirement). Generally, this should be kNo unless you
+  // know what you are doing. Encoded sinks are never secure.
+  enum class IsSecure { kNo, kYes };
+
+  // UsesAlpha indicates if this MediaStreamVideoSink might use its source's
+  // alpha channel (if the source has one). This should be kDefault unless it is
+  // guaranteed that the alpha channel of |track| will be ignored. If
+  // kDependsOnOtherSinks is used, the sink will not receive alpha if all other
+  // sinks do not use alpha.
+  enum class UsesAlpha { kDefault, kDependsOnOtherSinks, kNo };
+
  protected:
   MediaStreamVideoSink();
   ~MediaStreamVideoSink() override;
@@ -44,14 +56,10 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSink : public WebMediaStreamSink {
   // Warning: Calling DisconnectFromTrack does not immediately stop frame
   // delivery through the |callback|, since frames are being delivered on a
   // different thread.
-  //
-  // |is_sink_secure| indicates if this MediaStreamVideoSink is secure (i.e.
-  // meets output protection requirement). Generally, this should be false
-  // unless you know what you are doing.
-  // Encoded sinks are never secure.
   void ConnectToTrack(const WebMediaStreamTrack& track,
                       const VideoCaptureDeliverFrameCB& callback,
-                      bool is_sink_secure);
+                      IsSecure is_secure,
+                      UsesAlpha uses_alpha);
   void ConnectEncodedToTrack(const WebMediaStreamTrack& track,
                              const EncodedVideoFrameCB& callback);
   void DisconnectFromTrack();

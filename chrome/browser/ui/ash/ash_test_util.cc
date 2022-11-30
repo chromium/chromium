@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,10 @@ class SnapWaiter : public aura::WindowObserver {
       : window_(window), type_(type) {
     window->AddObserver(this);
   }
+
+  SnapWaiter(const SnapWaiter&) = delete;
+  SnapWaiter& operator=(const SnapWaiter&) = delete;
+
   ~SnapWaiter() override { window_->RemoveObserver(this); }
 
   // aura::WindowObserver:
@@ -44,8 +48,6 @@ class SnapWaiter : public aura::WindowObserver {
   aura::Window* window_;
   chromeos::WindowStateType type_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapWaiter);
 };
 
 }  // namespace
@@ -59,15 +61,15 @@ void ActivateAndSnapWindow(aura::Window* window,
   ASSERT_TRUE(wm::IsActiveWindow(window));
 
   SnapWaiter snap_waiter(window, type);
-  ASSERT_TRUE(type == chromeos::WindowStateType::kRightSnapped ||
-              type == chromeos::WindowStateType::kLeftSnapped);
+  ASSERT_TRUE(type == chromeos::WindowStateType::kSecondarySnapped ||
+              type == chromeos::WindowStateType::kPrimarySnapped);
 
   // Early return if it's already snapped.
   if (snap_waiter.IsSnapped())
     return;
 
   ui_controls::SendKeyPress(window,
-                            type == chromeos::WindowStateType::kLeftSnapped
+                            type == chromeos::WindowStateType::kPrimarySnapped
                                 ? ui::VKEY_OEM_4
                                 : ui::VKEY_OEM_6,
                             /*control=*/false,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,6 +90,15 @@ bool FileHandlerCanHandleEntry(const apps::FileHandlerInfo& handler,
 bool WebAppFileHandlerCanHandleEntry(const apps::FileHandler& handler,
                                      const EntryInfo& entry);
 
+// Creates a new file entry and allows |renderer_id| to access |path|, with
+// specified permissions. This registers a new file system for |path|. Note
+// that |can_create| and |can_delete| both require |can_write|.
+GrantedFileEntry CreateFileEntryWithPermissions(int renderer_id,
+                                                const base::FilePath& path,
+                                                bool can_write,
+                                                bool can_create,
+                                                bool can_delete);
+
 // Creates a new file entry and allows |renderer_id| to access |path|. This
 // registers a new file system for |path|.
 GrantedFileEntry CreateFileEntry(content::BrowserContext* context,
@@ -120,6 +129,16 @@ bool ValidateFileEntryAndGetPath(const std::string& filesystem_name,
                                  int render_process_id,
                                  base::FilePath* file_path,
                                  std::string* error);
+
+// Returns a vector of EntryInfo with:
+// * |path| fields populated by |entry_paths|.
+// * |mime_type| fields populated by |mime_types| (must have same size as
+//   |entry_paths|), with empty elements replaced by a fallback.
+// * |is_directory| fields decided by whether |path| is in |directory_paths|.
+std::vector<extensions::EntryInfo> CreateEntryInfos(
+    const std::vector<base::FilePath>& entry_paths,
+    const std::vector<std::string>& mime_types,
+    const std::set<base::FilePath>& directory_paths);
 
 }  // namespace app_file_handler_util
 

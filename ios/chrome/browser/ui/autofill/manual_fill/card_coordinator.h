@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,9 @@
 // Delegate for the coordinator actions.
 // TODO(crbug.com/845472): revise delegate method names.
 @protocol CardCoordinatorDelegate<FallbackCoordinatorDelegate>
+
+// Open feature to add a credit card.
+- (void)openAddCreditCard;
 
 // Opens the cards settings.
 - (void)openCardSettings;

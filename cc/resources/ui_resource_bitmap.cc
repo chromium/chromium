@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "build/build_config.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
@@ -71,9 +74,32 @@ size_t UIResourceBitmap::SizeInBytes() const {
 UIResourceBitmap::UIResourceBitmap(const SkBitmap& skbitmap) {
   DCHECK(skbitmap.isImmutable());
 
-  sk_sp<SkPixelRef> pixel_ref = sk_ref_sp(skbitmap.pixelRef());
-  Create(std::move(pixel_ref), skbitmap.info(),
-         SkColorTypeToUIResourceFormat(skbitmap.colorType()));
+  const SkBitmap* target = &skbitmap;
+#if BUILDFLAG(IS_ANDROID)
+  SkBitmap copy;
+  if (features::IsDrDcEnabled()) {
+    // TODO(vikassoni): Forcing everything to N32 while android backing cannot
+    // support some other formats. Note that DrDc is disabled on some gl
+    // renderers and hence gpus via gpu driver bug workaround. That workaround
+    // is not applied here and so on those disable gpus, everything will still
+    // be forced to N32 even though drdc is disabled. This should be fine for
+    // now and would be fixed later. crbug.com/1354201.
+    if (skbitmap.colorType() != kN32_SkColorType) {
+      SkImageInfo new_info = skbitmap.info().makeColorType(kN32_SkColorType);
+      copy.allocPixels(new_info, new_info.minRowBytes());
+      SkCanvas copy_canvas(copy);
+      copy_canvas.drawImage(skbitmap.asImage(), 0, 0, SkSamplingOptions(),
+                            nullptr);
+      copy.setImmutable();
+      target = &copy;
+    }
+    DCHECK_EQ(target->width(), target->rowBytesAsPixels());
+    DCHECK(target->isImmutable());
+  }
+#endif
+  sk_sp<SkPixelRef> pixel_ref = sk_ref_sp(target->pixelRef());
+  Create(std::move(pixel_ref), target->info(),
+         SkColorTypeToUIResourceFormat(target->colorType()));
 }
 
 UIResourceBitmap::UIResourceBitmap(const gfx::Size& size, bool is_opaque) {

@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
 
-#include "base/check.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,6 +31,8 @@ const PrefixTypeAssociation prefixTypeAssociations[] = {
     {NATIVE_WEIBO, @"com.apple.UIKit.activity.PostToWeibo", true},
     {NATIVE_CLIPBOARD, @"com.apple.UIKit.activity.CopyToPasteboard", true},
     {NATIVE_SAVE_IMAGE, @"com.apple.UIKit.activity.SaveToCameraRoll", true},
+    {NATIVE_SAVE_FILE, @"com.apple.DocumentManagerUICore.SaveToFiles", true},
+    {NATIVE_MARKUP, @"com.apple.UIKit.activity.MarkupAsPDF", true},
     {NATIVE_PRINT, @"com.apple.UIKit.activity.Print", true},
     {PRINT, @"com.google.chrome.printActivity", true},
     {FIND_IN_PAGE, @"com.google.chrome.FindInPageActivityType", true},
@@ -92,6 +94,12 @@ void RecordMetricForActivity(ActivityType type) {
       break;
     case NATIVE_SAVE_IMAGE:
       base::RecordAction(base::UserMetricsAction("MobileShareMenuSaveImage"));
+      break;
+    case NATIVE_SAVE_FILE:
+      base::RecordAction(base::UserMetricsAction("MobileShareMenuSaveFile"));
+      break;
+    case NATIVE_MARKUP:
+      base::RecordAction(base::UserMetricsAction("MobileShareMenuMarkupPDF"));
       break;
     case FIND_IN_PAGE:
       base::RecordAction(base::UserMetricsAction("MobileShareMenuFindInPage"));

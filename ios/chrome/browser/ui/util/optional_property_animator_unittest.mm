@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/util/optional_property_animator.h"
 
 #import "base/ios/block_types.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,7 +19,7 @@ const NSTimeInterval kDuration = 0.1;
 // Test fixture for OptionalPropertyAnimator.
 using OptionalPropertyAnimatorTest = PlatformTest;
 
-// Tests that the animator's |hasAnimations| property is NO before adding an
+// Tests that the animator's `hasAnimations` property is NO before adding an
 // animation.
 TEST_F(OptionalPropertyAnimatorTest, NoAnimations) {
   id<UITimingCurveProvider> curve = [[UICubicTimingParameters alloc]
@@ -31,7 +31,7 @@ TEST_F(OptionalPropertyAnimatorTest, NoAnimations) {
 }
 
 // Tests that animations added in initializers are correctly reflected in
-// |hasAnimations|
+// `hasAnimations`
 TEST_F(OptionalPropertyAnimatorTest, InitializersWithAnimations) {
   ProceduralBlock empty_animation = ^{
   };

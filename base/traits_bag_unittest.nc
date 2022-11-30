@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ struct TestTraits {
 
 #if defined(NCTEST_TRAITS_BAG_REQUIRED_TRAIT_NOT_SET)  // [r"The traits bag is missing a required trait."]
 constexpr TestTraits traits = {};
-#elif defined(NCTEST_TRAITS_BAG_INVALID_TRAIT)  // [r"no matching constructor for initialization of 'const base::TestTraits'"]
+#elif defined(NCTEST_TRAITS_BAG_INVALID_TRAIT)  // [r"no matching constructor for initialization of 'const TestTraits'"]
 constexpr TestTraits traits = {RequiredTrait::A, NotAValidTrait{}};
 #elif defined(NCTEST_TASK_TRAITS_MULTIPLE_REQUIRED_TRAIT)  // [r"The traits bag contains multiple traits of the same type."]
 constexpr TestTraits traits = {RequiredTrait::A, RequiredTrait::B};

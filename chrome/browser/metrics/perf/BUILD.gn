@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,8 +12,9 @@ test("profile_provider_unittest") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/test:test_support",
-    "//chromeos/dbus",
+    "//chromeos/ash/components/dbus",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/aura",
   ]
 }

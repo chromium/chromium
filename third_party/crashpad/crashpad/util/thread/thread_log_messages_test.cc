@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <iterator>
+
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "util/thread/thread.h"
@@ -65,8 +66,8 @@ TEST(ThreadLogMessages, Basic) {
     const std::vector<std::string>& log_messages =
         thread_log_messages.log_messages();
 
-    EXPECT_EQ(log_messages.size(), base::size(kMessages));
-    for (size_t index = 0; index < base::size(kMessages); ++index) {
+    EXPECT_EQ(log_messages.size(), std::size(kMessages));
+    for (size_t index = 0; index < std::size(kMessages); ++index) {
       ASSERT_NO_FATAL_FAILURE(
           ExpectLogMessage(log_messages[index], kMessages[index]))
           << "index " << index;
@@ -104,6 +105,10 @@ TEST(ThreadLogMessages, Basic) {
 class LoggingTestThread : public Thread {
  public:
   LoggingTestThread() : thread_number_(0), start_(0), count_(0) {}
+
+  LoggingTestThread(const LoggingTestThread&) = delete;
+  LoggingTestThread& operator=(const LoggingTestThread&) = delete;
+
   ~LoggingTestThread() override {}
 
   void Initialize(size_t thread_number, int start, int count) {
@@ -137,8 +142,6 @@ class LoggingTestThread : public Thread {
   size_t thread_number_;
   int start_;
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingTestThread);
 };
 
 TEST(ThreadLogMessages, Multithreaded) {
@@ -147,7 +150,7 @@ TEST(ThreadLogMessages, Multithreaded) {
 
   LoggingTestThread threads[20];
   int start = 0;
-  for (size_t index = 0; index < base::size(threads); ++index) {
+  for (size_t index = 0; index < std::size(threads); ++index) {
     threads[index].Initialize(
         index, static_cast<int>(start), static_cast<int>(index));
     start += static_cast<int>(index);

@@ -1,25 +1,36 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_BROWSER_IMPL_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_BROWSER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "headless/public/headless_browser.h"
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 #include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"
 
 #if defined(HEADLESS_USE_PREFS)
 class PrefService;
+#endif
+
+#if defined(HEADLESS_USE_POLICY)
+namespace policy {
+class PolicyService;
+}  // namespace policy
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/screen.h"
 #endif
 
 namespace ui {
@@ -46,6 +57,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   HeadlessBrowserImpl(
       base::OnceCallback<void(HeadlessBrowser*)> on_start_callback,
       HeadlessBrowser::Options options);
+
+  HeadlessBrowserImpl(const HeadlessBrowserImpl&) = delete;
+  HeadlessBrowserImpl& operator=(const HeadlessBrowserImpl&) = delete;
+
   ~HeadlessBrowserImpl() override;
 
   // HeadlessBrowser implementation:
@@ -102,22 +117,29 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   PrefService* GetPrefs();
 #endif
 
+#if defined(HEADLESS_USE_POLICY)
+  policy::PolicyService* GetPolicyService();
+#endif
+
+  bool did_shutdown() const { return did_shutdown_; }
+
  protected:
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
+#endif
+
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   HeadlessBrowser::Options options_;
-  HeadlessBrowserMainParts* browser_main_parts_;  // Not owned.
+  raw_ptr<HeadlessBrowserMainParts> browser_main_parts_;  // Not owned.
 
   base::flat_map<std::string, std::unique_ptr<HeadlessBrowserContextImpl>>
       browser_contexts_;
-  HeadlessBrowserContext* default_browser_context_;  // Not owned.
-
+  raw_ptr<HeadlessBrowserContext> default_browser_context_;  // Not owned.
+  bool did_shutdown_ = false;  // TODO(1342152): remove once the bug is fixed.
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;
   base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserImpl);
 };
 
 }  // namespace headless

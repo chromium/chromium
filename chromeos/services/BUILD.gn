@@ -1,10 +1,8 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
-import("//chromeos/assistant/assistant.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
@@ -19,24 +17,9 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 source_set("unit_tests") {
   testonly = true
   deps = [
-    "//chromeos/services/assistant:tests",
-    "//chromeos/services/cellular_setup:unit_tests",
-    "//chromeos/services/cros_healthd/public/cpp:unit_tests",
-    "//chromeos/services/device_sync:unit_tests",
-    "//chromeos/services/ime:services_unittests",
-    "//chromeos/services/ime:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
-    "//chromeos/services/multidevice_setup:unit_tests",
     "//chromeos/services/network_config:unit_tests",
-    "//chromeos/services/secure_channel:unit_tests",
+    "//chromeos/services/network_health:unit_tests",
     "//chromeos/services/tts:services_unittests",
   ]
-  if (is_cfm) {
-    deps +=
-        [ "//chromeos/services/chromebox_for_meetings/public/cpp:unit_tests" ]
-  }
-
-  if (enable_cros_libassistant) {
-    deps += [ "//chromeos/services/libassistant:unit_tests" ]
-  }
 }

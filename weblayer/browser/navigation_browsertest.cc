@@ -1,14 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_ids_provider.h"
@@ -19,12 +25,15 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/browser.h"
+#include "weblayer/public/browser_observer.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/navigation_observer.h"
+#include "weblayer/public/new_tab_delegate.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/interstitial_utils.h"
 #include "weblayer/test/test_navigation_observer.h"
@@ -45,6 +54,8 @@ class NavigationObserverImpl : public NavigationObserver {
   ~NavigationObserverImpl() override { controller_->RemoveObserver(this); }
 
   using Callback = base::RepeatingCallback<void(Navigation*)>;
+  using PageLanguageDeterminedCallback =
+      base::RepeatingCallback<void(Page*, std::string)>;
 
   void SetStartedCallback(Callback callback) {
     started_callback_ = std::move(callback);
@@ -60,6 +71,11 @@ class NavigationObserverImpl : public NavigationObserver {
 
   void SetCompletedClosure(Callback callback) {
     completed_callback_ = std::move(callback);
+  }
+
+  void SetOnPageLanguageDeterminedCallback(
+      PageLanguageDeterminedCallback callback) {
+    on_page_language_determined_callback_ = std::move(callback);
   }
 
   // NavigationObserver:
@@ -82,13 +98,19 @@ class NavigationObserverImpl : public NavigationObserver {
     if (callback)
       callback.Run(navigation);
   }
+  void OnPageLanguageDetermined(Page* page,
+                                const std::string& language) override {
+    if (on_page_language_determined_callback_)
+      on_page_language_determined_callback_.Run(page, language);
+  }
 
  private:
-  NavigationController* controller_;
+  raw_ptr<NavigationController> controller_;
   Callback started_callback_;
   Callback redirected_callback_;
   Callback completed_callback_;
   Callback failed_callback_;
+  PageLanguageDeterminedCallback on_page_language_determined_callback_;
 };
 
 }  // namespace
@@ -97,6 +119,10 @@ class NavigationBrowserTest : public WebLayerBrowserTest {
  public:
   NavigationController* GetNavigationController() {
     return shell()->tab()->GetNavigationController();
+  }
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
   }
 };
 
@@ -116,6 +142,35 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, NoError) {
   EXPECT_EQ(observer.load_error(), Navigation::kNoError);
   EXPECT_EQ(observer.http_status_code(), 200);
   EXPECT_EQ(observer.navigation_state(), NavigationState::kComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       IsPageInitiatedTrueForWindowHistoryBack) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  std::unique_ptr<OneShotNavigationObserver> observer =
+      std::make_unique<OneShotNavigationObserver>(shell());
+  GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  observer->WaitForNavigation();
+  ASSERT_TRUE(observer->completed());
+  EXPECT_FALSE(observer->is_page_initiated());
+
+  observer = std::make_unique<OneShotNavigationObserver>(shell());
+  GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("b.com", "/simple_page.html"));
+  observer->WaitForNavigation();
+  ASSERT_TRUE(observer->completed());
+  EXPECT_FALSE(observer->is_page_initiated());
+
+  observer = std::make_unique<OneShotNavigationObserver>(shell());
+  shell()->tab()->ExecuteScript(
+      u"window.history.back();", false,
+      base::BindLambdaForTesting(
+          [&](base::Value value) { LOG(ERROR) << "executescript result"; }));
+  observer->WaitForNavigation();
+  ASSERT_TRUE(observer->completed());
+  EXPECT_TRUE(observer->is_page_initiated());
 }
 
 // Http client error when the server returns a non-empty response.
@@ -201,7 +256,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, HttpConnectivityError) {
   EXPECT_EQ(observer.navigation_state(), NavigationState::kFailed);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Download) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// https://crbug.com/1296643
+#define MAYBE_Download DISABLED_Download
+#else
+#define MAYBE_Download Download
+#endif
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Download) {
   EXPECT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/content-disposition.html"));
 
@@ -245,7 +307,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, DestroyTabInNavigation) {
       base::BindLambdaForTesting([&](Navigation* navigation) {
         observer.reset();
         shell()->browser()->DestroyTab(new_tab);
-        run_loop.Quit();
+        // Destroying the tab posts a task to delete the WebContents, which must
+        // be run before the test shuts down lest it access deleted state.
+        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                      run_loop.QuitClosure());
       }));
   new_tab->GetNavigationController()->Navigate(
       embedded_test_server()->GetURL("/simple_pageX.html"));
@@ -299,6 +364,72 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(2, completed_count);
   ASSERT_EQ(2, controller->GetNavigationListSize());
   EXPECT_EQ(final_url, controller->GetNavigationEntryDisplayURL(1));
+}
+
+class BrowserObserverImpl : public BrowserObserver {
+ public:
+  explicit BrowserObserverImpl(Browser* browser) : browser_(browser) {
+    browser->AddObserver(this);
+  }
+
+  ~BrowserObserverImpl() override { browser_->RemoveObserver(this); }
+
+  void SetNewTabCallback(base::RepeatingCallback<void(Tab*)> callback) {
+    new_tab_callback_ = callback;
+  }
+
+  // BrowserObserver:
+  void OnTabAdded(Tab* tab) override { new_tab_callback_.Run(tab); }
+
+ private:
+  base::RepeatingCallback<void(Tab*)> new_tab_callback_;
+  raw_ptr<Browser> browser_;
+};
+
+class NewTabDelegateImpl : public NewTabDelegate {
+ public:
+  // NewTabDelegate:
+  void OnNewTab(Tab* new_tab, NewTabType type) override {}
+};
+
+// Ensures calling Navigate() from within NavigationStarted() for a popup does
+// not crash.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, NavigateFromNewWindow) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndWaitForCompletion(
+      embedded_test_server()->GetURL("/simple_page2.html"), shell());
+  NewTabDelegate* old_new_tab_delegate =
+      static_cast<TabImpl*>(shell()->tab())->new_tab_delegate();
+  NewTabDelegateImpl new_tab_delegate;
+  shell()->tab()->SetNewTabDelegate(&new_tab_delegate);
+  BrowserObserverImpl browser_observer(shell()->tab()->GetBrowser());
+  std::unique_ptr<NavigationObserverImpl> popup_navigation_observer;
+  base::RunLoop run_loop;
+  Tab* popup_tab = nullptr;
+  auto popup_started_navigation = [&](Navigation* navigation) {
+    if (navigation->GetURL().path() == "/simple_page.html") {
+      popup_tab->GetNavigationController()->Navigate(
+          embedded_test_server()->GetURL("/simple_page3.html"));
+    } else if (navigation->GetURL().path() == "/simple_page3.html") {
+      run_loop.Quit();
+    }
+  };
+  browser_observer.SetNewTabCallback(base::BindLambdaForTesting([&](Tab* tab) {
+    popup_tab = tab;
+    popup_navigation_observer = std::make_unique<NavigationObserverImpl>(
+        tab->GetNavigationController());
+    popup_navigation_observer->SetStartedCallback(
+        base::BindLambdaForTesting(popup_started_navigation));
+  }));
+  // 'noopener' is key to triggering the problematic case.
+  const std::string window_open = base::StringPrintf(
+      "window.open('%s', '', 'noopener')",
+      embedded_test_server()->GetURL("/simple_page.html").spec().c_str());
+  ExecuteScriptWithUserGesture(shell()->tab(), window_open);
+  run_loop.Run();
+
+  // Restore the old delegate to make sure it is cleaned up on Android.
+  shell()->tab()->SetNewTabDelegate(old_new_tab_delegate);
 }
 
 // Verifies calling Navigate() from NavigationRedirected() works.
@@ -434,8 +565,29 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SetRequestHeaderInRedirect) {
   EXPECT_EQ(header_value, response_2.http_request()->headers.at(header_name));
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PageSeesUserAgentString) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+class NavigationBrowserTestUserAgentOverrideSubstring
+    : public NavigationBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kUserAgentOverrideExperiment,
+         blink::features::kUACHOverrideBlank},
+        {});
+    NavigationBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestUserAgentOverrideSubstring,
+                       PageSeesUserAgentString) {
+  net::test_server::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("weblayer/test/data")));
+
+  ASSERT_TRUE(https_server.Start());
 
   const std::string custom_ua = "custom";
   NavigationObserverImpl observer(GetNavigationController());
@@ -443,9 +595,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PageSeesUserAgentString) {
       base::BindLambdaForTesting([&](Navigation* navigation) {
         navigation->SetUserAgentString(custom_ua);
       }));
+  base::HistogramTester histogram;
   OneShotNavigationObserver navigation_observer(shell());
-  shell()->LoadURL(embedded_test_server()->GetURL("/simple_page.html"));
+  shell()->LoadURL(https_server.GetURL("/simple_page.html"));
   navigation_observer.WaitForNavigation();
+
+  histogram.ExpectBucketCount(
+      blink::UserAgentOverride::kUserAgentOverrideHistogram,
+      blink::UserAgentOverride::UserAgentOverriden, 1);
 
   base::RunLoop run_loop;
   shell()->tab()->ExecuteScript(
@@ -456,6 +613,17 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PageSeesUserAgentString) {
         run_loop.Quit();
       }));
   run_loop.Run();
+
+  // Ensure that userAgentData is blank when custom user agent is set.
+  base::RunLoop run_loop2;
+  shell()->tab()->ExecuteScript(
+      u"navigator.userAgentData.platform;", false,
+      base::BindLambdaForTesting([&](base::Value value) {
+        ASSERT_TRUE(value.is_string());
+        EXPECT_EQ("", value.GetString());
+        run_loop2.Quit();
+      }));
+  run_loop2.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Reload) {
@@ -474,12 +642,19 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Reload) {
   EXPECT_TRUE(observer2.is_reload());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SetUserAgentString) {
-  net::test_server::ControllableHttpResponse response_1(embedded_test_server(),
-                                                        "", true);
-  net::test_server::ControllableHttpResponse response_2(embedded_test_server(),
-                                                        "", true);
-  ASSERT_TRUE(embedded_test_server()->Start());
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestUserAgentOverrideSubstring,
+                       SetUserAgentString) {
+  std::unique_ptr<net::test_server::EmbeddedTestServer> https_server =
+      std::make_unique<net::test_server::EmbeddedTestServer>(
+          net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("weblayer/test/data")));
+
+  net::test_server::ControllableHttpResponse response_1(https_server.get(), "",
+                                                        true);
+  net::test_server::ControllableHttpResponse response_2(https_server.get(), "",
+                                                        true);
+  ASSERT_TRUE(https_server->Start());
 
   const std::string custom_ua = "CUSTOM";
   NavigationObserverImpl observer(GetNavigationController());
@@ -488,7 +663,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SetUserAgentString) {
         navigation->SetUserAgentString(custom_ua);
       }));
 
-  shell()->LoadURL(embedded_test_server()->GetURL("/simple_page.html"));
+  base::HistogramTester histogram;
+  shell()->LoadURL(https_server->GetURL("/simple_page.html"));
   response_1.WaitForRequest();
 
   // |custom_ua| should be present in initial request.
@@ -498,6 +674,15 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SetUserAgentString) {
       net::HttpRequestHeaders::kUserAgent);
   EXPECT_EQ(custom_ua, new_header);
 
+  ASSERT_TRUE(base::Contains(response_1.http_request()->headers, "sec-ch-ua"));
+  const std::string new_ch_header =
+      response_1.http_request()->headers.at("Sec-CH-UA");
+  EXPECT_EQ("", new_ch_header);
+  content::FetchHistogramsFromChildProcesses();
+  histogram.ExpectBucketCount(
+      blink::UserAgentOverride::kUserAgentOverrideHistogram,
+      blink::UserAgentOverride::UserAgentOverriden, 1);
+
   // Header should carry through to redirect.
   response_1.Send(
       "HTTP/1.1 302 Moved Temporarily\r\nLocation: /new_doc\r\n\r\n");
@@ -505,9 +690,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SetUserAgentString) {
   response_2.WaitForRequest();
   EXPECT_EQ(custom_ua, response_2.http_request()->headers.at(
                            net::HttpRequestHeaders::kUserAgent));
+  EXPECT_EQ("", response_2.http_request()->headers.at("Sec-CH-UA"));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        SetUserAgentStringDoesntChangeViewportMetaTag) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -666,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       }));
   const GURL target_url = embedded_test_server()->GetURL("/foo.html");
   shell()->tab()->ExecuteScript(
-      base::ASCIIToUTF16("location.href='" + target_url.spec() + "';"), false,
+      u"location.href='" + base::ASCIIToUTF16(target_url.spec()) + u"';", false,
       base::DoNothing());
   response_2.WaitForRequest();
   // |custom_ua| should be present in the renderer initiated navigation.
@@ -703,6 +889,9 @@ class WaitForMediaPlaying : public content::WebContentsObserver {
   explicit WaitForMediaPlaying(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  WaitForMediaPlaying(const WaitForMediaPlaying&) = delete;
+  WaitForMediaPlaying& operator=(const WaitForMediaPlaying&) = delete;
+
   // WebContentsObserver override.
   void MediaStartedPlaying(const MediaPlayerInfo& info,
                            const content::MediaPlayerId&) final {
@@ -715,8 +904,6 @@ class WaitForMediaPlaying : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForMediaPlaying);
 };
 
 }  // namespace
@@ -896,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest2, SetXClientDataHeaderInRedirect) {
   EXPECT_EQ(header_value, last_header_value);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Verifies setting the 'referer' to an android-app url works.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AndroidAppReferer) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -918,5 +1105,158 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AndroidAppReferer) {
   EXPECT_EQ(header_value, response.http_request()->headers.at(header_name));
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       OnPageLanguageDeterminedCallback) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  NavigationController* controller = shell()->tab()->GetNavigationController();
+  NavigationObserverImpl observer(controller);
+
+  Page* committed_page = nullptr;
+  Page* page_with_language_determined = nullptr;
+  std::string determined_language = "";
+
+  base::RunLoop navigation_run_loop1;
+  base::RunLoop page_language_determination_run_loop1;
+
+  base::RunLoop* navigation_run_loop = &navigation_run_loop1;
+  base::RunLoop* page_language_determination_run_loop =
+      &page_language_determination_run_loop1;
+
+  observer.SetCompletedClosure(
+      base::BindLambdaForTesting([&](Navigation* navigation) {
+        committed_page = navigation->GetPage();
+        navigation_run_loop->Quit();
+      }));
+  observer.SetOnPageLanguageDeterminedCallback(
+      base::BindLambdaForTesting([&](Page* page, std::string language) {
+        page_with_language_determined = page;
+        determined_language = language;
+        page_language_determination_run_loop->Quit();
+      }));
+
+  // Navigate to a page in English.
+  controller->Navigate(embedded_test_server()->GetURL("/english_page.html"));
+  navigation_run_loop1.Run();
+  EXPECT_TRUE(committed_page);
+
+  // Verify that the language determined event fires as expected.
+  page_language_determination_run_loop1.Run();
+  EXPECT_EQ(committed_page, page_with_language_determined);
+  EXPECT_EQ("en", determined_language);
+
+  // Now navigate to a page in French.
+  committed_page = nullptr;
+  page_with_language_determined = nullptr;
+  base::RunLoop navigation_run_loop2;
+  base::RunLoop page_language_determination_run_loop2;
+
+  navigation_run_loop = &navigation_run_loop2;
+  page_language_determination_run_loop = &page_language_determination_run_loop2;
+
+  controller->Navigate(embedded_test_server()->GetURL("/french_page.html"));
+  navigation_run_loop2.Run();
+  EXPECT_TRUE(committed_page);
+
+  // Verify that the language determined event fires as expected.
+  page_language_determination_run_loop2.Run();
+  EXPECT_EQ(committed_page, page_with_language_determined);
+  EXPECT_EQ("fr", determined_language);
+}
+
+// Verifies that closing a tab when a navigation is waiting for a response
+// causes the navigation to be marked as failed to the embedder.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       CloseTabWithNavigationWaitingForResponse) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "", true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL("/initial_url.html");
+  base::RunLoop run_loop;
+  Navigation* ongoing_navigation = nullptr;
+
+  auto observer =
+      std::make_unique<NavigationObserverImpl>(GetNavigationController());
+  observer->SetStartedCallback(base::BindLambdaForTesting(
+      [&](Navigation* navigation) { ongoing_navigation = navigation; }));
+  observer->SetFailedCallback(
+      base::BindLambdaForTesting([&](Navigation* navigation) {
+        EXPECT_EQ(url, navigation->GetURL());
+        EXPECT_EQ(NavigationState::kFailed, navigation->GetState());
+
+        run_loop.Quit();
+
+        // The NavigationControllerImpl that |observer| is observing will
+        // be destroyed before control returns to the test, so destroy
+        // |observer| now to avoid UaF.
+        observer.reset();
+      }));
+
+  shell()->LoadURL(url);
+  response.WaitForRequest();
+
+  EXPECT_EQ(NavigationState::kWaitingResponse, ongoing_navigation->GetState());
+  shell()->browser()->DestroyTab(shell()->tab());
+
+  run_loop.Run();
+}
+
+// Verifies that closing a tab when a navigation is in the middle of receiving a
+// response causes the navigation to be marked as failed to the embedder.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       CloseTabWithNavigationReceivingBytes) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "", true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL("/initial_url.html");
+  base::RunLoop run_loop;
+  Navigation* ongoing_navigation = nullptr;
+
+  auto observer =
+      std::make_unique<NavigationObserverImpl>(GetNavigationController());
+  observer->SetStartedCallback(base::BindLambdaForTesting(
+      [&](Navigation* navigation) { ongoing_navigation = navigation; }));
+  observer->SetFailedCallback(
+      base::BindLambdaForTesting([&](Navigation* navigation) {
+        EXPECT_EQ(url, navigation->GetURL());
+        EXPECT_EQ(NavigationState::kFailed, navigation->GetState());
+
+        run_loop.Quit();
+
+        // The NavigationControllerImpl that |observer| is observing will
+        // be destroyed before control returns to the test, so destroy
+        // |observer| now to avoid UaF.
+        observer.reset();
+      }));
+
+  auto* tab = static_cast<TabImpl*>(shell()->tab());
+  auto wait_for_response_start =
+      std::make_unique<content::TestNavigationManager>(tab->web_contents(),
+                                                       url);
+  shell()->LoadURL(url);
+  // Wait until request is ready to start.
+  EXPECT_TRUE(wait_for_response_start->WaitForRequestStart());
+  // Start the request.
+  wait_for_response_start->ResumeNavigation();
+  // Wait for the request to arrive to ControllableHttpResponse.
+  response.WaitForRequest();
+
+  response.Send(net::HTTP_OK, "text/html", "<html>");
+
+  ASSERT_TRUE(wait_for_response_start->WaitForResponse());
+
+  EXPECT_EQ(NavigationState::kReceivingBytes, ongoing_navigation->GetState());
+
+  // Destroy |wait_for_response_start| before we indirectly destroy the
+  // WebContents it's observing.
+  wait_for_response_start.reset();
+
+  shell()->browser()->DestroyTab(tab);
+
+  run_loop.Run();
+}
 
 }  // namespace weblayer

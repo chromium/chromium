@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,11 +35,9 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -54,12 +52,9 @@ import org.chromium.ui.modelutil.ListObservable;
  * Controller tests for the address accessory sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 public class AddressAccessorySheetControllerTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
@@ -67,17 +62,14 @@ public class AddressAccessorySheetControllerTest {
     private RecyclerView mMockView;
     @Mock
     private ListObservable.ListObserver<Void> mMockItemListObserver;
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogramNatives;
 
     private AddressAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabModel mSheetDataPieces;
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator = new AddressAccessorySheetCoordinator(RuntimeEnvironment.application, null);
         assertNotNull(mCoordinator);

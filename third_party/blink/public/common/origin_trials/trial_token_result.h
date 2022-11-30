@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,8 @@ class BLINK_COMMON_EXPORT TrialTokenResult {
   OriginTrialTokenStatus Status() const { return status_; }
 
   const TrialToken* ParsedToken() const { return parsed_token_.get(); }
+
+  void SetStatus(OriginTrialTokenStatus status) { status_ = status; }
 
  private:
   OriginTrialTokenStatus status_;

@@ -1,0 +1,52 @@
+<style include="cr-shared-style shared-style">
+  #container {
+    box-sizing: border-box;
+  }
+
+  #header {
+    font-size: 0.88rem;  /* Should be 14px */
+    margin: 31px auto 16px auto;
+    width: var(--cr-toolbar-field-width);
+  }
+
+  #site-permissions-container {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    color: var(--cr-primary-text-color);
+    margin: 0 auto;
+    width: var(--cr-toolbar-field-width);
+  }
+
+  #site-lists {
+    box-sizing: border-box;
+    padding: var(--cr-section-padding) var(--cr-section-padding) 0;
+  }
+
+  cr-link-row {
+    padding-inline-end: 28px;
+  }
+</style>
+<div class="page-container" id="container">
+  <div id="header">$i18n{sitePermissionsPageTitle}</div>
+  <div id="site-permissions-container">
+    <div id="site-lists">
+      <site-permissions-list
+          delegate="[[delegate]]"
+          extensions="[[extensions]]"
+          header="$i18n{permittedSites}"
+          site-set="[[siteSetEnum_.USER_PERMITTED]]"
+          sites="[[permittedSites]]"></site-permissions-list>
+      <site-permissions-list
+          delegate="[[delegate]]"
+          extensions="[[extensions]]"
+          header="$i18n{restrictedSites}"
+          site-set="[[siteSetEnum_.USER_RESTRICTED]]"
+          sites="[[restrictedSites]]"></site-permissions-list>
+    </div>
+    <cr-link-row class="hr" id="allSitesLink"
+        label="$i18n{sitePermissionsViewAllSites}"
+        on-click="onAllSitesLinkClick_">
+    </cr-link-row>
+  </div>
+</div>

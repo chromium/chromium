@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
-#include "components/no_state_prefetch/renderer/prerender_utils.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
@@ -27,7 +27,6 @@
 #include "components/webapps/renderer/web_page_metadata_agent.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -37,12 +36,12 @@
 #include "weblayer/renderer/weblayer_render_frame_observer.h"
 #include "weblayer/renderer/weblayer_render_thread_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/android_system_error_page/error_page_populator.h"
 #include "components/cdm/renderer/android_key_systems.h"
-#include "components/embedder_support/android/common/url_constants.h"
 #include "components/spellcheck/renderer/spellcheck.h"           // nogncheck
 #include "components/spellcheck/renderer/spellcheck_provider.h"  // nogncheck
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -54,11 +53,16 @@ namespace weblayer {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class SpellcheckInterfaceProvider
     : public service_manager::LocalInterfaceProvider {
  public:
   SpellcheckInterfaceProvider() = default;
+
+  SpellcheckInterfaceProvider(const SpellcheckInterfaceProvider&) = delete;
+  SpellcheckInterfaceProvider& operator=(const SpellcheckInterfaceProvider&) =
+      delete;
+
   ~SpellcheckInterfaceProvider() override = default;
 
   // service_manager::LocalInterfaceProvider:
@@ -70,11 +74,8 @@ class SpellcheckInterfaceProvider
     content::RenderThread::Get()->BindHostReceiver(mojo::GenericPendingReceiver(
         interface_name, std::move(interface_pipe)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckInterfaceProvider);
 };
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -82,13 +83,13 @@ ContentRendererClientImpl::ContentRendererClientImpl() = default;
 ContentRendererClientImpl::~ContentRendererClientImpl() = default;
 
 void ContentRendererClientImpl::RenderThreadStarted() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!spellcheck_) {
     local_interface_provider_ = std::make_unique<SpellcheckInterfaceProvider>();
     spellcheck_ = std::make_unique<SpellCheck>(local_interface_provider_.get());
   }
   blink::WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
-      blink::WebString::FromUTF8(embedder_support::kAndroidAppScheme));
+      blink::WebString::FromUTF8(content::kAndroidAppScheme));
 #endif
 
   content::RenderThread* thread = content::RenderThread::Get();
@@ -119,8 +120,14 @@ void ContentRendererClientImpl::RenderFrameCreated(
   auto* agent = new content_settings::ContentSettingsAgentImpl(
       render_frame, false /* should_whitelist */,
       std::make_unique<content_settings::ContentSettingsAgentImpl::Delegate>());
-  if (weblayer_observer_)
-    agent->SetContentSettingRules(weblayer_observer_->content_setting_rules());
+  if (weblayer_observer_) {
+    if (weblayer_observer_->content_settings_manager()) {
+      mojo::Remote<content_settings::mojom::ContentSettingsManager> manager;
+      weblayer_observer_->content_settings_manager()->Clone(
+          manager.BindNewPipeAndPassReceiver());
+      agent->SetContentSettingsManager(std::move(manager));
+    }
+  }
 
   auto* metrics_render_frame_observer =
       new page_load_metrics::MetricsRenderFrameObserver(render_frame);
@@ -135,7 +142,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
           std::move(ad_resource_tracker));
   subresource_filter_agent->Initialize();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // |SpellCheckProvider| manages its own lifetime (and destroys itself when the
   // RenderFrame is destroyed).
   new SpellCheckProvider(render_frame, spellcheck_.get(),
@@ -146,7 +153,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);
 
-  if (content_capture::features::IsContentCaptureEnabled()) {
+  if (content_capture::features::IsContentCaptureEnabledInWebLayer()) {
     new content_capture::ContentCaptureSender(
         render_frame, render_frame_observer->associated_interfaces());
   }
@@ -154,7 +161,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
   if (!render_frame->IsMainFrame()) {
     auto* main_frame_no_state_prefetch_helper =
         prerender::NoStatePrefetchHelper::Get(
-            render_frame->GetRenderView()->GetMainRenderFrame());
+            render_frame->GetMainRenderFrame());
     if (main_frame_no_state_prefetch_helper) {
       // Avoid any race conditions from having the browser tell subframes that
       // they're no-state prefetching.
@@ -165,9 +172,11 @@ void ContentRendererClientImpl::RenderFrameCreated(
   }
 }
 
-void ContentRendererClientImpl::RenderViewCreated(
-    content::RenderView* render_view) {
-  new prerender::NoStatePrefetchClient(render_view->GetWebView());
+void ContentRendererClientImpl::WebViewCreated(
+    blink::WebView* web_view,
+    bool was_created_by_renderer,
+    const url::Origin* outermost_origin) {
+  new prerender::NoStatePrefetchClient(web_view);
 }
 
 SkBitmap* ContentRendererClientImpl::GetSadPluginBitmap() {
@@ -186,12 +195,14 @@ void ContentRendererClientImpl::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,
     const std::string& http_method,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) {
   auto* error_page_helper = ErrorPageHelper::GetForFrame(render_frame);
   if (error_page_helper)
     error_page_helper->PrepareErrorPage();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This does nothing if |error_html| is non-null (which happens if the
   // embedder injects an error page).
   android_system_error_page::PopulateErrorPageHtml(error, error_html);
@@ -205,18 +216,22 @@ ContentRendererClientImpl::CreateURLLoaderThrottleProvider(
       browser_interface_broker_.get(), provider_type);
 }
 
-void ContentRendererClientImpl::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
-#if defined(OS_ANDROID)
-  cdm::AddAndroidWidevine(key_systems);
-  cdm::AddAndroidPlatformKeySystems(key_systems);
-#endif
+void ContentRendererClientImpl::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  media::KeySystemInfoVector key_systems;
+#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WIDEVINE)
+  cdm::AddAndroidWidevine(&key_systems);
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
+  cdm::AddAndroidPlatformKeySystems(&key_systems);
+#endif  // BUILDFLAG(IS_ANDROID)
+  std::move(cb).Run(std::move(key_systems));
 }
 
 void ContentRendererClientImpl::
     SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
   blink::WebRuntimeFeatures::EnablePerformanceManagerInstrumentation(true);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Web Share is experimental by default, and explicitly enabled on Android
   // (for both Chrome and WebLayer).
   blink::WebRuntimeFeatures::EnableWebShare(true);

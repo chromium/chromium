@@ -1,0 +1,8 @@
+# These deps should be only the required deps for
+# //chromeos/ash/components/browser_context_helper.
+include_rules = [
+  "+content/public/browser/browser_context.h",
+
+  # For testing.
+  "+content/public/test",
+]

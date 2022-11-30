@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point.h"
@@ -28,14 +27,19 @@ class EVENTS_EXPORT EventTarget {
    public:
     explicit DispatcherApi(EventTarget* target) : target_(target) {}
 
+    DispatcherApi(const DispatcherApi&) = delete;
+    DispatcherApi& operator=(const DispatcherApi&) = delete;
+
    private:
     DispatcherApi();
-    EventTarget* target_;
-
-    DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
+    raw_ptr<EventTarget> target_;
   };
 
   EventTarget();
+
+  EventTarget(const EventTarget&) = delete;
+  EventTarget& operator=(const EventTarget&) = delete;
+
   virtual ~EventTarget();
 
   virtual bool CanAcceptEvent(const Event& event) = 0;
@@ -78,8 +82,8 @@ class EVENTS_EXPORT EventTarget {
   // Adds a handler to receive events before the target. The handler must be
   // explicitly removed from the target before the handler is destroyed. The
   // EventTarget does not take ownership of the handler.
-  void AddPreTargetHandler(EventHandler* handler,
-                           Priority priority = Priority::kDefault);
+  void AddPreTargetHandler(EventHandler* handler);
+  void AddPreTargetHandler(EventHandler* handler, Priority priority);
   void RemovePreTargetHandler(EventHandler* handler);
 
   // Adds a handler to receive events after the target. The handler must be
@@ -126,9 +130,8 @@ class EVENTS_EXPORT EventTarget {
 
   EventHandlerPriorityList pre_target_list_;
   EventHandlerList post_target_list_;
-  EventHandler* target_handler_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTarget);
+  // TODO(crbug.com/1298696): Breaks content_unittests.
+  raw_ptr<EventHandler, DegradeToNoOpWhenMTE> target_handler_ = nullptr;
 };
 
 }  // namespace ui

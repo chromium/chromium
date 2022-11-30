@@ -1,0 +1,80 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.shell.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Observer interface for system volume changes.
+//
+// Security: This interface is hosted in a render process.
+interface CastDemoVolumeChangeObserver {
+  // Will be called anytime the volume has been changed, including applying
+  // the default volume.
+  VolumeChanged(float level);
+};
+
+// Interface for the Cast Demo app to communicate with Cast platform. This
+// interface is only exposed for the Cast Demo app, which is used for in-store
+// retail demos. The content resources for this app are baked into the platform.
+// When a device is in demo mode, its functionality is restricted to the demo
+// app experience, which includes pre-baked video demos and simple smart-home
+// device controls.
+//
+// Security: This interface is hosted by the Cast Service. Most of these methods
+// expose non-sensitive capabilities. SetWifiCredentials() allows the app to
+// select a WiFi network for the device, and is documented below.
+interface CastDemo {
+  // Record a metrics event, with |data| logged with the event as JSON.
+  RecordEvent(string event_name, mojo_base.mojom.Value data);
+
+  // Set a retailer name to identify the chain of this device.
+  SetRetailerName(string retailer_name);
+
+  // Set a store ID to identify the location of this device.
+  SetStoreId(string store_id);
+
+  // Get a retailer name to identify the chain of this device.
+  GetRetailerName() => (string retailer_name);
+
+  // Get a store ID to identify the location of this device.
+  GetStoreId() => (string store_id);
+
+  // Change the default volume level, with |level| in the range [0, 1].
+  SetDefaultVolumeLevel(float level);
+
+  // Get the volume level previously set through SetDefaultVolumeLevel().
+  GetDefaultVolumeLevel() => (float level);
+
+  // Set the volume to a previous level set through SetDefaultVolumeLevel().
+  ApplyDefaultVolume();
+
+  // Set store-specific wifi credentials.
+  // If |psk| is present, WPA-PSK is assumed.
+  // If |psk| is empty, no security is assumed.
+  //
+  // Security: This allows the Cast Demo app to select a WiFi network for the
+  // device. Before the app enters "demonstration mode", this API allows retail
+  // store managers to configure the WiFi network for the device without having
+  // to complete the standard device setup flow. After setup, this API is
+  // inaccessible to customers interacting with the demo app.
+  SetWifiCredentials(string ssid, string psk);
+
+  // Get the list of available WIFI networks.
+  // |network_list| contains a Value with the following structure:
+  // {"networks": [{"ssid": "<ssid>", "type": "<SECURE|PUBLIC>"}, ... ]}
+  GetAvailableWifiNetworks() => (mojo_base.mojom.Value network_list);
+
+  // Get the current connection status.
+  // |status| contains a Value with the following structure:
+  // { "status": "<CONNECTED|DISCONNECTED>", "network": "<ssid>" }
+  GetConnectionStatus() => (mojo_base.mojom.Value status);
+
+  // Register an observer to be notified when the volume is changed.
+  AddVolumeChangeObserver(
+      pending_remote<CastDemoVolumeChangeObserver> observer);
+
+  // Force JS LocalStorage to be persisted to disk.
+  PersistLocalStorage();
+};

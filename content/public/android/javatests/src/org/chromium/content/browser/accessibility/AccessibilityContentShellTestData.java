@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ public class AccessibilityContentShellTestData {
     public int typeWindowContentChangedCount;
     public boolean receivedEvent;
     public boolean receivedAccessibilityFocusEvent;
+    public boolean receivedTraversalEvent;
+    public boolean receivedSelectionEvent;
 
     private AccessibilityContentShellTestData() {
         traverseFromIndex = -1;
@@ -39,6 +41,8 @@ public class AccessibilityContentShellTestData {
         typeWindowContentChangedCount = 0;
         receivedEvent = false;
         receivedAccessibilityFocusEvent = false;
+        receivedTraversalEvent = false;
+        receivedSelectionEvent = false;
     }
 
     public int getTraverseFromIndex() {
@@ -107,5 +111,21 @@ public class AccessibilityContentShellTestData {
 
     public void setReceivedAccessibilityFocusEvent(boolean receivedAccessibilityFocusEvent) {
         this.receivedAccessibilityFocusEvent = receivedAccessibilityFocusEvent;
+    }
+
+    public boolean hasReceivedTraversalEvent() {
+        return receivedTraversalEvent;
+    }
+
+    public void setReceivedTraversalEvent(boolean receivedTraversalEvent) {
+        this.receivedTraversalEvent = receivedTraversalEvent;
+    }
+
+    public boolean hasReceivedSelectionEvent() {
+        return receivedSelectionEvent;
+    }
+
+    public void setReceivedSelectionEvent(boolean receivedSelectionEvent) {
+        this.receivedSelectionEvent = receivedSelectionEvent;
     }
 }

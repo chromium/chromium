@@ -1,7 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/input_monitor/local_pointer_input_monitor.h"
 
 #import <AppKit/AppKit.h>
@@ -13,11 +14,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
@@ -38,6 +38,11 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       LocalInputMonitor::PointerMoveCallback on_mouse_move);
+
+  LocalMouseInputMonitorMac(const LocalMouseInputMonitorMac&) = delete;
+  LocalMouseInputMonitorMac& operator=(const LocalMouseInputMonitorMac&) =
+      delete;
+
   ~LocalMouseInputMonitorMac() override;
 
  private:
@@ -46,8 +51,6 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMouseInputMonitorMac);
 };
 
 }  // namespace
@@ -57,10 +60,10 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
  @private
   CFRunLoopSourceRef _mouseRunLoopSource;
   base::ScopedCFTypeRef<CFMachPortRef> _mouseMachPort;
-  remoting::LocalMouseInputMonitorMac::EventHandler* _monitor;
+  raw_ptr<remoting::LocalMouseInputMonitorMac::EventHandler> _monitor;
 }
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalMouseInputMonitorMac::EventHandler*)monitor;
 
 // Called when the local mouse moves
@@ -87,7 +90,7 @@ static CGEventRef LocalMouseMoved(CGEventTapProxy proxy,
 
 @implementation LocalInputMonitorManager
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalMouseInputMonitorMac::EventHandler*)monitor {
   if ((self = [super init])) {
     _monitor = monitor;
@@ -136,6 +139,9 @@ class LocalMouseInputMonitorMac::Core : public base::RefCountedThreadSafe<Core>,
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
        LocalInputMonitor::PointerMoveCallback on_mouse_move);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void Start();
   void Stop();
 
@@ -161,8 +167,6 @@ class LocalMouseInputMonitorMac::Core : public base::RefCountedThreadSafe<Core>,
   LocalInputMonitor::PointerMoveCallback on_mouse_move_;
 
   webrtc::DesktopVector mouse_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 LocalMouseInputMonitorMac::LocalMouseInputMonitorMac(

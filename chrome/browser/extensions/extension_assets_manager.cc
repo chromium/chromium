@@ -1,10 +1,9 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_assets_manager.h"
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -20,6 +19,10 @@ namespace {
 
 class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
  public:
+  ExtensionAssetsManagerImpl(const ExtensionAssetsManagerImpl&) = delete;
+  ExtensionAssetsManagerImpl& operator=(const ExtensionAssetsManagerImpl&) =
+      delete;
+
   static ExtensionAssetsManagerImpl* GetInstance() {
     return base::Singleton<ExtensionAssetsManagerImpl>::get();
   }
@@ -49,8 +52,6 @@ class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
 
   ExtensionAssetsManagerImpl() {}
   ~ExtensionAssetsManagerImpl() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionAssetsManagerImpl);
 };
 
 }  // namespace

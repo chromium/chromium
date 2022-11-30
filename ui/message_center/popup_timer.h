@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -31,6 +30,10 @@ class PopupTimer {
   PopupTimer(const std::string& id,
              base::TimeDelta timeout,
              base::WeakPtr<Delegate> delegate);
+
+  PopupTimer(const PopupTimer&) = delete;
+  PopupTimer& operator=(const PopupTimer&) = delete;
+
   ~PopupTimer();
 
   // Starts running the timer.  Barring a Pause or Reset call, the timer will
@@ -62,8 +65,6 @@ class PopupTimer {
 
   // The actual timer.
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTimer);
 };
 
 }  // namespace message_center

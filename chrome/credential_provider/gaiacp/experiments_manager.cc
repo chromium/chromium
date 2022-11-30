@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   experiments_file->Read(0, buffer.data(), buffer.size());
   experiments_file.reset();
 
-  base::Optional<base::Value> experiments_data =
+  absl::optional<base::Value> experiments_data =
       base::JSONReader::Read(base::StringPiece(buffer.data(), buffer.size()),
                              base::JSON_ALLOW_TRAILING_COMMAS);
   if (!experiments_data || !experiments_data->is_dict()) {
@@ -79,15 +79,15 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
     return false;
   }
 
-  const base::Value* experiments =
+  const base::Value* experiments_value =
       experiments_data->FindListKey(kResponseExperimentsKeyName);
-  if (!experiments) {
+  if (!experiments_value) {
     LOGFN(ERROR) << "User experiments not found!";
     return false;
   }
 
-  if (experiments->is_list()) {
-    for (const auto& item : experiments->GetList()) {
+  if (experiments_value->is_list()) {
+    for (const auto& item : experiments_value->GetListDeprecated()) {
       auto* f = item.FindStringKey(kResponseFeatureKeyName);
       auto* v = item.FindStringKey(kResponseValueKeyName);
       if (!f || !v) {
@@ -146,7 +146,7 @@ bool ExperimentsManager::GetExperimentForUserAsBool(const std::string& sid,
 }
 
 bool ExperimentsManager::ExperimentsEnabled() const {
-  return GetGlobalFlagOrDefault(kExperimentsEnabledRegKey, 0);
+  return GetGlobalFlagOrDefault(kExperimentsEnabledRegKey, 1);
 }
 
 std::vector<std::string> ExperimentsManager::GetExperimentsList() const {

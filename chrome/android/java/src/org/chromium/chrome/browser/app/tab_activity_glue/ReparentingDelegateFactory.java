@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** Constructs delegates needed for reparenting tabs. */
 public class ReparentingDelegateFactory {
@@ -50,7 +51,7 @@ public class ReparentingDelegateFactory {
             }
 
             @Override
-            public boolean isNTPUrl(String url) {
+            public boolean isNTPUrl(GURL url) {
                 return UrlUtilities.isNTPUrl(url);
             }
         };

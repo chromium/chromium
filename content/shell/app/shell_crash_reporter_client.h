@@ -1,12 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_SHELL_APP_SHELL_CRASH_REPORTER_CLIENT_H_
 #define CONTENT_SHELL_APP_SHELL_CRASH_REPORTER_CLIENT_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
@@ -15,9 +13,13 @@ namespace content {
 class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   ShellCrashReporterClient();
+
+  ShellCrashReporterClient(const ShellCrashReporterClient&) = delete;
+  ShellCrashReporterClient& operator=(const ShellCrashReporterClient&) = delete;
+
   ~ShellCrashReporterClient() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns a textual description of the product type and version to include
   // in the crash report.
   void GetProductNameAndVersion(const std::wstring& exe_path,
@@ -27,7 +29,7 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
                                 std::wstring* channel_name) override;
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Returns a textual description of the product type and version to include
   // in the crash report.
   void GetProductNameAndVersion(const char** product_name,
@@ -40,21 +42,18 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   // The location where minidump files should be written. Returns true if
   // |crash_dir| was set.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool GetCrashDumpLocation(std::wstring* crash_dir) override;
 #else
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the descriptor key of the android minidump global descriptor.
   int GetAndroidMinidumpDescriptor() override;
 #endif
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellCrashReporterClient);
 };
 
 }  // namespace content

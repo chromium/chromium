@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -22,15 +21,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattService {
  public:
   // Interacting with Characteristics and Descriptors can produce
   // this set of errors.
-  enum GattErrorCode {
-    GATT_ERROR_UNKNOWN = 0,
-    GATT_ERROR_FAILED,
-    GATT_ERROR_IN_PROGRESS,
-    GATT_ERROR_INVALID_LENGTH,
-    GATT_ERROR_NOT_PERMITTED,
-    GATT_ERROR_NOT_AUTHORIZED,
-    GATT_ERROR_NOT_PAIRED,
-    GATT_ERROR_NOT_SUPPORTED
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. This enum should be kept in sync
+  // with the BluetoothGattServiceGattErrorCode enum in
+  // src/tools/metrics/histograms/enums.xml.
+  enum class GattErrorCode {
+    kUnknown = 0,
+    kFailed = 1,
+    kInProgress = 2,
+    kInvalidLength = 3,
+    kNotPermitted = 4,
+    kNotAuthorized = 5,
+    kNotPaired = 6,
+    kNotSupported = 7,
+    kMaxValue = kNotSupported,
   };
 
   // The ErrorCallback is used by methods to asynchronously report errors.
@@ -53,13 +57,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattService {
   // services.
   virtual bool IsPrimary() const = 0;
 
+  BluetoothGattService(const BluetoothGattService&) = delete;
+  BluetoothGattService& operator=(const BluetoothGattService&) = delete;
+
   virtual ~BluetoothGattService();
 
  protected:
   BluetoothGattService();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattService);
 };
 
 }  // namespace device

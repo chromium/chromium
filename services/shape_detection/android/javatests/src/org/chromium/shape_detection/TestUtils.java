@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.text.TextRecognizer;
+
+import org.junit.Assert;
+
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
 import org.chromium.skia.mojom.BitmapN32ImageInfo;
@@ -24,10 +32,35 @@ import java.nio.ByteBuffer;
  */
 public class TestUtils {
     public static final boolean IS_GMS_CORE_SUPPORTED = isGmsCoreSupported();
+    public static boolean sIsVisionLibraryReady;
 
     private static boolean isGmsCoreSupported() {
         return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                 ContextUtils.getApplicationContext());
+    }
+
+    public static void waitForVisionLibraryReady() {
+        Assert.assertTrue(IS_GMS_CORE_SUPPORTED);
+        if (!sIsVisionLibraryReady) {
+            FaceDetector.Builder builder =
+                    new FaceDetector.Builder(ContextUtils.getApplicationContext());
+            builder.setMode(FaceDetector.ACCURATE_MODE);
+            builder.setLandmarkType(FaceDetector.ALL_LANDMARKS);
+            FaceDetector faceDetector = builder.build();
+            CriteriaHelper.pollInstrumentationThread(() -> faceDetector.isOperational());
+
+            BarcodeDetector barcodeDetector =
+                    new BarcodeDetector.Builder(ContextUtils.getApplicationContext())
+                            .setBarcodeFormats(Barcode.ALL_FORMATS)
+                            .build();
+            CriteriaHelper.pollInstrumentationThread(() -> barcodeDetector.isOperational());
+
+            TextRecognizer textRecognizer =
+                    new TextRecognizer.Builder(ContextUtils.getApplicationContext()).build();
+            CriteriaHelper.pollInstrumentationThread(() -> textRecognizer.isOperational());
+
+            sIsVisionLibraryReady = true;
+        }
     }
 
     public static org.chromium.skia.mojom.BitmapN32 mojoBitmapFromBitmap(Bitmap bitmap) {

@@ -1,59 +1,126 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/crostini/crostini_terminal.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
+#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/base/tablet_state.h"
+#include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/types_util.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
 
+void RequestAppListSort(Profile* profile, ash::AppListSortOrder order) {
+  ChromeAppListModelUpdater* model_updater =
+      static_cast<ChromeAppListModelUpdater*>(
+          app_list::AppListSyncableServiceFactory::GetForProfile(profile)
+              ->GetModelUpdater());
+  model_updater->RequestAppListSort(order);
+}
+
 bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
   return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
 }
 
-web_app::DisplayMode ConvertUseLaunchTypeCommandToDisplayMode(int command_id) {
+apps::WindowMode ConvertUseLaunchTypeCommandToWindowMode(int command_id) {
   DCHECK(command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
          command_id < ash::USE_LAUNCH_TYPE_COMMAND_END);
   switch (command_id) {
     case ash::USE_LAUNCH_TYPE_REGULAR:
-      return web_app::DisplayMode::kBrowser;
+      return apps::WindowMode::kBrowser;
     case ash::USE_LAUNCH_TYPE_WINDOW:
-      return web_app::DisplayMode::kStandalone;
+      return apps::WindowMode::kWindow;
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
+      return apps::WindowMode::kTabbedWindow;
     case ash::USE_LAUNCH_TYPE_PINNED:
     case ash::USE_LAUNCH_TYPE_FULLSCREEN:
-    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
     default:
-      return web_app::DisplayMode::kUndefined;
+      return apps::WindowMode::kUnknown;
   }
+}
+
+void CreateNewWindow(bool incognito, bool post_task) {
+  if (post_task) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(CreateNewWindow, incognito, /*post_task=*/false));
+    return;
+  }
+
+  ash::NewWindowDelegate::GetInstance()->NewWindow(
+      incognito, /*should_trigger_session_restore=*/false);
+}
+
+void ShowOptionsPage(AppListControllerDelegate* controller,
+                     Profile* profile,
+                     const std::string& app_id,
+                     bool post_task) {
+  DCHECK(controller);
+  DCHECK(profile);
+
+  if (post_task) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(ShowOptionsPage, controller, profile, app_id,
+                                  /*post_task=*/false));
+    return;
+  }
+
+  controller->ShowOptionsPage(profile, app_id);
+}
+
+void ExecuteLaunchCommand(app_list::AppContextMenuDelegate* delegate,
+                          int event_flags,
+                          bool post_task) {
+  DCHECK(delegate);
+  if (post_task) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(ExecuteLaunchCommand, delegate, event_flags,
+                                  /*post_task=*/false));
+    return;
+  }
+
+  delegate->ExecuteLaunchCommand(event_flags);
 }
 
 }  // namespace
@@ -62,52 +129,82 @@ AppServiceContextMenu::AppServiceContextMenu(
     app_list::AppContextMenuDelegate* delegate,
     Profile* profile,
     const std::string& app_id,
-    AppListControllerDelegate* controller)
-    : AppContextMenu(delegate, profile, app_id, controller) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->AppRegistryCache().ForOneApp(
+    AppListControllerDelegate* controller,
+    ash::AppListItemContext item_context)
+    : AppContextMenu(delegate, profile, app_id, controller),
+      proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)),
+      item_context_(item_context) {
+  proxy_->AppRegistryCache().ForOneApp(
       app_id, [this](const apps::AppUpdate& update) {
-        app_type_ =
-            update.Readiness() == apps::mojom::Readiness::kUninstalledByUser
-                ? apps::mojom::AppType::kUnknown
-                : app_type_ = update.AppType();
+        app_type_ = apps_util::IsInstalled(update.Readiness())
+                        ? update.AppType()
+                        : apps::AppType::kUnknown;
+        is_platform_app_ = update.IsPlatformApp().value_or(false);
       });
+  // StandaloneBrowserExtension creates its own context menus for platform apps.
+  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp &&
+      is_platform_app_) {
+    standalone_browser_extension_menu_ =
+        std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
+            app_id, StandaloneBrowserExtensionAppContextMenu::Source::kAppList);
+  }
 }
 
 AppServiceContextMenu::~AppServiceContextMenu() = default;
 
 void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  if (proxy->AppRegistryCache().GetAppType(app_id()) ==
-      apps::mojom::AppType::kUnknown) {
+  if (app_type_ == apps::AppType::kUnknown) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  proxy->GetMenuModel(
-      app_id(), apps::mojom::MenuType::kAppList,
-      controller()->GetAppListDisplayId(),
-      base::BindOnce(&AppServiceContextMenu::OnGetMenuModel,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  // StandaloneBrowserExtension handles its own context menus for platform apps.
+  // Forward to that class.
+  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp &&
+      is_platform_app_) {
+    standalone_browser_extension_menu_->GetMenuModel(std::move(callback));
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(apps::kAppServiceGetMenuWithoutMojom)) {
+    proxy_->GetMenuModel(
+        app_id(), apps::MenuType::kAppList, controller()->GetAppListDisplayId(),
+        base::BindOnce(&AppServiceContextMenu::OnGetMenuModel,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    proxy_->GetMenuModel(
+        app_id(), apps::mojom::MenuType::kAppList,
+        controller()->GetAppListDisplayId(),
+        base::BindOnce(&AppServiceContextMenu::OnGetMojomMenuModel,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
+  // StandaloneBrowserExtension handles its own context menus. Forward to that
+  // class.
+  if (standalone_browser_extension_menu_) {
+    standalone_browser_extension_menu_->ExecuteCommand(command_id, event_flags);
+    return;
+  }
+
   // Place new windows on the same display as the context menu.
   display::ScopedDisplayForNewWindows scoped_display(
       controller()->GetAppListDisplayId());
   switch (command_id) {
     case ash::LAUNCH_NEW:
-      delegate()->ExecuteLaunchCommand(event_flags);
+      ExecuteLaunchCommand(delegate(), event_flags, /*post_task=*/true);
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
     case ash::SHOW_APP_INFO:
       ShowAppInfo();
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
     case ash::OPTIONS:
-      controller()->ShowOptionsPage(profile(), app_id());
+      ShowOptionsPage(controller(), profile(), app_id(), /*post_task=*/true);
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
     case ash::UNINSTALL:
@@ -115,25 +212,31 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     case ash::SETTINGS:
-      if (app_id() == crostini::kCrostiniTerminalSystemAppId)
-        crostini::LaunchTerminalSettings(profile(),
+      if (app_id() == guest_os::kTerminalSystemAppId) {
+        guest_os::LaunchTerminalSettings(profile(),
                                          controller()->GetAppListDisplayId());
+        ash::full_restore::FullRestoreService::MaybeCloseNotification(
+            profile());
+      }
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
-      if (app_type_ == apps::mojom::AppType::kLacros)
-        crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
-      else
-        controller()->CreateNewWindow(/*incognito=*/false);
+    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW: {
+      const bool is_incognito =
+          command_id == ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW;
+      if (app_type_ == apps::AppType::kStandaloneBrowser) {
+        crosapi::BrowserManager::Get()->NewWindow(
+            is_incognito, /*should_trigger_session_restore=*/false);
+      } else {
+        // Create browser asynchronously to prevent this AppServiceContextMenu
+        // object to be deleted when the browser window is shown.
+        CreateNewWindow(is_incognito, /*post_task=*/true);
+      }
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
-
-    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      // TODO(crbug.com/1188020): Support Incognito window of Lacros.
-      controller()->CreateNewWindow(/*incognito=*/true);
-      break;
-
+    }
     case ash::SHUTDOWN_GUEST_OS:
-      if (app_id() == crostini::kCrostiniTerminalSystemAppId) {
+      if (app_id() == guest_os::kTerminalSystemAppId) {
         crostini::CrostiniManager::GetForProfile(profile())->StopVm(
             crostini::kCrostiniDefaultVmName, base::DoNothing());
       } else if (app_id() == plugin_vm::kPluginVmShelfAppId) {
@@ -145,15 +248,30 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       }
       break;
 
+    case ash::REORDER_BY_NAME_ALPHABETICAL:
+      RequestAppListSort(profile(), ash::AppListSortOrder::kNameAlphabetical);
+      break;
+
+    case ash::REORDER_BY_NAME_REVERSE_ALPHABETICAL:
+      RequestAppListSort(profile(),
+                         ash::AppListSortOrder::kNameReverseAlphabetical);
+      break;
+
+    case ash::REORDER_BY_COLOR:
+      RequestAppListSort(profile(), ash::AppListSortOrder::kColor);
+      break;
+
     default:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
-        if (app_type_ == apps::mojom::AppType::kWeb &&
+        if (app_type_ == apps::AppType::kWeb &&
             command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW) {
-          auto* provider = web_app::WebAppProvider::Get(profile());
-          DCHECK(provider);
-          provider->registry_controller().SetExperimentalTabbedWindowMode(
-              app_id(), true, /*is_user_action=*/true);
+          if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
+            proxy_->SetWindowMode(app_id(), apps::WindowMode::kTabbedWindow);
+          } else {
+            proxy_->SetWindowMode(app_id(),
+                                  apps::mojom::WindowMode::kTabbedWindow);
+          }
           return;
         }
 
@@ -179,25 +297,29 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
 }
 
 bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
+  // StandaloneBrowserExtension handles its own context menus. Forward to that
+  // class.
+  if (standalone_browser_extension_menu_) {
+    return standalone_browser_extension_menu_->IsCommandIdChecked(command_id);
+  }
+
   switch (app_type_) {
-    case apps::mojom::AppType::kWeb:
+    case apps::AppType::kWeb:
+    case apps::AppType::kStandaloneBrowserChromeApp:  // hosted app
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
-        auto* provider = web_app::WebAppProvider::Get(profile());
-        DCHECK(provider);
-        if (provider->registrar().IsInExperimentalTabbedWindowMode(app_id())) {
-          return command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW;
-        }
-
-        web_app::DisplayMode user_display_mode =
-            provider->registrar().GetAppUserDisplayMode(app_id());
-        return user_display_mode != web_app::DisplayMode::kUndefined &&
-               user_display_mode ==
-                   ConvertUseLaunchTypeCommandToDisplayMode(command_id);
+        auto user_window_mode = apps::WindowMode::kUnknown;
+        proxy_->AppRegistryCache().ForOneApp(
+            app_id(), [&user_window_mode](const apps::AppUpdate& update) {
+              user_window_mode = update.WindowMode();
+            });
+        return user_window_mode != apps::WindowMode::kUnknown &&
+               user_window_mode ==
+                   ConvertUseLaunchTypeCommandToWindowMode(command_id);
       }
       return AppContextMenu::IsCommandIdChecked(command_id);
 
-    case apps::mojom::AppType::kExtension:
+    case apps::AppType::kChromeApp:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         return static_cast<int>(
@@ -210,22 +332,28 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
       }
       return AppContextMenu::IsCommandIdChecked(command_id);
 
-    case apps::mojom::AppType::kArc:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kCrostini:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kBuiltIn:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kPluginVm:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kBorealis:
-      FALLTHROUGH;
+    case apps::AppType::kArc:
+      [[fallthrough]];
+    case apps::AppType::kCrostini:
+      [[fallthrough]];
+    case apps::AppType::kBuiltIn:
+      [[fallthrough]];
+    case apps::AppType::kPluginVm:
+      [[fallthrough]];
+    case apps::AppType::kBorealis:
+      [[fallthrough]];
     default:
       return AppContextMenu::IsCommandIdChecked(command_id);
   }
 }
 
 bool AppServiceContextMenu::IsCommandIdEnabled(int command_id) const {
+  // StandaloneBrowserExtension handles its own context menus. Forward to that
+  // class.
+  if (standalone_browser_extension_menu_) {
+    return standalone_browser_extension_menu_->IsCommandIdEnabled(command_id);
+  }
+
   if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id) &&
       extension_menu_items_) {
     return extension_menu_items_->IsCommandIdEnabled(command_id);
@@ -233,14 +361,13 @@ bool AppServiceContextMenu::IsCommandIdEnabled(int command_id) const {
   return AppContextMenu::IsCommandIdEnabled(command_id);
 }
 
-void AppServiceContextMenu::OnGetMenuModel(
-    GetMenuModelCallback callback,
-    apps::mojom::MenuItemsPtr menu_items) {
+void AppServiceContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
+                                           apps::MenuItems menu_items) {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
   size_t index = 0;
-  if (apps::PopulateNewItemFromMojoMenuItems(
-          menu_items->items, menu_model.get(), submenu_.get(),
+  if (apps::PopulateNewItemFromMenuItems(
+          menu_items, menu_model.get(), submenu_.get(),
           base::BindOnce(&AppServiceContextMenu::GetMenuItemVectorIcon))) {
     index = 1;
   }
@@ -248,17 +375,17 @@ void AppServiceContextMenu::OnGetMenuModel(
   // The special rule to ensure that FilesManager's first menu item is "New
   // window".
   const bool build_extension_menu_before_default =
-      (app_type_ == apps::mojom::AppType::kExtension &&
+      (app_type_ == apps::AppType::kChromeApp &&
        app_id() == extension_misc::kFilesManagerAppId);
 
   if (build_extension_menu_before_default)
     BuildExtensionAppShortcutsMenu(menu_model.get());
 
   // Create default items for non-Remote apps.
-  if (app_id() != extension_misc::kChromeAppId &&
-      app_id() != extension_misc::kLacrosAppId &&
-      app_type_ != apps::mojom::AppType::kUnknown &&
-      app_type_ != apps::mojom::AppType::kRemote) {
+  if (app_id() != app_constants::kChromeAppId &&
+      app_id() != app_constants::kLacrosAppId &&
+      app_type_ != apps::AppType::kUnknown &&
+      app_type_ != apps::AppType::kRemote) {
     app_list::AppContextMenu::BuildMenu(menu_model.get());
   }
 
@@ -266,20 +393,56 @@ void AppServiceContextMenu::OnGetMenuModel(
     BuildExtensionAppShortcutsMenu(menu_model.get());
 
   app_shortcut_items_ = std::make_unique<apps::AppShortcutItems>();
-  for (size_t i = index; i < menu_items->items.size(); i++) {
-    if (menu_items->items[i]->type == apps::mojom::MenuItemType::kCommand) {
+  for (size_t i = index; i < menu_items.items.size(); i++) {
+    if (menu_items.items[i]->type == apps::MenuItemType::kCommand) {
       AddContextMenuOption(
           menu_model.get(),
-          static_cast<ash::CommandId>(menu_items->items[i]->command_id),
-          menu_items->items[i]->string_id);
+          static_cast<ash::CommandId>(menu_items.items[i]->command_id),
+          menu_items.items[i]->string_id);
     } else {
-      apps::PopulateItemFromMojoMenuItems(std::move(menu_items->items[i]),
-                                          menu_model.get(),
-                                          app_shortcut_items_.get());
+      apps::PopulateItemFromMenuItem(menu_items.items[i], menu_model.get(),
+                                     app_shortcut_items_.get());
     }
   }
 
+  const ui::ColorId color_id = apps::GetColorIdForMenuItemIcon();
+  if (item_context_ == ash::AppListItemContext::kAppsGrid &&
+      ash::features::IsLauncherAppSortEnabled()) {
+    reorder_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
+    // As all the options below are only for tests and are expected to change in
+    // the future, the strings are directly written as the parameters.
+    reorder_submenu_->AddItemWithIcon(
+        ash::REORDER_BY_NAME_ALPHABETICAL,
+        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_NAME),
+        ui::ImageModel::FromVectorIcon(
+            GetMenuItemVectorIcon(ash::REORDER_BY_NAME_ALPHABETICAL,
+                                  /*string_id=*/-1),
+            color_id));
+    reorder_submenu_->AddItemWithIcon(
+        ash::REORDER_BY_COLOR,
+        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_COLOR),
+        ui::ImageModel::FromVectorIcon(
+            GetMenuItemVectorIcon(ash::REORDER_BY_COLOR, /*string_id=*/-1),
+            color_id));
+    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+
+    menu_model->AddSubMenuWithIcon(
+        ash::REORDER_SUBMENU,
+        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_TITLE),
+        reorder_submenu_.get(),
+        ui::ImageModel::FromVectorIcon(
+            GetMenuItemVectorIcon(ash::REORDER_SUBMENU, /*string_id=*/-1),
+            color_id));
+  }
+
   std::move(callback).Run(std::move(menu_model));
+}
+
+void AppServiceContextMenu::OnGetMojomMenuModel(
+    GetMenuModelCallback callback,
+    apps::mojom::MenuItemsPtr menu_items) {
+  OnGetMenuModel(std::move(callback),
+                 apps::ConvertMojomMenuItemsToMenuItems(menu_items));
 }
 
 void AppServiceContextMenu::BuildExtensionAppShortcutsMenu(
@@ -301,10 +464,10 @@ void AppServiceContextMenu::BuildExtensionAppShortcutsMenu(
 }
 
 void AppServiceContextMenu::ShowAppInfo() {
-  if (app_type_ == apps::mojom::AppType::kArc) {
+  if (app_type_ == apps::AppType::kArc) {
     chrome::ShowAppManagementPage(
         profile(), app_id(),
-        AppManagementEntryPoint::kAppListContextMenuAppInfoArc);
+        ash::settings::AppManagementEntryPoint::kAppListContextMenuAppInfoArc);
     return;
   }
 
@@ -313,21 +476,24 @@ void AppServiceContextMenu::ShowAppInfo() {
 
 void AppServiceContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
-    case apps::mojom::AppType::kWeb: {
-      // Web apps can only toggle between kStandalone and kBrowser.
-      web_app::DisplayMode user_display_mode =
-          ConvertUseLaunchTypeCommandToDisplayMode(command_id);
-      if (user_display_mode != web_app::DisplayMode::kUndefined) {
-        auto* provider = web_app::WebAppProvider::Get(profile());
-        DCHECK(provider);
-        provider->registry_controller().SetExperimentalTabbedWindowMode(
-            app_id(), false, /*is_user_action=*/true);
-        provider->registry_controller().SetAppUserDisplayMode(
-            app_id(), user_display_mode, /*is_user_action=*/true);
+    case apps::AppType::kWeb:
+    case apps::AppType::kStandaloneBrowserChromeApp: {
+      // Web apps and standalone browser hosted apps can only toggle between
+      // kWindow and kBrowser.
+      apps::WindowMode user_window_mode =
+          ConvertUseLaunchTypeCommandToWindowMode(command_id);
+      if (user_window_mode != apps::WindowMode::kUnknown) {
+        if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
+          proxy_->SetWindowMode(app_id(), user_window_mode);
+        } else {
+          proxy_->SetWindowMode(
+              app_id(),
+              apps::ConvertWindowModeToMojomWindowMode(user_window_mode));
+        }
       }
       return;
     }
-    case apps::mojom::AppType::kExtension: {
+    case apps::AppType::kChromeApp: {
       // Hosted apps can only toggle between LAUNCH_TYPE_WINDOW and
       // LAUNCH_TYPE_REGULAR.
       extensions::LaunchType launch_type =
@@ -338,16 +504,16 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
       controller()->SetExtensionLaunchType(profile(), app_id(), launch_type);
       return;
     }
-    case apps::mojom::AppType::kArc:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kCrostini:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kBuiltIn:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kPluginVm:
-      FALLTHROUGH;
-    case apps::mojom::AppType::kBorealis:
-      FALLTHROUGH;
+    case apps::AppType::kArc:
+      [[fallthrough]];
+    case apps::AppType::kCrostini:
+      [[fallthrough]];
+    case apps::AppType::kBuiltIn:
+      [[fallthrough]];
+    case apps::AppType::kPluginVm:
+      [[fallthrough]];
+    case apps::AppType::kBorealis:
+      [[fallthrough]];
     default:
       return;
   }
@@ -360,10 +526,7 @@ void AppServiceContextMenu::ExecutePublisherContextMenuCommand(int command_id) {
   DCHECK(app_shortcut_items_);
   DCHECK_LT(index, app_shortcut_items_->size());
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-
-  proxy->ExecuteContextMenuCommand(app_id(), command_id,
-                                   app_shortcut_items_->at(index).shortcut_id,
-                                   controller()->GetAppListDisplayId());
+  proxy_->ExecuteContextMenuCommand(app_id(), command_id,
+                                    app_shortcut_items_->at(index).shortcut_id,
+                                    controller()->GetAppListDisplayId());
 }

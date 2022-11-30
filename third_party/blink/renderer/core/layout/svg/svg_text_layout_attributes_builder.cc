@@ -65,7 +65,7 @@ SVGTextLayoutAttributesBuilder::SVGTextLayoutAttributesBuilder(
 void SVGTextLayoutAttributesBuilder::BuildLayoutAttributes() {
   character_data_map_.clear();
 
-  if (text_positions_.IsEmpty()) {
+  if (text_positions_.empty()) {
     character_count_ = 0;
     CollectTextPositioningElements(text_root_);
   }
@@ -117,7 +117,7 @@ static SVGTextPositioningElement* PositioningElementFromLayoutObject(
 
 void SVGTextLayoutAttributesBuilder::CollectTextPositioningElements(
     LayoutBoxModelObject& start) {
-  DCHECK(!start.IsSVGText() || text_positions_.IsEmpty());
+  DCHECK(!start.IsSVGText() || text_positions_.empty());
   SVGTextPositioningElement* element =
       PositioningElementFromLayoutObject(start);
   unsigned at_position = text_positions_.size();

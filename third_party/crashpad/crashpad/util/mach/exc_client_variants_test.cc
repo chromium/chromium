@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include <iterator>
+
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
@@ -49,6 +49,9 @@ class TestExcClientVariants : public MachMultiprocess,
     ++exception_code_;
     ++exception_subcode_;
   }
+
+  TestExcClientVariants(const TestExcClientVariants&) = delete;
+  TestExcClientVariants& operator=(const TestExcClientVariants&) = delete;
 
   // UniversalMachExcServer::Interface:
 
@@ -182,11 +185,11 @@ class TestExcClientVariants : public MachMultiprocess,
       // These aren’t real flavors, it’s just for testing.
       flavor = exception_ + 10;
       flavor_p = &flavor;
-      for (size_t index = 0; index < base::size(old_state); ++index) {
+      for (size_t index = 0; index < std::size(old_state); ++index) {
         old_state[index] = index;
       }
       old_state_p = reinterpret_cast<thread_state_t>(&old_state);
-      old_state_count = base::size(old_state);
+      old_state_count = std::size(old_state);
 
       // new_state and new_state_count are out parameters that the server should
       // never see or use, so set them to bogus values. The call to the server
@@ -203,7 +206,7 @@ class TestExcClientVariants : public MachMultiprocess,
                                       task,
                                       exception,
                                       code,
-                                      base::size(code),
+                                      std::size(code),
                                       flavor_p,
                                       old_state_p,
                                       old_state_count,
@@ -251,8 +254,6 @@ class TestExcClientVariants : public MachMultiprocess,
   static exception_type_t exception_;
   static mach_exception_code_t exception_code_;
   static mach_exception_subcode_t exception_subcode_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExcClientVariants);
 };
 
 exception_type_t TestExcClientVariants::exception_ = 0;
@@ -274,7 +275,7 @@ TEST(ExcClientVariants, UniversalExceptionRaise) {
       kMachExceptionCodes | EXCEPTION_STATE_IDENTITY,
   };
 
-  for (size_t index = 0; index < base::size(kBehaviors); ++index) {
+  for (size_t index = 0; index < std::size(kBehaviors); ++index) {
     exception_behavior_t behavior = kBehaviors[index];
     SCOPED_TRACE(base::StringPrintf("index %zu, behavior %d", index, behavior));
 

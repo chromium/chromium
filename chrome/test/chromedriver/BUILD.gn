@@ -1,9 +1,12 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
+if (is_linux) {
+  import("//build/linux/strip_binary.gni")
+}
 import("//build/util/lastchange.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
@@ -35,6 +38,45 @@ action("embed_js_in_cpp") {
   args += rebase_path(js_files, root_build_dir)
 }
 
+action("embed_mobile_devices_in_cpp") {
+  script = "embed_mobile_devices_in_cpp.py"
+
+  ts_files = [ "//third_party/devtools-frontend/src/front_end/models/emulation/EmulatedDevices.ts" ]
+  inputs = [
+    "//chrome/VERSION",
+    "cpp_source.py",
+  ]
+  inputs += ts_files
+
+  outputs = [
+    "$target_gen_dir/chrome/mobile_device_list.cc",
+    "$target_gen_dir/chrome/mobile_device_list.h",
+  ]
+  args = [
+    "--directory",
+    rebase_path("$target_gen_dir/chrome", root_build_dir),
+  ]
+  args += rebase_path(ts_files, root_build_dir)
+}
+
+action("embed_bidimapper_in_cpp") {
+  script = "embed_bidimapper_in_cpp.py"
+
+  js_files = [ "//third_party/bidimapper/mapper.js" ]
+
+  inputs = [ "cpp_source.py" ] + js_files
+
+  outputs = [
+    "$target_gen_dir/bidimapper/bidimapper.cc",
+    "$target_gen_dir/bidimapper/bidimapper.h",
+  ]
+  args = [
+    "--directory",
+    rebase_path("$target_gen_dir/bidimapper", root_build_dir),
+  ]
+  args += rebase_path(js_files, root_build_dir)
+}
+
 action("embed_user_data_dir_in_cpp") {
   script = "embed_user_data_dir_in_cpp.py"
 
@@ -62,6 +104,8 @@ source_set("automation_client_lib") {
     "chrome/adb.h",
     "chrome/adb_impl.cc",
     "chrome/adb_impl.h",
+    "chrome/bidi_tracker.cc",
+    "chrome/bidi_tracker.h",
     "chrome/browser_info.cc",
     "chrome/browser_info.h",
     "chrome/cast_tracker.cc",
@@ -93,8 +137,6 @@ source_set("automation_client_lib") {
     "chrome/devtools_event_listener.h",
     "chrome/devtools_http_client.cc",
     "chrome/devtools_http_client.h",
-    "chrome/dom_tracker.cc",
-    "chrome/dom_tracker.h",
     "chrome/download_directory_override_manager.cc",
     "chrome/download_directory_override_manager.h",
     "chrome/frame_tracker.cc",
@@ -110,8 +152,6 @@ source_set("automation_client_lib") {
     "chrome/log.h",
     "chrome/mobile_device.cc",
     "chrome/mobile_device.h",
-    "chrome/mobile_device_list.cc",
-    "chrome/mobile_device_list.h",
     "chrome/mobile_emulation_override_manager.cc",
     "chrome/mobile_emulation_override_manager.h",
     "chrome/navigation_tracker.cc",
@@ -126,6 +166,8 @@ source_set("automation_client_lib") {
     "chrome/non_blocking_navigation_tracker.h",
     "chrome/page_load_strategy.cc",
     "chrome/page_load_strategy.h",
+    "chrome/page_tracker.cc",
+    "chrome/page_tracker.h",
     "chrome/scoped_temp_dir_with_retry.cc",
     "chrome/scoped_temp_dir_with_retry.h",
     "chrome/status.cc",
@@ -173,10 +215,14 @@ source_set("automation_client_lib") {
 
   # Also compile the generated files.
   sources += get_target_outputs(":embed_js_in_cpp")
+  sources += get_target_outputs(":embed_mobile_devices_in_cpp")
+  sources += get_target_outputs(":embed_bidimapper_in_cpp")
   sources += get_target_outputs(":embed_user_data_dir_in_cpp")
 
   deps = [
+    ":embed_bidimapper_in_cpp",
     ":embed_js_in_cpp",
+    ":embed_mobile_devices_in_cpp",
     ":embed_user_data_dir_in_cpp",
     "//base",
     "//base/third_party/dynamic_annotations",
@@ -258,10 +304,6 @@ source_set("lib") {
     sources += [ "keycode_text_conversion_win.cc" ]
   }
 
-  if (use_x11) {
-    sources += [ "keycode_text_conversion_x.cc" ]
-  }
-
   deps = [
     ":automation_client_lib",
     "//base",
@@ -290,14 +332,24 @@ source_set("lib") {
     "//ui/gfx/geometry",
   ]
 
-  # The X11 implementation uses part of Ozone implementation.
-  if (use_ozone || use_x11) {
+  if (use_ozone) {
     sources += [ "keycode_text_conversion_ozone.cc" ]
-    deps += [ "//ui/events/ozone/layout" ]
-  }
+    deps += [
+      "//ui/events/ozone/layout",
+      "//ui/ozone:buildflags",
+    ]
 
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
+    # TODO(1239521): clean up usages of ozone_platform_x11.
+    # Ozone/X11 implementation provides a stub KeyboardLayoutEngine. Thus,
+    # use plain X11 keyboard conversion code until Ozone/X11 uses a non-stub
+    # engine.
+    if (ozone_platform_x11) {
+      sources += [ "keycode_text_conversion_x.cc" ]
+      deps += [
+        "//ui/base/x",
+        "//ui/gfx/x",
+      ]
+    }
   }
 
   if (is_mac) {
@@ -305,7 +357,13 @@ source_set("lib") {
   }
 }
 
-executable("chromedriver") {
+if (is_linux) {
+  chromedriver_output = "chromedriver.unstripped"
+} else {
+  chromedriver_output = "chromedriver"
+}
+
+executable("$chromedriver_output") {
   testonly = true
   sources = [ "server/chromedriver_server.cc" ]
 
@@ -321,10 +379,17 @@ executable("chromedriver") {
   ]
 
   if (is_mac && is_component_ffmpeg) {
-    ldflags = [
-      "-rpath",
-      "@executable_path/.",
-    ]
+    ldflags = [ "-Wl,-rpath,@executable_path/." ]
+  }
+}
+
+if (is_linux) {
+  strip_binary("chromedriver") {
+    testonly = true
+    binary_input = "$root_out_dir/$chromedriver_output"
+    symbol_output = "$root_out_dir/chromedriver.debug"
+    stripped_binary_output = "$root_out_dir/chromedriver"
+    deps = [ ":$chromedriver_output" ]
   }
 }
 
@@ -340,11 +405,12 @@ python_library("chromedriver_py_tests") {
     "//chrome/test/data/chromedriver/",
     "//chrome/test/chromedriver/js/",
     "//testing/scripts/run_chromedriver_tests.py",
-    "//testing/scripts/common.py",
-    "//testing/xvfb.py",
   ]
 
-  data_deps = [ "//chrome/test/chromedriver" ]
+  data_deps = [
+    "//chrome/test/chromedriver",
+    "//testing:test_scripts_shared",
+  ]
   if (is_component_build && is_mac) {
     data_deps += [ "//chrome:chrome_framework" ]
   }
@@ -358,6 +424,8 @@ python_library("chromedriver_py_tests") {
 python_library("chromedriver_replay_unittests") {
   testonly = true
   deps = [ ":chromedriver" ]
+
+  data_deps = [ "//testing:test_scripts_shared" ]
 
   pydeps_file = "log_replay/client_replay_unittest.pydeps"
 }
@@ -373,7 +441,6 @@ test("chromedriver_unittests") {
     "chrome/devtools_client_impl_unittest.cc",
     "chrome/devtools_endpoint_unittest.cc",
     "chrome/devtools_http_client_unittest.cc",
-    "chrome/dom_tracker_unittest.cc",
     "chrome/download_directory_override_manager_unittest.cc",
     "chrome/frame_tracker_unittest.cc",
     "chrome/geolocation_override_manager_unittest.cc",

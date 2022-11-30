@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,15 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
 
 namespace gpu {
 class MailboxManager;
-class SyncPointManager;
+class Scheduler;
 class SharedImageManager;
+class SyncPointManager;
 }  // namespace gpu
 
 namespace android_webview {
@@ -48,6 +48,8 @@ class GpuServiceWebView {
     return shared_image_manager_.get();
   }
 
+  gpu::Scheduler* scheduler() const { return scheduler_.get(); }
+
   const gpu::GPUInfo& gpu_info() const { return gpu_info_; }
 
   const gpu::GpuPreferences& gpu_preferences() const {
@@ -66,6 +68,7 @@ class GpuServiceWebView {
       std::unique_ptr<gpu::SyncPointManager> sync_pointer_manager,
       std::unique_ptr<gpu::MailboxManager> mailbox_manager,
       std::unique_ptr<gpu::SharedImageManager> shared_image_manager,
+      std::unique_ptr<gpu::Scheduler> scheduler,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuFeatureInfo& gpu_feature_info);
@@ -73,6 +76,7 @@ class GpuServiceWebView {
   std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
   std::unique_ptr<gpu::MailboxManager> mailbox_manager_;
   std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
+  std::unique_ptr<gpu::Scheduler> scheduler_;
 
   gpu::GPUInfo gpu_info_;
   gpu::GpuPreferences gpu_preferences_;

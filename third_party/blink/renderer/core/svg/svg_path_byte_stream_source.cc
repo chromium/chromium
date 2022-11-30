@@ -19,6 +19,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 PathSegmentData SVGPathByteStreamSource::ParseSegment() {
@@ -29,42 +31,43 @@ PathSegmentData SVGPathByteStreamSource::ParseSegment() {
   switch (segment.command) {
     case kPathSegCurveToCubicRel:
     case kPathSegCurveToCubicAbs:
-      segment.point1 = ReadFloatPoint();
-      FALLTHROUGH;
+      segment.point1 = ReadPoint();
+      [[fallthrough]];
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
-      segment.point2 = ReadFloatPoint();
-      FALLTHROUGH;
+      segment.point2 = ReadPoint();
+      [[fallthrough]];
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
     case kPathSegLineToRel:
     case kPathSegLineToAbs:
     case kPathSegCurveToQuadraticSmoothRel:
     case kPathSegCurveToQuadraticSmoothAbs:
-      segment.target_point = ReadFloatPoint();
+      segment.target_point = ReadPoint();
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      segment.target_point.SetX(ReadFloat());
+      segment.target_point.set_x(ReadFloat());
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      segment.target_point.SetY(ReadFloat());
+      segment.target_point.set_y(ReadFloat());
       break;
     case kPathSegClosePath:
       break;
     case kPathSegCurveToQuadraticRel:
     case kPathSegCurveToQuadraticAbs:
-      segment.point1 = ReadFloatPoint();
-      segment.target_point = ReadFloatPoint();
+      segment.point1 = ReadPoint();
+      segment.target_point = ReadPoint();
       break;
     case kPathSegArcRel:
     case kPathSegArcAbs: {
-      segment.ArcRadii() = ReadFloatPoint();
+      segment.SetArcRadiusX(ReadFloat());
+      segment.SetArcRadiusY(ReadFloat());
       segment.SetArcAngle(ReadFloat());
       segment.arc_large = ReadFlag();
       segment.arc_sweep = ReadFlag();
-      segment.target_point = ReadFloatPoint();
+      segment.target_point = ReadPoint();
       break;
     }
     default:

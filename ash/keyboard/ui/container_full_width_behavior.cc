@@ -1,24 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/keyboard/ui/container_full_width_behavior.h"
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace keyboard {
 
 // The virtual keyboard show/hide animation durations.
-constexpr auto kShowAnimationDuration = base::TimeDelta::FromMilliseconds(200);
-constexpr auto kHideAnimationDuration = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kShowAnimationDuration = base::Milliseconds(200);
+constexpr auto kHideAnimationDuration = base::Milliseconds(100);
 
 // The height of the area from the bottom of the keyboard where the user can
 // swipe up to access the shelf. Manually calculated to be slightly below
-// the virtual keyboard's space bar.
-constexpr int kSwipeUpGestureAreaHeight = 25;
+// the virtual keyboard's space bar to avoid accidental trigger.
+constexpr int kSwipeUpGestureAreaHeight = 8;
 
 ContainerFullWidthBehavior::ContainerFullWidthBehavior(Delegate* delegate)
     : ContainerBehavior(delegate) {}
@@ -100,6 +102,9 @@ bool ContainerFullWidthBehavior::HandlePointerEvent(
 bool ContainerFullWidthBehavior::HandleGestureEvent(
     const ui::GestureEvent& event,
     const gfx::Rect& bounds_in_screen) {
+  if (!ash::TabletMode::Get()->InTabletMode())
+    return false;
+
   if (event.type() == ui::ET_GESTURE_SCROLL_BEGIN) {
     // Check that the user is swiping upwards near the bottom of the keyboard.
     // The coordinates of the |event| is relative to the window.

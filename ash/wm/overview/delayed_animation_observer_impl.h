@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/delayed_animation_observer.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace ash {
@@ -19,6 +18,10 @@ class OverviewDelegate;
 class ASH_EXPORT ForceDelayObserver : public DelayedAnimationObserver {
  public:
   explicit ForceDelayObserver(base::TimeDelta delay);
+
+  ForceDelayObserver(const ForceDelayObserver&) = delete;
+  ForceDelayObserver& operator=(const ForceDelayObserver&) = delete;
+
   ~ForceDelayObserver() override;
 
   // DelayedAnimationObserver:
@@ -30,8 +33,6 @@ class ASH_EXPORT ForceDelayObserver : public DelayedAnimationObserver {
 
   OverviewDelegate* owner_ = nullptr;
   base::WeakPtrFactory<ForceDelayObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ForceDelayObserver);
 };
 
 // An observer which watches a overview enter animation and signals its owner
@@ -40,6 +41,10 @@ class ASH_EXPORT EnterAnimationObserver : public ui::ImplicitAnimationObserver,
                                           public DelayedAnimationObserver {
  public:
   EnterAnimationObserver();
+
+  EnterAnimationObserver(const EnterAnimationObserver&) = delete;
+  EnterAnimationObserver& operator=(const EnterAnimationObserver&) = delete;
+
   ~EnterAnimationObserver() override;
 
   // ui::ImplicitAnimationObserver:
@@ -51,8 +56,6 @@ class ASH_EXPORT EnterAnimationObserver : public ui::ImplicitAnimationObserver,
 
  private:
   OverviewDelegate* owner_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterAnimationObserver);
 };
 
 // An observer which watches a overview exit animation and signals its owner
@@ -61,6 +64,10 @@ class ASH_EXPORT ExitAnimationObserver : public ui::ImplicitAnimationObserver,
                                          public DelayedAnimationObserver {
  public:
   ExitAnimationObserver();
+
+  ExitAnimationObserver(const ExitAnimationObserver&) = delete;
+  ExitAnimationObserver& operator=(const ExitAnimationObserver&) = delete;
+
   ~ExitAnimationObserver() override;
 
   // ui::ImplicitAnimationObserver:
@@ -72,8 +79,6 @@ class ASH_EXPORT ExitAnimationObserver : public ui::ImplicitAnimationObserver,
 
  private:
   OverviewDelegate* owner_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitAnimationObserver);
 };
 
 }  // namespace ash

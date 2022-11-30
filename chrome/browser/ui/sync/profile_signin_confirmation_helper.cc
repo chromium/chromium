@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -15,8 +16,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/extensions/extension_constants.h"
@@ -37,8 +36,9 @@ bool HasBookmarks(Profile* profile) {
   BookmarkModel* bookmarks =
       BookmarkModelFactory::GetForBrowserContext(profile);
   bool has_bookmarks = bookmarks && bookmarks->HasBookmarks();
-  if (has_bookmarks)
+  if (has_bookmarks) {
     VLOG(1) << "SigninConfirmationHelper: profile contains bookmarks";
+  }
   return has_bookmarks;
 }
 
@@ -46,17 +46,11 @@ bool HasBookmarks(Profile* profile) {
 
 namespace ui {
 
-SkColor GetSigninConfirmationPromptBarColor(ui::NativeTheme* theme,
-                                            SkAlpha alpha) {
-  static const SkColor kBackgroundColor =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_DialogBackground);
-  return color_utils::BlendTowardMaxContrast(kBackgroundColor, alpha);
-}
-
 bool HasBeenShutdown(Profile* profile) {
   bool has_been_shutdown = !profile->IsNewProfile();
-  if (has_been_shutdown)
+  if (has_been_shutdown) {
     VLOG(1) << "ProfileSigninConfirmationHelper: profile is not new";
+  }
   return has_been_shutdown;
 }
 
@@ -88,8 +82,7 @@ void CheckShouldPromptForNewProfile(
     base::OnceCallback<void(bool)> return_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (HasBeenShutdown(profile) ||
-      HasBookmarks(profile) ||
+  if (HasBeenShutdown(profile) || HasBookmarks(profile) ||
       HasSyncedExtensions(profile)) {
     std::move(return_result).Run(true);
     return;
@@ -104,6 +97,7 @@ void CheckShouldPromptForNewProfile(
   helper->CheckHasTypedURLs();
 }
 
-ProfileSigninConfirmationDelegate::~ProfileSigninConfirmationDelegate() {}
+ProfileSigninConfirmationDelegate::~ProfileSigninConfirmationDelegate() =
+    default;
 
 }  // namespace ui

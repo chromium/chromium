@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,15 @@
 #include <atk/atk.h>
 #include <atspi/atspi.h>
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "base/memory/raw_ptr.h"
+#include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace content {
+
+class BrowserAccessibilityManager;
 
 // This class has two distinct event recording code paths. When we are
 // recording events in-process (typically this is used for
@@ -23,12 +28,18 @@ namespace content {
 // in-process as well, thus it should be possible to remove the ATK code path
 // entirely.
 class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
-    : public AccessibilityEventRecorder {
+    : public ui::AXEventRecorder {
  public:
   explicit AccessibilityEventRecorderAuraLinux(
       BrowserAccessibilityManager* manager,
       base::ProcessId pid,
-      const AXTreeSelector& selector);
+      const ui::AXTreeSelector& selector);
+
+  AccessibilityEventRecorderAuraLinux(
+      const AccessibilityEventRecorderAuraLinux&) = delete;
+  AccessibilityEventRecorderAuraLinux& operator=(
+      const AccessibilityEventRecorderAuraLinux&) = delete;
+
   ~AccessibilityEventRecorderAuraLinux() override;
 
   void ProcessATKEvent(const char* event,
@@ -53,12 +64,12 @@ class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
   void AddATSPIEventListeners();
   void RemoveATSPIEventListeners();
 
-  AtspiEventListener* atspi_event_listener_ = nullptr;
+  raw_ptr<AtspiEventListener> atspi_event_listener_ = nullptr;
+  // TODO: should be either removed or converted to a weakptr.
+  const raw_ptr<BrowserAccessibilityManager> manager_;
   base::ProcessId pid_;
   ui::AXTreeSelector selector_;
   static AccessibilityEventRecorderAuraLinux* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderAuraLinux);
 };
 
 }  // namespace content

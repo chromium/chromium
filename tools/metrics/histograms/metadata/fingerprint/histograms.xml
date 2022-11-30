@@ -1,0 +1,326 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Fingerprint histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Fingerprint.Auth.Error" enum="FingerprintError"
+    expires_after="2023-04-10">
+  <owner>patrykd@google.com</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the error during fingerprint authentication session. It is recorded
+    every time authentication session (unlock screen, web auth, etc.) ends with
+    error.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
+    expires_after="2023-02-12">
+  <owner>emaamari@google.com</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the scan result during fingerprint authentication session. It is
+    recorded every time user touches the fingerprint sensor while authenticating
+    (unlock screen, web auth, etc.) and session is not finished with error.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.AuthScanDoneSignal.UpgradeToFingerprintMessage"
+    enum="BooleanUpgraded" expires_after="2022-06-09">
+  <obsolete>
+    Since transition to FingerprintMessage is completed, this histogram is no
+    longer used. Removed in 02/2022.
+  </obsolete>
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks AuthScanDone signal structure transition from ScanResult enum to
+    FingerprintMessage protobuf. The signal is upgraded when it contains the
+    protobuf and not upgraded when the enum is present. When the signal doesn't
+    contain any of these nothing is emitted.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
+    expires_after="2023-03-02">
+  <owner>emaamari@google.com</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the scan result during fingerprint enrollment session. It is recorded
+    every time user touches the fingerprint sensor while enrolling fingerprints
+    (during onboarding or in Chrome OS settings).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.FingerprintPowerButtonRace" units="units"
+    expires_after="2023-02-12">
+  <owner>emaamari@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the event where a fingerprint scan and a power button press occured
+    within 1 second of each other. Recorded when FingerprintStorage and
+    PowerManagerClient notify FingerprintPowerButtonRaceDetector of a
+    fingerprint scan and power button press respectively, within 1 second.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.FingerprintScanDone" units="units"
+    expires_after="2023-02-12">
+  <owner>emaamari@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Indicates a scan was recorded by the finperprint sensor. Recorded when an
+    AuthScanDone signal is received by FinperprintStorage from biod, and
+    notifies FingerprintPowerButtonRaceDetector.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Reset.ResetContextMode"
+    enum="FingerprintSensorMode" expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>The mode FPMCU was in when we reset context.</summary>
+</histogram>
+
+<histogram name="Fingerprint.SetContext.SetContextMode"
+    enum="FingerprintSensorMode" expires_after="2023-04-05">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>The mode FPMCU was in when we set its context.</summary>
+</histogram>
+
+<histogram name="Fingerprint.SetContext.Success" enum="BooleanSuccess"
+    expires_after="2023-04-05">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>Whether setting FPMCU mode succeeded.</summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.AttemptsCountBeforeSuccess" units="count"
+    expires_after="2023-04-05">
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Counts the number of fingerprint attempts until successful screen unlock.
+
+    A count of 0 means that the user unlocked the screen on the first attempt.
+    The maximum number of unlock attempts is governed by kMaximumUnlockAttempts,
+    such that this value must be less than the max.
+
+    This is related to Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
+    expires_after="2023-04-05">
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Counts the number of times that the fingerprint match successfully vs.
+    rejected.
+
+    This is recorded in the same location as Fingerprint.Unlock.Result. When the
+    Fingerprint.Unlock.Result is success, AuthSuccessful reports true, otherwise
+    AuthSuccessful reports false.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
+    expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>Counts the number of fingers enrolled by the user.</summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
+    enum="BooleanCorrect" expires_after="2023-04-09">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Whether the hash of the positive match secret read from FPMCU matches the
+    record.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.MatchIgnoredDueToPowerButtonPress"
+    enum="BooleanIgnored" expires_after="2023-04-05">
+  <owner>ravisadineni@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    ChromeOS only. Record when a fingerprint touch was ignored due to parallel
+    power button press. Fingerprint matches will be ignored for a duration of
+    kAuthIgnoreTimeoutmsecs (1000 ms) after each power button press. This only
+    applies to fingerprint sensors that reside on a power button.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.PartialAttemptsBeforeSuccess"
+    units="attempts" expires_after="2023-10-11">
+  <owner>hcyang@google.com</owner>
+  <owner>tomhughes@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of partial fingerprint attempts until successful result is
+    reported in biod. Partial attempts refers to the &quot;low coverage&quot;
+    error, which means that the sensor is only partially covered with a finger.
+    It often occurs when the user just dropped their finger onto the sensor. We
+    expect the user to adjust their finger position soon after that, so instead
+    of reporting an error biod silently allows up to 20 retries for this kind of
+    error. We want to observe in average how many partial attempts are needed
+    before successfully matching.
+
+    A count of 0 means that the fingerprint match attempt is successful without
+    any preceding partial matches. The maximum number of partial attempts is
+    governed by kMaxPartialAttempts, such that this value must be less than the
+    max.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.ReadPositiveMatchSecret.Success"
+    enum="BooleanSuccess" expires_after="2023-04-05">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    ChromeOS Only. After a positive fingerprint match has been identified,
+    record when a positive match secret is read from FPMCU. Note that this does
+    not indicate that the match was was validated, only that the secret was
+    read. Fingerprint.Unlock.Match.PositiveMatchSecretCorrect may be used to
+    track validation.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess"
+    units="attempts" expires_after="2023-04-05">
+  <owner>agrandi@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of recent fingerprint attempts until successful screen
+    unlock. Recent attempts are defined as happening within 3 seconds from each
+    others. The goal is to count intentional attempt to unlock the device and
+    exclude incidental touches of the fingerprint sensor.
+
+    A count of 0 means that the user unlocked the screen on the first attempt.
+    The maximum number of unlock attempts is governed by kMaximumUnlockAttempts,
+    such that this value must be less than the max.
+
+    This is related to Fingerprint.Unlock.AttemptsCountBeforeSuccess.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.RecordFormatVersion"
+    enum="FingerprintRecordFormatVersion" expires_after="2023-04-05">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Format version of a fingerprint template record read from storage. ChromeOS
+    Only. Records the format version of each fingerprint template record prior
+    to uploading to the FPMCU. Format version will not be recorded if there are
+    no available record slots.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
+    expires_after="2023-02-12">
+  <owner>emaamari@google.com</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the result of the fingerprint authentication attempt on the lock
+    screen.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.{Outcome}.Duration.{Interval}" units="ms"
+    expires_after="2023-04-05">
+  <owner>bobbycasey@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Measures the time it took {Interval} in the '{Outcome}' case.
+  </summary>
+  <token key="Outcome">
+    <variant name="Match" summary="match"/>
+    <variant name="NoMatch" summary="no-match"/>
+  </token>
+  <token key="Interval">
+    <variant name="Capture" summary="to capture the fingerprint image"/>
+    <variant name="Matcher" summary="to run the matcher"/>
+    <variant name="Overall"
+        summary="between the detection of the finger and the match/no-match
+                 event being sent to the Application Processor(AP)"/>
+  </token>
+</histogram>
+
+<histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
+    expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Track whether fingerprint is enabled to unlock the screen, when the user
+    logs in.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
+    expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the fingerprint firmware updater's reason(s) for re-flashing.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
+    expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>Tracks the fingerprint firmware updater's overall status.</summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.{Outcome}.Duration.Overall" units="ms"
+    expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Measures the total time it takes to run the fingerprint firmware updater
+    when an update was {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="NoUpdate" summary="not necessary"/>
+    <variant name="Update" summary="necessary"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

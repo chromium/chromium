@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -18,9 +17,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/controls/menu/menu_config.h"
-#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -32,7 +30,7 @@ gfx::Rect GetChromeIconBoundsInScreen(aura::Window* root) {
   ash::ShelfView* shelf_view =
       ash::Shelf::ForWindow(root)->GetShelfViewForTesting();
   const views::ViewModel* view_model = shelf_view->view_model_for_test();
-  EXPECT_EQ(1, view_model->view_size());
+  EXPECT_EQ(1u, view_model->view_size());
   gfx::Rect bounds = view_model->view_at(0)->GetBoundsInScreen();
   return bounds;
 }
@@ -54,46 +52,30 @@ void OpenBrowserUsingShelfOnRootWindow(aura::Window* root) {
   generator.ClickLeftButton();
 }
 
-// Launch a new browser window by clicking the "New window" context menu item.
-void OpenBrowserUsingContextMenuOnRootWindow(aura::Window* root) {
-  ui::test::EventGenerator generator(root);
-  gfx::Point chrome_icon = GetChromeIconBoundsInScreen(root).CenterPoint();
-  generator.MoveMouseTo(chrome_icon);
-  generator.PressRightButton();
-
-  // Move the cursor up to the "New window" menu option - assumes menu content.
-  ash::ShelfView* shelf_view =
-      ash::Shelf::ForWindow(root)->GetShelfViewForTesting();
-  const int offset =
-      // Top half of the button we just clicked on.
-      shelf_view->GetButtonSize() / 2 +
-      // Space between shelf top and menu bottom. Here we get this menu with
-      // a right-click but long-pressing yields the same result. All menus
-      // here use a touchable layout.
-      views::MenuConfig::instance().touchable_anchor_offset +
-      // 3 menu items we don't want, and go over part of the one we want.
-      3.2 * views::MenuConfig::instance().touchable_menu_height;
-  generator.MoveMouseBy(0, -offset);
-  generator.ReleaseRightButton();
-}
-
 class WindowSizerTest : public InProcessBrowserTest {
  public:
-  WindowSizerTest() {}
-  ~WindowSizerTest() override {}
+  WindowSizerTest() = default;
+  WindowSizerTest(const WindowSizerTest&) = delete;
+  WindowSizerTest& operator=(const WindowSizerTest&) = delete;
+  ~WindowSizerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Make screens sufficiently wide to host 2 browsers side by side.
     command_line->AppendSwitchASCII("ash-host-window-bounds",
-                                    "600x600,601+0-600x600");
+                                    "800x600,801+0-800x600");
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowSizerTest);
+  ui::ScopedAnimationDurationScaleMode zero_duration_{
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
-// TODO(crbug.com/1038342): Test is flaky.
-IN_PROC_BROWSER_TEST_F(WindowSizerTest, DISABLED_OpenBrowserUsingShelfItem) {
+// TODO(crbug.com/1038342): Test is flaky on sanitizers.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_OpenBrowserUsingShelfItem DISABLED_OpenBrowserUsingShelfItem
+#else
+#define MAYBE_OpenBrowserUsingShelfItem OpenBrowserUsingShelfItem
+#endif
+IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
   // Don't shutdown when closing the last browser window.
   ScopedKeepAlive test_keep_alive(KeepAliveOrigin::BROWSER_PROCESS_CHROMEOS,
                                   KeepAliveRestartOption::DISABLED);
@@ -129,48 +111,6 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, DISABLED_OpenBrowserUsingShelfItem) {
 
   // A new browser window should be opened on the 1st display.
   EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(displays.first.id(),
-            screen
-                ->GetDisplayNearestWindow(
-                    browser_list->get(0)->window()->GetNativeWindow())
-                .id());
-  EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
-}
-
-// TODO(crbug.com/1038342): Test is flaky.
-IN_PROC_BROWSER_TEST_F(WindowSizerTest, DISABLED_OpenBrowserUsingContextMenu) {
-  // Don't shutdown when closing the last browser window.
-  ScopedKeepAlive test_keep_alive(KeepAliveOrigin::BROWSER_PROCESS_CHROMEOS,
-                                  KeepAliveRestartOption::DISABLED);
-  aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EnsureShelfInitialization();
-
-  views::MenuController::TurnOffMenuSelectionHoldForTest();
-
-  ASSERT_EQ(1u, browser_list->size());
-  EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
-  CloseBrowserSynchronously(browser_list->get(0));
-
-  OpenBrowserUsingContextMenuOnRootWindow(root_windows[1]);
-
-  // A new browser window should be opened on the 2nd display.
-  display::Screen* screen = display::Screen::GetScreen();
-  std::pair<display::Display, display::Display> displays =
-      ui_test_utils::GetDisplays(screen);
-  ASSERT_EQ(1u, browser_list->size());
-  EXPECT_EQ(displays.second.id(),
-            screen
-                ->GetDisplayNearestWindow(
-                    browser_list->get(0)->window()->GetNativeWindow())
-                .id());
-  EXPECT_EQ(root_windows[1], ash::Shell::GetRootWindowForNewWindows());
-
-  CloseBrowserSynchronously(browser_list->get(0));
-  OpenBrowserUsingContextMenuOnRootWindow(root_windows[0]);
-
-  // A new browser window should be opened on the 1st display.
-  ASSERT_EQ(1u, browser_list->size());
   EXPECT_EQ(displays.first.id(),
             screen
                 ->GetDisplayNearestWindow(

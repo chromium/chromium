@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.metrics.mojom;
+
+// This interface is implemented in browser process and is called in renderer
+// process so the metrics in renderer process can be collected and uploaded.
+interface MetricsHelper {
+  // Logs application specific events.
+  RecordApplicationEvent(string app_id,
+                         string session_id,
+                         string sdk_version,
+                         string event);
+};

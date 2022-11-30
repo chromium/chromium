@@ -1,0 +1,8 @@
+CONSOLE MESSAGE: This test logs all exposed Worklets
+CONSOLE MESSAGE: paintWorklet
+CONSOLE MESSAGE: AudioWorklet
+CONSOLE MESSAGE: IMPORTANT:
+CONSOLE MESSAGE: If you have added a new Worklet, do not just update this expectation file.
+CONSOLE MESSAGE: Instead, please add a new webexposed test for the global scope of your Worklet.
+CONSOLE MESSAGE: You can find examples for other Worklets in this folder.
+

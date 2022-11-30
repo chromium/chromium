@@ -1,0 +1,28 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("root_store_proto_full") {
+  proto_out_dir = "net/cert/root_store_proto_full/"
+  sources = [ "root_store.proto" ]
+
+  # root_store_tool uses the full protobuf library to parse textproto. This
+  # should not be linked into the browser. If a browser target needs this
+  # protobuf, use the _lite target below.
+  use_protobuf_full = true
+  visibility = [ "//net/tools/root_store_tool:root_store_tool" ]
+}
+
+proto_library("root_store_proto_lite") {
+  proto_out_dir = "net/cert/root_store_proto_lite/"
+  sources = [ "root_store.proto" ]
+
+  cc_generator_options = "lite=true:"
+  visibility = [
+    "//net:net",
+    "//services/cert_verifier:lib",
+    "//services/cert_verifier:tests",
+  ]
+}

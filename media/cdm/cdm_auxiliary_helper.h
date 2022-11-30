@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_allocator.h"
+#include "media/cdm/cdm_document_service.h"
 #include "media/cdm/output_protection.h"
-#include "media/cdm/platform_verification.h"
 #include "media/media_buildflags.h"
 #include "url/origin.h"
 
@@ -27,14 +28,16 @@ class FileIOClient;
 namespace media {
 
 // Provides a wrapper on the auxiliary functions (CdmAllocator, CdmFileIO,
-// OutputProtection, PlatformVerification) needed by the library CDM. The
+// OutputProtection, CdmDocumentService) needed by the library CDM. The
 // default implementation does nothing -- it simply returns nullptr, false, 0,
 // etc. as required to meet the interface.
 class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                                         public OutputProtection,
-                                        public PlatformVerification {
+                                        public CdmDocumentService {
  public:
   CdmAuxiliaryHelper();
+  CdmAuxiliaryHelper(const CdmAuxiliaryHelper&) = delete;
+  CdmAuxiliaryHelper& operator=(const CdmAuxiliaryHelper&) = delete;
   ~CdmAuxiliaryHelper() override;
 
   // Callback to report the size of file read by cdm::FileIO created by |this|.
@@ -60,14 +63,17 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
   void EnableProtection(uint32_t desired_protection_mask,
                         EnableProtectionCB callback) override;
 
-  // PlatformVerification implementation.
+  // CdmDocumentService implementation.
   void ChallengePlatform(const std::string& service_id,
                          const std::string& challenge,
                          ChallengePlatformCB callback) override;
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmAuxiliaryHelper);
+#if BUILDFLAG(IS_WIN)
+  void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) override;
+  void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
+  void OnCdmEvent(CdmEvent event, HRESULT hresult) override;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace media

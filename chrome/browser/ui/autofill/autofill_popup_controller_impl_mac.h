@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,11 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
                                  const gfx::RectF& element_bounds,
                                  base::i18n::TextDirection text_direction);
 
+  AutofillPopupControllerImplMac(const AutofillPopupControllerImplMac&) =
+      delete;
+  AutofillPopupControllerImplMac& operator=(
+      const AutofillPopupControllerImplMac&) = delete;
+
   ~AutofillPopupControllerImplMac() override;
 
   // Shows the popup, or updates the existing popup with the given values.
@@ -33,9 +38,10 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
   void UpdateDataListValues(const std::vector<std::u16string>& values,
                             const std::vector<std::u16string>& labels) override;
 
+ protected:
   // Hides the popup and destroys the controller. This also invalidates
   // |delegate_|.
-  void Hide(PopupHidingReason reason) override;
+  void HideViewAndDie() override;
 
  private:
   // The controller providing the autofill touch bar.
@@ -43,10 +49,8 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
 
   // True if the popup contains credit card items.
   BOOL is_credit_card_popup_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupControllerImplMac);
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_MAC_H_

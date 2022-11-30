@@ -1,7 +1,8 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//build/config/chromecast_build.gni")
 
 # Most build code won't need to include this file. Instead you can
@@ -9,13 +10,12 @@ import("//build/config/chromecast_build.gni")
 # disabled.
 
 declare_args() {
-  enable_pdf = !is_android && !is_ios && !is_chromecast
-
-  # Enable additional code for the Pepper-free PDF viewer.
+  # Enable ink libraries provided by the ChromeOS media app dependency.
   #
-  # This argument enables additional code paths that are only useful during the
-  # PDF viewer's migration from Pepper. This argument is intended to guard code
-  # meant only for developers, and will be phased out before launch in favor of
-  # a run-time feature flag.
-  enable_pdf_unseasoned = false
+  # This argument indicates whether the ink libraries provided by the ChromeOS
+  # media app dependency is enabled. It also determines whether the annotation
+  # feature is enabled for the PDF viewer.
+  enable_ink = enable_cros_media_app
+
+  enable_pdf = !is_android && !is_ios && !is_castos
 }

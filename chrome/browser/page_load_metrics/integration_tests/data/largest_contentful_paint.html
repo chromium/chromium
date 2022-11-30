@@ -59,9 +59,7 @@ setup({'output': false});
   po.observe({type: 'largest-contentful-paint', buffered: true});
 </script>
 
-<div id="content_div_1">
-  <img src="images/green-16x16.png"></img>
-</div>
+<div id="content_div_1"></div>
 <div id="content_div_2"></div>
 
 <script>
@@ -72,6 +70,14 @@ setup({'output': false});
       assert_equals(seen_events.length, 1);
       return seen_events[0];
     });
+  };
+
+  // Adds the first image "green-16x16.png" to "content_div_1". We expect this
+  // operation to trigger a new LCP entry.
+  const add_first_image = () => {
+    let img = document.createElement("img");
+    content_div_1.appendChild(img);
+    img.src = "images/green-16x16.png";
   };
 
   // Adds another image that is larger than "green-16x16.png". We expect this
@@ -111,43 +117,59 @@ setup({'output': false});
     });
   };
 
-  const run_test = async () => {
-    // This test exerciess the following scenario
+  const test_first_image = async () => {
+    // This test exercises the following scenario
     //  - have an initial page load with an image
     //  - assert that LCP fires for that image
-    //  - add a larger image to the page
-    //  - assert that LCP fires for the new image
-    //  - remove the larger image
-    //  - wait for some rAFs
-    //  - add the largest image to the page
-    //  - asset that the new LCP is for the largest
-    const lcp_0 = await block_for_next_lcp();
-    add_larger_image();
-    const lcp_1 = await block_for_next_lcp();
-    remove_larger_image();
-    await waitForAnimationFrames(3);
-    add_largest_image();
-    const lcp_2 = await block_for_next_lcp();
+    add_first_image();
+    const lcp = await block_for_next_lcp();
 
     // Now that we've run through the scenario and collected our measurements,
     // return them in a structure that the C++ side can easily query.
     let output = [
-    // lcp_0
+    // lcp
     {
-      url: lcp_0.url,
-      time: lcp_0.startTime
-    },
-    // lcp_1
+      url: lcp.url,
+      time: lcp.startTime
+    }];
+    return output;
+  };
+  const test_larger_image = async () => {
+    // This test exercises the following scenario
+    //  - add a larger image to the page
+    //  - assert that LCP fires for the new image
+    //  - remove the larger image
+    //  - wait for some rAFs
+    add_larger_image();
+    const lcp = await block_for_next_lcp();
+    remove_larger_image();
+    await waitForAnimationFrames(3);
+
+    // Now that we've run through the scenario and collected our measurements,
+    // return them in a structure that the C++ side can easily query.
+    let output = [
+    // lcp
     {
-      url: lcp_1.url,
-      time: lcp_1.startTime
-    },
-    // lcp_2
+      url: lcp.url,
+      time: lcp.startTime
+    }];
+    return output;
+  };
+  const test_largest_image = async () => {
+    // This test exercises the following scenario
+    //  - add the largest image to the page
+    //  - assert that the new LCP is for the largest
+    add_largest_image();
+    const lcp = await block_for_next_lcp();
+
+    // Now that we've run through the scenario and collected our measurements,
+    // return them in a structure that the C++ side can easily query.
+    let output = [
+    // lcp
     {
-      url: lcp_2.url,
-      time: lcp_2.startTime
-    }
-    ];
+      url: lcp.url,
+      time: lcp.startTime
+    }];
     return output;
   };
 </script>

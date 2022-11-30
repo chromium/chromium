@@ -1,9 +1,10 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 
 if (!is_android) {
   import("//build/config/features.gni")
@@ -16,16 +17,14 @@ if (!is_android) {
   import("$_inspector_protocol/inspector_protocol.gni")
 
   _protocol_generated = [
-    "protocol/base_string_adapter.cc",
-    "protocol/base_string_adapter.h",
     "protocol/browser.cc",
     "protocol/browser.h",
     "protocol/cast.cc",
     "protocol/cast.h",
-    "protocol/forward.h",
+    "protocol/emulation.cc",
+    "protocol/emulation.h",
     "protocol/page.cc",
     "protocol/page.h",
-    "protocol/protocol.cc",
     "protocol/protocol.h",
     "protocol/security.cc",
     "protocol/security.h",
@@ -68,6 +67,7 @@ if (!is_android) {
     deps = [ ":concatenate_protocols" ]
     out_dir = target_gen_dir
     config_file = "inspector_protocol_config.json"
+    use_embedder_types = true
 
     protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
     config_values = [ "protocol.path=$protocol_path" ]
@@ -86,7 +86,6 @@ static_library("devtools") {
   sources = []
 
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
   ]
@@ -123,8 +122,10 @@ static_library("devtools") {
       "//chrome/browser:browser_process",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/web_applications",
       "//chrome/common",
       "//components/guest_view/browser",
+      "//components/infobars/content",
       "//components/infobars/core",
       "//components/javascript_dialogs",
       "//components/keep_alive_registry",
@@ -133,15 +134,17 @@ static_library("devtools") {
       "//components/pref_registry",
       "//components/prefs",
       "//components/sessions",
+      "//components/signin/public/identity_manager:identity_manager",
+      "//components/sync/driver:driver",
       "//components/sync_preferences",
       "//components/viz/host",
       "//components/web_modal",
       "//components/zoom",
-      "//extensions/browser",
       "//net/server:http_server",
       "//skia",
       "//third_party/icu",
       "//third_party/leveldatabase",
+      "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/shell_dialogs",
     ]
@@ -198,6 +201,8 @@ static_library("devtools") {
       "devtools_file_watcher.h",
       "devtools_infobar_delegate.cc",
       "devtools_infobar_delegate.h",
+      "devtools_settings.cc",
+      "devtools_settings.h",
       "devtools_targets_ui.cc",
       "devtools_targets_ui.h",
       "devtools_toggle_action.cc",
@@ -222,6 +227,7 @@ static_library("devtools") {
       ]
     }
   }
+
   if (is_mac) {
     sources += [ "devtools_dock_tile_mac.mm" ]
   } else {
@@ -233,6 +239,7 @@ static_library("devtools") {
       "//chrome/app:command_ids",
       "//components/media_router/browser",
       "//components/media_router/common/mojom:media_router",
+      "//components/payments/content",
       "//components/security_state/content",
       "//components/subresource_filter/content/browser:browser",
       "//components/webapps/browser",
@@ -243,6 +250,8 @@ static_library("devtools") {
       "protocol/browser_handler.h",
       "protocol/cast_handler.cc",
       "protocol/cast_handler.h",
+      "protocol/emulation_handler.cc",
+      "protocol/emulation_handler.h",
       "protocol/page_handler.cc",
       "protocol/page_handler.h",
       "protocol/security_handler.cc",
@@ -257,11 +266,20 @@ static_library("devtools") {
         "protocol/window_manager_handler.h",
       ]
     }
+    if (enable_basic_printing) {
+      deps += [
+        "//components/printing/browser/headless",
+        "//components/printing/browser/print_to_pdf",
+      ]
+    }
     sources += rebase_path(_protocol_generated, ".", target_gen_dir)
   }
 
   if (enable_extensions) {
-    deps += [ "//chrome/common/extensions/api" ]
+    deps += [
+      "//chrome/common/extensions/api",
+      "//extensions/browser",
+    ]
   }
 }
 

@@ -1,14 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_ENGINE_NIGORI_KEYSTORE_KEYS_HANDLER_H_
 #define COMPONENTS_SYNC_ENGINE_NIGORI_KEYSTORE_KEYS_HANDLER_H_
 
-#include <string>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace syncer {
 
@@ -16,6 +13,10 @@ namespace syncer {
 class KeystoreKeysHandler {
  public:
   KeystoreKeysHandler() = default;
+
+  KeystoreKeysHandler(const KeystoreKeysHandler&) = delete;
+  KeystoreKeysHandler& operator=(const KeystoreKeysHandler&) = delete;
+
   virtual ~KeystoreKeysHandler() = default;
 
   // Whether a keystore key needs to be requested from the sync server.
@@ -25,9 +26,6 @@ class KeystoreKeysHandler {
   // Returns true on success, false otherwise.
   virtual bool SetKeystoreKeys(
       const std::vector<std::vector<uint8_t>>& keys) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeystoreKeysHandler);
 };
 
 }  // namespace syncer

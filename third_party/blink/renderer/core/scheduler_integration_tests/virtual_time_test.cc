@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -13,40 +13,53 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 namespace virtual_time_test {
 
-class ScriptExecutionCallbackHelper : public WebScriptExecutionCallback {
+class ScriptExecutionCallbackHelper final {
  public:
   const String Result() const { return result_; }
-
- private:
-  void Completed(const WebVector<v8::Local<v8::Value>>& values) override {
-    if (!values.empty() && !values[0].IsEmpty() && values[0]->IsString()) {
-      result_ = ToCoreString(v8::Local<v8::String>::Cast(values[0]));
-    }
+  void Completed(absl::optional<base::Value> value,
+                 base::TimeTicks start_time) {
+    if (!value)
+      return;
+    if (std::string* str = value->GetIfString())
+      result_ = String(*str);
   }
 
+ private:
   String result_;
 };
 
 class VirtualTimeTest : public SimTest {
  protected:
+  VirtualTimeController* GetVirtualTimeController() {
+    return WebView().Scheduler()->GetVirtualTimeController();
+  }
   void SetUp() override {
     SimTest::SetUp();
-    WebView().Scheduler()->EnableVirtualTime();
+    GetVirtualTimeController()->EnableVirtualTime(base::Time());
   }
 
   String ExecuteJavaScript(String script_source) {
     ScriptExecutionCallbackHelper callback_helper;
-    WebView()
-        .MainFrame()
-        ->ToWebLocalFrame()
-        ->RequestExecuteScriptAndReturnValue(
-            WebScriptSource(WebString(script_source)), false, &callback_helper);
+    WebScriptSource source(script_source);
+    WebView().MainFrame()->ToWebLocalFrame()->RequestExecuteScript(
+        DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1),
+        mojom::blink::UserActivationOption::kDoNotActivate,
+        mojom::blink::EvaluationTiming::kSynchronous,
+        mojom::blink::LoadEventBlockingOption::kDoNotBlock,
+        base::BindOnce(&ScriptExecutionCallbackHelper::Completed,
+                       base::Unretained(&callback_helper)),
+        BackForwardCacheAware::kAllow,
+        mojom::blink::WantResultOption::kWantResult,
+        mojom::blink::PromiseResultOption::kDoNotWait);
+
     return callback_helper.Result();
   }
 
@@ -54,13 +67,13 @@ class VirtualTimeTest : public SimTest {
     // SimTest::TearDown() calls RunPendingTasks. This is a problem because
     // if there are any repeating tasks, advancing virtual time will cause the
     // runloop to busy loop. Disabling virtual time here fixes that.
-    WebView().Scheduler()->DisableVirtualTimeForTesting();
+    GetVirtualTimeController()->DisableVirtualTimeForTesting();
     SimTest::TearDown();
   }
 
   void StopVirtualTimeAndExitRunLoop() {
-    WebView().Scheduler()->SetVirtualTimePolicy(
-        PageScheduler::VirtualTimePolicy::kPause);
+    GetVirtualTimeController()->SetVirtualTimePolicy(
+        VirtualTimeController::VirtualTimePolicy::kPause);
     test::ExitRunLoop();
   }
 
@@ -69,23 +82,25 @@ class VirtualTimeTest : public SimTest {
   void RunTasksForPeriod(double delay_ms) {
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
         FROM_HERE,
-        WTF::Bind(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
-                  WTF::Unretained(this)),
-        base::TimeDelta::FromMillisecondsD(delay_ms));
+        WTF::BindOnce(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
+                      WTF::Unretained(this)),
+        base::Milliseconds(delay_ms));
     test::EnterRunLoop();
   }
+
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetInterval DISABLED_SetInterval
 #else
 #define MAYBE_SetInterval SetInterval
 #endif
 TEST_F(VirtualTimeTest, MAYBE_SetInterval) {
-  WebView().Scheduler()->EnableVirtualTime();
-  WebView().Scheduler()->SetVirtualTimePolicy(
-      PageScheduler::VirtualTimePolicy::kAdvance);
+  GetVirtualTimeController()->EnableVirtualTime(base::Time());
+  GetVirtualTimeController()->SetVirtualTimePolicy(
+      VirtualTimeController::VirtualTimePolicy::kAdvance);
 
   ExecuteJavaScript(
       "var run_order = [];"
@@ -105,14 +120,14 @@ TEST_F(VirtualTimeTest, MAYBE_SetInterval) {
 }
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AllowVirtualTimeToAdvance DISABLED_AllowVirtualTimeToAdvance
 #else
 #define MAYBE_AllowVirtualTimeToAdvance AllowVirtualTimeToAdvance
 #endif
 TEST_F(VirtualTimeTest, MAYBE_AllowVirtualTimeToAdvance) {
-  WebView().Scheduler()->SetVirtualTimePolicy(
-      PageScheduler::VirtualTimePolicy::kPause);
+  GetVirtualTimeController()->SetVirtualTimePolicy(
+      VirtualTimeController::VirtualTimePolicy::kPause);
 
   ExecuteJavaScript(
       "var run_order = [];"
@@ -126,15 +141,15 @@ TEST_F(VirtualTimeTest, MAYBE_AllowVirtualTimeToAdvance) {
   test::RunPendingTasks();
   EXPECT_EQ("", ExecuteJavaScript("run_order.join(', ')"));
 
-  WebView().Scheduler()->SetVirtualTimePolicy(
-      PageScheduler::VirtualTimePolicy::kAdvance);
+  GetVirtualTimeController()->SetVirtualTimePolicy(
+      VirtualTimeController::VirtualTimePolicy::kAdvance);
   RunTasksForPeriod(1000);
 
   EXPECT_EQ("c, b, a", ExecuteJavaScript("run_order.join(', ')"));
 }
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_VirtualTimeNotAllowedToAdvanceWhileResourcesLoading \
   DISABLED_VirtualTimeNotAllowedToAdvanceWhileResourcesLoading
 #else
@@ -143,11 +158,11 @@ TEST_F(VirtualTimeTest, MAYBE_AllowVirtualTimeToAdvance) {
 #endif
 TEST_F(VirtualTimeTest,
        MAYBE_VirtualTimeNotAllowedToAdvanceWhileResourcesLoading) {
-  WebView().Scheduler()->EnableVirtualTime();
-  WebView().Scheduler()->SetVirtualTimePolicy(
-      PageScheduler::VirtualTimePolicy::kDeterministicLoading);
+  GetVirtualTimeController()->EnableVirtualTime(base::Time());
+  GetVirtualTimeController()->SetVirtualTimePolicy(
+      VirtualTimeController::VirtualTimePolicy::kDeterministicLoading);
 
-  EXPECT_TRUE(WebView().Scheduler()->VirtualTimeAllowedToAdvance());
+  EXPECT_TRUE(GetVirtualTimeController()->VirtualTimeAllowedToAdvance());
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimSubresourceRequest css_resource("https://example.com/test.css",
@@ -155,28 +170,28 @@ TEST_F(VirtualTimeTest,
 
   // Loading, virtual time should not advance.
   LoadURL("https://example.com/test.html");
-  EXPECT_FALSE(WebView().Scheduler()->VirtualTimeAllowedToAdvance());
+  EXPECT_FALSE(GetVirtualTimeController()->VirtualTimeAllowedToAdvance());
 
   // Still Loading, virtual time should not advance.
   main_resource.Write("<!DOCTYPE html><link rel=stylesheet href=test.css>");
-  EXPECT_FALSE(WebView().Scheduler()->VirtualTimeAllowedToAdvance());
+  EXPECT_FALSE(GetVirtualTimeController()->VirtualTimeAllowedToAdvance());
 
   // Still Loading, virtual time should not advance.
   css_resource.Start();
   css_resource.Write("a { color: red; }");
-  EXPECT_FALSE(WebView().Scheduler()->VirtualTimeAllowedToAdvance());
+  EXPECT_FALSE(GetVirtualTimeController()->VirtualTimeAllowedToAdvance());
 
   // Still Loading, virtual time should not advance.
   css_resource.Finish();
-  EXPECT_FALSE(WebView().Scheduler()->VirtualTimeAllowedToAdvance());
+  EXPECT_FALSE(GetVirtualTimeController()->VirtualTimeAllowedToAdvance());
 
   // Still Loading, virtual time should not advance.
   main_resource.Write("<body>");
-  EXPECT_FALSE(WebView().Scheduler()->VirtualTimeAllowedToAdvance());
+  EXPECT_FALSE(GetVirtualTimeController()->VirtualTimeAllowedToAdvance());
 
   // Finished loading, virtual time should be able to advance.
   main_resource.Finish();
-  EXPECT_TRUE(WebView().Scheduler()->VirtualTimeAllowedToAdvance());
+  EXPECT_TRUE(GetVirtualTimeController()->VirtualTimeAllowedToAdvance());
 
   // The loading events are delayed for 10 virtual ms after they have run, we
   // let tasks run for a little while to ensure we don't get any asserts on

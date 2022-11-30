@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
@@ -29,6 +30,10 @@ class JsCommunication
       public content::RenderFrameObserverTracker<JsCommunication> {
  public:
   explicit JsCommunication(content::RenderFrame* render_frame);
+
+  JsCommunication(const JsCommunication&) = delete;
+  JsCommunication& operator=(const JsCommunication&) = delete;
+
   ~JsCommunication() override;
 
   // mojom::JsCommunication implementation
@@ -63,12 +68,12 @@ class JsCommunication
   bool inside_did_clear_window_object_ = false;
 
   std::vector<std::unique_ptr<DocumentStartJavaScript>> scripts_;
-  std::vector<std::unique_ptr<JsBinding>> js_bindings_;
+  std::vector<base::WeakPtr<JsBinding>> js_bindings_;
 
   // Associated with legacy IPC channel.
   mojo::AssociatedReceiver<mojom::JsCommunication> receiver_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(JsCommunication);
+  base::WeakPtrFactory<JsCommunication> weak_ptr_factory_for_bindings_{this};
 };
 
 }  // namespace js_injection

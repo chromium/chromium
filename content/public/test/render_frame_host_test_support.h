@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ class RenderFrameHost;
 
 // Forces RenderFrameHost to be left in pending deletion, so it would not be
 // deleted. This is done to ensure that the tests have a way to reliably get a
-// RenderFrameHost which is not current (see RenderFrameHost::IsCurrent) and
+// RenderFrameHost which is inactive (see RenderFrameHost::IsActive) and
 // test that they handle it correctly.
 void LeaveInPendingDeletionState(RenderFrameHost* rfh);
 

@@ -1,23 +1,22 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/files/file_tracing.h"
 
-#include "base/atomicops.h"
-#include "base/files/file.h"
+#include <atomic>
 
-using base::subtle::AtomicWord;
+#include "base/files/file.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 
 namespace {
-AtomicWord g_provider;
+std::atomic<FileTracing::Provider*> g_provider;
 }
 
 FileTracing::Provider* GetProvider() {
-  AtomicWord provider = base::subtle::Acquire_Load(&g_provider);
-  return reinterpret_cast<FileTracing::Provider*>(provider);
+  return g_provider.load(std::memory_order_acquire);
 }
 
 // static
@@ -28,8 +27,7 @@ bool FileTracing::IsCategoryEnabled() {
 
 // static
 void FileTracing::SetProvider(FileTracing::Provider* provider) {
-  base::subtle::Release_Store(&g_provider,
-                              reinterpret_cast<AtomicWord>(provider));
+  g_provider.store(provider, std::memory_order_release);
 }
 
 FileTracing::ScopedEnabler::ScopedEnabler() {
@@ -42,6 +40,8 @@ FileTracing::ScopedEnabler::~ScopedEnabler() {
   FileTracing::Provider* provider = GetProvider();
   if (provider)
     provider->FileTracingDisable(this);
+  // TODO(crbug.com/1021571): Remove this once fixed.
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 FileTracing::ScopedTrace::~ScopedTrace() {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #endif
 
@@ -18,7 +19,7 @@ class AccountsCookieMutator;
 class PrimaryAccountMutator;
 class DeviceAccountsSynchronizer;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class IdentityMutator;
 
 // This class is the JNI interface accessing IdentityMutator.
@@ -34,13 +35,13 @@ class JniIdentityMutator {
   JniIdentityMutator const& operator=(const IdentityMutator& other) = delete;
 
   // Called by java to mark the account with |account_id| as the primary
-  // account, and return whether the operation succeeded or not. To succeed,
-  // this requires that:
+  // account, and returns PrimaryAccountMutator::PrimaryAccountError. To
+  // succeed, this requires that:
   //   - the account is known by the IdentityManager.
   //   - setting the primary account is allowed,
   //   - the account username is allowed by policy,
   //   - there is not already a primary account set.
-  bool SetPrimaryAccount(
+  jint SetPrimaryAccount(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& primary_account_id,
       jint consent_level);
@@ -51,6 +52,9 @@ class JniIdentityMutator {
   bool ClearPrimaryAccount(JNIEnv* env,
                            jint source_metric,
                            jint delete_metric);
+
+  // Called by java to revoke sync consent for the primary account.
+  void RevokeSyncConsent(JNIEnv* env, jint source_metric, jint delete_metric);
 
   // Called by java to reload the accounts in the token service from the system
   // accounts.
@@ -63,7 +67,7 @@ class JniIdentityMutator {
 
   JniIdentityMutator(IdentityMutator* identity_mutator);
 
-  IdentityMutator* identity_mutator_;
+  raw_ptr<IdentityMutator> identity_mutator_;
 };
 #endif
 
@@ -85,7 +89,7 @@ class IdentityMutator {
   IdentityMutator(const IdentityMutator& other) = delete;
   IdentityMutator const& operator=(const IdentityMutator& other) = delete;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Get the reference on the java IdentityManager.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
@@ -109,7 +113,7 @@ class IdentityMutator {
   DeviceAccountsSynchronizer* GetDeviceAccountsSynchronizer();
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // C++ endpoint for identity mutator calls originating from java.
   std::unique_ptr<JniIdentityMutator> jni_identity_mutator_;
 

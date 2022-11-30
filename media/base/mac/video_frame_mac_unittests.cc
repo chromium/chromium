@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace {
 const int kWidth = 64;
 const int kHeight = 48;
 const int kVisibleRectOffset = 8;
-const base::TimeDelta kTimestamp = base::TimeDelta::FromMicroseconds(1337);
+const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
 struct FormatPair {
   VideoPixelFormat chrome;
@@ -40,7 +40,7 @@ TEST(VideoFrameMac, CheckBasicAttributes) {
                                        size, kTimestamp);
   ASSERT_TRUE(frame.get());
 
-  auto pb = WrapVideoFrameInCVPixelBuffer(*frame);
+  auto pb = WrapVideoFrameInCVPixelBuffer(frame);
   ASSERT_TRUE(pb.get());
 
   const gfx::Size coded_size = frame->coded_size();
@@ -77,7 +77,7 @@ TEST(VideoFrameMac, CheckFormats) {
     auto frame = VideoFrame::CreateFrame(format_pair.chrome, size,
                                          gfx::Rect(size), size, kTimestamp);
     ASSERT_TRUE(frame.get());
-    auto pb = WrapVideoFrameInCVPixelBuffer(*frame);
+    auto pb = WrapVideoFrameInCVPixelBuffer(frame);
     if (format_pair.corevideo) {
       EXPECT_EQ(format_pair.corevideo, CVPixelBufferGetPixelFormatType(pb));
     } else {
@@ -99,7 +99,7 @@ TEST(VideoFrameMac, CheckLifetime) {
       base::BindOnce(&Increment, &instances_destroyed));
   ASSERT_TRUE(wrapper_frame.get());
 
-  auto pb = WrapVideoFrameInCVPixelBuffer(*wrapper_frame);
+  auto pb = WrapVideoFrameInCVPixelBuffer(wrapper_frame);
   ASSERT_TRUE(pb.get());
 
   wrapper_frame = nullptr;
@@ -156,7 +156,7 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
   ASSERT_TRUE(frame.get());
   FillFrameWithPredictableValues(*frame);
 
-  auto pb = WrapVideoFrameInCVPixelBuffer(*frame);
+  auto pb = WrapVideoFrameInCVPixelBuffer(frame);
   ASSERT_TRUE(pb.get());
   EXPECT_EQ(kCVPixelFormatType_420YpCbCr8Planar,
             CVPixelBufferGetPixelFormatType(pb));

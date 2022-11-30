@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,14 @@
 #define CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_H_
 
 #include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/browser_controls_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -83,8 +86,15 @@ class CC_EXPORT BrowserControlsOffsetManager {
                                   BrowserControlsState current,
                                   bool animate);
 
+  // Return the browser control constraint that must be synced to the
+  // main renderer thread (to trigger viewport and related changes).
   BrowserControlsState PullConstraintForMainThread(
       bool* out_changed_since_commit);
+  // Called to notify this object that the control constraint has
+  // been pushed to the main thread. When a compositor commit does not
+  // happen the value pulled by the method above may not be synced;
+  // a call to this method notifies us that it has.
+  void NotifyConstraintSyncedToMainThread();
 
   void OnBrowserControlsParamsChanged(bool animate_changes);
 
@@ -117,9 +127,11 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void InitAnimationForHeightChange(Animation* animation,
                                     float start_ratio,
                                     float stop_ratio);
+  void SetTopMinHeightOffsetAnimationRange(float from, float to);
+  void SetBottomMinHeightOffsetAnimationRange(float from, float to);
 
   // The client manages the lifecycle of this.
-  BrowserControlsOffsetManagerClient* client_;
+  raw_ptr<BrowserControlsOffsetManagerClient> client_;
 
   BrowserControlsState permitted_state_;
 
@@ -156,6 +168,15 @@ class CC_EXPORT BrowserControlsOffsetManager {
   float top_controls_min_height_offset_;
   float bottom_controls_min_height_offset_;
 
+  // Minimum and maximum values |top_controls_min_height_offset_| can take
+  // during the current min-height change animation.
+  absl::optional<std::pair<float, float>>
+      top_min_height_offset_animation_range_;
+  // Minimum and maximum values |bottom_controls_min_height_offset_| can take
+  // during the current min-height change animation.
+  absl::optional<std::pair<float, float>>
+      bottom_min_height_offset_animation_range_;
+
   // Class that holds and manages the state of the controls animations.
   class Animation {
    public:
@@ -171,14 +192,14 @@ class CC_EXPORT BrowserControlsOffsetManager {
                     int64_t duration,
                     bool jump_to_end_on_reset);
     // Returns the animated value for the given monotonic time tick if the
-    // animation is initialized. Otherwise, returns |base::nullopt|.
-    base::Optional<float> Tick(base::TimeTicks monotonic_time);
+    // animation is initialized. Otherwise, returns |absl::nullopt|.
+    absl::optional<float> Tick(base::TimeTicks monotonic_time);
     // Set the minimum and maximum values the animation can have.
     void SetBounds(float min, float max);
     // Reset the properties. If |skip_to_end_on_reset_| is false, this function
-    // will return |base::nullopt|. Otherwise, it will return the end value
+    // will return |absl::nullopt|. Otherwise, it will return the end value
     // (clamped to min-max).
-    base::Optional<float> Reset();
+    absl::optional<float> Reset();
 
     // Returns the value the animation will end on. This will be the stop_value
     // passed to the constructor clamped by the currently configured bounds.

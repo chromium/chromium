@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++staticText name='Parent div not included'
+++++++++inlineTextBox name='Parent div not included'
+++++++none ignored className='before'
+++++++++genericContainer ignored
+++++++++++staticText name='['
+++++++++++++inlineTextBox name='['
+++++++++staticText name='Has ::before'
+++++++++++inlineTextBox name='Has ::before'
+++++++none ignored className='after'
+++++++++staticText name='Has ::after'
+++++++++++inlineTextBox name='Has ::after'
+++++++++genericContainer ignored
+++++++++++staticText name=']'
+++++++++++++inlineTextBox name=']'

@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/widget/compositing/widget_compositor.h"
+
+#include <tuple>
 
 #include "base/test/task_environment.h"
 #include "cc/test/layer_tree_test.h"
@@ -29,20 +31,23 @@ class StubWidgetBaseClient : public WidgetBaseClient {
     return WebInputEventResult::kNotHandled;
   }
   bool SupportsBufferedTouchEvents() override { return false; }
-  bool WillHandleGestureEvent(const WebGestureEvent&) override { return false; }
+  void WillHandleGestureEvent(const WebGestureEvent&, bool* suppress) override {
+  }
   void WillHandleMouseEvent(const WebMouseEvent&) override {}
   void ObserveGestureEventAndResult(const WebGestureEvent&,
                                     const gfx::Vector2dF&,
                                     const cc::OverscrollBehavior&,
                                     bool) override {}
-  void FocusChanged(bool) override {}
+  void FocusChanged(mojom::blink::FocusState) override {}
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override {}
-  const ScreenInfo& GetOriginalScreenInfo() override { return screen_info_; }
+  const display::ScreenInfos& GetOriginalScreenInfos() override {
+    return screen_infos_;
+  }
   gfx::Rect ViewportVisibleRect() override { return gfx::Rect(); }
 
  private:
-  ScreenInfo screen_info_;
+  display::ScreenInfos screen_infos_;
 };
 
 class FakeWidgetCompositor : public WidgetCompositor {
@@ -74,14 +79,15 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
         widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
     mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_remote;
-    ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = widget_host_remote.BindNewEndpointAndPassDedicatedReceiver();
 
     widget_base_ = std::make_unique<WidgetBase>(
         /*widget_base_client=*/&client_, widget_host_remote.Unbind(),
         std::move(widget_receiver), base::ThreadTaskRunnerHandle::Get(),
         /*is_hidden=*/false,
         /*never_composited=*/false,
-        /*is_for_child_local_root=*/false);
+        /*is_for_child_local_root=*/false,
+        /*is_for_scalable_page=*/true);
 
     widget_compositor_ = base::MakeRefCounted<FakeWidgetCompositor>(
         layer_tree_host(), widget_base_->GetWeakPtr(),

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
-#include <string>
-
 #include "base/big_endian.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/receiver_rtcp_event_subscriber.h"
@@ -24,6 +21,10 @@ namespace cast {
 class RtcpBuilder {
  public:
   explicit RtcpBuilder(uint32_t sending_ssrc);
+
+  RtcpBuilder(const RtcpBuilder&) = delete;
+  RtcpBuilder& operator=(const RtcpBuilder&) = delete;
+
   ~RtcpBuilder();
 
   PacketRef BuildRtcpFromSender(const RtcpSenderInfo& sender_info);
@@ -51,12 +52,10 @@ class RtcpBuilder {
       RtcpReceiverLogMessage* receiver_log_message,
       size_t* total_number_of_messages_to_send);
 
-  base::BigEndianWriter writer_;
   const uint32_t local_ssrc_;
-  char* ptr_of_length_;
+  raw_ptr<char> ptr_of_length_;
   PacketRef packet_;
-
-  DISALLOW_COPY_AND_ASSIGN(RtcpBuilder);
+  base::BigEndianWriter writer_;
 };
 
 }  // namespace cast

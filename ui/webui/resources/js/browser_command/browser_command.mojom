@@ -1,0 +1,54 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module browser_command.mojom;
+
+// The set of browser commands sent by the NTP promos or the What's New
+// chrome.com content, and understood by the browser. They may trigger actions
+// in the browser such as navigating to a chrome:// URL or initiating a helpful
+// flow. The implementer of the CommandHandler interface chooses which commands
+// to handle and which ones to ignore depending on the platform or the
+// milestone. Note that the implementations of these commands must be
+// side-effect-free.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Please update enums.xml upon addition of new commands.
+enum Command {
+  kUnknownCommand = 0,
+  kOpenSafetyCheck = 1,
+  kOpenSafeBrowsingEnhancedProtectionSettings = 2,
+  kOpenFeedbackForm = 3,
+  kOpenPrivacyGuide = 4,
+  kStartTabGroupTutorial = 5,
+  kOpenPasswordManager = 6,
+  kNoOpCommand = 7,
+};
+
+// Click information needed to determine user's desired window disposition using
+// ui::DispositionFromClick().
+struct ClickInfo {
+  bool middle_button;
+  bool alt_key;
+  bool ctrl_key;
+  bool meta_key;
+  bool shift_key;
+};
+
+// Implemented by the New Tab Page and What's New WebUIs that provide
+// CommandHandlers to handle requests for browser commands from JS.
+interface CommandHandlerFactory {
+  // Called when first initialized.
+  CreateBrowserCommandHandler(pending_receiver<CommandHandler> handler);
+};
+
+// Browser-side handler for requests from JS.
+interface CommandHandler {
+  // Returns the given command ID can be executed.
+  CanExecuteCommand(Command command_id) => (bool can_execute);
+
+  // Executes the command with the given ID and click information. Returns
+  // whether or not the command was executed.
+  ExecuteCommand(Command command_id, ClickInfo click_info)
+      => (bool command_executed);
+};

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.net.ChromiumNetworkAdapter;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -103,7 +105,9 @@ public final class ConnectivityChecker {
             @Override
             protected Integer doInBackground() {
                 try {
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    HttpURLConnection conn =
+                            (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
+                                    url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
                     conn.setInstanceFollowRedirects(false);
                     conn.setRequestMethod("GET");
                     conn.setDoInput(false);

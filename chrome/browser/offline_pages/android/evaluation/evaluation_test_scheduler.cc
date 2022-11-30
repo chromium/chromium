@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,8 +51,7 @@ void StartProcessing() {
   if (net::NetworkChangeNotifier::GetConnectionType() ==
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&StartProcessing),
-        base::TimeDelta::FromSeconds(2));
+        FROM_HERE, base::BindOnce(&StartProcessing), base::Seconds(2));
     return;
   }
   Profile* profile = ProfileManager::GetLastUsedProfile();

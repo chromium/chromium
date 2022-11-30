@@ -1,8 +1,7 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -28,12 +27,12 @@ class InteractionMediaQueriesDynamicTest : public ContentBrowserTest {
 }  //  namespace
 
 // Disable test on Android ASAN bot: crbug.com/807420
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    (defined(OS_ANDROID) && !defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
                        PointerMediaQueriesDynamic) {
   RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost());
 
   ui::SetAvailablePointerAndHoverTypesForTesting(ui::POINTER_TYPE_NONE,
                                                  ui::HOVER_TYPE_NONE);

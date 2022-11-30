@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "storage/browser/test/sandbox_database_test_helper.h"
@@ -39,6 +38,10 @@ class SandboxDirectoryDatabaseTest : public testing::Test {
     EXPECT_TRUE(base_.CreateUniqueTempDir());
     InitDatabase();
   }
+
+  SandboxDirectoryDatabaseTest(const SandboxDirectoryDatabaseTest&) = delete;
+  SandboxDirectoryDatabaseTest& operator=(const SandboxDirectoryDatabaseTest&) =
+      delete;
 
   SandboxDirectoryDatabase* db() { return db_.get(); }
 
@@ -136,9 +139,6 @@ class SandboxDirectoryDatabaseTest : public testing::Test {
   // Common temp base for nondestructive uses.
   base::ScopedTempDir base_;
   std::unique_ptr<SandboxDirectoryDatabase> db_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SandboxDirectoryDatabaseTest);
 };
 
 TEST_F(SandboxDirectoryDatabaseTest, TestMissingFileGetInfo) {

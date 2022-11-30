@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/form_group.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -31,7 +32,7 @@ void FormGroup::GetMatchingTypes(const std::u16string& text,
   std::u16string canonicalized_text = comparator.NormalizeForComparison(text);
   ServerFieldTypeSet types;
   GetSupportedTypes(&types);
-  for (const auto& type : types) {
+  for (auto type : types) {
     if (comparator.Compare(canonicalized_text,
                            GetInfo(AutofillType(type), app_locale))) {
       matching_types->insert(type);
@@ -43,10 +44,24 @@ void FormGroup::GetNonEmptyTypes(const std::string& app_locale,
                                  ServerFieldTypeSet* non_empty_types) const {
   ServerFieldTypeSet types;
   GetSupportedTypes(&types);
-  for (const auto& type : types) {
+  for (auto type : types) {
     if (!GetInfo(AutofillType(type), app_locale).empty())
       non_empty_types->insert(type);
   }
+}
+
+void FormGroup::GetNonEmptyRawTypes(ServerFieldTypeSet* non_empty_types) const {
+  ServerFieldTypeSet types;
+  GetSupportedTypes(&types);
+  for (auto type : types) {
+    if (!GetRawInfo(type).empty())
+      non_empty_types->insert(type);
+  }
+}
+
+int FormGroup::GetRawInfoAsInt(ServerFieldType type) const {
+  NOTREACHED();
+  return 0;
 }
 
 bool FormGroup::HasRawInfo(ServerFieldType type) const {
@@ -133,8 +148,11 @@ bool FormGroup::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   return true;
 }
 
-void FormGroup::SetRawInfo(ServerFieldType type, const std::u16string& value) {
-  SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
+void FormGroup::SetRawInfoAsIntWithVerificationStatus(
+    ServerFieldType type,
+    int value,
+    VerificationStatus status) {
+  SetRawInfoWithVerificationStatus(type, base::NumberToString16(value), status);
 }
 
 void FormGroup::SetRawInfoWithVerificationStatusInt(ServerFieldType type,
@@ -142,6 +160,15 @@ void FormGroup::SetRawInfoWithVerificationStatusInt(ServerFieldType type,
                                                     int status) {
   SetRawInfoWithVerificationStatus(type, value,
                                    static_cast<VerificationStatus>(status));
+}
+
+void FormGroup::SetRawInfo(ServerFieldType type, const std::u16string& value) {
+  SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
+}
+
+void FormGroup::SetRawInfoAsInt(ServerFieldType type, int value) {
+  SetRawInfoAsIntWithVerificationStatus(type, value,
+                                        VerificationStatus::kNoStatus);
 }
 
 VerificationStatus FormGroup::GetVerificationStatusImpl(

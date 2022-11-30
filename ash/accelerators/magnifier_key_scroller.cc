@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "ash/accelerators/key_hold_detector.h"
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/keyboard/keyboard_util.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "ui/events/event.h"
@@ -25,7 +25,7 @@ bool MagnifierKeyScroller::IsEnabled() {
       switches::kAshEnableMagnifierKeyScroller);
 
   return (magnifier_key_scroller_enabled || has_switch) &&
-         Shell::Get()->magnification_controller()->IsEnabled();
+         Shell::Get()->fullscreen_magnifier_controller()->IsEnabled();
 }
 
 // static
@@ -55,20 +55,23 @@ bool MagnifierKeyScroller::ShouldStopEventPropagation() const {
 }
 
 void MagnifierKeyScroller::OnKeyHold(const ui::KeyEvent* event) {
-  MagnificationController* controller =
-      Shell::Get()->magnification_controller();
+  FullscreenMagnifierController* controller =
+      Shell::Get()->fullscreen_magnifier_controller();
   switch (event->key_code()) {
     case ui::VKEY_UP:
-      controller->SetScrollDirection(MagnificationController::SCROLL_UP);
+      controller->SetScrollDirection(FullscreenMagnifierController::SCROLL_UP);
       break;
     case ui::VKEY_DOWN:
-      controller->SetScrollDirection(MagnificationController::SCROLL_DOWN);
+      controller->SetScrollDirection(
+          FullscreenMagnifierController::SCROLL_DOWN);
       break;
     case ui::VKEY_LEFT:
-      controller->SetScrollDirection(MagnificationController::SCROLL_LEFT);
+      controller->SetScrollDirection(
+          FullscreenMagnifierController::SCROLL_LEFT);
       break;
     case ui::VKEY_RIGHT:
-      controller->SetScrollDirection(MagnificationController::SCROLL_RIGHT);
+      controller->SetScrollDirection(
+          FullscreenMagnifierController::SCROLL_RIGHT);
       break;
     default:
       NOTREACHED() << "Unknown keyboard_code:" << event->key_code();
@@ -76,9 +79,9 @@ void MagnifierKeyScroller::OnKeyHold(const ui::KeyEvent* event) {
 }
 
 void MagnifierKeyScroller::OnKeyUnhold(const ui::KeyEvent* event) {
-  MagnificationController* controller =
-      Shell::Get()->magnification_controller();
-  controller->SetScrollDirection(MagnificationController::SCROLL_NONE);
+  FullscreenMagnifierController* controller =
+      Shell::Get()->fullscreen_magnifier_controller();
+  controller->SetScrollDirection(FullscreenMagnifierController::SCROLL_NONE);
 }
 
 MagnifierKeyScroller::MagnifierKeyScroller() = default;

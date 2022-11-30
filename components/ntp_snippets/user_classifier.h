@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -57,6 +57,8 @@ class UserClassifier {
 
   // The provided |pref_service| may be nullptr in unit-tests.
   UserClassifier(PrefService* pref_service, base::Clock* clock);
+  UserClassifier(const UserClassifier&) = delete;
+  UserClassifier& operator=(const UserClassifier&) = delete;
   ~UserClassifier();
 
   // Registers profile prefs for all metrics. Called from browser_prefs.cc.
@@ -96,8 +98,8 @@ class UserClassifier {
   void SetMetricValue(Metric metric, double metric_value);
   void ClearMetricValue(Metric metric);
 
-  PrefService* pref_service_;
-  base::Clock* clock_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<base::Clock> clock_;
 
   // Params of the metric.
   const double discount_rate_per_hour_;
@@ -107,8 +109,6 @@ class UserClassifier {
   // Params of the classification.
   const double active_consumer_clicks_at_least_once_per_hours_;
   const double rare_user_opens_ntp_at_most_once_per_hours_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserClassifier);
 };
 
 }  // namespace ntp_snippets

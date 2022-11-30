@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,13 +20,17 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_button_pressed_metric_tracker.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
+#include "base/cancelable_callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
@@ -54,7 +58,8 @@ class Separator;
 }  // namespace views
 
 namespace ash {
-class DragImageView;
+class GhostImageView;
+class PartyingShelfItem;
 class ShelfAppButton;
 class ShelfButton;
 class ShelfModel;
@@ -72,21 +77,47 @@ enum ShelfAlignmentUmaEnumValue {
 
 // ShelfView contains the shelf items visible within an active user session.
 // ShelfView and LoginShelfView should never be shown together.
-
 class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfButtonDelegate,
                              public ShelfModelObserver,
                              public ShellObserver,
+                             public ShelfObserver,
                              public views::ContextMenuController,
                              public views::BoundsAnimatorObserver,
                              public ApplicationDragAndDropHost,
                              public ShelfTooltipDelegate,
                              public TabletModeObserver {
  public:
+  METADATA_HEADER(ShelfView);
+  // Used to communicate with the container class ScrollableShelfView.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called on each shelf item drag update to update the parent view scroll
+    // offset if needed.
+    virtual void ScheduleScrollForItemDragIfNeeded(
+        const gfx::Rect& item_bounds_in_screen) = 0;
+
+    // Called when a shelf item drag ends to cancel any parent view scroll
+    // offset updates previously scheduled by
+    // `ScheduleDcrollForItemDragIfNeeded()`.
+    virtual void CancelScrollForItemDrag() = 0;
+
+    // Returns whether the provided `bounds_in_screen` are within visible
+    // portion of the shelf.
+    virtual bool AreBoundsWithinVisibleSpace(
+        const gfx::Rect& bounds_in_screen) const = 0;
+  };
+
   ShelfView(ShelfModel* model,
             Shelf* shelf,
-            ApplicationDragAndDropHost* drag_and_drop_host,
-            ShelfButtonDelegate* delegate);
+            Delegate* delegate,
+            ShelfButtonDelegate* button_delegate);
+
+  ShelfView(const ShelfView&) = delete;
+  ShelfView& operator=(const ShelfView&) = delete;
+
   ~ShelfView() override;
 
   Shelf* shelf() const { return shelf_; }
@@ -94,15 +125,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // Returns the size occupied by |count| app buttons. |button_size| indicates
   // the size of each app button.
-  static int GetSizeOfAppButtons(int count, int button_size);
+  int GetSizeOfAppButtons(int count, int button_size);
 
   // Initializes shelf view elements.
-  void Init();
-
-  // Returns the ideal bounds of the specified item, or an empty rect if id
-  // isn't know. If the item is in an overflow shelf, the overflow icon location
-  // will be returned.
-  gfx::Rect GetIdealBoundsOfItemIcon(const ShelfID& id);
+  void Init(views::FocusSearch* focus_search);
 
   // Returns true if we're showing a menu. Note the menu could be either the
   // context menu or the application select menu.
@@ -135,12 +161,13 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   FocusTraversable* GetPaneFocusTraversable() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
-  const char* GetClassName() const override;
-  void OnThemeChanged() override;
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -176,32 +203,15 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool ShouldEventActivateButton(views::View* view, const ui::Event& event);
 
   // ApplicationDragAndDropHost:
-  void CreateDragIconProxyByLocationWithNoAnimation(
-      const gfx::Point& origin_in_screen_coordinates,
-      const gfx::ImageSkia& icon,
-      views::View* replaced_view,
-      float scale_factor,
-      int blur_radius) override;
-
-  void UpdateDragIconProxy(
-      const gfx::Point& location_in_screen_coordinates) override;
-
-  void UpdateDragIconProxyByLocation(
-      const gfx::Point& origin_in_screen_coordinates) override;
-
-  void DestroyDragIconProxy() override;
-
-  // Transfers ownership of |drag_image_widget_|, and cleans up DragIconProxy
-  // state.
-  views::UniqueWidgetPtr RetrieveDragIconProxyAndClearDragProxyState();
-
-  bool ShouldStartDrag(
-      const std::string& app_id,
-      const gfx::Point& location_in_screen_coordinates) const override;
+  bool ShouldHandleDrag(const std::string& app_id,
+                        const gfx::Point& location_in_screen) const override;
   bool StartDrag(const std::string& app_id,
-                 const gfx::Point& location_in_screen_coordinates) override;
-  bool Drag(const gfx::Point& location_in_screen_coordinates) override;
-  void EndDrag(bool cancel) override;
+                 const gfx::Point& location_in_screen,
+                 const gfx::Rect& drag_icon_bounds_in_screen) override;
+  bool Drag(const gfx::Point& location_in_screen,
+            const gfx::Rect& drag_icon_bounds_in_screen) override;
+  void EndDrag(bool cancel,
+               std::unique_ptr<AppDragIconProxy> icon_proxy) override;
 
   // Swaps the given button with the next one if |with_next| is true, or with
   // the previous one if |with_next| is false.
@@ -212,10 +222,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void PointerPressedOnButton(views::View* view,
                               Pointer pointer,
                               const ui::LocatedEvent& event);
-  void PointerDraggedOnButton(views::View* view,
+  void PointerDraggedOnButton(const views::View* view,
                               Pointer pointer,
                               const ui::LocatedEvent& event);
-  void PointerReleasedOnButton(views::View* view,
+  void PointerReleasedOnButton(const views::View* view,
                                Pointer pointer,
                                bool canceled);
 
@@ -256,9 +266,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // stops the animation.
   void StopAnimatingViewIfAny(views::View* view);
 
-  // Whether ShelfView is handling a drag and drop.
-  bool IsShelfViewHandlingDragAndDrop() const;
-
   // Returns the the shelf button size.
   int GetButtonSize() const;
 
@@ -280,10 +287,15 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // new updates, based on the item having a notification badge.
   void AnnounceShelfItemNotificationBadge(views::View* button);
 
+  // Returns whether `bounds_animator_` is animating any view.
+  bool IsAnimating() const;
+
+  // If a shelf icon is being dragged (and drag icon proxy is created), returns
+  // the drag icon bounds in screen coordinate. Otherwise, returns empty bounds.
+  gfx::Rect GetDragIconBoundsInScreenForTest() const;
+
   // Return the view model for test purposes.
-  const views::ViewModel* view_model_for_test() const {
-    return view_model_.get();
-  }
+  views::ViewModel* view_model_for_test() { return view_model_.get(); }
 
   void set_default_last_focusable_child(bool default_last_focusable_child) {
     default_last_focusable_child_ = default_last_focusable_child;
@@ -291,14 +303,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   ShelfAppButton* drag_view() { return drag_view_; }
 
-  const std::vector<int>& visible_views_indices() const {
+  const std::vector<size_t>& visible_views_indices() const {
     return visible_views_indices_;
   }
-  int number_of_visible_apps() const { return visible_views_indices_.size(); }
+  size_t number_of_visible_apps() const {
+    return visible_views_indices_.size();
+  }
   ShelfWidget* shelf_widget() const { return shelf_->shelf_widget(); }
-  views::ViewModel* view_model() { return view_model_.get(); }
   const views::ViewModel* view_model() const { return view_model_.get(); }
-  bool dragged_off_shelf() const { return dragged_off_shelf_; }
   ShelfID drag_and_drop_shelf_id() const { return drag_and_drop_shelf_id_; }
 
   views::View* first_visible_button_for_testing() {
@@ -310,12 +322,17 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
     return shelf_menu_model_adapter_.get();
   }
 
+  absl::optional<size_t> current_ghost_view_index() const {
+    return current_ghost_view_index_;
+  }
+
  private:
   friend class ShelfViewTestAPI;
 
   class FadeInAnimationDelegate;
   class FadeOutAnimationDelegate;
   class StartFadeAnimationDelegate;
+  class ViewOpacityResetter;
 
   enum RemovableState {
     REMOVABLE,      // Item can be removed when dragged away.
@@ -354,14 +371,16 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Sets the bounds of each view to its ideal bounds.
   void LayoutToIdealBounds();
 
-  void LayoutBackAndHomeButtons();
-
   // Returns the index of the last view whose max primary axis coordinate is
   // less than |max_value|. Returns -1 if nothing fits, or there are no views.
   int IndexOfLastItemThatFitsSize(int max_value) const;
 
   // Animates the bounds of each view to its ideal bounds.
   void AnimateToIdealBounds();
+
+  // Animates the separator to its ideal bounds if `animate` is true, or sets
+  // the bounds directly otherwise.
+  void UpdateSeparatorBounds(bool animate);
 
   // Fades |view| from an opacity of 0 to 1. This is when adding a new item.
   void FadeIn(views::View* view);
@@ -382,20 +401,12 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Reorder |drag_view_| according to the latest dragging coordinate.
   void MoveDragViewTo(int primary_axis_coordinate);
 
-  // Creates a drag proxy icon which can escape the given view.
-  // The proxy should get created using the |icon| with a magnification of
-  // |scale_factor| at a center location of |location_in_screen_coordinates.
-  // Use |replaced_view| to find the screen which is used.
-  // The |cursor_offset_from_center| is the offset from the mouse cursor to
-  // the center of the item.
-  // |animate_visibility| indicates whether the icon visibility changes should
-  // be animated.
-  void CreateDragIconProxy(const gfx::Point& location_in_screen_coordinates,
-                           const gfx::ImageSkia& icon,
-                           views::View* replaced_view,
-                           const gfx::Vector2d& cursor_offset_from_center,
-                           float scale_factor,
-                           bool animate_visibility);
+  // Called when drag icon proxy closure animation completes.
+  // Runs `opacity_resetter` which is expected to reset the drag view opacity to
+  // visible state (as drag view may get hidden while shelf item drag is in
+  // progress).
+  void OnDragIconProxyAnimatedOut(
+      std::unique_ptr<ViewOpacityResetter> opacity_resetter);
 
   // Handles ripping off an item from the shelf.
   void HandleRipOffDrag(const ui::LocatedEvent& event);
@@ -414,11 +425,11 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // Returns the range (in the model) the item at the specified index can be
   // dragged to.
-  std::pair<int, int> GetDragRange(int index);
+  std::pair<size_t, size_t> GetDragRange(size_t index);
 
   // Checks if the item at |dragged_item_index| should be pinned or unpinned on
   // pointer release.
-  bool ShouldUpdateDraggedViewPinStatus(int dragged_item_index);
+  bool ShouldUpdateDraggedViewPinStatus(size_t dragged_item_index);
 
   // Checks if |dragged_view| is allowed to be dragged across the separator to
   // perform pinning and unpinning. Note that this function doesn't check if the
@@ -427,7 +438,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // If there is a drag operation in progress it's canceled. If |modified_index|
   // is valid, the new position of the corresponding item is returned.
-  int CancelDrag(int modified_index);
+  absl::optional<size_t> CancelDrag(absl::optional<size_t> modified_index);
 
   // Returns rectangle bounds used for drag insertion.
   gfx::Rect GetBoundsForDragInsertInScreen();
@@ -466,11 +477,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void ShelfItemStatusChanged(const ShelfID& id) override;
   void ShelfItemRippedOff() override;
   void ShelfItemReturnedFromRipOff(int index) override;
+  void ShelfPartyToggled(bool in_shelf_party) override;
 
   // Overridden from ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
-  void OnShelfAutoHideBehaviorChanged(aura::Window* root_window) override;
+
+  // ShelfObserver:
+  void OnShelfAutoHideBehaviorChanged() override;
 
   // Shows a shelf context menu with the given |model|, or a default menu.
   void ShowShelfContextMenu(const ShelfID& shelf_id,
@@ -523,9 +537,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   bool CanPrepareForDrag(Pointer pointer, const ui::LocatedEvent& event);
 
-  // Set background blur to the dragged image. |size| is the image size.
-  void SetDragImageBlur(const gfx::Size& size, int blur_radius);
-
   bool ShouldHandleGestures(const ui::GestureEvent& event) const;
 
   void DestroyScopedDisplay();
@@ -535,25 +546,45 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   int CalculateAppIconsLayoutOffset() const;
 
-  // Get the |drag_image_widget_| content view as DragImageView.
-  DragImageView* GetDragImage();
-
   // Returns the bounds of the given |child| view taken into account RTL layouts
   // and on-going bounds animations on |child|.
   gfx::Rect GetChildViewTargetMirroredBounds(const views::View* child) const;
 
+  // Calls |UpdateShelfItemViewsVisibility| and updates the shelf for changes in
+  // visibility of items. Used when items may have joined or left shelf party,
+  // because partying items are hidden from the shelf. After the party ends,
+  // this function causes the items that were partying to reappear on the shelf.
+  void HandleShelfParty();
+
+  // Updates the visibility, position, and transform of
+  // `all_pinned_items_are_partying_label_`.
+  void UpdateAllPinnedItemsArePartyingLabel();
+
+  // Returns true if `all_pinned_items_are_partying_label_` should be visible.
+  bool ShouldShowAllPinnedItemsArePartyingLabel() const;
+
+  // Returns the space occupied by `all_pinned_items_are_partying_label_`,
+  // including the gap between that label and the first item, in DIPs.
+  int AllPinnedItemsArePartyingLabelSpace() const;
+
+  // Removes and reset |current_ghost_view| and |last_ghost_view|.
+  void RemoveGhostView();
+
+  // Resets the data members related to the app item context menu model request.
+  void ResetActiveMenuModelRequest();
+
   // The model; owned by Launcher.
-  ShelfModel* model_;
+  ShelfModel* const model_;
 
   // The shelf controller; owned by RootWindowController.
-  Shelf* shelf_;
+  Shelf* const shelf_;
 
   // Used to manage the set of active launcher buttons. There is a view per
   // item in |model_|.
   std::unique_ptr<views::ViewModel> view_model_;
 
   // The indices of the views in |view_model_| that are visible.
-  std::vector<int> visible_views_indices_;
+  std::vector<size_t> visible_views_indices_;
 
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
@@ -573,8 +604,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // items.
   views::Separator* separator_ = nullptr;
 
-  // Index of |separator_|. It is set to -1 if it is invisible.
-  int separator_index_ = -1;
+  // Index of |separator_|. It is set to nullopt if it is invisible.
+  absl::optional<size_t> separator_index_ = absl::nullopt;
 
   // Used in |drag_view_relative_to_ideal_bounds_| to represent the relative
   // position between |drag_view_| and its ideal bounds in shelf.
@@ -596,12 +627,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   gfx::Point drag_origin_;
 
   // Index |drag_view_| was initially at.
-  int start_drag_index_ = -1;
+  absl::optional<size_t> start_drag_index_ = absl::nullopt;
 
   // Used for the context menu of a particular item.
   ShelfID context_menu_id_;
-
-  std::unique_ptr<views::FocusSearch> focus_search_;
 
   // Responsible for building and running all menus.
   std::unique_ptr<ShelfMenuModelAdapter> shelf_menu_model_adapter_;
@@ -635,18 +664,12 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The ShelfItem currently used for drag and drop; empty if none.
   ShelfID drag_and_drop_shelf_id_;
 
+  // Last received drag icon bounds during drag and drop received using
+  // `ApplicationDragAndDropHost` interface.
+  gfx::Rect drag_icon_bounds_in_screen_;
+
   // The original launcher item's size before the dragging operation.
   gfx::Size pre_drag_and_drop_size_;
-
-  // The image proxy for drag operations when a drag and drop host exists and
-  // the item can be dragged outside the app grid.
-  views::UniqueWidgetPtr drag_image_widget_;
-
-  // The cursor offset to the middle of the dragged item.
-  gfx::Vector2d drag_image_offset_;
-
-  // The view which gets replaced by our drag icon proxy.
-  views::View* drag_replaced_view_ = nullptr;
 
   // True when the icon was dragged off the shelf.
   bool dragged_off_shelf_ = false;
@@ -661,7 +684,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Record the index for the last pressed shelf item. This variable is used to
   // check if a repost event occurs on the same shelf item as previous one. If
   // so, the repost event should be ignored.
-  int last_pressed_index_ = -1;
+  absl::optional<size_t> last_pressed_index_ = absl::nullopt;
 
   // Tracks UMA metrics based on shelf button press actions.
   ShelfButtonPressedMetricTracker shelf_button_pressed_metric_tracker_;
@@ -673,6 +696,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // A view used to make accessibility announcements (changes in the shelf's
   // alignment or auto-hide state).
   views::View* announcement_view_ = nullptr;  // Owned by ShelfView
+
+  // A view used to indicate that all pinned items are partying.
+  views::View* all_pinned_items_are_partying_label_ =
+      nullptr;  // Owned by ShelfView
 
   // For dragging: -1 if scrolling back, 1 if scrolling forward, 0 if neither.
   int drag_scroll_dir_ = 0;
@@ -692,28 +719,48 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // becomes y-axis)
   int app_icons_layout_offset_ = 0;
 
-  // When the scrollable shelf is enabled, |drag_and_drop_host_| should be
-  // ScrollableShelfView.
-  ApplicationDragAndDropHost* drag_and_drop_host_ = nullptr;
+  Delegate* const delegate_;
+
+  // Whether the shelf view is actively acting as an application drag and drop
+  // host. Note that shelf view is not expected to create its own
+  // `AppDragIconProxy` for item drag operation, but a `drag_icon_proxy_` may
+  // get passed to the shelf view using `ApplicationDragAndDropHost::EndDrag()`
+  // interface.
+  bool is_active_drag_and_drop_host_ = false;
+
+  // The app item icon proxy created for drag operation.
+  std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
+
+  // Placeholder ghost icon to show where an app will drop on the shelf.
+  GhostImageView* current_ghost_view_ = nullptr;
+  // The latest ghost icon shown set to be replaced by |current_ghost_view_|.
+  GhostImageView* last_ghost_view_ = nullptr;
+
+  // The index in the shelf app icons where the |current_ghost_view_| will show.
+  absl::optional<size_t> current_ghost_view_index_ = absl::nullopt;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.
   ShelfButtonDelegate* shelf_button_delegate_ = nullptr;
 
+  // Owned by ScrollableShelfView.
+  views::FocusSearch* focus_search_ = nullptr;
+
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
 
   // Tracks the icon move animation.
-  base::Optional<ui::ThroughputTracker> move_animation_tracker_;
+  absl::optional<ui::ThroughputTracker> move_animation_tracker_;
 
   // Tracks the icon fade-out animation.
-  base::Optional<ui::ThroughputTracker> fade_out_animation_tracker_;
+  absl::optional<ui::ThroughputTracker> fade_out_animation_tracker_;
 
   // Called when showing shelf context menu.
   base::RepeatingClosure context_menu_shown_callback_;
 
-  base::WeakPtrFactory<ShelfView> weak_factory_{this};
+  // The shelf party animations.
+  base::flat_map<ShelfID, std::unique_ptr<PartyingShelfItem>> party_;
 
-  DISALLOW_COPY_AND_ASSIGN(ShelfView);
+  base::WeakPtrFactory<ShelfView> weak_factory_{this};
 };
 
 }  // namespace ash

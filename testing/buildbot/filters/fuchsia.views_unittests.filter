@@ -1,0 +1,45 @@
+# Being ported, https://crbug.com/1206224.
+
+# TODO(crbug.com/1231509): These tests require
+# OSExchangeDataProviderFactory::CreateProvider to be implemented.
+-DesktopDragDropClientOzoneTest.ReceiveDrag
+-DesktopDragDropClientOzoneTest.StartDrag
+-DesktopDragDropClientOzoneTest.StartDragCtrlPressed
+-DesktopDragDropClientOzoneTest.TargetDestroyedDuringDrag
+-MenuControllerTest.CancelAllDuringDrag
+-MenuControllerTest.MenuControllerReplacedDuringDrag
+-TextfieldTest.DragAndDrop_Canceled
+-TextfieldTest.DragAndDrop_InitiateDrag
+-TextfieldTest.DragAndDrop_ToTheLeft
+-TextfieldTest.DragAndDrop_ToTheRight
+-TextfieldTest.DropCallbackRun
+-TextfieldTest.DropCallbackCancelled
+
+# TODO(crbug.com/1231516): This test require handling capture in
+# ui::ScenicWindow
+-TooltipControllerTest.Capture
+
+# TODO(crbug.com/1231576): These tests require handling window resizing in
+# ui::ScenicWindow
+-DesktopAuraWidgetTest.TopLevelOwnedPopupResizeTest
+-DesktopNativeWidgetAuraTest.DesktopAuraWindowSizeTest
+-DesktopWidgetObserverTest.OnWidgetMovedWhenOriginChangesNative
+-DesktopWidgetTest.GetRestoredBounds
+-DesktopWidgetTest.GetWindowPlacement
+-DesktopWidgetTest.MinimumSizeConstraints
+-DesktopWindowTreeHostPlatformTest.SetBoundsWithUnchangedSize
+-NativeWidgetAuraTest.CenterWindowLargeParent
+-RootViewDesktopNativeWidgetTest.SingleLayoutDuringInit
+
+# TODO(crbug.com/1231590): These tests are failing on Fuchsia and need to be
+# investigated.
+-CompositorAnimationRunnerDesktopTest.SwitchCompositor
+-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
+-DesktopWidgetTest.CloseAllSecondaryWidgets
+-DesktopWidgetTestTest.GetAllWidgets
+-LabelTest.FontPropertyArial
+-LabelTest.FontPropertySymbol
+
+# TODO(crbug.com/1233426): These tests require handling fullscreen windows.
+-DesktopAuraWidgetTest.*Fullscreen*
+-DesktopWidgetTest.*Fullscreen*

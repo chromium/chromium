@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_SSL_CONFIG_SERVICE_MOJO_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cert/cert_verifier.h"
@@ -29,6 +30,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
       mojom::SSLConfigPtr initial_config,
       mojo::PendingReceiver<mojom::SSLConfigClient> ssl_config_client_receiver,
       CRLSetDistributor* crl_set_distributor);
+
+  SSLConfigServiceMojo(const SSLConfigServiceMojo&) = delete;
+  SSLConfigServiceMojo& operator=(const SSLConfigServiceMojo&) = delete;
+
   ~SSLConfigServiceMojo() override;
 
   // Sets |cert_verifier| to be configured by certificate-related settings
@@ -54,15 +59,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   net::SSLContextConfig ssl_context_config_;
   net::CertVerifier::Config cert_verifier_config_;
 
-  net::CertVerifier* cert_verifier_;
-  CRLSetDistributor* crl_set_distributor_;
+  raw_ptr<net::CertVerifier> cert_verifier_;
+  raw_ptr<CRLSetDistributor> crl_set_distributor_;
 
   // The list of domains and subdomains from enterprise policy where connection
   // coalescing is allowed when client certs are in use if the hosts being
   // coalesced match this list.
   std::vector<std::string> client_cert_pooling_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLConfigServiceMojo);
 };
 
 }  // namespace network

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package enterprise_connectors;
 
 // For ClientDownloadRequest.
-import "components/safe_browsing/core/proto/csd.proto";
+import "components/safe_browsing/core/common/proto/csd.proto";
 
 // Which connector is calling BinaryUploadService so that the proper rules can
 // be triggered.  BinaryUploadService also uses this value to find the URL that
@@ -22,6 +22,8 @@ enum AnalysisConnector {
   FILE_DOWNLOADED = 1;
   FILE_ATTACHED = 2;
   BULK_DATA_ENTRY = 3;
+  PRINT = 4;
+  FILE_TRANSFER = 5;
 }
 
 message ContentMetaData {
@@ -41,9 +43,57 @@ message ContentMetaData {
   // Optional email address of user.  This field may be empty if the user
   // is not signed in.
   optional string email = 5;
+
+  // MimeType of the field as detected by Chrome.
+  optional string content_type = 6;
+
+  // Source information, e.g., url or path.
+  optional string source = 7;
+
+  // Destination information, e.g., url or path.
+  optional string destination = 8;
+
+  // Name of tab title.
+  optional string tab_title = 9;
 }
 
+message ClientMetadata {
+  // Describes the browser uploading a scan request.
+  message Browser {
+    optional string browser_id = 1;
+    optional string user_agent = 2;
+    optional string chrome_version = 3;
+
+    // This is omitted on scans triggered at the profile level.
+    optional string machine_user = 4;
+  };
+  optional Browser browser = 1;
+
+  // Describes the device uploading a scan request. This is omitted on scans
+  // triggered at the profile level.
+  message Device {
+    optional string dm_token = 1;
+    optional string client_id = 2;
+    optional string os_version = 3;
+    optional string os_platform = 4;
+    optional string name = 5;
+  };
+  optional Device device = 2;
+
+  // Describes the profile uploading a scan request.
+  message Profile {
+    optional string dm_token = 1;
+    optional string gaia_email = 2;
+    optional string profile_path = 3;
+    optional string profile_name = 4;
+    optional string client_id = 5;
+  };
+  optional Profile profile = 3;
+};
+
 // Analysis request sent from chrome to backend.
+// The proto here is the source of truth; the copy in the LCAC Github repo
+// should always be in sync with it (https://github.com/chromium/content_analysis_sdk/blob/main/proto/content_analysis/sdk/analysis.proto)
 message ContentAnalysisRequest {
   // The TokenID for Enterprise-enrolled devices.  This identifies a specific
   // chrome instance.
@@ -53,18 +103,44 @@ message ContentAnalysisRequest {
   // This identifies a specific chrome instance.
   optional string fcm_notification_token = 2;
 
+  // Token used to correlate requests and responses. This is different than the
+  // FCM token in that it is unique for each request.
+  optional string request_token = 5;
+
   // Which enterprise connector fired this request.
   optional AnalysisConnector analysis_connector = 9;
 
   // Information about the data that triggered the content analysis request.
   optional ContentMetaData request_data = 10;
 
-  // Token used to correlate requests and responses. This is different than the
-  // FCM token in that it is unique for each request.
-  optional string request_token = 5;
-
   // The tags configured for the URL that triggered the content analysis.
   repeated string tags = 11;
+
+  // Additional information about the browser, device or profile so events can
+  // be reported with device/user identifiable information.
+  optional ClientMetadata client_metadata = 12;
+
+  oneof content_data {
+    // The text content to analyze in local content analysis request. This field
+    // is mutually exclusive with file_path.
+    string text_content = 13;
+
+    // The full path to the file to analyze in local content analysis request.
+    // The path is expressed in a platform dependent way. This field is mutually
+    // exclusive with text_content.
+    string file_path = 14;
+  }
+
+  // The absolute deadline (timestamp in UTC Epoch time) that Chrome will wait
+  // until a response from the agent is received.
+  optional int64 expires_at = 15;
+
+  // ID for keeping track of analysis requests that belong to the same user
+  // action.
+  optional string user_action_id = 16;
+
+  // Count of analysis requests that belong to the same user action.
+  optional int64 user_action_requests_count = 17;
 
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
@@ -134,4 +210,38 @@ message ContentAnalysisResponse {
 
   // Reserved to make sure there is no overlap with DeepScanningClientResponse.
   reserved 2 to 3;
+}
+
+// An Acknowledgement is sent by the browser following the receipt of a response
+// from the agent.
+message ContentAnalysisAcknowledgement {
+  // Token used to correlate with the corresponding request and response.
+  optional string request_token = 1;
+
+  // The action taken by google Chrome with the content analysis response.
+  enum Status {
+    // The response was handled as specified by the agent.
+    SUCCESS = 1;
+
+    // The response from the agent was not properly formatted.
+    INVALID_RESPONSE = 2;
+
+    // The response from the agent was too late and Google Chrome took the
+    // default action.
+    TOO_LATE = 3;
+  };
+  optional Status status = 2;
+
+  // The final action that chrome took with this request.  This may be different
+  // from the action specified in the response if the response was too late or
+  // if the original request was part of a user action whose overall final
+  // differed from the action of this particular request.
+  enum FinalAction {
+    ACTION_UNSPECIFIED = 0;
+    ALLOW = 1;
+    REPORT_ONLY = 2;
+    WARN = 3;
+    BLOCK = 4;
+  };
+  optional FinalAction final_action = 3;
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/cdm_promise.h"
 #include "media/cdm/json_web_key.h"
@@ -31,6 +30,12 @@ class NewPersistentSessionCdmPromise : public NewSessionCdmPromise {
                                  std::unique_ptr<NewSessionCdmPromise> promise)
       : session_created_cb_(std::move(session_created_cb)),
         promise_(std::move(promise)) {}
+
+  NewPersistentSessionCdmPromise(const NewPersistentSessionCdmPromise&) =
+      delete;
+  NewPersistentSessionCdmPromise& operator=(
+      const NewPersistentSessionCdmPromise&) = delete;
+
   ~NewPersistentSessionCdmPromise() override = default;
 
   // NewSessionCdmPromise implementation.
@@ -50,8 +55,6 @@ class NewPersistentSessionCdmPromise : public NewSessionCdmPromise {
  private:
   SessionCreatedCB session_created_cb_;
   std::unique_ptr<NewSessionCdmPromise> promise_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewPersistentSessionCdmPromise);
 };
 
 // When a session has been loaded, we need to call FinishUpdate() to complete
@@ -64,6 +67,10 @@ class FinishLoadCdmPromise : public SimpleCdmPromise {
   FinishLoadCdmPromise(const std::string& session_id,
                        std::unique_ptr<NewSessionCdmPromise> promise)
       : session_id_(session_id), promise_(std::move(promise)) {}
+
+  FinishLoadCdmPromise(const FinishLoadCdmPromise&) = delete;
+  FinishLoadCdmPromise& operator=(const FinishLoadCdmPromise&) = delete;
+
   ~FinishLoadCdmPromise() override = default;
 
   // CdmSimplePromise implementation.
@@ -83,8 +90,6 @@ class FinishLoadCdmPromise : public SimpleCdmPromise {
  private:
   std::string session_id_;
   std::unique_ptr<NewSessionCdmPromise> promise_;
-
-  DISALLOW_COPY_AND_ASSIGN(FinishLoadCdmPromise);
 };
 
 }  // namespace
@@ -352,9 +357,10 @@ void ClearKeyPersistentSessionCdm::AddPersistentSession(
 }
 
 void ClearKeyPersistentSessionCdm::OnSessionClosed(
-    const std::string& session_id) {
+    const std::string& session_id,
+    CdmSessionClosedReason reason) {
   persistent_sessions_.erase(session_id);
-  session_closed_cb_.Run(session_id);
+  session_closed_cb_.Run(session_id, reason);
 }
 
 void ClearKeyPersistentSessionCdm::OnSessionMessage(

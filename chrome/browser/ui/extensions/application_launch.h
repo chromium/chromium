@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_APPLICATION_LAUNCH_H_
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -31,6 +32,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
                                        apps::AppLaunchParams&& params);
 
 // Open the application in a way specified by |params|.
+// Result may be nullptr if Navigate() fails.
 content::WebContents* OpenApplication(Profile* profile,
                                       apps::AppLaunchParams&& params);
 
@@ -75,7 +77,13 @@ void LaunchAppWithCallback(
     const std::string& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
-    base::OnceCallback<void(Browser* browser,
-                            apps::mojom::LaunchContainer container)> callback);
+    base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
+        callback);
+
+// Shows the browser for |profile| if existent, otherwise attempts to open it.
+// Returns true if browser window already exists or if it was successfully
+// launched.
+bool ShowBrowserForProfile(Profile* profile,
+                           const apps::AppLaunchParams& params);
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_APPLICATION_LAUNCH_H_

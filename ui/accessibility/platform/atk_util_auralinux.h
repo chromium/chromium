@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <atk/atk.h>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
@@ -40,6 +39,9 @@ class AX_EXPORT AtkUtilAuraLinux {
 
   AtkUtilAuraLinux() = default;
 
+  AtkUtilAuraLinux(const AtkUtilAuraLinux&) = delete;
+  AtkUtilAuraLinux& operator=(const AtkUtilAuraLinux&) = delete;
+
   void InitializeAsync();
   void InitializeForTesting();
 
@@ -62,8 +64,6 @@ class AX_EXPORT AtkUtilAuraLinux {
   void PlatformInitializeAsync();
 
   bool at_spi_ready_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AtkUtilAuraLinux);
 };
 
 }  // namespace ui

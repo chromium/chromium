@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,28 @@
 namespace blink {
 namespace scheduler {
 
+using base::sequence_manager::QueueName;
 using base::sequence_manager::TaskQueue;
 
 NonMainThreadSchedulerHelper::NonMainThreadSchedulerHelper(
     base::sequence_manager::SequenceManager* sequence_manager,
-    NonMainThreadSchedulerImpl* non_main_thread_scheduler,
+    NonMainThreadSchedulerBase* non_main_thread_scheduler,
     TaskType default_task_type)
     : SchedulerHelper(sequence_manager),
       non_main_thread_scheduler_(non_main_thread_scheduler),
-      default_task_queue_(NewTaskQueue(TaskQueue::Spec("subthread_default_tq")
-                                           .SetShouldMonitorQuiescence(true))),
-      control_task_queue_(NewTaskQueue(TaskQueue::Spec("subthread_control_tq")
-                                           .SetShouldNotifyObservers(false))) {
-  InitDefaultQueues(default_task_queue_, control_task_queue_,
-                    default_task_type);
+      default_task_queue_(
+          NewTaskQueue(TaskQueue::Spec(QueueName::SUBTHREAD_DEFAULT_TQ)
+                           .SetShouldMonitorQuiescence(true))),
+      input_task_queue_(
+          NewTaskQueue(TaskQueue::Spec(QueueName::SUBTHREAD_INPUT_TQ))),
+      control_task_queue_(
+          NewTaskQueue(TaskQueue::Spec(QueueName::SUBTHREAD_CONTROL_TQ)
+                           .SetShouldNotifyObservers(false))) {
+  control_task_queue_->SetQueuePriority(TaskQueue::kControlPriority);
+  input_task_queue_->SetQueuePriority(TaskQueue::kHighestPriority);
+
+  InitDefaultTaskRunner(
+      default_task_queue_->CreateTaskRunner(default_task_type));
 }
 
 NonMainThreadSchedulerHelper::~NonMainThreadSchedulerHelper() {
@@ -37,8 +45,8 @@ NonMainThreadSchedulerHelper::DefaultNonMainThreadTaskQueue() {
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
-NonMainThreadSchedulerHelper::DefaultTaskRunner() {
-  return default_task_queue_->GetTaskRunnerWithDefaultTaskType();
+NonMainThreadSchedulerHelper::InputTaskRunner() {
+  return input_task_queue_->GetTaskRunnerWithDefaultTaskType();
 }
 
 scoped_refptr<NonMainThreadTaskQueue>
@@ -52,9 +60,10 @@ NonMainThreadSchedulerHelper::ControlTaskRunner() {
 }
 
 scoped_refptr<NonMainThreadTaskQueue>
-NonMainThreadSchedulerHelper::NewTaskQueue(const TaskQueue::Spec& spec) {
+NonMainThreadSchedulerHelper::NewTaskQueue(const TaskQueue::Spec& spec,
+                                           bool can_be_throttled) {
   return sequence_manager_->CreateTaskQueueWithType<NonMainThreadTaskQueue>(
-      spec, non_main_thread_scheduler_);
+      spec, non_main_thread_scheduler_, can_be_throttled);
 }
 
 void NonMainThreadSchedulerHelper::ShutdownAllQueues() {

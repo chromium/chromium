@@ -1,18 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/clients/mojo_media_log_service.h"
-
-#include <memory>
 
 #include "base/logging.h"
 #include "media/base/media_log_record.h"
 
 namespace media {
 
-MojoMediaLogService::MojoMediaLogService(media::MediaLog* media_log)
-    : media_log_(media_log) {
+MojoMediaLogService::MojoMediaLogService(
+    std::unique_ptr<media::MediaLog> media_log)
+    : media_log_(std::move(media_log)) {
   DVLOG(1) << __func__;
   DCHECK(media_log_);
 }
@@ -21,17 +20,12 @@ MojoMediaLogService::~MojoMediaLogService() {
   DVLOG(1) << __func__;
 }
 
-void MojoMediaLogService::AddLogRecord(const media::MediaLogRecord& event) {
+void MojoMediaLogService::AddLogRecord(const MediaLogRecord& event) {
   DVLOG(1) << __func__;
 
   // Make a copy so that we can transfer ownership to |media_log_|.
   std::unique_ptr<media::MediaLogRecord> modified_event =
       std::make_unique<media::MediaLogRecord>(event);
-
-  // |id| is player-unique per-process, but the remote side does not know the
-  // correct value (nor would we necessarily trust it). Overwrite with the
-  // correct value.
-  modified_event->id = media_log_->id();
 
   media_log_->AddLogRecord(std::move(modified_event));
 }

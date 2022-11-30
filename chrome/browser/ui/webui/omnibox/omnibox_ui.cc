@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_page_handler.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
@@ -23,10 +24,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
-#endif
-
 OmniboxUI::OmniboxUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   // Set up the chrome://omnibox/ source.
@@ -35,7 +32,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types cr-autocomplete-match parse-html-subset;");
+      "trusted-types static-types parse-html-subset;");
 
   // Expose version information to client because it is useful in output.
   VersionUI::AddVersionDetailStrings(source);
@@ -44,12 +41,6 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   source->AddResourcePaths(
       base::make_span(kOmniboxResources, kOmniboxResourcesSize));
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
-
-#if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
-    popup_handler_ = std::make_unique<OmniboxPopupHandler>();
-  }
-#endif
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
   web_ui->AddMessageHandler(std::make_unique<VersionHandler>());

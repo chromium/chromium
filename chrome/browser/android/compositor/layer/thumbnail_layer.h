@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "cc/resources/ui_resource_client.h"
@@ -28,6 +27,10 @@ class ThumbnailLayer : public Layer {
  public:
   // Creates a ThumbnailLayer.
   static scoped_refptr<ThumbnailLayer> Create();
+
+  ThumbnailLayer(const ThumbnailLayer&) = delete;
+  ThumbnailLayer& operator=(const ThumbnailLayer&) = delete;
+
   // Sets thumbnail that will be shown. |thumbnail| should not be nullptr.
   void SetThumbnail(Thumbnail* thumbnail);
   // Clip the thumbnail to the given |clipping|.
@@ -54,8 +57,6 @@ class ThumbnailLayer : public Layer {
   gfx::Rect last_clipping_;
   bool clipped_ = false;
   gfx::SizeF resource_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailLayer);
 };
 
 }  // namespace android

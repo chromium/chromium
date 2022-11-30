@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "media/audio/mac/audio_low_latency_input_mac.h"
@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <mach-o/loader.h>
 #include <mach/mach.h>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -227,9 +228,7 @@ AUAudioInputStream::AUAudioInputStream(
       output_device_id_for_aec_(kAudioObjectUnknown),
       last_sample_time_(0.0),
       last_number_of_frames_(0),
-      total_lost_frames_(0),
-      largest_glitch_frames_(0),
-      glitches_detected_(0),
+      glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
       log_callback_(log_callback) {
   DCHECK(manager_);
   CHECK(log_callback_ != AudioManager::LogCallback());
@@ -285,7 +284,7 @@ AUAudioInputStream::~AUAudioInputStream() {
 }
 
 // Obtain and open the AUHAL AudioOutputUnit for recording.
-bool AUAudioInputStream::Open() {
+AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << "Open";
   DCHECK(!audio_unit_);
@@ -295,7 +294,7 @@ bool AUAudioInputStream::Open() {
   if (input_device_id_ == kAudioObjectUnknown) {
     NOTREACHED() << "Device ID is unknown";
     HandleError(kAudioUnitErr_InvalidElement);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   // The requested sample-rate must match the hardware sample-rate.
@@ -310,7 +309,7 @@ bool AUAudioInputStream::Open() {
       use_voice_processing_ ? OpenVoiceProcessingAU() : OpenAUHAL();
 
   if (!success)
-    return false;
+    return OpenOutcome::kFailed;
 
   // The hardware latency is fixed and will not change during the call.
   hardware_latency_ = AudioManagerMac::GetHardwareLatency(
@@ -321,7 +320,7 @@ bool AUAudioInputStream::Open() {
   // And the master channel is not counted in |number_of_channels_in_frame_|.
   number_of_channels_in_frame_ = GetNumberOfChannelsFromStream();
 
-  return true;
+  return OpenOutcome::kSuccess;
 }
 
 bool AUAudioInputStream::OpenAUHAL() {
@@ -686,8 +685,7 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
                                             base::Unretained(this), callback));
     manager_->GetTaskRunner()->PostDelayedTask(
         FROM_HERE, deferred_start_cb_.callback(),
-        base::TimeDelta::FromSeconds(
-            AudioManagerMac::kStartDelayInSecsForPowerEvents));
+        base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents));
     return;
   }
 
@@ -716,10 +714,9 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
   // callbacks starts indicating if input audio recording starts as intended.
   // CheckInputStartupSuccess() will check if |input_callback_is_active_| is
   // true when the timer expires.
-  input_callback_timer_.reset(new base::OneShotTimer());
+  input_callback_timer_ = std::make_unique<base::OneShotTimer>();
   input_callback_timer_->Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kInputCallbackStartTimeoutInSeconds), this,
+      FROM_HERE, base::Seconds(kInputCallbackStartTimeoutInSeconds), this,
       &AUAudioInputStream::CheckInputStartupSuccess);
   DCHECK(input_callback_timer_->IsRunning());
 }
@@ -827,7 +824,7 @@ void AUAudioInputStream::SetVolume(double volume) {
   }
 
   // There is no master volume control, try to set volume for each channel.
-  int successful_channels = 0;
+  [[maybe_unused]] int successful_channels = 0;
   for (int i = 1; i <= number_of_channels_in_frame_; ++i) {
     property_address.mElement = static_cast<UInt32>(i);
     if (IsVolumeSettableOnChannel(i)) {
@@ -1122,7 +1119,7 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
       base::TimeDelta time_since_last_success =
           base::TimeTicks::Now() - last_success_time_;
       if ((time_since_last_success >
-           base::TimeDelta::FromSeconds(kMaxErrorTimeoutInSeconds))) {
+           base::Seconds(kMaxErrorTimeoutInSeconds))) {
         const char* err = (result == kAudioUnitErr_TooManyFramesToProcess)
                               ? "kAudioUnitErr_TooManyFramesToProcess"
                               : "kAudioUnitErr_CannotDoInCurrentContext";
@@ -1392,18 +1389,13 @@ void AUAudioInputStream::UpdateCaptureTimestamp(
 
   if (last_sample_time_) {
     DCHECK_NE(0U, last_number_of_frames_);
-    UInt32 diff =
+    UInt32 sample_time_diff =
         static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
-    if (diff != last_number_of_frames_) {
-      DCHECK_GT(diff, last_number_of_frames_);
-      // We were given samples post what we expected. Update the glitch count
-      // etc. and keep a record of the largest glitch.
-      auto lost_frames = diff - last_number_of_frames_;
-      total_lost_frames_ += lost_frames;
-      if (lost_frames > largest_glitch_frames_)
-        largest_glitch_frames_ = lost_frames;
-      ++glitches_detected_;
-    }
+    DCHECK_GE(sample_time_diff, last_number_of_frames_);
+    UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
+    base::TimeDelta lost_audio_duration = AudioTimestampHelper::FramesToTime(
+        lost_frames, input_params_.sample_rate());
+    glitch_reporter_.UpdateStats(lost_audio_duration);
   }
 
   // Store the last sample time for use next time we get called back.
@@ -1417,35 +1409,24 @@ void AUAudioInputStream::ReportAndResetStats() {
   // A value of 0 indicates that we got the buffer size we asked for.
   UMA_HISTOGRAM_COUNTS_10000("Media.Audio.Capture.FramesProvided",
                              number_of_frames_provided_);
-  // Even if there aren't any glitches, we want to record it to get a feel for
-  // how often we get no glitches vs the alternative.
-  UMA_HISTOGRAM_COUNTS_1M("Media.Audio.Capture.Glitches", glitches_detected_);
 
-  auto lost_frames_ms = (total_lost_frames_ * 1000) / format_.mSampleRate;
+  SystemGlitchReporter::Stats stats =
+      glitch_reporter_.GetLongTermStatsAndReset();
+
   std::string log_message = base::StringPrintf(
-      "AU in: Total glitches=%d. Total frames lost=%d (%.0lf ms).",
-      glitches_detected_, total_lost_frames_, lost_frames_ms);
-  log_callback_.Run(log_message);
+      "AU in: (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
+      "largest_glitch=[%llu ms])",
+      stats.glitches_detected, stats.total_glitch_duration.InMilliseconds(),
+      stats.largest_glitch_duration.InMilliseconds());
 
-  if (glitches_detected_ != 0) {
-    UMA_HISTOGRAM_LONG_TIMES("Media.Audio.Capture.LostFramesInMs",
-                             base::TimeDelta::FromMilliseconds(lost_frames_ms));
-    auto largest_glitch_ms =
-        (largest_glitch_frames_ * 1000) / format_.mSampleRate;
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Media.Audio.Capture.LargestGlitchMs",
-        base::TimeDelta::FromMilliseconds(largest_glitch_ms),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(1),
-        50);
+  log_callback_.Run(log_message);
+  if (stats.glitches_detected != 0) {
     DLOG(WARNING) << log_message;
   }
 
   number_of_frames_provided_ = 0;
-  glitches_detected_ = 0;
   last_sample_time_ = 0;
   last_number_of_frames_ = 0;
-  total_lost_frames_ = 0;
-  largest_glitch_frames_ = 0;
 }
 
 // TODO(ossu): Ideally, we'd just use the mono stream directly. However, since

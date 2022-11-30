@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
     'use strict';
     TestRunner.addResult(`Tests that serviceworker timings are displayed correctly.\n`);
-    await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+    await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     await TestRunner.loadTestModule('network_test_runner');
     await TestRunner.showPanel('network');
 
@@ -56,11 +56,12 @@
       url: 'http://example.com/inspector-test.js',
       lineNumber: 117
     };
-    var testRequest = new SDK.NetworkRequest(
-        'testRequest', 'http://example.com/inspector-test.js', 'http://example.com/fake-document-url', 1, 1, fakeInitiator);
+    var testRequest = SDK.NetworkRequest.create(
+        'testRequest', 'http://example.com/inspector-test.js',
+        'http://example.com/fake-document-url', 1, 1, fakeInitiator);
     setRequestValues(testRequest);
 
-    const calculator = UI.panels.network._calculator;
+    const calculator = UI.panels.network.calculator;
     const tableElement = Network.RequestTimingView.createTimingTable(testRequest, calculator);
 
     for (const element of tableElement.getElementsByTagName('td')) {

@@ -1,5 +1,5 @@
 'use strict';
-// Copyright (C) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ class DateTimeLocalPicker extends HTMLElement {
 
   onClick_ = (event) => {
     if (event.target.matches(
-            '.day-cell, .time-cell, .today-button-refresh, .calendar-navigation-button, .year-list-view, .calendar-navigation-button, .navigation-button-icon-refresh, .month-button') &&
+            '.day-cell, .time-cell, .today-button, .calendar-navigation-button, .year-list-view, .calendar-navigation-button, .navigation-button-icon, .month-button') &&
         this.hasSelectedDate) {
       window.pagePopupController.setValue(this.selectedValue);
     }

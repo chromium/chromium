@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="../demo.css">
+<style>
+  cr-input {
+    --cr-input-error-display: none;
+  }
+</style>
+
+<h1>cr-toast</h1>
+<div class="demos">
+  <cr-input type="text" label="Toast message" value="{{message_}}"></cr-input>
+  <cr-checkbox checked="{{showDismissButton_}}">
+    Show dismiss button
+  </cr-checkbox>
+  <cr-input type="number" label="Duration (ms)" value="{{duration_}}">
+  </cr-input>
+
+  <cr-button on-click="onShowToastClick_">Show toast</cr-button>
+</div>
+
+<h1>cr-toast-manager</h1>
+<div class="demos">
+  <div>
+    One single toast manager per top-level app that allows for more dynamic
+    toast messages that can be truncated if strings are too long.
+  </div>
+
+  <cr-button on-click="onShowToastManagerClick_">
+    Show toast from toast manager
+  </cr-button>
+</div>
+
+<cr-toast id="toast" duration="[[duration_]]">
+  <div>[[message_]]</div>
+  <cr-button hidden$="[[!showDismissButton_]]" on-click="onHideToastClick_">
+    Dismiss
+  </cr-button>
+</cr-toast>

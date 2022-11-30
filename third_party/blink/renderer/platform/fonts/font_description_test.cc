@@ -25,14 +25,15 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
-#include "base/stl_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-TEST(FontDescriptionTest, TestHashCollision) {
+class FontDescriptionTest : public FontTestBase {};
+
+TEST_F(FontDescriptionTest, TestHashCollision) {
   FontSelectionValue weights[] = {
       FontSelectionValue(100), FontSelectionValue(200),
       FontSelectionValue(300), FontSelectionValue(400),
@@ -50,11 +51,11 @@ TEST(FontDescriptionTest, TestHashCollision) {
 
   FontDescription source;
   WTF::Vector<unsigned> hashes;
-  for (size_t i = 0; i < base::size(weights); i++) {
+  for (size_t i = 0; i < std::size(weights); i++) {
     source.SetWeight(weights[i]);
-    for (size_t j = 0; j < base::size(stretches); j++) {
+    for (size_t j = 0; j < std::size(stretches); j++) {
       source.SetStretch(stretches[j]);
-      for (size_t k = 0; k < base::size(slopes); k++) {
+      for (size_t k = 0; k < std::size(slopes); k++) {
         source.SetStyle(slopes[k]);
         unsigned hash = source.StyleHashWithoutFamilyList();
         ASSERT_FALSE(hashes.Contains(hash));
@@ -64,7 +65,7 @@ TEST(FontDescriptionTest, TestHashCollision) {
   }
 }
 
-TEST(FontDescriptionTest, VariationSettingsIdentical) {
+TEST_F(FontDescriptionTest, VariationSettingsIdentical) {
   FontDescription a;
   FontDescription b(a);
 
@@ -90,7 +91,7 @@ TEST(FontDescriptionTest, VariationSettingsIdentical) {
   ASSERT_EQ(cache_key_a, cache_key_b);
 }
 
-TEST(FontDescriptionTest, VariationSettingsDifferent) {
+TEST_F(FontDescriptionTest, VariationSettingsDifferent) {
   FontDescription a;
   FontDescription b(a);
 
@@ -136,13 +137,38 @@ TEST(FontDescriptionTest, VariationSettingsDifferent) {
   ASSERT_NE(second_cache_key_a, second_cache_key_b);
 }
 
-TEST(FontDescriptionTest, ToString) {
+TEST_F(FontDescriptionTest, PaletteDifferent) {
+  FontDescription a;
+  FontDescription b(a);
+
+  scoped_refptr<FontPalette> palette_a =
+      FontPalette::Create(FontPalette::kLightPalette);
+
+  scoped_refptr<FontPalette> palette_b =
+      FontPalette::Create(FontPalette::kDarkPalette);
+
+  ASSERT_NE(*palette_a, *palette_b);
+
+  a.SetFontPalette(palette_a);
+  b.SetFontPalette(palette_b);
+
+  ASSERT_NE(a, b);
+
+  FontFaceCreationParams test_creation_params;
+
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
+
+  ASSERT_NE(cache_key_a, cache_key_b);
+}
+
+TEST_F(FontDescriptionTest, ToString) {
   FontDescription description;
 
   FontFamily family;
-  family.SetFamily("A");
+  family.SetFamily("A", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B");
+  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   description.SetFamily(family);
 
@@ -173,7 +199,7 @@ TEST(FontDescriptionTest, ToString) {
   description.SetTextRendering(kOptimizeLegibility);
 
   EXPECT_EQ(
-      "family_list=[A,B], feature_settings=[cccc=76,dddd=94], "
+      "family_list=[A, B], feature_settings=[cccc=76,dddd=94], "
       "variation_settings=[aaaa=42,bbbb=8118], locale=no, "
       "specified_size=1.100000, "
       "computed_size=2.200000, adjusted_size=3.300000, size_adjust=4.400000, "
@@ -190,12 +216,13 @@ TEST(FontDescriptionTest, ToString) {
       "variant_numeric=[numeric_figure=NormalFigure, "
       "numeric_spacing=NormalSpacing, numeric_fraction=Normal, ordinal=Off, "
       "slashed_zero=Off], variant_east_asian=[form=Normal, width=Normal, "
-      "ruby=false], font_optical_sizing=Auto",
+      "ruby=false], font_optical_sizing=Auto, font_synthesis_weight=Auto, "
+      "font_synthesis_style=Auto",
       description.ToString());
 }
 
 // Verifies the correctness of the default hash trait of FontDescription.
-TEST(FontDescriptionTest, DefaultHashTrait) {
+TEST_F(FontDescriptionTest, DefaultHashTrait) {
   HashMap<FontDescription, int> map;
 
   FontDescription description1;
@@ -204,9 +231,9 @@ TEST(FontDescriptionTest, DefaultHashTrait) {
   description1.SetWeight(FontSelectionValue(100));
 
   FontFamily family;
-  family.SetFamily("A");
+  family.SetFamily("A", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B");
+  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   FontDescription description3;
   description3.SetFamily(family);
@@ -251,7 +278,7 @@ TEST(FontDescriptionTest, DefaultHashTrait) {
 }
 
 // https://crbug.com/1081017
-TEST(FontDescriptionTest, NegativeZeroEmFontSize) {
+TEST_F(FontDescriptionTest, NegativeZeroEmFontSize) {
   // 'font-size: -0.0em' sets the following
   FontDescription description1;
   description1.SetSpecifiedSize(-0.0);

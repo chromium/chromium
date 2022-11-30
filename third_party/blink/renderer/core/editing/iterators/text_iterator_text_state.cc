@@ -75,7 +75,7 @@ UChar TextIteratorTextState::CharacterAt(unsigned index) const {
 
 String TextIteratorTextState::GetTextForTesting() const {
   if (single_character_buffer_)
-    return String(&single_character_buffer_, 1);
+    return String(&single_character_buffer_, 1u);
   return text_.Substring(text_start_offset_, length());
 }
 
@@ -109,8 +109,8 @@ void TextIteratorTextState::ResetPositionContainerNode(
   position_node_type_ = node_type;
   position_container_node_ = nullptr;
   position_node_ = &node;
-  position_start_offset_ = base::nullopt;
-  position_end_offset_ = base::nullopt;
+  position_start_offset_ = absl::nullopt;
+  position_end_offset_ = absl::nullopt;
 }
 
 void TextIteratorTextState::UpdatePositionOffsets(
@@ -227,7 +227,7 @@ void TextIteratorTextState::EmitText(const Text& text_node,
           ? RepeatString("x", string.length())
           : string;
 
-  DCHECK(!text.IsEmpty());
+  DCHECK(!text.empty());
   DCHECK_LT(text_start_offset, text.length());
   DCHECK_LE(text_end_offset, text.length());
   DCHECK_LE(text_start_offset, text_end_offset);

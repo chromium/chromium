@@ -22,8 +22,13 @@
     }
 
     body {
-      background: var(--md-background-color);
       cursor: default;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        background: var(--md-background-color);
+      }
     }
 
     /* Minimal styling required to display app shim. TODO(dbeam): do we really

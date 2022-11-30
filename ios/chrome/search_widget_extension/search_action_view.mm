@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #import <NotificationCenter/NotificationCenter.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/search_widget_extension/search_widget_constants.h"
 
@@ -35,21 +35,13 @@ const CGFloat kIconSize = 35;
     UIVibrancyEffect* primaryEffect = nil;
     UIVibrancyEffect* secondaryEffect = nil;
     UIVibrancyEffect* iconBackgroundEffect = nil;
-    if (@available(iOS 13, *)) {
-      primaryEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
-      secondaryEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
-      iconBackgroundEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
-    }
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-    else {
-      primaryEffect = [UIVibrancyEffect widgetPrimaryVibrancyEffect];
-      secondaryEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-      iconBackgroundEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-    }
-#endif
+    primaryEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
+    secondaryEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+    iconBackgroundEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
+
     DCHECK(primaryEffect);
     DCHECK(secondaryEffect);
     DCHECK(iconBackgroundEffect);
@@ -69,11 +61,7 @@ const CGFloat kIconSize = 35;
 
     UIView* circleView = [[UIView alloc] initWithFrame:CGRectZero];
     circleView.translatesAutoresizingMaskIntoConstraints = NO;
-    if (@available(iOS 13, *)) {
-      circleView.backgroundColor = UIColor.whiteColor;
-    } else {
-      circleView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
-    }
+    circleView.backgroundColor = UIColor.whiteColor;
     circleView.layer.cornerRadius = kActionButtonSize / 2;
     [iconBackgroundEffectView.contentView addSubview:circleView];
     AddSameConstraints(iconBackgroundEffectView.contentView, circleView);

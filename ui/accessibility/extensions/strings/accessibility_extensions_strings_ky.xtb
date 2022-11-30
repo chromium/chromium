@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Бардык сүрөт анимацияларын өчүрүү.</translation>
 <translation id="1703735871906654364">Caret серептөөсү</translation>
 <translation id="1791496371305830581">Бардык анимацияланган сүрөттөргө уруксат.</translation>
+<translation id="1974060860693918893">Өркүндөтүлгөн</translation>
 <translation id="1996252509865389616">Иштетилсинби?</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2179565792157161713">Кеңири сүрөттөмөнү жаңы өтмөктөн ачуу</translation>
@@ -33,7 +34,7 @@
 <translation id="4937901943818762779">Анимацияланган сүрөттөргө уруксат берилсин, бирок бир гана жолу.</translation>
 <translation id="4949131196216960195">Caret серептөөсүн күйгүзүү үчүн &lt;span class='key'&gt;Издөө&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (Жарык деңгээлин жогорулатуу баскычы же F7) басыңыз. Өчүрүү үчүн аны кайра басыңыз.</translation>
 <translation id="4954450790315188152">Caret серептөөсү иштетилгенде:</translation>
-<translation id="5041932793799765940">Түсүн тууралоо</translation>
+<translation id="5041932793799765940">Түстөрдү тууралоо</translation>
 <translation id="5094574508723441140">Күчөтүлгөн контраст</translation>
 <translation id="5173942593318174089">Курсордун позициясын анимация менен бөлүп көрсөтүү.</translation>
 <translation id="5287723860611749454">&lt;p&gt;Документ боюнча жылдыруу үчүн жебе баскычтарын колдонуңуз. &lt;/p&gt;&lt;p&gt;Курсорду каалаган жериңизге жылдыруу үчүн каалаган жерди чыкылдатыңыз. &lt;/p&gt; &lt;p&gt;   Текстти тандоо үчүн &lt;span class='key'&gt;Shift&lt;/span&gt; + жебелерин басыңыз.&lt;/p&gt;</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Түсүн жакшырткыч</translation>
 <translation id="633394792577263429">Сөз боюнча жылдыруу үчүн &lt;span class='key'&gt;Control&lt;/span&gt; баскычын кармап туруңуз.</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
+<translation id="6699630355767768222">3-кадам: Түзөтүү үчүн түс огун өзгөртүңүз.</translation>
 <translation id="6838518108677880446">Орнотуу:</translation>
 <translation id="690628312087070417">Каре чоң аралыкка секиргенде:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Анимация саясаты</translation>
 <translation id="8480209185614411573">Жогорку контраст</translation>
 <translation id="8609925175482059018">Caret серептөөсүн күйгүзүү үчүн &lt;span class='key'&gt;F7&lt;/span&gt; басыңыз. Өчүрүү үчүн аны кайра басыңыз.</translation>
+<translation id="8798099450830957504">Демейки</translation>
 <translation id="894241283505723656">Контексттик менюдагы кеңири сүрөттөмөлөр</translation>
 </translationbundle>

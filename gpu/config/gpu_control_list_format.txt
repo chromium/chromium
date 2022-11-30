@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,7 @@
 //     "baytrail", "ivybridge", "haswell", "cherrytrail", "broadwell",
 //     "apollolake", "skylake", "geminilake", "kabylake", "coffeelake",
 //     "whiskeylake", "cometlake", "cannonlake", "icelake", "elkhartlake",
-//     "jasperlake", "tigerlake".
+//     "jasperlake", "tigerlake", "alderlake".
 // 30. "hardware_overlay" is either "supported" or "unsupported". Currently it
 //     only applies on Windows where hardware overlays may be supported on
 //     certain Intel GPUs. By default it's "dont_care" and there is no need to
@@ -107,6 +107,11 @@
 // Only "driver_version" supports lexical style if the format is major.minor;
 // in that case, major is still numerical, but minor is lexical.
 // Only "driver_version" supports "(intel|nvidia)_driver" schema.
+//
+// intel_driver schema versions have the form like "AA.BB.(CC|CCC).DDDD". The
+// last two fields are most relevant, and the first two will be ignored by
+// setting them to 0. Thus "0.0.(CC|CCC).DDDD" will be used in comparison
+// following the general rule.
 //
 // FLOAT includes "op" "value", and "value2".  "op" can be any of the
 // following values: "=", "<", "<=", ">", ">=", "any", "between".  "value2" is

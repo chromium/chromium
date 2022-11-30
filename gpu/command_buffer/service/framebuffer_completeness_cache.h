@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
@@ -20,6 +19,11 @@ namespace gles2 {
 class GPU_GLES2_EXPORT FramebufferCompletenessCache {
  public:
   FramebufferCompletenessCache();
+
+  FramebufferCompletenessCache(const FramebufferCompletenessCache&) = delete;
+  FramebufferCompletenessCache& operator=(const FramebufferCompletenessCache&) =
+      delete;
+
   ~FramebufferCompletenessCache();
 
   bool IsComplete(const std::string& signature) const;
@@ -29,8 +33,6 @@ class GPU_GLES2_EXPORT FramebufferCompletenessCache {
   typedef std::unordered_set<std::string> Map;
 
   Map cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FramebufferCompletenessCache);
 };
 
 }  // namespace gles2

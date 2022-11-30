@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -338,17 +338,5 @@ public class ModelListAdapterTest {
         mBindFloatCallbackHelper.waitForCallback(0);
         mBindIntCallbackHelper.waitForCallback(0);
         mBindObjectCallbackHelper.waitForCallback(0);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testBindNewModel_RewriteReadOnlyProperty() {
-        PropertyModel oldModel = new PropertyModel.Builder(READONLY_BOOLEAN_PROPERTY)
-                                         .with(READONLY_BOOLEAN_PROPERTY, false)
-                                         .build();
-        PropertyModel newModel = new PropertyModel.Builder(READONLY_BOOLEAN_PROPERTY)
-                                         .with(READONLY_BOOLEAN_PROPERTY, true)
-                                         .build();
-        ModelListAdapter.bindNewModel(
-                newModel, oldModel, new View(RuntimeEnvironment.application), new TestViewBinder());
     }
 }

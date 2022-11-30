@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,16 @@ function WrapFunction(fn) {
 
 async function RegisterServiceWorker() {
   await navigator.serviceWorker.register('sw.js', { scope: 'content_index' });
+}
+
+async function AddContentForFrame(id) {
+  const iframe = document.getElementById('iframe-id');
+  await iframe.contentWindow.AddContent(id);
+}
+
+async function GetIdsForFrame() {
+  const iframe = document.getElementById('iframe-id');
+  return await iframe.contentWindow.GetIds();
 }
 
 async function AddContent(id) {

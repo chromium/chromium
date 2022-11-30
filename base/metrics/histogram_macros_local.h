@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,9 +59,9 @@
 //
 // For usage details, see the equivalents in histogram_macros.h.
 
-#define LOCAL_HISTOGRAM_TIMES(name, sample) LOCAL_HISTOGRAM_CUSTOM_TIMES(      \
-    name, sample, base::TimeDelta::FromMilliseconds(1),                        \
-    base::TimeDelta::FromSeconds(10), 50)
+#define LOCAL_HISTOGRAM_TIMES(name, sample)                         \
+  LOCAL_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                               base::Seconds(10), 50)
 
 #define LOCAL_HISTOGRAM_CUSTOM_TIMES(name, sample, min, max, bucket_count) \
   STATIC_HISTOGRAM_POINTER_BLOCK(                                          \

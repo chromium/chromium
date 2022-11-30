@@ -1,20 +1,18 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_FOCUSABLE_BORDER_H_
 #define UI_VIEWS_CONTROLS_FOCUSABLE_BORDER_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "ui/native_theme/native_theme.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 
 namespace gfx {
 class Canvas;
-class Insets;
 }  // namespace gfx
 
 namespace views {
@@ -25,15 +23,18 @@ class VIEWS_EXPORT FocusableBorder : public Border {
   static constexpr float kCornerRadiusDp = 2.f;
 
   FocusableBorder();
+
+  FocusableBorder(const FocusableBorder&) = delete;
+  FocusableBorder& operator=(const FocusableBorder&) = delete;
+
   ~FocusableBorder() override;
 
   // Sets the insets of the border.
-  void SetInsets(int top, int left, int bottom, int right);
-  void SetInsets(int vertical, int horizontal);
+  void SetInsets(const gfx::Insets& insets);
 
   // Sets the color id to use for this border. When unsupplied, the color will
   // depend on the focus state.
-  void SetColorId(const base::Optional<ui::NativeTheme::ColorId>& color_id);
+  void SetColorId(const absl::optional<ui::ColorId>& color_id);
 
   // Overridden from Border:
   void Paint(const View& view, gfx::Canvas* canvas) override;
@@ -46,9 +47,7 @@ class VIEWS_EXPORT FocusableBorder : public Border {
  private:
   gfx::Insets insets_;
 
-  base::Optional<ui::NativeTheme::ColorId> override_color_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusableBorder);
+  absl::optional<ui::ColorId> override_color_id_;
 };
 
 }  // namespace views

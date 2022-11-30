@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@
 
 // This class encapsulates the logic needed to map a request URL to a response.
 // The mapping -- between URL to response -- is maintained internally, use
-// |CanHandleRequest| to check if a request can be handled and use
-// |GetResponseHeadersAndBody| to actually handle the request.
+// `CanHandleRequest` to check if a request can be handled and use
+// `GetResponseHeadersAndBody` to actually handle the request.
 class HtmlResponseProviderImpl {
  public:
   // Encapsulates the body and headers that make up a response.
@@ -36,26 +36,26 @@ class HtmlResponseProviderImpl {
   // request.
   HtmlResponseProviderImpl();
   // Constructs an HtmlResponseProviderImpl that generates a simple string
-  // response to a URL based on the mapping present in |responses|.
+  // response to a URL based on the mapping present in `responses`.
   explicit HtmlResponseProviderImpl(
       const std::map<GURL, std::string>& responses);
   // Constructs an HtmlResponseProvider that generates a simple string response
   // to a URL with set cookie in the headers based on the mapping present in
-  // |responses|.
+  // `responses`.
   explicit HtmlResponseProviderImpl(
       const std::map<GURL, std::pair<std::string, std::string>>& responses);
   // Constructs an HtmlResponseProviderImpl that generates a response to a URL
-  // based on the mapping present in |responses|.
+  // based on the mapping present in `responses`.
   explicit HtmlResponseProviderImpl(const std::map<GURL, Response>& responses);
 
   virtual ~HtmlResponseProviderImpl();
 
-  // Creates a response based on a redirect to |destination_url|.
+  // Creates a response based on a redirect to `destination_url`.
   static HtmlResponseProviderImpl::Response GetRedirectResponse(
       const GURL& destination_url,
       const net::HttpStatusCode& http_status);
 
-  // Creates a response with |net::HTTP_OK|.
+  // Creates a response with `net::HTTP_OK`.
   static HtmlResponseProviderImpl::Response GetSimpleResponse(
       const std::string& body);
 

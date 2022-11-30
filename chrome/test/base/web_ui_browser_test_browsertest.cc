@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "content/public/browser/web_ui.h"
@@ -29,7 +31,7 @@ const GURL& DummyUrl() {
 }  // namespace
 
 // According to the interface for EXPECT_FATAL_FAILURE
-// (https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#catching-failures)
+// (https://github.com/google/googletest/blob/main/docs/advanced.md#catching-failures)
 // the statement must be statically available. Therefore, we make a static
 // global s_test_ which should point to |this| for the duration of the test run
 // and be cleared afterward.
@@ -43,7 +45,7 @@ class WebUIBrowserExpectFailTest : public WebUIBrowserTest {
  protected:
   ~WebUIBrowserExpectFailTest() override {
     EXPECT_TRUE(s_test_);
-    s_test_ = NULL;
+    s_test_ = nullptr;
   }
 
   static void RunJavascriptTestNoReturn(const std::string& testname) {
@@ -60,33 +62,34 @@ class WebUIBrowserExpectFailTest : public WebUIBrowserTest {
   static WebUIBrowserTest* s_test_;
 };
 
-WebUIBrowserTest* WebUIBrowserExpectFailTest::s_test_ = NULL;
+WebUIBrowserTest* WebUIBrowserExpectFailTest::s_test_ = nullptr;
 
 // Test that bogus javascript fails fast - no timeout waiting for result.
 // TODO(crbug/974796): Flaky on Win7 debug builds.
-#if (defined(OS_WIN) && !(defined(NDEBUG)))
+#if (BUILDFLAG(IS_WIN) && !(defined(NDEBUG)))
 #define MAYBE_TestFailsFast DISABLED_TestFailsFast
 #else
 #define MAYBE_TestFailsFast TestFailsFast
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("sample_downloads.js")));
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIDownloadsURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIDownloadsURL)));
   EXPECT_FATAL_FAILURE(RunJavascriptTestNoReturn("DISABLED_BogusFunctionName"),
-                       "GetAsBoolean(&run_test_succeeded_)");
+                       "result.is_bool()");
 }
 
 // Test that bogus javascript fails fast - no timeout waiting for result.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("runtime_error.js")));
-  ui_test_utils::NavigateToURL(browser(), DummyUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), DummyUrl()));
   EXPECT_FATAL_FAILURE(RunJavascriptTestNoReturn("TestRuntimeErrorFailsFast"),
-                       "GetAsBoolean(&run_test_succeeded_)");
+                       "result.is_bool()");
 }
 
 // Test times out in debug builds: https://crbug.com/902310
 // Test also times out in Win7 Tests: https://crbug.com/1039406
-#if defined(OS_WIN) || !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) || !defined(NDEBUG)
 #define MAYBE_TestFailsAsyncFast DISABLED_TestFailsAsyncFast
 #else
 #define MAYBE_TestFailsAsyncFast TestFailsAsyncFast
@@ -96,10 +99,11 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
 // for result.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsAsyncFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("sample_downloads.js")));
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIDownloadsURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIDownloadsURL)));
   EXPECT_FATAL_FAILURE(
       RunJavascriptAsyncTestNoReturn("DISABLED_BogusFunctionName"),
-      "GetAsBoolean(&run_test_succeeded_)");
+      "result.is_bool()");
 }
 
 // Tests that the async framework works.
@@ -133,9 +137,9 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
     AsyncWebUIMessageHandler& operator=(const AsyncWebUIMessageHandler&) =
         delete;
 
-    MOCK_METHOD1(HandleTestContinues, void(const base::ListValue*));
-    MOCK_METHOD1(HandleTestFails, void(const base::ListValue*));
-    MOCK_METHOD1(HandleTestPasses, void(const base::ListValue*));
+    MOCK_METHOD1(HandleTestContinues, void(const base::Value::List&));
+    MOCK_METHOD1(HandleTestFails, void(const base::Value::List&));
+    MOCK_METHOD1(HandleTestPasses, void(const base::Value::List&));
 
    private:
     void RegisterMessages() override {
@@ -158,10 +162,9 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
     }
 
     // Starts the test in |list_value|[0] with the runAsync wrapper.
-    void HandleStartAsyncTest(const base::ListValue* list_value) {
-      const base::Value* test_name;
-      ASSERT_TRUE(list_value->Get(0, &test_name));
-      web_ui()->CallJavascriptFunctionUnsafe("runAsync", *test_name);
+    void HandleStartAsyncTest(const base::Value::List& list_value) {
+      const base::Value& test_name = list_value[0];
+      web_ui()->CallJavascriptFunctionUnsafe("runAsync", test_name);
     }
   };
 
@@ -178,7 +181,7 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
     AddLibrary(base::FilePath(FILE_PATH_LITERAL("async.js")));
-    ui_test_utils::NavigateToURL(browser(), DummyUrl());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), DummyUrl()));
   }
 };
 
@@ -194,15 +197,6 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncFailsAssert) {
   EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
   ASSERT_FALSE(
       RunJavascriptAsyncTest("startAsyncTest", base::Value("testFailsAssert")));
-}
-
-// Test that expectations continue the function, but fail the test.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncFailsExpect) {
-  ::testing::InSequence s;
-  EXPECT_CALL(message_handler_, HandleTestContinues(::testing::_));
-  EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
-  ASSERT_FALSE(
-      RunJavascriptAsyncTest("startAsyncTest", base::Value("testFailsExpect")));
 }
 
 // Test that test continues and passes. (Sync version).
@@ -249,18 +243,6 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncPassThenFail) {
       RunJavascriptAsyncTest("startAsyncTest", base::Value("testPasses")));
 }
 
-// Test that testDone() with failure first then sync pass still fails.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncDoneFailFirstSyncPass) {
-  ::testing::InSequence s;
-  EXPECT_CALL(message_handler_, HandleTestContinues(::testing::_));
-  EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
-
-  // Call runAsync directly instead of deferring through startAsyncTest. It will
-  // call testDone() on failure, then return.
-  ASSERT_FALSE(RunJavascriptAsyncTest(
-      "runAsync", base::Value("testAsyncDoneFailFirstSyncPass")));
-}
-
 // Test that calling testDone during RunJavascriptAsyncTest still completes
 // when waiting for async result. This is similar to the previous test, but call
 // testDone directly and expect pass result.
@@ -272,4 +254,39 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestTestDoneEarlyPassesAsync) {
 // waiting for async result.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestTestDoneEarlyPasses) {
   ASSERT_TRUE(RunJavascriptTest("testDone"));
+}
+
+class WebUICoverageTest : public WebUIBrowserTest {
+ protected:
+  base::ScopedTempDir tmp_dir_;
+
+ private:
+  void SetUpOnMainThread() override {
+    WebUIBrowserTest::SetUpOnMainThread();
+    AddLibrary(base::FilePath(FILE_PATH_LITERAL("async.js")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), DummyUrl()));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CHECK(tmp_dir_.CreateUniqueTempDir());
+    command_line->AppendSwitchPath(switches::kDevtoolsCodeCoverage,
+                                   tmp_dir_.GetPath());
+    WebUIBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUICoverageTest, TestCoverageEmits) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::IsDirectoryEmpty(tmp_dir_.GetPath()));
+  ASSERT_TRUE(RunJavascriptTest("testDone"));
+
+  CollectCoverage("foo");
+  ASSERT_FALSE(base::IsDirectoryEmpty(tmp_dir_.GetPath()));
+
+  // Scripts and tests are special directories under the WebUI specific
+  // directory, ensure they have been created and are not empty.
+  base::FilePath coverage_dir =
+      tmp_dir_.GetPath().AppendASCII("webui_javascript_code_coverage");
+  ASSERT_FALSE(base::IsDirectoryEmpty(coverage_dir.AppendASCII("scripts")));
+  ASSERT_FALSE(base::IsDirectoryEmpty(coverage_dir.AppendASCII("tests")));
 }

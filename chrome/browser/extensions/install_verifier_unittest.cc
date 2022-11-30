@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/install_verifier.h"
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -26,6 +25,10 @@ namespace extensions {
 class InstallVerifierTest : public ExtensionServiceTestBase {
  public:
   InstallVerifierTest() = default;
+
+  InstallVerifierTest(const InstallVerifierTest&) = delete;
+  InstallVerifierTest& operator=(const InstallVerifierTest&) = delete;
+
   ~InstallVerifierTest() override = default;
 
   void SetUp() override {
@@ -50,8 +53,6 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
       ScopedInstallVerifierBypassForTest::kForceOn};
   std::unique_ptr<ExtensionManagement> extension_management_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallVerifierTest);
 };
 
 // Test the behavior of the InstallVerifier for various extensions.
@@ -71,7 +72,7 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
   struct {
     const char* test_name;
     ManifestLocation location;
-    base::Optional<GURL> update_url;
+    absl::optional<GURL> update_url;
     FromStoreStatus expected_from_store_status;
     MustRemainDisabledStatus expected_must_remain_disabled_status;
   } test_cases[] = {
@@ -79,13 +80,13 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
        FROM_STORE, CAN_BE_ENABLED},
       {"internal non-store update url", ManifestLocation::kInternal,
        non_store_update_url, NOT_FROM_STORE, MUST_REMAIN_DISABLED},
-      {"internal no update url", ManifestLocation::kInternal, base::nullopt,
+      {"internal no update url", ManifestLocation::kInternal, absl::nullopt,
        NOT_FROM_STORE, MUST_REMAIN_DISABLED},
       {"unpacked from store", ManifestLocation::kUnpacked, store_update_url,
        FROM_STORE, CAN_BE_ENABLED},
       {"unpacked non-store update url", ManifestLocation::kUnpacked,
        non_store_update_url, NOT_FROM_STORE, CAN_BE_ENABLED},
-      {"unpacked no update url", ManifestLocation::kUnpacked, base::nullopt,
+      {"unpacked no update url", ManifestLocation::kUnpacked, absl::nullopt,
        NOT_FROM_STORE, CAN_BE_ENABLED},
       {"external from store", ManifestLocation::kExternalPolicyDownload,
        store_update_url, FROM_STORE, CAN_BE_ENABLED},

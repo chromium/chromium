@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,13 +20,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/stl_util.h"
+#include "base/metrics/ranges_manager.h"
 #include "base/strings/string_piece.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -38,7 +37,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace metrics {
-
 namespace {
 
 // These structures provide values used to define how files are opened and
@@ -55,33 +53,33 @@ struct SourceOptions {
   bool is_read_only;
 };
 
-enum : int {
-  // Opening a file typically requires at least these flags.
-  STD_OPEN = base::File::FLAG_OPEN | base::File::FLAG_READ,
-};
+// Opening a file typically requires at least these flags.
+constexpr int STD_OPEN = base::File::FLAG_OPEN | base::File::FLAG_READ;
 
 constexpr SourceOptions kSourceOptions[] = {
-  // SOURCE_HISTOGRAMS_ATOMIC_FILE
-  {
-    // Ensure that no other process reads this at the same time.
-    STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
-    base::MemoryMappedFile::READ_ONLY,
-    true
-  },
-  // SOURCE_HISTOGRAMS_ATOMIC_DIR
-  {
-    // Ensure that no other process reads this at the same time.
-    STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
-    base::MemoryMappedFile::READ_ONLY,
-    true
-  },
-  // SOURCE_HISTOGRAMS_ACTIVE_FILE
-  {
-    // Allow writing (updated "logged" values) to the file.
-    STD_OPEN | base::File::FLAG_WRITE,
-    base::MemoryMappedFile::READ_WRITE,
-    false
-  }
+    // SOURCE_HISTOGRAMS_ATOMIC_FILE
+    {
+        // Ensure that no other process reads this at the same time.
+        STD_OPEN | base::File::FLAG_WIN_EXCLUSIVE_READ,
+        base::MemoryMappedFile::READ_ONLY,
+        true,
+    },
+    // SOURCE_HISTOGRAMS_ATOMIC_DIR
+    {
+        // Ensure that no other process reads this at the same time.
+        STD_OPEN | base::File::FLAG_WIN_EXCLUSIVE_READ,
+        base::MemoryMappedFile::READ_ONLY,
+        true,
+    },
+    // SOURCE_HISTOGRAMS_ACTIVE_FILE
+    {
+        // Allow writing to the file. This is needed so we can keep track of
+        // deltas that have been uploaded (by modifying the file), while the
+        // file may still be open by an external process (e.g. Crashpad).
+        STD_OPEN | base::File::FLAG_WRITE,
+        base::MemoryMappedFile::READ_WRITE,
+        false,
+    },
 };
 
 void DeleteFileWhenPossible(const base::FilePath& path) {
@@ -123,7 +121,7 @@ struct FileMetricsProvider::SourceInfo {
     switch (type) {
       case SOURCE_HISTOGRAMS_ACTIVE_FILE:
         DCHECK(prefs_key.empty());
-        FALLTHROUGH;
+        [[fallthrough]];
       case SOURCE_HISTOGRAMS_ATOMIC_FILE:
         path = params.path;
         break;
@@ -132,6 +130,10 @@ struct FileMetricsProvider::SourceInfo {
         break;
     }
   }
+
+  SourceInfo(const SourceInfo&) = delete;
+  SourceInfo& operator=(const SourceInfo&) = delete;
+
   ~SourceInfo() {}
 
   struct FoundFile {
@@ -181,9 +183,6 @@ struct FileMetricsProvider::SourceInfo {
   // Once a file has been recognized as needing to be read, it is mapped
   // into memory and assigned to an |allocator| object.
   std::unique_ptr<base::PersistentHistogramAllocator> allocator;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SourceInfo);
 };
 
 FileMetricsProvider::Params::Params(const base::FilePath& path,
@@ -209,7 +208,7 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure that kSourceOptions has been filled for this type.
-  DCHECK_GT(base::size(kSourceOptions), static_cast<size_t>(params.type));
+  DCHECK_GT(std::size(kSourceOptions), static_cast<size_t>(params.type));
 
   std::unique_ptr<SourceInfo> source(new SourceInfo(params));
 
@@ -238,8 +237,8 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
 void FileMetricsProvider::RegisterSourcePrefs(
     PrefRegistrySimple* prefs,
     const base::StringPiece prefs_key) {
-  prefs->RegisterInt64Pref(metrics::prefs::kMetricsLastSeenPrefix +
-                           prefs_key.as_string(), 0);
+  prefs->RegisterInt64Pref(
+      metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key), 0);
 }
 
 //  static
@@ -479,6 +478,41 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   if (!file.IsValid())
     return ACCESS_RESULT_NO_OPEN;
 
+  // Check that file is writable if that is expected. If a write is attempted
+  // on an unwritable memory-mapped file, a SIGBUS will cause a crash.
+  const bool read_only = kSourceOptions[source->type].is_read_only;
+  if (!read_only) {
+    constexpr int kTestSize = 16;
+    char header[kTestSize];
+    int amount = file.Read(0, header, kTestSize);
+    if (amount != kTestSize)
+      return ACCESS_RESULT_INVALID_CONTENTS;
+
+    char zeros[kTestSize] = {0};
+    file.Write(0, zeros, kTestSize);
+    file.Flush();
+
+    // A crash here would be unfortunate as the file would be left invalid
+    // and skipped/deleted by later attempts. This is unlikely, however, and
+    // the benefit of avoiding crashes from mapping as read/write a file that
+    // can't be written more than justifies the risk.
+
+    char check[kTestSize];
+    amount = file.Read(0, check, kTestSize);
+    if (amount != kTestSize)
+      return ACCESS_RESULT_INVALID_CONTENTS;
+    if (memcmp(check, zeros, kTestSize) != 0)
+      return ACCESS_RESULT_NOT_WRITABLE;
+
+    file.Write(0, header, kTestSize);
+    file.Flush();
+    amount = file.Read(0, check, kTestSize);
+    if (amount != kTestSize)
+      return ACCESS_RESULT_INVALID_CONTENTS;
+    if (memcmp(check, header, kTestSize) != 0)
+      return ACCESS_RESULT_NOT_WRITABLE;
+  }
+
   std::unique_ptr<base::MemoryMappedFile> mapped(new base::MemoryMappedFile());
   if (!mapped->Initialize(std::move(file),
                           kSourceOptions[source->type].memory_mapped_access)) {
@@ -489,7 +523,6 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   source->last_seen = info.last_modified;
 
   // Test the validity of the file contents.
-  const bool read_only = kSourceOptions[source->type].is_read_only;
   if (!base::FilePersistentMemoryAllocator::IsFileAcceptable(*mapped,
                                                              read_only)) {
     return ACCESS_RESULT_INVALID_CONTENTS;
@@ -541,13 +574,6 @@ void FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
     std::unique_ptr<base::HistogramBase> histogram = histogram_iter.GetNext();
     if (!histogram)
       break;
-
-    // Keep track of which histograms are getting merged from other sources.
-    // TODO(crbug.com/1176977): Consider removing this after bug is fixed.
-    base::UmaHistogramSparse(
-        read_only ? "UMA.FileMetricsProvider.MergeHistogram.ReadOnly"
-                  : "UMA.FileMetricsProvider.MergeHistogram.NotReadOnly",
-        static_cast<base::HistogramBase::Sample>(histogram->name_hash()));
 
     if (read_only) {
       source->allocator->MergeHistogramFinalDeltaToStatisticsRecorder(
@@ -644,6 +670,10 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
     base::HistogramSnapshotManager* snapshot_manager) {
   if (PersistentSystemProfile::GetSystemProfile(
           *source->allocator->memory_allocator(), system_profile_proto)) {
+    // Pass a custom RangesManager so that we do not register the BucketRanges
+    // with the global statistics recorder. Otherwise, it could add unnecessary
+    // contention, and a low amount of extra memory that will never be released.
+    source->allocator->SetRangesManager(new base::RangesManager());
     system_profile_proto->mutable_stability()->set_from_previous_run(true);
     RecordHistogramSnapshotsFromSource(snapshot_manager, source);
     return true;
@@ -653,8 +683,8 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
 }
 
 void FileMetricsProvider::AppendToSamplesCountPref(size_t samples_count) {
-  ListPrefUpdate update(pref_service_,
-                        metrics::prefs::kMetricsFileMetricsMetadata);
+  ScopedListPrefUpdate update(pref_service_,
+                              metrics::prefs::kMetricsFileMetricsMetadata);
   update->Append(static_cast<int>(samples_count));
 }
 
@@ -894,21 +924,21 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
     return false;
   }
 
-  ListPrefUpdate list_value(pref_service_,
-                            metrics::prefs::kMetricsFileMetricsMetadata);
-  if (list_value->empty())
+  ScopedListPrefUpdate list_pref(pref_service_,
+                                 metrics::prefs::kMetricsFileMetricsMetadata);
+  base::Value::List& list_value = list_pref.Get();
+  if (list_value.empty())
     return false;
 
-  base::Value::ListView mutable_list = list_value->GetList();
   size_t count = pref_service_->GetInteger(
       metrics::prefs::kStabilityFileMetricsUnsentSamplesCount);
   pref_service_->SetInteger(
       metrics::prefs::kStabilityFileMetricsUnsentSamplesCount,
-      mutable_list[0].GetInt() + count);
+      list_value[0].GetInt() + count);
   pref_service_->SetInteger(
       metrics::prefs::kStabilityFileMetricsUnsentFilesCount,
-      list_value->GetSize() - 1);
-  list_value->EraseListIter(mutable_list.begin());
+      list_value.size() - 1);
+  list_value.erase(list_value.begin());
 
   return true;
 }

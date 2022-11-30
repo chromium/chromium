@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
@@ -18,14 +17,15 @@
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace installer {
 
 struct Params {
-  Params(bool system_level, base::Optional<int> target_dir_key)
+  Params(bool system_level, absl::optional<int> target_dir_key)
       : system_level(system_level), target_dir_key(target_dir_key) {}
   bool system_level;
-  base::Optional<int> target_dir_key;
+  absl::optional<int> target_dir_key;
 };
 
 // Tests GetChromeInstallPath with a params object that contains a boolean
@@ -90,9 +90,9 @@ class GetChromeInstallPathTest : public testing::TestWithParam<Params> {
   base::ScopedTempDir random_;
   base::ScopedTempDir local_app_data_;
   registry_util::RegistryOverrideManager registry_override_manager_;
-  base::Optional<base::ScopedPathOverride> program_files_override_;
-  base::Optional<base::ScopedPathOverride> program_files_x86_override_;
-  base::Optional<base::ScopedPathOverride> local_data_app_override_;
+  absl::optional<base::ScopedPathOverride> program_files_override_;
+  absl::optional<base::ScopedPathOverride> program_files_x86_override_;
+  absl::optional<base::ScopedPathOverride> local_data_app_override_;
 };
 
 TEST_P(GetChromeInstallPathTest, NoRegistryValue) {
@@ -157,10 +157,10 @@ TEST_P(GetChromeInstallPathTest, RegistryValueSetNoProductVersion) {
 
 INSTANTIATE_TEST_SUITE_P(UserLevelTest,
                          GetChromeInstallPathTest,
-                         testing::Values<Params>({false, base::nullopt}));
+                         testing::Values<Params>({false, absl::nullopt}));
 INSTANTIATE_TEST_SUITE_P(SystemLevelTest,
                          GetChromeInstallPathTest,
-                         testing::Values<Params>({true, base::nullopt}));
+                         testing::Values<Params>({true, absl::nullopt}));
 
 // Tests GetChromeInstallPath with a params object that contains a boolean
 // |system_level| which is |true| if the test must use system-level values or
@@ -188,14 +188,13 @@ class GetChromeInstallPathWithPrefsTest : public GetChromeInstallPathTest {
     return result;
   }
 
-  static base::DictionaryValue prefs_json() {
+  static base::Value::Dict prefs_json() {
     base::FilePath result;
     if (GetParam().target_dir_key.has_value())
       base::PathService::Get(GetParam().target_dir_key.value(), &result);
-    base::DictionaryValue distribution;
-    distribution.SetStringPath("distribution.program_files_dir",
-                               result.AsUTF8Unsafe());
-
+    base::Value::Dict distribution;
+    distribution.SetByDottedPath("distribution.program_files_dir",
+                                 result.AsUTF8Unsafe());
     return distribution;
   }
 };
@@ -281,7 +280,7 @@ INSTANTIATE_TEST_SUITE_P(UserLevelUnsupportedPathSetupTest,
 
 INSTANTIATE_TEST_SUITE_P(UserLevelEmptyPathSetupTest,
                          GetChromeInstallPathWithPrefsTest,
-                         testing::Values<Params>(Params(false, base::nullopt)));
+                         testing::Values<Params>(Params(false, absl::nullopt)));
 
 INSTANTIATE_TEST_SUITE_P(
     MachineLevelX86SetupTest,
@@ -299,6 +298,6 @@ INSTANTIATE_TEST_SUITE_P(MachineLevelUnsupportedPathSetupTest,
 
 INSTANTIATE_TEST_SUITE_P(MachineLevelEmptyPathSetupTest,
                          GetChromeInstallPathWithPrefsTest,
-                         testing::Values<Params>(Params(true, base::nullopt)));
+                         testing::Values<Params>(Params(true, absl::nullopt)));
 
 }  // namespace installer

@@ -20,11 +20,25 @@ function setInnerHTML(el,content) {
 
 const hostChildren = 100;
 
+// Make sure the clone operation works
+function testClone(template) {
+  const wrapper = document.createElement('div');
+  document.body.appendChild(wrapper);
+  wrapper.appendChild(template.content.cloneNode(true));
+  const templateHtml = template.getInnerHTML({includeShadowRoots: true});
+  const clonedHtml = wrapper.getInnerHTML({includeShadowRoots: true});
+  if (templateHtml !== clonedHtml) {
+    PerfTestRunner.logFatalError('Cloned template does not match original!');
+  }
+  wrapper.remove();
+}
+
 function buildTemplate(slotted) {
   const template = document.createElement('template');
   document.body.appendChild(template);
   const html = createDeepShadowTemplateContent(hostChildren, slotted);
   setInnerHTML(template,html);
+  testClone(template);
   return template;
 }
 

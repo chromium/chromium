@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,14 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.DoNotInline;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -28,23 +30,27 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("thin_webview::android")
 public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     private final CompositorView mCompositorView;
-    private WindowAndroid mWindowAndroid;
+    private final WindowAndroid mWindowAndroid;
     private long mNativeThinWebViewImpl;
     private WebContents mWebContents;
-    private WebContentsDelegateAndroid mWebContentsDelegate;
     private View mContentView;
+    // Passed to native and stored as a weak reference, so ensure this strong
+    // reference is not optimized away by R8.
+    @DoNotInline
+    private WebContentsDelegateAndroid mWebContentsDelegate;
 
     /**
      * Creates a {@link ThinWebViewImpl} backed by a {@link Surface}.
      * @param context The Context to create this view.
-     * @param windowAndroid The associated {@code WindowAndroid} on which the view is to be
-     *         displayed.
      * @param constraints A set of constraints associated with this view.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ThinWebViewImpl(Context context, ThinWebViewConstraints constraints) {
+    public ThinWebViewImpl(Context context, ThinWebViewConstraints constraints,
+            IntentRequestTracker intentRequestTracker) {
         super(context);
         if (ContextUtils.activityFromContext(context) != null) {
-            mWindowAndroid = new ActivityWindowAndroid(context);
+            mWindowAndroid = new ActivityWindowAndroid(
+                    context, /* listenToActivityState= */ true, intentRequestTracker);
         } else {
             mWindowAndroid = new WindowAndroid(context);
         }
@@ -72,8 +78,8 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         mWebContentsDelegate = delegate;
         setContentView(contentView);
         ThinWebViewImplJni.get().setWebContents(
-                mNativeThinWebViewImpl, ThinWebViewImpl.this, mWebContents, mWebContentsDelegate);
-        mWebContents.onShow();
+                mNativeThinWebViewImpl, ThinWebViewImpl.this, webContents, delegate);
+        webContents.onShow();
     }
 
     @Override

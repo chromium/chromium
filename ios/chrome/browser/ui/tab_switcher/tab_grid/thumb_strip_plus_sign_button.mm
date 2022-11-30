@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/thumb_strip_plus_sign_button.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -14,6 +14,8 @@
 @interface ThumbStripPlusSignButton ()
 // The transparency gradient of the button.
 @property(nonatomic, strong) CAGradientLayer* gradient;
+// The current constraints for the image.
+@property(nonatomic, strong) NSLayoutConstraint* plusYConstraints;
 @end
 
 @implementation ThumbStripPlusSignButton
@@ -30,13 +32,15 @@
   plusSignImage.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:plusSignImage];
 
+  self.plusYConstraints = [plusSignImage.centerYAnchor
+      constraintEqualToAnchor:self.topAnchor
+                     constant:kPlusSignImageYCenterConstant];
+
   NSArray* constraints = @[
     [plusSignImage.centerXAnchor
         constraintEqualToAnchor:self.trailingAnchor
                        constant:-kPlusSignImageTrailingCenterDistance],
-    [plusSignImage.centerYAnchor
-        constraintEqualToAnchor:self.topAnchor
-                       constant:kPlusSignImageYCenterConstant],
+    self.plusYConstraints,
   ];
   [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -64,6 +68,17 @@
     gradient.affineTransform = CGAffineTransformMakeScale(-1, 1);
   }
   [self.layer insertSublayer:gradient atIndex:0];
+}
+
+#pragma mark - Properties
+
+- (void)setPlusSignVerticalOffset:(CGFloat)verticalOffset {
+  BOOL updateNeeded = _plusSignVerticalOffset != verticalOffset;
+  _plusSignVerticalOffset = verticalOffset;
+  if (updateNeeded) {
+    self.plusYConstraints.constant =
+        kPlusSignImageYCenterConstant + self.plusSignVerticalOffset;
+  }
 }
 
 @end

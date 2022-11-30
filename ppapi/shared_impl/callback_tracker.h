@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "ppapi/c/pp_resource.h"
@@ -73,6 +72,9 @@ class PPAPI_SHARED_EXPORT CallbackTracker
  public:
   CallbackTracker();
 
+  CallbackTracker(const CallbackTracker&) = delete;
+  CallbackTracker& operator=(const CallbackTracker&) = delete;
+
   // Abort all callbacks (synchronously).
   void AbortAll();
 
@@ -103,8 +105,6 @@ class PPAPI_SHARED_EXPORT CallbackTracker
   bool abort_all_called_;
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackTracker);
 };
 
 }  // namespace ppapi

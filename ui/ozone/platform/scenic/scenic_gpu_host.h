@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 #include <inttypes.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
+#include "ui/ozone/platform/scenic/mojom/scenic_gpu_service.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
-#include "ui/ozone/public/mojom/scenic_gpu_host.mojom.h"
-#include "ui/ozone/public/mojom/scenic_gpu_service.mojom.h"
 
 namespace ui {
 class ScenicWindowManager;
@@ -33,6 +32,10 @@ class ScenicGpuHost : public mojom::ScenicGpuHost,
                       public GpuPlatformSupportHost {
  public:
   ScenicGpuHost(ScenicWindowManager* scenic_window_manager);
+
+  ScenicGpuHost(const ScenicGpuHost&) = delete;
+  ScenicGpuHost& operator=(const ScenicGpuHost&) = delete;
+
   ~ScenicGpuHost() override;
 
   // Binds the receiver for the main process surface factory.
@@ -51,14 +54,10 @@ class ScenicGpuHost : public mojom::ScenicGpuHost,
   void OnChannelDestroyed(int host_id) override;
   void OnGpuServiceLaunched(
       int host_id,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
       GpuHostBindInterfaceCallback binder,
       GpuHostTerminateCallback terminate_callback) override;
 
  private:
-  void OnGpuServiceLaunchedOnUI(
-      mojo::PendingRemote<mojom::ScenicGpuService> gpu_service);
   void UpdateReceiver(uint32_t service_launch_count,
                       mojo::PendingReceiver<mojom::ScenicGpuHost> receiver);
 
@@ -73,8 +72,6 @@ class ScenicGpuHost : public mojom::ScenicGpuHost,
   THREAD_CHECKER(io_thread_checker_);
 
   base::WeakPtrFactory<ScenicGpuHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicGpuHost);
 };
 
 }  // namespace ui

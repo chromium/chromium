@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -26,35 +27,36 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // Not much point in going on with an empty CSP string.
     return EXIT_SUCCESS;
   }
+  if (it - data > 250) {
+    // Origins should not be too long. The origin of size 'N' is copied into 'M'
+    // policies. The fuzzer can send an input of size N+M and use O(N*M) memory.
+    // Due to this quadratic behavior, we must limit the size of the origin to
+    // prevent the fuzzer from triggering OOM crash. Note that real domain names
+    // are limited to 253 characters.
+    return EXIT_SUCCESS;
+  }
 
-  String url = String(data, it - 1 - data);
-  String header = String(it, size - (it - data));
+  String url = String(data, static_cast<unsigned>(it - 1 - data));
+  String header = String(it, static_cast<unsigned>(size - (it - data)));
   unsigned hash = header.IsNull() ? 0 : header.Impl()->GetHash();
 
   // Use the 'hash' value to pick header_type and header_source input.
   // 1st bit: header type.
   // 2nd bit: header source: HTTP (or other)
-  // 3rd bit: header source: Meta or OriginPolicy (if not HTTP)
   network::mojom::ContentSecurityPolicyType header_type =
       hash & 0x01 ? network::mojom::ContentSecurityPolicyType::kEnforce
                   : network::mojom::ContentSecurityPolicyType::kReport;
   network::mojom::ContentSecurityPolicySource header_source =
       network::mojom::ContentSecurityPolicySource::kHTTP;
   if (hash & 0x02) {
-    header_source =
-        (hash & 0x04)
-            ? network::mojom::ContentSecurityPolicySource::kMeta
-            : network::mojom::ContentSecurityPolicySource::kOriginPolicy;
+    header_source = network::mojom::ContentSecurityPolicySource::kMeta;
   }
 
-  scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(KURL(url));
-
   // Construct a policy from the string.
-  auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader(header, *self_origin, header_type, header_source);
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
+      ParseContentSecurityPolicies(header, header_type, header_source,
+                                   KURL(url));
 
-  const Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
-      parsed_policies = csp->GetParsedPolicies();
   if (parsed_policies.size() > 0) {
     network::mojom::blink::ContentSecurityPolicyPtr converted_csp =
         ConvertToMojoBlink(ConvertToPublic(parsed_policies[0]->Clone()));
@@ -65,7 +67,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Specify namespace explicitly. Otherwise it conflicts on Mac OS X with:
   // CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Threads.h.
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 
   return 0;
 }

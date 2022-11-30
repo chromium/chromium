@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class VersionCompatibilityTest(MojomParserTestCase):
 
     checker = module.BackwardCompatibilityChecker()
     compatibility_map = {}
-    for name in old.keys():
+    for name in old:
       compatibility_map[name] = checker.IsBackwardCompatible(
           new[name], old[name])
     return compatibility_map

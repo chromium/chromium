@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -39,7 +38,7 @@ const std::array<uint8_t, kBlockSize> kOneBlock = {'a', 'b', 'c', 'd', 'e', 'f',
                                                    'm', 'n', 'o', 'p'};
 
 const std::array<uint8_t, 6> kPartialBlock = {'a', 'b', 'c', 'd', 'e', 'f'};
-static_assert(base::size(kPartialBlock) != kBlockSize, "kPartialBlock wrong");
+static_assert(std::size(kPartialBlock) != kBlockSize, "kPartialBlock wrong");
 
 std::string MakeString(const std::vector<uint8_t>& chars) {
   return std::string(chars.begin(), chars.end());
@@ -108,7 +107,7 @@ class CbcsDecryptorTest : public testing::Test {
       const std::vector<uint8_t>& data,
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsample_entries,
-      base::Optional<EncryptionPattern> encryption_pattern) {
+      absl::optional<EncryptionPattern> encryption_pattern) {
     EXPECT_FALSE(data.empty());
     EXPECT_FALSE(iv.empty());
 
@@ -148,7 +147,8 @@ TEST_F(CbcsDecryptorTest, OneBlock) {
   DCHECK_EQ(kBlockSize, encrypted_block.size());
 
   // Only 1 subsample, all encrypted data.
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
       encrypted_block, iv_, subsamples, EncryptionPattern(1, 9));
@@ -160,12 +160,13 @@ TEST_F(CbcsDecryptorTest, AdditionalData) {
   DCHECK_EQ(kBlockSize, encrypted_block.size());
 
   // Only 1 subsample, all encrypted data.
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
       encrypted_block, iv_, subsamples, EncryptionPattern(1, 9));
-  encrypted_buffer->set_timestamp(base::TimeDelta::FromDays(2));
-  encrypted_buffer->set_duration(base::TimeDelta::FromMinutes(5));
+  encrypted_buffer->set_timestamp(base::Days(2));
+  encrypted_buffer->set_duration(base::Minutes(5));
   encrypted_buffer->set_is_key_frame(true);
   encrypted_buffer->CopySideDataFrom(encrypted_block.data(),
                                      encrypted_block.size());
@@ -190,7 +191,8 @@ TEST_F(CbcsDecryptorTest, DifferentPattern) {
   DCHECK_EQ(kBlockSize, encrypted_block.size());
 
   // Only 1 subsample, all encrypted data.
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
       encrypted_block, iv_, subsamples, EncryptionPattern(1, 0));
@@ -202,7 +204,8 @@ TEST_F(CbcsDecryptorTest, EmptyPattern) {
   DCHECK_EQ(kBlockSize, encrypted_block.size());
 
   // Only 1 subsample, all encrypted data.
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   // Pattern 0:0 treats the buffer as all encrypted.
   auto encrypted_buffer = CreateEncryptedBuffer(
@@ -215,7 +218,8 @@ TEST_F(CbcsDecryptorTest, PatternTooLarge) {
   DCHECK_EQ(kBlockSize, encrypted_block.size());
 
   // Only 1 subsample, all encrypted data.
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   // Pattern 100:0 is too large, so decryption will fail.
   auto encrypted_buffer = CreateEncryptedBuffer(
@@ -238,7 +242,8 @@ TEST_F(CbcsDecryptorTest, BadSubsamples) {
   auto encrypted_block = Encrypt(one_block_, *key_, iv_);
 
   // Subsample size > data size.
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size() + 1}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size() + 1)}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
       encrypted_block, iv_, subsamples, EncryptionPattern(1, 0));
@@ -248,7 +253,8 @@ TEST_F(CbcsDecryptorTest, BadSubsamples) {
 TEST_F(CbcsDecryptorTest, InvalidIv) {
   auto encrypted_block = Encrypt(one_block_, *key_, iv_);
 
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   // Use an invalid IV for decryption. Call should succeed, but return
   // something other than the original data.
@@ -261,12 +267,13 @@ TEST_F(CbcsDecryptorTest, InvalidIv) {
 TEST_F(CbcsDecryptorTest, InvalidKey) {
   auto encrypted_block = Encrypt(one_block_, *key_, iv_);
 
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   // Use a different key for decryption. Call should succeed, but return
   // something other than the original data.
   std::unique_ptr<crypto::SymmetricKey> bad_key = crypto::SymmetricKey::Import(
-      crypto::SymmetricKey::AES, std::string(base::size(kKey), 'b'));
+      crypto::SymmetricKey::AES, std::string(std::size(kKey), 'b'));
   auto encrypted_buffer = CreateEncryptedBuffer(
       encrypted_block, iv_, subsamples, EncryptionPattern(1, 0));
   EXPECT_NE(one_block_, DecryptWithKey(encrypted_buffer, *bad_key));
@@ -275,7 +282,8 @@ TEST_F(CbcsDecryptorTest, InvalidKey) {
 TEST_F(CbcsDecryptorTest, PartialBlock) {
   // Only 1 subsample, all "encrypted" data. However, as it's not a full block,
   // it will be treated as unencrypted.
-  std::vector<SubsampleEntry> subsamples = {{0, partial_block_.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(partial_block_.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(partial_block_, iv_, subsamples,
                                                 EncryptionPattern(1, 0));
@@ -290,7 +298,8 @@ TEST_F(CbcsDecryptorTest, SingleBlockWithExtraData) {
   auto expected_result = Combine({one_block_, partial_block_});
 
   // Only 1 subsample, all "encrypted" data.
-  std::vector<SubsampleEntry> subsamples = {{0, encrypted_block.size()}};
+  std::vector<SubsampleEntry> subsamples = {
+      {0, static_cast<uint32_t>(encrypted_block.size())}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(
       encrypted_block, iv_, subsamples, EncryptionPattern(1, 0));
@@ -299,7 +308,8 @@ TEST_F(CbcsDecryptorTest, SingleBlockWithExtraData) {
 
 TEST_F(CbcsDecryptorTest, SkipBlock) {
   // Only 1 subsample, but all unencrypted data.
-  std::vector<SubsampleEntry> subsamples = {{one_block_.size(), 0}};
+  std::vector<SubsampleEntry> subsamples = {
+      {static_cast<uint32_t>(one_block_.size()), 0}};
 
   auto encrypted_buffer = CreateEncryptedBuffer(one_block_, iv_, subsamples,
                                                 EncryptionPattern(1, 0));

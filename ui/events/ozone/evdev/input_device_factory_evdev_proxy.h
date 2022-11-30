@@ -1,22 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_PROXY_H_
 #define UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_PROXY_H_
 
-#include <memory>
-#include <set>
-#include <vector>
-
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/ozone/public/input_controller.h"
 
 namespace ui {
@@ -34,6 +29,11 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
   InputDeviceFactoryEvdevProxy(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::WeakPtr<InputDeviceFactoryEvdev> input_device_factory);
+
+  InputDeviceFactoryEvdevProxy(const InputDeviceFactoryEvdevProxy&) = delete;
+  InputDeviceFactoryEvdevProxy& operator=(const InputDeviceFactoryEvdevProxy&) =
+      delete;
+
   ~InputDeviceFactoryEvdevProxy();
 
   // See InputDeviceFactoryEvdev for docs. These calls simply forward to
@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
   void RemoveInputDevice(const base::FilePath& path);
   void OnStartupScanComplete();
   void SetCapsLockLed(bool enabled);
+  void GetStylusSwitchState(InputController::GetStylusSwitchStateReply reply);
   void SetTouchEventLoggingEnabled(bool enabled);
   void UpdateInputDeviceSettings(const InputDeviceSettingsEvdev& settings);
   void GetTouchDeviceStatus(InputController::GetTouchDeviceStatusReply reply);
@@ -51,12 +52,15 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
       mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver);
   void PlayVibrationEffect(int id, uint8_t amplitude, uint16_t duration_millis);
   void StopVibration(int id);
+  void PlayHapticTouchpadEffect(HapticTouchpadEffect effect,
+                                HapticTouchpadEffectStrength strength);
+  void SetHapticTouchpadEffectForNextButtonRelease(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<InputDeviceFactoryEvdev> input_device_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceFactoryEvdevProxy);
 };
 
 }  // namespace ui

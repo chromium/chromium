@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
@@ -100,6 +100,9 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // percentage of charge remaining.
   static const double kCriticalBatteryChargePercentage;
 
+  PowerStatus(const PowerStatus&) = delete;
+  PowerStatus& operator=(const PowerStatus&) = delete;
+
   // Sets the global instance. Must be called before any calls to Get().
   static void Initialize();
 
@@ -157,8 +160,8 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Irrespective of IsBatteryTimeBeingCalculated(), estimates may be
   // unavailable if powerd didn't provide them because the battery current was
   // close to zero (resulting in time estimates approaching infinity).
-  base::Optional<base::TimeDelta> GetBatteryTimeToEmpty() const;
-  base::Optional<base::TimeDelta> GetBatteryTimeToFull() const;
+  absl::optional<base::TimeDelta> GetBatteryTimeToEmpty() const;
+  absl::optional<base::TimeDelta> GetBatteryTimeToFull() const;
 
   // Returns true if line power (including a charger of any type) is connected.
   bool IsLinePowerConnected() const;
@@ -194,10 +197,12 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   void CalculateBatteryImageInfo(BatteryImageInfo* info) const;
 
   // Creates a new image that should be shown for the battery's current state.
-  static gfx::ImageSkia GetBatteryImage(const BatteryImageInfo& info,
-                                        int height,
-                                        SkColor bg_color,
-                                        SkColor fg_color);
+  static gfx::ImageSkia GetBatteryImage(
+      const BatteryImageInfo& info,
+      int height,
+      SkColor bg_color,
+      SkColor fg_color,
+      absl::optional<SkColor> badge_color = absl::nullopt);
 
   // Returns a string describing the current state for accessibility.
   std::u16string GetAccessibleNameString(bool full_description) const;
@@ -230,8 +235,6 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
 
   // Current state.
   power_manager::PowerSupplyProperties proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerStatus);
 };
 
 }  // namespace ash

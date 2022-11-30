@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher.h"
 #include "url/gurl.h"
@@ -56,9 +56,16 @@ class PasswordRequirementsSpecFetcherImpl
       int version,
       size_t prefix_length,
       int timeout);
+
+  PasswordRequirementsSpecFetcherImpl(
+      const PasswordRequirementsSpecFetcherImpl&) = delete;
+  PasswordRequirementsSpecFetcherImpl& operator=(
+      const PasswordRequirementsSpecFetcherImpl&) = delete;
+
   ~PasswordRequirementsSpecFetcherImpl() override;
 
   // Implementation for PasswordRequirementsSpecFetcher:
+  // TODO(https://crbug.com/1300422): Pass GURL by const reference here.
   void Fetch(GURL origin, FetchCallback callback) override;
 
  private:
@@ -66,6 +73,10 @@ class PasswordRequirementsSpecFetcherImpl
   // for a file with a specific hash prefix.
   struct LookupInFlight {
     LookupInFlight();
+
+    LookupInFlight(const LookupInFlight&) = delete;
+    LookupInFlight& operator=(const LookupInFlight&) = delete;
+
     ~LookupInFlight();
 
     // Callbacks to be called if the network request resolves or is aborted.
@@ -80,9 +91,6 @@ class PasswordRequirementsSpecFetcherImpl
 
     // Time when the network request is started.
     base::TimeTicks start_of_request;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(LookupInFlight);
   };
 
   // These are the two ways how a network request can end. The functions remove
@@ -134,8 +142,6 @@ class PasswordRequirementsSpecFetcherImpl
   // time of starting the network request until receiving the response or a
   // timeout.
   std::map<std::string, std::unique_ptr<LookupInFlight>> lookups_in_flight_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordRequirementsSpecFetcherImpl);
 };
 
 }  // namespace autofill

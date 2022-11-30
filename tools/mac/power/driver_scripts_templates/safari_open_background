@@ -1,0 +1,38 @@
+{%- from 'macros' import hash_bang with context -%}
+{%- from 'macros' import make_maximized with context -%}
+{{ hash_bang() }}
+
+-- Copyright 2021 The Chromium Authors
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- For behavior description see open_background file. Differs from the generic
+-- template becauses tabs and windows are not acessesed in the same way for
+-- Safari. The way to wait for the page to be done loading is also different.
+
+tell application "Safari"
+  -- If Safari is already started then just bring
+  -- it to the forefront otherwise open it.
+  if it is running then
+    reopen
+  else
+    activate
+  end if
+
+  {{ make_maximized() }}
+
+  set sites to { {{ background_sites }} }
+  repeat with site in sites
+    open location site
+
+    -- Wait for the page to be fully loaded.
+    repeat while document 1's source = ""
+      delay 0.5
+    end repeat
+
+  end repeat
+
+  delay {{ delay }}
+
+  activate
+end tell

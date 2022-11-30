@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,19 +17,14 @@ declare_args() {
   # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
 
-  # Compile with Xcode version of clang instead of hermetic version shipped
-  # with the build. Used to be used iOS for official builds, but is now off by
-  # default for all configurations.
-  use_xcode_clang = false
-
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
 }
 
 if (generate_linker_map) {
-  assert(is_official_build || is_chromecast,
+  assert(is_official_build || is_castos || is_cast_android,
          "Linker map files should only be generated when is_official_build = " +
-             "true or is_chromecast = true")
+             "true or is_castos = true or is_cast_android = true")
   assert(current_os == "android" || current_os == "linux" ||
              target_os == "android" || target_os == "linux" ||
              target_os == "chromeos",
@@ -38,14 +33,8 @@ if (generate_linker_map) {
 }
 
 declare_args() {
-  clang_version = "13.0.0"
+  clang_version = "16.0.0"
 }
-
-# Check target_os here instead of is_ios as this file is loaded for secondary
-# toolchain (host toolchain in particular) but the argument is the same for
-# all toolchains.
-assert(!use_xcode_clang || target_os == "ios",
-       "Using Xcode's clang is only supported in iOS builds")
 
 # Extension for shared library files (including leading dot).
 if (is_apple) {

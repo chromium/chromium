@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,17 @@
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
+#include "build/buildflag.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
@@ -20,22 +27,14 @@
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_test_job.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace {
 
-#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
-const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
+#if BUILDFLAG(ENABLE_MIRROR)
 const char kMirrorAction[] = "action=ADDSESSION";
 #endif
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL GaiaUrl() {
-  return GURL("https://accounts.google.com");
-}
 
 // URLRequestInterceptor adding a account consistency response header to Gaia
 // responses.
@@ -65,11 +64,14 @@ class TestResponseAdapter : public signin::ResponseAdapter,
  public:
   TestResponseAdapter(const std::string& header_name,
                       const std::string& header_value,
-                      bool is_main_frame)
-      : is_main_frame_(is_main_frame),
+                      bool is_outermost_main_frame)
+      : is_outermost_main_frame_(is_outermost_main_frame),
         headers_(new net::HttpResponseHeaders(std::string())) {
     headers_->SetHeader(header_name, header_value);
   }
+
+  TestResponseAdapter(const TestResponseAdapter&) = delete;
+  TestResponseAdapter& operator=(const TestResponseAdapter&) = delete;
 
   ~TestResponseAdapter() override {}
 
@@ -77,8 +79,10 @@ class TestResponseAdapter : public signin::ResponseAdapter,
     return base::BindRepeating(
         []() -> content::WebContents* { return nullptr; });
   }
-  bool IsMainFrame() const override { return is_main_frame_; }
-  GURL GetOrigin() const override { return GaiaUrl(); }
+  bool IsOutermostMainFrame() const override {
+    return is_outermost_main_frame_;
+  }
+  GURL GetURL() const override { return GURL("https://accounts.google.com"); }
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_.get();
   }
@@ -98,51 +102,125 @@ class TestResponseAdapter : public signin::ResponseAdapter,
   }
 
  private:
-  bool is_main_frame_;
+  bool is_outermost_main_frame_;
   scoped_refptr<net::HttpResponseHeaders> headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResponseAdapter);
 };
 
 }  // namespace
 
 class ChromeSigninHelperTest : public testing::Test {
  protected:
-  ChromeSigninHelperTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+  ChromeSigninHelperTest() = default;
+  ~ChromeSigninHelperTest() override = default;
 
-  ~ChromeSigninHelperTest() override {}
-
+ private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<net::TestDelegate> test_request_delegate_;
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
+ public:
+  explicit TestChromeRequestAdapter(const GURL& url)
+      : signin::ChromeRequestAdapter(url,
+                                     original_headers_,
+                                     &modified_headers_,
+                                     &headers_to_remove_) {}
+
+  const net::HttpRequestHeaders& modified_headers() const {
+    return modified_headers_;
+  }
+
+  // ChromeRequestAdapter:
+  content::WebContents::Getter GetWebContentsGetter() const override {
+    return content::WebContents::Getter();
+  }
+  network::mojom::RequestDestination GetRequestDestination() const override {
+    return network::mojom::RequestDestination::kDocument;
+  }
+  bool IsOutermostMainFrame() const override { return true; }
+  bool IsFetchLikeAPI() const override { return false; }
+  GURL GetReferrer() const override { return GURL(); }
+  void SetDestructionCallback(base::OnceClosure closure) override {}
+
+ private:
+  net::HttpRequestHeaders original_headers_;
+  net::HttpRequestHeaders modified_headers_;
+  std::vector<std::string> headers_to_remove_;
+};
+
 // Tests that Dice response headers are removed after being processed.
 TEST_F(ChromeSigninHelperTest, RemoveDiceSigninHeader) {
   // Process the header.
   TestResponseAdapter adapter(signin::kDiceResponseHeader, "Foo",
-                              /*is_main_frame=*/false);
+                              /*is_outermost_main_frame=*/false);
   signin::ProcessAccountConsistencyResponseHeaders(&adapter, GURL(),
                                                    false /* is_incognito */);
 
   // Check that the header has been removed.
   EXPECT_FALSE(adapter.GetHeaders()->HasHeader(signin::kDiceResponseHeader));
 }
+
+TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
+  // Setup the test environment.
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  content_settings::CookieSettings::RegisterProfilePrefs(prefs.registry());
+  HostContentSettingsMap::RegisterProfilePrefs(prefs.registry());
+  scoped_refptr<HostContentSettingsMap> settings_map =
+      new HostContentSettingsMap(&prefs, /*is_off_the_record=*/false,
+                                 /*store_last_modified=*/false,
+                                 /*restore_session=*/false);
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      new content_settings::CookieSettings(settings_map.get(), &prefs, false);
+
+  {
+    // Non-elligible request, no header.
+    TestChromeRequestAdapter request(GURL("https://gmail.com"));
+    signin::FixAccountConsistencyRequestHeader(
+        &request, GURL(), /*is_off_the_record=*/false,
+        /*incognito_availability=*/0, signin::AccountConsistencyMethod::kDice,
+        "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
+        /*is_sync_enabled=*/true, "device_id", cookie_settings.get());
+    std::string managed_account_header;
+    EXPECT_FALSE(request.modified_headers().GetHeader(
+        signin::kChromeConnectedHeader, &managed_account_header));
+  }
+
+  {
+    // Google Docs gets the header.
+    TestChromeRequestAdapter request(GURL("https://docs.google.com"));
+    signin::FixAccountConsistencyRequestHeader(
+        &request, GURL(), /*is_off_the_record=*/false,
+        /*incognito_availability=*/0, signin::AccountConsistencyMethod::kDice,
+        "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
+        /*is_sync_enabled=*/true, "device_id", cookie_settings.get());
+    std::string managed_account_header;
+    EXPECT_TRUE(request.modified_headers().GetHeader(
+        signin::kChromeConnectedHeader, &managed_account_header));
+    std::string expected_header =
+        "source=Chrome,id=gaia_id,mode=0,enable_account_consistency=false,"
+        "supervised=false,consistency_enabled_by_default=false";
+    EXPECT_EQ(managed_account_header, expected_header);
+  }
+
+  // Tear down the test environment.
+  settings_map->ShutdownOnUIThread();
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_MIRROR)
 // Tests that user data is set on Mirror requests.
 TEST_F(ChromeSigninHelperTest, MirrorMainFrame) {
   // Process the header.
-  TestResponseAdapter response_adapter(kChromeManageAccountsHeader,
+  TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
                                        kMirrorAction,
-                                       /*is_main_frame=*/true);
+                                       /*is_outermost_main_frame=*/true);
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    false /* is_incognito */);
   // Check that the header has not been removed.
-  EXPECT_TRUE(
-      response_adapter.GetHeaders()->HasHeader(kChromeManageAccountsHeader));
+  EXPECT_TRUE(response_adapter.GetHeaders()->HasHeader(
+      signin::kChromeManageAccountsHeader));
   // Request was flagged with the user data.
   EXPECT_TRUE(response_adapter.GetUserData(
       signin::kManageAccountsHeaderReceivedUserDataKey));
@@ -151,13 +229,35 @@ TEST_F(ChromeSigninHelperTest, MirrorMainFrame) {
 // Tests that user data is not set on Mirror requests for sub frames.
 TEST_F(ChromeSigninHelperTest, MirrorSubFrame) {
   // Process the header.
-  TestResponseAdapter response_adapter(kChromeManageAccountsHeader,
+  TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
                                        kMirrorAction,
-                                       /*is_main_frame=*/false);
+                                       /*is_outermost_main_frame=*/false);
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    false /* is_incognito */);
   // Request was not flagged with the user data.
   EXPECT_FALSE(response_adapter.GetUserData(
       signin::kManageAccountsHeaderReceivedUserDataKey));
 }
-#endif  // BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_MIRROR)
+
+TEST_F(ChromeSigninHelperTest,
+       ParseGaiaIdFromRemoveLocalAccountResponseHeader) {
+  EXPECT_EQ("123456",
+            signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+                TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
+                                    "obfuscatedid=\"123456\"",
+                                    /*is_outermost_main_frame=*/false)
+                    .GetHeaders()));
+  EXPECT_EQ("123456",
+            signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+                TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
+                                    "obfuscatedid=\"123456\",foo=\"bar\"",
+                                    /*is_outermost_main_frame=*/false)
+                    .GetHeaders()));
+  EXPECT_EQ(
+      "",
+      signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+          TestResponseAdapter("Google-Accounts-RemoveLocalAccount", "malformed",
+                              /*is_outermost_main_frame=*/false)
+              .GetHeaders()));
+}

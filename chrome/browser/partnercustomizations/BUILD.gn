@@ -1,0 +1,88 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegate.java",
+    "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateUpstreamImpl.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//components/embedder_support/android:util_java",
+    "//components/version_info/android:version_constants_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  jar_excluded_patterns = [ "*/CustomizationProviderDelegateImpl.class" ]
+}
+
+android_library("delegate_public_impl_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateImpl.java" ]
+  deps = [ ":delegate_java" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java" ]
+}
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java" ]
+  deps = [
+    ":delegate_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//components/embedder_support/android:util_java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//components/version_info/android:version_constants_java",
+    "//content/public/android:content_main_dex_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
+  ]
+}
+
+android_library("test_support_java") {
+  testonly = true
+  sources = [ "junit/src/org/chromium/chrome/browser/partnercustomizations/BasePartnerBrowserCustomizationUnitTestRule.java" ]
+  deps = [
+    ":delegate_java",
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizationsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/partnercustomizations/PartnerDisableBookmarksEditingUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/partnercustomizations/PartnerDisableIncognitoModeUnitTest.java",
+  ]
+  deps = [
+    ":delegate_java",
+    ":java",
+    ":test_support_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/embedder_support/android:util_java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//url:gurl_java",
+  ]
+}

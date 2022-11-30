@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/element_precondition.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "url/gurl.h"
 
@@ -52,8 +52,13 @@ void PromptAction::InternalProcessAction(ProcessActionCallback callback) {
   wait_time_stopwatch_.Start();
   if (HasNonemptyPreconditions() || auto_select_ ||
       proto_.prompt().allow_interrupt()) {
+    // TODO(b/219004758): Enable observer-based WaitForDom, which would require
+    // negating the preconditions that matched in the previous check, so that we
+    // are alerted every time one changes instead of every time one becomes
+    // true.
     delegate_->WaitForDom(
-        base::TimeDelta::Max(), proto_.prompt().allow_interrupt(),
+        /* max_wait_time= */ base::TimeDelta::Max(),
+        /* allow_observer_mode = */ false, proto_.prompt().allow_interrupt(),
         /* observer= */ nullptr,
         base::BindRepeating(&PromptAction::RegisterChecks,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -79,15 +84,16 @@ void PromptAction::RegisterChecks(
   UpdateUserActions();
 
   for (size_t i = 0; i < preconditions_.size(); i++) {
-    preconditions_[i]->Check(checker,
-                             base::BindOnce(&PromptAction::OnPreconditionResult,
-                                            weak_ptr_factory_.GetWeakPtr(), i));
+    checker->AddElementConditionCheck(
+        preconditions_[i], base::BindOnce(&PromptAction::OnPreconditionResult,
+                                          weak_ptr_factory_.GetWeakPtr(), i));
   }
 
   if (auto_select_) {
-    auto_select_->Check(checker,
-                        base::BindOnce(&PromptAction::OnAutoSelectCondition,
-                                       weak_ptr_factory_.GetWeakPtr()));
+    checker->AddElementConditionCheck(
+        auto_select_.value(),
+        base::BindOnce(&PromptAction::OnAutoSelectCondition,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
   checker->AddAllDoneCallback(base::BindOnce(&PromptAction::OnElementChecksDone,
                                              weak_ptr_factory_.GetWeakPtr(),
@@ -103,31 +109,30 @@ void PromptAction::SetupConditions() {
 
   for (int i = 0; i < choice_count; i++) {
     auto& choice_proto = proto_.prompt().choices(i);
-    preconditions_[i] =
-        std::make_unique<ElementPrecondition>(choice_proto.show_only_when());
-    precondition_results_[i] = preconditions_[i]->empty();
+    preconditions_[i] = choice_proto.show_only_when();
+    precondition_results_[i] =
+        BatchElementChecker::IsElementConditionEmpty(preconditions_[i]);
     positive_precondition_changes_[i] = false;
   }
 
-  ElementConditionsProto auto_select;
+  ElementConditionProto auto_select;
+  auto* auto_select_any_of = auto_select.mutable_any_of();
   for (int i = 0; i < choice_count; i++) {
     auto& choice_proto = proto_.prompt().choices(i);
     if (choice_proto.has_auto_select_when()) {
-      ElementConditionProto* condition = auto_select.add_conditions();
+      ElementConditionProto* condition = auto_select_any_of->add_conditions();
       *condition = choice_proto.auto_select_when();
-      condition->set_payload(base::NumberToString(i));
+      condition->set_tag(base::NumberToString(i));
     }
   }
-  if (!auto_select.conditions().empty()) {
-    ElementConditionProto auto_select_condition;
-    *auto_select_condition.mutable_any_of() = auto_select;
-    auto_select_ = std::make_unique<ElementPrecondition>(auto_select_condition);
+  if (!auto_select_any_of->conditions().empty()) {
+    auto_select_ = auto_select;
   }
 }
 
 bool PromptAction::HasNonemptyPreconditions() {
   for (const auto& precondition : preconditions_) {
-    if (!precondition->empty())
+    if (!BatchElementChecker::IsElementConditionEmpty(precondition))
       return true;
   }
   return false;
@@ -137,6 +142,7 @@ void PromptAction::OnPreconditionResult(
     size_t choice_index,
     const ClientStatus& status,
     const std::vector<std::string>& ignored_payloads,
+    const std::vector<std::string>& ignored_tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   bool precondition_is_met = status.ok();
   if (precondition_results_[choice_index] == precondition_is_met)
@@ -153,10 +159,10 @@ void PromptAction::UpdateUserActions() {
   auto user_actions = std::make_unique<std::vector<UserAction>>();
   for (int i = 0; i < proto_.prompt().choices_size(); i++) {
     auto& choice_proto = proto_.prompt().choices(i);
-    UserAction user_action(choice_proto.chip(), choice_proto.direct_action(),
+    UserAction user_action(choice_proto.chip(),
                            /* enabled = */ true,
                            /* identifier = */ std::string());
-    if (!user_action.has_triggers())
+    if (!user_action.has_chip())
       continue;
 
     // Hide actions whose preconditions don't match.
@@ -200,13 +206,14 @@ void PromptAction::UpdateTimings() {
 void PromptAction::OnAutoSelectCondition(
     const ClientStatus& status,
     const std::vector<std::string>& payloads,
+    const std::vector<std::string>& tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
-  if (payloads.empty())
+  if (tags.empty())
     return;
 
   // We want to select the first matching choice, so only the first entry of
   // payloads matter.
-  base::StringToInt(payloads[0], &auto_select_choice_index_);
+  base::StringToInt(tags[0], &auto_select_choice_index_);
 
   // Calling OnSuggestionChosen() is delayed until try_done, as it indirectly
   // deletes the batch element checker, which isn't supported from an element
@@ -269,6 +276,8 @@ void PromptAction::OnSuggestionChosen(int choice_index) {
 
   processed_action_proto_->mutable_prompt_choice()->set_server_payload(
       proto_.prompt().choices(choice_index).server_payload());
+  processed_action_proto_->mutable_prompt_choice()->set_choice_tag(
+      proto_.prompt().choices(choice_index).tag());
   EndAction(ClientStatus(ACTION_APPLIED));
 }
 

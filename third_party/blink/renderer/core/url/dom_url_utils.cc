@@ -33,10 +33,6 @@ namespace blink {
 
 DOMURLUtils::~DOMURLUtils() = default;
 
-void DOMURLUtils::setHref(const String& value) {
-  SetInput(value);
-}
-
 void DOMURLUtils::setProtocol(const String& value) {
   KURL kurl = Url();
   if (kurl.IsNull())
@@ -50,7 +46,8 @@ void DOMURLUtils::setUsername(const String& value) {
   if (kurl.IsNull())
     return;
   kurl.SetUser(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setPassword(const String& value) {
@@ -58,11 +55,12 @@ void DOMURLUtils::setPassword(const String& value) {
   if (kurl.IsNull())
     return;
   kurl.SetPass(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setHost(const String& value) {
-  if (value.IsEmpty())
+  if (value.empty())
     return;
 
   KURL kurl = Url();
@@ -70,38 +68,33 @@ void DOMURLUtils::setHost(const String& value) {
     return;
 
   kurl.SetHostAndPort(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setHostname(const String& value) {
+  if (value.empty())
+    return;
+
   KURL kurl = Url();
   if (!kurl.CanSetHostOrPort())
     return;
 
-  // Before setting new value:
-  // Remove all leading U+002F SOLIDUS ("/") characters.
-  unsigned i = 0;
-  unsigned host_length = value.length();
-  while (value[i] == '/')
-    i++;
-
-  if (i == host_length)
-    return;
-
-  kurl.SetHost(value.Substring(i));
-
-  SetURL(kurl);
+  kurl.SetHost(value);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setPort(const String& value) {
   KURL kurl = Url();
   if (!kurl.CanSetHostOrPort())
     return;
-  if (!value.IsEmpty())
+  if (!value.empty())
     kurl.SetPort(value);
   else
     kurl.RemovePort();
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setPathname(const String& value) {
@@ -109,7 +102,8 @@ void DOMURLUtils::setPathname(const String& value) {
   if (!kurl.CanSetPathname())
     return;
   kurl.SetPath(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setSearch(const String& value) {
@@ -125,12 +119,13 @@ void DOMURLUtils::SetSearchInternal(const String& value) {
   // FIXME: have KURL do this clearing of the query component
   // instead, if practical. Will require addressing
   // http://crbug.com/108690, for one.
-  if ((value.length() == 1 && value[0] == '?') || value.IsEmpty())
+  if ((value.length() == 1 && value[0] == '?') || value.empty())
     kurl.SetQuery(String());
   else
     kurl.SetQuery(value);
 
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setHash(const String& value) {
@@ -143,13 +138,14 @@ void DOMURLUtils::setHash(const String& value) {
   if (value[0] == '#')
     kurl.SetFragmentIdentifier(value.Substring(1));
   else {
-    if (value.IsEmpty())
+    if (value.empty())
       kurl.RemoveFragmentIdentifier();
     else
       kurl.SetFragmentIdentifier(value);
   }
 
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -210,8 +210,8 @@ public class HttpAuthDatabase {
                     new String[] { host, realm }, null, null, null);
             if (cursor.moveToFirst()) {
                 ret = new String[] {
-                        cursor.getString(cursor.getColumnIndex(HTTPAUTH_USERNAME_COL)),
-                        cursor.getString(cursor.getColumnIndex(HTTPAUTH_PASSWORD_COL)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_USERNAME_COL)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_PASSWORD_COL)),
                 };
             }
         } catch (IllegalStateException e) {

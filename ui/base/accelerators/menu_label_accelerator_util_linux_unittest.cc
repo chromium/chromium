@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -24,7 +23,7 @@ TEST(MenuLabelAcceleratorTest, ConvertAcceleratorsFromWindowsStyle) {
     { "&foo &&bar", "_foo &bar" },
     { "&foo &bar", "_foo _bar" },
   };
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::string result = ConvertAcceleratorsFromWindowsStyle(cases[i].input);
     EXPECT_EQ(cases[i].output, result);
   }
@@ -43,7 +42,7 @@ TEST(MenuLabelAcceleratorTest, RemoveWindowsStyleAccelerators) {
     { "&foo &&bar", "foo &bar" },
     { "&foo &bar", "foo bar" },
   };
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::string result = RemoveWindowsStyleAccelerators(cases[i].input);
     EXPECT_EQ(cases[i].output, result);
   }

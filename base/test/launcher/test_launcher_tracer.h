@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,13 +21,19 @@ class FilePath;
 class TestLauncherTracer {
  public:
   TestLauncherTracer();
+
+  TestLauncherTracer(const TestLauncherTracer&) = delete;
+  TestLauncherTracer& operator=(const TestLauncherTracer&) = delete;
+
   ~TestLauncherTracer();
 
   // Records an event corresponding to test process execution.
-  void RecordProcessExecution(TimeTicks start_time, TimeDelta duration);
+  // Return the sequence num of the process executed. The sequence num is also
+  // used as part of the event name been recorded.
+  int RecordProcessExecution(TimeTicks start_time, TimeDelta duration);
 
   // Dumps trace data as JSON. Returns true on success.
-  bool Dump(const FilePath& path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Dump(const FilePath& path);
 
  private:
   // Simplified version of base::TraceEvent.
@@ -46,8 +52,6 @@ class TestLauncherTracer {
 
   // Lock to protect all member variables.
   Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLauncherTracer);
 };
 
 }  // namespace base

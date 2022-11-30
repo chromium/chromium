@@ -1,17 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/metrics/metrics_hashes.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -60,7 +62,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    runner_ = std::make_unique<NavigationThrottleRunner>(this, 1);
+    runner_ = std::make_unique<NavigationThrottleRunner>(this, 1, true);
   }
 
   void Resume() { runner_->CallResumeForTesting(); }
@@ -167,6 +169,8 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
             base::Unretained(this))));
   }
 
+  ukm::TestUkmRecorder& test_ukm_recorder() { return test_ukm_recorder_; }
+
  private:
   // NavigationThrottleRunner::Delegate:
   void OnNavigationEventProcessed(
@@ -186,6 +190,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
       NavigationThrottleRunner::Event::NoEvent;
   bool was_delegate_notified_ = false;
   NavigationThrottle::ThrottleCheckResult delegate_result_;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
 class NavigationThrottleRunnerTestWithEvent
@@ -368,6 +373,40 @@ TEST_P(NavigationThrottleRunnerTestWithEventAndAction, ProceedThenCancel) {
   EXPECT_EQ(event(), observer_last_event());
 }
 
+// Checks that a NavigationThrottle being deferred and resumed records UKM about
+// the deferral.
+TEST_P(NavigationThrottleRunnerTestWithEventAndAction, DeferRecordsUKM) {
+  TestNavigationThrottle* defer_throttle =
+      CreateTestNavigationThrottle(NavigationThrottle::DEFER);
+  CheckNotNotified(defer_throttle);
+
+  // Simulate the event. The request should be deferred.
+  SimulateEvent(event());
+  CheckNotified(defer_throttle);
+  EXPECT_TRUE(is_deferring());
+
+  // Resume the request. This should record UKM.
+  Resume();
+
+  // There should be one entry with name hash matching the logging name and
+  // event that is being run. Ignore the time for testing as it is variable, and
+  // even possibly 0.
+  const auto& entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::NavigationThrottleDeferredTime::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (auto* entry : entries) {
+    EXPECT_EQ(*ukm::TestUkmRecorder::GetEntryMetric(
+                  entry, ukm::builders::NavigationThrottleDeferredTime::
+                             kNavigationThrottleEventTypeName),
+              static_cast<int64_t>(event()));
+    EXPECT_EQ(*ukm::TestUkmRecorder::GetEntryMetric(
+                  entry, ukm::builders::NavigationThrottleDeferredTime::
+                             kNavigationThrottleNameHashName),
+              static_cast<int64_t>(
+                  base::HashMetricName(defer_throttle->GetNameForLogging())));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEventAndAction,
@@ -388,7 +427,7 @@ class NavigationThrottleRunnerTestWithEventAndError
       public testing::WithParamInterface<
           std::tuple<NavigationThrottleRunner::Event,
                      net::Error,
-                     base::Optional<std::string>>> {
+                     absl::optional<std::string>>> {
  public:
   NavigationThrottleRunnerTestWithEventAndError()
       : NavigationThrottleRunnerTest() {}
@@ -399,7 +438,7 @@ class NavigationThrottleRunnerTestWithEventAndError
   }
   NavigationThrottleRunner::Event event() const { return event_; }
   net::Error error() const { return error_; }
-  const base::Optional<std::string>& custom_error_page() const {
+  const absl::optional<std::string>& custom_error_page() const {
     return custom_error_page_;
   }
 
@@ -410,7 +449,7 @@ class NavigationThrottleRunnerTestWithEventAndError
  private:
   NavigationThrottleRunner::Event event_;
   net::Error error_;
-  base::Optional<std::string> custom_error_page_ = base::nullopt;
+  absl::optional<std::string> custom_error_page_ = absl::nullopt;
 };
 
 // Checks that the NavigationThrottleRunner correctly propagates a
@@ -456,6 +495,6 @@ INSTANTIATE_TEST_SUITE_P(
                           NavigationThrottleRunner::Event::WillFailRequest,
                           NavigationThrottleRunner::Event::WillProcessResponse),
         ::testing::Values(net::ERR_BLOCKED_BY_ADMINISTRATOR, net::ERR_ABORTED),
-        ::testing::Values(base::nullopt, "<html><body>test</body></html>")));
+        ::testing::Values(absl::nullopt, "<html><body>test</body></html>")));
 
 }  // namespace content

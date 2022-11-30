@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
 
@@ -119,6 +119,12 @@ class MenuItemBuilder {
     return *this;
   }
 
+  // Hide this item from the menu if |condition| is true.
+  MenuItemBuilder& set_hidden(bool condition) {
+    is_hidden_ |= condition;
+    return *this;
+  }
+
   // Builds a NSMenuItem instance from the properties set on the Builder.
   base::scoped_nsobject<NSMenuItem> Build() const;
 
@@ -140,7 +146,9 @@ class MenuItemBuilder {
 
   bool is_removed_ = false;
 
-  base::Optional<std::vector<MenuItemBuilder>> submenu_;
+  absl::optional<std::vector<MenuItemBuilder>> submenu_;
+
+  bool is_hidden_ = false;
 
   // Copy and assign allowed.
 };

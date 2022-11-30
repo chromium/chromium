@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<meta charset=UTF-8>
+<link rel="match" href="raster-scale-perspective-001-ref.html">
+<style>
+
+div.test {
+  will-change: transform;
+  transform-origin: top left;
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  background-size: 100% 100%;
+  position: absolute;
+}
+
+div.cover {
+  position: absolute;
+  width: 58px;
+  height: 58px;
+  border: 2px solid blue;
+}
+
+</style>
+
+<body>
+
+<script>
+
+const TESTS = [
+  { scale: 1.0, transform: "scale(1)" },
+  { scale: 1.0, transform: "perspective(0)" },
+  { scale: 1.0, transform: "perspective(50px)" },
+  { scale: 2.0, transform: "perspective(40px) translateZ(20px)" },
+  /* the test gradient seems to behave oddly if raster scale is less than 1 */
+  { scale: 2.0, transform: "scale(4) perspective(30px) translateZ(-30px)" },
+  { scale: 1.5, transform: "scale(1.5)" },
+  { scale: 1.5, transform: "scale(1.5) perspective(0)" },
+  { scale: 1.5, transform: "scale(1.5) perspective(50px)" },
+  { scale: 3.0, transform: "scale(1.5) perspective(40px) translateZ(20px)" },
+  { scale: 1.5, transform: "scale(3) perspective(50px) translateZ(-50px)" },
+];
+
+const tests_per_row = 5;
+
+for (const index in TESTS) {
+  const test = TESTS[index];
+  const y = Math.floor(index / tests_per_row);
+  const x = index - (y * tests_per_row);
+
+  let div = document.createElement("div");
+  div.className = "test";
+  div.style.left = `${x * 100}px`;
+  div.style.top = `${y * 100}px`;
+  const size = `${60 / test.scale}px`;
+  div.style.width = size;
+  div.style.height = size;
+
+  /* This should work with "1/" rather than "2/", but doesn't */
+  const stop_length = 2/(Math.sqrt(2) * test.scale);
+  div.style.backgroundImage = `repeating-linear-gradient(120deg, white 0px, white ${stop_length}px, black ${stop_length}px, black ${2 * stop_length}px)`;
+
+  div.style.transform = test.transform;
+
+  document.body.appendChild(div);
+
+  div = document.createElement("div");
+  div.className = "cover";
+  div.style.left = `${x * 100 - 1}px`;
+  div.style.top = `${y * 100 - 1}px`;
+  document.body.appendChild(div);
+}
+
+</script>

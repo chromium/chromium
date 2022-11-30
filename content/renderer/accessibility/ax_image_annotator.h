@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,17 @@
 #define CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_ANNOTATOR_H_
 
 #include <string>
-#include <unordered_map>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/cpp/image_processor.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -41,6 +39,10 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   AXImageAnnotator(
       RenderAccessibilityImpl* const render_accessibility,
       mojo::PendingRemote<image_annotation::mojom::Annotator> annotator);
+
+  AXImageAnnotator(const AXImageAnnotator&) = delete;
+  AXImageAnnotator& operator=(const AXImageAnnotator&) = delete;
+
   ~AXImageAnnotator() override;
 
   void Destroy();
@@ -55,6 +57,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   void OnImageUpdated(blink::WebAXObject& image);
   void OnImageRemoved(blink::WebAXObject& image);
 
+  static int GetLengthAfterRemovingStopwords(const std::string& image_name);
   static bool ImageNameHasMostlyStopwords(const std::string& image_name);
 
  private:
@@ -84,7 +87,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
    private:
     image_annotation::ImageProcessor image_processor_;
     ax::mojom::ImageAnnotationStatus status_;
-    base::Optional<std::string> annotation_;
+    absl::optional<std::string> annotation_;
   };
 
   // Retrieves the image data from the renderer.
@@ -125,12 +128,10 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   // Keeps track of the image data and the automatic annotations for each image.
   //
   // The key is retrieved using WebAXObject::AxID().
-  std::unordered_map<int, ImageInfo> image_annotations_;
+  std::map<int, ImageInfo> image_annotations_;
 
   // This member needs to be last because it should destructed first.
   base::WeakPtrFactory<AXImageAnnotator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AXImageAnnotator);
 };
 
 }  // namespace content

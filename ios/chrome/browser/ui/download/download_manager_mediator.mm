@@ -1,25 +1,23 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/download/download_manager_mediator.h"
 
-#include <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
 
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "ios/chrome/browser/download/download_directory_util.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
-#include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "net/base/net_errors.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -63,51 +61,7 @@ void DownloadManagerMediator::StartDowloading() {
   // "Start Download" button.
   [consumer_ setState:kDownloadManagerStateInProgress];
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&base::CreateDirectory, download_dir),
-      base::BindOnce(&DownloadManagerMediator::DownloadWithDestinationDir,
-                     weak_ptr_factory_.GetWeakPtr(), download_dir, task_));
-}
-
-void DownloadManagerMediator::DownloadWithDestinationDir(
-    const base::FilePath& destination_dir,
-    web::DownloadTask* task,
-    bool directory_created) {
-  if (!directory_created) {
-    [consumer_ setState:kDownloadManagerStateFailed];
-    return;
-  }
-
-  if (task_ != task) {
-    // Download task has been replaced, so simply ignore the old download.
-    return;
-  }
-
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  std::u16string file_name = task_->GetSuggestedFilename();
-  base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
-  auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
-  writer->Initialize(base::BindRepeating(
-      &DownloadManagerMediator::DownloadWithWriter,
-      weak_ptr_factory_.GetWeakPtr(), base::Passed(std::move(writer)), task_));
-}
-
-void DownloadManagerMediator::DownloadWithWriter(
-    std::unique_ptr<net::URLFetcherFileWriter> writer,
-    web::DownloadTask* task,
-    int writer_initialization_status) {
-  if (task_ != task) {
-    // Download task has been replaced, so simply ignore the old download.
-    return;
-  }
-
-  if (writer_initialization_status == net::OK) {
-    task_->Start(std::move(writer));
-  } else {
-    [consumer_ setState:kDownloadManagerStateFailed];
-  }
+  task_->Start(download_dir.Append(task_->GenerateFileName()));
 }
 
 void DownloadManagerMediator::OnDownloadUpdated(web::DownloadTask* task) {
@@ -122,7 +76,7 @@ void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
 
   if (state == kDownloadManagerStateSucceeded) {
-    download_path_ = task_->GetResponseWriter()->AsFileWriter()->file_path();
+    download_path_ = task_->GetResponsePath();
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -140,8 +94,9 @@ void DownloadManagerMediator::UpdateConsumer() {
   [consumer_ setCountOfBytesReceived:task_->GetReceivedBytes()];
   [consumer_ setCountOfBytesExpectedToReceive:task_->GetTotalBytes()];
   [consumer_ setProgress:GetDownloadManagerProgress()];
-  [consumer_
-      setFileName:base::SysUTF16ToNSString(task_->GetSuggestedFilename())];
+
+  base::FilePath filename = task_->GenerateFileName();
+  [consumer_ setFileName:base::SysUTF8ToNSString(filename.AsUTF8Unsafe())];
 
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {
@@ -151,20 +106,19 @@ void DownloadManagerMediator::UpdateConsumer() {
 }
 
 void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
-    base::FilePath download_path_,
+    base::FilePath download_path,
     bool file_exists) {
   if (!file_exists || !task_)
     return;
 
   base::FilePath user_download_path;
   GetDownloadsDirectory(&user_download_path);
-  user_download_path = user_download_path.Append(
-      base::UTF16ToUTF8(task_->GetSuggestedFilename()));
+  user_download_path = user_download_path.Append(task_->GenerateFileName());
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&base::Move, download_path_, user_download_path),
+      base::BindOnce(&base::Move, download_path, user_download_path),
       base::BindOnce(&DownloadManagerMediator::RestoreDownloadPath,
                      weak_ptr_factory_.GetWeakPtr(), user_download_path));
 }
@@ -183,8 +137,11 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
     case web::DownloadTask::State::kInProgress:
       return kDownloadManagerStateInProgress;
     case web::DownloadTask::State::kComplete:
-      return task_->GetErrorCode() ? kDownloadManagerStateFailed
-                                   : kDownloadManagerStateSucceeded;
+      return kDownloadManagerStateSucceeded;
+    case web::DownloadTask::State::kFailed:
+      return kDownloadManagerStateFailed;
+    case web::DownloadTask::State::kFailedNotResumable:
+      return kDownloadManagerStateFailedNotResumable;
     case web::DownloadTask::State::kCancelled:
       // Download Manager should dismiss the UI after download cancellation.
       return kDownloadManagerStateNotStarted;
@@ -196,6 +153,8 @@ int DownloadManagerMediator::GetDownloadManagerA11yAnnouncement() const {
     case web::DownloadTask::State::kNotStarted:
       return IDS_IOS_DOWNLOAD_MANAGER_REQUESTED_ACCESSIBILITY_ANNOUNCEMENT;
     case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable:
       return task_->GetErrorCode()
                  ? IDS_IOS_DOWNLOAD_MANAGER_FAILED_ACCESSIBILITY_ANNOUNCEMENT
                  : IDS_IOS_DOWNLOAD_MANAGER_SUCCEEDED_ACCESSIBILITY_ANNOUNCEMENT;

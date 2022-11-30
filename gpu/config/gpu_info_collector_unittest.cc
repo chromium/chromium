@@ -1,6 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "gpu/config/gpu_info_collector.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -9,15 +11,18 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
-#include "gpu/config/gpu_info_collector.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_context_stub.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -57,8 +62,8 @@ class GPUInfoCollectorTest
   void SetUp() override {
     testing::Test::SetUp();
     gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
-    gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
-    gl_.reset(new ::testing::StrictMock<::gl::MockGLInterface>());
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+    gl_ = std::make_unique<::testing::StrictMock<::gl::MockGLInterface>>();
     ::gl::MockGLInterface::SetGLInterface(gl_.get());
     switch (GetParam()) {
       case kMockedAndroid: {
@@ -182,12 +187,12 @@ class GPUInfoCollectorTest
   void TearDown() override {
     ::gl::MockGLInterface::SetGLInterface(nullptr);
     gl_.reset();
-    gl::init::ShutdownGL(false);
+    gl::GLSurfaceTestSupport::ShutdownGL(display_);
 
     testing::Test::TearDown();
   }
 
- public:
+ protected:
   // Use StrictMock to make 100% sure we know how GL will be called.
   std::unique_ptr<::testing::StrictMock<::gl::MockGLInterface>> gl_;
   GPUInfo test_values_;
@@ -197,6 +202,8 @@ class GPUInfoCollectorTest
 
   // Persistent storage is needed for the split extension string.
   std::vector<std::string> split_extensions_;
+
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(GPUConfig,
@@ -211,24 +218,24 @@ INSTANTIATE_TEST_SUITE_P(GPUConfig,
 // be fixed.
 TEST_P(GPUInfoCollectorTest, CollectGraphicsInfoGL) {
   GPUInfo gpu_info;
-  CollectGraphicsInfoGL(&gpu_info);
-#if defined(OS_WIN)
+  CollectGraphicsInfoGL(&gpu_info, gl::GetDefaultDisplay());
+#if BUILDFLAG(IS_WIN)
   if (GetParam() == kMockedWindows) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
     // Skip testing the driver version on Windows because it's
     // obtained from the bot's registry.
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   if (GetParam() == kMockedMacOSX) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
     EXPECT_EQ(test_values_.gpu.driver_version, gpu_info.gpu.driver_version);
   }
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (GetParam() == kMockedAndroid) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
     EXPECT_EQ(test_values_.gpu.driver_version, gpu_info.gpu.driver_version);
   }
-#else  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (GetParam() == kMockedLinux) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
     EXPECT_EQ(test_values_.gpu.driver_version, gpu_info.gpu.driver_version);

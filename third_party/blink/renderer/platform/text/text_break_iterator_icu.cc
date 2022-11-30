@@ -28,12 +28,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -53,6 +52,8 @@ class LineBreakIteratorPool final {
   }
 
   LineBreakIteratorPool() = default;
+  LineBreakIteratorPool(const LineBreakIteratorPool&) = delete;
+  LineBreakIteratorPool& operator=(const LineBreakIteratorPool&) = delete;
 
   icu::BreakIterator* Take(const AtomicString& locale) {
     icu::BreakIterator* iterator = nullptr;
@@ -66,7 +67,7 @@ class LineBreakIteratorPool final {
 
     if (!iterator) {
       UErrorCode open_status = U_ZERO_ERROR;
-      bool locale_is_empty = locale.IsEmpty();
+      bool locale_is_empty = locale.empty();
       iterator = icu::BreakIterator::createLineInstance(
           locale_is_empty ? icu::Locale(CurrentTextBreakLocaleID())
                           : icu::Locale(locale.Utf8().c_str()),
@@ -112,19 +113,17 @@ class LineBreakIteratorPool final {
 
   friend WTF::ThreadSpecific<LineBreakIteratorPool>::
   operator LineBreakIteratorPool*();
-
-  DISALLOW_COPY_AND_ASSIGN(LineBreakIteratorPool);
 };
 
 enum TextContext { kNoContext, kPriorContext, kPrimaryContext };
 
 const int kTextBufferCapacity = 16;
 
-typedef struct {
+struct UTextWithBuffer {
   DISALLOW_NEW();
   UText text;
   UChar buffer[kTextBufferCapacity];
-} UTextWithBuffer;
+};
 
 static inline int64_t TextPinIndex(int64_t& index, int64_t limit) {
   if (index < 0)
@@ -428,7 +427,8 @@ static UText* TextOpenLatin1(UTextWithBuffer* ut_with_buffer,
     DCHECK(!text);
     return nullptr;
   }
-  TextInit(text, &kTextLatin1Funcs, string.data(), string.size(), prior_context,
+  TextInit(text, &kTextLatin1Funcs, string.data(),
+           base::checked_cast<unsigned>(string.size()), prior_context,
            prior_context_length);
   return text;
 }
@@ -575,7 +575,8 @@ static UText* TextOpenUTF16(UText* text,
     DCHECK(!text);
     return nullptr;
   }
-  TextInit(text, &kTextUTF16Funcs, string.data(), string.size(), prior_context,
+  TextInit(text, &kTextUTF16Funcs, string.data(),
+           base::checked_cast<unsigned>(string.size()), prior_context,
            prior_context_length);
   return text;
 }
@@ -646,7 +647,7 @@ TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
 TextBreakIterator* WordBreakIterator(const String& string,
                                      int start,
                                      int length) {
-  if (string.IsEmpty())
+  if (string.empty())
     return nullptr;
   if (string.Is8Bit())
     return WordBreakIterator(string.Span8().subspan(start, length));
@@ -733,7 +734,7 @@ static TextBreakIterator* GetNonSharedCharacterBreakIterator() {
     ICUError error_code;
     iterator = base::WrapUnique(icu::BreakIterator::createCharacterInstance(
         icu::Locale(CurrentTextBreakLocaleID()), error_code));
-    CHECK(U_SUCCESS(error_code) && iterator)
+    DCHECK(U_SUCCESS(error_code) && iterator)
         << "ICU could not open a break iterator: " << u_errorName(error_code)
         << " (" << error_code << ")";
   }
@@ -749,7 +750,7 @@ NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(
       offset_(0),
       length_(0),
       iterator_(nullptr) {
-  if (string.IsEmpty())
+  if (string.empty())
     return;
 
   is_8bit_ = string.Is8Bit();

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,56 +10,55 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
-    # Component apps common image resources - 1x
-    "apps/topbar_button_close.png",
-    "apps/topbar_button_maximize.png",
-    "apps/topbar_button_minimize.png",
-
-    # Component apps common image resources - 2x
-    "2x/apps/topbar_button_close.png",
-    "2x/apps/topbar_button_maximize.png",
-    "2x/apps/topbar_button_minimize.png",
-
-    # Non-apps images
     "add.svg",
     "cancel_red.svg",
-    "check_circle_green.svg",
-    "check.png",
     "checkbox_black.png",
     "checkbox_white.png",
+    "check_circle_green.svg",
+    "check.png",
+    "dark/icon_search.svg",
     "disabled_select.png",
+    "drop_down_arrow_black.svg",
+    "drop_down_arrow_gray.svg",
+    "drop_down_arrow_white.svg",
     "error.svg",
-    "icon_search.svg",
+    "icon_cancel.svg",
+    "icon_copy_content.svg",
+    "icon_file.png",
     "icon_refresh.svg",
+    "icon_search.svg",
+    "open_in_new.svg",
     "select.png",
     "throbber_medium.svg",
+    "throbber_small_dark.svg",
     "throbber_small.svg",
-  ]
+    "tree_triangle.svg",
 
-  if (!is_android) {
-    input_files += [
-      "icon_copy_content.svg",
-      "open_in_new.svg",
-    ]
-  }
+    "2x/checkbox_black.png",
+    "2x/checkbox_white.png",
+    "2x/check.png",
+    "2x/disabled_select.png",
+    "2x/select.png",
+  ]
 
   if (!is_android && !is_ios) {
     input_files += [
-      "200-logo_googleg.png",
       "arrow_down.svg",
       "arrow_right.svg",
       "business.svg",
+      "chrome_logo_dark.svg",
       "dark/arrow_down.svg",
-      "dark/icon_search.svg",
       "icon_arrow_back.svg",
       "icon_arrow_dropdown.svg",
       "icon_bookmark.svg",
-      "icon_cancel.svg",
       "icon_clear.svg",
+      "icon_clock.svg",
       "icon_delete_gray.svg",
       "icon_edit.svg",
       "icon_expand_less.svg",
       "icon_expand_more.svg",
+      "icon_folder_open.svg",
+      "icon_journeys.svg",
       "icon_more_vert.svg",
       "icon_picture_delete.svg",
       "icon_settings.svg",
@@ -67,5 +66,11 @@ generate_grd("build_grdp") {
       "icon_visibility.svg",
     ]
   }
+
+  if (is_chromeos) {
+    input_files += [ "os_flags_app_icon.svg" ]
+    input_files += [ "os_system_app_icon.svg" ]
+  }
+
   resource_path_prefix = "images"
 }

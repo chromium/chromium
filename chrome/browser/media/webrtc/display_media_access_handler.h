@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,19 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_DISPLAY_MEDIA_ACCESS_HANDLER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/web_contents.h"
 
 namespace extensions {
 class Extension;
@@ -31,6 +33,11 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   DisplayMediaAccessHandler(
       std::unique_ptr<DesktopMediaPickerFactory> picker_factory,
       bool display_notification);
+
+  DisplayMediaAccessHandler(const DisplayMediaAccessHandler&) = delete;
+  DisplayMediaAccessHandler& operator=(const DisplayMediaAccessHandler&) =
+      delete;
+
   ~DisplayMediaAccessHandler() override;
 
   // MediaAccessHandler implementation.
@@ -55,16 +62,46 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
  private:
   friend class DisplayMediaAccessHandlerTest;
 
-  struct PendingAccessRequest;
-  using RequestsQueue =
-      base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
-  using RequestsQueues = base::flat_map<content::WebContents*, RequestsQueue>;
+  void ProcessChangeSourceRequest(content::WebContents* web_contents,
+                                  const content::MediaStreamRequest& request,
+                                  content::MediaResponseCallback callback);
 
+  // Processes one pending request. Requests are queued so that we display one
+  // picker UI at a time for each content::WebContents.
   void ProcessQueuedAccessRequest(const RequestsQueue& queue,
                                   content::WebContents* web_contents);
 
-  void OnPickerDialogResults(content::WebContents* web_contents,
-                             content::DesktopMediaID source);
+  void ProcessQueuedPickerRequest(const PendingAccessRequest& pending_request,
+                                  content::WebContents* web_contents,
+                                  AllowedScreenCaptureLevel capture_level,
+                                  const GURL& request_origin);
+
+  void ProcessQueuedChangeSourceRequest(
+      const content::MediaStreamRequest& request,
+      content::WebContents* web_contents);
+
+  void RejectRequest(content::WebContents* web_contents,
+                     blink::mojom::MediaStreamRequestResult result);
+
+  // Helper to finalize processing the first queued request for |web_contents|,
+  // after all checks have been performed. Calls ProcessQueuedAccessRequest() if
+  // there are more requests left in the queue.
+  void AcceptRequest(content::WebContents* web_contents,
+                     const content::DesktopMediaID& media_id);
+
+  // Called back after the user chooses one of the possible desktop media
+  // sources for the request that's currently being processed. If no |media_id|
+  // is given, the request was rejected, either by the browser or by the user.
+  void OnDisplaySurfaceSelected(
+      base::WeakPtr<content::WebContents> web_contents,
+      content::DesktopMediaID media_id);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Called back after checking Data Leak Prevention (DLP) restrictions.
+  void OnDlpRestrictionChecked(base::WeakPtr<content::WebContents> web_contents,
+                               const content::DesktopMediaID& media_id,
+                               bool is_dlp_allowed);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void DeletePendingAccessRequest(int render_process_id,
                                   int render_frame_id,
@@ -78,8 +115,6 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   RequestsQueues pending_requests_;
 
   WebContentsCollection web_contents_collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayMediaAccessHandler);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DISPLAY_MEDIA_ACCESS_HANDLER_H_

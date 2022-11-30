@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,9 +35,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -46,6 +49,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 import org.chromium.components.find_in_page.FindInPageBridge;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
@@ -58,7 +63,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A toolbar providing find in page functionality. */
-public class FindToolbar extends LinearLayout {
+public class FindToolbar extends LinearLayout implements BackPressHandler {
     private static final String TAG = "FindInPage";
 
     private static final long ACCESSIBLE_ANNOUNCEMENT_DELAY_MILLIS = 500;
@@ -109,6 +114,8 @@ public class FindToolbar extends LinearLayout {
     private Handler mHandler = new Handler();
     private Runnable mAccessibleAnnouncementRunnable;
     private boolean mAccessibilityDidActivateResult;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
 
     /** Subclasses EditText in order to intercept BACK key presses. */
     @SuppressLint("Instantiatable")
@@ -117,7 +124,9 @@ public class FindToolbar extends LinearLayout {
 
         public FindQuery(Context context, AttributeSet attrs) {
             super(context, attrs);
-            setOnKeyListener(this);
+            if (!BackPressManager.isEnabled() && !BuildInfo.isAtLeastT()) {
+                setOnKeyListener(this);
+            }
         }
 
         void setFindToolbar(FindToolbar findToolbar) {
@@ -134,6 +143,7 @@ public class FindToolbar extends LinearLayout {
                 } else if (event.getAction() == KeyEvent.ACTION_UP) {
                     getKeyDispatcherState().handleUpEvent(event);
                     if (event.isTracking() && !event.isCanceled()) {
+                        BackPressManager.record(Type.FIND_TOOLBAR);
                         mFindToolbar.deactivate();
                         return true;
                     }
@@ -367,7 +377,17 @@ public class FindToolbar extends LinearLayout {
         mDivider = findViewById(R.id.find_separator);
     }
 
-    // Overriden by subclasses.
+    @Override
+    public void handleBackPress() {
+        deactivate();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
+    // Overridden by subclasses.
     protected void findResultSelected(Rect rect) {}
 
     private void hideKeyboardAndStartFinding(boolean forward) {
@@ -661,6 +681,7 @@ public class FindToolbar extends LinearLayout {
 
     private void setCurrentState(@FindLocationBarState int state) {
         mCurrentState = state;
+        mBackPressStateSupplier.set(mCurrentState == FindLocationBarState.SHOWN);
 
         // Notify the observers if we hit the transition states.
         if (mObserver != null) {
@@ -780,9 +801,8 @@ public class FindToolbar extends LinearLayout {
      * @return          The color of the status text.
      */
     protected int getStatusColor(boolean failed, boolean incognito) {
-        int colorResourceId = failed ? R.color.find_in_page_failed_results_status_color
-                                     : R.color.default_text_color_secondary;
-        return ApiCompatibilityUtils.getColor(getContext().getResources(), colorResourceId);
+        return failed ? getContext().getColor(R.color.find_in_page_failed_results_status_color)
+                      : SemanticColorUtils.getDefaultTextColorSecondary(getContext());
     }
 
     protected void setPrevNextEnabled(boolean enable) {

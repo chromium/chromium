@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,22 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/stl_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
+#include "net/base/features.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -44,7 +52,7 @@ struct AvailableIds {
 
 GURL URL(const GURL& origin, const std::string& path) {
   EXPECT_TRUE(origin.is_valid());
-  EXPECT_EQ(origin, origin.GetOrigin());
+  EXPECT_EQ(origin, origin.DeprecatedGetOriginAsURL());
   GURL out(origin.spec() + path);
   EXPECT_TRUE(out.is_valid());
   return out;
@@ -69,12 +77,13 @@ void VerifyRegistrationData(const RegistrationData& expected,
                             const RegistrationData& actual) {
   EXPECT_EQ(expected.registration_id, actual.registration_id);
   EXPECT_EQ(expected.scope, actual.scope);
+  EXPECT_EQ(expected.key, actual.key);
   EXPECT_EQ(expected.script, actual.script);
   EXPECT_EQ(expected.script_type, actual.script_type);
   EXPECT_EQ(expected.update_via_cache, actual.update_via_cache);
   EXPECT_EQ(expected.version_id, actual.version_id);
   EXPECT_EQ(expected.is_active, actual.is_active);
-  EXPECT_EQ(expected.has_fetch_handler, actual.has_fetch_handler);
+  EXPECT_EQ(expected.fetch_handler_type, actual.fetch_handler_type);
   EXPECT_EQ(expected.last_update_check, actual.last_update_check);
   EXPECT_EQ(expected.used_features, actual.used_features);
   EXPECT_EQ(expected.resources_total_size_bytes,
@@ -82,6 +91,16 @@ void VerifyRegistrationData(const RegistrationData& expected,
   EXPECT_EQ(expected.script_response_time, actual.script_response_time);
   EXPECT_EQ(expected.cross_origin_embedder_policy,
             actual.cross_origin_embedder_policy);
+  EXPECT_EQ(expected.ancestor_frame_type, actual.ancestor_frame_type);
+  if (expected.policy_container_policies) {
+    EXPECT_EQ(expected.policy_container_policies,
+              actual.policy_container_policies);
+  } else {
+    // Null policy container policies will be read as default policies because
+    // there's always going to be a default Cross Origin Embedder Policy
+    EXPECT_EQ(blink::mojom::PolicyContainerPolicies::New(),
+              actual.policy_container_policies);
+  }
 }
 
 void VerifyResourceRecords(const std::vector<ResourceRecordPtr>& expected,
@@ -101,6 +120,12 @@ network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyNone() {
 network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyRequireCorp() {
   network::CrossOriginEmbedderPolicy out;
   out.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  return out;
+}
+
+network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyCredentialless() {
+  network::CrossOriginEmbedderPolicy out;
+  out.value = network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
   return out;
 }
 
@@ -166,6 +191,8 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_ValidSchemaVersion) {
   resources.push_back(CreateResource(1, URL(origin, "/resource"), 10));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   RegistrationData data;
+  data.scope = origin;
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
@@ -189,6 +216,8 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_ObsoleteSchemaVersion) {
   resources.push_back(CreateResource(1, URL(origin, "/resource"), 10));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   RegistrationData data;
+  data.scope = origin;
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
@@ -227,6 +256,8 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_CorruptedSchemaVersion) {
   resources.push_back(CreateResource(1, URL(origin, "/resource"), 10));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   RegistrationData data;
+  data.scope = origin;
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
@@ -304,6 +335,7 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   data1.registration_id = 100;
   data1.scope = URL(origin, "/foo");
+  data1.key = blink::StorageKey(url::Origin::Create(data1.scope));
   data1.script = URL(origin, "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 300;
@@ -323,6 +355,7 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   RegistrationData data2;
   data2.registration_id = 10;
   data2.scope = URL(origin, "/bar");
+  data2.key = blink::StorageKey(url::Origin::Create(data2.scope));
   data2.script = URL(origin, "/script2.js");
   data2.version_id = 20;
   data2.resources_total_size_bytes = 400;
@@ -348,21 +381,23 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   EXPECT_EQ(21, ids.res_id);
 }
 
-TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
+TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
-  std::set<url::Origin> origins;
+  std::set<blink::StorageKey> keys;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetOriginsWithRegistrations(&origins));
-  EXPECT_TRUE(origins.empty());
+            database->GetStorageKeysWithRegistrations(&keys));
+  EXPECT_TRUE(keys.empty());
 
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
-  url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
+  GURL origin1 = GURL("https://example.com");
+  blink::StorageKey key1(url::Origin::Create(origin1));
   RegistrationData data1;
   data1.registration_id = 123;
-  data1.scope = URL(origin1.GetURL(), "/foo");
-  data1.script = URL(origin1.GetURL(), "/script1.js");
+  data1.scope = URL(origin1, "/foo");
+  data1.key = key1;
+  data1.script = URL(origin1, "/script1.js");
   data1.version_id = 456;
   data1.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources1;
@@ -370,11 +405,13 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data1, resources1, &deleted_version));
 
-  url::Origin origin2 = url::Origin::Create(GURL("https://www.example.com"));
+  GURL origin2 = GURL("https://www.example.com");
+  blink::StorageKey key2(url::Origin::Create(origin2));
   RegistrationData data2;
   data2.registration_id = 234;
-  data2.scope = URL(origin2.GetURL(), "/bar");
-  data2.script = URL(origin2.GetURL(), "/script2.js");
+  data2.scope = URL(origin2, "/bar");
+  data2.key = key2;
+  data2.script = URL(origin2, "/script2.js");
   data2.version_id = 567;
   data2.resources_total_size_bytes = 200;
   std::vector<ResourceRecordPtr> resources2;
@@ -382,11 +419,13 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data2, resources2, &deleted_version));
 
-  url::Origin origin3 = url::Origin::Create(GURL("https://example.org"));
+  GURL origin3 = GURL("https://example.org");
+  blink::StorageKey key3(url::Origin::Create(origin3));
   RegistrationData data3;
   data3.registration_id = 345;
-  data3.scope = URL(origin3.GetURL(), "/hoge");
-  data3.script = URL(origin3.GetURL(), "/script3.js");
+  data3.scope = URL(origin3, "/hoge");
+  data3.key = key3;
+  data3.script = URL(origin3, "/script3.js");
   data3.version_id = 678;
   data3.resources_total_size_bytes = 300;
   std::vector<ResourceRecordPtr> resources3;
@@ -394,11 +433,12 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data3, resources3, &deleted_version));
 
-  // |origin3| has two registrations.
+  // |key3| has two registrations.
   RegistrationData data4;
   data4.registration_id = 456;
-  data4.scope = URL(origin3.GetURL(), "/fuga");
-  data4.script = URL(origin3.GetURL(), "/script4.js");
+  data4.scope = URL(origin3, "/fuga");
+  data4.key = key3;
+  data4.script = URL(origin3, "/script4.js");
   data4.version_id = 789;
   data4.resources_total_size_bytes = 400;
   std::vector<ResourceRecordPtr> resources4;
@@ -406,55 +446,137 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data4, resources4, &deleted_version));
 
-  origins.clear();
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetOriginsWithRegistrations(&origins));
-  EXPECT_EQ(3U, origins.size());
-  EXPECT_TRUE(base::Contains(origins, origin1));
-  EXPECT_TRUE(base::Contains(origins, origin2));
-  EXPECT_TRUE(base::Contains(origins, origin3));
+  // Add some partitioned keys.
+  // Make sure kThirdPartyStoragePartitioning is enabled so the keys are
+  // inserted as partitioned.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
 
-  // |origin3| has another registration, so should not remove it from the
+  GURL origin5 = GURL("https://example.org");
+  net::SchemefulSite top_level_site1(GURL("https://toplevel.com"));
+  blink::StorageKey key5 = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(origin5), top_level_site1);
+  RegistrationData data5;
+  data5.registration_id = 567;
+  data5.scope = URL(origin5, "/hoge");
+  data5.key = key5;
+  data5.script = URL(origin5, "/script5.js");
+  data5.version_id = 890;
+  data5.resources_total_size_bytes = 500;
+  std::vector<ResourceRecordPtr> resources5;
+  resources5.push_back(CreateResource(5, data5.script, 500));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data5, resources5, &deleted_version));
+
+  GURL origin6 = GURL("https://example.org");
+  net::SchemefulSite top_level_site2(GURL("https://toplevel2.com"));
+  blink::StorageKey key6 = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(origin6), top_level_site2);
+  RegistrationData data6;
+  data6.registration_id = 678;
+  data6.scope = URL(origin6, "/hoge");
+  data6.key = key6;
+  data6.script = URL(origin6, "/script6.js");
+  data6.version_id = 8910;
+  data6.resources_total_size_bytes = 600;
+  std::vector<ResourceRecordPtr> resources6;
+  resources6.push_back(CreateResource(6, data6.script, 600));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data6, resources6, &deleted_version));
+
+  scoped_feature_list.Reset();
+  // Because kThirdPartyStoragePartitioning is disabled now we shouldn't get the
+  // partitioned keys in the following checks.
+
+  // Keys with nonces should always be gettable.
+  GURL origin7 = GURL("https://example.org");
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  blink::StorageKey key7 =
+      blink::StorageKey::CreateWithNonce(url::Origin::Create(origin7), token);
+  RegistrationData data7;
+  data7.registration_id = 789;
+  data7.scope = URL(origin7, "/hoge");
+  data7.key = key7;
+  data7.script = URL(origin7, "/script7.js");
+  data7.version_id = 91011;
+  data7.resources_total_size_bytes = 700;
+  std::vector<ResourceRecordPtr> resources7;
+  resources7.push_back(CreateResource(7, data7.script, 700));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data7, resources7, &deleted_version));
+
+  keys.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetStorageKeysWithRegistrations(&keys));
+  EXPECT_EQ(4U, keys.size());
+  EXPECT_TRUE(base::Contains(keys, key1));
+  EXPECT_TRUE(base::Contains(keys, key2));
+  EXPECT_TRUE(base::Contains(keys, key3));
+  EXPECT_TRUE(base::Contains(keys, key7));
+
+  // |key3| has another registration, so should not remove it from the
   // unique origin list.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data4.registration_id,
-                                         origin3.GetURL(), &deleted_version));
+            database->DeleteRegistration(data4.registration_id, key3,
+                                         &deleted_version));
   EXPECT_EQ(data4.registration_id, deleted_version.registration_id);
 
-  origins.clear();
+  keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetOriginsWithRegistrations(&origins));
-  EXPECT_EQ(3U, origins.size());
-  EXPECT_TRUE(base::Contains(origins, origin1));
-  EXPECT_TRUE(base::Contains(origins, origin2));
-  EXPECT_TRUE(base::Contains(origins, origin3));
+            database->GetStorageKeysWithRegistrations(&keys));
+  EXPECT_EQ(4U, keys.size());
+  EXPECT_TRUE(base::Contains(keys, key1));
+  EXPECT_TRUE(base::Contains(keys, key2));
+  EXPECT_TRUE(base::Contains(keys, key3));
+  EXPECT_TRUE(base::Contains(keys, key7));
 
-  // |origin3| should be removed from the unique origin list.
+  // |key3| should be removed from the unique origin list.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data3.registration_id,
-                                         origin3.GetURL(), &deleted_version));
+            database->DeleteRegistration(data3.registration_id, key3,
+                                         &deleted_version));
   EXPECT_EQ(data3.registration_id, deleted_version.registration_id);
 
-  origins.clear();
+  keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetOriginsWithRegistrations(&origins));
-  EXPECT_EQ(2U, origins.size());
-  EXPECT_TRUE(base::Contains(origins, origin1));
-  EXPECT_TRUE(base::Contains(origins, origin2));
+            database->GetStorageKeysWithRegistrations(&keys));
+  EXPECT_EQ(3U, keys.size());
+  EXPECT_TRUE(base::Contains(keys, key1));
+  EXPECT_TRUE(base::Contains(keys, key2));
+  EXPECT_TRUE(base::Contains(keys, key7));
+
+  // Now re-enable kThirdPartyStoragePartitioning and check for the partitioned
+  // keys.
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  keys.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetStorageKeysWithRegistrations(&keys));
+  EXPECT_EQ(5U, keys.size());
+  EXPECT_TRUE(base::Contains(keys, key1));
+  EXPECT_TRUE(base::Contains(keys, key2));
+  EXPECT_TRUE(base::Contains(keys, key5));
+  EXPECT_TRUE(base::Contains(keys, key6));
+  EXPECT_TRUE(base::Contains(keys, key7));
 }
 
-TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
+TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
   GURL origin1("https://example.com");
   GURL origin2("https://www.example.com");
   GURL origin3("https://example.org");
 
+  blink::StorageKey key1(url::Origin::Create(origin1));
+  blink::StorageKey key2(url::Origin::Create(origin2));
+  blink::StorageKey key3(url::Origin::Create(origin3));
+
   std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   std::vector<std::vector<ResourceRecordPtr>> resources_list;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetRegistrationsForOrigin(
-                url::Origin::Create(origin1), &registrations, &resources_list));
+            database->GetRegistrationsForStorageKey(key1, &registrations,
+                                                    &resources_list));
   EXPECT_TRUE(registrations.empty());
   EXPECT_TRUE(resources_list.empty());
 
@@ -463,11 +585,17 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin1, "/foo");
+  data1.key = key1;
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
   data1.script_response_time = base::Time::FromJsTime(0);
   data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+  data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data1.policy_container_policies->cross_origin_embedder_policy =
+      data1.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -476,8 +604,8 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   registrations.clear();
   resources_list.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetRegistrationsForOrigin(
-                url::Origin::Create(origin1), &registrations, &resources_list));
+            database->GetRegistrationsForStorageKey(key1, &registrations,
+                                                    &resources_list));
   EXPECT_EQ(1U, registrations.size());
   VerifyRegistrationData(data1, *registrations[0]);
   EXPECT_EQ(1U, resources_list.size());
@@ -486,11 +614,17 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   RegistrationData data2;
   data2.registration_id = 200;
   data2.scope = URL(origin2, "/bar");
+  data2.key = key2;
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
   data2.script_response_time = base::Time::FromJsTime(42);
   data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
+  data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data2.policy_container_policies->cross_origin_embedder_policy =
+      data2.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -499,8 +633,8 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   registrations.clear();
   resources_list.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetRegistrationsForOrigin(
-                url::Origin::Create(origin2), &registrations, &resources_list));
+            database->GetRegistrationsForStorageKey(key2, &registrations,
+                                                    &resources_list));
   EXPECT_EQ(1U, registrations.size());
   VerifyRegistrationData(data2, *registrations[0]);
   EXPECT_EQ(1U, resources_list.size());
@@ -509,25 +643,36 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   RegistrationData data3;
   data3.registration_id = 300;
   data3.scope = URL(origin3, "/hoge");
+  data3.key = key3;
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
   data3.script_response_time = base::Time::FromJsTime(420);
   data3.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+  data3.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data3.policy_container_policies->cross_origin_embedder_policy =
+      data3.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data3, resources3, &deleted_version));
 
-  // |origin3| has two registrations.
+  // |key3| has two registrations.
   RegistrationData data4;
   data4.registration_id = 400;
   data4.scope = URL(origin3, "/fuga");
+  data4.key = key3;
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
   data4.script_response_time = base::Time::FromJsTime(4200);
-  data4.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
+  data4.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  data4.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data4.policy_container_policies->cross_origin_embedder_policy =
+      data4.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources4;
   resources4.push_back(CreateResource(4, data4.script, 400));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -536,8 +681,8 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   registrations.clear();
   resources_list.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetRegistrationsForOrigin(
-                url::Origin::Create(origin3), &registrations, &resources_list));
+            database->GetRegistrationsForStorageKey(key3, &registrations,
+                                                    &resources_list));
   EXPECT_EQ(2U, registrations.size());
   VerifyRegistrationData(data3, *registrations[0]);
   VerifyRegistrationData(data4, *registrations[1]);
@@ -545,12 +690,12 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   VerifyResourceRecords(resources3, resources_list[0]);
   VerifyResourceRecords(resources4, resources_list[1]);
 
-  // The third parameter |opt_resources_list| to GetRegistrationsForOrigin()
+  // The third parameter |opt_resources_list| to GetRegistrationsForStorageKey()
   // is optional. So, nullptr should be acceptable.
   registrations.clear();
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetRegistrationsForOrigin(url::Origin::Create(origin1),
-                                                &registrations, nullptr));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->GetRegistrationsForStorageKey(key1, &registrations, nullptr));
   EXPECT_EQ(1U, registrations.size());
   VerifyRegistrationData(data1, *registrations[0]);
 }
@@ -569,10 +714,16 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin1, "/foo");
+  data1.key = blink::StorageKey(url::Origin::Create(data1.scope));
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
   data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+  data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data1.policy_container_policies->cross_origin_embedder_policy =
+      data1.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -582,11 +733,17 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data2;
   data2.registration_id = 200;
   data2.scope = URL(origin2, "/bar");
+  data2.key = blink::StorageKey(url::Origin::Create(data2.scope));
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
   data2.update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
   data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
+  data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data2.policy_container_policies->cross_origin_embedder_policy =
+      data2.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -596,9 +753,16 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data3;
   data3.registration_id = 300;
   data3.scope = URL(origin3, "/hoge");
+  data3.key = blink::StorageKey(url::Origin::Create(data3.scope));
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
+  data3.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  data3.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data3.policy_container_policies->cross_origin_embedder_policy =
+      data3.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -608,6 +772,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data4;
   data4.registration_id = 400;
   data4.scope = URL(origin3, "/fuga");
+  data4.key = blink::StorageKey(url::Origin::Create(data4.scope));
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
@@ -616,24 +781,113 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data4, resources4, &deleted_version));
 
+  // Add partitioned keys.
+  // Make sure kThirdPartyStoragePartitioning is enabled so the keys are
+  // inserted as partitioned.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  GURL origin5("https://www5.example.com");
+  net::SchemefulSite top_level_site1(GURL("https://toplevel.com"));
+  RegistrationData data5;
+  data5.registration_id = 500;
+  data5.scope = URL(origin5, "/hoge");
+  data5.key = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(data5.scope), top_level_site1);
+  data5.script = URL(origin5, "/script5.js");
+  data5.version_id = 5000;
+  data5.resources_total_size_bytes = 500;
+  data5.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  std::vector<ResourceRecordPtr> resources5;
+  data5.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data5.policy_container_policies->cross_origin_embedder_policy =
+      data5.cross_origin_embedder_policy.value;
+  resources5.push_back(CreateResource(5, data5.script, 500));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data5, resources5, &deleted_version));
+
+  GURL origin6("https://www6.example.com");
+  net::SchemefulSite top_level_site2(GURL("https://toplevel2.com"));
+  RegistrationData data6;
+  data6.registration_id = 600;
+  data6.scope = URL(origin6, "/hoge");
+  data6.key = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(data6.scope), top_level_site2);
+  data6.script = URL(origin6, "/script6.js");
+  data6.version_id = 6000;
+  data6.resources_total_size_bytes = 600;
+  data6.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  data6.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data6.policy_container_policies->cross_origin_embedder_policy =
+      data6.cross_origin_embedder_policy.value;
+  std::vector<ResourceRecordPtr> resources6;
+  resources6.push_back(CreateResource(6, data6.script, 600));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data6, resources6, &deleted_version));
+
+  // Disable partitioning to ensure the partitioned keys are not found.
+  scoped_feature_list.Reset();
+
+  // Keys with nonces should always be gettable.
+  GURL origin7 = GURL("https://www7.example.com");
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  RegistrationData data7;
+  data7.registration_id = 700;
+  data7.scope = URL(origin7, "/hoge");
+  data7.key = blink::StorageKey::CreateWithNonce(
+      url::Origin::Create(data7.scope), token);
+  data7.script = URL(origin7, "/script7.js");
+  data7.version_id = 7000;
+  data7.resources_total_size_bytes = 700;
+  data7.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  data7.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data7.policy_container_policies->cross_origin_embedder_policy =
+      data7.cross_origin_embedder_policy.value;
+  std::vector<ResourceRecordPtr> resources7;
+  resources7.push_back(CreateResource(7, data7.script, 700));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data7, resources7, &deleted_version));
+
   registrations.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetAllRegistrations(&registrations));
-  EXPECT_EQ(4U, registrations.size());
+  EXPECT_EQ(5U, registrations.size());
 
   VerifyRegistrationData(data1, *registrations[0]);
   VerifyRegistrationData(data2, *registrations[1]);
   VerifyRegistrationData(data3, *registrations[2]);
   VerifyRegistrationData(data4, *registrations[3]);
+  VerifyRegistrationData(data7, *registrations[4]);
+
+  // Re-enable partitioning and check for the partitioned keys.
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  registrations.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetAllRegistrations(&registrations));
+  EXPECT_EQ(7U, registrations.size());
+
+  VerifyRegistrationData(data5, *registrations[4]);
+  VerifyRegistrationData(data6, *registrations[5]);
 }
 
 TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
   GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 10939 + 200;
@@ -670,15 +924,15 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
+            database->ReadRegistration(data.registration_id, key, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data, *data_out);
   VerifyResourceRecords(resources, resources_out);
-  GURL origin_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->ReadRegistrationOrigin(data.registration_id, &origin_out));
-  EXPECT_EQ(origin, origin_out);
+      database->ReadRegistrationStorageKey(data.registration_id, &key_out));
+  EXPECT_EQ(key, key_out);
 
   // Make sure that the resource is removed from the uncommitted list.
   uncommitted_ids_out.clear();
@@ -687,7 +941,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   EXPECT_TRUE(uncommitted_ids_out.empty());
 
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data.registration_id, origin,
+            database->DeleteRegistration(data.registration_id, key,
                                          &deleted_version));
   EXPECT_EQ(data.version_id, deleted_version.version_id);
   ASSERT_EQ(resources.size(), deleted_version.newly_purgeable_resources.size());
@@ -698,12 +952,12 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   // Make sure that the registration and resource records are gone.
   resources_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
+            database->ReadRegistration(data.registration_id, key, &data_out,
                                        &resources_out));
   EXPECT_TRUE(resources_out.empty());
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
-      database->ReadRegistrationOrigin(data.registration_id, &origin_out));
+      database->ReadRegistrationStorageKey(data.registration_id, &key_out));
 
   // Resources should be purgeable because these are no longer referred.
   std::vector<int64_t> purgeable_ids_out;
@@ -721,6 +975,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 19 + 29129;
@@ -743,9 +998,11 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
   // Delete from an origin that has a registration.
   deleted_version.version_id = kArbitraryVersionId;
   deleted_version.newly_purgeable_resources.clear();
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(kNonExistentRegistrationId, origin,
-                                         &deleted_version));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->DeleteRegistration(
+          kNonExistentRegistrationId,
+          blink::StorageKey(url::Origin::Create(origin)), &deleted_version));
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
             deleted_version.version_id);
   EXPECT_TRUE(deleted_version.newly_purgeable_resources.empty());
@@ -753,10 +1010,12 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
   // Delete from an origin that has no registration.
   deleted_version.version_id = kArbitraryVersionId;
   deleted_version.newly_purgeable_resources.clear();
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(kNonExistentRegistrationId,
-                                         GURL("https://example.net"),
-                                         &deleted_version));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->DeleteRegistration(
+          kNonExistentRegistrationId,
+          blink::StorageKey::CreateFromStringForTesting("https://example.net"),
+          &deleted_version));
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
             deleted_version.version_id);
   EXPECT_TRUE(deleted_version.newly_purgeable_resources.empty());
@@ -766,9 +1025,11 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
   GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 10 + 11;
@@ -793,7 +1054,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
+            database->ReadRegistration(data.registration_id, key, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data, *data_out);
   VerifyResourceRecords(resources1, resources_out);
@@ -828,7 +1089,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   // is moved to the purgeable list.
   resources_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(updated_data->registration_id, origin,
+            database->ReadRegistration(updated_data->registration_id, key,
                                        &data_out, &resources_out));
   VerifyRegistrationData(*updated_data, *data_out);
   VerifyResourceRecords(resources2, resources_out);
@@ -844,6 +1105,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
 TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
 
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
@@ -851,6 +1113,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin, "/foo");
+  data1.key = key;
   data1.script = URL(origin, "/resource1");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 1451 + 15234;
@@ -865,6 +1128,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(origin, "/bar");
+  data2.key = key;
   data2.script = URL(origin, "/resource3");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 5 + 6;
@@ -879,27 +1143,27 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data1.registration_id, origin, &data_out,
+            database->ReadRegistration(data1.registration_id, key, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data1, *data_out);
   VerifyResourceRecords(resources1, resources_out);
-  GURL origin_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->ReadRegistrationOrigin(data1.registration_id, &origin_out));
-  EXPECT_EQ(origin, origin_out);
+      database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
+  EXPECT_EQ(key, key_out);
 
   // Make sure that registration2 is also stored.
   resources_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data2.registration_id, origin, &data_out,
+            database->ReadRegistration(data2.registration_id, key, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data2, *data_out);
   VerifyResourceRecords(resources2, resources_out);
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->ReadRegistrationOrigin(data2.registration_id, &origin_out));
-  EXPECT_EQ(origin, origin_out);
+      database->ReadRegistrationStorageKey(data2.registration_id, &key_out));
+  EXPECT_EQ(key, key_out);
 
   std::vector<int64_t> purgeable_ids_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -908,19 +1172,19 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
 
   // Delete registration1.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data1.registration_id, origin,
+            database->DeleteRegistration(data1.registration_id, key,
                                          &deleted_version));
   EXPECT_EQ(data1.registration_id, deleted_version.registration_id);
 
   // Make sure that registration1 is gone.
   resources_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->ReadRegistration(data1.registration_id, origin, &data_out,
+            database->ReadRegistration(data1.registration_id, key, &data_out,
                                        &resources_out));
   EXPECT_TRUE(resources_out.empty());
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
-      database->ReadRegistrationOrigin(data1.registration_id, &origin_out));
+      database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
 
   purgeable_ids_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -932,35 +1196,36 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   // Make sure that registration2 is still alive.
   resources_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data2.registration_id, origin, &data_out,
+            database->ReadRegistration(data2.registration_id, key, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data2, *data_out);
   VerifyResourceRecords(resources2, resources_out);
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->ReadRegistrationOrigin(data2.registration_id, &origin_out));
-  EXPECT_EQ(origin, origin_out);
+      database->ReadRegistrationStorageKey(data2.registration_id, &key_out));
+  EXPECT_EQ(key, key_out);
 }
 
 TEST(ServiceWorkerDatabaseTest, Registration_UninitializedDatabase) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
 
   // Should be failed because the database does not exist.
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->ReadRegistration(100, origin, &data_out, &resources_out));
+            database->ReadRegistration(100, key, &data_out, &resources_out));
   EXPECT_TRUE(data_out.is_null());
   EXPECT_TRUE(resources_out.empty());
-  GURL origin_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->ReadRegistrationOrigin(100, &origin_out));
+            database->ReadRegistrationStorageKey(100, &key_out));
 
   // Deleting non-existent registration should succeed.
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(100, origin, &deleted_version));
+            database->DeleteRegistration(100, key, &deleted_version));
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
             deleted_version.version_id);
   EXPECT_TRUE(deleted_version.newly_purgeable_resources.empty());
@@ -972,15 +1237,15 @@ TEST(ServiceWorkerDatabaseTest, Registration_UninitializedDatabase) {
   ASSERT_EQ(ServiceWorkerDatabase::DATABASE_STATE_UNINITIALIZED,
             database->state_);
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->ReadRegistration(100, origin, &data_out, &resources_out));
+            database->ReadRegistration(100, key, &data_out, &resources_out));
   EXPECT_TRUE(data_out.is_null());
   EXPECT_TRUE(resources_out.empty());
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->ReadRegistrationOrigin(100, &origin_out));
+            database->ReadRegistrationStorageKey(100, &key_out));
 
   // Deleting non-existent registration should succeed.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(100, origin, &deleted_version));
+            database->DeleteRegistration(100, key, &deleted_version));
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
             deleted_version.version_id);
   EXPECT_TRUE(deleted_version.newly_purgeable_resources.empty());
@@ -996,6 +1261,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin1, "/foo");
+  data1.key = blink::StorageKey(url::Origin::Create(data1.scope));
   data1.script = URL(origin1, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 10 + 10000;
@@ -1011,6 +1277,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   RegistrationData data2;
   data2.registration_id = 200;
   data2.scope = URL(origin2, "/bar");
+  data2.key = blink::StorageKey(url::Origin::Create(data2.scope));
   data2.script = URL(origin2, "/resource3");
   data2.version_id = 200;
   data2.resources_total_size_bytes = 20 + 20000;
@@ -1026,6 +1293,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   RegistrationData data3;
   data3.registration_id = 300;
   data3.scope = URL(origin3, "/baz");
+  data3.key = blink::StorageKey(url::Origin::Create(data3.scope));
   data3.script = URL(origin3, "/resource5");
   data3.version_id = 300;
   data3.resources_total_size_bytes = 30 + 30000;
@@ -1038,25 +1306,31 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
 
   RegistrationDataPtr data;
   std::vector<ResourceRecordPtr> resources;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data1.registration_id, origin1, &data,
-                                       &resources));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->ReadRegistration(
+          data1.registration_id,
+          blink::StorageKey(url::Origin::Create(origin1)), &data, &resources));
   VerifyRegistrationData(data1, *data);
   VerifyResourceRecords(resources1, resources);
   EXPECT_EQ(2U, resources.size());
   resources.clear();
 
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data2.registration_id, origin2, &data,
-                                       &resources));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->ReadRegistration(
+          data2.registration_id,
+          blink::StorageKey(url::Origin::Create(origin2)), &data, &resources));
   VerifyRegistrationData(data2, *data);
   VerifyResourceRecords(resources2, resources);
   EXPECT_EQ(2U, resources.size());
   resources.clear();
 
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data3.registration_id, origin3, &data,
-                                       &resources));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->ReadRegistration(
+          data3.registration_id,
+          blink::StorageKey(url::Origin::Create(origin3)), &data, &resources));
   VerifyRegistrationData(data3, *data);
   VerifyResourceRecords(resources3, resources);
   EXPECT_EQ(2U, resources.size());
@@ -1066,11 +1340,13 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
 TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  blink::StorageKey key(kOrigin);
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.key = key;
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
@@ -1084,7 +1360,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   std::vector<std::string> user_data_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, kOrigin,
+                data.registration_id, key,
                 CreateUserData(data.registration_id, {{"key1", "data"}})));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1094,14 +1370,14 @@ TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
 
   // Writing user data not associated with the stored registration should be
   // failed.
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->WriteUserData(
-                300, kOrigin,
-                CreateUserData(data.registration_id, {{"key1", "data"}})));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kErrorNotFound,
+      database->WriteUserData(
+          300, key, CreateUserData(data.registration_id, {{"key1", "data"}})));
 
   // Write empty user data for a different key.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->WriteUserData(data.registration_id, kOrigin,
+            database->WriteUserData(data.registration_id, key,
                                     CreateUserData(data.registration_id,
                                                    {{"key2", std::string()}})));
   EXPECT_EQ(
@@ -1118,7 +1394,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   // Overwrite the existing user data.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, kOrigin,
+                data.registration_id, key,
                 CreateUserData(data.registration_id, {{"key1", "overwrite"}})));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1142,7 +1418,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   // Write/overwrite multiple user data keys.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, kOrigin,
+                data.registration_id, key,
                 CreateUserData(data.registration_id, {{"key2", "overwrite2"},
                                                       {"key3", "data3"},
                                                       {"key4", "data4"}})));
@@ -1186,11 +1462,13 @@ TEST(ServiceWorkerDatabaseTest,
      UserData_ReadUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1201,6 +1479,7 @@ TEST(ServiceWorkerDatabaseTest,
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1216,39 +1495,39 @@ TEST(ServiceWorkerDatabaseTest,
   // Write user data associated with the registration1.
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data1.registration_id, kOrigin,
+      database->WriteUserData(data1.registration_id, kKey,
                               CreateUserData(data1.registration_id,
                                              {{"key_prefix:key1", "value1"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data1.registration_id, kOrigin,
+      database->WriteUserData(data1.registration_id, kKey,
                               CreateUserData(data1.registration_id,
                                              {{"key_prefix:key2", "value2"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data1.registration_id, kOrigin,
+      database->WriteUserData(data1.registration_id, kKey,
                               CreateUserData(data1.registration_id,
                                              {{"key_prefix:key3", "value3"}})));
 
   // Write user data associated with the registration2.
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data2.registration_id, kOrigin,
+      database->WriteUserData(data2.registration_id, kKey,
                               CreateUserData(data2.registration_id,
                                              {{"key_prefix:key1", "value1"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data2.registration_id, kOrigin,
+      database->WriteUserData(data2.registration_id, kKey,
                               CreateUserData(data2.registration_id,
                                              {{"key_prefix:key2", "value2"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, kOrigin,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id,
                                {{"another_key_prefix:key1", "value1"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, kOrigin,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id,
                                {{"another_key_prefix:key2", "value2"}})));
 
@@ -1279,11 +1558,13 @@ TEST(ServiceWorkerDatabaseTest,
 TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.key = kKey;
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
@@ -1296,7 +1577,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
   // Write user data associated with the registration.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, kOrigin,
+                data.registration_id, kKey,
                 CreateUserData(data.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1325,11 +1606,13 @@ TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
 TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.key = kKey;
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
@@ -1342,7 +1625,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
   // Write user data associated with the registration.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, kOrigin,
+                data.registration_id, kKey,
                 CreateUserData(data.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1375,11 +1658,13 @@ TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
 TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  blink::StorageKey key(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = key;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1390,6 +1675,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = key;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1405,7 +1691,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   // Write user data associated with registration 1.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, kOrigin,
+                data1.registration_id, key,
                 CreateUserData(data1.registration_id,
                                {{"key_prefix:key1", "value_a1"},
                                 {"key_prefix:key2", "value_a2"},
@@ -1415,7 +1701,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   // Write user data associated with registration 2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, kOrigin,
+                data2.registration_id, key,
                 CreateUserData(data2.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1483,11 +1769,13 @@ TEST(ServiceWorkerDatabaseTest,
      UserData_DeleteUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1498,6 +1786,7 @@ TEST(ServiceWorkerDatabaseTest,
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1513,7 +1802,7 @@ TEST(ServiceWorkerDatabaseTest,
   // Write user data associated with registration 1.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, kOrigin,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id,
                                {{"key_prefix:key1", "value_a1"},
                                 {"key_prefix:key2", "value_a2"},
@@ -1523,7 +1812,7 @@ TEST(ServiceWorkerDatabaseTest,
   // Write user data associated with registration 2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, kOrigin,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1570,11 +1859,13 @@ TEST(ServiceWorkerDatabaseTest,
 TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1585,6 +1876,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1602,7 +1894,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   std::vector<std::string> user_data_out;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, kOrigin,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id, {{"key", "value1"}})));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1617,7 +1909,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   // the data associated with registration1.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, kOrigin,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id, {{"key", "value2"}})));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1668,11 +1960,13 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
 TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1683,6 +1977,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1699,11 +1994,11 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   std::vector<std::string> user_data_out;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, kOrigin,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id, {{"key1", "value1"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, kOrigin,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id, {{"key2", "value2"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1719,7 +2014,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   // Write user data associated with the registration2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, kOrigin,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id, {{"key3", "value3"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1730,8 +2025,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   // Delete all data associated with the registration1. This shouldn't delete
   // the data associated with registration2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data1.registration_id,
-                                         kOrigin.GetURL(), &deleted_version));
+            database->DeleteRegistration(data1.registration_id, kKey,
+                                         &deleted_version));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
       database->ReadUserData(data1.registration_id, {"key1"}, &user_data_out));
@@ -1748,6 +2043,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
 TEST(ServiceWorkerDatabaseTest, UserData_UninitializedDatabase) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  blink::StorageKey key(kOrigin);
 
   // Should be failed because the database does not exist.
   std::vector<std::string> user_data_out;
@@ -1756,7 +2052,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_UninitializedDatabase) {
 
   // Should be failed because the associated registration does not exist.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->WriteUserData(100, kOrigin,
+            database->WriteUserData(100, key,
                                     CreateUserData(100, {{"key", "value"}})));
 
   // Deleting non-existent entry should succeed.
@@ -1772,7 +2068,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_UninitializedDatabase) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
             database->ReadUserData(100, {"key"}, &user_data_out));
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->WriteUserData(100, kOrigin,
+            database->WriteUserData(100, key,
                                     CreateUserData(100, {{"key", "value"}})));
 
   // Deleting non-existent entry should succeed.
@@ -1783,17 +2079,19 @@ TEST(ServiceWorkerDatabaseTest, UserData_UninitializedDatabase) {
 TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
 
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
   // Should be false because a registration does not exist.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->UpdateVersionToActive(0, origin));
+            database->UpdateVersionToActive(0, key));
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/script.js");
   data.version_id = 200;
   data.is_active = false;
@@ -1807,19 +2105,19 @@ TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
+            database->ReadRegistration(data.registration_id, key, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data, *data_out);
   EXPECT_EQ(1u, resources_out.size());
 
   // Activate the registration.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->UpdateVersionToActive(data.registration_id, origin));
+            database->UpdateVersionToActive(data.registration_id, key));
 
   // Make sure that the registration is activated.
   resources_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
+            database->ReadRegistration(data.registration_id, key, &data_out,
                                        &resources_out));
   mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
   expected_data->is_active = true;
@@ -1828,28 +2126,30 @@ TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
 
   // Delete the registration.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data.registration_id, origin,
+            database->DeleteRegistration(data.registration_id, key,
                                          &deleted_version));
   EXPECT_EQ(data.registration_id, deleted_version.registration_id);
 
   // Should be false because the registration is gone.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->UpdateVersionToActive(data.registration_id, origin));
+            database->UpdateVersionToActive(data.registration_id, key));
 }
 
 TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
   // Should be false because a registration does not exist.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->UpdateLastCheckTime(0, origin, base::Time::Now()));
+            database->UpdateLastCheckTime(0, key, base::Time::Now()));
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/script.js");
   data.version_id = 200;
   data.last_update_check = base::Time::Now();
@@ -1863,21 +2163,21 @@ TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
+            database->ReadRegistration(data.registration_id, key, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data, *data_out);
   EXPECT_EQ(1u, resources_out.size());
 
   // Update the last check time.
   base::Time updated_time = base::Time::Now();
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->UpdateLastCheckTime(data.registration_id, origin,
-                                          updated_time));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->UpdateLastCheckTime(data.registration_id, key, updated_time));
 
   // Make sure that the registration is updated.
   resources_out.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
+            database->ReadRegistration(data.registration_id, key, &data_out,
                                        &resources_out));
   mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
   expected_data->last_update_check = updated_time;
@@ -1886,14 +2186,79 @@ TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
 
   // Delete the registration.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data.registration_id, origin,
+            database->DeleteRegistration(data.registration_id, key,
                                          &deleted_version));
   EXPECT_EQ(data.registration_id, deleted_version.registration_id);
 
   // Should be false because the registration is gone.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
-            database->UpdateLastCheckTime(data.registration_id, origin,
+            database->UpdateLastCheckTime(data.registration_id, key,
                                           base::Time::Now()));
+}
+
+TEST(ServiceWorkerDatabaseTest, UpdateFetchHandlerType) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+  GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
+  ServiceWorkerDatabase::DeletedVersion deleted_version;
+
+  // Should be false because a registration does not exist.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateLastCheckTime(0, key, base::Time::Now()));
+
+  // Add a registration.
+  RegistrationData data;
+  data.registration_id = 100;
+  data.scope = URL(origin, "/foo");
+  data.key = key;
+  data.script = URL(origin, "/script.js");
+  data.version_id = 200;
+  data.last_update_check = base::Time::Now();
+  data.fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  data.resources_total_size_bytes = 100;
+  std::vector<ResourceRecordPtr> resources;
+  resources.push_back(CreateResource(1, data.script, 100));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+  // Make sure that the registration is stored.
+  RegistrationDataPtr data_out;
+  std::vector<ResourceRecordPtr> resources_out;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  VerifyRegistrationData(data, *data_out);
+  EXPECT_EQ(1u, resources_out.size());
+
+  // Update the fetch handler type.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->UpdateFetchHandlerType(
+                data.registration_id, key,
+                blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler));
+
+  // Make sure that the registration is updated.
+  resources_out.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
+  expected_data->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  VerifyRegistrationData(*expected_data, *data_out);
+  EXPECT_EQ(1u, resources_out.size());
+
+  // Delete the registration.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->DeleteRegistration(data.registration_id, key,
+                                         &deleted_version));
+  EXPECT_EQ(data.registration_id, deleted_version.registration_id);
+
+  // Should be false because the registration is gone.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateFetchHandlerType(
+                data.registration_id, key,
+                blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable));
 }
 
 TEST(ServiceWorkerDatabaseTest, UncommittedAndPurgeableResourceIds) {
@@ -1944,20 +2309,23 @@ TEST(ServiceWorkerDatabaseTest, UncommittedAndPurgeableResourceIds) {
   EXPECT_EQ(expected, ids_out);
 }
 
-TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
+TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
-  // Data associated with |origin1| will be removed.
+  // Data associated with |key1| will be removed.
   GURL url1("https://example.com");
   GURL url2("https://example.org");
   url::Origin origin1 = url::Origin::Create(url1);
   url::Origin origin2 = url::Origin::Create(url2);
+  blink::StorageKey key1(origin1);
+  blink::StorageKey key2(origin2);
 
-  // |origin1| has two registrations (registration1 and registration2).
+  // |key1| has two registrations (registration1 and registration2).
   RegistrationData data1;
   data1.registration_id = 10;
   data1.scope = URL(url1, "/foo");
+  data1.key = key1;
   data1.script = URL(url1, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 2013 + 512;
@@ -1969,16 +2337,17 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
             database->WriteRegistration(data1, resources1, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, origin1,
+                data1.registration_id, key1,
                 CreateUserData(data1.registration_id, {{"key1", "value1"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, origin1,
+                data1.registration_id, key1,
                 CreateUserData(data1.registration_id, {{"key2", "value2"}})));
 
   RegistrationData data2;
   data2.registration_id = 11;
   data2.scope = URL(url1, "/bar");
+  data2.key = key1;
   data2.script = URL(url1, "/resource3");
   data2.version_id = 101;
   data2.resources_total_size_bytes = 4 + 5;
@@ -1990,17 +2359,18 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
             database->WriteRegistration(data2, resources2, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, origin1,
+                data2.registration_id, key1,
                 CreateUserData(data2.registration_id, {{"key3", "value3"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, origin1,
+                data2.registration_id, key1,
                 CreateUserData(data2.registration_id, {{"key4", "value4"}})));
 
-  // |origin2| has one registration (registration3).
+  // |key2| has one registration (registration3).
   RegistrationData data3;
   data3.registration_id = 12;
   data3.scope = URL(url2, "/hoge");
+  data3.key = key2;
   data3.script = URL(url2, "/resource5");
   data3.version_id = 102;
   data3.resources_total_size_bytes = 6 + 7;
@@ -2012,52 +2382,52 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
             database->WriteRegistration(data3, resources3, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data3.registration_id, origin2,
+                data3.registration_id, key2,
                 CreateUserData(data3.registration_id, {{"key5", "value5"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data3.registration_id, origin2,
+                data3.registration_id, key2,
                 CreateUserData(data3.registration_id, {{"key6", "value6"}})));
 
-  std::set<GURL> origins_to_delete;
+  std::set<blink::StorageKey> keys_to_delete;
   std::vector<int64_t> newly_purgeable_resources;
-  origins_to_delete.insert(url1);
+  keys_to_delete.insert(key1);
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteAllDataForOrigins(origins_to_delete,
-                                              &newly_purgeable_resources));
+            database->DeleteAllDataForStorageKeys(keys_to_delete,
+                                                  &newly_purgeable_resources));
 
-  // |origin1| should be removed from the unique origin list.
-  std::set<url::Origin> unique_origins;
+  // |key1| should be removed from the unique origin list.
+  std::set<blink::StorageKey> unique_keys;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetOriginsWithRegistrations(&unique_origins));
-  EXPECT_EQ(1u, unique_origins.size());
-  EXPECT_TRUE(base::Contains(unique_origins, origin2));
+            database->GetStorageKeysWithRegistrations(&unique_keys));
+  EXPECT_EQ(1u, unique_keys.size());
+  EXPECT_TRUE(base::Contains(unique_keys, key2));
 
-  // The registrations for |origin1| should be removed.
+  // The registrations for |key1| should be removed.
   std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->GetRegistrationsForOrigin(origin1, &registrations, nullptr));
+      database->GetRegistrationsForStorageKey(key1, &registrations, nullptr));
   EXPECT_TRUE(registrations.empty());
-  GURL origin_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
-      database->ReadRegistrationOrigin(data1.registration_id, &origin_out));
+      database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
 
-  // The registration for |origin2| should not be removed.
+  // The registration for |key2| should not be removed.
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data3.registration_id, url2, &data_out,
+            database->ReadRegistration(data3.registration_id, key2, &data_out,
                                        &resources_out));
   VerifyRegistrationData(data3, *data_out);
   VerifyResourceRecords(resources3, resources_out);
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->ReadRegistrationOrigin(data3.registration_id, &origin_out));
-  EXPECT_EQ(url2, origin_out);
+      database->ReadRegistrationStorageKey(data3.registration_id, &key_out));
+  EXPECT_EQ(key2, key_out);
 
-  // The resources associated with |origin1| should be purgeable.
+  // The resources associated with |key1| should be purgeable.
   std::vector<int64_t> purgeable_ids_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
@@ -2067,7 +2437,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   EXPECT_TRUE(base::Contains(purgeable_ids_out, 3));
   EXPECT_TRUE(base::Contains(purgeable_ids_out, 4));
 
-  // The user data associated with |origin1| should be removed.
+  // The user data associated with |key1| should be removed.
   std::vector<std::string> user_data_out;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
@@ -2082,7 +2452,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
       ServiceWorkerDatabase::Status::kErrorNotFound,
       database->ReadUserData(data2.registration_id, {"key4"}, &user_data_out));
 
-  // The user data associated with |origin2| should not be removed.
+  // The user data associated with |key2| should not be removed.
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
       database->ReadUserData(data3.registration_id, {"key5"}, &user_data_out));
@@ -2117,6 +2487,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_NoMainResource) {
   RegistrationData data;
   data.registration_id = 10;
   data.scope = URL(origin, "/foo");
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.script = URL(origin, "/resource1");
   data.version_id = 100;
   data.resources_total_size_bytes = 2016;
@@ -2132,25 +2503,29 @@ TEST(ServiceWorkerDatabaseTest, Corruption_NoMainResource) {
   // The database should detect lack of the main resource (i.e. "/resource1").
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorCorrupted,
-            database->ReadRegistration(data.registration_id, origin, &data_out,
-                                       &resources_out));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kErrorCorrupted,
+      database->ReadRegistration(data.registration_id,
+                                 blink::StorageKey(url::Origin::Create(origin)),
+                                 &data_out, &resources_out));
   EXPECT_TRUE(resources_out.empty());
 }
 
-// Tests that GetRegistrationsForOrigin() detects corruption without crashing.
-// It must delete the database after freeing the iterator it uses to read all
-// registrations. Regression test for https://crbug.com/909024.
-TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForOrigin) {
+// Tests that GetRegistrationsForStorageKey() detects corruption without
+// crashing. It must delete the database after freeing the iterator it uses to
+// read all registrations. Regression test for https://crbug.com/909024.
+TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForStorageKey) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   std::vector<ResourceRecordPtr> resources;
   GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
 
   // Write a normal registration.
   RegistrationData data1;
   data1.registration_id = 1;
   data1.scope = URL(origin, "/foo");
+  data1.key = key;
   data1.script = URL(origin, "/resource1");
   data1.version_id = 1;
   data1.resources_total_size_bytes = 2016;
@@ -2162,6 +2537,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForOrigin) {
   RegistrationData data2;
   data2.registration_id = 2;
   data2.scope = URL(origin, "/foo");
+  data2.key = key;
   data2.script = URL(origin, "/resource2");
   data2.version_id = 2;
   data2.resources_total_size_bytes = 2016;
@@ -2172,14 +2548,14 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForOrigin) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data2, resources, &deleted_version));
 
-  // Call GetRegistrationsForOrigin(). It should detect corruption, and not
+  // Call GetRegistrationsForStorageKey(). It should detect corruption, and not
   // crash.
   base::HistogramTester histogram_tester;
   std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   std::vector<std::vector<ResourceRecordPtr>> resources_list;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorCorrupted,
-            database->GetRegistrationsForOrigin(
-                url::Origin::Create(origin), &registrations, &resources_list));
+            database->GetRegistrationsForStorageKey(key, &registrations,
+                                                    &resources_list));
   EXPECT_TRUE(registrations.empty());
   EXPECT_TRUE(resources_list.empty());
 
@@ -2208,6 +2584,8 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
   data.set_version_id(1);
   data.set_is_active(true);
   data.set_has_fetch_handler(true);
+  data.set_fetch_handler_skippable_type(
+      ServiceWorkerRegistrationData::NOT_SKIPPABLE);
   data.set_last_update_check_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
@@ -2226,6 +2604,9 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
   database->next_avail_registration_id_ = 2;
   database->next_avail_version_id_ = 2;
 
+  blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(data.scope_url());
+
   // Write the serialization.
   std::string value;
   ASSERT_TRUE(data.SerializeToString(&value));
@@ -2233,7 +2614,7 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
   // Parse the serialized data. The invalid features should be ignored.
   RegistrationDataPtr registration;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ParseRegistrationData(value, &registration));
+            database->ParseRegistrationData(value, key, &registration));
   std::vector<blink::mojom::WebFeature> expect = {
       blink::mojom::WebFeature::kFetch,
       blink::mojom::WebFeature::kBackgroundSync,
@@ -2250,10 +2631,14 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     RegistrationData data;
     data.registration_id = 123;
     data.scope = URL(origin, "/foo");
+    data.key = blink::StorageKey(url::Origin::Create(data.scope));
     data.script = URL(origin, "/script.js");
     data.version_id = 456;
     data.resources_total_size_bytes = 100;
     data.cross_origin_embedder_policy = policy;
+    data.policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
+    data.policy_container_policies->cross_origin_embedder_policy = policy.value;
     std::vector<ResourceRecordPtr> resources;
     resources.push_back(CreateResource(1, data.script, 100));
 
@@ -2266,10 +2651,10 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     // Restore.
     std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
     std::vector<std::vector<ResourceRecordPtr>> resources_list;
-    EXPECT_EQ(
-        ServiceWorkerDatabase::Status::kOk,
-        database->GetRegistrationsForOrigin(url::Origin::Create(origin),
-                                            &registrations, &resources_list));
+    EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->GetRegistrationsForStorageKey(
+                  blink::StorageKey(url::Origin::Create(origin)),
+                  &registrations, &resources_list));
 
     // The data must not have been altered.
     VerifyRegistrationData(data, *registrations[0]);
@@ -2280,6 +2665,9 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     policy.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
     store_and_restore(policy);
     policy.value = network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+    store_and_restore(policy);
+    policy.value =
+        network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
     store_and_restore(policy);
   }
 
@@ -2296,6 +2684,9 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     store_and_restore(policy);
     policy.report_only_value =
         network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+    store_and_restore(policy);
+    policy.report_only_value =
+        network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
     store_and_restore(policy);
   }
 
@@ -2318,11 +2709,16 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
   data.set_version_id(1);
   data.set_is_active(true);
   data.set_has_fetch_handler(true);
+  data.set_fetch_handler_skippable_type(
+      ServiceWorkerRegistrationData::NOT_SKIPPABLE);
   data.set_last_update_check_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   database->next_avail_registration_id_ = 2;
   database->next_avail_version_id_ = 2;
+
+  blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(data.scope_url());
 
   // Write the serialization.
   std::string value;
@@ -2331,9 +2727,332 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
   // Parse the serialized data. The policy is kNone if it's not set.
   RegistrationDataPtr registration;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ParseRegistrationData(value, &registration));
+            database->ParseRegistrationData(value, key, &registration));
   EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
             registration->cross_origin_embedder_policy.value);
+}
+
+const network::mojom::WebSandboxFlags kWebSandboxFlags[] = {
+    network::mojom::WebSandboxFlags::kNone,
+    network::mojom::WebSandboxFlags::kNavigation,
+    network::mojom::WebSandboxFlags::kPlugins,
+    network::mojom::WebSandboxFlags::kOrigin,
+    network::mojom::WebSandboxFlags::kForms,
+    network::mojom::WebSandboxFlags::kScripts,
+    network::mojom::WebSandboxFlags::kTopNavigation,
+    network::mojom::WebSandboxFlags::kPopups,
+    network::mojom::WebSandboxFlags::kAutomaticFeatures,
+    network::mojom::WebSandboxFlags::kPointerLock,
+    network::mojom::WebSandboxFlags::kDocumentDomain,
+    network::mojom::WebSandboxFlags::kOrientationLock,
+    network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts,
+    network::mojom::WebSandboxFlags::kModals,
+    network::mojom::WebSandboxFlags::kPresentationController,
+    network::mojom::WebSandboxFlags::kTopNavigationByUserActivation,
+    network::mojom::WebSandboxFlags::kDownloads,
+    network::mojom::WebSandboxFlags::kStorageAccessByUserActivation,
+    network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols,
+    network::mojom::WebSandboxFlags::kAll,
+};
+
+static_assert(
+    network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols ==
+        network::mojom::WebSandboxFlags::kMaxValue,
+    "The array should contain all the flags");
+
+// Check that every field of PolicyContainerPolicies can be properly
+// serialized and deserialized.
+TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
+  auto store_and_restore =
+      [](blink::mojom::PolicyContainerPoliciesPtr policies) {
+        // Build the minimal RegistrationData with the given |policy|.
+        GURL origin("https://example.com");
+        RegistrationData data;
+        data.registration_id = 123;
+        data.scope = URL(origin, "/foo");
+        data.key = blink::StorageKey(url::Origin::Create(data.scope));
+        data.script = URL(origin, "/script.js");
+        data.version_id = 456;
+        data.resources_total_size_bytes = 100;
+        data.policy_container_policies = std::move(policies);
+        data.cross_origin_embedder_policy.value =
+            data.policy_container_policies->cross_origin_embedder_policy;
+        std::vector<ResourceRecordPtr> resources;
+        resources.push_back(CreateResource(1, data.script, 100));
+
+        // Store.
+        std::unique_ptr<ServiceWorkerDatabase> database(
+            CreateDatabaseInMemory());
+        ServiceWorkerDatabase::DeletedVersion deleted_version;
+        ASSERT_EQ(
+            ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+        // Restore.
+        std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+        std::vector<std::vector<ResourceRecordPtr>> resources_list;
+        EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+                  database->GetRegistrationsForStorageKey(
+                      blink::StorageKey(url::Origin::Create(origin)),
+                      &registrations, &resources_list));
+
+        // The data must not have been altered.
+        VerifyRegistrationData(data, *registrations[0]);
+      };
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+    store_and_restore(policies->Clone());
+
+    for (auto value : {
+             network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+             network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+             network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
+         }) {
+      policies->cross_origin_embedder_policy = value;
+      store_and_restore(policies->Clone());
+    }
+  }
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto referrer_policy : {
+             network::mojom::ReferrerPolicy::kAlways,
+             network::mojom::ReferrerPolicy::kDefault,
+             network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+             network::mojom::ReferrerPolicy::kNever,
+             network::mojom::ReferrerPolicy::kOrigin,
+             network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin,
+             network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
+             network::mojom::ReferrerPolicy::kSameOrigin,
+             network::mojom::ReferrerPolicy::kStrictOrigin,
+         }) {
+      policies->referrer_policy = referrer_policy;
+      store_and_restore(policies->Clone());
+    }
+  }
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto sandbox_flags : kWebSandboxFlags) {
+      policies->sandbox_flags = sandbox_flags;
+      store_and_restore(policies->Clone());
+      for (auto sandbox_flags_2 : kWebSandboxFlags) {
+        if (sandbox_flags_2 >= sandbox_flags)
+          break;
+        policies->sandbox_flags = sandbox_flags | sandbox_flags_2;
+        store_and_restore(policies->Clone());
+      }
+    }
+  }
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto ip_address_space : {
+             network::mojom::IPAddressSpace::kLocal,
+             network::mojom::IPAddressSpace::kPrivate,
+             network::mojom::IPAddressSpace::kPublic,
+             network::mojom::IPAddressSpace::kUnknown,
+         }) {
+      policies->ip_address_space = ip_address_space;
+      store_and_restore(policies->Clone());
+    }
+  }
+}
+
+// As part of crbug.com/1199077 ServiceWorkerDataBase was refactored to use
+// blink::StorageKey instead of url::Origin/GURL. The refactor is/should be a
+// no-op but this test exists to confirms that a DB created with the Origin/GURL
+// impl can still be correctly read by the blink::StorageKey impl.
+TEST(ServiceWorkerDatabaseTest, StorageKeyImplCanReadPreviousOriginImplDB) {
+  base::FilePath root_path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+  base::FilePath database_dir = root_path.AppendASCII(
+      "components/test/data/service_worker/created_by_origin_impl/Database/");
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  ASSERT_TRUE(base::CopyDirectory(database_dir, temp_dir.GetPath(),
+                                  /*recursive=*/true));
+
+  base::FilePath temp_database_dir = temp_dir.GetPath();
+  temp_database_dir = temp_database_dir.AppendASCII("Database");
+
+  std::unique_ptr<ServiceWorkerDatabase> database(
+      CreateDatabase(temp_database_dir));
+
+  int64_t next_registration_id;
+  int64_t next_version_id;
+  int64_t next_resource_id;
+  // Make sure to read in the IDs first, otherwise the
+  // GetRegistrationsForStorageKey will return as corrupted.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetNextAvailableIds(&next_registration_id,
+                                          &next_version_id, &next_resource_id));
+  EXPECT_EQ(next_registration_id, 1);
+  EXPECT_EQ(next_version_id, 1);
+  EXPECT_EQ(next_resource_id, 1);
+
+  // https://googlechrome.github.io/samples/service-worker/basic/ provided the
+  // service worker for this test.
+  blink::StorageKey key = blink::StorageKey::CreateFromStringForTesting(
+      "https://googlechrome.github.io/");
+
+  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+  std::vector<std::vector<ResourceRecordPtr>> resources_list;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetRegistrationsForStorageKey(key, &registrations,
+                                                    &resources_list));
+
+  EXPECT_FALSE(registrations.empty());
+  EXPECT_FALSE(resources_list.empty());
+}
+
+TEST(ServiceWorkerDatabaseTest, NoFetchHandlerType) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+
+  ServiceWorkerRegistrationData data;
+  data.set_registration_id(1);
+  data.set_scope_url("https://example.com");
+  data.set_script_url("https://example.com/sw");
+  data.set_version_id(1);
+  data.set_is_active(true);
+  data.set_last_update_check_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  database->next_avail_registration_id_ = 2;
+  database->next_avail_version_id_ = 2;
+
+  blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(data.scope_url());
+
+  {
+    // has_fetch_handler = true.
+    data.set_has_fetch_handler(true);
+
+    // Write the serialization.
+    std::string value;
+    ASSERT_TRUE(data.SerializeToString(&value));
+
+    // Parse the serialized data. The kNotSkippable if has_fetch_handler is true
+    // and no fetch_handler_type.
+    RegistrationDataPtr registration;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->ParseRegistrationData(value, key, &registration));
+    EXPECT_EQ(blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
+              registration->fetch_handler_type);
+  }
+
+  {
+    // has_fetch_handler = false.
+    data.set_has_fetch_handler(false);
+
+    // Write the serialization.
+    std::string value;
+    ASSERT_TRUE(data.SerializeToString(&value));
+
+    // Parse the serialized data. The kNoHandler if has_fetch_handler is
+    // false and no fetch_handler_type.
+    RegistrationDataPtr registration;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->ParseRegistrationData(value, key, &registration));
+    EXPECT_EQ(blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
+              registration->fetch_handler_type);
+  }
+}
+
+TEST(ServiceWorkerDatabaseTest, FetchHandlerType) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+
+  ServiceWorkerRegistrationData data;
+  data.set_registration_id(1);
+  data.set_scope_url("https://example.com");
+  data.set_script_url("https://example.com/sw");
+  data.set_version_id(1);
+  data.set_is_active(true);
+  data.set_has_fetch_handler(true);
+  data.set_last_update_check_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  database->next_avail_registration_id_ = 2;
+  database->next_avail_version_id_ = 2;
+
+  blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(data.scope_url());
+
+  {
+    data.set_fetch_handler_skippable_type(
+        ServiceWorkerRegistrationData::NOT_SKIPPABLE);
+    // Write the serialization.
+    std::string value;
+    ASSERT_TRUE(data.SerializeToString(&value));
+
+    RegistrationDataPtr registration;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->ParseRegistrationData(value, key, &registration));
+    EXPECT_EQ(blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
+              registration->fetch_handler_type);
+  }
+
+  {
+    data.set_fetch_handler_skippable_type(
+        ServiceWorkerRegistrationData::SKIPPABLE_EMPTY_FETCH_HANDLER);
+    // Write the serialization.
+    std::string value;
+    ASSERT_TRUE(data.SerializeToString(&value));
+
+    // Parse the serialized data. The policy is kNone if it's not set.
+    RegistrationDataPtr registration;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->ParseRegistrationData(value, key, &registration));
+    EXPECT_EQ(blink::mojom::ServiceWorkerFetchHandlerType::kEmptyFetchHandler,
+              registration->fetch_handler_type);
+  }
+}
+
+TEST(ServiceWorkerDatabaseTest, FetchHandlerTypeStoreRestore) {
+  auto store_and_restore =
+      [](blink::mojom::ServiceWorkerFetchHandlerType type) {
+        GURL origin("https://example.com");
+        RegistrationData data;
+        data.registration_id = 123;
+        data.scope = URL(origin, "/foo");
+        data.key = blink::StorageKey(url::Origin::Create(data.scope));
+        data.script = URL(origin, "/script.js");
+        data.version_id = 456;
+        data.fetch_handler_type = type;
+        data.resources_total_size_bytes = 100;
+        data.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+        std::vector<ResourceRecordPtr> resources;
+        resources.push_back(CreateResource(1, data.script, 100));
+
+        // Store.
+        std::unique_ptr<ServiceWorkerDatabase> database(
+            CreateDatabaseInMemory());
+        ServiceWorkerDatabase::DeletedVersion deleted_version;
+        ASSERT_EQ(
+            ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+        // Restore.
+        std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+        std::vector<std::vector<ResourceRecordPtr>> resources_list;
+        EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+                  database->GetRegistrationsForStorageKey(
+                      blink::StorageKey(url::Origin::Create(origin)),
+                      &registrations, &resources_list));
+
+        // The data must not have been altered.
+        VerifyRegistrationData(data, *registrations[0]);
+      };
+  store_and_restore(blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler);
+  store_and_restore(blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable);
+  store_and_restore(
+      blink::mojom::ServiceWorkerFetchHandlerType::kEmptyFetchHandler);
 }
 
 }  // namespace storage

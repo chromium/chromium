@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,8 +91,11 @@ void DrmDisplayHost::SetGammaCorrection(
                                  gamma_lut);
 }
 
-void DrmDisplayHost::SetPrivacyScreen(bool enabled) {
-  sender_->GpuSetPrivacyScreen(snapshot_->display_id(), enabled);
+void DrmDisplayHost::SetPrivacyScreen(
+    bool enabled,
+    display::SetPrivacyScreenCallback callback) {
+  sender_->GpuSetPrivacyScreen(snapshot_->display_id(), enabled,
+                               std::move(callback));
 }
 
 void DrmDisplayHost::OnGpuProcessLaunched() {}

@@ -1,0 +1,41 @@
+<!--
+@WIN-ALLOW:colcount*
+@WIN-ALLOW:colindex*
+@WIN-ALLOW:rowcount*
+@WIN-ALLOW:rowindex*
+@WIN-ALLOW:ia2_table_cell_column_index=*
+@WIN-ALLOW:ia2_table_cell_row_index=*
+@MAC-ALLOW:AXARIAColumnCount
+@MAC-ALLOW:AXARIAColumnIndex
+@MAC-ALLOW:AXARIARowCount
+@MAC-ALLOW:AXARIARowIndex
+@BLINK-ALLOW:ariaColumn*
+@BLINK-ALLOW:ariaCellColumn*
+@BLINK-ALLOW:ariaRow*
+@BLINK-ALLOW:ariaCellRow*
+@AURALINUX-ALLOW:colcount*
+@AURALINUX-ALLOW:colindex*
+@AURALINUX-ALLOW:rowcount*
+@AURALINUX-ALLOW:rowindex*
+-->
+<div role="table">
+  <div role="rowgroup">
+    <div role="row" aria-rowindex="-1">
+      <span role="columnheader" aria-colindex="-1">row1 colheader1</span>
+      <span role="columnheader" aria-colindex="0">row1 colheader2</span>
+      <span role="columnheader" aria-colindex="1">row1 colheader3</span>
+    </div>
+  </div>
+  <div role="rowgroup">
+    <div role="row" aria-rowindex="0">
+      <span role="cell" aria-colindex="-1">row2 col1</span>
+      <span role="cell" aria-colindex="0">row2 col2</span>
+      <span role="cell" aria-colindex="1">row2 col3</span>
+    </div>
+    <div role="row" aria-rowindex="1">
+      <span role="cell" aria-colindex="-1">row3 col1</span>
+      <span role="cell" aria-colindex="0">row3 col2</span>
+      <span role="cell" aria-colindex="1">row3 col3</span>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,7 @@ class RuntimeCallStatsTest : public testing::Test {
   void SetUp() override {
     // Add one millisecond because RuntimeCallTimer uses |start_ticks_| =
     // base::TimeTicks() to represent that the timer is not running.
-    clock_.SetNowTicks(base::TimeTicks() +
-                       base::TimeDelta::FromMilliseconds(1));
+    clock_.SetNowTicks(base::TimeTicks() + base::Milliseconds(1));
   }
 
   void TearDown() override {
@@ -33,7 +32,7 @@ class RuntimeCallStatsTest : public testing::Test {
   }
 
   void AdvanceClock(int milliseconds) {
-    clock_.Advance(base::TimeDelta::FromMilliseconds(milliseconds));
+    clock_.Advance(base::Milliseconds(milliseconds));
   }
 
   const base::TickClock* clock() { return &clock_; }
@@ -179,20 +178,21 @@ TEST_F(RuntimeCallStatsTest, RuntimeCallTimerScopeTest) {
   EXPECT_EQ(100, counter->GetTime().InMilliseconds());
 }
 
+static void RecursiveRCSTestHelper(int remaining_count,
+                                   RuntimeCallStatsTest& fixture,
+                                   RuntimeCallStats& stats) {
+  RuntimeCallTimerScope scope(&stats, test_counter_1_id);
+  if (remaining_count <= 0)
+    return;
+  fixture.AdvanceClock(50);
+  RecursiveRCSTestHelper(remaining_count - 1, fixture, stats);
+}
+
 TEST_F(RuntimeCallStatsTest, RecursiveFunctionWithScopeTest) {
   RuntimeCallStats stats(clock());
   RuntimeCallCounter* counter = stats.GetCounter(test_counter_1_id);
 
-  RuntimeCallStatsTest* test = this;
-  std::function<void(int)> recursive_func;
-  recursive_func = [&stats, &recursive_func, test](int x) {
-    RuntimeCallTimerScope scope(&stats, test_counter_1_id);
-    if (x <= 0)
-      return;
-    test->AdvanceClock(50);
-    recursive_func(x - 1);
-  };
-  recursive_func(5);
+  RecursiveRCSTestHelper(5, *this, stats);
 
   EXPECT_EQ(6ul, counter->GetCount());
   EXPECT_EQ(250, counter->GetTime().InMilliseconds());
@@ -301,7 +301,7 @@ TEST_F(RuntimeCallStatsTest, TestScopeWithOptionalMacroWithCallStatsDisabled) {
   RuntimeCallCounter* counter = stats.GetCounter(test_counter_1_id);
 
   {
-    base::Optional<RuntimeCallTimerScope> scope;
+    absl::optional<RuntimeCallTimerScope> scope;
     RUNTIME_CALL_TIMER_SCOPE_WITH_OPTIONAL_RCS(scope, &stats,
                                                test_counter_1_id);
     AdvanceClock(25);
@@ -317,7 +317,7 @@ TEST_F(RuntimeCallStatsTest, TestScopeWithOptionalMacroWithCallStatsEnabled) {
   RuntimeCallCounter* counter = stats.GetCounter(test_counter_1_id);
 
   {
-    base::Optional<RuntimeCallTimerScope> scope;
+    absl::optional<RuntimeCallTimerScope> scope;
     RUNTIME_CALL_TIMER_SCOPE_WITH_OPTIONAL_RCS(scope, &stats,
                                                test_counter_1_id);
     AdvanceClock(25);

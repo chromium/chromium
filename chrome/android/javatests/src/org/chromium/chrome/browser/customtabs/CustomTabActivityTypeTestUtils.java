@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.webapps.WebApkActivityTestRule;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
@@ -58,7 +58,7 @@ public class CustomTabActivityTypeTestUtils {
 
     private static void launchWebapp(WebappActivityTestRule activityTestRule, String url) {
         Intent launchIntent = activityTestRule.createIntent();
-        launchIntent.putExtra(ShortcutHelper.EXTRA_URL, url);
+        launchIntent.putExtra(WebappConstants.EXTRA_URL, url);
         activityTestRule.startWebappActivity(launchIntent);
     }
 
@@ -70,7 +70,7 @@ public class CustomTabActivityTypeTestUtils {
 
     private static void launchCct(CustomTabActivityTestRule activityTestRule, String url) {
         activityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), url));
     }
 

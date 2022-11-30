@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "base/optional.h"
+#include "ash/public/cpp/holding_space/holding_space_section.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -26,14 +28,13 @@ class ScrollView;
 namespace ash {
 
 class HoldingSpaceItemView;
-class HoldingSpaceItemViewDelegate;
+class HoldingSpaceViewDelegate;
 
 // A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
-class HoldingSpaceItemViewsSection : public views::View {
+class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
  public:
-  HoldingSpaceItemViewsSection(HoldingSpaceItemViewDelegate* delegate,
-                               std::set<HoldingSpaceItem::Type> supported_types,
-                               const base::Optional<size_t>& max_count);
+  HoldingSpaceItemViewsSection(HoldingSpaceViewDelegate* delegate,
+                               HoldingSpaceSectionId section_id);
   HoldingSpaceItemViewsSection(const HoldingSpaceItemViewsSection& other) =
       delete;
   HoldingSpaceItemViewsSection& operator=(
@@ -63,7 +64,7 @@ class HoldingSpaceItemViewsSection : public views::View {
   // view if, for example, its parent is animating out.
   void OnHoldingSpaceItemsAdded(const std::vector<const HoldingSpaceItem*>&);
   void OnHoldingSpaceItemsRemoved(const std::vector<const HoldingSpaceItem*>&);
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item);
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item);
 
   // Removes all holding space item views from this section. This method is
   // expected to only be called:
@@ -73,12 +74,12 @@ class HoldingSpaceItemViewsSection : public views::View {
   void RemoveAllHoldingSpaceItemViews();
 
   // Returns whether this section has a placeholder to show in lieu of item
-  // views when the model contains no finalized items of supported types.
+  // views when the model contains no initialized items of supported types.
   bool has_placeholder() const { return !!placeholder_; }
 
   // Returns the types of holding space items supported by this section.
   const std::set<HoldingSpaceItem::Type>& supported_types() const {
-    return supported_types_;
+    return section_->supported_types;
   }
 
  protected:
@@ -102,7 +103,15 @@ class HoldingSpaceItemViewsSection : public views::View {
   // Invoked to destroy `placeholder_`.
   void DestroyPlaceholder();
 
-  HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
+  // Whether to display this section's contents: either its `container_` or its
+  // `placeholder_` as applicable. Sections that have no concept of expanded
+  // state are always treated as expanded.
+  virtual bool IsExpanded();
+
+  // Updates the section's views based on changes to the expanded state.
+  void OnExpandedChanged();
+
+  HoldingSpaceViewDelegate* delegate() { return delegate_; }
 
  private:
   enum AnimationState : uint32_t {
@@ -132,9 +141,8 @@ class HoldingSpaceItemViewsSection : public views::View {
   void OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
   void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
-  HoldingSpaceItemViewDelegate* const delegate_;
-  const std::set<HoldingSpaceItem::Type> supported_types_;
-  const base::Optional<size_t> max_count_;
+  HoldingSpaceViewDelegate* const delegate_;
+  const HoldingSpaceSection* const section_;
 
   // Owned by view hierarchy.
   views::View* header_ = nullptr;

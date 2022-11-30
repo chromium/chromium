@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-Found 50 tests; 23 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface RTCPeerConnection: original interface defined
@@ -49,6 +48,5 @@ FAIL MediaStreamTrack interface: attribute isolated assert_true: The prototype o
 FAIL MediaStreamTrack interface: attribute onisolationchange assert_true: The prototype object must have a property "onisolationchange" expected true got false
 FAIL MediaStreamTrack interface: track must inherit property "isolated" with the proper type assert_inherits: property "isolated" not found in prototype chain
 FAIL MediaStreamTrack interface: track must inherit property "onisolationchange" with the proper type assert_inherits: property "onisolationchange" not found in prototype chain
-PASS WorkerGlobalScope interface: existence and properties of interface object
 Harness: the test ran to completion.
 

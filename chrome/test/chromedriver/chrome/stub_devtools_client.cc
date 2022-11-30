@@ -1,8 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/chrome/stub_devtools_client.h"
+
+#include <memory>
 
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -17,6 +19,22 @@ const std::string& StubDevToolsClient::GetId() {
   return id_;
 }
 
+const std::string& StubDevToolsClient::SessionId() const {
+  return session_id_;
+}
+
+const std::string& StubDevToolsClient::TunnelSessionId() const {
+  return tunnel_session_id_;
+}
+
+void StubDevToolsClient::SetTunnelSessionId(const std::string& session_id) {
+  tunnel_session_id_ = session_id;
+}
+
+bool StubDevToolsClient::IsNull() const {
+  return false;
+}
+
 bool StubDevToolsClient::WasCrashed() {
   return false;
 }
@@ -25,56 +43,54 @@ Status StubDevToolsClient::ConnectIfNecessary() {
   return Status(kOk);
 }
 
-Status StubDevToolsClient::SetUpDevTools() {
-  return Status(kOk);
+Status StubDevToolsClient::PostBidiCommand(base::Value::Dict command) {
+  return Status{kOk};
 }
 
-Status StubDevToolsClient::SendCommand(
-    const std::string& method,
-    const base::DictionaryValue& params) {
-  std::unique_ptr<base::DictionaryValue> result;
+Status StubDevToolsClient::SendCommand(const std::string& method,
+                                       const base::Value::Dict& params) {
+  base::Value result;
   return SendCommandAndGetResult(method, params, &result);
 }
 
 Status StubDevToolsClient::SendCommandFromWebSocket(
     const std::string& method,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     const int client_command_id) {
   return SendCommand(method, params);
 }
 
 Status StubDevToolsClient::SendCommandWithTimeout(
     const std::string& method,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     const Timeout* timeout) {
   return SendCommand(method, params);
 }
 
-Status StubDevToolsClient::SendAsyncCommand(
-    const std::string& method,
-    const base::DictionaryValue& params) {
+Status StubDevToolsClient::SendAsyncCommand(const std::string& method,
+                                            const base::Value::Dict& params) {
   return SendCommand(method, params);
 }
 
 Status StubDevToolsClient::SendCommandAndGetResult(
     const std::string& method,
-    const base::DictionaryValue& params,
-    std::unique_ptr<base::DictionaryValue>* result) {
-  result->reset(new base::DictionaryValue());
+    const base::Value::Dict& params,
+    base::Value* result) {
+  *result = base::Value(base::Value::Type::DICTIONARY);
   return Status(kOk);
 }
 
 Status StubDevToolsClient::SendCommandAndGetResultWithTimeout(
     const std::string& method,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     const Timeout* timeout,
-    std::unique_ptr<base::DictionaryValue>* result) {
+    base::Value* result) {
   return SendCommandAndGetResult(method, params, result);
 }
 
 Status StubDevToolsClient::SendCommandAndIgnoreResponse(
-      const std::string& method,
-      const base::DictionaryValue& params) {
+    const std::string& method,
+    const base::Value::Dict& params) {
   return SendCommand(method, params);
 }
 
@@ -102,4 +118,12 @@ WebViewImpl* StubDevToolsClient::GetOwner() const {
 
 DevToolsClient* StubDevToolsClient::GetRootClient() {
   return this;
+}
+
+DevToolsClient* StubDevToolsClient::GetParentClient() const {
+  return nullptr;
+}
+
+bool StubDevToolsClient::IsMainPage() const {
+  return true;
 }

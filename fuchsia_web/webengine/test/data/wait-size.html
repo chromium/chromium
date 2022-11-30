@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <script>
+    // Set title to "done" as soon as the page size is set.
+    function checkWindowSize() {
+      if (window.innerWidth > 0 && window.innerHeight > 0)
+        document.title = "done";
+    }
+    window.onresize = checkWindowSize;
+    checkWindowSize();
+  </script>
+  <body></body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,63 +7,27 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_make_current.h"
 
 namespace media {
-namespace {
-
-// Makes |texture_owner|'s context current if it isn't already.
-std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrentIfNeeded(
-    gpu::TextureOwner* texture_owner) {
-  gl::GLContext* context = texture_owner->GetContext();
-  // Note: this works for virtual contexts too, because IsCurrent() returns true
-  // if their shared platform context is current, regardless of which virtual
-  // context is current.
-  if (context->IsCurrent(nullptr))
-    return nullptr;
-
-  auto scoped_current = std::make_unique<ui::ScopedMakeCurrent>(
-      context, texture_owner->GetSurface());
-  // Log an error if ScopedMakeCurrent failed for debugging
-  // https://crbug.com/878042.
-  // TODO(ericrk): Remove this once debugging is completed.
-  if (!context->IsCurrent(nullptr)) {
-    LOG(ERROR) << "Failed to make context current in CodecImage. Subsequent "
-                  "UpdateTexImage may fail.";
-  }
-  return scoped_current;
-}
-
-class ScopedRestoreTextureBinding {
- public:
-  ScopedRestoreTextureBinding() {
-    glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &bound_service_id_);
-  }
-  ~ScopedRestoreTextureBinding() {
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, bound_service_id_);
-  }
-
- private:
-  GLint bound_service_id_;
-};
-
-}  // namespace
 
 CodecOutputBufferRenderer::CodecOutputBufferRenderer(
     std::unique_ptr<CodecOutputBuffer> output_buffer,
-    scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator)
-    : output_buffer_(std::move(output_buffer)),
+    scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      output_buffer_(std::move(output_buffer)),
       codec_buffer_wait_coordinator_(std::move(codec_buffer_wait_coordinator)) {
-
 }
 
 CodecOutputBufferRenderer::~CodecOutputBufferRenderer() = default;
 
 bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
+  AssertAcquiredDrDcLock();
   DCHECK_NE(phase_, Phase::kInFrontBuffer);
   if (phase_ == Phase::kInBackBuffer)
     return true;
@@ -93,7 +57,9 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
 }
 
 bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
-    BindingsMode bindings_mode) {
+    BindingsMode bindings_mode,
+    GLuint service_id) {
+  AssertAcquiredDrDcLock();
   // Normally, we should have a wait coordinator if we're called.  However, if
   // the renderer is torn down (either VideoFrameSubmitter or the whole process)
   // before we get returns back from viz, then we can be notified that we're
@@ -103,34 +69,11 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     return false;
 
   if (phase_ == Phase::kInFrontBuffer) {
-    EnsureBoundIfNeeded(bindings_mode);
+    EnsureBoundIfNeeded(bindings_mode, service_id);
     return true;
   }
   if (phase_ == Phase::kInvalidated)
     return false;
-
-  std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
-
-  // If the texture_owner() binds the texture while doing the texture update
-  // (UpdateTexImage), like in SurfaceTexture case, then only make the context
-  // current. For AImageReader, since we only acquire the latest image from it
-  // during the texture update process, there is no need to make it's context
-  // current.
-  if (codec_buffer_wait_coordinator_->texture_owner()
-          ->binds_texture_on_update()) {
-    scoped_make_current = MakeCurrentIfNeeded(
-        codec_buffer_wait_coordinator_->texture_owner().get());
-  }
-
-  // If updating the image will implicitly update the texture bindings then
-  // restore if requested or the update needed a context switch.
-  base::Optional<ScopedRestoreTextureBinding> scoped_restore_texture;
-  if (codec_buffer_wait_coordinator_->texture_owner()
-          ->binds_texture_on_update() &&
-      (bindings_mode == BindingsMode::kRestoreIfBound ||
-       !!scoped_make_current)) {
-    scoped_restore_texture.emplace();
-  }
 
   // Render it to the back buffer if it's not already there.
   if (phase_ != Phase::kInBackBuffer) {
@@ -157,25 +100,31 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     codec_buffer_wait_coordinator_->WaitForFrameAvailable();
 
   codec_buffer_wait_coordinator_->texture_owner()->UpdateTexImage();
-  EnsureBoundIfNeeded(bindings_mode);
-  return true;
-}
-
-void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode) {
-  DCHECK(codec_buffer_wait_coordinator_);
-
+  // if |texture_owner| binds image on update, mark that we bound it.
   if (codec_buffer_wait_coordinator_->texture_owner()
           ->binds_texture_on_update()) {
     was_tex_image_bound_ = true;
-    return;
   }
-  if (mode != BindingsMode::kEnsureTexImageBound)
-    return;
-  codec_buffer_wait_coordinator_->texture_owner()->EnsureTexImageBound();
-  was_tex_image_bound_ = true;
+
+  EnsureBoundIfNeeded(bindings_mode, service_id);
+  return true;
+}
+
+void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode,
+                                                    GLuint service_id) {
+  AssertAcquiredDrDcLock();
+  DCHECK(codec_buffer_wait_coordinator_);
+
+  if (mode == BindingsMode::kBindImage) {
+    DCHECK_GT(service_id, 0u);
+    codec_buffer_wait_coordinator_->texture_owner()->EnsureTexImageBound(
+        service_id);
+    was_tex_image_bound_ = true;
+  }
 }
 
 bool CodecOutputBufferRenderer::RenderToOverlay() {
+  AssertAcquiredDrDcLock();
   if (phase_ == Phase::kInFrontBuffer)
     return true;
   if (phase_ == Phase::kInvalidated)
@@ -190,10 +139,14 @@ bool CodecOutputBufferRenderer::RenderToOverlay() {
 }
 
 bool CodecOutputBufferRenderer::RenderToFrontBuffer() {
+  AssertAcquiredDrDcLock();
+
   // This code is used to trigger early rendering of the image before it is used
-  // for compositing, there is no need to bind the image.
+  // for compositing, there is no need to bind the image. Hence pass texture
+  // service_id as 0.
   return codec_buffer_wait_coordinator_
-             ? RenderToTextureOwnerFrontBuffer(BindingsMode::kRestoreIfBound)
+             ? RenderToTextureOwnerFrontBuffer(BindingsMode::kDontBindImage,
+                                               0 /* service_id */)
              : RenderToOverlay();
 }
 

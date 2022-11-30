@@ -1,14 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extension_install_friction_dialog_view.h"
-#include <cstdint>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,17 +24,15 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
-
-namespace chrome {
 
 namespace {
 
@@ -52,6 +53,8 @@ void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
 
 }  // namespace
 
+namespace extensions {
+
 void ShowExtensionInstallFrictionDialog(
     content::WebContents* contents,
     base::OnceCallback<void(bool)> callback) {
@@ -69,12 +72,33 @@ void ShowExtensionInstallFrictionDialog(
       ->Show();
 }
 
-}  // namespace chrome
+}  // namespace extensions
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ExtensionInstallFrictionDialogAction {
+  kClose = 0,
+  kLearnMore = 1,
+  kContinueToInstall = 2,
+  kMaxValue = kContinueToInstall,
+};
+
+void ReportExtensionInstallFrictionDialogAction(
+    ExtensionInstallFrictionDialogAction action) {
+  base::UmaHistogramEnumeration("Extensions.InstallFrictionDialogAction",
+                                action);
+}
+
+}  // namespace
 
 ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
-    content::PageNavigator* navigator,
+    content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback)
-    : navigator_(navigator), callback_(std::move(callback)) {
+    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+      parent_web_contents_(web_contents->GetWeakPtr()),
+      callback_(std::move(callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -90,20 +114,15 @@ ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
   SetTitle(
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_INSTALL_FRICTION_TITLE));
 
-  auto run_callback = [](ExtensionInstallFrictionDialogView* dialog,
-                         bool accept) {
-    // TODO(jeffcyr): Record UMA metric
-    std::move(dialog->callback_).Run(accept);
-  };
-  SetAcceptCallback(base::BindOnce(run_callback, base::Unretained(this), true));
-  SetCancelCallback(
-      base::BindOnce(run_callback, base::Unretained(this), false));
+  SetAcceptCallback(base::BindOnce(
+      [](ExtensionInstallFrictionDialogView* view) { view->accepted_ = true; },
+      base::Unretained(this)));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
   set_draggable(true);
 
   auto warning_label = CreateWarningLabel();
@@ -114,9 +133,6 @@ ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
   scroll_view->ClipHeightTo(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::EXTENSION_INSTALL_FRICTION);
 }
 
 std::unique_ptr<views::StyledLabel>
@@ -141,15 +157,32 @@ ExtensionInstallFrictionDialogView::CreateWarningLabel() {
   return label;
 }
 
-ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() =
-    default;
+ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() {
+  // Another modal dialog (ExtensionInstallDialogView) is displayed when
+  // clicking through this friction dialog. The callback is invoked in the
+  // destructor to make sure the current modal dialog is closed before showing
+  // the next one.
+  //
+  // On MacOS, a modal dialog silently fails to display if another modal dialog
+  // is already displayed. The issue is tracked in crbug.com/1199383
+  ExtensionInstallFrictionDialogAction action;
+  if (accepted_) {
+    action = ExtensionInstallFrictionDialogAction::kContinueToInstall;
+  } else if (learn_more_clicked_) {
+    action = ExtensionInstallFrictionDialogAction::kLearnMore;
+  } else {
+    action = ExtensionInstallFrictionDialogAction::kClose;
+  }
+  ReportExtensionInstallFrictionDialogAction(action);
+
+  std::move(callback_).Run(accepted_);
+}
 
 // override
-gfx::ImageSkia ExtensionInstallFrictionDialogView::GetWindowIcon() {
-  return gfx::CreateVectorIcon(
-      vector_icons::kGppMaybeIcon, extension_misc::EXTENSION_ICON_SMALL,
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityMedium));
+ui::ImageModel ExtensionInstallFrictionDialogView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kGppMaybeIcon, ui::kColorAlertMediumSeverity,
+      extension_misc::EXTENSION_ICON_SMALLISH);
 }
 
 void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {
@@ -158,10 +191,21 @@ void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
 
-  navigator_->OpenURL(params);
+  learn_more_clicked_ = true;
+  if (parent_web_contents_) {
+    parent_web_contents_->OpenURL(params);
+  } else {
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
+    displayer.browser()->OpenURL(params);
+  }
+
   CancelDialog();
 
   // TODO(jeffcyr): Record UMA metric
+}
+
+void ExtensionInstallFrictionDialogView::ClickLearnMoreLinkForTesting() {
+  OnLearnMoreLinkClicked();
 }
 
 BEGIN_METADATA(ExtensionInstallFrictionDialogView,

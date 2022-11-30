@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/hash/md5.h"
 #include "base/numerics/ranges.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_constants.h"
@@ -35,7 +35,7 @@ constexpr unsigned char kBadDisplayName[] =
     "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
     "\x50\x20\x5a\x00\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
     "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
-constexpr size_t kBadDisplayNameLength = base::size(kBadDisplayName);
+constexpr size_t kBadDisplayNameLength = std::size(kBadDisplayName);
 
 // Sample EDID data extracted from real devices.
 constexpr unsigned char kNormalDisplay[] =
@@ -47,7 +47,76 @@ constexpr unsigned char kNormalDisplay[] =
     "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
     "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
     "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
-constexpr size_t kNormalDisplayLength = base::size(kNormalDisplay);
+constexpr size_t kNormalDisplayLength = std::size(kNormalDisplay);
+
+// Max image display is an optional field and is omitted in this display by
+// setting bytes 21-22 to 0x00.
+constexpr unsigned char kNoMaxImageSizeDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\x02\x16\x01\x04\xb5\x00\x00\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
+    "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
+constexpr size_t kNoMaxImageSizeDisplayLength =
+    std::size(kNoMaxImageSizeDisplay);
+
+// Serial number is in bytes 12-15 of Block 0. Serial number descriptor
+// (tag: 0xff) is omitted and replaced by a dummy descriptor (tag: 0x10).
+constexpr unsigned char kBlockZeroSerialNumberOnlyDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\x02\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\x10"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x71";
+constexpr size_t kBlockZeroSerialNumberOnlyDisplayLength =
+    std::size(kBlockZeroSerialNumberOnlyDisplay);
+
+// Serial number is unavilable. Omitted from bytes 12-15 of block zero and SN
+// descriptor (tag: 0xff).
+constexpr unsigned char kNoSerialNumberDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x00\x00\x00\x00"
+    "\x02\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\x10"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x71";
+constexpr size_t kNoSerialNumberDisplayLength =
+    std::size(kNoSerialNumberDisplay);
+
+// Week of manufacture is optional and is omitted in this display
+// (0x00 at byte 16).
+constexpr unsigned char kNoWeekOfManufactureDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\x00\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
+    "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
+constexpr size_t kNoWeekOfManufactureDisplayLength =
+    std::size(kNoWeekOfManufactureDisplay);
+
+// Week of manufacture can be used to signal that year of manufacture is the
+// model year by setting byte 16 to 0xff.
+constexpr unsigned char kModelYearDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x01\x01\x01\x01"
+    "\xff\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\xff"
+    "\x00\x43\x4e\x34\x32\x30\x32\x31\x33\x37\x51\x0a\x20\x20\x00\x71";
+constexpr size_t kModelYearDisplayLength = std::size(kModelYearDisplay);
 
 constexpr unsigned char kInternalDisplay[] =
     "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\xa3\x42\x31\x00\x00\x00\x00"
@@ -58,7 +127,7 @@ constexpr unsigned char kInternalDisplay[] =
     "\x00\x00\x00\x00\x00\x23\x87\x02\x64\x00\x00\x00\x00\xfe\x00\x53"
     "\x41\x4d\x53\x55\x4e\x47\x0a\x20\x20\x20\x20\x20\x00\x00\x00\xfe"
     "\x00\x31\x32\x31\x41\x54\x31\x31\x2d\x38\x30\x31\x0a\x20\x00\x45";
-constexpr size_t kInternalDisplayLength = base::size(kInternalDisplay);
+constexpr size_t kInternalDisplayLength = std::size(kInternalDisplay);
 
 constexpr unsigned char kOverscanDisplay[] =
     "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\x2d\xfe\x08\x00\x00\x00\x00"
@@ -77,7 +146,7 @@ constexpr unsigned char kOverscanDisplay[] =
     "\x5a\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc6";
-constexpr size_t kOverscanDisplayLength = base::size(kOverscanDisplay);
+constexpr size_t kOverscanDisplayLength = std::size(kOverscanDisplay);
 
 // The EDID info misdetecting overscan once. see crbug.com/226318
 constexpr unsigned char kMisdetectedDisplay[] =
@@ -97,7 +166,7 @@ constexpr unsigned char kMisdetectedDisplay[] =
     "\x72\x51\xd0\x1e\x20\x6e\x28\x55\x00\x81\x91\x21\x00\x00\x1e\x8c"
     "\x0a\xd0\x8a\x20\xe0\x2d\x10\x10\x3e\x96\x00\x81\x91\x21\x00\x00"
     "\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x94";
-constexpr size_t kMisdetectedDisplayLength = base::size(kMisdetectedDisplay);
+constexpr size_t kMisdetectedDisplayLength = std::size(kMisdetectedDisplay);
 
 constexpr unsigned char kLP2565A[] =
     "\x00\xFF\xFF\xFF\xFF\xFF\xFF\x00\x22\xF0\x76\x26\x01\x01\x01\x01"
@@ -108,7 +177,7 @@ constexpr unsigned char kLP2565A[] =
     "\x5E\x11\x00\x0A\x20\x20\x20\x20\x20\x20\x00\x00\x00\xFC\x00\x48"
     "\x50\x20\x4C\x50\x32\x34\x36\x35\x0A\x20\x20\x20\x00\x00\x00\xFF"
     "\x00\x43\x4E\x4B\x38\x30\x32\x30\x34\x48\x4D\x0A\x20\x20\x00\xA4";
-constexpr size_t kLP2565ALength = base::size(kLP2565A);
+constexpr size_t kLP2565ALength = std::size(kLP2565A);
 
 constexpr unsigned char kLP2565B[] =
     "\x00\xFF\xFF\xFF\xFF\xFF\xFF\x00\x22\xF0\x75\x26\x01\x01\x01\x01"
@@ -119,7 +188,7 @@ constexpr unsigned char kLP2565B[] =
     "\x5E\x15\x00\x0A\x20\x20\x20\x20\x20\x20\x00\x00\x00\xFC\x00\x48"
     "\x50\x20\x4C\x50\x32\x34\x36\x35\x0A\x20\x20\x20\x00\x00\x00\xFF"
     "\x00\x43\x4E\x4B\x38\x30\x32\x30\x34\x48\x4D\x0A\x20\x20\x00\x45";
-constexpr size_t kLP2565BLength = base::size(kLP2565B);
+constexpr size_t kLP2565BLength = std::size(kLP2565B);
 
 // HP z32x monitor.
 constexpr unsigned char kHPz32x[] =
@@ -139,7 +208,7 @@ constexpr unsigned char kHPz32x[] =
     "\x00\xA0\xA0\x40\x2E\x60\x20\x30\x63\x00\xB9\x88\x21\x00\x00\x1C"
     "\x28\x3C\x80\xA0\x70\xB0\x23\x40\x30\x20\x36\x00\xB9\x88\x21\x00"
     "\x00\x1A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x3E";
-constexpr size_t kHPz32xLength = base::size(kHPz32x);
+constexpr size_t kHPz32xLength = std::size(kHPz32x);
 
 // Chromebook Samus internal display.
 constexpr unsigned char kSamus[] =
@@ -151,7 +220,7 @@ constexpr unsigned char kSamus[] =
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xfe\x00\x4c"
     "\x47\x20\x44\x69\x73\x70\x6c\x61\x79\x0a\x20\x20\x00\x00\x00\xfe"
     "\x00\x4c\x50\x31\x32\x39\x51\x45\x32\x2d\x53\x50\x41\x31\x00\x6c";
-constexpr size_t kSamusLength = base::size(kSamus);
+constexpr size_t kSamusLength = std::size(kSamus);
 
 // Chromebook Eve internal display.
 constexpr unsigned char kEve[] =
@@ -163,7 +232,7 @@ constexpr unsigned char kEve[] =
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00"
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xfc"
     "\x00\x4c\x51\x31\x32\x33\x50\x31\x4a\x58\x33\x32\x0a\x20\x00\xb6";
-constexpr size_t kEveLength = base::size(kEve);
+constexpr size_t kEveLength = std::size(kEve);
 
 // A Samsung monitor that supports HDR metadata.
 constexpr unsigned char kHDRMetadata[] =
@@ -183,7 +252,17 @@ constexpr unsigned char kHDRMetadata[] =
     "\x1d\x80\xd0\x72\x1c\x16\x20\x10\x2c\x25\x80\x50\x1d\x74\x00\x00"
     "\x9e\x66\x21\x56\xaa\x51\x00\x1e\x30\x46\x8f\x33\x00\x50\x1d\x74"
     "\x00\x00\x1e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xbd";
-constexpr size_t kHDRMetadataLength = base::size(kHDRMetadata);
+constexpr size_t kHDRMetadataLength = std::size(kHDRMetadata);
+
+const std::string kNoSerialNumber = "";
+const gfx::Size kNoMaxImageSize = gfx::Size(0, 0);
+constexpr uint8_t kNoWeekOfManufactureTag = 0x00;
+constexpr uint8_t kModelYearTag = 0xff;
+// 16843009 == 0x01010101
+const std::string kGenericBlockZeroHashedSerialNumber =
+    base::MD5String(std::string("16843009"));
+const std::string kNormalDisplayHashedDescriptorBlockSerialNumber =
+    base::MD5String(std::string("CN4202137Q"));
 
 // Primaries coordinates ({RX, RY, GX, GY, BX, BY, WX, WY}) calculated by hand
 // and rounded to 4 decimal places.
@@ -240,8 +319,12 @@ constexpr static float kPrimariesPrecision = 1 / 2048.f;
 struct TestParams {
   uint16_t manufacturer_id;
   uint16_t product_id;
+  std::string block_zero_serial_number_hash;
+  std::string descriptor_block_serial_number_hash;
+  gfx::Size max_image_size;
   std::string display_name;
   gfx::Size active_pixel_size;
+  int32_t week_of_manufacture;
   int32_t year_of_manufacture;
   bool overscan_flag;
   double gamma;
@@ -249,22 +332,29 @@ struct TestParams {
   SkColorSpacePrimaries primaries;
 
   uint32_t product_code;
-  int64_t display_id_zero;
+  int64_t index_based_display_id_zero;
+  int64_t edid_based_display_id;
 
   std::string manufacturer_id_string;
   std::string product_id_string;
 
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
-  base::Optional<EdidParser::Luminance> luminance_;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
+  absl::optional<uint16_t> min_vfreq;
+  absl::optional<uint16_t> max_vfreq;
 
   const unsigned char* edid_blob;
   size_t edid_blob_length;
 } kTestCases[] = {
     {0x22f0u,
      0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
      "HP Z 30w",  // non-ascii char in display name.
      gfx::Size(2560, 1600),
+     2,
      2012,
      false,
      2.2,
@@ -272,17 +362,24 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834990092472576,
+     1713305697,
      "HWP",
      "286C",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kBadDisplayName,
      kBadDisplayNameLength},
     {0x22f0u,
      0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
      "HP ZR30w",
      gfx::Size(2560, 1600),
+     2,
      2012,
      false,
      2.2,
@@ -290,17 +387,149 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834734971736576,
+     51468448,
      "HWP",
      "286C",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kNormalDisplay,
      kNormalDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     kNoMaxImageSize,
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     2,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     403808854,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     kNoMaxImageSizeDisplay,
+     kNoMaxImageSizeDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     2,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     3094128629,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     kBlockZeroSerialNumberOnlyDisplay,
+     kBlockZeroSerialNumberOnlyDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     2,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     2769865770,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     kNoSerialNumberDisplay,
+     kNoSerialNumberDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     kNoWeekOfManufactureTag,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     4082014303,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     kNoWeekOfManufactureDisplay,
+     kNoWeekOfManufactureDisplayLength},
+    {0x22f0u,
+     0x6c28u,
+     kGenericBlockZeroHashedSerialNumber,
+     kNormalDisplayHashedDescriptorBlockSerialNumber,
+     gfx::Size(64, 40),
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     kModelYearTag,
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     1070357245,
+     "HWP",
+     "286C",
+     {},
+     {},
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     kModelYearDisplay,
+     kModelYearDisplayLength},
     {0x4ca3u,
      0x4231u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(26, 16),
      "",
      gfx::Size(1280, 800),
+     kNoWeekOfManufactureTag,
      2011,
      false,
      2.2,
@@ -308,17 +537,24 @@ struct TestParams {
      kInternalDisplayPrimaries,
      1285767729,
      21571318625337344,
+     1646280528,
      "SEC",
      "3142",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kInternalDisplay,
      kInternalDisplayLength},
     {0x4c2du,
      0xfe08u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(16, 9),
      "SAMSUNG",
      gfx::Size(1920, 1080),
+     41,
      2011,
      true,
      2.2,
@@ -326,17 +562,24 @@ struct TestParams {
      kOverscanDisplayPrimaries,
      1278082568,
      21442559853606400,
+     3766836601,
      "SAM",
      "08FE",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     24,
+     75,
      kOverscanDisplay,
      kOverscanDisplayLength},
     {0x10ACu,
      0x6440u,
+     base::MD5String("842018892"),  // == LSB of 0x4c, 0x30, 0x30, 0x32
+     base::MD5String("PH5NY13N200L"),
+     gfx::Size(64, 40),
      "DELL U3011",
      gfx::Size(1920, 1200),
+     12,
      2011,
      false,
      2.2,
@@ -344,17 +587,24 @@ struct TestParams {
      kMisdetectedDisplayPrimaries,
      279733312,
      4692848143772416,
+     1487444765,
      "DEL",
      "4064",
      {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M},
      {},
-     base::nullopt,
+     absl::nullopt,
+     49,
+     86,
      kMisdetectedDisplay,
      kMisdetectedDisplayLength},
     {0x22f0u,
      0x7626u,
+     kGenericBlockZeroHashedSerialNumber,
+     base::MD5String("CNK80204HM"),
+     gfx::Size(52, 33),
      "HP LP2465",
      gfx::Size(1920, 1200),
+     2,
      2008,
      false,
      2.2,
@@ -362,17 +612,24 @@ struct TestParams {
      kLP2565APrimaries,
      586184230,
      9834630174887424,
+     1695949480,
      "HWP",
      "2676",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     48,
+     85,
      kLP2565A,
      kLP2565ALength},
     {0x22f0u,
      0x7526u,
+     kGenericBlockZeroHashedSerialNumber,
+     base::MD5String("CNK80204HM"),
+     gfx::Size(52, 33),
      "HP LP2465",
      gfx::Size(1920, 1200),
+     2,
      2008,
      false,
      2.2,
@@ -380,17 +637,24 @@ struct TestParams {
      kLP2565BPrimaries,
      586183974,
      9834630174887424,
+     3357789438,
      "HWP",
      "2675",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     48,
+     85,
      kLP2565B,
      kLP2565BLength},
     {0x22f0u,
      0x7532u,
+     kGenericBlockZeroHashedSerialNumber,
+     base::MD5String("CNC7270MW0"),
+     gfx::Size(70, 39),
      "HP Z32x",
      gfx::Size(3840, 2160),
+     27,
      2017,
      false,
      2.2,
@@ -398,17 +662,24 @@ struct TestParams {
      kHPz32xPrimaries,
      586183986,
      9834799315992832,
+     129207725,
      "HWP",
      "3275",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     24,
+     60,
      kHPz32x,
      kHPz32xLength},
     {0x30E4u,
      0x2E04u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(27, 18),
      "",
      gfx::Size(2560, 1700),
+     kNoWeekOfManufactureTag,
      2014,
      false,
      2.5,
@@ -416,17 +687,24 @@ struct TestParams {
      kSamusPrimaries,
      820260356,
      13761487533244416,
+     2825178591,
      "LGD",
      "042E",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kSamus,
      kSamusLength},
     {0x4D10u,
      0x8A14u,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(26, 17),
      "LQ123P1JX32",
      gfx::Size(2400, 1600),
+     22,
      2017,
      false,
      2.2,
@@ -434,17 +712,24 @@ struct TestParams {
      kEvePrimaries,
      1292929556,
      21692109949126656,
+     2755351929,
      "SHP",
      "148A",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      kEve,
      kEveLength},
     {19501u,
      62989u,
+     base::MD5String("16780800"),  // == LSB of 0x00, 0x0e, 0x00 0x01
+     kNoSerialNumber,
+     gfx::Size(95, 54),
      "SAMSUNG",
      gfx::Size(3840, 2160),
+     1,
      2017,
      true,
      2.2,
@@ -452,22 +737,28 @@ struct TestParams {
      kHDRPrimaries,
      1278080525,
      21442559853606400,
+     755395064,
      "SAM",
      "0DF6",
      {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M,
       gfx::ColorSpace::PrimaryID::BT2020},
-     {gfx::ColorSpace::TransferID::BT709,
-      gfx::ColorSpace::TransferID::SMPTEST2084,
-      gfx::ColorSpace::TransferID::ARIB_STD_B67},
-     base::Optional<EdidParser::Luminance>({603.666, 530.095, 0.00454}),
+     {gfx::ColorSpace::TransferID::BT709, gfx::ColorSpace::TransferID::PQ,
+      gfx::ColorSpace::TransferID::HLG},
+     absl::make_optional<gfx::HDRStaticMetadata>(603.666, 530.095, 0.00454),
+     24,
+     75,
      kHDRMetadata,
      kHDRMetadataLength},
 
     // Empty Edid, which is tantamount to error.
     {0,
      0,
+     kNoSerialNumber,
+     kNoSerialNumber,
+     gfx::Size(0, 0),
      "",
      gfx::Size(0, 0),
+     kNoWeekOfManufactureTag,
      display::kInvalidYearOfManufacture,
      false,
      0.0,
@@ -475,11 +766,15 @@ struct TestParams {
      SkColorSpacePrimaries(),
      0,
      0,
+     // Not zero because we're still hashing some string of zero/empty values.
+     710538554,
      "@@@",
      "0000",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
+     absl::nullopt,
+     absl::nullopt,
      nullptr,
      0u},
 };
@@ -491,17 +786,23 @@ class EDIDParserTest : public TestWithParam<TestParams> {
             GetParam().edid_blob,
             GetParam().edid_blob + GetParam().edid_blob_length)) {}
 
-  const EdidParser parser_;
+  EDIDParserTest(const EDIDParserTest&) = delete;
+  EDIDParserTest& operator=(const EDIDParserTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(EDIDParserTest);
+  const EdidParser parser_;
 };
 
 TEST_P(EDIDParserTest, ParseEdids) {
   EXPECT_EQ(parser_.manufacturer_id(), GetParam().manufacturer_id);
   EXPECT_EQ(parser_.product_id(), GetParam().product_id);
+  EXPECT_EQ(parser_.block_zero_serial_number_hash(),
+            GetParam().block_zero_serial_number_hash);
+  EXPECT_EQ(parser_.descriptor_block_serial_number_hash(),
+            GetParam().descriptor_block_serial_number_hash);
+  EXPECT_EQ(parser_.max_image_size(), GetParam().max_image_size);
   EXPECT_EQ(parser_.display_name(), GetParam().display_name);
   EXPECT_EQ(parser_.active_pixel_size(), GetParam().active_pixel_size);
+  EXPECT_EQ(parser_.week_of_manufacture(), GetParam().week_of_manufacture);
   EXPECT_EQ(parser_.year_of_manufacture(), GetParam().year_of_manufacture);
   EXPECT_EQ(parser_.has_overscan_flag(), GetParam().overscan_flag);
   if (parser_.has_overscan_flag())
@@ -512,8 +813,9 @@ TEST_P(EDIDParserTest, ParseEdids) {
                       GetParam().primaries);
 
   EXPECT_EQ(parser_.GetProductCode(), GetParam().product_code);
-  EXPECT_EQ(parser_.GetDisplayId(0 /* product_index */),
-            GetParam().display_id_zero);
+  EXPECT_EQ(parser_.GetIndexBasedDisplayId(0 /* product_index */),
+            GetParam().index_based_display_id_zero);
+  EXPECT_EQ(parser_.GetEdidBasedDisplayId(), GetParam().edid_based_display_id);
 
   EXPECT_EQ(EdidParser::ManufacturerIdToString(parser_.manufacturer_id()),
             GetParam().manufacturer_id_string);
@@ -525,14 +827,23 @@ TEST_P(EDIDParserTest, ParseEdids) {
   EXPECT_EQ(GetParam().supported_color_transfer_ids_,
             parser_.supported_color_transfer_ids());
 
-  const EdidParser::Luminance* luminance = parser_.luminance();
-  EXPECT_EQ(GetParam().luminance_.has_value(), luminance != nullptr);
-  if (GetParam().luminance_.has_value() && luminance) {
+  const absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata =
+      parser_.hdr_static_metadata();
+  EXPECT_EQ(GetParam().hdr_static_metadata_.has_value(),
+            hdr_static_metadata.has_value());
+  if (GetParam().hdr_static_metadata_.has_value() &&
+      hdr_static_metadata.has_value()) {
     constexpr double epsilon = 0.001;
-    EXPECT_NEAR(GetParam().luminance_->max, luminance->max, epsilon);
-    EXPECT_NEAR(GetParam().luminance_->max_avg, luminance->max_avg, epsilon);
-    EXPECT_NEAR(GetParam().luminance_->min, luminance->min, epsilon);
+    EXPECT_NEAR(GetParam().hdr_static_metadata_->max, hdr_static_metadata->max,
+                epsilon);
+    EXPECT_NEAR(GetParam().hdr_static_metadata_->max_avg,
+                hdr_static_metadata->max_avg, epsilon);
+    EXPECT_NEAR(GetParam().hdr_static_metadata_->min, hdr_static_metadata->min,
+                epsilon);
   }
+
+  EXPECT_EQ(parser_.min_vfreq(), GetParam().min_vfreq);
+  EXPECT_EQ(parser_.max_vfreq(), GetParam().max_vfreq);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, EDIDParserTest, ValuesIn(kTestCases));

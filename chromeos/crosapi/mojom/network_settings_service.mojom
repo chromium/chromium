@@ -1,0 +1,113 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "url/mojom/url.mojom";
+
+[Stable]
+struct ProxyLocation {
+    // Host (or IP address) to use for proxy.
+    string host;
+    int32 port;
+
+    [Stable,Extensible]
+    enum Scheme {
+        [Default] kUnknown,
+        kInvalid,
+        kDirect,
+        kHttp,
+        kSocks4,
+        kSocks5,
+        kHttps,
+        kQuic,
+    };
+
+    // Identifies the scheme which is used to connect to the proxy. This is
+    // independent of the type of the transmitted requests, e.g. it does not
+    // have to be kHttps for a proxy which handles https requests. That's why
+    // it has to be transmitted.
+    [MinVersion=1] Scheme scheme;
+};
+
+// Description of the extension in the primary profile which is controlling the
+// OS proxy configuration. It is sent from Lacros' primary profile to Ash and
+// from Ash to all profiles in Lacros, the PlayStore and Chrome OS system
+// services.
+// Note: In the Lacros primary profile, the extension set proxy has priority so
+// proxy updates coming from the OS are ignored.
+[Stable]
+struct ExtensionControllingProxy {
+    string name;
+    string id;
+    [MinVersion=1] bool can_be_disabled;
+};
+
+[Stable]
+struct ProxySettingsDirect {};
+
+[Stable]
+struct ProxySettingsManual {
+    array<ProxyLocation> http_proxies;
+    array<ProxyLocation> secure_http_proxies;
+    array<ProxyLocation> socks_proxies;
+    // Domains and hosts for which to exclude proxy settings.
+    array<string> exclude_domains;
+ };
+
+[Stable]
+struct ProxySettingsPac {
+    url.mojom.Url pac_url;
+    // If true, network traffic does not fall back to direct connections in
+    // case the PAC script is not available.
+    bool pac_mandatory;
+ };
+
+[Stable]
+struct ProxySettingsWpad {
+    url.mojom.Url pac_url;
+};
+
+[Stable]
+union ProxySettings {
+    ProxySettingsDirect direct;
+    ProxySettingsManual manual;
+    ProxySettingsPac pac;
+    ProxySettingsWpad wpad;
+};
+
+[Stable]
+struct ProxyConfig {
+    ProxySettings proxy_settings;
+
+    // Identifies the extension controlling the proxy.
+    ExtensionControllingProxy? extension;
+};
+
+// Implemented by Lacros-Chrome.
+[Stable]
+interface NetworkSettingsObserver {
+    // This methods is called when:
+    // - the observer is added to the `NetworkSettingsService`;
+    // - the proxy configuration in Ash is updated;
+    // - the WPAD URL on the default network is updated.
+    OnProxyChanged@0(ProxyConfig proxy_config);
+};
+
+// Implemented by Ash-Chrome.
+[Stable, Uuid="e8916037-b993-454a-96ef-20f269cace54"]
+interface NetworkSettingsService {
+    // Add an Ash network settings service observer.
+    AddNetworkSettingsObserver@0(
+        pending_remote<NetworkSettingsObserver> observer);
+    // Used by the Lacros browser to forward proxy configurations set via
+    // extensions in the primary profile to Ash. `proxy_config` must specify the
+    // extension setting the proxy.
+    [MinVersion=1]
+    SetExtensionProxy@1(ProxyConfig proxy_config);
+    // Used by the Lacros browser to clear proxy configurations set via
+    // extensions in the primary profile to Ash.
+    [MinVersion=1]
+    ClearExtensionProxy@2();
+};

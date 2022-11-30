@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,7 @@ struct Environment {
 };
 
 DEFINE_PROTO_FUZZER(const Input& input) {
-  static Environment environment = Environment();
-  ALLOW_UNUSED_LOCAL(environment);
+  [[maybe_unused]] static Environment environment = Environment();
 
   static Converter converter = Converter();
   std::string ipc_filter_message = converter.Convert(input);

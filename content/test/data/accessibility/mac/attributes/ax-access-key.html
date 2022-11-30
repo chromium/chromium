@@ -1,0 +1,16 @@
+<!--
+@SCRIPT:
+  focusable.accessibilityAttributeNames.has(AXAccessKey)
+  focusable.accessibilityAttributeValue(AXAccessKey)
+  restriction.accessibilityAttributeNames.has(AXAccessKey)
+  restriction.accessibilityAttributeValue(AXAccessKey)
+  invalid.accessibilityAttributeNames.has(AXAccessKey)
+  invalid.accessibilityAttributeValue(AXAccessKey)
+  not_applicable.accessibilityAttributeNames.has(AXAccessKey)
+  not_applicable.accessibilityAttributeValue(AXAccessKey)
+-->
+<!DOCTYPE html>
+<input id="focusable" accesskey="s">
+<input id="restriction" readonly accesskey="s">
+<div id="invalid" aria-invalid="true" accesskey="s">
+<div id="not_applicable" accesskey="s">

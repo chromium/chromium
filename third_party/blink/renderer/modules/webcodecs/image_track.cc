@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,8 +65,10 @@ void ImageTrack::UpdateTrack(uint32_t frame_count, int repetition_count) {
   frame_count_ = frame_count;
   repetition_count_ = repetition_count;
 
-  // Animation state isn't allowed to change after construction.
-  DCHECK_EQ(was_animated, animated());
+  // Changes from still to animated are not allowed since they can cause sites
+  // to think there are no further frames to decode in the streaming case.
+  if (!was_animated)
+    DCHECK_EQ(was_animated, animated());
 }
 
 void ImageTrack::Trace(Visitor* visitor) const {

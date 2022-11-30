@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,16 +22,13 @@ class GpoEditorWriter(template_writer.TemplateWriter):
   def IsVersionSupported(self, policy, supported_on):
     # Include deprecated policies in the 'DeprecatedPolicies' group, even if
     # they aren't supported anymore.
-    #
-    # TODO(crbug.com/463990): Eventually exclude some policies, e.g. if they
-    # were deprecated a long time ago.
     major_version = self._GetChromiumMajorVersion()
     if not major_version:
       return True
 
     since_version = supported_on.get('since_version', None)
 
-    return not since_version or since_version >= major_version
+    return not since_version or major_version >= int(since_version)
 
   def IsPolicyOnWin7Only(self, policy):
     ''' Returns true if the policy is supported on win7 only.'''
@@ -77,10 +74,14 @@ class GpoEditorWriter(template_writer.TemplateWriter):
     for group in policy_list:
       if group['type'] != 'group':
         continue
-      # TODO(nicolaso): Remove empty groups
       group['policies'] = [
           p for p in group['policies'] if p['name'] not in policies_to_remove
       ]
+
+    # Remove empty groups.
+    policy_list[:] = [
+        p for p in policy_list if p['type'] != 'group' or p['policies']
+    ]
 
   def _MovePolicyGroup(self, policy_list, predicate, policy_desc, group):
     '''Remove policies from |policy_list| that satisfy |predicate| and add them

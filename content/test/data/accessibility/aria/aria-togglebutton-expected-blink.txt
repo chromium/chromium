@@ -5,5 +5,11 @@ rootWebArea
 ++++++++staticText name='Regular button'
 ++++++++++inlineTextBox name='Regular button'
 ++++++toggleButton name='Toggle button' checkedState=false
+++++++++staticText name='Toggle button'
+++++++++++inlineTextBox name='Toggle button'
 ++++++toggleButton name='Toggle button' checkedState=true
+++++++++staticText name='Toggle button'
+++++++++++inlineTextBox name='Toggle button'
 ++++++toggleButton name='Toggle button' checkedState=mixed
+++++++++staticText name='Toggle button'
+++++++++++inlineTextBox name='Toggle button'

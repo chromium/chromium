@@ -1,10 +1,11 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import test_util
 import time
 from absl import app, flags
+
+from test_util import create_chrome_webdriver
 
 FLAGS = flags.FLAGS
 
@@ -25,7 +26,7 @@ flags.DEFINE_bool(
 
 
 def main(argv):
-  driver = test_util.create_chrome_webdriver(incognito=FLAGS.incognito)
+  driver = create_chrome_webdriver(incognito=FLAGS.incognito)
   driver.get(FLAGS.url)
 
   if FLAGS.wait > 0:

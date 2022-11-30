@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,7 @@ class ParentPermissionDialogViewTest
   enum class NextDialogAction {
     kCancel,
     kAccept,
+    kClose,
   };
 
   ParentPermissionDialogViewTest()
@@ -123,6 +124,9 @@ class ParentPermissionDialogViewTest
         case NextDialogAction::kAccept:
           view_->AcceptDialog();
           break;
+        case NextDialogAction::kClose:
+          view_->CloseDialog();
+          break;
       }
     }
   }
@@ -136,9 +140,9 @@ class ParentPermissionDialogViewTest
     // OAuth refresh tokens.
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_env_->MakeAccountAvailable(
-        chromeos::FakeGaiaMixin::kFakeUserEmail);
-    identity_test_env_->SetPrimaryAccount(
-        chromeos::FakeGaiaMixin::kFakeUserEmail);
+        ash::FakeGaiaMixin::kFakeUserEmail);
+    identity_test_env_->SetPrimaryAccount(ash::FakeGaiaMixin::kFakeUserEmail,
+                                          signin::ConsentLevel::kSync);
     identity_test_env_->SetRefreshTokenForPrimaryAccount();
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   }
@@ -255,11 +259,11 @@ class ParentPermissionDialogViewTest
 
   ParentPermissionDialog::Result result_;
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+  ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
       // Simulate Gellerization / Adding Supervision to load extensions.
-      content::IsPreTest() ? chromeos::LoggedInUserMixin::LogInType::kRegular
-                           : chromeos::LoggedInUserMixin::LogInType::kChild,
+      content::IsPreTest() ? ash::LoggedInUserMixin::LogInType::kRegular
+                           : ash::LoggedInUserMixin::LogInType::kChild,
       embedded_test_server(), this};
 
   // Closure that is triggered once the dialog is shown.
@@ -268,10 +272,10 @@ class ParentPermissionDialogViewTest
   // Closure that is triggered once the dialog completes.
   base::OnceClosure on_dialog_done_closure_;
 
-  scoped_refptr<const extensions::Extension> test_extension_ = nullptr;
+  scoped_refptr<const extensions::Extension> test_extension_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-  base::Optional<NextDialogAction> next_dialog_action_;
+  absl::optional<NextDialogAction> next_dialog_action_;
 };
 
 // Tests that a plain dialog widget is shown using the TestBrowserUi
@@ -313,6 +317,13 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
   CheckResult(ParentPermissionDialog::Result::kParentPermissionCanceled);
 }
 
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest, PermissionDialogClosed) {
+  set_next_dialog_action(
+      ParentPermissionDialogViewTest::NextDialogAction::kClose);
+  ShowPrompt();
+  CheckResult(ParentPermissionDialog::Result::kParentPermissionCanceled);
+}
+
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionReceivedForExtension) {
   base::HistogramTester histogram_tester;
@@ -340,10 +351,6 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kParentPermissionDialogHistogramName,
                                     2);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kParentPermissionDialogParentApprovedTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kParentPermissionDialogOpenedActionName));
@@ -379,10 +386,6 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kParentPermissionDialogHistogramName,
                                     2);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kParentPermissionDialogFailedTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kParentPermissionDialogOpenedActionName));
@@ -415,10 +418,6 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kParentPermissionDialogHistogramName,
                                     2);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kParentPermissionDialogParentCanceledTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kParentPermissionDialogOpenedActionName));
@@ -616,7 +615,7 @@ class ExtensionManagementApiTestSupervised
     extensions::ResultCatcher catcher;
     GURL url = test_extension->GetResourceURL(page_url);
     DCHECK(url.is_valid());
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     if (catcher.GetNextResult())
       return true;
     if (error_message)

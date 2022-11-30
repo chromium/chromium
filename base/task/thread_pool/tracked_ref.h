@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/template_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -127,7 +128,7 @@ template <class T>
 class TrackedRefFactory {
  public:
   explicit TrackedRefFactory(T* ptr)
-      : ptr_(ptr), self_ref_(TrackedRef<T>(ptr_, this)) {
+      : ptr_(ptr), self_ref_(TrackedRef<T>(ptr_.get(), this)) {
     DCHECK(ptr_);
   }
 
@@ -153,14 +154,14 @@ class TrackedRefFactory {
     // vend new TrackedRefs while it's being destroyed (owners of TrackedRefs
     // may still copy/move their refs around during the destruction phase).
     DCHECK(!live_tracked_refs_.IsZero());
-    return TrackedRef<T>(ptr_, this);
+    return TrackedRef<T>(ptr_.get(), this);
   }
 
  private:
   friend class TrackedRef<T>;
   FRIEND_TEST_ALL_PREFIXES(TrackedRefTest, CopyAndMoveSemantics);
 
-  T* const ptr_;
+  const raw_ptr<T> ptr_;
 
   // The number of live TrackedRefs vended by this factory.
   AtomicRefCount live_tracked_refs_{0};
@@ -168,11 +169,11 @@ class TrackedRefFactory {
   // Non-null during the destruction phase. Signaled once |live_tracked_refs_|
   // reaches 0. Note: making this optional and only initializing it in the
   // destruction phase avoids keeping a handle open for the entire session.
-  Optional<WaitableEvent> ready_to_destroy_;
+  absl::optional<WaitableEvent> ready_to_destroy_;
 
   // TrackedRefFactory holds a TrackedRef as well to prevent
   // |live_tracked_refs_| from ever reaching zero before ~TrackedRefFactory().
-  Optional<TrackedRef<T>> self_ref_;
+  absl::optional<TrackedRef<T>> self_ref_;
 };
 
 }  // namespace internal

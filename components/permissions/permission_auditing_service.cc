@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,10 @@ namespace {
 
 // Specifies the permissions usage session lifetime. Each session older
 // than this value is to be deleted.
-constexpr base::TimeDelta kUsageSessionMaxAge = base::TimeDelta::FromDays(90);
+constexpr base::TimeDelta kUsageSessionMaxAge = base::Days(90);
 
 // Specifies the time period between the regular sessions deletions.
-constexpr base::TimeDelta kUsageSessionCullingInterval =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kUsageSessionCullingInterval = base::Minutes(30);
 
 }  // namespace
 
@@ -29,7 +28,7 @@ PermissionAuditingService::PermissionAuditingService(
 
 PermissionAuditingService::~PermissionAuditingService() {
   if (db_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, db_);
+    backend_task_runner_->DeleteSoon(FROM_HERE, db_.get());
     db_ = nullptr;
   }
 }

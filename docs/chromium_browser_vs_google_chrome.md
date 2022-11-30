@@ -19,7 +19,6 @@ builds **on Linux**.
 *   Video and Audio codecs (may vary by distribution)
     *   **H.264**, AV1, VP8, and VP9 video codecs.
     *   **AAC**, MP3, Opus, Theora, Vorbis, FLAC, and WAV audio codecs.
-*   Sandboxed PPAPI (non-free) Flash plugin included in release
 *   Code is tested by Chrome developers
 *   Sandbox is always on
 *   Single deb/rpm package
@@ -37,8 +36,6 @@ builds **on Linux**.
 *   Video and Audio codecs (may vary by distribution)
     *   AV1, VP8, and VP9 video codecs.
     *   MP3, Opus, Theora, Vorbis, FLAC, and WAV audio codecs.
-*   Supports NPAPI (unsandboxed) Flash plugins, including the one from Adobe in
-    Chrome 34 and below
 *   Code may be modified by distributions
 *   Sandbox depends on the distribution (navigate to about:sandbox to confirm)
 *   Packaging depends on the distribution

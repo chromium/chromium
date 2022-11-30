@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/site_engagement/content/site_engagement_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -41,9 +40,6 @@ const char SiteEngagementMetrics::kEngagementScoreHistogram[] =
 const char SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram[] =
     "SiteEngagementService.OriginsWithMaxEngagement";
 
-const char SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram[] =
-    "SiteEngagementService.OriginsWithMaxDailyEngagement";
-
 const char SiteEngagementMetrics::kEngagementTypeHistogram[] =
     "SiteEngagementService.EngagementType";
 
@@ -75,7 +71,7 @@ void SiteEngagementMetrics::RecordEngagementScores(
     return;
 
   std::map<int, int> score_buckets;
-  for (size_t i = 0; i < base::size(kEngagementBucketHistogramBuckets); ++i)
+  for (size_t i = 0; i < std::size(kEngagementBucketHistogramBuckets); ++i)
     score_buckets[kEngagementBucketHistogramBuckets[i]] = 0;
 
   for (const auto& detail : details) {
@@ -104,12 +100,6 @@ void SiteEngagementMetrics::RecordOriginsWithMaxEngagement(int total_origins) {
   UMA_HISTOGRAM_COUNTS_100(kOriginsWithMaxEngagementHistogram, total_origins);
 }
 
-void SiteEngagementMetrics::RecordOriginsWithMaxDailyEngagement(
-    int total_origins) {
-  UMA_HISTOGRAM_COUNTS_100(kOriginsWithMaxDailyEngagementHistogram,
-                           total_origins);
-}
-
 void SiteEngagementMetrics::RecordEngagement(EngagementType type) {
   UMA_HISTOGRAM_ENUMERATION(kEngagementTypeHistogram, type,
                             EngagementType::kLast);
@@ -123,7 +113,7 @@ void SiteEngagementMetrics::RecordDaysSinceLastShortcutLaunch(int days) {
 std::vector<std::string>
 SiteEngagementMetrics::GetEngagementBucketHistogramNames() {
   std::vector<std::string> histogram_names;
-  for (size_t i = 0; i < base::size(kEngagementBucketHistogramBuckets); ++i) {
+  for (size_t i = 0; i < std::size(kEngagementBucketHistogramBuckets); ++i) {
     histogram_names.push_back(
         kEngagementBucketHistogramBase +
         base::NumberToString(kEngagementBucketHistogramBuckets[i]));

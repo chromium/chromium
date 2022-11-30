@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>cr-toggle demo</title>
+    <link rel="stylesheet" href="demo.css">
+  </head>
+  <body>
+    <dom-bind>
+      <template>
+        <h1>cr-toggle</h1>
+        <div class="demos">
+          <div class="row">
+            <cr-toggle
+                aria-label="Label for toggle"
+                checked="{{checked_}}">
+            </cr-toggle>
+            <span aria-hidden="true">Label for toggle</span>
+            <span>
+              Checked? [[checked_]]
+            </span>
+          </div>
+
+          <div class="row">
+            <cr-toggle aria-label="Disabled toggle" disabled></cr-toggle>
+            <span aria-hidden="true">Disabled toggle</span>
+          </div>
+
+          <div class="row">
+            <cr-toggle
+                aria-label="Dark mode toggle"
+                aria-describedby="description"
+                dark>
+            </cr-toggle>
+            <div>
+              <div aria-hidden="true">Dark mode toggle</div>
+              <div id="description"> This toggle has dark mode forced on.</div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </dom-bind>
+
+    <script src="//resources/cr_elements/cr_toggle/cr_toggle.js"
+        type="module"></script>
+  </body>
+</html>

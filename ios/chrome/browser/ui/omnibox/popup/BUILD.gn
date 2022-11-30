@@ -1,9 +1,61 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/swift_source_set.gni")
+
+swift_source_set("popup_swift") {
+  bridge_header = "popup_swift_bridge.h"
+  sources = [
+    "omnibox_popup_view_provider.swift",
+    "shared/blurred_background.swift",
+    "shared/fake_omnibox_icon.swift",
+    "shared/gradient_text_view.swift",
+    "shared/omnibox_pedal.swift",
+    "shared/omnibox_text.swift",
+    "shared/popup_empty_space_view.swift",
+    "shared/popup_image.swift",
+    "shared/popup_match.swift",
+    "shared/popup_match_image_view.swift",
+    "shared/popup_match_row_action_button.swift",
+    "shared/popup_match_row_view.swift",
+    "shared/popup_match_trailing_button.swift",
+    "shared/popup_model.swift",
+    "shared/popup_ui_configuration.swift",
+    "shared/popup_ui_variation.swift",
+    "shared/popup_view.swift",
+    "shared/popup_visible_suggestion_count.swift",
+    "shared/pressed_preference_key_button_style.swift",
+    "shared/self_sizing_list.swift",
+  ]
+
+  deps = [
+    ":popup_ui_protocols",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/theme",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
+    "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors:swift",
+    "//ui/base",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+}
+
 source_set("popup") {
   sources = [
+    "omnibox_pedal_annotator.h",
+    "omnibox_pedal_annotator.mm",
+    "omnibox_popup_container_view.h",
+    "omnibox_popup_container_view.mm",
     "omnibox_popup_coordinator.h",
     "omnibox_popup_coordinator.mm",
     "omnibox_popup_mediator.h",
@@ -14,30 +66,56 @@ source_set("popup") {
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
     "omnibox_popup_view_suggestions_delegate.h",
+    "pedal_section_extractor.h",
+    "pedal_section_extractor.mm",
+    "pedal_suggestion_wrapper.h",
+    "pedal_suggestion_wrapper.mm",
   ]
   deps = [
     ":popup_internal",
+    ":popup_swift",
     ":popup_ui",
+    ":popup_ui_protocols",
     "//base",
-    "//components/image_fetcher/ios",
+    "//components/favicon/core",
+    "//components/image_fetcher/core",
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/default_browser",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/favicon",
+    "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp:util",
+    "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_clear_browsing_data",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_default_browser",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_dino",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_history",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_incognito",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_passwords",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_payments",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_safety_check",
+    "//ios/chrome/browser/ui/omnibox/resources:pedal_settings",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
@@ -59,47 +137,60 @@ source_set("popup_accessibility_identifier_constants") {
 
 source_set("popup_ui") {
   sources = [
-    "autocomplete_result_consumer.h",
-    "autocomplete_suggestion.h",
+    "carousel_item.h",
+    "carousel_item.mm",
+    "carousel_item_menu_provider.h",
     "favicon_retriever.h",
     "image_retriever.h",
-    "omnibox_icon.h",
     "omnibox_icon_view.h",
     "omnibox_icon_view.mm",
+    "omnibox_popup_carousel_cell.h",
+    "omnibox_popup_carousel_cell.mm",
+    "omnibox_popup_carousel_control.h",
+    "omnibox_popup_carousel_control.mm",
     "omnibox_popup_row_cell.h",
     "omnibox_popup_row_cell.mm",
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
-    "self_sizing_table_view.h",
-    "self_sizing_table_view.mm",
     "simple_omnibox_icon.h",
     "simple_omnibox_icon.mm",
   ]
   deps = [
     ":popup_accessibility_identifier_constants",
+    ":popup_ui_protocols",
+    "resources:background_color_swiftui_ios14",
+    "resources:grouped_primary_background_color_swiftui_ios14",
     "resources:omnibox_popup_tab_match",
     "resources:omnibox_suggestion_answer_icon_color",
     "resources:omnibox_suggestion_answer_icon_dark_color",
     "resources:omnibox_suggestion_icon_color",
     "resources:omnibox_suggestion_icon_dark_color",
+    "resources:omnibox_suggestion_row_highlight_color",
     "//base",
+    "//components/favicon/core",
     "//components/omnibox/common",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/elements",
-    "//ios/chrome/browser/ui/ntp_tile_views",
+    "//ios/chrome/browser/ui/favicon",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
+    "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:elements",
+    "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/images",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
     "//url",
   ]
@@ -110,20 +201,36 @@ source_set("popup_internal") {
   sources = [
     "autocomplete_match_formatter.h",
     "autocomplete_match_formatter.mm",
+    "autocomplete_suggestion_group_impl.h",
+    "autocomplete_suggestion_group_impl.mm",
     "omnibox_icon_formatter.h",
     "omnibox_icon_formatter.mm",
   ]
   deps = [
+    ":popup_swift",
     ":popup_ui",
+    ":popup_ui_protocols",
     "//base",
     "//components/omnibox/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors",
+    "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("popup_ui_protocols") {
+  sources = [
+    "autocomplete_result_consumer.h",
+    "autocomplete_suggestion.h",
+    "content_providing.h",
+    "omnibox_icon.h",
+    "omnibox_pedal.h",
+    "popup_match_preview_delegate.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -131,22 +238,31 @@ source_set("popup_internal") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "omnibox_popup_row_cell_unittest.mm" ]
+  sources = [
+    "omnibox_pedal_annotator_unittest.mm",
+    "omnibox_popup_mediator_unittest.mm",
+    "omnibox_popup_row_cell_unittest.mm",
+    "omnibox_popup_view_controller_unittest.mm",
+    "pedal_section_extractor_unittest.mm",
+  ]
   deps = [
     ":popup",
     ":popup_internal",
     ":popup_ui",
+    ":popup_ui_protocols",
     "//base",
+    "//base/test:test_support",
+    "//components/image_fetcher/core",
     "//components/omnibox/browser",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/favicon",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -156,11 +272,19 @@ source_set("eg2_tests") {
   deps = [
     ":popup_accessibility_identifier_constants",
     "//base",
+    "//components/strings",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/history:constants",
+    "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
     "//net:test_support",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

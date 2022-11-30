@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/origin.h"
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
@@ -54,15 +54,17 @@ std::u16string LocationBarModelImpl::GetURLForDisplay() const {
     format_types |= url_formatter::kFormatUrlTrimAfterHost;
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   format_types |= url_formatter::kFormatUrlTrimAfterHost;
 #endif
 
   format_types |= url_formatter::kFormatUrlOmitHTTPS;
   format_types |= url_formatter::kFormatUrlOmitTrivialSubdomains;
 
-  if (base::FeatureList::IsEnabled(omnibox::kHideFileUrlScheme))
-    format_types |= url_formatter::kFormatUrlOmitFileScheme;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On desktop, the File chip makes the scheme redundant in the steady state.
+  format_types |= url_formatter::kFormatUrlOmitFileScheme;
+#endif
 
   if (dom_distiller::url_utils::IsDistilledPage(GetURL())) {
     // We explicitly elide the scheme here to ensure that HTTPS and HTTP will
@@ -89,29 +91,16 @@ std::u16string LocationBarModelImpl::GetFormattedURL(
                    ~url_formatter::kFormatUrlOmitHTTP;
   }
 
-  // Prevent scheme/trivial subdomain elision when simplified domain field
-  // trials are enabled. In these field trials, OmniboxViewViews handles elision
-  // of scheme and trivial subdomains because they are shown/hidden based on
-  // user interactions with the omnibox.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover) ||
-      base::FeatureList::IsEnabled(
-          omnibox::kHideSteadyStateUrlPathQueryAndRefOnInteraction)) {
-    format_types &= ~url_formatter::kFormatUrlOmitHTTP;
-    format_types &= ~url_formatter::kFormatUrlOmitHTTPS;
-    format_types &= ~url_formatter::kFormatUrlOmitTrivialSubdomains;
-  }
-
   GURL url(GetURL());
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // On iOS, the blob: display URLs should be simply the domain name. However,
   // url_formatter parses everything past blob: as path, not domain, so swap
   // the url here to be just origin.
   if (url.SchemeIsBlob()) {
     url = url::Origin::Create(url).GetURL();
   }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Special handling for dom-distiller:. Instead of showing internal reader
   // mode URLs, show the original article URL in the omnibox.
@@ -133,9 +122,9 @@ std::u16string LocationBarModelImpl::GetFormattedURL(
   // the space.
   const std::u16string formatted_text =
       delegate_->FormattedStringWithEquivalentMeaning(
-          url,
-          url_formatter::FormatUrl(url, format_types, net::UnescapeRule::NORMAL,
-                                   nullptr, nullptr, nullptr));
+          url, url_formatter::FormatUrl(url, format_types,
+                                        base::UnescapeRule::NORMAL, nullptr,
+                                        nullptr, nullptr));
 
   // Truncating the URL breaks editing and then pressing enter, but hopefully
   // people won't try to do much with such enormous URLs anyway. If this becomes
@@ -161,51 +150,76 @@ security_state::SecurityLevel LocationBarModelImpl::GetSecurityLevel() const {
   return delegate_->GetSecurityLevel();
 }
 
+net::CertStatus LocationBarModelImpl::GetCertStatus() const {
+  // When empty, assume no cert status.
+  if (!ShouldDisplayURL())
+    return 0;
+
+  return delegate_->GetCertStatus();
+}
+
 OmniboxEventProto::PageClassification
-LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
+LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source,
+                                            bool is_prefetch) {
   // We may be unable to fetch the current URL during startup or shutdown when
   // the omnibox exists but there is no attached page.
   GURL gurl;
-  if (!delegate_->GetURL(&gurl))
+  if (!delegate_->GetURL(&gurl)) {
     return OmniboxEventProto::OTHER;
-
+  }
   if (delegate_->IsNewTabPage()) {
     // Note that we treat OMNIBOX as the source if focus_source_ is INVALID,
     // i.e., if input isn't actually in progress.
-    return (focus_source == OmniboxFocusSource::FAKEBOX)
+    return is_prefetch ? OmniboxEventProto::NTP_ZPS_PREFETCH
+           : focus_source == OmniboxFocusSource::FAKEBOX
                ? OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS
                : OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS;
   }
-  if (!gurl.is_valid())
+  if (!gurl.is_valid()) {
     return OmniboxEventProto::INVALID_SPEC;
-  if (delegate_->IsNewTabPageURL(gurl))
-    return OmniboxEventProto::NTP;
-  if (gurl.spec() == url::kAboutBlankURL)
+  }
+  if (delegate_->IsNewTabPageURL(gurl)) {
+    return is_prefetch ? OmniboxEventProto::NTP_ZPS_PREFETCH
+                       : OmniboxEventProto::NTP;
+  }
+  if (gurl.spec() == url::kAboutBlankURL) {
     return OmniboxEventProto::BLANK;
-  if (delegate_->IsHomePage(gurl))
+  }
+  if (delegate_->IsHomePage(gurl)) {
     return OmniboxEventProto::HOME_PAGE;
+  }
 
   TemplateURLService* template_url_service = delegate_->GetTemplateURLService();
   if (template_url_service &&
       template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
           gurl)) {
-    return OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
+    return is_prefetch ? OmniboxEventProto::SRP_ZPS_PREFETCH
+                       : OmniboxEventProto::
+                             SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
   }
 
-  return OmniboxEventProto::OTHER;
+  return is_prefetch ? OmniboxEventProto::OTHER_ZPS_PREFETCH
+                     : OmniboxEventProto::OTHER;
 }
 
 const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   auto* const icon_override = delegate_->GetVectorIconOverride();
   if (icon_override)
     return *icon_override;
 
   if (IsOfflinePage())
     return omnibox::kOfflinePinIcon;
+
+  if (GetSecurityLevel() == security_state::SecurityLevel::SECURE &&
+      delegate_->IsShowingAccuracyTip()) {
+    return omnibox::kHttpIcon;
+  }
 #endif
 
-  return location_bar_model::GetSecurityVectorIcon(GetSecurityLevel());
+  return location_bar_model::GetSecurityVectorIcon(
+      GetSecurityLevel(),
+      delegate_->ShouldUseUpdatedConnectionSecurityIndicators());
 }
 
 std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
@@ -220,7 +234,9 @@ std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
     case security_state::WARNING:
       return l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE);
     case security_state::SECURE:
-      return std::u16string();
+      return delegate_->IsShowingAccuracyTip()
+                 ? l10n_util::GetStringUTF16(IDS_ACCURACY_CHECK_VERBOSE_STATE)
+                 : std::u16string();
     case security_state::DANGEROUS: {
       std::unique_ptr<security_state::VisibleSecurityState>
           visible_security_state = delegate_->GetVisibleSecurityState();
@@ -267,4 +283,9 @@ bool LocationBarModelImpl::IsOfflinePage() const {
 
 bool LocationBarModelImpl::ShouldPreventElision() const {
   return delegate_->ShouldPreventElision();
+}
+
+bool LocationBarModelImpl::ShouldUseUpdatedConnectionSecurityIndicators()
+    const {
+  return delegate_->ShouldUseUpdatedConnectionSecurityIndicators();
 }

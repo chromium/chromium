@@ -1,0 +1,36 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../fenced_frame/resources/utils.js"></script>
+
+<body>
+<script>
+'use strict';
+
+promise_test(async () => {
+    const ancestor_key = token();
+    let url0 = generateURL("resources/sender0.html", [ancestor_key]);
+    let url1 = generateURL("resources/sender1.html", [ancestor_key]);
+
+    await sharedStorage.worklet.addModule("resources/simple-module.js");
+
+    let uuid0 = await sharedStorage.selectURL(
+        "test-url-selection-operation", [
+            {url: url0,
+             reportingMetadata:
+                 {
+                     'click': "resources/receiver0.html",
+                     'mouse interaction': "resources/receiver1.html"
+                 }
+             }, {url: url1}
+        ], {data: {'mockResult': 0}});
+    assert_true(uuid0.startsWith('urn:uuid:'));
+    attachFencedFrame(uuid0, 'opaque-ads');
+    const result0 = await nextValueFromServer(ancestor_key);
+    assert_equals(result0, "sender0_reported");
+}, 'selectURL() with reportEvent()');
+
+</script>
+</body>

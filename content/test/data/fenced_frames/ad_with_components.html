@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <iframe id="component1"></iframe>
+<script>
+  let components = navigator.adAuctionComponents(1);
+  let subframe = document.getElementById("component1");
+  subframe.src = components[0];
+</script>
+</body>
+</html>

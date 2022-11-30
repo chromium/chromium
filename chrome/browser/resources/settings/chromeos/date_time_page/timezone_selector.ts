@@ -1,0 +1,211 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview 'timezone-selector' is the time zone selector dropdown.
+ */
+
+import '../../settings_shared.css.js';
+import '../../controls/settings_dropdown_menu.js';
+
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+
+import {TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
+import {getTemplate} from './timezone_selector.html.js';
+
+const TimezoneSelectorElementBase =
+    mixinBehaviors([PrefsBehavior], PolymerElement) as {
+      new (): PolymerElement & PrefsBehaviorInterface,
+    };
+
+export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
+  static get is() {
+    return 'timezone-selector';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+       * This stores active time zone display name to be used in other UI
+       * via bi-directional binding.
+       */
+      activeTimeZoneDisplayName: {
+        type: String,
+        notify: true,
+      },
+
+      /**
+       * True if the account is supervised and doesn't get parent access code
+       * verification.
+       */
+      shouldDisableTimeZoneGeoSelector: {
+        type: Boolean,
+        notify: true,
+      },
+
+      /**
+       * Initialized with the current time zone so the menu displays the
+       * correct value. The full option list is fetched lazily if necessary by
+       * maybeGetTimeZoneList_.
+       */
+      timeZoneList_: {
+        type: Array,
+        value() {
+          return [{
+            name: loadTimeData.getString('timeZoneName'),
+            value: loadTimeData.getString('timeZoneID'),
+          }];
+        },
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'maybeGetTimeZoneListPerUser_(' +
+          'prefs.settings.timezone.value,' +
+          'prefs.generated.resolve_timezone_by_geolocation_on_off.value)',
+      'maybeGetTimeZoneListPerSystem_(' +
+          'prefs.cros.system.timezone.value,' +
+          'prefs.generated.resolve_timezone_by_geolocation_on_off.value)',
+      'updateActiveTimeZoneName_(prefs.cros.system.timezone.value)',
+    ];
+  }
+
+  activeTimeZoneDisplayName: string;
+  shouldDisableTimeZoneGeoSelector: boolean;
+  private timeZoneList_: DropdownMenuOptionList;
+  private getTimeZonesRequestSent_: boolean;
+
+  constructor() {
+    super();
+
+    /**
+     * True if getTimeZones request was sent to Chrome, but result is not
+     * yet received.
+     */
+    this.getTimeZonesRequestSent_ = false;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.maybeGetTimeZoneList_();
+  }
+
+  /**
+   * Fetches the list of time zones if necessary.
+   * @param perUserTimeZoneMode Expected value of per-user time zone.
+   */
+  private maybeGetTimeZoneList_(perUserTimeZoneMode?: boolean) {
+    if (typeof (perUserTimeZoneMode) !== 'undefined') {
+      /* This method is called as observer. Skip if if current mode does not
+       * match expected.
+       */
+      if (perUserTimeZoneMode !==
+          this.getPref('cros.flags.per_user_timezone_enabled').value) {
+        return;
+      }
+    }
+
+    // Only fetch the list once.
+    if (this.timeZoneList_.length > 1 || !CrSettingsPrefs.isInitialized) {
+      return;
+    }
+
+    if (this.getTimeZonesRequestSent_) {
+      return;
+    }
+
+    // If auto-detect is enabled, we only need the current time zone.
+    if (this.getPref('generated.resolve_timezone_by_geolocation_on_off')
+            .value) {
+      const isPerUserTimezone =
+          this.getPref('cros.flags.per_user_timezone_enabled').value;
+      if (this.timeZoneList_[0].value ===
+          (isPerUserTimezone ? this.getPref('settings.timezone').value :
+                               this.getPref('cros.system.timezone').value)) {
+        return;
+      }
+    }
+    // Setting several preferences at once will trigger several
+    // |maybeGetTimeZoneList_| calls, which we don't want.
+    this.getTimeZonesRequestSent_ = true;
+    TimeZoneBrowserProxyImpl.getInstance()
+        .getTimeZones()
+        .then(timezones => {
+          this.setTimeZoneList_(timezones);
+        })
+        .finally(() => {
+          this.getTimeZonesRequestSent_ = false;
+        });
+  }
+
+  /**
+   * Prefs observer for Per-user time zone enabled mode.
+   */
+  private maybeGetTimeZoneListPerUser_() {
+    this.maybeGetTimeZoneList_(true);
+  }
+
+  /**
+   * Prefs observer for Per-user time zone disabled mode.
+   */
+  private maybeGetTimeZoneListPerSystem_() {
+    this.maybeGetTimeZoneList_(false);
+  }
+
+  /**
+   * Converts the C++ response into an array of menu options.
+   * @param timeZones C++ time zones response.
+   */
+  private setTimeZoneList_(timeZones: string[][]) {
+    this.timeZoneList_ = timeZones.map((timeZonePair) => {
+      return {
+        name: timeZonePair[1],
+        value: timeZonePair[0],
+      };
+    });
+    this.updateActiveTimeZoneName_(this.getPref('cros.system.timezone').value);
+  }
+
+  /**
+   * Updates active time zone display name when changed.
+   * @param activeTimeZoneId value of cros.system.timezone preference.
+   */
+  private updateActiveTimeZoneName_(activeTimeZoneId: string) {
+    const activeTimeZone = this.timeZoneList_.find(
+        (timeZone) => timeZone.value.toString() === activeTimeZoneId);
+    if (activeTimeZone) {
+      this.activeTimeZoneDisplayName = activeTimeZone.name;
+    }
+  }
+
+  /**
+   * Computes visibility of user timezone preference.
+   */
+  private isUserTimeZoneSelectorHidden_(
+      prefUserTimezone: chrome.settingsPrivate.PrefObject|null,
+      prefResolveOnOffValue: boolean): boolean {
+    return (prefUserTimezone && prefUserTimezone.controlledBy != null) ||
+        prefResolveOnOffValue;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'timezone-selector': TimezoneSelectorElement;
+  }
+}
+
+customElements.define(TimezoneSelectorElement.is, TimezoneSelectorElement);

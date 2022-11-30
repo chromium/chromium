@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,13 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -19,21 +24,22 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/tracing/crash_service_uploader.h"
+#include "chrome/browser/tracing/background_tracing_field_trial.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/tracing/common/tracing_switches.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
+#include "components/tracing/common/background_tracing_utils.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/crash_upload_list/crash_upload_list_android.h"
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -43,60 +49,91 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #endif
 
 namespace {
 
-const int kMinDaysUntilNextUpload = 7;
+using tracing::BackgroundTracingSetupMode;
+using tracing::BackgroundTracingState;
+using tracing::BackgroundTracingStateManager;
 
-// These values are logged to UMA. Entries should not be renumbered and numeric
-// values should never be reused. Please keep in sync with
-// "TracingFinalizationDisallowedReason" in
-// src/tools/metrics/histograms/enums.xml.
-enum class TracingFinalizationDisallowedReason {
-  kIncognitoLaunched = 0,
-  kProfileNotLoaded = 1,
-  kCrashMetricsNotLoaded = 2,
-  kLastSessionCrashed = 3,
-  kMetricsReportingDisabled = 4,
-  kTraceUploadedRecently = 5,
-  kMaxValue = kTraceUploadedRecently
-};
-
-void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Tracing.Background.FinalizationDisallowedReason",
-                            reason);
+bool IsBackgroundTracingCommandLine() {
+  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
+  if (tracing_mode == BackgroundTracingSetupMode::kFromConfigFile ||
+      tracing_mode == BackgroundTracingSetupMode::kFromFieldTrialLocalOutput) {
+    return true;
+  }
+  return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Helper for reading the value of device policy from ash-chrome.
+class DevicePolicyObserver {
+ public:
+  DevicePolicyObserver()
+      : pref_observer_(
+            crosapi::mojom::PrefPath::kDeviceSystemWideTracingEnabled,
+            base::BindRepeating(&DevicePolicyObserver::OnPrefChanged,
+                                base::Unretained(this))) {}
+
+  bool system_wide_tracing_enabled() const {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return system_wide_tracing_enabled_;
+  }
+
+  static const DevicePolicyObserver& GetInstance() {
+    static base::NoDestructor<DevicePolicyObserver> instance;
+    return *instance;
+  }
+
+ private:
+  void OnPrefChanged(base::Value value) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    system_wide_tracing_enabled_ = value.GetBool();
+  }
+
+  ~DevicePolicyObserver() = default;
+
+  CrosapiPrefObserver pref_observer_;
+  bool system_wide_tracing_enabled_ = false;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
-void ChromeTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(prefs::kBackgroundTracingLastUpload, 0);
-}
-
-ChromeTracingDelegate::ChromeTracingDelegate() : incognito_launched_(false) {
+ChromeTracingDelegate::ChromeTracingDelegate() {
   // Ensure that this code is called on the UI thread, except for
   // tests where a UI thread might not have been initialized at this point.
   DCHECK(
       content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
       !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   BrowserList::AddObserver(this);
 #else
   TabModelList::AddObserver(this);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This sets up the pref observer.
+  DevicePolicyObserver::GetInstance();
 #endif
 }
 
 ChromeTracingDelegate::~ChromeTracingDelegate() {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   BrowserList::RemoveObserver(this);
 #else
   TabModelList::RemoveObserver(this);
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ChromeTracingDelegate::OnTabModelAdded() {
   for (const TabModel* model : TabModelList::models()) {
     if (model->GetProfile()->IsOffTheRecord())
@@ -112,130 +149,76 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
   if (browser->profile()->IsOffTheRecord())
     incognito_launched_ = true;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-std::unique_ptr<content::TraceUploader> ChromeTracingDelegate::GetTraceUploader(
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  return std::unique_ptr<content::TraceUploader>(
-      new TraceCrashServiceUploader(std::move(factory)));
-}
-
-namespace {
-
-enum PermitMissingProfile { PROFILE_REQUIRED, PROFILE_NOT_REQUIRED };
-
-Profile* GetProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager)
-    return nullptr;
-
-  return profile_manager->GetProfileByPath(
-      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
-}
-
-bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,
-                           PermitMissingProfile profile_permission,
-                           bool is_crash_scenario) {
+bool ChromeTracingDelegate::IsActionAllowed(
+    BackgroundScenarioAction action,
+    const content::BackgroundTracingConfig& config,
+    bool requires_anonymized_data,
+    bool ignore_trace_limit) const {
   // If the background tracing is specified on the command-line, we allow
-  // any scenario to be traced.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
-      command_line->HasSwitch(switches::kTraceUploadURL)) {
+  // any scenario to be traced and uploaded.
+  if (IsBackgroundTracingCommandLine())
     return true;
-  }
 
-  // If the profile hasn't loaded or been created yet, we allow the scenario
-  // to start up, but not be finalized.
-  Profile* profile = GetProfile();
-  if (!profile) {
-    if (profile_permission == PROFILE_REQUIRED) {
-      RecordDisallowedMetric(
-          TracingFinalizationDisallowedReason::kProfileNotLoaded);
-    }
-    return profile_permission != PROFILE_REQUIRED;
-  }
-
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
-  if (!local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled)) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kMetricsReportingDisabled);
+  if (requires_anonymized_data &&
+      (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
+    tracing::RecordDisallowedMetric(
+        tracing::TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
   }
-#endif  // !OS_CHROMEOS && OFFICIAL_BUILD
 
-  // Skip the rest of the checks, we know that the scenario does not have
-  // incognito profile and metrics reporting is enabled. Skip the upload limit
-  // checks.
-  if (is_crash_scenario) {
-    // Maybe we shouldn't skip the browser crash test when session begins (when
-    // PROFILE_NOT_REQUIRED).
-    DCHECK_EQ(PROFILE_REQUIRED, profile_permission);
-    return true;
-  }
+  BackgroundTracingStateManager& state =
+      BackgroundTracingStateManager::GetInstance();
 
-// Safeguard, in case background tracing is responsible for a crash on
-// startup.
-#if !defined(OS_ANDROID)
-  if (profile->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kLastSessionCrashed);
+  // Don't start a new trace if the previous trace did not end.
+  if (action == BackgroundScenarioAction::kStartTracing &&
+      state.DidLastSessionEndUnexpectedly()) {
+    tracing::RecordDisallowedMetric(
+        tracing::TracingFinalizationDisallowedReason::
+            kLastTracingSessionDidNotEnd);
     return false;
   }
-#else
-  // If the metrics haven't loaded, we allow the scenario to start up, but not
-  // be finalized.
-  if (!CrashUploadListAndroid::BrowserCrashMetricsInitialized()) {
-    if (profile_permission == PROFILE_REQUIRED) {
-      RecordDisallowedMetric(
-          TracingFinalizationDisallowedReason::kCrashMetricsNotLoaded);
-    }
-    return profile_permission != PROFILE_REQUIRED;
-  }
 
-  if (CrashUploadListAndroid::DidBrowserCrashRecently()) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kLastSessionCrashed);
+  // Check the trace limit for both kStartTracing and kUploadTrace actions
+  // because there is no point starting a trace that can't be uploaded.
+  if (!ignore_trace_limit && state.DidRecentlyUploadForScenario(config)) {
+    tracing::RecordDisallowedMetric(
+        tracing::TracingFinalizationDisallowedReason::kTraceUploadedRecently);
     return false;
-  }
-#endif
-
-  if (config.tracing_mode() == content::BackgroundTracingConfig::PREEMPTIVE) {
-    const base::Time last_upload_time = base::Time::FromInternalValue(
-        local_state->GetInt64(prefs::kBackgroundTracingLastUpload));
-    if (!last_upload_time.is_null()) {
-      base::Time computed_next_allowed_time =
-          last_upload_time + base::TimeDelta::FromDays(kMinDaysUntilNextUpload);
-      if (computed_next_allowed_time > base::Time::Now()) {
-        RecordDisallowedMetric(
-            TracingFinalizationDisallowedReason::kTraceUploadedRecently);
-        return false;
-      }
-    }
   }
 
   return true;
 }
 
-}  // namespace
-
 bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenario(
     const content::BackgroundTracingConfig& config,
     bool requires_anonymized_data) {
-  // For crash-triggered traces, we can only support preemptive tracing. For
-  // such preemptive traces, the profile will not be loaded yet, and calling
-  // ProfileAllowsScenario() will return true to allow the trace to start,
-  // regardless of the value of is_crash_scenario.
-  if (!ProfileAllowsScenario(config, PROFILE_NOT_REQUIRED,
-                             /*is_crash_scenario=*/false)) {
+  // We call Initialize() only when a tracing scenario tries to start, and
+  // unless this happens we never save state. In particular, if the background
+  // tracing experiment is disabled, Initialize() will never be called, and we
+  // will thus not save state. This means that when we save the background
+  // tracing session state for one session, and then later read the state in a
+  // future session, there might have been sessions between these two where
+  // tracing was disabled. Therefore, when IsActionAllowed records
+  // TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd, it
+  // might not be the directly preceding session, but instead it is the
+  // previous session where tracing was enabled.
+  BackgroundTracingStateManager& state =
+      BackgroundTracingStateManager::GetInstance();
+  state.Initialize(g_browser_process->local_state());
+
+  // If the config includes a crash scenario, ignore the trace limit so that a
+  // trace can be taken on crash. We check if the trigger is actually due to a
+  // crash later before uploading.
+  const bool ignore_trace_limit = config.has_crash_scenario();
+
+  if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing, config,
+                       requires_anonymized_data, ignore_trace_limit)) {
     return false;
   }
 
-  if (requires_anonymized_data && chrome::IsOffTheRecordSessionActive())
-    return false;
-
+  state.NotifyTracingStarted();
   return true;
 }
 
@@ -243,60 +226,59 @@ bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
     const content::BackgroundTracingConfig& config,
     bool requires_anonymized_data,
     bool is_crash_scenario) {
-  if (requires_anonymized_data &&
-      (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kIncognitoLaunched);
+  BackgroundTracingStateManager& state =
+      BackgroundTracingStateManager::GetInstance();
+  state.NotifyFinalizationStarted();
+
+  // If a crash scenario triggered, ignore the trace upload limit and continue
+  // uploading.
+  const bool ignore_trace_limit = is_crash_scenario;
+
+  if (!IsActionAllowed(BackgroundScenarioAction::kUploadTrace, config,
+                       requires_anonymized_data, ignore_trace_limit)) {
     return false;
   }
 
-  if (!ProfileAllowsScenario(config, PROFILE_REQUIRED, is_crash_scenario))
-    return false;
-
-  if (config.tracing_mode() == content::BackgroundTracingConfig::PREEMPTIVE) {
-    PrefService* local_state = g_browser_process->local_state();
-    DCHECK(local_state);
-    local_state->SetInt64(prefs::kBackgroundTracingLastUpload,
-                          base::Time::Now().ToInternalValue());
-
-    // We make sure we've persisted the value in case finalizing the tracing
-    // causes a crash.
-    local_state->CommitPendingWrite();
-  }
-
+  state.OnScenarioUploaded(config.scenario_name());
   return true;
-}
-
-bool ChromeTracingDelegate::IsProfileLoaded() {
-  return GetProfile() != nullptr;
 }
 
 bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Always allow system tracing in dev mode images.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kSystemDevMode)) {
+    return true;
+  }
+  // In non-dev images, honor the pref for system-wide tracing.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   return local_state->GetBoolean(
       chromeos::prefs::kDeviceSystemWideTracingEnabled);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1173395): Enable for Lacros-Chrome.
-  return false;
+  // This is a temporary solution that observes the ash pref
+  // chromeos::prefs::kDeviceSystemWideTracingEnabled via mojo IPC provided by
+  // CrosapiPrefObserver.
+  // crbug.com/1201582 is a long term solution for this which assumes that
+  // device flags will be available to Lacros.
+  return DevicePolicyObserver::GetInstance().system_wide_tracing_enabled();
 #else
   return false;
 #endif
 }
 
-std::unique_ptr<base::DictionaryValue>
+absl::optional<base::Value::Dict>
 ChromeTracingDelegate::GenerateMetadataDict() {
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict metadata_dict;
   std::vector<std::string> variations;
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
                                                    &variations);
 
-  std::unique_ptr<base::ListValue> variations_list(new base::ListValue());
+  base::Value variations_list(base::Value::Type::LIST);
   for (const auto& it : variations)
-    variations_list->AppendString(it);
+    variations_list.Append(it);
 
-  metadata_dict->Set("field-trials", std::move(variations_list));
-  metadata_dict->SetString("revision", version_info::GetLastChange());
+  metadata_dict.Set("field-trials", std::move(variations_list));
+  metadata_dict.Set("revision", version_info::GetLastChange());
   return metadata_dict;
 }

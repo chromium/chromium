@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,10 @@ CORE_EXPORT LogicalOffset ComputeRelativeOffsetForBoxFragment(
 CORE_EXPORT LogicalOffset
 ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
                                const ComputedStyle& child_style);
+
+CORE_EXPORT LogicalOffset
+ComputeRelativeOffsetForOOFInInline(const NGConstraintSpace& space,
+                                    const ComputedStyle& child_style);
 
 }  // namespace blink
 

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test click in inframe inside shadow element</title>
+    <style>
+        #light { margin-bottom: 1000px; };
+    </style>
+    <script>
+        function addIframe(parent, scroll) {
+            const iframe = document.createElement('iframe');
+            iframe.src = './shadow_iframe_component.html' +
+              ((scroll) ? '?scroll=true' : '');
+            parent.appendChild(iframe);
+        }
+        function load() {
+            const shadow = document.getElementById('shadow').attachShadow({ mode: 'open' });
+            const shadow_scroll = document.getElementById('shadow_scroll').attachShadow({ mode: 'open' });
+            const light_scroll = document.getElementById('light_scroll');
+            const light = document.getElementById('light');
+            addIframe(shadow, false);
+            addIframe(light, false);
+            addIframe(light_scroll, true);
+            addIframe(shadow_scroll, true);
+        }
+    </script>
+</head>
+
+<body onload="load()">
+    <div id="shadow"></div>
+    <div id="light"></div>
+    <div id="light_scroll"></div>
+    <div id="shadow_scroll"></div>
+</body>
+
+</html>

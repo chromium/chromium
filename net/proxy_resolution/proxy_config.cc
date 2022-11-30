@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -21,9 +23,9 @@ namespace {
 // If |proxies| is non-empty, sets it in |dict| under the key |name|.
 void AddProxyListToValue(const char* name,
                          const ProxyList& proxies,
-                         base::Value* dict) {
+                         base::Value::Dict* dict) {
   if (!proxies.IsEmpty())
-    dict->SetKey(name, proxies.ToValue());
+    dict->Set(name, proxies.ToValue());
 }
 
 // Split the |uri_list| on commas and add each entry to |proxy_list| in turn.
@@ -33,16 +35,13 @@ void AddProxyURIListToProxyList(std::string uri_list,
   base::StringTokenizer proxy_uri_list(uri_list, ",");
   while (proxy_uri_list.GetNext()) {
     proxy_list->AddProxyServer(
-        ProxyServer::FromURI(proxy_uri_list.token(), default_scheme));
+        ProxyUriToProxyServer(proxy_uri_list.token(), default_scheme));
   }
 }
 
 }  // namespace
 
-ProxyConfig::ProxyRules::ProxyRules()
-    : reverse_bypass(false),
-      type(Type::EMPTY) {
-}
+ProxyConfig::ProxyRules::ProxyRules() = default;
 
 ProxyConfig::ProxyRules::ProxyRules(const ProxyRules& other) = default;
 
@@ -208,7 +207,7 @@ const ProxyList* ProxyConfig::ProxyRules::GetProxyListForWebSocketScheme()
   return nullptr;
 }
 
-ProxyConfig::ProxyConfig() : auto_detect_(false), pac_mandatory_(false) {}
+ProxyConfig::ProxyConfig() = default;
 
 ProxyConfig::ProxyConfig(const ProxyConfig& config) = default;
 
@@ -217,9 +216,9 @@ ProxyConfig::~ProxyConfig() = default;
 ProxyConfig& ProxyConfig::operator=(const ProxyConfig& config) = default;
 
 bool ProxyConfig::Equals(const ProxyConfig& other) const {
-  return auto_detect_ == other.auto_detect_ &&
-         pac_url_ == other.pac_url_ &&
+  return auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
          pac_mandatory_ == other.pac_mandatory_ &&
+         from_system_ == other.from_system_ &&
          proxy_rules_.Equals(other.proxy_rules());
 }
 
@@ -233,15 +232,18 @@ void ProxyConfig::ClearAutomaticSettings() {
 }
 
 base::Value ProxyConfig::ToValue() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
   // Output the automatic settings.
   if (auto_detect_)
-    dict.SetBoolKey("auto_detect", auto_detect_);
+    dict.Set("auto_detect", auto_detect_);
   if (has_pac_url()) {
-    dict.SetStringKey("pac_url", pac_url_.possibly_invalid_spec());
+    dict.Set("pac_url", pac_url_.possibly_invalid_spec());
     if (pac_mandatory_)
-      dict.SetBoolKey("pac_mandatory", pac_mandatory_);
+      dict.Set("pac_mandatory", pac_mandatory_);
+  }
+  if (from_system_) {
+    dict.Set("from_system", from_system_);
   }
 
   // Output the manual settings.
@@ -251,12 +253,12 @@ base::Value ProxyConfig::ToValue() const {
         AddProxyListToValue("single_proxy", proxy_rules_.single_proxies, &dict);
         break;
       case ProxyRules::Type::PROXY_LIST_PER_SCHEME: {
-        base::Value dict2(base::Value::Type::DICTIONARY);
+        base::Value::Dict dict2;
         AddProxyListToValue("http", proxy_rules_.proxies_for_http, &dict2);
         AddProxyListToValue("https", proxy_rules_.proxies_for_https, &dict2);
         AddProxyListToValue("ftp", proxy_rules_.proxies_for_ftp, &dict2);
         AddProxyListToValue("fallback", proxy_rules_.fallback_proxies, &dict2);
-        dict.SetKey("proxy_per_scheme", std::move(dict2));
+        dict.Set("proxy_per_scheme", std::move(dict2));
         break;
       }
       default:
@@ -267,18 +269,18 @@ base::Value ProxyConfig::ToValue() const {
     const ProxyBypassRules& bypass = proxy_rules_.bypass_rules;
     if (!bypass.rules().empty()) {
       if (proxy_rules_.reverse_bypass)
-        dict.SetBoolKey("reverse_bypass", true);
+        dict.Set("reverse_bypass", true);
 
       base::Value list(base::Value::Type::LIST);
 
       for (const auto& bypass_rule : bypass.rules())
         list.Append(bypass_rule->ToString());
 
-      dict.SetKey("bypass_list", std::move(list));
+      dict.Set("bypass_list", std::move(list));
     }
   }
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 }  // namespace net

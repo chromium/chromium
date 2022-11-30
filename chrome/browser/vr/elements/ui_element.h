@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "chrome/browser/vr/elements/corner_radii.h"
@@ -30,9 +30,9 @@
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operations.h"
 
 namespace base {
 class TimeTicks;
@@ -76,7 +76,7 @@ struct HitTestRequest {
 
 // The result of performing a hit test.
 struct HitTestResult {
-  enum Type {
+  enum class Type {
     // The given ray does not pass through the element.
     kNone = 0,
     // The given ray does not pass through the element, but passes through the
@@ -102,6 +102,10 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
                                public gfx::ColorAnimationCurve::Target {
  public:
   UiElement();
+
+  UiElement(const UiElement&) = delete;
+  UiElement& operator=(const UiElement&) = delete;
+
   ~UiElement() override;
 
   enum OperationIndex {
@@ -655,7 +659,7 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
   gfx::Transform world_space_transform_;
   bool world_space_transform_dirty_ = false;
 
-  UiElement* parent_ = nullptr;
+  raw_ptr<UiElement> parent_ = nullptr;
   std::vector<std::unique_ptr<UiElement>> children_;
 
   // This is true if a descendant has been added and the total list has not yet
@@ -666,15 +670,13 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
 
   UpdatePhase update_phase_ = kClean;
 
-  AudioDelegate* audio_delegate_ = nullptr;
+  raw_ptr<AudioDelegate> audio_delegate_ = nullptr;
   Sounds sounds_;
 
   // Indicates that this element may be resized by parent layout elements.
   bool resizable_by_layout_ = false;
 
   CursorType cursor_type_ = kCursorDefault;
-
-  DISALLOW_COPY_AND_ASSIGN(UiElement);
 };
 
 }  // namespace vr

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
@@ -24,6 +24,8 @@ class FallbackTaskProvider : public TaskProvider {
   FallbackTaskProvider(
       std::vector<std::unique_ptr<TaskProvider>> primary_subproviders,
       std::unique_ptr<TaskProvider> secondary_subprovider);
+  FallbackTaskProvider(const FallbackTaskProvider&) = delete;
+  FallbackTaskProvider& operator=(const FallbackTaskProvider&) = delete;
   ~FallbackTaskProvider() override;
 
   // task_manager::TaskProvider:
@@ -74,8 +76,6 @@ class FallbackTaskProvider : public TaskProvider {
   // releases it is, but the checking needs to be turned off during testing of
   // this class itself.
   bool allow_fallback_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FallbackTaskProvider);
 };
 
 class FallbackTaskProvider::SubproviderSource : public TaskProviderObserver {
@@ -95,7 +95,7 @@ class FallbackTaskProvider::SubproviderSource : public TaskProviderObserver {
 
   // The outer task provider on whose behalf we observe the |subprovider_|. This
   // is a pointer back to the class that owns us.
-  FallbackTaskProvider* fallback_task_provider_;
+  raw_ptr<FallbackTaskProvider> fallback_task_provider_;
 
   // The task provider that we are observing.
   std::unique_ptr<TaskProvider> subprovider_;

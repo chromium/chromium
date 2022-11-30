@@ -1,14 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -97,10 +96,12 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // Import a public and private keypair from "ec_private_keys.json". It doesn't
   // really matter which one is used since they are all valid. In this case
   // using the first one.
-  base::ListValue private_keys;
-  ASSERT_TRUE(ReadJsonTestFileToList("ec_private_keys.json", &private_keys));
-  const base::DictionaryValue* key_dict;
-  ASSERT_TRUE(private_keys.GetDictionary(0, &key_dict));
+  base::Value::List private_keys =
+      ReadJsonTestFileAsList("ec_private_keys.json");
+  const base::Value& key_value = private_keys[0];
+  ASSERT_TRUE(key_value.is_dict());
+  const base::DictionaryValue* key_dict =
+      &base::Value::AsDictionaryValue(key_value);
   blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(key_dict);
   const base::DictionaryValue* key_jwk;
   ASSERT_TRUE(key_dict->GetDictionary("jwk", &key_jwk));
@@ -114,8 +115,10 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // Erase the "d" member so the private key JWK can be used to import the
   // public key (WebCrypto doesn't provide a mechanism for importing a public
   // key given a private key).
-  std::unique_ptr<base::DictionaryValue> key_jwk_copy(key_jwk->DeepCopy());
-  key_jwk_copy->Remove("d", nullptr);
+  std::unique_ptr<base::DictionaryValue> key_jwk_copy =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(key_jwk->Clone()));
+  key_jwk_copy->RemoveKey("d");
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
       Status::Success(),
@@ -130,36 +133,33 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   std::vector<uint8_t> signature1;
   std::vector<uint8_t> signature2;
   ASSERT_EQ(Status::Success(),
-            Sign(algorithm, private_key, CryptoData(message), &signature1));
+            Sign(algorithm, private_key, message, &signature1));
   ASSERT_EQ(Status::Success(),
-            Sign(algorithm, private_key, CryptoData(message), &signature2));
+            Sign(algorithm, private_key, message, &signature2));
 
   // The two signatures should be different.
-  EXPECT_NE(CryptoData(signature1), CryptoData(signature2));
+  EXPECT_NE(signature1, signature2);
 
   // And both should be valid signatures which can be verified.
   bool signature_matches;
-  ASSERT_EQ(Status::Success(),
-            Verify(algorithm, public_key, CryptoData(signature1),
-                   CryptoData(message), &signature_matches));
+  ASSERT_EQ(Status::Success(), Verify(algorithm, public_key, signature1,
+                                      message, &signature_matches));
   EXPECT_TRUE(signature_matches);
-  ASSERT_EQ(Status::Success(),
-            Verify(algorithm, public_key, CryptoData(signature2),
-                   CryptoData(message), &signature_matches));
+  ASSERT_EQ(Status::Success(), Verify(algorithm, public_key, signature2,
+                                      message, &signature_matches));
   EXPECT_TRUE(signature_matches);
 }
 
 // Tests verify() for ECDSA using an assortment of keys, curves and hashes.
 // These tests also include expected failures for bad signatures and keys.
 TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("ecdsa.json", &tests));
+  base::Value::List tests = ReadJsonTestFileAsList("ecdsa.json");
+  for (const auto& test_value : tests) {
+    SCOPED_TRACE(&test_value - &tests[0]);
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
-    SCOPED_TRACE(test_index);
-
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
     blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
@@ -172,9 +172,9 @@ TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
 
     // Import the public key.
     blink::WebCryptoKey key;
-    Status status = ImportKey(key_format, CryptoData(key_data),
-                              CreateEcdsaImportAlgorithm(curve), true,
-                              blink::kWebCryptoKeyUsageVerify, &key);
+    Status status =
+        ImportKey(key_format, key_data, CreateEcdsaImportAlgorithm(curve), true,
+                  blink::kWebCryptoKeyUsageVerify, &key);
     ASSERT_EQ(expected_error, StatusToString(status));
     if (status.IsError())
       continue;
@@ -190,17 +190,17 @@ TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
     blink::WebCryptoAlgorithm hash = GetDigestAlgorithm(test, "hash");
 
     bool verify_result;
-    status = Verify(CreateEcdsaAlgorithm(hash.Id()), key, CryptoData(signature),
-                    CryptoData(message), &verify_result);
+    status = Verify(CreateEcdsaAlgorithm(hash.Id()), key, signature, message,
+                    &verify_result);
     ASSERT_EQ(expected_error, StatusToString(status));
     if (status.IsError())
       continue;
 
     // If no error was expected, the verification's boolean must match
     // "verify_result" for the test.
-    bool expected_result = false;
-    ASSERT_TRUE(test->GetBoolean("verify_result", &expected_result));
-    EXPECT_EQ(expected_result, verify_result);
+    absl::optional<bool> expected_result = test->FindBoolKey("verify_result");
+    ASSERT_TRUE(expected_result);
+    EXPECT_EQ(expected_result.value(), verify_result);
   }
 }
 
@@ -223,7 +223,7 @@ blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
       const base::DictionaryValue* key = nullptr;
       if (!test->GetDictionary("key", &key))
         ADD_FAILURE() << "Missing key property";
-      return key->HasKey("d") ? kPrivateUsages : kPublicUsages;
+      return key->FindKey("d") ? kPrivateUsages : kPublicUsages;
     }
   }
 
@@ -233,14 +233,14 @@ blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
 
 // Tests importing bad public/private keys in a variety of formats.
 TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("bad_ec_keys.json", &tests));
+  base::Value::List tests = ReadJsonTestFileAsList("bad_ec_keys.json");
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
-    SCOPED_TRACE(test_index);
+  for (const auto& test_value : tests) {
+    SCOPED_TRACE(&test_value - &tests[0]);
 
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
     blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
@@ -250,9 +250,9 @@ TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
     ASSERT_TRUE(test->GetString("error", &expected_error));
 
     blink::WebCryptoKey key;
-    Status status = ImportKey(
-        key_format, CryptoData(key_data), CreateEcdsaImportAlgorithm(curve),
-        true, GetExpectedUsagesForKeyImport(key_format, test), &key);
+    Status status =
+        ImportKey(key_format, key_data, CreateEcdsaImportAlgorithm(curve), true,
+                  GetExpectedUsagesForKeyImport(key_format, test), &key);
     ASSERT_EQ(expected_error, StatusToString(status));
   }
 }
@@ -263,21 +263,20 @@ TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
 // The test imports a key first using JWK, and then exporting it to JWK and
 // PKCS8. It does the same thing using PKCS8 as the original source of truth.
 TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("ec_private_keys.json", &tests));
+  base::Value::List tests = ReadJsonTestFileAsList("ec_private_keys.json");
+  for (const auto& test_value : tests) {
+    SCOPED_TRACE(&test_value - &tests[0]);
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
-    SCOPED_TRACE(test_index);
-
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
     const base::DictionaryValue* jwk_dict;
     EXPECT_TRUE(test->GetDictionary("jwk", &jwk_dict));
     std::vector<uint8_t> jwk_bytes = MakeJsonVector(*jwk_dict);
     std::vector<uint8_t> pkcs8_bytes = GetBytesFromHexString(
-        test, test->HasKey("exported_pkcs8") ? "exported_pkcs8" : "pkcs8");
+        test, test->FindKey("exported_pkcs8") ? "exported_pkcs8" : "pkcs8");
 
     // -------------------------------------------------
     // Test from JWK, and then export to {JWK, PKCS8}
@@ -286,7 +285,7 @@ TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
     // Import the key using JWK
     blink::WebCryptoKey key;
     ASSERT_EQ(Status::Success(),
-              ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(jwk_bytes),
+              ImportKey(blink::kWebCryptoKeyFormatJwk, jwk_bytes,
                         CreateEcdsaImportAlgorithm(curve), true,
                         blink::kWebCryptoKeyUsageSign, &key));
 
@@ -303,19 +302,19 @@ TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
     // expectation.
     jwk_bytes = exported_bytes;
     ASSERT_EQ(Status::Success(),
-              ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(jwk_bytes),
+              ImportKey(blink::kWebCryptoKeyFormatJwk, jwk_bytes,
                         CreateEcdsaImportAlgorithm(curve), true,
                         blink::kWebCryptoKeyUsageSign, &key));
 
     // Export the key as JWK (again)
     ASSERT_EQ(Status::Success(),
               ExportKey(blink::kWebCryptoKeyFormatJwk, key, &exported_bytes));
-    EXPECT_EQ(CryptoData(jwk_bytes), CryptoData(exported_bytes));
+    EXPECT_EQ(jwk_bytes, exported_bytes);
 
     // Export the key as PKCS8
     ASSERT_EQ(Status::Success(),
               ExportKey(blink::kWebCryptoKeyFormatPkcs8, key, &exported_bytes));
-    EXPECT_EQ(CryptoData(pkcs8_bytes), CryptoData(exported_bytes));
+    EXPECT_EQ(pkcs8_bytes, exported_bytes);
 
     // -------------------------------------------------
     // Test from PKCS8, and then export to {JWK, PKCS8}
@@ -325,9 +324,9 @@ TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
     // where the publicKey was missing, it will be synthesized and written back
     // during export).
     std::vector<uint8_t> pkcs8_input_bytes = GetBytesFromHexString(
-        test, test->HasKey("original_pkcs8") ? "original_pkcs8" : "pkcs8");
-    CryptoData pkcs8_input_data(pkcs8_input_bytes.empty() ? pkcs8_bytes
-                                                          : pkcs8_input_bytes);
+        test, test->FindKey("original_pkcs8") ? "original_pkcs8" : "pkcs8");
+    base::span<const uint8_t> pkcs8_input_data(
+        pkcs8_input_bytes.empty() ? pkcs8_bytes : pkcs8_input_bytes);
 
     // Import the key using PKCS8
     ASSERT_EQ(Status::Success(),
@@ -338,12 +337,12 @@ TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
     // Export the key as PKCS8
     ASSERT_EQ(Status::Success(),
               ExportKey(blink::kWebCryptoKeyFormatPkcs8, key, &exported_bytes));
-    EXPECT_EQ(CryptoData(pkcs8_bytes), CryptoData(exported_bytes));
+    EXPECT_EQ(pkcs8_bytes, exported_bytes);
 
     // Export the key as JWK
     ASSERT_EQ(Status::Success(),
               ExportKey(blink::kWebCryptoKeyFormatJwk, key, &exported_bytes));
-    EXPECT_EQ(CryptoData(jwk_bytes), CryptoData(exported_bytes));
+    EXPECT_EQ(jwk_bytes, exported_bytes);
   }
 }
 

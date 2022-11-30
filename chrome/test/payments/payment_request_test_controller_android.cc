@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,17 +28,17 @@ bool PaymentRequestTestController::ClickPaymentHandlerCloseButton() {
   return ClickPaymentHandlerCloseButtonForTest();
 }
 
+bool PaymentRequestTestController::CloseDialog() {
+  return CloseDialogForTest();
+}
+
 bool PaymentRequestTestController::ConfirmPayment() {
   NOTIMPLEMENTED();
   return false;
 }
 
-bool PaymentRequestTestController::ConfirmMinimalUI() {
-  return ConfirmMinimalUIForTest();
-}
-
-bool PaymentRequestTestController::DismissMinimalUI() {
-  return DismissMinimalUIForTest();
+bool PaymentRequestTestController::ClickOptOut() {
+  return ClickSecurePaymentConfirmationOptOutForTest();
 }
 
 bool PaymentRequestTestController::IsAndroidMarshmallowOrLollipop() {
@@ -66,6 +66,8 @@ void PaymentRequestTestController::SetUpOnMainThread() {
                           base::Unretained(this)),
       base::BindRepeating(&PaymentRequestTestController::set_app_descriptions,
                           base::Unretained(this)),
+      base::BindRepeating(&PaymentRequestTestController::OnErrorDisplayed,
+                          base::Unretained(this)),
       base::BindRepeating(&PaymentRequestTestController::OnNotSupportedError,
                           base::Unretained(this)),
       base::BindRepeating(&PaymentRequestTestController::OnConnectionTerminated,
@@ -74,13 +76,12 @@ void PaymentRequestTestController::SetUpOnMainThread() {
                           base::Unretained(this)),
       base::BindRepeating(&PaymentRequestTestController::OnCompleteCalled,
                           base::Unretained(this)),
-      base::BindRepeating(&PaymentRequestTestController::OnMinimalUIReady,
+      base::BindRepeating(&PaymentRequestTestController::OnUIDisplayed,
                           base::Unretained(this)));
 
-  SetUseDelegateOnPaymentRequestForTesting(
-      /*use_delegate_for_test=*/true, is_off_the_record_, valid_ssl_,
-      can_make_payment_pref_,
-      /*skip_ui_for_basic_card=*/false, twa_package_name_);
+  SetUseDelegateOnPaymentRequestForTesting(is_off_the_record_, valid_ssl_,
+                                           can_make_payment_pref_,
+                                           twa_package_name_);
 }
 
 void PaymentRequestTestController::SetObserver(
@@ -90,42 +91,35 @@ void PaymentRequestTestController::SetObserver(
 
 void PaymentRequestTestController::SetOffTheRecord(bool is_off_the_record) {
   is_off_the_record_ = is_off_the_record;
-  SetUseDelegateOnPaymentRequestForTesting(
-      /*use_delegate_for_test=*/true, is_off_the_record_, valid_ssl_,
-      can_make_payment_pref_,
-      /*skip_ui_for_basic_card=*/false, twa_package_name_);
+  SetUseDelegateOnPaymentRequestForTesting(is_off_the_record_, valid_ssl_,
+                                           can_make_payment_pref_,
+                                           twa_package_name_);
 }
 
 void PaymentRequestTestController::SetValidSsl(bool valid_ssl) {
   valid_ssl_ = valid_ssl;
-  SetUseDelegateOnPaymentRequestForTesting(
-      /*use_delegate_for_test=*/true, is_off_the_record_, valid_ssl_,
-      can_make_payment_pref_,
-      /*skip_ui_for_basic_card=*/false, twa_package_name_);
+  SetUseDelegateOnPaymentRequestForTesting(is_off_the_record_, valid_ssl_,
+                                           can_make_payment_pref_,
+                                           twa_package_name_);
 }
 
 void PaymentRequestTestController::SetCanMakePaymentEnabledPref(
     bool can_make_payment_enabled) {
   can_make_payment_pref_ = can_make_payment_enabled;
-  SetUseDelegateOnPaymentRequestForTesting(
-      /*use_delegate_for_test=*/true, is_off_the_record_, valid_ssl_,
-      can_make_payment_pref_,
-      /*skip_ui_for_basic_card=*/false, twa_package_name_);
+  SetUseDelegateOnPaymentRequestForTesting(is_off_the_record_, valid_ssl_,
+                                           can_make_payment_pref_,
+                                           twa_package_name_);
 }
 
 void PaymentRequestTestController::SetTwaPackageName(
     const std::string& twa_package_name) {
   twa_package_name_ = twa_package_name;
-  SetUseDelegateOnPaymentRequestForTesting(
-      /*use_delegate_for_test=*/true, is_off_the_record_, valid_ssl_,
-      can_make_payment_pref_,
-      /*skip_ui_for_basic_card=*/false, twa_package_name_);
+  SetUseDelegateOnPaymentRequestForTesting(is_off_the_record_, valid_ssl_,
+                                           can_make_payment_pref_,
+                                           twa_package_name_);
 }
 
 void PaymentRequestTestController::SetHasAuthenticator(bool has_authenticator) {
-  // TODO(https://crbug.com/1110320): Implement SetHasAuthenticator() for
-  // Android, so secure payment confirmation can be integration tested on
-  // Android as well.
   has_authenticator_ = has_authenticator;
 }
 
@@ -159,6 +153,10 @@ void PaymentRequestTestController::OnAppListReady() {
   if (observer_)
     observer_->OnAppListReady();
 }
+void PaymentRequestTestController::OnErrorDisplayed() {
+  if (observer_)
+    observer_->OnErrorDisplayed();
+}
 void PaymentRequestTestController::OnNotSupportedError() {
   if (observer_)
     observer_->OnNotSupportedError();
@@ -179,9 +177,9 @@ void PaymentRequestTestController::OnCompleteCalled() {
     observer_->OnCompleteCalled();
 }
 
-void PaymentRequestTestController::OnMinimalUIReady() {
+void PaymentRequestTestController::OnUIDisplayed() {
   if (observer_)
-    observer_->OnMinimalUIReady();
+    observer_->OnUIDisplayed();
 }
 
 }  // namespace payments

@@ -1,17 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 
-#include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,7 +22,7 @@ using TableViewDetailTextItemTest = PlatformTest;
 }
 
 // Tests that the UILabels are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(TableViewDetailTextItemTest, ItemProperties) {
   NSString* text = @"Cell text";
   NSString* detailText = @"Cell detail text";
@@ -89,6 +89,39 @@ TEST_F(TableViewDetailTextItemTest, ItemPropertiesDefaultColor) {
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_NSEQ(text, cell.textLabel.text);
   EXPECT_NSEQ(detailText, cell.detailTextLabel.text);
-  EXPECT_NSEQ(UIColor.cr_labelColor, cell.textLabel.textColor);
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, cell.detailTextLabel.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextPrimaryColor], cell.textLabel.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
+              cell.detailTextLabel.textColor);
+}
+
+// Tests the accessory symbol is set and unset.
+TEST_F(TableViewDetailTextItemTest, ItemPropertiesAccessorySymbol) {
+  TableViewDetailTextItem* item =
+      [[TableViewDetailTextItem alloc] initWithType:0];
+  TableViewDetailTextCell* cell = [[[item cellClass] alloc] init];
+
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_NSEQ(nil, cell.accessoryView);
+
+  item.accessorySymbol = TableViewDetailTextCellAccessorySymbolChevron;
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_NSNE(nil, cell.accessoryView);
+
+  item.accessorySymbol = TableViewDetailTextCellAccessorySymbolNone;
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_NSEQ(nil, cell.accessoryView);
+}
+
+// Tests the accessory view is nil after cell prepare for reuse.
+TEST_F(TableViewDetailTextItemTest, CellPrepareForReuseAccessorySymbolNil) {
+  TableViewDetailTextItem* item =
+      [[TableViewDetailTextItem alloc] initWithType:0];
+  TableViewDetailTextCell* cell = [[[item cellClass] alloc] init];
+
+  item.accessorySymbol = TableViewDetailTextCellAccessorySymbolExternalLink;
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_NSNE(nil, cell.accessoryView);
+
+  [cell prepareForReuse];
+  EXPECT_NSEQ(nil, cell.accessoryView);
 }

@@ -1,0 +1,63 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("chromium_stay_safe") {
+  sources = [
+    "chromium_stay_safe.imageset/Contents.json",
+    "chromium_stay_safe.imageset/chromium_stay_safe.png",
+    "chromium_stay_safe.imageset/chromium_stay_safe@2x.png",
+    "chromium_stay_safe.imageset/chromium_stay_safe@3x.png",
+  ]
+}
+
+imageset("chromium_ios_made") {
+  sources = [
+    "chromium_ios_made.imageset/Contents.json",
+    "chromium_ios_made.imageset/chromium_ios_made.png",
+    "chromium_ios_made.imageset/chromium_ios_made@2x.png",
+    "chromium_ios_made.imageset/chromium_ios_made@3x.png",
+    "chromium_ios_made.imageset/chromium_ios_made_dark.png",
+    "chromium_ios_made.imageset/chromium_ios_made_dark@2x.png",
+    "chromium_ios_made.imageset/chromium_ios_made_dark@3x.png",
+  ]
+}
+
+imageset("chromium_ipados_made") {
+  sources = [
+    "chromium_ipados_made.imageset/Contents.json",
+    "chromium_ipados_made.imageset/chromium_ipados_made@2x.png",
+    "chromium_ipados_made.imageset/chromium_ipados_made@3x.png",
+    "chromium_ipados_made.imageset/chromium_ipados_made_dark@2x.png",
+    "chromium_ipados_made.imageset/chromium_ipados_made_dark@3x.png",
+  ]
+}
+
+imageset("chromium_non_default_promo") {
+  sources = [
+    "chromium_non_default_promo.imageset/Contents.json",
+    "chromium_non_default_promo.imageset/chromium_non_default_promo@2x.png",
+    "chromium_non_default_promo.imageset/chromium_non_default_promo@3x.png",
+  ]
+}
+
+imageset("download_drivium") {
+  sources = [
+    "download_drivium.imageset/Contents.json",
+    "download_drivium.imageset/download_drivium.png",
+    "download_drivium.imageset/download_drivium@2x.png",
+    "download_drivium.imageset/download_drivium@3x.png",
+  ]
+}
+
+imageset("password_suggestion_key") {
+  sources = [
+    "password_suggestion_key.imageset/Contents.json",
+    "password_suggestion_key.imageset/password_suggestion_key@2x.png",
+    "password_suggestion_key.imageset/password_suggestion_key@3x.png",
+    "password_suggestion_key.imageset/password_suggestion_key_dark@2x.png",
+    "password_suggestion_key.imageset/password_suggestion_key_dark@3x.png",
+  ]
+}

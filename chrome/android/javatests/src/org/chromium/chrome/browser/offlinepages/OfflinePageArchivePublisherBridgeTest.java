@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.offlinepages;
 
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -11,15 +12,17 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
@@ -27,6 +30,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallba
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -41,9 +45,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Unit tests for {@link OfflinePageArchivePublisherBridge}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class OfflinePageArchivePublisherBridgeTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final int TIMEOUT_MS = 5000;
@@ -77,8 +87,6 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Ensure we start in an offline state.
             NetworkChangeNotifier.forceConnectivityState(false);
@@ -101,14 +109,16 @@ public class OfflinePageArchivePublisherBridgeTest {
         mTestServer.stopAndDestroyServer();
     }
 
-    // TODO(iwells): Change "29" to "Build.VERSION_CODES.Q" when it's available.
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = 28)
-    public void testAddCompletedDownload() throws InterruptedException, TimeoutException {
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+            reason = "On Android Q+, publish offline pages to the downloads collection "
+                    + "rather than DownloadManager.")
+    public void
+    testAddCompletedDownload() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
-        mActivityTestRule.loadUrl(mTestPage);
+        sActivityTestRule.loadUrl(mTestPage);
         savePage(TEST_CLIENT_ID);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
@@ -120,11 +130,14 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = 28)
-    public void testRemove() throws InterruptedException, TimeoutException {
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+            reason = "On Android Q+, publish offline pages to the downloads collection "
+                    + "rather than DownloadManager.")
+    public void
+    testRemove() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
-        mActivityTestRule.loadUrl(mTestPage);
+        sActivityTestRule.loadUrl(mTestPage);
         savePage(TEST_CLIENT_ID);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
@@ -148,7 +161,7 @@ public class OfflinePageArchivePublisherBridgeTest {
     public void testPublishArchiveToDownloadsCollection()
             throws InterruptedException, TimeoutException {
         // Save a page and publish.
-        mActivityTestRule.loadUrl(mTestPage);
+        sActivityTestRule.loadUrl(mTestPage);
         savePage(TEST_CLIENT_ID);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
@@ -174,7 +187,7 @@ public class OfflinePageArchivePublisherBridgeTest {
     testPublishArchiveToDownloadsCollection_NoCrashWhenAndroidCantGenerateUniqueFilename()
             throws InterruptedException, TimeoutException {
         // Save a page and publish.
-        mActivityTestRule.loadUrl(mTestPage);
+        sActivityTestRule.loadUrl(mTestPage);
         savePage(TEST_CLIENT_ID);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
@@ -196,7 +209,7 @@ public class OfflinePageArchivePublisherBridgeTest {
         final AtomicInteger result = new AtomicInteger(SavePageResult.MAX_VALUE);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mOfflinePageBridge.savePage(
-                    mActivityTestRule.getWebContents(), clientId, new SavePageCallback() {
+                    sActivityTestRule.getWebContents(), clientId, new SavePageCallback() {
                         @Override
                         public void onSavePageDone(int savePageResult, String url, long offlineId) {
                             result.set(savePageResult);

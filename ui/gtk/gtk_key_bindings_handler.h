@@ -1,17 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GTK_GTK_KEY_BINDINGS_HANDLER_H_
 #define UI_GTK_GTK_KEY_BINDINGS_HANDLER_H_
 
-#include <gtk/gtk.h>
-
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
 #include "ui/events/platform_event.h"
+#include "ui/gtk/gtk_compat.h"
 
 namespace ui {
 class Event;
@@ -51,13 +51,57 @@ class GtkKeyBindingsHandler {
  private:
   // Object structure of Handler class, which is derived from GtkTextView.
   struct Handler {
-    GtkTextView parent_object;
-    GtkKeyBindingsHandler* owner;
+    // Starting in Gtk4, GtkTextView subclasses from GtkWidget instead of
+    // GtkContainer.  This class is only used on Gtk3, so to ensure ABI
+    // compatibility, we always want the Gtk3 struct layout even when building
+    // with Gtk4 headers.  To facilitate this, we manually copy the class
+    // hierarchy up to GtkWidget.
+    GtkWidget widget;
+    raw_ptr<void> container_private;
+    raw_ptr<void> text_view_private;
+    raw_ptr<GtkKeyBindingsHandler> owner;
   };
 
   // Class structure of Handler class.
   struct HandlerClass {
-    GtkTextViewClass parent_class;
+    // Class layout for types changes between GTK versions, but is stable within
+    // the same major version.  This class is only used on Gtk3, so manually
+    // expand the class layout as it appears in Gtk3.
+    GInitiallyUnownedClass parent_class;
+
+    // GtkWidgetClass and GtkContainerClass
+    guint pad0;
+    void* pad1[95];
+    unsigned int pad2 : 1;
+    void* pad3[8];
+
+    // GtkTextViewClass
+    void (*populate_popup)(GtkTextView* text_view, GtkWidget* popup);
+    void (*move_cursor)(GtkTextView* text_view,
+                        GtkMovementStep step,
+                        gint count,
+                        gboolean extend_selection);
+    void (*set_anchor)(GtkTextView* text_view);
+    void (*insert_at_cursor)(GtkTextView* text_view, const gchar* str);
+    void (*delete_from_cursor)(GtkTextView* text_view,
+                               GtkDeleteType type,
+                               gint count);
+    void (*backspace)(GtkTextView* text_view);
+    void (*cut_clipboard)(GtkTextView* text_view);
+    void (*copy_clipboard)(GtkTextView* text_view);
+    void (*paste_clipboard)(GtkTextView* text_view);
+    void (*toggle_overwrite)(GtkTextView* text_view);
+    GtkTextBuffer* (*create_buffer)(GtkTextView* text_view);
+    void (*draw_layer)(GtkTextView* text_view,
+                       GtkTextViewLayer layer,
+                       cairo_t* cr);
+    gboolean (*extend_selection)(GtkTextView* text_view,
+                                 GtkTextExtendSelection granularity,
+                                 const GtkTextIter* location,
+                                 GtkTextIter* start,
+                                 GtkTextIter* end);
+    void (*insert_emoji)(GtkTextView* text_view);
+    void* pad4[4];
   };
 
   // Creates a new instance of Handler class.

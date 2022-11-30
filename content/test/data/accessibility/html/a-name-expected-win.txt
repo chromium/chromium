@@ -1,5 +1,5 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_LINK name='named anchor'
+++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_STATICTEXT name='named anchor'
 ++ROLE_SYSTEM_LINK name='both a named anchor and a link' FOCUSABLE LINKED
 ++++ROLE_SYSTEM_STATICTEXT name='both a named anchor and a link' LINKED

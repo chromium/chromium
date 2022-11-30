@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,17 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
-
-namespace update_client {
-struct CrxComponent;
-}  // namespace update_client
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
+struct ComponentRegistration;
 
-base::Optional<update_client::CrxComponent> GetComponent(
-    const base::flat_map<std::string, update_client::CrxComponent>& components,
+absl::optional<ComponentRegistration> GetComponent(
+    const base::flat_map<std::string, ComponentRegistration>& components,
     const std::string& id);
 
-std::vector<base::Optional<update_client::CrxComponent>> GetCrxComponents(
-    const base::flat_map<std::string, update_client::CrxComponent>&
+std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
+    const base::flat_map<std::string, ComponentRegistration>&
         registered_components,
     const std::vector<std::string>& ids);
 

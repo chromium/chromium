@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,7 +41,7 @@ BOOL WaitForKeyboardToAppear() {
                   block:^BOOL {
                     return [EarlGrey isKeyboardShownWithError:nil];
                   }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
+  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 }  // namespace
@@ -204,15 +204,11 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the Address View Controller is dismissed when tapping the
 // keyboard icon.
-- (void)testKeyboardIconDismissAddressController {
-#if TARGET_IPHONE_SIMULATOR
-  // See crbug.com/1163133.
-  EARL_GREY_TEST_DISABLED(@"Test is not applicable for simulator.");
-#endif
+// TODO(crbug.com/1352114): Re-enable
+- (void)DISABLED_testKeyboardIconDismissAddressController {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // The keyboard icon is never present in iPads.
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPad");
-    ;
   }
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -293,7 +289,7 @@ BOOL WaitForKeyboardToAppear() {
   testAddressIconIsNotVisibleWhenAddressStoreEmpty
 #endif
 - (void)MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty {
-  // Delete the profile that is added on |-setUp|.
+  // Delete the profile that is added on `-setUp`.
   [AutofillAppInterface clearProfilesStore];
 
   // Bring up the keyboard.

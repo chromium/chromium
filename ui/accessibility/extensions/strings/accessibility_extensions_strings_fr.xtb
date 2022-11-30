@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Désactiver l'animation au niveau de toutes les images</translation>
 <translation id="1703735871906654364">Navigation au clavier</translation>
 <translation id="1791496371305830581">Autoriser toutes les images animées</translation>
+<translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1996252509865389616">Activer ?</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2179565792157161713">Ouvrir la description longue dans un nouvel onglet</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">Maintenez la touche &lt;span class='key'&gt;Ctrl&lt;/span&gt; enfoncée pour vous déplacer d'un mot à l'autre.</translation>
 <translation id="6550675742724504774">Options</translation>
+<translation id="6699630355767768222">Étape 3 : Ignorez l'axe des couleurs pour la correction.</translation>
 <translation id="6838518108677880446">Configurer :</translation>
 <translation id="690628312087070417">Lorsque le curseur parcourt une grande distance :</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">Gestion des animations</translation>
 <translation id="8480209185614411573">Contraste élevé</translation>
 <translation id="8609925175482059018">Appuyez sur &lt;span class='key'&gt;F7&lt;/span&gt; pour activer la Navigation au clavier. Appuyez à nouveau sur la touche pour la désactiver.</translation>
+<translation id="8798099450830957504">Par défaut</translation>
 <translation id="894241283505723656">Descriptions longues dans le menu contextuel</translation>
 </translationbundle>

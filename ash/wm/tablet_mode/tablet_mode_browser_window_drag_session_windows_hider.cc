@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,7 +103,9 @@ void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowDestroying(
 void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
-  if (window == source_window_)
+  // The window object is not necessarily the one that is being observed.
+  // So we only take action if the window is currently being observed.
+  if (window_visibility_map_.count(window) == 0)
     return;
 
   if (visible) {
@@ -115,6 +117,11 @@ void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowVisibilityChanged(
   }
   // else do nothing. It must come from Hide() function above thus should be
   // ignored.
+}
+
+int TabletModeBrowserWindowDragSessionWindowsHider::
+    GetWindowVisibilityMapSizeForTesting() const {
+  return window_visibility_map_.size();
 }
 
 }  // namespace ash

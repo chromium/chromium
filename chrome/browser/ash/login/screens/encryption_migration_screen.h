@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,46 +9,50 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/login/auth/user_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
-class EncryptionMigrationScreenView;
 class LoginFeedback;
 class UserContext;
 
 class EncryptionMigrationScreen : public BaseScreen,
-                                  public PowerManagerClient::Observer,
+                                  public chromeos::PowerManagerClient::Observer,
                                   public UserDataAuthClient::Observer {
  public:
   using TView = EncryptionMigrationScreenView;
 
   using SkipMigrationCallback = base::OnceCallback<void(const UserContext&)>;
 
-  // Callback that can be used to check free disk space.
-  using FreeDiskSpaceFetcher = base::RepeatingCallback<int64_t()>;
+  class EncryptionMigrationScreenTestDelegate {
+   public:
+    virtual ~EncryptionMigrationScreenTestDelegate() = default;
 
-  explicit EncryptionMigrationScreen(EncryptionMigrationScreenView* view);
+    // Returns free disk space for testing.
+    virtual int64_t GetFreeSpace() const = 0;
+  };
+
+  explicit EncryptionMigrationScreen(
+      base::WeakPtr<EncryptionMigrationScreenView> view);
+
+  EncryptionMigrationScreen(const EncryptionMigrationScreen&) = delete;
+  EncryptionMigrationScreen& operator=(const EncryptionMigrationScreen&) =
+      delete;
+
   ~EncryptionMigrationScreen() override;
-
-  // This method is called, when view is being destroyed. Note, if Delegate is
-  // destroyed earlier then it has to call SetDelegate(NULL).
-  void OnViewDestroyed(EncryptionMigrationScreenView* view);
 
   // Sets the UserContext for a user whose cryptohome should be migrated.
   void SetUserContext(const UserContext& user_context);
@@ -65,11 +69,8 @@ class EncryptionMigrationScreen : public BaseScreen,
   // This should be called after other state like UserContext, etc... are set.
   void SetupInitialView();
 
-  // Testing only: Sets the free disk space fetcher.
-  void set_free_disk_space_fetcher_for_testing(
-      FreeDiskSpaceFetcher free_disk_space_fetcher) {
-    free_disk_space_fetcher_ = std::move(free_disk_space_fetcher);
-  }
+  static void SetEncryptionMigrationScreenTestDelegate(
+      EncryptionMigrationScreenTestDelegate* test_delegate);
 
  protected:
   virtual device::mojom::WakeLock* GetWakeLock();
@@ -78,7 +79,7 @@ class EncryptionMigrationScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // PowerManagerClient::Observer implementation:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
@@ -100,10 +101,10 @@ class EncryptionMigrationScreen : public BaseScreen,
   void OnGetAvailableStorage(int64_t size);
   void WaitBatteryAndMigrate();
   void StartMigration();
-  void OnMountExistingVault(base::Optional<user_data_auth::MountReply> reply);
+  void OnMountExistingVault(absl::optional<user_data_auth::MountReply> reply);
   // Removes cryptohome and shows the error screen after the removal finishes.
   void RemoveCryptohome();
-  void OnRemoveCryptohome(base::Optional<user_data_auth::RemoveReply> reply);
+  void OnRemoveCryptohome(absl::optional<user_data_auth::RemoveReply> reply);
 
   // Creates authorization request for MountEx method using |user_context_|.
   cryptohome::AuthorizationRequest CreateAuthorizationRequest();
@@ -113,7 +114,7 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   // Handlers for cryptohome API callbacks.
   void OnMigrationRequested(
-      base::Optional<user_data_auth::StartMigrateToDircryptoReply> reply);
+      absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply);
 
   // Records UMA about visible screen after delay.
   void OnDelayedRecordVisibleScreen(
@@ -128,7 +129,7 @@ class EncryptionMigrationScreen : public BaseScreen,
   // Stop forcing migration if it was forced by policy.
   void MaybeStopForcingMigration();
 
-  EncryptionMigrationScreenView* view_;
+  base::WeakPtr<EncryptionMigrationScreenView> view_;
 
   // The current UI state which should be refrected in the web UI.
   EncryptionMigrationScreenView::UIState current_ui_state_ =
@@ -146,7 +147,7 @@ class EncryptionMigrationScreen : public BaseScreen,
   EncryptionMigrationMode mode_ = EncryptionMigrationMode::ASK_USER;
 
   // The current battery level.
-  base::Optional<double> current_battery_percent_;
+  absl::optional<double> current_battery_percent_;
 
   // True if the migration should start immediately once the battery level gets
   // sufficient.
@@ -159,21 +160,23 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   std::unique_ptr<LoginFeedback> login_feedback_;
 
-  FreeDiskSpaceFetcher free_disk_space_fetcher_;
-
   std::unique_ptr<
       base::ScopedObservation<UserDataAuthClient, UserDataAuthClient::Observer>>
       userdataauth_observer_;
 
-  std::unique_ptr<
-      ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>
-      power_manager_observer_;
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observation_{this};
 
   base::WeakPtrFactory<EncryptionMigrationScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptionMigrationScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EncryptionMigrationScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ENCRYPTION_MIGRATION_SCREEN_H_

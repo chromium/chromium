@@ -1,31 +1,31 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {AndroidAppListModel} from './android_app_list_model.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {TrashRootEntry} from '../../common/js/trash.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
-// #import {FakeEntryImpl, VolumeEntry, EntryList} from '../../common/js/files_app_entry_types.m.js';
-// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// clang-format on
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+
+import {DialogType} from '../../common/js/dialog_type.js';
+import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {AndroidAppListModel} from './android_app_list_model.js';
+import {DirectoryModel} from './directory_model.js';
+import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 
 /**
  * @enum {string}
  */
-/* #export */ const NavigationModelItemType = {
+export const NavigationModelItemType = {
   SHORTCUT: 'shortcut',
   VOLUME: 'volume',
   RECENT: 'recent',
   CROSTINI: 'crostini',
+  GUEST_OS: 'guest-os',
   ENTRY_LIST: 'entry-list',
   DRIVE: 'drive',
   ANDROID_APP: 'android-app',
@@ -44,7 +44,7 @@
  *      - ANDROID_APPS: ANDROID picker apps.
  * @enum {string}
  */
-/* #export */ const NavigationSection = {
+export const NavigationSection = {
   TOP: 'top',
   MY_FILES: 'my_files',
   REMOVABLE: 'removable',
@@ -55,7 +55,7 @@
 /**
  * Base item of NavigationListModel. Should not be created directly.
  */
-/* #export */ class NavigationModelItem {
+export class NavigationModelItem {
   /**
    * @param {string} label
    * @param {NavigationModelItemType} type
@@ -104,7 +104,7 @@
 /**
  * Item of NavigationListModel for shortcuts.
  */
-/* #export */ class NavigationModelShortcutItem extends NavigationModelItem {
+export class NavigationModelShortcutItem extends NavigationModelItem {
   /**
    * @param {string} label Label.
    * @param {!DirectoryEntry} entry Entry. Cannot be null.
@@ -122,7 +122,7 @@
 /**
  * Item of NavigationListModel for Android apps.
  */
-/* #export */ class NavigationModelAndroidAppItem extends NavigationModelItem {
+export class NavigationModelAndroidAppItem extends NavigationModelItem {
   /**
    * @param {!chrome.fileManagerPrivate.AndroidApp} androidApp Android app.
    *     Cannot be null.
@@ -143,7 +143,7 @@
 /**
  * Item of NavigationListModel for volumes.
  */
-/* #export */ class NavigationModelVolumeItem extends NavigationModelItem {
+export class NavigationModelVolumeItem extends NavigationModelItem {
   /**
    * @param {string} label Label.
    * @param {!VolumeInfo} volumeInfo Volume info for the volume. Cannot be null.
@@ -164,7 +164,7 @@
 /**
  * Item of NavigationListModel for a fake item such as Recent or Linux files.
  */
-/* #export */ class NavigationModelFakeItem extends NavigationModelItem {
+export class NavigationModelFakeItem extends NavigationModelItem {
   /**
    * @param {string} label Label on the menu button.
    * @param {NavigationModelItemType} type
@@ -183,7 +183,7 @@
 /**
  * A navigation list model. This model combines multiple models.
  */
-/* #export */ class NavigationListModel extends cr.EventTarget {
+export class NavigationListModel extends EventTarget {
   /**
    * @param {!VolumeManager} volumeManager VolumeManager instance.
    * @param {!FolderShortcutsDataModel} shortcutListModel The list of folder
@@ -191,10 +191,11 @@
    * @param {NavigationModelFakeItem} recentModelItem Recent folder.
    * @param {!DirectoryModel} directoryModel
    * @param {!AndroidAppListModel} androidAppListModel
+   * @param {!DialogType} dialogType
    */
   constructor(
       volumeManager, shortcutListModel, recentModelItem, directoryModel,
-      androidAppListModel) {
+      androidAppListModel, dialogType) {
     super();
 
     /**
@@ -227,6 +228,11 @@
     this.androidAppListModel_ = androidAppListModel;
 
     /**
+     * @private {!DialogType}
+     */
+    this.dialogType_ = dialogType;
+
+    /**
      * Root folder for crostini Linux files.
      * This field will be modified when crostini is enabled/disabled.
      * @private {NavigationModelFakeItem}
@@ -234,8 +240,15 @@
     this.linuxFilesItem_ = null;
 
     /**
+     * Root folders for Guest OS files.
+     * This field will be modified when new guests are added/removed.
+     * @private {!Array<!NavigationModelFakeItem>}
+     */
+    this.guestOsPlaceholders_ = [];
+
+    /**
      * Root folder for trash.
-     * @private {NavigationModelFakeItem}
+     * @private {?NavigationModelFakeItem}
      */
     this.trashItem_ = null;
 
@@ -436,11 +449,29 @@
   }
 
   /**
+   * Set the Guest OS Files placeholder roots and reorder items.
+   * @param {!Array<!NavigationModelFakeItem>} items Guest OS Files roots.
+   */
+  set guestOsPlaceholders(items) {
+    this.guestOsPlaceholders_ = items;
+    this.reorderNavigationItems_();
+  }
+
+  /**
    * Set the fake Drive root and reorder items.
-   * @param {NavigationModelFakeItem} item Fake Drive root.
+   * @param {?NavigationModelFakeItem} item Fake Drive root.
    */
   set fakeDriveItem(item) {
     this.fakeDriveItem_ = item;
+    this.reorderNavigationItems_();
+  }
+
+  /**
+   * Set the fake Trash root and reorder items.
+   * @param {?NavigationModelFakeItem} item Fake Trash root.
+   */
+  set fakeTrashItem(item) {
+    this.trashItem_ = item;
     this.reorderNavigationItems_();
   }
 
@@ -465,7 +496,7 @@
    *    4.3. Linux files (crostini volume or fake item) (if enabled).
    *  5. Drive volumes.
    *  6. Other FSP (File System Provider) (when mounted).
-   *  7. Other volumes (MTP, ARCHIVE, REMOVABLE, Zip volumes).
+   *  7. Other volumes (MTP, ARCHIVE, REMOVABLE).
    *  8. Add new services if (it exists).
    * @private
    */
@@ -488,20 +519,6 @@
           volumeIndexes[volumeType] = i;
           break;
         case VolumeManagerCommon.VolumeType.PROVIDED:
-          // ZipArchiver mounts zip files as PROVIDED volume type, however we
-          // want to display mounted zip files the same way as archive, so
-          // splitting them apart from PROVIDED.
-          volumeId = volumeList[i].volumeInfo.volumeId;
-          providedType = VolumeManagerCommon.VolumeType.PROVIDED;
-          if (volumeId.includes(NavigationListModel.ZIP_EXTENSION_ID)) {
-            providedType = NavigationListModel.ZIP_VOLUME_TYPE;
-          }
-          if (!volumeIndexes[providedType]) {
-            volumeIndexes[providedType] = [i];
-          } else {
-            volumeIndexes[providedType].push(i);
-          }
-          break;
         case VolumeManagerCommon.VolumeType.REMOVABLE:
         case VolumeManagerCommon.VolumeType.ARCHIVE:
         case VolumeManagerCommon.VolumeType.MTP:
@@ -509,6 +526,7 @@
         case VolumeManagerCommon.VolumeType.MEDIA_VIEW:
         case VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER:
         case VolumeManagerCommon.VolumeType.SMB:
+        case VolumeManagerCommon.VolumeType.GUEST_OS:
           if (!volumeIndexes[volumeType]) {
             volumeIndexes[volumeType] = [i];
           } else {
@@ -566,59 +584,20 @@
       return removableGroups;
     };
 
-    /**
-     * Creates a model item for a Recent view whose contents are filtered by
-     * their file types.
-     * @param {string} label
-     * @param {chrome.fileManagerPrivate.RecentFileType} fileType
-     * @param {VolumeManagerCommon.RootType} rootType
-     * @return {!NavigationModelFakeItem}
-     */
-    const createFilteredRecentModelItem = (label, fileType, rootType) => {
-      const entry = /** @type {!FakeEntry} */ (Object.assign(
-          Object.create(FakeEntryImpl.prototype), this.recentModelItem_.entry));
-      entry.recentFileType = fileType;
-      entry.rootType = rootType;
-      return new NavigationModelFakeItem(
-          label, NavigationModelItemType.RECENT, entry);
-    };
-
     // Items as per required order.
     this.navigationItems_ = [];
 
     if (this.recentModelItem_) {
       this.navigationItems_.push(this.recentModelItem_);
-      if (util.isUnifiedMediaViewEnabled() && !util.isRecentsFilterEnabled()) {
-        // Unified Media View (Images, Videos and Audio).
-        this.navigationItems_.push(createFilteredRecentModelItem(
-            str('MEDIA_VIEW_AUDIO_ROOT_LABEL'),
-            chrome.fileManagerPrivate.RecentFileType.AUDIO,
-            VolumeManagerCommon.RootType.RECENT_AUDIO));
-        this.navigationItems_.push(createFilteredRecentModelItem(
-            str('MEDIA_VIEW_IMAGES_ROOT_LABEL'),
-            chrome.fileManagerPrivate.RecentFileType.IMAGE,
-            VolumeManagerCommon.RootType.RECENT_IMAGES));
-        this.navigationItems_.push(createFilteredRecentModelItem(
-            str('MEDIA_VIEW_VIDEOS_ROOT_LABEL'),
-            chrome.fileManagerPrivate.RecentFileType.VIDEO,
-            VolumeManagerCommon.RootType.RECENT_VIDEOS));
-      }
     }
 
-    // Legacy Media View (Images, Videos and Audio).
-    if (!util.isUnifiedMediaViewEnabled()) {
-      for (const mediaView of getVolumes(
-               VolumeManagerCommon.VolumeType.MEDIA_VIEW)) {
-        this.navigationItems_.push(mediaView);
-        mediaView.section = NavigationSection.TOP;
-      }
-    }
     // Shortcuts.
     for (const shortcut of this.shortcutList_) {
       this.navigationItems_.push(shortcut);
     }
 
-    let myFilesEntry, myFilesModel;
+    let myFilesEntry;
+    let myFilesModel;
     if (!this.myFilesModel_) {
       // When MyFilesVolume is enabled we use the Downloads volume to be the
       // MyFiles volume.
@@ -667,7 +646,7 @@
         getSingleVolume(VolumeManagerCommon.VolumeType.CROSTINI);
 
     // Remove Crostini FakeEntry, it's re-added below if needed.
-    myFilesEntry.removeByRootType(VolumeManagerCommon.RootType.CROSTINI);
+    myFilesEntry.removeAllByRootType(VolumeManagerCommon.RootType.CROSTINI);
     if (crostiniVolume) {
       // Crostini is mounted so add it if MyFiles doesn't have it yet.
       if (myFilesEntry.findIndexByVolumeInfo(crostiniVolume.volumeInfo) ===
@@ -684,15 +663,53 @@
       }
     }
 
-    // Add Trash to My Files.
-    if (loadTimeData.getBoolean('FILES_TRASH_ENABLED')) {
-      if (!this.trashItem_) {
-        this.trashItem_ = new NavigationModelFakeItem(
-            str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
-            new TrashRootEntry(this.volumeManager_));
+    // TODO(crbug/1293229): To start with, we only support listing and not
+    // mounting, which means we're just dealing with fake entries here. This
+    // gets updated to handle real volumes once we support mounting them.
+    if (util.isGuestOsEnabled()) {
+      // Remove all GuestOs placeholders, we readd any if they're needed.
+      myFilesEntry.removeAllByRootType(VolumeManagerCommon.RootType.GUEST_OS);
+
+      // For each volume, add any which aren't already in the list.
+      let guestOsVolumes = getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS);
+      if (util.isArcVirtioBlkForDataEnabled()) {
+        // Remove GuestOs Android placeholder, similar to what we did for
+        // GuestOs placeholders. This should be readded if needed.
+        myFilesEntry.removeAllByRootType(
+            VolumeManagerCommon.RootType.ANDROID_FILES);
+        const androidVolume =
+            getSingleVolume(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+        if (androidVolume) {
+          guestOsVolumes = guestOsVolumes.concat(androidVolume);
+        }
       }
-      myFilesEntry.removeByRootType(VolumeManagerCommon.RootType.TRASH);
-      myFilesEntry.addEntry(this.trashItem_.entry);
+      for (const volume of guestOsVolumes) {
+        if (myFilesEntry.findIndexByVolumeInfo(volume.volumeInfo) === -1) {
+          myFilesEntry.addEntry(new VolumeEntry(volume.volumeInfo));
+        }
+      }
+      // For each entry in the list, remove any for volumes that no longer
+      // exist.
+      for (const volume of myFilesEntry.getUIChildren()) {
+        if (!volume.volumeInfo ||
+            volume.volumeInfo.volumeType !=
+                VolumeManagerCommon.VolumeType.GUEST_OS) {
+          continue;
+        }
+        if (!guestOsVolumes.find(v => v.label === volume.name)) {
+          myFilesEntry.removeChildEntry(volume);
+        }
+      }
+      // Now we add any guests we know about which don't already have a
+      // matching volume.
+      for (const item of this.guestOsPlaceholders_) {
+        if (!guestOsVolumes.find(v => v.label === item.label)) {
+          // Since it's a fake item, link the navigation model so
+          // DirectoryTree can choose the correct DirectoryItem for it.
+          item.entry.navigationModel = item;
+          myFilesEntry.addEntry(item.entry);
+        }
+      }
     }
 
     // Add Drive.
@@ -705,6 +722,18 @@
     if (!hasDrive && this.fakeDriveItem_) {
       this.navigationItems_.push(this.fakeDriveItem_);
       this.fakeDriveItem_.section = NavigationSection.CLOUD;
+    }
+
+    // Add Trash.
+    // This should only show when Files app is open as a standalone app. The ARC
+    // file selector, however, opens Files app as a standalone app but passes a
+    // query parameter to indicate the mode. As Trash is a fake volume, it is
+    // not filtered out in the filtered volume manager so perform it here
+    // instead.
+    if (util.isTrashEnabled() && this.dialogType_ === DialogType.FULL_PAGE &&
+        !this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled() &&
+        this.trashItem_) {
+      this.navigationItems_.push(this.trashItem_);
     }
 
     // Add SMB.
@@ -782,12 +811,10 @@
     this.removableModels_ = removableModels;
 
     // Join MTP, ARCHIVE. These types belong to same section.
-    const zipIndexes = volumeIndexes[NavigationListModel.ZIP_VOLUME_TYPE] || [];
     const otherVolumes =
         [].concat(
               getVolumes(VolumeManagerCommon.VolumeType.ARCHIVE),
-              getVolumes(VolumeManagerCommon.VolumeType.MTP),
-              zipIndexes.map(idx => volumeList[idx]))
+              getVolumes(VolumeManagerCommon.VolumeType.MTP))
             .sort((volume1, volume2) => {
               return volume1.originalOrder - volume2.originalOrder;
             });
@@ -864,17 +891,3 @@
     return -1;
   }
 }
-
-/**
- * ZipArchiver mounts zip files as PROVIDED volume type.
- * This is a special case for zip volumes to be able to split them apart from
- * PROVIDED.
- * @const
- */
-NavigationListModel.ZIP_VOLUME_TYPE = '_ZIP_VOLUME_';
-
-/**
- * Id of the Zip Archiver extension, that can mount zip files.
- * @const
- */
-NavigationListModel.ZIP_EXTENSION_ID = 'dmboannefpncccogfdikhmhpmdnddgoe';

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,13 @@ struct TranslateTriggerDecision {
   void PreventShowingPredefinedLanguageTranslateUI();
   bool can_show_predefined_language_translate_ui() const;
 
+  void PreventPredefinedLanguageAutoTranslate() {
+    can_auto_translate_for_predefined_language_ = false;
+  }
+  bool can_auto_translate_for_predefined_language() const {
+    return can_auto_translate_for_predefined_language_;
+  }
+
   void SetIsInLanguageBlocklist() { is_in_language_blocklist_ = true; }
   bool is_in_language_blocklist() const { return is_in_language_blocklist_; }
 
@@ -57,6 +64,7 @@ struct TranslateTriggerDecision {
       initiation_statuses;
   std::vector<int> ranker_events;
   std::string auto_translate_target;
+  std::string href_translate_source;
   std::string href_translate_target;
   std::string predefined_translate_target;
 
@@ -73,6 +81,7 @@ struct TranslateTriggerDecision {
   // Whether the UI should be shown for a predefined target language
   // which was set via SetPredefinedTargetLanguage call.
   bool can_show_predefined_language_translate_ui_ = true;
+  bool can_auto_translate_for_predefined_language_ = true;
 
   bool should_suppress_from_ranker_ = false;
 

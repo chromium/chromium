@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -47,6 +48,10 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
  public:
   explicit MockSpellCheckHost(content::RenderProcessHost* process_host)
       : process_host_(process_host) {}
+
+  MockSpellCheckHost(const MockSpellCheckHost&) = delete;
+  MockSpellCheckHost& operator=(const MockSpellCheckHost&) = delete;
+
   ~MockSpellCheckHost() override {}
 
   content::RenderProcessHost* process_host() const { return process_host_; }
@@ -72,7 +77,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
     ui_task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockSpellCheckHost::Timeout, base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
 
     base::RunLoop run_loop;
     quit_ = run_loop.QuitClosure();
@@ -127,7 +132,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback) override {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(
       InitializeDictionariesCallback callback) override {
     if (base::FeatureList::IsEnabled(
@@ -168,21 +173,19 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   // Callback passed as argument to InitializeDictionaries, and invoked when
   // the dictionaries are loaded for the first time.
   InitializeDictionariesCallback dictionaries_loaded_callback_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // spellcheck::mojom::SpellCheckHost:
   void DisconnectSessionBridge() override {}
 #endif
 
-  content::RenderProcessHost* process_host_;
+  raw_ptr<content::RenderProcessHost> process_host_;
   bool text_received_ = false;
   std::u16string text_;
   mojo::Receiver<spellcheck::mojom::SpellCheckHost> receiver_{this};
   base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSpellCheckHost);
 };
 
 class SpellCheckBrowserTestHelper {
@@ -192,6 +195,10 @@ class SpellCheckBrowserTestHelper {
         base::BindRepeating(&SpellCheckBrowserTestHelper::BindSpellCheckHost,
                             base::Unretained(this)));
   }
+
+  SpellCheckBrowserTestHelper(const SpellCheckBrowserTestHelper&) = delete;
+  SpellCheckBrowserTestHelper& operator=(const SpellCheckBrowserTestHelper&) =
+      delete;
 
   ~SpellCheckBrowserTestHelper() {
     SpellCheckHostChromeImpl::OverrideBinderForTesting(base::NullCallback());
@@ -228,7 +235,7 @@ class SpellCheckBrowserTestHelper {
         FROM_HERE,
         base::BindOnce(&SpellCheckBrowserTestHelper::Timeout,
                        base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
 
     base::RunLoop run_loop;
     quit_on_bind_closure_ = run_loop.QuitClosure();
@@ -255,8 +262,6 @@ class SpellCheckBrowserTestHelper {
 
   base::OnceClosure quit_on_bind_closure_;
   std::vector<std::unique_ptr<MockSpellCheckHost>> spell_check_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckBrowserTestHelper);
 };
 
 class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
@@ -264,14 +269,14 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
   ChromeSitePerProcessSpellCheckTest() = default;
 
   void SetUp() override {
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     // When delayed initialization of the spellcheck service is enabled by
     // default, want to maintain test coverage for the older code path that
     // initializes spellcheck on browser startup.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
         /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
     ChromeSitePerProcessTest::SetUp();
   }
@@ -284,13 +289,13 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
 
     GURL main_url(embedded_test_server()->GetURL(
         "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
     spell_check_helper.RunUntilBind();
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::RenderFrameHost* cross_site_subframe =
-        ChildFrameAt(web_contents->GetMainFrame(), 0);
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
     MockSpellCheckHost* spell_check_host =
         spell_check_helper.GetSpellCheckHostForProcess(
@@ -319,13 +324,13 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
 
     GURL main_url(embedded_test_server()->GetURL(
         "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
     spell_check_helper.RunUntilBindOrTimeout();
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::RenderFrameHost* cross_site_subframe =
-        ChildFrameAt(web_contents->GetMainFrame(), 0);
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
     MockSpellCheckHost* spell_check_host =
         spell_check_helper.GetSpellCheckHostForProcess(
@@ -354,24 +359,18 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
 // Tests that the OSX spell check panel can be opened from an out-of-process
 // subframe, crbug.com/712395
-#if defined(OS_MAC)
-// https://crbug.com/1032617
-#define MAYBE_OOPIFSpellCheckPanelTest DISABLED_OOPIFSpellCheckPanelTest
-#else
-#define MAYBE_OOPIFSpellCheckPanelTest OOPIFSpellCheckPanelTest
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
-                       MAYBE_OOPIFSpellCheckPanelTest) {
+                       OOPIFSpellCheckPanelTest) {
   spellcheck::SpellCheckPanelBrowserTestHelper test_helper;
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* cross_site_subframe =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   EXPECT_TRUE(cross_site_subframe->IsCrossProcessSubframe());
 
@@ -388,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
 }
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 class ChromeSitePerProcessSpellCheckTestDelayInit
     : public ChromeSitePerProcessSpellCheckTest {
  public:
@@ -414,4 +413,4 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTestDelayInit,
                        OOPIFDisabledSpellCheckTest) {
   RunOOPIFDisabledSpellCheckTest();
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)

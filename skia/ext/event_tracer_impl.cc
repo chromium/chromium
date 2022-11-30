@@ -1,12 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/event_tracer_impl.h"
 #include "third_party/skia/include/utils/SkEventTracer.h"
+
+namespace {
+// Experiment with not deleting the Skia event tracer at process exit
+// to measure the improvement in performance. See crbug.com/1329594
+BASE_FEATURE(kLeakSkiaEventTracerAtExit,
+             "LeakSkiaEventTracerAtExit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace
 
 namespace skia {
 
@@ -71,9 +80,10 @@ void
 
 }  // namespace skia
 
-
 void InitSkiaEventTracer() {
   // Initialize the binding to Skia's tracing events. Skia will
   // take ownership of and clean up the memory allocated here.
-  SkEventTracer::SetInstance(new skia::SkChromiumEventTracer());
+  SkEventTracer::SetInstance(
+      new skia::SkChromiumEventTracer(),
+      base::FeatureList::IsEnabled(kLeakSkiaEventTracerAtExit));
 }

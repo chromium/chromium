@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_INDEX_CONTENT_INDEX_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -46,17 +46,17 @@ class ContentIndex final : public ScriptWrappable {
   mojom::blink::ContentIndexService* GetService();
 
   // Callbacks.
-  void DidGetIconSizes(ScriptPromiseResolver* resolver,
-                       mojom::blink::ContentDescriptionPtr description,
+  void DidGetIconSizes(mojom::blink::ContentDescriptionPtr description,
+                       ScriptPromiseResolver* resolver,
                        const Vector<gfx::Size>& icon_sizes);
   void DidGetIcons(ScriptPromiseResolver* resolver,
                    mojom::blink::ContentDescriptionPtr description,
                    Vector<SkBitmap> icons);
   void DidCheckOfflineCapability(
-      ScriptPromiseResolver* resolver,
       KURL launch_url,
       mojom::blink::ContentDescriptionPtr description,
       Vector<SkBitmap> icons,
+      ScriptPromiseResolver* resolver,
       bool is_offline_capable);
   void DidAdd(ScriptPromiseResolver* resolver,
               mojom::blink::ContentIndexError error);

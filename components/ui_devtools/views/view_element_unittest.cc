@@ -1,13 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/view_element.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace ui_devtools {
@@ -92,12 +94,42 @@ class MockNamedTestView : public views::View {
 
 BEGIN_METADATA(MockNamedTestView, views::View)
 ADD_PROPERTY_METADATA(bool, BoolProperty)
-ADD_PROPERTY_METADATA(SkColor, ColorProperty, views::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, ColorProperty, ui::metadata::SkColorConverter)
+END_METADATA
+
+class AlwaysOnTopView : public views::View {
+  METADATA_HEADER(AlwaysOnTopView);
+};
+BEGIN_METADATA(AlwaysOnTopView, views::View)
+END_METADATA
+
+class SelfReorderingTestView : public views::View, public views::ViewObserver {
+ public:
+  METADATA_HEADER(SelfReorderingTestView);
+  SelfReorderingTestView()
+      : always_on_top_view_(AddChildView(std::make_unique<AlwaysOnTopView>())) {
+    AddObserver(this);
+  }
+  ~SelfReorderingTestView() override { RemoveObserver(this); }
+
+  // views::ViewObserver
+  void OnChildViewAdded(View* observed_view, View* child) override {
+    ReorderChildView(always_on_top_view_, children().size());
+  }
+
+ private:
+  raw_ptr<views::View> always_on_top_view_;
+};
+BEGIN_METADATA(SelfReorderingTestView, views::View)
 END_METADATA
 
 class ViewElementTest : public views::ViewsTestBase {
  public:
   ViewElementTest() {}
+
+  ViewElementTest(const ViewElementTest&) = delete;
+  ViewElementTest& operator=(const ViewElementTest&) = delete;
+
   ~ViewElementTest() override {}
 
  protected:
@@ -107,7 +139,8 @@ class ViewElementTest : public views::ViewsTestBase {
     delegate_ = std::make_unique<testing::NiceMock<MockUIElementDelegate>>();
     // |OnUIElementAdded| is called on element creation.
     EXPECT_CALL(*delegate_, OnUIElementAdded(_, _)).Times(1);
-    element_.reset(new ViewElement(view_.get(), delegate_.get(), nullptr));
+    element_ =
+        std::make_unique<ViewElement>(view_.get(), delegate_.get(), nullptr);
   }
 
   MockNamedTestView* view() { return view_.get(); }
@@ -118,8 +151,6 @@ class ViewElementTest : public views::ViewsTestBase {
   std::unique_ptr<MockNamedTestView> view_;
   std::unique_ptr<ViewElement> element_;
   std::unique_ptr<MockUIElementDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewElementTest);
 };
 
 TEST_F(ViewElementTest, SettingsBoundsOnViewCallsDelegate) {
@@ -298,9 +329,15 @@ TEST_F(ViewElementTest, GetSources) {
 
   // ViewElement should have two sources: from MockNamedTestView and from View.
   EXPECT_EQ(sources.size(), 2U);
+#if defined(__clang__) && defined(_MSC_VER)
+  EXPECT_EQ(sources[0].path_,
+            "components\\ui_devtools\\views\\view_element_unittest.cc");
+  EXPECT_EQ(sources[1].path_, "ui\\views\\view.h");
+#else
   EXPECT_EQ(sources[0].path_,
             "components/ui_devtools/views/view_element_unittest.cc");
   EXPECT_EQ(sources[1].path_, "ui/views/view.h");
+#endif
 }
 
 TEST_F(ViewElementTest, DispatchMouseEvent) {
@@ -393,6 +430,23 @@ TEST_F(ViewElementTest, DispatchMouseEvent) {
     element()->DispatchMouseEvent(event.get());
 
   view()->parent()->RemoveChildView(view());
+}
+
+TEST_F(ViewElementTest, OutOfOrderObserverTest) {
+  // Override the expectation from setup; we don't need to keep track
+  // in this test.
+  EXPECT_CALL(*delegate(), OnUIElementAdded(_, _)).Times(testing::AnyNumber());
+  auto view = std::make_unique<SelfReorderingTestView>();
+  auto element = std::make_unique<ViewElement>(view.get(), delegate(), nullptr);
+  // `element` will receive OnChildViewReordered and OnViewAdded out of
+  // order. Ensure it doesn't crash and that the subtree is consistent
+  // afterward.
+  view->AddChildView(std::make_unique<views::View>());
+  ASSERT_EQ(element->children().size(), 2u);
+  auto attrs = element->children().at(1)->GetAttributes();
+  EXPECT_EQ(attrs[0], "name");
+  std::string& name = attrs[1];
+  EXPECT_EQ(name, "AlwaysOnTopView");
 }
 
 }  // namespace ui_devtools

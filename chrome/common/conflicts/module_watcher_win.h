@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
@@ -52,7 +53,7 @@ class ModuleWatcher {
     // The load address of the module. Careful consideration must be made before
     // accessing memory at this address. See the comment for
     // OnModuleEventCallback.
-    void* module_load_address;
+    raw_ptr<void> module_load_address;
     // The size of the module in memory.
     size_t module_size;
   };
@@ -90,6 +91,9 @@ class ModuleWatcher {
   // Only a single instance of a watcher may exist at any moment. This will
   // return nullptr when trying to create a second watcher.
   static std::unique_ptr<ModuleWatcher> Create(OnModuleEventCallback callback);
+
+  ModuleWatcher(const ModuleWatcher&) = delete;
+  ModuleWatcher& operator=(const ModuleWatcher&) = delete;
 
   // This can be called on any thread. After destruction the |callback|
   // provided to the constructor will no longer be invoked with module events.
@@ -142,8 +146,6 @@ class ModuleWatcher {
   void* dll_notification_cookie_ = nullptr;
 
   base::WeakPtrFactory<ModuleWatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleWatcher);
 };
 
 #endif  // CHROME_COMMON_CONFLICTS_MODULE_WATCHER_WIN_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
 
   // Setters for metadata.
   virtual void SetPlaybackStatus(PlaybackStatus value) = 0;
+  virtual void SetID(const std::string* value) {}
   virtual void SetTitle(const std::u16string& value) = 0;
   virtual void SetArtist(const std::u16string& value) = 0;
   virtual void SetAlbum(const std::u16string& value) = 0;

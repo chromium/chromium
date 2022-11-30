@@ -1,18 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 #define UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace ui {
 class GestureEvent;
@@ -33,13 +31,21 @@ namespace wm {
 // consumed by any of those filters. If an event is consumed by a filter, the
 // rest of the filter(s) and CompoundEventFilter will not see the consumed
 // event.
-class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
+class COMPONENT_EXPORT(UI_WM) CompoundEventFilter : public ui::EventHandler {
  public:
   CompoundEventFilter();
+
+  CompoundEventFilter(const CompoundEventFilter&) = delete;
+  CompoundEventFilter& operator=(const CompoundEventFilter&) = delete;
+
   ~CompoundEventFilter() override;
 
   // Returns the cursor for the specified component.
   static gfx::NativeCursor CursorForWindowComponent(int window_component);
+
+  // Returns the not-resizable cursor for the specified component.
+  static gfx::NativeCursor NoResizeCursorForWindowComponent(
+      int window_component);
 
   // Adds/removes additional event filters. This does not take ownership of
   // the EventHandler.
@@ -78,8 +84,6 @@ class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
 
   // Additional pre-target event handlers.
   base::ObserverList<ui::EventHandler, true>::Unchecked handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompoundEventFilter);
 };
 
 }  // namespace wm

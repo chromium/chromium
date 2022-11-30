@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -60,7 +60,6 @@ static_library("gcm_driver") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/sync/base",
     "//components/version_info",
     "//google_apis",
     "//google_apis/gcm",
@@ -76,10 +75,6 @@ static_library("gcm_driver") {
     "//components/gcm_driver/crypto",
     "//components/gcm_driver/instance_id",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//components/timers" ]
-  }
 
   if (use_gcm_from_platform) {
     assert(is_android)
@@ -179,7 +174,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/gcm_driver/crypto",
     "//components/prefs:test_support",
-    "//components/sync/protocol",
     "//google_apis:test_support",
     "//google_apis/gcm:test_support",
     "//net:test_support",

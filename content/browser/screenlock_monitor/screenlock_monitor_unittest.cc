@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +49,10 @@ class ScreenlockMonitorTestObserver : public ScreenlockObserver {
 };
 
 class ScreenlockMonitorTest : public testing::Test {
+ public:
+  ScreenlockMonitorTest(const ScreenlockMonitorTest&) = delete;
+  ScreenlockMonitorTest& operator=(const ScreenlockMonitorTest&) = delete;
+
  protected:
   ScreenlockMonitorTest() {
     screenlock_monitor_source_ = new ScreenlockMonitorTestSource();
@@ -57,13 +62,11 @@ class ScreenlockMonitorTest : public testing::Test {
   ~ScreenlockMonitorTest() override = default;
 
  protected:
-  ScreenlockMonitorTestSource* screenlock_monitor_source_;
+  raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
 
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockMonitorTest);
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(ScreenlockMonitorTest, ScreenlockNotifications) {
@@ -84,6 +87,35 @@ TEST_F(ScreenlockMonitorTest, ScreenlockNotifications) {
   // Ensure all observers were notified of the event
   for (int index = 0; index < kObservers; ++index)
     EXPECT_FALSE(observers[index].IsScreenLocked());
+}
+
+TEST_F(ScreenlockMonitorTest, HistogramTest) {
+  base::HistogramTester histogram_tester;
+
+  base::TimeDelta time_to_advance = base::Seconds(10);
+  task_environment_.AdvanceClock(time_to_advance);
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  // We should not log any metrics for the first lock event.
+  histogram_tester.ExpectTotalCount("ScreenLocker.Unlocked.Duration", 0);
+  histogram_tester.ExpectTotalCount("ScreenLocker.Locked.Duration", 0);
+
+  time_to_advance = base::Seconds(11);
+  task_environment_.AdvanceClock(time_to_advance);
+  screenlock_monitor_source_->GenerateScreenUnlockedEvent();
+  // A Locked event with duration should be logged on unlock.
+  histogram_tester.ExpectTotalCount("ScreenLocker.Unlocked.Duration", 0);
+  histogram_tester.ExpectTotalCount("ScreenLocker.Locked.Duration", 1);
+  histogram_tester.ExpectUniqueTimeSample("ScreenLocker.Locked.Duration",
+                                          time_to_advance, 1);
+
+  time_to_advance = base::Seconds(12);
+  task_environment_.AdvanceClock(time_to_advance);
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  // A Unlocked event with duration should be logged on lock.
+  histogram_tester.ExpectTotalCount("ScreenLocker.Unlocked.Duration", 1);
+  histogram_tester.ExpectTotalCount("ScreenLocker.Locked.Duration", 1);
+  histogram_tester.ExpectUniqueTimeSample("ScreenLocker.Unlocked.Duration",
+                                          time_to_advance, 1);
 }
 
 }  // namespace content

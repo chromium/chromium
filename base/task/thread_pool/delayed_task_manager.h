@@ -1,25 +1,25 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_TASK_THREAD_POOL_DELAYED_TASK_MANAGER_H_
 #define BASE_TASK_THREAD_POOL_DELAYED_TASK_MANAGER_H_
 
-#include <memory>
-#include <utility>
+#include <functional>
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/common/intrusive_heap.h"
+#include "base/task/delay_policy.h"
 #include "base/task/thread_pool/task.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -59,7 +59,11 @@ class BASE_EXPORT DelayedTaskManager {
   void ProcessRipeTasks();
 
   // Returns the |delayed_run_time| of the next scheduled task, if any.
-  Optional<TimeTicks> NextScheduledRunTime() const;
+  absl::optional<TimeTicks> NextScheduledRunTime() const;
+
+  // Returns true if there are any pending tasks in the task source which
+  // require high resolution timing.
+  bool HasPendingHighResolutionTasksForTesting() const;
 
  private:
   struct DelayedTask {
@@ -75,15 +79,12 @@ class BASE_EXPORT DelayedTaskManager {
     // Required by IntrusiveHeap::insert().
     DelayedTask& operator=(DelayedTask&& other);
 
-    // Required by IntrusiveHeap.
-    bool operator<=(const DelayedTask& other) const;
+    // Used for a min-heap.
+    bool operator>(const DelayedTask& other) const;
 
     Task task;
     PostTaskNowCallback callback;
     scoped_refptr<TaskRunner> task_runner;
-
-    // True iff the delayed task has been marked as scheduled.
-    bool IsScheduled() const;
 
     // Mark the delayed task as scheduled. Since the sort key is
     // |task.delayed_run_time|, it does not alter sort order when it is called.
@@ -97,26 +98,23 @@ class BASE_EXPORT DelayedTaskManager {
 
     // Required by IntrusiveHeap.
     HeapHandle GetHeapHandle() const { return HeapHandle::Invalid(); }
-
-   private:
-    bool scheduled_ = false;
   };
 
   // Get the time at which to schedule the next |ProcessRipeTasks()| execution,
   // or TimeTicks::Max() if none needs to be scheduled (i.e. no task, or next
   // task already scheduled).
-  TimeTicks GetTimeToScheduleProcessRipeTasksLockRequired()
+  std::pair<TimeTicks, subtle::DelayPolicy>
+  GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired()
       EXCLUSIVE_LOCKS_REQUIRED(queue_lock_);
 
-  // Schedule |ProcessRipeTasks()| on the service thread to be executed at the
-  // given |process_ripe_tasks_time|, provided the given time is not
-  // TimeTicks::Max().
-  void ScheduleProcessRipeTasksOnServiceThread(
-      TimeTicks process_ripe_tasks_time);
+  // Schedule |ProcessRipeTasks()| on the service thread to be executed when
+  // the next task is ripe.
+  void ScheduleProcessRipeTasksOnServiceThread();
 
   const RepeatingClosure process_ripe_tasks_closure_;
+  const RepeatingClosure schedule_process_ripe_tasks_closure_;
 
-  const TickClock* const tick_clock_;
+  const raw_ptr<const TickClock> tick_clock_;
 
   // Synchronizes access to |delayed_task_queue_| and the setting of
   // |service_thread_task_runner_|. Once |service_thread_task_runner_| is set,
@@ -127,7 +125,15 @@ class BASE_EXPORT DelayedTaskManager {
 
   scoped_refptr<SequencedTaskRunner> service_thread_task_runner_;
 
-  IntrusiveHeap<DelayedTask> delayed_task_queue_ GUARDED_BY(queue_lock_);
+  DelayedTaskHandle delayed_task_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  IntrusiveHeap<DelayedTask, std::greater<>> delayed_task_queue_
+      GUARDED_BY(queue_lock_);
+  int pending_high_res_task_count_ GUARDED_BY(queue_lock_){0};
+
+  bool align_wake_ups_ GUARDED_BY(queue_lock_) = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace internal

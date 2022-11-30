@@ -41,7 +41,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -55,7 +56,6 @@ class Event;
 class GestureEvent;
 class HTMLFrameOwnerElement;
 class HTMLPlugInElement;
-class IntRect;
 class KeyboardEvent;
 class LocalFrameView;
 class MouseEvent;
@@ -90,9 +90,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   // |paint_offset| is used to to paint the contents at the correct location.
   // It should be issued as a transform operation before painting the contents.
   void Paint(GraphicsContext&,
-             const GlobalPaintFlags,
+             PaintFlags,
              const CullRect&,
-             const IntSize& paint_offset = IntSize()) const override;
+             const gfx::Vector2d& paint_offset) const override;
   void UpdateGeometry() override;
   void Show() override;
   void Hide() override;
@@ -104,12 +104,10 @@ class CORE_EXPORT WebPluginContainerImpl final
   bool CanProcessDrag() const;
   bool WantsWheelEvents() const;
   void UpdateAllLifecyclePhases();
-  void InvalidateRect(const IntRect&);
   void SetFocused(bool, mojom::blink::FocusType);
   void HandleEvent(Event&);
   bool IsErrorplaceholder();
   void EventListenersRemoved();
-  void InvalidatePaint() {}
 
   // WebPluginContainer methods
   WebElement GetElement() override;
@@ -121,7 +119,6 @@ class CORE_EXPORT WebPluginContainerImpl final
                              const WebString& url) override;
   void EnqueueMessageEvent(const WebDOMMessageEvent&) override;
   void Invalidate() override;
-  void InvalidateRect(const gfx::Rect&) override;
   void ScheduleAnimation() override;
   void ReportGeometry() override;
   v8::Local<v8::Object> V8ObjectForElement() override;
@@ -140,8 +137,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   void ReportFindInPageMatchCount(int identifier,
                                   int total,
                                   bool final_update) override;
-  void ReportFindInPageSelection(int identifier, int index) override;
-  float DeviceScaleFactor() override;
+  void ReportFindInPageSelection(int identifier,
+                                 int index,
+                                 bool final_update) override;
   float PageScaleFactor() override;
   float PageZoomFactor() override;
   void SetCcLayer(cc::Layer*) override;
@@ -187,7 +185,7 @@ class CORE_EXPORT WebPluginContainerImpl final
   // method. Here we call Dispose() which does the correct virtual dispatch.
   void PreFinalize() { Dispose(); }
   void Dispose() override;
-  void SetFrameRect(const IntRect&) override;
+  void SetFrameRect(const gfx::Rect&) override;
   void PropagateFrameRects() override { ReportGeometry(); }
 
   void MaybeLostMouseLock();
@@ -203,9 +201,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   // without also clipping to the screen), in local space of the plugin.
   void ComputeClipRectsForPlugin(
       const HTMLFrameOwnerElement* plugin_owner_element,
-      IntRect& window_rect,
-      IntRect& clipped_local_rect,
-      IntRect& unclipped_int_local_rect) const;
+      gfx::Rect& window_rect,
+      gfx::Rect& clipped_local_rect,
+      gfx::Rect& unclipped_int_local_rect) const;
 
   WebTouchEvent TransformTouchEvent(const WebInputEvent&);
   WebCoalescedInputEvent TransformCoalescedTouchEvent(
@@ -225,9 +223,9 @@ class CORE_EXPORT WebPluginContainerImpl final
 
   void FocusPlugin();
 
-  void CalculateGeometry(IntRect& window_rect,
-                         IntRect& clip_rect,
-                         IntRect& unobscured_rect);
+  void CalculateGeometry(gfx::Rect& window_rect,
+                         gfx::Rect& clip_rect,
+                         gfx::Rect& unobscured_rect);
 
   friend class WebPluginContainerTest;
   class MouseLockLostListener;
@@ -235,9 +233,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   Member<HTMLPlugInElement> element_;
   Member<MouseLockLostListener> mouse_lock_lost_listener_;
   WebPlugin* web_plugin_;
-  cc::Layer* layer_;
-  TouchEventRequestType touch_event_request_type_;
-  bool wants_wheel_events_;
+  cc::Layer* layer_ = nullptr;
+  TouchEventRequestType touch_event_request_type_ = kTouchEventRequestTypeNone;
+  bool wants_wheel_events_ = false;
 };
 
 template <>
@@ -253,4 +251,4 @@ struct DowncastTraits<WebPluginContainerImpl> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PLUGIN_CONTAINER_IMPL_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,10 +26,6 @@ void RecordCancelOnSuccessTime(base::TimeDelta duration) {
 void RecordContinueOnSuccessTime(base::TimeDelta duration) {
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeContinueOnSuccess",
                              duration);
-}
-
-void RecordDestroyedReason(blink::WebOTPServiceDestroyedReason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.Sms.Receive.DestroyedReason", reason);
 }
 
 void RecordSmsParsingStatus(SmsParsingStatus status, ukm::SourceId source_id) {
@@ -87,6 +83,11 @@ void RecordSmsUserCancelTime(base::TimeDelta duration,
   builder.SetTimeUserCancelMs(
       ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
   builder.Record(ukm_recorder);
+}
+
+void RecordWebContentsVisibilityOnReceive(bool is_visible) {
+  base::UmaHistogramBoolean("Blink.Sms.WebContentsVisibleOnReceive",
+                            is_visible);
 }
 
 }  // namespace content

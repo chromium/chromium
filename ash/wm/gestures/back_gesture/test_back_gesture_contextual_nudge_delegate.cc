@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ TestBackGestureContextualNudgeDelegate::
 
 void TestBackGestureContextualNudgeDelegate::MaybeStartTrackingNavigation(
     aura::Window* window) {
-  if (window->type() == aura::client::WindowType::WINDOW_TYPE_NORMAL)
+  if (window->GetType() == aura::client::WindowType::WINDOW_TYPE_NORMAL)
     controller_->NavigationEntryChanged(window);
 }
 

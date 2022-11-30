@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/video_detector.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -20,6 +17,10 @@ class ASH_EXPORT VideoActivityNotifier : public VideoDetector::Observer,
                                          public SessionObserver {
  public:
   explicit VideoActivityNotifier(VideoDetector* detector);
+
+  VideoActivityNotifier(const VideoActivityNotifier&) = delete;
+  VideoActivityNotifier& operator=(const VideoActivityNotifier&) = delete;
+
   ~VideoActivityNotifier() override;
 
   // VideoDetector::Observer implementation.
@@ -30,7 +31,7 @@ class ASH_EXPORT VideoActivityNotifier : public VideoDetector::Observer,
 
   // If |notify_timer_| is running, calls MaybeNotifyPowerManager() and returns
   // true. Returns false otherwise.
-  bool TriggerTimeoutForTest() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TriggerTimeoutForTest();
 
  private:
   bool should_notify_power_manager() {
@@ -58,8 +59,6 @@ class ASH_EXPORT VideoActivityNotifier : public VideoDetector::Observer,
   base::RepeatingTimer notify_timer_;
 
   ScopedSessionObserver scoped_session_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoActivityNotifier);
 };
 
 }  // namespace ash

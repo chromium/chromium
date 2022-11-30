@@ -18,23 +18,7 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-#ifdef HAVE_FLOAT_H
-#include <float.h>
-#endif
-#ifdef HAVE_IEEEFP_H
-#include <ieeefp.h>
-#endif
-#ifdef HAVE_NAN_H
-#include <nan.h>
-#endif
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
 #include <windows.h>
 #ifndef INVALID_FILE_ATTRIBUTES
 #define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
@@ -279,7 +263,7 @@ xsltCheckFilename (const char *path)
 {
 #ifdef HAVE_STAT
     struct stat stat_buffer;
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
     DWORD dwAttrs;
 
     dwAttrs = GetFileAttributesA(path);
@@ -384,7 +368,7 @@ xsltCheckWrite(xsltSecurityPrefsPtr sec,
     if ((uri->scheme == NULL) ||
 	(xmlStrEqual(BAD_CAST uri->scheme, BAD_CAST "file"))) {
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
         if ((uri->path)&&(uri->path[0]=='/')&&
             (uri->path[1]!='\0')&&(uri->path[2]==':'))
             ret = xsltCheckWritePath(sec, ctxt, uri->path+1);

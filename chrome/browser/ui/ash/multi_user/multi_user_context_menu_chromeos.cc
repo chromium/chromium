@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +31,11 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
                                      public ui::SimpleMenuModel::Delegate {
  public:
   explicit MultiUserContextMenuChromeos(aura::Window* window);
+
+  MultiUserContextMenuChromeos(const MultiUserContextMenuChromeos&) = delete;
+  MultiUserContextMenuChromeos& operator=(const MultiUserContextMenuChromeos&) =
+      delete;
+
   ~MultiUserContextMenuChromeos() override {}
 
   // SimpleMenuModel::Delegate:
@@ -42,8 +46,6 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
  private:
   // The window for which this menu is.
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiUserContextMenuChromeos);
 };
 
 MultiUserContextMenuChromeos::MultiUserContextMenuChromeos(aura::Window* window)

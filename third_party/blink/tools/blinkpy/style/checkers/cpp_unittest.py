@@ -35,7 +35,6 @@
 # FIXME: Add a good test that tests UpdateIncludeState.
 
 import os
-import random
 import re
 import unittest
 
@@ -266,7 +265,7 @@ class CppStyleTestBase(unittest.TestCase):
         tuple_position: a tuple (row, column) to compare against.
         """
         self.assertEqual(
-            position, cpp_style.Position(tuple_position[0], tuple_position[1]),
+            (position.row, position.column), tuple_position,
             'position %s, tuple_position %s' % (position, tuple_position))
 
 
@@ -1360,10 +1359,9 @@ class CppStyleTest(CppStyleTestBase):
     def test_invalid_utf8(self):
         def do_test(self, raw_bytes, has_invalid_utf8):
             error_collector = ErrorCollector(self.assertTrue)
-            self.process_file_data(
-                'foo.cpp', 'cpp',
-                unicode(raw_bytes, 'utf8', 'replace').split('\n'),
-                error_collector)
+            unicode_string = raw_bytes.decode('utf8', 'replace').split('\n')
+            self.process_file_data('foo.cpp', 'cpp', unicode_string,
+                                   error_collector)
             # The warning appears only once.
             self.assertEqual(
                 int(has_invalid_utf8),
@@ -1372,12 +1370,12 @@ class CppStyleTest(CppStyleTestBase):
                     ' (or Unicode replacement character).'
                     '  [readability/utf8] [5]'))
 
-        do_test(self, 'Hello world\n', False)
-        do_test(self, '\xe9\x8e\xbd\n', False)
-        do_test(self, '\xe9x\x8e\xbd\n', True)
+        do_test(self, b'Hello world\n', False)
+        do_test(self, b'\xe9\x8e\xbd\n', False)
+        do_test(self, b'\xe9x\x8e\xbd\n', True)
         # This is the encoding of the replacement character itself (which
         # you can see by evaluating codecs.getencoder('utf8')(u'\ufffd')).
-        do_test(self, '\xef\xbf\xbd\n', True)
+        do_test(self, b'\xef\xbf\xbd\n', True)
 
     def test_is_blank_line(self):
         self.assertTrue(cpp_style.is_blank_line(''))
@@ -1655,45 +1653,6 @@ class CleansedLinesTest(unittest.TestCase):
                          collapse('StringReplace(body, "\\\\", "\\\\\\\\");'))
         self.assertEqual('\'\' ""', collapse('\'"\' "foo"'))
         self.assertEqual('""', collapse('"a" "b" "c"'))
-
-
-class OrderOfIncludesTest(CppStyleTestBase):
-    def setUp(self):
-        self.include_state = cpp_style._IncludeState()
-
-        # Cheat os.path.abspath called in FileInfo class.
-        self.os_path_abspath_orig = os.path.abspath
-        os.path.abspath = lambda value: value
-
-    def tearDown(self):
-        os.path.abspath = self.os_path_abspath_orig
-
-    def test_try_drop_common_suffixes(self):
-        self.assertEqual('foo/foo',
-                         cpp_style._drop_common_suffixes('foo/foo-inl.h'))
-        self.assertEqual('foo/bar/foo',
-                         cpp_style._drop_common_suffixes('foo/bar/foo_inl.h'))
-        self.assertEqual('foo/foo',
-                         cpp_style._drop_common_suffixes('foo/foo.cpp'))
-        self.assertEqual(
-            'foo/foo_unusualinternal',
-            cpp_style._drop_common_suffixes('foo/foo_unusualinternal.h'))
-        self.assertEqual('', cpp_style._drop_common_suffixes('_test.cpp'))
-        self.assertEqual('test', cpp_style._drop_common_suffixes('test.cpp'))
-
-
-class OrderOfIncludesTest(CppStyleTestBase):
-    def setUp(self):
-        self.include_state = cpp_style._IncludeState()
-
-        # Cheat os.path.abspath called in FileInfo class.
-        self.os_path_abspath_orig = os.path.abspath
-        self.os_path_isfile_orig = os.path.isfile
-        os.path.abspath = lambda value: value
-
-    def tearDown(self):
-        os.path.abspath = self.os_path_abspath_orig
-        os.path.isfile = self.os_path_isfile_orig
 
 
 class CheckForFunctionLengthsTest(CppStyleTestBase):
@@ -2487,9 +2446,10 @@ class WebKitStyleTest(CppStyleTestBase):
 
     def test_ctype_fucntion(self):
         self.assert_lint(
-            'int i = isascii(8);',
-            'Use equivalent function in <wtf/ASCIICType.h> instead of the '
-            'isascii() function.  [runtime/ctype_function] [4]', 'foo.cpp')
+            'int i = isascii(8);', 'Use equivalent function in '
+            '"third_party/blink/renderer/platform/wtf/text/ascii_ctype.h" '
+            'instead of the isascii() function.  [runtime/ctype_function] [4]',
+            'foo.cpp')
 
     def test_redundant_virtual(self):
         self.assert_lint(

@@ -40,14 +40,22 @@ namespace blink {
 
 struct SameSizeAsRootInlineBox : public InlineFlowBox {
   unsigned unsigned_variable;
-  void* pointers[3];
+  Member<void*> member1;
+  Member<void*> member2;
+  void* pointers[1];
   LayoutUnit layout_variables[6];
 };
 
 ASSERT_SIZE(RootInlineBox, SameSizeAsRootInlineBox);
 
-typedef WTF::HashMap<const RootInlineBox*, EllipsisBox*> EllipsisBoxMap;
-static EllipsisBoxMap* g_ellipsis_box_map = nullptr;
+typedef HeapHashMap<Member<const RootInlineBox>, Member<EllipsisBox>>
+    EllipsisBoxMap;
+
+EllipsisBoxMap& GetEllipsisBoxMap() {
+  DEFINE_STATIC_LOCAL(Persistent<EllipsisBoxMap>, ellipsis_box_map,
+                      (MakeGarbageCollected<EllipsisBoxMap>()));
+  return *ellipsis_box_map;
+}
 
 RootInlineBox::RootInlineBox(LineLayoutItem block)
     : InlineFlowBox(block), line_break_pos_(0), line_break_obj_(nullptr) {
@@ -61,7 +69,7 @@ void RootInlineBox::Destroy() {
 
 void RootInlineBox::DetachEllipsisBox() {
   if (HasEllipsisBox()) {
-    EllipsisBox* box = g_ellipsis_box_map->Take(this);
+    EllipsisBox* box = GetEllipsisBoxMap().Take(this);
     box->SetParent(nullptr);
     box->Destroy();
     SetHasEllipsisBox(false);
@@ -120,19 +128,17 @@ LayoutUnit RootInlineBox::PlaceEllipsis(const AtomicString& ellipsis_str,
   // Create an ellipsis box if we don't already have one. If we already have one
   // we're just here to blank out (truncate) the text boxes.
   if (!*found_box) {
-    EllipsisBox* ellipsis_box = new EllipsisBox(
+    EllipsisBox* ellipsis_box = MakeGarbageCollected<EllipsisBox>(
         GetLineLayoutItem(), ellipsis_str, this, ellipsis_width,
         LogicalHeight(), Location(), !PrevRootBox(), IsHorizontal());
 
-    if (!g_ellipsis_box_map)
-      g_ellipsis_box_map = new EllipsisBoxMap();
-    g_ellipsis_box_map->insert(this, ellipsis_box);
+    GetEllipsisBoxMap().insert(this, ellipsis_box);
     SetHasEllipsisBox(true);
   }
 
   // FIXME: Do we need an RTL version of this?
   LayoutUnit adjusted_logical_left = logical_left_offset + LogicalLeft();
-  if (force_ellipsis == ForceEllipsis && ltr &&
+  if (force_ellipsis == kForceEllipsis && ltr &&
       (adjusted_logical_left + LogicalWidth() + ellipsis_width) <=
           block_right_edge) {
     if (HasEllipsisBox())
@@ -212,7 +218,7 @@ void RootInlineBox::Move(const LayoutSize& delta) {
 }
 
 void RootInlineBox::ChildRemoved(InlineBox* box) {
-  if (box->GetLineLayoutItem() == line_break_obj_)
+  if (box->GetLineLayoutItem() == LineBreakObj())
     SetLineBreakInfo(nullptr, 0, BidiStatus());
 
   for (RootInlineBox* prev = PrevRootBox();
@@ -295,8 +301,6 @@ LayoutUnit RootInlineBox::AlignBoxesInBlockDirection(
 
   LayoutUnit annotations_adjustment = BeforeAnnotationsAdjustment();
   if (annotations_adjustment) {
-    // FIXME: Need to handle pagination here. We might have to move to the next
-    // page/column as a result of the ruby expansion.
     MoveInBlockDirection(annotations_adjustment);
     height_of_block += annotations_adjustment;
   }
@@ -413,7 +417,7 @@ LineLayoutBlockFlow RootInlineBox::Block() const {
 
 static bool IsEditableLeaf(InlineBox* leaf) {
   return leaf && leaf->GetLineLayoutItem().GetNode() &&
-         HasEditableStyle(*leaf->GetLineLayoutItem().GetNode());
+         IsEditable(*leaf->GetLineLayoutItem().GetNode());
 }
 
 const LayoutObject* RootInlineBox::ClosestLeafChildForPoint(
@@ -477,6 +481,16 @@ InlineBox* RootInlineBox::ClosestLeafChildForLogicalLeftPosition(
   return closest_leaf ? closest_leaf : last_leaf;
 }
 
+void RootInlineBox::AppendFloat(LayoutBox* floating_box) {
+  DCHECK(!IsDirty());
+  if (floats_) {
+    floats_->push_back(floating_box);
+  } else {
+    floats_ =
+        MakeGarbageCollected<HeapVector<Member<LayoutBox>>>(1, floating_box);
+  }
+}
+
 BidiStatus RootInlineBox::LineBreakBidiStatus() const {
   return BidiStatus(
       static_cast<WTF::unicode::CharDirection>(line_break_bidi_status_eor_),
@@ -498,7 +512,7 @@ void RootInlineBox::SetLineBreakInfo(LineLayoutItem obj,
                   !(obj.IsLayoutInline() && obj.IsBox() &&
                     !LineLayoutBox(obj).InlineBoxWrapper()));
 
-  line_break_obj_ = obj;
+  line_break_obj_ = obj.GetLayoutObject();
   line_break_pos_ = break_pos;
   line_break_bidi_status_eor_ = status.eor;
   line_break_bidi_status_last_strong_ = status.last_strong;
@@ -509,7 +523,7 @@ void RootInlineBox::SetLineBreakInfo(LineLayoutItem obj,
 EllipsisBox* RootInlineBox::GetEllipsisBox() const {
   if (!HasEllipsisBox())
     return nullptr;
-  return g_ellipsis_box_map->at(this);
+  return GetEllipsisBoxMap().at(this);
 }
 
 void RootInlineBox::RemoveLineBoxFromLayoutObject() {
@@ -593,7 +607,7 @@ void RootInlineBox::AscentAndDescentForBox(
   bool include_leading = IncludeLeadingForBox(box);
   bool set_used_font_with_leading = false;
 
-  if (used_fonts && !used_fonts->IsEmpty() &&
+  if (used_fonts && !used_fonts->empty() &&
       (box->GetLineLayoutItem()
            .Style(IsFirstLineStyle())
            ->LineHeight()
@@ -750,7 +764,7 @@ bool RootInlineBox::IncludeLeadingForBox(InlineBox* box) const {
 }
 
 void RootInlineBox::CollectLeafBoxesInLogicalOrder(
-    Vector<InlineBox*>& leaf_boxes_in_logical_order,
+    HeapVector<Member<InlineBox>>& leaf_boxes_in_logical_order,
     CustomInlineBoxRangeReverse custom_reverse_implementation) const {
   InlineBox* leaf = FirstLeafChild();
 
@@ -781,22 +795,24 @@ void RootInlineBox::CollectLeafBoxesInLogicalOrder(
   if (!(min_level % 2))
     ++min_level;
 
-  Vector<InlineBox*>::iterator end = leaf_boxes_in_logical_order.end();
+  HeapVector<Member<InlineBox>>::iterator end =
+      leaf_boxes_in_logical_order.end();
   while (min_level <= max_level) {
-    Vector<InlineBox*>::iterator it = leaf_boxes_in_logical_order.begin();
+    HeapVector<Member<InlineBox>>::iterator it =
+        leaf_boxes_in_logical_order.begin();
     while (it != end) {
       while (it != end) {
         if ((*it)->BidiLevel() >= min_level)
           break;
         ++it;
       }
-      Vector<InlineBox*>::iterator first = it;
+      HeapVector<Member<InlineBox>>::iterator first = it;
       while (it != end) {
         if ((*it)->BidiLevel() < min_level)
           break;
         ++it;
       }
-      Vector<InlineBox*>::iterator last = it;
+      HeapVector<Member<InlineBox>>::iterator last = it;
       if (custom_reverse_implementation)
         (*custom_reverse_implementation)(first, last);
       else
@@ -807,7 +823,7 @@ void RootInlineBox::CollectLeafBoxesInLogicalOrder(
 }
 
 const InlineBox* RootInlineBox::GetLogicalStartNonPseudoBox() const {
-  Vector<InlineBox*> leaf_boxes_in_logical_order;
+  HeapVector<Member<InlineBox>> leaf_boxes_in_logical_order;
   CollectLeafBoxesInLogicalOrder(leaf_boxes_in_logical_order);
   for (InlineBox* box : leaf_boxes_in_logical_order) {
     if (box->GetLineLayoutItem().NonPseudoNode())
@@ -817,7 +833,7 @@ const InlineBox* RootInlineBox::GetLogicalStartNonPseudoBox() const {
 }
 
 const InlineBox* RootInlineBox::GetLogicalEndNonPseudoBox() const {
-  Vector<InlineBox*> leaf_boxes_in_logical_order;
+  HeapVector<Member<InlineBox>> leaf_boxes_in_logical_order;
   CollectLeafBoxesInLogicalOrder(leaf_boxes_in_logical_order);
   for (wtf_size_t i = leaf_boxes_in_logical_order.size(); i > 0; --i) {
     if (leaf_boxes_in_logical_order[i - 1]
@@ -831,6 +847,12 @@ const InlineBox* RootInlineBox::GetLogicalEndNonPseudoBox() const {
 
 const char* RootInlineBox::BoxName() const {
   return "RootInlineBox";
+}
+
+void RootInlineBox::Trace(Visitor* visitor) const {
+  visitor->Trace(line_break_obj_);
+  visitor->Trace(floats_);
+  InlineFlowBox::Trace(visitor);
 }
 
 }  // namespace blink

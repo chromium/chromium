@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -38,6 +38,10 @@ class OnMoreDataConverter
   OnMoreDataConverter(const AudioParameters& input_params,
                       const AudioParameters& output_params,
                       std::unique_ptr<AudioDebugRecorder> debug_recorder);
+
+  OnMoreDataConverter(const OnMoreDataConverter&) = delete;
+  OnMoreDataConverter& operator=(const OnMoreDataConverter&) = delete;
+
   ~OnMoreDataConverter() override;
 
   // AudioSourceCallback interface.
@@ -63,7 +67,7 @@ class OnMoreDataConverter
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
 
   // Source callback.
-  AudioOutputStream::AudioSourceCallback* source_callback_;
+  raw_ptr<AudioOutputStream::AudioSourceCallback> source_callback_;
 
   // Last |delay| and |delay_timestamp| received via OnMoreData(). Used to
   // correct playback delay in ProvideInput() before calling |source_callback_|.
@@ -86,8 +90,6 @@ class OnMoreDataConverter
 
   // For audio debug recordings.
   std::unique_ptr<AudioDebugRecorder> debug_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnMoreDataConverter);
 };
 
 namespace {
@@ -112,7 +114,7 @@ static void RecordStats(const AudioParameters& output_params) {
 
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Converts low latency based |output_params| into high latency appropriate
 // output parameters in error situations.
 AudioParameters GetFallbackOutputParams(
@@ -126,10 +128,10 @@ AudioParameters GetFallbackOutputParams(
   const int frames_per_buffer = std::max(
       original_output_params.frames_per_buffer(), kMinLowLatencyFrameSize);
 
-  return AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                         original_output_params.channel_layout(),
-                         original_output_params.sample_rate(),
-                         frames_per_buffer);
+  AudioParameters fallback_params(original_output_params);
+  fallback_params.set_format(AudioParameters::AUDIO_PCM_LINEAR);
+  fallback_params.set_frames_per_buffer(frames_per_buffer);
+  return fallback_params;
 }
 #endif
 
@@ -295,7 +297,7 @@ bool AudioOutputResampler::OpenStream() {
 
   // Only Windows has a high latency output driver that is not the same as the
   // low latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DLOG(ERROR) << "Unable to open audio device in low latency mode.  Falling "
               << "back to high latency audio output.";
 

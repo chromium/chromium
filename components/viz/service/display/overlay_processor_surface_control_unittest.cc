@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace viz {
 
@@ -13,8 +13,6 @@ TEST(OverlayCandidateValidatorSurfaceControlTest, NoClipOrNegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(10.f, 10.f);
   candidate.uv_rect = gfx::RectF(1.f, 1.f);
-  candidate.is_clipped = false;
-  candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
@@ -30,7 +28,6 @@ TEST(OverlayProcessorSurfaceControlTest, Clipped) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(10.f, 10.f);
   candidate.uv_rect = gfx::RectF(1.f, 1.f);
-  candidate.is_clipped = true;
   candidate.clip_rect = gfx::Rect(2, 2, 5, 5);
   candidate.overlay_handled = false;
 
@@ -49,8 +46,6 @@ TEST(OverlayProcessorSurfaceControlTest, NegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(-2.f, -4.f, 10.f, 10.f);
   candidate.uv_rect = gfx::RectF(0.5f, 0.5f);
-  candidate.is_clipped = false;
-  candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
@@ -68,7 +63,6 @@ TEST(OverlayProcessorSurfaceControlTest, ClipAndNegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(-5.0f, -5.0f, 10.0f, 10.0f);
   candidate.uv_rect = gfx::RectF(0.5f, 0.5f, 0.5f, 0.5f);
-  candidate.is_clipped = true;
   candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
@@ -105,7 +99,8 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
   candidates.back().transform = gfx::OVERLAY_TRANSFORM_ROTATE_90;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
-  EXPECT_EQ(candidates.back().transform, gfx::OVERLAY_TRANSFORM_NONE);
+  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
+            gfx::OVERLAY_TRANSFORM_NONE);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
 }
 
@@ -113,7 +108,7 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOutputSurfaceOverlay) {
   OverlayProcessorInterface::OutputSurfaceOverlayPlane candidate;
   candidate.display_rect = gfx::RectF(100, 200);
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+  absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       overlay_plane = candidate;
 
   OverlayProcessorSurfaceControl processor;

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:2000px"></div>
+
+<details>
+  <div style="height:2000px"></div>
+  <div id=target>target</div>
+</details>
+
+<script>
+async_test(t => {
+  const details = document.querySelector('details');
+  details.addEventListener('toggle', t.step_func_done(() => {
+    assert_true((window.innerHeight + window.scrollY) >= document.body.offsetHeight);
+  }));
+
+  testRunner.findString('target', ['Async']);
+}, `Verifies that find-in-page scrolls the target all the way into view when auto expanding details elements.`);
+</script>

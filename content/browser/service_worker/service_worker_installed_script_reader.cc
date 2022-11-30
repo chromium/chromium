@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace content {
@@ -113,7 +114,7 @@ void ServiceWorkerInstalledScriptReader::Start() {
 void ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete(
     int result,
     network::mojom::URLResponseHeadPtr response_head,
-    base::Optional<mojo_base::BigBuffer> metadata) {
+    absl::optional<mojo_base::BigBuffer> metadata) {
   DCHECK(client_);
   TRACE_EVENT0(
       "ServiceWorker",
@@ -131,16 +132,16 @@ void ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete(
 
   body_size_ = response_head->content_length;
   int64_t content_length = response_head->content_length;
-  reader_->ReadData(
-      content_length, receiver_.BindNewPipeAndPassRemote(),
-      base::BindOnce(&ServiceWorkerInstalledScriptReader::OnReadDataStarted,
+  reader_->PrepareReadData(
+      content_length,
+      base::BindOnce(&ServiceWorkerInstalledScriptReader::OnReadDataPrepared,
                      AsWeakPtr(), std::move(response_head),
                      std::move(metadata)));
 }
 
-void ServiceWorkerInstalledScriptReader::OnReadDataStarted(
+void ServiceWorkerInstalledScriptReader::OnReadDataPrepared(
     network::mojom::URLResponseHeadPtr response_head,
-    base::Optional<mojo_base::BigBuffer> metadata,
+    absl::optional<mojo_base::BigBuffer> metadata,
     mojo::ScopedDataPipeConsumerHandle body_consumer_handle) {
   if (!body_consumer_handle) {
     CompleteSendIfNeeded(FinishedReason::kCreateDataPipeError);
@@ -180,6 +181,9 @@ void ServiceWorkerInstalledScriptReader::OnReadDataStarted(
   client_->OnStarted(std::move(response_head), std::move(metadata),
                      std::move(body_consumer_handle),
                      std::move(meta_data_consumer));
+
+  reader_->ReadData(base::BindOnce(
+      &ServiceWorkerInstalledScriptReader::OnComplete, AsWeakPtr()));
 }
 
 void ServiceWorkerInstalledScriptReader::OnReaderDisconnected() {

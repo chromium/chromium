@@ -1,21 +1,22 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 
 #include <cmath>
+#include <memory>
 #include <string>
+#include <vector>
 
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
-#include "base/partition_alloc_buildflags.h"
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -29,59 +30,63 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_main.h"
-#include "chrome/browser/metrics/authenticator_utility.h"
-#include "chrome/browser/metrics/bluetooth_available_utility.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/power/battery_level_provider.h"
-#include "chrome/browser/metrics/power/power_metrics_reporter.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
-#include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
-#include "crypto/unexportable_key.h"
+#include "crypto/unexportable_key_metrics.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/power_monitor/battery_state_sampler.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
+#include "chrome/browser/metrics/power/battery_discharge_reporter.h"
+#include "chrome/browser/metrics/power/power_metrics_reporter.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID) && defined(__arm__)
+#if BUILDFLAG(IS_ANDROID) && defined(__arm__)
 #include <cpu-features.h>
-#endif  // defined(OS_ANDROID) && defined(__arm__)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(__arm__)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include <gnu/libc-version.h>
 
 #include "base/linux_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#include "ui/base/x/x11_util.h"
-#endif
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/win/base_win_buildflags.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/shell_integration_win.h"
-#endif  // defined(OS_WIN)
+#include "chrome/installer/util/taskbar_util.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -188,60 +193,9 @@ void RecordMicroArchitectureStats() {
                            base::SysInfo::NumberOfProcessors());
 }
 
-#if defined(OS_WIN)
-bool IsApplockerRunning();
-#endif  // defined(OS_WIN)
-
-// Called on a background thread, with low priority to avoid slowing down
-// startup with metrics that aren't trivial to compute.
-void RecordStartupMetrics() {
-#if defined(OS_WIN)
-  const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
-  int patch = os_info.version_number().patch;
-  int build = os_info.version_number().build;
-  int patch_level = 0;
-
-  if (patch < 65536 && build < 65536)
-    patch_level = MAKELONG(patch, build);
-  DCHECK(patch_level) << "Windows version too high!";
-  base::UmaHistogramSparse("Windows.PatchLevel", patch_level);
-
-  int kernel32_patch = os_info.Kernel32VersionNumber().patch;
-  int kernel32_build = os_info.Kernel32VersionNumber().build;
-  int kernel32_patch_level = 0;
-  if (kernel32_patch < 65536 && kernel32_build < 65536)
-    kernel32_patch_level = MAKELONG(kernel32_patch, kernel32_build);
-  DCHECK(kernel32_patch_level) << "Windows kernel32.dll version too high!";
-  base::UmaHistogramSparse("Windows.PatchLevelKernel32", kernel32_patch_level);
-
-  base::UmaHistogramBoolean("Windows.HasHighResolutionTimeTicks",
-                            base::TimeTicks::IsHighResolution());
-
-  // Determine if Applocker is enabled and running. This does not check if
-  // Applocker rules are being enforced.
-  base::UmaHistogramBoolean("Windows.ApplockerRunning", IsApplockerRunning());
-
-  crypto::MeasureTPMAvailability();
-#endif  // defined(OS_WIN)
-
-  bluetooth_utility::ReportBluetoothAvailability();
-
-  // Record whether Chrome is the default browser or not.
-  shell_integration::DefaultWebClientState default_state =
-      shell_integration::GetDefaultBrowser();
-  base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
-                                shell_integration::NUM_DEFAULT_STATES);
-
-  authenticator_utility::ReportUVPlatformAuthenticatorAvailability();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  RecordChromeOSChannel();
-#endif
-}
-
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void RecordLinuxDistroSpecific(const std::string& version_string,
                                size_t parts,
                                const char* histogram_name) {
@@ -302,6 +256,8 @@ void RecordLinuxDistro() {
     } else if (distro_tokens.size() >= 2 && distro_tokens[1] == "Mint") {
       // Format: Linux Mint RR
       distro_result = UMA_LINUX_DISTRO_MINT;
+      if (distro_tokens.size() >= 3)
+        RecordLinuxDistroSpecific(distro_tokens[2], 1, "Linux.Distro.Mint");
     } else if (distro_tokens.size() >= 4 && distro_tokens[0] == "Red" &&
                distro_tokens[1] == "Hat" && distro_tokens[2] == "Enterprise" &&
                distro_tokens[3] == "Linux") {
@@ -317,12 +273,12 @@ void RecordLinuxDistro() {
 
   base::UmaHistogramSparse("Linux.Distro2", distro_result);
 }
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void RecordLinuxGlibcVersion() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::Version version(gnu_get_libc_version());
 
   UMALinuxGlibcVersion glibc_version_result = UMA_LINUX_GLIBC_NOT_PARSEABLE;
@@ -377,7 +333,7 @@ void RecordTouchEventState() {
                                 UMA_TOUCH_EVENT_FEATURE_DETECTION_STATE_COUNT);
 }
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
 
 // Asynchronously records the touch event state when the ui::DeviceDataManager
 // completes a device scan.
@@ -385,13 +341,16 @@ class AsynchronousTouchEventStateRecorder
     : public ui::InputDeviceEventObserver {
  public:
   AsynchronousTouchEventStateRecorder();
+
+  AsynchronousTouchEventStateRecorder(
+      const AsynchronousTouchEventStateRecorder&) = delete;
+  AsynchronousTouchEventStateRecorder& operator=(
+      const AsynchronousTouchEventStateRecorder&) = delete;
+
   ~AsynchronousTouchEventStateRecorder() override;
 
   // ui::InputDeviceEventObserver overrides.
   void OnDeviceListsComplete() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousTouchEventStateRecorder);
 };
 
 AsynchronousTouchEventStateRecorder::AsynchronousTouchEventStateRecorder() {
@@ -407,9 +366,9 @@ void AsynchronousTouchEventStateRecorder::OnDeviceListsComplete() {
   RecordTouchEventState();
 }
 
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RecordPinnedToTaskbarProcessError(bool error) {
   base::UmaHistogramBoolean("Windows.IsPinnedToTaskbar.ProcessError", error);
 }
@@ -419,25 +378,38 @@ void OnShellHandlerConnectionError() {
 }
 
 // Record the UMA histogram when a response is received.
-void OnIsPinnedToTaskbarResult(bool succeeded,
-                               bool is_pinned_to_taskbar,
-                               bool is_pinned_to_taskbar_verb_check) {
+void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
   RecordPinnedToTaskbarProcessError(false);
 
   // Used for histograms; do not reorder.
   enum Result { NOT_PINNED = 0, PINNED = 1, FAILURE = 2, NUM_RESULTS };
 
-  Result result_no_verb_check = FAILURE;
-  Result result_verb_check = FAILURE;
-  if (succeeded) {
-    result_no_verb_check = is_pinned_to_taskbar ? PINNED : NOT_PINNED;
-    result_verb_check = is_pinned_to_taskbar_verb_check ? PINNED : NOT_PINNED;
-  }
+  Result result = FAILURE;
+  if (succeeded)
+    result = is_pinned_to_taskbar ? PINNED : NOT_PINNED;
 
-  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result_verb_check,
+  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result,
                                 NUM_RESULTS);
-  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar2",
-                                result_no_verb_check, NUM_RESULTS);
+
+  // If Chrome is not pinned to taskbar, clear the recording that the installer
+  // pinned Chrome to the taskbar, so that if the user pins Chrome back to the
+  // taskbar, we don't count launches as coming from an installer-pinned
+  // shortcut.  TODO(https://crbug.com/1353953): We currently only check if
+  // Chrome is pinned to the taskbar 1 out every 100 launches, which makes this
+  // less meaningful, so if keeping track of whether the installer pinned Chrome
+  // to the taskbar is important, we need to deal with that.
+
+  // Record whether or not the user unpinned an installer pin of Chrome. Records
+  // true if the installer pinned Chrome, and it's not pinned on this startup,
+  // false if the installer pinned Chrome, and it's still pinned.
+  if (GetInstallerPinnedChromeToTaskbar().value_or(false)) {
+    if (result == NOT_PINNED)
+      SetInstallerPinnedChromeToTaskbar(false);
+    if (result != FAILURE) {
+      base::UmaHistogramBoolean("Windows.InstallerPinUnpinned",
+                                result == NOT_PINNED);
+    }
+  }
 }
 
 // Records the pinned state of the current executable into a histogram. Should
@@ -449,59 +421,104 @@ void RecordIsPinnedToTaskbarHistogram() {
       base::BindOnce(&OnIsPinnedToTaskbarResult));
 }
 
-class ScHandleTraits {
- public:
-  typedef SC_HANDLE Handle;
-
-  ScHandleTraits() = delete;
-  ScHandleTraits(const ScHandleTraits&) = delete;
-  ScHandleTraits& operator=(const ScHandleTraits&) = delete;
-
-  // Closes the handle.
-  static bool CloseHandle(SC_HANDLE handle) {
-    return ::CloseServiceHandle(handle) != FALSE;
-  }
-
-  // Returns true if the handle value is valid.
-  static bool IsHandleValid(SC_HANDLE handle) { return handle != nullptr; }
-
-  // Returns null handle value.
-  static SC_HANDLE NullHandle() { return nullptr; }
-};
-
-typedef base::win::GenericScopedHandle<ScHandleTraits,
-                                       base::win::DummyVerifierTraits>
-    ScopedScHandle;
-
-bool IsApplockerRunning() {
-  ScopedScHandle scm_handle(
-      ::OpenSCManagerW(nullptr, nullptr, SC_MANAGER_CONNECT));
-  if (!scm_handle.IsValid())
+// This registry key is not fully documented but there is information on it
+// here:
+// https://blogs.blackberry.com/en/2017/10/windows-10-parallel-loading-breakdown.
+bool IsParallelDllLoadingEnabled() {
+  // Parallel DLL loading is only available on Windows 10 and above.
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return false;
-
-  ScopedScHandle service_handle(
-      ::OpenServiceW(scm_handle.Get(), L"appid", SERVICE_QUERY_STATUS));
-  if (!service_handle.IsValid())
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
     return false;
+  const wchar_t kIFEOKey[] =
+      L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution "
+      L"Options\\";
+  std::wstring browser_process_key = kIFEOKey + exe_path.BaseName().value();
 
-  SERVICE_STATUS status;
-  if (!::QueryServiceStatus(service_handle.Get(), &status))
-    return false;
+  base::win::RegKey key;
+  if (ERROR_SUCCESS != key.Open(HKEY_LOCAL_MACHINE, browser_process_key.c_str(),
+                                KEY_QUERY_VALUE))
+    return true;
 
-  return status.dwCurrentState == SERVICE_RUNNING;
+  const wchar_t kMaxLoaderThreads[] = L"MaxLoaderThreads";
+  DWORD max_loader_threads = 0;
+  if (ERROR_SUCCESS != key.ReadValueDW(kMaxLoaderThreads, &max_loader_threads))
+    return true;
+
+  // Note: If LoaderThreads is 0, it will be set to the default value of 4.
+  return max_loader_threads != 1;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+
+void RecordDisplayHDRStatus(const display::Display& display) {
+  base::UmaHistogramBoolean("Hardware.Display.SupportsHDR",
+                            display.color_spaces().SupportsHDR());
+}
+
+// Called on a background thread, with low priority to avoid slowing down
+// startup with metrics that aren't trivial to compute.
+void RecordStartupMetrics() {
+#if BUILDFLAG(IS_WIN)
+  const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
+  int patch = os_info.version_number().patch;
+  int build = os_info.version_number().build;
+  int patch_level = 0;
+
+  if (patch < 65536 && build < 65536)
+    patch_level = MAKELONG(patch, build);
+  DCHECK(patch_level) << "Windows version too high!";
+  base::UmaHistogramSparse("Windows.PatchLevel", patch_level);
+
+  int kernel32_patch = os_info.Kernel32VersionNumber().patch;
+  int kernel32_build = os_info.Kernel32VersionNumber().build;
+  int kernel32_patch_level = 0;
+  if (kernel32_patch < 65536 && kernel32_build < 65536)
+    kernel32_patch_level = MAKELONG(kernel32_patch, kernel32_build);
+  DCHECK(kernel32_patch_level) << "Windows kernel32.dll version too high!";
+  base::UmaHistogramSparse("Windows.PatchLevelKernel32", kernel32_patch_level);
+
+  base::UmaHistogramBoolean("Windows.HasHighResolutionTimeTicks",
+                            base::TimeTicks::IsHighResolution());
+
+  // Determine whether parallel DLL loading is enabled for the browser process
+  // executable. This is disabled by default on fresh Windows installations, but
+  // the registry key that controls this might have been removed. Having the
+  // parallel DLL loader enabled might affect both sandbox and early startup
+  // behavior.
+  base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
+                            IsParallelDllLoadingEnabled());
+  crypto::MaybeMeasureTpmOperations();
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Record whether Chrome is the default browser or not.
+  // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.
+#if !BUILDFLAG(IS_LINUX)
+  shell_integration::DefaultWebClientState default_state =
+      shell_integration::GetDefaultBrowser();
+  base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
+                                shell_integration::NUM_DEFAULT_STATES);
+#endif  // !BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  RecordChromeOSChannel();
+#endif
+}
 
 }  // namespace
 
 ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
-    : display_count_(0), is_screen_observer_(false) {
-}
+    : display_count_(0) {}
 
-ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() {
-  if (is_screen_observer_)
-    display::Screen::GetScreen()->RemoveObserver(this);
+ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
+    default;
+
+void ChromeBrowserMainExtraPartsMetrics::PostCreateMainMessageLoop() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Must be initialized before any child processes are spawned.
+  process_monitor_ = std::make_unique<ProcessMonitor>();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreProfileInit() {
@@ -527,7 +544,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   );
 
   // Records whether or not the Segment heap is in use.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
   if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("WinSegmentHeap",
@@ -552,111 +569,50 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 #endif
   );
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-  // Records whether or not PartitionAlloc is used as the default allocator.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "PartitionAllocEverywhere",
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-      "Enabled"
-#else
-      "Disabled"
-#endif
-  );
-
-  // Records whether or not PartitionAlloc-Everywhere is enabled, and whether
-  // PCScan is enabled on top of it. This is meant for a 3-way experiment with 2
-  // binaries:
-  // - binary A: deployed to 33% users, with PA-E and PCScan off.
-  // - binary B: deployed to 66% users, with PA-E on, half of which having
-  //             PCScan on
-  //
-  // NOTE, deliberately don't use PA_ALLOW_PCSCAN which depends on bitness.
-  // In the 32-bit case, PCScan is always disabled, but we'll deliberately
-  // misrepresent it as enabled here (and later ignored when analyzing results),
-  // in order to keep each population at 33%.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "PartitionAllocEverywhereAndPCScan",
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanBrowserOnly)
-          ? "EnabledWithPCScan"
-          : "EnabledWithoutPCScan"
-#else
-      "Disabled"
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  );
-
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // Records whether or not BackupRefPtr and/or PCScan is enabled. This is meant
-  // for a 3-way experiment with 2 binaries:
-  // - binary A: deployed to 66% users, with half of them having PCScan on and
-  //             half off (BackupRefPtr fully off)
-  // - binary B: deployed to 33% users, with BackupRefPtr on (PCSCan fully off)
-  //
-  // NOTE, deliberately don't use PA_ALLOW_PCSCAN which depends on bitness.
-  // In the 32-bit case, PCScan is always disabled, but we'll deliberately
-  // misrepresent it as enabled here (and later ignored when analyzing results),
-  // in order to keep each population at 33%.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "BackupRefPtrAndPCScan",
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-      "BackupRefPtrEnabled"
-#else
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanBrowserOnly)
-          ? "PCScanEnabled"
-          : "Disabled"
-#endif
-  );
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "PartitionAllocGigaCageSynthetic",
-      base::features::IsPartitionAllocGigaCageEnabled() ? "Enabled"
-                                                        : "Disabled");
+  // Register synthetic Finch trials proposed by PartitionAlloc.
+  auto pa_trials = base::allocator::ProposeSyntheticFinchTrials();
+  for (auto& trial : pa_trials) {
+    auto [trial_name, group_name] = trial;
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
+                                                              group_name);
+  }
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   RecordMemoryMetricsAfterDelay();
   RecordLinuxGlibcVersion();
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // Ozone writes this histogram upon platform initialisation.
-    base::UmaHistogramEnumeration("Linux.WindowManager",
-                                  ui::GetWindowManagerUMA());
-  }
-#endif
 
   constexpr base::TaskTraits kBestEffortTaskTraits = {
       base::MayBlock(), base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::ThreadPool::PostTask(FROM_HERE, kBestEffortTaskTraits,
                              base::BindOnce(&RecordLinuxDistro));
 #endif
 
-#if defined(USE_OZONE) || defined(USE_X11)
-  // The touch event state for X11 and Ozone based event sub-systems are based
-  // on device scans that happen asynchronously. So we may need to attach an
-  // observer to wait until these scans complete.
+#if defined(USE_OZONE)
+  // The touch event state for Ozone based event sub-systems are based on device
+  // scans that happen asynchronously. So we may need to attach an observer to
+  // wait until these scans complete.
   if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
     RecordTouchEventState();
   } else {
-    input_device_event_observer_.reset(
-        new AsynchronousTouchEventStateRecorder());
+    input_device_event_observer_ =
+        std::make_unique<AsynchronousTouchEventStateRecorder>();
   }
 #else
   RecordTouchEventState();
-#endif  // defined(USE_OZONE) || defined(USE_X11)
+#endif  // defined(USE_OZONE)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   RecordMacMetrics();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // RecordStartupMetrics calls into shell_integration::GetDefaultBrowser(),
   // which requires a COM thread on Windows.
   base::ThreadPool::CreateCOMSTATaskRunner(kBestEffortTaskTraits)
@@ -664,9 +620,9 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 #else
   base::ThreadPool::PostTask(FROM_HERE, kBestEffortTaskTraits,
                              base::BindOnce(&RecordStartupMetrics));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(isherman): The delay below is currently needed to avoid (flakily)
   // breaking some tests, including all of the ProcessMemoryMetricsEmitterTest
   // tests. Figure out why there is a dependency and fix the tests.
@@ -679,17 +635,22 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   if (base::RandGenerator(100) == 0) {
     background_task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordIsPinnedToTaskbarHistogram),
-        base::TimeDelta::FromSeconds(45));
+        base::Seconds(45));
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-  display_count_ = display::Screen::GetScreen()->GetNumDisplays();
+  auto* screen = display::Screen::GetScreen();
+  display_count_ = screen->GetNumDisplays();
   base::UmaHistogramCounts100("Hardware.Display.Count.OnStartup",
                               display_count_);
-  display::Screen::GetScreen()->AddObserver(this);
-  is_screen_observer_ = true;
 
-#if !defined(OS_ANDROID)
+  for (const auto& display : screen->GetAllDisplays()) {
+    RecordDisplayHDRStatus(display);
+  }
+
+  display_observer_.emplace(this);
+
+#if !BUILDFLAG(IS_ANDROID)
   metrics::BeginFirstWebContentsProfiling();
   // Only instantiate the tab stats tracker if a local state exists. This is
   // always the case for Chrome but not for the unittests.
@@ -699,17 +660,29 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<metrics::TabStatsTracker>(
             g_browser_process->local_state()));
   }
-#endif  // !defined(OS_ANDROID)
-#if defined(OS_MAC) || defined(OS_WIN)
-  // BatteryLevelProvider is supported on mac and windows only, thus we report
-  // power metrics only on those platforms.
-  if (performance_monitor::ProcessMonitor::Get()) {
-    // PowerMetricsReporter needs ProcessMonitor to be created.
-    usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
-    power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
-        usage_scenario_tracker_->data_store(), BatteryLevelProvider::Create());
+
+  // Instantiate the power-related metrics reporters.
+
+  // BatteryDischargeRateReporter reports the system-wide battery discharge
+  // rate. It depends on the TabStatsTracker to determine the usage scenario,
+  // and the BatteryStateSampler to determine the battery level.
+  // The TabStatsTracker always exists (except during unit tests), while the
+  // BatteryStateSampler only exists on platform where a BatteryLevelProvider
+  // implementation exists.
+  if (metrics::TabStatsTracker::GetInstance() &&
+      base::BatteryStateSampler::Get()) {
+    battery_discharge_reporter_ = std::make_unique<BatteryDischargeReporter>(
+        base::BatteryStateSampler::Get());
   }
-#endif  // defined(OS_MAC) || defined (OS_WIN)
+
+  // PowerMetricsReporter focus solely on Chrome-specific metrics that affect
+  // power (CPU time, wake ups, etc.). Only instantiate it if |process_monitor_|
+  // exists. This is always the case for Chrome but not for the unit tests.
+  if (process_monitor_) {
+    power_metrics_reporter_ =
+        std::make_unique<PowerMetricsReporter>(process_monitor_.get());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
@@ -730,11 +703,20 @@ void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
 void ChromeBrowserMainExtraPartsMetrics::OnDisplayAdded(
     const display::Display& new_display) {
   EmitDisplaysChangedMetric();
+  RecordDisplayHDRStatus(new_display);
 }
 
 void ChromeBrowserMainExtraPartsMetrics::OnDisplayRemoved(
     const display::Display& old_display) {
   EmitDisplaysChangedMetric();
+}
+
+void ChromeBrowserMainExtraPartsMetrics::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (changed_metrics & DisplayObserver::DISPLAY_METRIC_COLOR_SPACE) {
+    RecordDisplayHDRStatus(display);
+  }
 }
 
 void ChromeBrowserMainExtraPartsMetrics::EmitDisplaysChangedMetric() {

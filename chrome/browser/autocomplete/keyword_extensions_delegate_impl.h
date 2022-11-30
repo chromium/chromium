@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,15 +10,15 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/keyword_extensions_delegate.h"
 #include "components/omnibox/browser/keyword_provider.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "components/omnibox/browser/omnibox_input_watcher.h"
+#include "components/omnibox/browser/omnibox_suggestions_watcher.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
@@ -27,10 +27,17 @@
 
 class Profile;
 
-class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
-                                      public content::NotificationObserver {
+class KeywordExtensionsDelegateImpl
+    : public KeywordExtensionsDelegate,
+      public OmniboxInputWatcher::Observer,
+      public OmniboxSuggestionsWatcher::Observer {
  public:
   KeywordExtensionsDelegateImpl(Profile* profile, KeywordProvider* provider);
+
+  KeywordExtensionsDelegateImpl(const KeywordExtensionsDelegateImpl&) = delete;
+  KeywordExtensionsDelegateImpl& operator=(
+      const KeywordExtensionsDelegateImpl&) = delete;
+
   ~KeywordExtensionsDelegateImpl() override;
 
   // KeywordExtensionsDelegate:
@@ -48,10 +55,12 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
   void EnterExtensionKeywordMode(const std::string& extension_id) override;
   void MaybeEndExtensionKeywordMode() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // OmniboxInputWatcher::Observer:
+  void OnOmniboxInputEntered() override;
+  // OmniboxSuggestionsWatcher::Observer:
+  void OnOmniboxSuggestionsReady(
+      extensions::api::omnibox::SendSuggestions::Params* suggestions) override;
+  void OnOmniboxDefaultSuggestionChanged() override;
 
   ACMatches* matches() { return &provider_->matches_; }
   void set_done(bool done) {
@@ -78,18 +87,20 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
   // the URL bar while the autocomplete popup is open.
   std::string current_keyword_extension_id_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The owner of this class.
-  KeywordProvider* provider_;
-
-  content::NotificationRegistrar registrar_;
+  raw_ptr<KeywordProvider> provider_;
 
   // We need our input IDs to be unique across all profiles, so we keep a global
   // UID that each provider uses.
   static int global_input_uid_;
 
-  DISALLOW_COPY_AND_ASSIGN(KeywordExtensionsDelegateImpl);
+  base::ScopedObservation<OmniboxInputWatcher, OmniboxInputWatcher::Observer>
+      omnibox_input_observation_{this};
+  base::ScopedObservation<OmniboxSuggestionsWatcher,
+                          OmniboxSuggestionsWatcher::Observer>
+      omnibox_suggestions_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_KEYWORD_EXTENSIONS_DELEGATE_IMPL_H_

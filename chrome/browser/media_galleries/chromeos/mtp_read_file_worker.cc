@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ namespace {
 uint32_t WriteDataChunkIntoSnapshotFileOnFileThread(
     const base::FilePath& snapshot_file_path,
     const std::string& data) {
-  return base::AppendToFile(snapshot_file_path, data.c_str(), data.size())
+  return base::AppendToFile(snapshot_file_path, data)
              ? base::checked_cast<uint32_t>(data.size())
              : 0;
 }

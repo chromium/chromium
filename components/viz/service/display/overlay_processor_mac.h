@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/ca_layer_overlay.h"
@@ -27,10 +25,14 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
  public:
   using CandidateList = CALayerOverlayList;
 
-  explicit OverlayProcessorMac(bool enable_ca_overlay);
+  OverlayProcessorMac();
   // For testing.
   explicit OverlayProcessorMac(
       std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor);
+
+  OverlayProcessorMac(const OverlayProcessorMac&) = delete;
+  OverlayProcessorMac& operator=(const OverlayProcessorMac&) = delete;
+
   ~OverlayProcessorMac() override;
 
   bool DisableSplittingQuads() const override;
@@ -38,6 +40,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   bool IsOverlaySupported() const override;
   gfx::Rect GetPreviousFrameOverlaysBoundingRect() const override;
   gfx::Rect GetAndResetOverlayDamage() override;
+  void SetIsVideoCaptureEnabled(bool enabled) override;
 
   // Returns true if the platform supports hw overlays and surface occluding
   // damage rect needs to be computed since it will be used by overlay
@@ -49,7 +52,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
-      const SkMatrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
@@ -60,15 +63,15 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
 
   // For Mac, if we successfully generated a candidate list for CALayerOverlay,
   // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the base::Optional instance so the instance can be reset.
+  // to the absl::optional instance so the instance can be reset.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   void AdjustOutputSurfaceOverlay(
-      base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+
+  gfx::CALayerResult GetCALayerErrorCode() const override;
 
  private:
-  const bool enable_ca_overlay_;
-
   // The damage that should be added the next frame for drawing to the output
   // surface.
   gfx::Rect ca_overlay_damage_rect_;
@@ -79,13 +82,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   // TODO(weiliangc): Eventually fold the CaLayerOverlayProcessor into this
   // class.
   std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor_;
-  const CALayerOverlayProcessor* GetOverlayProcessor() const {
+  CALayerOverlayProcessor* GetOverlayProcessor() const {
     return ca_layer_overlay_processor_.get();
   }
 
  private:
   bool output_surface_already_handled_;
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorMac);
 };
 
 }  // namespace viz

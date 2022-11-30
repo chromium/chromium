@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "media/base/key_system_properties.h"
+#include "media/base/key_system_info.h"
 
 namespace android_webview {
 
-void AwAddKeySystems(std::vector<std::unique_ptr<media::KeySystemProperties>>*
-                         key_systems_properties);
+void AwAddKeySystems(
+    std::vector<std::unique_ptr<media::KeySystemInfo>>* key_systems_properties);
 
 }  // namespace android_webview
 

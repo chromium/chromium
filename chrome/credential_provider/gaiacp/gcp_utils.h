@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/win/scoped_handle.h"
@@ -264,11 +266,11 @@ void DeleteStartupSentinel();
 void DeleteStartupSentinelForVersion(const std::wstring& version);
 
 // Gets a string resource from the DLL with the given id.
-std::wstring GetStringResource(int base_message_id);
+std::wstring GetStringResource(UINT base_message_id);
 
 // Gets a string resource from the DLL with the given id after replacing the
 // placeholders with the provided substitutions.
-std::wstring GetStringResource(int base_message_id,
+std::wstring GetStringResource(UINT base_message_id,
                                const std::vector<std::wstring>& subst);
 
 // Gets the language selected by the base::win::i18n::LanguageSelector.
@@ -276,8 +278,8 @@ std::wstring GetSelectedLanguage();
 
 // Securely clear a base::Value that may be a dictionary value that may
 // have a password field.
-void SecurelyClearDictionaryValue(base::Optional<base::Value>* value);
-void SecurelyClearDictionaryValueWithKey(base::Optional<base::Value>* value,
+void SecurelyClearDictionaryValue(absl::optional<base::Value>* value);
+void SecurelyClearDictionaryValueWithKey(absl::optional<base::Value>* value,
                                          const std::string& password_key);
 
 // Securely clear std::wstring and std::string.
@@ -336,8 +338,12 @@ struct FakesForTesting {
   ~FakesForTesting();
 
   ScopedLsaPolicy::CreatorCallback scoped_lsa_policy_creator;
-  OSUserManager* os_user_manager_for_testing = nullptr;
-  OSProcessManager* os_process_manager_for_testing = nullptr;
+  // TODO(crbug.com/1298696): gcp_unittests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<OSUserManager, DegradeToNoOpWhenMTE> os_user_manager_for_testing =
+      nullptr;
+  raw_ptr<OSProcessManager, DegradeToNoOpWhenMTE>
+      os_process_manager_for_testing = nullptr;
   WinHttpUrlFetcher::CreatorCallback fake_win_http_url_fetcher_creator;
 };
 

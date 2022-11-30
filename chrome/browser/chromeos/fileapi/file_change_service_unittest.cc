@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/fileapi/file_change_service.h"
 
-#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -22,10 +22,13 @@
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_blob_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace chromeos {
 
@@ -35,15 +38,7 @@ namespace {
 
 // Returns the file system context associated with the specified `profile`.
 storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
-  return file_manager::util::GetFileSystemContextForExtensionId(
-      profile, file_manager::kFileManagerAppId);
-}
-
-// Returns the file system operation runner associated with the specified
-// `profile`.
-storage::FileSystemOperationRunner* GetFileSystemOperationRunner(
-    Profile* profile) {
-  return GetFileSystemContext(profile)->operation_runner();
+  return file_manager::util::GetFileManagerFileSystemContext(profile);
 }
 
 // Creates a mojo data pipe with the provided `content`.
@@ -64,10 +59,8 @@ mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
       std::make_unique<mojo::StringDataSource>(
           contents, mojo::StringDataSource::AsyncWritingMode::
                         STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION),
-      base::BindOnce(
-          base::DoNothing::Once<std::unique_ptr<mojo::DataPipeProducer>,
-                                MojoResult>(),
-          std::move(producer)));
+      base::BindOnce([](std::unique_ptr<mojo::DataPipeProducer>, MojoResult) {},
+                     std::move(producer)));
   return consumer_handle;
 }
 
@@ -117,10 +110,8 @@ class TempFileSystem {
             name_, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), temp_dir_.GetPath()));
 
-    GetFileSystemContext(profile_)
-        ->external_backend()
-        ->GrantFileAccessToExtension(file_manager::kFileManagerAppId,
-                                     base::FilePath(name_));
+    GetFileSystemContext(profile_)->external_backend()->GrantFileAccessToOrigin(
+        file_manager::util::GetFilesAppOrigin(), base::FilePath(name_));
   }
 
   // Synchronously creates the file specified by `url`.
@@ -132,7 +123,7 @@ class TempFileSystem {
   // Returns a file system URL for the specified path relative to `temp_dir_`.
   storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
     return GetFileSystemContext(profile_)->CreateCrackedFileSystemURL(
-        origin_, storage::kFileSystemTypeLocal,
+        blink::StorageKey(origin_), storage::kFileSystemTypeLocal,
         temp_dir_.GetPath().Append(base::FilePath::FromUTF8Unsafe(path)));
   }
 
@@ -247,7 +238,7 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
  private:
   // BrowserWithTestWindowTest:
   TestingProfile* CreateProfile() override {
-    constexpr char kPrimaryProfileName[] = "primary_profile";
+    constexpr char kPrimaryProfileName[] = "primary_profile@test";
     return CreateProfileWithName(kPrimaryProfileName);
   }
 
@@ -270,7 +261,7 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
   ASSERT_TRUE(primary_profile_service);
 
   // `FileChangeService` should be created as needed for additional profiles.
-  constexpr char kSecondaryProfileName[] = "secondary_profile";
+  constexpr char kSecondaryProfileName[] = "secondary_profile@test";
   auto* secondary_profile = CreateProfileWithName(kSecondaryProfileName);
   auto* secondary_profile_service = factory->GetService(secondary_profile);
   ASSERT_TRUE(secondary_profile_service);

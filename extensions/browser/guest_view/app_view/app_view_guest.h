@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
+#include "base/values.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest_delegate.h"
 #include "extensions/browser/lazy_context_task_queue.h"
@@ -23,6 +23,13 @@ class Extension;
 class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
  public:
   static const char Type[];
+
+  ~AppViewGuest() override;
+  AppViewGuest(const AppViewGuest&) = delete;
+  AppViewGuest& operator=(const AppViewGuest&) = delete;
+
+  static std::unique_ptr<GuestViewBase> Create(
+      content::WebContents* owner_web_contents);
 
   // Completes the creation of a WebContents associated with the provided
   // |guest_extension_id| and |guest_instance_id| for the given
@@ -40,8 +47,6 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       const std::string& guest_extension_id,
       content::RenderProcessHost* guest_render_process_host);
 
-  static GuestViewBase* Create(content::WebContents* owner_web_contents);
-
   static std::vector<int> GetAllRegisteredInstanceIdsForTesting();
 
   // Sets the AppDelegate for this guest.
@@ -50,17 +55,16 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
  private:
   explicit AppViewGuest(content::WebContents* owner_web_contents);
 
-  ~AppViewGuest() override;
-
   // GuestViewBase implementation.
-  void CreateWebContents(const base::DictionaryValue& create_params,
+  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
+                         const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) final;
-  void DidInitialize(const base::DictionaryValue& create_params) final;
+  void DidInitialize(const base::Value::Dict& create_params) final;
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
 
   // content::WebContentsDelegate implementation.
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
@@ -72,10 +76,12 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
 
   void CompleteCreateWebContents(const GURL& url,
                                  const Extension* guest_extension,
+                                 std::unique_ptr<GuestViewBase> owned_this,
                                  WebContentsCreatedCallback callback);
 
   void LaunchAppAndFireEvent(
-      std::unique_ptr<base::DictionaryValue> data,
+      std::unique_ptr<GuestViewBase> owned_this,
+      base::Value::Dict data,
       WebContentsCreatedCallback callback,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info);
 
@@ -87,8 +93,6 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
   base::WeakPtrFactory<AppViewGuest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppViewGuest);
 };
 
 }  // namespace extensions

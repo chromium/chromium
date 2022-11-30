@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "base/guid.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/download/public/common//mock_simple_download_manager.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/download/public/common/mock_simple_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +33,11 @@ class DownloadOfflineContentProviderTest : public testing::Test {
         provider_(&aggregator_, kTestDownloadNamespace),
         coordinator_(base::NullCallback(), false) {}
 
+  DownloadOfflineContentProviderTest(
+      const DownloadOfflineContentProviderTest&) = delete;
+  DownloadOfflineContentProviderTest& operator=(
+      const DownloadOfflineContentProviderTest&) = delete;
+
   ~DownloadOfflineContentProviderTest() override {}
 
   void InitializeDownloads(bool full_browser) {
@@ -48,8 +53,6 @@ class DownloadOfflineContentProviderTest : public testing::Test {
   DownloadOfflineContentProvider provider_;
   SimpleDownloadManagerCoordinator coordinator_;
   NiceMock<download::MockSimpleDownloadManager> mock_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOfflineContentProviderTest);
 };
 
 TEST_F(DownloadOfflineContentProviderTest, PauseDownloadBeforeInit) {

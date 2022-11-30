@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace media_router {
@@ -34,6 +35,10 @@ class MediaSinksObserver {
   // source, so the returned sink list may be incomplete.
   // TODO(crbug.com/929937): Fix this.
   explicit MediaSinksObserver(MediaRouter* router);
+
+  MediaSinksObserver(const MediaSinksObserver&) = delete;
+  MediaSinksObserver& operator=(const MediaSinksObserver&) = delete;
+
   virtual ~MediaSinksObserver();
 
   // Registers with MediaRouter to start observing. Must be called before the
@@ -51,7 +56,7 @@ class MediaSinksObserver {
   virtual void OnSinksUpdated(const std::vector<MediaSink>& sinks,
                               const std::vector<url::Origin>& origins);
 
-  const base::Optional<const MediaSource>& source() const { return source_; }
+  const absl::optional<const MediaSource>& source() const { return source_; }
 
  protected:
   // This function is invoked from |OnSinksUpdated(sinks, origins)|.
@@ -61,16 +66,14 @@ class MediaSinksObserver {
   virtual void OnSinksReceived(const std::vector<MediaSink>& sinks) = 0;
 
  private:
-  const base::Optional<const MediaSource> source_;
+  const absl::optional<const MediaSource> source_;
   const url::Origin origin_;
-  MediaRouter* const router_;
+  const raw_ptr<MediaRouter> router_;
   bool initialized_;
 
 #if DCHECK_IS_ON()
   bool in_on_sinks_updated_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSinksObserver);
 };
 
 }  // namespace media_router

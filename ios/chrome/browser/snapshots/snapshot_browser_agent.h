@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
@@ -15,15 +14,14 @@
 @class SnapshotCache;
 
 // Associates a SnapshotCache to a Browser.
-class SnapshotBrowserAgent : BrowserObserver,
+class SnapshotBrowserAgent : public BrowserObserver,
                              public WebStateListObserver,
                              public BrowserUserData<SnapshotBrowserAgent> {
  public:
-  SnapshotBrowserAgent();
-  ~SnapshotBrowserAgent() override;
-
   SnapshotBrowserAgent(const SnapshotBrowserAgent&) = delete;
   SnapshotBrowserAgent& operator=(const SnapshotBrowserAgent&) = delete;
+
+  ~SnapshotBrowserAgent() override;
 
   // Set a session identification string that will be used to locate the
   // snapshots directory. Setting this more than once on the same agent is
@@ -40,9 +38,10 @@ class SnapshotBrowserAgent : BrowserObserver,
   SnapshotCache* snapshot_cache() { return snapshot_cache_; }
 
  private:
-  explicit SnapshotBrowserAgent(Browser* browser);
   friend class BrowserUserData<SnapshotBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit SnapshotBrowserAgent(Browser* browser);
 
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;

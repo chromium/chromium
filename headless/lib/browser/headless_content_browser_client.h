@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,14 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_CONTENT_BROWSER_CLIENT_H_
 
 #include <memory>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "headless/public/headless_browser.h"
+#include "services/network/network_service.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 
 namespace headless {
@@ -19,22 +23,31 @@ class HeadlessBrowserImpl;
 class HeadlessContentBrowserClient : public content::ContentBrowserClient {
  public:
   explicit HeadlessContentBrowserClient(HeadlessBrowserImpl* browser);
+
+  HeadlessContentBrowserClient(const HeadlessContentBrowserClient&) = delete;
+  HeadlessContentBrowserClient& operator=(const HeadlessContentBrowserClient&) =
+      delete;
+
   ~HeadlessContentBrowserClient() override;
 
   // content::ContentBrowserClient implementation:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams&) override;
+      bool is_integration_test) override;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
-  content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
@@ -49,7 +62,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       int cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
-      bool is_main_frame_request,
+      bool is_primary_main_frame_request,
       bool strict_enforcement,
       base::OnceCallback<void(content::CertificateRequestResultType)> callback)
       override;
@@ -72,6 +85,15 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   std::string GetUserAgent() override;
 
   bool CanAcceptUntrustedExchangesIfNeeded() override;
+  device::GeolocationManager* GetGeolocationManager() override;
+
+#if defined(HEADLESS_USE_POLICY)
+  std::vector<std::unique_ptr<content::NavigationThrottle>>
+  CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
+#endif
+
+  void OnNetworkServiceCreated(
+      ::network::mojom::NetworkService* network_service) override;
 
  private:
   class StubBadgeService;
@@ -80,15 +102,13 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
 
-  HeadlessBrowserImpl* browser_;  // Not owned.
+  raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
 
   // We store the callback here because we may call it from the I/O thread.
   HeadlessBrowser::Options::AppendCommandLineFlagsCallback
       append_command_line_flags_callback_;
 
   std::unique_ptr<StubBadgeService> stub_badge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentBrowserClient);
 };
 
 }  // namespace headless

@@ -6,6 +6,7 @@ The following subprojects exist:
 * codesearch - Builders that test codesearch with chromium.
 * findit - Builders that are used by the Sheriff-o-Matic findit service.
 * goma - Builders that test the use of goma by chromium builders.
+* reclient - Builders that test the use of reclient by chromium builders.
 * webrtc - Builders that test the integration of WebRTC with chromium.
 
 Each subproject contains a subproject.star that is the entry point for its

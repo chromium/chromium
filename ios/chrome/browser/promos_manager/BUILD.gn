@@ -1,0 +1,117 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("promos_manager") {
+  sources = [
+    "promos_manager.h",
+    "promos_manager.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    ":constants",
+    ":features",
+    ":types",
+    "//components/prefs",
+    "//ios/chrome/browser/prefs:pref_names",
+  ]
+}
+
+source_set("internal") {
+  sources = [
+    "promos_manager_impl.h",
+    "promos_manager_impl.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [
+    ":constants",
+    ":promos_manager",
+    ":types",
+    "//base",
+    "//components/prefs",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    ":features",
+    "//ios/chrome/browser/prefs:pref_names",
+  ]
+}
+
+source_set("types") {
+  sources = [
+    "impression_limit.h",
+    "impression_limit.mm",
+    "promo.h",
+    "promo.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [ ":constants" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  deps = [ "//base" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_promos_manager.h",
+    "mock_promos_manager.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [
+    ":constants",
+    ":promos_manager",
+    ":types",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "promos_manager_impl_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":constants",
+    ":features",
+    ":internal",
+    ":promos_manager",
+    ":types",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}

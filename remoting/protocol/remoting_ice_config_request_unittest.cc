@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -42,7 +41,8 @@ class RemotingIceConfigRequestTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
-  RemotingIceConfigRequest request_{test_responder_.GetUrlLoaderFactory()};
+  RemotingIceConfigRequest request_{test_responder_.GetUrlLoaderFactory(),
+                                    nullptr};
 };
 
 TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
@@ -87,5 +87,4 @@ TEST_F(RemotingIceConfigRequestTest, FailedRequest) {
   EXPECT_TRUE(received_config.is_null());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

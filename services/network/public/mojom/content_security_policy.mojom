@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,11 +24,7 @@ enum ContentSecurityPolicySource {
   kHTTP,
 
   // From the <meta> HTML tag with the "http-equiv" attribute.
-  kMeta,
-
-  // From an origin-policy file.
-  // Origin Policy spec: https://wicg.github.io/origin-policy/
-  kOriginPolicy
+  kMeta
 };
 
 // Represents a single Content Security Policy header (i.e. coming from a single
@@ -88,6 +84,7 @@ struct CSPSourceList {
   bool allow_inline = false;
   bool allow_eval = false;
   bool allow_wasm_eval = false;
+  bool allow_wasm_unsafe_eval = false;
   bool allow_dynamic = false;
   bool allow_unsafe_hashes = false;
   bool report_sample = false;
@@ -101,6 +98,7 @@ enum CSPDirectiveName {
   ChildSrc,
   ConnectSrc,
   DefaultSrc,
+  FencedFrameSrc,
   FontSrc,
   FormAction,
   FrameAncestors,
@@ -232,9 +230,6 @@ struct CSPViolation {
   // Each policy has an associated disposition, which is either "enforce" or
   // "report".
   ContentSecurityPolicyType type;
-
-  // Whether or not the violation happens after a redirect.
-  bool after_redirect;
 
   // The source code location that triggered the blocked navigation.
   SourceLocation source_location;

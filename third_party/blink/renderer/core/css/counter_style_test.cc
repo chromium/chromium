@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,11 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-class CounterStyleTest : public PageTestBase,
-                         private ScopedCSSAtRuleCounterStyleForTest {
- public:
-  CounterStyleTest() : ScopedCSSAtRuleCounterStyleForTest(true) {}
-
+class CounterStyleTest : public PageTestBase {
  protected:
   const CounterStyle& GetCounterStyle(const AtomicString& name) {
     if (const CounterStyleMap* document_map =
@@ -235,16 +232,16 @@ TEST_F(CounterStyleTest, CustomPad) {
   // Getting custom 'pad' directly from descriptor value.
   const CounterStyle& financial_decimal_pad =
       GetCounterStyle("financial-decimal-pad");
-  EXPECT_EQ("(0099)", financial_decimal_pad.GenerateRepresentation(-99));
-  EXPECT_EQ("(0001)", financial_decimal_pad.GenerateRepresentation(-1));
+  EXPECT_EQ("(99)", financial_decimal_pad.GenerateRepresentation(-99));
+  EXPECT_EQ("(01)", financial_decimal_pad.GenerateRepresentation(-1));
   EXPECT_EQ("0000", financial_decimal_pad.GenerateRepresentation(0));
   EXPECT_EQ("0001", financial_decimal_pad.GenerateRepresentation(1));
   EXPECT_EQ("0099", financial_decimal_pad.GenerateRepresentation(99));
 
   // Getting custom 'pad' indirectly by extending a counter style.
   const CounterStyle& extended = GetCounterStyle("extended");
-  EXPECT_EQ("(0099)", extended.GenerateRepresentation(-99));
-  EXPECT_EQ("(0001)", extended.GenerateRepresentation(-1));
+  EXPECT_EQ("(99)", extended.GenerateRepresentation(-99));
+  EXPECT_EQ("(01)", extended.GenerateRepresentation(-1));
   EXPECT_EQ("0000", extended.GenerateRepresentation(0));
   EXPECT_EQ("0001", extended.GenerateRepresentation(1));
   EXPECT_EQ("0099", extended.GenerateRepresentation(99));
@@ -508,6 +505,42 @@ TEST_F(CounterStyleTest, UpperArmenian) {
   }
 }
 
+TEST_F(CounterStyleTest, ExtendArmenianRangeToIncludeZero) {
+  // 'lower-armenian' and 'upper-armenian' counter styles cannot represent 0.
+  // Even if we extend them to include 0 into the range, we still fall back.
+  const CounterStyle& extends_lower_armenian =
+      AddCounterStyle("extends-lower-armenian", R"CSS(
+    system: extends lower-armenian;
+    range: 0 infinity;
+  )CSS");
+  EXPECT_EQ("0", extends_lower_armenian.GenerateRepresentation(0));
+
+  const CounterStyle& extends_upper_armenian =
+      AddCounterStyle("extends-upper-armenian", R"CSS(
+    system: extends upper-armenian;
+    range: 0 infinity;
+  )CSS");
+  EXPECT_EQ("0", extends_upper_armenian.GenerateRepresentation(0));
+}
+
+TEST_F(CounterStyleTest, ExtendArmenianRangeToAuto) {
+  // 'lower-armenian' and 'upper-armenian' counter styles cannot represent 0,
+  // even if we extend their range to 'auto'.
+  const CounterStyle& extends_lower_armenian =
+      AddCounterStyle("extends-lower-armenian", R"CSS(
+    system: extends lower-armenian;
+    range: auto;
+  )CSS");
+  EXPECT_EQ("0", extends_lower_armenian.GenerateRepresentation(0));
+
+  const CounterStyle& extends_upper_armenian =
+      AddCounterStyle("extends-upper-armenian", R"CSS(
+    system: extends upper-armenian;
+    range: 0 auto;
+  )CSS");
+  EXPECT_EQ("0", extends_upper_armenian.GenerateRepresentation(0));
+}
+
 TEST_F(CounterStyleTest, KoreanHangulFormal) {
   // Verifies that our 'korean-hangul-formal' implementation matches the spec in
   // the officially specified range 1-9999.
@@ -622,6 +655,40 @@ TEST_F(CounterStyleTest, EthiopicNumeric) {
             style.GenerateRepresentation(78010092));
   EXPECT_EQ(String(u"\u137B\u137C\u1369"),
             style.GenerateRepresentation(1000001));
+}
+
+TEST_F(CounterStyleTest, GenerateTextAlternativeSpeakAsDisabled) {
+  ScopedCSSAtRuleCounterStyleSpeakAsDescriptorForTest disabled(false);
+
+  AddCounterStyle("base", R"CSS(
+    system: fixed;
+    symbols: 'One' 'Two' 'Three';
+    suffix: '. ';
+  )CSS");
+
+  const CounterStyle& bullets = AddCounterStyle("bullets", R"CSS(
+    system: extends base;
+    speak-as: bullets;
+  )CSS");
+  EXPECT_EQ("One. ", bullets.GenerateTextAlternative(1));
+  EXPECT_EQ("Two. ", bullets.GenerateTextAlternative(2));
+  EXPECT_EQ("Three. ", bullets.GenerateTextAlternative(3));
+
+  const CounterStyle& numbers = AddCounterStyle("numbers", R"CSS(
+    system: extends base;
+    speak-as: numbers;
+  )CSS");
+  EXPECT_EQ("One. ", numbers.GenerateTextAlternative(1));
+  EXPECT_EQ("Two. ", numbers.GenerateTextAlternative(2));
+  EXPECT_EQ("Three. ", numbers.GenerateTextAlternative(3));
+
+  const CounterStyle& words = AddCounterStyle("words", R"CSS(
+    system: extends base;
+    speak-as: words;
+  )CSS");
+  EXPECT_EQ("One. ", words.GenerateTextAlternative(1));
+  EXPECT_EQ("Two. ", words.GenerateTextAlternative(2));
+  EXPECT_EQ("Three. ", words.GenerateTextAlternative(3));
 }
 
 }  // namespace blink

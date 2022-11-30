@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ TEST(MessageBuilderTest, ScopedIndentation) {
     EXPECT_EQ(expected, builder.content());
 
     {
-      auto scoped_indent = builder.Indent();
+      auto indent = builder.Indent();
       builder.Add(L"*", L"*", L"*").NewLine();
       expected += L"\t\t***\n";
       EXPECT_EQ(expected, builder.content());

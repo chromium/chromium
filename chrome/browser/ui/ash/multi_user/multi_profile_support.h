@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/account_id/account_id.h"
@@ -39,6 +38,10 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
  public:
   // Create the manager and use |active_account_id| as the active user.
   explicit MultiProfileSupport(const AccountId& active_account_id);
+
+  MultiProfileSupport(const MultiProfileSupport&) = delete;
+  MultiProfileSupport& operator=(const MultiProfileSupport&) = delete;
+
   ~MultiProfileSupport() override;
 
   static MultiProfileSupport* GetInstanceForTest() { return instance_; }
@@ -71,14 +74,13 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
   // tests.
   static MultiProfileSupport* instance_;
 
-  using AccountIdToAppWindowObserver = std::map<AccountId, AppObserver*>;
+  using AccountIdToAppWindowObserver =
+      std::map<AccountId, std::unique_ptr<AppObserver>>;
 
   // A list of all known users and their app window observers.
   AccountIdToAppWindowObserver account_id_to_app_observer_;
 
   std::unique_ptr<ash::MultiUserWindowManager> multi_user_window_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiProfileSupport);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_PROFILE_SUPPORT_H_

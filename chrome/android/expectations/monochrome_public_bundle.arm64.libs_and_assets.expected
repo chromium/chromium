@@ -3,10 +3,12 @@ apk_path=lib/arm64-v8a/libmonochrome.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libarcore_sdk_c.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libcrashpad_handler_trampoline.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libmonochrome.so, compress=False, alignment=4096
+apk_path=lib/armeabi-v7a/liboptimization_guide_internal.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/icudtl.dat, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/am.pak, compress=False, alignment=4
+apk_path=assets/locales/ar-XB.pak, compress=False, alignment=4
 apk_path=assets/locales/ar.pak, compress=False, alignment=4
 apk_path=assets/locales/as.pak, compress=False, alignment=4
 apk_path=assets/locales/az.pak, compress=False, alignment=4
@@ -21,6 +23,7 @@ apk_path=assets/locales/de.pak, compress=False, alignment=4
 apk_path=assets/locales/el.pak, compress=False, alignment=4
 apk_path=assets/locales/en-GB.pak, compress=False, alignment=4
 apk_path=assets/locales/en-US.pak, compress=False, alignment=4
+apk_path=assets/locales/en-XA.pak, compress=False, alignment=4
 apk_path=assets/locales/es-419.pak, compress=False, alignment=4
 apk_path=assets/locales/es.pak, compress=False, alignment=4
 apk_path=assets/locales/et.pak, compress=False, alignment=4
@@ -91,6 +94,7 @@ apk_path=assets/snapshot_blob_32.bin, compress=False, alignment=4
 apk_path=assets/snapshot_blob_64.bin, compress=False, alignment=4
 apk_path=assets/stored-locales/af.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/am.pak, compress=False, alignment=4
+apk_path=assets/stored-locales/ar-XB.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/ar.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/as.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/az.pak, compress=False, alignment=4
@@ -105,6 +109,7 @@ apk_path=assets/stored-locales/de.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/el.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/en-GB.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/en-US.pak, compress=False, alignment=4
+apk_path=assets/stored-locales/en-XA.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/es-419.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/es.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/et.pak, compress=False, alignment=4
@@ -170,5 +175,5 @@ apk_path=assets/stored-locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zu.pak, compress=False, alignment=4
-apk_path=assets/webapk7.dex, compress=True, alignment=0
+apk_path=assets/webapk8.dex, compress=True, alignment=0
 apk_path=assets/webapk_dex_version.txt, compress=True, alignment=0

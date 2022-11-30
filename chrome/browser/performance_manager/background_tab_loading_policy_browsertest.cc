@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
@@ -59,7 +59,7 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
     content::NavigationController* controller = &tab->GetController();
     // If tab content is not in a loading state and doesn't need reload.
     if (!controller->NeedsReload() && !controller->GetPendingEntry() &&
-        !controller->GetWebContents()->IsLoading()) {
+        !tab->IsLoading()) {
       return;
     }
 

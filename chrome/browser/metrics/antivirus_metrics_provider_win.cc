@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,7 @@ bool ShouldReportFullNames() {
   // but this allows a small group to be enabled on other channels if there are
   // a large percentage of hashes collected on these channels that are not
   // resolved to names previously collected on Canary channel.
-  bool enabled = base::FeatureList::IsEnabled(
-      AntiVirusMetricsProvider::kReportNamesFeature);
+  bool enabled = base::FeatureList::IsEnabled(kReportFullAVProductDetails);
 
   if (chrome::GetChannel() == version_info::Channel::CANARY)
     return true;
@@ -28,7 +27,9 @@ bool ShouldReportFullNames() {
 
 }  // namespace
 
-constexpr base::Feature AntiVirusMetricsProvider::kReportNamesFeature;
+BASE_FEATURE(kReportFullAVProductDetails,
+             "ReportFullAVProductDetails",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 AntiVirusMetricsProvider::AntiVirusMetricsProvider() = default;
 
@@ -46,7 +47,7 @@ void AntiVirusMetricsProvider::ProvideSystemProfileMetrics(
 void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   if (!remote_util_win_) {
     remote_util_win_ = LaunchUtilWinServiceInstance();
-    remote_util_win_.reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote_util_win_.reset_on_idle_timeout(base::Seconds(5));
   }
 
   // Intentionally don't handle connection errors as not reporting this metric

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,8 +67,9 @@ TEST(ScanServiceFactoryTest, OriginalProfileHasService) {
 TEST(ScanServiceFactoryTest, OffTheRecordProfileHasService) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<Profile> profile = CreateProfile("");
-  EXPECT_NE(nullptr, ScanServiceFactory::GetForBrowserContext(
-                         profile->GetPrimaryOTRProfile()));
+  EXPECT_NE(nullptr,
+            ScanServiceFactory::GetForBrowserContext(
+                profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 // Test that the ScanService cannot be created with a signin profile.

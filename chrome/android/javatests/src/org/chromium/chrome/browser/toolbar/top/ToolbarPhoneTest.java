@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,24 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,17 +41,24 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -68,6 +81,8 @@ public class ToolbarPhoneTest {
     private Runnable mRequestRenderRunnable;
     @Mock
     ThemeColorProvider mThemeColorProvider;
+    @Mock
+    GradientDrawable mLocationbarBackgroundDrawable;
 
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -91,7 +106,7 @@ public class ToolbarPhoneTest {
         doReturn(mMenuButton).when(mMenuButtonCoordinator).getMenuButton();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mToolbar.drawTabSwitcherAnimationOverlay(mCanvas, 0);
+            mToolbar.draWithoutBackground(mCanvas);
             verify(mMenuButtonCoordinator)
                     .drawTabSwitcherAnimationOverlay(mToolbarButtonsContainer, mCanvas, 255);
 
@@ -124,12 +139,13 @@ public class ToolbarPhoneTest {
         // When menu is hidden, optional button should have no padding.
         doReturn(false).when(mMenuButtonCoordinator).isVisible();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mToolbar.updateOptionalButton(
-                    new ButtonDataImpl(false, drawable, null, R.string.share, false, null, false));
+            mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null, R.string.share,
+                    false, null, false, AdaptiveToolbarButtonVariant.UNKNOWN));
             mToolbar.updateButtonVisibility();
         });
 
-        int padding = mToolbar.findViewById(R.id.optional_toolbar_button).getPaddingStart();
+        int padding =
+                mToolbar.findViewById(R.id.optional_toolbar_button_container).getPaddingStart();
         assertEquals("Optional button's padding should be 0 when menu button is not visible", 0,
                 padding);
 
@@ -137,7 +153,7 @@ public class ToolbarPhoneTest {
         // toolbar_phone_optional_button_padding padding.
         doReturn(true).when(mMenuButtonCoordinator).isVisible();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateButtonVisibility(); });
-        padding = mToolbar.findViewById(R.id.optional_toolbar_button).getPaddingStart();
+        padding = mToolbar.findViewById(R.id.optional_toolbar_button_container).getPaddingStart();
         int expectedPadding = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                 R.dimen.toolbar_phone_optional_button_padding);
         assertEquals(
@@ -157,15 +173,17 @@ public class ToolbarPhoneTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Has to be created on the main thread.
+            // clang-format off
             MenuButtonCoordinator realMenuButtonCoordinator = new MenuButtonCoordinator(
                     new OneshotSupplierImpl<AppMenuCoordinator>(),
                     new TestControlsVisibilityDelegate(),
                     mActivityTestRule.getActivity().getWindowAndroid(), mFocusFunction,
-                    mRequestRenderRunnable, true,
-                    () -> false, mThemeColorProvider, org.chromium.chrome.R.id.menu_button_wrapper);
+                    mRequestRenderRunnable, true, () -> false, mThemeColorProvider,
+                    () -> null, () -> {}, org.chromium.chrome.R.id.menu_button_wrapper);
+            // clang-format on
             mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
-            mToolbar.updateOptionalButton(
-                    new ButtonDataImpl(false, drawable, null, R.string.share, false, null, false));
+            mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null, R.string.share,
+                    false, null, false, AdaptiveToolbarButtonVariant.UNKNOWN));
             // Make sure the button is visible in the beginning of the test.
             assertEquals(realMenuButtonCoordinator.isVisible(), true);
 
@@ -193,6 +211,112 @@ public class ToolbarPhoneTest {
             Assert.assertNotEquals("Offset should be different when menu button is invisible",
                     offsetWhenButtonInvisible, offsetWhenParentVisible);
         });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:modernize_visual_update_active_color_on_omnibox/true"})
+    public void
+    testToolbarColorSameAsSuggestionColorWhenFocus_activeColorOmnibox() {
+        LocationBarCoordinator locationBarCoordinator =
+                (LocationBarCoordinator) mToolbar.getLocationBar();
+        ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
+        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
+        int nonFocusedRadius = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
+                R.dimen.modern_toolbar_background_corner_radius);
+        int focusedRadius = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_bg_round_corner_radius);
+
+        // Focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().requestFocus();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(toolbarBackgroundDrawable.getColor(),
+                    Matchers.is(locationBarCoordinator.getDropdownBackgroundColor(
+                            false /*isIncognito*/)));
+        });
+        verify(mLocationbarBackgroundDrawable)
+                .setTint(
+                        locationBarCoordinator.getSuggestionBackgroundColor(false /*isIncognito*/));
+        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(focusedRadius);
+
+        // Clear focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(toolbarBackgroundDrawable.getColor(),
+                    Matchers.not(locationBarCoordinator.getDropdownBackgroundColor(
+                            false /*isIncognito*/)));
+        });
+        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
+        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(nonFocusedRadius);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:modernize_visual_update_active_color_on_omnibox/false"})
+    public void
+    testToolbarColorSameAsSuggestionColorWhenFocus_noActiveColorOmnibox() {
+        LocationBarCoordinator locationBarCoordinator =
+                (LocationBarCoordinator) mToolbar.getLocationBar();
+        ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
+        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
+
+        // Focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().requestFocus();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(toolbarBackgroundDrawable.getColor(),
+                    Matchers.is(locationBarCoordinator.getDropdownBackgroundColor(
+                            false /*isIncognito*/)));
+        });
+        verify(mLocationbarBackgroundDrawable)
+                .setTint(locationBarCoordinator.getDropdownBackgroundColor(false /*isIncognito*/));
+        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
+
+        // Clear focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(toolbarBackgroundDrawable.getColor(),
+                    Matchers.not(locationBarCoordinator.getDropdownBackgroundColor(
+                            false /*isIncognito*/)));
+        });
+        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
+        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    public void testLocationBarCornerShouldNeverUpdatedWithoutExperiment() {
+        LocationBarCoordinator locationBarCoordinator =
+                (LocationBarCoordinator) mToolbar.getLocationBar();
+        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
+
+        // Focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().requestFocus();
+        });
+        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
+
+        // Clear focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
+        });
+        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
     }
 
     private static class TestControlsVisibilityDelegate

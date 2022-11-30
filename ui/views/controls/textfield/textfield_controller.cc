@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/controls/textfield/textfield_controller.h"
 
+#include "base/callback_helpers.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/event.h"
 
@@ -26,8 +27,13 @@ bool TextfieldController::HandleGestureEvent(
 }
 
 ui::mojom::DragOperation TextfieldController::OnDrop(
-    const ui::OSExchangeData& data) {
+    const ui::DropTargetEvent& event) {
   return ui::mojom::DragOperation::kNone;
+}
+
+views::View::DropCallback TextfieldController::CreateDropCallback(
+    const ui::DropTargetEvent& event) {
+  return base::NullCallback();
 }
 
 }  // namespace views

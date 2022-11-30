@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/optional.h"
 #include "chrome/browser/video_tutorials/tutorial.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::android::ScopedJavaLocalRef;
 
@@ -25,7 +25,7 @@ class TutorialConversionBridge {
 
   static ScopedJavaLocalRef<jobject> CreateJavaTutorial(
       JNIEnv* env,
-      base::Optional<Tutorial> tutorial);
+      absl::optional<Tutorial> tutorial);
 };
 
 }  // namespace video_tutorials

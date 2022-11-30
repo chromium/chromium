@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module arc.mojom;
+
+enum CameraIntentMode {
+  PHOTO,
+  VIDEO,
+};
+
+// The status of camera intent handling process. Details are as following:
+//
+// FINISH: Camera intent is finished and the intent helper should save the
+//     data and notify the caller that the intent is handled
+//     successfully.
+// CANCEL: Camera intent is aborted and the intent helper should withdraw all
+//     the data it saved and notify the caller that the intent is canceled.
+// APPEND_DATA: Camera intent is sending data and not finished yet. The intent
+//     helper should save the data accordingly.
+// CLEAR_DATA: Camera intent discards all the data it already saved and might
+//     send new data to save later.
+enum CameraIntentAction {
+  FINISH,
+  CANCEL,
+  APPEND_DATA,
+  CLEAR_DATA,
+};

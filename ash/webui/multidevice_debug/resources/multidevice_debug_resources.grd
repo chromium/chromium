@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/ash_multidevice_debug_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/ash_multidevice_debug_resources_map.cc"
+      type="resource_file_map_source" />
+    <output filename="grit/ash_multidevice_debug_resources_map.h"
+      type="resource_map_header" />
+    <output filename="ash_multidevice_debug_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <!-- Resources for ProximityAuth debug page. -->
+      <include name="IDR_MULTIDEVICE_DEBUG_INDEX_HTML" file="index.html" type="BINDATA" />
+      <include name="IDR_MULTIDEVICE_DEBUG_COMMON_CSS" file="common.css" type="BINDATA" />
+      <include name="IDR_MULTIDEVICE_DEBUG_LOGS_JS" file="logs.js" type="BINDATA" />
+      <include name="IDR_MULTIDEVICE_DEBUG_WEBUI_JS" file="webui.js" type="BINDATA" />
+      <include name="IDR_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_HTML" file="proximity_auth.html" type="BINDATA" />
+      <include name="IDR_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_CSS" file="proximity_auth.css" type="BINDATA" />
+      <include name="IDR_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_JS" file="proximity_auth.js" type="BINDATA" />
+    </includes>
+  </release>
+</grit>

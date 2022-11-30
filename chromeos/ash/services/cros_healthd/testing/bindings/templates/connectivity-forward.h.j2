@@ -1,0 +1,58 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_CONNECTIVITY_FORWARD_H_"|format(
+        module.path|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+{%- macro namespace_begin() %}
+{%-   for namespace in namespaces_as_array %}
+namespace {{namespace}} {
+{%-   endfor %}
+{%- endmacro %}
+
+{%- macro namespace_end() %}
+{%-   for namespace in namespaces_as_array|reverse %}
+}  // namespace {{namespace}}
+{%-   endfor %}
+{%- endmacro %}
+
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+// This header is for internal use. Don't include it directly. Insteadly,
+// include:
+//   {{module.path}}-connectivity.h
+
+{{namespace_begin()}}
+
+{%- for interface in module.interfaces %}
+class {{interface.mojom_name}}TestProvider;
+class {{interface.mojom_name}}TestConsumer;
+{%-   for enum in interface.enums %}
+class {{interface.mojom_name}}_{{enum.mojom_name}}DataGenerator;
+{%-   endfor %}
+{%- endfor %}
+
+{%-  for struct in module.structs %}
+class {{struct.mojom_name}}DataGenerator;
+class {{struct.mojom_name}}NullableDataGenerator;
+{%-   for enum in struct.enums %}
+class {{struct.mojom_name}}_{{enum.mojom_name}}DataGenerator;
+{%-   endfor %}
+{%-  endfor %}
+
+{%-  for union in module.unions %}
+class {{union.mojom_name}}DataGenerator;
+class {{union.mojom_name}}NullableDataGenerator;
+{%-  endfor %}
+
+{%-  for enum in module.enums %}
+class {{enum.mojom_name}}DataGenerator;
+{%-  endfor %}
+
+{{namespace_end()}}
+
+#endif  // {{header_guard}}

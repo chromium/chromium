@@ -1,16 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/cdm_context.h"
@@ -79,7 +79,7 @@ std::unique_ptr<MojoDecoderBufferReader> MojoDecoderBufferReader::Create(
   // `ReadDecoderBuffer()` below will fail.
   // TODO(xhwang): Update callers to handle failure so we can return null.
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  ignore_result(CreateDataPipe(capacity, producer_handle, &consumer_handle));
+  std::ignore = CreateDataPipe(capacity, producer_handle, &consumer_handle);
   return std::make_unique<MojoDecoderBufferReader>(std::move(consumer_handle));
 }
 
@@ -311,7 +311,7 @@ std::unique_ptr<MojoDecoderBufferWriter> MojoDecoderBufferWriter::Create(
   // `WriteDecoderBuffer()` below will fail.
   // TODO(xhwang): Update callers to handle failure so we can return null.
   mojo::ScopedDataPipeProducerHandle producer_handle;
-  ignore_result(CreateDataPipe(capacity, &producer_handle, consumer_handle));
+  std::ignore = CreateDataPipe(capacity, &producer_handle, consumer_handle);
   return std::make_unique<MojoDecoderBufferWriter>(std::move(producer_handle));
 }
 

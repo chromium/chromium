@@ -1,0 +1,1112 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Storage histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="API.StorageAccess.AllowedRequests" enum="StorageAccessResult"
+    expires_after="2020-11-27">
+  <obsolete>
+    Removed 2021/09.
+  </obsolete>
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records if various requests to access storage are allowed or not and if the
+    Storage Access API unblocked the request or not. Recorded whenever a
+    decision to access storage like getting/setting cookies or opening an
+    indexeddb connection is made in CookieSettings.
+
+    This histogram erroneously recorded ALLOW when cookies were globally
+    blocked.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.AllowedRequests2" enum="StorageAccessResult"
+    expires_after="2023-03-12">
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records if various requests to access storage are allowed or not and if the
+    Storage Access API unblocked the request or not. Recorded whenever a
+    decision to access storage like getting/setting cookies or opening an
+    indexeddb connection is made in CookieSettings.
+
+    Warning: this histogram was expired from 2022-03-27 to 08-12-2022; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.GrantIsImplicit" enum="BooleanAvailable"
+    expires_after="2023-03-12">
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records if a generated grant was implicit or explicit at the time it was
+    created.
+
+    Warning: this histogram was expired from 2020-11-27 to 08-12-2022; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.RequestOutcome"
+    enum="StorageAccessAPIRequestOutcome" expires_after="2023-08-31">
+  <owner>cfredric@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records the outcome of a particular Storage Access API permission request.
+
+    Recorded at the time of the request, for every request.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.RequestStorageAccess"
+    enum="RequestStorageResult" expires_after="2023-03-12">
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records requests to use document.requestStorageAccess and reasons the
+    request may be approved or rejected.
+
+    Warning: this histogram was expired from 2020-11-27 to 08-12-2022; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.RequestStorageAccessForOrigin"
+    enum="RequestStorageResult" expires_after="2023-03-12">
+  <owner>cfredric@chromium.org</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records invocations of document.requestStorageAccessForOrigin and reasons
+    the request was approved or rejected. Recorded for every call to the
+    function, regardless of outcome. Note that
+    API.StorageAccess.RequestStorageAccess is similar, but for the other variant
+    of this API.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.ExtensionContentScriptReadHasUserActivation"
+    units="proportion" expires_after="2021-08-09">
+  <obsolete>
+    Removed February 2021 as enough data was collected.
+  </obsolete>
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/clipboard/OWNERS</owner>
+  <summary>
+    For calls to document.execCommand('paste') by extensions via content
+    scripts, record the proportion of calls with user activation.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.Read" enum="ClipboardFormatRead"
+    expires_after="2023-02-12">
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Counts how often each Clipboard format is read by the platform clipboard.
+    These reads generally imply that an application requested this format after
+    checking that the format is available, but there are some cases where Chrome
+    reads a format to check for existence (outside the
+    ui::Clipboard::ReadAvailableTypes() function). Please prefer interpreting
+    these numbers as relative use changes, as opposed to absolute user usage.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.RegisterClipboardFormatFailure" units="count"
+    expires_after="2021-01-01">
+  <obsolete>
+    Removed July 2021 as enough data was collected.
+  </obsolete>
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Counts how often the Windows clipboard fails to register a format. Recorded
+    when RegisterClipbaordFormat fails (returns 0). Failure rates will inform
+    whether we implement error handling. https://crbug.com/1000919
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.TimeIntervalBetweenCommitAndRead" units="ms"
+    expires_after="2023-02-12">
+  <owner>dcheng@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Records the time interval between when clipboard data was committed to the
+    clipboard and the same clipboard data was read from the clipboard. The same
+    clipboard data may be read multiple times. Emitted at the moment the
+    clipboard data was read. Currently only implemented for Chrome OS' in-memory
+    clipboard (`ui::ClipboardNonBacked`).
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
+    expires_after="2023-02-12">
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Counts how often each Clipboard format is written by the platform clipboard.
+    These writes all imply that an application had this format available, and
+    therefore wrote this format.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.X11StoreCopyPasteDuration" units="ms"
+    expires_after="M95">
+  <owner>dcheng@chromium.org</owner>
+  <owner>pkotwicz@chromium.org</owner>
+  <summary>
+    The length of time that it takes to transfer ownership of Chrome's CLIPBOARD
+    selection to the clipboard manager when Chrome exits.
+  </summary>
+</histogram>
+
+<histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
+    expires_after="2022-12-04">
+  <owner>cmumford@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Tracks the success rate of deleting an unused leveldb table backup file.
+  </summary>
+</histogram>
+
+<histogram name="LevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>Methods where leveldb's Chromium environment has IO errors.</summary>
+</histogram>
+
+<histogram name="LevelDBEnv.MissingFiles" units="files"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Number of backup files found without corresponding ldb files. As measured by
+    GetChildren when used in LevelDB clients other than IndexedDB.
+  </summary>
+</histogram>
+
+<histogram name="LevelDBWrapper.CommitDelay" units="ms"
+    expires_after="2022-12-04">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Delay between the browser process receiving changes and those changes being
+    written to the DB.
+  </summary>
+</histogram>
+
+<histogram name="MojoLevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Methods where leveldb's Mojo environment has IO errors. This histogram has
+    expired between M87-106.
+  </summary>
+</histogram>
+
+<histogram name="NativeFileSystemAPI.FileChooserResult.{Type}" units="units"
+    expires_after="2023-05-01">
+  <owner>asully@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The number of files a user picked using the file picker in the File System
+    Access API. Recorded as 0 if the user cancelled the picker.
+  </summary>
+  <token key="Type">
+    <variant name="OpenDirectory" summary=""/>
+    <variant name="OpenFile" summary=""/>
+    <variant name="OpenMultipleFiles" summary=""/>
+    <variant name="SaveFile" summary=""/>
+  </token>
+</histogram>
+
+<histogram name="Sqlite.RecoveryStep" enum="SqliteErrorCode"
+    expires_after="M77">
+  <owner>costan@google.com</owner>
+  <summary>Error from sqlite3_backup_step() in sql::Recovery.</summary>
+</histogram>
+
+<histogram name="Storage.BlacklistedImportantSites.Reason"
+    enum="ClearDataSiteBlacklistCrossedReason" expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This is recorded for every site that the user blocklists when they when they
+    clear browsing data. It indicates which signals were used to show the given
+    site to the user that the user then chose to exclude from clearing. This
+    histogram has expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.DataURLWorkerRegister" enum="Boolean"
+    expires_after="M106">
+  <owner>awillia@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <summary>
+    Recorded when the PublicURLManager::Register method is called from a worker
+    execution context (excluding service worker contexts). The value indicates
+    if the worker was created from a data URL.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.DataURLWorkerResolveAsURLLoaderFactory"
+    enum="Boolean" expires_after="M106">
+  <owner>awillia@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <summary>
+    Recorded when the PublicURLManager::Resolve URLLoaderFactory method is
+    called from a worker execution context (excluding service worker contexts).
+    The value indicates if the worker was created from a data URL.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.DataURLWorkerResolveForNavigation" enum="Boolean"
+    expires_after="M106">
+  <owner>awillia@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <summary>
+    Recorded when the PublicURLManager::Resolve method for navigations is called
+    from a worker execution context (excluding service worker contexts). The
+    value indicates if the worker was created from a data URL.
+  </summary>
+</histogram>
+
+<histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
+    units="ms" expires_after="2023-01-01">
+  <owner>asully@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Age of a persisted permission when attempting to auto-grant via this
+    permission.
+  </summary>
+  <token key="Type">
+    <variant name="NonPWA" summary="Origins which are not installed PWAs"/>
+    <variant name="PWA" summary="Origins with installed PWAs"/>
+  </token>
+</histogram>
+
+<histogram name="Storage.FileSystemAccess.PersistedPermissions.Count"
+    units="paths" expires_after="2023-01-01">
+  <owner>asully@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Number of paths with permissions being persisted via the File System Access
+    API. This is recorded shortly after instantiation of a new
+    ChromeFileSystemAccessPermissionContext, as well as sampled periodically via
+    a RepeatingTimer every 3 hours. See
+    ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() and
+    its call sites for details.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.FileSystemAccess.PersistedPermissions.SweepTime.{Type}"
+    units="ms" expires_after="2023-01-01">
+  <owner>asully@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Time taken to sweep persisted permissions to automatically renew permissions
+    with active grants or revoke permissions which have expired.
+  </summary>
+  <token key="Type">
+    <variant name="All" summary="Update all persisted permissions"/>
+    <variant name="Origin" summary="Update one origin's persisted permissions"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
+    enum="FileSystemAccessPermissionRequestOutcome" expires_after="2023-05-01">
+  <owner>asully@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The result of an attempt to request permission to a file or directory via
+    the File System Access API.
+  </summary>
+  <token key="OpType">
+    <variant name="Read" summary="Read permission requested"/>
+    <variant name="Write" summary="Write permission requested"/>
+  </token>
+  <token key="EntryType">
+    <variant name="Directory" summary="Requested permission to a directory"/>
+    <variant name="File" summary="Requested permission to a file"/>
+  </token>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDChosenReason"
+    enum="ImportantSitesReason" expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    When a user chooses to blocklist one or more sites when they clear browsing
+    data, this is recorded for every reason each chosen site was marked as
+    important. It indicates which signals were used to show the given site to
+    the user that the user then chose to exclude from clearing. This histogram
+    has expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDChosenReasonCount" units="count"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This records the number of reasons each important site had that the user
+    chose to blocklist when clearing browsing data. This histogram has expired
+    between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDIgnoredReason"
+    enum="ImportantSitesReason" expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    When a user chooses to blocklist one or more sites when they clear browsing
+    data, this is recorded for every reason each unchosen site was marked as
+    important. It indicates which signals were used to show the given site to
+    the user, which the user then ignored and did not select to blocklist from
+    clearing data. This histogram has expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.CBDIgnoredReasonCount" units="count"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This records the number of reasons each important site had that the user
+    chose to NOT blocklist when clearing browsing data. This histogram has
+    expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.GeneratedReason"
+    enum="ImportantSitesReason" expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Recorded when we generate a list of important sites. This can happen when
+    the user opens the Clear Browsing Data dialog on Android, views the Storage
+    tab in Site Settings on Android, or launches 'Manage Storage' from Android
+    System Settings for Chrome. We record every reason each site was chosen in
+    this metric. This means that we can report this metric multiple times for a
+    single site. This histogram has expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.GeneratedReasonCount" units="count"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    This records the number of reasons qualifying a site for being 'important'.
+    We record this for every site when we generate a list of important sites,
+    described in &quot;Storage.ImportantSites.GeneratedReason&quot;. This
+    histogram has expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.ImportantSites.GenerationTime" units="ms"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The time it takes to generate the list of 'important' sites. This list is
+    generated when the user enters the 'Clear Browsing Dialog' or the 'Manage
+    Space' screens for Chrome, both of which are on Android. This histogram has
+    expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.IndexedDB.PutBlobSizeKB" units="KB"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the size of a blob used in an IndexedDB add/put operation. Recorded
+    for every put operation that contains a blob. This histogram has expired
+    between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.IndexedDB.PutValidBlob" enum="Boolean"
+    expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records if a blob intended to be used in an IndexedDB add/put operation is a
+    valid blob. Recorded for every put operation that contains a blob. This
+    histogram has expired between M95-M106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.DBErrors" units="count"
+    expires_after="2023-03-19">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of database errors that occur when accessing interest
+    group storage.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.DBMaintenanceTime" units="microseconds"
+    expires_after="2023-02-26">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the time spent performing database maintenance on the interest group
+    storage. Recorded when maintenance is run (approximately once an hour).
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.DBSize" units="KB"
+    expires_after="2023-02-26">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the size of the InterestGroup database. Collected prior to database
+    maintenance.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.PerSiteCount" units="groups"
+    expires_after="2023-02-26">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of interest groups loaded for a single group owner when
+    running an ad auction. Recorded for each owner involved in a running ad
+    auction.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SessionStorage.RendererAreaCacheHit"
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2023-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The renderer side cache hit rate metrics for new HTML5 SessionStorage DB
+    opened. This histogram has expired between M97-106.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.AsyncIterator.EntriesQueuedCount"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Count of database entries queued to be sent to the async iterator. Recorded
+    in `SharedStorageIterator::DidReadEntries()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks"
+    units="BenchmarksMet" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each of a set of benchmark percentages, we record that benchmark when
+    the async iterator first iterates through at least that percentage of queued
+    entries. Recorded in `SharedStorageIterator::NextHelper()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.AsyncIterator.ReceivedEntriesBenchmarks"
+    units="BenchmarksMet" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each of a set of benchmark percentages, we record that benchmark when
+    the async iterator first receives from the database at least that percentage
+    of queued entries. Recorded in `SharedStorageIterator::DidReadEntries()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.Destruction"
+    units="BooleanDestroyed" expires_after="2023-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether destruction was successful after a catastrophic error that occurred
+    in Shared Storage. Recorded by
+    SharedStorageDatabase::DatabaseErrorCallback() just after the SQLite
+    database called RazeAndClose() and then, if it was file-backed,
+    SharedStorageDatabase attempted to delete the file.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.Error" enum="SqliteErrorCode"
+    expires_after="2023-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Errors that occur in Shared Storage. Recorded by
+    SharedStorageDatabase::DatabaseErrorCallback() just before the SQLite
+    database determines whether the error is catastrophic and handles it
+    accordingly.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.FileSize.GB"
+    units="GB" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The size in gigabytes of the SQL database file backing
+    `SharedStorageDatabase`. Measured only for file-backed databases of size at
+    least one gigabyte. Recorded in `SharedStorageDatabase::InitImpl()` via
+    `LogInitHistograms()` when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.FileSize.KB"
+    units="KB" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The size in kilobytes of the SQL database file backing
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Max"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Maximum origin length, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Median"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Median origin length, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Min"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Minimum origin length, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q1"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Lower quartile of the origin lengths, as listed in the `per_origin_mapping`
+    of `SharedStorageDatabase` (calculated through Method 1 from
+    https://en.wikipedia.org/wiki/Quartile). Measured for file-backed databases
+    only. Recorded in `SharedStorageDatabase::InitImpl()` via
+    `LogInitHistograms()` when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q3"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Upper quartile of the origin lengths, as listed in the `per_origin_mapping`
+    of `SharedStorageDatabase` (calculated through Method 1 from
+    https://en.wikipedia.org/wiki/Quartile). Measured for file-backed databases
+    only. Recorded in `SharedStorageDatabase::InitImpl()` via
+    `LogInitHistograms()` when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.NumEntries.Total"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The total count of entries in the `values_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.NumOrigins"
+    units="Origins" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Number of origins in the `per_origin_mapping` of `SharedStorageDatabase`.
+    Measured for file-backed databases only. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.IsFileBacked"
+    units="BooleanIsFileBacked" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not the database is file-backed. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.AddModule" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `blink::SharedStorageWorklet::AddModule()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in the lambda function callback for
+    `blink::SharedStorageWorklet::AddModule()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Append" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Append()`
+    to when the callback has successfully completed. Does not measure the timing
+    of calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Clear" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Clear()`
+    to when the callback has successfully completed. Does not measure the timing
+    of calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Delete" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Delete()`
+    to when the callback has successfully completed. Does not measure the timing
+    of calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Run" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Run()` to
+    when the callback has successfully completed. Does not measure the timing of
+    calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from when the end of the call to
+    `SharedStorageWorkletHost::RunOperationOnWorklet()` to the end of
+    `SharedStorageWorkletHost::OnRunOperationOnWorkletFinished()`. Recorded in
+    `SharedStorageWorkletHost::OnRunOperationOnWorkletFinished()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.SelectURL" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `blink::SharedStorage::SelectURL()` to when the callback has successfully
+    completed. Does not measure the timing of calls that end in an error.
+    Recorded in the lambda function callback for
+    `blink::SharedStorage::SelectURL()`.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from when the mojo callback runs in
+    `SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet()` to the end
+    of
+    `SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished()`.
+    Only measured for calls where the mojo callback has run with a parameter
+    `success` equal to true. Recorded in
+    `SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Set" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Set()` to
+    when the callback has successfully completed. Does not measure the timing of
+    calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.OnShutdown.NumSqlErrors" units="Errors"
+    expires_after="2023-04-09">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Count of SQL errors that have occurred in Shared Storage. Recorded by
+    SharedStorageManager::RecordShutdownMetrics() when the StoragePartitionImpl
+    is destroyed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted"
+    units="BooleanRecoveryAttempted" expires_after="2023-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not the SharedStorageManager tried to recover from
+    SharedStorageDatabase::InitStatus::kInitFailure. Recorded by
+    SharedStorageManager::RecordShutdownMetrics() when the StoragePartitionImpl
+    is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.OnShutdown.RecoveryOnDiskAttempted"
+    units="BooleanRecoveryOnDiskAttempted" expires_after="2023-04-09">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not the SharedStorageManager tried to recover from
+    SharedStorageDatabase::InitStatus::kInitFailure on disk. Recorded by
+    SharedStorageManager::RecordShutdownMetrics() when the StoragePartitionImpl
+    is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.DestroyedStatus"
+    enum="SharedStorageWorkletDestroyedStatus" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not the worklet entered keep-alive phase before destruction, and
+    if it did enter keep-alive, whether the keep-alive was terminated by
+    operations finishing or due to timeout. Recorded in the destructor of
+    `SharedStorageWokletHost`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Error.Type"
+    enum="SharedStorageWorkletErrorType" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Type of error encountered by the SharedStorageWorklet in either
+    `addModule()`, `run()`, or `selectURL()`. Recorded after an exception is
+    thrown, after a callback is run with `/*success=*/false`, after a call to
+    `ReportBadMessage()`, and/or just before the rejected promise is returned,
+    via the utility method `LogWorkletError()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.NumPerPage"
+    units="WorkletsCreated" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the number of `SharedStorageWorkletHost`'s created by a given page.
+    Recorded in
+    `SharedStoragePageLoadMetricsObserver::RecordSessionEndHistogram()` when
+    metrics are flushed due to the pageload completing or the app entering the
+    background.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Append" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Append()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Clear" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Clear()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Delete" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Delete()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Entries.Next" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from the start of the call to
+    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
+    promise is returned, for the iterator in `Mode::kKeyValue`. Includes only
+    calls where `has_error_` is false. Recorded in
+    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `LogElapsedTime()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Get" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Get()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnStringRetrievalOperationFinished()`.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Worklet.Timing.KeepAliveEndedDueToOperationsFinished.KeepAliveDuration"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from entering keep alive until the start of the call to
+    `FinishKeepAlive()` for keep-alives that are terminated when operations end
+    (i.e. excludes worklets whose keep-alives are terminated via timeout).
+    Recorded in `SharedStorageWokletHost::FinishKeepAlive()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Keys.Next" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from the start of the call to
+    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
+    promise is returned, for the iterator in `Mode::kKey`. Includes only calls
+    where `has_error_` is false. Recorded in
+    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `LogElapsedTime()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Length" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Length()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnLengthOperationFinished()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.RemainingBudget"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::RemainingBudget()` to when the
+    callback has successfully completed. Does not measure the timing of calls
+    that end in an error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Set" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Set()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration"
+    units="%" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the percentage of the time duration between a
+    `SharedStorageWorkletHost`'s creation and destruction that occurs before the
+    time of its last finished operation. For worklets that are destroyed before
+    completing their outstanding operations, we record 100. Recorded in the
+    destructor of `SharedStorageWorkletHost`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.StoragePressure.Bubble"
+    enum="StoragePressureBubbleUserAction" expires_after="2023-03-09">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    How did the user interact with the StoragePressure Bubble? Ignored means the
+    user did not click on the positive button before the bubble is closed
+    (either manually closed or when the browser closes).
+  </summary>
+</histogram>
+
+<histogram name="websql.OpenDatabase" enum="BooleanSecure"
+    expires_after="never">
+<!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
+
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Counts the number of WebSQL databases opened for secure vs insecure origins.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

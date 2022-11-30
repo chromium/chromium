@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,47 +9,22 @@
 
 namespace signin {
 
-// Features to trigger the startup sign-in promo at boot.
-extern const base::Feature kForceStartupSigninPromo;
-
-// This feature simplify sign-out UI in the account table view.
-extern const base::Feature kSimplifySignOutIOS;
-
 // Returns true if the startup sign-in promo should be displayed at boot.
 bool ForceStartupSigninPromo();
-
-// Feature controlling whether to restore GAIA cookies if they are deleted.
-extern const base::Feature kRestoreGaiaCookiesIfDeleted;
-
-// Feature controlling whether to restore GAIA cookies when the user explicitly
-// requests to sign in to a Google service.
-extern const base::Feature kRestoreGaiaCookiesOnUserAction;
 
 // Name of multi-value switch that controls the delay (in minutes) for polling
 // for the existence of Gaia cookies for google.com.
 extern const char kDelayThresholdMinutesToUpdateGaiaCookie[];
 
-// Feature controlling whether to use full username in sign-in notifications.
-extern const base::Feature kSigninNotificationInfobarUsernameInTitle;
+// Name of multi-value switch that controls the max time (in seconds) for
+// waiting for a response from the Account Capabilities API.
+extern const char kWaitThresholdMillisecondsForCapabilitiesApi[];
 
-// This feature disable SSO editing.
-extern const base::Feature kDisableSSOEditing;
+// Feature to enable FRE MICe.
+BASE_DECLARE_FEATURE(kNewMobileIdentityConsistencyFRE);
 
-// Returns true if SSO editing is enabled.
-bool IsSSOEditingEnabled();
-
-// This feature enable account creation in a Chrome tab.
-// This flag is unused if kSSODisableAccountCreation is set to true.
-extern const base::Feature kSSOAccountCreationInChromeTab;
-
-// Returns true if the account creation should be done in a Chrome tab.
-bool IsSSOAccountCreationInChromeTabEnabled();
-
-// This feature enable account creation.
-extern const base::Feature kSSODisableAccountCreation;
-
-// Returns true if the account creation is enabled.
-bool IsSSOAccountCreationEnabled();
+// Feature to enable Unicorn account sign-in for iOS.
+BASE_DECLARE_FEATURE(kEnableUnicornAccountSupport);
 
 }  // namespace signin
 

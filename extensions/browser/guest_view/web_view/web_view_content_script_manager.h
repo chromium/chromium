@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct HostID;
 
@@ -34,6 +34,11 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
  public:
   explicit WebViewContentScriptManager(
       content::BrowserContext* browser_context);
+
+  WebViewContentScriptManager(const WebViewContentScriptManager&) = delete;
+  WebViewContentScriptManager& operator=(const WebViewContentScriptManager&) =
+      delete;
+
   ~WebViewContentScriptManager() override;
 
   static WebViewContentScriptManager* Get(
@@ -74,14 +79,16 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
 
  private:
   using GuestMapKey = std::pair<int, int>;
-  using ContentScriptMap = std::map<std::string, UserScriptIDPair>;
+
+  // Maps a content script's name to its id.
+  using ContentScriptMap = std::map<std::string, std::string>;
   using GuestContentScriptMap = std::map<GuestMapKey, ContentScriptMap>;
 
   // Invoked when scripts are updated from any kind of operation or when a
   // UserScriptLoader is about to be destroyed. This may be called multiple
   // times per script load.
   void OnScriptsUpdated(UserScriptLoader* loader,
-                        const base::Optional<std::string>& error);
+                        const absl::optional<std::string>& error);
 
   // If there are no pending script loads, we will run all the remaining
   // callbacks in |pending_scripts_loading_callbacks_|.
@@ -102,11 +109,9 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
   // Caches callbacks and resumes them when all the scripts are loaded.
   std::vector<base::OnceClosure> pending_scripts_loading_callbacks_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   base::WeakPtrFactory<WebViewContentScriptManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewContentScriptManager);
 };
 
 }  // namespace extensions

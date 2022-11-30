@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,13 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
 using jingle_xmpp::QName;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 JingleSessionManager::JingleSessionManager(SignalStrategy* signal_strategy)
     : signal_strategy_(signal_strategy),
@@ -70,8 +69,8 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
 
   std::unique_ptr<jingle_xmpp::XmlElement> stanza_copy(new jingle_xmpp::XmlElement(*stanza));
   std::unique_ptr<JingleMessage> message(new JingleMessage());
-  std::string error;
-  if (!message->ParseXml(stanza, &error)) {
+  std::string error_msg;
+  if (!message->ParseXml(stanza, &error_msg)) {
     SendReply(std::move(stanza_copy), JingleMessageReply::BAD_REQUEST);
     return true;
   }
@@ -87,7 +86,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
             signal_strategy_->GetLocalAddress().id(), message->from.id());
 
     JingleSession* session = new JingleSession(this);
-    session->InitializeIncomingConnection(stanza->Attr(jingle_xmpp::QN_ID), *message,
+    session->InitializeIncomingConnection(stanza->Attr(kQNameId), *message,
                                           std::move(authenticator));
     sessions_[session->session_id_] = session;
 
@@ -135,7 +134,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
   }
 
   it->second->OnIncomingMessage(
-      stanza->Attr(jingle_xmpp::QN_ID), std::move(message),
+      stanza->Attr(kQNameId), std::move(message),
       base::BindOnce(&JingleSessionManager::SendReply, base::Unretained(this),
                      std::move(stanza_copy)));
   return true;
@@ -152,5 +151,4 @@ void JingleSessionManager::SessionDestroyed(JingleSession* session) {
   sessions_.erase(session->session_id_);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

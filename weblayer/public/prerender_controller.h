@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef WEBLAYER_PUBLIC_PRERENDER_CONTROLLER_H_
 #define WEBLAYER_PUBLIC_PRERENDER_CONTROLLER_H_
-
-#include <string>
 
 class GURL;
 
@@ -21,6 +19,7 @@ namespace weblayer {
 class PrerenderController {
  public:
   virtual void Prerender(const GURL& url) = 0;
+  virtual void DestroyAllContents() = 0;
 
  protected:
   virtual ~PrerenderController() = default;

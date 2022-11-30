@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 
 namespace autofill {
 
-CardUnmaskDelegate::UserProvidedUnmaskDetails::UserProvidedUnmaskDetails()
-    : should_store_pan(false) {}
+CardUnmaskDelegate::UserProvidedUnmaskDetails::UserProvidedUnmaskDetails() =
+    default;
 
 CardUnmaskDelegate::UserProvidedUnmaskDetails::UserProvidedUnmaskDetails(
     const UserProvidedUnmaskDetails& other) = default;
 
-CardUnmaskDelegate::UserProvidedUnmaskDetails::~UserProvidedUnmaskDetails() {}
+CardUnmaskDelegate::UserProvidedUnmaskDetails::~UserProvidedUnmaskDetails() =
+    default;
 
 }  // namespace autofill

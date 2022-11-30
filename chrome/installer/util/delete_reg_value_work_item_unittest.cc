@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/work_item.h"
@@ -24,6 +23,11 @@ const wchar_t kNameStr[] = L"name_str";
 const wchar_t kNameDword[] = L"name_dword";
 
 class DeleteRegValueWorkItemTest : public testing::Test {
+ public:
+  DeleteRegValueWorkItemTest(const DeleteRegValueWorkItemTest&) = delete;
+  DeleteRegValueWorkItemTest& operator=(const DeleteRegValueWorkItemTest&) =
+      delete;
+
  protected:
   DeleteRegValueWorkItemTest() {}
 
@@ -34,8 +38,6 @@ class DeleteRegValueWorkItemTest : public testing::Test {
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteRegValueWorkItemTest);
 };
 
 }  // namespace

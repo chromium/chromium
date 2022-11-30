@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_VIDEO_DEVICE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_VIDEO_DEVICE_H_
 
-#include "base/optional.h"
 #include "media/capture/video_capture_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -15,15 +15,9 @@
 
 namespace blink {
 class MediaConstraints;
-class WebString;
 }  // namespace blink
 
 namespace blink {
-
-// Calculates and returns videoKind value for |format|.
-// See https://w3c.github.io/mediacapture-depth.
-MODULES_EXPORT WebString
-GetVideoKindForFormat(const media::VideoCaptureFormat& format);
 
 MODULES_EXPORT MediaStreamTrackPlatform::FacingMode ToPlatformFacingMode(
     mojom::blink::FacingMode video_facing);
@@ -61,7 +55,7 @@ struct MODULES_EXPORT VideoDeviceCaptureCapabilities {
   // VideoInputDeviceCapabilitiesPtr type once dependent types are migrated to
   // Blink.
   Vector<VideoInputDeviceCapabilities> device_capabilities;
-  Vector<base::Optional<bool>> noise_reduction_capabilities;
+  Vector<absl::optional<bool>> noise_reduction_capabilities;
 };
 
 // This function performs source, source-settings and track-settings selection

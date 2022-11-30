@@ -88,6 +88,30 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   virtual bool IsActivatedSubmit() const { return false; }
   virtual void SetActivatedSubmit(bool) {}
 
+  struct PopupTargetElement final {
+   public:
+    DISALLOW_NEW();
+    WeakMember<Element> element;
+    PopupTriggerAction action;
+    QualifiedName attribute_name;
+    void Trace(Visitor* visitor) const { visitor->Trace(element); }
+  };
+
+  enum class PopupTriggerSupport {
+    kNone,
+    kSupported,
+  };
+
+  // Retrieves the element pointed to by 'popuptoggletarget', 'popupshowtarget',
+  // and/or 'popuphidetarget' content attributes, if any, and only if this form
+  // control element supports popup triggering.
+  PopupTargetElement popupTargetElement() const;
+  virtual PopupTriggerSupport SupportsPopupTriggering() const {
+    return PopupTriggerSupport::kNone;
+  }
+
+  void DefaultEventHandler(Event&) override;
+
   // Getter and setter for the PII type of the element derived from the autofill
   // field semantic prediction.
   virtual FormElementPiiType GetFormElementPiiType() const {
@@ -107,12 +131,22 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsAutofilled() const {
     return autofill_state_ != WebAutofillState::kNotFilled;
   }
+  bool HighlightAutofilled() const {
+    return autofill_state_ == WebAutofillState::kAutofilled &&
+           !PreventHighlightingOfAutofilledFields();
+  }
   void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
+  void SetPreventHighlightingOfAutofilledFields(bool prevent_highlighting);
+  bool PreventHighlightingOfAutofilledFields() const {
+    return prevent_highlighting_of_autofilled_fields_;
+  }
 
   // The autofill section to which this element belongs (e.g. billing address,
   // shipping address, .. .)
   WebString AutofillSection() const { return autofill_section_; }
   void SetAutofillSection(const WebString&);
+
+  bool IsAutocompleteEmailUrlOrPassword() const;
 
   const AtomicString& autocapitalize() const final;
 
@@ -129,7 +163,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool BlocksFormSubmission() const { return blocks_form_submission_; }
   void SetBlocksFormSubmission(bool value) { blocks_form_submission_ = value; }
 
-  unsigned UniqueRendererFormControlId() const {
+  uint64_t UniqueRendererFormControlId() const {
     return unique_renderer_form_control_id_;
   }
 
@@ -161,10 +195,11 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsValidElement() override;
   bool MatchesValidityPseudoClasses() const override;
 
-  unsigned unique_renderer_form_control_id_;
+  uint64_t unique_renderer_form_control_id_;
 
   WebString autofill_section_;
   enum WebAutofillState autofill_state_;
+  bool prevent_highlighting_of_autofilled_fields_ : 1;
 
   bool blocks_form_submission_ : 1;
 };
@@ -189,4 +224,4 @@ struct DowncastTraits<HTMLFormControlElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_

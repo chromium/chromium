@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,15 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/operation.h"
-#include "device/fido/public_key_credential_user_entity.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 struct AuthenticatorConfig;
 
@@ -34,7 +31,7 @@ struct AuthenticatorConfig;
 class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
     : public FidoAuthenticator {
  public:
-  // IsAvailable runs |callback| with a bool incidating whether the
+  // IsAvailable runs |callback| with a bool indicating whether the
   // authenticator is available, i.e. whether the device has a Secure Enclave
   // and the current binary carries a keychain-access-groups entitlement that
   // matches the one set in |config|.
@@ -46,31 +43,31 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   static std::unique_ptr<TouchIdAuthenticator> Create(
       AuthenticatorConfig config);
 
+  TouchIdAuthenticator(const TouchIdAuthenticator&) = delete;
+  TouchIdAuthenticator& operator=(const TouchIdAuthenticator&) = delete;
+
   ~TouchIdAuthenticator() override;
 
-  bool HasCredentialForGetAssertionRequest(
-      const CtapGetAssertionRequest& request) const;
-
-  std::vector<PublicKeyCredentialUserEntity>
-  GetResidentCredentialUsersForRequest(
-      const CtapGetAssertionRequest& request) const;
-
-  // FidoAuthenticator
+  // FidoAuthenticator:
   void InitializeAuthenticator(base::OnceClosure callback) override;
   void MakeCredential(CtapMakeCredentialRequest request,
+                      MakeCredentialOptions options,
                       MakeCredentialCallback callback) override;
   void GetAssertion(CtapGetAssertionRequest request,
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
   void GetNextAssertion(GetAssertionCallback callback) override;
+  void GetCredentialInformationForRequest(
+      const CtapGetAssertionRequest& request,
+      GetCredentialInformationForRequestCallback callback) override;
   void Cancel() override;
+  Type GetType() const override;
   std::string GetId() const override;
-  const base::Optional<AuthenticatorSupportedOptions>& Options() const override;
-  base::Optional<FidoTransportProtocol> AuthenticatorTransport() const override;
+  const absl::optional<AuthenticatorSupportedOptions>& Options() const override;
+  absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   bool IsInPairingMode() const override;
   bool IsPaired() const override;
   bool RequiresBlePairingPin() const override;
-  bool IsTouchIdAuthenticator() const override;
   void GetTouch(base::OnceClosure callback) override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
@@ -83,13 +80,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   std::unique_ptr<Operation> operation_;
 
   base::WeakPtrFactory<TouchIdAuthenticator> weak_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchIdAuthenticator);
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_AUTHENTICATOR_H_

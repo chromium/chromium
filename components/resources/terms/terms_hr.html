@@ -4,17 +4,39 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="initial-scale=1.0">
-<title>Dodatni uvjeti pružanja usluge za Google Chrome i Chrome OS</title>
+<title>Dodatni uvjeti pružanja usluge za Google Chrome i ChromeOS</title>
 <style>
-:root { color-scheme: light dark }
-body { font-family:Arial; font-size:13px; }
-h2 { font-size:1em; margin-top:0 }
+:root {
+    color-scheme: light dark;
+}
+body {
+    font-family: Arial;
+}
+h2 {
+    margin-top: 0;
+}
+@supports (-webkit-touch-callout: none) {
+    body {
+        font: -apple-system-body;
+    }
+    h2 {
+        font: -apple-system-headline;
+    }
+}
+@supports not (-webkit-touch-callout: none) {
+    body {
+        font-size: 13px;
+    }
+    h2 {
+        font-size: 1em;
+    }
+}
 </style>
 </head>
 
 <body>
 <h2>
- Dodatni uvjeti pružanja usluge za Google Chrome i Chrome OS
+ Dodatni uvjeti pružanja usluge za Google Chrome i ChromeOS
 </h2>
 <p>
  Zadnja izmjena: 1. siječnja 2021.

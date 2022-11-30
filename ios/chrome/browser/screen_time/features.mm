@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kScreenTimeIntegration{"ScreenTimeIntegration",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kScreenTimeIntegration,
+             "ScreenTimeIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenTimeIntegrationEnabled() {
-  if (@available(iOS 14, *)) {
-    return base::FeatureList::IsEnabled(kScreenTimeIntegration);
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kScreenTimeIntegration);
 }

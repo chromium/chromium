@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
-#include "base/macros.h"
 #include "base/process/memory.h"
 #include "base/system/sys_info.h"
 #include "base/test/launcher/test_launcher.h"
@@ -22,9 +21,9 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -33,6 +32,10 @@ class ContentBrowserTestSuite : public ContentTestSuiteBase {
   ContentBrowserTestSuite(int argc, char** argv)
       : ContentTestSuiteBase(argc, argv) {
   }
+
+  ContentBrowserTestSuite(const ContentBrowserTestSuite&) = delete;
+  ContentBrowserTestSuite& operator=(const ContentBrowserTestSuite&) = delete;
+
   ~ContentBrowserTestSuite() override {}
 
  protected:
@@ -42,17 +45,20 @@ class ContentBrowserTestSuite : public ContentTestSuiteBase {
 
     ContentTestSuiteBase::Initialize();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     RegisterInProcessThreads();
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ContentBrowserTestSuite);
 };
 
 class ContentTestLauncherDelegate : public TestLauncherDelegate {
  public:
   ContentTestLauncherDelegate() {}
+
+  ContentTestLauncherDelegate(const ContentTestLauncherDelegate&) = delete;
+  ContentTestLauncherDelegate& operator=(const ContentTestLauncherDelegate&) =
+      delete;
+
   ~ContentTestLauncherDelegate() override {}
 
   int RunTestSuite(int argc, char** argv) override {
@@ -64,14 +70,11 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
   }
 
  protected:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ContentMainDelegate* CreateContentMainDelegate() override {
     return new ContentBrowserTestShellMainDelegate();
   }
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentTestLauncherDelegate);
 };
 
 }  // namespace content
@@ -82,11 +85,11 @@ int main(int argc, char** argv) {
   if (parallel_jobs == 0U)
     return 1;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Load and pin user32.dll to avoid having to load it once tests start while
   // on the main thread loop where blocking calls are disallowed.
   base::win::PinUser32();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   content::ContentTestLauncherDelegate launcher_delegate;
   return LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
 }

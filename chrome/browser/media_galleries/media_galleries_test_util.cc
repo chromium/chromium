@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -26,17 +28,16 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/policy/core/common/preferences_mock_mac.h"
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
     const std::string& name,
@@ -47,20 +48,20 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   manifest->SetString(extensions::manifest_keys::kVersion, "0.1");
   manifest->SetInteger(extensions::manifest_keys::kManifestVersion, 2);
   auto background_script_list = std::make_unique<base::ListValue>();
-  background_script_list->AppendString("background.js");
+  background_script_list->Append("background.js");
   manifest->Set(extensions::manifest_keys::kPlatformAppBackgroundScripts,
                 std::move(background_script_list));
 
-  auto permission_detail_list = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < media_galleries_permissions.size(); i++)
-    permission_detail_list->AppendString(media_galleries_permissions[i]);
-  auto media_galleries_permission = std::make_unique<base::DictionaryValue>();
-  media_galleries_permission->Set("mediaGalleries",
-                                  std::move(permission_detail_list));
-  auto permission_list = std::make_unique<base::ListValue>();
-  permission_list->Append(std::move(media_galleries_permission));
-  manifest->Set(extensions::manifest_keys::kPermissions,
-                std::move(permission_list));
+  base::Value::List permission_detail_list;
+  for (const auto& permission : media_galleries_permissions)
+    permission_detail_list.Append(permission);
+  base::Value::Dict media_galleries_permission;
+  media_galleries_permission.Set("mediaGalleries",
+                                 std::move(permission_detail_list));
+  base::Value::List permission_list;
+  permission_list.Append(std::move(media_galleries_permission));
+  manifest->GetDict().Set(extensions::manifest_keys::kPermissions,
+                          std::move(permission_list));
 
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile);
@@ -95,7 +96,7 @@ EnsureMediaDirectoriesExists::EnsureMediaDirectoriesExists()
 
 EnsureMediaDirectoriesExists::~EnsureMediaDirectoriesExists() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ignore_result(fake_dir_.Delete());
+  std::ignore = fake_dir_.Delete();
 }
 
 void EnsureMediaDirectoriesExists::ChangeMediaPathOverrides() {
@@ -107,23 +108,23 @@ void EnsureMediaDirectoriesExists::ChangeMediaPathOverrides() {
   music_override_.reset();
   std::string music_path_string("music");
   music_path_string.append(base::NumberToString(times_overrides_changed_));
-  music_override_.reset(new base::ScopedPathOverride(
+  music_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_MUSIC,
-      fake_dir_.GetPath().AppendASCII(music_path_string)));
+      fake_dir_.GetPath().AppendASCII(music_path_string));
 
   pictures_override_.reset();
   std::string pictures_path_string("pictures");
   pictures_path_string.append(base::NumberToString(times_overrides_changed_));
-  pictures_override_.reset(new base::ScopedPathOverride(
+  pictures_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_PICTURES,
-      fake_dir_.GetPath().AppendASCII(pictures_path_string)));
+      fake_dir_.GetPath().AppendASCII(pictures_path_string));
 
   video_override_.reset();
   std::string videos_path_string("videos");
   videos_path_string.append(base::NumberToString(times_overrides_changed_));
-  video_override_.reset(new base::ScopedPathOverride(
+  video_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_VIDEOS,
-      fake_dir_.GetPath().AppendASCII(videos_path_string)));
+      fake_dir_.GetPath().AppendASCII(videos_path_string));
 
   times_overrides_changed_++;
 
@@ -136,34 +137,30 @@ base::FilePath EnsureMediaDirectoriesExists::GetFakeAppDataPath() const {
   return fake_dir_.GetPath().AppendASCII("appdata");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 base::FilePath EnsureMediaDirectoriesExists::GetFakeLocalAppDataPath() const {
   DCHECK(fake_dir_.IsValid());
   return fake_dir_.GetPath().AppendASCII("localappdata");
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 void EnsureMediaDirectoriesExists::Init() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
   return;
 #else
 
   ASSERT_TRUE(fake_dir_.CreateUniqueTempDir());
 
-#if defined(OS_MAC)
-  mac_preferences_.reset(new MockPreferences);
-#endif  // OS_MAC
-
   ChangeMediaPathOverrides();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_ANDROID
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 }
 
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(FILE_PATH_LITERAL("C:\\")).AppendASCII(dir);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::FilePath(FILE_PATH_LITERAL("/")).Append(dir);
 #else
-  NOTREACHED();
+#error Unknown platform.
 #endif
 }

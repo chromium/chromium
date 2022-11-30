@@ -1,0 +1,151 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoCctProfileManager.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoStartup.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoTabPersistence.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthController.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerImpl.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorBase.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactory.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthDialog.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManager.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthMediator.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthMenuDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthProperties.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingSwitchPreference.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingUtils.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthTopToolbarDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/TabSwitcherIncognitoReauthCoordinator.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/android/features/tab_ui/public:java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/dependency_injection:java",
+    "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabpersistence:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/android_deps:dagger_java",
+    "//third_party/android_deps:javax_inject_javax_inject_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_full_java",
+    "//url:gurl_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.incognito"
+}
+
+generate_jni("jni_headers") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [ "android/java/res/layout/incognito_reauth_view.xml" ]
+
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+  ]
+}
+
+android_library("incognito_java_tests") {
+  testonly = true
+
+  sources = [
+    "android/javatests/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingSwitchPreferenceTest.java",
+    "android/javatests/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingTest.java",
+    "android/javatests/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthViewTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/settings/android:test_support_java",
+    "//components/browser_ui/widget/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+robolectric_library("incognito_junit_tests") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinatorTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerImplTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactoryTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthDialogTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManagerTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/TabSwitcherIncognitoReauthCoordinatorTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android/features/tab_ui/public:java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

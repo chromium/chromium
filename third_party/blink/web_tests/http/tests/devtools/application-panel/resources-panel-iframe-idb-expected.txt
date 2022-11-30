@@ -4,6 +4,10 @@ Initial tree...
 
 Application
  Manifest
+  Identity
+  Presentation
+  Protocol Handlers
+  Icons
  Service Workers
  Storage
 Storage
@@ -22,9 +26,10 @@ Storage
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
  Trust Tokens
+ Interest Groups
 Cache
  Cache Storage
- Application Cache
+ Back/forward cache
 Background Services
  Background Fetch
  Background Sync
@@ -32,6 +37,7 @@ Background Services
  Payment Handler
  Periodic Background Sync
  Push Messaging
+ Reporting API
 Frames
  top
   indexeddb-in-iframe.html
@@ -42,6 +48,10 @@ Remove iframe from page...
 
 Application
  Manifest
+  Identity
+  Presentation
+  Protocol Handlers
+  Icons
  Service Workers
  Storage
 Storage
@@ -56,9 +66,10 @@ Storage
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
  Trust Tokens
+ Interest Groups
 Cache
  Cache Storage
- Application Cache
+ Back/forward cache
 Background Services
  Background Fetch
  Background Sync
@@ -66,6 +77,7 @@ Background Services
  Payment Handler
  Periodic Background Sync
  Push Messaging
+ Reporting API
 Frames
  top
   inspected-page.html
@@ -74,6 +86,10 @@ Add iframe to page again...
 
 Application
  Manifest
+  Identity
+  Presentation
+  Protocol Handlers
+  Icons
  Service Workers
  Storage
 Storage
@@ -92,9 +108,10 @@ Storage
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
  Trust Tokens
+ Interest Groups
 Cache
  Cache Storage
- Application Cache
+ Back/forward cache
 Background Services
  Background Fetch
  Background Sync
@@ -102,6 +119,7 @@ Background Services
  Payment Handler
  Periodic Background Sync
  Push Messaging
+ Reporting API
 Frames
  top
   indexeddb-in-iframe.html

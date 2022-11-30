@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/url_constants.h"
@@ -49,8 +48,8 @@ scoped_refptr<base::RefCountedMemory> CreateNotFoundResponse() {
 
 // DevToolsDataSource ---------------------------------------------------------
 
-std::string GetMimeTypeForPath(const std::string& path) {
-  std::string filename = PathWithoutParams(path);
+std::string GetMimeTypeForUrl(const GURL& url) {
+  std::string filename = url.ExtractFileName();
   if (base::EndsWith(filename, ".html", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/html";
   } else if (base::EndsWith(filename, ".css",
@@ -104,6 +103,37 @@ GURL GetCustomDevToolsFrontendURL() {
   return GURL();
 }
 
+bool DevToolsDataSource::MaybeHandleCustomRequest(const std::string& path,
+                                                  GotDataCallback* callback) {
+  GURL custom_devtools_frontend = GetCustomDevToolsFrontendURL();
+  if (!custom_devtools_frontend.is_valid())
+    return false;
+  std::string serve_rev_prefix("serve_rev/");
+  std::string stripped_path = path;
+  // Check if a service a remote revision request.
+  // In this case, we need to strip the revision prefix.
+  if (base::StartsWith(path, serve_rev_prefix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    // Strip revision prefix. For example:
+    // "serve_rev/@76e4c1bb2ab4671b8beba3444e61c0f17584b2fc/inspector.html"
+    // becomes "inspector.html".
+    std::size_t found = path.find("/", serve_rev_prefix.length() + 1);
+    if (found != std::string::npos)
+      stripped_path = path.substr(found + 1);
+    else
+      DLOG(ERROR) << "Unexpected URL format, falling back to the original URL.";
+  }
+  if (custom_devtools_frontend.SchemeIsFile()) {
+    // Fetch from file system but strip all the params.
+    StartFileRequest(PathWithoutParams(stripped_path), std::move(*callback));
+    return true;
+  }
+  GURL remote_url(custom_devtools_frontend.spec() + stripped_path);
+  // Fetch from remote URL.
+  StartCustomDataRequest(remote_url, std::move(*callback));
+  return true;
+}
+
 void DevToolsDataSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
@@ -121,20 +151,10 @@ void DevToolsDataSource::StartDataRequest(
                             base::CompareCase::INSENSITIVE_ASCII));
     std::string path_under_bundled =
         path_without_params.substr(bundled_path_prefix.length());
-    GURL custom_devtools_frontend = GetCustomDevToolsFrontendURL();
-    if (!custom_devtools_frontend.is_valid()) {
+    if (!MaybeHandleCustomRequest(path_under_bundled, &callback)) {
       // Fetch from packaged resources.
       StartBundledDataRequest(path_under_bundled, std::move(callback));
-      return;
     }
-    if (GetCustomDevToolsFrontendURL().SchemeIsFile()) {
-      // Fetch from file system.
-      StartFileRequest(path_under_bundled, std::move(callback));
-      return;
-    }
-    GURL remote_url(custom_devtools_frontend.spec() + path_under_bundled);
-    // Fetch from remote URL.
-    StartCustomDataRequest(remote_url, std::move(callback));
     return;
   }
 
@@ -151,11 +171,17 @@ void DevToolsDataSource::StartDataRequest(
   remote_path_prefix += "/";
   if (base::StartsWith(path, remote_path_prefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {
-    GURL url(kRemoteFrontendBase + path.substr(remote_path_prefix.length()));
+    if (MaybeHandleCustomRequest(path.substr(remote_path_prefix.length()),
+                                 &callback)) {
+      return;
+    }
+    GURL remote_url(kRemoteFrontendBase +
+                    path.substr(remote_path_prefix.length()));
 
-    CHECK_EQ(url.host(), kRemoteFrontendDomain);
-    if (url.is_valid() && DevToolsUIBindings::IsValidRemoteFrontendURL(url)) {
-      StartRemoteDataRequest(url, std::move(callback));
+    CHECK_EQ(remote_url.host(), kRemoteFrontendDomain);
+    if (remote_url.is_valid() &&
+        DevToolsUIBindings::IsValidRemoteFrontendURL(remote_url)) {
+      StartRemoteDataRequest(remote_url, std::move(callback));
     } else {
       DLOG(ERROR) << "Refusing to load invalid remote front-end URL";
       std::move(callback).Run(CreateNotFoundResponse());
@@ -170,10 +196,10 @@ void DevToolsDataSource::StartDataRequest(
                        base::CompareCase::INSENSITIVE_ASCII)) {
     GURL custom_devtools_frontend = GetCustomDevToolsFrontendURL();
     if (!custom_devtools_frontend.is_empty()) {
-      GURL url = GURL(custom_devtools_frontend.spec() +
-                      path.substr(custom_path_prefix.length()));
-      DCHECK(url.is_valid());
-      StartCustomDataRequest(url, std::move(callback));
+      GURL devtools_url(custom_devtools_frontend.spec() +
+                        path.substr(custom_path_prefix.length()));
+      DCHECK(devtools_url.is_valid());
+      StartCustomDataRequest(devtools_url, std::move(callback));
       return;
     }
   }
@@ -181,8 +207,8 @@ void DevToolsDataSource::StartDataRequest(
   std::move(callback).Run(CreateNotFoundResponse());
 }
 
-std::string DevToolsDataSource::GetMimeType(const std::string& path) {
-  return GetMimeTypeForPath(path);
+std::string DevToolsDataSource::GetMimeType(const GURL& url) {
+  return GetMimeTypeForUrl(url);
 }
 
 bool DevToolsDataSource::ShouldAddContentSecurityPolicy() {

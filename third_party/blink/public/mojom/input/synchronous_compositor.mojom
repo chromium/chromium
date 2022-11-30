@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom";
@@ -31,8 +30,8 @@ struct SyncCompositorDemandDrawSwParams {
 
 struct SyncCompositorCommonRendererParams {
   uint32 version = 0;
-  gfx.mojom.ScrollOffset total_scroll_offset;
-  gfx.mojom.ScrollOffset max_scroll_offset;
+  gfx.mojom.PointF total_scroll_offset;
+  gfx.mojom.PointF max_scroll_offset;
   gfx.mojom.SizeF scrollable_size;
   float page_scale_factor = 0;
   float min_page_scale_factor = 0;
@@ -101,8 +100,13 @@ interface SynchronousCompositor {
   ReclaimResources(uint32 layer_tree_frame_sink_id,
                    array<viz.mojom.ReturnedResource> resources);
 
+  // Notifies the client when a directive for DocumentTransition, submitted in
+  // a previous CompositorFrame, has finished executing.
+  OnCompositorFrameTransitionDirectiveProcessed(uint32 layer_tree_frame_sink_id,
+                                                uint32 sequence_id);
+
   // Adjust the scroll to the given offset.
-  SetScroll(gfx.mojom.ScrollOffset offset);
+  SetScroll(gfx.mojom.PointF offset);
 
   // BeginFrame, update will be pushed via SynchronousCompositorControlHost
   // BeginFrameResponse.

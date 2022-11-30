@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_RESIZE_HANDLE_BUTTON_H_
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-
-namespace views {
 
 // An image button representing a white resize handle affordance.
 class ResizeHandleButton : public views::ImageButton {
@@ -21,16 +19,18 @@ class ResizeHandleButton : public views::ImageButton {
   ResizeHandleButton& operator=(const ResizeHandleButton&) = delete;
   ~ResizeHandleButton() override;
 
+  void OnThemeChanged() override;
+
   void SetPosition(const gfx::Size& size,
                    OverlayWindowViews::WindowQuadrant quadrant);
   int GetHTComponent() const;
+  void SetQuadrant(OverlayWindowViews::WindowQuadrant quadrant);
 
  private:
-  void SetImageForQuadrant(OverlayWindowViews::WindowQuadrant quadrant);
+  void UpdateImageForQuadrant();
 
-  base::Optional<OverlayWindowViews::WindowQuadrant> current_quadrant_;
+  OverlayWindowViews::WindowQuadrant current_quadrant_ =
+      OverlayWindowViews::WindowQuadrant::kBottomRight;
 };
-
-}  // namespace views
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_RESIZE_HANDLE_BUTTON_H_

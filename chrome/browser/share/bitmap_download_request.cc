@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,7 @@ static void JNI_BitmapDownloadRequest_DownloadBitmap(
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(
-          ProfileManager::GetLastUsedProfile());
+      ProfileManager::GetLastUsedProfile()->GetDownloadManager();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("download_bitmap", R"(
         semantics {

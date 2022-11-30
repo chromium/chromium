@@ -81,13 +81,6 @@ The GPU process is running for the display compositor only, no acceleration is
 enabled.
 
 
-#### `DISABLED`
-
-The GPU process is disabled and will not be launched. The display compositor
-will be run in-process. This is only used on Windows, and on Chromecast audio
-devices.
-
-
 ### Special Cases
 
 There are a few platforms that expect hardware acceleration, with some
@@ -98,7 +91,7 @@ exceptions for certain circumstances.
 
 Android requires hardware acceleration, except in the case of Chromecast
 audio-only builds. These run with the flag `--disable-gpu`, and the GPU process
-is not launched.
+is launched in `DISPLAY_COMPOSITOR` mode.
 
 
 #### Fuchsia

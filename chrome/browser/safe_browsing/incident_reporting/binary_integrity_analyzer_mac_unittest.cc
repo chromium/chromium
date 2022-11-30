@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer_mac.h"
 
+#include <Security/Security.h>
 #include <stdint.h>
 
 #include <memory>
@@ -12,11 +13,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/bundle_locations.h"
+#include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/path_service.h"
+#include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
 #include "chrome/browser/safe_browsing/incident_reporting/mock_incident_receiver.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +42,7 @@ bool CorruptFileContent(const base::FilePath& file_path) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   if (!file.IsValid())
     return false;
-  char vec[] = {0xAA};
+  char vec[] = {'\xAA'};
   return file.Write(text_pos, vec, sizeof(vec)) == sizeof(vec);
 }
 
@@ -77,18 +81,38 @@ TEST_F(BinaryIntegrityAnalyzerMacTest, GetCriticalPathsAndRequirements) {
       "(identifier \"com.google.Chrome\" or "
       "identifier \"com.google.Chrome.beta\" or "
       "identifier \"com.google.Chrome.dev\" or "
-      "identifier \"com.google.Chrome.canary\") "
-      "and certificate leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\")";
+      "identifier \"com.google.Chrome.canary\") and "
+      "anchor apple generic and "
+      "certificate 1[field.1.2.840.113635.100.6.2.6] and "
+      "certificate leaf[field.1.2.840.113635.100.6.1.13] and "
+      "certificate leaf[subject.OU] = EQHXZ8M8AV";
   paths_and_requirements_expected.push_back(
       PathAndRequirement(base::mac::OuterBundlePath(), expected_req));
+  paths_and_requirements_expected.push_back(
+      PathAndRequirement(base::mac::FrameworkBundlePath(), expected_req));
 
   std::vector<PathAndRequirement> paths_and_requirements =
       GetCriticalPathsAndRequirements();
-  ASSERT_EQ(1u, paths_and_requirements.size());
-  EXPECT_EQ(paths_and_requirements[0].path,
-            paths_and_requirements_expected[0].path);
-  EXPECT_EQ(paths_and_requirements[0].requirement,
-            paths_and_requirements_expected[0].requirement);
+
+  ASSERT_EQ(2u, paths_and_requirements.size());
+  ASSERT_EQ(paths_and_requirements_expected.size(),
+            paths_and_requirements.size());
+
+  for (size_t i = 0; i < paths_and_requirements_expected.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << "expected path and requirement " << i);
+
+    EXPECT_EQ(paths_and_requirements[i].path,
+              paths_and_requirements_expected[i].path);
+    EXPECT_EQ(paths_and_requirements[i].requirement,
+              paths_and_requirements_expected[i].requirement);
+
+    base::ScopedCFTypeRef<SecRequirementRef> requirement;
+    EXPECT_EQ(
+        errSecSuccess,
+        SecRequirementCreateWithString(
+            base::SysUTF8ToCFStringRef(paths_and_requirements[i].requirement),
+            kSecCSDefaultFlags, requirement.InitializeInto()));
+  }
 }
 
 TEST_F(BinaryIntegrityAnalyzerMacTest, VerifyBinaryIntegrityForTesting) {

@@ -33,13 +33,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_VIEW_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -75,6 +76,8 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   // Called by the owner HTMLInputElement when this InputType is disconnected
   // from the HTMLInputElement.
   void WillBeDestroyed();
+  InputTypeView(const InputTypeView&) = delete;
+  InputTypeView& operator=(const InputTypeView&) = delete;
   virtual ~InputTypeView();
   void Trace(Visitor*) const override;
 
@@ -104,11 +107,12 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   void DispatchSimulatedClickIfActive(KeyboardEvent&) const;
 
   virtual void SubtreeHasChanged();
-  virtual bool TypeShouldForceLegacyLayout() const;
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                            LegacyLayout) const;
   virtual void CustomStyleForLayoutObject(ComputedStyle& style);
+  virtual ControlPart AutoAppearance() const;
   virtual TextDirection ComputedTextDirection();
+  virtual void OpenPopupView();
   virtual void ClosePopupView();
   virtual bool HasOpenedPopup() const;
 
@@ -157,9 +161,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
  private:
   Member<HTMLInputElement> element_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputTypeView);
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_VIEW_H_

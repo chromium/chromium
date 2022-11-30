@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 class GURL;
 
@@ -40,6 +40,12 @@ class SubresourceFilterSafeBrowsingClientRequest
           database_manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       SubresourceFilterSafeBrowsingClient* client);
+
+  SubresourceFilterSafeBrowsingClientRequest(
+      const SubresourceFilterSafeBrowsingClientRequest&) = delete;
+  SubresourceFilterSafeBrowsingClientRequest& operator=(
+      const SubresourceFilterSafeBrowsingClientRequest&) = delete;
+
   ~SubresourceFilterSafeBrowsingClientRequest() override;
 
   void Start(const GURL& url);
@@ -56,8 +62,7 @@ class SubresourceFilterSafeBrowsingClientRequest
   // verify a URL. After this amount of time the outstanding check will be
   // aborted, and the URL will be treated as if it didn't belong to the
   // Subresource Filter only list.
-  static constexpr base::TimeDelta kCheckURLTimeout =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kCheckURLTimeout = base::Seconds(5);
 
  private:
   // Callback for when the safe browsing check has taken longer than
@@ -78,14 +83,12 @@ class SubresourceFilterSafeBrowsingClientRequest
   const base::TimeTicks start_time_;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  SubresourceFilterSafeBrowsingClient* client_ = nullptr;
+  raw_ptr<SubresourceFilterSafeBrowsingClient> client_ = nullptr;
 
   // Timer to abort the safe browsing check if it takes too long.
   base::OneShotTimer timer_;
 
   bool request_completed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingClientRequest);
 };
 
 }  // namespace subresource_filter

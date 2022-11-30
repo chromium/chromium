@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,9 @@ typedef void (^URLFetcherBlockAdapterCompletion)(NSData*,
 // Class to manage retrieval of WebUI resources.
 class URLFetcherBlockAdapter {
  public:
-  // Creates URLFetcherBlockAdapter for resource at |url| with
-  // |request_context|.
-  // |completion_handler| is called with results of the fetch.
+  // Creates URLFetcherBlockAdapter for resource at `url` with
+  // `request_context`.
+  // `completion_handler` is called with results of the fetch.
   URLFetcherBlockAdapter(
       const GURL& url,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

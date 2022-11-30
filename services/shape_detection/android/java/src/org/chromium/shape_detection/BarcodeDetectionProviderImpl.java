@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ public class BarcodeDetectionProviderImpl implements BarcodeDetectionProvider {
     }
 
     @Override
-    public void enumerateSupportedFormats(EnumerateSupportedFormatsResponse callback) {
+    public void enumerateSupportedFormats(EnumerateSupportedFormats_Response callback) {
         // Keep this list in sync with the constants defined in
         // com.google.android.gms.vision.barcode.Barcode and the format hints
         // supported by BarcodeDetectionImpl.

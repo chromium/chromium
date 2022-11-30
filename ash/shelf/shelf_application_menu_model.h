@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -38,8 +37,13 @@ class ASH_EXPORT ShelfApplicationMenuModel
   // Makes a menu with a |title|, |items|, and a separator for |delegate|.
   // |delegate| may be null in unit tests that do not execute commands.
   ShelfApplicationMenuModel(const std::u16string& title,
-                            Items items,
+                            const Items& items,
                             ShelfItemDelegate* delegate);
+
+  ShelfApplicationMenuModel(const ShelfApplicationMenuModel&) = delete;
+  ShelfApplicationMenuModel& operator=(const ShelfApplicationMenuModel&) =
+      delete;
+
   ~ShelfApplicationMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -54,12 +58,10 @@ class ASH_EXPORT ShelfApplicationMenuModel
                                      int num_menu_items_enabled);
 
   // The shelf item delegate that created the menu and executes its commands.
-  ShelfItemDelegate* delegate_;
+  ShelfItemDelegate* const delegate_;
 
   // A set containing the enabled command IDs.
   base::flat_set<int> enabled_commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfApplicationMenuModel);
 };
 
 }  // namespace ash

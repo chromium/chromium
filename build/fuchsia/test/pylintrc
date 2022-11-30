@@ -1,0 +1,26 @@
+[MESSAGES CONTROL]
+
+# Disable the message, report, category or checker with the given id(s).
+disable=fixme,
+
+# fixme
+# This complains about TODOs, which are perfectly valid to have.
+
+# Suppression for invalid-name error for PRESUBMIT.py file.
+good-names=f,PRESUBMIT
+
+[REPORTS]
+
+reports=no
+
+[DESIGN]
+
+# Maximum number of arguments for function / method
+max-args=6
+
+# Maximum number of instance attributes
+max-attributes=10
+
+[FORMAT]
+
+max-line-length=80

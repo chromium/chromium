@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ const net::BackoffEntry::Policy& FtlServicesContext::GetBackoffPolicy() {
       0,
 
       // Initial delay for exponential back-off in ms.
-      kBackoffInitialDelay.InMilliseconds(),
+      static_cast<int>(kBackoffInitialDelay.InMilliseconds()),
 
       // Factor by which the waiting time will be multiplied.
       2,
@@ -89,9 +89,9 @@ ftl::RequestHeader FtlServicesContext::CreateRequestHeader(
   client_info->set_version_minor(VERSION_BUILD);
   client_info->set_version_point(VERSION_PATCH);
   ftl::Platform_Type platform_type;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   platform_type = ftl::Platform_Type_FTL_ANDROID;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   platform_type = ftl::Platform_Type_FTL_IOS;
 #else
   platform_type = ftl::Platform_Type_FTL_DESKTOP;

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/search_engine_base_url_tracker.h"
 #include "chrome/browser/ui/search/instant_controller.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 
@@ -27,6 +26,10 @@ class Profile;
 class BrowserInstantController {
  public:
   explicit BrowserInstantController(Browser* browser);
+
+  BrowserInstantController(const BrowserInstantController&) = delete;
+  BrowserInstantController& operator=(const BrowserInstantController&) = delete;
+
   ~BrowserInstantController();
 
  private:
@@ -35,13 +38,11 @@ class BrowserInstantController {
 
   Profile* profile() const;
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   InstantController instant_;
 
   std::unique_ptr<SearchEngineBaseURLTracker> search_engine_base_url_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserInstantController);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_INSTANT_CONTROLLER_H_

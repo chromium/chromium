@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Si è verificato un errore imprevisto. Segnala il problema agli sviluppatori.</translation>
 <translation id="1697532407822776718">Ecco fatto!</translation>
 <translation id="1742469581923031760">Connessione in corso...</translation>
+<translation id="177040763384871009">Per consentire ai link cliccati sul dispositivo remoto di essere aperti sul browser del client, è necessario cambiare il browser web del sistema con "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP canale per client: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" ip_host="<ph name="HOST_IP_ADDRESS_AND_PORT" />" canale="<ph name="CHANNEL_TYPE" />" connessione="<ph name="CONNECTION_TYPE" />".</translation>
 <translation id="1897488610212723051">Elimina</translation>
 <translation id="2009755455353575666">Connessione non riuscita</translation>
@@ -24,7 +25,7 @@ Per concedere questa autorizzazione, fai clic su "<ph name="BUTTON_NAME" />" sot
 Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezionala e selezionala di nuovo.</translation>
 <translation id="225614027745146050">Benvenuto</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Tutti i diritti riservati.</translation>
+<translation id="2329392777730037872">Impossibile aprire <ph name="URL" /> sul dispositivo client.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">Impossibile raggiungere l'host. Il problema potrebbe essere dovuto alla configurazione della rete in uso.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Visto l'ultima volta online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="2599300881200251572">Questo servizio consente connessioni in entrata da client Chrome Remote Desktop.</translation>
 <translation id="2647232381348739934">Servizio Chromoting</translation>
 <translation id="2676780859508944670">Operazione in corso...</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Si è verificato un problema di autenticazione. Accedi nuovamente.</translation>
 <translation id="2803375539583399270">Inserisci PIN</translation>
@@ -55,6 +57,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Scopri come</translation>
 <translation id="3776024066357219166">La sessione Chrome Remote Desktop è terminata.</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Dominio proprietario host non valido.</translation>
 <translation id="3931191050278863510">Host interrotto.</translation>
@@ -67,14 +70,16 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4176825807642096119">Codice di accesso</translation>
 <translation id="4227991223508142681">Utilità di provisioning degli host</translation>
 <translation id="4240294130679914010">Programma di disinstallazione host Chromoting</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">Il codice di accesso non è valido. Riprova.</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="443560535555262820">Apri preferenze Accessibilità</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client scollegato: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> non è configurato correttamente. Scegli un altro browser web predefinito e poi attiva nuovamente l'inoltro di URL.</translation>
 <translation id="4635770493235256822">Dispositivi remoti</translation>
 <translation id="4660011489602794167">Mostra tastiera</translation>
 <translation id="4703799847237267011">La sessione Chromoting è terminata.</translation>
@@ -87,14 +92,14 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4867841927763172006">Invia Stamp</translation>
 <translation id="4974476491460646149">Connessione a <ph name="HOSTNAME" /> chiusa</translation>
 <translation id="4985296110227979402">Devi eseguire prima la configurazione del computer per poter effettuare l'accesso remoto</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop non può determinare il browser per aprire gli URL localmente. Scegline uno dall'elenco di seguito.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Vuoi disattivare le connessioni remote a <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">ID host non valido.</translation>
 <translation id="5204575267916639804">Domande frequenti</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5234764350956374838">Ignora</translation>
-<translation id="5308380583665731573">Connessione</translation>
-<translation id="5327248766486351172">Nome</translation>
+<translation id="5308380583665731573">Connetti</translation>
 <translation id="533625276787323658">Non ci sono computer a cui connettersi</translation>
 <translation id="5397086374758643919">Programma di disinstallazione host Chrome Remote Desktop</translation>
 <translation id="5419418238395129586">Ultimo collegamento online: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="5750083143895808682">Accesso eseguito come <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Riconnetti</translation>
 <translation id="5810269635982033450">Lo schermo funge da trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha chiesto di accedere per vedere il tuo schermo e controllare la tastiera e il mouse. Premi ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' se questa richiesta non era prevista. Altrimenti seleziona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' quando vuoi consentire la connessione.</translation>
 <translation id="5823658491130719298">Sul computer a cui vuoi accedere da remoto, apri Chrome e visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opzioni di visualizzazione</translation>
 <translation id="6033507038939587647">Opzioni tastiera</translation>
@@ -121,6 +127,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="6612717000975622067">Invia Ctrl-Alt-Canc</translation>
 <translation id="6654753848497929428">Condividi</translation>
 <translation id="677755392401385740">Host avviato per utente: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Helper per aprire un URL sul client <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostra/nascondi tastiera.</translation>
 <translation id="6963936880795878952">Le connessioni al computer remoto sono temporaneamente bloccate perché qualcuno stava cercando di collegarsi al computer con un PIN non valido. Riprova più tardi.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -133,10 +140,12 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="7312846573060934304">L'host è offline.</translation>
 <translation id="7319983568955948908">Interrompi condivisione</translation>
+<translation id="7359298090707901886">Il browser selezionato non può essere utilizzato per aprire gli URL sulla macchina locale.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">Accesso negato per client: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client connesso: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Cambia account</translation>
+<translation id="7535110896613603182">Apri le impostazioni delle app predefinite</translation>
 <translation id="7628469622942688817">Memorizza il PIN su questo dispositivo.</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7658239707568436148">Annulla</translation>
@@ -161,6 +170,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 Per concedere questa autorizzazione, fai clic su "<ph name="BUTTON_NAME" />" sotto. Nel riquadro delle preferenze "Accessibilità" visualizzato, seleziona la casella "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezionala e selezionala di nuovo.</translation>
+<translation id="8305209735512572429">Web Authentication Remoting Process</translation>
 <translation id="8383794970363966105">Per poter utilizzare Chromoting devi aggiungere un Account Google sul dispositivo.</translation>
 <translation id="8386846956409881180">L'host è stato configurato con credenziali OAuth non valide.</translation>
 <translation id="8397385476380433240">Concedi l'autorizzazione a <ph name="PRODUCT_NAME" /></translation>

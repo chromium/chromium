@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,78 +12,85 @@
         "name": "getConfig",
         "type": "function",
         "description": "Gives configuration options set by the test.",
-        "parameters": [
-          {
-            "type": "function", "name": "callback", "parameters": [
-              {
-                "type": "object",
-                "name": "testConfig",
-                "properties": {
-                  "customArg": {
-                    "type": "string",
-                    "optional": true,
-                    "description": "Additional string argument to pass to test."
-                  },
-                  "ftpServer": {
-                    "type": "object",
-                    "optional": true,
-                    "description": "Details on the FTP server used to mock network responses.  Will be set only if test calls ExtensionApiTest::StartFTPServer().",
-                    "properties": {
-                      "port": {
-                        "type": "integer",
-                        "description": "The port on which the FTP server is listening.",
-                        "minimum": 1024,
-                        "maximum": 65535
-                      }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "object",
+              "name": "testConfig",
+              "properties": {
+                "customArg": {
+                  "type": "string",
+                  "optional": true,
+                  "description": "Additional string argument to pass to test."
+                },
+                "ftpServer": {
+                  "type": "object",
+                  "optional": true,
+                  "description": "Details on the FTP server used to mock network responses.  Will be set only if test calls ExtensionApiTest::StartFTPServer().",
+                  "properties": {
+                    "port": {
+                      "type": "integer",
+                      "description": "The port on which the FTP server is listening.",
+                      "minimum": 1024,
+                      "maximum": 65535
                     }
-                  },
-                  "testServer": {
-                    "type": "object",
-                    "optional": true,
-                    "description": "Details on the test server used to mock network responses.  Will be set only if test calls ExtensionApiTest::StartEmbeddedTestServer().",
-                    "properties": {
-                      "port": {
-                        "type": "integer",
-                        "description": "The port on which the test server is listening.",
-                        "minimum": 1024,
-                        "maximum": 65535
-                      }
+                  }
+                },
+                "testServer": {
+                  "type": "object",
+                  "optional": true,
+                  "description": "Details on the test server used to mock network responses.  Will be set only if test calls ExtensionApiTest::StartEmbeddedTestServer().",
+                  "properties": {
+                    "port": {
+                      "type": "integer",
+                      "description": "The port on which the test server is listening.",
+                      "minimum": 1024,
+                      "maximum": 65535
                     }
-                  },
-                  "testDataDirectory": {
-                    "type": "string",
-                    "optional": true,
-                    "description": "file:/// URL for the API test data directory."
-                  },
-                  "testWebSocketPort": {
-                    "type": "integer",
-                    "optional": true,
-                    "description": "The port on which the test WebSocket server is listening.",
-                    "minimum": 0,
-                    "maximum": 65535
-                  },
-                  "loginStatus": {
-                    "type": "object",
-                    "optional": true,
-                    "description": "Login status.",
-                    "properties": {
-                      "isLoggedIn": {
-                        "type": "boolean",
-                        "optional": true,
-                        "description": "Whether there's a logged-in user."
-                      },
-                      "isScreenLocked": {
-                        "type": "boolean",
-                        "optional": true,
-                        "description": "Whether the screen is locked."
-                      }
+                  }
+                },
+                "testDataDirectory": {
+                  "type": "string",
+                  "optional": true,
+                  "description": "file:/// URL for the API test data directory."
+                },
+                "testWebSocketPort": {
+                  "type": "integer",
+                  "optional": true,
+                  "description": "The port on which the test WebSocket server is listening.",
+                  "minimum": 0,
+                  "maximum": 65535
+                },
+                "testWebTransportPort": {
+                  "type": "integer",
+                  "optional": true,
+                  "description": "The port on which the test WebTransport server is listening.",
+                  "minimum": 0,
+                  "maximum": 65535
+                },
+                "loginStatus": {
+                  "type": "object",
+                  "optional": true,
+                  "description": "Login status.",
+                  "properties": {
+                    "isLoggedIn": {
+                      "type": "boolean",
+                      "optional": true,
+                      "description": "Whether there's a logged-in user."
+                    },
+                    "isScreenLocked": {
+                      "type": "boolean",
+                      "optional": true,
+                      "description": "Whether the screen is locked."
                     }
                   }
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "notifyFail",
@@ -114,16 +121,26 @@
         "type": "function",
         "description": "Sends a string message to the browser process, generating a Notification that C++ test code can wait for.",
         "parameters": [
-          {"type": "string", "name": "message"},
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {"type": "string", "name": "response"}
-            ]
-          }
-        ]
+          {"type": "string", "name": "message"}
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {"type": "string", "name": "response"}
+          ]
+        }
+      },
+      {
+        "name": "sendScriptResult",
+        "type": "function",
+        "description": "Sends a result back to the browser as a result of script executing; this is handy for communicating results from browser-driven script execution.",
+        "parameters": [{"type": "any", "name": "result"}],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "callbackAdded",
@@ -359,12 +376,12 @@
       {
         "name": "runWithUserGesture",
         "type": "function",
-        "description": "Runs the callback in the context of a user gesture.",
+        "description": "Runs the provided function in the context of a user gesture.",
         "nocompile": true,
         "parameters": [
           {
             "type": "function",
-            "name": "callback",
+            "name": "functionToRun",
             "parameters": []
           }
         ]
@@ -374,15 +391,31 @@
         "type": "function",
         "description": "Sends a string message one round trip from the renderer to the browser process and back.",
         "parameters": [
-          {"type": "string", "name": "message"},
+          {"type": "string", "name": "message"}
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"type": "string", "name": "message"}
+          ]
+        }
+      },
+      {
+        "name": "loadScript",
+        "type": "function",
+        "nocompile": true,
+        "description": "Loads a JS script in the current JS context.",
+        "parameters": [
           {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"type": "string", "name": "message"}
-            ]
+            "type": "string",
+            "name": "scriptUrl"
           }
-        ]
+        ],
+        "returns": {
+          "type": "object",
+          "isInstanceOf": "Promise",
+          "description": "A promise that will be resolved once the script is loaded."
+        }
       },
       {
         "name": "setExceptionHandler",
@@ -392,7 +425,7 @@
         "parameters": [
           {
             "type": "function",
-            "name": "callback",
+            "name": "handler",
             "parameters": [
               {"type": "string", "name": "message"},
               {"type": "any", "name": "exception"}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"
@@ -112,7 +113,11 @@ class CC_EXPORT TilingSetEvictionQueue {
     bool GetFirstTileAndCheckIfValid(TilingIteratorType* iterator);
 
     PrioritizedTile prioritized_tile_;
-    std::vector<PictureLayerTiling*>* tilings_;
+
+    // `tilings_` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
+    RAW_PTR_EXCLUSION std::vector<PictureLayerTiling*>* tilings_;
+
     WhichTree tree_;
     PictureLayerTiling::PriorityRectType priority_rect_type_;
     size_t tiling_index_;

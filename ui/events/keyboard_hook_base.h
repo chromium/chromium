@@ -1,13 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_EVENTS_KEYBOARD_HOOK_BASE_H_
 #define UI_EVENTS_KEYBOARD_HOOK_BASE_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "ui/events/keyboard_hook.h"
 
 namespace ui {
@@ -17,8 +14,12 @@ class KeyEvent;
 
 class KeyboardHookBase : public KeyboardHook {
  public:
-  KeyboardHookBase(base::Optional<base::flat_set<DomCode>> dom_codes,
+  KeyboardHookBase(absl::optional<base::flat_set<DomCode>> dom_codes,
                    KeyEventCallback callback);
+
+  KeyboardHookBase(const KeyboardHookBase&) = delete;
+  KeyboardHookBase& operator=(const KeyboardHookBase&) = delete;
+
   ~KeyboardHookBase() override;
 
   // KeyboardHook implementation.
@@ -35,7 +36,7 @@ class KeyboardHookBase : public KeyboardHook {
   // returns.
   void ForwardCapturedKeyEvent(KeyEvent* event);
 
-  const base::Optional<base::flat_set<DomCode>>& dom_codes() {
+  const absl::optional<base::flat_set<DomCode>>& dom_codes() {
     return dom_codes_;
   }
 
@@ -44,9 +45,7 @@ class KeyboardHookBase : public KeyboardHook {
   KeyEventCallback key_event_callback_;
 
   // The set of keys which should be intercepted by the keyboard hook.
-  base::Optional<base::flat_set<DomCode>> dom_codes_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHookBase);
+  absl::optional<base::flat_set<DomCode>> dom_codes_;
 };
 
 }  // namespace ui

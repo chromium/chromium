@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/observer_list.h"
 #include "base/time/default_tick_clock.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -28,18 +29,15 @@ void OutOfMemoryReporter::RemoveObserver(Observer* observer) {
 
 OutOfMemoryReporter::OutOfMemoryReporter(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      tick_clock_(std::make_unique<base::DefaultTickClock>())
-#if defined(OS_ANDROID)
-      ,
-      scoped_observer_(this) {
+      content::WebContentsUserData<OutOfMemoryReporter>(*web_contents),
+      tick_clock_(std::make_unique<base::DefaultTickClock>()) {
+#if BUILDFLAG(IS_ANDROID)
   // This adds N async observers for N WebContents, which isn't great but
   // probably won't be a big problem on Android, where many multiple tabs are
   // rarer.
   auto* crash_manager = crash_reporter::CrashMetricsReporter::GetInstance();
   DCHECK(crash_manager);
-  scoped_observer_.Add(crash_manager);
-#else
-{
+  scoped_observation_.Observe(crash_manager);
 #endif
 }
 
@@ -62,23 +60,17 @@ void OutOfMemoryReporter::SetTickClockForTest(
   tick_clock_ = std::move(tick_clock);
 }
 
-void OutOfMemoryReporter::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  // Only care about main frame navigations that commit to another document.
-  if (!handle->IsInMainFrame() || !handle->HasCommitted() ||
-      handle->IsSameDocument()) {
-    return;
-  }
+void OutOfMemoryReporter::PrimaryPageChanged(content::Page& page) {
   last_committed_source_id_.reset();
   last_navigation_timestamp_ = tick_clock_->NowTicks();
   crashed_render_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
-  if (handle->IsErrorPage())
+  if (page.GetMainDocument().IsErrorDocument())
     return;
-  last_committed_source_id_ = ukm::ConvertToSourceId(
-      handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  last_committed_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 }
 
-void OutOfMemoryReporter::RenderProcessGone(base::TerminationStatus status) {
+void OutOfMemoryReporter::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // Don't record OOM metrics (especially not UKM) for unactivated portals
   // since the user didn't explicitly navigate to it.
   if (web_contents()->IsPortal())
@@ -88,25 +80,27 @@ void OutOfMemoryReporter::RenderProcessGone(base::TerminationStatus status) {
   if (web_contents()->GetVisibility() != content::Visibility::VISIBLE)
     return;
 
+  // RenderProcessGone is only called for when the current RenderFrameHost of
+  // the primary main frame exits, so it is ok to call GetPrimaryMainFrame here.
   crashed_render_process_id_ =
-      web_contents()->GetMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
 
 // On Android, we care about OOM protected crashes, which are obtained via
 // crash dump analysis. Otherwise we can use the termination status to
-// deterine OOM.
-#if !defined(OS_ANDROID)
+// determine OOM.
+#if !BUILDFLAG(IS_ANDROID)
   if (status == base::TERMINATION_STATUS_OOM
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       || status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM
 #endif
   ) {
     OnForegroundOOMDetected(web_contents()->GetLastCommittedURL(),
                             *last_committed_source_id_);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // This should always be called *after* the associated RenderProcessGone. This
 // is because the crash dump is processed asynchronously on the IO thread in
 // response to RenderProcessHost::ProcessDied, while RenderProcessGone is called
@@ -128,6 +122,6 @@ void OutOfMemoryReporter::OnCrashDumpProcessed(
                             *last_committed_source_id_);
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OutOfMemoryReporter)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OutOfMemoryReporter);

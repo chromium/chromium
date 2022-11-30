@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -20,6 +19,12 @@ namespace ash {
 class TestKeyboardControllerObserver : public KeyboardControllerObserver {
  public:
   explicit TestKeyboardControllerObserver(KeyboardController* controller);
+
+  TestKeyboardControllerObserver(const TestKeyboardControllerObserver&) =
+      delete;
+  TestKeyboardControllerObserver& operator=(
+      const TestKeyboardControllerObserver&) = delete;
+
   ~TestKeyboardControllerObserver() override;
 
   // KeyboardControllerObserver:
@@ -44,8 +49,6 @@ class TestKeyboardControllerObserver : public KeyboardControllerObserver {
   std::set<keyboard::KeyboardEnableFlag> enable_flags_;
   keyboard::KeyboardConfig config_;
   int destroyed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardControllerObserver);
 };
 
 }  // namespace ash

@@ -1,0 +1,57 @@
+<title>Test timeline work properly when playing live video.</title>
+<script src="/w3c/resources/testharness.js"></script>
+<script src="/w3c/resources/testharnessreport.js"></script>
+<script src="media-source/mediasource-util.js"></script>
+<script src="../../media-resources/media-controls.js"></script>
+<video controls></video>
+<script>
+  const epsilon = 0.2;
+  const pause_delay = 1;  // 1 second.
+
+  mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData){
+
+    // Append all media data for complete playback.
+    test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer end update.');
+    test.expectEvent(mediaElement, 'loadedmetadata', 'Reached HAVE_METADATA');
+    test.expectEvent(mediaElement, 'playing', 'Playing media.');
+    sourceBuffer.appendBuffer(mediaData);
+    let timeline = timelineElement(mediaElement);
+
+    var playPromise = mediaElement.play();
+    assert_true(playPromise !== undefined, "Video element |play| method did not return a promise");
+
+
+    playPromise.then(_ => {
+      mediaSource.duration = +Infinity;
+      test.waitForExpectedEvents(function() {
+        test.waitForCurrentTimeChange(mediaElement, function() {
+          assert_approx_equals(Number(timeline.value), Number(timeline.max),
+                               epsilon, "timline thumb should be near the end");
+
+          mediaElement.onpause = test.step_func(function() {
+            // Timeline value should be at least 1s away from end at some point
+            // after paused.
+            function waitForTimeline() {
+              if (Number(timeline.max) - Number(timeline.value) >= pause_delay) {
+                test.done();
+                return;
+              }
+              test.step_timeout(waitForTimeline, 1000);
+            }
+
+            waitForTimeline();
+          });
+
+          mediaElement.pause();
+        });
+      });
+    }).catch(err => {
+      // No autoplay, are you running the webtests?
+      assert_false(true, "autoplay policy is disabling this test");
+    });
+
+  }, "Timeline work properly when playing live video", {
+    "enable_controls": true
+  });
+
+</script>

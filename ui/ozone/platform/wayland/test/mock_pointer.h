@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <wayland-server-protocol.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -17,9 +17,15 @@ namespace wl {
 
 extern const struct wl_pointer_interface kMockPointerImpl;
 
+class MockZcrPointerStylus;
+
 class MockPointer : public ServerObject {
  public:
   explicit MockPointer(wl_resource* resource);
+
+  MockPointer(const MockPointer&) = delete;
+  MockPointer& operator=(const MockPointer&) = delete;
+
   ~MockPointer() override;
 
   MOCK_METHOD3(SetCursor,
@@ -27,8 +33,13 @@ class MockPointer : public ServerObject {
                     int32_t hotspot_x,
                     int32_t hotspot_y));
 
+  void set_pointer_stylus(MockZcrPointerStylus* pointer_stylus) {
+    pointer_stylus_ = pointer_stylus;
+  }
+  MockZcrPointerStylus* pointer_stylus() const { return pointer_stylus_; }
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockPointer);
+  raw_ptr<MockZcrPointerStylus> pointer_stylus_ = nullptr;
 };
 
 }  // namespace wl

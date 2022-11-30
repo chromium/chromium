@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,12 +42,15 @@ const UChar32 kRisS = 0x1F1F8;
 
 class ForwardGraphemeBoundaryStatemachineTest
     : public GraphemeStateMachineTestBase {
+ public:
+  ForwardGraphemeBoundaryStatemachineTest(
+      const ForwardGraphemeBoundaryStatemachineTest&) = delete;
+  ForwardGraphemeBoundaryStatemachineTest& operator=(
+      const ForwardGraphemeBoundaryStatemachineTest&) = delete;
+
  protected:
   ForwardGraphemeBoundaryStatemachineTest() = default;
   ~ForwardGraphemeBoundaryStatemachineTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ForwardGraphemeBoundaryStatemachineTest);
 };
 
 TEST_F(ForwardGraphemeBoundaryStatemachineTest, DoNothingCase) {

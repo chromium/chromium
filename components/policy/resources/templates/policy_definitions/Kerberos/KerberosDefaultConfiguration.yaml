@@ -1,0 +1,25 @@
+caption: Changes default configuration for Kerberos tickets
+desc: |-
+  Changes the <ph name="KRB5_CONFIG">krb5</ph> suggested configuration for the new manually created tickets.
+
+        If the policy is set, its value is applied as the suggested configuration and shown in the "Advanced" section of the authentication dialog.
+
+        If this policy is unset, the recommended <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> configuration is applied instead. Note that it is also shown in the "Advanced" section of the authentication dialog.
+example_value: |
+  [libdefaults]
+    default_tgs_enctypes = aes256-cts-hmac-sha1-96
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome_os
+owners:
+- slutskii@google.com
+- file://chrome/browser/ash/kerberos/OWNERS
+schema:
+  type: string
+supported_chrome_os_management:
+- google_cloud
+tags:
+- website-sharing
+type: string

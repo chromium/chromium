@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,14 @@
 #include "net/base/net_export.h"
 
 namespace net {
+
+// Use base::HexEncode() for encoding to hex representation.
+
+// Decode a hex representation like "666f6f" to a string like "foo".  Crashes on
+// invalid input in debug builds, therefore it must only be used on sanitized
+// input (like a constant literal).  If validity of input needs to be checked or
+// partial decoding is desired, use base::HexStringToString() instead.
+NET_EXPORT_PRIVATE std::string HexDecode(base::StringPiece hex);
 
 // Return a std::string containing hex and ASCII representations of the binary
 // buffer |input|, with offsets at the beginning of each line, in the style of

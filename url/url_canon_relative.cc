@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -355,7 +355,7 @@ bool DoResolveRelativePath(const char* base_url,
       // Relative path, replace the query, and reference. We take the
       // original path with the file part stripped, and append the new path.
       // The canonicalizer will take care of resolving ".." and "."
-      int path_begin = output->length();
+      size_t path_begin = output->length();
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
       success &= CanonicalizePartialPathInternal(relative_url, path, path_begin,
@@ -543,10 +543,7 @@ bool DoResolveRelativeURL(const char* base_url,
   // have a host, we want to use the special host detection logic for file
   // URLs provided by DoResolveAbsoluteFile(), as opposed to the generic host
   // detection logic, for consistency with parsing file URLs from scratch.
-  // This also handles the special case where the URL is only slashes,
-  // since that doesn't have a host part either.
-  if (base_is_file &&
-      (num_slashes >= 2 || num_slashes == relative_component.len)) {
+  if (base_is_file && num_slashes >= 2) {
     return DoResolveAbsoluteFile(relative_url, relative_component,
                                  query_converter, output, out_parsed);
   }

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
+#include "third_party/blink/renderer/core/animation/css/compositor_keyframe_transform.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
@@ -44,10 +45,11 @@
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -58,7 +60,7 @@ using animation_test_helpers::EnsureInterpolatedValueCached;
 class AnimationKeyframeEffectModel : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().UpdateStyleAndLayoutTree();
     element = GetDocument().CreateElementForBinding("foo");
     GetDocument().body()->appendChild(element);
@@ -81,9 +83,10 @@ class AnimationKeyframeEffectModel : public PageTestBase {
         To<InterpolableLength>(typed_value->GetInterpolableValue());
     // Lengths are computed in logical units, which are quantized to 64ths of
     // a pixel.
-    EXPECT_NEAR(expected_value,
-                length.CreateCSSValue(kValueRangeAll)->GetDoubleValue(),
-                /*abs_error=*/0.02);
+    EXPECT_NEAR(
+        expected_value,
+        length.CreateCSSValue(Length::ValueRange::kAll)->GetDoubleValue(),
+        /*abs_error=*/0.02);
   }
 
   void ExpectNonInterpolableValue(const String& expected_value,
@@ -108,7 +111,7 @@ class AnimationKeyframeEffectModel : public PageTestBase {
   Persistent<Element> element;
 };
 
-const AnimationTimeDelta kDuration = AnimationTimeDelta::FromSecondsD(1);
+const AnimationTimeDelta kDuration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
 
 StringKeyframeVector KeyframesAtZeroAndOne(CSSPropertyID property,
                                            const String& zero_value,
@@ -305,7 +308,7 @@ TEST_F(AnimationKeyframeEffectModel, ZeroKeyframes) {
       MakeGarbageCollected<StringKeyframeEffectModel>(StringKeyframeVector());
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.5, kDuration, values);
-  EXPECT_TRUE(values.IsEmpty());
+  EXPECT_TRUE(values.empty());
 }
 
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
@@ -794,6 +797,56 @@ TEST_F(AnimationKeyframeEffectModel, CompositorUpdateColorProperty) {
   EXPECT_TRUE(value_mixed1->IsColor());
   EXPECT_EQ(To<CompositorKeyframeColor>(value_mixed1)->ToColor(),
             SK_ColorGREEN);
+}
+
+TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotContainerRelative) {
+  ScopedCSSContainerQueriesForTest container_queries(true);
+  ScopedLayoutNGForTest layout_ng(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        container-type: size;
+        width: 100px;
+        height: 200px;
+      }
+    </style>
+    <div id=container>
+      <div id="target">
+        Test
+      </div>
+    </div>
+  )HTML");
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+
+  StringKeyframeVector keyframes = KeyframesAtZeroAndOne(
+      CSSPropertyID::kTransform, "translateX(10cqw)", "translateX(10cqh)");
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(
+      *target, target->ComputedStyleRef(), nullptr));
+
+  const auto& property_specific_keyframes =
+      *effect->GetPropertySpecificKeyframes(
+          PropertyHandle(GetCSSPropertyTransform()));
+  ASSERT_EQ(2u, property_specific_keyframes.size());
+  const auto* value0 = DynamicTo<CompositorKeyframeTransform>(
+      property_specific_keyframes[0]->GetCompositorKeyframeValue());
+  const auto* value1 = DynamicTo<CompositorKeyframeTransform>(
+      property_specific_keyframes[1]->GetCompositorKeyframeValue());
+  ASSERT_TRUE(value0);
+  ASSERT_TRUE(value1);
+  const TransformOperations& ops0 = value0->GetTransformOperations();
+  const TransformOperations& ops1 = value1->GetTransformOperations();
+  ASSERT_EQ(1u, ops0.size());
+  ASSERT_EQ(1u, ops1.size());
+  const auto* op0 = DynamicTo<TranslateTransformOperation>(ops0.at(0));
+  const auto* op1 = DynamicTo<TranslateTransformOperation>(ops1.at(0));
+  ASSERT_TRUE(op0);
+  ASSERT_TRUE(op1);
+  EXPECT_FLOAT_EQ(10.0f, op0->X().Pixels());
+  EXPECT_FLOAT_EQ(20.0f, op1->X().Pixels());
 }
 
 }  // namespace blink

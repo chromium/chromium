@@ -1,20 +1,57 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/timing/profiler.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
+Profiler* Profiler::Create(ScriptState* script_state,
+                           const ProfilerInitOptions* options,
+                           ExceptionState& exception_state) {
+  auto* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context);
+
+  Performance* performance = nullptr;
+  bool can_profile = false;
+  if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+    can_profile = ProfilerGroup::CanProfile(window, &exception_state,
+                                            ReportOptions::kReportOnFailure);
+    performance = DOMWindowPerformance::performance(*window);
+  }
+
+  if (!can_profile) {
+    DCHECK(exception_state.HadException());
+    return nullptr;
+  }
+
+  DCHECK(performance);
+
+  auto* profiler_group = ProfilerGroup::From(script_state->GetIsolate());
+  DCHECK(profiler_group);
+
+  auto* profiler = profiler_group->CreateProfiler(
+      script_state, *options, performance->GetTimeOriginInternal(),
+      exception_state);
+  if (exception_state.HadException())
+    return nullptr;
+
+  return profiler;
+}
+
 void Profiler::Trace(Visitor* visitor) const {
   visitor->Trace(profiler_group_);
   visitor->Trace(script_state_);
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
 }
 
 void Profiler::DisposeAsync() {

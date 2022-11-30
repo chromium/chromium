@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,10 @@ class DiscoverySession : public mojom::DiscoverySession {
  public:
   explicit DiscoverySession(
       std::unique_ptr<device::BluetoothDiscoverySession> session);
+
+  DiscoverySession(const DiscoverySession&) = delete;
+  DiscoverySession& operator=(const DiscoverySession&) = delete;
+
   ~DiscoverySession() override;
 
   // mojom::DiscoverySession overrides:
@@ -35,10 +39,8 @@ class DiscoverySession : public mojom::DiscoverySession {
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
 
   base::WeakPtrFactory<DiscoverySession> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiscoverySession);
 };
 
 }  // namespace bluetooth
 
-#endif
+#endif  // DEVICE_BLUETOOTH_DISCOVERY_SESSION_H_

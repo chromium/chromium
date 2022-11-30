@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,7 @@ source_set("web_state") {
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/security",
     "//ios/web/public/session",
     "//ios/web/public/webui",
     "//ios/web/security",
@@ -40,11 +41,17 @@ source_set("web_state") {
     "web_state_delegate.mm",
     "web_state_delegate_bridge.mm",
     "web_state_impl.mm",
+    "web_state_impl_realized_web_state.h",
+    "web_state_impl_realized_web_state.mm",
+    "web_state_impl_serialized_data.h",
+    "web_state_impl_serialized_data.mm",
     "web_state_observer.mm",
     "web_state_observer_bridge.mm",
     "web_state_policy_decider.mm",
     "web_state_policy_decider_bridge.mm",
   ]
+
+  frameworks = [ "QuartzCore.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -122,6 +129,19 @@ source_set("policy_decision_state_tracker") {
     "//base",
     "//ios/web/public",
   ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("test_util") {
+  testonly = true
+
+  sources = [
+    "web_state_policy_decider_test_util.h",
+    "web_state_policy_decider_test_util.mm",
+  ]
+
+  deps = [ "//ios/web/public/navigation" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

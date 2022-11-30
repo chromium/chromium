@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,8 @@ NSArray<NSArray<NSString*>*>* alert_text_button_pairs = @[
   @[
     @"would like to find and connect to devices on your local network.", @"OK"
   ],
-  @[ @"Unable to activate Touch ID on this iPhone.", @"OK" ]
+  @[ @"Unable to activate Touch ID on this iPhone.", @"OK" ],
+  @[ @"Like to Access the Microphone", @"OK" ],
 ];
 
 BOOL ElementStaticTextContainsText(XCUIElement* element, NSString* text) {
@@ -63,8 +64,10 @@ BOOL HandleSystemAlertsIfVisible() {
   // Limit attempt times. If attempt limit is exceeded it means something wrong
   // at tapping the dismiss button.
   int attempt = 0;
-  while (attempt < 5 &&
-         [alert waitForExistenceWithTimeout:kWaitForUIElementTimeout]) {
+  while (
+      attempt < 5 &&
+      [alert
+          waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()]) {
     NSLog(@"Alert on screen: %@", alert.label);
     if (!HandleSingleAlert(alert)) {
       return NO;
@@ -87,24 +90,26 @@ BOOL HandleSystemAlertsIfVisible() {
   XCTAssert(HandleSystemAlertsIfVisible(), @"Unhandled system alert.");
 }
 
-// Verifies Internet connectivity by navigating to browsingtest.appspot.com.
+// Verifies Internet connectivity by navigating to google.com.
 - (void)testNetworkConnection {
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
   [app.buttons[ntp_home::FakeOmniboxAccessibilityID()].firstMatch tap];
 
-  XCTAssert([app.keyboards.firstMatch
-                waitForExistenceWithTimeout:kWaitForUIElementTimeout],
-            @"Keyboard didn't appear!");
-  [app typeText:@"http://browsingtest.appspot.com/googleLogoPage.html"];
+  XCTAssert(
+      [app.keyboards.firstMatch
+          waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+      @"Keyboard didn't appear!");
+  [app typeText:@"http://google.com"];
   [app typeText:XCUIKeyboardKeyReturn];
 
-  ConditionBlock waitForWebContents = ^{
-    return ElementStaticTextContainsText(app.webViews.firstMatch, @"some text");
-  };
   XCTAssert(
-      WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, waitForWebContents),
-      @"Failed to find desired text in web page!");
+      // verify chrome is not showing offline dino page
+      ![[[app.webViews.firstMatch descendantsMatchingType:XCUIElementTypeAny]
+            matchingIdentifier:@"Dino game, play"]
+              .firstMatch
+          waitForExistenceWithTimeout:kWaitForPageLoadTimeout.InSecondsF()],
+      @"Showing chrome dino page!");
 }
 
 @end

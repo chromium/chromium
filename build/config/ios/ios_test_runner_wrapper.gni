@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -61,6 +61,8 @@ template("ios_test_runner_wrapper") {
 
     _rebased_mac_toolchain = rebase_path("//mac_toolchain", root_build_dir)
     _rebased_xcode_path = rebase_path("//Xcode.app", root_build_dir)
+    _rebased_ios_runtime_cache_prefix =
+        rebase_path("//Runtime-ios-", root_build_dir)
 
     # --out-dir argument is specified in gn_isolate_map.pyl because
     # ${ISOLATED_OUTDIR} doesn't get resolved through this wrapper.
@@ -69,6 +71,8 @@ template("ios_test_runner_wrapper") {
       "@WrappedPath(${_rebased_xcode_path})",
       "--mac-toolchain-cmd",
       "@WrappedPath(${_rebased_mac_toolchain})",
+      "--runtime-cache-prefix",
+      "@WrappedPath(${_rebased_ios_runtime_cache_prefix})",
     ]
 
     # Default retries to 3
@@ -89,7 +93,14 @@ template("ios_test_runner_wrapper") {
       "${shards}",
     ]
 
-    data_deps = []
+    if (xcode_version_int >= 1400) {
+      executable_args += [
+        "--readline-timeout",
+        "600",
+      ]
+    }
+
+    data_deps = [ "//testing:test_scripts_shared" ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }
@@ -131,9 +142,14 @@ template("ios_test_runner_wrapper") {
       data += invoker.data
     }
     data += [
-      "//testing/test_env.py",
-      "//.vpython",
       "//ios/build/bots/scripts/",
+      "//ios/build/bots/scripts/plugin",
+
+      # gRPC interface for iOS test plugin
+      "//ios/testing/plugin",
+
+      # Variations test utilities used by variations_runner script.
+      "//testing/scripts/variations_seed_access_helper.py",
       "//testing/test_env.py",
     ]
   }

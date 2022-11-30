@@ -1,0 +1,4 @@
+include_rules = [
+  "+base",
+  "+third_party/leveldatabase",
+]

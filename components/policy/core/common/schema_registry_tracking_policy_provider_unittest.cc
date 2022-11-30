@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,9 +122,9 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, SchemaReadyWithComponents) {
   policy_map.Set("foo", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                  POLICY_SOURCE_CLOUD, base::Value("omg"), nullptr);
   std::unique_ptr<PolicyBundle> bundle(new PolicyBundle);
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, "")).CopyFrom(policy_map);
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz"))
-      .CopyFrom(policy_map);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, "")) = policy_map.Clone();
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz")) =
+      policy_map.Clone();
   EXPECT_CALL(observer_, OnUpdatePolicy(&schema_registry_tracking_provider_));
   mock_provider_.UpdatePolicy(std::move(bundle));
   Mock::VerifyAndClearExpectations(&observer_);
@@ -142,8 +142,8 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, SchemaReadyWithComponents) {
   EXPECT_FALSE(schema_registry_tracking_provider_.IsInitializationComplete(
       policy::POLICY_DOMAIN_EXTENSIONS));
   PolicyBundle expected_bundle;
-  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""))
-      .CopyFrom(policy_map);
+  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, "")) =
+      policy_map.Clone();
   EXPECT_TRUE(
       schema_registry_tracking_provider_.policies().Equals(expected_bundle));
 
@@ -153,8 +153,8 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, SchemaReadyWithComponents) {
 
   EXPECT_TRUE(schema_registry_tracking_provider_.IsInitializationComplete(
       policy::POLICY_DOMAIN_EXTENSIONS));
-  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz"))
-      .CopyFrom(policy_map);
+  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz")) =
+      policy_map.Clone();
   EXPECT_TRUE(
       schema_registry_tracking_provider_.policies().Equals(expected_bundle));
 }
@@ -229,7 +229,7 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, RemoveAndAddComponent) {
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
   EXPECT_CALL(observer_, OnUpdatePolicy(_));
-  copy.reset(new PolicyBundle);
+  copy = std::make_unique<PolicyBundle>();
   copy->CopyFrom(platform_policy);
   mock_provider_.UpdatePolicy(std::move(copy));
   Mock::VerifyAndClearExpectations(&observer_);

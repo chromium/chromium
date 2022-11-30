@@ -178,7 +178,7 @@ void TableLayoutAlgorithmAuto::FullRecalc() {
   unsigned n_eff_cols = table_->NumEffectiveColumns();
   layout_struct_.resize(n_eff_cols);
   layout_struct_.Fill(Layout());
-  span_cells_.Fill(0);
+  span_cells_.clear();
 
   Length group_logical_width;
   unsigned current_column = 0;
@@ -439,10 +439,10 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
             // mozilla doesn't do this so I decided we don't neither.
             break;
           }
-          FALLTHROUGH;
+          [[fallthrough]];
         case Length::kAuto:
           have_auto = true;
-          FALLTHROUGH;
+          [[fallthrough]];
         default:
           // If the column is a percentage width, do not let the spanning cell
           // overwrite the width value.  This caused a mis-layout on amazon.com.
@@ -661,7 +661,7 @@ void TableLayoutAlgorithmAuto::InsertSpanCell(LayoutTableCell* cell) {
   if (!size || span_cells_[size - 1] != 0) {
     span_cells_.Grow(size + 10);
     for (unsigned i = 0; i < 10; i++)
-      span_cells_[size + i] = 0;
+      span_cells_[size + i] = nullptr;
     size += 10;
   }
 
@@ -673,7 +673,7 @@ void TableLayoutAlgorithmAuto::InsertSpanCell(LayoutTableCell* cell) {
          span > span_cells_[pos]->ColSpan())
     pos++;
   memmove(span_cells_.data() + pos + 1, span_cells_.data() + pos,
-          (size - pos - 1) * sizeof(LayoutTableCell*));
+          (size - pos - 1) * sizeof(decltype(span_cells_)::value_type));
   span_cells_[pos] = cell;
 }
 
@@ -927,4 +927,10 @@ void TableLayoutAlgorithmAuto::ShrinkColumnWidth(
     }
   }
 }
+
+void TableLayoutAlgorithmAuto::Trace(Visitor* visitor) const {
+  visitor->Trace(span_cells_);
+  TableLayoutAlgorithm::Trace(visitor);
+}
+
 }  // namespace blink

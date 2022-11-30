@@ -1,0 +1,35 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=../../cr_elements/cr_shared_style.css.js
+ * #include=cr-shared-style
+ * #css_wrapper_metadata_end */
+
+/* .list-frame and .list-item match the styling in settings_shared_css. */
+.list-frame {
+  align-items: center;
+  display: block;
+  padding-inline-end: 20px;
+  padding-inline-start: 60px;
+}
+
+.list-item {
+  align-items: center;
+  display: flex;
+  min-height: 48px;
+}
+
+.list-item.underbar {
+  border-bottom: var(--cr-separator-line);
+}
+
+.list-item.selected {
+  font-weight: 500;
+}
+
+.list-item > .start {
+  flex: 1;
+}

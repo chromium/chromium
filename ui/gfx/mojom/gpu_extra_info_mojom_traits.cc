@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,15 +24,7 @@ bool StructTraits<gfx::mojom::GpuExtraInfoDataView, gfx::GpuExtraInfo>::Read(
     gfx::GpuExtraInfo* out) {
   if (!data.ReadAngleFeatures(&out->angle_features))
     return false;
-#if defined(USE_OZONE_PLATFORM_X11) || defined(USE_X11)
-  // These visuals below are obtained via methods of gl::GLVisualPickerGLX class
-  // and consumed by ui::XVisualManager::UpdateVisualsOnGpuInfoChanged(); should
-  // bad visuals come there, the GPU process will be shut down.
-  //
-  // See content::GpuDataManagerVisualProxyOzoneLinux and the ShutdownGpuOnIO()
-  // function there.
-  out->system_visual = static_cast<x11::VisualId>(data.system_visual());
-  out->rgba_visual = static_cast<x11::VisualId>(data.rgba_visual());
+#if defined(USE_OZONE_PLATFORM_X11)
   if (!data.ReadGpuMemoryBufferSupportX11(&out->gpu_memory_buffer_support_x11))
     return false;
 #endif

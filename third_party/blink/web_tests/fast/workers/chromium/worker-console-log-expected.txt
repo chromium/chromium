@@ -1,12 +1,12 @@
-CONSOLE MESSAGE: line 2: log
-CONSOLE MESSAGE: line 3: function
-CONSOLE MESSAGE: line 4: function log() { [native code] }
-CONSOLE ERROR: line 5: error
-CONSOLE WARNING: line 6: warn
-CONSOLE MESSAGE: line 7: info
-CONSOLE DEBUG: line 8: debug
-CONSOLE DEBUG: line 9: count: 1
-CONSOLE ERROR: line 16: console.assert
+CONSOLE MESSAGE: log
+CONSOLE MESSAGE: function
+CONSOLE MESSAGE: function log() { [native code] }
+CONSOLE ERROR: error
+CONSOLE WARNING: warn
+CONSOLE MESSAGE: info
+CONSOLE DEBUG: debug
+CONSOLE DEBUG: count: 1
+CONSOLE ERROR: console.assert
 This tests that 'console.log' and friends function correctly from workers.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

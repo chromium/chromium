@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,6 +22,8 @@ java_cpp_strings("java_switches_srcjar") {
 android_library("policy_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ ":java_switches_srcjar" ]
@@ -57,10 +59,7 @@ generate_jni("jni_headers") {
   sources = _jni_sources
 }
 
-java_library("components_policy_junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("components_policy_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/policy/AbstractAppRestrictionsProviderTest.java",
     "junit/src/org/chromium/components/policy/CombinedPolicyProviderTest.java",
@@ -75,7 +74,8 @@ java_library("components_policy_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -92,7 +92,7 @@ android_library("native_test_support_java") {
   testonly = true
   deps = [
     ":policy_java",
-    "//base:base_java",
+    "//base:jni_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

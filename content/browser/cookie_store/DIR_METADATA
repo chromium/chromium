@@ -1,4 +1,1 @@
-monorail {
-  component: "Blink>Storage>CookiesAPI"
-}
-team_email: "storage-dev@chromium.org"
+mixins: "//content/browser/cookie_store/COMMON_METADATA"

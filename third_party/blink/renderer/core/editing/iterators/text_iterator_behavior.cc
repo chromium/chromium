@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,6 +124,14 @@ TextIteratorBehavior::Builder::SetIgnoresDisplayLock(bool value) {
   behavior_.values_.bits.ignores_display_lock = value;
   return *this;
 }
+
+TextIteratorBehavior::Builder&
+TextIteratorBehavior::Builder::SetEmitsPunctuationForReplacedElements(
+    bool value) {
+  behavior_.values_.bits.emits_punctuation_for_replaced_elements = value;
+  return *this;
+}
+
 // -
 TextIteratorBehavior::TextIteratorBehavior(const TextIteratorBehavior& other) =
     default;

@@ -1,0 +1,3 @@
+caption: Native Messaging
+desc: Configures policies for Native Messaging. Blocked native messaging hosts won't
+  be allowed unless they are whitelisted.

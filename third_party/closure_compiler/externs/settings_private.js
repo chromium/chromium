@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.settingsPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: settingsPrivate */
+/**
+ * @fileoverview Externs generated from namespace: settingsPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.settingsPrivate = {};
@@ -52,7 +55,7 @@ chrome.settingsPrivate.Enforcement = {
  * @typedef {{
  *   key: string,
  *   type: !chrome.settingsPrivate.PrefType,
- *   value: *,
+ *   value: (*|undefined),
  *   controlledBy: (!chrome.settingsPrivate.ControlledBy|undefined),
  *   controlledByName: (string|undefined),
  *   enforcement: (!chrome.settingsPrivate.Enforcement|undefined),

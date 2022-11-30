@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -20,16 +19,20 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
  public:
   class Iterator {
    public:
-    Iterator(const base::circular_deque<std::string>& queries);
+    explicit Iterator(const base::circular_deque<std::string>& queries);
+
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     ~Iterator();
 
     // Fetches the next query. If current is already the last query, or there is
     // no query in history, returns nullopt.
-    base::Optional<std::string> Next();
+    absl::optional<std::string> Next();
 
     // Fetches the previous query. If current is already the first query, return
     // the first query. If there is no query in history, returns nullopt.
-    base::Optional<std::string> Prev();
+    absl::optional<std::string> Prev();
 
     // Resets to the last query. It also makes current iterator valid again if
     // new queries are added to the underlying AssistantQueryHistory.
@@ -38,11 +41,13 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
    private:
     const base::circular_deque<std::string>& queries_;
     size_t cur_pos_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   AssistantQueryHistory(int capacity = 100);
+
+  AssistantQueryHistory(const AssistantQueryHistory&) = delete;
+  AssistantQueryHistory& operator=(const AssistantQueryHistory&) = delete;
+
   ~AssistantQueryHistory();
 
   // Gets the iterator of query history.
@@ -54,8 +59,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
  private:
   const int capacity_;
   base::circular_deque<std::string> queries_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantQueryHistory);
 };
 
 }  // namespace ash

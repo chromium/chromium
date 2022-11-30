@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,28 +7,27 @@
 // To test out locally:
 // - Assuming
 //     $OUT is your local build output directory with use_libbfuzzer set.
-//     $GEN is the suitable 'gen' directory under $OUT. $GEN is
-//         $OUT/gen/third_party_blink/renderer/modules/sanitizer_api.
+//     $GEN is the suitable 'gen' directory under $OUT.
+//
 // - Build:
 //   $ ninja -C $OUT sanitizer_api_fuzzer
 // - Run with:
+//   $ GEN=$OUT/gen/third_party/blink/renderer/modules/sanitizer_api
 //   $ $OUT/sanitizer_api_fuzzer --dict=$GEN/sanitizer_api.dict \
 //       $(mktemp -d) $GEN/corpus/
 
 #include "sanitizer.h"
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_document_fragment_or_document.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_trusted_html_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/sanitizer_config.pb.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -79,6 +78,7 @@ void MakeConfiguration(SanitizerConfig* sanitizer_config,
     sanitizer_config->setDropAttributes(drop_attributes);
   }
   sanitizer_config->setAllowCustomElements(proto.allow_custom_elements());
+  sanitizer_config->setAllowComments(proto.allow_comments());
 }
 
 void TextProtoFuzzer(const SanitizerConfigProto& proto,
@@ -90,18 +90,26 @@ void TextProtoFuzzer(const SanitizerConfigProto& proto,
   auto* sanitizer = MakeGarbageCollected<Sanitizer>(
       window->GetExecutionContext(), sanitizer_config);
 
-  // Sanitize string given in proto. Method depends on sanitize_to_string.
-  String str = proto.html_string().c_str();
-  if (proto.sanitize_to_string()) {
-    StringOrTrustedHTMLOrDocumentFragmentOrDocument str1 =
-        StringOrTrustedHTMLOrDocumentFragmentOrDocument::FromString(str);
-    sanitizer->sanitize(script_state, str1, IGNORE_EXCEPTION_FOR_TESTING);
-  } else {
-    StringOrDocumentFragmentOrDocument str2 =
-        StringOrDocumentFragmentOrDocument::FromString(str);
-    sanitizer->sanitizeToString(script_state, str2,
-                                IGNORE_EXCEPTION_FOR_TESTING);
+  // Sanitize string given in proto. Use proto.string_context to decide on
+  // parsing context for sanitizeFor.
+  // TODO(1225606): This needs to be updated to also support SVG & MathML
+  // contexts, once those are implemented.
+  String markup = proto.html_string().c_str();
+  const char* string_context = nullptr;
+  switch (proto.string_context()) {
+    case SanitizerConfigProto::DIV:
+      string_context = "div";
+      break;
+    case SanitizerConfigProto::TABLE:
+      string_context = "table";
+      break;
+    case SanitizerConfigProto::TEMPLATE:
+    default:
+      string_context = "template";
+      break;
   }
+  sanitizer->sanitizeFor(script_state, string_context, markup,
+                         IGNORE_EXCEPTION_FOR_TESTING);
 
   // The fuzzer will eventually run out of memory. Force the GC to run every
   // N-th time. This will trigger both V8 + Oilpan GC.

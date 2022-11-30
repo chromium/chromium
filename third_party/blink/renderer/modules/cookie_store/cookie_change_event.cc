@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_change_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
-#include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
+#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -109,13 +109,16 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
   if (!is_deleted) {
     list_item->setValue(String::FromUTF8(canonical_cookie.Value()));
     if (canonical_cookie.ExpiryDate().is_null()) {
-      // TODO(crbug.com/1070871): Use base::nullopt instead.
-      list_item->setExpiresToNull();
+      list_item->setExpires(absl::nullopt);
     } else {
-      list_item->setExpires(ConvertSecondsToDOMTimeStamp(
-          canonical_cookie.ExpiryDate().ToDoubleT()));
+      list_item->setExpires(
+          ConvertTimeToEpochTimeStamp(canonical_cookie.ExpiryDate()));
     }
   }
+
+  list_item->setSameParty(canonical_cookie.IsSameParty());
+  list_item->setPartitioned(canonical_cookie.IsPartitioned());
+
   return list_item;
 }
 

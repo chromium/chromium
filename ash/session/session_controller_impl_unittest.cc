@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,15 +16,17 @@
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -37,6 +39,10 @@ namespace {
 class TestSessionObserver : public SessionObserver {
  public:
   TestSessionObserver() : active_account_id_(EmptyAccountId()) {}
+
+  TestSessionObserver(const TestSessionObserver&) = delete;
+  TestSessionObserver& operator=(const TestSessionObserver&) = delete;
+
   ~TestSessionObserver() override = default;
 
   // SessionObserver:
@@ -85,8 +91,6 @@ class TestSessionObserver : public SessionObserver {
   std::vector<AccountId> user_session_account_ids_;
   PrefService* last_user_pref_service_ = nullptr;
   int user_prefs_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionObserver);
 };
 
 void FillDefaultSessionInfo(SessionInfo* info) {
@@ -100,6 +104,11 @@ void FillDefaultSessionInfo(SessionInfo* info) {
 class SessionControllerImplTest : public testing::Test {
  public:
   SessionControllerImplTest() = default;
+
+  SessionControllerImplTest(const SessionControllerImplTest&) = delete;
+  SessionControllerImplTest& operator=(const SessionControllerImplTest&) =
+      delete;
+
   ~SessionControllerImplTest() override = default;
 
   // testing::Test:
@@ -140,8 +149,49 @@ class SessionControllerImplTest : public testing::Test {
  private:
   std::unique_ptr<SessionControllerImpl> controller_;
   TestSessionObserver observer_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerImplTest);
+class SessionControllerImplWithShellTest : public AshTestBase {
+ public:
+  SessionControllerImplWithShellTest() = default;
+
+  SessionControllerImplWithShellTest(
+      const SessionControllerImplWithShellTest&) = delete;
+  SessionControllerImplWithShellTest& operator=(
+      const SessionControllerImplWithShellTest&) = delete;
+
+  ~SessionControllerImplWithShellTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    controller()->AddObserver(&observer_);
+  }
+
+  void TearDown() override {
+    controller()->RemoveObserver(&observer_);
+    window_.reset();
+    AshTestBase::TearDown();
+  }
+
+  void CreateFullscreenWindow() {
+    window_ = CreateTestWindow();
+    window_->SetProperty(aura::client::kShowStateKey,
+                         ui::SHOW_STATE_FULLSCREEN);
+    window_state_ = WindowState::Get(window_.get());
+  }
+
+  SessionControllerImpl* controller() {
+    return Shell::Get()->session_controller();
+  }
+  const TestSessionObserver* observer() const { return &observer_; }
+
+ protected:
+  WindowState* window_state_ = nullptr;
+
+ private:
+  TestSessionObserver observer_;
+  std::unique_ptr<aura::Window> window_;
 };
 
 // Tests that the simple session info is reflected properly.
@@ -222,7 +272,7 @@ TEST_F(SessionControllerImplTest, AddUserPolicy) {
 }
 
 // Tests that session state can be set and reflected properly.
-TEST_F(SessionControllerImplTest, SessionState) {
+TEST_F(SessionControllerImplWithShellTest, SessionState) {
   const struct {
     SessionState state;
     bool expected_is_screen_locked;
@@ -240,7 +290,7 @@ TEST_F(SessionControllerImplTest, SessionState) {
   FillDefaultSessionInfo(&info);
   for (const auto& test_case : kTestCases) {
     info.state = test_case.state;
-    SetSessionInfo(info);
+    controller()->SetSessionInfo(info);
 
     EXPECT_EQ(test_case.state, controller()->GetSessionState())
         << "Test case state=" << static_cast<int>(test_case.state);
@@ -266,7 +316,7 @@ TEST_F(SessionControllerImplTest, GetLoginStatus) {
       {SessionState::LOGIN_PRIMARY, LoginStatus::NOT_LOGGED_IN},
       {SessionState::LOGGED_IN_NOT_ACTIVE, LoginStatus::NOT_LOGGED_IN},
       {SessionState::LOCKED, LoginStatus::LOCKED},
-      // TODO: Add LOGIN_SECONDARY if we added a status for it.
+      // TODO(jamescook): Add LOGIN_SECONDARY if we added a status for it.
   };
 
   SessionInfo info;
@@ -298,7 +348,8 @@ TEST_F(SessionControllerImplTest, GetLoginStateForActiveSession) {
       {user_manager::USER_TYPE_CHILD, LoginStatus::CHILD},
       {user_manager::USER_TYPE_ARC_KIOSK_APP, LoginStatus::KIOSK_APP},
       {user_manager::USER_TYPE_WEB_KIOSK_APP, LoginStatus::KIOSK_APP}
-      // TODO: Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for it.
+      // TODO(jamescook): Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for
+      // it.
   };
 
   for (const auto& test_case : kTestCases) {
@@ -370,24 +421,21 @@ TEST_F(SessionControllerImplTest, ActiveSession) {
 // Tests that user session is unblocked with a running unlock animation so that
 // focus rules can find a correct activatable window after screen lock is
 // dismissed.
-TEST_F(SessionControllerImplTest,
+TEST_F(SessionControllerImplWithShellTest,
        UserSessionUnblockedWithRunningUnlockAnimation) {
   SessionInfo info;
   FillDefaultSessionInfo(&info);
 
   // LOCKED means blocked user session.
   info.state = SessionState::LOCKED;
-  SetSessionInfo(info);
+  controller()->SetSessionInfo(info);
   EXPECT_TRUE(controller()->IsUserSessionBlocked());
-
-  // Mark a running unlock animation unblocks user session.
-  controller()->RunUnlockAnimation(base::OnceClosure());
-  EXPECT_FALSE(controller()->IsUserSessionBlocked());
 
   const struct {
     SessionState state;
-    bool expected_is_user_session_blocked;
+    bool expect_blocked_after_unlock_animation;
   } kTestCases[] = {
+      {SessionState::LOCKED, false},
       {SessionState::OOBE, true},
       {SessionState::LOGIN_PRIMARY, true},
       {SessionState::LOGGED_IN_NOT_ACTIVE, false},
@@ -396,12 +444,14 @@ TEST_F(SessionControllerImplTest,
   };
   for (const auto& test_case : kTestCases) {
     info.state = test_case.state;
-    SetSessionInfo(info);
+    controller()->SetSessionInfo(info);
 
     // Mark a running unlock animation.
-    controller()->RunUnlockAnimation(base::OnceClosure());
-
-    EXPECT_EQ(test_case.expected_is_user_session_blocked,
+    base::RunLoop run_loop;
+    controller()->RunUnlockAnimation(base::BindLambdaForTesting(
+        [&run_loop](bool aborted) { run_loop.Quit(); }));
+    run_loop.Run();
+    EXPECT_EQ(test_case.expect_blocked_after_unlock_animation,
               controller()->IsUserSessionBlocked())
         << "Test case state=" << static_cast<int>(test_case.state);
   }
@@ -414,9 +464,6 @@ TEST_F(SessionControllerImplTest, IsUserChild) {
   controller()->UpdateUserSession(session);
 
   EXPECT_TRUE(controller()->IsUserChild());
-
-  // Child accounts are supervised.
-  EXPECT_TRUE(controller()->IsUserChildOrDeprecatedSupervised());
 }
 
 using SessionControllerImplPrefsTest = NoSessionAshTestBase;
@@ -575,6 +622,10 @@ class CanSwitchUserTest : public AshTestBase {
     DECLINE_DIALOG,  // A dialog should be shown and we do not accept it.
   };
   CanSwitchUserTest() = default;
+
+  CanSwitchUserTest(const CanSwitchUserTest&) = delete;
+  CanSwitchUserTest& operator=(const CanSwitchUserTest&) = delete;
+
   ~CanSwitchUserTest() override = default;
 
   void TearDown() override {
@@ -670,8 +721,6 @@ class CanSwitchUserTest : public AshTestBase {
   int stop_capture_callback_hit_count_ = 0;
   int stop_share_callback_hit_count_ = 0;
   int switch_callback_hit_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CanSwitchUserTest);
 };
 
 // Test that when there is no screen operation going on the user switch will be
@@ -792,6 +841,16 @@ TEST_F(SessionControllerImplUnblockTest, ActiveWindowAfterUnblocking) {
   // |widget| should now be active as SessionControllerImpl no longer is
   // blocking windows from becoming active.
   EXPECT_TRUE(widget->IsActive());
+}
+
+TEST_F(SessionControllerImplWithShellTest, ExitFullscreenBeforeLock) {
+  CreateFullscreenWindow();
+  EXPECT_TRUE(window_state_->IsFullscreen());
+
+  base::RunLoop run_loop;
+  Shell::Get()->session_controller()->PrepareForLock(run_loop.QuitClosure());
+
+  EXPECT_FALSE(window_state_->IsFullscreen());
 }
 
 }  // namespace

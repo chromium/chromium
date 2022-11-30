@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
 
 #include "util/stdlib/thread_safe_vector.h"
 
-#include "base/stl_util.h"
+#include <iterator>
+
 #include "gtest/gtest.h"
 #include "util/thread/thread.h"
 
@@ -27,6 +28,11 @@ constexpr int kElementsPerThread = 100;
 class ThreadSafeVectorTestThread : public Thread {
  public:
   ThreadSafeVectorTestThread() : thread_safe_vector_(nullptr), start_(0) {}
+
+  ThreadSafeVectorTestThread(const ThreadSafeVectorTestThread&) = delete;
+  ThreadSafeVectorTestThread& operator=(const ThreadSafeVectorTestThread&) =
+      delete;
+
   ~ThreadSafeVectorTestThread() {}
 
   void SetTestParameters(ThreadSafeVector<int>* thread_safe_vector, int start) {
@@ -44,8 +50,6 @@ class ThreadSafeVectorTestThread : public Thread {
  private:
   ThreadSafeVector<int>* thread_safe_vector_;
   int start_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeVectorTestThread);
 };
 
 TEST(ThreadSafeVector, ThreadSafeVector) {
@@ -54,12 +58,12 @@ TEST(ThreadSafeVector, ThreadSafeVector) {
   EXPECT_TRUE(vector.empty());
 
   ThreadSafeVectorTestThread threads[100];
-  for (size_t index = 0; index < base::size(threads); ++index) {
+  for (size_t index = 0; index < std::size(threads); ++index) {
     threads[index].SetTestParameters(
         &thread_safe_vector, static_cast<int>(index * kElementsPerThread));
   }
 
-  for (size_t index = 0; index < base::size(threads); ++index) {
+  for (size_t index = 0; index < std::size(threads); ++index) {
     threads[index].Start();
 
     if (index % 10 == 0) {
@@ -76,8 +80,8 @@ TEST(ThreadSafeVector, ThreadSafeVector) {
 
   std::vector<int> drained = thread_safe_vector.Drain();
   vector.insert(vector.end(), drained.begin(), drained.end());
-  bool found[base::size(threads) * kElementsPerThread] = {};
-  EXPECT_EQ(vector.size(), base::size(found));
+  bool found[std::size(threads) * kElementsPerThread] = {};
+  EXPECT_EQ(vector.size(), std::size(found));
   for (int element : vector) {
     EXPECT_FALSE(found[element]) << element;
     found[element] = true;

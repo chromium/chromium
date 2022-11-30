@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -128,6 +127,15 @@ void CheckManifestError(const ExtensionError* error,
             manifest_error->manifest_specific());
 }
 
+// Checks that a given `error` refers to an error for using a deprecated
+// manifest version.
+void CheckDeprecatedManifestVersionError(const ExtensionError* error,
+                                         const std::string& id) {
+  CheckManifestError(error, id, manifest_errors::kManifestV2IsDeprecatedWarning,
+                     manifest_keys::kManifestVersion,
+                     std::string() /* no manifest_specific bit */);
+}
+
 }  // namespace
 
 class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
@@ -154,6 +162,10 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
           error_console_(error_console) {
       error_console_->AddObserver(this);
     }
+
+    ErrorObserver(const ErrorObserver&) = delete;
+    ErrorObserver& operator=(const ErrorObserver&) = delete;
+
     virtual ~ErrorObserver() {
       if (error_console_)
         error_console_->RemoveObserver(this);
@@ -184,9 +196,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     size_t errors_expected_;
     bool waiting_;
 
-    ErrorConsole* error_console_;
-
-    DISALLOW_COPY_AND_ASSIGN(ErrorObserver);
+    raw_ptr<ErrorConsole> error_console_;
   };
 
   // The type of action which we take after we load an extension in order to
@@ -237,7 +247,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
 
     switch (action) {
       case ACTION_NAVIGATE: {
-        ui_test_utils::NavigateToURL(browser(), GetTestURL());
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
         break;
       }
       case ACTION_BROWSER_ACTION: {
@@ -247,8 +257,8 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
         break;
       }
       case ACTION_NEW_TAB: {
-        ui_test_utils::NavigateToURL(browser(),
-                                     GURL(chrome::kChromeUINewTabURL));
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(
+            browser(), GURL(chrome::kChromeUINewTabURL)));
         break;
       }
       case ACTION_NONE:
@@ -275,7 +285,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   GURL test_url_;
 
   // Weak reference to the ErrorConsole.
-  ErrorConsole* error_console_;
+  raw_ptr<ErrorConsole> error_console_;
 };
 
 // Test to ensure that we are successfully reporting manifest errors as an
@@ -397,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   CheckRuntimeError(errors[1].get(), extension->id(), script_url,
                     false,  // not from incognito
                     "Uncaught TypeError: "
-                    "Cannot set property 'foo' of undefined",
+                    "Cannot set properties of undefined (setting 'foo')",
                     logging::LOG_ERROR,  // JS errors are always ERROR level.
                     GetTestURL(), 1u);
 
@@ -411,8 +421,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "browser_action_runtime_error", {.ignore_manifest_warnings = false},
-      1u,  // One error: A reference error from within the browser action.
-      ACTION_BROWSER_ACTION, &extension);
+      // Two errors: An error for running a deprecated manifest version and
+      // a reference error from within the browser action.
+      2u, ACTION_BROWSER_ACTION, &extension);
 
   std::string script_url =
       extension->GetResourceURL("browser_action.js").spec();
@@ -420,18 +431,20 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
 
+  CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
+
   // TODO(devlin): The specific event name (here, 'browserAction.onClicked')
   // may or may not be worth preserving. In most cases, it's unnecessary with
   // the line number, but it could be useful in some cases.
   std::string message =
       "Error in event handler: ReferenceError: baz is not defined";
 
-  CheckRuntimeError(errors[0].get(), extension->id(), script_url,
+  CheckRuntimeError(errors[1].get(), extension->id(), script_url,
                     false,  // not incognito
                     message, logging::LOG_ERROR,
                     extension->GetResourceURL(kBackgroundPageName), 1u);
 
-  const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
+  const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   // Note: This test used to have a stack trace of length 6 that contains stack
   // frames in the extension code, but since crbug.com/404406 was fixed only
   // stack frames within user-defined extension code are printed.
@@ -444,23 +457,26 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "bad_api_arguments_runtime_error", {.ignore_manifest_warnings = false},
-      1,  // One error: call an API with improper arguments.
-      ACTION_NONE, &extension);
+      // Two errors: An error for running a deprecated manifest version and an
+      // error for calling an API with improper arguments.
+      2, ACTION_NONE, &extension);
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
+
+  CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
 
   std::string source = extension->GetResourceURL("background.js").spec();
   std::string message =
       "Uncaught TypeError: Error in invocation of tabs.get"
       "(integer tabId, function callback): No matching signature.";
 
-  CheckRuntimeError(errors[0].get(), extension->id(), source,
+  CheckRuntimeError(errors[1].get(), extension->id(), source,
                     false,  // not incognito
                     message, logging::LOG_ERROR,
                     extension->GetResourceURL(kBackgroundPageName), 1u);
 
-  const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
+  const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   ASSERT_EQ(1u, stack_trace.size());
   CheckStackFrame(stack_trace[0], source, kAnonymousFunction);
 }
@@ -471,22 +487,26 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "bad_api_permissions_runtime_error", {.ignore_manifest_warnings = false},
-      1,  // One error: we try to call addUrl() on chrome.history without
-          // permission, which results in a TypeError.
-      ACTION_NONE, &extension);
+      // Two errors: an error for running a deprecated manifest version and an
+      // error for trying to call addUrl() on chrome.history without permission
+      // which results in a TypeError.
+      2, ACTION_NONE, &extension);
 
   std::string script_url = extension->GetResourceURL("background.js").spec();
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
 
-  CheckRuntimeError(
-      errors[0].get(), extension->id(), script_url,
-      false,  // not incognito
-      "Uncaught TypeError: Cannot read property 'addUrl' of undefined",
-      logging::LOG_ERROR, extension->GetResourceURL(kBackgroundPageName), 1u);
+  CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
 
-  const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
+  CheckRuntimeError(errors[1].get(), extension->id(), script_url,
+                    false,  // not incognito
+                    "Uncaught TypeError: Cannot read properties of undefined "
+                    "(reading 'addUrl')",
+                    logging::LOG_ERROR,
+                    extension->GetResourceURL(kBackgroundPageName), 1u);
+
+  const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   ASSERT_EQ(1u, stack_trace.size());
   CheckStackFrame(stack_trace[0],
                   script_url,

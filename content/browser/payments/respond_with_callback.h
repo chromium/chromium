@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define CONTENT_BROWSER_PAYMENTS_RESPOND_WITH_CALLBACK_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/payment_app_provider_util.h"
@@ -19,14 +17,13 @@
 
 namespace content {
 
-class ServiceWorkerCoreThreadEventDispatcher;
+class PaymentEventDispatcher;
 enum class RespondWithCallbackType { kInvoke, kAbort, kCanMakePayment };
 
 // Abstract base class for event callbacks that are invoked when the payment
 // handler resolves the promise passed in to TheEvent.respondWith() method.
 class RespondWithCallback
-    : public payments::mojom::PaymentHandlerResponseCallback,
-      public WebContentsObserver {
+    : public payments::mojom::PaymentHandlerResponseCallback {
  public:
   // Disallow copy and assign.
   RespondWithCallback(const RespondWithCallback& other) = delete;
@@ -37,10 +34,9 @@ class RespondWithCallback
 
  protected:
   RespondWithCallback(
-      WebContents* web_contents,
       ServiceWorkerMetrics::EventType event_type,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
-      base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher);
+      base::WeakPtr<PaymentEventDispatcher> event_dispatcher);
 
   ~RespondWithCallback() override;
 
@@ -65,7 +61,7 @@ class RespondWithCallback
  private:
   int request_id_;
   scoped_refptr<ServiceWorkerVersion> service_worker_version_;
-  base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher_;
+  base::WeakPtr<PaymentEventDispatcher> event_dispatcher_;
   mojo::Receiver<payments::mojom::PaymentHandlerResponseCallback> receiver_{
       this};
 
@@ -78,9 +74,8 @@ class RespondWithCallback
 class CanMakePaymentRespondWithCallback : public RespondWithCallback {
  public:
   CanMakePaymentRespondWithCallback(
-      WebContents* web_contents,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
-      base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
+      base::WeakPtr<PaymentEventDispatcher> event_dispatcher,
       PaymentAppProvider::CanMakePaymentCallback callback);
   ~CanMakePaymentRespondWithCallback() override;
 
@@ -108,9 +103,8 @@ class CanMakePaymentRespondWithCallback : public RespondWithCallback {
 class InvokeRespondWithCallback : public RespondWithCallback {
  public:
   InvokeRespondWithCallback(
-      WebContents* web_contents,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
-      base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
+      base::WeakPtr<PaymentEventDispatcher> event_dispatcher,
       PaymentAppProvider::InvokePaymentAppCallback callback);
   ~InvokeRespondWithCallback() override;
 
@@ -143,9 +137,8 @@ class InvokeRespondWithCallback : public RespondWithCallback {
 class AbortRespondWithCallback : public RespondWithCallback {
  public:
   AbortRespondWithCallback(
-      WebContents* web_contents,
       scoped_refptr<ServiceWorkerVersion> service_worker_version,
-      base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher,
+      base::WeakPtr<PaymentEventDispatcher> event_dispatcher,
       PaymentAppProvider::AbortCallback callback);
   ~AbortRespondWithCallback() override;
 

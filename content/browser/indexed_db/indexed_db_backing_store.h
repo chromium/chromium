@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -25,7 +26,8 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/services/storage/indexed_db/scopes/scope_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
@@ -40,11 +42,10 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace blink {
 class IndexedDBKeyRange;
@@ -53,6 +54,7 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 class AutoDidCommitTransaction;
+class IndexedDBBucketState;
 class IndexedDBActiveBlobRegistry;
 class LevelDBWriteBatch;
 class TransactionalLevelDBDatabase;
@@ -131,7 +133,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
     virtual ~Transaction();
 
-    virtual void Begin(std::vector<ScopeLock> locks);
+    virtual void Begin(std::vector<PartitionedLock> locks);
 
     // CommitPhaseOne determines what blobs (if any) need to be written to disk
     // and updates the primary blob journal, and kicks off the async writing
@@ -210,7 +212,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     base::WeakPtr<IndexedDBBackingStore> backing_store_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
-    TransactionalLevelDBFactory* const transactional_leveldb_factory_;
+    const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
 
     scoped_refptr<TransactionalLevelDBTransaction> transaction_
         GUARDED_BY_CONTEXT(sequence_checker_);
@@ -235,7 +237,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     // opposed to being ephemeral and owned by the WriteBlobToFile callbacks)
     // because the transaction needs to be able to cancel this operation in
     // Rollback().
-    base::Optional<BlobWriteState> write_state_
+    absl::optional<BlobWriteState> write_state_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Set to true between CommitPhaseOne and CommitPhaseTwo/Rollback, to
@@ -243,7 +245,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     // has been bumped, and journal cleaning should be deferred.
     bool committing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-    // This flag is passed to LevelDBScopes as |sync_on_commit|, converted
+    // This flag is passed to LevelDBScopes as `sync_on_commit`, converted
     // via ShouldSyncOnCommit.
     const blink::mojom::IDBTransactionDurability durability_;
     const blink::mojom::IDBTransactionMode mode_;
@@ -378,15 +380,15 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Wait for a maximum of 5 seconds from the first call to the timer since the
   // last journal cleaning.
   static constexpr const base::TimeDelta kMaxJournalCleaningWindowTime =
-      base::TimeDelta::FromSeconds(5);
+      base::Seconds(5);
   // Default to a 2 second timer delay before we clean up blobs.
   static constexpr const base::TimeDelta kInitialJournalCleaningWindowTime =
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 
   IndexedDBBackingStore(
       Mode backing_store_mode,
       TransactionalLevelDBFactory* transactional_leveldb_factory,
-      const url::Origin& origin,
+      const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
@@ -405,7 +407,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // operations or method calls on this object.
   leveldb::Status Initialize(bool clean_active_blob_journal);
 
-  const url::Origin& origin() const { return origin_; }
+  const storage::BucketLocator& bucket_locator() const {
+    return bucket_locator_;
+  }
   base::SequencedTaskRunner* idb_task_runner() const {
     return idb_task_runner_.get();
   }
@@ -421,82 +425,82 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       TransactionalLevelDBTransaction* transaction);
 
   static bool RecordCorruptionInfo(const base::FilePath& path_base,
-                                   const url::Origin& origin,
+                                   const storage::BucketLocator& bucket_locator,
                                    const std::string& message);
 
-  virtual leveldb::Status GetRecord(
+  [[nodiscard]] virtual leveldb::Status GetRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
-      IndexedDBValue* record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status PutRecord(
+      IndexedDBValue* record);
+  [[nodiscard]] virtual leveldb::Status PutRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       IndexedDBValue* value,
-      RecordIdentifier* record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status ClearObjectStore(
+      RecordIdentifier* record);
+  [[nodiscard]] virtual leveldb::Status ClearObjectStore(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
-      int64_t object_store_id) WARN_UNUSED_RESULT;
-  virtual leveldb::Status DeleteRecord(
-      IndexedDBBackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      const RecordIdentifier& record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status DeleteRange(
+      int64_t object_store_id);
+  [[nodiscard]] virtual leveldb::Status DeleteRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      const blink::IndexedDBKeyRange&) WARN_UNUSED_RESULT;
-  virtual leveldb::Status GetKeyGeneratorCurrentNumber(
+      const RecordIdentifier& record);
+  [[nodiscard]] virtual leveldb::Status DeleteRange(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      int64_t* current_number) WARN_UNUSED_RESULT;
-  virtual leveldb::Status MaybeUpdateKeyGeneratorCurrentNumber(
+      const blink::IndexedDBKeyRange&);
+  [[nodiscard]] virtual leveldb::Status GetKeyGeneratorCurrentNumber(
+      IndexedDBBackingStore::Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      int64_t* current_number);
+  [[nodiscard]] virtual leveldb::Status MaybeUpdateKeyGeneratorCurrentNumber(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t new_state,
-      bool check_current) WARN_UNUSED_RESULT;
-  virtual leveldb::Status KeyExistsInObjectStore(
+      bool check_current);
+  [[nodiscard]] virtual leveldb::Status KeyExistsInObjectStore(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       RecordIdentifier* found_record_identifier,
-      bool* found) WARN_UNUSED_RESULT;
+      bool* found);
 
-  virtual leveldb::Status ClearIndex(
+  [[nodiscard]] virtual leveldb::Status ClearIndex(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      int64_t index_id) WARN_UNUSED_RESULT;
-  virtual leveldb::Status PutIndexDataForRecord(
-      IndexedDBBackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      int64_t index_id,
-      const blink::IndexedDBKey& key,
-      const RecordIdentifier& record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status GetPrimaryKeyViaIndex(
+      int64_t index_id);
+  [[nodiscard]] virtual leveldb::Status PutIndexDataForRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
-      std::unique_ptr<blink::IndexedDBKey>* primary_key) WARN_UNUSED_RESULT;
-  virtual leveldb::Status KeyExistsInIndex(
+      const RecordIdentifier& record);
+  [[nodiscard]] virtual leveldb::Status GetPrimaryKeyViaIndex(
+      IndexedDBBackingStore::Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      int64_t index_id,
+      const blink::IndexedDBKey& key,
+      std::unique_ptr<blink::IndexedDBKey>* primary_key);
+  [[nodiscard]] virtual leveldb::Status KeyExistsInIndex(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
-      bool* exists) WARN_UNUSED_RESULT;
+      bool* exists);
 
   // Public for IndexedDBActiveBlobRegistry::MarkBlobInactive.
   virtual void ReportBlobUnused(int64_t database_id, int64_t blob_number);
@@ -585,7 +589,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::mojom::IDBTransactionDurability durability);
 
  protected:
-  friend class IndexedDBOriginState;
+  friend class IndexedDBBucketState;
 
   leveldb::Status AnyDatabaseContainsBlobs(
       TransactionalLevelDBDatabase* database,
@@ -660,8 +664,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   void DidCommitTransaction();
 
   const Mode backing_store_mode_;
-  TransactionalLevelDBFactory* const transactional_leveldb_factory_;
-  const url::Origin origin_;
+  const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
+  const storage::BucketLocator bucket_locator_;
   const base::FilePath blob_path_;
 
   // IndexedDB can store blobs and File System Access handles. These mojo
@@ -669,18 +673,18 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // relevant subsystems.
   // Raw pointers are safe because the bindings are owned by
   // IndexedDBContextImpl.
-  storage::mojom::BlobStorageContext* const blob_storage_context_;
-  storage::mojom::FileSystemAccessContext* const file_system_access_context_;
+  const raw_ptr<storage::mojom::BlobStorageContext> blob_storage_context_;
+  const raw_ptr<storage::mojom::FileSystemAccessContext>
+      file_system_access_context_;
 
   // Filesystem proxy to use for file operations.  nullptr if in memory.
   const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
 
-  // The origin identifier is a key prefix unique to the origin used in the
-  // leveldb backing store to partition data by origin. It is a normalized
-  // version of the origin URL with a versioning suffix appended, e.g.
-  // "http_localhost_81@1" Since only one origin is stored per backing store
-  // this is redundant but necessary for backwards compatibility; the suffix
-  // provides for future flexibility.
+  // The origin identifier is a key prefix, unique to the storage key's origin,
+  // used in the leveldb backing store to partition data by origin. It is a
+  // normalized version of the origin URL with a versioning suffix appended,
+  // e.g. "http_localhost_81@1." Since only one storage key is stored per
+  // backing store this is redundant but necessary for backwards compatibility.
   const std::string origin_identifier_;
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;

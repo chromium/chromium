@@ -1,417 +1,55 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
+assert(!is_android && !is_ios)
+
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-preprocess_mojom_manifest = "preprocessed_mojom_manifest.json"
-preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
-preprocess_src_manifest = "preprocessed_src_manifest.json"
-
-generate_grd("build_grdp") {
-  grd_prefix = "cr_components"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-  deps = [ ":preprocess" ]
-  input_files_base_dir = rebase_path(".", "//")
-  input_files = [
-    "customize_themes/colorize.svg",
-    "customize_themes/brush.svg",
-  ]
-  if (is_chromeos_ash) {
-    input_files += [
-      "chromeos/multidevice_setup/all_set_1x.svg",
-      "chromeos/multidevice_setup/all_set_2x.svg",
-      "chromeos/multidevice_setup/start_setup_icon_1x.png",
-      "chromeos/multidevice_setup/start_setup_icon_2x.png",
-      "chromeos/cellular_setup/sim_detect_error.svg",
-      "chromeos/cellular_setup/error_1x.png",
-      "chromeos/cellular_setup/error_2x.png",
-      "chromeos/cellular_setup/final_page_success_1x.png",
-      "chromeos/cellular_setup/final_page_success_2x.png",
-      "chromeos/cellular_setup/psim_1x.png",
-      "chromeos/cellular_setup/psim_2x.png",
-      "chromeos/cellular_setup/esim_1x.png",
-      "chromeos/cellular_setup/esim_2x.png",
-      "chromeos/cellular_setup/default_esim_profile.svg",
-      "chromeos/network/cellular_0_with_x.svg",
-      "chromeos/network/cellular_0.svg",
-      "chromeos/network/cellular_1.svg",
-      "chromeos/network/cellular_2.svg",
-      "chromeos/network/cellular_3.svg",
-      "chromeos/network/cellular_4.svg",
-      "chromeos/network/cellular_off.svg",
-      "chromeos/network/ethernet.svg",
-      "chromeos/network/vpn.svg",
-      "chromeos/network/wifi_0_with_x.svg",
-      "chromeos/network/wifi_0.svg",
-      "chromeos/network/wifi_1.svg",
-      "chromeos/network/wifi_2.svg",
-      "chromeos/network/wifi_3.svg",
-      "chromeos/network/wifi_4.svg",
-      "chromeos/network/wifi_off.svg",
-      "chromeos/network_health/test_canceled.png",
-      "chromeos/network_health/test_failed.png",
-      "chromeos/network_health/test_not_run.png",
-      "chromeos/network_health/test_passed.png",
-      "chromeos/network_health/test_warning.png",
-    ]
-  }
-  manifest_files = [
-    "$target_gen_dir/$preprocess_gen_manifest",
-    "$target_gen_dir/$preprocess_mojom_manifest",
-    "$target_gen_dir/$preprocess_polymer2_manifest",
-    "$target_gen_dir/$preprocess_src_manifest",
-  ]
-  resource_path_prefix = "cr_components"
-}
 
 group("preprocess") {
   public_deps = [
-    ":preprocess_generated",
-    ":preprocess_mojom",
-    ":preprocess_polymer2",
-    ":preprocess_src",
+    ":preprocess_generated_ts",
+    ":preprocess_src_ts",
   ]
 }
 
-preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "customize_themes/browser_proxy.js" ]
-
-  if (use_nss_certs) {
-    in_files += [
-      "certificate_manager/certificate_manager_types.js",
-      "certificate_manager/certificate_provisioning_browser_proxy.js",
-      "certificate_manager/certificates_browser_proxy.js",
-    ]
-  }
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
+preprocess_if_expr("preprocess_src_ts") {
+  in_folder = "."
+  out_folder = preprocess_folder
+  in_files = [
+    "localized_link/localized_link.ts",
+    "managed_dialog/managed_dialog.ts",
+    "managed_footnote/managed_footnote.ts",
+  ]
 }
 
-preprocess_if_expr("preprocess_mojom") {
-  deps =
-      [ "//ui/webui/resources/cr_components/customize_themes:mojom_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components"
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_mojom_manifest"
-  in_files = [ "customize_themes/customize_themes.mojom-webui.js" ]
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":polymer3_elements" ]
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
+preprocess_if_expr("preprocess_generated_ts") {
+  deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  out_folder = preprocess_folder
   in_files = [
-    "customize_themes/customize_themes.js",
-    "customize_themes/theme_icon.js",
-    "managed_dialog/managed_dialog.js",
-    "managed_footnote/managed_footnote.m.js",
-    "omnibox/cr_autocomplete_match_list.js",
+    "localized_link/localized_link.html.ts",
+    "managed_dialog/managed_dialog.html.ts",
+    "managed_footnote/managed_footnote.html.ts",
   ]
-
-  if (use_nss_certs) {
-    in_files += [
-      "certificate_manager/ca_trust_edit_dialog.js",
-      "certificate_manager/certificate_delete_confirmation_dialog.js",
-      "certificate_manager/certificate_entry.js",
-      "certificate_manager/certificate_list.js",
-      "certificate_manager/certificate_manager.js",
-      "certificate_manager/certificate_password_decryption_dialog.js",
-      "certificate_manager/certificate_password_encryption_dialog.js",
-      "certificate_manager/certificate_provisioning_details_dialog.js",
-      "certificate_manager/certificate_provisioning_entry.js",
-      "certificate_manager/certificate_provisioning_list.js",
-      "certificate_manager/certificates_error_dialog.js",
-      "certificate_manager/certificate_shared_css.js",
-      "certificate_manager/certificate_subentry.js",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    in_files += [
-      "chromeos/bluetooth/bluetooth_dialog.m.js",
-      "chromeos/cellular_setup/activation_code_page.m.js",
-      "chromeos/cellular_setup/base_page.m.js",
-      "chromeos/cellular_setup/button_bar.m.js",
-      "chromeos/cellular_setup/cellular_setup_delegate.m.js",
-      "chromeos/cellular_setup/cellular_setup_icons.m.js",
-      "chromeos/cellular_setup/cellular_setup.m.js",
-      "chromeos/cellular_setup/cellular_types.m.js",
-      "chromeos/cellular_setup/confirmation_code_page.m.js",
-      "chromeos/cellular_setup/esim_flow_ui.m.js",
-      "chromeos/cellular_setup/final_page.m.js",
-      "chromeos/cellular_setup/mojo_interface_provider.m.js",
-      "chromeos/cellular_setup/esim_manager_listener_behavior.m.js",
-      "chromeos/cellular_setup/esim_manager_utils.m.js",
-      "chromeos/cellular_setup/profile_discovery_list_item.m.js",
-      "chromeos/cellular_setup/profile_discovery_list_page.m.js",
-      "chromeos/cellular_setup/provisioning_page.m.js",
-      "chromeos/cellular_setup/psim_flow_ui.m.js",
-      "chromeos/cellular_setup/setup_selection_flow.m.js",
-      "chromeos/cellular_setup/cellular_eid_popup.m.js",
-      "chromeos/cellular_setup/setup_loading_page.m.js",
-      "chromeos/cellular_setup/subflow_behavior.m.js",
-      "chromeos/cellular_setup/webview_post_util.m.js",
-      "chromeos/multidevice_setup/mojo_api.m.js",
-      "chromeos/multidevice_setup/fake_mojo_service.m.js",
-      "chromeos/multidevice_setup/button_bar.m.js",
-      "chromeos/multidevice_setup/multidevice_setup.m.js",
-      "chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js",
-      "chromeos/multidevice_setup/multidevice_setup_delegate.m.js",
-      "chromeos/multidevice_setup/password_page.m.js",
-      "chromeos/multidevice_setup/setup_succeeded_page.m.js",
-      "chromeos/multidevice_setup/start_setup_page.m.js",
-      "chromeos/multidevice_setup/ui_page_container_behavior.m.js",
-      "chromeos/multidevice_setup/multidevice_setup_shared_css.m.js",
-      "chromeos/multidevice_setup/ui_page.m.js",
-      "chromeos/multidevice_setup/icons.m.js",
-      "chromeos/network_health/network_health_container.m.js",
-      "chromeos/network_health/network_health_summary.m.js",
-      "chromeos/network_health/network_health_mojo.m.js",
-      "chromeos/network_health/network_diagnostics.m.js",
-      "chromeos/network_health/network_diagnostics_mojo.m.js",
-      "chromeos/network_health/network_diagnostics_types.m.js",
-      "chromeos/network_health/routine_group.m.js",
-      "chromeos/network/cr_policy_network_behavior_mojo.m.js",
-      "chromeos/network/cr_policy_network_indicator_mojo.m.js",
-      "chromeos/network/mojo_interface_provider.m.js",
-      "chromeos/network/network_apnlist.m.js",
-      "chromeos/network/network_choose_mobile.m.js",
-      "chromeos/network/network_config_element_behavior.m.js",
-      "chromeos/network/network_config_input.m.js",
-      "chromeos/network/network_config.m.js",
-      "chromeos/network/cellular_utils.m.js",
-      "chromeos/network/network_config_select.m.js",
-      "chromeos/network/network_config_toggle.m.js",
-      "chromeos/network/network_icon.m.js",
-      "chromeos/network/network_icons.m.js",
-      "chromeos/network/network_ip_config.m.js",
-      "chromeos/network/network_listener_behavior.m.js",
-      "chromeos/network/network_list_item.m.js",
-      "chromeos/network/network_list.m.js",
-      "chromeos/network/network_list_types.m.js",
-      "chromeos/network/network_nameservers.m.js",
-      "chromeos/network/network_password_input.m.js",
-      "chromeos/network/network_property_list_mojo.m.js",
-      "chromeos/network/network_proxy_exclusions.m.js",
-      "chromeos/network/network_proxy_input.m.js",
-      "chromeos/network/network_proxy.m.js",
-      "chromeos/network/network_select.m.js",
-      "chromeos/network/network_shared_css.m.js",
-      "chromeos/network/network_siminfo.m.js",
-      "chromeos/network/onc_mojo.m.js",
-      "chromeos/network/sim_lock_dialogs.m.js",
-      "chromeos/quick_unlock/lock_screen_constants.m.js",
-      "chromeos/quick_unlock/pin_keyboard_icon.m.js",
-      "chromeos/quick_unlock/pin_keyboard.m.js",
-      "chromeos/quick_unlock/setup_pin_keyboard.m.js",
-      "chromeos/smb_shares/add_smb_share_dialog.m.js",
-      "chromeos/smb_shares/smb_browser_proxy.m.js",
-    ]
-  }
 }
 
-preprocess_if_expr("preprocess_polymer2") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_polymer2_manifest"
+html_to_wrapper("html_wrapper_files") {
   in_files = [
+    "localized_link/localized_link.html",
+    "managed_dialog/managed_dialog.html",
     "managed_footnote/managed_footnote.html",
-    "managed_footnote/managed_footnote.js",
   ]
-  if (is_chromeos_ash) {
-    if (!optimize_webui) {
-      in_files += [
-        "chromeos/bluetooth/bluetooth_dialog.html",
-        "chromeos/bluetooth/bluetooth_dialog.js",
-        "chromeos/network/network_apnlist.html",
-        "chromeos/network/network_apnlist.js",
-        "chromeos/network/network_choose_mobile.html",
-        "chromeos/network/network_choose_mobile.js",
-        "chromeos/network/network_config.html",
-        "chromeos/network/network_config.js",
-        "chromeos/network/network_config_element_behavior.html",
-        "chromeos/network/network_config_element_behavior.js",
-        "chromeos/network/network_config_input.html",
-        "chromeos/network/network_config_input.js",
-        "chromeos/network/network_config_select.html",
-        "chromeos/network/network_config_select.js",
-        "chromeos/network/network_config_toggle.html",
-        "chromeos/network/network_config_toggle.js",
-        "chromeos/network/network_ip_config.html",
-        "chromeos/network/network_ip_config.js",
-        "chromeos/network/network_nameservers.html",
-        "chromeos/network/network_nameservers.js",
-        "chromeos/network/network_password_input.html",
-        "chromeos/network/network_password_input.js",
-        "chromeos/network/network_property_list_mojo.html",
-        "chromeos/network/network_property_list_mojo.js",
-        "chromeos/network/network_proxy.html",
-        "chromeos/network/network_proxy.js",
-        "chromeos/network/network_proxy_exclusions.html",
-        "chromeos/network/network_proxy_exclusions.js",
-        "chromeos/network/network_proxy_input.html",
-        "chromeos/network/network_proxy_input.js",
-        "chromeos/network/network_siminfo.html",
-        "chromeos/network/network_siminfo.js",
-        "chromeos/network/network_shared_css.html",
-        "chromeos/network/sim_lock_dialogs.html",
-        "chromeos/network/sim_lock_dialogs.js",
-      ]
-    }
-    in_files += [
-      "chromeos/cellular_setup/activation_code_page.html",
-      "chromeos/cellular_setup/activation_code_page.js",
-      "chromeos/cellular_setup/base_page.html",
-      "chromeos/cellular_setup/base_page.js",
-      "chromeos/cellular_setup/button_bar.html",
-      "chromeos/cellular_setup/button_bar.js",
-      "chromeos/cellular_setup/cellular_setup_delegate.html",
-      "chromeos/cellular_setup/cellular_setup_delegate.js",
-      "chromeos/cellular_setup/cellular_setup_icons.html",
-      "chromeos/cellular_setup/cellular_setup.html",
-      "chromeos/cellular_setup/cellular_setup.js",
-      "chromeos/cellular_setup/cellular_types.html",
-      "chromeos/cellular_setup/cellular_types.js",
-      "chromeos/cellular_setup/confirmation_code_page.html",
-      "chromeos/cellular_setup/confirmation_code_page.js",
-      "chromeos/cellular_setup/esim_flow_ui.html",
-      "chromeos/cellular_setup/esim_flow_ui.js",
-      "chromeos/cellular_setup/final_page.html",
-      "chromeos/cellular_setup/final_page.js",
-      "chromeos/cellular_setup/mojo_interface_provider.html",
-      "chromeos/cellular_setup/mojo_interface_provider.js",
-      "chromeos/cellular_setup/esim_manager_listener_behavior.html",
-      "chromeos/cellular_setup/esim_manager_listener_behavior.js",
-      "chromeos/cellular_setup/esim_manager_utils.html",
-      "chromeos/cellular_setup/esim_manager_utils.js",
-      "chromeos/cellular_setup/profile_discovery_list_item.html",
-      "chromeos/cellular_setup/profile_discovery_list_item.js",
-      "chromeos/cellular_setup/profile_discovery_list_page.html",
-      "chromeos/cellular_setup/profile_discovery_list_page.js",
-      "chromeos/cellular_setup/provisioning_page.html",
-      "chromeos/cellular_setup/provisioning_page.js",
-      "chromeos/cellular_setup/psim_flow_ui.html",
-      "chromeos/cellular_setup/psim_flow_ui.js",
-      "chromeos/cellular_setup/setup_selection_flow.html",
-      "chromeos/cellular_setup/setup_selection_flow.js",
-      "chromeos/cellular_setup/cellular_eid_popup.html",
-      "chromeos/cellular_setup/cellular_eid_popup.js",
-      "chromeos/cellular_setup/setup_loading_page.html",
-      "chromeos/cellular_setup/setup_loading_page.js",
-      "chromeos/cellular_setup/subflow_behavior.html",
-      "chromeos/cellular_setup/subflow_behavior.js",
-      "chromeos/cellular_setup/webview_post_util.html",
-      "chromeos/cellular_setup/webview_post_util.js",
-      "chromeos/multidevice_setup/button_bar.html",
-      "chromeos/multidevice_setup/button_bar.js",
-      "chromeos/multidevice_setup/fake_mojo_service.html",
-      "chromeos/multidevice_setup/fake_mojo_service.js",
-      "chromeos/multidevice_setup/icons.html",
-      "chromeos/multidevice_setup/mojo_api.html",
-      "chromeos/multidevice_setup/mojo_api.js",
-      "chromeos/multidevice_setup/multidevice_setup_browser_proxy.html",
-      "chromeos/multidevice_setup/multidevice_setup_browser_proxy.js",
-      "chromeos/multidevice_setup/multidevice_setup_delegate.html",
-      "chromeos/multidevice_setup/multidevice_setup_delegate.js",
-      "chromeos/multidevice_setup/multidevice_setup.html",
-      "chromeos/multidevice_setup/multidevice_setup.js",
-      "chromeos/multidevice_setup/multidevice_setup_shared_css.html",
-      "chromeos/multidevice_setup/password_page.html",
-      "chromeos/multidevice_setup/password_page.js",
-      "chromeos/multidevice_setup/setup_succeeded_page.html",
-      "chromeos/multidevice_setup/setup_succeeded_page.js",
-      "chromeos/multidevice_setup/start_setup_page.html",
-      "chromeos/multidevice_setup/start_setup_page.js",
-      "chromeos/multidevice_setup/ui_page_container_behavior.html",
-      "chromeos/multidevice_setup/ui_page_container_behavior.js",
-      "chromeos/multidevice_setup/ui_page.html",
-      "chromeos/multidevice_setup/ui_page.js",
-      "chromeos/network/cr_policy_network_behavior_mojo.html",
-      "chromeos/network/cr_policy_network_behavior_mojo.js",
-      "chromeos/network/cr_policy_network_indicator_mojo.html",
-      "chromeos/network/cr_policy_network_indicator_mojo.js",
-      "chromeos/network_health/network_diagnostics.html",
-      "chromeos/network_health/network_diagnostics.js",
-      "chromeos/network_health/network_diagnostics_mojo.html",
-      "chromeos/network_health/network_diagnostics_mojo.js",
-      "chromeos/network_health/network_diagnostics_types.html",
-      "chromeos/network_health/network_diagnostics_types.js",
-      "chromeos/network_health/network_health_container.html",
-      "chromeos/network_health/network_health_container.js",
-      "chromeos/network_health/network_health_summary.html",
-      "chromeos/network_health/network_health_summary.js",
-      "chromeos/network_health/network_health_mojo.html",
-      "chromeos/network_health/network_health_mojo.js",
-      "chromeos/network_health/routine_group.html",
-      "chromeos/network_health/routine_group.js",
-      "chromeos/network/mojo_interface_provider.html",
-      "chromeos/network/mojo_interface_provider.js",
-      "chromeos/network/network_icon.html",
-      "chromeos/network/network_icon.js",
-      "chromeos/network/network_icons.html",
-      "chromeos/network/network_listener_behavior.html",
-      "chromeos/network/network_listener_behavior.js",
-      "chromeos/network/cellular_utils.html",
-      "chromeos/network/cellular_utils.js",
-      "chromeos/network/network_list.html",
-      "chromeos/network/network_list_item.html",
-      "chromeos/network/network_list_item.js",
-      "chromeos/network/network_list.js",
-      "chromeos/network/network_list_types.html",
-      "chromeos/network/network_list_types.js",
-      "chromeos/network/network_select.html",
-      "chromeos/network/network_select.js",
-      "chromeos/network/onc_mojo.html",
-      "chromeos/network/onc_mojo.js",
-      "chromeos/quick_unlock/lock_screen_constants.html",
-      "chromeos/quick_unlock/lock_screen_constants.js",
-      "chromeos/quick_unlock/pin_keyboard.html",
-      "chromeos/quick_unlock/pin_keyboard_icon.html",
-      "chromeos/quick_unlock/pin_keyboard.js",
-      "chromeos/quick_unlock/setup_pin_keyboard.html",
-      "chromeos/quick_unlock/setup_pin_keyboard.js",
-      "chromeos/smb_shares/add_smb_share_dialog.html",
-      "chromeos/smb_shares/add_smb_share_dialog.js",
-      "chromeos/smb_shares/smb_browser_proxy.html",
-      "chromeos/smb_shares/smb_browser_proxy.js",
-    ]
-  }
-}
-
-group("closure_compile") {
-  deps = [
-    "certificate_manager:closure_compile_module",
-    "customize_themes:closure_compile",
-    "managed_dialog:closure_compile",
-    "managed_footnote:closure_compile",
-    "managed_footnote:closure_compile_module",
-    "omnibox:closure_compile",
-  ]
-
-  if (is_chromeos_ash) {
-    deps += [ "chromeos:closure_compile" ]
-  }
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    "certificate_manager:web_components",
-    "customize_themes:web_components",
-    "managed_dialog:web_components",
-    "managed_footnote:managed_footnote_module",
-    "omnibox:web_components",
-  ]
-  if (is_chromeos_ash) {
-    public_deps += [ "chromeos:polymer3_elements" ]
-  }
 }

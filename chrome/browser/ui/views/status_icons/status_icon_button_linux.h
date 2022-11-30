@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/linux/status_icon_linux.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/linux_ui/status_icon_linux.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -22,7 +22,7 @@ class WindowTreeHost;
 // A button that is internally mapped as a status icon if the underlaying
 // platform supports that kind of windows. Otherwise, calls
 // OnImplInitializationFailed.
-class StatusIconButtonLinux : public views::StatusIconLinux,
+class StatusIconButtonLinux : public ui::StatusIconLinux,
                               public views::Button,
                               public views::ContextMenuController {
  public:
@@ -50,7 +50,7 @@ class StatusIconButtonLinux : public views::StatusIconLinux,
  private:
   std::unique_ptr<views::Widget> widget_;
 
-  aura::WindowTreeHost* host_ = nullptr;
+  raw_ptr<aura::WindowTreeHost> host_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };

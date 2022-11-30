@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,9 @@ namespace media_session {
 class MediaControllerTest : public testing::Test {
  public:
   MediaControllerTest() = default;
+
+  MediaControllerTest(const MediaControllerTest&) = delete;
+  MediaControllerTest& operator=(const MediaControllerTest&) = delete;
 
   void SetUp() override {
     // Create an instance of the MediaSessionService and bind some interfaces.
@@ -73,8 +76,6 @@ class MediaControllerTest : public testing::Test {
   mojo::Remote<mojom::AudioFocusManager> audio_focus_remote_;
   mojo::Remote<mojom::MediaController> media_controller_remote_;
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControllerTest);
 };
 
 TEST_F(MediaControllerTest, ActiveController_Suspend) {
@@ -506,8 +507,7 @@ TEST_F(MediaControllerTest, ActiveController_Seek) {
     EXPECT_EQ(0, media_session.seek_count());
   }
 
-  controller()->Seek(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->Seek(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_EQ(1, media_session.seek_count());
@@ -527,8 +527,7 @@ TEST_F(MediaControllerTest, ActiveController_SeekTo) {
     EXPECT_EQ(0, media_session.seek_to_count());
   }
 
-  controller()->SeekTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->SeekTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_EQ(1, media_session.seek_to_count());
@@ -550,22 +549,19 @@ TEST_F(MediaControllerTest, ActiveController_ScrubTo) {
     EXPECT_EQ(0, media_session.seek_to_count());
   }
 
-  controller()->ScrubTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->ScrubTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_TRUE(media_session.is_scrubbing());
   EXPECT_EQ(0, media_session.seek_to_count());
 
-  controller()->ScrubTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->ScrubTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_TRUE(media_session.is_scrubbing());
   EXPECT_EQ(0, media_session.seek_to_count());
 
-  controller()->SeekTo(
-      base::TimeDelta::FromSeconds(mojom::kDefaultSeekTimeSeconds));
+  controller()->SeekTo(base::Seconds(mojom::kDefaultSeekTimeSeconds));
   controller().FlushForTesting();
 
   EXPECT_FALSE(media_session.is_scrubbing());
@@ -581,7 +577,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_Abandoned) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata(metadata);
+  absl::optional<MediaMetadata> test_metadata(metadata);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -602,7 +598,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata;
+  absl::optional<MediaMetadata> test_metadata;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -626,7 +622,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_WithInfo) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata(metadata);
+  absl::optional<MediaMetadata> test_metadata(metadata);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -645,7 +641,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_AddObserver_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata;
+  absl::optional<MediaMetadata> test_metadata;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -670,7 +666,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_AddObserver_WithInfo) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata(metadata);
+  absl::optional<MediaMetadata> test_metadata(metadata);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -898,7 +894,7 @@ TEST_F(MediaControllerTest, ActiveController_Position_Observer_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position;
+  absl::optional<MediaPosition> test_position;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -914,14 +910,16 @@ TEST_F(MediaControllerTest, ActiveController_Position_Observer_Empty) {
 }
 
 TEST_F(MediaControllerTest, ActiveController_Position_Observer_WithInfo) {
-  MediaPosition position(1 /* playback_rate */,
-                         base::TimeDelta::FromSeconds(600) /* duration */,
-                         base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position(
+      /*playback_rate=*/1,
+      /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position(position);
+  absl::optional<MediaPosition> test_position(position);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -940,7 +938,7 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position;
+  absl::optional<MediaPosition> test_position;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -957,14 +955,16 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_Empty) {
 }
 
 TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_WithInfo) {
-  MediaPosition position(1 /* playback_rate */,
-                         base::TimeDelta::FromSeconds(600) /* duration */,
-                         base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position(
+      /*playback_rate=*/1,
+      /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position(position);
+  absl::optional<MediaPosition> test_position(position);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -981,14 +981,16 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_WithInfo) {
 }
 
 TEST_F(MediaControllerTest, ActiveController_Position_Observer_Abandoned) {
-  MediaPosition position(1 /* playback_rate */,
-                         base::TimeDelta::FromSeconds(600) /* duration */,
-                         base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position(
+      /*playback_rate=*/1,
+      /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position(position);
+  absl::optional<MediaPosition> test_position(position);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -1278,7 +1280,7 @@ TEST_F(MediaControllerTest, ActiveController_Observer_SessionChanged) {
 
   {
     test::TestMediaControllerObserver observer(controller());
-    observer.WaitForSession(base::nullopt);
+    observer.WaitForSession(absl::nullopt);
   }
 
   {
@@ -1312,7 +1314,7 @@ TEST_F(MediaControllerTest, ActiveController_Observer_SessionChanged) {
   {
     test::TestMediaControllerObserver observer(controller());
     media_session_1.SetIsControllable(false);
-    observer.WaitForSession(base::nullopt);
+    observer.WaitForSession(absl::nullopt);
   }
 }
 

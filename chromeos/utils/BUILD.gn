@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+
+source_set("utils") {
+  deps = [
+    "//base",
+    "//printing:printing_base",
+    "//skia",
+    "//ui/gfx",
+  ]
+
+  sources = [
+    "pdf_conversion.cc",
+    "pdf_conversion.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":utils",
+    "//base",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+  sources = [ "pdf_conversion_unittest.cc" ]
+}

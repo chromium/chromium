@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,16 +29,6 @@ TEST(AutofillTypeTest, ServerFieldTypes) {
   EXPECT_EQ(PHONE_HOME_NUMBER, phone.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kPhoneHome, phone.group());
 
-  // Billing type.
-  AutofillType billing_address(ADDRESS_BILLING_LINE1);
-  EXPECT_EQ(ADDRESS_HOME_LINE1, billing_address.GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressBilling, billing_address.group());
-
-  // Last value, to check any offset errors.
-  AutofillType last(NAME_BILLING_SUFFIX);
-  EXPECT_EQ(NAME_SUFFIX, last.GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kNameBilling, last.group());
-
   // Boundary (error) condition.
   AutofillType boundary(MAX_VALID_FIELD_TYPE);
   EXPECT_EQ(UNKNOWN_TYPE, boundary.GetStorableType());
@@ -57,32 +47,35 @@ TEST(AutofillTypeTest, ServerFieldTypes) {
 
 TEST(AutofillTypeTest, HtmlFieldTypes) {
   // Unknown type.
-  AutofillType unknown(HTML_TYPE_UNSPECIFIED, HTML_MODE_NONE);
+  AutofillType unknown(HtmlFieldType::kUnspecified, HtmlFieldMode::kNone);
   EXPECT_EQ(UNKNOWN_TYPE, unknown.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kNoGroup, unknown.group());
 
   // Type with group but no subgroup.
-  AutofillType first(HTML_TYPE_GIVEN_NAME, HTML_MODE_NONE);
+  AutofillType first(HtmlFieldType::kGivenName, HtmlFieldMode::kNone);
   EXPECT_EQ(NAME_FIRST, first.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kName, first.group());
 
   // Type with group and subgroup.
-  AutofillType phone(HTML_TYPE_TEL, HTML_MODE_NONE);
+  AutofillType phone(HtmlFieldType::kTel, HtmlFieldMode::kNone);
   EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER, phone.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kPhoneHome, phone.group());
 
   // Last value, to check any offset errors.
-  AutofillType last(HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, HTML_MODE_NONE);
+  AutofillType last(HtmlFieldType::kCreditCardExp4DigitYear,
+                    HtmlFieldMode::kNone);
   EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR, last.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kCreditCard, last.group());
 
   // Shipping mode.
-  AutofillType shipping_first(HTML_TYPE_GIVEN_NAME, HTML_MODE_SHIPPING);
+  AutofillType shipping_first(HtmlFieldType::kGivenName,
+                              HtmlFieldMode::kShipping);
   EXPECT_EQ(NAME_FIRST, shipping_first.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kName, shipping_first.group());
 
   // Billing mode.
-  AutofillType billing_first(HTML_TYPE_GIVEN_NAME, HTML_MODE_BILLING);
+  AutofillType billing_first(HtmlFieldType::kGivenName,
+                             HtmlFieldMode::kBilling);
   EXPECT_EQ(NAME_FIRST, billing_first.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kNameBilling, billing_first.group());
 }

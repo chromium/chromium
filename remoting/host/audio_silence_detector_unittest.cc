@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -48,24 +47,24 @@ TEST(AudioSilenceDetectorTest, Silence) {
   const int16_t kSamples[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   AudioSilenceDetector target(0);
-  TestSilenceDetector(&target, kSamples, base::size(kSamples), true);
+  TestSilenceDetector(&target, kSamples, std::size(kSamples), true);
 }
 
 TEST(AudioSilenceDetectorTest, Sound) {
   const int16_t kSamples[] = {65, 73, 83, 89, 92, -1, 5, 9, 123, 0};
 
   AudioSilenceDetector target(0);
-  TestSilenceDetector(&target, kSamples, base::size(kSamples), false);
+  TestSilenceDetector(&target, kSamples, std::size(kSamples), false);
 }
 
 TEST(AudioSilenceDetectorTest, Threshold) {
   const int16_t kSamples[] = {0, 0, 0, 0, 1, 0, 0, -1, 0, 0};
 
   AudioSilenceDetector target1(0);
-  TestSilenceDetector(&target1, kSamples, base::size(kSamples), false);
+  TestSilenceDetector(&target1, kSamples, std::size(kSamples), false);
 
   AudioSilenceDetector target2(1);
-  TestSilenceDetector(&target2, kSamples, base::size(kSamples), true);
+  TestSilenceDetector(&target2, kSamples, std::size(kSamples), true);
 }
 
 }  // namespace remoting

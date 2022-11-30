@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "weblayer/test/weblayer_browser_test.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 
@@ -58,7 +58,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
   std::unique_ptr<base::RunLoop> is_keeping_alive_loop_;
 };
 }  // namespace
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 const char kExampleUrl[] = "https://www.example.com/";
@@ -98,12 +98,12 @@ class BackgroundSyncBrowserTest : public WebLayerBrowserTest {
     return nullptr;
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void PostRunTestOnMainThread() override {
     keep_alive_observer_.WaitUntilNoKeepAlives();
     WebLayerBrowserTest::PostRunTestOnMainThread();
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  protected:
   content::WebContents* web_contents() {
@@ -112,9 +112,9 @@ class BackgroundSyncBrowserTest : public WebLayerBrowserTest {
 
   std::unique_ptr<base::RunLoop> sync_event_received_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TestKeepAliveStateObserver keep_alive_observer_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, GetBackgroundSyncController) {
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, ZeroSiteEngagementPenalty) {
   // min interval >=0 implies Periodic Background Sync.
   blink::mojom::SyncRegistrationOptions options(
       kTag,
-      /* min_interval= */ base::TimeDelta::FromHours(12).InMilliseconds());
+      /* min_interval= */ base::Hours(12).InMilliseconds());
   *registration.options() = std::move(options);
   // First attempt.
   registration.set_num_attempts(0);
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, ZeroSiteEngagementPenalty) {
   EXPECT_EQ(delay, base::TimeDelta::Max());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/1154332): Fix flaky test.
 IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest,
                        DISABLED_BackgroundSyncNotDisabled) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ class NET_EXPORT UploadDataStream {
   // cache to formulate a cache key. This value should be unique across browser
   // sessions. A value of 0 is used to indicate an unspecified identifier.
   UploadDataStream(bool is_chunked, int64_t identifier);
+  UploadDataStream(bool is_chunked, bool has_null_source, int64_t identifier);
 
   UploadDataStream(const UploadDataStream&) = delete;
   UploadDataStream& operator=(const UploadDataStream&) = delete;
@@ -72,6 +73,10 @@ class NET_EXPORT UploadDataStream {
   int64_t identifier() const { return identifier_; }
 
   bool is_chunked() const { return is_chunked_; }
+
+  // Returns true if the stream has a null source which is defined at
+  // https://fetch.spec.whatwg.org/#concept-body-source.
+  bool has_null_source() const { return has_null_source_; }
 
   // Returns true if all data has been consumed from this upload data
   // stream. For chunked uploads, returns false until the first read attempt.
@@ -133,17 +138,18 @@ class NET_EXPORT UploadDataStream {
   // at least once before every call to InitInternal.
   virtual void ResetInternal() = 0;
 
-  uint64_t total_size_;
-  uint64_t current_position_;
+  uint64_t total_size_ = 0;
+  uint64_t current_position_ = 0;
 
   const int64_t identifier_;
 
   const bool is_chunked_;
+  const bool has_null_source_;
 
   // True if the initialization was successful.
-  bool initialized_successfully_;
+  bool initialized_successfully_ = false;
 
-  bool is_eof_;
+  bool is_eof_ = false;
 
   CompletionOnceCallback callback_;
 

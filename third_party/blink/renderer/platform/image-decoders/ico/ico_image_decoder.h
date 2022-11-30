@@ -43,21 +43,25 @@ class PNGImageDecoder;
 // This class decodes the ICO and CUR image formats.
 class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
  public:
-  ICOImageDecoder(AlphaOption, const ColorBehavior&, size_t max_decoded_bytes);
+  ICOImageDecoder(AlphaOption,
+                  const ColorBehavior&,
+                  wtf_size_t max_decoded_bytes);
+  ICOImageDecoder(const ICOImageDecoder&) = delete;
+  ICOImageDecoder& operator=(const ICOImageDecoder&) = delete;
   ~ICOImageDecoder() override;
 
   // ImageDecoder:
   String FilenameExtension() const override { return "ico"; }
   void OnSetData(SegmentReader*) override;
-  IntSize Size() const override;
-  IntSize FrameSizeAtIndex(size_t) const override;
+  gfx::Size Size() const override;
+  gfx::Size FrameSizeAtIndex(wtf_size_t) const override;
   bool SetSize(unsigned width, unsigned height) override;
-  bool FrameIsReceivedAtIndex(size_t) const override;
+  bool FrameIsReceivedAtIndex(wtf_size_t) const override;
   // CAUTION: SetFailed() deletes all readers and decoders.  Be careful to
   // avoid accessing deleted memory, especially when calling this from
   // inside BMPImageReader!
   bool SetFailed() override;
-  bool HotSpot(IntPoint&) const override;
+  bool HotSpot(gfx::Point&) const override;
 
  private:
   enum ImageType {
@@ -73,9 +77,9 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   struct IconDirectoryEntry {
     DISALLOW_NEW();
-    IntSize size_;
+    gfx::Size size_;
     uint16_t bit_count_;
-    IntPoint hot_spot_;
+    gfx::Point hot_spot_;
     uint32_t image_offset_;
     uint32_t byte_size_;
   };
@@ -87,12 +91,12 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   void DecodeSize() override { Decode(0, true); }
-  size_t DecodeFrameCount() override;
-  void Decode(size_t index) override { Decode(index, false); }
+  wtf_size_t DecodeFrameCount() override;
+  void Decode(wtf_size_t index) override { Decode(index, false); }
 
   // TODO (scroggo): These functions are identical to functions in
   // BMPImageReader. Share code?
-  inline uint8_t ReadUint8(size_t offset) const {
+  inline uint8_t ReadUint8(wtf_size_t offset) const {
     return fast_reader_.GetOneByte(decoded_offset_ + offset);
   }
 
@@ -111,12 +115,12 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   }
 
   // If the desired PNGImageDecoder exists, gives it the appropriate data.
-  void SetDataForPNGDecoderAtIndex(size_t);
+  void SetDataForPNGDecoderAtIndex(wtf_size_t);
 
   // Decodes the entry at |index|.  If |only_size| is true, stops decoding
   // after calculating the image size.  If decoding fails but there is no
   // more data coming, sets the "decode failure" flag.
-  void Decode(size_t index, bool only_size);
+  void Decode(wtf_size_t index, bool only_size);
 
   // Decodes the directory and directory entries at the beginning of the
   // data, and initializes members.  Returns true if all decoding
@@ -124,7 +128,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   bool DecodeDirectory();
 
   // Decodes the specified entry.
-  bool DecodeAtIndex(size_t);
+  bool DecodeAtIndex(wtf_size_t);
 
   // Processes the ICONDIR at the beginning of the data.  Returns true if
   // the directory could be decoded.
@@ -137,7 +141,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   // Stores the hot-spot for |index| in |hot_spot| and returns true,
   // or returns false if there is none.
-  bool HotSpotAtIndex(size_t index, IntPoint& hot_spot) const;
+  bool HotSpotAtIndex(wtf_size_t index, gfx::Point& hot_spot) const;
 
   // Reads and returns a directory entry from the current offset into
   // |data|.
@@ -145,14 +149,14 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   // Determines whether the desired entry is a BMP or PNG.  Returns true
   // if the type could be determined.
-  ImageType ImageTypeAtIndex(size_t);
+  ImageType ImageTypeAtIndex(wtf_size_t);
 
   FastSharedBufferReader fast_reader_{nullptr};
 
   // An index into |data_| representing how much we've already decoded.
   // Note that this only tracks data _this_ class decodes; once the
   // BMPImageReader takes over this will not be updated further.
-  size_t decoded_offset_ = 0;
+  wtf_size_t decoded_offset_ = 0;
 
   // Which type of file (ICO/CUR) this is.
   FileType file_type_;
@@ -164,7 +168,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   // Count of directory entries is parsed from header before initializing
   // dir_entries_. dir_entries_ is populated only when full header
   // information including directory entries is available.
-  size_t dir_entries_count_ = 0;
+  wtf_size_t dir_entries_count_ = 0;
 
   // The image decoders for the various frames.
   typedef Vector<std::unique_ptr<BMPImageReader>> BMPReaders;
@@ -174,11 +178,9 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   // Valid only while a BMPImageReader is decoding, this holds the size
   // for the particular entry being decoded.
-  IntSize frame_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ICOImageDecoder);
+  gfx::Size frame_size_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_ICO_ICO_IMAGE_DECODER_H_

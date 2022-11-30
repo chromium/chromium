@@ -38,9 +38,6 @@ class LayoutFieldset final : public LayoutBlockFlow {
     return FindInFlowLegend(*this);
   }
 
-  static LayoutBlock* FindLegendContainingBlock(const LayoutBox& legend,
-                                                AncestorSkipInfo* = nullptr);
-
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutFieldset";

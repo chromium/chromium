@@ -1,15 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_VR_ANDROID_ARCORE_ADDRESS_TO_ID_MAP_H_
 #define DEVICE_VR_ANDROID_ARCORE_ADDRESS_TO_ID_MAP_H_
 
-#include "base/check.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
-
+#include <limits>
 #include <unordered_map>
+
+#include "base/check.h"
+#include "base/containers/cxx20_erase_unordered_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -19,7 +20,7 @@ namespace device {
 // be passed over mojo. The Ids should be directly exposable from blink if
 // desired.
 // Note that IdType must be constructable from a uint64_t, and should most often
-// be a util::IdTypeU64 type.
+// be a base::IdTypeU64 type.
 template <typename IdType>
 class AddressToIdMap {
  public:
@@ -53,10 +54,10 @@ class AddressToIdMap {
   }
 
   // Gets the id for the corresponding address, if it's available.
-  base::Optional<IdType> GetId(void* address) const {
+  absl::optional<IdType> GetId(void* address) const {
     auto it = address_to_id_.find(address);
     if (it == address_to_id_.end()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return it->second;

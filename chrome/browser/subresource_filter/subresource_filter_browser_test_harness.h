@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,26 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
+#include "components/safe_browsing/core/browser/db/util.h"
+#include "components/subresource_filter/content/browser/subresource_filter_observer.h"
+#include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +42,7 @@ using subresource_filter::testing::TestRulesetCreator;
 using subresource_filter::testing::TestRulesetPair;
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -46,10 +55,84 @@ class AdsInterventionManager;
 class SubresourceFilterContentSettingsManager;
 class RulesetService;
 
+// Small helper mock to allow tests to set expectations about observations on
+// the subresource filter. Automatically registers and unregisters itself as an
+// observer for its lifetime.
+class MockSubresourceFilterObserver : public SubresourceFilterObserver {
+ public:
+  explicit MockSubresourceFilterObserver(content::WebContents* web_contents);
+  ~MockSubresourceFilterObserver() override;
+
+  MOCK_METHOD2(OnPageActivationComputed,
+               void(content::NavigationHandle*, const mojom::ActivationState&));
+
+ private:
+  base::ScopedObservation<SubresourceFilterObserverManager,
+                          SubresourceFilterObserver>
+      scoped_observation_{this};
+};
+
+// Matchers for mojom::ActivationState arguments.
+MATCHER(HasActivationLevelDisabled, "") {
+  return arg.activation_level == mojom::ActivationLevel::kDisabled;
+}
+MATCHER(HasActivationLevelDryRun, "") {
+  return arg.activation_level == mojom::ActivationLevel::kDryRun;
+}
+MATCHER(HasActivationLevelEnabled, "") {
+  return arg.activation_level == mojom::ActivationLevel::kEnabled;
+}
+
 class SubresourceFilterBrowserTest : public PlatformBrowserTest {
  public:
   SubresourceFilterBrowserTest();
+
+  SubresourceFilterBrowserTest(const SubresourceFilterBrowserTest&) = delete;
+  SubresourceFilterBrowserTest& operator=(const SubresourceFilterBrowserTest&) =
+      delete;
+
   ~SubresourceFilterBrowserTest() override;
+
+  // Names of DocumentLoad histograms.
+  static constexpr const char kDocumentLoadActivationLevel[] =
+      "SubresourceFilter.DocumentLoad.ActivationState";
+
+  static constexpr const char kSubresourceLoadsTotalForPage[] =
+      "SubresourceFilter.PageLoad.NumSubresourceLoads.Total";
+  static constexpr const char kSubresourceLoadsEvaluatedForPage[] =
+      "SubresourceFilter.PageLoad.NumSubresourceLoads.Evaluated";
+  static constexpr const char kSubresourceLoadsMatchedRulesForPage[] =
+      "SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules";
+  static constexpr const char kSubresourceLoadsDisallowedForPage[] =
+      "SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed";
+
+  // Names of the performance measurement histograms.
+  static constexpr const char kEvaluationTotalWallDurationForPage[] =
+      "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration";
+  static constexpr const char kEvaluationTotalCPUDurationForPage[] =
+      "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration";
+  static constexpr const char kEvaluationWallDuration[] =
+      "SubresourceFilter.SubresourceLoad.Evaluation.WallDuration";
+  static constexpr const char kEvaluationCPUDuration[] =
+      "SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration";
+
+  static constexpr const char kActivationDecision[] =
+      "SubresourceFilter.PageLoad.ActivationDecision";
+
+  // Names of navigation chain patterns histogram.
+  static constexpr const char kActivationListHistogram[] =
+      "SubresourceFilter.PageLoad.ActivationList";
+
+  static constexpr const char kPageLoadActivationStateHistogram[] =
+      "SubresourceFilter.PageLoad.ActivationState";
+  static constexpr const char kPageLoadActivationStateDidInheritHistogram[] =
+      "SubresourceFilter.PageLoad.ActivationState.DidInherit";
+
+  // Other histograms.
+  static constexpr const char kSubresourceFilterActionsHistogram[] =
+      "SubresourceFilter.Actions2";
+
+  bool AdsBlockedInContentSettings(content::RenderFrameHost* frame_host);
 
  protected:
   // InProcessBrowserTest:
@@ -128,9 +211,7 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> database_helper_;
 
   // Owned by the profile.
-  SubresourceFilterProfileContext* profile_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterBrowserTest);
+  raw_ptr<SubresourceFilterProfileContext> profile_context_;
 };
 
 // This class automatically syncs the SubresourceFilter SafeBrowsing list
@@ -138,6 +219,32 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
 class SubresourceFilterListInsertingBrowserTest
     : public SubresourceFilterBrowserTest {
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> CreateTestDatabase() override;
+};
+
+class SubresourceFilterPrerenderingBrowserTest
+    : public SubresourceFilterListInsertingBrowserTest {
+ public:
+  SubresourceFilterPrerenderingBrowserTest();
+  ~SubresourceFilterPrerenderingBrowserTest() override;
+
+  void SetUp() override;
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+class SubresourceFilterFencedFrameBrowserTest
+    : public SubresourceFilterListInsertingBrowserTest {
+ public:
+  SubresourceFilterFencedFrameBrowserTest() = default;
+  ~SubresourceFilterFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
 }  // namespace subresource_filter

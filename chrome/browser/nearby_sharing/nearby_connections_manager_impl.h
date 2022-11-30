@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -27,8 +27,9 @@ class NearbyConnectionsManagerImpl
       public location::nearby::connections::mojom::ConnectionLifecycleListener,
       public location::nearby::connections::mojom::PayloadListener {
  public:
-  explicit NearbyConnectionsManagerImpl(
-      chromeos::nearby::NearbyProcessManager* process_manager);
+  NearbyConnectionsManagerImpl(
+      ash::nearby::NearbyProcessManager* process_manager,
+      const std::string& service_id);
   ~NearbyConnectionsManagerImpl() override;
   NearbyConnectionsManagerImpl(const NearbyConnectionsManagerImpl&) = delete;
   NearbyConnectionsManagerImpl& operator=(const NearbyConnectionsManagerImpl&) =
@@ -41,29 +42,30 @@ class NearbyConnectionsManagerImpl
                         PowerLevel power_level,
                         DataUsage data_usage,
                         ConnectionsCallback callback) override;
-  void StopAdvertising() override;
+  void StopAdvertising(ConnectionsCallback callback) override;
   void StartDiscovery(DiscoveryListener* listener,
                       DataUsage data_usage,
                       ConnectionsCallback callback) override;
   void StopDiscovery() override;
   void Connect(std::vector<uint8_t> endpoint_info,
                const std::string& endpoint_id,
-               base::Optional<std::vector<uint8_t>> bluetooth_mac_address,
+               absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
                DataUsage data_usage,
                NearbyConnectionCallback callback) override;
   void Disconnect(const std::string& endpoint_id) override;
   void Send(const std::string& endpoint_id,
             PayloadPtr payload,
-            PayloadStatusListener* listener) override;
-  void RegisterPayloadStatusListener(int64_t payload_id,
-                                     PayloadStatusListener* listener) override;
+            base::WeakPtr<PayloadStatusListener> listener) override;
+  void RegisterPayloadStatusListener(
+      int64_t payload_id,
+      base::WeakPtr<PayloadStatusListener> listener) override;
   void RegisterPayloadPath(int64_t payload_id,
                            const base::FilePath& file_path,
                            ConnectionsCallback callback) override;
   Payload* GetIncomingPayload(int64_t payload_id) override;
   void Cancel(int64_t payload_id) override;
   void ClearIncomingPayloads() override;
-  base::Optional<std::vector<uint8_t>> GetRawAuthenticationToken(
+  absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
 
@@ -120,7 +122,7 @@ class NearbyConnectionsManagerImpl
   void OnConnectionRequested(const std::string& endpoint_id,
                              ConnectionsStatus status);
   void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   location::nearby::connections::mojom::NearbyConnections*
   GetNearbyConnections();
@@ -131,12 +133,11 @@ class NearbyConnectionsManagerImpl
                      NearbyFileHandler::CreateFileResult result);
 
   // For metrics.
-  base::Optional<Medium> GetUpgradedMedium(
+  absl::optional<Medium> GetUpgradedMedium(
       const std::string& endpoint_id) const;
 
-  chromeos::nearby::NearbyProcessManager* process_manager_;
-  std::unique_ptr<
-      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+  ash::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   NearbyFileHandler file_handler_;
   IncomingConnectionListener* incoming_connection_listener_ = nullptr;
@@ -153,8 +154,9 @@ class NearbyConnectionsManagerImpl
   // A map of endpoint_id to timers that timeout a connection request.
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       connect_timeout_timers_;
-  // A map of payload_id to PayloadStatusListener*.
-  base::flat_map<int64_t, PayloadStatusListener*> payload_status_listeners_;
+  // A map of payload_id to PayloadStatusListener weak pointer.
+  base::flat_map<int64_t, base::WeakPtr<PayloadStatusListener>>
+      payload_status_listeners_;
   // A map of payload_id to PayloadPtr.
   base::flat_map<int64_t, PayloadPtr> incoming_payloads_;
 
@@ -163,6 +165,8 @@ class NearbyConnectionsManagerImpl
   base::flat_set<std::string> requested_bwu_endpoint_ids_;
   // For metrics. A map of endpoint_id to current upgraded medium.
   base::flat_map<std::string, Medium> current_upgraded_mediums_;
+
+  const std::string service_id_;
 
   mojo::Receiver<EndpointDiscoveryListener> endpoint_discovery_listener_{this};
   mojo::ReceiverSet<ConnectionLifecycleListener>

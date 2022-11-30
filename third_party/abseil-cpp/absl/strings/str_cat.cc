@@ -17,15 +17,51 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <string>
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/numbers.h"
+#include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
+
+namespace strings_internal {
+void StringifySink::Append(size_t count, char ch) { buffer_.append(count, ch); }
+
+void StringifySink::Append(string_view v) {
+  buffer_.append(v.data(), v.size());
+}
+
+bool StringifySink::PutPaddedString(string_view v, int width, int precision,
+                                    bool left) {
+  size_t space_remaining = 0;
+
+  if (width >= 0) space_remaining = static_cast<size_t>(width);
+
+  size_t n = v.size();
+
+  if (precision >= 0) n = (std::min)(n, static_cast<size_t>(precision));
+
+  string_view shown(v.data(), n);
+
+  if (shown.size() < space_remaining) {
+    space_remaining = space_remaining - shown.size();
+  } else {
+    space_remaining = 0;
+  }
+
+  if (!left) Append(space_remaining, ' ');
+  Append(shown);
+  if (left) Append(space_remaining, ' ');
+  return true;
+}
+
+}  // namespace strings_internal
 
 AlphaNum::AlphaNum(Hex hex) {
   static_assert(numbers_internal::kFastToBufferSize >= 32,
@@ -56,7 +92,7 @@ AlphaNum::AlphaNum(Dec dec) {
     *--writer = '0' + (value % 10);
     value /= 10;
   }
-  *--writer = '0' + value;
+  *--writer = '0' + static_cast<char>(value);
   if (neg) *--writer = '-';
 
   ptrdiff_t fillers = writer - minfill;
@@ -73,7 +109,7 @@ AlphaNum::AlphaNum(Dec dec) {
     if (add_sign_again) *--writer = '-';
   }
 
-  piece_ = absl::string_view(writer, end - writer);
+  piece_ = absl::string_view(writer, static_cast<size_t>(end - writer));
 }
 
 // ----------------------------------------------------------------------
@@ -174,7 +210,7 @@ void AppendPieces(std::string* dest,
     ASSERT_NO_OVERLAP(*dest, piece);
     total_size += piece.size();
   }
-  strings_internal::STLStringResizeUninitialized(dest, total_size);
+  strings_internal::STLStringResizeUninitializedAmortized(dest, total_size);
 
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;
@@ -199,7 +235,7 @@ void StrAppend(std::string* dest, const AlphaNum& a, const AlphaNum& b) {
   ASSERT_NO_OVERLAP(*dest, a);
   ASSERT_NO_OVERLAP(*dest, b);
   std::string::size_type old_size = dest->size();
-  strings_internal::STLStringResizeUninitialized(
+  strings_internal::STLStringResizeUninitializedAmortized(
       dest, old_size + a.size() + b.size());
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;
@@ -214,7 +250,7 @@ void StrAppend(std::string* dest, const AlphaNum& a, const AlphaNum& b,
   ASSERT_NO_OVERLAP(*dest, b);
   ASSERT_NO_OVERLAP(*dest, c);
   std::string::size_type old_size = dest->size();
-  strings_internal::STLStringResizeUninitialized(
+  strings_internal::STLStringResizeUninitializedAmortized(
       dest, old_size + a.size() + b.size() + c.size());
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;
@@ -231,7 +267,7 @@ void StrAppend(std::string* dest, const AlphaNum& a, const AlphaNum& b,
   ASSERT_NO_OVERLAP(*dest, c);
   ASSERT_NO_OVERLAP(*dest, d);
   std::string::size_type old_size = dest->size();
-  strings_internal::STLStringResizeUninitialized(
+  strings_internal::STLStringResizeUninitializedAmortized(
       dest, old_size + a.size() + b.size() + c.size() + d.size());
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;

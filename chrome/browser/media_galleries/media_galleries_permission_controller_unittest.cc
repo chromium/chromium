@@ -1,15 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media_galleries/media_galleries_permission_controller.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,6 +52,11 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
         controller_(nullptr),
         profile_(new TestingProfile()) {}
 
+  MediaGalleriesPermissionControllerTest(
+      const MediaGalleriesPermissionControllerTest&) = delete;
+  MediaGalleriesPermissionControllerTest& operator=(
+      const MediaGalleriesPermissionControllerTest&) = delete;
+
   ~MediaGalleriesPermissionControllerTest() override {
     EXPECT_FALSE(controller_);
     EXPECT_FALSE(dialog_);
@@ -65,7 +71,8 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
 
-    gallery_prefs_.reset(new MediaGalleriesPreferences(profile_.get()));
+    gallery_prefs_ =
+        std::make_unique<MediaGalleriesPreferences>(profile_.get());
     base::RunLoop loop;
     gallery_prefs_->EnsureInitialized(loop.QuitClosure());
     loop.Run();
@@ -143,11 +150,11 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
   // The dialog is owned by the controller, but this pointer should only be
   // valid while the dialog is live within the controller.
-  MockMediaGalleriesDialog* dialog_;
+  raw_ptr<MockMediaGalleriesDialog> dialog_;
   int dialog_update_count_at_destruction_;
 
   // The controller owns itself.
-  MediaGalleriesPermissionController* controller_;
+  raw_ptr<MediaGalleriesPermissionController> controller_;
 
   scoped_refptr<extensions::Extension> extension_;
 
@@ -162,8 +169,6 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
   base::WeakPtrFactory<MediaGalleriesPermissionControllerTest> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPermissionControllerTest);
 };
 
 GalleryDialogId
@@ -272,7 +277,7 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   galleryName = "gallery2";
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   galleryName = base::FilePath(FILE_PATH_LITERAL("/path/to/gallery"))
                     .Append(gallery.path).MaybeAsASCII();
 #endif

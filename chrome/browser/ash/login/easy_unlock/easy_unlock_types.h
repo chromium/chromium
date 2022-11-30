@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include <string>
 #include <vector>
-#include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 extern const char kEasyUnlockKeyMetaNameBluetoothAddress[];
 extern const char kEasyUnlockKeyMetaNamePsk[];
@@ -43,6 +42,6 @@ struct EasyUnlockDeviceKeyData {
 };
 typedef std::vector<EasyUnlockDeviceKeyData> EasyUnlockDeviceKeyDataList;
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_TYPES_H_

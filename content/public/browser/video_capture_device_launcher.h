@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
+#include "base/token.h"
 #include "content/common/content_export.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -68,6 +71,10 @@ class CONTENT_EXPORT LaunchedVideoCaptureDevice
       media::VideoCaptureDevice::TakePhotoCallback callback) = 0;
   virtual void MaybeSuspendDevice() = 0;
   virtual void ResumeDevice() = 0;
+  virtual void Crop(
+      const base::Token& crop_id,
+      uint32_t crop_version,
+      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) = 0;
   virtual void RequestRefreshFrame() = 0;
 
   // Methods for specific types of devices.

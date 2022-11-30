@@ -1,2 +1,2 @@
 AXWebArea
-++AXImage AXRoleDescription='image'
+++AXImage

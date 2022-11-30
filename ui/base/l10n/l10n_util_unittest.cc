@@ -1,6 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "ui/base/l10n/l10n_util.h"
 
 #include <stddef.h>
 
@@ -14,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,11 +27,10 @@
 #include "testing/platform_test.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/grit/ui_base_test_resources.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 #include "ui/base/ui_base_paths.h"
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 #include <cstdlib>
 #endif
 
@@ -42,12 +42,14 @@ namespace {
 class StringWrapper {
  public:
   explicit StringWrapper(const std::u16string& string) : string_(string) {}
+
+  StringWrapper(const StringWrapper&) = delete;
+  StringWrapper& operator=(const StringWrapper&) = delete;
+
   const std::u16string& string() const { return string_; }
 
  private:
   std::u16string string_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringWrapper);
 };
 
 }  // namespace
@@ -69,7 +71,7 @@ TEST_F(L10nUtilTest, GetString) {
   EXPECT_EQ(u"You owe me $$1.", s16);
 }
 
-#if !defined(OS_APPLE) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 // On Mac, we are disabling this test because GetApplicationLocale() as an
 // API isn't something that we'll easily be able to unit test in this manner.
 // The meaning of that API, on the Mac, is "the locale used by Cocoa's main
@@ -79,18 +81,18 @@ TEST_F(L10nUtilTest, GetString) {
 // On Android, we are disabling this test since GetApplicationLocale() just
 // returns the system's locale, which, similarly, is not easily unit tested.
 
-#if defined(OS_POSIX) && defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
-const bool kPlatformHasDefaultLocale = 1;
-const bool kUseLocaleFromEnvironment = 1;
-const bool kSupportsLocalePreference = 0;
-#elif defined(OS_WIN)
-const bool kPlatformHasDefaultLocale = 1;
-const bool kUseLocaleFromEnvironment = 0;
-const bool kSupportsLocalePreference = 1;
+#if BUILDFLAG(IS_POSIX) && defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
+const bool kPlatformHasDefaultLocale = true;
+const bool kUseLocaleFromEnvironment = true;
+const bool kSupportsLocalePreference = false;
+#elif BUILDFLAG(IS_WIN)
+const bool kPlatformHasDefaultLocale = true;
+const bool kUseLocaleFromEnvironment = false;
+const bool kSupportsLocalePreference = true;
 #else
-const bool kPlatformHasDefaultLocale = 0;
-const bool kUseLocaleFromEnvironment = 0;
-const bool kSupportsLocalePreference = 1;
+const bool kPlatformHasDefaultLocale = false;
+const bool kUseLocaleFromEnvironment = false;
+const bool kSupportsLocalePreference = true;
 #endif
 
 void SetDefaultLocaleForTest(const std::string& tag, base::Environment* env) {
@@ -113,7 +115,7 @@ TEST_F(L10nUtilTest, GetAppLocale) {
       "fr", "he", "nb",          "pt-BR", "pt-PT", "zh-CN", "zh-TW",
   };
 
-  for (size_t i = 0; i < base::size(filenames); ++i) {
+  for (size_t i = 0; i < std::size(filenames); ++i) {
     base::FilePath filename = new_locale_dir.AppendASCII(
         filenames[i] + ".pak");
     base::WriteFile(filename, "");
@@ -369,19 +371,19 @@ TEST_F(L10nUtilTest, GetAppLocale) {
     EXPECT_STREQ("en", icu::Locale::getDefault().getLanguage());
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::i18n::SetICUDefaultLocale("am");
   EXPECT_EQ("am", l10n_util::GetApplicationLocale(""));
   EXPECT_STREQ("am", icu::Locale::getDefault().getLanguage());
   base::i18n::SetICUDefaultLocale("en-GB");
   EXPECT_EQ("am", l10n_util::GetApplicationLocale("am"));
   EXPECT_STREQ("am", icu::Locale::getDefault().getLanguage());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Clean up.
   base::i18n::SetICUDefaultLocale(original_locale);
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 TEST_F(L10nUtilTest, SortStringsUsingFunction) {
   std::vector<std::unique_ptr<StringWrapper>> strings;
@@ -582,7 +584,7 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
 
   // Verify that base::TimeDurationFormat() works for all available locales:
   // http://crbug.com/707515
-  base::TimeDelta kDelta = base::TimeDelta::FromMinutes(15 * 60 + 42);
+  base::TimeDelta kDelta = base::Minutes(15 * 60 + 42);
   for (const std::string& locale : l10n_util::GetAvailableICULocales()) {
     base::i18n::SetICUDefaultLocale(locale);
     std::u16string str;
@@ -594,16 +596,18 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
   }
 }
 
-TEST_F(L10nUtilTest, GetLocalesWithStrings) {
+TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
   // Convert the vector to a set for easy lookup.
   const base::flat_set<std::string> locales =
-      l10n_util::GetLocalesWithStrings();
+      l10n_util::GetUserFacingUILocaleList();
 
   // Common locales which should be available on all platforms.
   EXPECT_TRUE(locales.contains("en") || locales.contains("en-US"));
   EXPECT_TRUE(locales.contains("en-GB"));
   EXPECT_TRUE(locales.contains("es") || locales.contains("es-ES"));
   EXPECT_TRUE(locales.contains("fr") || locales.contains("fr-FR"));
+  EXPECT_TRUE(locales.contains("zh-CN"));
+  EXPECT_TRUE(locales.contains("zh-TW"));
 
   // Locales that we should have valid fallbacks for.
   EXPECT_TRUE(locales.contains("en-CA"));
@@ -611,6 +615,14 @@ TEST_F(L10nUtilTest, GetLocalesWithStrings) {
   EXPECT_TRUE(locales.contains("fr-CA"));
 
   // Locales that should not be included:
+  // Chinese and Chinese (Hong Kong), as we do not have specific strings for
+  // them (except on Android).
+  EXPECT_FALSE(locales.contains("zh"));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(locales.contains("zh-HK"));
+#endif
+  // Norwegian (no), as it does not specify a written form.
+  EXPECT_FALSE(locales.contains("no"));
   // English (Germany). A valid locale and in ICU's list of locales, but not in
   // our list of Accept-Language locales.
   EXPECT_FALSE(locales.contains("en-DE"));

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,9 @@ SingleThreadTaskExecutor::SingleThreadTaskExecutor(
           sequence_manager::SequenceManager::Settings::Builder()
               .SetMessagePumpType(type)
               .Build())),
-      default_task_queue_(sequence_manager_->CreateTaskQueue(
-          sequence_manager::TaskQueue::Spec("default_tq"))),
+      default_task_queue_(
+          sequence_manager_->CreateTaskQueue(sequence_manager::TaskQueue::Spec(
+              sequence_manager::QueueName::DEFAULT_TQ))),
       type_(type),
       simple_task_executor_(task_runner()) {
   sequence_manager_->SetDefaultTaskRunner(default_task_queue_->task_runner());
@@ -38,12 +39,12 @@ SingleThreadTaskExecutor::SingleThreadTaskExecutor(
 
 SingleThreadTaskExecutor::~SingleThreadTaskExecutor() = default;
 
-scoped_refptr<SingleThreadTaskRunner> SingleThreadTaskExecutor::task_runner()
-    const {
+const scoped_refptr<SingleThreadTaskRunner>&
+SingleThreadTaskExecutor::task_runner() const {
   return default_task_queue_->task_runner();
 }
 
-void SingleThreadTaskExecutor::SetWorkBatchSize(size_t work_batch_size) {
+void SingleThreadTaskExecutor::SetWorkBatchSize(int work_batch_size) {
   sequence_manager_->SetWorkBatchSize(work_batch_size);
 }
 

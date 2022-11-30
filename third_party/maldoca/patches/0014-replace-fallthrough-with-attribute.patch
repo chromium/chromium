@@ -1,0 +1,13 @@
+diff --git a/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc b/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc
+index ed27503f31751..d6c27c4ed9451 100644
+--- a/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc
++++ b/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc
+@@ -114,7 +114,7 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf, int inbuf_len,
+         state_++;
+         // If we have a zero-length FEXTRA, we want to check to notice that
+         // we're done reading the FEXTRA before we exit this loop...
+-        FALLTHROUGH;
++        [[fallthrough]];
+ 
+       case IN_FEXTRA: {
+         // Grab the rest of the bytes in the extra field, or as many

@@ -25,9 +25,18 @@ async_test(function() {
     receivedPointerEvents.push(event);
     test(function() {
       assert_between_inclusive(event.pointerId, 1, POINTER_PROPERTIES.length);
-      var pp = POINTER_PROPERTIES[event.pointerId-1];
-      for (var i in pp)
-        assert_equals(event[i], (event.type == "pointerup" && i == "pressure") ? 0 : pp[i], "" + i);
+      var properties = POINTER_PROPERTIES[event.pointerId-1];
+      for (var property in properties) {
+        var expected = properties[property];
+        if (event.type == "pointerup") {
+          if (property == "pressure") {
+            expected = 0;
+          } else if (property == "width" || property == "height") {
+            expected = 1;
+          }
+        }
+        assert_equals(event[property], expected, "" + property);
+      }
       assert_equals(event.view.name, "mainWindow");
     }, "Pointer event properties for pointer " + event.pointerId + " on " + event.type);
   }
@@ -40,16 +49,22 @@ async_test(function() {
     var y = target0.offsetTop + 2;
 
     for (var i = 0 ; i < POINTER_PROPERTIES.length; ++i) {
-      var pp = POINTER_PROPERTIES[i];
-      if (i != POINTER_PROPERTIES.length-1)
-        eventSender.addTouchPoint(x + i, y + i, pp["width"] / 2.0, pp["height"] / 2.0, pp["pressure"], pp["tiltX"], pp["tiltY"], pp["pointerType"]);
-      else // Test default pointerType
-        eventSender.addTouchPoint(x + i, y + i, pp["width"] / 2.0, pp["height"] / 2.0, pp["pressure"], pp["tiltX"], pp["tiltY"]);
+      var properties = POINTER_PROPERTIES[i];
+      if (i != POINTER_PROPERTIES.length-1) {
+        eventSender.addTouchPoint(x + i, y + i,
+                                  properties["width"] / 2.0, properties["height"] / 2.0,
+                                  properties["pressure"], properties["tiltX"], properties["tiltY"],
+                                  properties["pointerType"]);
+      } else { // Test default pointerType
+        eventSender.addTouchPoint(x + i, y + i,
+                                  properties["width"] / 2.0,
+                                  properties["height"] / 2.0,
+                                  properties["pressure"], properties["tiltX"], properties["tiltY"]);
+      }
     }
     eventSender.touchStart();
 
     for (var i = 0 ; i < POINTER_PROPERTIES.length; ++i) {
-      var pp = POINTER_PROPERTIES[i];
       eventSender.updateTouchPoint(i, x + i + 20, y + i + 20);
     }
 

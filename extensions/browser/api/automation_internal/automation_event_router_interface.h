@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -51,9 +51,11 @@ class AutomationEventRouterInterface {
       content::BrowserContext* browser_context = nullptr) = 0;
 
   // Notify the source extension of the result to getTextLocation.
+  // Currently only supported by ARC++ in response to
+  // ax::mojom::Action::kGetTextLocation.
   virtual void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) = 0;
+      const absl::optional<gfx::Rect>& rect) = 0;
 };
 
 }  // namespace extensions

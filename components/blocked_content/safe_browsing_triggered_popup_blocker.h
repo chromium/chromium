@@ -1,20 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 #define COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 
-#include <memory>
-
 #include "base/feature_list.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
+#include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -25,7 +25,7 @@ class PrefRegistrySyncable;
 }
 
 namespace blocked_content {
-extern const base::Feature kAbusiveExperienceEnforce;
+BASE_DECLARE_FEATURE(kAbusiveExperienceEnforce);
 
 constexpr char kAbusiveEnforceMessage[] =
     "Chrome prevented this site from opening a new tab or window. Learn more "
@@ -75,11 +75,19 @@ class SafeBrowsingTriggeredPopupBlocker
   // Creates a SafeBrowsingTriggeredPopupBlocker and attaches it (via UserData)
   // to |web_contents|.
   static void MaybeCreate(content::WebContents* web_contents);
+
+  SafeBrowsingTriggeredPopupBlocker(const SafeBrowsingTriggeredPopupBlocker&) =
+      delete;
+  SafeBrowsingTriggeredPopupBlocker& operator=(
+      const SafeBrowsingTriggeredPopupBlocker&) = delete;
+
   ~SafeBrowsingTriggeredPopupBlocker() override;
 
-  bool ShouldApplyAbusivePopupBlocker();
+  bool ShouldApplyAbusivePopupBlocker(content::Page& page);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingTriggeredPopupBlockerTest,
+                           NonPrimaryFrameTree);
   friend class content::WebContentsUserData<SafeBrowsingTriggeredPopupBlocker>;
   // The |web_contents| and |observer_manager| are expected to be
   // non-nullptr.
@@ -102,18 +110,24 @@ class SafeBrowsingTriggeredPopupBlocker
   // controlled by enterprise policy).
   static bool IsEnabled(content::WebContents* web_contents);
 
-  // Data scoped to a single page. Will be reset at navigation commit.
-  class PageData {
+  // Data scoped to a single page. PageData has the same lifetime as the page's
+  // main document.
+  class PageData : public content::PageUserData<PageData> {
    public:
-    PageData();
+    explicit PageData(content::Page& page);
+
+    PageData(const PageData&) = delete;
+    PageData& operator=(const PageData&) = delete;
 
     // Logs UMA in the destructor based on the number of popups blocked.
-    ~PageData();
+    ~PageData() override;
 
     void inc_num_popups_blocked() { ++num_popups_blocked_; }
 
     void set_is_triggered(bool is_triggered) { is_triggered_ = is_triggered; }
     bool is_triggered() const { return is_triggered_; }
+
+    PAGE_USER_DATA_KEY_DECL();
 
    private:
     // How many popups are blocked in this page.
@@ -122,25 +136,36 @@ class SafeBrowsingTriggeredPopupBlocker
     // Whether the current committed page load should trigger the stronger popup
     // blocker.
     bool is_triggered_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(PageData);
   };
+
+  class NavigationHandleData
+      : public content::NavigationHandleUserData<NavigationHandleData> {
+   public:
+    explicit NavigationHandleData(content::NavigationHandle&);
+    ~NavigationHandleData() override;
+
+    absl::optional<safe_browsing::SubresourceFilterLevel>&
+    level_for_next_committed_navigation() {
+      return level_for_next_committed_navigation_;
+    }
+
+    NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+
+   private:
+    // Whether this navigation should trigger the stronger popup blocker in
+    // enforce or warn mode.
+    absl::optional<safe_browsing::SubresourceFilterLevel>
+        level_for_next_committed_navigation_;
+  };
+
+  // Returns the PageData for the specified |page|.
+  PageData& GetPageData(content::Page& page);
 
   base::ScopedObservation<subresource_filter::SubresourceFilterObserverManager,
                           subresource_filter::SubresourceFilterObserver>
       scoped_observation_{this};
 
-  // Whether the next main frame navigation that commits should trigger the
-  // stronger popup blocker in enforce or warn mode.
-  base::Optional<safe_browsing::SubresourceFilterLevel>
-      level_for_next_committed_navigation_;
-
-  // Should never be nullptr.
-  std::unique_ptr<PageData> current_page_data_;
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTriggeredPopupBlocker);
 };
 
 }  // namespace blocked_content

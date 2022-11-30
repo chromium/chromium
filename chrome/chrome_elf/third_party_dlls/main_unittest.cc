@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/process/launch.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
@@ -51,9 +50,8 @@ struct TestModuleData {
 };
 
 // NOTE: TestTimeouts::action_max_timeout() is not long enough here.
-base::TimeDelta g_timeout = ::IsDebuggerPresent()
-                                ? base::TimeDelta::FromMilliseconds(INFINITE)
-                                : base::TimeDelta::FromMilliseconds(5000);
+base::TimeDelta g_timeout =
+    ::IsDebuggerPresent() ? base::TimeDelta::Max() : base::Milliseconds(5000);
 
 // Centralize child test process control.
 void LaunchChildAndWait(const base::CommandLine& command_line, int* exit_code) {
@@ -174,6 +172,10 @@ bool QueryStatusCodes(std::vector<ThirdPartyStatus>* status_array) {
 //------------------------------------------------------------------------------
 
 class ThirdPartyTest : public testing::Test {
+ public:
+  ThirdPartyTest(const ThirdPartyTest&) = delete;
+  ThirdPartyTest& operator=(const ThirdPartyTest&) = delete;
+
  protected:
   ThirdPartyTest() = default;
 
@@ -194,7 +196,7 @@ class ThirdPartyTest : public testing::Test {
     // Create the blacklist file empty.
     base::File file(base::FilePath(bl_test_file_path_),
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-                        base::File::FLAG_SHARE_DELETE |
+                        base::File::FLAG_WIN_SHARE_DELETE |
                         base::File::FLAG_DELETE_ON_CLOSE);
     ASSERT_TRUE(file.IsValid());
 
@@ -237,8 +239,6 @@ class ThirdPartyTest : public testing::Test {
   base::File bl_file_;
   std::wstring bl_test_file_path_;
   std::wstring exe_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyTest);
 };
 
 //------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ class ThirdPartyTest : public testing::Test {
 // configurations.
 //------------------------------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Base DISABLED_Base
 #else
 #define MAYBE_Base Base
@@ -481,7 +481,7 @@ TEST_F(ThirdPartyTest, SHA1SanityCheck) {
 }
 
 // Flaky: crbug.com/868233
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PathCaseSensitive DISABLED_PathCaseSensitive
 #else
 #define MAYBE_PathCaseSensitive PathCaseSensitive

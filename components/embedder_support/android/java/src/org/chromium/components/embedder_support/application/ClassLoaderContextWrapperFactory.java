@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.WrappedClassLoader;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
@@ -76,19 +77,8 @@ public class ClassLoaderContextWrapperFactory {
         public ClassLoader getClassLoader() {
             final ClassLoader appCl = getBaseContext().getClassLoader();
             final ClassLoader chromiumCl = ClassLoaderContextWrapper.class.getClassLoader();
-            return new ClassLoader() {
-                @Override
-                protected Class<?> findClass(String name) throws ClassNotFoundException {
-                    // First look in the Chromium class loader.
-                    try {
-                        return chromiumCl.loadClass(name);
-                    } catch (ClassNotFoundException e) {
-                        // Look in the app class loader; allowing it to throw
-                        // ClassNotFoundException.
-                        return appCl.loadClass(name);
-                    }
-                }
-            };
+
+            return new WrappedClassLoader(chromiumCl, appCl);
         }
 
         @Override
@@ -137,7 +127,7 @@ public class ClassLoaderContextWrapperFactory {
             if (ContextUtils.activityFromContext(this) == null) {
                 // FLAG_ACTIVITY_NEW_TASK is needed to start activities from a non-activity
                 // context.
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             }
 
             super.startActivity(intent);

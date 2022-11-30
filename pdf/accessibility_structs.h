@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -17,6 +18,9 @@
 namespace chrome_pdf {
 
 struct AccessibilityDocInfo {
+  bool operator==(const AccessibilityDocInfo& other) const;
+  bool operator!=(const AccessibilityDocInfo& other) const;
+
   uint32_t page_count = 0;
   bool text_accessible = false;
   bool text_copyable = false;
@@ -29,9 +33,6 @@ struct AccessibilityPageInfo {
   uint32_t char_count = 0;
 };
 
-// TODO(crbug.com/1144444): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in PP_TextRenderingMode.
 // See PDF Reference 1.7, page 402, table 5.3.
 enum class AccessibilityTextRenderMode {
   kUnknown = -1,
@@ -71,9 +72,6 @@ struct AccessibilityTextStyleInfo {
   bool is_bold = false;
 };
 
-// TODO(crbug.com/1144444): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in PP_PrivateDirection.
 enum class AccessibilityTextDirection {
   kNone = 0,
   kLeftToRight = 1,
@@ -106,7 +104,7 @@ struct AccessibilityCharInfo {
 struct AccessibilityTextRunRangeInfo {
   // Index of the starting text run of the annotation in the collection of all
   // text runs in the page.
-  uint32_t index = 0;
+  size_t index = 0;
   // Count of the text runs spanning the annotation.
   uint32_t count = 0;
 };
@@ -133,18 +131,25 @@ struct AccessibilityImageInfo {
   AccessibilityImageInfo();
   AccessibilityImageInfo(const std::string& alt_text,
                          uint32_t text_run_index,
-                         const gfx::RectF& bounds);
+                         const gfx::RectF& bounds,
+                         const SkBitmap& image_data);
   AccessibilityImageInfo(const AccessibilityImageInfo& other);
   ~AccessibilityImageInfo();
 
   // Alternate text for the image provided by PDF.
   std::string alt_text;
+
   // We anchor the image to a char index, this denotes the text run before
   // which the image should be inserted in the accessibility tree. The text run
   // at this index should contain the anchor char index.
   uint32_t text_run_index = 0;
+
   // Bounding box of the image.
   gfx::RectF bounds;
+
+  // Only populated if `alt_text` is empty or unavailable, and if the user has
+  // requested that the OCR service tag the PDF so that it is made accessible.
+  SkBitmap image_data;
 };
 
 struct AccessibilityHighlightInfo {
@@ -211,13 +216,10 @@ struct AccessibilityChoiceFieldOptionInfo {
   gfx::RectF bounds;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PrivateChoiceFieldType.
 enum class ChoiceFieldType {
   kListBox = 0,
   kComboBox = 1,
+  kMinValue = kListBox,
   kMaxValue = kComboBox,
 };
 
@@ -259,13 +261,11 @@ struct AccessibilityChoiceFieldInfo {
   gfx::RectF bounds;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in PP_PrivateButtonType.
 enum class ButtonType {
   kPushButton = 1,
   kCheckBox = 2,
   kRadioButton = 3,
+  kMinValue = kPushButton,
   kMaxValue = kRadioButton,
 };
 
@@ -297,13 +297,13 @@ struct AccessibilityButtonInfo {
   // Represents count of controls in the control group. A group of interactive
   // form annotations is collectively called a form control group. Here, an
   // interactive form annotation, should be either a radio button or a
-  // checkbox. Value of |control_count| is >= 1.
+  // checkbox. Value of `control_count` is >= 1.
   uint32_t control_count = 0;
   // Represents index of the control in the control group. A group of
   // interactive form annotations is collectively called a form control group.
   // Here, an interactive form annotation, should be either a radio button or
-  // a checkbox. Value of |control_index| should always be less than
-  // |control_count|.
+  // a checkbox. Value of `control_index` should always be less than
+  // `control_count`.
   uint32_t control_index = 0;
   // Index of this button in the collection of buttons in the page.
   uint32_t index_in_page = 0;
@@ -344,10 +344,6 @@ struct AccessibilityPageObjects {
   AccessibilityFormFieldInfo form_fields;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PrivateFocusObjectType.
 enum class FocusObjectType {
   kNone = 0,
   kDocument = 1,
@@ -375,10 +371,6 @@ struct AccessibilityViewportInfo {
   AccessibilityFocusInfo focus_info;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PdfAccessibilityAction.
 enum class AccessibilityAction {
   // No action specified.
   kNone = 0,
@@ -394,10 +386,6 @@ enum class AccessibilityAction {
   kMaxValue = kSetSelection,
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PdfAccessibilityAnnotationType.
 enum class AccessibilityAnnotationType {
   // No annotation type defined.
   kNone = 0,

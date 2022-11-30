@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <algorithm>
 
 #include "base/command_line.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -22,7 +22,7 @@ static base::TimeDelta CalculateInterval(int frame_rate) {
   int timer_interval = 1000000 / frame_rate;
   if (timer_interval < 10000)
     timer_interval = 10000;
-  return base::TimeDelta::FromMicroseconds(timer_interval);
+  return base::Microseconds(timer_interval);
 }
 
 const int LinearAnimation::kDefaultFrameRate = 60;
@@ -44,7 +44,7 @@ double LinearAnimation::GetCurrentValue() const {
 }
 
 void LinearAnimation::SetCurrentValue(double new_value) {
-  new_value = base::ClampToRange(new_value, 0.0, 1.0);
+  new_value = base::clamp(new_value, 0.0, 1.0);
   const base::TimeDelta time_delta = duration_ * (new_value - state_);
   SetStartTime(start_time() - time_delta);
   state_ = new_value;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -39,6 +38,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TransitionalURLLoaderFactoryOwner {
   // |url_request_context_getter|.
   explicit TransitionalURLLoaderFactoryOwner(
       scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
+
+  TransitionalURLLoaderFactoryOwner(const TransitionalURLLoaderFactoryOwner&) =
+      delete;
+  TransitionalURLLoaderFactoryOwner& operator=(
+      const TransitionalURLLoaderFactoryOwner&) = delete;
+
   ~TransitionalURLLoaderFactoryOwner();
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
@@ -60,8 +65,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TransitionalURLLoaderFactoryOwner {
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TransitionalURLLoaderFactoryOwner);
 };
 
 }  // namespace network

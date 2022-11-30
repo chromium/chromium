@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_downloading_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // When user clicks "Continue setup", this will be sent to chrome to indicate
@@ -17,36 +18,29 @@ constexpr const char kUserActionButtonContinueSetup[] =
 }  // namespace
 
 AppDownloadingScreen::AppDownloadingScreen(
-    AppDownloadingScreenView* view,
+    base::WeakPtr<AppDownloadingScreenView> view,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(AppDownloadingScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  DCHECK(view_);
-  view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-AppDownloadingScreen::~AppDownloadingScreen() {
-  if (view_)
-    view_->Bind(nullptr);
-}
+AppDownloadingScreen::~AppDownloadingScreen() = default;
 
 void AppDownloadingScreen::ShowImpl() {
   // Show the screen.
   view_->Show();
 }
 
-void AppDownloadingScreen::HideImpl() {
-  view_->Hide();
-}
+void AppDownloadingScreen::HideImpl() {}
 
-void AppDownloadingScreen::OnUserAction(const std::string& action_id) {
+void AppDownloadingScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionButtonContinueSetup) {
     exit_callback_.Run();
     return;
   }
-  BaseScreen::OnUserAction(action_id);
+  BaseScreen::OnUserAction(args);
 }
 
-}  // namespace chromeos
+}  // namespace ash

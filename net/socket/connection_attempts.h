@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@ namespace net {
 struct ConnectionAttempt {
   ConnectionAttempt(const IPEndPoint endpoint, int result)
       : endpoint(endpoint), result(result) {}
+
+  bool operator==(const ConnectionAttempt& other) const {
+    return endpoint == other.endpoint && result == other.result;
+  }
 
   // Address and port the socket layer attempted to connect to.
   IPEndPoint endpoint;

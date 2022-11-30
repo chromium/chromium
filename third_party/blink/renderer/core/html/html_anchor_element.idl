@@ -35,12 +35,6 @@
 
     [CEReactions, ImplementedAs=textContent] attribute DOMString text;
 
-    // Conversion Measurement
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString impressionData;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString conversionDestination;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString reportingOrigin;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString impressionExpiry;
-
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLAnchorElement-partial
     [CEReactions, Reflect] attribute DOMString coords;
@@ -50,4 +44,5 @@
     [CEReactions, Reflect] attribute DOMString shape;
 };
 
+HTMLAnchorElement includes HTMLAttributionSrcElementUtils;
 HTMLAnchorElement includes HTMLHyperlinkElementUtils;

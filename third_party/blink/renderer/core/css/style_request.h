@@ -23,9 +23,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
 
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -38,6 +40,7 @@ class StyleRequest {
 
  public:
   enum RequestType { kForRenderer, kForComputedStyle };
+  enum RulesToInclude { kUAOnly, kAll };
 
   StyleRequest() = default;
 
@@ -45,21 +48,30 @@ class StyleRequest {
 
   const ComputedStyle* parent_override{nullptr};
   const ComputedStyle* layout_parent_override{nullptr};
+  const ComputedStyle* originating_element_style{nullptr};
   RuleMatchingBehavior matching_behavior{kMatchAllRules};
 
   PseudoId pseudo_id{kPseudoIdNone};
   RequestType type{kForRenderer};
   ScrollbarPart scrollbar_part{kNoPart};
   CustomScrollbar* scrollbar{nullptr};
+  AtomicString pseudo_argument{g_null_atom};
+  RulesToInclude rules_to_include{kAll};
 
   explicit StyleRequest(const ComputedStyle* parent_override)
       : parent_override(parent_override),
         layout_parent_override(parent_override) {}
 
-  StyleRequest(PseudoId pseudo_id, const ComputedStyle* parent_override)
+  StyleRequest(PseudoId pseudo_id,
+               const ComputedStyle* parent_override,
+               const AtomicString& pseudo_argument = g_null_atom)
       : parent_override(parent_override),
         layout_parent_override(parent_override),
-        pseudo_id(pseudo_id) {}
+        pseudo_id(pseudo_id),
+        pseudo_argument(pseudo_argument) {
+    DCHECK(!IsTransitionPseudoElement(pseudo_id) ||
+           pseudo_id == kPseudoIdPageTransition || pseudo_argument);
+  }
 
   StyleRequest(PseudoId pseudo_id,
                CustomScrollbar* scrollbar,
@@ -72,10 +84,7 @@ class StyleRequest {
         scrollbar(scrollbar) {}
 
   StyleRequest(PseudoId pseudo_id, RequestType request_type)
-      : pseudo_id(pseudo_id),
-        type(request_type),
-        scrollbar_part(kNoPart),
-        scrollbar(nullptr) {}
+      : pseudo_id(pseudo_id), type(request_type) {}
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@
 
 #include <vector>
 
+#include "base/memory/page_size.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/process/process_metrics.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -96,14 +96,18 @@ intptr_t CopySyscallArgsToAux(const struct arch_seccomp_data& args, void* aux) {
   // |aux| is our BPF_AUX pointer.
   std::vector<uint64_t>* const seen_syscall_args =
       static_cast<std::vector<uint64_t>*>(aux);
-  BPF_ASSERT(base::size(args.args) == 6);
-  seen_syscall_args->assign(args.args, args.args + base::size(args.args));
+  BPF_ASSERT(std::size(args.args) == 6);
+  seen_syscall_args->assign(args.args, args.args + std::size(args.args));
   return -ENOMEM;
 }
 
 class CopyAllArgsOnUnamePolicy : public bpf_dsl::Policy {
  public:
   explicit CopyAllArgsOnUnamePolicy(std::vector<uint64_t>* aux) : aux_(aux) {}
+
+  CopyAllArgsOnUnamePolicy(const CopyAllArgsOnUnamePolicy&) = delete;
+  CopyAllArgsOnUnamePolicy& operator=(const CopyAllArgsOnUnamePolicy&) = delete;
+
   ~CopyAllArgsOnUnamePolicy() override {}
 
   ResultExpr EvaluateSyscall(int sysno) const override {
@@ -116,9 +120,7 @@ class CopyAllArgsOnUnamePolicy : public bpf_dsl::Policy {
   }
 
  private:
-  std::vector<uint64_t>* aux_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyAllArgsOnUnamePolicy);
+  raw_ptr<std::vector<uint64_t>> aux_;
 };
 
 // We are testing Syscall::Call() by making use of a BPF filter that
@@ -134,7 +136,7 @@ BPF_TEST(Syscall,
   // implementation details of kernel BPF filters and we will need to document
   // the expected behavior very clearly.
   int syscall_args[6];
-  for (size_t i = 0; i < base::size(syscall_args); ++i) {
+  for (size_t i = 0; i < std::size(syscall_args); ++i) {
     syscall_args[i] = kExpectedValue + i;
   }
 

@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "commerce_tab_helper.h",
+    "commerce_tab_helper.mm",
+    "web_state_wrapper.h",
+    "web_state_wrapper.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/commerce/core:shopping_service",
+    "//ios/web",
+    "//ios/web/public/js_messaging",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

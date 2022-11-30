@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "cc/layers/surface_layer_impl.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -50,22 +51,23 @@ void ThrottleDecider::ProcessRenderPass(
         gfx::RectF blur_bounds(child_rp.output_rect);
         if (child_rp.backdrop_filter_bounds)
           blur_bounds.Intersect(child_rp.backdrop_filter_bounds->rect());
-        quad->shared_quad_state->quad_to_target_transform.TransformRect(
-            &blur_bounds);
-        if (quad->shared_quad_state->is_clipped) {
-          blur_bounds.Intersect(gfx::RectF(quad->shared_quad_state->clip_rect));
+        blur_bounds = quad->shared_quad_state->quad_to_target_transform.MapRect(
+            blur_bounds);
+        if (quad->shared_quad_state->clip_rect) {
+          blur_bounds.Intersect(
+              gfx::RectF(*quad->shared_quad_state->clip_rect));
         }
         blur_backdrop_filter_bounds.push_back(blur_bounds);
       }
     } else if (quad->material == viz::DrawQuad::Material::kSurfaceContent) {
       bool inside_backdrop_filter_bounds = false;
       if (!foreground_blurred && !blur_backdrop_filter_bounds.empty()) {
-        gfx::RectF rect_in_target_space(quad->visible_rect);
-        quad->shared_quad_state->quad_to_target_transform.TransformRect(
-            &rect_in_target_space);
-        if (quad->shared_quad_state->is_clipped) {
+        gfx::RectF rect_in_target_space =
+            quad->shared_quad_state->quad_to_target_transform.MapRect(
+                gfx::RectF(quad->visible_rect));
+        if (quad->shared_quad_state->clip_rect) {
           rect_in_target_space.Intersect(
-              gfx::RectF(quad->shared_quad_state->clip_rect));
+              gfx::RectF(*quad->shared_quad_state->clip_rect));
         }
 
         for (const gfx::RectF& blur_bounds : blur_backdrop_filter_bounds) {
@@ -83,6 +85,14 @@ void ThrottleDecider::ProcessRenderPass(
     }
   }
   id_to_pass_map_.emplace(render_pass.id, &render_pass);
+}
+
+void ThrottleDecider::ProcessLayerNotToDraw(const LayerImpl* layer) {
+  if (layer->is_surface_layer()) {
+    const auto* surface_layer = static_cast<const SurfaceLayerImpl*>(layer);
+    if (surface_layer->range().IsValid())
+      ids_.insert(surface_layer->range().end().frame_sink_id());
+  }
 }
 
 bool ThrottleDecider::HasThrottlingChanged() const {

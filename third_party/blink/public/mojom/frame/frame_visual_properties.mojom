@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@ module blink.mojom;
 
 import "cc/mojom/browser_controls_params.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
-import "third_party/blink/public/mojom/widget/screen_info.mojom";
+import "ui/display/mojom/screen_infos.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // See public/common/frame/frame_visual_properties.h
 struct FrameVisualProperties {
-  // Information about the screen (dpi, depth, etc..).
-  ScreenInfo screen_info;
+  // Information about the screens (dpi, depth, etc..).
+  display.mojom.ScreenInfos screen_infos;
 
   // Whether or not blink should be in auto-resize mode.
   bool auto_resize_enabled;
@@ -70,7 +70,8 @@ struct FrameVisualProperties {
   // for what, and how they should relate or not.
   gfx.mojom.Rect compositor_viewport;
 
-  gfx.mojom.Rect screen_space_rect;
+  // The frame's rect relative to the nearest ancestor local root frame.
+  gfx.mojom.Rect rect_in_local_root;
 
   gfx.mojom.Size local_frame_size;
 

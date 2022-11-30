@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,20 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {
+
+void RecordIconLoadMethodMetrics(IconLoadingMethod icon_loading_method) {
+  base::UmaHistogramEnumeration("Apps.IconLoadingMethod", icon_loading_method);
+}
 
 IconCache::Value::Value()
     : image_(), is_placeholder_icon_(false), ref_count_(0) {}
 
-apps::mojom::IconValuePtr IconCache::Value::AsIconValue(
-    apps::mojom::IconType icon_type) {
-  auto icon_value = apps::mojom::IconValue::New();
+IconValuePtr IconCache::Value::AsIconValue(IconType icon_type) {
+  auto icon_value = std::make_unique<IconValue>();
   icon_value->icon_type = icon_type;
   icon_value->uncompressed = image_;
   icon_value->is_placeholder_icon = is_placeholder_icon_;
@@ -28,20 +33,19 @@ IconCache::IconCache(IconLoader* wrapped_loader,
 
 IconCache::~IconCache() = default;
 
-apps::mojom::IconKeyPtr IconCache::GetIconKey(const std::string& app_id) {
+absl::optional<IconKey> IconCache::GetIconKey(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wrapped_loader_ ? wrapped_loader_->GetIconKey(app_id)
-                         : apps::mojom::IconKey::New();
+  return wrapped_loader_ ? wrapped_loader_->GetIconKey(app_id) : absl::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
-    apps::mojom::AppType app_type,
+    AppType app_type,
     const std::string& app_id,
-    apps::mojom::IconKeyPtr icon_key,
-    apps::mojom::IconType icon_type,
+    const IconKey& icon_key,
+    IconType icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
-    apps::mojom::Publisher::LoadIconCallback callback) {
+    apps::LoadIconCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IconLoader::Key key(
       app_type, app_id, icon_key, icon_type, size_hint_in_dip,
@@ -55,8 +59,8 @@ std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
   Value* cache_hit = nullptr;
   bool ref_count_incremented = false;
 
-  if (icon_type == apps::mojom::IconType::kUncompressed ||
-      icon_type == apps::mojom::IconType::kStandard) {
+  if (icon_type == IconType::kUncompressed ||
+      icon_type == IconType::kStandard) {
     auto iter = map_.find(key);
     if (iter == map_.end()) {
       iter = map_.insert(std::make_pair(key, Value())).first;
@@ -72,15 +76,16 @@ std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
 
   std::unique_ptr<IconLoader::Releaser> releaser(nullptr);
   if (cache_hit) {
+    RecordIconLoadMethodMetrics(IconLoadingMethod::kFromCache);
     std::move(callback).Run(cache_hit->AsIconValue(icon_type));
   } else if (wrapped_loader_) {
     releaser = wrapped_loader_->LoadIconFromIconKey(
-        app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
+        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
         allow_placeholder_icon,
         base::BindOnce(&IconCache::OnLoadIcon, weak_ptr_factory_.GetWeakPtr(),
                        key, std::move(callback)));
   } else {
-    std::move(callback).Run(apps::mojom::IconValue::New());
+    std::move(callback).Run(std::make_unique<IconValue>());
   }
 
   return ref_count_incremented
@@ -109,8 +114,7 @@ void IconCache::SweepReleasedIcons() {
   }
 }
 
-void IconCache::RemoveIcon(apps::mojom::AppType app_type,
-                           const std::string& app_id) {
+void IconCache::RemoveIcon(AppType app_type, const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (gc_policy_ != GarbageCollectionPolicy::kExplicit) {
     return;
@@ -127,9 +131,9 @@ void IconCache::RemoveIcon(apps::mojom::AppType app_type,
 }
 
 void IconCache::Update(const IconLoader::Key& key,
-                       const apps::mojom::IconValue& icon_value) {
-  if (icon_value.icon_type != apps::mojom::IconType::kUncompressed &&
-      icon_value.icon_type != apps::mojom::IconType::kStandard) {
+                       const IconValue& icon_value) {
+  if (icon_value.icon_type != IconType::kUncompressed &&
+      icon_value.icon_type != IconType::kStandard) {
     return;
   }
 
@@ -146,13 +150,12 @@ void IconCache::Update(const IconLoader::Key& key,
   iter->second.image_ = icon_value.uncompressed;
 }
 
-void IconCache::OnLoadIcon(
-    IconLoader::Key key,
-    apps::mojom::Publisher::LoadIconCallback wrapped_callback,
-    apps::mojom::IconValuePtr icon_value) {
+void IconCache::OnLoadIcon(const IconLoader::Key& key,
+                           apps::LoadIconCallback callback,
+                           IconValuePtr icon_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Update(key, *icon_value);
-  std::move(wrapped_callback).Run(std::move(icon_value));
+  std::move(callback).Run(std::move(icon_value));
 }
 
 void IconCache::OnRelease(IconLoader::Key key) {

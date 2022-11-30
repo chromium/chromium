@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that postmessage tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(t => {
+  const scriptId = scheduler.taskId;
+  const channel = new MessageChannel();
+
+  return new Promise((resolve, reject) => {
+    channel.port1.onmessage = () => {
+      try {
+        assert_equals(scheduler.isAncestor(scriptId), "ancestor");
+        resolve();
+      } catch(e) {
+        reject(e);
+      }
+    }
+    channel.port2.postMessage("hello");
+  });
+}, "Same document MessagePort postMessage task properly detects its parent.");
+
+</script>
+</body>
+</html>

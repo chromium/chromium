@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -166,9 +166,8 @@ int WebSocketInflater::InflateChokedInput() {
 
 WebSocketInflater::OutputBuffer::OutputBuffer(size_t capacity)
     : capacity_(capacity),
-      buffer_(capacity_ + 1),  // 1 for sentinel
-      head_(0),
-      tail_(0) {}
+      buffer_(capacity_ + 1)  // 1 for sentinel
+{}
 
 WebSocketInflater::OutputBuffer::~OutputBuffer() = default;
 
@@ -218,7 +217,7 @@ void WebSocketInflater::OutputBuffer::AdvanceTail(size_t advance) {
 }
 
 WebSocketInflater::InputQueue::InputQueue(size_t capacity)
-    : capacity_(capacity), head_of_first_buffer_(0), tail_of_last_buffer_(0) {}
+    : capacity_(capacity) {}
 
 WebSocketInflater::InputQueue::~InputQueue() = default;
 

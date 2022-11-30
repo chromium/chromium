@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,7 @@
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -153,13 +152,6 @@ class NetStreamSocketAdapter : public net::StreamSocket {
     NOTREACHED();
     return false;
   }
-  void GetConnectionAttempts(net::ConnectionAttempts* out) const override {
-    NOTREACHED();
-  }
-  void ClearConnectionAttempts() override { NOTREACHED(); }
-  void AddConnectionAttempts(const net::ConnectionAttempts& attempts) override {
-    NOTREACHED();
-  }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;
@@ -251,8 +243,8 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
   int result;
   if (is_ssl_server()) {
     scoped_refptr<net::X509Certificate> cert =
-        net::X509Certificate::CreateFromBytes(local_cert_.data(),
-                                              local_cert_.length());
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(local_cert_)));
     if (!cert) {
       LOG(ERROR) << "Failed to parse X509Certificate";
       NotifyError(net::ERR_FAILED);
@@ -288,8 +280,8 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
     ssl_config.require_ecdhe = true;
 
     scoped_refptr<net::X509Certificate> cert =
-        net::X509Certificate::CreateFromBytes(remote_cert_.data(),
-                                              remote_cert_.length());
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(remote_cert_)));
     if (!cert) {
       LOG(ERROR) << "Failed to parse X509Certificate";
       NotifyError(net::ERR_FAILED);
@@ -470,5 +462,4 @@ void SslHmacChannelAuthenticator::NotifyError(int error) {
   std::move(done_callback_).Run(error, nullptr);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

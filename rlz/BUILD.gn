@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -85,7 +85,8 @@ if (enable_rlz_support) {
         "chromeos/lib/rlz_value_store_chromeos.h",
       ]
       deps += [
-        "//chromeos/dbus",
+        "//chromeos/ash/components/dbus",
+        "//chromeos/ash/components/dbus/debug_daemon",
         "//chromeos/system",
       ]
     }
@@ -124,9 +125,6 @@ if (enable_rlz_support) {
       "lib/rlz_lib.h",
     ]
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
     public_deps = [
       ":rlz_lib_no_network",
       "//base",
@@ -144,7 +142,7 @@ if (enable_rlz_support) {
 
     if (is_chromeos_ash) {
       deps += [
-        "//chromeos/dbus",
+        "//chromeos/ash/components/dbus",
         "//chromeos/system",
       ]
     }
@@ -188,9 +186,6 @@ if (enable_rlz_support) {
       sources += [ "win/lib/machine_deal_test.cc" ]
     }
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
     deps = [
       ":rlz_lib",
       ":rlz_utils",
@@ -206,7 +201,8 @@ if (enable_rlz_support) {
     ]
     if (is_chromeos_ash) {
       deps += [
-        "//chromeos/dbus:test_support",
+        "//chromeos/ash/components/dbus:test_support",
+        "//chromeos/ash/components/dbus/debug_daemon",
         "//chromeos/system",
       ]
     }

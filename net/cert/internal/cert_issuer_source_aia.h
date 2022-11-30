@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
-#include "net/cert/internal/cert_issuer_source.h"
+#include "net/cert/pki/cert_issuer_source.h"
 
 namespace net {
 
@@ -20,6 +20,10 @@ class NET_EXPORT CertIssuerSourceAia : public CertIssuerSource {
   // used only on a single thread, which is the thread |cert_fetcher| will be
   // operated from.
   explicit CertIssuerSourceAia(scoped_refptr<CertNetFetcher> cert_fetcher);
+
+  CertIssuerSourceAia(const CertIssuerSourceAia&) = delete;
+  CertIssuerSourceAia& operator=(const CertIssuerSourceAia&) = delete;
+
   ~CertIssuerSourceAia() override;
 
   // CertIssuerSource implementation:
@@ -30,8 +34,6 @@ class NET_EXPORT CertIssuerSourceAia : public CertIssuerSource {
 
  private:
   scoped_refptr<CertNetFetcher> cert_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertIssuerSourceAia);
 };
 
 }  // namespace net

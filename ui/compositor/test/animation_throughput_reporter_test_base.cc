@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ void AnimationThroughputReporterTestBase::SetUp() {
   compositor()->SetRootLayer(&root_);
 
   frame_generation_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(16), this,
+      FROM_HERE, base::Milliseconds(16), this,
       &AnimationThroughputReporterTestBase::GenerateOneFrame);
 }
 

@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">അപ്രതീക്ഷിതമായ ഒരു പിശക് സംഭവിച്ചു. ഈ പ്രശ്‌നം ഡവലപ്പർമാർക്ക് റിപ്പോർട്ട് ചെയ്യുക.</translation>
 <translation id="1697532407822776718">എല്ലാം സജ്ജമായിക്കഴിഞ്ഞു!</translation>
 <translation id="1742469581923031760">കണക്റ്റുചെയ്യുന്നു...</translation>
+<translation id="177040763384871009">വിദൂര ഉപകരണത്തിൽ ക്ലിക്ക് ചെയ്ത ലിങ്കുകൾ ക്ലയന്റ് ബ്രൗസറിൽ തുറക്കാൻ അനുവദിക്കുന്നതിന് സിസ്റ്റത്തിന്റെ വെബ് ബ്രൗസർ "<ph name="URL_FORWARDER_NAME" />" ആയി മാറ്റേണ്ടതുണ്ട്.</translation>
 <translation id="177096447311351977">ക്ലയന്റിനായുള്ള ചാനൽ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ഇല്ലാതാക്കുക</translation>
 <translation id="2009755455353575666">കണക്ഷൻ പരാജയപ്പെട്ടു</translation>
@@ -24,7 +25,7 @@
 '<ph name="SERVICE_SCRIPT_NAME" />' എന്നതിൽ മുമ്പേ ചെക്ക്‌മാർക്ക് ഇട്ടിട്ടുണ്ടെങ്കിൽ, അത് അൺചെക്ക് ചെയ്‍ത ശേഷം വീണ്ടും ചെക്ക്‌ മാർക്കിടുക.</translation>
 <translation id="225614027745146050">സ്വാഗതം</translation>
 <translation id="2320166752086256636">കീബോർഡ് മറയ്‌ക്കുക</translation>
-<translation id="2333212046079545895">പകർപ്പവകാശം 2021 Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‌തം.</translation>
+<translation id="2329392777730037872">ക്ലയന്റ് ഉപകരണത്തിൽ <ph name="URL" /> തുറക്കാനായില്ല.</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2366718077645204424">ഹോസ്റ്റിൽ എത്തിച്ചേരാനായില്ല. ഇത് നിങ്ങൾ ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്കിന്റെ കോൺഫിഗറേഷൻ കാരണമാകാം.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> അവസാനമായി ഓൺലൈനിൽ കണ്ടത് <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">Chrome വിദൂര ഡെസ്‌ക്ടോപ്പ് ക്ലയന്റുകളിൽ നിന്നുള്ള ഇൻകമിംഗ് കണക്ഷനുകളെ ഈ സേവനം പ്രവർത്തനക്ഷമമാക്കുന്നു.</translation>
 <translation id="2647232381348739934">ക്രോമോട്ടിംഗ് സേവനം</translation>
 <translation id="2676780859508944670">പുരോഗമിക്കുന്നു…</translation>
+<translation id="2692522824157224199">പകർപ്പവകാശം 2022 Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‌തം.</translation>
 <translation id="2699970397166997657">ക്രോമോട്ടിംഗ്</translation>
 <translation id="2758123043070977469">പരിശോധിച്ചുറപ്പിക്കുന്നതിൽ ‌പ്രശ്‌നം ഉണ്ടായിരുന്നു, വീണ്ടും ലോഗിൻ ചെയ്യുക.</translation>
 <translation id="2803375539583399270">പിൻ നൽകുക</translation>
@@ -55,26 +57,29 @@
 <translation id="369442766917958684">ഓഫ്‌ലൈൻ.</translation>
 <translation id="3695446226812920698">എങ്ങനെയെന്നറിയുക</translation>
 <translation id="3776024066357219166">നിങ്ങളുടെ Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് സെഷന്‍ അവസാനിച്ചു.</translation>
+<translation id="3858860766373142691">പേര്</translation>
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3905196214175737742">ഹോസ്റ്റ് ഉടമ ഡൊമെയ്‌ൻ അസാധുവാണ്.</translation>
 <translation id="3931191050278863510">ഹോസ്റ്റ് നിർത്തി.</translation>
 <translation id="3950820424414687140">സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="405887016757208221">സെഷൻ സമാരംഭിക്കുന്നതിന് റിമോട്ട് കമ്പ്യൂട്ടർ പരാജയപ്പെട്ടു. പ്രശ്‌നം നിലനിൽക്കുകയാണെങ്കിൽ, ഹോസ്‌റ്റ് വീണ്ടും കോൺഫിഗർ ചെയ്യാൻ ശ്രമിക്കുക.</translation>
 <translation id="4060747889721220580">ഫയൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
-<translation id="4126409073460786861">സജ്ജീകരണം പൂർത്തിയാക്കിയതിന് ശേഷം, ഈ പേജ് പുതുക്കുക, തുടർന്ന് നിങ്ങളുടെ ഉപകരണം തിരഞ്ഞെടുത്ത് പിൻ നൽകിയാൽ നിങ്ങൾക്ക് കമ്പ്യൂട്ടർ ആക്‌സസ് ചെയ്യാനാവും</translation>
+<translation id="4126409073460786861">സജ്ജീകരണം പൂർത്തിയാക്കിയതിന് ശേഷം, ഈ പേജ് റീഫ്രഷ് ചെയ്യുക, തുടർന്ന് നിങ്ങളുടെ ഉപകരണം തിരഞ്ഞെടുത്ത് പിൻ നൽകിയാൽ നിങ്ങൾക്ക് കമ്പ്യൂട്ടർ ആക്‌സസ് ചെയ്യാനാവും</translation>
 <translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
 <translation id="4155497795971509630">ആവശ്യമുള്ള ചില ഘടകങ്ങൾ കാണുന്നില്ല. സോഫ്‌റ്റ്‌വെയറിന്റെ ഏറ്റവും പുതിയ പതിപ്പ് ഇൻസ്റ്റാൾ ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കി വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4176825807642096119">ആക്‌സസ് കോഡ്</translation>
 <translation id="4227991223508142681">ഹോസ്‌റ്റ് പ്രൊവിഷനിംഗ് യൂട്ടിലിറ്റി</translation>
 <translation id="4240294130679914010">ക്രോമോട്ടിംഗ് ഹോസ്റ്റ് അൺഇൻസ്റ്റാളർ</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">ആക്‌സസ് കോഡ് അസാധുവാണ്. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4281844954008187215">സേവന നിബന്ധനകൾ</translation>
+<translation id="4372650392690220936">പകർപ്പവകാശം 2022 The Chromium Authors. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‌തം.</translation>
 <translation id="4405930547258349619">കോർ ലൈബ്രറി</translation>
 <translation id="443560535555262820">ഉപയോഗസഹായി മുൻഗണനകൾ തുറക്കുക</translation>
 <translation id="4450893287417543264">വീണ്ടും കാണിക്കരുത്</translation>
-<translation id="4512952200932940229">പകർപ്പവകാശം 2021 The Chromium Authors. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="4563926062592110512">ക്ലയന്റ് വിച്ഛേദിച്ചു: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ശരിയായി കോൺഫിഗർ ചെയ്തിട്ടില്ല. മറ്റൊരു ഡിഫോൾട്ട് വെബ് ബ്രൗസർ തിരഞ്ഞെടുത്ത ശേഷം URL ഫോർവേഡിംഗ് വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക.</translation>
 <translation id="4635770493235256822">വിദൂര ഉപകരണങ്ങൾ</translation>
 <translation id="4660011489602794167">കീബോര്‍‌ഡ് കാണിക്കുക</translation>
 <translation id="4703799847237267011">നിങ്ങളുടെ ക്രോമോട്ടിംഗ് സെഷൻ അവസാനിച്ചു.</translation>
@@ -87,14 +92,14 @@
 <translation id="4867841927763172006">PrtScn അയയ്‌ക്കുക</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> എന്നതിനുള്ള കണക്ഷൻ അടച്ചു</translation>
 <translation id="4985296110227979402">റിമോട്ട് ആക്‌സസിന് വേണ്ടി നിങ്ങൾ, ആദ്യം കമ്പ്യൂട്ടർ സജ്ജമാക്കേണ്ടതുണ്ട്</translation>
+<translation id="4987330545941822761">URL-കൾ ലോക്കലായി തുറക്കാനുള്ള ബ്രൗസർ നിർണ്ണയിക്കാൻ Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പിനാകുന്നില്ല. ചുവടെയുള്ള ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ഓഫ്‌ലൈൻ)</translation>
 <translation id="507204348399810022"><ph name="HOSTNAME" /> എന്നതിലേക്കുള്ള റിമോട്ട് കണക്ഷനുകൾ പ്രവർത്തനരഹിതമാക്കണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="5170982930780719864">ഹോസ്റ്റ് ഐഡി അസാധുവാണ്.</translation>
 <translation id="5204575267916639804">പതിവ് ചോദ്യങ്ങൾ</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
-<translation id="5308380583665731573">കണക്‌റ്റുചെയ്യുക</translation>
-<translation id="5327248766486351172">പേര്</translation>
+<translation id="5308380583665731573">കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="533625276787323658">ഇതിലേക്ക് കണക്‌റ്റുചെയ്യാൻ ഒന്നുമില്ല</translation>
 <translation id="5397086374758643919">Chrome വിദൂര ഡെസ്‌ക്ടോപ്പ് ഹോസ്റ്റ് അൺഇൻസ്റ്റാളർ</translation>
 <translation id="5419418238395129586">അവസാന ഓൺലൈൻ: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
 <translation id="579702532610384533">വീണ്ടും ബന്ധിപ്പിക്കുക</translation>
 <translation id="5810269635982033450">ട്രാക്ക്‌പാഡ് പോലെ ‌സ്‌ക്രീൻ പ്രവർത്തിക്കുന്നു</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> നിങ്ങളുടെ സ്ക്രീൻ കാണാനും കീബോർഡും മൗസും നിയന്ത്രിക്കാനും ആക്‌സസ് അഭ്യർത്ഥിച്ചു. ഈ അഭ്യർത്ഥന നിങ്ങൾ പ്രതീക്ഷിക്കുന്നില്ലെങ്കിൽ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' അമർത്തുക. അല്ലെങ്കിൽ കണക്ഷൻ തയ്യാറാകുമ്പോൾ അനുവദിക്കാൻ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' അമർത്തുക.</translation>
 <translation id="5823658491130719298">നിങ്ങൾ വിദൂരമായി ആക്‌സസ് ചെയ്യാൻ ആഗ്രഹിക്കുന്ന കമ്പ്യൂട്ടറിൽ, Chrome തുറന്ന് <ph name="INSTALLATION_LINK" /> സന്ദർശിക്കുക</translation>
 <translation id="5841343754884244200">ഡിസ്‌പ്ലേ ഓപ്‌ഷനുകൾ</translation>
 <translation id="6033507038939587647">ക്കീബോർഡ് ഓപ്ഷനുകൾ</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">Ctrl-Alt-Del അയയ്‌ക്കുക</translation>
 <translation id="6654753848497929428">പങ്കിടുക</translation>
 <translation id="677755392401385740">ഇനിപ്പറയുന്ന ഉപയോക്താവിനായി ഹോസ്റ്റ് ആരംഭിച്ചു: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> ക്ലയന്റിൽ URL തുറക്കുന്നതിനുള്ള സഹായി ആപ്പ്</translation>
 <translation id="6939719207673461467">കീബോർഡ് ദൃശ്യമാക്കുക/മറയ്‌ക്കുക.</translation>
 <translation id="6963936880795878952">അസാധുവായ പിൻ ഉപയോഗിച്ച് ഒരാൾ റിമോട്ട് കമ്പ്യൂട്ടറിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ശ്രമിച്ചതിനാൽ അതിലേക്കുള്ള കണക്ഷനുകൾ തൽക്കാലം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6965382102122355670">ശരി</translation>
@@ -133,16 +140,18 @@
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7312846573060934304">ഹോസ്‌റ്റ് ഓഫ്‌ലൈനാണ്.</translation>
 <translation id="7319983568955948908">പങ്കിടുന്നത് നിർത്തുക</translation>
+<translation id="7359298090707901886">ലോക്കൽ മെഷീനിൽ URL-കൾ തുറക്കുന്നതിന് തിരഞ്ഞെടുത്ത ബ്രൗസർ ഉപയോഗിക്കാനാകില്ല.</translation>
 <translation id="7401733114166276557">Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ്</translation>
 <translation id="7434397035092923453">ഇനിപ്പറയുന്ന ക്ലയന്റിന് ആക്‌സസ് നിരസിച്ചു: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ക്ലയന്റ് കണക്റ്റ് ചെയ്‌തു: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">അക്കൗണ്ട് മാറ്റുക</translation>
+<translation id="7535110896613603182">ഡിഫോൾട്ട് ആപ്പ് ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7628469622942688817">ഈ ഉപകരണത്തിൽ എന്റെ പിൻ ഓർക്കുക.</translation>
 <translation id="7649070708921625228">സഹായം</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7665369617277396874">അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="7678209621226490279">ഇടതുവശത്തേക്ക് ഡോക്കുചെയ്യുക</translation>
-<translation id="7693372326588366043">ഹോസ്റ്റുകളുടെ ലിസ്റ്റ് പുതുക്കുക</translation>
+<translation id="7693372326588366043">ഹോസ്റ്റുകളുടെ ലിസ്റ്റ് റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7714222945760997814">ഇത് റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="7868137160098754906">വിദൂര കമ്പ്യൂട്ടറിനായി നിങ്ങളുടെ പിൻ നൽകുക.</translation>
 <translation id="7895403300744144251">റിമോട്ട് കമ്പ്യൂട്ടറിലെ സുരക്ഷാ നയങ്ങൾ നിങ്ങളുടെ അക്കൗണ്ടിൽ നിന്നുള്ള കണക്ഷനുകളെ അനുവദിക്കുന്നില്ല.</translation>
@@ -161,12 +170,13 @@
 ഈ അനുമതി നൽകാൻ, താഴെയുള്ള '<ph name="BUTTON_NAME" />' ക്ലിക്ക് ചെയ്യുക. അപ്പോൾ തുറക്കുന്ന 'ഉപയോഗസഹായി' മുൻഗണനകൾ പെയിനിൽ '<ph name="SERVICE_SCRIPT_NAME" />' എന്നതിന് അടുത്തുള്ള ബോക്‌സിൽ ചെക്ക്‌ മാർക്കിടുക.
 
 '<ph name="SERVICE_SCRIPT_NAME" />' എന്നതിൽ മുമ്പേ ചെക്ക്‌മാർക്ക് ഇട്ടിട്ടുണ്ടെങ്കിൽ, അത് അൺചെക്ക് ചെയ്‍ത ശേഷം വീണ്ടും ചെക്ക്‌ മാർക്കിടുക.</translation>
+<translation id="8305209735512572429">വെബ് ഓതന്റിക്കേഷൻ റിമോട്ടിംഗ് പ്രോസസ്</translation>
 <translation id="8383794970363966105">Chromoting ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ ഉപകരണത്തിൽ ഒരു Google അക്കൗണ്ട് ചേർക്കേണ്ടതായിവരും.</translation>
-<translation id="8386846956409881180">അസാധുവായ OAuth ക്രഡൻഷ്യലുകൾ ഉപയോഗിച്ച് ഹോസ്റ്റ് കോൺഫിഗർ ചെയ്‌തിരിക്കുന്നു.</translation>
+<translation id="8386846956409881180">അസാധുവായ OAuth ക്രെഡൻഷ്യലുകൾ ഉപയോഗിച്ച് ഹോസ്റ്റ് കോൺഫിഗർ ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> എന്നതിന് അനുമതി നൽകുക</translation>
 <translation id="8406498562923498210">Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് പരിതസ്ഥിതിക്കുള്ളിൽ ലോഞ്ച് ചെയ്യാൻ ഒരു സെഷൻ തിരഞ്ഞെടുക്കുക. (ഒരേ സമയത്ത് ലോക്കൽ കൺസോളിലും Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പിനുള്ളിലും പ്രവർത്തിക്കുന്നതിനെ ചില സെഷൻ തരങ്ങൾ പിന്തുണച്ചേക്കില്ലെന്ന കാര്യം ശ്രദ്ധിക്കുക.)</translation>
-<translation id="8428213095426709021">ക്രമീകരണങ്ങള്‍</translation>
-<translation id="8445362773033888690">Google Play സ്റ്റോറിൽ കാണുക</translation>
+<translation id="8428213095426709021">ക്രമീകരണം</translation>
+<translation id="8445362773033888690">Google Play Store-ൽ കാണുക</translation>
 <translation id="8509907436388546015">ഡെസ്‌ക്ടോപ്പ് സംയോജന പ്രക്രിയ</translation>
 <translation id="8513093439376855948">വിദൂര ഹോസ്‌റ്റ് നിയന്ത്രണത്തിനുള്ള പ്രാദേശിക സന്ദേശമയയ്ക്കൽ ഹോസ്‌റ്റ്</translation>
 <translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>

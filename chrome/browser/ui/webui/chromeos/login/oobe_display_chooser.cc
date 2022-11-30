@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "ash/public/ash_interfaces.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -87,12 +88,12 @@ void OobeDisplayChooser::MoveToTouchDisplay() {
        device_data_manager->GetTouchscreenDevices()) {
     if (IsAllowListedVendorId(device.vendor_id) &&
         device.target_display_id != display::kInvalidDisplayId) {
-      auto config_properties = ash::mojom::DisplayConfigProperties::New();
+      auto config_properties = crosapi::mojom::DisplayConfigProperties::New();
       config_properties->set_primary = true;
       cros_display_config_->SetDisplayProperties(
           base::NumberToString(device.target_display_id),
-          std::move(config_properties), ash::mojom::DisplayConfigSource::kUser,
-          base::DoNothing());
+          std::move(config_properties),
+          crosapi::mojom::DisplayConfigSource::kUser, base::DoNothing());
       break;
     }
   }

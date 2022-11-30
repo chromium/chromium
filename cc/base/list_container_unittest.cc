@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -152,9 +152,9 @@ class MockDerivedElement : public SimpleDerivedElementConstructMagicNumberOne {
         << "element destructor called the wrong number of times";
   }
 
-  // Not using base::Optional<size_t> here in order to get a precise destructor
+  // Not using absl::optional<size_t> here in order to get a precise destructor
   // behavior. The tests below need the ability to catch multiple destructor
-  // calls, and base::Optional's destructor might make has_value() return false.
+  // calls, and absl::optional's destructor might make has_value() return false.
   size_t expected_destructor_calls_;
   bool has_expected_destructor_calls_ = false;
   size_t destructor_calls_ = 0;
@@ -797,7 +797,7 @@ TEST(ListContainerTest, InsertCopyBeforeMany) {
         list.AllocateAndConstruct<SimpleDerivedElement>();
     element->set_value(initial_list_element);
   }
-  EXPECT_EQ(base::size(initial_list), list.size());
+  EXPECT_EQ(std::size(initial_list), list.size());
 
   // Insert the missing elements.
   auto iter = list.begin();
@@ -916,7 +916,7 @@ TEST(ListContainerTest, InsertBeforeMany) {
       23, 24, 25, 26, 27, 28, 29, 30, 32, 34, 36, 37, 51, 52, 54, 56,
       60, 64, 65, 70, 75, 76, 80, 81, 83, 86, 87, 90, 93, 95, 97, 98,
   };
-  const size_t size = base::size(initial_list);
+  const size_t size = std::size(initial_list);
   for (size_t i = 0; i < size; ++i) {
     SimpleDerivedElement* element =
         list.AllocateAndConstruct<SimpleDerivedElement>();
@@ -1043,7 +1043,7 @@ TEST(ListContainerTest, InsertAfterMany) {
       23, 24, 25, 26, 27, 28, 29, 30, 32, 34, 36, 37, 51, 52, 54, 56,
       60, 64, 65, 70, 75, 76, 80, 81, 83, 86, 87, 90, 93, 95, 97, 98,
   };
-  const size_t size = base::size(initial_list);
+  const size_t size = std::size(initial_list);
   for (size_t i = 0; i < size; ++i) {
     SimpleDerivedElement* element =
         list.AllocateAndConstruct<SimpleDerivedElement>();
@@ -1168,7 +1168,7 @@ class InstanceCounter {
   }
 
  private:
-  int* counter_;
+  raw_ptr<int> counter_;
 };
 
 TEST(ListContainerTest, RemoveLastDestruction) {

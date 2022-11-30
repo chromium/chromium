@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,9 +14,12 @@ blink_modules_sources("imagecapture") {
 
   deps = [
     "//media",
-    "//media/capture/mojom:image_capture_blink",
-    "//skia",
     "//third_party/blink/renderer/modules/permissions:permissions",
     "//third_party/libyuv",
+  ]
+
+  public_deps = [
+    "//media/capture/mojom:image_capture_blink",
+    "//skia",
   ]
 }

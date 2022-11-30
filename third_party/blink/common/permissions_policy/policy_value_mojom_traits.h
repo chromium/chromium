@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_COMMON_PERMISSIONS_POLICY_POLICY_VALUE_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_COMMON_PERMISSIONS_POLICY_POLICY_VALUE_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-shared.h"
@@ -19,17 +20,17 @@ struct BLINK_COMMON_EXPORT
       const blink::PolicyValue& value) {
     switch (value.Type()) {
       case blink::mojom::PolicyValueType::kNull:
-        return blink::mojom::PolicyValueDataView::Tag::NULL_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kNullValue;
       case blink::mojom::PolicyValueType::kBool:
-        return blink::mojom::PolicyValueDataView::Tag::BOOL_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kBoolValue;
       case blink::mojom::PolicyValueType::kDecDouble:
-        return blink::mojom::PolicyValueDataView::Tag::DEC_DOUBLE_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kDecDoubleValue;
       case blink::mojom::PolicyValueType::kEnum:
-        return blink::mojom::PolicyValueDataView::Tag::ENUM_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kEnumValue;
     }
 
     NOTREACHED();
-    return blink::mojom::PolicyValueDataView::Tag::NULL_VALUE;
+    return blink::mojom::PolicyValueDataView::Tag::kNullValue;
   }
   static bool null_value(const blink::PolicyValue& value) { return false; }
   static bool bool_value(const blink::PolicyValue& value) {

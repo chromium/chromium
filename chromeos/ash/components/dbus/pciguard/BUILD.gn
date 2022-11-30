@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("pciguard") {
+  defines = [ "IS_PCIGUARD_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_pciguard_client.cc",
+    "fake_pciguard_client.h",
+    "pciguard_client.cc",
+    "pciguard_client.h",
+  ]
+}

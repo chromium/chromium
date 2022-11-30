@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 #
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,6 +22,9 @@ def merge_shard_results(summary_json, jsons_to_merge):
     with open(summary_json) as f:
       summary = json.load(f)
   except (IOError, ValueError):
+    # TODO(crbug.com/1245494):Re-enable this check after the recipe module
+    # chromium_swarming can run it with py3
+    # pylint: disable=raise-missing-from
     raise Exception('Summary json cannot be loaded.')
 
   # Merge all JSON files together. Keep track of missing shards.
@@ -43,17 +46,17 @@ def merge_shard_results(summary_json, jsons_to_merge):
     # client/swarming.py, which means the state enum is saved in its string
     # name form, not in the number form.
     state = result.get('state')
-    if state == u'BOT_DIED':
+    if state == 'BOT_DIED':
       print(
           'Shard #%d had a Swarming internal failure' % index, file=sys.stderr)
-    elif state == u'EXPIRED':
+    elif state == 'EXPIRED':
       print('There wasn\'t enough capacity to run your test', file=sys.stderr)
-    elif state == u'TIMED_OUT':
+    elif state == 'TIMED_OUT':
       print('Test runtime exceeded allocated time'
             'Either it ran for too long (hard timeout) or it didn\'t produce '
             'I/O for an extended period of time (I/O timeout)',
             file=sys.stderr)
-    elif state != u'COMPLETED':
+    elif state != 'COMPLETED':
       print('Invalid Swarming task state: %s' % state, file=sys.stderr)
 
     json_data, err_msg = load_shard_json(index, result.get('task_id'),
@@ -111,7 +114,7 @@ def load_shard_json(index, task_id, jsons_to_merge):
   if not matching_json_files:
     print('shard %s test output missing' % index, file=sys.stderr)
     return (None, 'shard %s test output was missing' % index)
-  elif len(matching_json_files) > 1:
+  if len(matching_json_files) > 1:
     print('duplicate test output for shard %s' % index, file=sys.stderr)
     return (None, 'shard %s test output was duplicated' % index)
 
@@ -138,7 +141,7 @@ def load_shard_json(index, task_id, jsons_to_merge):
 def merge_list_of_dicts(left, right):
   """Merges dicts left[0] with right[0], left[1] with right[1], etc."""
   output = []
-  for i in xrange(max(len(left), len(right))):
+  for i in range(max(len(left), len(right))):
     left_dict = left[i] if i < len(left) else {}
     right_dict = right[i] if i < len(right) else {}
     merged_dict = left_dict.copy()
@@ -151,7 +154,7 @@ def standard_gtest_merge(
     output_json, summary_json, jsons_to_merge):
 
   output = merge_shard_results(summary_json, jsons_to_merge)
-  with open(output_json, 'wb') as f:
+  with open(output_json, 'w') as f:
     json.dump(output, f)
 
   return 0

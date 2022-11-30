@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,16 +34,18 @@ struct ChannelState {
 // unexpected $CHROME_VERSION_EXTRA value.
 ChannelState GetChannelImpl() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const base::StringPiece env = getenv("CHROME_VERSION_EXTRA");
+  const char* const env = getenv("CHROME_VERSION_EXTRA");
+  const base::StringPiece env_str =
+      env ? base::StringPiece(env) : base::StringPiece();
 
   // Ordered by decreasing expected population size.
-  if (env == "stable")
+  if (env_str == "stable")
     return {version_info::Channel::STABLE, /*is_extended_stable=*/false};
-  if (env == "extended")
+  if (env_str == "extended")
     return {version_info::Channel::STABLE, /*is_extended_stable=*/true};
-  if (env == "beta")
+  if (env_str == "beta")
     return {version_info::Channel::BETA, /*is_extended_stable=*/false};
-  if (env == "unstable")  // linux version of "dev"
+  if (env_str == "unstable")  // linux version of "dev"
     return {version_info::Channel::DEV, /*is_extended_stable=*/false};
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -71,7 +73,8 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
       return std::string();
   }
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return std::string(base::StringPiece(getenv("CHROME_VERSION_EXTRA")));
+  const char* const env = getenv("CHROME_VERSION_EXTRA");
+  return env ? std::string(base::StringPiece(env)) : std::string();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
@@ -90,7 +93,7 @@ std::string GetChannelSuffixForDataDir() {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 std::string GetDesktopName(base::Environment* env) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Google Chrome packaged as a snap is a special case: the application name
@@ -120,7 +123,7 @@ std::string GetDesktopName(base::Environment* env) {
   return "chromium-browser.desktop";
 #endif
 }
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 version_info::Channel GetChannel() {
   return GetChannelImpl().channel;

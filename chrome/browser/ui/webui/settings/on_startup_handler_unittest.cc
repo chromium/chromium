@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -70,7 +70,7 @@ class OnStartupHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<TestOnStartupHandler> handler_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
@@ -78,70 +78,62 @@ class OnStartupHandlerTest : public testing::Test {
 };
 
 TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
-  base::ListValue list_args;
-  list_args.AppendString(kCallbackId);
-  handler()->HandleGetNtpExtension(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kCallbackId);
+  handler()->HandleGetNtpExtension(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(kCallbackId, callback_id);
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
-  bool success = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-  EXPECT_TRUE(success);
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
-  base::ListValue list_args;
-  list_args.AppendString(kCallbackId);
-  list_args.AppendString("http://example.com");
-  handler()->HandleValidateStartupPage(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kCallbackId);
+  list_args.Append("http://example.com");
+  handler()->HandleValidateStartupPage(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(kCallbackId, callback_id);
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
-  bool success = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-  EXPECT_TRUE(success);
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
 
-  bool is_valid = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&is_valid));
-  EXPECT_TRUE(is_valid);
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_TRUE(data.arg3()->GetBool());
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Invalid) {
-  base::ListValue list_args;
-  list_args.AppendString(kCallbackId);
-  list_args.AppendString("@");
-  handler()->HandleValidateStartupPage(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kCallbackId);
+  list_args.Append("@");
+  handler()->HandleValidateStartupPage(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", data.function_name());
 
-  std::string callback_id;
-  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(kCallbackId, callback_id);
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
 
-  bool success = false;
-  ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-  EXPECT_TRUE(success);
+  ASSERT_TRUE(data.arg2()->is_bool());
+  EXPECT_TRUE(data.arg2()->GetBool());
 
-  bool is_valid = false;
-  ASSERT_TRUE(data.arg3()->GetAsBoolean(&is_valid));
-  EXPECT_FALSE(is_valid);
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_FALSE(data.arg3()->GetBool());
 }
 
 }  // namespace settings

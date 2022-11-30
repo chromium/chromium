@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -23,6 +23,12 @@ class PermissionsBasedManagementPolicyProvider
  public:
   explicit PermissionsBasedManagementPolicyProvider(
       ExtensionManagement* settings);
+
+  PermissionsBasedManagementPolicyProvider(
+      const PermissionsBasedManagementPolicyProvider&) = delete;
+  PermissionsBasedManagementPolicyProvider& operator=(
+      const PermissionsBasedManagementPolicyProvider&) = delete;
+
   ~PermissionsBasedManagementPolicyProvider() override;
 
   // ManagementPolicy::Provider implementation.
@@ -31,9 +37,7 @@ class PermissionsBasedManagementPolicyProvider
                    std::u16string* error) const override;
 
  private:
-  ExtensionManagement* settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsBasedManagementPolicyProvider);
+  raw_ptr<ExtensionManagement> settings_;
 };
 
 }  // namespace extensions

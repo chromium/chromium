@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -61,8 +63,8 @@ NativeMessagingReaderTest::~NativeMessagingReaderTest() = default;
 
 void NativeMessagingReaderTest::SetUp() {
   ASSERT_TRUE(MakePipe(&read_file_, &write_file_));
-  reader_.reset(new NativeMessagingReader(std::move(read_file_)));
-  run_loop_.reset(new base::RunLoop());
+  reader_ = std::make_unique<NativeMessagingReader>(std::move(read_file_));
+  run_loop_ = std::make_unique<base::RunLoop>();
 
   // base::Unretained is safe since no further tasks can run after
   // RunLoop::Run() returns.
@@ -74,7 +76,7 @@ void NativeMessagingReaderTest::SetUp() {
 
 void NativeMessagingReaderTest::RunAndWaitForOperationComplete() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void NativeMessagingReaderTest::OnMessage(
@@ -110,10 +112,11 @@ TEST_F(NativeMessagingReaderTest, ReaderDestroyedByClosingPipe) {
   ASSERT_TRUE(on_error_signaled_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This scenario is only a problem on Windows as closing the write pipe there
 // does not trigger the parent process to close the read pipe.
-TEST_F(NativeMessagingReaderTest, ReaderDestroyedByOwner) {
+// TODO(crbug.com/1313610) Disabled because it's flaky.
+TEST_F(NativeMessagingReaderTest, DISABLED_ReaderDestroyedByOwner) {
   WriteMessage("{\"foo\": 42}");
   RunAndWaitForOperationComplete();
   ASSERT_FALSE(on_error_signaled_);
@@ -122,52 +125,62 @@ TEST_F(NativeMessagingReaderTest, ReaderDestroyedByOwner) {
   reader_.reset();
   ASSERT_FALSE(on_error_signaled_);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(NativeMessagingReaderTest, SingleGoodMessage) {
   WriteMessage("{\"foo\": 42}");
   RunAndWaitForOperationComplete();
   ASSERT_FALSE(on_error_signaled_);
   ASSERT_TRUE(message_);
-  base::DictionaryValue* message_dict;
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  int result;
-  ASSERT_TRUE(message_dict->GetInteger("foo", &result));
+
+  ASSERT_TRUE(message_->is_dict());
+  absl::optional<int> result = message_->GetDict().FindInt("foo");
+  ASSERT_TRUE(result.has_value());
   ASSERT_EQ(42, result);
 }
 
 TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
-  WriteMessage("{}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  base::DictionaryValue* message_dict;
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
+  {
+    WriteMessage("{}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    ASSERT_TRUE(message_->GetDict().empty());
+  }
 
-  int result;
-  WriteMessage("{\"foo\": 42}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  ASSERT_TRUE(message_dict->GetInteger("foo", &result));
-  ASSERT_EQ(42, result);
+  {
+    WriteMessage("{\"foo\": 42}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    absl::optional<int> result = message_->GetDict().FindInt("foo");
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(42, result);
+  }
 
-  WriteMessage("{\"bar\": 43}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  ASSERT_TRUE(message_dict->GetInteger("bar", &result));
-  ASSERT_EQ(43, result);
+  {
+    WriteMessage("{\"bar\": 43}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    absl::optional<int> result = message_->GetDict().FindInt("bar");
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(43, result);
+  }
 
-  WriteMessage("{\"baz\": 44}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  ASSERT_TRUE(message_dict->GetInteger("baz", &result));
-  ASSERT_EQ(44, result);
+  {
+    WriteMessage("{\"baz\": 44}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    absl::optional<int> result = message_->GetDict().FindInt("baz");
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(44, result);
+  }
 }
 
 TEST_F(NativeMessagingReaderTest, InvalidLength) {

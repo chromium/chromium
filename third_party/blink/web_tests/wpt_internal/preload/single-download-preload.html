@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<script>
+  var t = async_test('Makes sure that preloaded resources are not downloaded again when used');
+</script>
+<link rel=preload href="resources/module1.js?single-download-preload" as=script crossorigin>
+<link rel=preload href="resources/module1.mjs?single-download-preload" as=script crossorigin>
+
+<body>
+  <script src="resources/module1.js?single-download-preload" type="module" crossorigin></script>
+  <script src="resources/module1.mjs?single-download-preload" type="module" crossorigin></script>
+  <script>
+    window.addEventListener("load", t.step_func(function () {
+      verifyPreloadAndRTSupport();
+      setTimeout(t.step_func(function () {
+        verifyLoadedAndNoDoubleDownload("resources/module1.js?single-download-preload");
+        verifyLoadedAndNoDoubleDownload("resources/module1.mjs?single-download-preload");
+        t.done();
+      }), 3000);
+    }));
+  </script>
+  <span>PASS - this text is here just so that the browser will download the font.</span>

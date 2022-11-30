@@ -49,4 +49,4 @@ class CORE_EXPORT HTMLTablePartElement : public HTMLElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_TABLE_PART_ELEMENT_H_

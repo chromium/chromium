@@ -1,11 +1,6 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
 
 /**
  * Namespace for async utility functions.
@@ -51,69 +46,50 @@ AsyncUtil.forEach = (array, callback, completionCallback, opt_thisObject) => {
  */
 AsyncUtil.ConcurrentQueue = class {
   /**
-   * @param {number} limit The number of jobs to run at the same time.
+   * @param {number} limit The number of tasks to run at the same time.
    */
   constructor(limit) {
     console.assert(limit > 0, '|limit| must be larger than 0');
-
     this.limit_ = limit;
-    this.addedTasks_ = [];
-    this.pendingTasks_ = [];
-    this.isCancelled_ = false;
+    this.added_ = [];
+    this.running_ = [];
+    this.cancelled_ = false;
   }
 
   /**
    * @return {boolean} True when a task is running, otherwise false.
    */
   isRunning() {
-    return this.pendingTasks_.length !== 0;
+    return this.running_.length !== 0;
   }
 
   /**
    * @return {number} Number of waiting tasks.
    */
   getWaitingTasksCount() {
-    return this.addedTasks_.length;
+    return this.added_.length;
   }
 
   /**
    * @return {number} Number of running tasks.
    */
   getRunningTasksCount() {
-    return this.pendingTasks_.length;
+    return this.running_.length;
   }
 
   /**
-   * Enqueues a closure to be executed.
-   * @param {function(function())} closure Closure with a completion
-   *     callback to be executed.
+   * Enqueues a task for running as soon as possible. If there is already the
+   * maximum number of tasks running, the run of this task is delayed until less
+   * than the limit given at the construction time of tasks are running.
+   * @param {function(function())} task The task to be enqueued for execution.
    */
-  run(closure) {
-    if (this.isCancelled_) {
-      console.error('Queue is cancelled. Cannot add a new task.');
-      return;
+  run(task) {
+    if (this.cancelled_) {
+      console.warn('Queue is cancelled. Cannot add a new task.');
+    } else {
+      this.added_.push(task);
+      this.scheduleNext_();
     }
-
-    this.addedTasks_.push(closure);
-    this.continue_();
-  }
-
-  /**
-   * Starts a task gated by this concurrent queue.
-   * Typical usage:
-   *
-   *   const unlock = await queue.lock();
-   *   try {
-   *     // Operations of the task.
-   *     ...
-   *   } finally {
-   *     unlock();
-   *   }
-   *
-   * @return {!Promise<function()>} Completion callback to run when finished.
-   */
-  async lock() {
-    return new Promise(resolve => this.run(unlock => resolve(unlock)));
   }
 
   /**
@@ -121,8 +97,8 @@ AsyncUtil.ConcurrentQueue = class {
    * does NOT stop tasks currently running.
    */
   cancel() {
-    this.isCancelled_ = true;
-    this.addedTasks_ = [];
+    this.cancelled_ = true;
+    this.added_ = [];
   }
 
   /**
@@ -130,35 +106,67 @@ AsyncUtil.ConcurrentQueue = class {
    *      already cancelled. Otherwise false.
    */
   isCancelled() {
-    return this.isCancelled_;
+    return this.cancelled_;
   }
 
   /**
-   * Runs the next tasks if available.
-   * @private
+   * Attempts to run another tasks. If there is less than the maximum number
+   * of task running, it immediately executes the task at the front of
+   * the queue.
    */
-  continue_() {
-    while (this.addedTasks_.length > 0 &&
-           this.pendingTasks_.length < this.limit_) {
-      // Run the next closure.
-      const closure = this.addedTasks_.shift();
-      this.pendingTasks_.push(closure);
-      closure(this.onTaskFinished_.bind(this, closure));
+  maybeExecute_() {
+    if (this.added_.length > 0) {
+      if (this.running_.length < this.limit_) {
+        this.execute_(this.added_.shift());
+      }
     }
   }
 
   /**
-   * Called when a task is finished. Removes the tasks from pending task list.
-   * @param {function()} closure Finished task, which has been bound in
-   *     |continue_|.
-   * @private
+   * Executes the given task. The task is placed in the list of running tasks
+   * and immediately executed.
+   * @param {function(function())} task The task to be immediately executed.
    */
-  onTaskFinished_(closure) {
-    const index = this.pendingTasks_.indexOf(closure);
-    console.assert(index >= 0, 'Invalid task is finished');
-    this.pendingTasks_.splice(index, 1);
+  execute_(task) {
+    this.running_.push(task);
+    try {
+      task(this.onTaskFinished_.bind(this, task));
+      // If the task executes successfully, it calls the callback, where we
+      // schedule a next run.
+    } catch (e) {
+      console.warn('Failed to execute a task', e);
+      // If the task fails we call the callback explicitly.
+      this.onTaskFinished_(task);
+    }
+  }
 
-    this.continue_();
+  /**
+   * Handles a task being finished.
+   */
+  onTaskFinished_(task) {
+    this.removeTask_(task);
+    this.scheduleNext_();
+  }
+
+  /**
+   * Attempts to remove the task that was running.
+   */
+  removeTask_(task) {
+    const index = this.running_.indexOf(task);
+    if (index >= 0) {
+      this.running_.splice(index, 1);
+    } else {
+      console.warn('Failed to find a finished task among running');
+    }
+  }
+
+  /**
+   * Schedules the next attempt at execution of the task at the front of
+   * the queue.
+   */
+  scheduleNext_() {
+    // TODO(1350885): Use setTimeout(()=>{this.maybeExecute();});
+    this.maybeExecute_();
   }
 
   /**
@@ -181,6 +189,24 @@ AsyncUtil.ConcurrentQueue = class {
 AsyncUtil.Queue = class Queue extends AsyncUtil.ConcurrentQueue {
   constructor() {
     super(1);
+  }
+
+  /**
+   * Starts a task gated by this concurrent queue.
+   * Typical usage:
+   *
+   *   const unlock = await queue.lock();
+   *   try {
+   *     // Operations of the task.
+   *     ...
+   *   } finally {
+   *     unlock();
+   *   }
+   *
+   * @return {!Promise<function()>} Completion callback to run when finished.
+   */
+  async lock() {
+    return new Promise(resolve => this.run(unlock => resolve(unlock)));
   }
 };
 
@@ -468,5 +494,4 @@ AsyncUtil.RateLimiter = class {
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {AsyncUtil};
+export {AsyncUtil};

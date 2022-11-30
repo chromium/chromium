@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/observer_list.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/class_property.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace base {
 namespace trace_event {
@@ -20,18 +25,28 @@ class TracedValue;
 
 namespace exo {
 class Surface;
+class SubSurfaceObserver;
 
 // This class provides functions for treating a surface as a sub-surface. A
 // sub-surface has one parent surface.
-class SubSurface : public SurfaceDelegate, public SurfaceObserver {
+class SubSurface : public SurfaceDelegate,
+                   public SurfaceObserver,
+                   public ui::PropertyHandler {
  public:
   SubSurface(Surface* surface, Surface* parent);
+
+  SubSurface(const SubSurface&) = delete;
+  SubSurface& operator=(const SubSurface&) = delete;
+
   ~SubSurface() override;
 
   // This schedules a sub-surface position change. The sub-surface will be
   // moved so, that its origin (top-left corner pixel) will be at the |position|
   // of the parent surface coordinate system.
-  void SetPosition(const gfx::Point& position);
+  void SetPosition(const gfx::PointF& position);
+
+  // This schedules a clip rect to be applied when drawing this sub-surface.
+  void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
 
   // This removes sub-surface from the stack, and puts it back just above the
   // reference surface, changing the z-order of the sub-surfaces. The reference
@@ -62,22 +77,39 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   void OnActivationRequested() override {}
   void OnNewOutputAdded() override {}
   void OnSetServerStartResize() override {}
-  void ShowSnapPreviewToLeft() override {}
-  void ShowSnapPreviewToRight() override {}
+  void ShowSnapPreviewToPrimary() override {}
+  void ShowSnapPreviewToSecondary() override {}
   void HideSnapPreview() override {}
-  void SetSnappedToLeft() override {}
-  void SetSnappedToRight() override {}
+  void SetSnappedToPrimary() override {}
+  void SetSnappedToSecondary() override {}
   void UnsetSnap() override {}
+  void SetCanGoBack() override {}
+  void UnsetCanGoBack() override {}
+  void SetPip() override {}
+  void UnsetPip() override {}
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override {}
+  void MoveToDesk(int desk_index) override {}
+  void SetVisibleOnAllWorkspaces() override {}
+  void SetInitialWorkspace(const char* initial_workspace) override {}
+  void Pin(bool trusted) override {}
+  void Unpin() override {}
+  void SetSystemModal(bool system_modal) override {}
+  SecurityDelegate* GetSecurityDelegate() override;
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
+
+  // SubSurface Observers
+  void AddSubSurfaceObserver(SubSurfaceObserver* observer);
+  void RemoveSubSurfaceObserver(SubSurfaceObserver* observer);
 
  private:
   Surface* surface_;
   Surface* parent_;
   bool is_synchronized_ = true;
 
-  DISALLOW_COPY_AND_ASSIGN(SubSurface);
+  // Surface observer list. Surface does not own the observers.
+  base::ObserverList<SubSurfaceObserver> observers_;
 };
 
 }  // namespace exo

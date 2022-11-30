@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/widget_test.h"
@@ -23,6 +23,10 @@ namespace test {
 class TestEventObserver : public ui::EventObserver {
  public:
   TestEventObserver() = default;
+
+  TestEventObserver(const TestEventObserver&) = delete;
+  TestEventObserver& operator=(const TestEventObserver&) = delete;
+
   ~TestEventObserver() override = default;
 
   // ui::EventObserver:
@@ -32,13 +36,14 @@ class TestEventObserver : public ui::EventObserver {
 
  private:
   size_t observed_event_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventObserver);
 };
 
 class EventMonitorTest : public WidgetTest {
  public:
   EventMonitorTest() = default;
+
+  EventMonitorTest(const EventMonitorTest&) = delete;
+  EventMonitorTest& operator=(const EventMonitorTest&) = delete;
 
   // testing::Test:
   void SetUp() override {
@@ -56,12 +61,9 @@ class EventMonitorTest : public WidgetTest {
   }
 
  protected:
-  Widget* widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   TestEventObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventMonitorTest);
 };
 
 TEST_F(EventMonitorTest, ShouldReceiveAppEventsWhileInstalled) {
@@ -134,6 +136,10 @@ class DeleteOtherOnEventObserver : public ui::EventObserver {
         this, context, {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED});
   }
 
+  DeleteOtherOnEventObserver(const DeleteOtherOnEventObserver&) = delete;
+  DeleteOtherOnEventObserver& operator=(const DeleteOtherOnEventObserver&) =
+      delete;
+
   bool DidDelete() const { return !observer_to_delete_; }
 
   void set_monitor_to_delete(
@@ -149,8 +155,6 @@ class DeleteOtherOnEventObserver : public ui::EventObserver {
  private:
   std::unique_ptr<EventMonitor> monitor_;
   std::unique_ptr<DeleteOtherOnEventObserver> observer_to_delete_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOtherOnEventObserver);
 };
 }  // namespace
 

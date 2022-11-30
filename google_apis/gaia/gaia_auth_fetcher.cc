@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,16 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/stl_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -29,13 +29,14 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
-#include "net/base/escape.h"
 #include "net/base/isolation_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -57,25 +58,22 @@ ExtractOAuth2TokenPairResponse(const std::string& data) {
   base::DictionaryValue* dict =
         static_cast<base::DictionaryValue*>(value.get());
 
-  std::string refresh_token;
-  std::string access_token;
-  std::string id_token;
-  int expires_in_secs;
-  if (!dict->GetStringWithoutPathExpansion("refresh_token", &refresh_token) ||
-      !dict->GetStringWithoutPathExpansion("access_token", &access_token) ||
-      !dict->GetIntegerWithoutPathExpansion("expires_in", &expires_in_secs)) {
+  std::string* refresh_token = dict->FindStringKey("refresh_token");
+  std::string* access_token = dict->FindStringKey("access_token");
+  absl::optional<int> expires_in_secs = dict->FindIntKey("expires_in");
+  if (!refresh_token || !access_token || !expires_in_secs.has_value())
     return nullptr;
-  }
 
   // Extract ID token when obtaining refresh token. Do not fail if absent,
   // but log to keep track.
-  if (!dict->GetStringWithoutPathExpansion("id_token", &id_token)) {
+  std::string* id_token = dict->FindStringKey("id_token");
+  if (!id_token)
     LOG(ERROR) << "Missing ID token on refresh token fetch response.";
-  }
-  gaia::TokenServiceFlags service_flags = gaia::ParseServiceFlags(id_token);
+  gaia::TokenServiceFlags service_flags =
+      gaia::ParseServiceFlags(id_token ? *id_token : std::string());
 
   return std::make_unique<const GaiaAuthConsumer::ClientOAuthResult>(
-      refresh_token, access_token, expires_in_secs,
+      *refresh_token, *access_token, expires_in_secs.value(),
       service_flags.is_child_account,
       service_flags.is_under_advanced_protection);
 }
@@ -96,13 +94,13 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
 
   base::DictionaryValue* dict =
       static_cast<base::DictionaryValue*>(value.get());
-  std::string error;
-  if (!dict->GetStringWithoutPathExpansion("error", &error))
+  std::string* error = dict->FindStringKey("error");
+  if (!error)
     return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
 
-  if (error == "invalid_token")
+  if (*error == "invalid_token")
     return GaiaAuthConsumer::TokenRevocationStatus::kInvalidToken;
-  if (error == "invalid_request")
+  if (*error == "invalid_request")
     return GaiaAuthConsumer::TokenRevocationStatus::kInvalidRequest;
 
   return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
@@ -110,10 +108,10 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
 
 std::unique_ptr<base::DictionaryValue> ParseJSONDict(const std::string& data) {
   std::unique_ptr<base::DictionaryValue> response_dict;
-  base::Optional<base::Value> message_value = base::JSONReader::Read(data);
+  absl::optional<base::Value> message_value = base::JSONReader::Read(data);
   if (message_value && message_value->is_dict()) {
     response_dict = std::make_unique<base::DictionaryValue>();
-    response_dict->MergeDictionary(base::OptionalOrNullptr(message_value));
+    response_dict->MergeDictionary(base::OptionalToPtr(message_value));
   }
   return response_dict;
 }
@@ -187,12 +185,6 @@ std::string GaiaSource::ToString() {
 }  // namespace gaia
 
 // static
-const char GaiaAuthFetcher::kIssueAuthTokenFormat[] =
-    "SID=%s&"
-    "LSID=%s&"
-    "service=%s&"
-    "Session=%s";
-// static
 const char GaiaAuthFetcher::kOAuth2CodeToTokenPairBodyFormat[] =
     "scope=%s&"
     "grant_type=authorization_code&"
@@ -206,9 +198,6 @@ const char GaiaAuthFetcher::kOAuth2CodeToTokenPairDeviceIdParam[] =
 const char GaiaAuthFetcher::kOAuth2RevokeTokenBodyFormat[] =
     "token=%s";
 // static
-const char GaiaAuthFetcher::kGetUserInfoFormat[] =
-    "LSID=%s";
-// static
 const char GaiaAuthFetcher::kMergeSessionFormat[] =
     "?uberauth=%s&"
     "continue=%s&"
@@ -218,24 +207,16 @@ const char GaiaAuthFetcher::kUberAuthTokenURLFormat[] =
     "?source=%s&"
     "issueuberauth=1";
 
-const char GaiaAuthFetcher::kOAuthLoginFormat[] = "service=%s&source=%s";
-
 // static
 const char GaiaAuthFetcher::kErrorParam[] = "Error";
 // static
 const char GaiaAuthFetcher::kErrorUrlParam[] = "Url";
 
 // static
-const char GaiaAuthFetcher::kAuthHeaderFormat[] =
-    "Authorization: GoogleLogin auth=%s";
-// static
 const char GaiaAuthFetcher::kOAuthHeaderFormat[] = "Authorization: OAuth %s";
 // static
 const char GaiaAuthFetcher::kOAuthMultiBearerHeaderFormat[] =
     "Authorization: MultiBearer %s";
-// static
-const char GaiaAuthFetcher::kOAuth2BearerHeaderFormat[] =
-    "Authorization: Bearer %s";
 
 GaiaAuthFetcher::GaiaAuthFetcher(
     GaiaAuthConsumer* consumer,
@@ -246,11 +227,9 @@ GaiaAuthFetcher::GaiaAuthFetcher(
       source_(source.ToString()),
       oauth2_token_gurl_(GaiaUrls::GetInstance()->oauth2_token_url()),
       oauth2_revoke_gurl_(GaiaUrls::GetInstance()->oauth2_revoke_url()),
-      get_user_info_gurl_(GaiaUrls::GetInstance()->get_user_info_url()),
       merge_session_gurl_(GaiaUrls::GetInstance()->merge_session_url()),
       uberauth_token_gurl_(GaiaUrls::GetInstance()->oauth1_login_url().Resolve(
           base::StringPrintf(kUberAuthTokenURLFormat, source_.c_str()))),
-      oauth_login_gurl_(GaiaUrls::GetInstance()->oauth1_login_url()),
       oauth_multilogin_gurl_(GaiaUrls::GetInstance()->oauth_multilogin_url()),
       list_accounts_gurl_(
           GaiaUrls::GetInstance()->ListAccountsURLWithSource(source_)),
@@ -269,13 +248,6 @@ bool GaiaAuthFetcher::HasPendingFetch() {
 void GaiaAuthFetcher::SetPendingFetch(bool pending_fetch) {
   fetch_pending_ = pending_fetch;
 }
-
-void GaiaAuthFetcher::CancelRequest() {
-  url_loader_.reset();
-  original_url_ = GURL();
-  fetch_pending_ = false;
-}
-
 bool GaiaAuthFetcher::IsMultiloginUrl(const GURL& url) {
   return base::StartsWith(url.spec(), oauth_multilogin_gurl_.spec(),
                           base::CompareCase::SENSITIVE);
@@ -300,10 +272,9 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
   original_url_ = gaia_gurl;
 
   if (credentials_mode != network::mojom::CredentialsMode::kOmit) {
-    DCHECK_EQ(GaiaUrls::GetInstance()->gaia_url(), gaia_gurl.GetOrigin())
-        << gaia_gurl;
-    url::Origin origin =
-        url::Origin::Create(GaiaUrls::GetInstance()->gaia_url());
+    CHECK(gaia::HasGaiaSchemeHostPort(gaia_gurl)) << gaia_gurl;
+
+    url::Origin origin = GaiaUrls::GetInstance()->gaia_origin();
     resource_request->site_for_cookies =
         net::SiteForCookies::FromOrigin(origin);
     resource_request->trusted_params =
@@ -318,11 +289,6 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
   if (!headers.empty())
     resource_request->headers.AddHeadersFromString(headers);
 
-  // The Gaia token exchange requests do not require any cookie-based
-  // identification as part of requests.  We suppress sending any cookies to
-  // maintain a separation between the user's browsing and Chrome's internal
-  // services.  Where such mixing is desired (MergeSession or OAuthLogin), it
-  // will be done explicitly.
   resource_request->credentials_mode = credentials_mode;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
@@ -356,36 +322,16 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
 }
 
 // static
-std::string GaiaAuthFetcher::MakeIssueAuthTokenBody(
-    const std::string& sid,
-    const std::string& lsid,
-    const char* const service) {
-  std::string encoded_sid = net::EscapeUrlEncodedData(sid, true);
-  std::string encoded_lsid = net::EscapeUrlEncodedData(lsid, true);
-
-  // All tokens should be session tokens except the gaia auth token.
-  bool session = true;
-  if (!strcmp(service, GaiaConstants::kGaiaService))
-    session = false;
-
-  return base::StringPrintf(kIssueAuthTokenFormat,
-                            encoded_sid.c_str(),
-                            encoded_lsid.c_str(),
-                            service,
-                            session ? "true" : "false");
-}
-
-// static
 std::string GaiaAuthFetcher::MakeGetTokenPairBody(
     const std::string& auth_code,
     const std::string& device_id) {
-  std::string encoded_scope = net::EscapeUrlEncodedData(
-      GaiaConstants::kOAuth1LoginScope, true);
-  std::string encoded_client_id = net::EscapeUrlEncodedData(
+  std::string encoded_scope =
+      base::EscapeUrlEncodedData(GaiaConstants::kOAuth1LoginScope, true);
+  std::string encoded_client_id = base::EscapeUrlEncodedData(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(), true);
-  std::string encoded_client_secret = net::EscapeUrlEncodedData(
+  std::string encoded_client_secret = base::EscapeUrlEncodedData(
       GaiaUrls::GetInstance()->oauth2_chrome_client_secret(), true);
-  std::string encoded_auth_code = net::EscapeUrlEncodedData(auth_code, true);
+  std::string encoded_auth_code = base::EscapeUrlEncodedData(auth_code, true);
   std::string body = base::StringPrintf(
       kOAuth2CodeToTokenPairBodyFormat, encoded_scope.c_str(),
       encoded_client_id.c_str(), encoded_client_secret.c_str(),
@@ -404,96 +350,40 @@ std::string GaiaAuthFetcher::MakeRevokeTokenBody(
 }
 
 // static
-std::string GaiaAuthFetcher::MakeGetUserInfoBody(const std::string& lsid) {
-  std::string encoded_lsid = net::EscapeUrlEncodedData(lsid, true);
-  return base::StringPrintf(kGetUserInfoFormat, encoded_lsid.c_str());
-}
-
-// static
 std::string GaiaAuthFetcher::MakeMergeSessionQuery(
     const std::string& auth_token,
     const std::string& external_cc_result,
     const std::string& continue_url,
     const std::string& source) {
-  std::string encoded_auth_token = net::EscapeUrlEncodedData(auth_token, true);
-  std::string encoded_continue_url = net::EscapeUrlEncodedData(continue_url,
-                                                               true);
-  std::string encoded_source = net::EscapeUrlEncodedData(source, true);
+  std::string encoded_auth_token = base::EscapeUrlEncodedData(auth_token, true);
+  std::string encoded_continue_url =
+      base::EscapeUrlEncodedData(continue_url, true);
+  std::string encoded_source = base::EscapeUrlEncodedData(source, true);
   std::string result = base::StringPrintf(kMergeSessionFormat,
                                           encoded_auth_token.c_str(),
                                           encoded_continue_url.c_str(),
                                           encoded_source.c_str());
   if (!external_cc_result.empty()) {
-    base::StringAppendF(&result, "&externalCcResult=%s",
-                        net::EscapeUrlEncodedData(
-                            external_cc_result, true).c_str());
+    base::StringAppendF(
+        &result, "&externalCcResult=%s",
+        base::EscapeUrlEncodedData(external_cc_result, true).c_str());
   }
 
   return result;
 }
 
 // static
-std::string GaiaAuthFetcher::MakeGetAuthCodeHeader(
-    const std::string& auth_token) {
-  return base::StringPrintf(kAuthHeaderFormat, auth_token.c_str());
-}
-
-// Helper method that extracts tokens from a successful reply.
-// static
-void GaiaAuthFetcher::ParseClientLoginResponse(const std::string& data,
-                                               std::string* sid,
-                                               std::string* lsid,
-                                               std::string* token) {
-  using std::vector;
-  using std::pair;
-  using std::string;
-  sid->clear();
-  lsid->clear();
-  token->clear();
+void GaiaAuthFetcher::ParseFailureResponse(const std::string& data,
+                                           std::string* error,
+                                           std::string* error_url) {
   base::StringPairs tokens;
   base::SplitStringIntoKeyValuePairs(data, '=', '\n', &tokens);
-  for (base::StringPairs::iterator i = tokens.begin();
-      i != tokens.end(); ++i) {
-    if (i->first == "SID") {
-      sid->assign(i->second);
-    } else if (i->first == "LSID") {
-      lsid->assign(i->second);
-    } else if (i->first == "Auth") {
-      token->assign(i->second);
-    }
-  }
-  // If this was a request for uberauth token, then that's all we've got in
-  // data.
-  if (sid->empty() && lsid->empty() && token->empty())
-    token->assign(data);
-}
 
-// static
-std::string GaiaAuthFetcher::MakeOAuthLoginBody(const std::string& service,
-                                                const std::string& source) {
-  std::string encoded_service = net::EscapeUrlEncodedData(service, true);
-  std::string encoded_source = net::EscapeUrlEncodedData(source, true);
-  return base::StringPrintf(kOAuthLoginFormat,
-                            encoded_service.c_str(),
-                            encoded_source.c_str());
-}
-
-// static
-void GaiaAuthFetcher::ParseClientLoginFailure(const std::string& data,
-                                              std::string* error,
-                                              std::string* error_url) {
-  using std::vector;
-  using std::pair;
-  using std::string;
-
-  base::StringPairs tokens;
-  base::SplitStringIntoKeyValuePairs(data, '=', '\n', &tokens);
-  for (base::StringPairs::iterator i = tokens.begin();
-       i != tokens.end(); ++i) {
-    if (i->first == kErrorParam) {
-      error->assign(i->second);
-    } else if (i->first == kErrorUrlParam) {
-      error_url->assign(i->second);
+  for (const auto& token : tokens) {
+    if (token.first == kErrorParam) {
+      error->assign(token.second);
+    } else if (token.first == kErrorUrlParam) {
+      error_url->assign(token.second);
     }
   }
 }
@@ -575,40 +465,6 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
   CreateAndStartGaiaFetcher(
       request_body_, kFormEncodedContentType, std::string(), oauth2_token_gurl_,
       network::mojom::CredentialsMode::kOmit, traffic_annotation);
-}
-
-void GaiaAuthFetcher::StartGetUserInfo(const std::string& lsid) {
-  DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
-
-  VLOG(1) << "Starting GetUserInfo for lsid=" << lsid;
-  request_body_ = MakeGetUserInfoBody(lsid);
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gaia_auth_get_user_info", R"(
-        semantics {
-          sender: "Chrome - Google authentication API"
-          description:
-            "This request fetches user information of a Google account."
-          trigger:
-            "This fetcher is only used after signing in with a child account."
-          data: "The value of the Google authentication LSID cookie."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This feature cannot be disabled in settings, but if the user "
-            "signs out of Chrome, this request would not be made."
-          chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
-            }
-          }
-        })");
-  CreateAndStartGaiaFetcher(request_body_, kFormEncodedContentType,
-                            std::string(), get_user_info_gurl_,
-                            network::mojom::CredentialsMode::kOmit,
-                            traffic_annotation);
 }
 
 void GaiaAuthFetcher::StartMergeSession(const std::string& uber_token,
@@ -702,49 +558,6 @@ void GaiaAuthFetcher::StartTokenFetchForUberAuthExchange(
       network::mojom::CredentialsMode::kOmit, traffic_annotation);
 }
 
-void GaiaAuthFetcher::StartOAuthLogin(const std::string& access_token,
-                                      const std::string& service) {
-  DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
-
-  request_body_ = MakeOAuthLoginBody(service, source_);
-  std::string authentication_header =
-      base::StringPrintf(kOAuth2BearerHeaderFormat, access_token.c_str());
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gaia_auth_login", R"(
-        semantics {
-          sender: "Chrome - Google authentication API"
-          description:
-            "This request exchanges an OAuthLogin-scoped OAuth 2.0 access "
-            "token for a ClientLogin-style service tokens. The response to "
-            "this request is the same as the response to a ClientLogin "
-            "request, except that captcha challenges are never issued."
-          trigger:
-            "This request is part of Gaia Auth API, and is triggered after "
-            "signing in with a child account."
-          data:
-            "This request contains an OAuth 2.0 access token and the service "
-            "for which a ClientLogin-style should be delivered."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "This feature cannot be disabled in settings, but if the user "
-            "signs out of Chrome, this request would not be made."
-          chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
-            }
-          }
-        })");
-  CreateAndStartGaiaFetcher(request_body_, kFormEncodedContentType,
-                            authentication_header, oauth_login_gurl_,
-                            network::mojom::CredentialsMode::kInclude,
-                            traffic_annotation);
-}
-
 void GaiaAuthFetcher::StartListAccounts() {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
@@ -801,7 +614,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
       kOAuthMultiBearerHeaderFormat,
       base::JoinString(authorization_header_parts, ",").c_str());
 
-  std::string source_string = net::EscapeUrlEncodedData(source_, true);
+  std::string source_string = base::EscapeUrlEncodedData(source_, true);
   std::string parameters = base::StringPrintf(
       "?source=%s&reuseCookies=%i", source_string.c_str(),
       mode == gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER
@@ -810,7 +623,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
   if (!external_cc_result.empty()) {
     base::StringAppendF(
         &parameters, "&externalCcResult=%s",
-        net::EscapeUrlEncodedData(external_cc_result, true).c_str());
+        base::EscapeUrlEncodedData(external_cc_result, true).c_str());
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -997,8 +810,8 @@ GoogleServiceAuthError GaiaAuthFetcher::GenerateAuthError(
 
   std::string error;
   std::string url;
-  ParseClientLoginFailure(data, &error, &url);
-  DLOG(WARNING) << "ClientLogin failed with " << error;
+  ParseFailureResponse(data, &error, &url);
+  DLOG(WARNING) << "Authentication request failed with " << error;
 
   if (error == kBadAuthenticationShortError ||
       error == kBadAuthenticationError) {
@@ -1083,23 +896,6 @@ void GaiaAuthFetcher::OnLogOutFetched(const std::string& data,
   }
 }
 
-void GaiaAuthFetcher::OnGetUserInfoFetched(const std::string& data,
-                                           net::Error net_error,
-                                           int response_code) {
-  if (net_error == net::OK && response_code == net::HTTP_OK) {
-    base::StringPairs tokens;
-    UserInfoMap matches;
-    base::SplitStringIntoKeyValuePairs(data, '=', '\n', &tokens);
-    base::StringPairs::iterator i;
-    for (i = tokens.begin(); i != tokens.end(); ++i) {
-      matches[i->first] = i->second;
-    }
-    consumer_->OnGetUserInfoSuccess(matches);
-  } else {
-    consumer_->OnGetUserInfoFailure(GenerateAuthError(data, net_error));
-  }
-}
-
 void GaiaAuthFetcher::OnReAuthApiInfoFetched(const std::string& data,
                                              net::Error net_error,
                                              int response_code) {
@@ -1148,22 +944,6 @@ void GaiaAuthFetcher::OnUberAuthTokenFetch(const std::string& data,
     consumer_->OnUberAuthTokenSuccess(data);
   } else {
     consumer_->OnUberAuthTokenFailure(GenerateAuthError(data, net_error));
-  }
-}
-
-void GaiaAuthFetcher::OnOAuthLoginFetched(const std::string& data,
-                                          net::Error net_error,
-                                          int response_code) {
-  if (net_error == net::OK && response_code == net::HTTP_OK) {
-    VLOG(1) << "ClientLogin successful!";
-    std::string sid;
-    std::string lsid;
-    std::string token;
-    ParseClientLoginResponse(data, &sid, &lsid, &token);
-    consumer_->OnClientLoginSuccess(
-        GaiaAuthConsumer::ClientLoginResult(sid, lsid, token, data));
-  } else {
-    consumer_->OnClientLoginFailure(GenerateAuthError(data, net_error));
   }
 }
 
@@ -1222,15 +1002,11 @@ void GaiaAuthFetcher::DispatchFetchedRequest(
     int response_code) {
   if (url == oauth2_token_gurl_) {
     OnOAuth2TokenPairFetched(data, net_error, response_code);
-  } else if (url == get_user_info_gurl_) {
-    OnGetUserInfoFetched(data, net_error, response_code);
   } else if (base::StartsWith(url.spec(), merge_session_gurl_.spec(),
                               base::CompareCase::SENSITIVE)) {
     OnMergeSessionFetched(data, net_error, response_code);
   } else if (url == uberauth_token_gurl_) {
     OnUberAuthTokenFetch(data, net_error, response_code);
-  } else if (url == oauth_login_gurl_) {
-    OnOAuthLoginFetched(data, net_error, response_code);
   } else if (IsMultiloginUrl(url)) {
     OnOAuthMultiloginFetched(data, net_error, response_code);
   } else if (url == oauth2_revoke_gurl_) {

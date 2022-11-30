@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
  * @fileoverview Interfaces for the Files app Entry Types.
  */
 
-// clang-format off
-// #import * as wrappedVolumeManagerCommon from '../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// clang-format on
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 
 /**
  * FilesAppEntry represents a single Entry (file, folder or root) in the Files
@@ -21,7 +19,7 @@
  *
  * @interface
  */
-/* #export */ class FilesAppEntry {
+export class FilesAppEntry {
   constructor() {
     /**
      * @public {boolean} true if this entry represents a Directory-like entry,
@@ -119,7 +117,7 @@
  *
  * @interface
  */
-/* #export */ class FilesAppDirEntry extends FilesAppEntry {
+export class FilesAppDirEntry extends FilesAppEntry {
   constructor() {
     super();
     /**
@@ -147,7 +145,7 @@
  *
  * @interface
  */
-/* #export */ class FakeEntry extends FilesAppDirEntry {
+export class FakeEntry extends FilesAppDirEntry {
   /**
    * @param {string} label Translated text to be displayed to user.
    * @param {!VolumeManagerCommon.RootType} rootType Root type of this entry.

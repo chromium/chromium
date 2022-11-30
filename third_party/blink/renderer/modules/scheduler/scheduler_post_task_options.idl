@@ -1,17 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Experimental Scheduling API Proposal:
-// https://docs.google.com/document/d/1xU7HyNsEsbXhTgt0ZnXDbeSXm5-m5FzkLJAT6LTizEI/edit#
+// https://wicg.github.io/scheduling-apis/#sec-task-priorities
 enum TaskPriority {
     "user-blocking",
     "user-visible",
     "background"
 };
 
+// https://wicg.github.io/scheduling-apis/#sec-scheduler
 dictionary SchedulerPostTaskOptions {
-    AbortSignal? signal = null;
-    TaskPriority? priority = null;
-    long delay = 0;
+    AbortSignal signal;
+    TaskPriority priority;
+    [EnforceRange] unsigned long long delay = 0;
 };

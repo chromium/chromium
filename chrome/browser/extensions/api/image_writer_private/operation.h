@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "base/hash/md5.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,7 +24,7 @@
 #include "extensions/common/extension_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #endif
 
 namespace image_writer_api = extensions::api::image_writer_private;
@@ -67,6 +67,9 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
             const ExtensionId& extension_id,
             const std::string& device_path,
             const base::FilePath& download_folder);
+
+  Operation(const Operation&) = delete;
+  Operation& operator=(const Operation&) = delete;
 
   // Starts the operation.
   void Start();
@@ -184,7 +187,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   void UnmountVolumes(base::OnceClosure continuation);
   // Starts the write after unmounting.
   void UnmountVolumesCallback(base::OnceClosure continuation,
-                              chromeos::MountError error_code);
+                              ash::MountError error_code);
   // Starts the ImageBurner write.  Note that target_path is the file path of
   // the device where device_path has been a system device path.
   void StartWriteOnUIThread(const std::string& target_path,
@@ -245,8 +248,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Sequenced task runner where all I/O operation will be performed.
   // Most of the methods of this class run in this task runner.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Operation);
 };
 
 }  // namespace image_writer

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,7 +23,7 @@
 // Relies on the tag being set to the command id.
 
 RenderViewContextMenuMac::RenderViewContextMenuMac(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
       text_services_context_menu_(this) {}
@@ -103,15 +102,14 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
     // In case the user has selected a word that triggers spelling suggestions,
     // show the dictionary lookup under the group that contains the command to
     // “Add to Dictionary.”
-    int index =
+    const absl::optional<size_t> index_opt =
         menu_model_.GetIndexOfCommandId(IDC_SPELLCHECK_ADD_TO_DICTIONARY);
-    if (index < 0) {
-      index = 0;
-    } else {
+    size_t index = index_opt.value_or(0);
+    if (index_opt.has_value()) {
       while (menu_model_.GetTypeAt(index) != ui::MenuModel::TYPE_SEPARATOR) {
         index++;
       }
-      index += 1; // Place it below the separator.
+      ++index;  // Place it below the separator.
     }
 
     std::u16string printable_selection_text = PrintableSelectionText();

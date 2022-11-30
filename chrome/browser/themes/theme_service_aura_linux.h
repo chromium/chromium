@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_
 #define CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_
 
-#include "base/macros.h"
 #include "chrome/browser/themes/theme_service.h"
 
 class Profile;
@@ -15,19 +14,21 @@ class Profile;
 class ThemeServiceAuraLinux : public ThemeService {
  public:
   using ThemeService::ThemeService;
+
+  ThemeServiceAuraLinux(const ThemeServiceAuraLinux&) = delete;
+  ThemeServiceAuraLinux& operator=(const ThemeServiceAuraLinux&) = delete;
+
   ~ThemeServiceAuraLinux() override;
 
   // Overridden from ThemeService:
-  bool ShouldInitWithSystemTheme() const override;
+  ui::SystemTheme GetDefaultSystemTheme() const override;
+  void UseTheme(ui::SystemTheme system_theme) override;
   void UseSystemTheme() override;
   bool IsSystemThemeDistinctFromDefaultTheme() const override;
   bool UsingSystemTheme() const override;
   void FixInconsistentPreferencesIfNeeded() override;
 
-  static bool ShouldUseSystemThemeForProfile(const Profile* profile);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThemeServiceAuraLinux);
+  static ui::SystemTheme GetSystemThemeForProfile(const Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_

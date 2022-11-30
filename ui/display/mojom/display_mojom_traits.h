@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,9 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
   static int32_t display_frequency(const display::Display& display) {
     return display.display_frequency();
   }
-
+  static const std::string& label(const display::Display& display) {
+    return display.label();
+  }
   static bool Read(display::mojom::DisplayDataView data, display::Display* out);
 };
 

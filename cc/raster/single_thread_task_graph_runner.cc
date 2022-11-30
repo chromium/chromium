@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/threading/simple_thread.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace cc {
 
@@ -26,8 +28,8 @@ SingleThreadTaskGraphRunner::~SingleThreadTaskGraphRunner() = default;
 void SingleThreadTaskGraphRunner::Start(
     const std::string& thread_name,
     const base::SimpleThread::Options& thread_options) {
-  thread_.reset(
-      new base::DelegateSimpleThread(this, thread_name, thread_options));
+  thread_ = std::make_unique<base::DelegateSimpleThread>(this, thread_name,
+                                                         thread_options);
   thread_->StartAsync();
 }
 
@@ -115,6 +117,11 @@ void SingleThreadTaskGraphRunner::Run() {
 
   while (true) {
     if (!RunTaskWithLockAcquired()) {
+      // Make sure the END of the last trace event emitted before going idle
+      // is flushed to perfetto.
+      // TODO(crbug.com/1021571): Remove this once fixed.
+      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
+
       // Exit when shutdown is set and no more tasks are pending.
       if (shutdown_)
         break;
@@ -133,12 +140,10 @@ bool SingleThreadTaskGraphRunner::RunTaskWithLockAcquired() {
   // Find the first category with any tasks to run. This task graph runner
   // treats categories as an additional priority.
   const auto& ready_to_run_namespaces = work_queue_.ready_to_run_namespaces();
-  auto found = std::find_if(
-      ready_to_run_namespaces.cbegin(), ready_to_run_namespaces.cend(),
-      [](const std::pair<const uint16_t,
-                         TaskGraphWorkQueue::TaskNamespace::Vector>& pair) {
-        return !pair.second.empty();
-      });
+  auto found = base::ranges::find_if_not(
+      ready_to_run_namespaces,
+      &TaskGraphWorkQueue::TaskNamespace::Vector::empty,
+      &TaskGraphWorkQueue::ReadyNamespaces::value_type::second);
 
   if (found == ready_to_run_namespaces.cend()) {
     return false;
@@ -152,7 +157,7 @@ bool SingleThreadTaskGraphRunner::RunTaskWithLockAcquired() {
     prioritized_task.task->RunOnWorkerThread();
   }
 
-  auto* task_namespace = prioritized_task.task_namespace;
+  auto* task_namespace = prioritized_task.task_namespace.get();
   work_queue_.CompleteTask(std::move(prioritized_task));
 
   // If namespace has finished running all tasks, wake up origin thread.

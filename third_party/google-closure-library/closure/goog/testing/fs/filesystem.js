@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Mock filesystem object.
@@ -33,6 +25,7 @@ goog.require('goog.testing.fs.DirectoryEntry');
  * @final
  */
 goog.testing.fs.FileSystem = function(opt_name) {
+  'use strict';
   /**
    * The name of the filesystem.
    * @type {string}
@@ -51,6 +44,7 @@ goog.testing.fs.FileSystem = function(opt_name) {
 
 /** @override */
 goog.testing.fs.FileSystem.prototype.getName = function() {
+  'use strict';
   return this.name_;
 };
 
@@ -60,5 +54,6 @@ goog.testing.fs.FileSystem.prototype.getName = function() {
  * @return {!goog.testing.fs.DirectoryEntry}
  */
 goog.testing.fs.FileSystem.prototype.getRoot = function() {
+  'use strict';
   return this.root_;
 };

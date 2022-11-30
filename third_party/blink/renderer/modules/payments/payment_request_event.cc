@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -87,7 +87,7 @@ PaymentRequestEvent::PaymentRequestEvent(
     payment_handler_host_.Bind(
         std::move(host),
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-    payment_handler_host_.set_disconnect_handler(WTF::Bind(
+    payment_handler_host_.set_disconnect_handler(WTF::BindOnce(
         &PaymentRequestEvent::OnHostConnectionError, WrapWeakPersistent(this)));
   }
 }
@@ -135,10 +135,10 @@ const ScriptValue PaymentRequestEvent::paymentOptions(
   return ScriptValue::From(script_state, payment_options_);
 }
 
-base::Optional<HeapVector<Member<PaymentShippingOption>>>
+absl::optional<HeapVector<Member<PaymentShippingOption>>>
 PaymentRequestEvent::shippingOptions() const {
-  if (shipping_options_.IsEmpty())
-    return base::nullopt;
+  if (shipping_options_.empty())
+    return absl::nullopt;
   return shipping_options_;
 }
 
@@ -217,8 +217,8 @@ ScriptPromise PaymentRequestEvent::changePaymentMethod(
   method_data->method_name = method_name;
   payment_handler_host_->ChangePaymentMethod(
       std::move(method_data),
-      WTF::Bind(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
+                    WrapWeakPersistent(this)));
   change_payment_request_details_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   return change_payment_request_details_resolver_->Promise();
@@ -259,8 +259,8 @@ ScriptPromise PaymentRequestEvent::changeShippingAddress(
 
   payment_handler_host_->ChangeShippingAddress(
       std::move(shipping_address_ptr),
-      WTF::Bind(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
+                    WrapWeakPersistent(this)));
   change_payment_request_details_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   return change_payment_request_details_resolver_->Promise();
@@ -299,8 +299,8 @@ ScriptPromise PaymentRequestEvent::changeShippingOption(
 
   payment_handler_host_->ChangeShippingOption(
       shipping_option_id,
-      WTF::Bind(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
+                    WrapWeakPersistent(this)));
   change_payment_request_details_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   return change_payment_request_details_resolver_->Promise();
@@ -340,7 +340,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
     return;
 
   auto* dictionary = MakeGarbageCollected<PaymentRequestDetailsUpdate>();
-  if (!response->error.IsNull() && !response->error.IsEmpty()) {
+  if (!response->error.IsNull() && !response->error.empty()) {
     dictionary->setError(response->error);
   }
 
@@ -377,7 +377,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
         mod->setTotal(total);
       }
 
-      if (!response_modifier->method_data->stringified_data.IsEmpty()) {
+      if (!response_modifier->method_data->stringified_data.empty()) {
         v8::Local<v8::Value> parsed_value = FromJSONString(
             script_state->GetIsolate(), script_state->GetContext(),
             response_modifier->method_data->stringified_data, exception_state);
@@ -415,7 +415,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
   }
 
   if (response->stringified_payment_method_errors &&
-      !response->stringified_payment_method_errors.IsEmpty()) {
+      !response->stringified_payment_method_errors.empty()) {
     v8::Local<v8::Value> parsed_value = FromJSONString(
         script_state->GetIsolate(), script_state->GetContext(),
         response->stringified_payment_method_errors, exception_state);

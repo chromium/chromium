@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_STATS_COLLECTION_CONTROLLER_H_
 #define CONTENT_RENDERER_STATS_COLLECTION_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "gin/wrappable.h"
 
 namespace blink {
@@ -22,6 +21,10 @@ class StatsCollectionController
     : public gin::Wrappable<StatsCollectionController> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  StatsCollectionController(const StatsCollectionController&) = delete;
+  StatsCollectionController& operator=(const StatsCollectionController&) =
+      delete;
 
   static void Install(blink::WebLocalFrame* frame);
 
@@ -42,8 +45,6 @@ class StatsCollectionController
 
   // Returns JSON representation of tab timing information for the current tab.
   std::string GetTabLoadTiming();
-
-  DISALLOW_COPY_AND_ASSIGN(StatsCollectionController);
 };
 
 }  // namespace content

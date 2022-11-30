@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace cc {
 class AnimationHost;
@@ -57,6 +57,10 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   bool has_inline_style_mutation_for_test() const {
     return has_inline_style_mutation_;
   }
+  void SetHasSmilAnimation();
+  void SetCurrentFrameHadRaf();
+  void SetNextFrameHasPendingRaf();
+  void SetHasSharedElementTransition(bool);
   void ReportFrameAnimations(cc::AnimationHost* animation_host);
 
  private:
@@ -70,6 +74,14 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   bool has_inline_style_mutation_ = false;
   // True if the current main frame has canvas invalidation.
   bool has_canvas_invalidation_ = false;
+  // True if the current main frame has svg smil animation.
+  bool has_smil_animation_ = false;
+  // True if there is a raf scheduled in this frame.
+  bool current_frame_had_raf_ = false;
+  // True if there is a raf scheduled for the next frame.
+  bool next_frame_has_pending_raf_ = false;
+  // True if there is an ongoing shared element transition.
+  bool has_shared_element_transition_ = false;
 };
 
 }  // namespace blink

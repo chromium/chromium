@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Class for showing simple modal dialog boxes.
@@ -51,6 +43,7 @@ goog.require('goog.string');
 goog.require('goog.style');
 goog.require('goog.ui.Map');
 goog.require('goog.ui.ModalPopup');
+goog.requireType('goog.events.BrowserEvent');
 
 
 
@@ -86,6 +79,7 @@ goog.require('goog.ui.ModalPopup');
  * @extends {goog.ui.ModalPopup}
  */
 goog.ui.Dialog = function(opt_class, opt_useIframeMask, opt_domHelper) {
+  'use strict';
   goog.ui.Dialog.base(this, 'constructor', opt_useIframeMask, opt_domHelper);
 
   /**
@@ -99,7 +93,6 @@ goog.ui.Dialog = function(opt_class, opt_useIframeMask, opt_domHelper) {
   this.buttons_ = goog.ui.Dialog.ButtonSet.createOkCancel();
 };
 goog.inherits(goog.ui.Dialog, goog.ui.ModalPopup);
-goog.tagUnsealableClass(goog.ui.Dialog);
 
 
 /**
@@ -238,8 +231,18 @@ goog.ui.Dialog.prototype.buttonEl_ = null;
 goog.ui.Dialog.prototype.preferredAriaRole_ = goog.a11y.aria.Role.DIALOG;
 
 
+/**
+ * Whether the dialog sets the aria-describedby element to point to the content
+ * element.
+ * @type {boolean}
+ * @private
+ */
+goog.ui.Dialog.prototype.isAriaDescribedByContent_ = false;
+
+
 /** @override */
 goog.ui.Dialog.prototype.getCssClass = function() {
+  'use strict';
   return this.class_;
 };
 
@@ -249,6 +252,7 @@ goog.ui.Dialog.prototype.getCssClass = function() {
  * @param {string} title The title text.
  */
 goog.ui.Dialog.prototype.setTitle = function(title) {
+  'use strict';
   this.title_ = title;
   if (this.titleTextEl_) {
     goog.dom.setTextContent(this.titleTextEl_, title);
@@ -261,6 +265,7 @@ goog.ui.Dialog.prototype.setTitle = function(title) {
  * @return {string} The title.
  */
 goog.ui.Dialog.prototype.getTitle = function() {
+  'use strict';
   return this.title_;
 };
 
@@ -270,6 +275,7 @@ goog.ui.Dialog.prototype.getTitle = function() {
  * @param {string} text Content plain text. Newlines are preserved.
  */
 goog.ui.Dialog.prototype.setTextContent = function(text) {
+  'use strict';
   this.setSafeHtmlContent(
       goog.html.SafeHtml.htmlEscapePreservingNewlines(text));
 };
@@ -280,6 +286,7 @@ goog.ui.Dialog.prototype.setTextContent = function(text) {
  * @param {!goog.html.SafeHtml} html Content HTML.
  */
 goog.ui.Dialog.prototype.setSafeHtmlContent = function(html) {
+  'use strict';
   this.content_ = html;
   if (this.contentEl_) {
     goog.dom.safe.setInnerHtml(this.contentEl_, html);
@@ -298,6 +305,7 @@ goog.ui.Dialog.prototype.setSafeHtmlContent = function(html) {
  * @return {string} Content HTML.
  */
 goog.ui.Dialog.prototype.getContent = function() {
+  'use strict';
   return this.content_ != null ? goog.html.SafeHtml.unwrap(this.content_) : '';
 };
 
@@ -307,6 +315,7 @@ goog.ui.Dialog.prototype.getContent = function() {
  * @return {goog.html.SafeHtml} Content HTML.
  */
 goog.ui.Dialog.prototype.getSafeHtmlContent = function() {
+  'use strict';
   return this.content_;
 };
 
@@ -318,6 +327,7 @@ goog.ui.Dialog.prototype.getSafeHtmlContent = function() {
  * @return {goog.a11y.aria.Role} This dialog's preferred ARIA role.
  */
 goog.ui.Dialog.prototype.getPreferredAriaRole = function() {
+  'use strict';
   return this.preferredAriaRole_;
 };
 
@@ -329,7 +339,30 @@ goog.ui.Dialog.prototype.getPreferredAriaRole = function() {
  * @param {goog.a11y.aria.Role} role This dialog's preferred ARIA role.
  */
 goog.ui.Dialog.prototype.setPreferredAriaRole = function(role) {
+  'use strict';
   this.preferredAriaRole_ = role;
+};
+
+
+/**
+ * @return {boolean} Whether the dialog sets the aria-describedby element to
+ *     point to the content element.
+ */
+goog.ui.Dialog.prototype.isAriaDescribedByContent = function() {
+  'use strict';
+  return this.isAriaDescribedByContent_;
+};
+
+
+/**
+ * Sets whether the dialog sets the aria-describedby element to point to the
+ * content element. This must be set prior to `createDom`.
+ * @param {boolean} isAriaDescribedByContent
+ */
+goog.ui.Dialog.prototype.setIsAriaDescribedByContent = function(
+    isAriaDescribedByContent) {
+  'use strict';
+  this.isAriaDescribedByContent_ = isAriaDescribedByContent;
 };
 
 
@@ -338,6 +371,7 @@ goog.ui.Dialog.prototype.setPreferredAriaRole = function(role) {
  * @private
  */
 goog.ui.Dialog.prototype.renderIfNoDom_ = function() {
+  'use strict';
   if (!this.getElement()) {
     // TODO(gboyer): Ideally we'd only create the DOM, but many applications
     // are requiring this behavior.  Eventually, it would be best if the
@@ -356,6 +390,7 @@ goog.ui.Dialog.prototype.renderIfNoDom_ = function() {
  * @override
  */
 goog.ui.Dialog.prototype.getContentElement = function() {
+  'use strict';
   this.renderIfNoDom_();
   return this.contentEl_;
 };
@@ -367,6 +402,7 @@ goog.ui.Dialog.prototype.getContentElement = function() {
  * @return {Element} The title element.
  */
 goog.ui.Dialog.prototype.getTitleElement = function() {
+  'use strict';
   this.renderIfNoDom_();
   return this.titleEl_;
 };
@@ -378,6 +414,7 @@ goog.ui.Dialog.prototype.getTitleElement = function() {
  * @return {Element} The title text element.
  */
 goog.ui.Dialog.prototype.getTitleTextElement = function() {
+  'use strict';
   this.renderIfNoDom_();
   return this.titleTextEl_;
 };
@@ -389,6 +426,7 @@ goog.ui.Dialog.prototype.getTitleTextElement = function() {
  * @return {Element} The close box.
  */
 goog.ui.Dialog.prototype.getTitleCloseElement = function() {
+  'use strict';
   this.renderIfNoDom_();
   return this.titleCloseEl_;
 };
@@ -399,6 +437,7 @@ goog.ui.Dialog.prototype.getTitleCloseElement = function() {
  * @protected
  */
 goog.ui.Dialog.prototype.getDialogCloseMessage = function() {
+  'use strict';
   return goog.ui.Dialog.MSG_GOOG_UI_DIALOG_CLOSE_;
 };
 
@@ -408,6 +447,7 @@ goog.ui.Dialog.prototype.getDialogCloseMessage = function() {
  * @return {Element} The button container element.
  */
 goog.ui.Dialog.prototype.getButtonElement = function() {
+  'use strict';
   this.renderIfNoDom_();
   return this.buttonEl_;
 };
@@ -419,6 +459,7 @@ goog.ui.Dialog.prototype.getButtonElement = function() {
  * @return {Element} The dialog element.
  */
 goog.ui.Dialog.prototype.getDialogElement = function() {
+  'use strict';
   this.renderIfNoDom_();
   return this.getElement();
 };
@@ -431,6 +472,7 @@ goog.ui.Dialog.prototype.getDialogElement = function() {
  * @override
  */
 goog.ui.Dialog.prototype.getBackgroundElement = function() {
+  'use strict';
   this.renderIfNoDom_();
   return goog.ui.Dialog.base(this, 'getBackgroundElement');
 };
@@ -441,6 +483,7 @@ goog.ui.Dialog.prototype.getBackgroundElement = function() {
  * @return {number} Background mask opacity.
  */
 goog.ui.Dialog.prototype.getBackgroundElementOpacity = function() {
+  'use strict';
   return this.backgroundElementOpacity_;
 };
 
@@ -450,6 +493,7 @@ goog.ui.Dialog.prototype.getBackgroundElementOpacity = function() {
  * @param {number} opacity Background mask opacity.
  */
 goog.ui.Dialog.prototype.setBackgroundElementOpacity = function(opacity) {
+  'use strict';
   this.backgroundElementOpacity_ = opacity;
 
   if (this.getElement()) {
@@ -471,6 +515,7 @@ goog.ui.Dialog.prototype.setBackgroundElementOpacity = function(opacity) {
  * @param {boolean} modal Whether the dialog is modal.
  */
 goog.ui.Dialog.prototype.setModal = function(modal) {
+  'use strict';
   if (modal != this.modal_) {
     this.setModalInternal_(modal);
   }
@@ -483,6 +528,7 @@ goog.ui.Dialog.prototype.setModal = function(modal) {
  * @private
  */
 goog.ui.Dialog.prototype.setModalInternal_ = function(modal) {
+  'use strict';
   this.modal_ = modal;
   if (this.isInDocument()) {
     var dom = this.getDomHelper();
@@ -508,6 +554,7 @@ goog.ui.Dialog.prototype.setModalInternal_ = function(modal) {
  * @return {boolean} modal Whether the dialog is modal.
  */
 goog.ui.Dialog.prototype.getModal = function() {
+  'use strict';
   return this.modal_;
 };
 
@@ -516,6 +563,7 @@ goog.ui.Dialog.prototype.getModal = function() {
  * @return {string} The CSS class name for the dialog element.
  */
 goog.ui.Dialog.prototype.getClass = function() {
+  'use strict';
   return this.getCssClass();
 };
 
@@ -525,6 +573,7 @@ goog.ui.Dialog.prototype.getClass = function() {
  * @param {boolean} draggable Whether the dialog can be dragged.
  */
 goog.ui.Dialog.prototype.setDraggable = function(draggable) {
+  'use strict';
   this.draggable_ = draggable;
   this.setDraggingEnabled_(draggable && this.isInDocument());
 };
@@ -538,6 +587,7 @@ goog.ui.Dialog.prototype.setDraggable = function(draggable) {
  * @protected
  */
 goog.ui.Dialog.prototype.createDragger = function() {
+  'use strict';
   return new goog.fx.Dragger(this.getElement(), this.titleEl_);
 };
 
@@ -546,6 +596,7 @@ goog.ui.Dialog.prototype.createDragger = function() {
  * @return {boolean} Whether the dialog is draggable.
  */
 goog.ui.Dialog.prototype.getDraggable = function() {
+  'use strict';
   return this.draggable_;
 };
 
@@ -556,6 +607,7 @@ goog.ui.Dialog.prototype.getDraggable = function() {
  * @private
  */
 goog.ui.Dialog.prototype.setDraggingEnabled_ = function(enabled) {
+  'use strict';
   // This isn't ideal, but the quickest and easiest way to append
   // title-draggable to the last class in the class_ string, then trim and
   // split the string into an array (in case the dialog was set up with
@@ -588,25 +640,31 @@ goog.ui.Dialog.prototype.setDraggingEnabled_ = function(enabled) {
 
 /** @override */
 goog.ui.Dialog.prototype.createDom = function() {
+  'use strict';
   goog.ui.Dialog.base(this, 'createDom');
   var element = this.getElement();
   goog.asserts.assert(element, 'getElement() returns null');
 
   var dom = this.getDomHelper();
+  // TODO(user): Fix this to use makeId instead of the dialog's id.
+  this.titleTextId_ = this.getId();
+  const contentElId = this.makeId('contentEl');
   this.titleEl_ = dom.createDom(
       goog.dom.TagName.DIV, goog.getCssName(this.class_, 'title'),
       this.titleTextEl_ = dom.createDom(
           goog.dom.TagName.SPAN, {
             'className': goog.getCssName(this.class_, 'title-text'),
-            'id': this.getId()
+            'id': this.titleTextId_
           },
           this.title_),
       this.titleCloseEl_ = dom.createDom(
           goog.dom.TagName.SPAN, goog.getCssName(this.class_, 'title-close'))),
   goog.dom.append(
       element, this.titleEl_,
-      this.contentEl_ = dom.createDom(
-          goog.dom.TagName.DIV, goog.getCssName(this.class_, 'content')),
+      this.contentEl_ = dom.createDom(goog.dom.TagName.DIV, {
+        'className': goog.getCssName(this.class_, 'content'),
+        'id': contentElId
+      }),
       this.buttonEl_ = dom.createDom(
           goog.dom.TagName.DIV, goog.getCssName(this.class_, 'buttons')));
 
@@ -619,7 +677,7 @@ goog.ui.Dialog.prototype.createDom = function() {
   goog.a11y.aria.setLabel(
       this.titleCloseEl_, goog.ui.Dialog.MSG_GOOG_UI_DIALOG_CLOSE_);
 
-  this.titleTextId_ = this.titleTextEl_.id;
+
   goog.a11y.aria.setRole(element, this.getPreferredAriaRole());
   goog.a11y.aria.setState(
       element, goog.a11y.aria.State.LABELLEDBY, this.titleTextId_ || '');
@@ -627,6 +685,10 @@ goog.ui.Dialog.prototype.createDom = function() {
   // the content element is initialized.
   if (this.content_) {
     goog.dom.safe.setInnerHtml(this.contentEl_, this.content_);
+    if (this.isAriaDescribedByContent_ && contentElId) {
+      goog.a11y.aria.setState(
+          element, goog.a11y.aria.State.DESCRIBEDBY, contentElId);
+    }
   }
   goog.style.setElementShown(this.titleCloseEl_, this.hasTitleCloseButton_);
 
@@ -641,6 +703,7 @@ goog.ui.Dialog.prototype.createDom = function() {
 
 /** @override */
 goog.ui.Dialog.prototype.decorateInternal = function(element) {
+  'use strict';
   goog.ui.Dialog.base(this, 'decorateInternal', element);
   var dialogElement = this.getElement();
   goog.asserts.assert(
@@ -729,6 +792,7 @@ goog.ui.Dialog.prototype.decorateInternal = function(element) {
 
 /** @override */
 goog.ui.Dialog.prototype.enterDocument = function() {
+  'use strict';
   goog.ui.Dialog.base(this, 'enterDocument');
 
   // Listen for keyboard events while the dialog is visible.
@@ -770,6 +834,7 @@ goog.ui.Dialog.prototype.enterDocument = function() {
 
 /** @override */
 goog.ui.Dialog.prototype.exitDocument = function() {
+  'use strict';
   if (this.isVisible()) {
     this.setVisible(false);
   }
@@ -790,6 +855,7 @@ goog.ui.Dialog.prototype.exitDocument = function() {
  * @override
  */
 goog.ui.Dialog.prototype.setVisible = function(visible) {
+  'use strict';
   if (visible == this.isVisible()) {
     return;
   }
@@ -808,6 +874,7 @@ goog.ui.Dialog.prototype.setVisible = function(visible) {
  * @suppress {deprecated} AFTER_SHOW is deprecated earlier in this file.
  */
 goog.ui.Dialog.prototype.onShow = function() {
+  'use strict';
   goog.ui.Dialog.base(this, 'onShow');
   this.dispatchEvent(goog.ui.Dialog.EventType.AFTER_SHOW);
 };
@@ -818,6 +885,7 @@ goog.ui.Dialog.prototype.onShow = function() {
  * @suppress {deprecated} AFTER_HIDE is deprecated earlier in this file.
  */
 goog.ui.Dialog.prototype.onHide = function() {
+  'use strict';
   goog.ui.Dialog.base(this, 'onHide');
   this.dispatchEvent(goog.ui.Dialog.EventType.AFTER_HIDE);
   if (this.disposeOnHide_) {
@@ -832,6 +900,7 @@ goog.ui.Dialog.prototype.onHide = function() {
  * @private
  */
 goog.ui.Dialog.prototype.setDraggerLimits_ = function(e) {
+  'use strict';
   var doc = this.getDomHelper().getDocument();
   var win = goog.dom.getWindow(doc) || window;
 
@@ -844,10 +913,9 @@ goog.ui.Dialog.prototype.setDraggerLimits_ = function(e) {
   var dialogSize = goog.style.getSize(this.getElement());
   if (goog.style.getComputedPosition(this.getElement()) == 'fixed') {
     // Ensure position:fixed dialogs can't be dragged beyond the viewport.
-    this.dragger_.setLimits(
-        new goog.math.Rect(
-            0, 0, Math.max(0, viewSize.width - dialogSize.width),
-            Math.max(0, viewSize.height - dialogSize.height)));
+    this.dragger_.setLimits(new goog.math.Rect(
+        0, 0, Math.max(0, viewSize.width - dialogSize.width),
+        Math.max(0, viewSize.height - dialogSize.height)));
   } else {
     this.dragger_.setLimits(
         new goog.math.Rect(0, 0, w - dialogSize.width, h - dialogSize.height));
@@ -861,6 +929,7 @@ goog.ui.Dialog.prototype.setDraggerLimits_ = function(e) {
  * @private
  */
 goog.ui.Dialog.prototype.onTitleCloseClick_ = function(e) {
+  'use strict';
   this.handleTitleClose_();
 };
 
@@ -872,6 +941,7 @@ goog.ui.Dialog.prototype.onTitleCloseClick_ = function(e) {
  * @private
  */
 goog.ui.Dialog.prototype.handleTitleClose_ = function() {
+  'use strict';
   if (!this.hasTitleCloseButton_) {
     return;
   }
@@ -894,6 +964,7 @@ goog.ui.Dialog.prototype.handleTitleClose_ = function() {
  * @return {boolean} Whether this dialog has a title close button.
  */
 goog.ui.Dialog.prototype.getHasTitleCloseButton = function() {
+  'use strict';
   return this.hasTitleCloseButton_;
 };
 
@@ -905,6 +976,7 @@ goog.ui.Dialog.prototype.getHasTitleCloseButton = function() {
  * @param {boolean} b Whether this dialog should have a title close button.
  */
 goog.ui.Dialog.prototype.setHasTitleCloseButton = function(b) {
+  'use strict';
   this.hasTitleCloseButton_ = b;
   if (this.titleCloseEl_) {
     goog.style.setElementShown(this.titleCloseEl_, this.hasTitleCloseButton_);
@@ -916,6 +988,7 @@ goog.ui.Dialog.prototype.setHasTitleCloseButton = function(b) {
  * @return {boolean} Whether the escape key should close this dialog.
  */
 goog.ui.Dialog.prototype.isEscapeToCancel = function() {
+  'use strict';
   return this.escapeToCancel_;
 };
 
@@ -924,6 +997,7 @@ goog.ui.Dialog.prototype.isEscapeToCancel = function() {
  * @param {boolean} b Whether the escape key should close this dialog.
  */
 goog.ui.Dialog.prototype.setEscapeToCancel = function(b) {
+  'use strict';
   this.escapeToCancel_ = b;
 };
 
@@ -935,6 +1009,7 @@ goog.ui.Dialog.prototype.setEscapeToCancel = function(b) {
  *     hidden.
  */
 goog.ui.Dialog.prototype.setDisposeOnHide = function(b) {
+  'use strict';
   this.disposeOnHide_ = b;
 };
 
@@ -943,12 +1018,14 @@ goog.ui.Dialog.prototype.setDisposeOnHide = function(b) {
  * @return {boolean} Whether the dialog should be disposed when it is hidden.
  */
 goog.ui.Dialog.prototype.getDisposeOnHide = function() {
+  'use strict';
   return this.disposeOnHide_;
 };
 
 
 /** @override */
 goog.ui.Dialog.prototype.disposeInternal = function() {
+  'use strict';
   this.titleCloseEl_ = null;
   this.buttonEl_ = null;
   goog.ui.Dialog.base(this, 'disposeInternal');
@@ -961,6 +1038,7 @@ goog.ui.Dialog.prototype.disposeInternal = function() {
  * @param {goog.ui.Dialog.ButtonSet?} buttons The button set to use.
  */
 goog.ui.Dialog.prototype.setButtonSet = function(buttons) {
+  'use strict';
   this.buttons_ = buttons;
   if (this.buttonEl_) {
     if (this.buttons_) {
@@ -978,6 +1056,7 @@ goog.ui.Dialog.prototype.setButtonSet = function(buttons) {
  * @return {goog.ui.Dialog.ButtonSet?} The button set being used.
  */
 goog.ui.Dialog.prototype.getButtonSet = function() {
+  'use strict';
   return this.buttons_;
 };
 
@@ -989,6 +1068,7 @@ goog.ui.Dialog.prototype.getButtonSet = function() {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.Dialog.prototype.onButtonClick_ = function(e) {
+  'use strict';
   var button = this.findParentButton_(/** @type {Element} */ (e.target));
   if (button && !button.disabled) {
     var key = button.name;
@@ -1009,6 +1089,7 @@ goog.ui.Dialog.prototype.onButtonClick_ = function(e) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.Dialog.prototype.findParentButton_ = function(element) {
+  'use strict';
   var el = element;
   while (el != null && el != this.buttonEl_) {
     if (el.tagName == goog.dom.TagName.BUTTON) {
@@ -1029,6 +1110,7 @@ goog.ui.Dialog.prototype.findParentButton_ = function(element) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.Dialog.prototype.onKey_ = function(e) {
+  'use strict';
   var close = false;
   var hasHandler = false;
   var buttonSet = this.getButtonSet();
@@ -1048,10 +1130,9 @@ goog.ui.Dialog.prototype.onKey_ = function(e) {
         hasHandler = true;
 
         var caption = buttonSet.get(cancel);
-        close = this.dispatchEvent(
-            new goog.ui.Dialog.Event(
-                cancel,
-                /** @type {Element|null|string} */ (caption)));
+        close = this.dispatchEvent(new goog.ui.Dialog.Event(
+            cancel,
+            /** @type {Element|null|string} */ (caption)));
       } else if (!isSpecialFormElement) {
         close = true;
       }
@@ -1122,6 +1203,7 @@ goog.ui.Dialog.prototype.onKey_ = function(e) {
  * @extends {goog.events.Event}
  */
 goog.ui.Dialog.Event = function(key, caption) {
+  'use strict';
   /** @const {!goog.ui.Dialog.EventType} */
   this.type = goog.ui.Dialog.EventType.SELECT;
   /** @const */
@@ -1177,6 +1259,7 @@ goog.ui.Dialog.EventType = {
  * @extends {goog.ui.Map}
  */
 goog.ui.Dialog.ButtonSet = function(opt_domHelper) {
+  'use strict';
   goog.ui.Map.call(this);
   // TODO(attila):  Refactor ButtonSet to extend goog.ui.Component?
   this.dom_ = opt_domHelper || goog.dom.getDomHelper();
@@ -1211,11 +1294,11 @@ goog.ui.Dialog.ButtonSet = function(opt_domHelper) {
   this.cancelButton_ = null;
 };
 goog.inherits(goog.ui.Dialog.ButtonSet, goog.ui.Map);
-goog.tagUnsealableClass(goog.ui.Dialog.ButtonSet);
 
 
 /** @override */
 goog.ui.Dialog.ButtonSet.prototype.clear = function() {
+  'use strict';
   goog.ui.Map.prototype.clear.call(this);
   this.defaultButton_ = this.cancelButton_ = null;
 };
@@ -1238,6 +1321,7 @@ goog.ui.Dialog.ButtonSet.prototype.clear = function() {
  */
 goog.ui.Dialog.ButtonSet.prototype.set = function(
     key, caption, opt_isDefault, opt_isCancel) {
+  'use strict';
   goog.ui.Map.prototype.set.call(this, key, caption);
 
   if (opt_isDefault) {
@@ -1265,6 +1349,7 @@ goog.ui.Dialog.ButtonSet.prototype.set = function(
  */
 goog.ui.Dialog.ButtonSet.prototype.addButton = function(
     button, opt_isDefault, opt_isCancel) {
+  'use strict';
   return this.set(button.key, button.caption, opt_isDefault, opt_isCancel);
 };
 
@@ -1274,6 +1359,7 @@ goog.ui.Dialog.ButtonSet.prototype.addButton = function(
  * @param {Element} el Container.
  */
 goog.ui.Dialog.ButtonSet.prototype.attachToElement = function(el) {
+  'use strict';
   this.element_ = el;
   this.render();
 };
@@ -1283,10 +1369,12 @@ goog.ui.Dialog.ButtonSet.prototype.attachToElement = function(el) {
  * Renders the button set inside its container element.
  */
 goog.ui.Dialog.ButtonSet.prototype.render = function() {
+  'use strict';
   if (this.element_) {
     goog.dom.safe.setInnerHtml(this.element_, goog.html.SafeHtml.EMPTY);
     var domHelper = goog.dom.getDomHelper(this.element_);
     this.forEach(function(caption, key) {
+      'use strict';
       var button =
           domHelper.createDom(goog.dom.TagName.BUTTON, {'name': key}, caption);
       if (key == this.defaultButton_) {
@@ -1308,6 +1396,7 @@ goog.ui.Dialog.ButtonSet.prototype.render = function() {
  * @param {Element} element The element to decorate; should contain buttons.
  */
 goog.ui.Dialog.ButtonSet.prototype.decorate = function(element) {
+  'use strict';
   if (!element || element.nodeType != goog.dom.NodeType.ELEMENT) {
     return;
   }
@@ -1338,6 +1427,7 @@ goog.ui.Dialog.ButtonSet.prototype.decorate = function(element) {
  * TODO(user): Remove after refactoring to goog.ui.Component.
  */
 goog.ui.Dialog.ButtonSet.prototype.getElement = function() {
+  'use strict';
   return this.element_;
 };
 
@@ -1348,6 +1438,7 @@ goog.ui.Dialog.ButtonSet.prototype.getElement = function() {
  * TODO(user): Remove after refactoring to goog.ui.Component.
  */
 goog.ui.Dialog.ButtonSet.prototype.getDomHelper = function() {
+  'use strict';
   return this.dom_;
 };
 
@@ -1357,6 +1448,7 @@ goog.ui.Dialog.ButtonSet.prototype.getDomHelper = function() {
  * @param {?string} key The default button.
  */
 goog.ui.Dialog.ButtonSet.prototype.setDefault = function(key) {
+  'use strict';
   this.defaultButton_ = key;
 };
 
@@ -1366,6 +1458,7 @@ goog.ui.Dialog.ButtonSet.prototype.setDefault = function(key) {
  * @return {?string} The default button.
  */
 goog.ui.Dialog.ButtonSet.prototype.getDefault = function() {
+  'use strict';
   return this.defaultButton_;
 };
 
@@ -1375,6 +1468,7 @@ goog.ui.Dialog.ButtonSet.prototype.getDefault = function() {
  * @param {?string} key The cancel button.
  */
 goog.ui.Dialog.ButtonSet.prototype.setCancel = function(key) {
+  'use strict';
   this.cancelButton_ = key;
 };
 
@@ -1384,6 +1478,7 @@ goog.ui.Dialog.ButtonSet.prototype.setCancel = function(key) {
  * @return {?string} The cancel button.
  */
 goog.ui.Dialog.ButtonSet.prototype.getCancel = function() {
+  'use strict';
   return this.cancelButton_;
 };
 
@@ -1394,6 +1489,7 @@ goog.ui.Dialog.ButtonSet.prototype.getCancel = function() {
  * @return {Element} The button, if found else null.
  */
 goog.ui.Dialog.ButtonSet.prototype.getButton = function(key) {
+  'use strict';
   var buttons = this.getAllButtons();
   for (var i = 0, nextButton; nextButton = buttons[i]; i++) {
     if (nextButton.name == key || nextButton.id == key) {
@@ -1409,6 +1505,7 @@ goog.ui.Dialog.ButtonSet.prototype.getButton = function(key) {
  * @return {!IArrayLike<!Element>} A live NodeList of the buttons.
  */
 goog.ui.Dialog.ButtonSet.prototype.getAllButtons = function() {
+  'use strict';
   return goog.dom.getElementsByTagName(
       goog.dom.TagName.BUTTON, goog.asserts.assert(this.element_));
 };
@@ -1422,6 +1519,7 @@ goog.ui.Dialog.ButtonSet.prototype.getAllButtons = function() {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.Dialog.ButtonSet.prototype.setButtonEnabled = function(key, enabled) {
+  'use strict';
   var button = this.getButton(key);
   if (button) {
     button.disabled = !enabled;
@@ -1435,6 +1533,7 @@ goog.ui.Dialog.ButtonSet.prototype.setButtonEnabled = function(key, enabled) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.Dialog.ButtonSet.prototype.setAllButtonsEnabled = function(enabled) {
+  'use strict';
   var allButtons = this.getAllButtons();
   for (var i = 0, button; button = allButtons[i]; i++) {
     button.disabled = !enabled;
@@ -1557,6 +1656,7 @@ goog.ui.Dialog.ButtonSet.DefaultButtons = {
  * @return {!goog.ui.Dialog.ButtonSet} The created ButtonSet.
  */
 goog.ui.Dialog.ButtonSet.createOk = function() {
+  'use strict';
   return new goog.ui.Dialog.ButtonSet().addButton(
       goog.ui.Dialog.ButtonSet.DefaultButtons.OK, true, true);
 };
@@ -1567,6 +1667,7 @@ goog.ui.Dialog.ButtonSet.createOk = function() {
  * @return {!goog.ui.Dialog.ButtonSet} The created ButtonSet.
  */
 goog.ui.Dialog.ButtonSet.createOkCancel = function() {
+  'use strict';
   return new goog.ui.Dialog.ButtonSet()
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK, true)
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.CANCEL, false, true);
@@ -1578,6 +1679,7 @@ goog.ui.Dialog.ButtonSet.createOkCancel = function() {
  * @return {!goog.ui.Dialog.ButtonSet} The created ButtonSet.
  */
 goog.ui.Dialog.ButtonSet.createYesNo = function() {
+  'use strict';
   return new goog.ui.Dialog.ButtonSet()
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.YES, true)
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.NO, false, true);
@@ -1589,6 +1691,7 @@ goog.ui.Dialog.ButtonSet.createYesNo = function() {
  * @return {!goog.ui.Dialog.ButtonSet} The created ButtonSet.
  */
 goog.ui.Dialog.ButtonSet.createYesNoCancel = function() {
+  'use strict';
   return new goog.ui.Dialog.ButtonSet()
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.YES)
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.NO, true)
@@ -1602,6 +1705,7 @@ goog.ui.Dialog.ButtonSet.createYesNoCancel = function() {
  * @return {!goog.ui.Dialog.ButtonSet} The created ButtonSet.
  */
 goog.ui.Dialog.ButtonSet.createContinueSaveCancel = function() {
+  'use strict';
   return new goog.ui.Dialog.ButtonSet()
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.CONTINUE)
       .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.SAVE)
@@ -1611,23 +1715,24 @@ goog.ui.Dialog.ButtonSet.createContinueSaveCancel = function() {
 
 // TODO(user): These shared instances should be phased out.
 (function() {
-  if (typeof document != 'undefined') {
-    /** @deprecated Use goog.ui.Dialog.ButtonSet#createOk. */
-    goog.ui.Dialog.ButtonSet.OK = goog.ui.Dialog.ButtonSet.createOk();
+'use strict';
+if (typeof document != 'undefined') {
+  /** @deprecated Use goog.ui.Dialog.ButtonSet#createOk. */
+  goog.ui.Dialog.ButtonSet.OK = goog.ui.Dialog.ButtonSet.createOk();
 
-    /** @deprecated Use goog.ui.Dialog.ButtonSet#createOkCancel. */
-    goog.ui.Dialog.ButtonSet.OK_CANCEL =
-        goog.ui.Dialog.ButtonSet.createOkCancel();
+  /** @deprecated Use goog.ui.Dialog.ButtonSet#createOkCancel. */
+  goog.ui.Dialog.ButtonSet.OK_CANCEL =
+      goog.ui.Dialog.ButtonSet.createOkCancel();
 
-    /** @deprecated Use goog.ui.Dialog.ButtonSet#createYesNo. */
-    goog.ui.Dialog.ButtonSet.YES_NO = goog.ui.Dialog.ButtonSet.createYesNo();
+  /** @deprecated Use goog.ui.Dialog.ButtonSet#createYesNo. */
+  goog.ui.Dialog.ButtonSet.YES_NO = goog.ui.Dialog.ButtonSet.createYesNo();
 
-    /** @deprecated Use goog.ui.Dialog.ButtonSet#createYesNoCancel. */
-    goog.ui.Dialog.ButtonSet.YES_NO_CANCEL =
-        goog.ui.Dialog.ButtonSet.createYesNoCancel();
+  /** @deprecated Use goog.ui.Dialog.ButtonSet#createYesNoCancel. */
+  goog.ui.Dialog.ButtonSet.YES_NO_CANCEL =
+      goog.ui.Dialog.ButtonSet.createYesNoCancel();
 
-    /** @deprecated Use goog.ui.Dialog.ButtonSet#createContinueSaveCancel. */
-    goog.ui.Dialog.ButtonSet.CONTINUE_SAVE_CANCEL =
-        goog.ui.Dialog.ButtonSet.createContinueSaveCancel();
-  }
+  /** @deprecated Use goog.ui.Dialog.ButtonSet#createContinueSaveCancel. */
+  goog.ui.Dialog.ButtonSet.CONTINUE_SAVE_CANCEL =
+      goog.ui.Dialog.ButtonSet.createContinueSaveCancel();
+}
 })();

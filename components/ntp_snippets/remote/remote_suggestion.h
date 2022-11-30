@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/ntp_snippets/content_suggestion.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace ntp_snippets {
 
@@ -34,13 +30,15 @@ class RemoteSuggestion {
 
   enum class ContentType { UNKNOWN, VIDEO };
 
+  RemoteSuggestion(const RemoteSuggestion&) = delete;
+  RemoteSuggestion& operator=(const RemoteSuggestion&) = delete;
   ~RemoteSuggestion();
 
   // Creates a RemoteSuggestion from a dictionary, as returned by Chrome Content
   // Suggestions. Returns a null pointer if the dictionary doesn't correspond to
   // a valid suggestion.
   static std::unique_ptr<RemoteSuggestion>
-  CreateFromContentSuggestionsDictionary(const base::DictionaryValue& dict,
+  CreateFromContentSuggestionsDictionary(const base::Value::Dict& dict,
                                          int remote_category_id,
                                          const base::Time& fetch_date);
 
@@ -80,7 +78,7 @@ class RemoteSuggestion {
   // directly.
   const GURL& salient_image_url() const { return salient_image_url_; }
 
-  const base::Optional<uint32_t>& optional_image_dominant_color() const {
+  const absl::optional<uint32_t>& optional_image_dominant_color() const {
     return image_dominant_color_;
   }
 
@@ -140,7 +138,7 @@ class RemoteSuggestion {
 
   GURL salient_image_url_;
   // Encoded as an Android @ColorInt.
-  base::Optional<uint32_t> image_dominant_color_;
+  absl::optional<uint32_t> image_dominant_color_;
 
   std::string snippet_;
   base::Time publish_date_;
@@ -157,8 +155,6 @@ class RemoteSuggestion {
 
   // The time when the remote suggestion was fetched from the server.
   base::Time fetch_date_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestion);
 };
 
 }  // namespace ntp_snippets

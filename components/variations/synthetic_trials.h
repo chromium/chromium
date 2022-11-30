@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,28 +10,77 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "components/variations/active_field_trials.h"
 
 namespace variations {
 
+// Specifies when UMA reports should start being annotated with a synthetic
+// field trial.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.variations
+enum class SyntheticTrialAnnotationMode {
+  // Start annotating UMA reports with this trial only after the next log opens.
+  // The UMA report that will be generated from the log that is open at the time
+  // of registration will not be annotated with this trial.
+  kNextLog,
+  // Start annotating UMA reports with this trial immediately, including the one
+  // that will be generated from the log that is open at the time of
+  // registration.
+  kCurrentLog,
+};
+
 // A Field Trial and its selected group, which represent a particular
-// Chrome configuration state. For example, the trial name could map to
-// a preference name, and the group name could map to a preference value.
-struct SyntheticTrialGroup {
+// Chrome configuration state. In other words, synthetic trials allow reporting
+// some client state as if it were a field trial. For example, the trial name
+// could map to a preference name, and the group name could map to a preference
+// value.
+class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
  public:
-  SyntheticTrialGroup(uint32_t trial, uint32_t group);
-  ~SyntheticTrialGroup();
+  SyntheticTrialGroup(base::StringPiece trial_name,
+                      base::StringPiece group_name,
+                      SyntheticTrialAnnotationMode annotation_mode);
 
-  ActiveGroupId id;
-  base::TimeTicks start_time;
+  SyntheticTrialGroup(const SyntheticTrialGroup&);
 
-  // If this is an external experiment.
-  bool is_external = false;
+  ~SyntheticTrialGroup() = default;
+
+  base::FieldTrial::ActiveGroup active_group() const { return active_group_; }
+  base::StringPiece trial_name() const { return active_group_.trial_name; }
+  base::StringPiece group_name() const { return active_group_.group_name; }
+  ActiveGroupId id() const { return id_; }
+  base::TimeTicks start_time() const { return start_time_; }
+  SyntheticTrialAnnotationMode annotation_mode() const {
+    return annotation_mode_;
+  }
+  bool is_external() const { return is_external_; }
+
+  void SetTrialName(base::StringPiece trial_name);
+  void SetGroupName(base::StringPiece group_name);
+  void SetStartTime(base::TimeTicks start_time) { start_time_ = start_time; }
+  void SetAnnotationMode(SyntheticTrialAnnotationMode annotation_mode) {
+    annotation_mode_ = annotation_mode;
+  }
+  void SetIsExternal(bool is_external) { is_external_ = is_external; }
+
+ private:
+  base::FieldTrial::ActiveGroup active_group_;
+  ActiveGroupId id_;
+  base::TimeTicks start_time_;
+
+  // Determines when UMA reports should start being annotated with this trial
+  // group.
+  SyntheticTrialAnnotationMode annotation_mode_;
+
+  // Whether this is an external experiment. I.e., if this synthetic trial was
+  // registered through SyntheticTrialRegistry::RegisterExternalExperiments().
+  // An example of an external experiment would be the Chrome updater randomly
+  // assigning which binary to update to.
+  bool is_external_ = false;
 };
 
 // Interface class to observe changes to synthetic trials in MetricsService.
-class SyntheticTrialObserver {
+class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialObserver {
  public:
   // Called when the list of synthetic field trial groups has changed.
   virtual void OnSyntheticTrialsChanged(

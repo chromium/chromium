@@ -1,11 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/resource_request_body.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/memory/scoped_refptr.h"
+#include "services/network/public/cpp/data_element.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/url_request.mojom-shared.h"
 
 namespace network {
 

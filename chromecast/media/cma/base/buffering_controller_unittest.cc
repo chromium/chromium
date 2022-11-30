@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromecast/media/cma/base/buffering_state.h"
@@ -47,14 +46,12 @@ class BufferingControllerTest : public testing::Test {
 };
 
 BufferingControllerTest::BufferingControllerTest() {
-  base::TimeDelta low_level_threshold(
-      base::TimeDelta::FromMilliseconds(2000));
-  base::TimeDelta high_level_threshold(
-      base::TimeDelta::FromMilliseconds(6000));
+  base::TimeDelta low_level_threshold(base::Milliseconds(2000));
+  base::TimeDelta high_level_threshold(base::Milliseconds(6000));
 
-  d1_ = low_level_threshold - base::TimeDelta::FromMilliseconds(50);
+  d1_ = low_level_threshold - base::Milliseconds(50);
   d2_ = (low_level_threshold + high_level_threshold) / 2;
-  d3_ = high_level_threshold + base::TimeDelta::FromMilliseconds(50);
+  d3_ = high_level_threshold + base::Milliseconds(50);
 
   scoped_refptr<BufferingConfig> buffering_config(
       new BufferingConfig(low_level_threshold, high_level_threshold));

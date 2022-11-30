@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,50 +10,50 @@
 #include "build/build_config.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_policy.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 class UtilitySandboxedProcessLauncherDelegate
     : public SandboxedProcessLauncherDelegate {
  public:
-  UtilitySandboxedProcessLauncherDelegate(
-      sandbox::policy::SandboxType sandbox_type,
-      const base::EnvironmentMap& env,
-      const base::CommandLine& cmd_line);
+  UtilitySandboxedProcessLauncherDelegate(sandbox::mojom::Sandbox sandbox_type,
+                                          const base::EnvironmentMap& env,
+                                          const base::CommandLine& cmd_line);
   ~UtilitySandboxedProcessLauncherDelegate() override;
 
-  sandbox::policy::SandboxType GetSandboxType() override;
+  sandbox::mojom::Sandbox GetSandboxType() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+  std::string GetSandboxTag() override;
   bool GetAppContainerId(std::string* appcontainer_id) override;
   bool DisableDefaultPolicy() override;
   bool ShouldLaunchElevated() override;
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   ZygoteHandle GetZygote() override;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::EnvironmentMap GetEnvironment() override;
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
  private:
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::EnvironmentMap env_;
-#endif  // OS_POSIX
-  sandbox::policy::SandboxType sandbox_type_;
+#endif  // BUILDFLAG(IS_POSIX)
+  sandbox::mojom::Sandbox sandbox_type_;
   base::CommandLine cmd_line_;
 };
 }  // namespace content

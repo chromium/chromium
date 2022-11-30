@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,13 @@ public class PaymentRequestBlobUrlTest {
     @MediumTest
     @Feature({"Payments"})
     public void test() throws TimeoutException {
+        // Trigger the Blob URL load, and wait for it to finish.
         mPaymentRequestTestRule.openPageAndClickNode("buy");
         mPaymentRequestTestRule.assertWaitForPageScaleFactorMatch(2);
+
+        // Trigger the PaymentRequest, which should be rejected.
+        mPaymentRequestTestRule.executeJavaScriptAndWaitForResult("triggerPaymentRequest();");
+
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"PaymentRequest is not defined"});
     }

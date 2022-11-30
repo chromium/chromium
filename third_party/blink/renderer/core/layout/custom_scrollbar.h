@@ -26,11 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CUSTOM_SCROLLBAR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CUSTOM_SCROLLBAR_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -52,9 +53,9 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
                                             ScrollbarOrientation,
                                             Element* style_source);
 
-  IntRect ButtonRect(ScrollbarPart) const;
-  IntRect TrackRect(int start_length, int end_length) const;
-  IntRect TrackPieceRectWithMargins(ScrollbarPart, const IntRect&) const;
+  gfx::Rect ButtonRect(ScrollbarPart) const;
+  gfx::Rect TrackRect(int start_length, int end_length) const;
+  gfx::Rect TrackPieceRectWithMargins(ScrollbarPart, const gfx::Rect&) const;
 
   int MinimumThumbLength() const;
 
@@ -65,10 +66,12 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
   void PositionScrollbarParts();
 
   LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) {
-    return parts_.at(part_type);
+    auto it = parts_.find(part_type);
+    return it != parts_.end() ? it->value : nullptr;
   }
   const LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) const {
-    return parts_.at(part_type);
+    auto it = parts_.find(part_type);
+    return it != parts_.end() ? it->value : nullptr;
   }
 
   void InvalidateDisplayItemClientsOfScrollbarParts();
@@ -96,7 +99,7 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
       PseudoId);
   void UpdateScrollbarPart(ScrollbarPart);
 
-  HashMap<ScrollbarPart, LayoutCustomScrollbarPart*> parts_;
+  HeapHashMap<ScrollbarPart, Member<LayoutCustomScrollbarPart>> parts_;
   bool needs_position_scrollbar_parts_ = true;
 };
 

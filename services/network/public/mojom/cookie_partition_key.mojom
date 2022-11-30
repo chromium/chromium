@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
+
+struct CookiePartitionKey {
+  SchemefulSite site;
+
+  // Indicates the CookiePartitionKey is a placeholder indicating that the
+  // cookie should be partitioned, but it was created in the renderer so we
+  // don't know what its partition key is yet.
+  bool from_script = false;
+
+  mojo_base.mojom.UnguessableToken? nonce;
+};
+
+struct CookiePartitionKeyCollection {
+  bool contains_all_partitions = false;
+  array<CookiePartitionKey> keys;
+};
+

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,8 +100,7 @@ CyclicFrameGenerator::ChangeInfoList CyclicFrameGenerator::GetChangeList(
   for (int i = last_identifier_frame_ + 1; i <= frame_id; ++i) {
     ChangeType type =
         (i % frames_in_cycle == 0) ? ChangeType::FULL : ChangeType::CURSOR;
-    base::TimeTicks timestamp = started_time_ + i * cursor_blink_period_;
-    result.emplace_back(type, timestamp);
+    result.emplace_back(type, started_time_ + i * cursor_blink_period_);
   }
   last_identifier_frame_ = frame_id;
 

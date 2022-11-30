@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,12 @@ class AudioDecoderPipelineNode : public CmaBackend::Decoder::Delegate,
  public:
   explicit AudioDecoderPipelineNode(
       CmaBackend::AudioDecoder* delegated_decoder);
+  AudioDecoderPipelineNode(const AudioDecoderPipelineNode& other) = delete;
+
   ~AudioDecoderPipelineNode() override;
+
+  AudioDecoderPipelineNode& operator=(const AudioDecoderPipelineNode& other) =
+      delete;
 
   // CmaBackend::AudioDecoder overrides.
   void SetDelegate(CmaBackend::Decoder::Delegate* delegate) override;
@@ -44,8 +49,9 @@ class AudioDecoderPipelineNode : public CmaBackend::Decoder::Delegate,
   bool SetVolume(float multiplier) override;
   CmaBackend::AudioDecoder::RenderingDelay GetRenderingDelay() override;
   void GetStatistics(CmaBackend::AudioDecoder::Statistics* statistics) override;
+  CmaBackend::AudioDecoder::AudioTrackTimestamp GetAudioTrackTimestamp() override;
+  int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override;
 
  protected:
   inline void CheckCalledOnCorrectThread() const {

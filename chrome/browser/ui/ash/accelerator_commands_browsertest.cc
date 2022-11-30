@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,6 +44,12 @@ class AcceleratorCommandsFullscreenBrowserTest
  public:
   AcceleratorCommandsFullscreenBrowserTest()
       : initial_show_state_(GetParam()) {}
+
+  AcceleratorCommandsFullscreenBrowserTest(
+      const AcceleratorCommandsFullscreenBrowserTest&) = delete;
+  AcceleratorCommandsFullscreenBrowserTest& operator=(
+      const AcceleratorCommandsFullscreenBrowserTest&) = delete;
+
   virtual ~AcceleratorCommandsFullscreenBrowserTest() {}
 
   // Sets |widget|'s show state to |initial_show_state_|.
@@ -67,8 +72,6 @@ class AcceleratorCommandsFullscreenBrowserTest
 
  private:
   ui::WindowShowState initial_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorCommandsFullscreenBrowserTest);
 };
 
 // Test that toggling window fullscreen works properly.
@@ -179,6 +182,12 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
  public:
   AcceleratorCommandsPlatformAppFullscreenBrowserTest()
       : initial_show_state_(GetParam()) {}
+
+  AcceleratorCommandsPlatformAppFullscreenBrowserTest(
+      const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
+  AcceleratorCommandsPlatformAppFullscreenBrowserTest& operator=(
+      const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
+
   virtual ~AcceleratorCommandsPlatformAppFullscreenBrowserTest() {}
 
   // Sets |app_window|'s show state to |initial_show_state_|.
@@ -199,8 +208,6 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
 
  private:
   ui::WindowShowState initial_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorCommandsPlatformAppFullscreenBrowserTest);
 };
 
 // Test the behavior of platform apps when ToggleFullscreen() is called.

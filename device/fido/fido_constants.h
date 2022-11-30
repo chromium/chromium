@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,6 +73,8 @@ constexpr size_t kP256X962Length = 1 /* type byte */ + 32 /* x */ + 32 /* y */;
 
 constexpr uint32_t kMinPinLength = 4;
 
+constexpr uint32_t kDefaultMaxTemplateFriendlyName = 64;
+
 // CTAP protocol device response code, as specified in
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticator-api
 enum class CtapDeviceResponseCode : uint8_t {
@@ -90,7 +92,7 @@ enum class CtapDeviceResponseCode : uint8_t {
   kCtap2ErrMissingParameter = 0x14,
   kCtap2ErrLimitExceeded = 0x15,
   kCtap2ErrUnsupportedExtension = 0x16,
-  kCtap2ErrTooManyElements = 0x17,
+  kCtap2ErrFpDatabaseFull = 0x17,
   kCtap2ErrLargeBlobStorageFull = 0x18,
   kCtap2ErrCredentialExcluded = 0x19,
   kCtap2ErrProcesssing = 0x21,
@@ -148,7 +150,7 @@ constexpr auto kCtapResponseCodeList = base::MakeFixedFlatSet<uint8_t>({
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrMissingParameter),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrLimitExceeded),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension),
-    static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrTooManyElements),
+    static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrFpDatabaseFull),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrLargeBlobStorageFull),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrCredentialExcluded),
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrProcesssing),
@@ -336,7 +338,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPlatformDeviceMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEntityIdMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEntityNameMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDisplayNameMapKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kIconUrlMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialTypeMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialAlgorithmMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialManagementMapKey[];
@@ -349,6 +350,7 @@ extern const char kDefaultCredProtectKey[];
 extern const char kEnterpriseAttestationKey[];
 extern const char kLargeBlobsKey[];
 extern const char kAlwaysUvKey[];
+extern const char kMakeCredUvNotRqdKey[];
 
 // HID transport specific constants.
 constexpr uint32_t kHidBroadcastChannel = 0xffffffff;
@@ -447,6 +449,20 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCtap2_1Version[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionHmacSecret[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredProtect[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredBlob[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionMinPINLength[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionDevicePublicKey[];
+
+// Map keys for the device public key extension.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kDevicePublicKeyAttestationKey[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kDevicePublicKeyAttestationFormatsKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyAAGUIDKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyDPKKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyScopeKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyNonceKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyEPKey[];
 
 // Maximum number of seconds the browser waits for Bluetooth authenticator to
 // send packets that advertises that the device is in pairing mode before
@@ -479,6 +495,23 @@ enum class CredProtectRequest : uint8_t {
 enum class PINUVAuthProtocol : uint8_t {
   kV1 = 1,
   kV2 = 2,
+};
+
+// FidoRequestType enumerates the top-level, user-visable types of requests.
+// These correspond to the create() and get() calls at the Web Platform layer.
+enum class FidoRequestType : uint8_t {
+  kMakeCredential = 0,
+  kGetAssertion = 1,
+};
+
+// CableRequestType enumerates the types of connections that caBLE cares about.
+// Unlike `FidoRequestType`, caBLE cares about the difference between making
+// a discoverable and non-discoverable credential because this is flagged in
+// the QR code.
+enum class CableRequestType {
+  kMakeCredential,
+  kDiscoverableMakeCredential,
+  kGetAssertion,
 };
 
 }  // namespace device

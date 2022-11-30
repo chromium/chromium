@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_MOJO_ANDROID_OVERLAY_H_
-#define MEDIA_BASE_MOJO_ANDROID_OVERLAY_H_
+#ifndef MEDIA_MOJO_CLIENTS_MOJO_ANDROID_OVERLAY_H_
+#define MEDIA_MOJO_CLIENTS_MOJO_ANDROID_OVERLAY_H_
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/base/android/android_overlay.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
@@ -23,6 +22,9 @@ class MojoAndroidOverlay : public AndroidOverlay,
       mojo::PendingRemote<mojom::AndroidOverlayProvider> pending_provider,
       AndroidOverlayConfig config,
       const base::UnguessableToken& routing_token);
+
+  MojoAndroidOverlay(const MojoAndroidOverlay&) = delete;
+  MojoAndroidOverlay& operator=(const MojoAndroidOverlay&) = delete;
 
   ~MojoAndroidOverlay() override;
 
@@ -45,10 +47,8 @@ class MojoAndroidOverlay : public AndroidOverlay,
 
   // Have we received OnSurfaceReady yet?
   bool received_surface_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAndroidOverlay);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_MOJO_ANDROID_OVERLAY_H_
+#endif  // MEDIA_MOJO_CLIENTS_MOJO_ANDROID_OVERLAY_H_

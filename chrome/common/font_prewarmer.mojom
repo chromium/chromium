@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+// Used to prewarm fonts. This interface is exposed per renderer. Note
+// that prewarming actually happens in a background thread.
+interface FontPrewarmer {
+  // Prewarms fonts previously returned via RenderFrameFontFamilyAccessor.
+  PrewarmFonts(array<string> primary_font_names,
+               array<string> fallback_font_names);
+};
+
+// Used to request the fonts used to generate first contenful paint. This is
+// exposed per RenderFrame and is an associated interface.
+interface RenderFrameFontFamilyAccessor {
+  // Requests the set of fonts used to generate first contentful paint.
+  GetFontFamilyNames() => (array<string> primary_font_names,
+                           array<string> fallback_font_names);
+};

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("feedback") {
   sources = [
+    "features.cc",
+    "features.h",
     "feedback_common.cc",
     "feedback_common.h",
     "feedback_data.cc",
@@ -18,6 +20,7 @@ static_library("feedback") {
     "feedback_uploader.h",
     "feedback_util.cc",
     "feedback_util.h",
+    "pii_types.h",
     "redaction_tool.cc",
     "redaction_tool.h",
     "system_logs/system_logs_fetcher.cc",
@@ -28,8 +31,9 @@ static_library("feedback") {
     "tracing_manager.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//build:chromeos_buildflags",
     "//components/feedback/proto",
     "//components/keyed_service/core",
@@ -64,6 +68,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_prefs",
+    "//components/variations:test_support",
     "//components/variations/net",
     "//net:test_support",
     "//services/network:test_support",

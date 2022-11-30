@@ -1,9 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/surfaces/surface_allocation_group.h"
 
+#include <utility>
+
+#include "base/ranges/algorithm.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 
@@ -38,7 +41,7 @@ void SurfaceAllocationGroup::RegisterSurface(Surface* surface) {
 }
 
 void SurfaceAllocationGroup::UnregisterSurface(Surface* surface) {
-  auto it = std::find(surfaces_.begin(), surfaces_.end(), surface);
+  auto it = base::ranges::find(surfaces_, surface);
   DCHECK(it != surfaces_.end());
   surfaces_.erase(it);
   MaybeMarkForDestruction();
@@ -174,6 +177,18 @@ void SurfaceAllocationGroup::WillNotRegisterNewSurfaces() {
   for (const auto& entry : embedders) {
     entry.first->OnActivationDependencyResolved(entry.second, this);
   }
+}
+
+void SurfaceAllocationGroup::AckLastestActiveUnAckedFrame() {
+  if (!last_active_reference_.is_valid())
+    return;
+  SurfaceRange range(last_active_reference_);
+  auto* lastest_active = FindLatestActiveSurfaceInRange(range);
+  // If this group is blocking another Surface, and our latest frame is unacked,
+  // we send the Ack now. This will allow frame production to continue for our
+  // client, leading to this group unblocking the other.
+  if (lastest_active && lastest_active->HasUnackedActiveFrame())
+    lastest_active->SendAckToClient();
 }
 
 std::vector<Surface*>::const_iterator

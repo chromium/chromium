@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,17 +15,15 @@ namespace autofill {
 
 ChromeStorageImpl::ChromeStorageImpl(WriteablePrefStore* store)
     : backing_store_(store) {
-  scoped_observer_.Add(backing_store_);
+  scoped_observation_.Observe(backing_store_);
 }
 
 ChromeStorageImpl::~ChromeStorageImpl() {}
 
 void ChromeStorageImpl::Put(const std::string& key, std::string* data) {
   DCHECK(data);
-  std::unique_ptr<std::string> owned_data(data);
-  backing_store_->SetValue(
-      key, std::make_unique<base::Value>(std::move(*owned_data)),
-      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  backing_store_->SetValue(key, base::Value(*data),
+                           WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 
 void ChromeStorageImpl::Get(const std::string& key,
@@ -52,7 +50,8 @@ void ChromeStorageImpl::DoGet(const std::string& key,
 
   const base::Value* value = NULL;
   std::unique_ptr<std::string> data(new std::string);
-  if (backing_store_->GetValue(key, &value) && value->GetAsString(data.get())) {
+  if (backing_store_->GetValue(key, &value) && value->is_string()) {
+    *data = value->GetString();
     data_ready(true, key, data.release());
   } else if (FallbackDataStore::Get(key, data.get())) {
     data_ready(true, key, data.release());

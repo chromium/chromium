@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,17 @@
 #include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
 
 namespace ui {
+
+namespace {
+
+std::string GetProcessName() {
+  char name[ZX_MAX_NAME_LEN] = {};
+  zx_status_t status =
+      zx::process::self()->get_property(ZX_PROP_NAME, name, sizeof(name));
+  return (status == ZX_OK) ? std::string(name) : "";
+}
+
+}  // namespace
 
 SysmemBufferManager::SysmemBufferManager(
     ScenicSurfaceFactory* scenic_surface_factory)
@@ -26,12 +37,19 @@ void SysmemBufferManager::Initialize(
   DCHECK(collections_.empty());
   DCHECK(!allocator_);
   allocator_.Bind(std::move(allocator));
+  allocator_->SetDebugClientInfo(GetProcessName() + "-SysmemBufferManager",
+                                 base::GetCurrentProcId());
 }
 
 void SysmemBufferManager::Shutdown() {
   base::AutoLock auto_lock(collections_lock_);
   DCHECK(collections_.empty());
   allocator_ = nullptr;
+}
+
+fuchsia::sysmem::Allocator_Sync* SysmemBufferManager::GetAllocator() {
+  DCHECK(allocator_);
+  return allocator_.get();
 }
 
 scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
@@ -44,7 +62,6 @@ scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
   if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
                           /*token_channel=*/zx::channel(), size, format, usage,
                           vk_device, min_buffer_count,
-                          /*force_protected=*/false,
                           /*register_with_image_pipe=*/false)) {
     return nullptr;
   }
@@ -61,13 +78,11 @@ SysmemBufferManager::ImportSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     size_t min_buffer_count,
-    bool force_protected,
     bool register_with_image_pipe) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>(id);
   if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
                           std::move(token), size, format, usage, vk_device,
-                          min_buffer_count, force_protected,
-                          register_with_image_pipe)) {
+                          min_buffer_count, register_with_image_pipe)) {
     return nullptr;
   }
   RegisterCollection(result.get());
@@ -81,7 +96,7 @@ void SysmemBufferManager::RegisterCollection(
     collections_[collection->id()] = collection;
   }
 
-  collection->SetOnDeletedCallback(
+  collection->AddOnDeletedCallback(
       base::BindOnce(&SysmemBufferManager::OnCollectionDestroyed,
                      base::Unretained(this), collection->id()));
 }

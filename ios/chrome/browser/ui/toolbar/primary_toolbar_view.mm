@@ -1,11 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
@@ -15,12 +16,12 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ui/gfx/ios/uikit_util.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,10 +71,8 @@
 #pragma mark** Buttons in the trailing stack view. **
 // Button to display the share menu, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarButton* shareButton;
-// Button to manage the bookmarks of this page, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* bookmarkButton;
 // Button to display the tools menu, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarToolsMenuButton* toolsMenuButton;
+@property(nonatomic, strong, readwrite) ToolbarButton* toolsMenuButton;
 
 // Button to cancel the edit of the location bar, redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIButton* cancelButton;
@@ -111,7 +110,6 @@
 @synthesize trailingStackView = _trailingStackView;
 @synthesize trailingStackViewButtons = _trailingStackViewButtons;
 @synthesize shareButton = _shareButton;
-@synthesize bookmarkButton = _bookmarkButton;
 @synthesize toolsMenuButton = _toolsMenuButton;
 @synthesize cancelButton = _cancelButton;
 @synthesize collapsedToolbarButton = _collapsedToolbarButton;
@@ -149,6 +147,10 @@
   [self setUpSeparator];
 
   [self setUpConstraints];
+}
+
+- (void)setHidden:(BOOL)hidden {
+  [super setHidden:hidden];
 }
 
 - (void)addFakeOmniboxTarget {
@@ -252,7 +254,6 @@
 // Sets the trailing stack view.
 - (void)setUpTrailingStackView {
   self.shareButton = [self.buttonFactory shareButton];
-  self.bookmarkButton = [self.buttonFactory bookmarkButton];
   self.tabGridButton = [self.buttonFactory tabGridButton];
   self.toolsMenuButton = [self.buttonFactory toolsMenuButton];
 
@@ -341,11 +342,15 @@
                        constant:kContractedLocationBarHorizontalMargin],
   ]];
 
+  CGFloat leadingMargin = IsOmniboxActionsEnabled()
+                              ? kExpandedLocationBarLeadingMarginRefreshedPopup
+                              : kExpandedLocationBarHorizontalMargin;
+
   // Constraints for contractedNoMarginConstraints.
   [self.contractedNoMarginConstraints addObjectsFromArray:@[
     [self.locationBarContainer.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:kExpandedLocationBarHorizontalMargin],
+                       constant:leadingMargin],
     [self.locationBarContainer.trailingAnchor
         constraintEqualToAnchor:safeArea.trailingAnchor
                        constant:-kExpandedLocationBarHorizontalMargin]
@@ -356,7 +361,7 @@
         constraintEqualToAnchor:self.cancelButton.leadingAnchor],
     [self.locationBarContainer.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:kExpandedLocationBarHorizontalMargin]
+                       constant:leadingMargin]
   ]];
 
   // Trailing StackView constraints.

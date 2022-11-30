@@ -1,0 +1,20 @@
+<html>
+  <head>
+      <script>
+          function go() {
+            document.getElementById("dialog").removeAttribute("hidden");
+          }
+      </script>
+  </head>
+  <body>
+
+    <div id="dialog" role="dialog" aria-labelledby="dialog-label" hidden>
+      <h2 id="dialog-label">Dialog title</h2>
+      <p>Dialog content:</p>
+      <div>
+        <input type="text" id="dialog-focus-element">
+      </div>
+    </div>
+
+  </body>
+</html>

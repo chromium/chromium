@@ -1,16 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 
-#include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,16 +46,23 @@
         self.accessibilityLabel ? self.accessibilityLabel : self.text;
   }
 
+  if (self.textFont) {
+    cell.textLabel.font = self.textFont;
+  } else {
+    cell.textLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  }
+
   // Decide cell.textLabel.textColor in order:
   //   1. this.textColor;
   //   2. styler.cellTitleColor;
-  //   3. UIColor.cr_labelColor.
+  //   3. [UIColor colorNamed:kTextPrimaryColor].
   if (self.textColor) {
     cell.textLabel.textColor = self.textColor;
   } else if (styler.cellTitleColor) {
     cell.textLabel.textColor = styler.cellTitleColor;
   } else {
-    cell.textLabel.textColor = UIColor.cr_labelColor;
+    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   cell.textLabel.textAlignment =
       self.textAlignment ? self.textAlignment : NSTextAlignmentNatural;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/glib/glib_signal.h"
@@ -21,6 +20,10 @@ namespace remoting {
 class ContinueWindowGtk : public ContinueWindow {
  public:
   ContinueWindowGtk();
+
+  ContinueWindowGtk(const ContinueWindowGtk&) = delete;
+  ContinueWindowGtk& operator=(const ContinueWindowGtk&) = delete;
+
   ~ContinueWindowGtk() override;
 
  protected:
@@ -34,8 +37,6 @@ class ContinueWindowGtk : public ContinueWindow {
   CHROMEG_CALLBACK_1(ContinueWindowGtk, void, OnResponse, GtkDialog*, int);
 
   GtkWidget* continue_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowGtk);
 };
 
 ContinueWindowGtk::ContinueWindowGtk()

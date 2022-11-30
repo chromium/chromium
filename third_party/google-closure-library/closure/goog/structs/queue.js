@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Datastructure: Queue.
@@ -56,6 +48,7 @@ goog.require('goog.array');
  * @template T
  */
 goog.structs.Queue = function() {
+  'use strict';
   /**
    * @private {!Array<T>} Front stack. Items are pop()'ed from here.
    */
@@ -74,7 +67,8 @@ goog.structs.Queue = function() {
  * @private
  */
 goog.structs.Queue.prototype.maybeFlip_ = function() {
-  if (goog.array.isEmpty(this.front_)) {
+  'use strict';
+  if (this.front_.length === 0) {
     this.front_ = this.back_;
     this.front_.reverse();
     this.back_ = [];
@@ -87,6 +81,7 @@ goog.structs.Queue.prototype.maybeFlip_ = function() {
  * @param {T} element The element to be added to the queue.
  */
 goog.structs.Queue.prototype.enqueue = function(element) {
+  'use strict';
   this.back_.push(element);
 };
 
@@ -97,6 +92,7 @@ goog.structs.Queue.prototype.enqueue = function(element) {
  *     queue is empty.
  */
 goog.structs.Queue.prototype.dequeue = function() {
+  'use strict';
   this.maybeFlip_();
   return this.front_.pop();
 };
@@ -108,6 +104,7 @@ goog.structs.Queue.prototype.dequeue = function() {
  *     queue is empty.
  */
 goog.structs.Queue.prototype.peek = function() {
+  'use strict';
   this.maybeFlip_();
   return goog.array.peek(this.front_);
 };
@@ -118,6 +115,7 @@ goog.structs.Queue.prototype.peek = function() {
  * @return {number} The number of elements in this queue.
  */
 goog.structs.Queue.prototype.getCount = function() {
+  'use strict';
   return this.front_.length + this.back_.length;
 };
 
@@ -127,7 +125,8 @@ goog.structs.Queue.prototype.getCount = function() {
  * @return {boolean} true if this queue contains no elements.
  */
 goog.structs.Queue.prototype.isEmpty = function() {
-  return goog.array.isEmpty(this.front_) && goog.array.isEmpty(this.back_);
+  'use strict';
+  return this.front_.length === 0 && this.back_.length === 0;
 };
 
 
@@ -135,6 +134,7 @@ goog.structs.Queue.prototype.isEmpty = function() {
  * Removes all elements from the queue.
  */
 goog.structs.Queue.prototype.clear = function() {
+  'use strict';
   this.front_ = [];
   this.back_ = [];
 };
@@ -146,6 +146,7 @@ goog.structs.Queue.prototype.clear = function() {
  * @return {boolean} Whether the object is in the queue.
  */
 goog.structs.Queue.prototype.contains = function(obj) {
+  'use strict';
   return goog.array.contains(this.front_, obj) ||
       goog.array.contains(this.back_, obj);
 };
@@ -157,6 +158,7 @@ goog.structs.Queue.prototype.contains = function(obj) {
  * @return {boolean} True if an element was removed.
  */
 goog.structs.Queue.prototype.remove = function(obj) {
+  'use strict';
   return goog.array.removeLast(this.front_, obj) ||
       goog.array.remove(this.back_, obj);
 };
@@ -167,6 +169,7 @@ goog.structs.Queue.prototype.remove = function(obj) {
  * @return {!Array<T>} An array of the values in the queue.
  */
 goog.structs.Queue.prototype.getValues = function() {
+  'use strict';
   var res = [];
   // Add the front array in reverse, then the back array.
   for (var i = this.front_.length - 1; i >= 0; --i) {

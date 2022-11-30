@@ -1,0 +1,6 @@
+WebView focusable scrollable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"State" viewIdResName:"state_label" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++EditText hint:"State" canOpenPopUp clickable editable disabled focusable focused inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, COLLAPSE] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300", hint="State"]
+++ListView viewIdResName:"state_list" clickable CollectionInfo:[rows=2, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
+++++View text:"Alabama" viewIdResName:"state1" clickable focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
+++++View text:"Alaska" viewIdResName:"state2" clickable focusable selected CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

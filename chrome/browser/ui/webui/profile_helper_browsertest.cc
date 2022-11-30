@@ -1,22 +1,29 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
@@ -26,24 +33,10 @@
 
 namespace {
 
-// An observer that returns back to test code after a new profile is
-// initialized.
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-
 Profile* CreateProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      std::u16string(), std::string());
-  run_loop.Run();
-  return profile_manager->GetProfileByPath(new_path);
+  return profiles::testing::CreateProfileSync(profile_manager, new_path);
 }
 
 // An observer returns back to test code after brower window associated with
@@ -70,7 +63,7 @@ class ExpectBrowserActivationForProfile : public BrowserListObserver {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::RunLoop loop_;
 };
 
@@ -95,33 +88,7 @@ class BrowserAddedObserver : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
-  base::RunLoop run_loop_;
-};
-
-class ProfileDeletionObserver : public ProfileAttributesStorage::Observer {
- public:
-  ProfileDeletionObserver() {
-    g_browser_process->profile_manager()
-        ->GetProfileAttributesStorage()
-        .AddObserver(this);
-  }
-
-  ~ProfileDeletionObserver() override {
-    g_browser_process->profile_manager()
-        ->GetProfileAttributesStorage()
-        .RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // ProfileAttributesStorage::Observer:
-  void OnProfileWasRemoved(const base::FilePath& profile_path,
-                           const std::u16string& profile_name) override {
-    run_loop_.Quit();
-  }
-
- private:
+  raw_ptr<Browser> browser_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -135,7 +102,7 @@ class ProfileHelperTest : public InProcessBrowserTest {
   void SetUp() override {
     // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
     // See crbug.com/1073451.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     AppShortcutManager::SuppressShortcutsForTesting();
 #endif
     InProcessBrowserTest::SetUp();
@@ -172,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
 // the same issue as BrowserWindowCocoa::Activate(), and execute call
 // BrowserList::SetLastActive() directly. Not sure if it is a bug or desired
 // behaviour.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Switch to original browser. Only LastActive should change.
   activation_observer =
       std::make_unique<ExpectBrowserActivationForProfile>(original_profile);
@@ -183,6 +150,8 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
 #endif
 }
 
+// The solo profile on Lacros is the main profile which can never be deleted.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
@@ -209,6 +178,7 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   EXPECT_NE(original_browser_profile_path, new_browser->profile()->GetPath());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   content::TestWebUI web_ui;
@@ -223,16 +193,36 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
 
   Profile* additional_profile = CreateProfile();
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The original browser belongs to the main profile which can't be deleted.
+  // Make the additional profile active and close the original browser.
+  profiles::SwitchToProfile(additional_profile->GetPath(), false);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(2U, browser_list->size());
+  CloseBrowserSynchronously(original_browser);
+  EXPECT_EQ(1u, browser_list->size());
+  EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
+  // Ensure the last active browser and the`LastUsedProfile` is set.
+  browser_list->get(0)->window()->Show();
+  EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfileDir(),
+            additional_profile->GetPath());
+
+  // Original browser now belongs to the additional profile.
+  original_browser = browser_list->get(0);
+#endif
 
   // Original browser will be closed, and browser with the new profile created.
   webui::DeleteProfileAtPath(original_browser->profile()->GetPath(),
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
   ui_test_utils::WaitForBrowserToClose(original_browser);
-
-  base::RunLoop().RunUntilIdle();
+  content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, browser_list->size());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_TRUE(browser_list->get(0)->profile()->IsMainProfile());
+#else
   EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
+#endif
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
 
@@ -281,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
     observer.Wait();
   } else {
     content::BrowsingDataRemoverCompletionInhibitor inhibitor(
-        content::BrowserContext::GetBrowsingDataRemover(additional_profile));
+        additional_profile->GetBrowsingDataRemover());
     webui::DeleteProfileAtPath(additional_profile_dir,
                                ProfileMetrics::DELETE_PROFILE_SETTINGS);
     inhibitor.BlockUntilNearCompletion();
@@ -292,11 +282,19 @@ IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
   EXPECT_TRUE(base::Contains(*browser_list, original_browser));
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
-  // TODO(crbug.com/1191455): Once RemoveProfile()/NukeProfileFromDisk() aren't
-  // flaky anymore, EXPECT_FALSE(PathExists(additional_profile_dir)).
+  if (destroy_profile) {
+    // Check that NukeProfileFromDisk() works correctly.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::Time start = base::Time::Now();
+    while (base::PathExists(additional_profile_dir) &&
+           base::Time::Now() - start < TestTimeouts::action_timeout()) {
+      base::RunLoop().RunUntilIdle();
+    }
+    EXPECT_FALSE(base::PathExists(additional_profile_dir));
+  }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
                          ProfileHelperTestWithDestroyProfile,
                          testing::Values(false));
@@ -304,4 +302,4 @@ INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
 INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
                          ProfileHelperTestWithDestroyProfile,
                          testing::Bool());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

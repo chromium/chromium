@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,9 @@ extern const char kEnableSnippets[];
 // Whether the list of NTP snippets is visible in UI. This is set to false when
 // the user toggles the list off.
 extern const char kArticlesListVisible[];
+
+// Choose how video previews will automatically play.
+extern const char kVideoPreviewsType[];
 
 void RegisterFeedSharedProfilePrefs(PrefRegistrySimple* registry);
 }  // namespace prefs

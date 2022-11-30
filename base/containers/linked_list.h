@@ -1,11 +1,12 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_CONTAINERS_LINKED_LIST_H_
 #define BASE_CONTAINERS_LINKED_LIST_H_
 
-#include "base/check_op.h"
+#include "base/base_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 // Simple LinkedList type. (See the Q&A section to understand how this
 // differs from std::list).
@@ -107,8 +108,11 @@ class BASE_EXPORT LinkNodeBase {
   LinkNodeBase* next_base() const { return next_; }
 
  private:
-  LinkNodeBase* previous_ = nullptr;
-  LinkNodeBase* next_ = nullptr;
+  // `previous_` and `next_` are not a raw_ptr<...> for performance reasons:
+  // on-stack pointer + a large number of non-PA pointees through WeakLinkNode +
+  // based on analysis of sampling profiler data and tab_search:top100:2020.
+  RAW_PTR_EXCLUSION LinkNodeBase* previous_ = nullptr;
+  RAW_PTR_EXCLUSION LinkNodeBase* next_ = nullptr;
 };
 
 }  // namespace internal

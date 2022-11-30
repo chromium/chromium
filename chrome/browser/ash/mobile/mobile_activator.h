@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,15 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_handler_callbacks.h"
-// TODO(https://crbug.com/1164001): restore network_state.h as forward
-// declaration after it is moved to ash.
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace base {
 class DictionaryValue;
@@ -27,6 +25,7 @@ class DictionaryValue;
 
 namespace ash {
 
+class NetworkState;
 class TestMobileActivator;
 
 // This class performs mobile plan activation process.
@@ -115,6 +114,9 @@ class MobileActivator : public NetworkStateHandlerObserver {
     virtual ~Observer() {}
   };
 
+  MobileActivator(const MobileActivator&) = delete;
+  MobileActivator& operator=(const MobileActivator&) = delete;
+
   static MobileActivator* GetInstance();
 
   // Add/remove activation process observer.
@@ -136,9 +138,7 @@ class MobileActivator : public NetworkStateHandlerObserver {
 
  protected:
   // For unit tests.
-  void set_state_for_test(PlanActivationState state) {
-    state_ = state;
-  }
+  void set_state_for_test(PlanActivationState state) { state_ = state; }
   virtual const NetworkState* GetNetworkState(const std::string& service_path);
   virtual const NetworkState* GetDefaultNetwork();
 
@@ -153,6 +153,7 @@ class MobileActivator : public NetworkStateHandlerObserver {
   // NetworkStateHandlerObserver overrides.
   void DefaultNetworkChanged(const NetworkState* network) override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
+  void OnShuttingDown() override;
 
   void GetPropertiesFailure(const std::string& error_name,
                             std::unique_ptr<base::DictionaryValue> error_data);
@@ -254,10 +255,11 @@ class MobileActivator : public NetworkStateHandlerObserver {
   // Cellular plan payment time.
   base::Time cellular_plan_payment_time_;
 
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   base::ObserverList<Observer>::Unchecked observers_;
   base::WeakPtrFactory<MobileActivator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MobileActivator);
 };
 
 }  // namespace ash

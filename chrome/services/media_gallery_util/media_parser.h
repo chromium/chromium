@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@
 class MediaParser : public chrome::mojom::MediaParser {
  public:
   MediaParser();
+
+  MediaParser(const MediaParser&) = delete;
+  MediaParser& operator=(const MediaParser&) = delete;
+
   ~MediaParser() override;
 
  private:
@@ -29,8 +33,6 @@ class MediaParser : public chrome::mojom::MediaParser {
                       base::File file,
                       CheckMediaFileCallback callback) override;
   void GetCpuInfo(GetCpuInfoCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaParser);
 };
 
 #endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_MEDIA_PARSER_H_

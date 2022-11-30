@@ -1,10 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/mock_device_factory.h"
 
 #include <utility>
+
+#include "base/memory/raw_ptr.h"
 
 namespace {
 
@@ -37,13 +39,12 @@ class RawPointerVideoCaptureDevice : public media::VideoCaptureDevice {
   void TakePhoto(TakePhotoCallback callback) override {
     device_->TakePhoto(std::move(callback));
   }
-  void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override {
-    device_->OnUtilizationReport(frame_feedback_id, feedback);
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) override {
+    device_->OnUtilizationReport(feedback);
   }
 
  private:
-  media::VideoCaptureDevice* device_;
+  raw_ptr<media::VideoCaptureDevice> device_;
 };
 
 }  // anonymous namespace
@@ -64,12 +65,15 @@ void MockDeviceFactory::RemoveAllDevices() {
   devices_.clear();
 }
 
-std::unique_ptr<media::VideoCaptureDevice> MockDeviceFactory::CreateDevice(
+VideoCaptureErrorOrDevice MockDeviceFactory::CreateDevice(
     const media::VideoCaptureDeviceDescriptor& device_descriptor) {
   if (devices_.find(device_descriptor) == devices_.end())
-    return nullptr;
-  return std::make_unique<RawPointerVideoCaptureDevice>(
-      devices_[device_descriptor]);
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+  return VideoCaptureErrorOrDevice(
+      std::make_unique<RawPointerVideoCaptureDevice>(
+          devices_[device_descriptor]));
 }
 
 void MockDeviceFactory::GetDevicesInfo(GetDevicesInfoCallback callback) {

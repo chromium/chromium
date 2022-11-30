@@ -1,11 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/webdata/common/webdata_export.h"
 
 namespace sql {
@@ -24,6 +24,10 @@ class WEBDATA_EXPORT WebDatabaseTable {
 
   // The object is not ready for use until Init() has been called.
   WebDatabaseTable();
+
+  WebDatabaseTable(const WebDatabaseTable&) = delete;
+  WebDatabaseTable& operator=(const WebDatabaseTable&) = delete;
+
   virtual ~WebDatabaseTable();
 
   // Retrieves the TypeKey for the concrete subtype.
@@ -58,11 +62,8 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // class exists. Since lifetime of WebDatabaseTable objects slightly
   // exceeds that of WebDatabase, they should not be used in
   // ~WebDatabaseTable.
-  sql::Database* db_;
-  sql::MetaTable* meta_table_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseTable);
+  raw_ptr<sql::Database> db_;
+  raw_ptr<sql::MetaTable> meta_table_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_

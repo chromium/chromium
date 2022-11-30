@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/shell/browser/shell_prefs.h"
 
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,6 +21,10 @@ namespace {
 class PrefsTestBrowserContext : public content::TestBrowserContext {
  public:
   PrefsTestBrowserContext() {}
+
+  PrefsTestBrowserContext(const PrefsTestBrowserContext&) = delete;
+  PrefsTestBrowserContext& operator=(const PrefsTestBrowserContext&) = delete;
+
   ~PrefsTestBrowserContext() override {}
 
   // content::BrowserContext:
@@ -30,9 +33,6 @@ class PrefsTestBrowserContext : public content::TestBrowserContext {
     base::PathService::Get(extensions::DIR_TEST_DATA, &path);
     return path.AppendASCII("shell_prefs");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefsTestBrowserContext);
 };
 
 class ShellPrefsTest : public testing::Test {
@@ -66,12 +66,10 @@ TEST_F(ShellPrefsTest, CreateUserPrefService) {
 
   // Some basic extension preferences are registered.
   EXPECT_TRUE(service->FindPreference("extensions.settings"));
-  EXPECT_TRUE(service->FindPreference("extensions.toolbarsize"));
   EXPECT_FALSE(service->FindPreference("should.not.exist"));
 
   // User prefs from the file have been read correctly.
   EXPECT_EQ("1.2.3.4", service->GetString("extensions.last_chrome_version"));
-  EXPECT_EQ(123, service->GetInteger("extensions.toolbarsize"));
 
   // The user prefs system has been initialized.
   EXPECT_EQ(service.get(), user_prefs::UserPrefs::Get(&browser_context_));

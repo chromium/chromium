@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,24 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
+#include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace account_manager {
 
@@ -31,16 +35,24 @@ namespace {
 
 using RemoteMinVersions = crosapi::mojom::AccountManager::MethodMinVersions;
 
-// UMA histogram name.
+// UMA histogram names.
 const char kAccountAdditionResultStatus[] =
     "AccountManager.AccountAdditionResultStatus";
+const char kGetAccountsMojoStatus[] =
+    "AccountManager.FacadeGetAccountsMojoStatus";
+const char kMojoDisconnectionsAccountManagerRemote[] =
+    "AccountManager.MojoDisconnections.AccountManagerRemote";
+const char kMojoDisconnectionsAccountManagerObserverReceiver[] =
+    "AccountManager.MojoDisconnections.AccountManagerObserverReceiver";
+const char kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote[] =
+    "AccountManager.MojoDisconnections.AccessTokenFetcherRemote";
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
     std::vector<crosapi::mojom::AccountPtr> mojo_accounts) {
   std::vector<Account> accounts;
   for (const auto& mojo_account : mojo_accounts) {
-    base::Optional<Account> maybe_account = FromMojoAccount(mojo_account);
+    absl::optional<Account> maybe_account = FromMojoAccount(mojo_account);
     if (!maybe_account) {
       // Skip accounts we couldn't unmarshal. No logging, as it would produce
       // a lot of noise.
@@ -54,7 +66,7 @@ void UnmarshalAccounts(
 void UnmarshalPersistentError(
     base::OnceCallback<void(const GoogleServiceAuthError&)> callback,
     crosapi::mojom::GoogleServiceAuthErrorPtr mojo_error) {
-  base::Optional<GoogleServiceAuthError> maybe_error =
+  absl::optional<GoogleServiceAuthError> maybe_error =
       FromMojoGoogleServiceAuthError(mojo_error);
   if (!maybe_error) {
     // Couldn't unmarshal GoogleServiceAuthError, report the account as not
@@ -67,6 +79,60 @@ void UnmarshalPersistentError(
   std::move(callback).Run(maybe_error.value());
 }
 
+// Returns whether an account should be available in ARC after it's added
+// in-session.
+bool GetIsAvailableInArcBySource(
+    AccountManagerFacade::AccountAdditionSource source) {
+  switch (source) {
+    // Accounts added from Ash should be available in ARC.
+    case AccountManagerFacade::AccountAdditionSource::kSettingsAddAccountButton:
+    case AccountManagerFacade::AccountAdditionSource::
+        kAccountManagerMigrationWelcomeScreen:
+    case AccountManagerFacade::AccountAdditionSource::kArc:
+    case AccountManagerFacade::AccountAdditionSource::kOnboarding:
+      return true;
+    // Accounts added from the browser should not be available in ARC.
+    case AccountManagerFacade::AccountAdditionSource::kChromeProfileCreation:
+    case AccountManagerFacade::AccountAdditionSource::kOgbAddAccount:
+    case AccountManagerFacade::AccountAdditionSource::
+        kAvatarBubbleTurnOnSyncAddAccount:
+    case AccountManagerFacade::AccountAdditionSource::
+        kChromeExtensionAddAccount:
+    case AccountManagerFacade::AccountAdditionSource::
+        kChromeSyncPromoAddAccount:
+    case AccountManagerFacade::AccountAdditionSource::
+        kChromeSettingsTurnOnSyncButton:
+      return false;
+    // These are reauthentication cases. ARC visibility shouldn't change for
+    // reauthentication.
+    case AccountManagerFacade::AccountAdditionSource::kContentAreaReauth:
+    case AccountManagerFacade::AccountAdditionSource::
+        kSettingsReauthAccountButton:
+    case AccountManagerFacade::AccountAdditionSource::
+        kAvatarBubbleReauthAccountButton:
+    case AccountManagerFacade::AccountAdditionSource::kChromeExtensionReauth:
+    case AccountManagerFacade::AccountAdditionSource::kChromeSyncPromoReauth:
+    case AccountManagerFacade::AccountAdditionSource::
+        kChromeSettingsReauthAccountButton:
+      NOTREACHED();
+      return false;
+    // Unused enums that cannot be deleted.
+    case AccountManagerFacade::AccountAdditionSource::kPrintPreviewDialogUnused:
+      NOTREACHED();
+      return false;
+  }
+}
+
+// Error logs the Mojo connection stats when `event` occurs.
+void LogMojoConnectionStats(const std::string& event,
+                            int num_remote_disconnections,
+                            int num_receiver_disconnections) {
+  LOG(ERROR) << base::StringPrintf(
+      "%s. Number of remote disconnections: %d, "
+      "number of receiver disconnections: %d",
+      event.c_str(), num_remote_disconnections, num_receiver_disconnections);
+}
+
 }  // namespace
 
 // Fetches access tokens over the Mojo remote to `AccountManager`.
@@ -75,17 +141,20 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
  public:
   AccessTokenFetcher(AccountManagerFacadeImpl* account_manager_facade_impl,
                      const account_manager::AccountKey& account_key,
-                     const std::string& oauth_consumer_name,
                      OAuth2AccessTokenConsumer* consumer)
       : OAuth2AccessTokenFetcher(consumer),
         account_manager_facade_impl_(account_manager_facade_impl),
         account_key_(account_key),
-        oauth_consumer_name_(oauth_consumer_name) {}
+        oauth_consumer_name_(consumer->GetConsumerName()) {}
 
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
   AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
 
-  ~AccessTokenFetcher() override = default;
+  ~AccessTokenFetcher() override {
+    base::UmaHistogramCounts100(
+        kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote,
+        num_remote_disconnections_);
+  }
 
   // Returns a closure, which marks `this` instance as ready for use. This
   // happens when `AccountManagerFacadeImpl`'s initialization sequence is
@@ -96,10 +165,11 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
   }
 
   // Returns a closure which handles Mojo connection errors tied to Account
-  // Manager.
-  base::OnceClosure MojoDisconnectionClosure() {
-    return base::BindOnce(&AccessTokenFetcher::OnMojoError,
-                          weak_factory_.GetWeakPtr());
+  // Manager remote.
+  base::OnceClosure AccountManagerRemoteDisconnectionClosure() {
+    return base::BindOnce(
+        &AccessTokenFetcher::OnAccountManagerRemoteDisconnection,
+        weak_factory_.GetWeakPtr());
   }
 
   // OAuth2AccessTokenFetcher override:
@@ -142,13 +212,16 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
                            weak_factory_.GetWeakPtr()));
 
     if (!is_remote_connected) {
-      OnMojoError();
+      OnAccountManagerRemoteDisconnection();
     }
   }
 
   void FetchAccessToken(
       mojo::PendingRemote<crosapi::mojom::AccessTokenFetcher> pending_remote) {
     access_token_fetcher_.Bind(std::move(pending_remote));
+    access_token_fetcher_.set_disconnect_handler(base::BindOnce(
+        &AccessTokenFetcher::OnAccessTokenFetcherRemoteDisconnection,
+        weak_factory_.GetWeakPtr()));
     access_token_fetcher_->Start(
         scopes_, base::BindOnce(&AccessTokenFetcher::OnAccessTokenFetchComplete,
                                 weak_factory_.GetWeakPtr()));
@@ -159,7 +232,7 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
     is_request_pending_ = false;
 
     if (result->is_error()) {
-      base::Optional<GoogleServiceAuthError> maybe_error =
+      absl::optional<GoogleServiceAuthError> maybe_error =
           account_manager::FromMojoGoogleServiceAuthError(result->get_error());
 
       if (!maybe_error.has_value()) {
@@ -182,21 +255,32 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
             .build());
   }
 
-  void OnMojoError() {
+  void OnAccountManagerRemoteDisconnection() {
+    FailPendingRequestWithServiceError("Mojo pipe disconnected");
+  }
+
+  void OnAccessTokenFetcherRemoteDisconnection() {
+    num_remote_disconnections_++;
+    LOG(ERROR) << "Access token fetcher remote disconnected";
+    FailPendingRequestWithServiceError("Access token Mojo pipe disconnected");
+  }
+
+  void FailPendingRequestWithServiceError(const std::string& message) {
     if (!is_request_pending_)
       return;
 
     CancelRequest();
-    FireOnGetTokenFailure(
-        GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+    FireOnGetTokenFailure(GoogleServiceAuthError::FromServiceError(message));
   }
 
-  AccountManagerFacadeImpl* const account_manager_facade_impl_;
+  const raw_ptr<AccountManagerFacadeImpl> account_manager_facade_impl_;
   const account_manager::AccountKey account_key_;
   const std::string oauth_consumer_name_;
 
   bool are_token_requests_allowed_ = false;
   bool is_request_pending_ = false;
+  // Number of Mojo pipe disconnections seen by `access_token_fetcher_`.
+  int num_remote_disconnections_ = 0;
   std::vector<std::string> scopes_;
   mojo::Remote<crosapi::mojom::AccessTokenFetcher> access_token_fetcher_;
 
@@ -206,9 +290,11 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
 AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
     uint32_t remote_version,
+    AccountManager* account_manager_for_tests,
     base::OnceClosure init_finished)
     : remote_version_(remote_version),
-      account_manager_remote_(std::move(account_manager_remote)) {
+      account_manager_remote_(std::move(account_manager_remote)),
+      account_manager_for_tests_(account_manager_for_tests) {
   DCHECK(init_finished);
   initialization_callbacks_.emplace_back(std::move(init_finished));
 
@@ -222,13 +308,19 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
   }
 
   account_manager_remote_.set_disconnect_handler(base::BindOnce(
-      &AccountManagerFacadeImpl::OnMojoError, weak_factory_.GetWeakPtr()));
+      &AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected,
+      weak_factory_.GetWeakPtr()));
   account_manager_remote_->AddObserver(
       base::BindOnce(&AccountManagerFacadeImpl::OnReceiverReceived,
                      weak_factory_.GetWeakPtr()));
 }
 
-AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
+AccountManagerFacadeImpl::~AccountManagerFacadeImpl() {
+  base::UmaHistogramCounts100(kMojoDisconnectionsAccountManagerRemote,
+                              num_remote_disconnections_);
+  base::UmaHistogramCounts100(kMojoDisconnectionsAccountManagerObserverReceiver,
+                              num_receiver_disconnections_);
+}
 
 void AccountManagerFacadeImpl::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -240,10 +332,22 @@ void AccountManagerFacadeImpl::RemoveObserver(Observer* observer) {
 
 void AccountManagerFacadeImpl::GetAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback) {
+  // Record the status of the mojo connection, to get more information about
+  // https://crbug.com/1287297
+  FacadeMojoStatus mojo_status = FacadeMojoStatus::kOk;
+  if (!account_manager_remote_)
+    mojo_status = FacadeMojoStatus::kNoRemote;
+  else if (remote_version_ < RemoteMinVersions::kGetAccountsMinVersion)
+    mojo_status = FacadeMojoStatus::kVersionMismatch;
+  else if (!is_initialized_)
+    mojo_status = FacadeMojoStatus::kUninitialized;
+  base::UmaHistogramEnumeration(kGetAccountsMojoStatus, mojo_status);
+
   if (!account_manager_remote_ ||
       remote_version_ < RemoteMinVersions::kGetAccountsMinVersion) {
-    // Remote side doesn't support GetAccounts, return an empty list.
-    std::move(callback).Run({});
+    // Remote side is disconnected or doesn't support GetAccounts. Do not return
+    // an empty list as that may cause Lacros to delete user profiles.
+    // TODO(https://crbug.com/1287297): Try to reconnect, or return an error.
     return;
   }
   RunAfterInitializationSequence(
@@ -267,14 +371,12 @@ void AccountManagerFacadeImpl::GetPersistentErrorForAccount(
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
-    const AccountAdditionSource& source) {
-  ShowAddAccountDialog(
-      source,
-      base::DoNothing::Once<const account_manager::AccountAdditionResult&>());
+    AccountAdditionSource source) {
+  ShowAddAccountDialog(source, base::DoNothing());
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
-    const AccountAdditionSource& source,
+    AccountAdditionSource source,
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback) {
   if (!account_manager_remote_ ||
@@ -283,7 +385,7 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
                  << RemoteMinVersions::kShowAddAccountDialogMinVersion
                  << " for ShowAddAccountDialog.";
     FinishAddAccount(std::move(callback),
-                     account_manager::AccountAdditionResult(
+                     account_manager::AccountAdditionResult::FromStatus(
                          account_manager::AccountAdditionResult::Status::
                              kUnexpectedResponse));
     return;
@@ -291,25 +393,35 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
 
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
+  crosapi::mojom::AccountAdditionOptionsPtr options =
+      crosapi::mojom::AccountAdditionOptions::New();
+  options->is_available_in_arc = GetIsAvailableInArcBySource(source);
+  options->show_arc_availability_picker =
+      (source == AccountManagerFacade::AccountAdditionSource::kArc);
+
   account_manager_remote_->ShowAddAccountDialog(
+      std::move(options),
       base::BindOnce(&AccountManagerFacadeImpl::OnShowAddAccountDialogFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AccountManagerFacadeImpl::ShowReauthAccountDialog(
-    const AccountAdditionSource& source,
-    const std::string& email) {
+    AccountAdditionSource source,
+    const std::string& email,
+    base::OnceClosure callback) {
   if (!account_manager_remote_ ||
       remote_version_ < RemoteMinVersions::kShowReauthAccountDialogMinVersion) {
     LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
                  << RemoteMinVersions::kShowReauthAccountDialogMinVersion
                  << " for ShowReauthAccountDialog.";
+    if (callback)
+      std::move(callback).Run();
     return;
   }
 
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
-  account_manager_remote_->ShowReauthAccountDialog(email, base::DoNothing());
+  account_manager_remote_->ShowReauthAccountDialog(email, std::move(callback));
 }
 
 void AccountManagerFacadeImpl::ShowManageAccountsSettings() {
@@ -328,7 +440,6 @@ void AccountManagerFacadeImpl::ShowManageAccountsSettings() {
 std::unique_ptr<OAuth2AccessTokenFetcher>
 AccountManagerFacadeImpl::CreateAccessTokenFetcher(
     const AccountKey& account,
-    const std::string& oauth_consumer_name,
     OAuth2AccessTokenConsumer* consumer) {
   if (!account_manager_remote_ ||
       remote_version_ <
@@ -338,21 +449,54 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
             << " for CreateAccessTokenFetcher";
     return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
         consumer,
-        GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+        GoogleServiceAuthError::FromServiceError("Mojo pipe disconnected"));
   }
 
   auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(
-      /*account_manager_facade_impl=*/this, account, oauth_consumer_name,
-      consumer);
+      /*account_manager_facade_impl=*/this, account, consumer);
   RunAfterInitializationSequence(access_token_fetcher->UnblockTokenRequest());
-  RunOnMojoDisconnection(access_token_fetcher->MojoDisconnectionClosure());
+  RunOnAccountManagerRemoteDisconnection(
+      access_token_fetcher->AccountManagerRemoteDisconnectionClosure());
   return std::move(access_token_fetcher);
+}
+
+void AccountManagerFacadeImpl::ReportAuthError(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  if (!account_manager_remote_ ||
+      remote_version_ < RemoteMinVersions::kReportAuthErrorMinVersion) {
+    LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
+                 << RemoteMinVersions::kReportAuthErrorMinVersion
+                 << " for ReportAuthError.";
+    return;
+  }
+
+  account_manager_remote_->ReportAuthError(ToMojoAccountKey(account),
+                                           ToMojoGoogleServiceAuthError(error));
+}
+
+void AccountManagerFacadeImpl::UpsertAccountForTesting(
+    const Account& account,
+    const std::string& token_value) {
+  account_manager_for_tests_->UpsertAccount(account.key, account.raw_email,
+                                            token_value);
+}
+
+void AccountManagerFacadeImpl::RemoveAccountForTesting(
+    const AccountKey& account) {
+  account_manager_for_tests_->RemoveAccount(account);
 }
 
 // static
 std::string AccountManagerFacadeImpl::
     GetAccountAdditionResultStatusHistogramNameForTesting() {
   return kAccountAdditionResultStatus;
+}
+
+// static
+std::string
+AccountManagerFacadeImpl::GetAccountsMojoStatusHistogramNameForTesting() {
+  return kGetAccountsMojoStatus;
 }
 
 void AccountManagerFacadeImpl::OnReceiverReceived(
@@ -362,6 +506,10 @@ void AccountManagerFacadeImpl::OnReceiverReceived(
           this, std::move(receiver));
   // At this point (`receiver_` exists), we are subscribed to Account Manager.
 
+  receiver_->set_disconnect_handler(base::BindOnce(
+      &AccountManagerFacadeImpl::OnAccountManagerObserverReceiverDisconnected,
+      weak_factory_.GetWeakPtr()));
+
   FinishInitSequenceIfNotAlreadyFinished();
 }
 
@@ -369,11 +517,11 @@ void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback,
     crosapi::mojom::AccountAdditionResultPtr mojo_result) {
-  base::Optional<account_manager::AccountAdditionResult> result =
+  absl::optional<account_manager::AccountAdditionResult> result =
       account_manager::FromMojoAccountAdditionResult(mojo_result);
   if (!result.has_value()) {
     FinishAddAccount(std::move(callback),
-                     account_manager::AccountAdditionResult(
+                     account_manager::AccountAdditionResult::FromStatus(
                          account_manager::AccountAdditionResult::Status::
                              kUnexpectedResponse));
     return;
@@ -385,13 +533,13 @@ void AccountManagerFacadeImpl::FinishAddAccount(
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback,
     const account_manager::AccountAdditionResult& result) {
-  base::UmaHistogramEnumeration(kAccountAdditionResultStatus, result.status);
+  base::UmaHistogramEnumeration(kAccountAdditionResultStatus, result.status());
   std::move(callback).Run(result);
 }
 
 void AccountManagerFacadeImpl::OnTokenUpserted(
     crosapi::mojom::AccountPtr account) {
-  base::Optional<Account> maybe_account = FromMojoAccount(account);
+  absl::optional<Account> maybe_account = FromMojoAccount(account);
   if (!maybe_account) {
     LOG(WARNING) << "Can't unmarshal account of type: "
                  << account->key->account_type;
@@ -404,7 +552,7 @@ void AccountManagerFacadeImpl::OnTokenUpserted(
 
 void AccountManagerFacadeImpl::OnAccountRemoved(
     crosapi::mojom::AccountPtr account) {
-  base::Optional<Account> maybe_account = FromMojoAccount(account);
+  absl::optional<Account> maybe_account = FromMojoAccount(account);
   if (!maybe_account) {
     LOG(WARNING) << "Can't unmarshal account of type: "
                  << account->key->account_type;
@@ -412,6 +560,34 @@ void AccountManagerFacadeImpl::OnAccountRemoved(
   }
   for (auto& observer : observer_list_) {
     observer.OnAccountRemoved(maybe_account.value());
+  }
+}
+
+void AccountManagerFacadeImpl::OnAuthErrorChanged(
+    crosapi::mojom::AccountKeyPtr account,
+    crosapi::mojom::GoogleServiceAuthErrorPtr error) {
+  absl::optional<AccountKey> maybe_account_key = FromMojoAccountKey(account);
+  if (!maybe_account_key) {
+    LOG(WARNING) << "Can't unmarshal account key of type: "
+                 << account->account_type;
+    return;
+  }
+
+  absl::optional<GoogleServiceAuthError> maybe_error =
+      FromMojoGoogleServiceAuthError(error);
+  if (!maybe_error) {
+    LOG(WARNING) << "Can't unmarshal error with state: " << error->state;
+    return;
+  }
+
+  for (auto& observer : observer_list_) {
+    observer.OnAuthErrorChanged(maybe_account_key.value(), maybe_error.value());
+  }
+}
+
+void AccountManagerFacadeImpl::OnSigninDialogClosed() {
+  for (auto& observer : observer_list_) {
+    observer.OnSigninDialogClosed();
   }
 }
 
@@ -463,22 +639,33 @@ void AccountManagerFacadeImpl::RunAfterInitializationSequence(
   }
 }
 
-void AccountManagerFacadeImpl::RunOnMojoDisconnection(
+void AccountManagerFacadeImpl::RunOnAccountManagerRemoteDisconnection(
     base::OnceClosure closure) {
   if (!account_manager_remote_) {
     std::move(closure).Run();
     return;
   }
-  mojo_disconnection_handlers_.emplace_back(std::move(closure));
+  account_manager_remote_disconnection_handlers_.emplace_back(
+      std::move(closure));
 }
 
-void AccountManagerFacadeImpl::OnMojoError() {
-  LOG(ERROR) << "Account Manager disconnected";
-  for (auto& cb : mojo_disconnection_handlers_) {
+void AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected() {
+  num_remote_disconnections_++;
+  LogMojoConnectionStats("Account Manager disconnected",
+                         num_remote_disconnections_,
+                         num_receiver_disconnections_);
+  for (auto& cb : account_manager_remote_disconnection_handlers_) {
     std::move(cb).Run();
   }
-  mojo_disconnection_handlers_.clear();
+  account_manager_remote_disconnection_handlers_.clear();
   account_manager_remote_.reset();
+}
+
+void AccountManagerFacadeImpl::OnAccountManagerObserverReceiverDisconnected() {
+  num_receiver_disconnections_++;
+  LogMojoConnectionStats("Account Manager Observer disconnected",
+                         num_remote_disconnections_,
+                         num_receiver_disconnections_);
 }
 
 bool AccountManagerFacadeImpl::IsInitialized() {

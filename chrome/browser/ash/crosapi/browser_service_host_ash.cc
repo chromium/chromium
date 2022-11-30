@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,6 +74,12 @@ void BrowserServiceHostAsh::OnVersionReady(
   // observers now.
   for (auto& observer : observer_list_)
     observer.OnBrowserServiceConnected(id, mojo_id, service, version);
+}
+
+void BrowserServiceHostAsh::RequestRelaunch() {
+  CrosapiId crosapi_id = receiver_set_.current_context();
+  for (auto& observer : observer_list_)
+    observer.OnBrowserRelaunchRequested(crosapi_id);
 }
 
 void BrowserServiceHostAsh::OnDisconnected(mojo::RemoteSetElementId mojo_id) {

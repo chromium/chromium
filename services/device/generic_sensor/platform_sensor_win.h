@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_WIN_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_WIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win.h"
@@ -32,6 +33,9 @@ class PlatformSensorWin final : public PlatformSensor,
       scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner,
       std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
 
+  PlatformSensorWin(const PlatformSensorWin&) = delete;
+  PlatformSensorWin& operator=(const PlatformSensorWin&) = delete;
+
   PlatformSensorConfiguration GetDefaultConfiguration() override;
   mojom::ReportingMode GetReportingMode() override;
   double GetMaximumSupportedFrequency() override;
@@ -51,10 +55,8 @@ class PlatformSensorWin final : public PlatformSensor,
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner_;
-  PlatformSensorReaderWinBase* const sensor_reader_;
+  const raw_ptr<PlatformSensorReaderWinBase> sensor_reader_;
   base::WeakPtrFactory<PlatformSensorWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorWin);
 };
 
 }  // namespace device

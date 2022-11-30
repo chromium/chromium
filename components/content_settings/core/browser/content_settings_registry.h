@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -35,6 +35,9 @@ class ContentSettingsRegistry {
                                           const ContentSettingsInfo*>;
 
   static ContentSettingsRegistry* GetInstance();
+
+  ContentSettingsRegistry(const ContentSettingsRegistry&) = delete;
+  ContentSettingsRegistry& operator=(const ContentSettingsRegistry&) = delete;
 
   // Reset the instance for use inside tests.
   void ResetForTest();
@@ -71,9 +74,7 @@ class ContentSettingsRegistry {
                 ContentSettingsInfo::OriginRestriction origin_restriction);
 
   Map content_settings_info_;
-  WebsiteSettingsRegistry* website_settings_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsRegistry);
+  raw_ptr<WebsiteSettingsRegistry> website_settings_registry_;
 };
 
 }  // namespace content_settings

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -23,6 +24,10 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
   explicit ClientNativePixmapFuchsia(gfx::NativePixmapHandle handle)
       : handle_(std::move(handle)) {
   }
+
+  ClientNativePixmapFuchsia(const ClientNativePixmapFuchsia&) = delete;
+  ClientNativePixmapFuchsia& operator=(const ClientNativePixmapFuchsia&) =
+      delete;
 
   ~ClientNativePixmapFuchsia() override {
     if (mapping_)
@@ -48,7 +53,7 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
 
     // Round mapping size to align with the page size.
     size_t page_size = base::SysInfo::VMAllocationGranularity();
-    mapping_size_ = base::bits::Align(mapping_size_, page_size);
+    mapping_size_ = base::bits::AlignUp(mapping_size_, page_size);
 
     zx_status_t status =
         zx::vmar::root_self()->map(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, 0,
@@ -80,6 +85,8 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     mapping_ = nullptr;
   }
 
+  size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
+
   void* GetMemoryAddress(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
     DCHECK(mapping_);
@@ -88,7 +95,11 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
 
   int GetStride(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
-    return handle_.planes[plane].stride;
+    return base::checked_cast<int>(handle_.planes[plane].stride);
+  }
+
+  gfx::NativePixmapHandle CloneHandleForIPC() const override {
+    return gfx::CloneHandleForIPC(handle_);
   }
 
  private:
@@ -96,13 +107,17 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
 
   uint8_t* mapping_ = nullptr;
   size_t mapping_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientNativePixmapFuchsia);
 };
 
 class ScenicClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
  public:
   ScenicClientNativePixmapFactory() = default;
+
+  ScenicClientNativePixmapFactory(const ScenicClientNativePixmapFactory&) =
+      delete;
+  ScenicClientNativePixmapFactory& operator=(
+      const ScenicClientNativePixmapFactory&) = delete;
+
   ~ScenicClientNativePixmapFactory() override = default;
 
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
@@ -140,6 +155,11 @@ class ScenicClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
         return nullptr;
       }
 
+      // The stride must be a valid integer in order to be consistent with the
+      // gfx::ClientNativePixmap::GetStride() API.
+      if (!base::IsValueInRangeForNumericType<int>(handle.planes[i].stride))
+        return nullptr;
+
       base::CheckedNumeric<size_t> min_size =
           base::CheckedNumeric<size_t>(handle.planes[i].stride) * plane_height;
       if (!min_size.IsValid() || handle.planes[i].size < min_size.ValueOrDie())
@@ -154,9 +174,6 @@ class ScenicClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
 
     return std::make_unique<ClientNativePixmapFuchsia>(std::move(handle));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScenicClientNativePixmapFactory);
 };
 
 gfx::ClientNativePixmapFactory* CreateClientNativePixmapFactoryScenic() {

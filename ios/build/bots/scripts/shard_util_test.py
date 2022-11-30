@@ -1,4 +1,5 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,7 +27,7 @@ DEBUG_APP_OTOOL_OUTPUT = '\n'.join([
     'imp 0x1075e6887 -[ToolBarTestCase testH]',
     'imp 0x1075e6887 -[ToolBarTestCase DISABLED_testI]',
     'imp 0x1075e6887 -[ToolBarTestCase FLAKY_testJ]', 'version 0'
-])
+]).encode('utf-8')
 
 # Debug app otool output format in Xcode 11.4 toolchain.
 DEBUG_APP_OTOOL_OUTPUT_114 = '\n'.join([
@@ -48,42 +49,81 @@ DEBUG_APP_OTOOL_OUTPUT_114 = '\n'.join([
     '    imp     0x1075e6887 -[ToolBarTestCase testH]',
     '    imp     0x1075e6887 -[ToolBarTestCase DISABLED_testI]',
     '    imp     0x1075e6887 -[ToolBarTestCase FLAKY_testJ]', 'version 0'
-])
+]).encode('utf-8')
 
 RELEASE_APP_OTOOL_OUTPUT = '\n'.join([
     'Meta Class', 'name 0x1064b8438 CacheTestCase',
     'baseMethods 0x1068586d8 (struct method_list_t *)',
     'name 0x1075e6887 testA', 'types 0x1064cc3e1', 'name 0x1075e6887 testB',
-    'name 0x1075e6887 testc', 'baseProtocols 0x0', 'Meta Class',
-    'name 0x1064b8438 TabUITestCase',
+    'name 0x1075e6887 testc', 'baseProtocols 0x0',
+    'name 0x1064b8438 CacheTestCase', 'unrelated line', 'Meta Class',
+    'name 0x1064b8438 TabUITestCase', 'no test methods in this case',
+    'name 0x1064b8438 TabUITestCase', 'unrelated line',
     'baseMethods 0x1068586d8 (struct method_list_t *)',
     'name 0x1064b8438 KeyboardTest', 'name 0x1075e6887 testD',
     'types 0x1064cc3e1 v16@0:8', 'name 0x1075e6887 testE',
     'name 0x1075e6887 testF', 'baseProtocols 0x0',
-    'name 0x1064b8438 ChromeTestCase', 'name 0x1064b8438 setUp',
+    'name 0x1064b8438 KeyboardTest', 'name 0x1075e6887 testUnrelatedG',
+    'unrelated line', 'name 0x1064b8438 ChromeTestCase',
+    'name 0x1064b8438 setUp', 'name 0x1064b8438 testPort',
+    'name 0x5345ac561 testSomeUnrelatedUtil', 'baseProtocols 0x0',
+    'name 0x1064b8438 ChromeTestCase', 'unrelated line',
+    'name 0x1064b8438 invalidTestCase', 'name 0x1075e6887 testG',
     'baseProtocols 0x0', 'name 0x1064b8438 ToolBarTestCase',
     'name 0x1075e6887 testG', 'name 0x1075e6887 testH',
     'name 0x1075e6887 DISABLED_testI', 'name 0x1075e6887 FLAKY_testJ',
-    'baseProtocols 0x0', 'version 0'
-])
+    'name 0x1064b8438 ToolBarTestCase', 'baseProtocols 0x0', 'version 0'
+]).encode('utf-8')
+
+RELEASE_APP_OTOOL_OUTPUT_CLASS_NOT_IN_PAIRS = '\n'.join([
+    'Meta Class', 'name 0x1064b8438 CacheTestCase',
+    'baseMethods 0x1068586d8 (struct method_list_t *)',
+    'name 0x1075e6887 testA', 'types 0x1064cc3e1', 'name 0x1075e6887 testB',
+    'name 0x1075e6887 testc', 'baseProtocols 0x0',
+    'name 0x1064b8438 CacheTestCase', 'unrelated line', 'Meta Class',
+    'name 0x1064b8438 TabUITestCase', 'no test methods in this case',
+    'name 0x1064b8438 TabUITestCase', 'unrelated line',
+    'baseMethods 0x1068586d8 (struct method_list_t *)',
+    'name 0x1064b8438 KeyboardTest', 'name 0x1075e6887 testD',
+    'types 0x1064cc3e1 v16@0:8', 'name 0x1075e6887 testE',
+    'name 0x1075e6887 testF', 'baseProtocols 0x0',
+    'name 0x1075e6887 testUnrelatedG', 'unrelated line',
+    'name 0x1064b8438 ChromeTestCase', 'name 0x1064b8438 setUp',
+    'name 0x1064b8438 testPort', 'name 0x5345ac561 testSomeUnrelatedUtil',
+    'baseProtocols 0x0', 'name 0x1064b8438 ChromeTestCase', 'unrelated line',
+    'name 0x1064b8438 invalidTestCase', 'name 0x1075e6887 testG',
+    'baseProtocols 0x0', 'name 0x1064b8438 ToolBarTestCase',
+    'name 0x1075e6887 testG', 'name 0x1075e6887 testH',
+    'name 0x1075e6887 DISABLED_testI', 'name 0x1075e6887 FLAKY_testJ',
+    'name 0x1064b8438 ToolBarTestCase', 'baseProtocols 0x0', 'version 0'
+]).encode('utf-8')
 
 # Release app otool output format in Xcode 11.4 toolchain.
 RELEASE_APP_OTOOL_OUTPUT_114 = '\n'.join([
-    'Meta Class', 'name          0x1064b8438 CacheTestCase',
-    'baseMethods   0x1068586d8 (struct method_list_t *)',
-    '    name    0x1075e6887 testA', '    types   0x1064cc3e1',
+    'Meta Class', '    name    0x1064b8438 CacheTestCase',
+    'baseMethods 0x1068586d8 (struct method_list_t *)',
+    '    name    0x1075e6887 testA', '    types    0x1064cc3e1',
     '    name    0x1075e6887 testB', '    name    0x1075e6887 testc',
-    'baseProtocols 0x0', 'Meta Class', '    name    0x1064b8438 TabUITestCase',
-    'baseMethods   0x1068586d8 (struct method_list_t *)',
+    'baseProtocols 0x0', '    name    0x1064b8438 CacheTestCase',
+    'unrelated line', 'Meta Class', '    name    0x1064b8438 TabUITestCase',
+    'no test methods in this case', '    name    0x1064b8438 TabUITestCase',
+    'unrelated line', 'baseMethods 0x1068586d8 (struct method_list_t *)',
     '    name    0x1064b8438 KeyboardTest', '    name    0x1075e6887 testD',
-    '    types   0x1064cc3e1 v16@0:8', '    name    0x1075e6887 testE',
+    '    types    0x1064cc3e1 v16@0:8', '    name    0x1075e6887 testE',
     '    name    0x1075e6887 testF', 'baseProtocols 0x0',
+    '    name    0x1064b8438 KeyboardTest',
+    '    name    0x1075e6887 testUnrelatedG', 'unrelated line',
     '    name    0x1064b8438 ChromeTestCase', '    name    0x1064b8438 setUp',
+    '    name    0x1064b8438 testPort',
+    '    name    0x5345ac561 testSomeUnrelatedUtil', 'baseProtocols 0x0',
+    '    name    0x1064b8438 ChromeTestCase', 'unrelated line',
+    '    name    0x1064b8438 invalidTestCase', '    name    0x1075e6887 testG',
     'baseProtocols 0x0', '    name    0x1064b8438 ToolBarTestCase',
     '    name    0x1075e6887 testG', '    name    0x1075e6887 testH',
-    '    name    0x1075e6893 DISABLED_testI',
-    '    name    0x1075e723f FLAKY_testJ', 'baseProtocols 0x0', 'version 0'
-])
+    '    name    0x1075e6887 DISABLED_testI',
+    '    name    0x1075e6887 FLAKY_testJ',
+    '    name    0x1064b8438 ToolBarTestCase', 'baseProtocols 0x0', 'version 0'
+]).encode('utf-8')
 
 
 class TestShardUtil(unittest.TestCase):
@@ -139,13 +179,14 @@ class TestShardUtil(unittest.TestCase):
     for test_name in expected_test_names:
       self.assertTrue(test_name in resp)
 
-    test_cases = map(lambda (test_case, test_method): test_case, resp)
-
+    test_cases = [test_case for (test_case, _) in resp]
     # ({'CacheTestCase': 3, 'TabUITestCase': 2, 'PasswordsTestCase': 1,
     # 'KeyboardTestCase': 1, 'ToolBarTestCase': 3})
     counts = collections.Counter(test_cases).most_common()
     name, _ = counts[0]
-    self.assertEqual(name, 'ToolBarTestCase')
+    # CacheTestCase and ToolBarTestCase each have 3 entries.
+    # In case of ties, most_common() returns the first encountered at index 0.
+    self.assertEqual(name, 'CacheTestCase')
 
   def test_fetch_test_counts_release(self):
     """Ensures that the release output is formatted correctly"""
@@ -167,12 +208,22 @@ class TestShardUtil(unittest.TestCase):
     for test_name in expected_test_names:
       self.assertTrue(test_name in resp)
 
-    test_cases = map(lambda (test_case, test_method): test_case, resp)
+    test_cases = [test_case for (test_case, _) in resp]
     # ({'KeyboardTest': 3, 'CacheTestCase': 3,
     # 'ToolBarTestCase': 4})
     counts = collections.Counter(test_cases).most_common()
     name, _ = counts[0]
     self.assertEqual(name, 'ToolBarTestCase')
+
+  def test_fetch_test_error_release(self):
+    """Ensures that unexpected release output raises error."""
+    with self.assertRaises(shard_util.ShardingError) as context:
+      shard_util.fetch_test_names_for_release(
+          RELEASE_APP_OTOOL_OUTPUT_CLASS_NOT_IN_PAIRS)
+    expected_message = (
+        'Incorrect otool output in which a test class name doesn\'t appear in '
+        'group of 2. Test class: KeyboardTest')
+    self.assertTrue(expected_message in str(context.exception))
 
   def test_fetch_test_names_debug_114(self):
     """Test the debug output from otool in Xcode 11.4"""
@@ -193,13 +244,15 @@ class TestShardUtil(unittest.TestCase):
     for test_name in expected_test_names:
       self.assertTrue(test_name in resp)
 
-    test_cases = map(lambda (test_case, test_method): test_case, resp)
+    test_cases = [test_case for (test_case, _) in resp]
 
     # ({'CacheTestCase': 3, 'TabUITestCase': 2, 'PasswordsTestCase': 1,
     # 'KeyboardTestCase': 1, 'ToolBarTestCase': 3})
     counts = collections.Counter(test_cases).most_common()
     name, _ = counts[0]
-    self.assertEqual(name, 'ToolBarTestCase')
+    # CacheTestCase and ToolBarTestCase each have 3 entries.
+    # In case of ties, most_common() returns the first encountered at index 0.
+    self.assertEqual(name, 'CacheTestCase')
 
   def test_fetch_test_counts_release_114(self):
     """Test the release output from otool in Xcode 11.4"""
@@ -221,7 +274,7 @@ class TestShardUtil(unittest.TestCase):
     for test_name in expected_test_names:
       self.assertTrue(test_name in resp)
 
-    test_cases = map(lambda (test_case, test_method): test_case, resp)
+    test_cases = [test_case for (test_case, _) in resp]
     # ({'KeyboardTest': 3, 'CacheTestCase': 3,
     # 'ToolBarTestCase': 4})
     counts = collections.Counter(test_cases).most_common()
@@ -231,7 +284,7 @@ class TestShardUtil(unittest.TestCase):
   def test_balance_into_sublists_debug(self):
     """Ensure the balancing algorithm works"""
     resp = shard_util.fetch_test_names_for_debug(DEBUG_APP_OTOOL_OUTPUT)
-    test_cases = map(lambda (test_case, test_method): test_case, resp)
+    test_cases = [test_case for (test_case, _) in resp]
     test_counts = collections.Counter(test_cases)
 
     sublists_1 = shard_util.balance_into_sublists(test_counts, 1)
@@ -254,7 +307,7 @@ class TestShardUtil(unittest.TestCase):
   def test_balance_into_sublists_release(self):
     """Ensure the balancing algorithm works"""
     resp = shard_util.fetch_test_names_for_release(RELEASE_APP_OTOOL_OUTPUT)
-    test_cases = map(lambda (test_case, test_method): test_case, resp)
+    test_cases = [test_case for (test_case, _) in resp]
     test_counts = collections.Counter(test_cases)
 
     sublists_3 = shard_util.balance_into_sublists(test_counts, 3)

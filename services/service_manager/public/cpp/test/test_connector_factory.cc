@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,6 +33,9 @@ class ProxiedServiceConnector : public mojom::Connector {
         proxies_(proxies),
         test_instance_group_(test_instance_group) {}
 
+  ProxiedServiceConnector(const ProxiedServiceConnector&) = delete;
+  ProxiedServiceConnector& operator=(const ProxiedServiceConnector&) = delete;
+
   ~ProxiedServiceConnector() override = default;
 
  private:
@@ -53,7 +56,7 @@ class ProxiedServiceConnector : public mojom::Connector {
     auto* proxy = GetServiceProxy(service_filter.service_name());
     if (!proxy && factory_->ignore_unknown_service_requests()) {
       std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED,
-                              base::nullopt);
+                              absl::nullopt);
       return;
     }
 
@@ -65,7 +68,7 @@ class ProxiedServiceConnector : public mojom::Connector {
                                 base::Token{}, fake_guid_),
                        CapabilitySet()),
         interface_name, std::move(interface_pipe), base::DoNothing());
-    std::move(callback).Run(mojom::ConnectResult::SUCCEEDED, base::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::SUCCEEDED, absl::nullopt);
   }
 
   void WarmService(const ServiceFilter& filter,
@@ -91,12 +94,10 @@ class ProxiedServiceConnector : public mojom::Connector {
   }
 
   const base::Token fake_guid_;
-  TestConnectorFactory* const factory_;
-  TestConnectorFactory::NameToServiceProxyMap* const proxies_;
+  const raw_ptr<TestConnectorFactory> factory_;
+  const raw_ptr<TestConnectorFactory::NameToServiceProxyMap> proxies_;
   const base::Token test_instance_group_;
   mojo::ReceiverSet<mojom::Connector> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxiedServiceConnector);
 };
 
 }  // namespace

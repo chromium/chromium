@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -19,6 +18,9 @@ class MediaPermission;
 }  // namespace media
 
 namespace blink {
+
+class FilteringNetworkManagerTest;
+class IpcNetworkManager;
 
 // FilteringNetworkManager exposes rtc::NetworkManager to
 // PeerConnectionDependencyFactory and wraps the IpcNetworkManager. It only
@@ -36,12 +38,14 @@ namespace blink {
 class FilteringNetworkManager : public rtc::NetworkManagerBase,
                                 public sigslot::has_slots<> {
  public:
-  // This class is created by WebRTC's signaling thread but used by WebRTC's
+  // This class is created by WebRTC's main thread but used by WebRTC's
   // worker thread |task_runner|.
   PLATFORM_EXPORT FilteringNetworkManager(
-      rtc::NetworkManager* network_manager,
+      IpcNetworkManager* network_manager,
       media::MediaPermission* media_permission,
       bool allow_mdns_obfuscation);
+  FilteringNetworkManager(const FilteringNetworkManager&) = delete;
+  FilteringNetworkManager& operator=(const FilteringNetworkManager&) = delete;
 
   PLATFORM_EXPORT ~FilteringNetworkManager() override;
 
@@ -49,11 +53,18 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   void Initialize() override;
   void StartUpdating() override;
   void StopUpdating() override;
-  void GetNetworks(NetworkList* networks) const override;
+  std::vector<const rtc::Network*> GetNetworks() const override;
 
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override;
 
  private:
+  friend class FilteringNetworkManagerTest;
+
+  PLATFORM_EXPORT FilteringNetworkManager(
+      base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread,
+      media::MediaPermission* media_permission,
+      bool allow_mdns_obfuscation);
+
   // Check mic/camera permission.
   void CheckPermission();
 
@@ -82,11 +93,14 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
 
   void SendNetworksChangedSignal();
 
-  // |network_manager_| is just a reference, owned by
-  // PeerConnectionDependencyFactory.
-  rtc::NetworkManager* network_manager_;
+  // `network_manager_for_signaling_thread_` is owned by the
+  // `PeerConnectionDependencyFactory`, that may be destroyed when the frame is
+  // detached.
+  // TODO(crbug.com/1191914): Clarify the lifetime of
+  // `network_manager_for_signaling_thread_` and `this`.
+  base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread_;
 
-  // The class is created by the signaling thread but used by the worker thread.
+  // The class is created by the main thread but used by the worker thread.
   THREAD_CHECKER(thread_checker_);
 
   media::MediaPermission* media_permission_;
@@ -117,8 +131,6 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   bool allow_mdns_obfuscation_ = true;
 
   base::WeakPtrFactory<FilteringNetworkManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FilteringNetworkManager);
 };
 
 }  // namespace blink

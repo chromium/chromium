@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,13 +88,15 @@ void FileSystemAccessPermissionRequestManager::AddRequest(
 
 FileSystemAccessPermissionRequestManager::
     FileSystemAccessPermissionRequestManager(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<FileSystemAccessPermissionRequestManager>(
+          *web_contents) {}
 
 bool FileSystemAccessPermissionRequestManager::CanShowRequest() const {
   // Deley showing requests until the main frame is fully loaded.
   // ScheduleShowRequest() will be called again when that happens.
-  return main_frame_has_fully_loaded_ && !queued_requests_.empty() &&
-         !current_request_;
+  return web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() &&
+         !queued_requests_.empty() && !current_request_;
 }
 
 void FileSystemAccessPermissionRequestManager::ScheduleShowRequest() {
@@ -129,16 +131,15 @@ void FileSystemAccessPermissionRequestManager::DequeueAndShowRequest() {
 }
 
 void FileSystemAccessPermissionRequestManager::
-    DocumentOnLoadCompletedInMainFrame(
-        content::RenderFrameHost* render_frame_host) {
-  main_frame_has_fully_loaded_ = true;
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
   // This is scheduled because while all calls to the browser have been
   // issued at DOMContentLoaded, they may be bouncing around in scheduled
   // callbacks finding the UI thread still. This makes sure we allow those
   // scheduled calls to AddRequest to complete before we show the page-load
   // permissions bubble.
-  if (!queued_requests_.empty())
+  if (!queued_requests_.empty()) {
     ScheduleShowRequest();
+  }
 }
 
 void FileSystemAccessPermissionRequestManager::OnPermissionDialogResult(
@@ -151,4 +152,4 @@ void FileSystemAccessPermissionRequestManager::OnPermissionDialogResult(
     ScheduleShowRequest();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FileSystemAccessPermissionRequestManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FileSystemAccessPermissionRequestManager);

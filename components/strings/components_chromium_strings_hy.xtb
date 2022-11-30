@@ -4,7 +4,6 @@
 <translation id="130631256467250065">Ձեր փոփոխություններն ուժի մեջ կմտնեն հաջորդ անգամ, երբ վերագործարկեք սարքը:</translation>
 <translation id="275588974610408078">Խափանումների մասին հաղորդումը մատչելի չէ Chromium-ում:</translation>
 <translation id="3064346599913645280">Ցուցադրվող Chromium էջն անվտանգ է</translation>
-<translation id="3550966579244642892">Chromium OS-ը չի ավարտել իր նախնական կարգավորումը:</translation>
 <translation id="358997566136285270">Chromium-ի պատկերանշանը</translation>
 <translation id="4365115785552740256">Chromium-ը ստեղծվել է շնորհիվ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> բաց կոդով նախագծի և այլ <ph name="BEGIN_LINK_OSS" />բաց կոդով ծրագրակազմերի<ph name="END_LINK_OSS" />:</translation>
 <translation id="4559775032954821361">Անցեք
@@ -16,10 +15,11 @@
           <ph name="PROXIES_TITLE" />
           &gt;
           LAN կարգավորումներ
-          և ապանշեք «Օգտագործել միջնորդ սերվեր LAN-ի համար» նշավանդակը:</translation>
+          և ապանշեք «Օգտագործել պրոքսի սերվեր LAN-ի համար» նշավանդակը:</translation>
 <translation id="4622039161600275920">Այս էջն արգելափակվել է Chromium-ի կողմից</translation>
 <translation id="48558539577516920">Հրապատի կամ հակավիրուսային ծրագրի կարգավորումներում
        թույլատրեք Chromium-ին միանալ ցանցին:</translation>
+<translation id="4918837013875648434">ChromiumOS-ը չի ավարտել իր նախնական կարգավորումը։</translation>
 <translation id="580822234363523061">Անցեք
           Chromium-ի ընտրացանկ &gt;
           <ph name="SETTINGS_TITLE" />

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,11 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
 #include "components/assist_ranker/ranker_url_fetcher.h"
@@ -41,8 +39,7 @@ const char kModelStatusHistogram[] = ".Model.Status";
 // Helper function to UMA log a timer histograms.
 void RecordTimerHistogram(const std::string& name, base::TimeDelta duration) {
   base::HistogramBase* counter = base::Histogram::FactoryTimeGet(
-      name, base::TimeDelta::FromMilliseconds(10),
-      base::TimeDelta::FromMilliseconds(200000), 100,
+      name, base::Milliseconds(10), base::Milliseconds(200000), 100,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   DCHECK(counter);
   counter->AddTime(duration);
@@ -55,6 +52,9 @@ class MyScopedHistogramTimer {
   MyScopedHistogramTimer(const base::StringPiece& name)
       : name_(name.begin(), name.end()), start_(base::TimeTicks::Now()) {}
 
+  MyScopedHistogramTimer(const MyScopedHistogramTimer&) = delete;
+  MyScopedHistogramTimer& operator=(const MyScopedHistogramTimer&) = delete;
+
   ~MyScopedHistogramTimer() {
     RecordTimerHistogram(name_, base::TimeTicks::Now() - start_);
   }
@@ -62,8 +62,6 @@ class MyScopedHistogramTimer {
  private:
   const std::string name_;
   const base::TimeTicks start_;
-
-  DISALLOW_COPY_AND_ASSIGN(MyScopedHistogramTimer);
 };
 
 std::string LoadFromFile(const base::FilePath& model_path) {
@@ -122,7 +120,7 @@ void RankerModelLoaderImpl::NotifyOfRankerActivity() {
       // There was no configured model path. Switch the state to IDLE and
       // fall through to consider the URL.
       state_ = LoaderState::IDLE;
-      FALLTHROUGH;
+      [[fallthrough]];
     case LoaderState::IDLE:
       if (model_url_.is_valid()) {
         StartLoadFromURL();
@@ -131,7 +129,7 @@ void RankerModelLoaderImpl::NotifyOfRankerActivity() {
       // There was no configured model URL. Switch the state to FINISHED and
       // fall through.
       state_ = LoaderState::FINISHED;
-      FALLTHROUGH;
+      [[fallthrough]];
     case LoaderState::FINISHED:
     case LoaderState::LOADING_FROM_FILE:
     case LoaderState::LOADING_FROM_URL:
@@ -218,7 +216,7 @@ void RankerModelLoaderImpl::StartLoadFromURL() {
   state_ = LoaderState::LOADING_FROM_URL;
   load_start_time_ = base::TimeTicks::Now();
   next_earliest_download_time_ =
-      load_start_time_ + base::TimeDelta::FromMinutes(kMinRetryDelayMins);
+      load_start_time_ + base::Minutes(kMinRetryDelayMins);
   bool request_started =
       url_fetcher_->Request(model_url_,
                             base::BindOnce(&RankerModelLoaderImpl::OnURLFetched,

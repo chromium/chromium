@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/hash/sha1.h"
 #include "base/strings/safe_sprintf.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // NOTE: This code may be used in crash handling code, so the implementation
 // must avoid dynamic memory allocation or using data structures which rely on
@@ -30,12 +31,14 @@ using Dyn = Elf32_Dyn;
 using Half = Elf32_Half;
 using Nhdr = Elf32_Nhdr;
 using Word = Elf32_Word;
+using Xword = Elf32_Word;
 #else
 using Ehdr = Elf64_Ehdr;
 using Dyn = Elf64_Dyn;
 using Half = Elf64_Half;
 using Nhdr = Elf64_Nhdr;
 using Word = Elf64_Word;
+using Xword = Elf64_Xword;
 #endif
 
 constexpr char kGnuNoteName[] = "GNU";
@@ -85,8 +88,8 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
         }
       }
 
-      size_t section_size = bits::AlignUp(current_note->n_namesz, 4) +
-                            bits::AlignUp(current_note->n_descsz, 4) +
+      size_t section_size = bits::AlignUp(current_note->n_namesz, 4u) +
+                            bits::AlignUp(current_note->n_descsz, 4u) +
                             sizeof(Nhdr);
       if (section_size > static_cast<size_t>(section_end - current_section))
         return 0;
@@ -104,7 +107,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
     // Write out the build ID as a null-terminated hex string.
     const uint8_t* build_id_raw =
         reinterpret_cast<const uint8_t*>(current_note) + sizeof(Nhdr) +
-        bits::AlignUp(current_note->n_namesz, 4);
+        bits::AlignUp(current_note->n_namesz, 4u);
     size_t i = 0;
     for (i = 0; i < current_note->n_descsz; ++i) {
       strings::SafeSNPrintf(&build_id[i * 2], 3, (uppercase ? "%02X" : "%02x"),
@@ -119,7 +122,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
   return 0;
 }
 
-Optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
+absl::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
   // NOTE: Function should use async signal safe calls only.
 
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
@@ -138,12 +141,12 @@ Optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
         reinterpret_cast<const Dyn*>(header.p_vaddr + relocation_offset);
     const Dyn* dynamic_end = reinterpret_cast<const Dyn*>(
         header.p_vaddr + relocation_offset + header.p_memsz);
-    Word soname_strtab_offset = 0;
+    Xword soname_strtab_offset = 0;
     const char* strtab_addr = 0;
     for (const Dyn* dynamic_iter = dynamic_start; dynamic_iter < dynamic_end;
          ++dynamic_iter) {
       if (dynamic_iter->d_tag == DT_STRTAB) {
-#if defined(OS_FUCHSIA) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
         // Fuchsia and Android do not relocate the symtab pointer on ELF load.
         strtab_addr = static_cast<size_t>(dynamic_iter->d_un.d_ptr) +
                       reinterpret_cast<const char*>(relocation_offset);
@@ -151,14 +154,16 @@ Optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
         strtab_addr = reinterpret_cast<const char*>(dynamic_iter->d_un.d_ptr);
 #endif
       } else if (dynamic_iter->d_tag == DT_SONAME) {
-        soname_strtab_offset = dynamic_iter->d_un.d_val;
+        // The Android NDK wrongly defines `d_val` as an Elf32_Sword for 32 bits
+        // and thus needs this cast.
+        soname_strtab_offset = static_cast<Xword>(dynamic_iter->d_un.d_val);
       }
     }
     if (soname_strtab_offset && strtab_addr)
       return StringPiece(strtab_addr + soname_strtab_offset);
   }
 
-  return nullopt;
+  return absl::nullopt;
 }
 
 span<const Phdr> GetElfProgramHeaders(const void* elf_mapped_base) {
@@ -191,8 +196,8 @@ size_t GetRelocationOffset(const void* elf_mapped_base) {
 
   // Assume the virtual addresses in the image start at 0, so the offset is
   // from 0 to the actual mapped base address.
-  return static_cast<size_t>(reinterpret_cast<const char*>(elf_mapped_base) -
-                             reinterpret_cast<const char*>(0));
+  return static_cast<size_t>(reinterpret_cast<uintptr_t>(elf_mapped_base) -
+                             reinterpret_cast<uintptr_t>(nullptr));
 }
 
 }  // namespace debug

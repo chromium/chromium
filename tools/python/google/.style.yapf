@@ -1,0 +1,6 @@
+[style]
+based_on_style = pep8
+
+# New directories should use a .style.yapf that does not include the following:
+column_limit = 80
+indent_width = 2

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,6 @@ ExtensionMessageBubbleController::ExtensionMessageBubbleController(
       user_action_(ACTION_BOUNDARY),
       delegate_(delegate),
       initialized_(false),
-      is_highlighting_(false),
       is_active_bubble_(false) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_->profile()));
@@ -110,8 +109,6 @@ ExtensionMessageBubbleController::~ExtensionMessageBubbleController() {
   BrowserList::RemoveObserver(this);
   if (is_active_bubble_)
     model_->set_has_active_bubble(false);
-  if (is_highlighting_)
-    model_->StopHighlighting();
 }
 
 Profile* ExtensionMessageBubbleController::profile() {
@@ -156,11 +153,9 @@ std::u16string ExtensionMessageBubbleController::GetExtensionListForDisplay() {
     extension_list.push_back(delegate_->GetOverflowText(
         base::NumberToString16(old_size - kMaxExtensionsToShow)));
   }
-  const char16_t bullet_point = u'•';
-  std::u16string prefix = bullet_point + base::ASCIIToUTF16(" ");
   for (std::u16string& str : extension_list)
-    str.insert(0, prefix);
-  return base::JoinString(extension_list, base::ASCIIToUTF16("\n"));
+    str.insert(0, u"• ");
+  return base::JoinString(extension_list, u"\n");
 }
 
 const ExtensionIdList& ExtensionMessageBubbleController::GetExtensionIdList() {
@@ -187,17 +182,6 @@ bool ExtensionMessageBubbleController::CloseOnDeactivate() {
   return delegate_->ShouldCloseOnDeactivate();
 }
 
-void ExtensionMessageBubbleController::HighlightExtensionsIfNecessary() {
-  DCHECK(is_active_bubble_);
-  if (delegate_->ShouldHighlightExtensions() && !is_highlighting_) {
-    is_highlighting_ = true;
-    const ExtensionIdList& extension_ids = GetExtensionIdList();
-    DCHECK(!extension_ids.empty());
-    model_->HighlightActions(extension_ids,
-                             ToolbarActionsModel::HIGHLIGHT_WARNING);
-  }
-}
-
 void ExtensionMessageBubbleController::OnShown(
     base::OnceClosure close_bubble_callback) {
   close_bubble_callback_ = std::move(close_bubble_callback);
@@ -222,7 +206,6 @@ void ExtensionMessageBubbleController::OnBubbleAction() {
   DCHECK_EQ(ACTION_BOUNDARY, user_action_);
   user_action_ = ACTION_EXECUTE;
 
-  delegate_->LogAction(ACTION_EXECUTE);
   delegate_->PerformAction(*GetOrCreateExtensionList());
 
   OnClose();
@@ -242,8 +225,6 @@ void ExtensionMessageBubbleController::OnBubbleDismiss(
   user_action_ = closed_by_deactivation ? ACTION_DISMISS_DEACTIVATION
                                         : ACTION_DISMISS_USER_ACTION;
 
-  delegate_->LogAction(user_action_);
-
   OnClose();
 }
 
@@ -251,7 +232,6 @@ void ExtensionMessageBubbleController::OnLinkClicked() {
   DCHECK_EQ(ACTION_BOUNDARY, user_action_);
   user_action_ = ACTION_LEARN_MORE;
 
-  delegate_->LogAction(ACTION_LEARN_MORE);
   // Opening a new tab for the learn more link can cause the bubble to close, so
   // perform our cleanup here before opening the new tab.
   OnClose();
@@ -313,15 +293,9 @@ void ExtensionMessageBubbleController::OnShutdown(ExtensionRegistry* registry) {
 
 void ExtensionMessageBubbleController::OnBrowserRemoved(Browser* browser) {
   extension_registry_observation_.Reset();
-  if (browser == browser_) {
-    if (is_highlighting_) {
-      model_->StopHighlighting();
-      is_highlighting_ = false;
-    }
-    if (is_active_bubble_) {
-      model_->set_has_active_bubble(false);
-      is_active_bubble_ = false;
-    }
+  if (browser == browser_ && is_active_bubble_) {
+    model_->set_has_active_bubble(false);
+    is_active_bubble_ = false;
   }
 }
 
@@ -346,7 +320,6 @@ ExtensionIdList* ExtensionMessageBubbleController::GetOrCreateExtensionList() {
         extension_list_.push_back(extension->id());
     }
 
-    delegate_->LogExtensionCount(extension_list_.size());
     initialized_ = true;
   }
 

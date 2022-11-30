@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityStateImplTest, TestHistograms) {
   base::HistogramTester histograms;
 
   BrowserAccessibilityState::GetInstance()->UpdateHistogramsForTesting();
-#if defined(OS_WIN)
-  histograms.ExpectTotalCount("Accessibility.WinScreenReader", 1);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   histograms.ExpectTotalCount("Accessibility.CrosSpokenFeedback", 1);
 #endif
 }

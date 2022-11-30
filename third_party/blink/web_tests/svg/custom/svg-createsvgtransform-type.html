@@ -4,8 +4,14 @@
 <script src="../../resources/js-test.js"></script>
 </head>
 <body>
-<p id="description"></p>
-<div id="console"></div>
-<script src="script-tests/svg-createsvgtransform-type.js"></script>
+<script>
+description("Tests whether createSVGTransform creates a SVGTransform of the right SVGTransform type.");
+
+var svgDoc = document.implementation.createDocument("http://www.w3.org/2000/svg", "svg", null);
+var transform = svgDoc.documentElement.createSVGTransform();
+shouldBe("transform.type", "SVGTransform.SVG_TRANSFORM_MATRIX");
+
+var successfullyParsed = true;
+</script>
 </body>
 </html>

@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/devices/device_data_manager.h"
 
-#include <algorithm>
-
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touch_device_transform.h"
@@ -27,7 +27,8 @@ namespace ui {
 namespace {
 
 bool InputDeviceEquals(const ui::InputDevice& a, const ui::InputDevice& b) {
-  return a.id == b.id && a.enabled == b.enabled;
+  return a.id == b.id && a.enabled == b.enabled &&
+         a.suspected_imposter == b.suspected_imposter;
 }
 
 }  // namespace
@@ -106,17 +107,10 @@ void DeviceDataManager::UpdateTouchMap() {
   auto last_iter = std::remove_if(
       touch_map_.begin(), touch_map_.end(),
       [this](const std::pair<int, TouchDeviceTransform>& map_entry) {
-        // Check if the given |map_entry| is present in the current list of
-        // connected devices.
-        auto iter = std::find_if(
-            touchscreen_devices_.begin(), touchscreen_devices_.end(),
-            [&map_entry](const TouchscreenDevice& touch_device) {
-              return touch_device.id == map_entry.second.device_id;
-            });
-
         // Remove the device identified by |map_entry| from |touch_map_| if it
         // is not present in the list of currently connected devices.
-        return iter != touchscreen_devices_.end();
+        return !base::Contains(touchscreen_devices_, map_entry.second.device_id,
+                               &TouchscreenDevice::id);
       });
   touch_map_.erase(last_iter, touch_map_.end());
 }
@@ -133,9 +127,8 @@ void DeviceDataManager::ApplyTouchTransformer(int touch_device_id,
                                               float* y) {
   auto iter = touch_map_.find(touch_device_id);
   if (iter != touch_map_.end()) {
-    gfx::Point3F point(*x, *y, 0.0);
     const gfx::Transform& trans = iter->second.transform;
-    trans.TransformPoint(&point);
+    gfx::PointF point = trans.MapPoint(gfx::PointF(*x, *y));
     *x = point.x();
     *y = point.y();
   }

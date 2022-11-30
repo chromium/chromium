@@ -1,10 +1,14 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
+
+# Android on x86 architecture is likely an emulator. Some multiplanar texture
+# types don't work on Android emulator.
+is_android_emulator = is_android && (target_cpu == "x64" || target_cpu == "x86")
 
 # Generate a buildflag header to determine which tests should be enabled.
 buildflag_header("buildflags") {
@@ -14,6 +18,7 @@ buildflag_header("buildflags") {
     "ENABLE_GL_BACKEND_TESTS=$enable_gl_backend_tests",
     "ENABLE_VULKAN_BACKEND_TESTS=$enable_vulkan_backend_tests",
     "ENABLE_DAWN_BACKEND_TESTS=$enable_dawn_backend_tests",
+    "IS_ANDROID_EMULATOR=$is_android_emulator",
   ]
 }
 
@@ -28,6 +33,8 @@ viz_static_library("test_support") {
     "compositor_frame_helpers.h",
     "delegated_ink_point_renderer_skia_for_test.cc",
     "delegated_ink_point_renderer_skia_for_test.h",
+    "draw_quad_matchers.cc",
+    "draw_quad_matchers.h",
     "fake_compositor_frame_sink_client.cc",
     "fake_compositor_frame_sink_client.h",
     "fake_delay_based_time_source.cc",
@@ -44,6 +51,8 @@ viz_static_library("test_support") {
     "fake_skia_output_surface.h",
     "fake_surface_observer.cc",
     "fake_surface_observer.h",
+    "gl_scaler_test_util.cc",
+    "gl_scaler_test_util.h",
     "gpu_host_impl_test_api.cc",
     "gpu_host_impl_test_api.h",
     "host_frame_sink_manager_test_api.cc",
@@ -79,8 +88,12 @@ viz_static_library("test_support") {
     "test_latest_local_surface_id_lookup_delegate.h",
     "test_output_surface_provider.cc",
     "test_output_surface_provider.h",
+    "test_raster_interface.cc",
+    "test_raster_interface.h",
     "test_shared_bitmap_manager.cc",
     "test_shared_bitmap_manager.h",
+    "test_surface_id_allocator.cc",
+    "test_surface_id_allocator.h",
     "test_types.cc",
     "test_types.h",
   ]
@@ -93,6 +106,8 @@ viz_static_library("test_support") {
     "//gpu:raster",
     "//gpu:test_support",
     "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/client:raster_interface",
+    "//gpu/ipc:gl_in_process_context",
     "//gpu/skia_bindings",
     "//services/viz/privileged/mojom",
     "//testing/gmock",
@@ -122,9 +137,6 @@ viz_source_set("test_suite") {
     "//ui/events/platform",
     "//ui/gl:test_support",
   ]
-  if (use_x11) {
-    deps += [ "//ui/events/platform/x11" ]
-  }
 }
 
 viz_source_set("unit_tests") {

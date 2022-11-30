@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@
   }
 
   HeapProfilerTestRunner.runHeapSnapshotTestSuite([function testStatistics(next) {
-    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, '_retrieveStatistics', step1);
+    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, 'retrieveStatistics', step1);
     HeapProfilerTestRunner.takeAndOpenSnapshot(createHeapSnapshot, () => {});
 
     async function step1(arg, result) {

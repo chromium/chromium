@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
  * Javascript for AdapterPage, served from chrome://bluetooth-internals/.
  */
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
+
+import {AdapterInfo} from './adapter.mojom-webui.js';
 import {ObjectFieldSet} from './object_fieldset.js';
 import {Page} from './page.js';
 
@@ -14,6 +16,7 @@ const PROPERTY_NAMES = {
   address: 'Address',
   name: 'Name',
   systemName: 'System Name',
+  floss: 'Floss',
   initialized: 'Initialized',
   present: 'Present',
   powered: 'Powered',
@@ -41,7 +44,7 @@ export class AdapterPage extends Page {
 
   /**
    * Sets the information to display in fieldset.
-   * @param {!bluetooth.mojom.AdapterInfo} info
+   * @param {!AdapterInfo} info
    */
   setAdapterInfo(info) {
     if (info.hasOwnProperty('systemName') && !info.systemName) {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,8 @@ TEST(SurfaceLayerImplTest, Occlusion) {
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   viz::SurfaceId surface_id(kArbitraryFrameSinkId, kArbitraryLocalSurfaceId);
-  surface_layer_impl->SetRange(viz::SurfaceRange(base::nullopt, surface_id),
-                               base::nullopt);
+  surface_layer_impl->SetRange(viz::SurfaceRange(absl::nullopt, surface_id),
+                               absl::nullopt);
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
@@ -97,7 +97,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id2, surface_id1), 2u);
-  surface_layer_impl->SetBackgroundColor(SK_ColorBLUE);
+  surface_layer_impl->SetBackgroundColor(SkColors::kBlue);
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
   gfx::Size viewport_size(1000, 1000);
@@ -120,7 +120,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   // viz::SurfaceInfo.
   {
     AppendQuadsData data;
-    surface_layer_impl->SetRange(viz::SurfaceRange(base::nullopt, surface_id1),
+    surface_layer_impl->SetRange(viz::SurfaceRange(absl::nullopt, surface_id1),
                                  0u);
     surface_layer_impl->AppendQuads(render_pass.get(), &data);
     // The primary viz::SurfaceInfo should be added to activation_dependencies.
@@ -159,15 +159,15 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   ASSERT_TRUE(surface_draw_quad3);
 
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad1->default_background_color);
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad1->default_background_color);
   EXPECT_EQ(surface_id2, surface_draw_quad1->surface_range.start());
 
   EXPECT_EQ(surface_id1, surface_draw_quad2->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad2->default_background_color);
-  EXPECT_EQ(base::nullopt, surface_draw_quad2->surface_range.start());
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad2->default_background_color);
+  EXPECT_EQ(absl::nullopt, surface_draw_quad2->surface_range.start());
 
   EXPECT_EQ(surface_id1, surface_draw_quad3->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad3->default_background_color);
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad3->default_background_color);
   EXPECT_EQ(surface_id2, surface_draw_quad3->surface_range.start());
 }
 
@@ -202,7 +202,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
   surface_layer_impl2->SetBounds(layer_size);
   surface_layer_impl2->SetDrawsContent(true);
   surface_layer_impl2->SetRange(viz::SurfaceRange(surface_id1, surface_id2),
-                                base::nullopt);
+                                absl::nullopt);
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
@@ -235,7 +235,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   surface_layer_impl->SetDrawsContent(true);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id1), 1u);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id1), 2u);
-  surface_layer_impl->SetBackgroundColor(SK_ColorBLUE);
+  surface_layer_impl->SetBackgroundColor(SkColors::kBlue);
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
   gfx::Size viewport_size(1000, 1000);
@@ -254,7 +254,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
 
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.end());
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.start());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad1->default_background_color);
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad1->default_background_color);
 }
 
 TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {
@@ -278,8 +278,9 @@ TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {
   // GetEnclosingRectInTargetSpace() and GetScaledEnclosingRectInTargetSpace()
   // should return the same value, otherwise we may not damage the right
   // pixels.
-  EXPECT_EQ(surface_layer_impl->GetScaledEnclosingRectInTargetSpace(1.33),
-            surface_layer_impl->GetEnclosingRectInTargetSpace());
+  EXPECT_EQ(
+      surface_layer_impl->GetScaledEnclosingVisibleRectInTargetSpace(1.33),
+      surface_layer_impl->GetEnclosingVisibleRectInTargetSpace());
 }
 
 TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {
@@ -305,7 +306,7 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {
                     done->Signal();
                 },
                 base::Unretained(&updated), base::Unretained(done)),
-            base::TimeDelta::FromMilliseconds(100));
+            base::Milliseconds(100));
       });
 
   // Note that this has to be created after the callback so that the layer is

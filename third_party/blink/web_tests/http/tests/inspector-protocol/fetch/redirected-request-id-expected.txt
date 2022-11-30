@@ -1,0 +1,6 @@
+Tests requestPaused.redirectedRequestId.
+requestPaused.redirectedRequesId at hop 0: as expected
+requestPaused.redirectedRequesId at hop 1: as expected
+requestPaused.redirectedRequesId at hop 2: as expected
+http://127.0.0.1:8000/protocol/inspector-protocol-page.html
+

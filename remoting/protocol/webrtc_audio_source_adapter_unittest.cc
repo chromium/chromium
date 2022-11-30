@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/proto/audio.pb.h"
@@ -18,15 +19,14 @@
 #include "third_party/webrtc/rtc_base/ref_count.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
 const int kSampleRate = 48000;
 const int kBytesPerSample = 2;
 const int kChannels = 2;
-constexpr auto kFrameDuration = base::TimeDelta::FromMilliseconds(10);
+constexpr auto kFrameDuration = base::Milliseconds(10);
 
 class FakeAudioSink : public webrtc::AudioTrackSinkInterface{
  public:
@@ -62,7 +62,7 @@ class WebrtcAudioSourceAdapterTest : public testing::Test {
     audio_source_adapter_ = new rtc::RefCountedObject<WebrtcAudioSourceAdapter>(
         task_environment_.GetMainThreadTaskRunner());
     audio_source_ = new FakeAudioSource();
-    audio_source_adapter_->Start(base::WrapUnique(audio_source_));
+    audio_source_adapter_->Start(base::WrapUnique(audio_source_.get()));
     audio_source_adapter_->AddSink(&sink_);
     base::RunLoop().RunUntilIdle();
   }
@@ -74,7 +74,7 @@ class WebrtcAudioSourceAdapterTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  FakeAudioSource* audio_source_;
+  raw_ptr<FakeAudioSource> audio_source_;
   scoped_refptr<WebrtcAudioSourceAdapter> audio_source_adapter_;
   FakeAudioSink sink_;
 };
@@ -115,6 +115,4 @@ TEST_F(WebrtcAudioSourceAdapterTest, PartialFrames) {
   }
 }
 
-
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

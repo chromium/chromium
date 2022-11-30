@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 
-namespace chromeos {
-
+namespace ash {
 class EasyUnlockCreateKeysOperation;
 class EasyUnlockRemoveKeysOperation;
-class UserContext;
 
 // The refresh keys operation replaces the existing keys in cryptohome with a
 // new list of keys. This operation is a simple sequence of the create and
@@ -29,6 +26,12 @@ class EasyUnlockRefreshKeysOperation {
                                  const std::string& tpm_public_key,
                                  const EasyUnlockDeviceKeyDataList& devices,
                                  RefreshKeysCallback callback);
+
+  EasyUnlockRefreshKeysOperation(const EasyUnlockRefreshKeysOperation&) =
+      delete;
+  EasyUnlockRefreshKeysOperation& operator=(
+      const EasyUnlockRefreshKeysOperation&) = delete;
+
   ~EasyUnlockRefreshKeysOperation();
 
   void Start();
@@ -47,10 +50,8 @@ class EasyUnlockRefreshKeysOperation {
   std::unique_ptr<EasyUnlockRemoveKeysOperation> remove_keys_operation_;
 
   base::WeakPtrFactory<EasyUnlockRefreshKeysOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockRefreshKeysOperation);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_REFRESH_KEYS_OPERATION_H_

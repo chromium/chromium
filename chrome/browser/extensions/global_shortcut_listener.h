@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -26,6 +25,9 @@ class GlobalShortcutListener {
     // Called when your global shortcut (|accelerator|) is struck.
     virtual void OnKeyPressed(const ui::Accelerator& accelerator) = 0;
   };
+
+  GlobalShortcutListener(const GlobalShortcutListener&) = delete;
+  GlobalShortcutListener& operator=(const GlobalShortcutListener&) = delete;
 
   virtual ~GlobalShortcutListener();
 
@@ -90,8 +92,6 @@ class GlobalShortcutListener {
 
   // Keeps track of whether shortcut handling is currently suspended.
   bool shortcut_handling_suspended_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalShortcutListener);
 };
 
 }  // namespace extensions

@@ -1,11 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -18,11 +19,15 @@
 
 namespace autofill {
 
-class MockSaveAddressProfileBubbleController
-    : public SaveAddressProfileBubbleController {
+class MockSaveUpdateAddressProfileBubbleController
+    : public SaveUpdateAddressProfileBubbleController {
  public:
   MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
+  MOCK_METHOD(const AutofillProfile*,
+              GetOriginalProfile,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               OnUserDecision,
               (AutofillClient::SaveAddressProfileOfferUserDecision decision),
@@ -33,10 +38,20 @@ class MockSaveAddressProfileBubbleController
 
 class SaveAddressProfileViewTest : public ChromeViewsTestBase {
  public:
-  SaveAddressProfileViewTest();
+  SaveAddressProfileViewTest() = default;
   ~SaveAddressProfileViewTest() override = default;
 
   void CreateViewAndShow();
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillAddressProfileSavePrompt);
+    ChromeViewsTestBase::SetUp();
+
+    address_profile_to_save_ = test::GetFullProfile();
+    test_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  }
 
   void TearDown() override {
     view_->GetWidget()->CloseWithReason(
@@ -50,29 +65,22 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
     return address_profile_to_save_;
   }
   SaveAddressProfileView* view() { return view_; }
-  MockSaveAddressProfileBubbleController* mock_controller() {
+  MockSaveUpdateAddressProfileBubbleController* mock_controller() {
     return &mock_controller_;
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  AutofillProfile address_profile_to_save_ = test::GetFullProfile();
+  AutofillProfile address_profile_to_save_;
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  SaveAddressProfileView* view_;
-  testing::NiceMock<MockSaveAddressProfileBubbleController> mock_controller_;
+  raw_ptr<SaveAddressProfileView> view_;
+  testing::NiceMock<MockSaveUpdateAddressProfileBubbleController>
+      mock_controller_;
 };
-
-SaveAddressProfileViewTest::SaveAddressProfileViewTest() {
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillAddressProfileSavePrompt);
-
-  test_web_contents_ =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-}
 
 void SaveAddressProfileViewTest::CreateViewAndShow() {
   ON_CALL(*mock_controller(), GetWindowTitle())

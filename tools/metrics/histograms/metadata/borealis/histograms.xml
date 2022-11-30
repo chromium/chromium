@@ -1,0 +1,277 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Borealis histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Borealis.Disk.Client.AvailableSpaceAtRequest" units="MB"
+    expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Amount of space, in MB, that is available on the Borealis VM disk when a
+    client requests for more space. This is recorded each time a client makes a
+    valid RequestSpace request.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.GetDiskInfoResult"
+    enum="BorealisGetDiskInfoResult" expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of a &quot;GetDiskInfo&quot; request from a client, which will
+    either be a success or an error. This is recorded each time a client makes a
+    GetDiskInfo request.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.NumRequestsPerSesssion" units="requests"
+    expires_after="2023-04-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The number of requests made by a client within a session of Borealis. This
+    counts each time a client makes a disk related request (GetDiskInfo,
+    RequestSpace and ReleaseSpace) and is emitted when Borealis is shutdown.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.ReleaseSpaceResult"
+    enum="BorealisResizeDiskResult" expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of a &quot;ReleaseSpace&quot; request from a client, which will
+    either be a success or an error. This is recorded each time a client makes a
+    ReleaseSpace request.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.RequestSpaceResult"
+    enum="BorealisResizeDiskResult" expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of a &quot;RequestSpace&quot; request from a client, which will
+    either be a success or an error. This is recorded each time a client makes a
+    RequestSpace request.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.SpaceReleased" units="MB"
+    expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Amount of space, in MB, that is freed by the client (via a
+    &quot;ReleaseSpace&quot; request). This is recorded each time a client makes
+    a ReleaseSpace request. This is not necessarily the amount of space that the
+    host frees, it is just the amount that the client signals as free.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.SpaceRequested" units="MB"
+    expires_after="2023-04-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Amount of space, in MB, that is requested by the client (via a
+    &quot;RequestSpace&quot; request). This is recorded each time a client makes
+    a RequestSpace request. This is not necessarily the amount of space granted
+    by the client, it is just the amount that the client has requested.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Startup.Result"
+    enum="BorealisSyncDiskSizeResult" expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of the disk sync process that is run when Borealis is launched.
+    This relays if the disk needed to be resized, if it was done successfully or
+    what error it faced. This is recorded each time the Borealis VM is launched,
+    if the disk management feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Startup.{TypeOfSpace}Space" units="MB"
+    expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    {TypeOfSpace} This is recorded each time the Borealis VM is launched, if the
+    disk management feature is enabled.
+  </summary>
+  <token key="TypeOfSpace">
+    <variant name="Available"
+        summary="Amount of available space, in MB, that Borealis has on its
+                 VM disk when it starts up."/>
+    <variant name="Expandable"
+        summary="Amount of space, in MB, that Borealis can expand its VM disk
+                 by."/>
+    <variant name="Total"
+        summary="Total amount of disk space, in MB, that Borealis has on its
+                 VM disk when it starts up."/>
+  </token>
+</histogram>
+
+<histogram name="Borealis.Disk.StatefulReadsDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis stateful KiB read per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.Disk.StatefulWritesDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis stateful KiB written per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.Disk.SwapReadsDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis swap file KiB read per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.Disk.SwapWritesDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis swap file KiB written per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.EngagementTime.{Variant}" units="ms"
+    expires_after="2023-02-01">
+  <owner>lqu@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    {Variant} Engagement time metrics, along with foreground and background
+    time, are only collected on users with Borealis enabled. All four metrics
+    are accumulated and recorded to UMA once a day.
+  </summary>
+  <token key="Variant">
+    <variant name="Background"
+        summary="Times when a user is engaged and Borealis apps are running
+                 in the background, but the user isn't focusing on an
+                 Borealis app window."/>
+    <variant name="BorealisTotal"
+        summary="Total of Borealis.EngagementTime.Background and .Foreground,
+                 which is the time the user is engaged and Borealis is
+                 running either in the foreground or background."/>
+    <variant name="Foreground"
+        summary="Times when a user is engaged and focuses on a Borealis GUI
+                 window."/>
+    <variant name="Total" summary="Should be same as BorealisTotal."/>
+  </token>
+</histogram>
+
+<histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
+    expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The number of Borealis installation attempts. This is recorded each time a
+    user tries to install Borealis. Specifically, this metric is recorded when a
+    user clicks on the install or retry button in the Borealis installer. It is
+    intended that this metric is compared against the sum of
+    Borealis.Install.Result as a way to measure silent failures.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Install.OverallTime" units="ms"
+    expires_after="2023-02-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Time taken for a successful installation. An install starts when the
+    &quot;install&quot; or &quot;retry&quot; installer buttons are clicked and
+    ends when the install completes successfully, at which point this metric is
+    recorded. Note that retries are considered as their own individual
+    installation attempts.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Install.Result" enum="BorealisInstallResult"
+    expires_after="2023-04-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The installation result, for example, a successful install, a cancelled
+    install, or an error. This is recorded after an installation attempt has
+    ended.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
+    expires_after="2023-02-01">
+  <owner>lqu@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Recording every attempt to exit Borealis given the that VM was launched.
+    Recorded regardless of if the shutdown is successful.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Stability" enum="GuestOsFailureClasses"
+    expires_after="2023-04-09">
+  <owner>cpelling@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    A record of post-startup failures in Borealis components. Buckets are
+    recorded to when we become aware that the corresponding component has
+    failed.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Startup.NumAttempts" enum="BooleanAttempted"
+    expires_after="2023-04-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Recording every attempt to start Borealis (via the UI).</summary>
+</histogram>
+
+<histogram name="Borealis.Startup.OverallTime" units="ms"
+    expires_after="2023-04-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Recording the time taken for each successful attempt to start Borealis (via
+    the UI).
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Startup.Result" enum="BorealisStartupResult"
+    expires_after="2023-04-09">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Recording the result of each attempt to start Borealis, whether it was
+    successful or the error that it faced.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ bool MediaFileChecker::Start(base::TimeDelta check_time) {
       auto context = AVStreamToAVCodecContext(format_context->streams[i]);
       if (!context)
         continue;
-      AVCodec* codec = avcodec_find_decoder(cp->codec_id);
+      const AVCodec* codec = avcodec_find_decoder(cp->codec_id);
       if (codec && avcodec_open2(context.get(), codec, nullptr) >= 0) {
         auto loop = std::make_unique<FFmpegDecodingLoop>(context.get());
         stream_contexts[i] = {std::move(context), std::move(loop)};
@@ -86,8 +86,7 @@ bool MediaFileChecker::Start(base::TimeDelta check_time) {
   auto do_nothing_cb = base::BindRepeating([](AVFrame*) { return true; });
   const base::TimeTicks deadline =
       base::TimeTicks::Now() +
-      std::min(check_time,
-               base::TimeDelta::FromSeconds(kMaxCheckTimeInSeconds));
+      std::min(check_time, base::Seconds(kMaxCheckTimeInSeconds));
   do {
     result = av_read_frame(glue.format_context(), &packet);
     if (result < 0)

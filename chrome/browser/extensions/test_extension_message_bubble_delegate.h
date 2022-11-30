@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,11 +46,7 @@ class TestExtensionMessageBubbleDelegate
   void OnShown(const ExtensionIdList& extensions) override;
   void ClearProfileSetForTesting() override;
   bool ShouldShowExtensionList() const override;
-  bool ShouldHighlightExtensions() const override;
   bool ShouldLimitToEnabledExtensions() const override;
-  void LogExtensionCount(size_t count) override;
-  void LogAction(
-      ExtensionMessageBubbleController::BubbleAction action) override;
   bool SupportsPolicyIndicator() override;
 
   // Indicate that `ShouldIncludeExtension()` should always return true for

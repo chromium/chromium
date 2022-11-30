@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "build/build_config.h"
@@ -18,7 +18,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
 namespace gfx {
 class ClientNativePixmapFactory;
 }
@@ -32,6 +32,10 @@ class GpuMemoryBufferManager;
 class GPU_EXPORT GpuMemoryBufferSupport {
  public:
   GpuMemoryBufferSupport();
+
+  GpuMemoryBufferSupport(const GpuMemoryBufferSupport&) = delete;
+  GpuMemoryBufferSupport& operator=(const GpuMemoryBufferSupport&) = delete;
+
   virtual ~GpuMemoryBufferSupport();
 
   // Returns the native GPU memory buffer factory type. Returns EMPTY_BUFFER
@@ -42,7 +46,7 @@ class GPU_EXPORT GpuMemoryBufferSupport {
   bool IsNativeGpuMemoryBufferConfigurationSupported(gfx::BufferFormat format,
                                                      gfx::BufferUsage usage);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if defined(USE_OZONE)
   gfx::ClientNativePixmapFactory* client_native_pixmap_factory() {
     return client_native_pixmap_factory_.get();
   }
@@ -67,14 +71,13 @@ class GPU_EXPORT GpuMemoryBufferSupport {
       gfx::BufferUsage usage,
       GpuMemoryBufferImpl::DestructionCallback callback,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr,
+      base::span<uint8_t> premapped_memory = base::span<uint8_t>());
 
  private:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if defined(USE_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferSupport);
 };
 
 }  // namespace gpu

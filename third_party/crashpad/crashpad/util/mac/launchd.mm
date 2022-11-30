@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
         }
 
         CFPropertyListRef value_cf =
-            implicit_cast<CFPropertyListRef>([dictionary_ns objectForKey:key]);
+            implicit_cast<CFPropertyListRef>(dictionary_ns[key]);
         launch_data_t value_launch = CFPropertyToLaunchData(value_cf);
         if (!value_launch) {
           return nullptr;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_INSTALLER_UTIL_FIREWALL_MANAGER_WIN_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace base {
 class FilePath;
@@ -18,6 +16,9 @@ namespace installer {
 // Requires that COM be initialized on the calling thread.
 class FirewallManager {
  public:
+  FirewallManager(const FirewallManager&) = delete;
+  FirewallManager& operator=(const FirewallManager&) = delete;
+
   virtual ~FirewallManager();
 
   // Creates instance of |FirewallManager|. Implementation chooses best version
@@ -39,8 +40,6 @@ class FirewallManager {
 
  protected:
   FirewallManager();
-
-  DISALLOW_COPY_AND_ASSIGN(FirewallManager);
 };
 
 }  // namespace installer

@@ -64,7 +64,7 @@ void silk_VQ_WMat_EC_c(
     *rate_dist_Q8 = silk_int32_MAX;
     *res_nrg_Q15 = silk_int32_MAX;
     cb_row_Q7 = cb_Q7;
-    /* In things go really bad, at least *ind is set to something safe. */
+    /* If things go really bad, at least *ind is set to something safe. */
     *ind = 0;
     for( k = 0; k < L; k++ ) {
         opus_int32 penalty;
@@ -115,7 +115,7 @@ void silk_VQ_WMat_EC_c(
         if( sum1_Q15 >= 0 ) {
             /* Translate residual energy to bits using high-rate assumption (6 dB ==> 1 bit/sample) */
             bits_res_Q8 = silk_SMULBB( subfr_len, silk_lin2log( sum1_Q15 + penalty) - (15 << 7) );
-            /* In the following line we reduce the codelength component by half ("-1"); seems to slghtly improve quality */
+            /* In the following line we reduce the codelength component by half ("-1"); seems to slightly improve quality */
             bits_tot_Q8 = silk_ADD_LSHIFT32( bits_res_Q8, cl_Q5[ k ], 3-1 );
             if( bits_tot_Q8 <= *rate_dist_Q8 ) {
                 *rate_dist_Q8 = bits_tot_Q8;

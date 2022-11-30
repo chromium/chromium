@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
 class FilePath;
-class ListValue;
-class Value;
 }
 
 namespace extensions {
@@ -38,8 +36,8 @@ namespace subtle {
 
 // Appends a dictionary {'key': 'value'} to |list|.
 void AppendKeyValuePair(const char* key,
-                        std::unique_ptr<base::Value> value,
-                        base::ListValue* list);
+                        base::Value value,
+                        base::Value::List& list);
 
 }  // namespace subtle
 
@@ -54,17 +52,17 @@ FORWARD_DECLARE_TEST(WebRequestUploadDataPresenterTest, RawData);
 // 3. If that check passed then retrieve object->Result().
 class UploadDataPresenter {
  public:
+  UploadDataPresenter(const UploadDataPresenter&) = delete;
+  UploadDataPresenter& operator=(const UploadDataPresenter&) = delete;
+
   virtual ~UploadDataPresenter();
   virtual void FeedBytes(base::StringPiece bytes) = 0;
   virtual void FeedFile(const base::FilePath& path) = 0;
   virtual bool Succeeded() = 0;
-  virtual std::unique_ptr<base::Value> Result() = 0;
+  virtual absl::optional<base::Value> TakeResult() = 0;
 
  protected:
   UploadDataPresenter() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UploadDataPresenter);
 };
 
 // This class passes all the bytes from bytes elements as a BinaryValue for each
@@ -73,23 +71,24 @@ class UploadDataPresenter {
 class RawDataPresenter : public UploadDataPresenter {
  public:
   RawDataPresenter();
+
+  RawDataPresenter(const RawDataPresenter&) = delete;
+  RawDataPresenter& operator=(const RawDataPresenter&) = delete;
+
   ~RawDataPresenter() override;
 
   // Implementation of UploadDataPresenter.
   void FeedBytes(base::StringPiece bytes) override;
   void FeedFile(const base::FilePath& path) override;
   bool Succeeded() override;
-  std::unique_ptr<base::Value> Result() override;
+  absl::optional<base::Value> TakeResult() override;
 
  private:
   void FeedNextBytes(const char* bytes, size_t size);
   void FeedNextFile(const std::string& filename);
   FRIEND_TEST_ALL_PREFIXES(WebRequestUploadDataPresenterTest, RawData);
 
-  const bool success_;
-  std::unique_ptr<base::ListValue> list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawDataPresenter);
+  base::Value::List list_;
 };
 
 // This class inspects the contents of bytes elements. It uses the
@@ -104,13 +103,17 @@ class RawDataPresenter : public UploadDataPresenter {
 class ParsedDataPresenter : public UploadDataPresenter {
  public:
   explicit ParsedDataPresenter(const net::HttpRequestHeaders& request_headers);
+
+  ParsedDataPresenter(const ParsedDataPresenter&) = delete;
+  ParsedDataPresenter& operator=(const ParsedDataPresenter&) = delete;
+
   ~ParsedDataPresenter() override;
 
   // Implementation of UploadDataPresenter.
   void FeedBytes(base::StringPiece bytes) override;
   void FeedFile(const base::FilePath& path) override;
   bool Succeeded() override;
-  std::unique_ptr<base::Value> Result() override;
+  absl::optional<base::Value> TakeResult() override;
 
   // Allows to create ParsedDataPresenter without request headers. Uses the
   // parser for "application/x-www-form-urlencoded" form encoding. Only use this
@@ -126,9 +129,7 @@ class ParsedDataPresenter : public UploadDataPresenter {
 
   std::unique_ptr<FormDataParser> parser_;
   bool success_;
-  std::unique_ptr<base::DictionaryValue> dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParsedDataPresenter);
+  absl::optional<base::Value::Dict> dictionary_;
 };
 
 }  // namespace extensions

@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/reporting_observer.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/report.h"
@@ -54,13 +54,14 @@ void ReportingObserver::QueueReport(Report* report) {
   // batch.
   if (report_queue_.size() == 1) {
     execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)
-        ->PostTask(FROM_HERE, WTF::Bind(&ReportingObserver::ReportToCallback,
-                                        WrapWeakPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&ReportingObserver::ReportToCallback,
+                                 WrapWeakPersistent(this)));
   }
 }
 
 bool ReportingObserver::ObservedType(const String& type) {
-  return !options_->hasTypesNonNull() || options_->typesNonNull().IsEmpty() ||
+  return !options_->hasTypesNonNull() || options_->typesNonNull().empty() ||
          options_->typesNonNull().Find(type) != kNotFound;
 }
 

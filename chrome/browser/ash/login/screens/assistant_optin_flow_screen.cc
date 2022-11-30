@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr const char kFlowFinished[] = "flow-finished";
@@ -53,8 +53,8 @@ AssistantOptInFlowScreen::~AssistantOptInFlowScreen() {
     view_->Unbind();
 }
 
-bool AssistantOptInFlowScreen::MaybeSkip(WizardContext* context) {
-  if (!g_libassistant_enabled ||
+bool AssistantOptInFlowScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests || !g_libassistant_enabled ||
       chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
@@ -62,7 +62,7 @@ bool AssistantOptInFlowScreen::MaybeSkip(WizardContext* context) {
 
   if (::assistant::IsAssistantAllowedForProfile(
           ProfileManager::GetActiveUserProfile()) ==
-      chromeos::assistant::AssistantAllowedState::ALLOWED) {
+      assistant::AssistantAllowedState::ALLOWED) {
     return false;
   }
 
@@ -93,11 +93,12 @@ AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(bool enabled) {
                                                  enabled);
 }
 
-void AssistantOptInFlowScreen::OnUserAction(const std::string& action_id) {
+void AssistantOptInFlowScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kFlowFinished)
     exit_callback_.Run(Result::NEXT);
   else
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

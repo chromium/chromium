@@ -1,0 +1,5 @@
+include_rules = [
+  "+chrome/browser/ui/views/side_panel/read_anything",
+  "+chrome/browser/ui/views/frame/browser_view.h",
+  "+chrome/common/accessibility",
+]

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,14 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/condition_variable.h"
-#include "base/synchronization/lock.h"
-#include "base/threading/thread_local.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event_memory_overhead.h"
 #include "build/build_config.h"
@@ -57,10 +52,9 @@ class BASE_EXPORT TraceEvent {
 
   TraceEvent();
 
-  TraceEvent(int thread_id,
+  TraceEvent(PlatformThreadId thread_id,
              TimeTicks timestamp,
              ThreadTicks thread_timestamp,
-             ThreadInstructionCount thread_instruction_count,
              char phase,
              const unsigned char* category_group_enabled,
              const char* name,
@@ -88,10 +82,9 @@ class BASE_EXPORT TraceEvent {
   //    event = TraceEvent(thread_id, ....);  // Create and destroy temporary.
   //    event.Reset(thread_id, ...);  // Direct re-initialization.
   //
-  void Reset(int thread_id,
+  void Reset(PlatformThreadId thread_id,
              TimeTicks timestamp,
              ThreadTicks thread_timestamp,
-             ThreadInstructionCount thread_instruction_count,
              char phase,
              const unsigned char* category_group_enabled,
              const char* name,
@@ -101,9 +94,7 @@ class BASE_EXPORT TraceEvent {
              TraceArguments* args,
              unsigned int flags);
 
-  void UpdateDuration(const TimeTicks& now,
-                      const ThreadTicks& thread_now,
-                      ThreadInstructionCount thread_instruction_now);
+  void UpdateDuration(const TimeTicks& now, const ThreadTicks& thread_now);
 
   void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
 
@@ -115,17 +106,11 @@ class BASE_EXPORT TraceEvent {
 
   TimeTicks timestamp() const { return timestamp_; }
   ThreadTicks thread_timestamp() const { return thread_timestamp_; }
-  ThreadInstructionCount thread_instruction_count() const {
-    return thread_instruction_count_;
-  }
   char phase() const { return phase_; }
-  int thread_id() const { return thread_id_; }
-  int process_id() const { return process_id_; }
+  PlatformThreadId thread_id() const { return thread_id_; }
+  ProcessId process_id() const { return process_id_; }
   TimeDelta duration() const { return duration_; }
   TimeDelta thread_duration() const { return thread_duration_; }
-  ThreadInstructionDelta thread_instruction_delta() const {
-    return thread_instruction_delta_;
-  }
   const char* scope() const { return scope_; }
   unsigned long long id() const { return id_; }
   unsigned int flags() const { return flags_; }
@@ -155,7 +140,7 @@ class BASE_EXPORT TraceEvent {
                : nullptr;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SendToATrace();
 #endif
 
@@ -167,8 +152,6 @@ class BASE_EXPORT TraceEvent {
   ThreadTicks thread_timestamp_ = ThreadTicks();
   TimeDelta duration_ = TimeDelta::FromInternalValue(-1);
   TimeDelta thread_duration_ = TimeDelta();
-  ThreadInstructionCount thread_instruction_count_ = ThreadInstructionCount();
-  ThreadInstructionDelta thread_instruction_delta_ = ThreadInstructionDelta();
   // scope_ and id_ can be used to store phase-specific data.
   // The following should be default-initialized to the expression
   // trace_event_internal::kGlobalScope, which is nullptr, but its definition
@@ -184,8 +167,8 @@ class BASE_EXPORT TraceEvent {
   //  tid: thread_id_, pid: current_process_id (default case).
   //  tid: -1, pid: process_id_ (when flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID).
   union {
-    int thread_id_ = 0;
-    int process_id_;
+    PlatformThreadId thread_id_ = 0;
+    ProcessId process_id_;
   };
   unsigned int flags_ = 0;
   unsigned long long bind_id_ = 0;

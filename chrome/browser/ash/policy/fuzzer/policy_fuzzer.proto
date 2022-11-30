@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package policy;
+
+import "chrome_device_policy.proto";
+import "cloud_policy.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message PolicyFuzzerProto {
+  enterprise_management.ChromeDeviceSettingsProto chrome_device_settings = 1;
+
+  enterprise_management.CloudPolicySettings cloud_policy_settings = 2;
+}

@@ -1,51 +1,86 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ALGORITHM_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
 
 namespace blink {
 
-class NGSVGTextLayoutAlgorithm {
+struct SvgTextContentRange;
+
+class NGSvgTextLayoutAlgorithm {
   STACK_ALLOCATED();
 
  public:
-  NGSVGTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
+  NGSvgTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
 
   // Apply SVG specific text layout algorithm to |items|.
   // Text items in |items| will be converted to kSVGText type.
-  void Layout(NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  PhysicalSize Layout(const String& ifc_text_content,
+                      NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
  private:
   // Returns false if we should skip the following steps.
-  bool Setup();
+  bool Setup(wtf_size_t approximate_count);
+  void SetFlags(const String& ifc_text_content,
+                const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void AdjustPositionsDxDy(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void ApplyTextLengthAttribute(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void ResolveTextLength(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+      const SvgTextContentRange& range,
+      Vector<wtf_size_t>& resolved_descendant_node_starts);
+  void AdjustPositionsXY(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void ApplyAnchoring(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void PositionOnPath(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+
+  PhysicalSize WriteBackToFragmentItems(
+      NGFragmentItemsBuilder::ItemWithOffsetList& items);
+
+  float ScalingFactorAt(const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+                        wtf_size_t addressable_index) const;
+  bool IsFirstCharacterInTextPath(wtf_size_t index) const;
 
   NGInlineNode inline_node_;
 
-  // "count" defined in the specification.
-  wtf_size_t count_;
+  // This data member represents the number of addressable characters in the
+  // target IFC. It's similar to "count" defined in the specification.
+  wtf_size_t addressable_count_;
 
   // "horizontal" flag defined in the specification.
   bool horizontal_;
 
-  // "result" defined in the specification
-  struct NGSVGPerCharacterInfo {
-    base::Optional<float> x;
-    base::Optional<float> y;
-    base::Optional<float> rotate;
+  struct SvgPerCharacterInfo {
+    absl::optional<float> x;
+    absl::optional<float> y;
+    absl::optional<float> rotate;
     bool hidden = false;
-    bool addressable = true;
     bool middle = false;
-    bool anchor_chunk = false;
+    bool anchored_chunk = false;
+
+    bool in_text_path = false;
+    bool text_length_resolved = false;
+    float baseline_shift = 0.0f;
+    float inline_size = 0.0f;
+    float length_adjust_scale = 1.0f;
+    float text_length_shift_x = 0.0f;
+    float text_length_shift_y = 0.0f;
     wtf_size_t item_index = WTF::kNotFound;
   };
-  Vector<NGSVGPerCharacterInfo> result_;
+  // This data member represents "result" defined in the specification, but it
+  // contains only addressable characters.
+  Vector<SvgPerCharacterInfo> result_;
 
-  // "CSS_positions" defined in the specification.
-  Vector<FloatPoint> css_positions_;
+  // This data member represents "CSS_positions" defined in the specification,
+  // but it contains only addressable characters.
+  Vector<gfx::PointF> css_positions_;
 };
 
 }  // namespace blink

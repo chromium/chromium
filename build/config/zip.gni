@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,6 +13,8 @@ import("python.gni")
 # base_dir (optional)
 #     If provided, the archive paths will be relative to this directory.
 #     Applies only to |inputs|.
+# zip_comment_values (optional)
+#     A list of key=value strings to store in a JSON-encoded archive comment.
 #
 # deps, public_deps, data, data_deps, testonly, visibility
 #     Normal meaning.
@@ -35,6 +37,15 @@ template("zip") {
       "--output",
       rebase_path(invoker.output, root_build_dir),
     ]
+
+    if (defined(invoker.zip_comment_values)) {
+      foreach(comment, invoker.zip_comment_values) {
+        args += [
+          "--comment-json",
+          comment,
+        ]
+      }
+    }
 
     _rebased_inputs = rebase_path(invoker.inputs, root_build_dir)
     args += [ "--input-files=$_rebased_inputs" ]

@@ -1,0 +1,39 @@
+<style include="diagnostics-shared">
+  #troubleshootingText {
+    color: var(--cros-text-color-primary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    line-height: 20px;
+  }
+
+  #troubleshootingContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px 0;
+    padding-bottom: 20px;
+    padding-top: 16px;
+  }
+
+  #troubleshootingLinkText {
+    color: var(--cros-link-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    line-height: 20px;
+    margin-top: 8px;
+  }
+</style>
+
+<div id="troubleshootingContainer" class="grey-container">
+  <span id="troubleshootingText">
+    [[troubleshootingInfo.header]]
+  </span>
+  <span id="troubleshootingLinkText" class="link-text"
+      hidden$="[[!isLoggedIn_]]"
+      on-click="onLinkTextClicked_">
+    [[troubleshootingInfo.linkText]]
+  </span>
+</div>

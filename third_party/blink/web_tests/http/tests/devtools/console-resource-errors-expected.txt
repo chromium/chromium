@@ -4,12 +4,6 @@ Message count: 5
 console-resource-errors-iframe.html:3 GET http://127.0.0.1:8000/devtools/missing.css net::ERR_ABORTED 404 (Not Found) console-message-wrapper console-error-level > console-message
 console-resource-errors-iframe.html:4 GET http://127.0.0.1:8000/devtools/non-existent-script.js net::ERR_ABORTED 404 (Not Found) console-message-wrapper console-error-level > console-message
 console-resource-errors-iframe.html:8 GET http://127.0.0.1:8000/devtools/non-existent-iframe.html 404 (Not Found) console-message-wrapper console-error-level > console-message
-console-resource-errors.js:25 [Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-loadXHR @ console-resource-errors.js:25
-step2 @ console-resource-errors.js:18
-error (async)
-performActions @ console-resource-errors.js:13
-(anonymous) @ console-resource-errors.js:37 console-message-wrapper console-warning-level > console-message
 console-resource-errors.js:26 GET http://127.0.0.1:8000/devtools/non-existent-xhr 404 (Not Found)
 loadXHR @ console-resource-errors.js:26
 step2 @ console-resource-errors.js:18

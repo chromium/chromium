@@ -1,0 +1,21 @@
+<!-- Simple combobox dialog test html for end-to-end a11y unit tests. -->
+<html>
+  <head>
+    <script>
+      function go() {
+        document.getElementById('test-input').focus();
+        document.getElementById('test-combobox').setAttribute('aria-expanded', 'true');
+        document.getElementById('test-dialog').removeAttribute('hidden');
+        document.getElementById('test-input').setAttribute('aria-controls', 'test-dialog');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="test-combobox" role="combobox" aria-expanded="false">
+      <input id="test-input" type="text">
+      <div id="test-dialog" role="dialog" hidden>
+        <p>Example Dialog</p>
+      </ul>
+    </div>
+  </body>
+</html>

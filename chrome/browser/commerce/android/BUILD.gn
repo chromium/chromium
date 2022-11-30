@@ -1,0 +1,74 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/PriceNotificationPreferenceFragment.java",
+    "java/src/org/chromium/chrome/browser/commerce/PriceUtils.java",
+    "java/src/org/chromium/chrome/browser/commerce/ShoppingFeatures.java",
+    "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/payments/content/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  resources_package = "org.chromium.chrome.browser.commerce"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/xml/price_notification_preferences.xml" ]
+
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/strings:components_strings_grd",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/commerce/PriceUtilsTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/payments/content/android:java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+  ]
+}
+
+generate_jni("shopping_service_jni") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
+  ]
+}

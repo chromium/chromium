@@ -4,6 +4,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/printing/browser",
   "+components/printing/common",
+  "+components/profile_metrics",
   "+components/security_state",
   "+components/viz",
   "+printing",
@@ -15,16 +16,35 @@ include_rules = [
   "+third_party/blink/public/mojom/quota",
   "+third_party/blink/public/mojom/badging",
   "+third_party/blink/public/common/renderer_preferences/renderer_preferences.h",
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
+  "+third_party/blink/public/common/permissions/permission_utils.h",
   "+ui/aura",
   "+ui/compositor",
   "+ui/events/keycodes/dom",
 ]
 specific_include_rules = {
   "headless_browser_main_parts.*": [
+    "+components/origin_trials/browser",
     "+components/policy",
     "+components/prefs",
+    "+components/pref_registry",
+    "+components/keyed_service/content",
   ],
-  "headless_browser_policy_connector.*": [
+  "headless_browser_context_impl.cc": [
+    "+components/keyed_service/content",
+    "+components/origin_trials",
+    "+components/user_prefs",
+    "+third_party/blink/public/common/origin_trials",
+  ],
+  "headless_content_browser_client.cc": [
     "+components/policy",
+    "+components/printing/browser/print_to_pdf",
+  ],
+  "headless_web_contents_impl.cc": [
+    "+components/printing/browser/print_to_pdf",
+    "+third_party/blink/public/mojom/window_features",
+  ],
+  "headless_select_file_dialog_factory.*": [
+    "+ui/shell_dialogs",
   ],
 }

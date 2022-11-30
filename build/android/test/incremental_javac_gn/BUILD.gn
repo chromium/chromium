@@ -1,0 +1,98 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+declare_args() {
+  incremental_javac_test_toggle_gn = false
+}
+
+all_test_sources = [
+  "../../java/test/NoSignatureChangeIncrementalJavacTestHelper.template",
+  "../../java/test/NoSignatureChangeIncrementalJavacTestHelper2.java",
+]
+
+template("incremental_javac_prebuilt") {
+  _out_jar = "${target_gen_dir}/${target_name}.jar"
+
+  action(target_name) {
+    script = "incremental_javac_test_android_library.py"
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "testonly",
+                           ])
+    deps = [ invoker.toggle_gn_target ]
+
+    inputs = []
+    if (defined(invoker.pydeps)) {
+      foreach(_pydeps_file, invoker.pydeps) {
+        _pydeps_file_lines = []
+        _pydeps_file_lines = read_file(_pydeps_file, "list lines")
+        _pydeps_entries = []
+        _pydeps_entries = filter_exclude(_pydeps_file_lines, [ "#*" ])
+        _pydeps_file_dir = get_path_info(_pydeps_file, "dir")
+        inputs += rebase_path(_pydeps_entries, ".", _pydeps_file_dir)
+      }
+    }
+
+    outputs = [ _out_jar ]
+
+    args = [
+      "--target-name",
+      get_label_info("${invoker.toggle_gn_target}", "label_no_toolchain"),
+      "--gn-args-path",
+      "args.gn",
+      "--out-dir",
+      rebase_path("${target_out_dir}/${target_name}/incremental_javac_out",
+                  root_build_dir),
+      "--out-jar",
+      rebase_path(_out_jar, root_build_dir),
+    ]
+  }
+}
+
+# Use jinja_template() instead of java_cpp_template() because incremental builds
+# are not done when non-.java files change.
+jinja_template("changing_javagen") {
+  input = "../../java/test/NoSignatureChangeIncrementalJavacTestHelper.template"
+  assert(filter_include(all_test_sources, [ input ]) != [])
+  output =
+      "${target_gen_dir}/test/NoSignatureChangeIncrementalJavacTestHelper.java"
+  if (incremental_javac_test_toggle_gn) {
+    variables = [ "foo_return_value=foo2" ]
+  } else {
+    variables = [ "foo_return_value=foo" ]
+  }
+}
+
+android_library("changing_java") {
+  testonly = true
+
+  # Should not be re-compiled during incremental build.
+  sources =
+      [ "../../java/test/NoSignatureChangeIncrementalJavacTestHelper2.java" ]
+  assert(filter_include(all_test_sources, sources) != [])
+
+  # Should be recompiled during incremental build.
+  sources += get_target_outputs(":changing_javagen")
+  deps = [ ":changing_javagen" ]
+}
+
+# Compiles :changing_java with and without |incremental_javac_test_toggle_gn|.
+incremental_javac_prebuilt("no_signature_change_prebuilt_generator") {
+  testonly = true
+  sources = all_test_sources
+  toggle_gn_target = ":changing_java"
+  pydeps = [ "//build/android/gyp/compile_java.pydeps" ]
+}
+
+android_java_prebuilt("no_signature_change_prebuilt_java") {
+  testonly = true
+  _generator_outputs =
+      get_target_outputs(":no_signature_change_prebuilt_generator")
+  jar_paths = filter_include(_generator_outputs, [ "*.jar" ])
+  jar_path = jar_paths[0]
+  deps = [ ":no_signature_change_prebuilt_generator" ]
+}

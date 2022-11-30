@@ -1,0 +1,185 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.os.diagnostics</code> API to run diagnostic routines.
+//
+// Many types defined here map with Mojo structs defined in
+// chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"]
+namespace os.diagnostics {
+  enum RoutineType {
+    ac_power,
+    battery_capacity,
+    battery_charge,
+    battery_discharge,
+    battery_health,
+    cpu_cache,
+    cpu_floating_point_accuracy,
+    cpu_prime_search,
+    cpu_stress,
+    disk_read,
+    dns_resolution,
+    memory,
+    nvme_wear_level,
+    smartctl_check,
+    lan_connectivity,
+    signal_strength,
+    dns_resolver_present,
+    gateway_can_be_pinged
+  };
+
+  enum RoutineStatus {
+    unknown,
+    ready,
+    running,
+    waiting_user_action,
+    passed,
+    failed,
+    error,
+    cancelled,
+    failed_to_start,
+    removed,
+    cancelling,
+    unsupported,
+    not_run
+  };
+
+  enum RoutineCommandType {
+    cancel,
+    remove,
+    resume,
+    status
+  };
+
+  enum UserMessageType {
+    unknown,
+    unplug_ac_power,
+    plug_in_ac_power
+  };
+
+  enum DiskReadRoutineType {
+    linear,
+    random
+  };
+
+  enum AcPowerStatus {
+    connected,
+    disconnected
+  };
+
+  dictionary GetAvailableRoutinesResponse {
+    RoutineType[] routines;
+  };
+
+  dictionary GetRoutineUpdateRequest {
+    long id;
+    RoutineCommandType command;
+  };
+
+  dictionary GetRoutineUpdateResponse {
+    long progress_percent;
+    DOMString? output;
+    RoutineStatus status;
+    DOMString status_message;
+    // Returned for routines that require user action (e.g. unplug power cable).
+    UserMessageType? user_message;
+  };
+
+  dictionary RunAcPowerRoutineRequest {
+    AcPowerStatus expected_status;
+    // If specified, this must match the type of power
+    // supply for the routine to succeed.
+    DOMString? expected_power_type;
+  };
+
+  dictionary RunBatteryChargeRoutineRequest {
+    long length_seconds;
+
+    long minimum_charge_percent_required;
+  };
+
+  dictionary RunBatteryDischargeRoutineRequest {
+    long length_seconds;
+
+    long maximum_discharge_percent_allowed;
+  };
+
+  dictionary RunCpuRoutineRequest {
+    long length_seconds;
+  };
+
+  dictionary RunDiskReadRequest {
+    DiskReadRoutineType type;
+    long length_seconds;
+    long file_size_mb;
+  };
+
+  dictionary RunNvmeWearLevelRequest {
+    long wear_level_threshold;
+  };
+
+  dictionary RunRoutineResponse {
+    long id;
+
+    RoutineStatus status;
+  };
+
+  callback GetAvailableRoutinesCallback = void (GetAvailableRoutinesResponse response);
+
+  callback GetRoutineUpdateCallback = void (GetRoutineUpdateResponse response);
+
+  callback RunRoutineCallback = void (RunRoutineResponse response);
+
+  interface Functions {
+    [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
+
+    [supportsPromises] static void getRoutineUpdate(GetRoutineUpdateRequest request,
+                                                    GetRoutineUpdateCallback callback);
+
+    [supportsPromises] static void runAcPowerRoutine(RunAcPowerRoutineRequest request,
+                                                     RunRoutineCallback callback);
+
+    [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runBatteryChargeRoutine(RunBatteryChargeRoutineRequest request,
+                                                           RunRoutineCallback callback);
+
+    [supportsPromises] static void runBatteryDischargeRoutine(RunBatteryDischargeRoutineRequest request,
+                                                              RunRoutineCallback callback);
+
+    [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
+                                                      RunRoutineCallback callback);
+
+    [supportsPromises] static void runCpuFloatingPointAccuracyRoutine(RunCpuRoutineRequest request,
+                                                                      RunRoutineCallback callback);
+
+    [supportsPromises] static void runCpuPrimeSearchRoutine(RunCpuRoutineRequest request,
+                                                            RunRoutineCallback callback);
+
+    [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
+                                                       RunRoutineCallback callback);
+
+    [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
+                                                      RunRoutineCallback callback);
+
+    [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runNvmeWearLevelRoutine(RunNvmeWearLevelRequest request,
+                                                           RunRoutineCallback callback);
+
+    [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
+  };
+};

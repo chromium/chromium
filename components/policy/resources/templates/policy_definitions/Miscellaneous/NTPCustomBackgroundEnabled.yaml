@@ -1,0 +1,28 @@
+caption: Allow users to customize the background on the New Tab page
+default: true
+default_for_enterprise_users: true
+desc: |-
+  If the policy is set to false, the New Tab page won't allow users to customize the background. Any existing custom background will be permanently removed even if the policy is set to true later.
+
+        If the policy is set to true or unset, users can customize the background on the New Tab page.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Users can customize the New Tab page background
+  value: true
+- caption: Users can not customize the New Tab page background
+  value: false
+owners:
+- mahmadi@chromium.org
+- yyushkina@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:80-
+- chrome_os:80-
+tags: []
+type: main

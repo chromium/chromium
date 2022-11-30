@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script>
+const sheet = new CSSStyleSheet();
+
+sheet.replaceSync(`
+  #parent {
+    width: 200px;
+    contain: layout style size;
+  }
+
+  @container (min-width: 100px) {
+    .item {
+      font-size: 1px;
+    }
+  }
+
+  #named-container {
+    width: 300px;
+    container-name: container-1;
+    container-type: inline-size;
+  }
+
+  @container container-1 (max-width: 300px) {
+    .item {
+      color: #abc;
+    }
+  }
+`);
+
+// Apply the stylesheet to a document:
+document.adoptedStyleSheets = [sheet];
+</script>
+<div id="named-container">
+  <div id="parent">
+    <div class="item"></div>
+  </div>
+</div>

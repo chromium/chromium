@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -237,7 +237,7 @@ public class RequestCoordinatorBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void getRequestsInQueue(Profile profile, Callback<SavePageRequest[]> callback);
         void removeRequestsFromQueue(
                 Profile profile, long[] requestIds, RequestsRemovedCallback callback);

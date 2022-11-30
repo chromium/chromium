@@ -1,22 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
@@ -47,6 +50,18 @@ class SingleClientUserEventsSyncTest : public SyncTest {
   }
 };
 
+class SingleClientUserEventsSyncTestWithEnabledThrottling
+    : public SingleClientUserEventsSyncTest {
+ public:
+  SingleClientUserEventsSyncTestWithEnabledThrottling() {
+    features_override_.InitAndEnableFeature(
+        syncer::kSyncExtensionTypesThrottling);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(
@@ -62,9 +77,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
   ASSERT_TRUE(SetupSync());
   const UserEventSpecifics specifics1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics specifics2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
@@ -91,9 +106,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
   ASSERT_TRUE(SetupSync());
 
   const UserEventSpecifics specifics1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics specifics2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
 
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
@@ -131,11 +146,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
   const UserEventSpecifics test_event1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics test_event2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
   const UserEventSpecifics test_event3 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(3));
+      CreateTestEvent(base::Time() + base::Microseconds(3));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
@@ -161,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
   const UserEventSpecifics specifics =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
@@ -176,9 +191,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
   const UserEventSpecifics test_event1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics test_event2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
@@ -202,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
                        ShouldNotUploadInSyncPausedState) {
   const UserEventSpecifics test_event =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
@@ -229,6 +244,42 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
 
   // No event should get synced up.
   EXPECT_TRUE(ExpectUserEvents({}));
+}
+
+// This is an analogy to SingleClientBookmarksSyncTest.DepleteQuota, tested on
+// a datatype that has no quota restrictions.
+IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTestWithEnabledThrottling,
+                       NoQuotaApplied) {
+  ASSERT_TRUE(SetupSync());
+  // Add enough user events that would deplete quota in the initial cycle.
+  syncer::UserEventService* event_service =
+      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+
+  std::vector<UserEventSpecifics> expected_specifics;
+  base::Time zero;
+  // Default number of entities per message on the client are 25, thus the quota
+  // would be fully depleted in 25*101 messages.
+  for (int i = 0; i < 2525; i++) {
+    const UserEventSpecifics specifics =
+        CreateTestEvent(zero + base::Milliseconds(i));
+    event_service->RecordUserEvent(specifics);
+    expected_specifics.push_back(specifics);
+  }
+  EXPECT_TRUE(ExpectUserEvents(expected_specifics));
+
+  base::HistogramTester histogram_tester;
+
+  // Adding another entity again triggers sync immediately (as there's no
+  // quota).
+  const UserEventSpecifics specifics = CreateTestEvent(zero + base::Seconds(3));
+  event_service->RecordUserEvent(specifics);
+  expected_specifics.push_back(specifics);
+  EXPECT_TRUE(ExpectUserEvents(expected_specifics));
+
+  // Make sure the histogram gets propagated from the sync engine sequence.
+  base::StatisticsRecorder::ImportProvidedHistograms();
+  // There is no record in the depleted quota histogram.
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }
 
 }  // namespace

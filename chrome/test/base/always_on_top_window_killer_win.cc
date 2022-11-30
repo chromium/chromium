@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/process_lineage_win.h"
 #include "chrome/test/base/save_desktop_snapshot_win.h"
 #include "ui/display/win/screen_win.h"
@@ -73,7 +73,7 @@ class WindowEnumerator {
 
   const base::FilePath output_dir_;
   const RunType run_type_;
-  const base::CommandLine* const child_command_line_;
+  const raw_ptr<const base::CommandLine> child_command_line_;
   bool saved_snapshot_ = false;
 };
 
@@ -120,9 +120,9 @@ bool WindowEnumerator::IsTopmostWindow(HWND hwnd) {
 // static
 std::wstring WindowEnumerator::GetWindowClass(HWND hwnd) {
   wchar_t buffer[257];  // Max is 256.
-  buffer[base::size(buffer) - 1] = L'\0';
-  int name_len = ::GetClassName(hwnd, &buffer[0], base::size(buffer));
-  if (name_len <= 0 || static_cast<size_t>(name_len) >= base::size(buffer))
+  buffer[std::size(buffer) - 1] = L'\0';
+  int name_len = ::GetClassName(hwnd, &buffer[0], std::size(buffer));
+  if (name_len <= 0 || static_cast<size_t>(name_len) >= std::size(buffer))
     return std::wstring();
   return std::wstring(&buffer[0], name_len);
 }

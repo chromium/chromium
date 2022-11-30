@@ -32,5 +32,5 @@
   <translation/>
   <developer_name>The Chromium Authors</developer_name>
   <url type="bugtracker">https://www.chromium.org/for-testers/bug-reporting-guidelines</url>
-  <url type="help">https://chromium.googlesource.com/chromium/src/+/master/docs/linux/debugging.md</url>
+  <url type="help">https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md</url>
 </component>

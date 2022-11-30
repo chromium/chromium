@@ -1,0 +1,213 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/media_app_ui/media_app_ui.gni")
+import("//ash/webui/web_applications/system_apps.gni")
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Media App is ash-chrome only")
+
+static_library("media_app_ui") {
+  sources = [
+    "file_system_access_helpers.cc",
+    "file_system_access_helpers.h",
+    "media_app_guest_ui.cc",
+    "media_app_guest_ui.h",
+    "media_app_page_handler.cc",
+    "media_app_page_handler.h",
+    "media_app_ui.cc",
+    "media_app_ui.h",
+    "media_app_ui_delegate.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    ":mojo_bindings_js",
+    "//ash/constants:constants",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/resources:media_app_bundle_resources",
+    "//ash/webui/resources:media_app_resources",
+    "//ash/webui/web_applications",
+    "//chromeos/constants",
+    "//chromeos/strings",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//third_party/blink/public/common",
+    "//ui/file_manager:resources",
+    "//ui/webui",
+  ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "test/media_app_ui_gtest_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":browser_test_support",
+    "//ash/constants",
+    "//chromeos/constants",
+  ]
+}
+
+source_set("browser_test_support") {
+  testonly = true
+  sources = [
+    "test/media_app_ui_browsertest.cc",
+    "test/media_app_ui_browsertest.h",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":media_app_ui",
+    "//ash/webui/web_applications/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+
+  data = [
+    "//ash/webui/system_apps/public/js/dom_testing_helpers.js",
+    "test/driver.js",
+    "test/driver_api.js",
+    "test/guest_query_receiver.js",
+    "test/media_app_ui_browsertest.js",
+    "test/media_app_guest_ui_browsertest.js",
+    "test/test_worker.js",
+  ]
+}
+
+group("closure_compile") {
+  testonly = true
+  deps = [
+    ":closure_compile_browsertests",
+    ":closure_compile_test_lib",
+    "resources/js:closure_compile",
+    "resources/mock/js:closure_compile",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "media_app_ui.mojom" ]
+  deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+}
+
+media_test_lib_closure_flags = system_app_closure_flags_strict + [
+                                 "hide_warnings_for=ash/webui/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
+                                 "js_module_root=" +
+                                     rebase_path(".", root_build_dir),
+                                 "js_module_root=" +
+                                     rebase_path(target_gen_dir,
+                                                 root_build_dir),
+                               ]
+
+# Use relaxed flags for the browsertest files themselves. This removes null
+# checks and "could not determine type" errors which don't add a lot of value.
+media_browsertest_closure_flags = system_app_closure_flags + [
+                                    "hide_warnings_for=ash/webui/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
+                                    "js_module_root=" +
+                                        rebase_path(".", root_build_dir),
+                                    "js_module_root=" +
+                                        rebase_path(target_gen_dir,
+                                                    root_build_dir),
+                                  ]
+
+js_type_check("closure_compile_test_lib") {
+  testonly = true
+  closure_flags = media_test_lib_closure_flags
+  deps = [
+    ":test_driver_api_js",
+    ":test_driver_js",
+    ":test_guest_query_receiver_js",
+  ]
+}
+
+js_type_check("closure_compile_browsertests") {
+  testonly = true
+  closure_flags = media_browsertest_closure_flags
+  deps = [
+    ":test_media_app_guest_ui_browsertest_js",
+    ":test_media_app_ui_browsertest_js",
+    ":test_media_app_ui_gtest_browsertest_js",
+  ]
+}
+
+js_library("test_driver_api_js") {
+  testonly = true
+  externs_list =
+      [ "//ash/webui/web_applications/externs/file_handling.externs.js" ]
+  sources = [ "test/driver_api.js" ]
+}
+
+js_library("test_guest_query_receiver_js") {
+  testonly = true
+  sources = [ "test/guest_query_receiver.js" ]
+  deps = [
+    ":test_driver_api_js",
+    "//ash/webui/media_app_ui/resources/js:receiver",
+    "//ash/webui/system_apps/public/js:dom_testing_helpers",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_driver_js") {
+  testonly = true
+  sources = [ "test/driver.js" ]
+  externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
+  deps = [
+    ":test_driver_api_js",
+    "//ash/webui/media_app_ui/resources/js:launch",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_worker_js") {
+  testonly = true
+  sources = [ "test/test_worker.js" ]
+}
+
+js_library("test_media_app_ui_gtest_browsertest_js") {
+  testonly = true
+  sources = [ "test/media_app_ui_gtest_browsertest.js" ]
+  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
+  deps = [ ":test_media_app_ui_browsertest_js" ]
+}
+
+js_library("test_media_app_ui_browsertest_js") {
+  testonly = true
+  sources = [ "test/media_app_ui_browsertest.js" ]
+  deps = [
+    ":test_driver_js",
+    "//ash/webui/media_app_ui/resources/js:launch",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_media_app_guest_ui_browsertest_js") {
+  testonly = true
+  sources = [ "test/media_app_guest_ui_browsertest.js" ]
+  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
+  deps = [
+    ":test_driver_js",
+    ":test_worker_js",
+    "//ash/webui/media_app_ui/resources/js:receiver",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+# Used to turn off tests that only work with our CIPD package e.g. loading ink.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_CROS_MEDIA_APP=$enable_cros_media_app" ]
+}

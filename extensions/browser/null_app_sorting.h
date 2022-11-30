@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/browser/app_sorting.h"
 
 namespace extensions {
@@ -17,6 +16,10 @@ namespace extensions {
 class NullAppSorting : public AppSorting {
  public:
   NullAppSorting();
+
+  NullAppSorting(const NullAppSorting&) = delete;
+  NullAppSorting& operator=(const NullAppSorting&) = delete;
+
   ~NullAppSorting() override;
 
   // AppSorting overrides:
@@ -52,9 +55,6 @@ class NullAppSorting : public AppSorting {
   syncer::StringOrdinal PageIntegerAsStringOrdinal(size_t page_index) override;
   void SetExtensionVisible(const std::string& extension_id,
                            bool visible) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullAppSorting);
 };
 
 }  // namespace extensions

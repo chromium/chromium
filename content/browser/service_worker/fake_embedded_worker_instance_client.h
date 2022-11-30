@@ -1,12 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_FAKE_EMBEDDED_WORKER_INSTANCE_CLIENT_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_FAKE_EMBEDDED_WORKER_INSTANCE_CLIENT_H_
 
-#include <string>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,6 +27,12 @@ class FakeEmbeddedWorkerInstanceClient
  public:
   // |helper| must outlive this instance.
   explicit FakeEmbeddedWorkerInstanceClient(EmbeddedWorkerTestHelper* helper);
+
+  FakeEmbeddedWorkerInstanceClient(const FakeEmbeddedWorkerInstanceClient&) =
+      delete;
+  FakeEmbeddedWorkerInstanceClient& operator=(
+      const FakeEmbeddedWorkerInstanceClient&) = delete;
+
   ~FakeEmbeddedWorkerInstanceClient() override;
 
   EmbeddedWorkerTestHelper* helper() { return helper_; }
@@ -68,7 +73,7 @@ class FakeEmbeddedWorkerInstanceClient
   void CallOnConnectionError();
 
   // |helper_| owns |this|.
-  EmbeddedWorkerTestHelper* const helper_;
+  const raw_ptr<EmbeddedWorkerTestHelper> helper_;
 
   blink::mojom::EmbeddedWorkerStartParamsPtr start_params_;
   mojo::AssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost> host_;
@@ -82,8 +87,6 @@ class FakeEmbeddedWorkerInstanceClient
   std::unique_ptr<LoaderClient> main_script_loader_client_;
 
   base::WeakPtrFactory<FakeEmbeddedWorkerInstanceClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEmbeddedWorkerInstanceClient);
 };
 
 // A EmbeddedWorkerInstanceClient fake that doesn't respond to the Start/Stop
@@ -93,6 +96,12 @@ class DelayedFakeEmbeddedWorkerInstanceClient
  public:
   explicit DelayedFakeEmbeddedWorkerInstanceClient(
       EmbeddedWorkerTestHelper* helper);
+
+  DelayedFakeEmbeddedWorkerInstanceClient(
+      const DelayedFakeEmbeddedWorkerInstanceClient&) = delete;
+  DelayedFakeEmbeddedWorkerInstanceClient& operator=(
+      const DelayedFakeEmbeddedWorkerInstanceClient&) = delete;
+
   ~DelayedFakeEmbeddedWorkerInstanceClient() override;
 
   // Unblocks the Start/StopWorker() call to this instance. May be called before
@@ -119,8 +128,6 @@ class DelayedFakeEmbeddedWorkerInstanceClient
 
   // Valid after StartWorker() until start is unblocked.
   blink::mojom::EmbeddedWorkerStartParamsPtr start_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedFakeEmbeddedWorkerInstanceClient);
 };
 
 }  // namespace content

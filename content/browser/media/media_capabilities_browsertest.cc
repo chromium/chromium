@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,8 +22,10 @@ namespace {
 
 const char kDecodeTestFile[] = "decode_capabilities_test.html";
 const char kSupported[] = "SUPPORTED";
+const char16_t kSupported16[] = u"SUPPORTED";
 const char kUnsupported[] = "UNSUPPORTED";
-const char kError[] = "ERROR";
+const char16_t kUnsupported16[] = u"UNSUPPORTED";
+const char16_t kError[] = u"ERROR";
 const char kFileString[] = "file";
 const char kMediaSourceString[] = "media-source";
 
@@ -50,6 +52,9 @@ namespace content {
 class MediaCapabilitiesTest : public ContentBrowserTest {
  public:
   MediaCapabilitiesTest() = default;
+
+  MediaCapabilitiesTest(const MediaCapabilitiesTest&) = delete;
+  MediaCapabilitiesTest& operator=(const MediaCapabilitiesTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
@@ -139,17 +144,13 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
     command.append(content_type);
     command.append(");");
 
-    EXPECT_TRUE(ExecuteScript(shell(), command));
+    EXPECT_TRUE(ExecJs(shell(), command));
 
-    TitleWatcher title_watcher(shell()->web_contents(),
-                               base::ASCIIToUTF16(kSupported));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kUnsupported));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kError));
+    TitleWatcher title_watcher(shell()->web_contents(), kSupported16);
+    title_watcher.AlsoWaitForTitle(kUnsupported16);
+    title_watcher.AlsoWaitForTitle(kError);
     return base::UTF16ToASCII(title_watcher.WaitAndGetTitle());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaCapabilitiesTest);
 };
 
 // Adds param for query type (file vs media-source) to
@@ -170,11 +171,18 @@ class MediaCapabilitiesTestWithConfigType
   }
 };
 
+// Fails on Linux and Chrome OS: http://crbug.com/1220321.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CommonVideoDecodeTypes DISABLED_CommonVideoDecodeTypes
+#else
+#define MAYBE_CommonVideoDecodeTypes CommonVideoDecodeTypes
+#endif
+
 // Cover basic codec support of content types where the answer of support
 // (or not) should be common to both "media-source" and "file" query types.
 // for more exhaustive codec string testing.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
-                       CommonVideoDecodeTypes) {
+                       MAYBE_CommonVideoDecodeTypes) {
   base::FilePath file_path = media::GetTestDataFilePath(kDecodeTestFile);
 
   const std::string& config_type = GetTypeString();
@@ -363,9 +371,16 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                               /*spatial_rendering*/ true));
 }
 
+// Fails on Linux and Chrome OS: http://crbug.com/1220321.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_VideoTypesWithDynamicRange DISABLED_VideoTypesWithDynamicRange
+#else
+#define MAYBE_VideoTypesWithDynamicRange VideoTypesWithDynamicRange
+#endif
+
 // Cover basic HDR support.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
-                       VideoTypesWithDynamicRange) {
+                       MAYBE_VideoTypesWithDynamicRange) {
   base::FilePath file_path = media::GetTestDataFilePath(kDecodeTestFile);
 
   const std::string& config_type = GetTypeString();

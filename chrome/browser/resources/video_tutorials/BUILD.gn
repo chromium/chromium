@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,5 +9,5 @@ js_type_check("closure_compile") {
 }
 
 js_library("video_player") {
-  deps = [ "//ui/webui/resources/js:util.m" ]
+  deps = [ "//ui/webui/resources/js:util" ]
 }

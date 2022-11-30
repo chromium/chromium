@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 
 #include "base/check.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -54,6 +53,6 @@ void AllTabContentsesList::Iterator::Next() {
 }
 
 const AllTabContentsesList& AllTabContentses() {
-  static const base::NoDestructor<AllTabContentsesList> all_tabs;
-  return *all_tabs;
+  static const AllTabContentsesList all_tabs;
+  return all_tabs;
 }

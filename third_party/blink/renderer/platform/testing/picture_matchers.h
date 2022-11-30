@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_PICTURE_MATCHERS_H_
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 class SkPicture;
 
 namespace blink {
-
-class FloatRect;
 
 // Matches if the picture draws exactly one rectangle, which (after accounting
 // for the total transformation matrix and applying any clips inside that
@@ -21,12 +19,13 @@ class FloatRect;
 // requested.
 // Note that clips which appear outside of a transform are not currently
 // supported.
-testing::Matcher<const SkPicture&> DrawsRectangle(const FloatRect&, Color);
+testing::Matcher<const SkPicture&> DrawsRectangle(const gfx::RectF&, Color);
 
 struct RectWithColor {
-  RectWithColor(const FloatRect& rect_arg, const Color& color_arg)
+  RectWithColor(const gfx::RectF& rect_arg, const Color& color_arg)
       : rect(rect_arg), color(color_arg) {}
-  FloatRect rect;
+  gfx::RectF rect;
+  // TODO(https://crbug.com/1351544): This class should use SkColor4f.
   Color color;
 };
 

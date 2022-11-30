@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,8 @@ namespace cc {
 
 class LayerTreeHostSingleThreadClient {
  public:
-  // Request that the client schedule a composite. For tests using single thread
-  // without a scheduler.
-  virtual void RequestScheduleComposite() {}
+  // Tells single-threaded web tests that a new commit needs to be scheduled.
+  virtual void ScheduleAnimationForWebTests() {}
 
   // Called whenever the begin frame interval changes. This interval can be used
   // for animations.

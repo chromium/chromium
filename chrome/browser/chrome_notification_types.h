@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,54 +37,6 @@ namespace chrome {
 enum NotificationType {
   NOTIFICATION_CHROME_START = PREVIOUS_END,
 
-  // Browser-window ----------------------------------------------------------
-
-  // This message is sent after a window has been opened.  The source is a
-  // Source<Browser> containing the affected Browser.  No details are
-  // expected.
-  // DEPRECATED: Use BrowserListObserver::OnBrowserAdded()
-  // TODO(https://crbug.com/1174776): Remove.
-  NOTIFICATION_BROWSER_OPENED = NOTIFICATION_CHROME_START,
-
-  // This message is sent when closing a browser has been cancelled, either by
-  // the user cancelling a beforeunload dialog, or IsClosingPermitted()
-  // disallowing closing. This notification implies that no BROWSER_CLOSING or
-  // BROWSER_CLOSED notification will be sent.
-  // The source is a Source<Browser> containing the affected browser. No details
-  // are expected.
-  // TODO(https://crbug.com/1174777): Remove.
-  NOTIFICATION_BROWSER_CLOSE_CANCELLED,
-
-  // Application-wide ----------------------------------------------------------
-
-  // This message is sent when the application is terminating (the last
-  // browser window has shutdown as part of an explicit user-initiated exit,
-  // or the user closed the last browser window on Windows/Linux and there are
-  // no BackgroundContents keeping the browser running). No source or details
-  // are passed.
-  // TODO(https://crbug.com/1174781): Remove.
-  NOTIFICATION_APP_TERMINATING,
-
-#if defined(OS_MAC)
-  // This notification is sent when the app has no key window, such as when
-  // all windows are closed but the app is still active. No source or details
-  // are provided.
-  // TODO(https://crbug.com/1174783): Remove.
-  NOTIFICATION_NO_KEY_WINDOW,
-#endif
-
-  // This is sent when the user has chosen to exit the app, but before any
-  // browsers have closed. This is sent if the user chooses to exit (via exit
-  // menu item or keyboard shortcut) or to restart the process (such as in flags
-  // page), not if Chrome exits by some other means (such as the user closing
-  // the last window). No source or details are passed.
-  //
-  // Note that receiving this notification does not necessarily mean the process
-  // will exit because the shutdown process can be cancelled by an unload
-  // handler.  Use APP_TERMINATING for such needs.
-  // TODO(https://crbug.com/1174784): Remove.
-  NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-
   // Authentication ----------------------------------------------------------
 
   // This is sent when a login prompt is shown.  The source is the
@@ -92,7 +44,7 @@ enum NotificationType {
   // Details are a LoginNotificationDetails which provide the LoginHandler
   // that should be given authentication.
   // TODO(https://crbug.com/1174785): Remove.
-  NOTIFICATION_AUTH_NEEDED,
+  NOTIFICATION_AUTH_NEEDED = NOTIFICATION_CHROME_START,
 
   // This is sent when authentication credentials have been supplied (either
   // by the user or by an automation service), but before we've actually
@@ -117,78 +69,14 @@ enum NotificationType {
   // Use ProfileManagerObserver::OnProfileAdded instead of this notification.
   // Sent after a Profile has been added to ProfileManager.
   // The details are none and the source is the new profile.
-  // TODO(https://crbug.com/1174720): Remove. See also
-  // https://crbug.com/1038437.
+  // Note: this notification is only sent for profiles owned by the
+  // `ProfileManager`. In particular, off-the-record profiles don't trigger this
+  // notification, but on-the-record System and Guest profiles do.
+  //  TODO(https://crbug.com/1174720): Remove. See also
+  //  https://crbug.com/1038437.
   NOTIFICATION_PROFILE_ADDED,
 
-  // Printing ----------------------------------------------------------------
-
-  // Notification from PrintJob that an event occurred. It can be that a page
-  // finished printing or that the print job failed. Details is
-  // PrintJob::EventDetails. Source is a PrintJob.
-  // TODO(https://crbug.com/796051): Remove.
-  NOTIFICATION_PRINT_JOB_EVENT,
-
-  // Sent when a PrintJob has been released.
-  // Source is the WebContents that holds the print job.
-  // TODO(https://crbug.com/1174788): Remove.
-  NOTIFICATION_PRINT_JOB_RELEASED,
-
   // Misc --------------------------------------------------------------------
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Sent when a network error message is displayed on the WebUI login screen.
-  // First paint event of this fires NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE.
-  // TODO(https://crbug.com/1174791): Remove.
-  NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-
-  // Sent when the specific part of login/lock WebUI is considered to be
-  // visible. That moment is tracked as the first paint event after one of the:
-  // NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN
-  //
-  // Possible series of notifications:
-  // 1. Boot into fresh OOBE
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // 2. Boot into user pods list (normal boot). Same for lock screen.
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // 3. Boot into GAIA sign in UI (user pods display disabled or no users):
-  //    if no network is connected or flaky network
-  //    (NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN +
-  //     NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE)
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // 4. Boot into retail mode
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // TODO(https://crbug.com/1174793): Remove.
-  NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-
-  // Sent when the screen lock state has changed. The source is
-  // ScreenLocker and the details is a bool specifing that the
-  // screen is locked. When details is a false, the source object
-  // is being deleted, so the receiver shouldn't use the screen locker
-  // object.
-  // TODO(https://crbug.com/1174796): Remove.
-  NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-#endif
-
-#if defined(TOOLKIT_VIEWS)
-  // Notification that the nested loop using during tab dragging has returned.
-  // Used for testing.
-  // TODO(https://crbug.com/1174797): Remove.
-  NOTIFICATION_TAB_DRAG_LOOP_DONE,
-#endif
-
-  // Sent when the applications in the NTP app launcher have been reordered.
-  // The details, if not NoDetails, is the std::string ID of the extension that
-  // was moved.
-  // TODO(https://crbug.com/1174798): Remove.
-  NOTIFICATION_APP_LAUNCHER_REORDERED,
-
-  // Sent when an app is installed and an NTP has been shown. Source is the
-  // WebContents that was shown, and Details is the string ID of the extension
-  // which was installed.
-  // TODO(https://crbug.com/1174799): Remove.
-  NOTIFICATION_APP_INSTALLED_TO_NTP,
-
   // Note:-
   // Currently only Content and Chrome define and use notifications.
   // Custom notifications not belonging to Content and Chrome should start

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "weblayer/public/js_communication/web_message_host.h"
 
@@ -39,7 +40,7 @@ class WebMessageReplyProxyImpl : public WebMessageHost {
   void OnBackForwardCacheStateChanged() override;
 
  private:
-  WebMessageReplyProxy* reply_proxy_;
+  raw_ptr<WebMessageReplyProxy> reply_proxy_;
 
   // The Java WebMessageReplyProxy.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

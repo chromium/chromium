@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Popup Date Picker implementation.  Pairs a goog.ui.DatePicker
@@ -29,6 +21,9 @@ goog.require('goog.ui.Component');
 goog.require('goog.ui.DatePicker');
 goog.require('goog.ui.Popup');
 goog.require('goog.ui.PopupBase');
+goog.requireType('goog.date.Date');
+goog.requireType('goog.dom.DomHelper');
+goog.requireType('goog.events.Event');
 
 
 
@@ -43,6 +38,7 @@ goog.require('goog.ui.PopupBase');
  * @constructor
  */
 goog.ui.PopupDatePicker = function(opt_datePicker, opt_domHelper) {
+  'use strict';
   goog.ui.Component.call(this, opt_domHelper);
 
   this.datePicker_ = opt_datePicker || new goog.ui.DatePicker();
@@ -56,7 +52,6 @@ goog.ui.PopupDatePicker = function(opt_datePicker, opt_domHelper) {
   this.keepAllWeeksInViewport_ = false;
 };
 goog.inherits(goog.ui.PopupDatePicker, goog.ui.Component);
-goog.tagUnsealableClass(goog.ui.PopupDatePicker);
 
 
 /**
@@ -96,6 +91,7 @@ goog.ui.PopupDatePicker.prototype.allowAutoFocus_ = true;
 
 /** @override */
 goog.ui.PopupDatePicker.prototype.createDom = function() {
+  'use strict';
   goog.ui.PopupDatePicker.superClass_.createDom.call(this);
   this.getElement().className = goog.getCssName('goog-popupdatepicker');
   this.popup_ = new goog.ui.Popup(this.getElement());
@@ -107,12 +103,14 @@ goog.ui.PopupDatePicker.prototype.createDom = function() {
  * @return {boolean} Whether the date picker is visible.
  */
 goog.ui.PopupDatePicker.prototype.isVisible = function() {
+  'use strict';
   return this.popup_ ? this.popup_.isVisible() : false;
 };
 
 
 /** @override */
 goog.ui.PopupDatePicker.prototype.enterDocument = function() {
+  'use strict';
   goog.ui.PopupDatePicker.superClass_.enterDocument.call(this);
   // Create the DatePicker, if it isn't already.
   // Done here as DatePicker assumes that the element passed to it is attached
@@ -136,6 +134,7 @@ goog.ui.PopupDatePicker.prototype.enterDocument = function() {
 
 /** @override */
 goog.ui.PopupDatePicker.prototype.disposeInternal = function() {
+  'use strict';
   goog.ui.PopupDatePicker.superClass_.disposeInternal.call(this);
   if (this.popup_) {
     this.popup_.dispose();
@@ -155,6 +154,7 @@ goog.ui.PopupDatePicker.prototype.disposeInternal = function() {
  * @override
  */
 goog.ui.PopupDatePicker.prototype.canDecorate = function(element) {
+  'use strict';
   return false;
 };
 
@@ -163,6 +163,7 @@ goog.ui.PopupDatePicker.prototype.canDecorate = function(element) {
  * @return {goog.ui.DatePicker} The date picker instance.
  */
 goog.ui.PopupDatePicker.prototype.getDatePicker = function() {
+  'use strict';
   return this.datePicker_;
 };
 
@@ -170,6 +171,7 @@ goog.ui.PopupDatePicker.prototype.getDatePicker = function() {
  * @return {?goog.ui.Popup} The popup instance.
  */
 goog.ui.PopupDatePicker.prototype.getPopup = function() {
+  'use strict';
   return this.popup_;
 };
 
@@ -179,6 +181,7 @@ goog.ui.PopupDatePicker.prototype.getPopup = function() {
  *     goog.ui.DatePicker.getDate().
  */
 goog.ui.PopupDatePicker.prototype.getDate = function() {
+  'use strict';
   return this.datePicker_.getDate();
 };
 
@@ -188,6 +191,7 @@ goog.ui.PopupDatePicker.prototype.getDate = function() {
  * @param {goog.date.Date?} date The date to select.
  */
 goog.ui.PopupDatePicker.prototype.setDate = function(date) {
+  'use strict';
   this.datePicker_.setDate(date);
 };
 
@@ -196,6 +200,7 @@ goog.ui.PopupDatePicker.prototype.setDate = function(date) {
  * @return {Element} The last element that triggered the popup.
  */
 goog.ui.PopupDatePicker.prototype.getLastTarget = function() {
+  'use strict';
   return this.lastTarget_;
 };
 
@@ -205,6 +210,7 @@ goog.ui.PopupDatePicker.prototype.getLastTarget = function() {
  * @param {Element} element The element to attach to.
  */
 goog.ui.PopupDatePicker.prototype.attach = function(element) {
+  'use strict';
   this.getHandler().listen(
       element, goog.events.EventType.MOUSEDOWN, this.showPopup_);
 };
@@ -215,6 +221,7 @@ goog.ui.PopupDatePicker.prototype.attach = function(element) {
  * @param {Element} element The element to detach from.
  */
 goog.ui.PopupDatePicker.prototype.detach = function(element) {
+  'use strict';
   this.getHandler().unlisten(
       element, goog.events.EventType.MOUSEDOWN, this.showPopup_);
 };
@@ -226,6 +233,7 @@ goog.ui.PopupDatePicker.prototype.detach = function(element) {
  * @param {boolean} allow Whether to allow auto focus.
  */
 goog.ui.PopupDatePicker.prototype.setAllowAutoFocus = function(allow) {
+  'use strict';
   this.allowAutoFocus_ = allow;
 };
 
@@ -235,6 +243,7 @@ goog.ui.PopupDatePicker.prototype.setAllowAutoFocus = function(allow) {
  * its key event target when it is set to visible.
  */
 goog.ui.PopupDatePicker.prototype.getAllowAutoFocus = function() {
+  'use strict';
   return this.allowAutoFocus_;
 };
 
@@ -246,6 +255,7 @@ goog.ui.PopupDatePicker.prototype.getAllowAutoFocus = function() {
  */
 goog.ui.PopupDatePicker.prototype.setKeepAllWeeksInViewport = function(
     keepAllWeeksInViewport) {
+  'use strict';
   this.keepAllWeeksInViewport_ = keepAllWeeksInViewport;
 };
 
@@ -255,6 +265,7 @@ goog.ui.PopupDatePicker.prototype.setKeepAllWeeksInViewport = function(
  *     changes so that all weeks are visible in the viewport.
  */
 goog.ui.PopupDatePicker.prototype.getKeepAllWeeksInViewport = function() {
+  'use strict';
   return this.keepAllWeeksInViewport_;
 };
 
@@ -267,6 +278,7 @@ goog.ui.PopupDatePicker.prototype.getKeepAllWeeksInViewport = function() {
  *     date. If false, the date is set to null. Defaults to false.
  */
 goog.ui.PopupDatePicker.prototype.showPopup = function(element, opt_keepDate) {
+  'use strict';
   this.lastTarget_ = element;
   this.popup_.setPosition(new goog.positioning.AnchoredViewportPosition(
       element, goog.positioning.Corner.BOTTOM_START, true));
@@ -323,6 +335,7 @@ goog.ui.PopupDatePicker.prototype.showPopup = function(element, opt_keepDate) {
  * @private
  */
 goog.ui.PopupDatePicker.prototype.showPopup_ = function(event) {
+  'use strict';
   this.showPopup(/** @type {Element} */ (event.currentTarget));
 };
 
@@ -331,6 +344,7 @@ goog.ui.PopupDatePicker.prototype.showPopup_ = function(event) {
  * Hides this popup.
  */
 goog.ui.PopupDatePicker.prototype.hidePopup = function() {
+  'use strict';
   this.popup_.setVisible(false);
   if (this.allowAutoFocus_ && this.lastTarget_) {
     this.lastTarget_.focus();
@@ -345,6 +359,7 @@ goog.ui.PopupDatePicker.prototype.hidePopup = function() {
  * @private
  */
 goog.ui.PopupDatePicker.prototype.onDateSelected_ = function(event) {
+  'use strict';
   this.hidePopup();
 
   // Forward the change event onto our listeners.
@@ -359,6 +374,7 @@ goog.ui.PopupDatePicker.prototype.onDateSelected_ = function(event) {
  * @private
  */
 goog.ui.PopupDatePicker.prototype.onDateChanged_ = function(event) {
+  'use strict';
   // Forward the change event onto our listeners.
   this.dispatchEvent(event);
 };
@@ -369,5 +385,6 @@ goog.ui.PopupDatePicker.prototype.onDateChanged_ = function(event) {
  * @private
  */
 goog.ui.PopupDatePicker.prototype.onGridSizeIncrease_ = function() {
+  'use strict';
   this.popup_ && this.popup_.reposition();
 };

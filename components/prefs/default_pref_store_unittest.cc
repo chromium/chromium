@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "components/prefs/default_pref_store.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Value;
@@ -13,6 +13,10 @@ namespace {
 class MockPrefStoreObserver : public PrefStore::Observer {
  public:
   explicit MockPrefStoreObserver(DefaultPrefStore* pref_store);
+
+  MockPrefStoreObserver(const MockPrefStoreObserver&) = delete;
+  MockPrefStoreObserver& operator=(const MockPrefStoreObserver&) = delete;
+
   ~MockPrefStoreObserver() override;
 
   int change_count() {
@@ -24,11 +28,9 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   void OnInitializationCompleted(bool succeeded) override {}
 
  private:
-  DefaultPrefStore* pref_store_;
+  raw_ptr<DefaultPrefStore> pref_store_;
 
   int change_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPrefStoreObserver);
 };
 
 MockPrefStoreObserver::MockPrefStoreObserver(DefaultPrefStore* pref_store)
@@ -63,4 +65,3 @@ TEST(DefaultPrefStoreTest, NotifyPrefValueChanged) {
   pref_store->ReplaceDefaultValue(kPrefKey, Value("bar"));
   EXPECT_EQ(1, observer.change_count());
 }
-

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -44,6 +45,10 @@ class AccountInvestigator : public KeyedService,
 
   AccountInvestigator(PrefService* pref_service,
                       signin::IdentityManager* identity_manager);
+
+  AccountInvestigator(const AccountInvestigator&) = delete;
+  AccountInvestigator& operator=(const AccountInvestigator&) = delete;
+
   ~AccountInvestigator() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -109,8 +114,8 @@ class AccountInvestigator : public KeyedService,
       const std::vector<gaia::ListedAccount>& signed_out_accounts,
       signin_metrics::ReportingType type);
 
-  PrefService* pref_service_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Handles invoking our periodic logic at the right time. As part of our
   // handling of this call we reset the timer for the next loop.
@@ -128,8 +133,6 @@ class AccountInvestigator : public KeyedService,
   // allows us ot emit AccountRelation metrics during a sign in that doesn't
   // actually change the cookie jar.
   bool previously_authenticated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountInvestigator);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_INVESTIGATOR_H_

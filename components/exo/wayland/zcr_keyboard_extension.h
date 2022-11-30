@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,17 @@ struct wl_client;
 
 namespace exo {
 namespace wayland {
+class SerialTracker;
+
+struct WaylandKeyboardExtension {
+  explicit WaylandKeyboardExtension(SerialTracker* serial_tracker)
+      : serial_tracker(serial_tracker) {}
+  WaylandKeyboardExtension(const WaylandKeyboardExtension&) = delete;
+  WaylandKeyboardExtension& operator=(const WaylandKeyboardExtension&) = delete;
+
+  // Owned by Server, which always outlives zcr_keyboard_extension.
+  SerialTracker* const serial_tracker;
+};
 
 void bind_keyboard_extension(wl_client* client,
                              void* data,

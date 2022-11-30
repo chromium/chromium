@@ -1,59 +1,59 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/memory/ptr_util.h"
+#import "base/strings/string_piece.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/features.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/sync_preferences/pref_service_mock_factory.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/testing_pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/sync_preferences/pref_service_mock_factory.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/upgrade/upgrade_constants.h"
-#include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/upgrade/upgrade_constants.h"
+#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #import "ios/chrome/common/string_util.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/time_format.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/time_format.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -86,6 +86,8 @@
 @property(nonatomic, assign) PasswordCheckState currentPasswordCheckState;
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* safeBrowsingPreference;
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* enhancedSafeBrowsingPreference;
 
 @end
 
@@ -124,6 +126,7 @@ PrefService* SetPrefService() {
   TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
   PrefRegistrySimple* registry = prefs->registry();
   registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, true);
   return prefs;
 }
 
@@ -178,8 +181,9 @@ class SafetyCheckMediatorTest : public PlatformTest {
     [defaults removeObjectForKey:kIOSChromeUpgradeURLKey];
   }
 
-  // Creates and adds a saved password form.
-  void AddSavedForm() {
+  // Creates and adds a saved password form. If `is_leaked` is true it marks the
+  // credential as leaked.
+  void AddSavedForm(bool is_leaked = false) {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
@@ -191,6 +195,12 @@ class SafetyCheckMediatorTest : public PlatformTest {
     form->signon_realm = "http://www.example.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
+    if (is_leaked) {
+      form->password_issues = {
+          {InsecureType::kLeaked,
+           password_manager::InsecurityMetadata(
+               base::Time::Now(), password_manager::IsMuted(false))}};
+    }
     AddPasswordForm(std::move(form));
   }
 
@@ -201,15 +211,9 @@ class SafetyCheckMediatorTest : public PlatformTest {
             .get());
   }
 
-  void AddCompromisedCredential() {
-    GetTestStore().AddInsecureCredential(password_manager::InsecureCredential(
-        "http://www.example.com/", u"test@egmail.com", base::Time::Now(),
-        InsecureType::kLeaked, password_manager::IsMuted(false)));
-    RunUntilIdle();
-  }
-
  protected:
   web::WebTaskEnvironment environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
   AuthenticationServiceFake* auth_service_;
@@ -273,10 +277,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
   base::Time lastCompletedCheck =
       base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
-  EXPECT_GE(lastCompletedCheck,
-            base::Time::Now() - base::TimeDelta::FromSeconds(1));
-  EXPECT_LE(lastCompletedCheck,
-            base::Time::Now() + base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
+  EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
 
   resetNSUserDefaultsForTesting();
 }
@@ -289,10 +291,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
   base::Time lastCompletedCheck =
       base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
-  EXPECT_GE(lastCompletedCheck,
-            base::Time::Now() - base::TimeDelta::FromSeconds(1));
-  EXPECT_LE(lastCompletedCheck,
-            base::Time::Now() + base::TimeDelta::FromSeconds(1));
+  EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
+  EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
 
   mediator_.checkDidRun = true;
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
@@ -318,11 +318,102 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingEnabledReturnsSafeState) {
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingSafeUI) {
   mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
   [mediator_ reconfigureSafeBrowsingCheckItem];
-  EXPECT_NSEQ(
-      mediator_.safeBrowsingCheckItem.detailText,
-      GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC));
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    EXPECT_NSEQ(
+        mediator_.safeBrowsingCheckItem.detailText,
+        GetNSString(
+            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC));
+
+    // Change from Enhanced Protection to Standard Protection.
+    mediator_.enhancedSafeBrowsingPreference.value = false;
+    [mediator_ reconfigureSafeBrowsingCheckItem];
+    EXPECT_NSEQ(
+        mediator_.safeBrowsingCheckItem.detailText,
+        GetNSString(
+            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
+  } else {
+    EXPECT_NSEQ(
+        mediator_.safeBrowsingCheckItem.detailText,
+        GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC));
+  }
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
             [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+}
+
+// Tests UI for Safe Browsing row in Safety Check settings with one of the
+// Enhanced Protection features enabled.
+TEST_F(SafetyCheckMediatorTest,
+       SafeBrowsingSafeUIStandardAndEnhancedProtection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kEnhancedProtection);
+  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+
+  mediator_.enhancedSafeBrowsingPreference.value = false;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+}
+
+// TODO(crbug.com/1348254): Consolidate with other test when feature is
+// launched.
+// Tests UI for Safe Browsing row in Safety Check settings with Enhanced
+// Protection features enabled.
+TEST_F(SafetyCheckMediatorTest,
+       SafeBrowsingSafeUIStandardAndEnhancedProtectionPhase2IOS) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{safe_browsing::kEnhancedProtection,
+                            safe_browsing::kEnhancedProtectionPhase2IOS},
+      /*disabled_features=*/{});
+
+  // Check UI when Safe Browsing protection choice is "Enhanced Protection".
+  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
+            UITableViewCellAccessoryNone);
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+
+  // Check UI when Safe Browsing protection choice is "Standard Protection".
+  mediator_.enhancedSafeBrowsingPreference.value = false;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+
+  // Check UI when Safe Browsing protection choice is "No Protection".
+  mediator_.safeBrowsingPreference.value = false;
+  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateUnsafe;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_unsafe_state"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
 }
 
@@ -340,7 +431,7 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingUnSafeUI) {
   EXPECT_NSEQ(
       mediator_.safeBrowsingCheckItem.detailText,
       GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC));
-  EXPECT_FALSE(mediator_.safeBrowsingCheckItem.infoButtonHidden);
+  EXPECT_TRUE(mediator_.safeBrowsingCheckItem.infoButtonHidden);
 }
 
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingManagedUI) {
@@ -372,16 +463,14 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUI) {
 }
 
 TEST_F(SafetyCheckMediatorTest, PasswordCheckUnSafeCheck) {
-  AddSavedForm();
-  AddCompromisedCredential();
+  AddSavedForm(/*is_leaked=*/true);
   mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
   [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
   EXPECT_EQ(mediator_.passwordCheckRowState, PasswordCheckRowStateUnSafe);
 }
 
 TEST_F(SafetyCheckMediatorTest, PasswordCheckUnSafeUI) {
-  AddSavedForm();
-  AddCompromisedCredential();
+  AddSavedForm(/*is_leaked=*/true);
   mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,

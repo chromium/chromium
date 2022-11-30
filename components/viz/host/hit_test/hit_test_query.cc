@@ -1,13 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/host/hit_test/hit_test_query.h"
 
 #include <sstream>
+#include <string>
+#include <utility>
 
 #include "base/containers/stack.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -50,8 +51,6 @@ const std::string GetFlagNames(uint32_t flag) {
     names.emplace_back("Touch");
   if (flag & kHitTestNotActive)
     names.emplace_back("NotActive");
-  if (flag & kHitTestDebug)
-    names.emplace_back("Debug");
 
   return base::JoinString(std::move(names), ", ");
 }
@@ -116,8 +115,7 @@ bool HitTestQuery::TransformLocationForTarget(
     if (!GetTransformToTarget(target_ancestors.front(), &transform))
       return false;
 
-    *transformed_location = location_in_root;
-    transform.TransformPoint(transformed_location);
+    *transformed_location = transform.MapPoint(location_in_root);
     return true;
   }
 
@@ -190,18 +188,15 @@ bool HitTestQuery::FindTargetInRegionForLocation(
     // HasPerspective() is checked for the transform because the point will not
     // be transformed correctly for a plane with a different normal.
     // See https://crbug.com/854247.
-    if (hit_test_data_[region_index].transform().HasPerspective()) {
+    if (hit_test_data_[region_index].transform.HasPerspective()) {
       target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
       target->location_in_target = gfx::PointF();
       target->flags = HitTestRegionFlags::kHitTestAsk;
-      RecordSlowPathHitTestReasons(
-          AsyncHitTestReasons::kPerspectiveTransform |
-          hit_test_data_[region_index].async_hit_test_reasons);
       return true;
     }
 
-    hit_test_data_[region_index].transform().TransformPoint(
-        &location_transformed);
+    location_transformed =
+        hit_test_data_[region_index].transform.MapPoint(location_transformed);
     if (!gfx::RectF(hit_test_data_[region_index].rect)
              .Contains(location_transformed)) {
       return false;
@@ -243,8 +238,6 @@ bool HitTestQuery::FindTargetInRegionForLocation(
     target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
     target->location_in_target = location_in_target;
     target->flags = flags;
-    RecordSlowPathHitTestReasons(
-        hit_test_data_[region_index].async_hit_test_reasons);
     return true;
   }
 
@@ -273,18 +266,14 @@ bool HitTestQuery::FindTargetInRegionForLocation(
       !(flags & HitTestRegionFlags::kHitTestIgnore)) {
     target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
     target->location_in_target = location_in_target;
-    uint32_t async_hit_test_reasons =
-        hit_test_data_[region_index].async_hit_test_reasons;
     uint32_t target_flags = flags;
     if (root_view_overlapped) {
       DCHECK_EQ(hit_test_data_[region_index].async_hit_test_reasons,
                 AsyncHitTestReasons::kOverlappedRegion);
       target_flags &= ~HitTestRegionFlags::kHitTestAsk;
-      async_hit_test_reasons = AsyncHitTestReasons::kNotAsyncHitTest;
     }
     target->flags = target_flags;
     // We record fast path hit testing instances with reason kNotAsyncHitTest.
-    RecordSlowPathHitTestReasons(async_hit_test_reasons);
     return true;
   }
   return false;
@@ -295,7 +284,8 @@ bool HitTestQuery::TransformLocationForTargetRecursively(
     size_t target_ancestor,
     size_t region_index,
     gfx::PointF* location_in_target) const {
-  hit_test_data_[region_index].transform().TransformPoint(location_in_target);
+  *location_in_target =
+      hit_test_data_[region_index].transform.MapPoint(*location_in_target);
   if (!target_ancestor)
     return true;
 
@@ -333,7 +323,7 @@ bool HitTestQuery::GetTransformToTargetRecursively(
   // TODO(crbug.com/966944): Cache the matrix product such that the transform
   // can be found immediately.
   if (hit_test_data_[region_index].frame_sink_id == target) {
-    *transform = hit_test_data_[region_index].transform();
+    *transform = hit_test_data_[region_index].transform;
     return true;
   }
 
@@ -349,7 +339,7 @@ bool HitTestQuery::GetTransformToTargetRecursively(
     gfx::Transform transform_to_child;
     if (GetTransformToTargetRecursively(target, child_region,
                                         &transform_to_child)) {
-      gfx::Transform region_transform(hit_test_data_[region_index].transform());
+      gfx::Transform region_transform(hit_test_data_[region_index].transform);
       *transform = transform_to_child * region_transform;
       return true;
     }
@@ -363,27 +353,6 @@ bool HitTestQuery::GetTransformToTargetRecursively(
   }
 
   return false;
-}
-
-void HitTestQuery::RecordSlowPathHitTestReasons(uint32_t reasons) const {
-  static const char* kAsyncHitTestReasonsHistogramName =
-      "Event.VizHitTest.AsyncHitTestReasons";
-  if (reasons == AsyncHitTestReasons::kNotAsyncHitTest) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kAsyncHitTestReasonsHistogramName,
-        AsyncHitTestReasons::kNotAsyncHitTest,
-        AsyncHitTestReasons::kAsyncHitTestReasonCount + 1);
-    return;
-  }
-
-  for (uint32_t i = 0; i < AsyncHitTestReasons::kAsyncHitTestReasonCount; ++i) {
-    unsigned val = 1 << i;
-    if (reasons & val) {
-      UMA_HISTOGRAM_ENUMERATION(
-          kAsyncHitTestReasonsHistogramName, i + 1,
-          AsyncHitTestReasons::kAsyncHitTestReasonCount + 1);
-    }
-  }
 }
 
 std::string HitTestQuery::PrintHitTestData() const {
@@ -409,7 +378,7 @@ std::string HitTestQuery::PrintHitTestData() const {
       std::string s;
       std::stringstream transform_ss;
 
-      transform_ss << htr.transform().ToString() << '\n';
+      transform_ss << htr.transform.ToString() << '\n';
 
       while (getline(transform_ss, s)) {
         oss << tabs << s << '\n';

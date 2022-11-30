@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 
@@ -41,6 +41,9 @@ class PersistedData {
   // update_client.
   PersistedData(PrefService* pref_service,
                 ActivityDataService* activity_data_service);
+
+  PersistedData(const PersistedData&) = delete;
+  PersistedData& operator=(const PersistedData&) = delete;
 
   ~PersistedData();
 
@@ -73,6 +76,12 @@ class PersistedData {
 
   // This is called only via update_client's RegisterUpdateClientPreferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Returns the install date for the specified |id|.
+  // "InstallDate" refers to the initial date that the given |id| was first
+  // installed on the machine. Date information is returned by the server. If
+  // "InstallDate" is not known, -2 is returned.
+  int GetInstallDate(const std::string& id) const;
 
   // These functions return cohort data for the specified |id|. "Cohort"
   // indicates the membership of the client in any release channels components
@@ -117,7 +126,8 @@ class PersistedData {
   const base::Value* GetAppKey(const std::string& id) const;
 
   // Returns an existing or newly created app key under a root pref.
-  base::Value* GetOrCreateAppKey(const std::string& id, base::Value* root);
+  base::Value::Dict* GetOrCreateAppKey(const std::string& id,
+                                       base::Value::Dict& root);
 
   // Returns fallback if the key does not exist.
   int GetInt(const std::string& id, const std::string& key, int fallback) const;
@@ -135,10 +145,8 @@ class PersistedData {
                              const std::set<std::string>& active_ids);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  PrefService* pref_service_;
-  ActivityDataService* activity_data_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistedData);
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<ActivityDataService> activity_data_service_;
 };
 
 }  // namespace update_client

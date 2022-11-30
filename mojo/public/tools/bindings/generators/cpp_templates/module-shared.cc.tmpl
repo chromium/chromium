@@ -1,15 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "{{module.path}}-shared.h"
 
+// Used to support stream output operator for enums.
+// TODO(dcheng): Consider omitting this somehow if not needed.
+#include <ostream>
 #include <utility>
 
-#include "base/stl_util.h"  // for base::size()
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
-#include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -72,4 +73,3 @@ namespace internal {
 {{enum_trace_format_traits(enum)}}
 {%-   endif %}
 {%- endfor %}
-

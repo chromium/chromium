@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/window_util.h"
 
@@ -29,7 +31,7 @@ aura::Window* FindContainerRoot(const gfx::Rect& bounds_in_screen) {
 bool HasTransientParentWindow(const aura::Window* window) {
   const aura::Window* transient_parent = ::wm::GetTransientParent(window);
   return transient_parent &&
-         transient_parent->type() != aura::client::WINDOW_TYPE_UNKNOWN;
+         transient_parent->GetType() != aura::client::WINDOW_TYPE_UNKNOWN;
 }
 
 aura::Window* GetSystemModalContainer(aura::Window* root,
@@ -57,7 +59,7 @@ aura::Window* GetSystemModalContainer(aura::Window* root,
 
   // Otherwise those that originate from LockScreen container and above are
   // placed in the screen lock modal container.
-  int window_container_id = transient_parent->parent()->id();
+  int window_container_id = transient_parent->parent()->GetId();
   if (window_container_id < kShellWindowId_LockScreenContainer)
     return root->GetChildById(kShellWindowId_SystemModalContainer);
   return root->GetChildById(kShellWindowId_LockSystemModalContainer);
@@ -75,7 +77,7 @@ aura::Window* GetContainerFromAlwaysOnTopController(aura::Window* root,
 aura::Window* GetContainerForWindow(aura::Window* window) {
   aura::Window* parent = window->parent();
   // The first parent with an explicit shell window ID is the container.
-  while (parent && parent->id() == kShellWindowId_Invalid)
+  while (parent && parent->GetId() == kShellWindowId_Invalid)
     parent = parent->parent();
   return parent;
 }
@@ -91,7 +93,25 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
     target_root = FindContainerRoot(bounds_in_screen);
   }
 
-  switch (window->type()) {
+  // For window restore, the window may be created before the associated window
+  // restore data can be retrieved. In this case, we will place it in a hidden
+  // container and will move it to a desk container when the window restore data
+  // can be retrieved. An example would be ARC windows, which can be created
+  // before their associated tasks are, which are required to retrieve window
+  // restore data.
+  if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
+    return target_root->GetChildById(kShellWindowId_UnparentedContainer);
+
+  // Use kShellWindowId_DragImageAndTooltipContainer to host security surfaces
+  // so that they are on top of other normal widgets (top-level windows, menus,
+  // bubbles etc). See http://crbug.com/1317904.
+  if (window->GetProperty(aura::client::kZOrderingKey) ==
+      ui::ZOrderLevel::kSecuritySurface) {
+    return target_root->GetChildById(
+        kShellWindowId_DragImageAndTooltipContainer);
+  }
+
+  switch (window->GetType()) {
     case aura::client::WINDOW_TYPE_NORMAL:
     case aura::client::WINDOW_TYPE_POPUP:
       if (window->GetProperty(aura::client::kModalKey) == ui::MODAL_TYPE_SYSTEM)
@@ -100,16 +120,15 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
         return GetContainerForWindow(transient_parent);
       return GetContainerFromAlwaysOnTopController(target_root, window);
     case aura::client::WINDOW_TYPE_CONTROL:
-      return target_root->GetChildById(
-          kShellWindowId_UnparentedControlContainer);
+      return target_root->GetChildById(kShellWindowId_UnparentedContainer);
     case aura::client::WINDOW_TYPE_MENU:
       return target_root->GetChildById(kShellWindowId_MenuContainer);
     case aura::client::WINDOW_TYPE_TOOLTIP:
       return target_root->GetChildById(
           kShellWindowId_DragImageAndTooltipContainer);
     default:
-      NOTREACHED() << "Window " << window->id() << " has unhandled type "
-                   << window->type();
+      NOTREACHED() << "Window " << window->GetId() << " has unhandled type "
+                   << window->GetType();
       break;
   }
   return nullptr;

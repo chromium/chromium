@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,100 +11,24 @@
 #include <initializer_list>
 #include <iterator>
 #include <list>
-#include <map>
 #include <queue>
 #include <set>
 #include <stack>
 #include <string>
 #include <type_traits>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/queue.h"
-#include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 using ::testing::IsNull;
 using ::testing::Pair;
-
-// Used as test case to ensure the various base::STLXxx functions don't require
-// more than operators "<" and "==" on values stored in containers.
-class ComparableValue {
- public:
-  explicit ComparableValue(int value) : value_(value) {}
-
-  bool operator==(const ComparableValue& rhs) const {
-    return value_ == rhs.value_;
-  }
-
-  bool operator<(const ComparableValue& rhs) const {
-    return value_ < rhs.value_;
-  }
-
- private:
-  int value_;
-};
-
-template <typename Container>
-size_t GetSize(const Container& c) {
-  return c.size();
-}
-
-template <typename T>
-size_t GetSize(const std::forward_list<T>& l) {
-  return std::distance(l.begin(), l.end());
-}
-
-template <typename Container>
-void RunEraseTest() {
-  const std::pair<Container, Container> test_data[] = {
-      {Container(), Container()}, {{1, 2, 3}, {1, 3}}, {{1, 2, 3, 2}, {1, 3}}};
-
-  for (auto test_case : test_data) {
-    size_t expected_erased =
-        GetSize(test_case.first) - GetSize(test_case.second);
-    EXPECT_EQ(expected_erased, base::Erase(test_case.first, 2));
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
-// This test is written for containers of std::pair<int, int> to support maps.
-template <typename Container>
-void RunEraseIfTest() {
-  struct {
-    Container input;
-    Container erase_even;
-    Container erase_odd;
-  } test_data[] = {
-      {Container(), Container(), Container()},
-      {{{1, 1}, {2, 2}, {3, 3}}, {{1, 1}, {3, 3}}, {{2, 2}}},
-      {{{1, 1}, {2, 2}, {3, 3}, {4, 4}}, {{1, 1}, {3, 3}}, {{2, 2}, {4, 4}}},
-  };
-
-  for (auto test_case : test_data) {
-    size_t expected_erased =
-        GetSize(test_case.input) - GetSize(test_case.erase_even);
-    EXPECT_EQ(expected_erased,
-              base::EraseIf(test_case.input, [](const auto& elem) {
-                return !(elem.first & 1);
-              }));
-    EXPECT_EQ(test_case.erase_even, test_case.input);
-  }
-
-  for (auto test_case : test_data) {
-    size_t expected_erased =
-        GetSize(test_case.input) - GetSize(test_case.erase_odd);
-    EXPECT_EQ(expected_erased,
-              base::EraseIf(test_case.input,
-                            [](const auto& elem) { return elem.first & 1; }));
-    EXPECT_EQ(test_case.erase_odd, test_case.input);
-  }
-}
 
 template <typename Container>
 void RunConstCastIteratorTest() {
@@ -126,167 +50,10 @@ void RunConstCastIteratorTest() {
   EXPECT_THAT(c, testing::ContainerEq(other));
 }
 
-struct CustomIntHash {
-  size_t operator()(int elem) const { return std::hash<int>()(elem) + 1; }
-};
-
-struct HashByFirst {
-  size_t operator()(const std::pair<int, int>& elem) const {
-    return std::hash<int>()(elem.first);
-  }
-};
-
 }  // namespace
 
 namespace base {
 namespace {
-
-TEST(STLUtilTest, Size) {
-  {
-    std::vector<int> vector = {1, 2, 3, 4, 5};
-    static_assert(
-        std::is_same<decltype(base::size(vector)),
-                     decltype(vector.size())>::value,
-        "base::size(vector) should have the same type as vector.size()");
-    EXPECT_EQ(vector.size(), base::size(vector));
-  }
-
-  {
-    std::string empty_str;
-    static_assert(
-        std::is_same<decltype(base::size(empty_str)),
-                     decltype(empty_str.size())>::value,
-        "base::size(empty_str) should have the same type as empty_str.size()");
-    EXPECT_EQ(0u, base::size(empty_str));
-  }
-
-  {
-    std::array<int, 4> array = {{1, 2, 3, 4}};
-    static_assert(
-        std::is_same<decltype(base::size(array)),
-                     decltype(array.size())>::value,
-        "base::size(array) should have the same type as array.size()");
-    static_assert(base::size(array) == array.size(),
-                  "base::size(array) should be equal to array.size()");
-  }
-
-  {
-    int array[] = {1, 2, 3};
-    static_assert(std::is_same<size_t, decltype(base::size(array))>::value,
-                  "base::size(array) should be of type size_t");
-    static_assert(3u == base::size(array), "base::size(array) should be 3");
-  }
-}
-
-TEST(STLUtilTest, Empty) {
-  {
-    std::vector<int> vector;
-    static_assert(
-        std::is_same<decltype(base::empty(vector)),
-                     decltype(vector.empty())>::value,
-        "base::empty(vector) should have the same type as vector.empty()");
-    EXPECT_EQ(vector.empty(), base::empty(vector));
-  }
-
-  {
-    std::array<int, 4> array = {{1, 2, 3, 4}};
-    static_assert(
-        std::is_same<decltype(base::empty(array)),
-                     decltype(array.empty())>::value,
-        "base::empty(array) should have the same type as array.empty()");
-    static_assert(base::empty(array) == array.empty(),
-                  "base::empty(array) should be equal to array.empty()");
-  }
-
-  {
-    int array[] = {1, 2, 3};
-    static_assert(std::is_same<bool, decltype(base::empty(array))>::value,
-                  "base::empty(array) should be of type bool");
-    static_assert(!base::empty(array), "base::empty(array) should be false");
-  }
-
-  {
-    constexpr std::initializer_list<int> il;
-    static_assert(std::is_same<bool, decltype(base::empty(il))>::value,
-                  "base::empty(il) should be of type bool");
-    static_assert(base::empty(il), "base::empty(il) should be true");
-  }
-}
-
-TEST(STLUtilTest, Data) {
-  {
-    std::vector<int> vector = {1, 2, 3, 4, 5};
-    static_assert(
-        std::is_same<decltype(base::data(vector)),
-                     decltype(vector.data())>::value,
-        "base::data(vector) should have the same type as vector.data()");
-    EXPECT_EQ(vector.data(), base::data(vector));
-  }
-
-  {
-    const std::string cstr = "const string";
-    static_assert(
-        std::is_same<decltype(base::data(cstr)), decltype(cstr.data())>::value,
-        "base::data(cstr) should have the same type as cstr.data()");
-
-    EXPECT_EQ(cstr.data(), base::data(cstr));
-  }
-
-  {
-    std::string str = "mutable string";
-    static_assert(std::is_same<decltype(base::data(str)), char*>::value,
-                  "base::data(str) should be of type char*");
-    EXPECT_EQ(str.data(), base::data(str));
-  }
-
-  {
-    std::string empty_str;
-    static_assert(std::is_same<decltype(base::data(empty_str)), char*>::value,
-                  "base::data(empty_str) should be of type char*");
-    EXPECT_EQ(empty_str.data(), base::data(empty_str));
-  }
-
-  {
-    std::array<int, 4> array = {{1, 2, 3, 4}};
-    static_assert(
-        std::is_same<decltype(base::data(array)),
-                     decltype(array.data())>::value,
-        "base::data(array) should have the same type as array.data()");
-    // std::array::data() is not constexpr prior to C++17, hence the runtime
-    // check.
-    EXPECT_EQ(array.data(), base::data(array));
-  }
-
-  {
-    constexpr int array[] = {1, 2, 3};
-    static_assert(std::is_same<const int*, decltype(base::data(array))>::value,
-                  "base::data(array) should be of type const int*");
-    static_assert(array == base::data(array),
-                  "base::data(array) should be array");
-  }
-
-  {
-    constexpr std::initializer_list<int> il;
-    static_assert(
-        std::is_same<decltype(il.begin()), decltype(base::data(il))>::value,
-        "base::data(il) should have the same type as il.begin()");
-    static_assert(il.begin() == base::data(il),
-                  "base::data(il) should be equal to il.begin()");
-  }
-}
-
-TEST(STLUtilTest, AsConst) {
-  int i = 123;
-  EXPECT_EQ(&i, &base::as_const(i));
-  static_assert(std::is_same<const int&, decltype(base::as_const(i))>::value,
-                "Error: base::as_const() returns an unexpected type");
-
-  const int ci = 456;
-  static_assert(&ci == &base::as_const(ci),
-                "Error: base::as_const() returns an unexpected reference");
-  static_assert(std::is_same<const int&, decltype(base::as_const(ci))>::value,
-                "Error: base::as_const() returns an unexpected type");
-}
 
 TEST(STLUtilTest, ToUnderlying) {
   enum Enum : int {
@@ -526,99 +293,6 @@ TEST(STLUtilTest, STLSetIntersection) {
   }
 }
 
-TEST(Erase, String) {
-  const std::pair<std::string, std::string> test_data[] = {
-      {"", ""}, {"abc", "bc"}, {"abca", "bc"},
-  };
-
-  for (auto test_case : test_data) {
-    Erase(test_case.first, 'a');
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-
-  for (auto test_case : test_data) {
-    EraseIf(test_case.first, [](char elem) { return elem < 'b'; });
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
-TEST(Erase, String16) {
-  std::pair<std::u16string, std::u16string> test_data[] = {
-      {std::u16string(), std::u16string()},
-      {u"abc", u"bc"},
-      {u"abca", u"bc"},
-  };
-
-  const std::u16string letters = u"ab";
-  for (auto test_case : test_data) {
-    Erase(test_case.first, letters[0]);
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-
-  for (auto test_case : test_data) {
-    EraseIf(test_case.first, [&](short elem) { return elem < letters[1]; });
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
-TEST(Erase, Deque) {
-  RunEraseTest<std::deque<int>>();
-  RunEraseIfTest<std::deque<std::pair<int, int>>>();
-}
-
-TEST(Erase, Vector) {
-  RunEraseTest<std::vector<int>>();
-  RunEraseIfTest<std::vector<std::pair<int, int>>>();
-}
-
-TEST(Erase, ForwardList) {
-  RunEraseTest<std::forward_list<int>>();
-  RunEraseIfTest<std::forward_list<std::pair<int, int>>>();
-}
-
-TEST(Erase, List) {
-  RunEraseTest<std::list<int>>();
-  RunEraseIfTest<std::list<std::pair<int, int>>>();
-}
-
-TEST(Erase, Map) {
-  RunEraseIfTest<std::map<int, int>>();
-  RunEraseIfTest<std::map<int, int, std::greater<>>>();
-}
-
-TEST(Erase, Multimap) {
-  RunEraseIfTest<std::multimap<int, int>>();
-  RunEraseIfTest<std::multimap<int, int, std::greater<>>>();
-}
-
-TEST(Erase, Set) {
-  RunEraseIfTest<std::set<std::pair<int, int>>>();
-  RunEraseIfTest<std::set<std::pair<int, int>, std::greater<>>>();
-}
-
-TEST(Erase, Multiset) {
-  RunEraseIfTest<std::multiset<std::pair<int, int>>>();
-  RunEraseIfTest<std::multiset<std::pair<int, int>, std::greater<>>>();
-}
-
-TEST(Erase, UnorderedMap) {
-  RunEraseIfTest<std::unordered_map<int, int>>();
-  RunEraseIfTest<std::unordered_map<int, int, CustomIntHash>>();
-}
-
-TEST(Erase, UnorderedMultimap) {
-  RunEraseIfTest<std::unordered_multimap<int, int>>();
-  RunEraseIfTest<std::unordered_multimap<int, int, CustomIntHash>>();
-}
-
-TEST(Erase, UnorderedSet) {
-  RunEraseIfTest<std::unordered_set<std::pair<int, int>, HashByFirst>>();
-}
-
-TEST(Erase, UnorderedMultiset) {
-  RunEraseIfTest<std::unordered_multiset<std::pair<int, int>, HashByFirst>>();
-}
-
 TEST(Erase, IsNotIn) {
   // Should keep both '2' but only one '4', like std::set_intersection.
   std::vector<int> lhs = {0, 2, 2, 4, 4, 4, 6, 8, 10};
@@ -626,113 +300,6 @@ TEST(Erase, IsNotIn) {
   std::vector<int> expected = {2, 2, 4, 6};
   EXPECT_EQ(5u, EraseIf(lhs, IsNotIn<std::vector<int>>(rhs)));
   EXPECT_EQ(expected, lhs);
-}
-
-TEST(STLUtilTest, InsertOrAssign) {
-  std::map<std::string, int> my_map;
-  auto result = InsertOrAssign(my_map, "Hello", 42);
-  EXPECT_THAT(*result.first, Pair("Hello", 42));
-  EXPECT_TRUE(result.second);
-
-  result = InsertOrAssign(my_map, "Hello", 43);
-  EXPECT_THAT(*result.first, Pair("Hello", 43));
-  EXPECT_FALSE(result.second);
-}
-
-TEST(STLUtilTest, InsertOrAssignHint) {
-  std::map<std::string, int> my_map;
-  auto result = InsertOrAssign(my_map, my_map.end(), "Hello", 42);
-  EXPECT_THAT(*result, Pair("Hello", 42));
-
-  result = InsertOrAssign(my_map, my_map.begin(), "Hello", 43);
-  EXPECT_THAT(*result, Pair("Hello", 43));
-}
-
-TEST(STLUtilTest, InsertOrAssignWrongHints) {
-  std::map<int, int> my_map;
-  // Since we insert keys in sorted order, my_map.begin() will be a wrong hint
-  // after the first iteration. Check that insertion happens anyway.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(i);
-    auto result = InsertOrAssign(my_map, my_map.begin(), i, i);
-    EXPECT_THAT(*result, Pair(i, i));
-  }
-
-  // Overwrite the keys we just inserted. Since we no longer insert into the
-  // map, my_map.end() will be a wrong hint for all iterations but the last.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(10 + i);
-    auto result = InsertOrAssign(my_map, my_map.end(), i, 10 + i);
-    EXPECT_THAT(*result, Pair(i, 10 + i));
-  }
-}
-
-TEST(STLUtilTest, TryEmplace) {
-  std::map<std::string, std::unique_ptr<int>> my_map;
-  auto result = TryEmplace(my_map, "Hello", nullptr);
-  EXPECT_THAT(*result.first, Pair("Hello", IsNull()));
-  EXPECT_TRUE(result.second);
-
-  auto new_value = std::make_unique<int>(42);
-  result = TryEmplace(my_map, "Hello", std::move(new_value));
-  EXPECT_THAT(*result.first, Pair("Hello", IsNull()));
-  EXPECT_FALSE(result.second);
-  // |new_value| should not be touched following a failed insertion.
-  ASSERT_NE(nullptr, new_value);
-  EXPECT_EQ(42, *new_value);
-
-  result = TryEmplace(my_map, "World", std::move(new_value));
-  EXPECT_EQ("World", result.first->first);
-  EXPECT_EQ(42, *result.first->second);
-  EXPECT_TRUE(result.second);
-  EXPECT_EQ(nullptr, new_value);
-}
-
-TEST(STLUtilTest, TryEmplaceHint) {
-  std::map<std::string, std::unique_ptr<int>> my_map;
-  auto result = TryEmplace(my_map, my_map.begin(), "Hello", nullptr);
-  EXPECT_THAT(*result, Pair("Hello", IsNull()));
-
-  auto new_value = std::make_unique<int>(42);
-  result = TryEmplace(my_map, result, "Hello", std::move(new_value));
-  EXPECT_THAT(*result, Pair("Hello", IsNull()));
-  // |new_value| should not be touched following a failed insertion.
-  ASSERT_NE(nullptr, new_value);
-  EXPECT_EQ(42, *new_value);
-
-  result = TryEmplace(my_map, result, "World", std::move(new_value));
-  EXPECT_EQ("World", result->first);
-  EXPECT_EQ(42, *result->second);
-  EXPECT_EQ(nullptr, new_value);
-}
-
-TEST(STLUtilTest, TryEmplaceWrongHints) {
-  std::map<int, int> my_map;
-  // Since we emplace keys in sorted order, my_map.begin() will be a wrong hint
-  // after the first iteration. Check that emplacement happens anyway.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(i);
-    auto result = TryEmplace(my_map, my_map.begin(), i, i);
-    EXPECT_THAT(*result, Pair(i, i));
-  }
-
-  // Fail to overwrite the keys we just inserted. Since we no longer emplace
-  // into the map, my_map.end() will be a wrong hint for all tried emplacements
-  // but the last.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(10 + i);
-    auto result = TryEmplace(my_map, my_map.end(), i, 10 + i);
-    EXPECT_THAT(*result, Pair(i, i));
-  }
-}
-
-TEST(STLUtilTest, OptionalOrNullptr) {
-  Optional<float> optional;
-  EXPECT_EQ(nullptr, base::OptionalOrNullptr(optional));
-
-  optional = 0.1f;
-  EXPECT_EQ(&optional.value(), base::OptionalOrNullptr(optional));
-  EXPECT_NE(nullptr, base::OptionalOrNullptr(optional));
 }
 
 }  // namespace

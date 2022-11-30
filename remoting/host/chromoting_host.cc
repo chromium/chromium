@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,27 +6,34 @@
 
 #include <stddef.h>
 
-#include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/host/ipc_constants.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/ice_connection_to_client.h"
 #include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_connection_to_client.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 using remoting::protocol::ConnectionToClient;
 using remoting::protocol::InputStub;
@@ -78,7 +85,7 @@ ChromotingHost::ChromotingHost(
       status_monitor_(new HostStatusMonitor()),
       login_backoff_(&kDefaultBackoffPolicy),
       desktop_environment_options_(options) {
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 }
 
 ChromotingHost::~ChromotingHost() {
@@ -96,7 +103,7 @@ ChromotingHost::~ChromotingHost() {
   // Notify observers.
   if (started_) {
     for (auto& observer : status_monitor_->observers())
-      observer.OnShutdown();
+      observer.OnHostShutdown();
   }
 }
 
@@ -107,10 +114,24 @@ void ChromotingHost::Start(const std::string& host_owner_email) {
   HOST_LOG << "Starting host";
   started_ = true;
   for (auto& observer : status_monitor_->observers())
-    observer.OnStart(host_owner_email);
+    observer.OnHostStarted(host_owner_email);
 
   session_manager_->AcceptIncoming(base::BindRepeating(
       &ChromotingHost::OnIncomingSession, base::Unretained(this)));
+}
+
+void ChromotingHost::StartChromotingHostServices() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!ipc_server_);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  ipc_server_ = std::make_unique<MojoIpcServer<mojom::ChromotingHostServices>>(
+      GetChromotingHostServicesServerName(), this);
+  ipc_server_->StartServer();
+  HOST_LOG << "ChromotingHostServices IPC server has been started.";
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 void ChromotingHost::AddExtension(std::unique_ptr<HostExtension> extension) {
@@ -182,16 +203,14 @@ void ChromotingHost::OnSessionAuthenticationFailed(ClientSession* client) {
 
   // Notify observers.
   for (auto& observer : status_monitor_->observers())
-    observer.OnAccessDenied(client->client_jid());
+    observer.OnClientAccessDenied(client->client_jid());
 }
 
 void ChromotingHost::OnSessionClosed(ClientSession* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = std::find_if(clients_.begin(), clients_.end(),
-                         [client](const std::unique_ptr<ClientSession>& item) {
-                           return item.get() == client;
-                         });
+  auto it = base::ranges::find(clients_, client,
+                               &std::unique_ptr<ClientSession>::get);
   CHECK(it != clients_.end());
 
   bool was_authenticated = client->is_authenticated();
@@ -211,6 +230,36 @@ void ChromotingHost::OnSessionRouteChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : status_monitor_->observers())
     observer.OnClientRouteChange(session->client_jid(), channel_name, route);
+}
+
+void ChromotingHost::BindSessionServices(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ClientSession* connected_client = GetConnectedClientSession();
+  if (!connected_client) {
+    LOG(WARNING) << "Session services bind request rejected: "
+                 << "No connected remote desktop client was found.";
+    return;
+  }
+#if BUILDFLAG(IS_WIN)
+  DWORD peer_session_id;
+  if (!ProcessIdToSessionId(ipc_server_->current_peer_pid(),
+                            &peer_session_id)) {
+    PLOG(ERROR) << "Session services bind request rejected: "
+                   "ProcessIdToSessionId failed";
+    return;
+  }
+  if (connected_client->desktop_session_id() != peer_session_id) {
+    LOG(WARNING)
+        << "Session services bind request rejected: "
+        << "Remote desktop client is not connected to the current session.";
+    return;
+  }
+#endif
+  connected_client->BindReceiver(std::move(receiver));
+  VLOG(1) << "Session services bound for receiver ID: "
+          << ipc_server_->current_receiver();
 }
 
 void ChromotingHost::OnIncomingSession(
@@ -235,13 +284,12 @@ void ChromotingHost::OnIncomingSession(
   std::unique_ptr<protocol::ConnectionToClient> connection;
   if (session->config().protocol() ==
       protocol::SessionConfig::Protocol::WEBRTC) {
-    connection.reset(new protocol::WebrtcConnectionToClient(
-        base::WrapUnique(session), transport_context_,
-        video_encode_task_runner_, audio_task_runner_));
+    connection = std::make_unique<protocol::WebrtcConnectionToClient>(
+        base::WrapUnique(session), transport_context_, audio_task_runner_);
   } else {
-    connection.reset(new protocol::IceConnectionToClient(
+    connection = std::make_unique<protocol::IceConnectionToClient>(
         base::WrapUnique(session), transport_context_,
-        video_encode_task_runner_, audio_task_runner_));
+        video_encode_task_runner_, audio_task_runner_);
   }
 
   // Create a ClientSession object.
@@ -252,6 +300,20 @@ void ChromotingHost::OnIncomingSession(
       this, std::move(connection), desktop_environment_factory_,
       desktop_environment_options_, max_session_duration_, pairing_registry_,
       extension_ptrs));
+}
+
+ClientSession* ChromotingHost::GetConnectedClientSession() const {
+  ClientSession* connected_client = nullptr;
+  for (auto& client : clients_) {
+    if (client->channels_connected()) {
+      if (connected_client) {
+        LOG(DFATAL) << "More than one connected client is found.";
+        return nullptr;
+      }
+      connected_client = client.get();
+    }
+  }
+  return connected_client;
 }
 
 }  // namespace remoting

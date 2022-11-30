@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/base/auth.h"
@@ -23,11 +24,13 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_server.h"
+#include "net/cert/x509_certificate.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/network_quality_estimator.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request_context.h"
 
@@ -37,9 +40,9 @@ namespace {
 
 // Callback for TYPE_URL_REQUEST_FILTERS_SET net-internals event.
 base::Value SourceStreamSetParams(SourceStream* source_stream) {
-  base::Value event_params(base::Value::Type::DICTIONARY);
-  event_params.SetStringKey("filters", source_stream->Description());
-  return event_params;
+  base::Value::Dict event_params;
+  event_params.Set("filters", source_stream->Description());
+  return base::Value(std::move(event_params));
 }
 
 }  // namespace
@@ -54,6 +57,10 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
       : SourceStream(SourceStream::TYPE_NONE), job_(job) {
     DCHECK(job_);
   }
+
+  URLRequestJobSourceStream(const URLRequestJobSourceStream&) = delete;
+  URLRequestJobSourceStream& operator=(const URLRequestJobSourceStream&) =
+      delete;
 
   ~URLRequestJobSourceStream() override = default;
 
@@ -74,21 +81,12 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   // It is safe to keep a raw pointer because |job_| owns the last stream which
   // indirectly owns |this|. Therefore, |job_| will not be destroyed when |this|
   // is alive.
-  URLRequestJob* const job_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestJobSourceStream);
+  const raw_ptr<URLRequestJob> job_;
 };
 
-URLRequestJob::URLRequestJob(URLRequest* request)
-    : request_(request),
-      done_(false),
-      prefilter_bytes_read_(0),
-      postfilter_bytes_read_(0),
-      has_handled_response_(false),
-      expected_content_size_(-1) {}
+URLRequestJob::URLRequestJob(URLRequest* request) : request_(request) {}
 
-URLRequestJob::~URLRequestJob() {
-}
+URLRequestJob::~URLRequestJob() = default;
 
 void URLRequestJob::SetUpload(UploadDataStream* upload) {
 }
@@ -232,14 +230,14 @@ void URLRequestJob::ContinueDespiteLastError() {
 }
 
 void URLRequestJob::FollowDeferredRedirect(
-    const base::Optional<std::vector<std::string>>& removed_headers,
-    const base::Optional<net::HttpRequestHeaders>& modified_headers) {
+    const absl::optional<std::vector<std::string>>& removed_headers,
+    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
   // OnReceivedRedirect must have been called.
   DCHECK(deferred_redirect_info_);
 
   // It is possible that FollowRedirect will delete |this|, so it is not safe to
   // pass along a reference to |deferred_redirect_info_|.
-  base::Optional<RedirectInfo> redirect_info =
+  absl::optional<RedirectInfo> redirect_info =
       std::move(deferred_redirect_info_);
   FollowRedirect(*redirect_info, removed_headers, modified_headers);
 }
@@ -266,8 +264,8 @@ IPEndPoint URLRequestJob::GetResponseRemoteEndpoint() const {
 void URLRequestJob::NotifyURLRequestDestroyed() {
 }
 
-void URLRequestJob::GetConnectionAttempts(ConnectionAttempts* out) const {
-  out->clear();
+ConnectionAttempts URLRequestJob::GetConnectionAttempts() const {
+  return {};
 }
 
 void URLRequestJob::CloseConnectionOnDestruction() {}
@@ -283,7 +281,7 @@ GURL MaybeStripToOrigin(GURL url, bool should_strip_to_origin) {
   if (!should_strip_to_origin)
     return url;
 
-  return url.GetOrigin();
+  return url.DeprecatedGetOriginAsURL();
 }
 
 }  // namespace
@@ -314,8 +312,7 @@ GURL URLRequestJob::ComputeReferrerForPolicy(
   if (stripped_referrer.spec().size() > 4096)
     should_strip_to_origin = true;
 
-  bool same_origin = url::Origin::Create(original_referrer)
-                         .IsSameOriginWith(url::Origin::Create(destination));
+  bool same_origin = url::IsSameOriginWith(original_referrer, destination);
 
   if (same_origin_out_for_metrics)
     *same_origin_out_for_metrics = same_origin;
@@ -401,27 +398,14 @@ void URLRequestJob::NotifySSLCertificateError(int net_error,
   request_->NotifySSLCertificateError(net_error, ssl_info, fatal);
 }
 
-bool URLRequestJob::CanGetCookies() const {
-  return request_->CanGetCookies();
-}
-
 bool URLRequestJob::CanSetCookie(const net::CanonicalCookie& cookie,
                                  CookieOptions* options) const {
   return request_->CanSetCookie(cookie, options);
 }
 
-PrivacyMode URLRequestJob::privacy_mode() const {
-  return request_->privacy_mode();
-}
-
 void URLRequestJob::NotifyHeadersComplete() {
   if (has_handled_response_)
     return;
-
-  // The URLRequest status should still be IO_PENDING, which it was set to
-  // before the URLRequestJob was started.  On error or cancellation, this
-  // method should not be called.
-  DCHECK_EQ(ERR_IO_PENDING, request_->status());
 
   // Initialize to the current time, and let the subclass optionally override
   // the time stamps if it has that information.  The default request_time is
@@ -475,8 +459,8 @@ void URLRequestJob::NotifyHeadersComplete() {
     if (defer_redirect) {
       deferred_redirect_info_ = std::move(redirect_info);
     } else {
-      FollowRedirect(redirect_info, base::nullopt, /*  removed_headers */
-                     base::nullopt /* modified_headers */);
+      FollowRedirect(redirect_info, absl::nullopt, /*  removed_headers */
+                     absl::nullopt /* modified_headers */);
     }
     return;
   }
@@ -734,8 +718,8 @@ int URLRequestJob::CanFollowRedirect(const GURL& new_url) {
 
 void URLRequestJob::FollowRedirect(
     const RedirectInfo& redirect_info,
-    const base::Optional<std::vector<std::string>>& removed_headers,
-    const base::Optional<net::HttpRequestHeaders>& modified_headers) {
+    const absl::optional<std::vector<std::string>>& removed_headers,
+    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
   request_->Redirect(redirect_info, removed_headers, modified_headers);
 }
 

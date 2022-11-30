@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,10 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import re
-import string
+
+# This line is 'magic' in that git-cl looks for it to decide whether to
+# use Python3 instead of Python2 when running the code in this file.
+USE_PYTHON3 = True
 
 # Well-defined simple classes containing only <= 4 ints, or <= 2 floats.
 BASE_TIME_TYPES = [
@@ -18,8 +21,7 @@ BASE_TIME_TYPES = [
     'base::TimeTicks',
 ]
 
-BASE_TIME_TYPES_RE = re.compile(r'\bconst (%s)&' %
-                                string.join(BASE_TIME_TYPES, '|'))
+BASE_TIME_TYPES_RE = re.compile(r'\bconst (%s)&' % '|'.join(BASE_TIME_TYPES))
 
 def _FilterFile(affected_file):
   """Return true if the file could contain code requiring a presubmit check."""
@@ -52,11 +54,16 @@ def _CheckForUseOfWrongClock(input_api, output_api):
   # base::Time class.  We want to prevent these from triggerring a warning.
   base_time_konstant_pattern = r'(^|\W)Time::k\w+'
 
+  # Regular expression to detect usage of openscreen clock types, which are
+  # allowed depending on DEPS rules.
+  openscreen_time_pattern = r'(^|\W)openscreen::Clock\s*'
+
   problem_re = input_api.re.compile(
       r'(' + base_time_type_pattern + r')|(' + base_time_member_pattern + r')')
   exception_re = input_api.re.compile(
       r'(' + using_base_time_decl_pattern + r')|(' +
-      base_time_konstant_pattern + r')')
+      base_time_konstant_pattern +  r')|(' +
+      openscreen_time_pattern + r')')
   problems = []
   for f in input_api.AffectedSourceFiles(_FilterFile):
     for line_number, line in f.ChangedContents():

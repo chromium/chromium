@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/resources.h>
 #include <lib/ui/scenic/cpp/session.h>
-#include <memory>
 
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/ozone/platform/scenic/safe_presenter.h"
 #include "ui/ozone/platform/scenic/scenic_surface.h"
 
 namespace ui {
@@ -23,9 +23,8 @@ namespace ui {
 // instances to display overlays.
 class ScenicOverlayView {
  public:
-  ScenicOverlayView(
-      scenic::SessionPtrAndListenerRequest session_and_listener_request,
-      ScenicSurfaceFactory* scenic_surface_factory);
+  explicit ScenicOverlayView(
+      scenic::SessionPtrAndListenerRequest session_and_listener_request);
   ~ScenicOverlayView();
   ScenicOverlayView(const ScenicOverlayView&) = delete;
   ScenicOverlayView& operator=(const ScenicOverlayView&) = delete;
@@ -36,39 +35,37 @@ class ScenicOverlayView {
   void Initialize(fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
                       collection_token);
 
-  // Calls ImagePipe2::AddImage() on |image_pipe_| for all of |buffer_count|
-  // images from the initialized BufferCollection with the specified |size|.
-  bool AddImages(uint32_t buffer_count, const gfx::Size& size);
+  // Adds an image to the ImagePipe using the specified `buffer_index` and
+  // `size`. Returns a non-zero `image_id` that may be used in `PresentImage()`
+  // and `RemoveImage()`.
+  uint32_t AddImage(uint32_t buffer_index, const gfx::Size& size);
 
-  // Calls ImagePipe2::PresentImage() on |image_pipe_| for the image
+  // Removes image with the `image_id_` from the ImagePipe.
+  void RemoveImage(uint32_t image_id);
+
+  // Calls `ImagePipe2::PresentImage()` on `image_pipe_` for the `image_id`
   // corresponding to |buffer_index| from the initialized BufferCollection.
-  bool PresentImage(uint32_t buffer_index,
+  bool PresentImage(uint32_t image_id,
                     std::vector<zx::event> acquire_fences,
                     std::vector<zx::event> release_fences);
 
   // If |enable_blend| is true, sets |image_pipe_| as non-opaque.
   void SetBlendMode(bool enable_blend);
 
-  // Return true if |view_holder_token_| can be attached to a surface from
-  // |widget|.
-  bool CanAttachToAcceleratedWidget(gfx::AcceleratedWidget widget);
-
-  // Return true if |view_holder_token_| is attached to the scene graph of
-  // surface corresponding to |widget|.
-  bool AttachToScenicSurface(gfx::AcceleratedWidget widget,
-                             gfx::SysmemBufferCollectionId id);
+  // Attaches the view using the specified token.
+  void AttachToScenicSurface(fuchsia::ui::views::ViewToken view_token);
 
  private:
   scenic::Session scenic_session_;
-  ScenicSurfaceFactory* const scenic_surface_factory_;
-  fuchsia::ui::views::ViewHolderToken view_holder_token_;
-  scenic::View view_;
+  // Used for safely queueing Present() operations on |scenic_session_|.
+  SafePresenter safe_presenter_;
+  absl::optional<scenic::View> view_;
   fuchsia::images::ImagePipe2Ptr image_pipe_;
-  std::unique_ptr<scenic::Material> image_material_;
+  scenic::Material image_material_;
+
+  uint32_t next_image_id_ = 1;
 
   bool enable_blend_ = false;
-  gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  gfx::SysmemBufferCollectionId buffer_collection_id_;
 
   THREAD_CHECKER(thread_checker_);
 };

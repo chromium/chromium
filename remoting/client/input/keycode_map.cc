@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "base/no_destructor.h"
 
 namespace remoting {
 
@@ -109,9 +108,9 @@ KeycodeMap CreateKeycodeMapFromMapEntries(const KeycodeMapEntry (&entries)[N]) {
 }
 
 const KeycodeMap& GetKeycodeMapQwerty() {
-  static const base::NoDestructor<KeycodeMap> map(
+  static const KeycodeMap map(
       CreateKeycodeMapFromMapEntries(kKeycodeMapEntriesQwerty));
-  return *map;
+  return map;
 }
 
 }  // namespace

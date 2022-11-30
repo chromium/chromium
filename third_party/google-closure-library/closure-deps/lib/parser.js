@@ -18,7 +18,7 @@
 const {SourceError} = require('./sourceerror');
 const depGraph = require('./depgraph');
 const fs = require('fs');
-const {gjd} = require('google-closure-compiler');
+const {gjd} = require('./jsfile_parser');
 const path = require('path');
 
 
@@ -287,11 +287,18 @@ const parseText = exports.parseText = function(text, filePath) {
   if (data.imported_modules) {
     data.imported_modules.forEach(r => imports.push(new depGraph.Es6Import(r)));
   }
+
+  // The special `goog` symbol is implicitly required by files that use
+  // goog primitives, and implicitly provided by base.js (in the output
+  // produced by jsfile_parser). However, it should be omitted from
+  // deps.js files, since the debug loader should never load base.js.
+
   if (data.requires) {
-    data.requires.forEach(r => imports.push(new depGraph.GoogRequire(r)));
+    data.requires.filter(r => r != 'goog')
+        .forEach(r => imports.push(new depGraph.GoogRequire(r)));
   }
 
-  const provides = data.provides || [];
+  const provides = (data.provides || []).filter(p => p != 'goog');
 
   let dependency;
 

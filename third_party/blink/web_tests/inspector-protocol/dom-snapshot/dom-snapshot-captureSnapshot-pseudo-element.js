@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startURL('../resources/dom-snapshot-pseudo-element.html', 'Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo elements.');
+  var {page, session, dp} = await testRunner.startURL('../resources/dom-snapshot-pseudo-element.html', 'Tests DOMSnapshot.captureSnapshot exports layout tree nodes associated with pseudo elements.');
 
   var response = await dp.DOMSnapshot.captureSnapshot({'computedStyles': ['font-weight', 'color'], 'includeEventListeners': true});
   if (response.error) {
@@ -11,7 +11,7 @@
     response.result.strings[response.result.documents[0].frameId] = '';
     testRunner.log(
         response.result, undefined,
-        ['documentURL', 'baseURL', 'frameId', 'backendNodeId']);
+        ['documentURL', 'baseURL', 'frameId', 'backendNodeId', 'shadowRootType']);
   }
   testRunner.completeTest();
 })

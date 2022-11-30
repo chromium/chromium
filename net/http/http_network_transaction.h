@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
@@ -20,7 +20,7 @@
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_request_headers.h"
@@ -52,6 +52,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
  public:
   HttpNetworkTransaction(RequestPriority priority,
                          HttpNetworkSession* session);
+
+  HttpNetworkTransaction(const HttpNetworkTransaction&) = delete;
+  HttpNetworkTransaction& operator=(const HttpNetworkTransaction&) = delete;
 
   ~HttpNetworkTransaction() override;
 
@@ -121,7 +124,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
                          SSLCertRequestInfo* cert_info) override;
 
   void OnQuicBroken() override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
+  ConnectionAttempts GetConnectionAttempts() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest, ResetStateForRestart);
@@ -142,6 +145,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     STATE_CREATE_STREAM_COMPLETE,
     STATE_INIT_STREAM,
     STATE_INIT_STREAM_COMPLETE,
+    STATE_CONNECTED_CALLBACK,
     STATE_CONNECTED_CALLBACK_COMPLETE,
     STATE_GENERATE_PROXY_AUTH_TOKEN,
     STATE_GENERATE_PROXY_AUTH_TOKEN_COMPLETE,
@@ -183,7 +187,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int DoCreateStreamComplete(int result);
   int DoInitStream();
   int DoInitStreamComplete(int result);
-  int DoConnectedCallbackComplete(int results);
+  int DoConnectedCallback();
+  int DoConnectedCallbackComplete(int result);
   int DoGenerateProxyAuthToken();
   int DoGenerateProxyAuthTokenComplete(int result);
   int DoGenerateServerAuthToken();
@@ -204,11 +209,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  // Processes the Reporting-Endpoints header specified in document reporting
-  // spec, if one exists. This header configures where the Reporting API (in
-  // net/reporting) will send reports for the document.
-  void ProcessReportingEndpointsHeader();
-
   // Processes the Report-To header, if one exists. This header configures where
   // the Reporting API (in //net/reporting) will send reports for the origin.
   void ProcessReportToHeader();
@@ -318,17 +318,17 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Whether this transaction is waiting for proxy auth, server auth, or is
   // not waiting for any auth at all. |pending_auth_target_| is read and
   // cleared by RestartWithAuth().
-  HttpAuth::Target pending_auth_target_;
+  HttpAuth::Target pending_auth_target_ = HttpAuth::AUTH_NONE;
 
   CompletionRepeatingCallback io_callback_;
   CompletionOnceCallback callback_;
 
-  HttpNetworkSession* session_;
+  raw_ptr<HttpNetworkSession> session_;
 
   NetLogWithSource net_log_;
 
   // Reset to null at the start of the Read state machine.
-  const HttpRequestInfo* request_;
+  raw_ptr<const HttpRequestInfo> request_ = nullptr;
 
   // The requested URL.
   GURL url_;
@@ -337,7 +337,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // Copied from |request_|, as it's needed after the response body has been
   // read.
-  NetworkIsolationKey network_isolation_key_;
+  NetworkAnonymizationKey network_anonymization_key_;
 
   // |proxy_info_| is the ProxyInfo used by the HttpStreamRequest.
   ProxyInfo proxy_info_;
@@ -346,14 +346,14 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   std::unique_ptr<HttpStream> stream_;
 
   // True if we've validated the headers that the stream parser has returned.
-  bool headers_valid_;
+  bool headers_valid_ = false;
 
   // True if we can send the request over early data.
-  bool can_send_early_data_;
+  bool can_send_early_data_ = false;
 
   // True if the client certificate for the server (rather than the proxy) was
   // configured in this transaction.
-  bool configured_client_cert_for_server_;
+  bool configured_client_cert_for_server_ = false;
 
   // SSL configuration used for the server and proxy, respectively. Note
   // |server_ssl_config_| may be updated from the HttpStreamFactory, which will
@@ -368,14 +368,14 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   HttpRequestHeaders request_headers_;
 #if BUILDFLAG(ENABLE_REPORTING)
   // Whether a NEL report has already been generated. Reset when restarting.
-  bool network_error_logging_report_generated_;
+  bool network_error_logging_report_generated_ = false;
   // Cache some fields from |request_| that we'll need to construct a NEL
   // report about the request.  (NEL report construction happens after we've
   // cleared the |request_| pointer.)
   std::string request_method_;
   std::string request_referrer_;
   std::string request_user_agent_;
-  int request_reporting_upload_depth_;
+  int request_reporting_upload_depth_ = 0;
   base::TimeTicks start_timeticks_;
 #endif
 
@@ -386,34 +386,35 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // User buffer and length passed to the Read method.
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
+  int read_buf_len_ = 0;
 
   // Total number of bytes received on all destroyed HttpStreams for this
   // transaction.
-  int64_t total_received_bytes_;
+  int64_t total_received_bytes_ = 0;
 
   // Total number of bytes sent on all destroyed HttpStreams for this
   // transaction.
-  int64_t total_sent_bytes_;
+  int64_t total_sent_bytes_ = 0;
 
   // When the transaction started / finished sending the request, including
-  // the body, if present.
+  // the body, if present. |send_start_time_| is set to |base::TimeTicks()|
+  // until |SendRequest()| is called on |stream_|, and reset for auth restarts.
   base::TimeTicks send_start_time_;
   base::TimeTicks send_end_time_;
 
   // The next state in the state machine.
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   // True when the tunnel is in the process of being established - we can't
   // read from the socket until the tunnel is done.
-  bool establishing_tunnel_;
+  bool establishing_tunnel_ = false;
 
   // Enable pooling to a SpdySession with matching IP and certificate
   // even if the SpdySessionKey is different.
-  bool enable_ip_based_pooling_;
+  bool enable_ip_based_pooling_ = true;
 
   // Enable using alternative services for the request.
-  bool enable_alternative_services_;
+  bool enable_alternative_services_ = true;
 
   // When a request is retried because of errors with the alternative service,
   // this will store the alternative service used.
@@ -421,8 +422,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // The helper object to use to create WebSocketHandshakeStreamBase
   // objects. Only relevant when establishing a WebSocket connection.
-  WebSocketHandshakeStreamBase::CreateHelper*
-      websocket_handshake_stream_base_create_helper_;
+  raw_ptr<WebSocketHandshakeStreamBase::CreateHelper>
+      websocket_handshake_stream_base_create_helper_ = nullptr;
 
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
@@ -442,14 +443,12 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // This count excludes retries on reused sockets since a well
   // behaved server may time those out and thus the number
   // of times we can retry a request on reused sockets is limited.
-  size_t retry_attempts_;
+  size_t retry_attempts_ = 0;
 
   // Number of times the transaction was restarted via a RestartWith* call.
-  size_t num_restarts_;
+  size_t num_restarts_ = 0;
 
   bool close_connection_on_destruction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpNetworkTransaction);
 };
 
 }  // namespace net

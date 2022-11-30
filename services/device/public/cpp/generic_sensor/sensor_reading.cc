@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,35 +7,23 @@
 namespace device {
 
 SensorReadingRaw::SensorReadingRaw() = default;
-SensorReadingRaw::~SensorReadingRaw() = default;
 
 SensorReadingBase::SensorReadingBase() = default;
-SensorReadingBase::~SensorReadingBase() = default;
 
 SensorReadingSingle::SensorReadingSingle() = default;
-SensorReadingSingle::~SensorReadingSingle() = default;
 
 SensorReadingXYZ::SensorReadingXYZ() = default;
-SensorReadingXYZ::~SensorReadingXYZ() = default;
 
 SensorReadingQuat::SensorReadingQuat() = default;
-SensorReadingQuat::~SensorReadingQuat() = default;
 
 SensorReadingSharedBuffer::SensorReadingSharedBuffer() = default;
 SensorReadingSharedBuffer::~SensorReadingSharedBuffer() = default;
 
 SensorReading::SensorReading() {
+  // We have a static_assert in the class declaration that verifies that |raw|
+  // is trivially destructible so we do not need a custom destructor here that
+  // invokes |raw|'s and can keep SensorReading trivially copyable.
   new (&raw) SensorReadingRaw();
-}
-SensorReading::SensorReading(const SensorReading& other) {
-  raw = other.raw;
-}
-SensorReading::~SensorReading() {
-  raw.~SensorReadingRaw();
-}
-SensorReading& SensorReading::operator=(const SensorReading& other) {
-  raw = other.raw;
-  return *this;
 }
 
 // static

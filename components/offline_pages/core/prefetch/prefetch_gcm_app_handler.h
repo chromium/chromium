@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/prefetch/prefetch_gcm_handler.h"
@@ -23,6 +24,10 @@ class PrefetchGCMAppHandler : public gcm::GCMAppHandler,
                               public PrefetchGCMHandler {
  public:
   explicit PrefetchGCMAppHandler();
+
+  PrefetchGCMAppHandler(const PrefetchGCMAppHandler&) = delete;
+  PrefetchGCMAppHandler& operator=(const PrefetchGCMAppHandler&) = delete;
+
   ~PrefetchGCMAppHandler() override;
 
   // gcm::GCMAppHandler implementation.
@@ -45,9 +50,7 @@ class PrefetchGCMAppHandler : public gcm::GCMAppHandler,
 
  private:
   // Not owned, PrefetchService owns |this|.
-  PrefetchService* prefetch_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchGCMAppHandler);
+  raw_ptr<PrefetchService> prefetch_service_ = nullptr;
 };
 
 }  // namespace offline_pages

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -24,11 +23,14 @@ class NET_EXPORT ProxyResolverFactory {
   // A handle to a request. Deleting it will cancel the request.
   class Request {
    public:
-    virtual ~Request() {}
+    virtual ~Request() = default;
   };
 
   // See |expects_pac_bytes()| for the meaning of |expects_pac_bytes|.
   explicit ProxyResolverFactory(bool expects_pac_bytes);
+
+  ProxyResolverFactory(const ProxyResolverFactory&) = delete;
+  ProxyResolverFactory& operator=(const ProxyResolverFactory&) = delete;
 
   virtual ~ProxyResolverFactory();
 
@@ -51,8 +53,6 @@ class NET_EXPORT ProxyResolverFactory {
 
  private:
   bool expects_pac_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactory);
 };
 
 }  // namespace net

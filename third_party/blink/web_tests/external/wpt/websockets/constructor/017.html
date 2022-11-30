@@ -2,26 +2,16 @@
 <title>WebSockets: too few slashes after ws: and wss:</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js?pipe=sub></script>
+<script src=../constants.sub.js></script>
 <meta name="variant" content="">
 <meta name="variant" content="?wss">
 <meta name="variant" content="?wpt_flags=h2">
 <div id=log></div>
 <script>
-var tests;
-if (location.search == '?wpt_flags=h2') {
-  tests = [
-    ['wss:', PORT_H2],
-    ['wss:/', PORT_H2]
-  ];
-} else {
-  tests = [
-    ['ws:', PORT],
-    ['ws:/', PORT],
-    ['wss:', PORT_SSL],
-    ['wss:/', PORT_SSL]
-  ];
-}
+var tests = [
+  [__SCHEME + ':', __PORT],
+  [__SCHEME + ':/', __PORT],
+];
 //Pass condition is to not throw
 for (var i = 0; i < tests.length; ++i) {
   test(function(){new WebSocket(tests[i][0] + location.hostname + ':' + tests[i][1] + '/echo')}, tests[i][0]);

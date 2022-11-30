@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,14 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_data.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_resources.h"
@@ -29,6 +28,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
@@ -71,7 +71,7 @@ UntrustedSource::UntrustedSource(Profile* profile)
   // |one_google_bar_service_| is null in incognito, or when the feature is
   // disabled.
   if (one_google_bar_service_) {
-    one_google_bar_service_observation_.Observe(one_google_bar_service_);
+    one_google_bar_service_observation_.Observe(one_google_bar_service_.get());
   }
 }
 
@@ -94,6 +94,8 @@ std::string UntrustedSource::GetContentSecurityPolicy(
       return std::string();
     case network::mojom::CSPDirectiveName::TrustedTypes:
       return std::string();
+    case network::mojom::CSPDirectiveName::FormAction:
+      return "form-action https://ogs.google.com https://*.corp.google.com;";
     default:
       return content::URLDataSource::GetContentSecurityPolicy(directive);
   }
@@ -133,12 +135,6 @@ void UntrustedSource::StartDataRequest(
         IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_JS));
     return;
   }
-  if (path == "one_google_bar_api.js") {
-    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-    std::move(callback).Run(
-        bundle.LoadDataResourceBytes(IDR_NEW_TAB_PAGE_ONE_GOOGLE_BAR_API_JS));
-    return;
-  }
   if (path == "image" && url_param.is_valid() &&
       (url_param.SchemeIs(url::kHttpsScheme) ||
        url_param.SchemeIs(content::kChromeUIUntrustedScheme))) {
@@ -151,7 +147,7 @@ void UntrustedSource::StartDataRequest(
   }
   if (path == "background_image") {
     ServeBackgroundImage(url_param, GURL(), "cover", "no-repeat", "no-repeat",
-                         "center", "center", std::move(callback));
+                         "center", "center", "inherit", std::move(callback));
     return;
   }
   if (path == "custom_background_image") {
@@ -178,6 +174,7 @@ void UntrustedSource::StartDataRequest(
         params.count("repeatY") == 1 ? params["repeatY"] : "no-repeat",
         params.count("positionX") == 1 ? params["positionX"] : "center",
         params.count("positionY") == 1 ? params["positionY"] : "center",
+        params.count("scrimDisplay") == 1 ? params["scrimDisplay"] : "inherit",
         std::move(callback));
     return;
   }
@@ -197,8 +194,8 @@ void UntrustedSource::StartDataRequest(
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
 }
 
-std::string UntrustedSource::GetMimeType(const std::string& path) {
-  const std::string stripped_path = path.substr(0, path.find("?"));
+std::string UntrustedSource::GetMimeType(const GURL& url) {
+  const base::StringPiece stripped_path = url.path_piece();
   if (base::EndsWith(stripped_path, ".js",
                      base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/javascript";
@@ -234,34 +231,36 @@ bool UntrustedSource::ShouldServiceRequest(
   return path == "one-google-bar" || path == "one_google_bar.js" ||
          path == "image" || path == "background_image" ||
          path == "custom_background_image" || path == "background_image.js" ||
-         path == "background.jpg" || path == "one_google_bar_api.js";
+         path == "background.jpg";
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {
-  base::Optional<OneGoogleBarData> data =
+  absl::optional<OneGoogleBarData> data =
       one_google_bar_service_->one_google_bar_data();
 
   if (one_google_bar_load_start_time_.has_value()) {
     NTPUserDataLogger::LogOneGoogleBarFetchDuration(
         /*success=*/data.has_value(),
         /*duration=*/base::TimeTicks::Now() - *one_google_bar_load_start_time_);
-    one_google_bar_load_start_time_ = base::nullopt;
+    one_google_bar_load_start_time_ = absl::nullopt;
   }
 
   std::string html;
   if (data.has_value()) {
     ui::TemplateReplacements replacements;
     replacements["textdirection"] = base::i18n::IsRTL() ? "rtl" : "ltr";
-    replacements["modalOverlays"] =
-        base::FeatureList::IsEnabled(ntp_features::kOneGoogleBarModalOverlays)
-            ? "modal-overlays"
-            : "";
     replacements["barHtml"] = data->bar_html;
     replacements["inHeadScript"] = data->in_head_script;
     replacements["inHeadStyle"] = data->in_head_style;
     replacements["afterBarScript"] = data->after_bar_script;
     replacements["endOfBodyHtml"] = data->end_of_body_html;
     replacements["endOfBodyScript"] = data->end_of_body_script;
+
+    replacements["ogbUnprotectedTextSelector"] =
+        ntp_features::kNtpOgbUnprotectedTextSelectorParam.Get();
+    replacements["ogbButtonSelector"] =
+        ntp_features::kNtpOgbButtonSelectorParam.Get();
+
     html = FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_HTML,
                           replacements);
   }
@@ -285,6 +284,7 @@ void UntrustedSource::ServeBackgroundImage(
     const std::string& repeat_y,
     const std::string& position_x,
     const std::string& position_y,
+    const std::string& scrim_display,
     content::URLDataSource::GotDataCallback callback) {
   if (!url.is_valid() || !(url.SchemeIs(url::kHttpsScheme) ||
                            url.SchemeIs(content::kChromeUIUntrustedScheme))) {
@@ -306,6 +306,7 @@ void UntrustedSource::ServeBackgroundImage(
   replacements["repeatY"] = repeat_y;
   replacements["positionX"] = position_x;
   replacements["positionY"] = position_y;
+  replacements["scrimDisplay"] = scrim_display;
   std::string html = FormatTemplate(
       IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements);
   std::move(callback).Run(base::RefCountedString::TakeString(&html));

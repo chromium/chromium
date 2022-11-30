@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,13 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "components/variations/synthetic_trials.h"
 
 // The native part of java UmaSessionStats class. This is a singleton.
 class UmaSessionStats {
  public:
-  static UmaSessionStats* GetInstance();
-
   void UmaResumeSession(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
   void UmaEndSession(JNIEnv* env,
@@ -30,18 +28,28 @@ class UmaSessionStats {
   // Called before an UMA log is completed to record associated metrics.
   void ProvideCurrentSessionData();
 
+  static UmaSessionStats* GetInstance();
+
+  UmaSessionStats(const UmaSessionStats&) = delete;
+  UmaSessionStats& operator=(const UmaSessionStats&) = delete;
+
+  // Returns true if there is a visible activity. Android Chrome only.
+  static bool HasVisibleActivity();
+
   // Called once on browser startup.
   static void OnStartup();
 
-  static void RegisterSyntheticFieldTrial(const std::string& trial_name,
-                                          const std::string& group_name);
+  static void RegisterSyntheticFieldTrial(
+      const std::string& trial_name,
+      const std::string& group_name,
+      variations::SyntheticTrialAnnotationMode annotation_mode);
 
   static bool IsBackgroundSessionStartForTesting();
 
  private:
   friend class base::NoDestructor<UmaSessionStats>;
-  UmaSessionStats();
-  ~UmaSessionStats();
+  UmaSessionStats() = default;
+  ~UmaSessionStats() = default;
 
   class SessionTimeTracker {
    public:
@@ -80,8 +88,6 @@ class UmaSessionStats {
 
   SessionTimeTracker session_time_tracker_;
   int active_session_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UmaSessionStats);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_METRICS_UMA_SESSION_STATS_H_

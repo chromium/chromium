@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "base/stl_util.h"
-#include "chrome/browser/android/metrics/jni_headers/UkmUtilsForTest_jni.h"
+#include "base/containers/contains.h"
+#include "chrome/browser/android/metrics/test_jni_headers/UkmUtilsForTest_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/ukm/ukm_service.h"

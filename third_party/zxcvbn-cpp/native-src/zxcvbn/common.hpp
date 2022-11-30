@@ -66,7 +66,6 @@ enum class MatchPattern {
 struct DictionaryMatch {
   static constexpr auto pattern = MatchPattern::DICTIONARY;
 
-  DictionaryTag dictionary_tag;
   std::string matched_word;
   rank_t rank;
   bool l33t;

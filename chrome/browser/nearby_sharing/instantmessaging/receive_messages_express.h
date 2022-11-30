@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
-#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -83,6 +84,9 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;
 
+  void DelegateMessage(const chrome_browser_nearby_sharing_instantmessaging::
+                           ReceiveMessagesResponse& response);
+
   // StreamParser callbacks:
   void OnFastPathReady();
   void OnMessageReceived(const std::string& message);
@@ -102,6 +106,7 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   StreamParser stream_parser_;
   base::OneShotTimer fast_path_ready_timeout_timer_;
+  std::string request_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

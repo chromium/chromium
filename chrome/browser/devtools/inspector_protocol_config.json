@@ -8,9 +8,9 @@
         "options": [
             {
                 "domain": "Page",
-                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons" ],
+                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId", "setSPCTransactionMode" ],
                 "include_events": [],
-                "async": ["getInstallabilityErrors", "getManifestIcons"]
+                "async": ["getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId" ]
             },
             {
                 "domain": "Browser",
@@ -24,7 +24,11 @@
             },
             {
                 "domain": "Cast",
-                "async": ["startTabMirroring"]
+                "async": ["startDesktopMirroring", "startTabMirroring"]
+            },
+            {
+                "domain": "Emulation",
+                "include": ["disable", "setAutomationOverride"]
             },
             {
                 "domain": "WindowManager"
@@ -39,7 +43,7 @@
     "lib": {
         "package": "chrome/browser/devtools/protocol",
         "output": "protocol",
-        "string_header": "chrome/browser/devtools/protocol/base_string_adapter.h"
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
     },
 
     "crdtp": {

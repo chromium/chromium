@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,13 +7,6 @@ import("//build/config/chrome_build.gni")
 source_set("user_signin") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "gradient_view.h",
-    "gradient_view.mm",
-    "policy_signout_commands.h",
-    "user_policy_signout_coordinator.h",
-    "user_policy_signout_coordinator.mm",
-    "user_policy_signout_view_controller.h",
-    "user_policy_signout_view_controller.mm",
     "user_signin_constants.h",
     "user_signin_constants.mm",
     "user_signin_coordinator.h",
@@ -29,7 +22,8 @@ source_set("user_signin") {
     "//components/sync/base",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy/resources:enterprise_icon_blue_large",
     "//ios/chrome/browser/signin",
@@ -42,11 +36,17 @@ source_set("user_signin") {
     "//ios/chrome/browser/ui/authentication/unified_consent",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
   ]
@@ -69,11 +69,13 @@ source_set("unit_tests") {
     "//components/consent_auditor:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/sync/driver:test_support",
+    "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/consent_auditor",
+    "//ios/chrome/browser/consent_auditor:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/signin",
@@ -83,6 +85,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
@@ -91,4 +94,35 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "upgrade_signin_promo_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/ios/browser:features",
+    "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/unified_consent:constants",
+    "//ios/chrome/browser/ui/authentication/views:views_constants",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:constants",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#if defined(OS_MAC)
+#include "build/build_config.h"
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 #include "base/path_service.h"
@@ -127,7 +128,7 @@ bool RunGLES2ConformTest(const char* path) {
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
   ::testing::InitGoogleTest(&argc, argv);

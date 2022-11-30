@@ -1,0 +1,280 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// An advertisement to display for an interest group.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
+struct InterestGroupAd {
+  // Must use https.
+  url.mojom.Url render_url;
+  // Opaque JSON data, persisted, then passed as object to auction worklet.
+  string? metadata;
+};
+
+// The maximum size of a valid interest group in bytes.
+const uint32 kMaxInterestGroupSize = 51200; // 50 * 1024
+
+// Interest group description, passed to JoinInterestGroup(). If an entry keyed
+// by (owner, name) already exists, we "merge" by overwriting specified fields,
+// leaving other existing fields intact.
+//
+// All URLs and origins must use https.
+//
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
+struct InterestGroup {
+  enum ExecutionMode {
+    // kCompatibilityMode creates a new context for every execution. This is
+    // potentially slow as it is only able to reuse the compilation cache from
+    // other interest groups with the same bidding script.
+    kCompatibilityMode,
+    // kGroupedByOriginMode, mode uses the same JavaScript context for groups
+    // with the same joining origin. This can be much faster, but to mitigate
+    // any privacy leaks FLEDGE will clear all of the interest groups for a
+    // joining origin if another origin joins or leaves one of the interest
+    // groups.
+    kGroupedByOriginMode,
+    // kFrozenContext mode uses a "frozen" JavaScript context to execute the
+    // bidding scripts for all interest groups that share a common biddnig
+    // script. Before the script is loaded the global object is recursively
+    // frozen to prevent persisting state. After the script is loaded, the
+    // script context is also frozen and checked for any state that may persist
+    // between function execution. If any potentially persistent state is
+    // identified, execution abandoned.
+    kFrozenContext,
+  };
+
+  mojo_base.mojom.Time expiry;
+  // `owner` must match the current frame URL's origin.
+  url.mojom.Origin owner;
+  string name;
+
+  // `priority` of the interest group.
+  double priority = 0.0;
+
+  // True if the interest group priority should be calculated using
+  // vectors from bidding signals fetch.
+  bool enable_bidding_signals_prioritization;
+
+  // Sparse vector whose dot product with the AuctionConfig's priority signals
+  // will be used in place of `priority`, if set.
+  map<string, double>? priority_vector;
+
+  // Sparse vector whose values override the AuctionConfig's corresponding
+  // priority signals.
+  map<string, double>? priority_signals_overrides;
+
+  // `execution_mode` of the interest group.
+  ExecutionMode execution_mode = kCompatibilityMode;
+  // `bidding_url` must match the current frame URL's origin.
+  url.mojom.Url? bidding_url;
+  // `bidding_wasm_helper_url` must match the current frame URL's origin.
+  url.mojom.Url? bidding_wasm_helper_url;
+  // `update_url` must match the current frame URL's origin.
+  url.mojom.Url? daily_update_url;
+  // `trusted_bidding_signals_url` must match the current frame URL's origin.
+  url.mojom.Url? trusted_bidding_signals_url;
+  array<string>? trusted_bidding_signals_keys;
+  // Opaque JSON data, persisted, then passed as object to auction worklet.
+  string?        user_bidding_signals;
+  array<InterestGroupAd>? ads;
+  array<InterestGroupAd>? ad_components;
+};
+
+// Packages the details necessary for the browser process to retrieve a
+// DirectFromSellerSignals resource of a subresource bundle -- the actual
+// subresource URL is constructed by the browser process from the
+// DirectFromSellerSignals `prefix` and the browser supplied suffix, as
+// described in DirectFromSellerSignals.
+//
+// To fetch a subresource bundle URL from the browser process, the `bundle_url`,
+// subresource URL (constructed from the prefix + suffix), token, and renderer
+// process ID are needed.
+//
+// The resource is only available while the <script type="webbundle"> tag that
+// declared the resource is still alive.
+//
+// TODO(crbug.com/1355887): Consider adding a mechanism to extend the lifetime
+// of the subresource for the duration of the auction.
+struct DirectFromSellerSignalsSubresource {
+  // URL of the bundle (.wbn / "application/webbundle") file.
+  url.mojom.Url bundle_url;
+
+  // The UnguessableToken for this subresource, stored in the renderer's
+  // ResourceFetcher.
+  //
+  // TODO(crbug.com/1364649): Change to use a base::TokenType specialization
+  // along with other web / subresource bundle uses of UnguessableToken.
+  mojo_base.mojom.UnguessableToken token;
+};
+
+// Signals to be loaded from resources in subresource bundle(s). Like
+// `seller_signals`, `per_buyer_signals`, and `auction_signals` in
+// AuctionAdConfigNonSharedParams, but the signals' contents are not revealed
+// to the renderer process.
+//
+// The page specifies a URL prefix, and the subresource URLs of signals destined
+// for particular origins are formed by concatenating a suffix (as described in
+// field comments) to the prefix -- since the browser process is doing the
+// concatenation, it can ensure that each signal is only given to the recipient
+// intended by the seller.
+//
+// All subresource URLs must resolve to a valid application/json string. The
+// origin of the prefix and the URL of each source bundle must have a scheme of
+// https (uuid-in-package isn't supported since it doesn't support CORS), and
+// each origin must match `seller` in AuctionAdConfig. The response must be
+// served with the headers `X-FLEDGE-Auction-Only: true` and `X-Allow-Fledge:
+// true`. The request is made with CORS, using the caller of runAdAuction()'s
+// frame as the initiator.
+//
+// The worklet process will parse the signals object and deliver it to worklet
+// functions (generateBid(), scoreAd(), reportWin(), reportResult()).
+//
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#25-additional-trusted-signals-directfromsellersignals
+struct DirectFromSellerSignals {
+  // The prefix specified by the page. Must have no query string.
+  url.mojom.Url prefix;
+
+  // DirectFromSellerSignals for individual buyers. Keys determine the buyer
+  // that should receive the signals loaded via the
+  // DirectFromSellerSignalsSubresource value. The subresource URL should be:
+  //
+  // prefix + "?perBuyerSignals=" + encodeURIComponent(buyer_origin_key)
+  //
+  // where encodeURIComponent() is a function equivalent to the JavaScript
+  // built-in function encodeURIComponent(), and buyer_origin_key is the buyer's
+  // origin (and also the map key for the particular
+  // DirectFromSellerSignalsSubresource).
+  //
+  // It's possible that not every buyer origin from `interest_group_buyers` is
+  // present, or that any buyer is present -- only those subresource URLs that
+  // are in the `interest_group_buyers` and have been declared in a
+  // <script type="webbundle"> tag will be included.
+  map<url.mojom.Origin, DirectFromSellerSignalsSubresource> per_buyer_signals;
+
+  // directFromSellerSignals for the seller. The subresource URL should be:
+  //
+  // prefix + "?sellerSignals"
+  //
+  // iff such a subresource is declared in a <script type="webbundle"> tag.
+  DirectFromSellerSignalsSubresource? seller_signals;
+
+  // Signals that are delivered to all parties -- the seller, and all buyers.
+  // The subresource URL should be:
+  //
+  // prefix + "?auctionSignals"
+  //
+  // iff such a subresource is declared in a <script type="webbundle"> tag.
+  DirectFromSellerSignalsSubresource? auction_signals;
+};
+
+// Subset of AuctionAdConfig that is not shared by all auctions that are
+// using the same SellerWorklet object (so it's "not shared" between
+// AuctionConfigs that share the same SellerWorklet). Other AuctionAdConfig
+// parameters all must be the same for two auctions to share a Sellerworklet, or
+// otherwise be parameters that don't need to be resent to each seller worklet
+// method invocation.
+struct AuctionAdConfigNonSharedParams {
+  // Owners of interest groups allowed to participate in the auction.
+  // Must all be HTTPS.
+  array<url.mojom.Origin>? interest_group_buyers;
+
+  // Opaque JSON data, passed as object to all worklets.
+  string? auction_signals;
+
+  // Opaque JSON data, passed as object to the seller worklet.
+  string? seller_signals;
+
+  // The value restricts the runtime of the seller's scoreAd() script.
+  mojo_base.mojom.TimeDelta? seller_timeout;
+
+  // Keys of `per_buyer_signals` must be valid HTTPS origins. Value is opaque
+  // JSON data, passed as object to auction worklet.
+  map<url.mojom.Origin, string>? per_buyer_signals;
+
+  // Keys of `per_buyer_timeouts` must be valid HTTPS origins. Values restrict
+  // the runtime of particular buyer's generateBid() scripts.
+  map<url.mojom.Origin, mojo_base.mojom.TimeDelta>? per_buyer_timeouts;
+
+  // The value restricts generateBid() script's runtime of all buyers with
+  // unspecified timeouts, if not Null.
+  mojo_base.mojom.TimeDelta? all_buyers_timeout;
+
+  // Keys of `per_buyer_group_limits` must be valid HTTPS origins. Values
+  // restrict the number of bidding interest groups for a particular buyer
+  // that can participate in an auction. Values must be greater than 0.
+  map<url.mojom.Origin, uint16> per_buyer_group_limits;
+
+  // Per-buyer sparse vector that, along with a similar per-interest group
+  // sparse vector, has its dot product taken to calculate interest group
+  // priorities.
+  //
+  // No signals key start with "browserSignals.", which is reserved for
+  // values coming from the browser.
+  map<url.mojom.Origin, map<string, double>>? per_buyer_priority_signals;
+
+  // Merged with `per_buyer_priority_signals` before calculating
+  // per-interest group priorities. In the case both have entries with the
+  // same key, the entry in `per_buyer_priority_signals` takes precedence.
+  //
+  // No signals key start with "browserSignals.", which is reserved for
+  // values coming from the browser.
+  map<string, double>? all_buyers_priority_signals;
+
+  // Limit on the number of bidding interest groups for any buyer. Must be
+  // greater than 0. Defaults to the largest uint16 value, which is fine
+  // in our case since the backend storage applies a lower limit.
+  uint16 all_buyers_group_limit = 65535;
+
+  // Nested auctions whose results will also be fed to `seller`. Only the top
+  // level auction config can have component auctions.
+  array<AuctionAdConfig> component_auctions;
+};
+
+// Configuration to pass to RunAdAuction().
+//
+// All URLs and origins must use https.
+//
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
+struct AuctionAdConfig {
+  // The entity running the ad auction. Unlike for interest groups, `seller`
+  // *doesn't* need to match the current frame URL's origin since the
+  // `decision_logic_url` determines the behavior of the auction. This allows
+  // the publisher page embedding the ad to call runAdAuction() directly if it
+  // desires, rather than requiring the runAdAuction() call to be made inside a
+  // seller-hosted iframe -- the decision logic has to be hosted by the seller
+  // though, even though signals from the page can come from the publisher. The
+  // seller and publisher could be different entities, or the same entity.
+  url.mojom.Origin seller;
+
+  // `decision_logic_url`'s origin must match the seller's origin.
+  url.mojom.Url decision_logic_url;
+
+  // Base URL for per-bid data passed to the seller worklet. Must be same
+  // origin with `seller`.
+  url.mojom.Url? trusted_scoring_signals_url;
+
+  // Other parameters are grouped in a struct that is passed to SellerWorklets.
+  AuctionAdConfigNonSharedParams auction_ad_config_non_shared_params;
+
+  // DirectFromSellerSignals to be loaded from resources in subresource
+  // bundle(s).  Like `seller_signals`,`per_buyer_signals`, and
+  // `auction_signals`, but the signals' contents are not revealed to the
+  // renderer process. See details in the DirectFromSellerSignals comment.
+  DirectFromSellerSignals? direct_from_seller_signals;
+
+  // Optional identifier for an experiment group, used when getting trusted
+  // signals (and as part of AuctionConfig given to worklets).
+  // TODO(https://crbug.com/657632): Update when optional integers supported.
+  bool has_seller_experiment_group_id = false;
+  uint16 seller_experiment_group_id;
+  bool has_all_buyer_experiment_group_id = false;
+  int16 all_buyer_experiment_group_id;
+  map<url.mojom.Origin, uint16> per_buyer_experiment_group_ids;
+};

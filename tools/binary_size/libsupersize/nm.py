@@ -1,4 +1,5 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,14 +16,22 @@ RunNmOnIntermediates():
   BulkForkAndCall() target: Runs nm on a .a file or a list of .o files, parses
   the output, extracts symbol information, and (if available) extracts string
   offset information.
+
+CreateUniqueSymbols():
+  Creates Symbol objects from nm output.
 """
 
+import argparse
 import collections
+import logging
+import os
 import subprocess
 
 import demangle
+import models
 import parallel
 import path_util
+import readelf
 import sys
 
 
@@ -72,7 +81,7 @@ def _IsRelevantObjectFileName(name):
   return name not in ('CSWTCH', 'lock', '__compound_literal', 'table')
 
 
-def CollectAliasesByAddress(elf_path, tool_prefix):
+def CollectAliasesByAddress(elf_path):
   """Runs nm on |elf_path| and returns a dict of address->[names]"""
   # Constructors often show up twice, so use sets to ensure no duplicates.
   names_by_address = collections.defaultdict(set)
@@ -92,11 +101,12 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
 
   # About 60mb of output, but piping takes ~30s, and loading it into RAM
   # directly takes 3s.
-  args = [path_util.GetNmPath(tool_prefix), '--no-sort', '--defined-only',
-          elf_path]
+  args = [path_util.GetNmPath(), '--no-sort', '--defined-only', elf_path]
   # pylint: disable=unexpected-keyword-arg
-  proc = subprocess.Popen(
-      args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+  proc = subprocess.Popen(args,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.DEVNULL,
+                          encoding='utf-8')
   # llvm-nm may write to stderr. Discard to denoise.
   stdout, _ = proc.communicate()
   assert proc.returncode == 0
@@ -127,7 +137,7 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
     names_by_address[address].add(name)
 
   # Demangle all names.
-  names_by_address = demangle.DemangleSetsInDicts(names_by_address, tool_prefix)
+  demangle.DemangleSetsInDictsInPlace(names_by_address)
 
   # Since this is run in a separate process, minimize data passing by returning
   # only aliased symbols.
@@ -139,20 +149,160 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
   }
 
 
+def CreateUniqueSymbols(elf_path, section_ranges):
+  """Creates symbols from nm --print-size output.
 
-def _CollectAliasesByAddressAsyncHelper(elf_path, tool_prefix):
-  result = CollectAliasesByAddress(elf_path, tool_prefix)
+  Creates only one symbol for each address (does not create symbol aliases).
+  """
+  # Filter to sections we care about and sort by (address, size).
+  section_ranges = [
+      x for x in section_ranges.items() if x[0] in models.NATIVE_SECTIONS
+  ]
+  section_ranges.sort(key=lambda x: x[1])
+  min_address = section_ranges[0][1][0]
+  max_address = sum(section_ranges[-1][1])
+
+  args = [
+      path_util.GetNmPath(), '--no-sort', '--defined-only', '--print-size',
+      elf_path
+  ]
+  # pylint: disable=unexpected-keyword-arg
+  stdout = subprocess.check_output(args,
+                                   stderr=subprocess.DEVNULL,
+                                   encoding='utf-8')
+  lines = stdout.splitlines()
+  logging.debug('Parsing %d lines of output', len(lines))
+  symbols_by_address = {}
+  # Example 32-bit output:
+  # 00857f94 00000004 t __on_dlclose_late
+  # 000001ec r ndk_build_number
+  for line in lines:
+    tokens = line.split(' ', 3)
+    num_tokens = len(tokens)
+    if num_tokens < 3:
+      # Address with no size and no name.
+      continue
+    address_str = tokens[0]
+    # Check if size is omitted (can happen with binutils but not llvm).
+    if num_tokens == 3:
+      size_str = '0'
+      section = tokens[1]
+      mangled_name = tokens[2]
+    else:
+      size_str = tokens[1]
+      section = tokens[2]
+      mangled_name = tokens[3]
+
+    if section not in 'BbDdTtRrWw' or not _IsRelevantNmName(mangled_name):
+      continue
+
+    address = int(address_str, 16)
+
+    # Ignore symbols outside of sections that we care about.
+    # Symbols can still exist in sections that we do not care about if those
+    # sections are interleaved. We discard such symbols in the next loop.
+    if not min_address <= address < max_address:
+      continue
+
+    # Pick the alias that defines a size.
+    existing_alias = symbols_by_address.get(address)
+    if existing_alias and existing_alias.size > 0:
+      continue
+
+    size = int(size_str, 16)
+
+    # E.g.: .str.2.llvm.12282370934750212
+    if mangled_name.startswith('.str.'):
+      mangled_name = models.STRING_LITERAL_NAME
+    elif mangled_name.startswith('__ARMV7PILongThunk_'):
+      # Convert thunks from prefix to suffix so that name is demangleable.
+      mangled_name = mangled_name[len('__ARMV7PILongThunk_'):] + '.LongThunk'
+    elif mangled_name.startswith('__ThumbV7PILongThunk_'):
+      mangled_name = mangled_name[len('__ThumbV7PILongThunk_'):] + '.LongThunk'
+
+    # Use address (next loop) to determine between .data and .data.rel.ro.
+    section_name = None
+    if section in 'Tt':
+      section_name = models.SECTION_TEXT
+    elif section in 'Rr':
+      section_name = models.SECTION_RODATA
+    elif section in 'Bb':
+      section_name = models.SECTION_BSS
+
+    # No need to demangle names since they will be demangled by
+    # DemangleRemainingSymbols().
+    symbols_by_address[address] = models.Symbol(section_name,
+                                                size,
+                                                address=address,
+                                                full_name=mangled_name)
+
+  logging.debug('Sorting %d NM symbols', len(symbols_by_address))
+  # Sort symbols by address.
+  sorted_symbols = sorted(symbols_by_address.values(), key=lambda s: s.address)
+
+  # Assign section to symbols based on address, and size where unspecified.
+  # Use address rather than nm's section character to distinguish between
+  # .data.rel.ro and .data.
+  logging.debug('Assigning section_name and filling in missing sizes')
+  section_range_iter = iter(section_ranges)
+  section_end = -1
+  raw_symbols = []
+  active_assembly_sym = None
+  for i, sym in enumerate(sorted_symbols):
+    # Move to next section if applicable.
+    while sym.address >= section_end:
+      section_range = next(section_range_iter)
+      section_name, (section_start, section_size) = section_range
+      section_end = section_start + section_size
+
+    # Skip symbols that don't fall into a section that we care about
+    # (e.g. GCC_except_table533 from .eh_frame).
+    if sym.address < section_start:
+      continue
+
+    if sym.section_name and sym.section_name != section_name:
+      logging.warning('Re-assigning section for %r to %s', sym, section_name)
+    sym.section_name = section_name
+
+    if i + 1 < len(sorted_symbols):
+      next_addr = min(section_end, sorted_symbols[i + 1].address)
+    else:
+      next_addr = section_end
+
+    # Heuristic: Discard subsequent assembly symbols (no size) that are ALL_CAPS
+    # or .-prefixed, since they are likely labels within a function.
+    if (active_assembly_sym and sym.size == 0
+        and sym.section_name == models.SECTION_TEXT):
+      if sym.full_name.startswith('.') or sym.full_name.isupper():
+        active_assembly_sym.size += next_addr - sym.address
+        # Triggers ~30 times for all of libchrome.so.
+        logging.debug('Discarding assembly label: %s', sym.full_name)
+        continue
+
+    active_assembly_sym = sym if sym.size == 0 else None
+
+    # For assembly symbols:
+    # Add in a size when absent and guard against size overlapping next symbol.
+    if active_assembly_sym or sym.end_address > next_addr:
+      sym.size = next_addr - sym.address
+
+    raw_symbols.append(sym)
+
+  return raw_symbols
+
+
+def _CollectAliasesByAddressAsyncHelper(elf_path):
+  result = CollectAliasesByAddress(elf_path)
   return parallel.EncodeDictOfLists(result, key_transform=str)
 
 
-def CollectAliasesByAddressAsync(elf_path, tool_prefix):
+def CollectAliasesByAddressAsync(elf_path):
   """Calls CollectAliasesByAddress in a helper process. Returns a Result."""
   def decode(encoded):
     return parallel.DecodeDictOfLists(encoded, key_transform=int)
 
-  return parallel.ForkAndCall(
-      _CollectAliasesByAddressAsyncHelper, (elf_path, tool_prefix),
-      decode_func=decode)
+  return parallel.ForkAndCall(_CollectAliasesByAddressAsyncHelper, (elf_path, ),
+                              decode_func=decode)
 
 
 def _ParseOneObjectFileNmOutput(lines):
@@ -180,19 +330,18 @@ def _ParseOneObjectFileNmOutput(lines):
 
 
 # This is a target for BulkForkAndCall().
-def RunNmOnIntermediates(target, tool_prefix, output_directory):
+def RunNmOnIntermediates(target, output_directory):
   """Returns encoded_symbol_names_by_path, encoded_string_addresses_by_path.
 
   Args:
     target: Either a single path to a .a (as a string), or a list of .o paths.
   """
   is_archive = isinstance(target, str)
-  args = [path_util.GetNmPath(tool_prefix), '--no-sort', '--defined-only']
+  args = [path_util.GetNmPath(), '--no-sort', '--defined-only']
   if is_archive:
     args.append(target)
   else:
     args.extend(target)
-  # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen(
       args,
       cwd=output_directory,
@@ -202,7 +351,7 @@ def RunNmOnIntermediates(target, tool_prefix, output_directory):
   # llvm-nm can print 'no symbols' to stderr. Capture and count the number of
   # lines, to be returned to the caller.
   stdout, stderr = proc.communicate()
-  assert proc.returncode == 0
+  assert proc.returncode == 0, 'NM failed: ' + ' '.join(args)
   num_no_symbols = len(stderr.splitlines())
   lines = stdout.splitlines()
   # Empty .a file has no output.
@@ -236,3 +385,24 @@ def RunNmOnIntermediates(target, tool_prefix, output_directory):
   #     down on marshalling overhead.
   return (parallel.EncodeDictOfLists(symbol_names_by_path),
           parallel.EncodeDictOfLists(string_addresses_by_path), num_no_symbols)
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--output-directory', required=True)
+  parser.add_argument('elf_path', type=os.path.realpath)
+
+  args = parser.parse_args()
+  logging.basicConfig(level=logging.DEBUG,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+
+  # Other functions in this file have test entrypoints in object_analyzer.py.
+  section_ranges = readelf.SectionInfoFromElf(args.elf_path)
+  symbols = CreateUniqueSymbols(args.elf_path, section_ranges)
+  for s in symbols:
+    print(s)
+  logging.warning('Printed %d symbols', len(symbols))
+
+
+if __name__ == '__main__':
+  main()

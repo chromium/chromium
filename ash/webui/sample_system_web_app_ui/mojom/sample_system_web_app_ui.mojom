@@ -1,0 +1,65 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom.sample_swa;
+
+import "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_shared_ui.mojom";
+
+// This file contains an example Mojo interface for the Sample System Web App
+// UI. It's only built on non-official Chrome OS builds. The Mojo interface
+// shows five types of interactions:
+//  1. Getting a value.
+//  2. Setting a value.
+//  3. Asking for an action to be executed.
+//  4. Being notified about an event.
+
+// Sample preferences that are managed by the PageHandler and are the return
+// value of the `getPreferences()` JS method.
+struct Preferences {
+  string background;
+  string foreground;
+};
+
+// Implemented in the browser process. The Sample System Web App WebUI uses
+// this interface to retrieve an endpoint to the PageHandler interface and pass
+// its own Page endpoint to receive notifications.
+//
+// The use of a factory is recommended to ensure that there is always a "Page"
+// interface bound to the "PageHandler" interface. The alternative of getting a
+// "PageHandler" remote directly and calling SetPage(page_remote) also works but
+// could lead to races where the Page is not bound.
+interface PageHandlerFactory {
+  // Create a page handler for the Sample System Web App UI and link it to it.
+  CreatePageHandler(pending_receiver<PageHandler> handler,
+                    pending_remote<Page> page);
+};
+
+// Implemented in the browser process. The Sample System Web App WebUI uses
+// this interface to query or send requests to the browser process.
+interface PageHandler {
+  // Getter example. Returns preferences stored in the browser process side.
+  GetPreferences() => (Preferences preferences);
+
+  // Setter example. Send a message to the browser.
+  Send(string message);
+
+  // Fire-and-forget action example. Triggers `Page.OnEventOccurred`
+  // asynchronously.
+  DoSomething();
+};
+
+// Implemented in Javascript. The browser uses this to send status updates to
+// the web page.
+interface Page {
+  // Notification example. Here the controller notifies the page that some
+  // event occurred. The |name| parameter tells the page the name of the
+  // event that occurred.
+  OnEventOccurred(string name);
+
+  // Called when the embedded chrome-untrusted:// page wants to bind Mojo
+  // interfaces for communicating with the chrome:// page.
+  CreateParentPage(
+    pending_remote<ChildUntrustedPage> child_untrusted_page,
+    pending_receiver<ParentTrustedPage> parent_trusted_page);
+};

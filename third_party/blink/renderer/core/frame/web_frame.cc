@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/web/web_frame.h"
 
 #include <algorithm>
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
@@ -23,14 +24,29 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
-bool WebFrame::Swap(WebFrame* frame) {
+bool WebFrame::Swap(WebLocalFrame* frame) {
   return ToCoreFrame(*this)->Swap(frame);
+}
+
+bool WebFrame::Swap(
+    WebRemoteFrame* frame,
+    CrossVariantMojoAssociatedRemote<mojom::blink::RemoteFrameHostInterfaceBase>
+        remote_frame_host,
+    CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
+        remote_frame_receiver,
+    blink::mojom::FrameReplicationStatePtr replicated_state) {
+  bool res = ToCoreFrame(*this)->Swap(frame, std::move(remote_frame_host),
+                                      std::move(remote_frame_receiver));
+  if (!res)
+    return false;
+
+  To<WebRemoteFrameImpl>(frame)->SetReplicatedState(
+      std::move(replicated_state));
+  return true;
 }
 
 void WebFrame::Detach() {
@@ -100,6 +116,12 @@ WebFrame* WebFrame::TraverseNext() const {
   if (Frame* frame = ToCoreFrame(*this))
     return FromCoreFrame(frame->Tree().TraverseNext());
   return nullptr;
+}
+
+bool WebFrame::IsOutermostMainFrame() const {
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return core_frame->IsOutermostMainFrame();
 }
 
 WebFrame* WebFrame::FromFrameOwnerElement(const WebNode& web_node) {

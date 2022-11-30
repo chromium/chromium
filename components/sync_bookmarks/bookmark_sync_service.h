@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,6 +36,9 @@ class BookmarkSyncService : public KeyedService {
   // |bookmark_undo_service| must not be null and must outlive this object.
   explicit BookmarkSyncService(BookmarkUndoService* bookmark_undo_service);
 
+  BookmarkSyncService(const BookmarkSyncService&) = delete;
+  BookmarkSyncService& operator=(const BookmarkSyncService&) = delete;
+
   // KeyedService implemenation.
   ~BookmarkSyncService() override;
 
@@ -62,8 +65,6 @@ class BookmarkSyncService : public KeyedService {
   // BookmarkModel/HistoryService.
   std::unique_ptr<sync_bookmarks::BookmarkModelTypeProcessor>
       bookmark_model_type_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkSyncService);
 };
 
 }  // namespace sync_bookmarks

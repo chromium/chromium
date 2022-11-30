@@ -1,0 +1,7 @@
+file://net/OWNERS
+file://services/network/OWNERS
+
+# Trust Tokens-related files.
+per-file *trust_token*=file://services/network/trust_tokens/OWNERS
+
+per-file network_quality*=file://net/nqe/OWNERS

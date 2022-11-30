@@ -2,7 +2,7 @@
 
 Some Linux distributions package up Chromium for easy installation. Please note
 that Chromium is not identical to Google Chrome -- see
-[chromium_browser_vs_google_chrome.md](chromium_browser_vs_google_chrome.md) --
+[chromium_browser_vs_google_chrome.md](../chromium_browser_vs_google_chrome.md) --
 and that distributions may (and actually do) make their own modifications.
 
 TODO: Move away from tables.
@@ -34,7 +34,7 @@ Packages in this section are not part of the distro's official repositories.
 
 | **System** | **Contact** | **URL for packages** | **URL for patches** |
 |:-----------|:------------|:---------------------|:--------------------|
-| FreeBSD    | http://lists.freebsd.org/mailman/listinfo/freebsd-chromium | http://wiki.freebsd.org/Chromium | https://svnweb.freebsd.org/ports/head/www/chromium/files/ |
+| FreeBSD    | freebsd-chromium@freebsd.org | https://wiki.freebsd.org/Chromium | https://cgit.freebsd.org/ports/tree/www/chromium/files |
 | OpenBSD    | Robert Nagy `robert@openbsd.org` | http://openports.se/www/chromium | http://www.openbsd.org/cgi-bin/cvsweb/ports/www/chromium/patches/ |
 
 ## Updating the list

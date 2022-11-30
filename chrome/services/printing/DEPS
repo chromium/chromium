@@ -1,11 +1,6 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/crash/core/common/crash_keys.h",
   "+components/pwg_encoder",
   "+pdf/pdf.h",
 ]
-
-specific_include_rules = {
-  "print_backend_service_test_impl.cc": [
-    "+chrome/browser/printing/print_backend_service.h",
-  ]
-}

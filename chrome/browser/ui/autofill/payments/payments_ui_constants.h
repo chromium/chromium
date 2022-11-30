@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,22 @@
 namespace autofill {
 
 constexpr int kMigrationDialogMainContainerChildSpacing = 24;
-constexpr gfx::Insets kMigrationDialogInsets = gfx::Insets(0, 24, 48, 24);
+constexpr auto kMigrationDialogInsets = gfx::Insets::TLBR(0, 24, 48, 24);
 
-// The time span a card bubble should be visible even if the document
-// navigates away meanwhile. This is to ensure that the user can see
+// The time span an Autofill card bubble should be visible even if the document
+// navigates away meanwhile. This is to ensure that the user has time to see
 // the bubble.
-constexpr base::TimeDelta kCardBubbleSurviveNavigationTime =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kAutofillBubbleSurviveNavigationTime =
+    base::Seconds(5);
+
+// The delay before dismissing the progress dialog after the progress throbber
+// shows the checkmark. This delay is for users to identify the status change.
+constexpr base::TimeDelta kDelayBeforeDismissingProgressDialog =
+    base::Seconds(1);
+
+// The duration that the "Get New Code" link is disabled after it is clicked in
+// Card Unmask OTP Input Dialog.
+constexpr base::TimeDelta kNewOtpCodeLinkDisabledDuration = base::Seconds(5);
 
 }  // namespace autofill
 

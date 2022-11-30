@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_handler.h"
@@ -81,7 +83,7 @@ const AtomicString& MojomActionToActionName(MediaSessionAction action) {
   return WTF::g_empty_atom;
 }
 
-base::Optional<MediaSessionAction> ActionNameToMojomAction(
+absl::optional<MediaSessionAction> ActionNameToMojomAction(
     const String& action_name) {
   if ("play" == action_name)
     return MediaSessionAction::kPlay;
@@ -109,7 +111,7 @@ base::Optional<MediaSessionAction> ActionNameToMojomAction(
     return MediaSessionAction::kHangUp;
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const AtomicString& MediaSessionPlaybackStateToString(
@@ -194,8 +196,14 @@ void MediaSession::OnMetadataChanged() {
   if (!service)
     return;
 
-  service->SetMetadata(MediaMetadataSanitizer::SanitizeAndConvertToMojo(
-      metadata_, GetSupplementable()->DomWindow()));
+  // OnMetadataChanged() is called from a timer. The Window/ExecutionContext
+  // might detaches in the meantime. See https://crbug.com/1269522
+  ExecutionContext* context = GetSupplementable()->DomWindow();
+  if (!context)
+    return;
+
+  service->SetMetadata(
+      MediaMetadataSanitizer::SanitizeAndConvertToMojo(metadata_, context));
 }
 
 void MediaSession::setActionHandler(const String& action,
@@ -351,7 +359,7 @@ base::TimeDelta MediaSession::GetPositionNow() const {
       (now - position_state_->last_updated_time);
   const base::TimeDelta updated_position =
       position_state_->position + elapsed_time;
-  const base::TimeDelta start = base::TimeDelta::FromSeconds(0);
+  const base::TimeDelta start = base::Seconds(0);
 
   if (updated_position <= start)
     return start;

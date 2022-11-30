@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <mach/mach.h>
 
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "ipc/ipc_message_support_export.h"
 #include "ipc/ipc_param_traits.h"
@@ -24,6 +23,9 @@ class IPC_MESSAGE_SUPPORT_EXPORT MachPortMac {
   MachPortMac() : mach_port_(MACH_PORT_NULL) {}
 
   explicit MachPortMac(mach_port_t mach_port) : mach_port_(mach_port) {}
+
+  MachPortMac(const MachPortMac&) = delete;
+  MachPortMac& operator=(const MachPortMac&) = delete;
 
   mach_port_t get_mach_port() const { return mach_port_; }
 
@@ -66,7 +68,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT MachPortMac {
   // ownership of the Mach port, and assumes that the client code which receives
   // the callback will take ownership of the Mach port.
   mach_port_t mach_port_;
-  DISALLOW_COPY_AND_ASSIGN(MachPortMac);
 };
 
 template <>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -20,9 +21,11 @@ class WebData;
 // status known to a particular session. Since it can be updated any time there
 // is a keychange event, iteration order and completeness is not guaranteed
 // if the event loop runs.
-class MediaKeyStatusMap final
-    : public ScriptWrappable,
-      public PairIterable<ArrayBufferOrArrayBufferView, String> {
+class MediaKeyStatusMap final : public ScriptWrappable,
+                                public PairIterable<Member<V8BufferSource>,
+                                                    V8BufferSource,
+                                                    String,
+                                                    IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  private:
@@ -43,8 +46,8 @@ class MediaKeyStatusMap final
 
   // IDL attributes / methods
   uint32_t size() const { return entries_.size(); }
-  bool has(const ArrayBufferOrArrayBufferView& key_id);
-  ScriptValue get(ScriptState*, const ArrayBufferOrArrayBufferView& key_id);
+  bool has(const V8BufferSource* key_id);
+  ScriptValue get(ScriptState*, const V8BufferSource* key_id);
 
   void Trace(Visitor*) const override;
 

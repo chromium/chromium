@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_APP_LIST_VIEWS_PAGE_SWITCHER_H_
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 
@@ -28,8 +27,7 @@ class PageSwitcher : public views::View,
 
   PageSwitcher(PaginationModel* model,
                bool is_root_app_grid_page_switcher,
-               bool is_tablet_mode,
-               SkColor background_color = gfx::kPlaceholderColor);
+               bool is_tablet_mode);
   PageSwitcher(const PageSwitcher&) = delete;
   PageSwitcher& operator=(const PageSwitcher&) = delete;
   ~PageSwitcher() override;
@@ -40,12 +38,11 @@ class PageSwitcher : public views::View,
   const char* GetClassName() const override;
   void OnThemeChanged() override;
 
-  void set_ignore_button_press(bool ignore) { ignore_button_press_ = ignore; }
   void set_is_tablet_mode(bool started) { is_tablet_mode_ = started; }
 
  private:
   // Button pressed callback.
-  void OnButtonPressed(views::Button* sender, const ui::Event& event);
+  void HandlePageSwitch(const ui::Event& event);
 
   // Overridden from PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
@@ -57,13 +54,8 @@ class PageSwitcher : public views::View,
   // True if the page switcher's root view is the AppsGridView.
   const bool is_root_app_grid_page_switcher_;
 
-  // True if button press should be ignored.
-  bool ignore_button_press_ = false;
-
   // Whether tablet mode is enabled.
   bool is_tablet_mode_;
-
-  const SkColor background_color_;
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,15 +27,7 @@ DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
 
 const DisplayResourceProvider::ChildResource*
 DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
-  // TODO(vasilyt): Todo below was added for Android and GPU resources and was
-  // copied here during refactoring. This shouldn't be necessary for software
-  // renderer case and should be removed.
-  // TODO(ericrk): We should never fail TryGetResource, but we appear to be
-  // doing so on Android in rare cases. Handle this gracefully until a better
-  // solution can be found. https://crbug.com/811858
-  ChildResource* resource = TryGetResource(id);
-  if (!resource)
-    return nullptr;
+  ChildResource* resource = GetResource(id);
 
   DCHECK(!resource->is_gpu_resource_type());
 
@@ -44,8 +36,8 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
         resource->transferable.mailbox_holder.mailbox;
     std::unique_ptr<SharedBitmap> bitmap =
         shared_bitmap_manager_->GetSharedBitmapFromId(
-            resource->transferable.size, resource->transferable.format,
-            shared_bitmap_id);
+            resource->transferable.size,
+            resource->transferable.format.resource_format(), shared_bitmap_id);
     if (bitmap) {
       resource->shared_bitmap = std::move(bitmap);
       resource->shared_bitmap_tracing_guid =
@@ -60,15 +52,7 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
 void DisplayResourceProviderSoftware::UnlockForRead(ResourceId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ChildResource* resource = TryGetResource(id);
-  // TODO(vasilyt): Todo below was added for Android and GPU resources and was
-  // copied here during refactoring. This shouldn't be necessary for software
-  // renderer case and should be removed.
-  // TODO(ericrk): We should never fail to find id, but we appear to be
-  // doing so on Android in rare cases. Handle this gracefully until a better
-  // solution can be found. https://crbug.com/811858
-  if (!resource)
-    return;
+  ChildResource* resource = GetResource(id);
 
   DCHECK(!resource->is_gpu_resource_type());
   DCHECK_GT(resource->lock_for_read_count, 0);
@@ -110,6 +94,7 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
     const bool is_lost = can_delete == CanDeleteNowResult::kYesButLoseResource;
 
     to_return.emplace_back(child_id, resource.sync_token(),
+                           std::move(resource.release_fence),
                            resource.imported_count, is_lost);
 
     child_info.child_to_parent_map.erase(child_id);
@@ -122,11 +107,12 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
 
 void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
     SkBitmap* sk_bitmap,
-    const ChildResource* resource) {
-  DCHECK(IsBitmapFormatSupported(resource->transferable.format));
+    const ChildResource* resource,
+    SkAlphaType alpha_type) {
+  DCHECK(resource->transferable.format.IsBitmapFormatSupported());
   SkImageInfo info =
-      SkImageInfo::MakeN32Premul(resource->transferable.size.width(),
-                                 resource->transferable.size.height());
+      SkImageInfo::MakeN32(resource->transferable.size.width(),
+                           resource->transferable.size.height(), alpha_type);
   bool pixels_installed = sk_bitmap->installPixels(
       info, resource->shared_bitmap->pixels(), info.minRowBytes());
   DCHECK(pixels_installed);
@@ -135,8 +121,7 @@ void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     DisplayResourceProviderSoftware* resource_provider,
     ResourceId resource_id,
-    SkAlphaType alpha_type,
-    GrSurfaceOrigin origin)
+    SkAlphaType alpha_type)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
   // When recording/replaying we don't have a resource provider, and need to get
   // the bitmap directly from the record/replay renderer.
@@ -172,9 +157,9 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     return;
   }
 
-  DCHECK(origin == kTopLeft_GrSurfaceOrigin);
   SkBitmap sk_bitmap;
-  resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource);
+  resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource,
+                                                  alpha_type);
   sk_bitmap.setImmutable();
   sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
   resource_provider_->resource_sk_images_[resource_id] = sk_image_;

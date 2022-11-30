@@ -1,16 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -46,6 +44,10 @@ enum class OverscrollSource {
 class CONTENT_EXPORT OverscrollController {
  public:
   OverscrollController();
+
+  OverscrollController(const OverscrollController&) = delete;
+  OverscrollController& operator=(const OverscrollController&) = delete;
+
   virtual ~OverscrollController();
 
   // This must be called when dispatching any event from the
@@ -184,9 +186,7 @@ class CONTENT_EXPORT OverscrollController {
   // cases. So we only process 0.3 second inertial events then cancel the
   // overscroll if it is not completed yet.
   // Timestamp for the first inertial event (fling) in current stream.
-  base::Optional<base::TimeTicks> first_inertial_event_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollController);
+  absl::optional<base::TimeTicks> first_inertial_event_time_;
 };
 
 }  // namespace content

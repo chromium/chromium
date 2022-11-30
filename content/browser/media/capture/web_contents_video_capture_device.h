@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,15 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/threading/sequence_bound.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
+#include "content/browser/media/capture/web_contents_frame_tracker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 
 namespace content {
 
@@ -26,11 +30,16 @@ namespace content {
 // RenderFrameHost tree mutates (e.g., due to page navigations, crashes, or
 // reloads), capture will continue without interruption.
 class CONTENT_EXPORT WebContentsVideoCaptureDevice
-    : public FrameSinkVideoCaptureDevice,
-      public base::SupportsWeakPtr<WebContentsVideoCaptureDevice> {
+    : public FrameSinkVideoCaptureDevice {
  public:
-  WebContentsVideoCaptureDevice(int render_process_id,
-                                int main_render_frame_id);
+  explicit WebContentsVideoCaptureDevice(const GlobalRenderFrameHostId& id);
+
+  WebContentsVideoCaptureDevice(WebContentsVideoCaptureDevice&&) = delete;
+  WebContentsVideoCaptureDevice(const WebContentsVideoCaptureDevice&) = delete;
+  WebContentsVideoCaptureDevice& operator=(
+      const WebContentsVideoCaptureDevice&&) = delete;
+  WebContentsVideoCaptureDevice& operator=(
+      const WebContentsVideoCaptureDevice&) = delete;
   ~WebContentsVideoCaptureDevice() override;
 
   // Creates a WebContentsVideoCaptureDevice instance from the given
@@ -38,22 +47,42 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
   static std::unique_ptr<WebContentsVideoCaptureDevice> Create(
       const std::string& device_id);
 
- private:
-  // Monitors the WebContents instance and notifies the base class any time the
-  // frame sink or main render frame's view changes.
-  class FrameTracker;
+  // VideoCaptureDevice overrides.
+  void Crop(
+      const base::Token& crop_id,
+      uint32_t crop_version,
+      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) final;
 
+  // FrameSinkVideoConsumer overrides.
+  void OnFrameCaptured(
+      media::mojom::VideoBufferHandlePtr data,
+      media::mojom::VideoFrameInfoPtr info,
+      const gfx::Rect& content_rect,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+          callbacks) final;
+
+  // For testing, we need the ability to create a device without its tracker.
+ protected:
+  WebContentsVideoCaptureDevice();
+
+ private:
   // FrameSinkVideoCaptureDevice overrides: These increment/decrement the
   // WebContents's capturer count, which causes the embedder to be notified.
   void WillStart() final;
   void DidStop() final;
 
+  gfx::Size content_size_;
+
   // A helper that runs on the UI thread to monitor changes to the
   // RenderFrameHost tree during the lifetime of a WebContents instance, and
   // posts notifications back to update the target frame sink.
-  const std::unique_ptr<FrameTracker, BrowserThread::DeleteOnUIThread> tracker_;
+  base::SequenceBound<WebContentsFrameTracker> tracker_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebContentsVideoCaptureDevice);
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Used to dispense WeakPtrs for the WebContentsFrameTracker to use to post
+  // tasks to the VideoCaptureDevice.
+  base::WeakPtrFactory<WebContentsVideoCaptureDevice> weak_ptr_factory_{this};
 };
 
 }  // namespace content

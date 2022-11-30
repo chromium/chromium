@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,99 +20,57 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
+#include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
 using ui::AXTreeFormatter;
 using ui::AXTreeSelector;
 
 namespace content {
 
-constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
-constexpr char kAllowOptStr[] = "@ALLOW:";
-constexpr char kDenyOptStr[] = "@DENY:";
-
-base::Value BuildTreeForSelector(const AXTreeSelector& selector,
-                                 const AXTreeFormatter* formatter) {
-  return formatter->BuildTreeForSelector(selector);
-}
-
-base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget,
-                               const AXTreeFormatter* formatter) {
-  return formatter->BuildTreeForWindow(widget);
-}
-
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
-                           const base::FilePath& filters_path) {
-  Run(base::BindOnce(&BuildTreeForSelector, selector), filters_path);
-}
+                           const ui::AXInspectScenario& scenario,
+                           ui::AXApiType::Type api) {
+  // If an API is not supplied, use the default API for this platform.
+  std::unique_ptr<AXTreeFormatter> formatter =
+      api != ui::AXApiType::kNone ? AXInspectFactory::CreateFormatter(api)
+                                  : AXInspectFactory::CreatePlatformFormatter();
 
-AXTreeServer::AXTreeServer(gfx::AcceleratedWidget widget,
-                           const base::FilePath& filters_path) {
-  Run(base::BindOnce(&BuildTreeForWindow, widget), filters_path);
-}
+  // If there are script instructions, execute the script.
+  if (!scenario.script_instructions.empty()) {
+    std::string results = formatter->EvaluateScript(selector, scenario);
 
-void AXTreeServer::Run(BuildTree build_tree,
-                       const base::FilePath& filters_path) {
-  std::unique_ptr<AXTreeFormatter> formatter(
-      AXInspectFactory::CreatePlatformFormatter());
-
-  // Set filters.
-  std::vector<ui::AXPropertyFilter> filters = GetPropertyFilters(filters_path);
-  if (filters.empty()) {
-    LOG(ERROR) << "Failed to parse filters";
+    if (results.empty()) {
+      LOG(ERROR) << "Failed to find application or execute script.";
+      error = true;
+      return;
+    }
+    printf("%s", results.c_str());
     return;
   }
-  formatter->SetPropertyFilters(filters);
+
+  // Otherwise, dump the tree.
+  // Use user provided filters with the default filter set.
+  std::vector<ui::AXPropertyFilter> property_filters_ext(
+      {{"AXRoleDescription", ui::AXPropertyFilter::ALLOW}});
+  property_filters_ext.insert(property_filters_ext.end(),
+                              scenario.property_filters.begin(),
+                              scenario.property_filters.end());
+
+  formatter->SetPropertyFilters(property_filters_ext,
+                                AXTreeFormatter::kFiltersDefaultSet);
 
   // Get accessibility tree as a nested dictionary.
-  base::Value dict = std::move(build_tree).Run(formatter.get());
-  if (dict.DictEmpty()) {
-    LOG(ERROR) << "Failed to get accessibility tree";
+  base::Value::Dict dict = formatter->BuildTreeForSelector(selector);
+
+  if (dict.empty()) {
+    LOG(ERROR) << "Failed to get accessibility tree.";
+    error = true;
     return;
   }
 
   // Write to console.
   printf("%s", formatter->FormatTree(dict).c_str());
-}
-
-std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
-    const base::FilePath& filters_path) {
-  if (filters_path.empty()) {
-    return {
-      ui::AXPropertyFilter("*", ui::AXPropertyFilter::ALLOW),
-    };
-  }
-
-  std::string raw_filters_text;
-  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
-  if (!base::ReadFileToString(filters_path, &raw_filters_text)) {
-    LOG(ERROR) << "Failed to open filters file " << filters_path
-               << ". Note: path traversal components ('..') are not allowed "
-                  "for security reasons";
-    return {};
-  }
-
-  std::vector<ui::AXPropertyFilter> filters;
-  for (const std::string& line :
-       base::SplitString(raw_filters_text, "\n", base::TRIM_WHITESPACE,
-                         base::SPLIT_WANT_ALL)) {
-    if (base::StartsWith(line, kAllowOptEmptyStr,
-                         base::CompareCase::SENSITIVE)) {
-      filters.emplace_back(line.substr(strlen(kAllowOptEmptyStr)),
-                           ui::AXPropertyFilter::ALLOW_EMPTY);
-    } else if (base::StartsWith(line, kAllowOptStr,
-                                base::CompareCase::SENSITIVE)) {
-      filters.emplace_back(line.substr(strlen(kAllowOptStr)),
-                           ui::AXPropertyFilter::ALLOW);
-    } else if (base::StartsWith(line, kDenyOptStr,
-                                base::CompareCase::SENSITIVE)) {
-      filters.emplace_back(line.substr(strlen(kDenyOptStr)),
-                           ui::AXPropertyFilter::DENY);
-    } else if (!line.empty()) {
-      LOG(ERROR) << "Unrecognized filter instruction at line: " << line;
-      return {};
-    }
-  }
-  return filters;
 }
 
 }  // namespace content

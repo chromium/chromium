@@ -1,9 +1,10 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/mac/mac_sdk.gni")
 import("//build/toolchain/apple/toolchain.gni")
+import("//build_overrides/build.gni")
 
 # Specialisation of the apple_toolchain template to declare the toolchain
 # and its tools to build target for macOS platform.
@@ -21,14 +22,26 @@ template("mac_toolchain") {
       current_os = "mac"
 
       if (target_os == "ios") {
+        # Use LLD for the host part of a chrome/ios build.
+        use_lld = true
+
+        # Override `is_component_build` for the host toolchain.
+        # See https://crbug.com/gn/286 for details why this is
+        # required.
+        is_component_build = is_debug
+
+        # Defined in //base, would trigger a warning if the build doesn't depend
+        # on it.
+        if (build_with_chromium) {
+          # cronet disable this because it targets 32-bit,
+          # enable it unconditionally for the host toolchain.
+          use_allocator_shim = true
+        }
+
         # TODO(crbug.com/753445): the use_sanitizer_coverage arg is currently
         # not supported by the Chromium mac_clang_x64 toolchain on iOS
         # distribution.
         use_sanitizer_coverage = false
-
-        # Do not use Xcode version of clang when building macOS tools for the
-        # host even if this is the version used to build for the iOS target.
-        use_xcode_clang = false
       }
     }
   }
@@ -94,6 +107,16 @@ mac_toolchain("clang_x64_v8_mips64el") {
 
     if (defined(v8_current_cpu)) {
       v8_current_cpu = "mips64el"
+    }
+  }
+}
+
+mac_toolchain("clang_arm64_v8_x64") {
+  toolchain_args = {
+    current_cpu = "arm64"
+
+    if (defined(v8_current_cpu)) {
+      v8_current_cpu = "x64"
     }
   }
 }

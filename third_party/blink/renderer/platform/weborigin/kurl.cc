@@ -30,6 +30,7 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -104,9 +105,10 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   void ConvertFromUTF16(const char16_t* input,
                         int input_length,
                         url::CanonOutput* output) override {
-    std::string encoded = encoding_->Encode(
-        String(input, input_length), WTF::kURLEncodedEntitiesForUnencodables);
-    output->Append(encoded.c_str(), static_cast<int>(encoded.length()));
+    std::string encoded =
+        encoding_->Encode(String(input, static_cast<unsigned>(input_length)),
+                          WTF::kURLEncodedEntitiesForUnencodables);
+    output->Append(encoded.c_str(), encoded.length());
   }
 
  private:
@@ -117,7 +119,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
 
 bool IsValidProtocol(const String& protocol) {
   // RFC3986: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-  if (protocol.IsEmpty())
+  if (protocol.empty())
     return false;
   if (!IsSchemeFirstChar(protocol[0]))
     return false;
@@ -161,18 +163,18 @@ bool KURL::IsLocalFile() const {
   // and including feed would allow feeds to potentially let someone's blog
   // read the contents of the clipboard on a drag, even without a drop.
   // Likewise with using the FrameLoader::shouldTreatURLAsLocal() function.
-  return ProtocolIs("file");
+  return ProtocolIs(url::kFileScheme);
 }
 
 bool ProtocolIsJavaScript(const String& url) {
-  return ProtocolIs(url, "javascript");
+  return ProtocolIs(url, url::kJavaScriptScheme);
 }
 
 const KURL& BlankURL() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_blank_url, ());
   KURL& blank_url = *static_blank_url;
   if (blank_url.IsNull())
-    blank_url = KURL(AtomicString("about:blank"));
+    blank_url = KURL(AtomicString(url::kAboutBlankURL));
   return blank_url;
 }
 
@@ -180,7 +182,7 @@ const KURL& SrcdocURL() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_srcdoc_url, ());
   KURL& srcdoc_url = *static_srcdoc_url;
   if (srcdoc_url.IsNull())
-    srcdoc_url = KURL(AtomicString("about:srcdoc"));
+    srcdoc_url = KURL(AtomicString(url::kAboutSrcdocURL));
   return srcdoc_url;
 }
 
@@ -246,12 +248,6 @@ KURL::KURL(const GURL& gurl) {
        nullptr /* query_encoding */);
 }
 
-KURL KURL::CreateIsolated(const String& url) {
-  // FIXME: We should be able to skip this extra copy and created an
-  // isolated KURL more efficiently.
-  return KURL(url).Copy();
-}
-
 // Constructs a new URL given a base URL and a possibly relative input URL.
 // This assumes UTF-8 encoding.
 KURL::KURL(const KURL& base, const String& relative) {
@@ -284,7 +280,7 @@ KURL::KURL(const KURL& other)
       parsed_(other.parsed_),
       string_(other.string_) {
   if (other.inner_url_.get())
-    inner_url_ = std::make_unique<KURL>(other.inner_url_->Copy());
+    inner_url_ = std::make_unique<KURL>(*other.inner_url_);
 }
 
 KURL::~KURL() = default;
@@ -296,22 +292,10 @@ KURL& KURL::operator=(const KURL& other) {
   parsed_ = other.parsed_;
   string_ = other.string_;
   if (other.inner_url_)
-    inner_url_ = std::make_unique<KURL>(other.inner_url_->Copy());
+    inner_url_ = std::make_unique<KURL>(*other.inner_url_);
   else
     inner_url_.reset();
   return *this;
-}
-
-KURL KURL::Copy() const {
-  KURL result;
-  result.is_valid_ = is_valid_;
-  result.protocol_is_in_http_family_ = protocol_is_in_http_family_;
-  result.protocol_ = protocol_.IsolatedCopy();
-  result.parsed_ = parsed_;
-  result.string_ = string_.IsolatedCopy();
-  if (inner_url_)
-    result.inner_url_ = std::make_unique<KURL>(inner_url_->Copy());
-  return result;
 }
 
 bool KURL::IsNull() const {
@@ -319,7 +303,7 @@ bool KURL::IsNull() const {
 }
 
 bool KURL::IsEmpty() const {
-  return string_.IsEmpty();
+  return string_.empty();
 }
 
 bool KURL::IsValid() const {
@@ -331,7 +315,7 @@ bool KURL::HasPort() const {
 }
 
 bool KURL::ProtocolIsJavaScript() const {
-  return ComponentStringView(parsed_.scheme) == "javascript";
+  return ComponentStringView(parsed_.scheme) == url::kJavaScriptScheme;
 }
 
 bool KURL::ProtocolIsInHTTPFamily() const {
@@ -442,7 +426,28 @@ String KURL::GetPath() const {
   return ComponentString(parsed_.path);
 }
 
+namespace {
+
+bool IsASCIITabOrNewline(UChar ch) {
+  return ch == '\t' || ch == '\r' || ch == '\n';
+}
+
+// See https://url.spec.whatwg.org/#concept-basic-url-parser:
+// 3. Remove all ASCII tab or newline from |input|.
+//
+// Matches url::RemoveURLWhitespace.
+String RemoveURLWhitespace(const String& input) {
+  return input.RemoveCharacters(IsASCIITabOrNewline);
+}
+
+}  // namespace
+
 bool KURL::SetProtocol(const String& protocol) {
+  // We should remove whitespace from |protocol| according to spec, but Firefox
+  // and Safari don't do it.
+  // - https://url.spec.whatwg.org/#dom-url-protocol
+  // - https://github.com/whatwg/url/issues/609
+
   // Firefox and IE remove everything after the first ':'.
   wtf_size_t separator_position = protocol.find(':');
   String new_protocol = protocol.Substring(0, separator_position);
@@ -475,8 +480,8 @@ bool KURL::SetProtocol(const String& protocol) {
   if (SchemeRegistry::IsSpecialScheme(Protocol()) &&
       SchemeRegistry::IsSpecialScheme(new_protocol_canon)) {
     // The protocol is lower-cased during canonicalization.
-    const bool new_protocol_is_file = new_protocol_canon == "file";
-    const bool old_protocol_is_file = ProtocolIs("file");
+    const bool new_protocol_is_file = new_protocol_canon == url::kFileScheme;
+    const bool old_protocol_is_file = ProtocolIs(url::kFileScheme);
 
     // https://url.spec.whatwg.org/#scheme-state
     // 3. If url includes credentials or has a non-null port, and buffer is
@@ -511,16 +516,9 @@ bool KURL::SetProtocol(const String& protocol) {
   return true;
 }
 
-void KURL::SetHost(const String& host) {
-  StringUTF8Adaptor host_utf8(host);
-  url::Replacements<char> replacements;
-  replacements.SetHost(CharactersOrEmpty(host_utf8),
-                       url::Component(0, host_utf8.size()));
-  ReplaceComponents(replacements);
-}
+namespace {
 
-static String ParsePortFromStringPosition(const String& value,
-                                          unsigned port_start) {
+String ParsePortFromStringPosition(const String& value, unsigned port_start) {
   // "008080junk" needs to be treated as port "8080" and "000" as "0".
   size_t length = value.length();
   unsigned port_end = port_start;
@@ -532,10 +530,44 @@ static String ParsePortFromStringPosition(const String& value,
   return value.Substring(port_start, port_end - port_start);
 }
 
-void KURL::SetHostAndPort(const String& host_and_port) {
+// Align with https://url.spec.whatwg.org/#host-state step 3, and also with the
+// IsAuthorityTerminator() function in //url/third_party/mozilla/url_parse.cc.
+bool IsEndOfHost(UChar ch) {
+  return ch == '/' || ch == '?' || ch == '#';
+}
+
+bool IsEndOfHostSpecial(UChar ch) {
+  return IsEndOfHost(ch) || ch == '\\';
+}
+
+wtf_size_t FindHostEnd(const String& host, bool is_special) {
+  wtf_size_t end = host.Find(is_special ? IsEndOfHostSpecial : IsEndOfHost);
+  if (end == kNotFound)
+    end = host.length();
+  return end;
+}
+
+}  // namespace
+
+void KURL::SetHost(const String& input) {
+  String host = RemoveURLWhitespace(input);
+  wtf_size_t value_end = FindHostEnd(host, IsHierarchical());
+  String truncated_host = host.Substring(0, value_end);
+  StringUTF8Adaptor host_utf8(truncated_host);
+  url::Replacements<char> replacements;
+  replacements.SetHost(CharactersOrEmpty(host_utf8),
+                       url::Component(0, host_utf8.size()));
+  ReplaceComponents(replacements);
+}
+
+void KURL::SetHostAndPort(const String& input) {
   // This method intentionally does very sloppy parsing for backwards
   // compatibility. See https://url.spec.whatwg.org/#host-state for what we
   // theoretically should be doing.
+
+  String orig_host_and_port = RemoveURLWhitespace(input);
+  wtf_size_t value_end = FindHostEnd(orig_host_and_port, IsHierarchical());
+  String host_and_port = orig_host_and_port.Substring(0, value_end);
 
   // This logic for handling IPv6 addresses is adapted from ParseServerInfo in
   // //url/third_party/mozilla/url_parse.cc. There's a slight behaviour
@@ -549,32 +581,39 @@ void KURL::SetHostAndPort(const String& host_and_port) {
 
   wtf_size_t colon = host_and_port.find(':', ipv6_terminator);
 
+  // Legacy behavior: ignore input if host part is empty
   if (colon == 0)
     return;
 
+  String host;
+  String port;
   if (colon == kNotFound) {
-    // |host_and_port| does not include a port, so only overwrite the host.
+    host = host_and_port;
+  } else {
+    host = host_and_port.Substring(0, colon);
+    port = ParsePortFromStringPosition(host_and_port, colon + 1);
+  }
+
+  // Replace host and port separately in order to maintain the original port if
+  // a valid host and invalid port are provided together.
+
+  // Replace host first.
+  {
     url::Replacements<char> replacements;
-    StringUTF8Adaptor host_utf8(host_and_port);
+    StringUTF8Adaptor host_utf8(host);
     replacements.SetHost(CharactersOrEmpty(host_utf8),
                          url::Component(0, host_utf8.size()));
     ReplaceComponents(replacements);
-    return;
   }
 
-  String host = host_and_port.Substring(0, colon);
-  String port = ParsePortFromStringPosition(host_and_port, colon + 1);
-
-  StringUTF8Adaptor host_utf8(host);
-  StringUTF8Adaptor port_utf8(port);
-
-  url::Replacements<char> replacements;
-  replacements.SetHost(CharactersOrEmpty(host_utf8),
-                       url::Component(0, host_utf8.size()));
-  if (port_utf8.size())
+  // Replace port next.
+  if (is_valid_ && !port.empty()) {
+    url::Replacements<char> replacements;
+    StringUTF8Adaptor port_utf8(port);
     replacements.SetPort(CharactersOrEmpty(port_utf8),
                          url::Component(0, port_utf8.size()));
-  ReplaceComponents(replacements);
+    ReplaceComponents(replacements, /*preserve_validity=*/true);
+  }
 }
 
 void KURL::RemovePort() {
@@ -585,9 +624,10 @@ void KURL::RemovePort() {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetPort(const String& port) {
+void KURL::SetPort(const String& input) {
+  String port = RemoveURLWhitespace(input);
   String parsed_port = ParsePortFromStringPosition(port, 0);
-  if (!parsed_port.IsEmpty())
+  if (!parsed_port.empty())
     SetPort(parsed_port.ToUInt());
 }
 
@@ -609,11 +649,14 @@ void KURL::SetPort(uint16_t port) {
 void KURL::SetUser(const String& user) {
   // This function is commonly called to clear the username, which we
   // normally don't have, so we optimize this case.
-  if (user.IsEmpty() && !parsed_.username.is_valid())
+  if (user.empty() && !parsed_.username.is_valid())
     return;
 
   // The canonicalizer will clear any usernames that are empty, so we
   // don't have to explicitly call ClearUsername() here.
+  //
+  // Unlike other setters, we do not remove whitespace per spec:
+  // https://url.spec.whatwg.org/#dom-url-username
   StringUTF8Adaptor user_utf8(user);
   url::Replacements<char> replacements;
   replacements.SetUsername(CharactersOrEmpty(user_utf8),
@@ -624,11 +667,14 @@ void KURL::SetUser(const String& user) {
 void KURL::SetPass(const String& pass) {
   // This function is commonly called to clear the password, which we
   // normally don't have, so we optimize this case.
-  if (pass.IsEmpty() && !parsed_.password.is_valid())
+  if (pass.empty() && !parsed_.password.is_valid())
     return;
 
   // The canonicalizer will clear any passwords that are empty, so we
   // don't have to explicitly call ClearUsername() here.
+  //
+  // Unlike other setters, we do not remove whitespace per spec:
+  // https://url.spec.whatwg.org/#dom-url-password
   StringUTF8Adaptor pass_utf8(pass);
   url::Replacements<char> replacements;
   replacements.SetPassword(CharactersOrEmpty(pass_utf8),
@@ -636,12 +682,13 @@ void KURL::SetPass(const String& pass) {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetFragmentIdentifier(const String& fragment) {
+void KURL::SetFragmentIdentifier(const String& input) {
   // This function is commonly called to clear the ref, which we
   // normally don't have, so we optimize this case.
-  if (fragment.IsNull() && !parsed_.ref.is_valid())
+  if (input.IsNull() && !parsed_.ref.is_valid())
     return;
 
+  String fragment = RemoveURLWhitespace(input);
   StringUTF8Adaptor fragment_utf8(fragment);
 
   url::Replacements<char> replacements;
@@ -660,7 +707,8 @@ void KURL::RemoveFragmentIdentifier() {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetQuery(const String& query) {
+void KURL::SetQuery(const String& input) {
+  String query = RemoveURLWhitespace(input);
   StringUTF8Adaptor query_utf8(query);
   url::Replacements<char> replacements;
   if (query.IsNull()) {
@@ -684,9 +732,10 @@ void KURL::SetQuery(const String& query) {
   ReplaceComponents(replacements);
 }
 
-void KURL::SetPath(const String& path) {
+void KURL::SetPath(const String& input) {
   // Empty paths will be canonicalized to "/", so we don't have to worry
   // about calling ClearPath().
+  String path = RemoveURLWhitespace(input);
   StringUTF8Adaptor path_utf8(path);
   url::Replacements<char> replacements;
   replacements.SetPath(CharactersOrEmpty(path_utf8),
@@ -700,7 +749,8 @@ String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
   url::DecodeURLEscapeSequences(string_utf8.data(), string_utf8.size(), mode,
                                 &unescaped);
   return StringImpl::Create8BitIfPossible(
-      reinterpret_cast<UChar*>(unescaped.data()), unescaped.length());
+      reinterpret_cast<UChar*>(unescaped.data()),
+      base::checked_cast<wtf_size_t>(unescaped.length()));
 }
 
 String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
@@ -708,11 +758,12 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
       UTF8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
 
   url::RawCanonOutputT<char> buffer;
-  int input_length = utf8.length();
+  size_t input_length = utf8.length();
   if (buffer.capacity() < input_length * 3)
     buffer.Resize(input_length * 3);
 
-  url::EncodeURIComponent(utf8.c_str(), input_length, &buffer);
+  url::EncodeURIComponent(utf8.c_str(), static_cast<wtf_size_t>(input_length),
+                          &buffer);
   String escaped(buffer.data(), static_cast<unsigned>(buffer.length()));
   // Unescape '/'; it's safe and much prettier.
   escaped.Replace("%2F", "/");
@@ -821,12 +872,12 @@ void KURL::Init(const KURL& base,
     StringUTF8Adaptor relative_utf8(relative);
     is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
                                      base.parsed_, relative_utf8.data(),
-                                     clampTo<int>(relative_utf8.size()),
+                                     ClampTo<int>(relative_utf8.size()),
                                      charset_converter, &output, &parsed_);
   } else {
     is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
                                      base.parsed_, relative.Characters16(),
-                                     clampTo<int>(relative.length()),
+                                     ClampTo<int>(relative.length()),
                                      charset_converter, &output, &parsed_);
   }
 
@@ -834,7 +885,7 @@ void KURL::Init(const KURL& base,
   // This makes it safe to call FromUTF8() below and still keep using parsed_
   // which stores byte offsets: Since it's all ASCII, UTF-8 byte offsets
   // map 1-to-1 to UTF-16 codepoint offsets.
-  for (int i = 0; i < output.length(); ++i) {
+  for (size_t i = 0; i < output.length(); ++i) {
     DCHECK(WTF::IsASCII(output.data()[i]));
   }
 
@@ -935,26 +986,24 @@ String KURL::ComponentString(const url::Component& component) const {
 }
 
 template <typename CHAR>
-void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements) {
+void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
+                             bool preserve_validity) {
   url::RawCanonOutputT<char> output;
   url::Parsed new_parsed;
 
   StringUTF8Adaptor utf8(string_);
-  is_valid_ =
+  bool replacements_valid =
       url::ReplaceComponents(utf8.data(), utf8.size(), parsed_, replacements,
                              nullptr, &output, &new_parsed);
-
-  parsed_ = new_parsed;
-  string_ = AtomicString::FromUTF8(output.data(), output.length());
-  InitProtocolMetadata();
+  if (replacements_valid || !preserve_validity) {
+    is_valid_ = replacements_valid;
+    parsed_ = new_parsed;
+    string_ = AtomicString::FromUTF8(output.data(), output.length());
+    InitProtocolMetadata();
+  }
 }
 
-bool KURL::IsSafeToSendToAnotherThread() const {
-  return string_.IsSafeToSendToAnotherThread() &&
-         (!inner_url_ || inner_url_->IsSafeToSendToAnotherThread());
-}
-
-void KURL::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void KURL::WriteIntoTrace(perfetto::TracedValue context) const {
   return perfetto::WriteIntoTracedValue(std::move(context), GetString());
 }
 

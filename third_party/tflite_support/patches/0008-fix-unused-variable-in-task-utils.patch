@@ -1,0 +1,29 @@
+From 4486076d02e6fbb5feb60a5b7e28d3d3c7ce7186 Mon Sep 17 00:00:00 2001
+From: Jun Zou <junzou@chromium.org>
+Date: Tue, 30 Aug 2022 18:42:25 +0000
+Subject: [PATCH 08/12] fix unused variable in task utils
+
+---
+ .../src/tensorflow_lite_support/cc/task/core/task_utils.h   | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
+index 540d3c2e7c7d4..33459268968cd 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
+@@ -145,8 +145,10 @@ inline absl::Status PopulateVector(const TfLiteTensor* tensor,
+ template <>
+ inline absl::Status PopulateVector<std::string>(
+     const TfLiteTensor* tensor, std::vector<std::string>* data) {
+-  std::string* v;
+-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<std::string>(tensor));
++  const auto status_or = AssertAndReturnTypedTensor<std::string>(tensor);
++  if (!status_or.ok()){
++    return status_or.status();
++  }
+   int num = GetStringCount(tensor);
+   data->reserve(num);
+   for (int i = 0; i < num; i++) {
+-- 
+2.37.3.998.g577e59143f-goog
+

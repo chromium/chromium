@@ -1,0 +1,250 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<!--
+This is a somewhat modified version of the xr-barebones page, which adds a
+rotating color square to the DOM content as well as adding support to capture
+and show the contents of the page via the WebRTC APIs.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <title>Tab Capture Test</title>
+    <link href='../css/common.css' rel='stylesheet'></link>
+    <style>
+      #session-info {
+          font-weight: bold;
+          font-family: monospace;
+      }
+
+      /* Override the default canvas styling which would make the canvas full
+         screen and on top of everything... */
+      #colorsquare {
+        position: relative;
+        z-index: auto;
+        width: 100px;
+        height: 100px;
+        left: auto;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Tab Capture Test</summary>
+        <p>
+          This sample demonstrates a simple AR page which uses DOM Overlay to
+          help show a capture of the current tab.
+          <a class="back" href="./index.html">Back</a>
+        </p>
+        <div id="session-info"></div>
+        <div id="warning-zone"></div>
+
+        <button id="xr-button" class="barebones-button" disabled>XR not found</button>
+        <button id="capture-button" class="barebones-button">Start Screen Capture</button>
+        <video id="capture-video" autoplay playsinline muted height=100></video>
+
+      </details>
+    </header>
+    <main style='text-align: center;'>
+      <p>Click 'Enter AR' to see content</p>
+      <canvas id="colorsquare"/>
+    </main>
+    <script type="module">
+      // XR globals.
+      const xrButton = document.getElementById('xr-button');
+      let xrSession = null;
+      let xrRefSpace = null;
+
+      // getDisplayMedia globals.
+      const captureButton = document.getElementById('capture-button');
+      const video = document.getElementById('capture-video');
+      let videoStream = null;
+
+      // WebGL scene globals.
+      let gl = null;
+
+      function checkSupportedState() {
+        navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+          if (supported) {
+            xrButton.innerHTML = 'Enter AR';
+          } else {
+            xrButton.innerHTML = 'AR not found';
+          }
+
+          xrButton.disabled = !supported;
+        });
+      }
+
+      function initXR() {
+        if (!window.isSecureContext) {
+          document.getElementById("warning-zone").innerText =
+              "WebXR unavailable due to insecure context";
+        }
+
+        if (navigator.xr) {
+          xrButton.addEventListener('click', onXRButtonClicked);
+          captureButton.addEventListener('click', oncaptureButtonClicked);
+          navigator.xr.addEventListener('devicechange', checkSupportedState);
+          checkSupportedState();
+        } else {
+          document.getElementById("warning-zone").innerText =
+              "WebXR unavailable.";
+        }
+      }
+
+      function oncaptureButtonClicked() {
+        if (!videoStream) {
+          navigator.mediaDevices.getDisplayMedia({video: true, preferCurrentTab: true})
+            .then(onCaptureSuccess, onCaptureError);
+        } else {
+          // Before we stop the tracks we need to cleanup the state of anything
+          // that might be using them; so we'll call onCaptureEnded. However,
+          // this also clears the videoStream variable, so cache the tracks that
+          // we need to stop ahead of time.
+          const tracks = videoStream.getTracks();
+          onCaptureEnded();
+          tracks.forEach(track => track.stop());
+        }
+      }
+
+      function onCaptureSuccess(stream) {
+        videoStream = stream;
+        video.srcObject = stream;
+        videoStream.getVideoTracks()[0].addEventListener('ended', onCaptureEnded);
+        captureButton.innerHTML = 'Stop Screen Capture';
+      }
+
+      function onCaptureEnded() {
+        video.pause();
+        video.srcObject = null;
+        videoStream = null;
+        captureButton.innerHTML = 'Start Screen Capture';
+      }
+
+      function onCaptureError(ex) {
+        document.getElementById("warning-zone").innerText =
+            "Failed to get display media.";
+        console.error(ex.message);
+      }
+
+      function onXRButtonClicked() {
+        if (!xrSession) {
+            // Ask for an optional DOM Overlay, see https://immersive-web.github.io/dom-overlays/
+            // Use BODY as the root element.
+            navigator.xr.requestSession('immersive-ar', {
+                optionalFeatures: ['dom-overlay'],
+                domOverlay: {root: document.body}
+            }).then(onSessionStarted, onRequestSessionError);
+        } else {
+          xrSession.end();
+        }
+      }
+
+      function onSessionStarted(session) {
+        xrSession = session;
+        xrButton.innerHTML = 'Exit AR';
+
+        // Show which type of DOM Overlay got enabled (if any)
+        document.getElementById('session-info').innerHTML = 'DOM Overlay type: ' + session.domOverlayState.type;
+
+        session.addEventListener('end', onSessionEnded);
+        const canvas = document.createElement('canvas');
+        gl = canvas.getContext('webgl', {
+          xrCompatible: true
+        });
+        session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+        session.requestReferenceSpace('local').then((refSpace) => {
+          xrRefSpace = refSpace;
+          session.requestAnimationFrame(onXRFrame);
+        });
+      }
+
+      function onRequestSessionError(ex) {
+        alert("Failed to start immersive AR session.");
+        console.error(ex.message);
+      }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded(event) {
+        xrSession = null;
+        xrButton.innerHTML = 'Enter AR';
+        document.getElementById('session-info').innerHTML = '';
+        gl = null;
+      }
+
+      function onXRFrame(t, frame) {
+        const session = frame.session;
+        session.requestAnimationFrame(onXRFrame);
+        const pose = frame.getViewerPose(xrRefSpace);
+
+        if (pose) {
+          gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+
+          // Update the clear color so that we can observe the color in the
+          // headset changing over time. Use a scissor rectangle to keep the AR
+          // scene visible.
+          const width = session.renderState.baseLayer.framebufferWidth;
+          const height = session.renderState.baseLayer.framebufferHeight;
+          gl.enable(gl.SCISSOR_TEST);
+          gl.scissor(width / 4, height / 4, width / 2, height / 2);
+          const time = Date.now();
+          gl.clearColor(Math.cos(time / 2000), Math.cos(time / 4000), Math.cos(time / 6000), 0.5);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        }
+      }
+
+      function initDOMColorSquare() {
+        // Add a box to the DOM content that cycles colors so we can ensure that
+        // the DOMOverlay is actually being live updated.
+        const colorSquare = document.getElementById('colorsquare');
+        const ctx = colorSquare.getContext('2d');
+
+        function paintCanvas() {
+          const time = Date.now();
+          const r = (Math.abs(Math.cos(time/2000)) * 255);
+          const g = (Math.abs(Math.cos(time/4000)) * 255);
+          const b = (Math.abs(Math.cos(time/6000)) * 255);
+          const color = "rgb("+r+","+g+","+b+")";
+
+          ctx.fillStyle = color;
+          ctx.fillRect(0,0, colorSquare.width, colorSquare.height);
+        }
+
+        window.setInterval(paintCanvas, 32);
+      }
+
+      initDOMColorSquare();
+      initXR();
+    </script>
+  </body>
+</html>

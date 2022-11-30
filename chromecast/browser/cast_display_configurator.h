@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -40,7 +39,17 @@ class CastTouchDeviceManager;
 // doesn't really do anything when using OzonePlatformCast.
 class CastDisplayConfigurator : public display::NativeDisplayObserver {
  public:
+  class Observer {
+   public:
+    virtual ~Observer() = default;
+    virtual void OnDisplayStateChanged() = 0;
+  };
+
   explicit CastDisplayConfigurator(CastScreen* screen);
+
+  CastDisplayConfigurator(const CastDisplayConfigurator&) = delete;
+  CastDisplayConfigurator& operator=(const CastDisplayConfigurator&) = delete;
+
   ~CastDisplayConfigurator() override;
 
   // display::NativeDisplayObserver implementation
@@ -50,6 +59,9 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
   void EnableDisplay(display::ConfigureCallback callback);
   void DisableDisplay(display::ConfigureCallback callback);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   void ConfigureDisplayFromCommandLine();
   void SetColorMatrix(const std::vector<float>& color_matrix);
   void SetGammaCorrection(
@@ -58,6 +70,7 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
 
  private:
   void ForceInitialConfigure();
+  void NotifyObservers();
   void OnDisplaysAcquired(
       bool force_initial_configure,
       const std::vector<display::DisplaySnapshot*>& displays);
@@ -70,14 +83,14 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
                     float device_scale_factor,
                     display::Display::Rotation rotation);
 
+  base::ObserverList<Observer>::Unchecked observers_;
+
   std::unique_ptr<display::NativeDisplayDelegate> delegate_;
   std::unique_ptr<CastTouchDeviceManager> touch_device_manager_;
   display::DisplaySnapshot* display_;
   CastScreen* const cast_screen_;
 
   base::WeakPtrFactory<CastDisplayConfigurator> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDisplayConfigurator);
 };
 
 }  // namespace shell

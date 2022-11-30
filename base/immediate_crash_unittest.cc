@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,8 @@
 
 #include "base/base_paths.h"
 #include "base/clang_profiling_buildflags.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
@@ -19,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -26,7 +25,7 @@ namespace {
 
 // If IMMEDIATE_CRASH() is not treated as noreturn by the compiler, the compiler
 // will complain that not all paths through this function return a value.
-int ALLOW_UNUSED_TYPE TestImmediateCrashTreatedAsNoReturn() {
+[[maybe_unused]] int TestImmediateCrashTreatedAsNoReturn() {
   IMMEDIATE_CRASH();
 }
 
@@ -73,12 +72,12 @@ enum : Instruction {
   kHlt0 = 0xd4400000,
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 constexpr Instruction kRequiredBody[] = {kBrkF000, kBrk1};
 constexpr Instruction kOptionalFooter[] = {};
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 
 constexpr Instruction kRequiredBody[] = {kBrk0, kHlt0};
 // Some clangs emit a BRK #1 for __builtin_unreachable(), but some do not, so
@@ -99,7 +98,7 @@ constexpr Instruction kOptionalFooter[] = {};
 // whichever of those functions happens to come first in the library.
 void GetTestFunctionInstructions(std::vector<Instruction>* body) {
   FilePath helper_library_path;
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // On Android M, DIR_EXE == /system/bin when running base_unittests.
   // On Fuchsia, NativeLibrary understands the native convention that libraries
   // are not colocated with the binary.
@@ -107,7 +106,7 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
 #endif
   helper_library_path = helper_library_path.AppendASCII(
       GetNativeLibraryName("immediate_crash_test_helper"));
-#if defined(OS_ANDROID) && defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_ANDROID) && defined(COMPONENT_BUILD)
   helper_library_path = helper_library_path.ReplaceExtension(".cr.so");
 #endif
   ScopedNativeLibrary helper_library(helper_library_path);
@@ -143,16 +142,16 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
     body->push_back(instruction);
 }
 
-base::Optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
+absl::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
     std::vector<Instruction> instructions) {
   auto iter = instructions.begin();
   for (const auto inst : kRequiredBody) {
     if (iter == instructions.end())
-      return base::nullopt;
+      return absl::nullopt;
     EXPECT_EQ(inst, *iter);
     iter++;
   }
-  return base::make_optional(
+  return absl::make_optional(
       std::vector<Instruction>(iter, instructions.end()));
 }
 
@@ -167,7 +166,7 @@ std::vector<Instruction> MaybeSkipOptionalFooter(
   return std::vector<Instruction>(iter, instructions.end());
 }
 
-#if BUILDFLAG(USE_CLANG_COVERAGE)
+#if BUILDFLAG(USE_CLANG_COVERAGE) || BUILDFLAG(CLANG_PROFILING)
 bool MatchPrefix(const std::vector<Instruction>& haystack,
                  const base::span<const Instruction>& needle) {
   for (size_t i = 0; i < needle.size(); i++) {
@@ -184,11 +183,11 @@ std::vector<Instruction> DropUntilMatch(
     haystack.erase(haystack.begin());
   return haystack;
 }
-#endif  // USE_CLANG_COVERAGE
+#endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 
 std::vector<Instruction> MaybeSkipCoverageHook(
     std::vector<Instruction> instructions) {
-#if BUILDFLAG(USE_CLANG_COVERAGE)
+#if BUILDFLAG(USE_CLANG_COVERAGE) || BUILDFLAG(CLANG_PROFILING)
   // Warning: it is not illegal for the entirety of the expected crash sequence
   // to appear as a subsequence of the coverage hook code. If that happens, this
   // code will falsely exit early, having not found the real expected crash
@@ -197,7 +196,7 @@ std::vector<Instruction> MaybeSkipCoverageHook(
   return DropUntilMatch(instructions, base::make_span(kRequiredBody));
 #else
   return instructions;
-#endif  // USE_CLANG_COVERAGE
+#endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 }
 
 }  // namespace
@@ -226,7 +225,7 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   it++;
 
   body = std::vector<Instruction>(it, body.end());
-  base::Optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
+  absl::optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
   result = ExpectImmediateCrashInvocation(result.value());
   result = MaybeSkipOptionalFooter(result.value());
   result = MaybeSkipCoverageHook(result.value());

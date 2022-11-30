@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/posix/signals.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #endif
 
@@ -46,6 +46,9 @@ class ScopedSigprocmaskRestore {
     DPLOG_IF(ERROR, !mask_is_set_) << "sigprocmask";
   }
 
+  ScopedSigprocmaskRestore(const ScopedSigprocmaskRestore&) = delete;
+  ScopedSigprocmaskRestore& operator=(const ScopedSigprocmaskRestore&) = delete;
+
   ~ScopedSigprocmaskRestore() {
     if (mask_is_set_ &&
         sys_sigprocmask(SIG_SETMASK, &orig_mask_, nullptr) != 0) {
@@ -56,8 +59,6 @@ class ScopedSigprocmaskRestore {
  private:
   kernel_sigset_t orig_mask_;
   bool mask_is_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSigprocmaskRestore);
 };
 
 }  // namespace

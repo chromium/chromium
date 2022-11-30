@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"
 #include "base/task/task_features.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
@@ -19,7 +21,6 @@
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/thread_group.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
-#include "base/task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,8 +77,8 @@ class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
 
  private:
   const TrackedRef<TaskTracker> task_tracker_;
-  DelayedTaskManager* const delayed_task_manager_;
-  ThreadGroup* thread_group_ = nullptr;
+  const raw_ptr<DelayedTaskManager> delayed_task_manager_;
+  raw_ptr<ThreadGroup> thread_group_ = nullptr;
 };
 
 // A simple MockJobTask that will give |worker_task| a fixed number of times,

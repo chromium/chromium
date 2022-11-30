@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 
 namespace extensions {
 namespace {
@@ -23,7 +23,7 @@ const AudioDevice* GetDevice(const AudioDeviceList& devices, uint64_t node_id) {
     if (it->id == node_id)
       return &(*it);
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,10 @@ class IOSTestEventWaiter {
  public:
   explicit IOSTestEventWaiter(std::list<Event> expected_events,
                               double timeout = 0);
+
+  IOSTestEventWaiter(const IOSTestEventWaiter&) = delete;
+  IOSTestEventWaiter& operator=(const IOSTestEventWaiter&) = delete;
+
   ~IOSTestEventWaiter() = default;
 
   // Either returns true right away if all events were observed between this
@@ -43,8 +47,6 @@ class IOSTestEventWaiter {
   std::list<Event> expected_events_;
   bool runloop_running_;
   double timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSTestEventWaiter);
 };
 
 template <typename Event>

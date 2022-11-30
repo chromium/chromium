@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/byte_queue.h"
@@ -34,18 +35,22 @@ class PidState;
 
 class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
  public:
-  explicit Mp2tStreamParser(const std::vector<std::string>& allowed_codecs,
+  explicit Mp2tStreamParser(base::span<const std::string> allowed_codecs,
                             bool sbr_in_mimetype);
+
+  Mp2tStreamParser(const Mp2tStreamParser&) = delete;
+  Mp2tStreamParser& operator=(const Mp2tStreamParser&) = delete;
+
   ~Mp2tStreamParser() override;
 
   // StreamParser implementation.
   void Init(InitCB init_cb,
-            const NewConfigCB& config_cb,
-            const NewBuffersCB& new_buffers_cb,
+            NewConfigCB config_cb,
+            NewBuffersCB new_buffers_cb,
             bool ignore_text_tracks,
-            const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-            const NewMediaSegmentCB& new_segment_cb,
-            const EndMediaSegmentCB& end_of_segment_cb,
+            EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+            NewMediaSegmentCB new_segment_cb,
+            EndMediaSegmentCB end_of_segment_cb,
             MediaLog* media_log) override;
   void Flush() override;
   bool GetGenerateTimestampsFlag() const override;
@@ -183,8 +188,6 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   // provide a better way to access the last values seen in a ECM packet.
   std::unique_ptr<DecryptConfig> decrypt_config_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Mp2tStreamParser);
 };
 
 }  // namespace mp2t

@@ -1,0 +1,17 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_aidl("webapk_install_aidl") {
+  import_include = [ "java/src" ]
+  sources = [
+    "java/src/org/chromium/components/webapk_install/IOnFinishInstallCallback.aidl",
+    "java/src/org/chromium/components/webapk_install/IWebApkInstallCoordinatorService.aidl",
+  ]
+}
+
+android_library("webapk_install_java") {
+  srcjar_deps = [ ":webapk_install_aidl" ]
+}

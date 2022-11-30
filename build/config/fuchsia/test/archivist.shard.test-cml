@@ -1,0 +1,23 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{
+  children: [
+    {
+      name: "isolated_archivist",
+      url: "fuchsia-pkg://fuchsia.com/archivist-without-attribution#meta/archivist-without-attribution.cm",
+    },
+  ],
+  use: [
+    {
+      protocol: "fuchsia.logger.Log",
+      path: "/svc/fuchsia.logger.Log.isolated",
+      from: "#isolated_archivist",
+    },
+    {
+      protocol: "fuchsia.logger.LogSink",
+      path: "/svc/fuchsia.logger.LogSink.isolated",
+      from: "#isolated_archivist",
+    },
+  ],
+}

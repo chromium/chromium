@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestDetailsUpdate;
+import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 
 import java.util.List;
@@ -122,11 +123,6 @@ public abstract class PaymentApp extends EditableOption {
      */
     public abstract Set<String> getInstrumentMethodNames();
 
-    /** @return Whether this is a server autofill app. */
-    public boolean isServerAutofillInstrument() {
-        return false;
-    }
-
     /**
      * @return Whether this is a replacement for all server autofill apps. If at least one of
      *         the displayed apps returns true here, then all apps that return true in
@@ -173,12 +169,6 @@ public abstract class PaymentApp extends EditableOption {
         return false;
     }
 
-    /** @return The country code (or null if none) associated with this payment app. */
-    @Nullable
-    public String getCountryCode() {
-        return null;
-    }
-
     /**
      * @param haveRequestedAutofillData Whether complete and valid autofill data for merchant's
      *                                  request is available.
@@ -188,20 +178,15 @@ public abstract class PaymentApp extends EditableOption {
     }
 
     /**
-     * @return Whether presence of this payment app should cause the
-     *         PaymentRequest.canMakePayment() to return true.
+     * @return Whether this payment app should cause PaymentRequest.hasEnrolledInstrument() to
+     *         return true.
      */
-    public boolean canMakePayment() {
+    public boolean hasEnrolledInstrument() {
         return true;
     }
 
     /** @return Whether this payment app can be pre-selected for immediate payment. */
     public boolean canPreselect() {
-        return true;
-    }
-
-    /** @return Whether skip-UI flow with this app requires a user gesture. */
-    public boolean isUserGestureRequiredToSkipUi() {
         return true;
     }
 
@@ -272,20 +257,6 @@ public abstract class PaymentApp extends EditableOption {
     /** Cleans up any resources held by the payment app. For example, closes server connections. */
     public abstract void dismissInstrument();
 
-    /** @return Whether the payment app is ready for a minimal UI flow. */
-    public boolean isReadyForMinimalUI() {
-        return false;
-    }
-
-    /** @return Account balance for minimal UI flow. */
-    @Nullable
-    public String accountBalance() {
-        return null;
-    }
-
-    /** Disable opening a window for this payment app. */
-    public void disableShowingOwnUI() {}
-
     /**
      * @return The identifier for another payment app that should be hidden when this payment app is
      * present.
@@ -329,5 +300,16 @@ public abstract class PaymentApp extends EditableOption {
      */
     public boolean isPreferred() {
         return false;
+    }
+
+    /**
+     * Updates the response IPC structure with the fields that are unique to this type of payment
+     * app. Used when JSON serialization of payment method specific data is not being used. The
+     * payment apps who need to set the fields should override this method.
+     * @param response The PaymentResponse to whom the fields are set.
+     * @return The PaymentResponse whose fields has been set.
+     */
+    public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
+        return response;
     }
 }

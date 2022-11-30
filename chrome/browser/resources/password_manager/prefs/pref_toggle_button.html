@@ -1,0 +1,37 @@
+<style include="cr-actionable-row-style iron-flex cr-shared-style shared-style">
+  :host {
+    --cr-icon-button-margin-end: 20px;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #outerRow {
+    align-items: center;
+    display: flex;
+    min-height: var(--two-line-section-min-height);
+    width: 100%;
+  }
+
+  #outerRow[noSubLabel] {
+    min-height: var(--section-min-height);
+  }
+
+  #labelWrapper {
+    padding: var(--cr-section-vertical-padding) 0;
+    margin-inline-end: var(--control-label-spacing);
+  }
+</style>
+<div id="outerRow" noSubLabel$="[[!subLabel]]">
+  <div class="flex" id="labelWrapper">
+    <div class="label" aria-hidden="true">[[label]]</div>
+    <div class="cr-secondary-text label" id="sub-label">
+      <span id="sub-label-text" aria-hidden="true">
+        [[subLabel]]
+      </span>
+    </div>
+  </div>
+  <!-- TODO(crbug.com/1350947): Add policy pref indicator -->
+  <cr-toggle id="control" checked="{{checked}}"
+      on-change="onChange_"
+      aria-describedby="sub-label-text">
+  </cr-toggle>
+</div>

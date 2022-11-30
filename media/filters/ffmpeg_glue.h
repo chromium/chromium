@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "media/base/container_names.h"
 #include "media/base/media_export.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
@@ -61,6 +60,10 @@ class MEDIA_EXPORT FFmpegGlue {
  public:
   // See file documentation for usage.  |protocol| must outlive FFmpegGlue.
   explicit FFmpegGlue(FFmpegURLProtocol* protocol);
+
+  FFmpegGlue(const FFmpegGlue&) = delete;
+  FFmpegGlue& operator=(const FFmpegGlue&) = delete;
+
   ~FFmpegGlue();
 
   // Opens an AVFormatContext specially prepared to process reads and seeks
@@ -85,8 +88,6 @@ class MEDIA_EXPORT FFmpegGlue {
   std::unique_ptr<AVIOContext, ScopedPtrAVFree> avio_context_;
   container_names::MediaContainerName container_ =
       container_names::CONTAINER_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegGlue);
 };
 
 }  // namespace media

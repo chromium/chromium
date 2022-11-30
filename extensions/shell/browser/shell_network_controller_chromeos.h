@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,28 +9,29 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace extensions {
 
 // Handles network-related tasks for app_shell on Chrome OS.
-class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
+class ShellNetworkController : public ash::NetworkStateHandlerObserver {
  public:
-  // This class must be instantiated after chromeos::DBusThreadManager and
+  // This class must be instantiated after ash::DBusThreadManager and
   // destroyed before it.
   explicit ShellNetworkController(const std::string& preferred_network_name);
+
+  ShellNetworkController(const ShellNetworkController&) = delete;
+  ShellNetworkController& operator=(const ShellNetworkController&) = delete;
+
   ~ShellNetworkController() override;
 
-  // chromeos::NetworkStateHandlerObserver overrides:
+  // ash::NetworkStateHandlerObserver overrides:
   void NetworkListChanged() override;
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* state) override;
+  void NetworkConnectionStateChanged(const ash::NetworkState* state) override;
 
-  // Control whether the cellular network connection allows roaming.
+  // Control whether roaming is enabled for cellular network connections.
   void SetCellularAllowRoaming(bool allow_roaming);
 
  private:
@@ -47,7 +48,7 @@ class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
 
   // Returns the connected or connecting WiFi network or NULL if no network
   // matches that description.
-  const chromeos::NetworkState* GetActiveWiFiNetwork();
+  const ash::NetworkState* GetActiveWiFiNetwork();
 
   // Controls whether scanning is performed periodically.
   void SetScanningEnabled(bool enabled);
@@ -62,10 +63,9 @@ class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
 
   // Handles a successful or failed connection attempt.
   void HandleConnectionSuccess();
-  void HandleConnectionError(const std::string& error_name,
-                             std::unique_ptr<base::DictionaryValue> error_data);
+  void HandleConnectionError(const std::string& error_name);
 
-  // Current status of communication with the chromeos::NetworkStateHandler.
+  // Current status of communication with the ash::NetworkStateHandler.
   // This is tracked to avoid sending duplicate requests before the handler has
   // acknowledged the initial connection attempt.
   State state_;
@@ -80,8 +80,6 @@ class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
   bool preferred_network_is_active_;
 
   base::WeakPtrFactory<ShellNetworkController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellNetworkController);
 };
 
 }  // namespace extensions

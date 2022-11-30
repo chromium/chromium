@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 
 namespace blink {
 
-base::Optional<double> NumberPropertyFunctions::GetInitialNumber(
+absl::optional<double> NumberPropertyFunctions::GetInitialNumber(
     const CSSProperty& property,
     const ComputedStyle& initial_style) {
   return GetNumber(property, initial_style);
 }
 
-base::Optional<double> NumberPropertyFunctions::GetNumber(
+absl::optional<double> NumberPropertyFunctions::GetNumber(
     const CSSProperty& property,
     const ComputedStyle& style) {
   switch (property.PropertyID()) {
@@ -45,21 +45,21 @@ base::Optional<double> NumberPropertyFunctions::GetNumber(
 
     case CSSPropertyID::kFontSizeAdjust:
       if (!style.HasFontSizeAdjust())
-        return base::Optional<double>();
+        return absl::optional<double>();
       return style.FontSizeAdjust();
     case CSSPropertyID::kColumnCount:
       if (style.HasAutoColumnCount())
-        return base::Optional<double>();
+        return absl::optional<double>();
       return style.ColumnCount();
     case CSSPropertyID::kZIndex:
       if (style.HasAutoZIndex())
-        return base::Optional<double>();
+        return absl::optional<double>();
       return style.ZIndex();
 
     case CSSPropertyID::kTextSizeAdjust: {
       const TextSizeAdjust& text_size_adjust = style.GetTextSizeAdjust();
       if (text_size_adjust.IsAuto())
-        return base::Optional<double>();
+        return absl::optional<double>();
       return text_size_adjust.Multiplier() * 100;
     }
 
@@ -67,22 +67,22 @@ base::Optional<double> NumberPropertyFunctions::GetNumber(
       const Length& length = style.SpecifiedLineHeight();
       // Numbers are represented by percentages.
       if (!length.IsPercent())
-        return base::Optional<double>();
+        return absl::optional<double>();
       double value = length.Value();
       // -100% represents the keyword "normal".
       if (value == -100)
-        return base::Optional<double>();
+        return absl::optional<double>();
       return value / 100;
     }
 
     case CSSPropertyID::kTabSize: {
       if (!style.GetTabSize().IsSpaces())
-        return base::nullopt;
+        return absl::nullopt;
       return style.GetTabSize().float_value_;
     }
 
     default:
-      return base::Optional<double>();
+      return absl::optional<double>();
   }
 }
 
@@ -90,17 +90,17 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
                                             double value) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeMiterlimit:
-      return clampTo<float>(value, 1);
+      return ClampTo<float>(value, 1);
 
     case CSSPropertyID::kFloodOpacity:
     case CSSPropertyID::kStopOpacity:
     case CSSPropertyID::kStrokeOpacity:
     case CSSPropertyID::kShapeImageThreshold:
-      return clampTo<float>(value, 0, 1);
+      return ClampTo<float>(value, 0, 1);
 
     case CSSPropertyID::kFillOpacity:
     case CSSPropertyID::kOpacity:
-      return clampTo<float>(value, 0, nextafterf(1, 0));
+      return ClampTo<float>(value, 0, nextafterf(1, 0));
 
     case CSSPropertyID::kFlexGrow:
     case CSSPropertyID::kFlexShrink:
@@ -108,18 +108,18 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
     case CSSPropertyID::kLineHeight:
     case CSSPropertyID::kTabSize:
     case CSSPropertyID::kTextSizeAdjust:
-      return clampTo<float>(value, 0);
+      return ClampTo<float>(value, 0);
 
     case CSSPropertyID::kOrphans:
     case CSSPropertyID::kWidows:
-      return clampTo<int16_t>(round(value), 1);
+      return ClampTo<int16_t>(round(value), 1);
 
     case CSSPropertyID::kColumnCount:
-      return clampTo<uint16_t>(round(value), 1);
+      return ClampTo<uint16_t>(round(value), 1);
 
     case CSSPropertyID::kOrder:
     case CSSPropertyID::kZIndex:
-      return clampTo<int>(round(value));
+      return ClampTo<int>(RoundHalfTowardsPositiveInfinity(value));
 
     default:
       NOTREACHED();

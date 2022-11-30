@@ -21,7 +21,7 @@ break-downs.
 UseCounter measures feature usage via UMA histogram and UKM. To add your
 feature to UseCounter, simply:
 + Add your feature to the
-  [blink::mojom::WebFeature enum](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/web_feature/web_feature.mojom);
+  [blink::mojom::WebFeature enum](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom);
 + Usage can be measured via:
     * MeasureAs=\<enum value\> in the feature's IDL definition; Or
     * blink::UseCounter::Count() for blink side features; Or

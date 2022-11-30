@@ -1,10 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <set>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,13 +17,18 @@ class AppCapabilityAccessCacheTest
     : public testing::Test,
       public apps::AppCapabilityAccessCache::Observer {
  protected:
-  static apps::mojom::CapabilityAccessPtr MakeCapabilityAccess(
+  AppCapabilityAccessCacheTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::kAppServiceCapabilityAccessWithoutMojom);
+  }
+
+  static apps::CapabilityAccessPtr MakeCapabilityAccess(
       const char* app_id,
-      apps::mojom::OptionalBool camera,
-      apps::mojom::OptionalBool microphone) {
-    apps::mojom::CapabilityAccessPtr access =
-        apps::mojom::CapabilityAccess::New();
-    access->app_id = app_id;
+      absl::optional<bool> camera,
+      absl::optional<bool> microphone) {
+    apps::CapabilityAccessPtr access =
+        std::make_unique<apps::CapabilityAccess>(app_id);
     access->camera = camera;
     access->microphone = microphone;
     return access;
@@ -35,12 +45,14 @@ class AppCapabilityAccessCacheTest
       const apps::CapabilityAccessUpdate& update) override {
     EXPECT_EQ(account_id_, update.AccountId());
     updated_ids_.insert(update.AppId());
-    if (update.Camera() == apps::mojom::OptionalBool::kTrue) {
+    auto camera = update.Camera();
+    if (camera.value_or(false)) {
       accessing_camera_apps_.insert(update.AppId());
     } else {
       accessing_camera_apps_.erase(update.AppId());
     }
-    if (update.Microphone() == apps::mojom::OptionalBool::kTrue) {
+    auto microphone = update.Microphone();
+    if (microphone.value_or(false)) {
       accessing_microphone_apps_.insert(update.AppId());
     } else {
       accessing_microphone_apps_.erase(update.AppId());
@@ -55,6 +67,8 @@ class AppCapabilityAccessCacheTest
 
   const AccountId& account_id() const { return account_id_; }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::set<std::string> updated_ids_;
   std::set<std::string> accessing_camera_apps_;
   std::set<std::string> accessing_microphone_apps_;
@@ -85,10 +99,9 @@ class CapabilityAccessRecursiveObserver
 
   ~CapabilityAccessRecursiveObserver() override = default;
 
-  void PrepareForOnCapabilityAccesses(
-      int expected_num_apps,
-      std::vector<apps::mojom::CapabilityAccessPtr>* super_recursive_accesses =
-          nullptr) {
+  void PrepareForOnCapabilityAccesses(int expected_num_apps,
+                                      std::vector<apps::CapabilityAccessPtr>*
+                                          super_recursive_accesses = nullptr) {
     expected_num_apps_ = expected_num_apps;
     num_apps_seen_on_capability_access_update_ = 0;
 
@@ -117,12 +130,12 @@ class CapabilityAccessRecursiveObserver
     int num_apps = 0;
     cache_->ForEachApp(
         [this, &outer, &num_apps](const apps::CapabilityAccessUpdate& inner) {
-          if (inner.Camera() == apps::mojom::OptionalBool::kTrue) {
+          if (inner.Camera().value_or(false)) {
             accessing_camera_apps_.insert(inner.AppId());
           } else {
             accessing_camera_apps_.erase(inner.AppId());
           }
-          if (inner.Microphone() == apps::mojom::OptionalBool::kTrue) {
+          if (inner.Microphone().value_or(false)) {
             accessing_microphone_apps_.insert(inner.AppId());
           } else {
             accessing_microphone_apps_.erase(inner.AppId());
@@ -146,9 +159,9 @@ class CapabilityAccessRecursiveObserver
           ExpectEq(outer, inner);
         }));
 
-    std::vector<apps::mojom::CapabilityAccessPtr> super_recursive;
+    std::vector<apps::CapabilityAccessPtr> super_recursive;
     while (!super_recursive_accesses_.empty()) {
-      apps::mojom::CapabilityAccessPtr access =
+      apps::CapabilityAccessPtr access =
           std::move(super_recursive_accesses_.back());
       super_recursive_accesses_.pop_back();
       if (access.get() == nullptr) {
@@ -178,7 +191,7 @@ class CapabilityAccessRecursiveObserver
   }
 
  private:
-  apps::AppCapabilityAccessCache* cache_;
+  raw_ptr<apps::AppCapabilityAccessCache> cache_;
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
   std::set<std::string> accessing_camera_apps_;
   std::set<std::string> accessing_microphone_apps_;
@@ -194,11 +207,11 @@ class CapabilityAccessRecursiveObserver
   // that group of popped elements (in LIFO order) is non-empty, that group
   // forms the vector of CapabilityAccess's passed to
   // app_capability_access_.OnCapabilityAccesses.
-  std::vector<apps::mojom::CapabilityAccessPtr> super_recursive_accesses_;
+  std::vector<apps::CapabilityAccessPtr> super_recursive_accesses_;
 };
 
 TEST_F(AppCapabilityAccessCacheTest, ForEachApp) {
-  std::vector<apps::mojom::CapabilityAccessPtr> deltas;
+  std::vector<apps::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
 
@@ -207,12 +220,9 @@ TEST_F(AppCapabilityAccessCacheTest, ForEachApp) {
   EXPECT_EQ(0u, updated_ids_.size());
 
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("a", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kTrue));
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("c", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kFalse));
+  deltas.push_back(MakeCapabilityAccess("a", true, true));
+  deltas.push_back(MakeCapabilityAccess("b", false, false));
+  deltas.push_back(MakeCapabilityAccess("c", true, false));
   cache.OnCapabilityAccesses(std::move(deltas));
 
   updated_ids_.clear();
@@ -225,10 +235,8 @@ TEST_F(AppCapabilityAccessCacheTest, ForEachApp) {
   EXPECT_EQ(cache.GetAppsAccessingMicrophone(), accessing_microphone_apps_);
 
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("a", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("d", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kTrue));
+  deltas.push_back(MakeCapabilityAccess("a", false, false));
+  deltas.push_back(MakeCapabilityAccess("d", false, true));
   cache.OnCapabilityAccesses(std::move(deltas));
 
   updated_ids_.clear();
@@ -247,8 +255,8 @@ TEST_F(AppCapabilityAccessCacheTest, ForEachApp) {
       "c", [&found_c](const apps::CapabilityAccessUpdate& update) {
         found_c = true;
         EXPECT_EQ("c", update.AppId());
-        EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.Camera());
-        EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.Microphone());
+        EXPECT_TRUE(update.Camera().value_or(false));
+        EXPECT_FALSE(update.Microphone().value_or(true));
       }));
   EXPECT_TRUE(found_c);
 
@@ -262,7 +270,7 @@ TEST_F(AppCapabilityAccessCacheTest, ForEachApp) {
 }
 
 TEST_F(AppCapabilityAccessCacheTest, Observer) {
-  std::vector<apps::mojom::CapabilityAccessPtr> deltas;
+  std::vector<apps::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
 
@@ -270,12 +278,9 @@ TEST_F(AppCapabilityAccessCacheTest, Observer) {
 
   updated_ids_.clear();
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("a", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kTrue));
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("c", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kFalse));
+  deltas.push_back(MakeCapabilityAccess("a", true, true));
+  deltas.push_back(MakeCapabilityAccess("b", false, false));
+  deltas.push_back(MakeCapabilityAccess("c", true, false));
   cache.OnCapabilityAccesses(std::move(deltas));
 
   EXPECT_EQ(3u, updated_ids_.size());
@@ -286,10 +291,8 @@ TEST_F(AppCapabilityAccessCacheTest, Observer) {
 
   updated_ids_.clear();
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kTrue));
-  deltas.push_back(MakeCapabilityAccess("c", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kTrue));
+  deltas.push_back(MakeCapabilityAccess("b", true, true));
+  deltas.push_back(MakeCapabilityAccess("c", false, true));
   cache.OnCapabilityAccesses(std::move(deltas));
 
   EXPECT_EQ(2u, updated_ids_.size());
@@ -304,8 +307,7 @@ TEST_F(AppCapabilityAccessCacheTest, Observer) {
   accessing_camera_apps_.clear();
   accessing_microphone_apps_.clear();
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("d", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kTrue));
+  deltas.push_back(MakeCapabilityAccess("d", false, true));
   cache.OnCapabilityAccesses(std::move(deltas));
 
   EXPECT_EQ(0u, accessing_camera_apps_.size());
@@ -313,37 +315,30 @@ TEST_F(AppCapabilityAccessCacheTest, Observer) {
 }
 
 TEST_F(AppCapabilityAccessCacheTest, Recursive) {
-  std::vector<apps::mojom::CapabilityAccessPtr> deltas;
+  std::vector<apps::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
   CapabilityAccessRecursiveObserver observer(&cache);
 
   observer.PrepareForOnCapabilityAccesses(2);
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("a", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kTrue));
+  deltas.push_back(MakeCapabilityAccess("a", true, false));
+  deltas.push_back(MakeCapabilityAccess("b", false, true));
   cache.OnCapabilityAccesses(std::move(deltas));
   EXPECT_EQ(2, observer.NumAppsSeenOnCapabilityAccessUpdate());
 
   observer.PrepareForOnCapabilityAccesses(3);
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("c", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kTrue));
+  deltas.push_back(MakeCapabilityAccess("b", true, false));
+  deltas.push_back(MakeCapabilityAccess("c", true, true));
   cache.OnCapabilityAccesses(std::move(deltas));
   EXPECT_EQ(2, observer.NumAppsSeenOnCapabilityAccessUpdate());
 
   observer.PrepareForOnCapabilityAccesses(3);
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kTrue));
+  deltas.push_back(MakeCapabilityAccess("b", true, false));
+  deltas.push_back(MakeCapabilityAccess("b", true, false));
+  deltas.push_back(MakeCapabilityAccess("b", true, true));
   cache.OnCapabilityAccesses(std::move(deltas));
   EXPECT_EQ(1, observer.NumAppsSeenOnCapabilityAccessUpdate());
 
@@ -353,7 +348,7 @@ TEST_F(AppCapabilityAccessCacheTest, Recursive) {
 }
 
 TEST_F(AppCapabilityAccessCacheTest, SuperRecursive) {
-  std::vector<apps::mojom::CapabilityAccessPtr> deltas;
+  std::vector<apps::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
   CapabilityAccessRecursiveObserver observer(&cache);
@@ -370,39 +365,26 @@ TEST_F(AppCapabilityAccessCacheTest, SuperRecursive) {
   // The vector is processed in LIFO order with nullptr punctuation to
   // terminate each group. See the comment on the
   // RecursiveObserver::super_recursive_accesses_ field.
-  std::vector<apps::mojom::CapabilityAccessPtr> super_recursive_accesses;
+  std::vector<apps::CapabilityAccessPtr> super_recursive_accesses;
   super_recursive_accesses.push_back(nullptr);
-  super_recursive_accesses.push_back(MakeCapabilityAccess(
-      "b", apps::mojom::OptionalBool::kTrue, apps::mojom::OptionalBool::kTrue));
-  super_recursive_accesses.push_back(nullptr);
-  super_recursive_accesses.push_back(nullptr);
-  super_recursive_accesses.push_back(MakeCapabilityAccess(
-      "a", apps::mojom::OptionalBool::kTrue, apps::mojom::OptionalBool::kTrue));
-  super_recursive_accesses.push_back(nullptr);
-  super_recursive_accesses.push_back(
-      MakeCapabilityAccess("b", apps::mojom::OptionalBool::kTrue,
-                           apps::mojom::OptionalBool::kFalse));
-  super_recursive_accesses.push_back(
-      MakeCapabilityAccess("a", apps::mojom::OptionalBool::kFalse,
-                           apps::mojom::OptionalBool::kFalse));
-  super_recursive_accesses.push_back(
-      MakeCapabilityAccess("b", apps::mojom::OptionalBool::kFalse,
-                           apps::mojom::OptionalBool::kFalse));
+  super_recursive_accesses.push_back(MakeCapabilityAccess("b", true, true));
   super_recursive_accesses.push_back(nullptr);
   super_recursive_accesses.push_back(nullptr);
-  super_recursive_accesses.push_back(MakeCapabilityAccess(
-      "c", apps::mojom::OptionalBool::kTrue, apps::mojom::OptionalBool::kTrue));
-  super_recursive_accesses.push_back(MakeCapabilityAccess(
-      "b", apps::mojom::OptionalBool::kTrue, apps::mojom::OptionalBool::kTrue));
+  super_recursive_accesses.push_back(MakeCapabilityAccess("a", true, true));
+  super_recursive_accesses.push_back(nullptr);
+  super_recursive_accesses.push_back(MakeCapabilityAccess("b", true, false));
+  super_recursive_accesses.push_back(MakeCapabilityAccess("a", false, false));
+  super_recursive_accesses.push_back(MakeCapabilityAccess("b", false, false));
+  super_recursive_accesses.push_back(nullptr);
+  super_recursive_accesses.push_back(nullptr);
+  super_recursive_accesses.push_back(MakeCapabilityAccess("c", true, true));
+  super_recursive_accesses.push_back(MakeCapabilityAccess("b", true, true));
 
   observer.PrepareForOnCapabilityAccesses(3, &super_recursive_accesses);
   deltas.clear();
-  deltas.push_back(MakeCapabilityAccess("a", apps::mojom::OptionalBool::kTrue,
-                                        apps::mojom::OptionalBool::kFalse));
-  deltas.push_back(MakeCapabilityAccess("b", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kTrue));
-  deltas.push_back(MakeCapabilityAccess("c", apps::mojom::OptionalBool::kFalse,
-                                        apps::mojom::OptionalBool::kFalse));
+  deltas.push_back(MakeCapabilityAccess("a", true, false));
+  deltas.push_back(MakeCapabilityAccess("b", false, true));
+  deltas.push_back(MakeCapabilityAccess("c", false, false));
   cache.OnCapabilityAccesses(std::move(deltas));
 
   // After all of that, check that for each app_id, the last delta won.

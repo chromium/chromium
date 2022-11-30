@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.widget.listmenu;
 
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.R;
@@ -52,17 +52,32 @@ public class ListMenuItemViewBinder {
                     endIcon.setVisibility(View.VISIBLE);
                 }
             }
-        } else if (propertyKey == ListMenuItemProperties.TINT_COLOR_ID) {
-            ApiCompatibilityUtils.setImageTintList(startIcon,
-                    ContextCompat.getColorStateList(
-                            view.getContext(), model.get(ListMenuItemProperties.TINT_COLOR_ID)));
-            ApiCompatibilityUtils.setImageTintList(endIcon,
-                    ContextCompat.getColorStateList(
-                            view.getContext(), model.get(ListMenuItemProperties.TINT_COLOR_ID)));
+        } else if (propertyKey == ListMenuItemProperties.MENU_ITEM_ID) {
+            // Not tracked intentionally because it's mainly for clients to know which menu item is
+            // clicked.
         } else if (propertyKey == ListMenuItemProperties.ENABLED) {
             textView.setEnabled(model.get(ListMenuItemProperties.ENABLED));
             startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
             endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
+        } else if (propertyKey == ListMenuItemProperties.TINT_COLOR_ID) {
+            ApiCompatibilityUtils.setImageTintList(startIcon,
+                    AppCompatResources.getColorStateList(
+                            view.getContext(), model.get(ListMenuItemProperties.TINT_COLOR_ID)));
+            ApiCompatibilityUtils.setImageTintList(endIcon,
+                    AppCompatResources.getColorStateList(
+                            view.getContext(), model.get(ListMenuItemProperties.TINT_COLOR_ID)));
+        } else if (propertyKey == ListMenuItemProperties.TEXT_APPEARANCE_ID) {
+            ApiCompatibilityUtils.setTextAppearance(
+                    textView, model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        } else if (propertyKey == ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END) {
+            if (model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END)) {
+                textView.setMaxLines(1);
+                textView.setEllipsize(TextUtils.TruncateAt.END);
+            } else {
+                textView.setEllipsize(null);
+            }
+        } else {
+            assert false : "Supplied propertyKey not implemented in ListMenuItemProperties.";
         }
     }
 }

@@ -1,0 +1,15 @@
+<script type="module">
+  const params = new URLSearchParams(location.search);
+  const type = params.get('type');
+  let url = `sw-${type}.js`;
+  if (params.get('fail') === '404')
+    url = `not-going-to-be-found/${url}`;
+
+  navigator.serviceWorker.ready.then(registration => {
+    registration.active.postMessage(`${type} init`);
+  });
+  window.completionMessage = new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', evt => { resolve(evt.data) });
+  });
+  await navigator.serviceWorker.register(url, { type });
+</script>

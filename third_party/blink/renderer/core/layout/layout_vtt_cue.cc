@@ -40,7 +40,7 @@ class SnapToLinesLayouter {
   STACK_ALLOCATED();
 
  public:
-  SnapToLinesLayouter(LayoutVTTCue& cue_box, const IntRect& controls_rect)
+  SnapToLinesLayouter(LayoutVTTCue& cue_box, const gfx::Rect& controls_rect)
       : cue_box_(cue_box), controls_rect_(controls_rect), margin_(0.0) {
     if (Settings* settings = cue_box_.GetDocument().GetSettings())
       margin_ = settings->GetTextTrackMarginPercentage() / 100.0;
@@ -49,7 +49,7 @@ class SnapToLinesLayouter {
   void UpdateLayout();
 
  private:
-  bool IsOutside(const IntRect&) const;
+  bool IsOutside(const gfx::Rect&) const;
   bool IsOverlapping() const;
   LayoutUnit ComputeInitialPositionAdjustment(LayoutUnit&,
                                               LayoutUnit,
@@ -64,7 +64,7 @@ class SnapToLinesLayouter {
 
   LayoutPoint specified_position_;
   LayoutVTTCue& cue_box_;
-  IntRect controls_rect_;
+  gfx::Rect controls_rect_;
   double margin_;
 };
 
@@ -117,24 +117,24 @@ LayoutUnit SnapToLinesLayouter::ComputeInitialPositionAdjustment(
 // are relative to the same coordinate space. If we didn't the (bounding) boxes
 // could be affect by transforms on an ancestor et.c, which could yield
 // incorrect results.
-IntRect BorderBoxRelativeToAncestor(const LayoutBox& box,
-                                    const LayoutBoxModelObject& ancestor) {
+gfx::Rect BorderBoxRelativeToAncestor(const LayoutBox& box,
+                                      const LayoutBoxModelObject& ancestor) {
   PhysicalRect border_box = box.PhysicalBorderBoxRect();
   // We pass UseTransforms here primarily because we use a transform for
   // non-snap-to-lines positioning (see VTTCue.cpp.)
-  return EnclosingIntRect(box.LocalToAncestorRect(border_box, &ancestor));
+  return ToEnclosingRect(box.LocalToAncestorRect(border_box, &ancestor));
 }
 
-IntRect CueBoundingBox(const LayoutBox& cue_box) {
+gfx::Rect CueBoundingBox(const LayoutBox& cue_box) {
   return BorderBoxRelativeToAncestor(cue_box, *cue_box.ContainingBlock());
 }
 
-bool SnapToLinesLayouter::IsOutside(const IntRect& title_area) const {
+bool SnapToLinesLayouter::IsOutside(const gfx::Rect& title_area) const {
   return !title_area.Contains(CueBoundingBox(cue_box_));
 }
 
 bool SnapToLinesLayouter::IsOverlapping() const {
-  IntRect cue_box_rect = CueBoundingBox(cue_box_);
+  gfx::Rect cue_box_rect = CueBoundingBox(cue_box_);
   for (LayoutBox* box = cue_box_.PreviousSiblingBox(); box;
        box = box->PreviousSiblingBox()) {
     if (cue_box_rect.Intersects(CueBoundingBox(*box)))
@@ -220,14 +220,12 @@ void SnapToLinesLayouter::UpdateLayout() {
   // Vertical: Let title area be a box that covers all of the video’s
   // rendering area except for a width of margin at the left of the rendering
   // area and a width of margin at the right of the rendering area.
-  IntRect title_area =
-      EnclosingIntRect(cue_box_.ContainingBlock()->PhysicalBorderBoxRect());
+  gfx::Rect title_area =
+      ToEnclosingRect(cue_box_.ContainingBlock()->PhysicalBorderBoxRect());
   if (blink::IsHorizontalWritingMode(writing_mode)) {
-    title_area.Move(0, margin.ToInt());
-    title_area.Contract(0, (2 * margin).ToInt());
+    title_area.Inset(gfx::Insets::VH(margin.ToInt(), 0));
   } else {
-    title_area.Move(margin.ToInt(), 0);
-    title_area.Contract((2 * margin).ToInt(), 0);
+    title_area.Inset(gfx::Insets::VH(0, margin.ToInt()));
   }
 
   // 15. Step loop: If none of the boxes in boxes would overlap any of the
@@ -257,6 +255,10 @@ void SnapToLinesLayouter::UpdateLayout() {
       // out of the viewport. Otherwise we'd need to mutate the layout
       // tree during layout.
       cue_box_.SetLogicalTop(cue_box_.ContainingBlock()->LogicalHeight() + 1);
+      // The above code doesn't work well if the container's writing-mode and
+      // the cue's writing-mode is different. SetLogicalTop() is based on the
+      // cue's writing-mode, and LogicalHeight() is based on the container's
+      // writing-mode.
       break;
     }
 
@@ -324,19 +326,24 @@ void LayoutVTTCue::RepositionCueSnapToLinesNotSet() {
   // boxes will unfortunately overlap.)
 }
 
-IntRect LayoutVTTCue::ComputeControlsRect() const {
+gfx::Rect LayoutVTTCue::ComputeControlsRect() const {
   NOT_DESTROYED();
+  return ComputeControlsRect(*Parent());
+}
+
+// static
+gfx::Rect LayoutVTTCue::ComputeControlsRect(const LayoutObject& container) {
   // Determine the area covered by the media controls, if any. For this, the
   // LayoutVTTCue will walk the tree up to the HTMLMediaElement, then ask for
   // the MediaControls.
-  DCHECK(Parent()->GetNode()->IsTextTrackContainer());
+  DCHECK(container.GetNode()->IsTextTrackContainer());
 
-  auto* media_element = To<HTMLMediaElement>(Parent()->Parent()->GetNode());
+  auto* media_element = To<HTMLMediaElement>(container.Parent()->GetNode());
   DCHECK(media_element);
 
   MediaControls* controls = media_element->GetMediaControls();
   if (!controls || !controls->ContainerLayoutObject())
-    return IntRect();
+    return gfx::Rect();
 
   // Only a part of the media controls is used for overlap avoidance.
   LayoutObject* button_panel_layout_object =
@@ -346,17 +353,17 @@ IntRect LayoutVTTCue::ComputeControlsRect() const {
 
   if (!button_panel_layout_object || !button_panel_layout_object->IsBox() ||
       !timeline_layout_object || !timeline_layout_object->IsBox()) {
-    return IntRect();
+    return gfx::Rect();
   }
 
-  IntRect button_panel_box = BorderBoxRelativeToAncestor(
+  gfx::Rect button_panel_box = BorderBoxRelativeToAncestor(
       To<LayoutBox>(*button_panel_layout_object),
       To<LayoutBox>(*controls->ContainerLayoutObject()));
-  IntRect timeline_box = BorderBoxRelativeToAncestor(
+  gfx::Rect timeline_box = BorderBoxRelativeToAncestor(
       To<LayoutBox>(*timeline_layout_object),
       To<LayoutBox>(*controls->ContainerLayoutObject()));
 
-  button_panel_box.Unite(timeline_box);
+  button_panel_box.Union(timeline_box);
   return button_panel_box;
 }
 

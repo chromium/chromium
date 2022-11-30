@@ -27,12 +27,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SEGMENTED_FONT_FACE_H_
 
 #include "base/callback.h"
+#include "base/containers/lru_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -50,7 +52,7 @@ class SegmentedFontData;
 // Iterating over the combined set, behaves as if all non-CSS-connected
 // FontFaces were stored after the CSS-connected ones.
 class FontFaceList : public GarbageCollected<FontFaceList> {
-  using FontFaceListPart = HeapListHashSet<Member<FontFace>>;
+  using FontFaceListPart = HeapLinkedHashSet<Member<FontFace>>;
 
  public:
   bool IsEmpty() const;
@@ -87,7 +89,9 @@ class FontFaceList : public GarbageCollected<FontFaceList> {
 class CSSSegmentedFontFace final
     : public GarbageCollected<CSSSegmentedFontFace> {
  public:
-  CSSSegmentedFontFace(FontSelectionCapabilities);
+  static CSSSegmentedFontFace* Create(FontSelectionCapabilities);
+
+  explicit CSSSegmentedFontFace(FontSelectionCapabilities);
   ~CSSSegmentedFontFace();
 
   FontSelectionCapabilities GetFontSelectionCapabilities() const {
@@ -120,7 +124,7 @@ class CSSSegmentedFontFace final
 
   FontSelectionCapabilities font_selection_capabilities_;
 
-  WTF::LruCache<FontCacheKey, scoped_refptr<SegmentedFontData>>
+  base::HashingLRUCache<FontCacheKey, scoped_refptr<SegmentedFontData>>
       font_data_table_;
 
   // All non-CSS-connected FontFaces are stored after the CSS-connected ones.

@@ -223,14 +223,6 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>FTP site URL</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>ftp</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
 			<string>Local file URL</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
@@ -249,6 +241,8 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${CHROMIUM_MIN_SYSTEM_VERSION}</string>
+	<key>LSRequiresNativeExecution</key>
+	<true/>
 	<key>NSPrincipalClass</key>
 	<string>BrowserCrApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
@@ -390,8 +384,6 @@
 	</array>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>banner</string>
-	<key>NSRequiresAquaSystemAppearance</key>
-	<false/>
 	<key>GPUEjectPolicy</key>
 	<string>wait</string>
 </dict>

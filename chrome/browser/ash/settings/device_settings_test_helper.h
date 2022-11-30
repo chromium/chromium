@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,25 +7,19 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class TestingProfile;
-
-namespace chromeos {
-class DBusThreadManagerSetter;
-}  // namespace chromeos
 
 namespace ash {
 
@@ -34,11 +28,16 @@ namespace ash {
 class ScopedDeviceSettingsTestHelper {
  public:
   ScopedDeviceSettingsTestHelper();
+
+  ScopedDeviceSettingsTestHelper(const ScopedDeviceSettingsTestHelper&) =
+      delete;
+  ScopedDeviceSettingsTestHelper& operator=(
+      const ScopedDeviceSettingsTestHelper&) = delete;
+
   ~ScopedDeviceSettingsTestHelper();
 
  private:
   FakeSessionManagerClient session_manager_client_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDeviceSettingsTestHelper);
 };
 
 // A convenience test base class that initializes a DeviceSettingsService
@@ -46,6 +45,10 @@ class ScopedDeviceSettingsTestHelper {
 // settings. |device_settings_service_| starts out in uninitialized state, so
 // startup code gets tested as well.
 class DeviceSettingsTestBase : public testing::Test {
+ public:
+  DeviceSettingsTestBase(const DeviceSettingsTestBase&) = delete;
+  DeviceSettingsTestBase& operator=(const DeviceSettingsTestBase&) = delete;
+
  protected:
   DeviceSettingsTestBase();
   explicit DeviceSettingsTestBase(base::test::TaskEnvironment::TimeSource time);
@@ -81,14 +84,10 @@ class DeviceSettingsTestBase : public testing::Test {
   // with the global instance (DeviceSettingsService::Get()).
   std::unique_ptr<DeviceSettingsService> device_settings_service_;
 
-  std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter_;
-
   std::unique_ptr<TestingProfile> profile_;
 
  private:
   bool teardown_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsTestBase);
 };
 
 }  // namespace ash

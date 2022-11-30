@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #import "cwv_cert_status.h"
 #import "cwv_export.h"
+#import "cwv_x509_certificate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,6 +58,9 @@ CWV_EXPORT
 
 // Status of the main frame's SSL certificate..
 @property(nonatomic, readonly) CWVCertStatus certStatus;
+
+// Details about the main frame's SSL certificate like issuer, expiration, etc.
+@property(nonatomic, nullable, readonly) CWVX509Certificate* certificate;
 
 - (instancetype)init NS_UNAVAILABLE;
 

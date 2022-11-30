@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_COCOA_SCROLL_BAR_H_
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #import "components/remote_cocoa/app_shim/views_scrollbar_bridge.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -27,6 +26,10 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   METADATA_HEADER(CocoaScrollBar);
 
   explicit CocoaScrollBar(bool horizontal);
+
+  CocoaScrollBar(const CocoaScrollBar&) = delete;
+  CocoaScrollBar& operator=(const CocoaScrollBar&) = delete;
+
   ~CocoaScrollBar() override;
 
   // ScrollBar:
@@ -127,8 +130,6 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
 
   // The bridge for NSScroller.
   base::scoped_nsobject<ViewsScrollbarBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaScrollBar);
 };
 
 }  // namespace views

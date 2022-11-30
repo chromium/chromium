@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_VR_GESTURE_DETECTOR_H_
 
 #include <memory>
+#include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -23,6 +23,10 @@ using InputEventList = std::vector<std::unique_ptr<InputEvent>>;
 class VR_EXPORT GestureDetector {
  public:
   GestureDetector();
+
+  GestureDetector(const GestureDetector&) = delete;
+  GestureDetector& operator=(const GestureDetector&) = delete;
+
   virtual ~GestureDetector();
 
   InputEventList DetectGestures(const PlatformController& controller,
@@ -103,8 +107,6 @@ class VR_EXPORT GestureDetector {
 
   base::TimeTicks menu_button_down_timestamp_;
   bool menu_button_long_pressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureDetector);
 };
 
 }  // namespace vr

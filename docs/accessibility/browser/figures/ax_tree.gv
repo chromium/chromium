@@ -1,0 +1,11 @@
+digraph graphname {
+    a [label="Dialog"];
+    a -> b;
+    a -> c;
+    b [label="Text"];
+    c [label="Button Grouping"];
+    c -> d;
+    c -> e;
+    d [label="OK"];
+    e [label="Cancel"];
+}

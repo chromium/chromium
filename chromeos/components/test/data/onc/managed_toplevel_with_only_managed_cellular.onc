@@ -1,0 +1,15 @@
+{
+  "GlobalNetworkConfiguration":{
+    "AllowOnlyPolicyCellularNetworks": true,
+  },
+  "NetworkConfigurations":[
+    {
+      "Ethernet":{
+        "Authentication":"None"
+      },
+      "GUID":"guid",
+      "Name":"name",
+      "Type":"Ethernet"
+    }
+  ]
+}

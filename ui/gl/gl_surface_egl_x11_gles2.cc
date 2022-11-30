@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,10 @@ using ui::GetLastEGLErrorString;
 namespace gl {
 
 NativeViewGLSurfaceEGLX11GLES2::NativeViewGLSurfaceEGLX11GLES2(
+    gl::GLDisplayEGL* display,
     x11::Window window)
-    : NativeViewGLSurfaceEGLX11(x11::Window::None), parent_window_(window) {}
+    : NativeViewGLSurfaceEGLX11(display, x11::Window::None),
+      parent_window_(window) {}
 
 bool NativeViewGLSurfaceEGLX11GLES2::InitializeNativeWindow() {
   auto* connection = GetXNativeConnection();
@@ -37,8 +39,8 @@ bool NativeViewGLSurfaceEGLX11GLES2::InitializeNativeWindow() {
   connection->CreateWindow(x11::CreateWindowRequest{
       .wid = window(),
       .parent = parent_window_,
-      .width = size_.width(),
-      .height = size_.height(),
+      .width = static_cast<uint16_t>(size_.width()),
+      .height = static_cast<uint16_t>(size_.height()),
       .c_class = x11::WindowClass::InputOutput,
       .background_pixmap = x11::Pixmap::None,
       .bit_gravity = x11::Gravity::NorthWest,
@@ -92,25 +94,45 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
                                EGL_NONE};
     config_attribs[kBufferSizeOffset] = geometry->depth;
 
-    EGLDisplay display = GetHardwareDisplay();
+    EGLDisplay display = GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
+    x11::VisualId visual_id;
+    ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+        true, &visual_id, nullptr, nullptr, nullptr);
     EGLint num_configs;
-    if (!eglChooseConfig(display, config_attribs, &config_, 1, &num_configs)) {
+    if (!eglChooseConfig(display, config_attribs, nullptr, 0, &num_configs)) {
       LOG(ERROR) << "eglChooseConfig failed with error "
                  << GetLastEGLErrorString();
       return nullptr;
     }
+    std::vector<EGLConfig> configs(num_configs);
 
     if (num_configs) {
-      EGLint config_depth;
-      if (!eglGetConfigAttrib(display, config_, EGL_BUFFER_SIZE,
-                              &config_depth)) {
-        LOG(ERROR) << "eglGetConfigAttrib failed with error "
+      if (!eglChooseConfig(display, config_attribs, &configs.front(),
+                           num_configs, &num_configs)) {
+        LOG(ERROR) << "eglChooseConfig failed with error "
                    << GetLastEGLErrorString();
         return nullptr;
       }
-
-      if (config_depth == geometry->depth) {
-        return config_;
+      for (EGLConfig config : configs) {
+        EGLint config_depth;
+        if (!eglGetConfigAttrib(display, config, EGL_BUFFER_SIZE,
+                                &config_depth)) {
+          LOG(ERROR) << "eglGetConfigAttrib failed with error "
+                     << GetLastEGLErrorString();
+          return nullptr;
+        }
+        EGLint config_visual_id;
+        if (!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID,
+                                &config_visual_id)) {
+          LOG(ERROR) << "eglGetConfigAttrib failed with error "
+                     << GetLastEGLErrorString();
+          return nullptr;
+        }
+        if (config_depth == geometry->depth &&
+            config_visual_id == static_cast<EGLint>(visual_id)) {
+          config_ = config;
+          return config_;
+        }
       }
     }
 

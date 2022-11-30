@@ -1,0 +1,60 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("subscriptions") {
+  sources = [
+    "commerce_subscription.cc",
+    "commerce_subscription.h",
+    "subscriptions_manager.cc",
+    "subscriptions_manager.h",
+    "subscriptions_server_proxy.cc",
+    "subscriptions_server_proxy.h",
+    "subscriptions_storage.cc",
+    "subscriptions_storage.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/commerce/core:account_checker",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:feature_list",
+    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/leveldb_proto",
+    "//components/session_proto_db:core",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//net:net",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp:cpp",
+  ]
+}
+
+source_set("subscriptions_unit_tests") {
+  testonly = true
+
+  sources = [
+    "subscriptions_manager_unittest.cc",
+    "subscriptions_server_proxy_unittest.cc",
+    "subscriptions_storage_unittest.cc",
+  ]
+
+  deps = [
+    ":subscriptions",
+    "//base/test:test_support",
+    "//components/commerce/core:account_checker_test_support",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:feature_list",
+    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/leveldb_proto",
+    "//components/session_proto_db:core",
+    "//components/signin/public/identity_manager:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

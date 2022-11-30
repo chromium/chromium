@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,23 +10,25 @@
 #include <xf86drmMode.h>
 #include <map>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
+#include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 #include "ui/ozone/public/swap_completion_callback.h"
 
 namespace gfx {
 class Point;
-}
+struct GpuFenceHandle;
+}  // namespace gfx
 
 namespace ui {
 
@@ -93,20 +95,25 @@ class HardwareDisplayController {
  public:
   HardwareDisplayController(std::unique_ptr<CrtcController> controller,
                             const gfx::Point& origin);
+
+  HardwareDisplayController(const HardwareDisplayController&) = delete;
+  HardwareDisplayController& operator=(const HardwareDisplayController&) =
+      delete;
+
   ~HardwareDisplayController();
 
   // Gets the props required to modeset a CRTC with a |mode| onto
   // |commit_request|.
   void GetModesetProps(CommitRequest* commit_request,
-                       const DrmOverlayPlane& primary,
+                       const DrmOverlayPlaneList& modeset_planes,
                        const drmModeModeInfo& mode);
   // Gets the props required to enable/disable a CRTC onto |commit_request|.
   void GetEnableProps(CommitRequest* commit_request,
-                      const DrmOverlayPlane& primary);
+                      const DrmOverlayPlaneList& modeset_planes);
   void GetDisableProps(CommitRequest* commit_request);
 
   // Updates state of the controller after modeset/enable/disable is performed.
-  void UpdateState(bool enable_requested, const DrmOverlayPlane* primary_plane);
+  void UpdateState(const CrtcCommitRequest& crtc_request);
 
   // Schedules the |overlays|' framebuffers to be displayed on the next vsync
   // event. The event will be posted on the graphics card file descriptor |fd_|
@@ -121,7 +128,7 @@ class HardwareDisplayController {
   // be modified as it could still be displayed.
   //
   // Note that this function does not block. Also, this function should not be
-  // called again before the page flip occurrs.
+  // called again before the page flip occurs.
   void SchedulePageFlip(DrmOverlayPlaneList plane_list,
                         SwapCompletionOnceCallback submission_callback,
                         PresentationOnceCallback presentation_callback);
@@ -168,20 +175,37 @@ class HardwareDisplayController {
   scoped_refptr<DrmDevice> GetDrmDevice() const;
 
   void OnPageFlipComplete(
+      int modeset_sequence,
       DrmOverlayPlaneList pending_planes,
       const gfx::PresentationFeedback& presentation_feedback);
 
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
+
  private:
+  // These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  enum PageFlipResult {
+    // Indicates that the page flip was committed successfully.
+    kSuccess = 0,
+    // Indicates that the page flip failed because we could not assign
+    // planes.
+    kFailedPlaneAssignment = 1,
+    // Indicates that we assigned planes but the DRM commit failed.
+    kFailedCommit = 2,
+    kMaxValue = kFailedCommit,
+  };
   // Loops over |crtc_controllers_| and save their props into |commit_request|
   // to be enabled/modeset.
   void GetModesetPropsForCrtcs(CommitRequest* commit_request,
-                               const DrmOverlayPlane& primary,
+                               const DrmOverlayPlaneList& modeset_planes,
                                bool use_current_crtc_mode,
                                const drmModeModeInfo& mode);
-  void OnModesetComplete(const DrmOverlayPlane& primary);
-  bool ScheduleOrTestPageFlip(const DrmOverlayPlaneList& plane_list,
-                              scoped_refptr<PageFlipRequest> page_flip_request,
-                              std::unique_ptr<gfx::GpuFence>* out_fence);
+  void OnModesetComplete(const DrmOverlayPlaneList& modeset_planes);
+  PageFlipResult ScheduleOrTestPageFlip(
+      const DrmOverlayPlaneList& plane_list,
+      scoped_refptr<PageFlipRequest> page_flip_request,
+      gfx::GpuFenceHandle* release_fence);
   void AllocateCursorBuffers();
   DrmDumbBuffer* NextCursorBuffer();
   void UpdateCursorImage();
@@ -214,9 +238,10 @@ class HardwareDisplayController {
   base::flat_map<uint32_t /*fourcc_format*/, uint64_t /*preferred_modifier*/>
       preferred_format_modifier_;
 
-  base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
+  // Used to crash the GPU process when unrecoverable failures occur.
+  PageFlipWatchdog watchdog_;
 
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayController);
+  base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

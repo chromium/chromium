@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class NSHTTPSystemCookieStore : public net::SystemCookieStore {
   NSHTTPSystemCookieStore();
 
   explicit NSHTTPSystemCookieStore(NSHTTPCookieStorage* cookie_store);
+
+  NSHTTPSystemCookieStore(const NSHTTPSystemCookieStore&) = delete;
+  NSHTTPSystemCookieStore& operator=(const NSHTTPSystemCookieStore&) = delete;
 
   ~NSHTTPSystemCookieStore() override;
 
@@ -67,8 +70,6 @@ class NSHTTPSystemCookieStore : public net::SystemCookieStore {
   void ClearStore();
 
   NSHTTPCookieStorage* cookie_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(NSHTTPSystemCookieStore);
 };
 
 }  // namespace net

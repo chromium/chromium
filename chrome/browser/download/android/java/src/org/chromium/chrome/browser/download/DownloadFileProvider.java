@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -198,8 +198,8 @@ public class DownloadFileProvider extends FileProvider {
         if (uri == null) return null;
 
         String filePath = uri.getQueryParameter(URI_QUERY_FILE);
-        Uri.parse(filePath);
-        return getMimeTypeFromUri(uri);
+        if (TextUtils.isEmpty(filePath)) return null;
+        return getMimeTypeFromUri(Uri.parse(filePath));
     }
 
     @Override

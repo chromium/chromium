@@ -1,13 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_stream_create_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -31,6 +31,9 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
                       base::OnceClosure done_callback)
       : owner_(owner), done_callback_(std::move(done_callback)) {}
 
+  TestConnectDelegate(const TestConnectDelegate&) = delete;
+  TestConnectDelegate& operator=(const TestConnectDelegate&) = delete;
+
   void OnCreateRequest(URLRequest* request) override {
     owner_->url_request_ = request;
   }
@@ -47,7 +50,7 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
 
   void OnFailure(const std::string& message,
                  int net_error,
-                 base::Optional<int> response_code) override {
+                 absl::optional<int> response_code) override {
     owner_->has_failed_ = true;
     owner_->failure_message_ = message;
     owner_->failure_response_code_ = response_code.value_or(-1);
@@ -76,7 +79,7 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     base::Optional<AuthCredentials>* credentials) override {
+                     absl::optional<AuthCredentials>* credentials) override {
     owner_->run_loop_waiting_for_on_auth_required_.Quit();
     owner_->auth_challenge_info_ = auth_info;
     *credentials = owner_->auth_credentials_;
@@ -85,13 +88,11 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
   }
 
  private:
-  WebSocketStreamCreateTestBase* owner_;
+  raw_ptr<WebSocketStreamCreateTestBase> owner_;
   base::OnceClosure done_callback_;
-  DISALLOW_COPY_AND_ASSIGN(TestConnectDelegate);
 };
 
-WebSocketStreamCreateTestBase::WebSocketStreamCreateTestBase()
-    : has_failed_(false), ssl_fatal_(false), url_request_(nullptr) {}
+WebSocketStreamCreateTestBase::WebSocketStreamCreateTestBase() = default;
 
 WebSocketStreamCreateTestBase::~WebSocketStreamCreateTestBase() = default;
 
@@ -121,7 +122,7 @@ WebSocketStreamCreateTestBase::RequestHeadersToVector(
   HttpRequestHeaders::Iterator it(headers);
   std::vector<HeaderKeyValuePair> result;
   while (it.GetNext())
-    result.push_back(HeaderKeyValuePair(it.name(), it.value()));
+    result.emplace_back(it.name(), it.value());
   return result;
 }
 
@@ -132,7 +133,7 @@ WebSocketStreamCreateTestBase::ResponseHeadersToVector(
   std::string name, value;
   std::vector<HeaderKeyValuePair> result;
   while (headers.EnumerateHeaderLines(&iter, &name, &value))
-    result.push_back(HeaderKeyValuePair(name, value));
+    result.emplace_back(name, value);
   return result;
 }
 

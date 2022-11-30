@@ -1,40 +1,37 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 #define ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 
-#include "ui/views/controls/button/image_button.h"
+#include "ash/style/icon_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
-// Collapse button shown in TopShortcutsView with TopShortcutButtons.
-// UnifiedSystemTrayBubble will support collapsed state where the height of the
-// bubble is smaller, and some rows and labels will be omitted.
-// By pressing the button, the state of the bubble will be toggled.
-class CollapseButton : public views::ImageButton {
+// The button with `kUnifiedMenuExpandIcon`. This button can be set as expanded
+// or collapsed through SetExpandedAmount and the icon will be rotated on the
+// `expanded_amount_`. Expanded is the default state.
+class CollapseButton : public IconButton {
  public:
+  METADATA_HEADER(CollapseButton);
+
   explicit CollapseButton(PressedCallback callback);
+
+  CollapseButton(const CollapseButton&) = delete;
+  CollapseButton& operator=(const CollapseButton&) = delete;
+
   ~CollapseButton() override;
 
   // Change the expanded state. The icon will change.
   void SetExpandedAmount(double expanded_amount);
 
-  // views::ImageButton:
-  gfx::Size CalculatePreferredSize() const override;
+  // IconButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
-  const char* GetClassName() const override;
-  void OnThemeChanged() override;
 
  private:
   double expanded_amount_ = 1.0;
-
-  DISALLOW_COPY_AND_ASSIGN(CollapseButton);
 };
 
 }  // namespace ash

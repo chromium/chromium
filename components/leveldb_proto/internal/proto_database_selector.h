@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 
@@ -62,7 +62,9 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
     kFailureNoSharedDBProviderUniqueFailed = 26,
     kSuccessNoSharedDBProviderUniqueSucceeded = 27,
     kFailureUniqueDbMissingClearSharedFailed = 28,
-    kMaxValue = kFailureUniqueDbMissingClearSharedFailed,
+    kDeletedSharedDbOnRepeatedFailures = 29,
+    kDeletionOfSharedDbFailed = 30,
+    kMaxValue = kDeletionOfSharedDbFailed,
   };
 
   static void RecordInitState(ProtoDatabaseInitState state);
@@ -118,6 +120,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
   void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
+      typename Callbacks::LoadKeysAndEntriesCallback callback);
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
       typename Callbacks::LoadKeysAndEntriesCallback callback);
 
   void LoadKeys(Callbacks::LoadKeysCallback callback);

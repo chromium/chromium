@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,17 +16,6 @@
 #endif
 
 namespace history {
-
-// static
-void WebStateTopSitesObserver::CreateForWebState(web::WebState* web_state,
-                                                 TopSites* top_sites) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new WebStateTopSitesObserver(web_state, top_sites)));
-  }
-}
 
 WebStateTopSitesObserver::WebStateTopSitesObserver(web::WebState* web_state,
                                                    TopSites* top_sites)

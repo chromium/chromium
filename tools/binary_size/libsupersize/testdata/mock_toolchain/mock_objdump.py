@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -45,7 +45,6 @@ Dynamic Section:
   ANDROID_REL          0x00021de8
   ANDROID_RELSZ        0x00030b95
   RELENT               0x00000008
-  RELCOUNT             0x00060367
   JMPREL               0x00052980
   PLTRELSZ             0x00000c48
   PLTGOT               0x0308e42c

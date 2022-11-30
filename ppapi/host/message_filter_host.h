@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define PPAPI_HOST_MESSAGE_FILTER_HOST_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/host/ppapi_host_export.h"
 #include "ppapi/host/resource_host.h"
@@ -27,10 +26,11 @@ class PPAPI_HOST_EXPORT MessageFilterHost : public ResourceHost {
                     PP_Instance instance,
                     PP_Resource resource,
                     const scoped_refptr<ResourceMessageFilter>& message_filter);
-  virtual ~MessageFilterHost();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageFilterHost);
+  MessageFilterHost(const MessageFilterHost&) = delete;
+  MessageFilterHost& operator=(const MessageFilterHost&) = delete;
+
+  virtual ~MessageFilterHost();
 };
 
 }  // namespace host

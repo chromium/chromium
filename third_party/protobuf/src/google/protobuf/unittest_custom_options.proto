@@ -45,6 +45,7 @@ option py_generic_services = true;
 // A custom file option (defined below).
 option (file_opt1) = 9876543210;
 
+import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 
 // We don't put this in a package within proto2 because we need to make sure
@@ -106,6 +107,8 @@ message TestMessageWithCustomOptions {
 
     int32 oneof_field = 2;
   }
+
+  map<string, string> map_field = 3 [(field_opt1) = 12345];
 
   enum AnEnum {
     option (enum_opt1) = -789;
@@ -329,6 +332,9 @@ message Aggregate {
 
   // An embedded message set
   optional AggregateMessageSet mset = 5;
+
+  // An any
+  optional google.protobuf.Any any = 6;
 }
 
 // Allow Aggregate to be used as an option at all possible locations
@@ -373,6 +379,12 @@ option (fileopt) = {
   // A message set inside an option value
   mset {
     [protobuf_unittest.AggregateMessageSetElement.message_set_extension] {
+      s: 'EmbeddedMessageSetElement'
+    }
+  }
+
+  any {
+    [type.googleapis.com/protobuf_unittest.AggregateMessageSetElement] {
       s: 'EmbeddedMessageSetElement'
     }
   }

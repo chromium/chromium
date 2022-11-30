@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/cookies/canonical_cookie.h"
@@ -126,6 +126,10 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   };
 
   OAuth2MintTokenFlow(Delegate* delegate, const Parameters& parameters);
+
+  OAuth2MintTokenFlow(const OAuth2MintTokenFlow&) = delete;
+  OAuth2MintTokenFlow& operator=(const OAuth2MintTokenFlow&) = delete;
+
   ~OAuth2MintTokenFlow() override;
 
  protected:
@@ -195,11 +199,9 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
                                      std::set<std::string>* granted_scopes,
                                      int* time_to_live);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   Parameters parameters_;
   base::WeakPtrFactory<OAuth2MintTokenFlow> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2MintTokenFlow);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_MINT_TOKEN_FLOW_H_

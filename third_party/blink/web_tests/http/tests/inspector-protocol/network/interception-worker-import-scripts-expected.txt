@@ -1,0 +1,4 @@
+Tests that Network.requestWillBeSent and Fetch.requestPaused are emitted for worker importScripts before continuing request
+Fetch.requestPaused: http://127.0.0.1:8000/inspector-protocol/network/resources/final.js
+Network.requestWillBeSent: http://127.0.0.1:8000/inspector-protocol/network/resources/final.js
+

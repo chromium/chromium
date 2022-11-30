@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ typedef int64_t MojoTimeTicks;
 // |MojoHandle|: Handles to Mojo objects.
 //   |MOJO_HANDLE_INVALID| - A value that is never a valid handle.
 
-typedef uint32_t MojoHandle;
+typedef uintptr_t MojoHandle;
 
 #ifdef __cplusplus
 const MojoHandle MOJO_HANDLE_INVALID = 0;

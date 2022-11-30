@@ -1,12 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/material_components/chrome_app_bar_view_controller.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
@@ -24,7 +23,7 @@
 #endif
 
 const CGFloat kTableViewSeparatorInset = 16;
-const CGFloat kTableViewSeparatorInsetWithIcon = 56;
+const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 
 @interface ChromeTableViewController ()
 // The loading displayed by [self startLoadingIndicatorWithLoadingMessage:].
@@ -73,11 +72,15 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
   return indexPath;
 }
 
-// TODO(crbug.com/1183349): Large titles appear collapsed when opening a
-// tableView on iOS 14. Remove this method when the issue is fixed.
+// TODO(crbug.com/1254652): Large titles appear collapsed in some case when
+// opening a tableView. e.g when opening History screen without entry. Remove
+// this method when iOS 14 is dropped.
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  [self.navigationController.navigationBar sizeToFit];
+  if (@available(iOS 15, *)) {
+  } else {
+    [self.navigationController.navigationBar sizeToFit];
+  }
 }
 
 #pragma mark - Accessors
@@ -188,8 +191,8 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
   NSArray* sortedIndexPaths =
       [indexPaths sortedArrayUsingSelector:@selector(compare:)];
   for (NSIndexPath* indexPath in [sortedIndexPaths reverseObjectEnumerator]) {
-    NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSection:indexPath.section];
+    NSInteger sectionIdentifier = [self.tableViewModel
+        sectionIdentifierForSectionIndex:indexPath.section];
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
     NSUInteger index =
         [self.tableViewModel indexInItemTypeForIndexPath:indexPath];
@@ -203,14 +206,16 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
 
 - (void)reconfigureCellsForItems:(NSArray*)items {
   for (TableViewItem* item in items) {
-    NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
-    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    if ([self.tableViewModel hasItem:item]) {
+      NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
+      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
 
-    // |cell| may be nil if the row is not currently on screen.
-    if (cell) {
-      TableViewCell* tableViewCell =
-          base::mac::ObjCCastStrict<TableViewCell>(cell);
-      [item configureCell:tableViewCell withStyler:self.styler];
+      // `cell` may be nil if the row is not currently on screen.
+      if (cell) {
+        TableViewCell* tableViewCell =
+            base::mac::ObjCCastStrict<TableViewCell>(cell);
+        [item configureCell:tableViewCell withStyler:self.styler];
+      }
     }
   }
 }
@@ -267,7 +272,7 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
   TableViewHeaderFooterItem* item =
-      [self.tableViewModel headerForSection:section];
+      [self.tableViewModel headerForSectionIndex:section];
   if (!item)
     return [[UIView alloc] initWithFrame:CGRectZero];
   Class headerFooterClass = [item cellClass];
@@ -283,7 +288,7 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
   TableViewHeaderFooterItem* item =
-      [self.tableViewModel footerForSection:section];
+      [self.tableViewModel footerForSectionIndex:section];
   if (!item)
     return [[UIView alloc] initWithFrame:CGRectZero];
   Class headerFooterClass = [item cellClass];

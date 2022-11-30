@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "courgette/assembly_program.h"
@@ -41,7 +41,7 @@ class NullAdjustmentMethod : public AdjustmentMethod {
 //
 class LabelInfo {
  public:
-  Label* label_;              // The label that this info a surrogate for.
+  raw_ptr<Label> label_;  // The label that this info a surrogate for.
 
   // Information used only in debugging messages.
   uint32_t is_model_ : 1;      // Is the label in the model?
@@ -49,12 +49,13 @@ class LabelInfo {
 
   uint32_t refs_;  // Number of times this Label is referenced.
 
-  LabelInfo* assignment_;     // Label from other program corresponding to this.
+  raw_ptr<LabelInfo>
+      assignment_;  // Label from other program corresponding to this.
 
   // LabelInfos are in a doubly linked list ordered by address (label_->rva_) so
   // we can quickly find Labels adjacent in address order.
-  LabelInfo* next_addr_;      // Label(Info) at next highest address.
-  LabelInfo* prev_addr_;      // Label(Info) at next lowest address.
+  raw_ptr<LabelInfo> next_addr_;  // Label(Info) at next highest address.
+  raw_ptr<LabelInfo> prev_addr_;  // Label(Info) at next lowest address.
 
   std::vector<uint32_t> positions_;  // Offsets into the trace of references.
 
@@ -143,8 +144,8 @@ struct Node {
         in_queue_(false) {
     length_ = 1 + (prev_ ? prev_->length_ : 0);
   }
-  LabelInfo* in_edge_;  //
-  Node* prev_;          // Node at shorter length.
+  raw_ptr<LabelInfo> in_edge_;  //
+  raw_ptr<Node> prev_;          // Node at shorter length.
   int count_;           // Frequency of this path in Trie.
   int length_;
   typedef std::map<LabelInfo*, Node*> Edges;
@@ -213,6 +214,9 @@ class AssignmentProblem {
         p_trace_(problem),
         m_root_(nullptr),
         p_root_(nullptr) {}
+
+  AssignmentProblem(const AssignmentProblem&) = delete;
+  AssignmentProblem& operator=(const AssignmentProblem&) = delete;
 
   ~AssignmentProblem() {
     for (size_t i = 0;  i < all_nodes_.size();  ++i)
@@ -555,21 +559,23 @@ class AssignmentProblem {
 
   const Trace& m_trace_;
   const Trace& p_trace_;
-  Node* m_root_;
-  Node* p_root_;
+  raw_ptr<Node> m_root_;
+  raw_ptr<Node> p_root_;
 
   NodeQueue worklist_;
   NodeQueue unsolved_;
 
   std::vector<Node*> all_nodes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssignmentProblem);
 };
 
 class GraphAdjuster : public AdjustmentMethod {
  public:
   GraphAdjuster()
       : prog_(nullptr), model_(nullptr), debug_label_index_gen_(0) {}
+
+  GraphAdjuster(const GraphAdjuster&) = delete;
+  GraphAdjuster& operator=(const GraphAdjuster&) = delete;
+
   ~GraphAdjuster() = default;
 
   bool Adjust(const AssemblyProgram& model, AssemblyProgram* program) {
@@ -646,8 +652,9 @@ class GraphAdjuster : public AdjustmentMethod {
     return &slot;
   }
 
-  AssemblyProgram* prog_;         // Program to be adjusted, owned by caller.
-  const AssemblyProgram* model_;  // Program to be mimicked, owned by caller.
+  raw_ptr<AssemblyProgram> prog_;  // Program to be adjusted, owned by caller.
+  raw_ptr<const AssemblyProgram>
+      model_;  // Program to be mimicked, owned by caller.
 
   Trace model_abs32_;
   Trace model_rel32_;
@@ -659,9 +666,6 @@ class GraphAdjuster : public AdjustmentMethod {
   // Note LabelInfo is allocated inside map, so the LabelInfo lifetimes are
   // managed by the map.
   std::map<Label*, LabelInfo> label_infos_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphAdjuster);
 };
 
 

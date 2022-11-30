@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ typedef NS_ENUM(NSInteger, SwitchToTabAnimationPosition) {
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Starts the animation between the |currentView|, to the |newView| which has a
-// |position| relatively to the |currentView|. At the end of the animation, this
+// Starts the animation between the `currentView`, to the `newView` which has a
+// `position` relatively to the `currentView`. At the end of the animation, this
 // view is removing itself from its parent.
 - (void)animateFromCurrentView:(UIView*)currentView
                      toNewView:(UIView*)newView

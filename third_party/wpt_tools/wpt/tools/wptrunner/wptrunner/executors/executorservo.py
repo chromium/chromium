@@ -1,4 +1,5 @@
-from __future__ import print_function
+# mypy: allow-untyped-defs
+
 import base64
 import json
 import os
@@ -7,24 +8,19 @@ import tempfile
 import threading
 import traceback
 import uuid
-from six import ensure_str
 
 from mozprocess import ProcessHandler
 
 from tools.serve.serve import make_hosts_file
 
-from .base import (ConnectionlessProtocol,
-                   RefTestImplementation,
+from .base import (RefTestImplementation,
                    crashtest_result_converter,
                    testharness_result_converter,
                    reftest_result_converter,
-                   TimedRunner,
-                   WdspecExecutor,
-                   WdspecProtocol)
+                   TimedRunner)
 from .process import ProcessTestExecutor
+from .protocol import ConnectionlessProtocol
 from ..browsers.base import browser_command
-from ..process import cast_env
-from ..webdriver_server import ServoDriverServer
 
 
 pytestrunner = None
@@ -49,7 +45,7 @@ def build_servo_command(test, test_url_func, browser, binary, pause_after_test, 
     for stylesheet in browser.user_stylesheets:
         args += ["--user-stylesheet", stylesheet]
     for pref, value in test.environment.get('prefs', {}).items():
-        args += ["--pref", "%s=%s" % (pref, value)]
+        args += ["--pref", f"{pref}={value}"]
     if browser.ca_certificate_path:
         args += ["--certificate-path", browser.ca_certificate_path]
     if extra_args:
@@ -103,11 +99,11 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             self.proc = ProcessHandler(self.command,
                                        processOutputLine=[self.on_output],
                                        onFinish=self.on_finish,
-                                       env=cast_env(env),
+                                       env=env,
                                        storeOutput=False)
             self.proc.run()
         else:
-            self.proc = subprocess.Popen(self.command, env=cast_env(env))
+            self.proc = subprocess.Popen(self.command, env=env)
 
         try:
             timeout = test.timeout * self.timeout_multiplier
@@ -163,7 +159,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         self.result_flag.set()
 
 
-class TempFilename(object):
+class TempFilename:
     def __init__(self, directory):
         self.directory = directory
         self.path = None
@@ -235,7 +231,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             if not self.interactive:
                 self.proc = ProcessHandler(self.command,
                                            processOutputLine=[self.on_output],
-                                           env=cast_env(env))
+                                           env=env)
 
 
                 try:
@@ -247,7 +243,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                     raise
             else:
                 self.proc = subprocess.Popen(self.command,
-                                             env=cast_env(env))
+                                             env=env)
                 try:
                     rv = self.proc.wait()
                 except KeyboardInterrupt:
@@ -264,7 +260,9 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             with open(output_path, "rb") as f:
                 # Might need to strip variable headers or something here
                 data = f.read()
-                return True, [ensure_str(base64.b64encode(data))]
+                # Returning the screenshot as a string could potentially be avoided,
+                # see https://github.com/web-platform-tests/wpt/issues/28929.
+                return True, [base64.b64encode(data).decode()]
 
     def do_test(self, test):
         result = self.implementation.run_test(test)
@@ -279,14 +277,6 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             self.logger.process_output(self.proc.pid,
                                        line,
                                        " ".join(self.command))
-
-
-class ServoDriverProtocol(WdspecProtocol):
-    server_cls = ServoDriverServer
-
-
-class ServoWdspecExecutor(WdspecExecutor):
-    protocol_cls = ServoDriverProtocol
 
 
 class ServoTimedRunner(TimedRunner):
@@ -357,11 +347,11 @@ class ServoCrashtestExecutor(ProcessTestExecutor):
 
         if not self.interactive:
             self.proc = ProcessHandler(command,
-                                       env=cast_env(env),
+                                       env=env,
                                        storeOutput=False)
             self.proc.run()
         else:
-            self.proc = subprocess.Popen(command, env=cast_env(env))
+            self.proc = subprocess.Popen(command, env=env)
 
         self.proc.wait()
 

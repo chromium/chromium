@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/platform/transforms/perspective_transform_operation.h"
 
+#include <algorithm>
+#include <cmath>
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -33,18 +35,27 @@ namespace blink {
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Accumulate(
     const TransformOperation& other) {
   DCHECK(other.IsSameType(*this));
-  double other_p = To<PerspectiveTransformOperation>(other).p_;
-
-  if (p_ == 0 && other_p == 0)
-    return nullptr;
+  const auto& other_op = To<PerspectiveTransformOperation>(other);
 
   // We want to solve:
   //   -1/p + -1/p' == -1/p'', where we know p and p'.
   //
   // This can be rewritten as:
   //   p'' == (p * p') / (p + p')
-  double p = (p_ * other_p) / (p_ + other_p);
-  return PerspectiveTransformOperation::Create(p);
+  absl::optional<double> result;
+  if (!Perspective()) {
+    // In the special case of 'none', p is conceptually infinite, which
+    // means p'' equals p' (including if it's also 'none').
+    result = other_op.Perspective();
+  } else if (!other_op.Perspective()) {
+    result = Perspective();
+  } else {
+    double other_p = other_op.UsedPerspective();
+    double p = UsedPerspective();
+    result = (p * other_p) / (p + other_p);
+  }
+
+  return PerspectiveTransformOperation::Create(result);
 }
 
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
@@ -54,39 +65,38 @@ scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
   if (from && !from->IsSameType(*this))
     return this;
 
+  // https://drafts.csswg.org/css-transforms-2/#interpolation-of-transform-functions
+  // says that we should run matrix decomposition and then run the rules for
+  // interpolation of matrices, but we know what those rules are going to
+  // yield, so just do that directly.
+  double from_p_inverse, to_p_inverse;
   if (blend_to_identity) {
-    // FIXME: this seems wrong.  https://bugs.webkit.org/show_bug.cgi?id=52700
-    double p = blink::Blend(p_, 1., progress);
-    return PerspectiveTransformOperation::Create(clampTo<int>(p, 0));
+    from_p_inverse = InverseUsedPerspective();
+    to_p_inverse = 0.0;
+  } else {
+    if (from) {
+      const PerspectiveTransformOperation* from_op =
+          static_cast<const PerspectiveTransformOperation*>(from);
+      from_p_inverse = from_op->InverseUsedPerspective();
+    } else {
+      from_p_inverse = 0.0;
+    }
+    to_p_inverse = InverseUsedPerspective();
   }
-
-  const PerspectiveTransformOperation* from_op =
-      static_cast<const PerspectiveTransformOperation*>(from);
-
-  TransformationMatrix from_t;
-  TransformationMatrix to_t;
-  from_t.ApplyPerspective(from_op ? from_op->p_ : 0);
-  to_t.ApplyPerspective(p_);
-  to_t.Blend(from_t, progress);
-
-  TransformationMatrix::DecomposedType decomp;
-  if (!to_t.Decompose(decomp)) {
-    // If we can't decompose, bail out of interpolation.
-    const PerspectiveTransformOperation* used_operation =
-        progress > 0.5 ? this : from_op;
-    return PerspectiveTransformOperation::Create(used_operation->Perspective());
+  double p_inverse = blink::Blend(from_p_inverse, to_p_inverse, progress);
+  absl::optional<double> p;
+  if (p_inverse > 0.0 && std::isnormal(p_inverse)) {
+    p = 1.0 / p_inverse;
   }
-
-  if (decomp.perspective_z) {
-    double val = -1.0 / decomp.perspective_z;
-    return PerspectiveTransformOperation::Create(clampTo<double>(val, 0));
-  }
-  return PerspectiveTransformOperation::Create(0);
+  return PerspectiveTransformOperation::Create(p);
 }
 
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Zoom(
     double factor) {
-  return Create(p_ * factor);
+  if (!p_) {
+    return Create(p_);
+  }
+  return Create(*p_ * factor);
 }
 
 }  // namespace blink

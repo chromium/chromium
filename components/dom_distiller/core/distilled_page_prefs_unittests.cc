@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
+
+#include <memory>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -45,9 +47,11 @@ class TestingObserver : public DistilledPagePrefs::Observer {
 class DistilledPagePrefsTest : public testing::Test {
  protected:
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable());
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     DistilledPagePrefs::RegisterProfilePrefs(pref_service_->registry());
-    distilled_page_prefs_.reset(new DistilledPagePrefs(pref_service_.get()));
+    distilled_page_prefs_ =
+        std::make_unique<DistilledPagePrefs>(pref_service_.get());
   }
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;

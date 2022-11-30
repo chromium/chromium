@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/policy/android/test_jni_headers/PolicyCacheUpdaterTestSupporter_jni.h"
@@ -29,15 +30,25 @@ using ::testing::Return;
 namespace policy {
 namespace android {
 namespace {
-// The list of policeis that can be cached is controlled by Java library. Hence
+// The list of policies that can be cached is controlled by Java library. Hence
 // we use real policy name for testing.
 constexpr char kPolicyName[] = "BrowserSignin";
 constexpr int kPolicyValue = 1;
 
 class StubPolicyHandler : public ConfigurationPolicyHandler {
  public:
-  StubPolicyHandler(const std::string& policy_name, bool has_error)
-      : policy_name_(policy_name), has_error_(has_error) {}
+  StubPolicyHandler(const std::string& policy_name,
+                    PolicyMap::MessageType error_level)
+      : StubPolicyHandler(policy_name,
+                          /*has_error=*/true,
+                          error_level) {}
+  StubPolicyHandler(
+      const std::string& policy_name,
+      bool has_error,
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError)
+      : policy_name_(policy_name),
+        has_error_(has_error),
+        error_level_(error_level) {}
   StubPolicyHandler(const StubPolicyHandler&) = delete;
   StubPolicyHandler& operator=(const StubPolicyHandler&) = delete;
   ~StubPolicyHandler() override = default;
@@ -45,9 +56,11 @@ class StubPolicyHandler : public ConfigurationPolicyHandler {
   bool CheckPolicySettings(const PolicyMap& policies,
                            PolicyErrorMap* errors) override {
     if (has_error_) {
-      errors->AddError(policy_name_, IDS_POLICY_BLOCKED);
+      errors->AddError(policy_name_, IDS_POLICY_BLOCKED, /*error_path=*/{},
+                       error_level_);
     }
-    return policies.GetValue(kPolicyName) && !has_error_;
+    return policies.GetValue(policy_name_, base::Value::Type::INTEGER) &&
+           error_level_ != PolicyMap::MessageType::kError;
   }
 
  private:
@@ -55,17 +68,16 @@ class StubPolicyHandler : public ConfigurationPolicyHandler {
                            PrefValueMap* prefs) override {}
   std::string policy_name_;
   bool has_error_;
+  PolicyMap::MessageType error_level_;
 };
-
 }  // namespace
 
 class PolicyCacheUpdaterAndroidTest : public ::testing::Test {
  public:
   PolicyCacheUpdaterAndroidTest() {
-    ON_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillByDefault(Return(true));
-    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(_))
-        .WillByDefault(Return(true));
+    policy_provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
     j_support_ = Java_PolicyCacheUpdaterTestSupporter_Constructor(env_);
     policy_service_ = std::make_unique<policy::PolicyServiceImpl>(
         std::vector<ConfigurationPolicyProvider*>({&policy_provider_}));
@@ -104,10 +116,10 @@ class PolicyCacheUpdaterAndroidTest : public ::testing::Test {
   PolicyMap* policy_map() { return &policy_map_; }
 
  private:
-  JNIEnv* env_ = base::android::AttachCurrentThread();
+  raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> j_support_;
   PolicyMap policy_map_;
-  MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<PolicyService> policy_service_;
   std::unique_ptr<ConfigurationPolicyHandlerList> policy_handler_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -179,7 +191,7 @@ TEST_F(PolicyCacheUpdaterAndroidTest, TestPolicyMapWarningMessagePolicy) {
   VerifyPolicyName(kPolicyName, /*has_value=*/true, kPolicyValue);
 }
 
-TEST_F(PolicyCacheUpdaterAndroidTest, TestPolicUpdatedBeforeUpdaterCreated) {
+TEST_F(PolicyCacheUpdaterAndroidTest, TestPolicyUpdatedBeforeUpdaterCreated) {
   policy_handler_list()->AddHandler(
       std::make_unique<StubPolicyHandler>(kPolicyName, /*has_error=*/false));
 
@@ -187,6 +199,37 @@ TEST_F(PolicyCacheUpdaterAndroidTest, TestPolicUpdatedBeforeUpdaterCreated) {
   UpdatePolicy();
   VerifyPolicyName(kPolicyName, /*has_value=*/false, kPolicyValue);
   PolicyCacheUpdater updater(policy_service(), policy_handler_list());
+  VerifyPolicyName(kPolicyName, /*has_value=*/true, kPolicyValue);
+}
+
+TEST_F(PolicyCacheUpdaterAndroidTest,
+       TestWithFatalError_PolicyDoesntHaveValue) {
+  policy_handler_list()->AddHandler(std::make_unique<StubPolicyHandler>(
+      kPolicyName, PolicyMap::MessageType::kError));
+
+  PolicyCacheUpdater updater(policy_service(), policy_handler_list());
+  SetPolicy(kPolicyName, kPolicyValue);
+  UpdatePolicy();
+  VerifyPolicyName(kPolicyName, /*has_value=*/false, kPolicyValue);
+}
+
+TEST_F(PolicyCacheUpdaterAndroidTest, TestWithWarningError_PolicyHasValue) {
+  policy_handler_list()->AddHandler(std::make_unique<StubPolicyHandler>(
+      kPolicyName, PolicyMap::MessageType::kWarning));
+
+  PolicyCacheUpdater updater(policy_service(), policy_handler_list());
+  SetPolicy(kPolicyName, kPolicyValue);
+  UpdatePolicy();
+  VerifyPolicyName(kPolicyName, /*has_value=*/true, kPolicyValue);
+}
+
+TEST_F(PolicyCacheUpdaterAndroidTest, TestWithInfoError_PolicyHasValue) {
+  policy_handler_list()->AddHandler(std::make_unique<StubPolicyHandler>(
+      kPolicyName, PolicyMap::MessageType::kInfo));
+
+  PolicyCacheUpdater updater(policy_service(), policy_handler_list());
+  SetPolicy(kPolicyName, kPolicyValue);
+  UpdatePolicy();
   VerifyPolicyName(kPolicyName, /*has_value=*/true, kPolicyValue);
 }
 

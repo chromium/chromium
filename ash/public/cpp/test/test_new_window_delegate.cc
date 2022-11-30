@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,26 @@
 
 #include <utility>
 
+#include "ui/aura/window.h"
+
 namespace ash {
 
 TestNewWindowDelegate::TestNewWindowDelegate() = default;
 TestNewWindowDelegate::~TestNewWindowDelegate() = default;
 
 void TestNewWindowDelegate::NewTab() {}
-void TestNewWindowDelegate::NewTabWithUrl(const GURL& url,
-                                          bool from_user_interaction) {}
-void TestNewWindowDelegate::NewWindow(bool incognito) {}
+void TestNewWindowDelegate::NewWindow(bool incognito,
+                                      bool should_trigger_session_restore) {}
+void TestNewWindowDelegate::NewWindowForDetachingTab(
+    aura::Window* source_window,
+    const ui::OSExchangeData& drop_data,
+    NewWindowForDetachingTabCallback closure) {
+  std::move(closure).Run(/*new_window=*/nullptr);
+}
+void TestNewWindowDelegate::OpenUrl(const GURL& url,
+                                    OpenUrlFrom from,
+                                    Disposition disposition) {}
+void TestNewWindowDelegate::OpenCalculator() {}
 void TestNewWindowDelegate::OpenFileManager() {}
 void TestNewWindowDelegate::OpenDownloadsFolder() {}
 void TestNewWindowDelegate::OpenCrosh() {}
@@ -23,20 +34,28 @@ void TestNewWindowDelegate::OpenGetHelp() {}
 void TestNewWindowDelegate::RestoreTab() {}
 void TestNewWindowDelegate::ShowKeyboardShortcutViewer() {}
 void TestNewWindowDelegate::ShowTaskManager() {}
-void TestNewWindowDelegate::OpenFeedbackPage(bool from_assistant) {}
+void TestNewWindowDelegate::OpenFeedbackPage(
+    FeedbackSource source,
+    const std::string& description_template) {}
+void TestNewWindowDelegate::OpenPersonalizationHub() {}
 
 TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
     std::unique_ptr<TestNewWindowDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : ash_(std::move(delegate)) {}
+
+TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
+    std::unique_ptr<TestNewWindowDelegate> ash,
+    std::unique_ptr<TestNewWindowDelegate> lacros)
+    : ash_(std::move(ash)), lacros_(std::move(lacros)) {}
 
 TestNewWindowDelegateProvider::~TestNewWindowDelegateProvider() = default;
 
 NewWindowDelegate* TestNewWindowDelegateProvider::GetInstance() {
-  return delegate_.get();
+  return ash_.get();
 }
 
 NewWindowDelegate* TestNewWindowDelegateProvider::GetPrimary() {
-  return delegate_.get();
+  return lacros_ ? lacros_.get() : ash_.get();
 }
 
 }  // namespace ash

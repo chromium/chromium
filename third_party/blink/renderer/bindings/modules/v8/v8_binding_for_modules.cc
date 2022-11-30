@@ -27,15 +27,14 @@
 
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_string_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor_with_value.h"
@@ -43,13 +42,19 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_index.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_key_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_object_store.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -62,6 +67,10 @@ static v8::Local<v8::Value> DeserializeIDBValueArray(
     v8::Isolate*,
     v8::Local<v8::Object> creation_context,
     const Vector<std::unique_ptr<IDBValue>>&);
+static v8::Local<v8::Value> DeserializeIDBValueArrayArray(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> creation_context,
+    const Vector<Vector<std::unique_ptr<IDBValue>>>&);
 
 v8::Local<v8::Value> ToV8(const IDBKeyPath& value,
                           v8::Local<v8::Object> creation_context,
@@ -160,6 +169,9 @@ v8::Local<v8::Value> ToV8(const IDBAny* impl,
       return v8::Number::New(isolate, impl->Integer());
     case IDBAny::kKeyType:
       return ToV8(impl->Key(), creation_context, isolate);
+    case IDBAny::kIDBValueArrayArrayType:
+      return DeserializeIDBValueArrayArray(isolate, creation_context,
+                                           impl->ValuesArray());
   }
 
   NOTREACHED();
@@ -189,7 +201,10 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     return IDBKey::CreateDate(value.As<v8::Date>()->ValueOf());
 
   if (value->IsArrayBuffer()) {
-    DOMArrayBuffer* buffer = V8ArrayBuffer::ToImpl(value.As<v8::Object>());
+    DOMArrayBuffer* buffer = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+        isolate, value, exception_state);
+    if (exception_state.HadException())
+      return IDBKey::CreateInvalid();
     if (buffer->IsDetached()) {
       exception_state.ThrowTypeError("The ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
@@ -201,7 +216,11 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
 
   if (value->IsArrayBufferView()) {
     DOMArrayBufferView* view =
-        V8ArrayBufferView::ToImpl(value.As<v8::Object>());
+        NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
+            isolate, value, exception_state)
+            .Get();
+    if (exception_state.HadException())
+      return IDBKey::CreateInvalid();
     if (view->buffer()->IsDetached()) {
       exception_state.ThrowTypeError("The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
@@ -267,10 +286,13 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::TryCatch try_block(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // Process stack - will return when complete.
   while (true) {
-    DCHECK(!stack.IsEmpty());
+    DCHECK(!stack.empty());
     Record* top = stack.back().get();
     const wtf_size_t item_index = top->subkeys.size();
 
@@ -281,7 +303,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
       seen.pop_back();
       stack.pop_back();
 
-      if (stack.IsEmpty())
+      if (stack.empty())
         return key;
       top = stack.back().get();
       top->subkeys.push_back(std::move(key));
@@ -371,6 +393,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::TryCatch block(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   for (wtf_size_t i = 0; i < key_path_elements.size(); ++i) {
     const String& element = key_path_elements[i];
 
@@ -611,6 +636,29 @@ static v8::Local<v8::Value> DeserializeIDBValueArray(
   return array;
 }
 
+static v8::Local<v8::Value> DeserializeIDBValueArrayArray(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> creation_context,
+    const Vector<Vector<std::unique_ptr<IDBValue>>>& all_values) {
+  DCHECK(isolate->InContext());
+
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Array> array = v8::Array::New(isolate, all_values.size());
+  for (wtf_size_t i = 0; i < all_values.size(); ++i) {
+    v8::Local<v8::Value> v8_values =
+        DeserializeIDBValueArray(isolate, creation_context, all_values[i]);
+    if (v8_values.IsEmpty())
+      v8_values = v8::Undefined(isolate);
+    bool created_property;
+    if (!array->CreateDataProperty(context, i, v8_values)
+             .To(&created_property) ||
+        !created_property)
+      return v8::Local<v8::Value>();
+  }
+
+  return array;
+}
+
 // Injects a primary key into a deserialized V8 value.
 //
 // In general, the value stored in IndexedDB is the serialized version of a
@@ -632,7 +680,7 @@ bool InjectV8KeyIntoV8Value(v8::Isolate* isolate,
                             v8::Local<v8::Value> key,
                             v8::Local<v8::Value> value,
                             const IDBKeyPath& key_path) {
-  IDB_TRACE("injectIDBV8KeyIntoV8Value");
+  TRACE_EVENT0("IndexedDB", "injectIDBV8KeyIntoV8Value");
   DCHECK(isolate->InContext());
 
   DCHECK_EQ(key_path.GetType(), mojom::IDBKeyPathType::String);
@@ -724,7 +772,7 @@ bool InjectV8KeyIntoV8Value(v8::Isolate* isolate,
 bool CanInjectIDBKeyIntoScriptValue(v8::Isolate* isolate,
                                     const ScriptValue& script_value,
                                     const IDBKeyPath& key_path) {
-  IDB_TRACE("canInjectIDBKeyIntoScriptValue");
+  TRACE_EVENT0("IndexedDB", "canInjectIDBKeyIntoScriptValue");
   DCHECK_EQ(key_path.GetType(), mojom::IDBKeyPathType::String);
   Vector<String> key_path_elements = ParseKeyPath(key_path.GetString());
 
@@ -782,7 +830,7 @@ SQLValue NativeValueTraits<SQLValue>::NativeValue(
   if (value->IsNumber())
     return SQLValue(value.As<v8::Number>()->Value());
   V8StringResource<> string_value(value);
-  if (!string_value.Prepare(exception_state))
+  if (!string_value.Prepare(isolate, exception_state))
     return SQLValue();
   return SQLValue(string_value);
 }
@@ -799,7 +847,7 @@ std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state,
     const IDBKeyPath& key_path) {
-  IDB_TRACE("createIDBKeyFromValueAndKeyPath");
+  TRACE_EVENT0("IndexedDB", "createIDBKeyFromValueAndKeyPath");
   return CreateIDBKeyFromValueAndKeyPath(isolate, value, key_path,
                                          exception_state);
 }
@@ -810,7 +858,7 @@ std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
     ExceptionState& exception_state,
     const IDBKeyPath& store_key_path,
     const IDBKeyPath& index_key_path) {
-  IDB_TRACE("createIDBKeyFromValueAndKeyPaths");
+  TRACE_EVENT0("IndexedDB", "createIDBKeyFromValueAndKeyPaths");
   return CreateIDBKeyFromValueAndKeyPaths(isolate, value, store_key_path,
                                           index_key_path, exception_state);
 }

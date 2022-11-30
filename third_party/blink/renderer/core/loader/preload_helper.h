@@ -1,19 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRELOAD_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRELOAD_HELPER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace blink {
 
 class AlternateSignedExchangeResourceInfo;
 class Document;
+class PendingLinkPreload;
 class LocalFrame;
-class SingleModuleClient;
 struct LinkLoadParameters;
 struct ViewportDescription;
 
@@ -33,6 +33,10 @@ class PreloadHelper final {
   // Media links cannot be preloaded until the first chunk is parsed. The rest
   // can be preloaded at commit time.
   enum MediaPreloadPolicy { kLoadAll, kOnlyLoadNonMedia, kOnlyLoadMedia };
+
+  static void LoadSpeculationRuleLinkFromHeader(const String& header_value,
+                                                Document* document,
+                                                LocalFrame& frame);
 
   static void LoadLinksFromHeader(
       const String& header_value,
@@ -60,19 +64,22 @@ class PreloadHelper final {
                                  Document*,
                                  LocalFrame*,
                                  LinkCaller);
-  static Resource* PrefetchIfNeeded(const LinkLoadParameters&, Document&);
-  static Resource* PreloadIfNeeded(const LinkLoadParameters&,
-                                   Document&,
-                                   const KURL& base_url,
-                                   LinkCaller,
-                                   const ViewportDescription*,
-                                   ParserDisposition);
+  static void PrefetchIfNeeded(const LinkLoadParameters&,
+                               Document&,
+                               PendingLinkPreload*);
+  static void PreloadIfNeeded(const LinkLoadParameters&,
+                              Document&,
+                              const KURL& base_url,
+                              LinkCaller,
+                              const ViewportDescription*,
+                              ParserDisposition,
+                              PendingLinkPreload*);
   static void ModulePreloadIfNeeded(const LinkLoadParameters&,
                                     Document&,
                                     const ViewportDescription*,
-                                    SingleModuleClient*);
+                                    PendingLinkPreload*);
 
-  static base::Optional<ResourceType> GetResourceTypeFromAsAttribute(
+  static absl::optional<ResourceType> GetResourceTypeFromAsAttribute(
       const String& as);
 };
 

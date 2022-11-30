@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/perf_time_logger.h"
 #include "base/threading/thread.h"
@@ -30,6 +29,9 @@ namespace {
 class MessagePipePerfTest : public test::MojoTestBase {
  public:
   MessagePipePerfTest() : message_count_(0), message_size_(0) {}
+
+  MessagePipePerfTest(const MessagePipePerfTest&) = delete;
+  MessagePipePerfTest& operator=(const MessagePipePerfTest&) = delete;
 
   void SetUpMeasurement(int message_count, size_t message_size) {
     message_count_ = message_count;
@@ -123,8 +125,6 @@ class MessagePipePerfTest : public test::MojoTestBase {
   std::string payload_;
   std::vector<uint8_t> read_buffer_;
   std::unique_ptr<base::PerfTimeLogger> perf_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipePerfTest);
 };
 
 TEST_F(MessagePipePerfTest, PingPong) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,9 +92,9 @@ class MockFileStream : public FileStream {
   int ErrorCallback(CompletionOnceCallback callback);
   int64_t ErrorCallback64(Int64CompletionOnceCallback callback);
 
-  int forced_error_;
-  bool async_error_;
-  bool throttled_;
+  int forced_error_ = OK;
+  bool async_error_ = false;
+  bool throttled_ = false;
   base::OnceClosure throttled_task_;
   base::FilePath path_;
 

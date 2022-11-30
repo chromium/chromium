@@ -13,9 +13,11 @@ include_rules = [
   "+components/user_prefs",
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/browser",
+  "+net/cookies",
   "+services/device/public",
   "+services/network/public",
   "+storage/browser",
+  "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
   "+ui/android",
 ]

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ WaylandClientRegistry::WaylandClientRegistry(wl_display* display)
 
 WaylandClientRegistry::~WaylandClientRegistry() = default;
 
-base::Optional<WaylandClientRegistry::Entry> WaylandClientRegistry::GetEntry(
+absl::optional<WaylandClientRegistry::Entry> WaylandClientRegistry::GetEntry(
     const char* interface_name) const noexcept {
   DCHECK(registry_);
   if (!registry_)
@@ -67,14 +67,16 @@ void WaylandClientRegistry::Add(void* context,
                                 wl_registry*,
                                 uint32_t name,
                                 const char* interface,
-                                uint32_t version) {
+                                uint32_t version) noexcept {
   WaylandClientRegistry* registry =
       static_cast<WaylandClientRegistry*>(context);
   registry->globals_.emplace(interface,
                              WaylandClientRegistry::Entry{name, version});
 }
 
-void WaylandClientRegistry::Remove(void*, wl_registry*, uint32_t name) {
+void WaylandClientRegistry::Remove(void*,
+                                   wl_registry*,
+                                   uint32_t name) noexcept {
   LOG(ERROR) << "Unexpected global remove of id " << name;
   DCHECK(false);
 }

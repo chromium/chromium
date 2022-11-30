@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
 namespace base {
 namespace win {
@@ -21,6 +20,9 @@ namespace win {
 class BASE_EXPORT StartupInformation {
  public:
   StartupInformation();
+
+  StartupInformation(const StartupInformation&) = delete;
+  StartupInformation& operator=(const StartupInformation&) = delete;
 
   ~StartupInformation();
 
@@ -44,7 +46,6 @@ class BASE_EXPORT StartupInformation {
  private:
   std::unique_ptr<char[]> attribute_list_;
   STARTUPINFOEXW startup_info_;
-  DISALLOW_COPY_AND_ASSIGN(StartupInformation);
 };
 
 }  // namespace win

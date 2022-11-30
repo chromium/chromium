@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,8 +59,8 @@ const std::string MacStartupProfiler::HistogramName(Location location) {
 void MacStartupProfiler::RecordHistogram(Location location,
                                          const base::TimeDelta& delta) {
   const std::string name(HistogramName(location));
-  base::TimeDelta min = base::TimeDelta::FromMilliseconds(10);
-  base::TimeDelta max = base::TimeDelta::FromMinutes(1);
+  base::TimeDelta min = base::Milliseconds(10);
+  base::TimeDelta max = base::Minutes(1);
   int bucket_count = 100;
 
   // No need to cache the histogram pointers, since each invocation of this

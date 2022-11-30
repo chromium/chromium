@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -33,7 +32,7 @@ namespace {
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;
 
-const char kNoCookieHeader[] = "";
+const WebSocketExtraHeaders kNoCookieHeader = {};
 
 class TestBase : public WebSocketStreamCreateTestBase {
  public:
@@ -41,25 +40,15 @@ class TestBase : public WebSocketStreamCreateTestBase {
                         const url::Origin& origin,
                         const SiteForCookies& site_for_cookies,
                         const IsolationInfo& isolation_info,
-                        const std::string& cookie_header,
+                        const WebSocketExtraHeaders& cookie_header,
                         const std::string& response_body) {
-    // We assume cookie_header ends with CRLF if not empty, as
-    // WebSocketStandardRequestWithCookies requires. Use AddCRLFIfNotEmpty
-    // in a call site.
-    CHECK(cookie_header.empty() ||
-          base::EndsWith(cookie_header, "\r\n", base::CompareCase::SENSITIVE));
-
     url_request_context_host_.SetExpectations(
-        WebSocketStandardRequestWithCookies(url.path(), url.host(), origin,
-                                            cookie_header, std::string(),
-                                            std::string()),
+        WebSocketStandardRequestWithCookies(
+            url.path(), url.host(), origin, cookie_header,
+            /*send_additional_request_headers=*/{}, /*extra_headers=*/{}),
         response_body);
     CreateAndConnectStream(url, NoSubProtocols(), origin, site_for_cookies,
                            isolation_info, HttpRequestHeaders(), nullptr);
-  }
-
-  std::string AddCRLFIfNotEmpty(const std::string& s) {
-    return s.empty() ? s : s + "\r\n";
   }
 };
 
@@ -70,9 +59,8 @@ struct ClientUseCookieParameter {
   const char* const cookie_url;
   // The previously set cookies contents.
   const char* const cookie_line;
-  // The Cookie: HTTP header expected to appear in the WS request. An empty
-  // string means there is no Cookie: header.
-  const char* const cookie_header;
+  // The Cookie: HTTP header expected to appear in the WS request.
+  const WebSocketExtraHeaders cookie_header;
 };
 
 class WebSocketStreamClientUseCookieTest
@@ -104,7 +92,7 @@ struct ServerSetCookieParameter {
   // The cookies expected to appear for |cookie_url| inquiry.
   const char* const cookie_line;
   // The Set-Cookie: HTTP header attached to the response.
-  const char* const cookie_header;
+  const WebSocketExtraHeaders cookie_header;
 };
 
 class WebSocketStreamServerSetCookieTest
@@ -146,7 +134,6 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
       IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin, origin,
                             SiteForCookies::FromOrigin(origin));
   const std::string cookie_line(GetParam().cookie_line);
-  const std::string cookie_header(AddCRLFIfNotEmpty(GetParam().cookie_header));
 
   bool is_called = false;
   bool set_cookie_result = false;
@@ -156,7 +143,8 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
   base::RunLoop run_loop;
   auto cookie =
       CanonicalCookie::Create(cookie_url, cookie_line, base::Time::Now(),
-                              base::nullopt /* server_time */);
+                              absl::nullopt /* server_time */,
+                              absl::nullopt /* cookie_partition_key */);
   store->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&SetCookieHelperFunction, run_loop.QuitClosure(),
@@ -166,8 +154,8 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
   ASSERT_TRUE(is_called);
   ASSERT_TRUE(set_cookie_result);
 
-  CreateAndConnect(url, origin, site_for_cookies, isolation_info, cookie_header,
-                   WebSocketStandardResponse(""));
+  CreateAndConnect(url, origin, site_for_cookies, isolation_info,
+                   GetParam().cookie_header, WebSocketStandardResponse(""));
   WaitUntilConnectDone();
   EXPECT_FALSE(has_failed());
 }
@@ -185,23 +173,24 @@ TEST_P(WebSocketStreamServerSetCookieTest, ServerSetCookie) {
       IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin, origin,
                             SiteForCookies::FromOrigin(origin));
   const std::string cookie_line(GetParam().cookie_line);
-  const std::string cookie_header(AddCRLFIfNotEmpty(GetParam().cookie_header));
-
+  HttpRequestHeaders headers;
+  for (const auto& [key, value] : GetParam().cookie_header)
+    headers.SetHeader(key, value);
+  std::string cookie_header(headers.ToString());
   const std::string response = base::StringPrintf(
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Connection: Upgrade\r\n"
-      "%s"
       "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
-      "\r\n",
+      "%s",
       cookie_header.c_str());
-
   CookieStore* store =
       url_request_context_host_.GetURLRequestContext()->cookie_store();
 
-  CreateAndConnect(url, origin, site_for_cookies, isolation_info, "", response);
+  CreateAndConnect(url, origin, site_for_cookies, isolation_info,
+                   /*cookie_header=*/{}, response);
   WaitUntilConnectDone();
-  EXPECT_FALSE(has_failed());
+  EXPECT_FALSE(has_failed()) << failure_message();
 
   bool is_called = false;
   CookieList get_cookie_list_result;
@@ -211,6 +200,7 @@ TEST_P(WebSocketStreamServerSetCookieTest, ServerSetCookie) {
   base::RunLoop run_loop;
   store->GetCookieListWithOptionsAsync(
       cookie_url, net::CookieOptions::MakeAllInclusive(),
+      CookiePartitionKeyCollection(),
       base::BindOnce(&GetCookieListHelperFunction, run_loop.QuitClosure(),
                      weak_is_called.GetWeakPtr(),
                      weak_get_cookie_list_result.GetWeakPtr()));
@@ -226,170 +216,146 @@ const ClientUseCookieParameter kClientUseCookieParameters[] = {
     {"ws://www.example.com",
      "http://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "https://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "ws://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "wss://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     // Non-secure cookies for wss
     {"wss://www.example.com",
      "http://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "https://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "ws://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "wss://www.example.com",
      "test-cookie",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     // Secure-cookies for ws
-    {"ws://www.example.com",
-     "https://www.example.com",
-     "test-cookie; secure",
+    {"ws://www.example.com", "https://www.example.com", "test-cookie; secure",
      kNoCookieHeader},
 
-    {"ws://www.example.com",
-     "wss://www.example.com",
-     "test-cookie; secure",
+    {"ws://www.example.com", "wss://www.example.com", "test-cookie; secure",
      kNoCookieHeader},
 
     // Secure-cookies for wss
     {"wss://www.example.com",
      "https://www.example.com",
      "test-cookie; secure",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "wss://www.example.com",
      "test-cookie; secure",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     // Non-secure cookies for ws (sharing domain)
     {"ws://www.example.com",
      "http://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "https://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "ws://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "wss://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     // Non-secure cookies for wss (sharing domain)
     {"wss://www.example.com",
      "http://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "https://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "ws://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "wss://www2.example.com",
      "test-cookie; Domain=example.com",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     // Secure-cookies for ws (sharing domain)
-    {"ws://www.example.com",
-     "https://www2.example.com",
-     "test-cookie; Domain=example.com; secure",
-     kNoCookieHeader},
+    {"ws://www.example.com", "https://www2.example.com",
+     "test-cookie; Domain=example.com; secure", kNoCookieHeader},
 
-    {"ws://www.example.com",
-     "wss://www2.example.com",
-     "test-cookie; Domain=example.com; secure",
-     kNoCookieHeader},
+    {"ws://www.example.com", "wss://www2.example.com",
+     "test-cookie; Domain=example.com; secure", kNoCookieHeader},
 
     // Secure-cookies for wss (sharing domain)
     {"wss://www.example.com",
      "https://www2.example.com",
      "test-cookie; Domain=example.com; secure",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "wss://www2.example.com",
      "test-cookie; Domain=example.com; secure",
-     "Cookie: test-cookie"},
+     {{"Cookie", "test-cookie"}}},
 
     // Non-matching cookies for ws
-    {"ws://www.example.com",
-     "http://www2.example.com",
-     "test-cookie",
+    {"ws://www.example.com", "http://www2.example.com", "test-cookie",
      kNoCookieHeader},
 
-    {"ws://www.example.com",
-     "https://www2.example.com",
-     "test-cookie",
+    {"ws://www.example.com", "https://www2.example.com", "test-cookie",
      kNoCookieHeader},
 
-    {"ws://www.example.com",
-     "ws://www2.example.com",
-     "test-cookie",
+    {"ws://www.example.com", "ws://www2.example.com", "test-cookie",
      kNoCookieHeader},
 
-    {"ws://www.example.com",
-     "wss://www2.example.com",
-     "test-cookie",
+    {"ws://www.example.com", "wss://www2.example.com", "test-cookie",
      kNoCookieHeader},
 
     // Non-matching cookies for wss
-    {"wss://www.example.com",
-     "http://www2.example.com",
-     "test-cookie",
+    {"wss://www.example.com", "http://www2.example.com", "test-cookie",
      kNoCookieHeader},
 
-    {"wss://www.example.com",
-     "https://www2.example.com",
-     "test-cookie",
+    {"wss://www.example.com", "https://www2.example.com", "test-cookie",
      kNoCookieHeader},
 
-    {"wss://www.example.com",
-     "ws://www2.example.com",
-     "test-cookie",
+    {"wss://www.example.com", "ws://www2.example.com", "test-cookie",
      kNoCookieHeader},
 
-    {"wss://www.example.com",
-     "wss://www2.example.com",
-     "test-cookie",
+    {"wss://www.example.com", "wss://www2.example.com", "test-cookie",
      kNoCookieHeader},
 };
 
@@ -402,127 +368,127 @@ const ServerSetCookieParameter kServerSetCookieParameters[] = {
     {"ws://www.example.com",
      "http://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "https://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "ws://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "wss://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     // Cookies coming from wss
     {"wss://www.example.com",
      "http://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "https://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "ws://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "wss://www.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     // cookies coming from ws (sharing domain)
     {"ws://www.example.com",
      "http://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     {"ws://www.example.com",
      "https://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     {"ws://www.example.com",
      "ws://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     {"ws://www.example.com",
      "wss://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     // cookies coming from wss (sharing domain)
     {"wss://www.example.com",
      "http://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     {"wss://www.example.com",
      "https://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     {"wss://www.example.com",
      "ws://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     {"wss://www.example.com",
      "wss://www2.example.com",
      "test-cookie",
-     "Set-Cookie: test-cookie; Domain=example.com"},
+     {{"Set-Cookie", "test-cookie; Domain=example.com"}}},
 
     // Non-matching cookies coming from ws
     {"ws://www.example.com",
      "http://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "https://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "ws://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"ws://www.example.com",
      "wss://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     // Non-matching cookies coming from wss
     {"wss://www.example.com",
      "http://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "https://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "ws://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 
     {"wss://www.example.com",
      "wss://www2.example.com",
      "",
-     "Set-Cookie: test-cookie"},
+     {{"Set-Cookie", "test-cookie"}}},
 };
 
 INSTANTIATE_TEST_SUITE_P(WebSocketStreamServerSetCookieTest,

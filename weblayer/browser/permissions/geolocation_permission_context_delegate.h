@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,20 +22,16 @@ class GeolocationPermissionContextDelegate
 
   // GeolocationPermissionContext::Delegate:
   bool DecidePermission(
-      content::WebContents* web_contents,
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,
       bool user_gesture,
       permissions::BrowserPermissionCallback* callback,
       permissions::GeolocationPermissionContext* context) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsInteractable(content::WebContents* web_contents) override;
   PrefService* GetPrefs(content::BrowserContext* browser_context) override;
   bool IsRequestingOriginDSE(content::BrowserContext* browser_context,
                              const GURL& requesting_origin) override;
-  void FinishNotifyPermissionSet(const permissions::PermissionRequestID& id,
-                                 const GURL& requesting_origin,
-                                 const GURL& embedding_origin) override;
 #endif
 };
 

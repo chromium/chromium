@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!--
+@AURALINUX-ALLOW:tag:*
+-->
+<style>
+  semantics > annotation-xml { display: math; } /* make annotation visible */
+</style>
+<math>
+  <semantics>
+    <mfrac><mn>1</mn><mn>2</mn></mfrac>
+    <annotation encoding="application/x-tex">\frac{1}{2}</annotation>
+    <annotation-xml class="test" encoding="application/mathml-content+xml">
+      <apply>
+        <divide/>
+        <cn>1</cn>
+        <cn>2</cn>
+      </apply>
+    </annotation-xml>
+  </semantics>
+</math>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,21 @@
 
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
+#include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "ui/aura/window.h"
+#include "base/ranges/algorithm.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -95,6 +98,52 @@ bool HoldingSpaceTestApi::IsShowingInShelf() {
   return holding_space_tray_ && holding_space_tray_->GetVisible();
 }
 
+const base::FilePath& HoldingSpaceTestApi::GetHoldingSpaceItemFilePath(
+    const views::View* item_view) const {
+  return HoldingSpaceItemView::Cast(item_view)->item()->file_path();
+}
+
+const std::string& HoldingSpaceTestApi::GetHoldingSpaceItemId(
+    const views::View* item_view) const {
+  return HoldingSpaceItemView::Cast(item_view)->item_id();
+}
+
+views::View* HoldingSpaceTestApi::GetHoldingSpaceItemView(
+    const std::vector<views::View*>& item_views,
+    const std::string& item_id) {
+  auto it =
+      base::ranges::find(item_views, item_id, [](const views::View* item_view) {
+        return HoldingSpaceItemView::Cast(item_view)->item_id();
+      });
+  return it != item_views.end() ? *it : nullptr;
+}
+
+std::vector<views::View*> HoldingSpaceTestApi::GetHoldingSpaceItemViews() {
+  std::vector<views::View*> item_views;
+  if (holding_space_tray_->bubble_for_testing()) {
+    for (HoldingSpaceItemView*& item_view :
+         holding_space_tray_->bubble_for_testing()
+             ->GetHoldingSpaceItemViews()) {
+      item_views.push_back(item_view);
+    }
+  }
+  return item_views;
+}
+
+views::View* HoldingSpaceTestApi::GetSuggestionsSectionContainer() {
+  return holding_space_tray_->GetBubbleView()
+             ? holding_space_tray_->GetBubbleView()->GetViewByID(
+                   kHoldingSpaceSuggestionsSectionContainerId)
+             : nullptr;
+}
+
+views::View* HoldingSpaceTestApi::GetSuggestionsSectionHeader() {
+  return holding_space_tray_->GetBubbleView()
+             ? holding_space_tray_->GetBubbleView()->GetViewByID(
+                   kHoldingSpaceSuggestionsSectionHeaderId)
+             : nullptr;
+}
+
 views::View* HoldingSpaceTestApi::GetDownloadsSectionHeader() {
   return holding_space_tray_->GetBubbleView()
              ? holding_space_tray_->GetBubbleView()->GetViewByID(
@@ -118,7 +167,7 @@ std::vector<views::View*> HoldingSpaceTestApi::GetPinnedFileChips() {
   if (holding_space_tray_->GetBubbleView()) {
     FindDescendentsOfClass<HoldingSpaceItemChipView>(
         holding_space_tray_->GetBubbleView()->GetViewByID(
-            kHoldingSpacePinnedFilesBubbleId),
+            kHoldingSpacePinnedFilesSectionId),
         &pinned_file_chips);
   }
   return pinned_file_chips;
@@ -135,6 +184,17 @@ std::vector<views::View*> HoldingSpaceTestApi::GetScreenCaptureViews() {
   return screen_capture_views;
 }
 
+std::vector<views::View*> HoldingSpaceTestApi::GetSuggestionChips() {
+  std::vector<views::View*> suggestion_chips;
+  if (holding_space_tray_->GetBubbleView()) {
+    FindDescendentsOfClass<HoldingSpaceItemChipView>(
+        holding_space_tray_->GetBubbleView()->GetViewByID(
+            kHoldingSpaceSuggestionsSectionId),
+        &suggestion_chips);
+  }
+  return suggestion_chips;
+}
+
 views::View* HoldingSpaceTestApi::GetTray() {
   return holding_space_tray_;
 }
@@ -143,12 +203,25 @@ views::View* HoldingSpaceTestApi::GetTrayDropTargetOverlay() {
   return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDropTargetOverlayId);
 }
 
-views::View* HoldingSpaceTestApi::GetDefaultTrayIcon() {
-  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDefaultIconId);
+views::ImageView* HoldingSpaceTestApi::GetDefaultTrayIcon() {
+  return views::AsViewClass<views::ImageView>(
+      holding_space_tray_->GetViewByID(kHoldingSpaceTrayDefaultIconId));
 }
 
 views::View* HoldingSpaceTestApi::GetPreviewsTrayIcon() {
   return holding_space_tray_->GetViewByID(kHoldingSpaceTrayPreviewsIconId);
+}
+
+views::ImageView* HoldingSpaceTestApi::GetSuggestionsSectionChevronIcon() {
+  return holding_space_tray_->GetBubbleView()
+             ? views::AsViewClass<views::ImageView>(
+                   holding_space_tray_->GetBubbleView()->GetViewByID(
+                       kHoldingSpaceSuggestionsChevronIconId))
+             : nullptr;
+}
+
+views::View* HoldingSpaceTestApi::GetBubble() {
+  return holding_space_tray_->GetBubbleView();
 }
 
 views::View* HoldingSpaceTestApi::GetPinnedFilesBubble() {
@@ -167,6 +240,13 @@ bool HoldingSpaceTestApi::PinnedFilesBubbleShown() const {
   return bubble && bubble->GetVisible();
 }
 
+views::View* HoldingSpaceTestApi::GetRecentFilesBubble() {
+  if (!holding_space_tray_->GetBubbleView())
+    return nullptr;
+  return holding_space_tray_->GetBubbleView()->GetViewByID(
+      kHoldingSpaceRecentFilesBubbleId);
+}
+
 bool HoldingSpaceTestApi::RecentFilesBubbleShown() const {
   if (!holding_space_tray_->GetBubbleView())
     return false;
@@ -174,6 +254,15 @@ bool HoldingSpaceTestApi::RecentFilesBubbleShown() const {
   views::View* bubble = holding_space_tray_->GetBubbleView()->GetViewByID(
       kHoldingSpaceRecentFilesBubbleId);
   return bubble && bubble->GetVisible();
+}
+
+bool HoldingSpaceTestApi::RecentFilesPlaceholderShown() const {
+  if (!holding_space_tray_->GetBubbleView())
+    return false;
+
+  views::View* placeholder = holding_space_tray_->GetBubbleView()->GetViewByID(
+      kHoldingSpaceRecentFilesPlaceholderId);
+  return placeholder && placeholder->GetVisible();
 }
 
 }  // namespace ash

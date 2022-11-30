@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -65,6 +65,10 @@ class MessageService : public BrowserContextKeyedAPI,
   struct MessageChannel;
 
   explicit MessageService(content::BrowserContext* context);
+
+  MessageService(const MessageService&) = delete;
+  MessageService& operator=(const MessageService&) = delete;
+
   ~MessageService() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -97,6 +101,7 @@ class MessageService : public BrowserContextKeyedAPI,
                         const PortId& source_port_id,
                         int tab_id,
                         int frame_id,
+                        const std::string& document_id,
                         const std::string& extension_id,
                         const std::string& channel_name);
 
@@ -116,6 +121,12 @@ class MessageService : public BrowserContextKeyedAPI,
                  int process_id,
                  const PortContext& port_context,
                  bool force_close);
+
+  // Notifies the port that one of the receivers of a message indicated that
+  // they plan to respond to the message later.
+  void NotifyResponsePending(const PortId& port_id,
+                             int process_id,
+                             const PortContext& port_context);
 
   // Returns the number of open channels for test.
   size_t GetChannelCountForTest() { return channels_.size(); }
@@ -238,11 +249,11 @@ class MessageService : public BrowserContextKeyedAPI,
   static const bool kServiceIsCreatedWithBrowserContext = false;
   static const bool kServiceIsNULLWhileTesting = true;
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Delegate for embedder-specific messaging, e.g. for Chrome tabs.
   // Owned by the ExtensionsAPIClient and guaranteed to outlive |this|.
-  MessagingDelegate* messaging_delegate_;
+  raw_ptr<MessagingDelegate> messaging_delegate_;
 
   MessageChannelMap channels_;
   // A set of channel IDs waiting for user permission to cross the border
@@ -252,8 +263,6 @@ class MessageService : public BrowserContextKeyedAPI,
   PendingLazyContextChannelMap pending_lazy_context_channels_;
 
   base::WeakPtrFactory<MessageService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageService);
 };
 
 }  // namespace extensions

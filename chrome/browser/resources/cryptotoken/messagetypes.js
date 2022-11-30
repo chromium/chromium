@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,5 +18,5 @@ var MessageTypes = {
   U2F_REGISTER_RESPONSE: 'u2f_register_response',
   U2F_SIGN_RESPONSE: 'u2f_sign_response',
   U2F_GET_API_VERSION_REQUEST: 'u2f_get_api_version_request',
-  U2F_GET_API_VERSION_RESPONSE: 'u2f_get_api_version_response'
+  U2F_GET_API_VERSION_RESPONSE: 'u2f_get_api_version_response',
 };

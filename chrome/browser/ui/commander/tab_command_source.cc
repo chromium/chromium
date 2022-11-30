@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,17 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/entity_match.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,9 +46,9 @@ std::unique_ptr<CommandItem> ItemForTitle(const std::u16string& title,
 // In practice, this is the tab group that *all* selected tabs belong to, if
 // any. In the common special case of single selection, this will return that
 // tab's group if it has one.
-base::Optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
+absl::optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
     TabStripModel* tab_strip_model) {
-  base::Optional<tab_groups::TabGroupId> excluded_group = base::nullopt;
+  absl::optional<tab_groups::TabGroupId> excluded_group = absl::nullopt;
   for (int index : tab_strip_model->selection_model().selected_indices()) {
     auto group = tab_strip_model->GetTabGroupForTab(index);
     if (group.has_value()) {
@@ -52,7 +56,7 @@ base::Optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
         excluded_group = group;
       } else if (group != excluded_group) {
         // More than one group in the selection, so don't exclude anything.
-        return base::nullopt;
+        return absl::nullopt;
       }
     }
   }
@@ -97,8 +101,8 @@ void CloseTabsToLeft(Browser* browser) {
     return;
   int left_selected = *(selection.selected_indices().cbegin());
   for (int i = left_selected - 1; i >= 0; --i) {
-    model->CloseWebContentsAt(i, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
-                                     TabStripModel::CLOSE_USER_GESTURE);
+    model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                                     TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }
 
@@ -114,16 +118,15 @@ void CloseUnpinnedTabs(Browser* browser) {
   TabStripModel* model = browser->tab_strip_model();
   for (int i = model->count() - 1; i >= 0; --i) {
     if (!model->IsTabPinned(i))
-      model->CloseWebContentsAt(i, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
-                                       TabStripModel::CLOSE_USER_GESTURE);
+      model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                                       TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }
 
 bool CanMoveTabsToExistingWindow(const Browser* browser_to_exclude) {
   const BrowserList* browser_list = BrowserList::GetInstance();
-  return std::any_of(
-      browser_list->begin(), browser_list->end(),
-      [browser_to_exclude](Browser* browser) {
+  return base::ranges::any_of(
+      *browser_list, [browser_to_exclude](Browser* browser) {
         return browser != browser_to_exclude && browser->is_type_normal() &&
                browser->profile() == browser_to_exclude->profile();
       });
@@ -185,6 +188,16 @@ bool HasMutedTabs(const TabStripModel* model) {
       return true;
   }
   return false;
+}
+
+void ScrollToTop(Browser* browser) {
+  browser->tab_strip_model()->GetActiveWebContents()->ScrollToTopOfDocument();
+}
+
+void ScrollToBottom(Browser* browser) {
+  browser->tab_strip_model()
+      ->GetActiveWebContents()
+      ->ScrollToBottomOfDocument();
 }
 
 // Multiphase commands:
@@ -273,7 +286,7 @@ CommandSource::CommandResults MoveTabsToWindowCommandsForWindowsMatching(
   // Add "New Window", if appropriate. It should score highest with no input.
   std::u16string new_window_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
   base::Erase(new_window_title, '&');
-  std::unique_ptr<CommandItem> item = nullptr;
+  std::unique_ptr<CommandItem> item;
   if (input.empty()) {
     item = std::make_unique<CommandItem>(new_window_title, .99,
                                          std::vector<gfx::Range>());
@@ -311,7 +324,7 @@ CommandSource::CommandResults AddTabsToGroupCommandsForGroupsMatching(
   // Add "New Group", if appropriate. It should score highest with no input.
   std::u16string new_group_title =
       l10n_util::GetStringUTF16(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP);
-  std::unique_ptr<CommandItem> item = nullptr;
+  std::unique_ptr<CommandItem> item;
   if (input.empty()) {
     item = std::make_unique<CommandItem>(new_group_title, .99,
                                          std::vector<gfx::Range>());
@@ -328,10 +341,10 @@ CommandSource::CommandResults AddTabsToGroupCommandsForGroupsMatching(
   }
   for (auto& match : GroupsMatchingInput(
            browser, input, IneligibleGroupForSelected(tab_strip_model))) {
-    auto item = match.ToCommandItem();
-    item->command =
+    auto command_item = match.ToCommandItem();
+    command_item->command =
         base::BindOnce(&AddTabsToGroup, browser->AsWeakPtr(), match.group);
-    results.push_back(std::move(item));
+    results.push_back(std::move(command_item));
   }
   return results;
 }
@@ -492,7 +505,26 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
       item->command =
           base::BindOnce(IgnoreResult(&chrome::MoveCurrentTabToReadLater),
                          base::Unretained(browser));
-      results.push_back((std::move(item)));
+      results.push_back(std::move(item));
+    }
+  }
+
+  if (auto item = ItemForTitle(u"Scroll to top", finder, &ranges)) {
+    item->command = base::BindOnce(&ScrollToTop, base::Unretained(browser));
+    results.push_back(std::move(item));
+  }
+
+  if (auto item = ItemForTitle(u"Scroll to bottom", finder, &ranges)) {
+    item->command = base::BindOnce(&ScrollToBottom, base::Unretained(browser));
+    results.push_back(std::move(item));
+  }
+
+  if (send_tab_to_self::ShouldDisplayEntryPoint(
+          tab_strip_model->GetActiveWebContents())) {
+    if (auto item = ItemForTitle(u"Send tab to self...", finder, &ranges)) {
+      item->command = base::BindOnce(&chrome::SendTabToSelfFromPageAction,
+                                     base::Unretained(browser));
+      results.push_back(std::move(item));
     }
   }
 

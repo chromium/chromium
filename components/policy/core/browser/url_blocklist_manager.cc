@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,17 @@
 #include <limits>
 #include <set>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -48,9 +45,9 @@ using url_matcher::URLQueryElementMatcherCondition;
 
 namespace policy {
 
-using url_util::CreateConditionSet;
-using url_util::FilterComponents;
-using url_util::FilterToComponents;
+using url_matcher::util::CreateConditionSet;
+using url_matcher::util::FilterComponents;
+using url_matcher::util::FilterToComponents;
 
 namespace {
 
@@ -71,7 +68,7 @@ const char* kBypassBlocklistWildcardForSchemes[] = {
     "chrome-search",
 };
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // The two schemes used on iOS for the NTP.
 constexpr char kIosNtpAboutScheme[] = "about";
 constexpr char kIosNtpChromeScheme[] = "chrome";
@@ -80,12 +77,28 @@ constexpr char kIosNtpHost[] = "newtab";
 #endif
 
 // Returns a blocklist based on the given |block| and |allow| pattern lists.
-std::unique_ptr<URLBlocklist> BuildBlocklist(const base::ListValue* block,
-                                             const base::ListValue* allow) {
+std::unique_ptr<URLBlocklist> BuildBlocklist(const base::Value::List* block,
+                                             const base::Value::List* allow) {
   auto blocklist = std::make_unique<URLBlocklist>();
-  blocklist->Block(block);
-  blocklist->Allow(allow);
+  if (block)
+    blocklist->Block(*block);
+  if (allow)
+    blocklist->Allow(*allow);
   return blocklist;
+}
+
+const base::Value::List* GetPrefList(PrefService* pref_service,
+                                     absl::optional<std::string> pref_path) {
+  DCHECK(pref_service);
+
+  if (!pref_path)
+    return nullptr;
+
+  DCHECK(!pref_path->empty());
+
+  return pref_service->HasPrefPath(*pref_path)
+             ? &pref_service->GetList(*pref_path)
+             : nullptr;
 }
 
 bool BypassBlocklistWildcardForURL(const GURL& url) {
@@ -94,7 +107,7 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
     if (scheme == bypass_scheme)
       return true;
   }
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Compare the chrome scheme and host against the chrome://newtab version of
   // the NTP URL.
   if (scheme == kIosNtpChromeScheme && url.host() == kIosNtpHost) {
@@ -114,16 +127,18 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
 
 }  // namespace
 
-URLBlocklist::URLBlocklist() : id_(0), url_matcher_(new URLMatcher) {}
+URLBlocklist::URLBlocklist() : url_matcher_(new URLMatcher) {}
 
 URLBlocklist::~URLBlocklist() = default;
 
-void URLBlocklist::Block(const base::ListValue* filters) {
-  url_util::AddFilters(url_matcher_.get(), false, &id_, filters, &filters_);
+void URLBlocklist::Block(const base::Value::List& filters) {
+  url_matcher::util::AddFilters(url_matcher_.get(), false, &id_, filters,
+                                &filters_);
 }
 
-void URLBlocklist::Allow(const base::ListValue* filters) {
-  url_util::AddFilters(url_matcher_.get(), true, &id_, filters, &filters_);
+void URLBlocklist::Allow(const base::Value::List& filters) {
+  url_matcher::util::AddFilters(url_matcher_.get(), true, &id_, filters,
+                                &filters_);
 }
 
 bool URLBlocklist::IsURLBlocked(const GURL& url) const {
@@ -133,7 +148,7 @@ bool URLBlocklist::IsURLBlocked(const GURL& url) const {
 
 URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
     const GURL& url) const {
-  std::set<URLMatcherConditionSet::ID> matching_ids =
+  std::set<base::MatcherStringPattern::ID> matching_ids =
       url_matcher_->MatchURL(url);
 
   const FilterComponents* max = nullptr;
@@ -152,7 +167,7 @@ URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
   // Some of the internal Chrome URLs are not affected by the "*" in the
   // blocklist. Note that the "*" is the lowest priority filter possible, so
   // any higher priority filter will be applied first.
-  if (max->IsBlocklistWildcard() && BypassBlocklistWildcardForURL(url))
+  if (!max->allow && max->IsWildcard() && BypassBlocklistWildcardForURL(url))
     return URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
 
   return max->allow ? URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
@@ -166,8 +181,8 @@ size_t URLBlocklist::Size() const {
 // static
 bool URLBlocklist::FilterTakesPrecedence(const FilterComponents& lhs,
                                          const FilterComponents& rhs) {
-  // The "*" wildcard is the lowest priority filter.
-  if (rhs.IsBlocklistWildcard())
+  // The "*" wildcard in the blocklist is the lowest priority filter.
+  if (!rhs.allow && rhs.IsWildcard())
     return true;
 
   if (lhs.match_subdomains && !rhs.match_subdomains)
@@ -185,8 +200,10 @@ bool URLBlocklist::FilterTakesPrecedence(const FilterComponents& lhs,
   if (path_length != other_path_length)
     return path_length > other_path_length;
 
-  if (lhs.number_of_key_value_pairs != rhs.number_of_key_value_pairs)
-    return lhs.number_of_key_value_pairs > rhs.number_of_key_value_pairs;
+  if (lhs.number_of_url_matching_conditions !=
+      rhs.number_of_url_matching_conditions)
+    return lhs.number_of_url_matching_conditions >
+           rhs.number_of_url_matching_conditions;
 
   if (lhs.allow && !rhs.allow)
     return true;
@@ -194,8 +211,16 @@ bool URLBlocklist::FilterTakesPrecedence(const FilterComponents& lhs,
   return false;
 }
 
-URLBlocklistManager::URLBlocklistManager(PrefService* pref_service)
-    : pref_service_(pref_service), blocklist_(new URLBlocklist) {
+URLBlocklistManager::URLBlocklistManager(
+    PrefService* pref_service,
+    absl::optional<std::string> blocklist_pref_path,
+    absl::optional<std::string> allowlist_pref_path)
+    : pref_service_(pref_service),
+      blocklist_pref_path_(std::move(blocklist_pref_path)),
+      allowlist_pref_path_(std::move(allowlist_pref_path)),
+      blocklist_(new URLBlocklist) {
+  DCHECK(blocklist_pref_path_ || allowlist_pref_path_);
+
   // This class assumes that it is created on the same thread that
   // |pref_service_| lives on.
   ui_task_runner_ = base::SequencedTaskRunnerHandle::Get();
@@ -205,17 +230,19 @@ URLBlocklistManager::URLBlocklistManager(PrefService* pref_service)
   pref_change_registrar_.Init(pref_service_);
   base::RepeatingClosure callback = base::BindRepeating(
       &URLBlocklistManager::ScheduleUpdate, base::Unretained(this));
-  pref_change_registrar_.Add(policy_prefs::kUrlBlocklist, callback);
-  pref_change_registrar_.Add(policy_prefs::kUrlAllowlist, callback);
+  if (blocklist_pref_path_)
+    pref_change_registrar_.Add(*blocklist_pref_path_, callback);
+  if (allowlist_pref_path_)
+    pref_change_registrar_.Add(*allowlist_pref_path_, callback);
 
   // Start enforcing the policies without a delay when they are present at
   // startup.
-  if (pref_service_->HasPrefPath(policy_prefs::kUrlBlocklist) ||
-      pref_service_->HasPrefPath(policy_prefs::kUrlAllowlist)) {
-    SetBlocklist(
-        BuildBlocklist(pref_service_->GetList(policy_prefs::kUrlBlocklist),
-                       pref_service_->GetList(policy_prefs::kUrlAllowlist)));
-  }
+  const base::Value::List* block =
+      GetPrefList(pref_service_, blocklist_pref_path_);
+  const base::Value::List* allow =
+      GetPrefList(pref_service_, allowlist_pref_path_);
+  if (block || allow)
+    SetBlocklist(BuildBlocklist(block, allow));
 }
 
 URLBlocklistManager::~URLBlocklistManager() {
@@ -239,14 +266,20 @@ void URLBlocklistManager::Update() {
 
   // The URLBlocklist is built in the background. Once it's ready, it is passed
   // to the URLBlocklistManager back on ui_task_runner_.
+  const base::Value::List* block =
+      GetPrefList(pref_service_, blocklist_pref_path_);
+  const base::Value::List* allow =
+      GetPrefList(pref_service_, allowlist_pref_path_);
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BuildBlocklist,
-          base::Owned(
-              pref_service_->GetList(policy_prefs::kUrlBlocklist)->DeepCopy()),
-          base::Owned(
-              pref_service_->GetList(policy_prefs::kUrlAllowlist)->DeepCopy())),
+          base::Owned(block
+                          ? std::make_unique<base::Value::List>(block->Clone())
+                          : nullptr),
+          base::Owned(allow
+                          ? std::make_unique<base::Value::List>(allow->Clone())
+                          : nullptr)),
       base::BindOnce(&URLBlocklistManager::SetBlocklist,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }

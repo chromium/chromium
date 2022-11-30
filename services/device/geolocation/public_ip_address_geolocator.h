@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
@@ -33,6 +33,11 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
   PublicIpAddressGeolocator(const net::PartialNetworkTrafficAnnotationTag tag,
                             PublicIpAddressLocationNotifier* notifier,
                             BadMessageCallback callback);
+
+  PublicIpAddressGeolocator(const PublicIpAddressGeolocator&) = delete;
+  PublicIpAddressGeolocator& operator=(const PublicIpAddressGeolocator&) =
+      delete;
+
   ~PublicIpAddressGeolocator() override;
 
  private:
@@ -50,7 +55,7 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
   base::Time last_updated_timestamp_;
 
   // Notifier to ask for IP-geolocation updates.
-  PublicIpAddressLocationNotifier* const notifier_;
+  const raw_ptr<PublicIpAddressLocationNotifier> notifier_;
 
   // The most recent PartialNetworkTrafficAnnotationTag provided by a client.
   std::unique_ptr<const net::PartialNetworkTrafficAnnotationTag>
@@ -58,8 +63,6 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
 
   // Bad message callback.
   BadMessageCallback bad_message_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicIpAddressGeolocator);
 };
 
 }  // namespace device

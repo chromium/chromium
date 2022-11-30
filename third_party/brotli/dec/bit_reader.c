@@ -6,7 +6,7 @@
 
 /* Bit reading helpers */
 
-#include "./bit_reader.h"
+#include "bit_reader.h"
 
 #include "../common/platform.h"
 #include <brotli/types.h>

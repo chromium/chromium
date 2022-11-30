@@ -1,19 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.site_settings;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.url.GURL;
 
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public interface SiteSettingsDelegate {
      * @param callback A callback that will be called with the favicon bitmap, or null if no
      *     favicon could be found or generated.
      */
-    void getFaviconImageForURL(String faviconUrl, Callback<Bitmap> callback);
+    void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback);
 
     /**
      * @return true if the given category type should be shown in the SiteSettings Fragment.
@@ -50,9 +51,19 @@ public interface SiteSettingsDelegate {
     boolean isCategoryVisible(@SiteSettingsCategory.Type int type);
 
     /**
+     * @return true if Incognito mode is enabled.
+     */
+    boolean isIncognitoModeEnabled();
+
+    /**
      * @return true if the QuietNotificationPrompts Feature is enabled.
      */
     boolean isQuietNotificationPromptsFeatureEnabled();
+
+    /**
+     * @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled.
+     */
+    boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
 
     /**
      * @return The id of the notification channel associated with the given origin.
@@ -118,4 +129,48 @@ public interface SiteSettingsDelegate {
      * Dismisses the Privacy Sandbox snackbar, if active.
      */
     void dismissPrivacySandboxSnackbar();
+
+    /***
+     * @return true if First Party Sets data access is enabled.
+     */
+    boolean isFirstPartySetsDataAccessEnabled();
+
+    /***
+     * @return true if First Party Sets data access is managed.
+     */
+    boolean isFirstPartySetsDataAccessManaged();
+
+    /***
+     * @param origin to check.
+     * @return true if the origin is part of the managed FirstPartySet.
+     */
+    boolean isPartOfManagedFirstPartySet(String origin);
+
+    /***
+     * @return Enables/disables First Party Sets data access.
+     */
+    void setFirstPartySetsDataAccessEnabled(boolean enabled);
+
+    /**
+     * Gets the First Party Sets owner hostname given a FPS member origin.
+     * @param memberOrigin FPS member origin.
+     * @return A string containing the owner hostname, null if it doesn't exist.
+     */
+    String getFirstPartySetOwner(String memberOrigin);
+
+    /**
+     * Returns whether the current implementation of the delegate is able to launch the Clear
+     * Browsing Data dialog in Settings.
+     */
+    boolean canLaunchClearBrowsingDataDialog();
+
+    /**
+     * Launches the Clear Browsing Data dialog in Settings, if that is possible.
+     */
+    void launchClearBrowsingDataDialog(Activity currentActivity);
+
+    /**
+     * Called when the view this delegate is assigned to gets destroyed.
+     */
+    void onDestroyView();
 }

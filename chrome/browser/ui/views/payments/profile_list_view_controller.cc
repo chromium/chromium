@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/payments/profile_list_view_controller.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
@@ -26,7 +27,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 
 namespace payments {
 
@@ -59,6 +59,10 @@ class ProfileItem : public PaymentRequestItemList::Item {
         profile_(profile) {
     Init();
   }
+
+  ProfileItem(const ProfileItem&) = delete;
+  ProfileItem& operator=(const ProfileItem&) = delete;
+
   ~ProfileItem() override {}
 
  private:
@@ -97,9 +101,7 @@ class ProfileItem : public PaymentRequestItemList::Item {
   void EditButtonPressed() override { controller_->ShowEditor(profile_); }
 
   base::WeakPtr<ProfileListViewController> controller_;
-  autofill::AutofillProfile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileItem);
+  raw_ptr<autofill::AutofillProfile> profile_;
 };
 
 // The ProfileListViewController subtype for the Shipping address list
@@ -116,6 +118,10 @@ class ShippingProfileViewController : public ProfileListViewController,
     spec->AddObserver(this);
     PopulateList();
   }
+
+  ShippingProfileViewController(const ShippingProfileViewController&) = delete;
+  ShippingProfileViewController& operator=(
+      const ShippingProfileViewController&) = delete;
 
   ~ShippingProfileViewController() override {
     if (spec())
@@ -225,8 +231,6 @@ class ShippingProfileViewController : public ProfileListViewController,
   }
 
   base::WeakPtrFactory<ShippingProfileViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShippingProfileViewController);
 };
 
 class ContactProfileViewController : public ProfileListViewController {
@@ -239,6 +243,11 @@ class ContactProfileViewController : public ProfileListViewController {
     DCHECK(spec);
     PopulateList();
   }
+
+  ContactProfileViewController(const ContactProfileViewController&) = delete;
+  ContactProfileViewController& operator=(const ContactProfileViewController&) =
+      delete;
+
   ~ContactProfileViewController() override {}
 
  protected:
@@ -300,9 +309,6 @@ class ContactProfileViewController : public ProfileListViewController {
   int GetSecondaryButtonId() override {
     return static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CONTACT_BUTTON);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContactProfileViewController);
 };
 
 }  // namespace

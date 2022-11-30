@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,14 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -149,6 +152,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
     Iterator(const PersistentMemoryAllocator* allocator,
              Reference starting_after);
 
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
+    ~Iterator();
+
     // Resets the iterator back to the beginning.
     void Reset();
 
@@ -217,15 +225,13 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
    private:
     // Weak-pointer to memory allocator being iterated over.
-    const PersistentMemoryAllocator* allocator_;
+    raw_ptr<const PersistentMemoryAllocator> allocator_;
 
     // The last record that was returned.
     std::atomic<Reference> last_record_;
 
     // The number of records found; used for detecting loops.
     std::atomic<uint32_t> record_count_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   // Returned information about the internal state of the heap.
@@ -286,6 +292,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   PersistentMemoryAllocator(void* base, size_t size, size_t page_size,
                             uint64_t id, base::StringPiece name,
                             bool readonly);
+
+  PersistentMemoryAllocator(const PersistentMemoryAllocator&) = delete;
+  PersistentMemoryAllocator& operator=(const PersistentMemoryAllocator&) =
+      delete;
+
   virtual ~PersistentMemoryAllocator();
 
   // Check if memory segment is acceptable for creation of an Allocator. This
@@ -314,7 +325,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // is done seperately from construction for situations such as when the
   // histograms will be backed by memory provided by this very allocator.
   //
-  // IMPORTANT: tools/metrics/histograms/histograms_xml/uma/histograms.xml must
+  // IMPORTANT: tools/metrics/histograms/metadata/uma/histograms.xml must
   // be updated with the following histograms for each |name| param:
   //    UMA.PersistentAllocator.name.Errors
   //    UMA.PersistentAllocator.name.UsedPct
@@ -609,7 +620,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   struct Memory {
     Memory(void* b, MemoryType t) : base(b), type(t) {}
 
-    void* base;
+    raw_ptr<void> base;
     MemoryType type;
   };
 
@@ -632,7 +643,17 @@ class BASE_EXPORT PersistentMemoryAllocator {
  private:
   struct SharedMetadata;
   struct BlockHeader;
-  static const uint32_t kAllocAlignment;
+  // All allocations and data-structures must be aligned to this byte boundary.
+  // Alignment as large as the physical bus between CPU and RAM is _required_
+  // for some architectures, is simply more efficient on other CPUs, and
+  // generally a Good Idea(tm) for all platforms as it reduces/eliminates the
+  // chance that a type will span cache lines. Alignment mustn't be less
+  // than 8 to ensure proper alignment for all types. The rest is a balance
+  // between reducing spans across multiple cache lines and wasted space spent
+  // padding out allocations. An alignment of 16 would ensure that the block
+  // header structure always sits in a single cache line. An average of about
+  // 1/2 this value will be wasted with every allocation.
+  static constexpr size_t kAllocAlignment = 8;
   static const Reference kReferenceQueue;
 
   // The shared metadata is always located at the top of the memory segment.
@@ -650,24 +671,29 @@ class BASE_EXPORT PersistentMemoryAllocator {
   Reference AllocateImpl(size_t size, uint32_t type_id);
 
   // Get the block header associated with a specific reference.
-  const volatile BlockHeader* GetBlock(Reference ref, uint32_t type_id,
-                                       uint32_t size, bool queue_ok,
+  const volatile BlockHeader* GetBlock(Reference ref,
+                                       uint32_t type_id,
+                                       size_t size,
+                                       bool queue_ok,
                                        bool free_ok) const;
-  volatile BlockHeader* GetBlock(Reference ref, uint32_t type_id, uint32_t size,
-                                 bool queue_ok, bool free_ok) {
-      return const_cast<volatile BlockHeader*>(
-          const_cast<const PersistentMemoryAllocator*>(this)->GetBlock(
-              ref, type_id, size, queue_ok, free_ok));
+  volatile BlockHeader* GetBlock(Reference ref,
+                                 uint32_t type_id,
+                                 size_t size,
+                                 bool queue_ok,
+                                 bool free_ok) {
+    return const_cast<volatile BlockHeader*>(
+        const_cast<const PersistentMemoryAllocator*>(this)->GetBlock(
+            ref, type_id, size, queue_ok, free_ok));
   }
 
   // Get the actual data within a block associated with a specific reference.
-  const volatile void* GetBlockData(Reference ref, uint32_t type_id,
-                                    uint32_t size) const;
-  volatile void* GetBlockData(Reference ref, uint32_t type_id,
-                              uint32_t size) {
-      return const_cast<volatile void*>(
-          const_cast<const PersistentMemoryAllocator*>(this)->GetBlockData(
-              ref, type_id, size));
+  const volatile void* GetBlockData(Reference ref,
+                                    uint32_t type_id,
+                                    size_t size) const;
+  volatile void* GetBlockData(Reference ref, uint32_t type_id, size_t size) {
+    return const_cast<volatile void*>(
+        const_cast<const PersistentMemoryAllocator*>(this)->GetBlockData(
+            ref, type_id, size));
   }
 
   // Record an error in the internal histogram.
@@ -676,13 +702,12 @@ class BASE_EXPORT PersistentMemoryAllocator {
   const bool readonly_;                // Indicates access to read-only memory.
   mutable std::atomic<bool> corrupt_;  // Local version of "corrupted" flag.
 
-  HistogramBase* allocs_histogram_;  // Histogram recording allocs.
-  HistogramBase* used_histogram_;    // Histogram recording used space.
-  HistogramBase* errors_histogram_;  // Histogram recording errors.
+  raw_ptr<HistogramBase> allocs_histogram_;  // Histogram recording allocs.
+  raw_ptr<HistogramBase> used_histogram_;    // Histogram recording used space.
+  raw_ptr<HistogramBase> errors_histogram_;  // Histogram recording errors.
 
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);
-  DISALLOW_COPY_AND_ASSIGN(PersistentMemoryAllocator);
 };
 
 
@@ -695,6 +720,12 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
  public:
   LocalPersistentMemoryAllocator(size_t size, uint64_t id,
                                  base::StringPiece name);
+
+  LocalPersistentMemoryAllocator(const LocalPersistentMemoryAllocator&) =
+      delete;
+  LocalPersistentMemoryAllocator& operator=(
+      const LocalPersistentMemoryAllocator&) = delete;
+
   ~LocalPersistentMemoryAllocator() override;
 
  private:
@@ -705,8 +736,6 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
 
   // Deallocates a block of local |memory| of the specified |size|.
   static void DeallocateLocalMemory(void* memory, size_t size, MemoryType type);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPersistentMemoryAllocator);
 };
 
 
@@ -719,6 +748,12 @@ class BASE_EXPORT WritableSharedPersistentMemoryAllocator
       base::WritableSharedMemoryMapping memory,
       uint64_t id,
       base::StringPiece name);
+
+  WritableSharedPersistentMemoryAllocator(
+      const WritableSharedPersistentMemoryAllocator&) = delete;
+  WritableSharedPersistentMemoryAllocator& operator=(
+      const WritableSharedPersistentMemoryAllocator&) = delete;
+
   ~WritableSharedPersistentMemoryAllocator() override;
 
   // Ensure that the memory isn't so invalid that it would crash when passing it
@@ -730,8 +765,6 @@ class BASE_EXPORT WritableSharedPersistentMemoryAllocator
 
  private:
   base::WritableSharedMemoryMapping shared_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WritableSharedPersistentMemoryAllocator);
 };
 
 // This allocator takes a read-only shared memory mapping object and performs
@@ -743,6 +776,12 @@ class BASE_EXPORT ReadOnlySharedPersistentMemoryAllocator
       base::ReadOnlySharedMemoryMapping memory,
       uint64_t id,
       base::StringPiece name);
+
+  ReadOnlySharedPersistentMemoryAllocator(
+      const ReadOnlySharedPersistentMemoryAllocator&) = delete;
+  ReadOnlySharedPersistentMemoryAllocator& operator=(
+      const ReadOnlySharedPersistentMemoryAllocator&) = delete;
+
   ~ReadOnlySharedPersistentMemoryAllocator() override;
 
   // Ensure that the memory isn't so invalid that it would crash when passing it
@@ -754,11 +793,10 @@ class BASE_EXPORT ReadOnlySharedPersistentMemoryAllocator
 
  private:
   base::ReadOnlySharedMemoryMapping shared_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySharedPersistentMemoryAllocator);
 };
 
-#if !defined(OS_NACL)  // NACL doesn't support any kind of file access in build.
+// NACL doesn't support any kind of file access in build.
+#if !BUILDFLAG(IS_NACL)
 // This allocator takes a memory-mapped file object and performs allocation
 // from it. The allocator takes ownership of the file object.
 class BASE_EXPORT FilePersistentMemoryAllocator
@@ -772,6 +810,11 @@ class BASE_EXPORT FilePersistentMemoryAllocator
                                 uint64_t id,
                                 base::StringPiece name,
                                 bool read_only);
+
+  FilePersistentMemoryAllocator(const FilePersistentMemoryAllocator&) = delete;
+  FilePersistentMemoryAllocator& operator=(
+      const FilePersistentMemoryAllocator&) = delete;
+
   ~FilePersistentMemoryAllocator() override;
 
   // Ensure that the file isn't so invalid that it would crash when passing it
@@ -794,10 +837,8 @@ class BASE_EXPORT FilePersistentMemoryAllocator
 
  private:
   std::unique_ptr<MemoryMappedFile> mapped_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilePersistentMemoryAllocator);
 };
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // An allocation that is defined but not executed until required at a later
 // time. This allows for potential users of an allocation to be decoupled
@@ -827,20 +868,6 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // with every Get() request to see if the allocation has already been
   // done. If reading |ref| outside of this object, be sure to do an
   // "acquire" load. Don't write to it -- leave that to this object.
-  //
-  // For convenience, methods taking both Atomic32 and std::atomic<Reference>
-  // are defined.
-  DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
-                              subtle::Atomic32* ref,
-                              uint32_t type,
-                              size_t size,
-                              bool make_iterable);
-  DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
-                              subtle::Atomic32* ref,
-                              uint32_t type,
-                              size_t size,
-                              size_t offset,
-                              bool make_iterable);
   DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
                               std::atomic<Reference>* ref,
                               uint32_t type,

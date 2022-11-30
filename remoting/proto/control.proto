@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,8 +12,11 @@ package remoting.protocol;
 
 import "layout_key_function.proto";
 
-// Set the host resolution to match the client. If none of the fields are
-// present, restore the host resolution instead.
+// Set the host resolution to match the client. If screen_id is omitted, then
+// the message will be ignored unless there is only one host display.
+//
+// If none of the fields (apart from screen_id) are present, restore the host
+// resolution instead.
 message ClientResolution {
   // Width and height of the client in Density-Independent Pixels.
   optional int32 dips_width = 1;
@@ -27,6 +30,9 @@ message ClientResolution {
   // unset, the corresponding DPI should be assumed to be 96 (Windows' default)
   optional int32 x_dpi = 5;
   optional int32 y_dpi = 6;
+
+  // The screen_id from the most recent VideoTrackLayout message.
+  optional int64 screen_id = 7;
 }
 
 message VideoControl {
@@ -87,11 +93,15 @@ message ExtensionMessage {
 }
 
 message VideoTrackLayout {
-  // Unique display identifier.
-  optional int32 id = 8;
+  // Unique display identifier, from ScreenId in desktop_capture_types.h.
+  // In client-to-host messages, an unset screen_id indicates that the client is
+  // requesting a new display to be added to the display layout.
+  optional int64 screen_id = 8;
 
-  // Name of the video track.
-  optional string track_name = 1;
+  // Name of the video stream, from the WebRTC MediaStream.id property.
+  // Absent in client-to-host messages if the client is requesting a new
+  // display.
+  optional string media_stream_id = 1;
 
   // Position of the top left corner of the rectangle covered by the video
   // track in DIPs (device independent pixels).
@@ -105,6 +115,8 @@ message VideoTrackLayout {
   // DPI of the screen.
   optional int32 x_dpi = 6;
   optional int32 y_dpi = 7;
+
+  // TODO(yuweih): Add bpp to the message.
 }
 
 message VideoLayout {
@@ -112,35 +124,21 @@ message VideoLayout {
   repeated VideoTrackLayout video_track = 1;
 
   // True if this display configuration supports capturing the entire desktop.
+  // Absent in client-to-host messages.
   optional bool supports_full_desktop_capture = 2;
+
+  // Screen ID of the display to be associated with the main window on the
+  // client. Optional. If not set, the client will choose a sensible display to
+  // be associated with the main window.
+  //
+  // This field is ignored in client-to-host messages.
+  optional int64 primary_screen_id = 3;
 }
 
 message SelectDesktopDisplayRequest {
   // Identifier for display to select. Valid strings are "0", "1", ...
   // The "all" string is used to select the entire desktop.
   optional string id = 1;
-}
-
-message DesktopDisplayInfo {
-  // Unique display identifier.
-  optional int32 id = 1;
-
-  // Position of the top left corner of this display (in pixels).
-  optional int32 x = 2;
-  optional int32 y = 3;
-
-  // Size of the display (in pixels).
-  optional int32 width = 4;
-  optional int32 height = 5;
-
-  // DPI of the screen.
-  optional int32 dpi = 6;
-
-  // Bits per pixel.
-  optional int32 bpp = 7;
-
-  // True if this is the default display.
-  optional bool is_default = 8;
 }
 
 // Next ID: 2
@@ -193,10 +191,4 @@ message PeerConnectionParameters {
   // restarting ICE. This can be used to change SDP configuration (for example,
   // switching to a different codec), without needing a full reconnection.
   optional bool request_sdp_restart = 4;
-}
-
-// Next ID: 2
-message OpenUrlRequest {
-  // The URL to be opened on the client, requested by the host.
-  optional string url = 1;
 }

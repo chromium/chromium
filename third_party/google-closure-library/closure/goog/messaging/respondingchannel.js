@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Definition of goog.messaging.RespondingChannel, which wraps a
@@ -22,8 +14,10 @@ goog.provide('goog.messaging.RespondingChannel');
 
 goog.require('goog.Disposable');
 goog.require('goog.Promise');
+goog.require('goog.dispose');
 goog.require('goog.log');
 goog.require('goog.messaging.MultiChannel');
+goog.requireType('goog.messaging.MessageChannel');
 
 
 
@@ -38,6 +32,7 @@ goog.require('goog.messaging.MultiChannel');
  * @extends {goog.Disposable}
  */
 goog.messaging.RespondingChannel = function(messageChannel) {
+  'use strict';
   goog.messaging.RespondingChannel.base(this, 'constructor');
 
   /**
@@ -130,12 +125,14 @@ goog.messaging.RespondingChannel.prototype.logger_ =
  * @private
  */
 goog.messaging.RespondingChannel.prototype.getNextSignature_ = function() {
+  'use strict';
   return this.nextSignatureIndex_++;
 };
 
 
 /** @override */
 goog.messaging.RespondingChannel.prototype.disposeInternal = function() {
+  'use strict';
   goog.dispose(this.messageChannel_);
   delete this.messageChannel_;
   // Note: this.publicChannel_ and this.privateChannel_ get disposed by
@@ -156,11 +153,11 @@ goog.messaging.RespondingChannel.prototype.disposeInternal = function() {
  */
 goog.messaging.RespondingChannel.prototype.send = function(
     serviceName, payload, callback) {
-
-  var signature = this.getNextSignature_();
+  'use strict';
+  const signature = this.getNextSignature_();
   this.sigCallbackMap_[signature] = callback;
 
-  var message = {};
+  const message = {};
   message['signature'] = signature;
   message['data'] = payload;
 
@@ -176,12 +173,12 @@ goog.messaging.RespondingChannel.prototype.send = function(
  */
 goog.messaging.RespondingChannel.prototype.callbackServiceHandler_ = function(
     message) {
-
-  var signature = message['signature'];
-  var result = message['data'];
+  'use strict';
+  const signature = message['signature'];
+  const result = message['data'];
 
   if (signature in this.sigCallbackMap_) {
-    var callback =
+    const callback =
         /** @type {function(Object)} */ (this.sigCallbackMap_[signature]);
     callback(result);
     delete this.sigCallbackMap_[signature];
@@ -199,6 +196,7 @@ goog.messaging.RespondingChannel.prototype.callbackServiceHandler_ = function(
  */
 goog.messaging.RespondingChannel.prototype.registerService = function(
     serviceName, callback) {
+  'use strict';
   this.publicChannel_.registerService(
       serviceName, goog.bind(this.callbackProxy_, this, callback), true);
 };
@@ -215,9 +213,11 @@ goog.messaging.RespondingChannel.prototype.registerService = function(
  */
 goog.messaging.RespondingChannel.prototype.callbackProxy_ = function(
     callback, message) {
-  var response = callback(message['data']);
-  var signature = message['signature'];
+  'use strict';
+  const response = callback(message['data']);
+  const signature = message['signature'];
   goog.Promise.resolve(response).then(goog.bind(function(result) {
+    'use strict';
     this.sendResponse_(result, signature);
   }, this));
 };
@@ -232,7 +232,8 @@ goog.messaging.RespondingChannel.prototype.callbackProxy_ = function(
  */
 goog.messaging.RespondingChannel.prototype.sendResponse_ = function(
     result, signature) {
-  var resultMessage = {};
+  'use strict';
+  const resultMessage = {};
   resultMessage['data'] = result;
   resultMessage['signature'] = signature;
   // The callback invoked above may have disposed the channel so check if it

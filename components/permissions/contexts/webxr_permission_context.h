@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_WEBXR_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_WEBXR_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -22,9 +21,7 @@ class WebXrPermissionContext : public PermissionContextBase {
 
  private:
   // PermissionContextBase:
-  bool IsRestrictedToSecureOrigins() const override;
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we need to do some additional checking for OS level permissions,
   // which do not need to happen on Desktop. Note that NotifyPermissionSet is
   // only called after a "RequestPermission" call (and not if we are just
@@ -40,6 +37,10 @@ class WebXrPermissionContext : public PermissionContextBase {
                            bool persist,
                            ContentSetting content_setting,
                            bool is_one_time) override;
+
+  void UpdateTabContext(const permissions::PermissionRequestID& id,
+                        const GURL& requesting_origin,
+                        bool allowed) override;
 
   void OnAndroidPermissionDecided(const PermissionRequestID& id,
                                   const GURL& requesting_origin,

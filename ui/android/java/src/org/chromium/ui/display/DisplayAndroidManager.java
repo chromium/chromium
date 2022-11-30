@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,15 @@ import android.util.SparseArray;
 import android.view.Display;
 import android.view.WindowManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForR;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * DisplayAndroidManager is a class that informs its observers Display changes.
@@ -49,9 +51,11 @@ public class DisplayAndroidManager {
             // Never remove the primary display.
             if (sdkDisplayId == mMainSdkDisplayId) return;
 
-            DisplayAndroid displayAndroid = mIdMap.get(sdkDisplayId);
+            PhysicalDisplayAndroid displayAndroid =
+                    (PhysicalDisplayAndroid) mIdMap.get(sdkDisplayId);
             if (displayAndroid == null) return;
 
+            displayAndroid.onDisplayRemoved();
             if (mNativePointer != 0) {
                 DisplayAndroidManagerJni.get().removeDisplay(
                         mNativePointer, DisplayAndroidManager.this, sdkDisplayId);
@@ -228,5 +232,11 @@ public class DisplayAndroidManager {
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
         void setPrimaryDisplayId(
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
+    }
+
+    /** Clears the object returned by {@link #getInstance()} */
+    @VisibleForTesting
+    public static void resetInstanceForTesting() {
+        sDisplayAndroidManager = null;
     }
 }

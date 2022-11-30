@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,12 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
-#include "third_party/blink/renderer/core/html/imports/html_import_child.h"
-#include "third_party/blink/renderer/core/html/imports/html_import_loader.h"
 
 namespace blink {
 
 CustomElementUpgradeSorter::CustomElementUpgradeSorter()
     : elements_(MakeGarbageCollected<HeapHashSet<Member<Element>>>()),
       parent_child_map_(MakeGarbageCollected<ParentChildMap>()) {}
-
-static HTMLLinkElement* GetLinkElementForImport(const Document& import) {
-  if (HTMLImportLoader* loader = import.ImportLoader())
-    return loader->FirstImport()->Link();
-  return nullptr;
-}
 
 CustomElementUpgradeSorter::AddResult
 CustomElementUpgradeSorter::AddToParentChildMap(Node* parent, Node* child) {
@@ -46,17 +38,6 @@ void CustomElementUpgradeSorter::Add(Element* element) {
        n = parent, parent = parent->ParentOrShadowHostNode()) {
     if (AddToParentChildMap(parent, n) == kParentAlreadyExistsInMap)
       break;
-
-    // Create parent-child link between <link rel="import"> and its imported
-    // document so that the content of the imported document be visited as if
-    // the imported document were inserted in the link element.
-    if (auto* document = DynamicTo<Document>(parent)) {
-      Element* link = GetLinkElementForImport(*document);
-      if (!link ||
-          AddToParentChildMap(link, parent) == kParentAlreadyExistsInMap)
-        break;
-      parent = link;
-    }
   }
 }
 
@@ -100,7 +81,7 @@ void CustomElementUpgradeSorter::Sorted(HeapVector<Member<Element>>* result,
   if (children->size() == 1)
     Visit(result, *children, children->begin());
 
-  DCHECK(children->IsEmpty());
+  DCHECK(children->empty());
 }
 
 }  // namespace blink

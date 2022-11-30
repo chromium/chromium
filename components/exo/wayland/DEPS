@@ -1,4 +1,6 @@
 include_rules = [
+  "+services/device/public/mojom/wake_lock.mojom.h",
+  "+services/device/wake_lock/power_save_blocker",
   "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h",
   "+third_party/wayland/include",
   "+ui/ozone/public",

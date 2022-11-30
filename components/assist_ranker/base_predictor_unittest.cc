@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/assist_ranker/fake_ranker_model_loader.h"
@@ -32,24 +33,13 @@ const char kTestUmaPrefixName[] = "Test.Ranker";
 const char kTestUrlParamName[] = "ranker-model-url";
 const char kTestDefaultModelUrl[] = "https://foo.bar/model.bin";
 
-// The allowed features must be metrics of kTestLoggingName in ukm.xml,
-// though the types do not need to match.
-const char kBoolFeature[] = "DidOptIn";
-const char kIntFeature[] = "DurationAfterScrollMs";
-const char kFloatFeature[] = "FontSize";
-const char kStringFeature[] = "IsEntity";
-const char kStringListFeature[] = "IsEntityEligible";
-const char kFeatureNotAllowed[] = "not_allowed";
-
 const char kTestNavigationUrl[] = "https://foo.com";
 
-const base::flat_set<std::string> kFeatureAllowlist({kBoolFeature, kIntFeature,
-                                                     kFloatFeature,
-                                                     kStringFeature,
-                                                     kStringListFeature});
+const base::flat_set<std::string> kFeatureAllowlist;
 
-const base::Feature kTestRankerQuery{"TestRankerQuery",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestRankerQuery,
+             "TestRankerQuery",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kTestRankerUrl{
     &kTestRankerQuery, kTestUrlParamName, kTestDefaultModelUrl};
@@ -71,6 +61,10 @@ class FakePredictor : public BasePredictor {
   // |predictor_config|.
   static std::unique_ptr<FakePredictor> Create(
       PredictorConfig predictor_config);
+
+  FakePredictor(const FakePredictor&) = delete;
+  FakePredictor& operator=(const FakePredictor&) = delete;
+
   ~FakePredictor() override {}
   // Validation will always succeed.
   static RankerModelStatus ValidateModel(const RankerModel& model) {
@@ -83,7 +77,6 @@ class FakePredictor : public BasePredictor {
 
  private:
   FakePredictor(const PredictorConfig& config) : BasePredictor(config) {}
-  DISALLOW_COPY_AND_ASSIGN(FakePredictor);
 };
 
 std::unique_ptr<FakePredictor> FakePredictor::Create(
@@ -102,6 +95,10 @@ std::unique_ptr<FakePredictor> FakePredictor::Create(
 }  // namespace
 
 class BasePredictorTest : public ::testing::Test {
+ public:
+  BasePredictorTest(const BasePredictorTest&) = delete;
+  BasePredictorTest& operator=(const BasePredictorTest&) = delete;
+
  protected:
   BasePredictorTest() = default;
 
@@ -120,8 +117,6 @@ class BasePredictorTest : public ::testing::Test {
 
   // Manages the enabling/disabling of features within the scope of a test.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasePredictorTest);
 };
 
 void BasePredictorTest::SetUp() {
@@ -151,41 +146,6 @@ TEST_F(BasePredictorTest, QueryDisabled) {
   EXPECT_EQ(kTestDefaultModelUrl, predictor->GetModelUrl());
   EXPECT_FALSE(predictor->is_query_enabled());
   EXPECT_FALSE(predictor->IsReady());
-}
-
-TEST_F(BasePredictorTest, LogExampleToUkm) {
-  auto predictor = FakePredictor::Create();
-  RankerExample example;
-  auto& features = *example.mutable_features();
-  features[kBoolFeature].set_bool_value(true);
-  features[kIntFeature].set_int32_value(42);
-  features[kFloatFeature].set_float_value(42.0f);
-  features[kStringFeature].set_string_value("42");
-  features[kStringListFeature].mutable_string_list()->add_string_value("42");
-
-  // This feature will not be logged.
-  features[kFeatureNotAllowed].set_bool_value(false);
-
-  predictor->LogExampleToUkm(example, GetSourceId());
-
-  EXPECT_EQ(1U, GetTestUkmRecorder()->sources_count());
-  EXPECT_EQ(1U, GetTestUkmRecorder()->entries_count());
-  std::vector<const ukm::mojom::UkmEntry*> entries =
-      GetTestUkmRecorder()->GetEntriesByName(kTestLoggingName);
-  EXPECT_EQ(1U, entries.size());
-  GetTestUkmRecorder()->ExpectEntryMetric(entries[0], kBoolFeature,
-                                          72057594037927937);
-  GetTestUkmRecorder()->ExpectEntryMetric(entries[0], kIntFeature,
-                                          216172782113783850);
-  GetTestUkmRecorder()->ExpectEntryMetric(entries[0], kFloatFeature,
-                                          144115189185773568);
-  GetTestUkmRecorder()->ExpectEntryMetric(entries[0], kStringFeature,
-                                          288230377208836903);
-  GetTestUkmRecorder()->ExpectEntryMetric(entries[0], kStringListFeature,
-                                          360287971246764839);
-
-  EXPECT_FALSE(
-      GetTestUkmRecorder()->EntryHasMetric(entries[0], kFeatureNotAllowed));
 }
 
 TEST_F(BasePredictorTest, GetPredictThresholdReplacement) {

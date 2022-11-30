@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -41,8 +41,10 @@ class WPTGitHubTest(unittest.TestCase):
                 pr_history_window=MAX_PR_HISTORY_WINDOW + 1)
 
     def test_auth_token(self):
-        self.assertEqual(self.wpt_github.auth_token(),
-                         base64.encodestring('rutabaga:decafbad').strip())
+        self.assertEqual(
+            self.wpt_github.auth_token(),
+            base64.encodestring(
+                'rutabaga:decafbad'.encode('utf-8')).strip().decode('utf-8'))
 
     def test_extract_link_next(self):
         link_header = (

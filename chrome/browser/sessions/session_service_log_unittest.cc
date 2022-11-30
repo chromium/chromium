@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ TEST_F(SessionServiceLogTest, LogSessionServiceStartEvent) {
 
 TEST_F(SessionServiceLogTest, LogSessionServiceExitEvent) {
   const base::Time start_time = base::Time::Now();
-  LogSessionServiceExitEvent(&testing_profile_, 1, 2);
+  LogSessionServiceExitEvent(&testing_profile_, 1, 2, true, false);
   auto events = GetSessionServiceEvents(&testing_profile_);
   ASSERT_EQ(1u, events.size());
   auto restored_event = *events.begin();
@@ -54,6 +54,22 @@ TEST_F(SessionServiceLogTest, LogSessionServiceExitEvent) {
   EXPECT_LE(start_time, restored_event.time);
   EXPECT_EQ(1, restored_event.data.exit.window_count);
   EXPECT_EQ(2, restored_event.data.exit.tab_count);
+  EXPECT_TRUE(restored_event.data.exit.is_first_session_service);
+  EXPECT_FALSE(restored_event.data.exit.did_schedule_command);
+}
+
+TEST_F(SessionServiceLogTest, LogSessionServiceExitEvent2) {
+  const base::Time start_time = base::Time::Now();
+  LogSessionServiceExitEvent(&testing_profile_, 1, 2, false, true);
+  auto events = GetSessionServiceEvents(&testing_profile_);
+  ASSERT_EQ(1u, events.size());
+  auto restored_event = *events.begin();
+  EXPECT_EQ(SessionServiceEventLogType::kExit, restored_event.type);
+  EXPECT_LE(start_time, restored_event.time);
+  EXPECT_EQ(1, restored_event.data.exit.window_count);
+  EXPECT_EQ(2, restored_event.data.exit.tab_count);
+  EXPECT_FALSE(restored_event.data.exit.is_first_session_service);
+  EXPECT_TRUE(restored_event.data.exit.did_schedule_command);
 }
 
 TEST_F(SessionServiceLogTest, LogSessionServiceRestoreEvent) {
@@ -93,6 +109,40 @@ TEST_F(SessionServiceLogTest, LogSessionServiceUnrecoverableWriteErrorEvent) {
   EXPECT_EQ(1, restored_event.data.write_error.unrecoverable_error_count);
 }
 
+TEST_F(SessionServiceLogTest, LogSessionServiceRestoreCanceledEvent) {
+  const base::Time start_time = base::Time::Now();
+  LogSessionServiceRestoreCanceledEvent(&testing_profile_);
+  auto events = GetSessionServiceEvents(&testing_profile_);
+  ASSERT_EQ(1u, events.size());
+  auto restored_event = *events.begin();
+  EXPECT_EQ(SessionServiceEventLogType::kRestoreCanceled, restored_event.type);
+  EXPECT_LE(start_time, restored_event.time);
+}
+
+TEST_F(SessionServiceLogTest, LogSessionServiceRestoreInitiatedEvent) {
+  const base::Time start_time = base::Time::Now();
+  LogSessionServiceRestoreInitiatedEvent(&testing_profile_,
+                                         /*synchronous=*/true,
+                                         /*restore_browser=*/false);
+  LogSessionServiceRestoreInitiatedEvent(&testing_profile_,
+                                         /*synchronous=*/false,
+                                         /*restore_browser=*/true);
+  auto events = GetSessionServiceEvents(&testing_profile_);
+  ASSERT_EQ(2u, events.size());
+  auto restored_event = *events.begin();
+  EXPECT_EQ(SessionServiceEventLogType::kRestoreInitiated, restored_event.type);
+  EXPECT_LE(start_time, restored_event.time);
+  EXPECT_TRUE(restored_event.data.restore_initiated.synchronous);
+  EXPECT_FALSE(restored_event.data.restore_initiated.restore_browser);
+
+  auto restored_event2 = *(++events.begin());
+  EXPECT_EQ(SessionServiceEventLogType::kRestoreInitiated,
+            restored_event2.type);
+  EXPECT_LE(start_time, restored_event2.time);
+  EXPECT_FALSE(restored_event2.data.restore_initiated.synchronous);
+  EXPECT_TRUE(restored_event2.data.restore_initiated.restore_browser);
+}
+
 TEST_F(SessionServiceLogTest, WriteErrorEventsCoalesce) {
   const base::Time start_time = base::Time::Now();
   LogSessionServiceWriteErrorEvent(&testing_profile_, false);
@@ -108,9 +158,9 @@ TEST_F(SessionServiceLogTest, WriteErrorEventsCoalesce) {
 }
 
 TEST_F(SessionServiceLogTest, RemoveLastSessionServiceEventOfType) {
-  LogSessionServiceExitEvent(&testing_profile_, 1, 2);
+  LogSessionServiceExitEvent(&testing_profile_, 1, 2, true, true);
   LogSessionServiceWriteErrorEvent(&testing_profile_, false);
-  LogSessionServiceExitEvent(&testing_profile_, 2, 3);
+  LogSessionServiceExitEvent(&testing_profile_, 2, 3, true, true);
   LogSessionServiceWriteErrorEvent(&testing_profile_, false);
   RemoveLastSessionServiceEventOfType(&testing_profile_,
                                       SessionServiceEventLogType::kExit);

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/display/display_damage_tracker.h"
 
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/display/surface_aggregator.h"
@@ -175,11 +176,6 @@ bool DisplayDamageTracker::OnSurfaceDamaged(const SurfaceId& surface_id,
   return display_damaged;
 }
 
-void DisplayDamageTracker::OnSurfaceDestroyed(const SurfaceId& surface_id) {
-  TRACE_EVENT0("viz", "DisplayDamageTracker::SurfaceDestroyed");
-  aggregator_->ReleaseResources(surface_id);
-}
-
 void DisplayDamageTracker::OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                                    const BeginFrameArgs& args) {
   TRACE_EVENT1("viz", "DisplayDamageTracker::SurfaceDamageExpected",
@@ -207,8 +203,8 @@ void DisplayDamageTracker::RunDrawCallbacks() {
   surfaces_to_ack_on_next_draw_.clear();
   // |surfaces_to_ack_on_next_draw_| does not cover surfaces that are being
   // embedded for the first time, so also go through SurfaceAggregator's list.
-  for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
-    Surface* surface = surface_manager_->GetSurfaceForId(id_entry.first);
+  for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
+    Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
     if (surface)
       surface->SendAckToClient();
   }

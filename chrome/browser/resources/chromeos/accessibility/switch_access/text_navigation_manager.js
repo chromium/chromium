@@ -1,6 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {EventGenerator} from '../common/event_generator.js';
+import {EventHandler} from '../common/event_handler.js';
+import {KeyCode} from '../common/key_code.js';
 
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';
@@ -34,7 +38,7 @@ export class TextNavigationManager {
     /** @private {!EventHandler} */
     this.selectionListener_ = new EventHandler(
         [], chrome.automation.EventType.TEXT_SELECTION_CHANGED,
-        this.onNavChange_.bind(this));
+        () => this.onNavChange_());
 
     /**
      * Keeps track of when there's a selection in the current node.
@@ -50,7 +54,7 @@ export class TextNavigationManager {
 
     if (SwitchAccess.instance.improvedTextInputEnabled()) {
       chrome.clipboard.onClipboardDataChanged.addListener(
-          this.updateClipboardHasData_.bind(this));
+          () => this.updateClipboardHasData_());
     }
   }
 
@@ -249,7 +253,7 @@ export class TextNavigationManager {
    */
   static saveSelectStart() {
     const manager = TextNavigationManager.instance;
-    chrome.automation.getFocus((focusedNode) => {
+    chrome.automation.getFocus(focusedNode => {
       manager.selectionStartObject_ = focusedNode;
       manager.selectionStartIndex_ = manager.getSelectionIndexFromNode_(
           manager.selectionStartObject_,
@@ -318,7 +322,7 @@ export class TextNavigationManager {
    */
   static saveSelectEnd() {
     const manager = TextNavigationManager.instance;
-    chrome.automation.getFocus((focusedNode) => {
+    chrome.automation.getFocus(focusedNode => {
       manager.selectionEndObject_ = focusedNode;
       manager.selectionEndIndex_ = manager.getSelectionIndexFromNode_(
           manager.selectionEndObject_,
@@ -380,7 +384,7 @@ export class TextNavigationManager {
         anchorObject: this.selectionStartObject_,
         anchorOffset: this.selectionStartIndex_,
         focusObject: this.selectionEndObject_,
-        focusOffset: this.selectionEndIndex_
+        focusOffset: this.selectionEndIndex_,
       });
     }
   }

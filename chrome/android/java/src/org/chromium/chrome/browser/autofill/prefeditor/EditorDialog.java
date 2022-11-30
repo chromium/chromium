@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -39,16 +39,24 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.settings.CreditCardNumberFormattingTextWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel;
+import org.chromium.components.autofill.prefeditor.EditorFieldView;
+import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
+import org.chromium.components.autofill.prefeditor.EditorTextField;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView.EdgeType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.ArrayList;
@@ -91,6 +99,7 @@ public class EditorDialog
     private EditorModel mEditorModel;
     private Button mDoneButton;
     private boolean mFormWasValid;
+    private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
     private ViewGroup mDataView;
     private View mFooter;
     @Nullable
@@ -103,6 +112,9 @@ public class EditorDialog
     private Runnable mDeleteRunnable;
     private boolean mIsDismissed;
     private Profile mProfile;
+    @Nullable
+    private UiConfig mUiConfig;
+
     /**
      * Builds the editor dialog.
      *
@@ -111,7 +123,7 @@ public class EditorDialog
      * @param profile         The current profile that creates EditorDialog.
      */
     public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile) {
-        super(activity, R.style.Theme_Chromium_Fullscreen);
+        super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mActivity = activity;
@@ -172,6 +184,15 @@ public class EditorDialog
     }
 
     /**
+     * @param shouldTrigger If true, done callback is triggered immediately after the user clicked
+     *         on the done button. Otherwise, by default, it is triggered only after the dialog is
+     *         dismissed with animation.
+     */
+    public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
+        mShouldTriggerDoneCallbackBeforeCloseAnimation = shouldTrigger;
+    }
+
+    /**
      * Prepares the toolbar for use.
      *
      * Many of the things that would ideally be set as attributes don't work and need to be set
@@ -179,8 +200,7 @@ public class EditorDialog
      */
     private void prepareToolbar() {
         EditorDialogToolbar toolbar = (EditorDialogToolbar) mLayout.findViewById(R.id.action_bar);
-        toolbar.setBackgroundColor(
-                ApiCompatibilityUtils.getColor(toolbar.getResources(), R.color.default_bg_color));
+        toolbar.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(toolbar.getContext()));
         toolbar.setTitleTextAppearance(
                 toolbar.getContext(), R.style.TextAppearance_Headline_Primary);
         toolbar.setTitle(mEditorModel.getTitle());
@@ -214,12 +234,11 @@ public class EditorDialog
         // The top shadow is handled by the toolbar, so hide the one used in the field editor.
         FadingEdgeScrollView scrollView =
                 (FadingEdgeScrollView) mLayout.findViewById(R.id.scroll_view);
-        scrollView.setEdgeVisibility(
-                FadingEdgeScrollView.EdgeType.NONE, FadingEdgeScrollView.EdgeType.FADING);
+        scrollView.setEdgeVisibility(EdgeType.NONE, EdgeType.FADING);
 
         // The shadow's top margin doesn't get picked up in the xml; set it programmatically.
         View shadow = mLayout.findViewById(R.id.shadow);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) shadow.getLayoutParams();
+        LayoutParams params = (LayoutParams) shadow.getLayoutParams();
         params.topMargin = toolbar.getLayoutParams().height;
         shadow.setLayoutParams(params);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(
@@ -281,6 +300,10 @@ public class EditorDialog
 
         if (view.getId() == R.id.editor_dialog_done_button) {
             if (validateForm()) {
+                if (mShouldTriggerDoneCallbackBeforeCloseAnimation && mEditorModel != null) {
+                    mEditorModel.done();
+                    mEditorModel = null;
+                }
                 mFormWasValid = true;
                 animateOutDialog();
                 return;
@@ -292,6 +315,10 @@ public class EditorDialog
 
     private void animateOutDialog() {
         if (mDialogInOutAnimator != null || !isShowing()) return;
+
+        if (getCurrentFocus() != null) {
+            KeyboardVisibilityDelegate.getInstance().hideKeyboard(getCurrentFocus());
+        }
 
         Animator dropDown =
                 ObjectAnimator.ofFloat(mLayout, View.TRANSLATION_Y, 0f, mLayout.getHeight());
@@ -340,6 +367,9 @@ public class EditorDialog
         mDoneButton = (Button) mLayout.findViewById(R.id.button_primary);
         mDoneButton.setId(R.id.editor_dialog_done_button);
         mDoneButton.setOnClickListener(this);
+        if (mEditorModel.getCustomDoneButtonText() != null) {
+            mDoneButton.setText(mEditorModel.getCustomDoneButtonText());
+        }
 
         Button cancelButton = (Button) mLayout.findViewById(R.id.button_secondary);
         cancelButton.setId(R.id.payments_edit_cancel_button);
@@ -424,6 +454,25 @@ public class EditorDialog
         mDataView.addView(mFooter);
     }
 
+    /**
+     * When this layout has a wide display style, it will be width constrained to
+     * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the settings layout will be visually centered
+     * by adding padding to both sides.
+     */
+    public void onConfigurationChanged() {
+        if (mUiConfig == null) {
+            if (mDataView != null) {
+                int minWidePaddingPixels = mActivity.getResources().getDimensionPixelSize(
+                        R.dimen.settings_wide_display_min_padding);
+                mUiConfig = new UiConfig(mDataView);
+                ViewResizer.createAndAttach(mDataView, mUiConfig, 0, minWidePaddingPixels);
+            }
+        } else {
+            mUiConfig.updateDisplayStyle();
+        }
+    }
+
     private void removeTextChangedListenersAndInputFilters() {
         if (mCardInput != null) {
             mCardInput.removeTextChangedListener(mCardNumberFormatter);
@@ -491,8 +540,8 @@ public class EditorDialog
                 formatter = mPhoneFormatter;
             }
 
-            EditorTextField inputLayout = new EditorTextField(
-                    mActivity, fieldModel, mEditorActionListener, filter, formatter);
+            EditorTextField inputLayout = new EditorTextField(mActivity, fieldModel,
+                    mEditorActionListener, filter, formatter, /* focusAndShowKeyboard= */ false);
             mFieldViews.add(inputLayout);
 
             EditText input = inputLayout.getEditText();
@@ -535,6 +584,10 @@ public class EditorDialog
         prepareEditor();
         prepareFooter();
         prepareButtons();
+        onConfigurationChanged();
+
+        // Temporarily hide the content to avoid blink before animation starts.
+        mLayout.setVisibility(View.INVISIBLE);
         show();
     }
 
@@ -557,6 +610,7 @@ public class EditorDialog
             mEditableTextFields.get(i).setEnabled(false);
         }
 
+        mLayout.setVisibility(View.VISIBLE);
         mLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         mLayout.buildLayer();
         Animator popUp =
@@ -585,17 +639,27 @@ public class EditorDialog
 
     private void initFocus() {
         mHandler.post(() -> {
-            List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(false);
-            if (!invalidViews.isEmpty()) {
-                // Immediately focus the first invalid field to make it faster to edit.
-                invalidViews.get(0).scrollToAndFocus();
-            } else {
-                // Trigger default focus as it is not triggered automatically on Android P+.
-                mLayout.requestFocus();
+            // If TalkBack is enabled, we want to keep the focus at the top
+            // because the user would not learn about the elements that are
+            // above the focused field.
+            if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(false);
+                if (!invalidViews.isEmpty()) {
+                    // Immediately focus the first invalid field to make it faster to edit.
+                    invalidViews.get(0).scrollToAndFocus();
+                } else {
+                    // Trigger default focus as it is not triggered automatically on Android P+.
+                    mLayout.requestFocus();
+                }
             }
             // Note that keyboard will not be shown for dropdown field since it's not necessary.
             if (getCurrentFocus() != null) {
                 KeyboardVisibilityDelegate.getInstance().showKeyboard(getCurrentFocus());
+                // Put the cursor to the end of the text.
+                if (getCurrentFocus() instanceof EditText) {
+                    EditText focusedEditText = (EditText) getCurrentFocus();
+                    focusedEditText.setSelection(focusedEditText.getText().length());
+                }
             }
             if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
         });
@@ -633,7 +697,7 @@ public class EditorDialog
     }
 
     private Drawable getTintedBackIcon() {
-        return TintedDrawable.constructTintedDrawable(
-                getContext(), R.drawable.ic_arrow_back_white_24dp, R.color.default_icon_color);
+        return TintedDrawable.constructTintedDrawable(getContext(),
+                R.drawable.ic_arrow_back_white_24dp, R.color.default_icon_color_tint_list);
     }
 }

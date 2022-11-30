@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define UI_NATIVE_THEME_NATIVE_THEME_MAC_H_
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_base.h"
 #include "ui/native_theme/native_theme_export.h"
 
@@ -32,32 +32,30 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
     COUNT
   };
 
-  // Adjusts an SkColor based on the current system control tint. For example,
-  // if the current tint is "graphite", this function maps the provided value to
-  // an appropriate gray.
-  static SkColor ApplySystemControlTint(SkColor color);
+  NativeThemeMac(const NativeThemeMac&) = delete;
+  NativeThemeMac& operator=(const NativeThemeMac&) = delete;
 
   // NativeTheme:
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
   SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
   PreferredContrast CalculatePreferredContrast() const override;
 
   // NativeThemeBase:
   void Paint(cc::PaintCanvas* canvas,
+             const ColorProvider* color_provider,
              Part part,
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
-             const base::Optional<SkColor>& accent_color) const override;
+             const absl::optional<SkColor>& accent_color) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const override;
   void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               const ColorProvider* color_provider,
                                State state,
                                const gfx::Rect& rect,
                                const MenuItemExtraParams& menu_item,
@@ -88,6 +86,11 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
                                         bool round_right,
                                         bool focus);
 
+  // Returns the minimum size for the thumb. We will not inset the thumb if it
+  // will be smaller than this size. The scale parameter should be the device
+  // scale factor.
+  gfx::Size GetThumbMinSize(bool vertical, float scale) const;
+
  protected:
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeMac>;
@@ -100,8 +103,8 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // Paint the selected menu item background, and a border for emphasis when in
   // high contrast.
   void PaintSelectedMenuItem(cc::PaintCanvas* canvas,
-                             const gfx::Rect& rect,
-                             ColorScheme color_scheme) const;
+                             const ColorProvider* color_provider,
+                             const gfx::Rect& rect) const;
 
   void PaintScrollBarTrackGradient(cc::PaintCanvas* canvas,
                                    const gfx::Rect& rect,
@@ -123,34 +126,27 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 
   void ConfigureWebInstance() override;
 
-  // Used by the GetSystem to run the switch for MacOS override colors that may
-  // use named NS system colors. This is a separate function from GetSystemColor
-  // to make sure the NSAppearance can be set in a scoped way.
-  base::Optional<SkColor> GetOSColor(ColorId color_id,
-                                     ColorScheme color_scheme) const;
-
   enum ScrollbarPart {
     kThumb,
     kTrackInnerBorder,
     kTrackOuterBorder,
   };
 
-  base::Optional<SkColor> GetScrollbarColor(
+  absl::optional<SkColor> GetScrollbarColor(
       ScrollbarPart part,
       ColorScheme color_scheme,
       const ScrollbarExtraParams& extra_params) const;
 
-  int ScrollbarTrackBorderWidth() const { return 1; }
+  int ScrollbarTrackBorderWidth(float scale_from_dip) const {
+    constexpr float border_width = 1.0f;
+    return scale_from_dip * border_width;
+  }
 
   // The amount the thumb is inset from the ends and the inside edge of track
   // border.
-  int GetScrollbarThumbInset(bool is_overlay) const {
-    return is_overlay ? 2 : 3;
+  int GetScrollbarThumbInset(bool is_overlay, float scale_from_dip) const {
+    return scale_from_dip * (is_overlay ? 2.0f : 3.0f);
   }
-
-  // Returns the minimum size for the thumb. We will not inset the thumb if it
-  // will be smaller than this size.
-  gfx::Size GetThumbMinSize(bool vertical) const;
 
   base::scoped_nsobject<NativeThemeEffectiveAppearanceObserver>
       appearance_observer_;
@@ -160,8 +156,16 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeMac);
+// Mac implementation of native theme support for web controls.
+// For consistency with older versions of Chrome for Mac, we do multiply
+// the border width and radius by the zoom, unlike the generic impl.
+class NativeThemeMacWeb : public NativeThemeAura {
+ public:
+  NativeThemeMacWeb();
+
+  static NativeThemeMacWeb* instance();
 };
 
 }  // namespace ui

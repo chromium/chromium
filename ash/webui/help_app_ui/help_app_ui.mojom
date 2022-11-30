@@ -1,0 +1,38 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.help_app.mojom;
+
+// Browser interface for chrome://help-app to bootstrap a connection.
+interface PageHandlerFactory {
+  // Create a page handler which exposes interfaces implemented in the browser
+  // process to the renderer process via |handler|.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// An interface implemented in the browser process that is exposed to the
+// renderer process for chrome://help-app.
+interface PageHandler {
+  // Opens the chrome feedback dialog.
+  OpenFeedbackDialog() => (string? error_message);
+
+  // Opens the parental controls part of OS settings.
+  ShowParentalControls();
+
+  // Returns true if Local Search Service integration is enabled.
+  IsLssEnabled() => (bool enabled);
+
+  // Returns true if the Help App Launcher Search feature is enabled.
+  IsLauncherSearchEnabled() => (bool enabled);
+
+  // Requests that the help app discover notification is shown if the required
+  // heuristics are present and if a notification for the Help App has not yet
+  // been shown in the current milestone.
+  MaybeShowDiscoverNotification();
+
+  // Request for the help app release notes notification to be shown, if a
+  // notification for the Help App has not yet been shown in the current
+  // milestone.
+  MaybeShowReleaseNotesNotification();
+};

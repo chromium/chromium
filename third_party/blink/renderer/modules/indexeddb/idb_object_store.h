@@ -26,9 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_OBJECT_STORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_OBJECT_STORE_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_index_parameters.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -98,19 +98,19 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   IDBRequest* getAllKeys(ScriptState*,
                          const ScriptValue& range,
                          ExceptionState&);
+  IDBRequest* batchGetAll(ScriptState*,
+                          const HeapVector<ScriptValue>& ranges,
+                          uint32_t max_count,
+                          ExceptionState&);
+  IDBRequest* batchGetAll(ScriptState*,
+                          const HeapVector<ScriptValue>& ranges,
+                          ExceptionState&);
   IDBRequest* add(ScriptState*, const ScriptValue& value, ExceptionState&);
   IDBRequest* add(ScriptState*,
                   const ScriptValue& value,
                   const ScriptValue& key,
                   ExceptionState&);
   IDBRequest* put(ScriptState*, const ScriptValue& value, ExceptionState&);
-  IDBRequest* putAllValues(ScriptState*,
-                           const HeapVector<ScriptValue>& values,
-                           ExceptionState&);
-  IDBRequest* DoPutAll(ScriptState* script_state,
-                       const HeapVector<ScriptValue>& values,
-                       const HeapVector<ScriptValue>& key_values,
-                       ExceptionState& exception_state);
   IDBRequest* put(ScriptState*,
                   const ScriptValue& value,
                   const ScriptValue& key,
@@ -120,7 +120,7 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
 
   IDBIndex* createIndex(ScriptState* script_state,
                         const String& name,
-                        const StringOrStringSequence& key_path,
+                        const V8UnionStringOrStringSequence* key_path,
                         const IDBIndexParameters* options,
                         ExceptionState& exception_state) {
     return createIndex(script_state, name, IDBKeyPath(key_path), options,
@@ -134,7 +134,7 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   // Exposed for the use of IDBCursor::update().
   IDBRequest* DoPut(ScriptState*,
                     mojom::IDBPutMode,
-                    const IDBRequest::Source&,
+                    const IDBRequest::Source*,
                     const ScriptValue&,
                     const IDBKey*,
                     ExceptionState&);

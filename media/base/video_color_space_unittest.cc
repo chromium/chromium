@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace media {
 
@@ -19,8 +19,8 @@ TEST(VideoColorSpaceTest, UnknownVideoToSRGB) {
       VideoColorSpace::MatrixID::INVALID, gfx::ColorSpace::RangeID::LIMITED);
   gfx::ColorSpace unknown = invalid_video_color_space.ToGfxColorSpace();
   gfx::ColorSpace sRGB = gfx::ColorSpace::CreateSRGB();
-  std::unique_ptr<gfx::ColorTransform> t(gfx::ColorTransform::NewColorTransform(
-      unknown, sRGB, gfx::ColorTransform::Intent::INTENT_PERCEPTUAL));
+  std::unique_ptr<gfx::ColorTransform> t(
+      gfx::ColorTransform::NewColorTransform(unknown, sRGB));
 
   gfx::ColorTransform::TriStim tmp(16.0f / 255.0f, 0.5f, 0.5f);
   t->Transform(&tmp, 1);

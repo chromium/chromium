@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,13 @@
 #include "base/memory/ptr_util.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_surface_egl.h"
 
 namespace gl {
+
+namespace {
+bool g_check_egl_fence_before_wait = false;
+}  // namespace
 
 GLFenceEGL::GLFenceEGL() = default;
 
@@ -28,6 +33,11 @@ std::unique_ptr<GLFenceEGL> GLFenceEGL::Create(EGLenum type, EGLint* attribs) {
   if (!fence->InitializeInternal(type, attribs))
     return nullptr;
   return fence;
+}
+
+// static
+void GLFenceEGL::CheckEGLFenceBeforeWait() {
+  g_check_egl_fence_before_wait = true;
 }
 
 bool GLFenceEGL::InitializeInternal(EGLenum type, EGLint* attribs) {
@@ -70,12 +80,22 @@ EGLint GLFenceEGL::ClientWaitWithTimeoutNanos(EGLTimeKHR timeout) {
 }
 
 void GLFenceEGL::ServerWait() {
-  if (!g_driver_egl.ext.b_EGL_KHR_wait_sync) {
+  GLDisplayEGL* display = GLSurfaceEGL::GetGLDisplayEGL();
+  if (!display->ext->b_EGL_KHR_wait_sync) {
     ClientWait();
     return;
   }
   EGLint flags = 0;
-  if (eglWaitSyncKHR(display_, sync_, flags) == EGL_FALSE) {
+
+  bool completed = false;
+  if (g_check_egl_fence_before_wait) {
+    // The i965 driver ends up doing a bunch of flushing if an already
+    // signalled fence is waited on. This causes performance to suffer.
+    // Check whether the fence is signalled before waiting.
+    completed = HasCompleted();
+  }
+
+  if (!completed && eglWaitSyncKHR(display_, sync_, flags) == EGL_FALSE) {
     LOG(ERROR) << "Failed to wait for EGLSync. error:"
                << ui::GetLastEGLErrorString();
     CHECK(false);

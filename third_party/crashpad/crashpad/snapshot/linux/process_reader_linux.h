@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/elf/elf_image_reader.h"
 #include "snapshot/module_snapshot.h"
 #include "util/linux/address_types.h"
@@ -61,6 +60,7 @@ class ProcessReaderLinux {
     ThreadInfo thread_info;
     LinuxVMAddress stack_region_address;
     LinuxVMSize stack_region_size;
+    std::string name;
     pid_t tid;
     int sched_policy;
     int static_priority;
@@ -99,6 +99,10 @@ class ProcessReaderLinux {
   };
 
   ProcessReaderLinux();
+
+  ProcessReaderLinux(const ProcessReaderLinux&) = delete;
+  ProcessReaderLinux& operator=(const ProcessReaderLinux&) = delete;
+
   ~ProcessReaderLinux();
 
   //! \brief Initializes this object.
@@ -120,7 +124,7 @@ class ProcessReaderLinux {
   pid_t ParentProcessID() const { return process_info_.ParentProcessID(); }
 
   //! \brief Return a memory reader for the target process.
-  const ProcessMemory* Memory() const { return connection_->Memory(); }
+  const ProcessMemoryLinux* Memory() const { return connection_->Memory(); }
 
   //! \brief Return a memory map of the target process.
   MemoryMap* GetMemoryMap() { return &memory_map_; }
@@ -175,8 +179,6 @@ class ProcessReaderLinux {
   bool initialized_threads_;
   bool initialized_modules_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderLinux);
 };
 
 }  // namespace crashpad

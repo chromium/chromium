@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -184,38 +184,6 @@ TEST_P(ProductStateTest, InitializeRenameCmd) {
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     EXPECT_TRUE(state.Initialize(system_install_));
     EXPECT_EQ(L"spam.exe --spamalot", state.rename_cmd());
-  }
-}
-
-// Test extraction of the "ap" value from the ClientState key.
-TEST_P(ProductStateTest, InitializeChannelInfo) {
-  MinimallyInstallProduct(L"10.0.1.1");
-
-  // No "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.DeleteValue(google_update::kRegApField);
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.channel().value().empty());
-  }
-
-  // Empty "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.WriteValue(google_update::kRegApField, L"");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.channel().value().empty());
-  }
-
-  // Valid "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.WriteValue(google_update::kRegApField, L"spam");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_EQ(L"spam", state.channel().value());
   }
 }
 

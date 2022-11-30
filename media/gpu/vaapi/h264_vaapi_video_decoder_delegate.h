@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,10 +32,19 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
           base::DoNothing(),
       CdmContext* cdm_context = nullptr,
       EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted);
+
+  H264VaapiVideoDecoderDelegate(const H264VaapiVideoDecoderDelegate&) = delete;
+  H264VaapiVideoDecoderDelegate& operator=(
+      const H264VaapiVideoDecoderDelegate&) = delete;
+
   ~H264VaapiVideoDecoderDelegate() override;
 
   // H264Decoder::H264Accelerator implementation.
   scoped_refptr<H264Picture> CreateH264Picture() override;
+  void ProcessSPS(const H264SPS* sps,
+                  base::span<const uint8_t> sps_nalu_data) override;
+  void ProcessPPS(const H264PPS* pps,
+                  base::span<const uint8_t> pps_nalu_data) override;
   Status SubmitFrameMetadata(const H264SPS* sps,
                              const H264PPS* pps,
                              const H264DPB& dpb,
@@ -46,8 +55,6 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
   Status ParseEncryptedSliceHeader(
       const std::vector<base::span<const uint8_t>>& data,
       const std::vector<SubsampleEntry>& subsamples,
-      const std::vector<uint8_t>& sps_nalu_data,
-      const std::vector<uint8_t>& pps_nalu_data,
       H264SliceHeader* slice_header_out) override;
   Status SubmitSlice(const H264PPS* pps,
                      const H264SliceHeader* slice_hdr,
@@ -83,7 +90,10 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
   // We need to set this so we don't resubmit crypto params on decode.
   bool full_sample_;
 
-  DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoDecoderDelegate);
+  // The most recent SPS and PPS, assumed to be active when samples are fully
+  // encrypted.
+  std::vector<uint8_t> last_sps_nalu_data_;
+  std::vector<uint8_t> last_pps_nalu_data_;
 };
 
 }  // namespace media

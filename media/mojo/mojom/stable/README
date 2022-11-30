@@ -1,0 +1,3 @@
+This directory contains the Mojo API used both by LaCrOS and by out-of-process
+video decoding. This API is a stable version of VideoDecoder and should only be
+used for the mentioned purposes.

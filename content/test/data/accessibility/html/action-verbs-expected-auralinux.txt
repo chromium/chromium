@@ -1,36 +1,40 @@
-[document web] name='Action verbs'
-++[section]
-++++[static] name='Generic div'
-++[heading] name='Heading'
-++++[static] name='Heading'
-++[push button] name='Button' actions=(press)
-++[link] name='Link' actions=(jump)
-++++[static] name='Link' actions=(clickAncestor)
-++[entry] selectable-text actions=(activate)
-++[entry] selectable-text actions=(activate)
-++[entry] selectable-text actions=(activate)
-++[entry] selectable-text actions=(activate)
-++[check box] actions=(check) checkable:true
-++[check box] checked actions=(uncheck) checkable:true
-++[radio button] actions=(check) checkable:true
-++[toggle button] name='ARIA Switch' actions=(check) checkable:true
-++[panel]
-++++[toggle button] name='Summary' actions=(press)
-++++++[static] name='Summary'
-++[combo box] actions=(open)
-++++[menu]
-++++++[menu item] name='Pop-up button' selectable selected actions=(select)
-++[section] actions=(click)
-++++[static] name='Div with click handler' actions=(clickAncestor)
-++[panel] actions=(click)
-++++[paragraph] actions=(clickAncestor)
-++++++[static] name='Paragraph with click handler on parent' actions=(clickAncestor)
-++[menu]
-++++[menu item] name='Menu item 1' actions=(select)
-++++[check menu item] name='Menu item 2' checked actions=(uncheck) checkable:true
-++++[radio menu item] name='Menu item 3' actions=(check) checkable:true
-++[push button] name='ARIA Button' actions=(click)
-++[push button] name='ARIA button with tab index' actions=(press)
-++[push button] name='ARIA button with negative tab index' actions=(press)
-++[section]
-++++[push button] name='ARIA button that is an active descendant' actions=(press)
+[document web] name='Action verbs' actions=(doDefault, showContextMenu, scrollBackward, scrollDown, scrollForward, scrollLeft, scrollRight, scrollUp)
+++[section] actions=(doDefault, showContextMenu)
+++++[static] name='Generic div' actions=(doDefault, showContextMenu)
+++[heading] name='Heading' actions=(doDefault, showContextMenu)
+++++[static] name='Heading' actions=(doDefault, showContextMenu)
+++[push button] name='Button' actions=(press, showContextMenu)
+++[link] name='Link' actions=(jump, showContextMenu)
+++++[static] name='Link' actions=(doDefault, showContextMenu)
+++[entry] selectable-text actions=(activate, showContextMenu)
+++[entry] selectable-text actions=(activate, showContextMenu)
+++[entry] selectable-text actions=(activate, showContextMenu)
+++[entry] selectable-text actions=(activate, showContextMenu)
+++[check box] actions=(check, showContextMenu) checkable:true
+++[check box] checked actions=(uncheck, showContextMenu) checkable:true
+++[radio button] actions=(check, showContextMenu) checkable:true
+++[toggle button] name='ARIA Switch' actions=(check, showContextMenu) checkable:true
+++[panel] actions=(doDefault, showContextMenu)
+++++[toggle button] name='Summary' actions=(press, showContextMenu)
+++++++[static] name='Summary' actions=(doDefault, showContextMenu)
+++[combo box] actions=(open, showContextMenu)
+++++[menu] actions=(doDefault, showContextMenu)
+++++++[menu item] name='Pop-up button' selectable selected actions=(select, showContextMenu)
+++[section] actions=(click, showContextMenu)
+++++[static] name='Div with click handler' actions=(doDefault, showContextMenu)
+++[panel] actions=(click, showContextMenu)
+++++[paragraph] actions=(clickAncestor, showContextMenu)
+++++++[static] name='Paragraph with click handler on parent' actions=(doDefault, showContextMenu)
+++[menu] actions=(doDefault, showContextMenu)
+++++[menu item] name='Menu item 1' actions=(select, showContextMenu)
+++++[check menu item] name='Menu item 2' checked actions=(uncheck, showContextMenu) checkable:true
+++++[radio menu item] name='Menu item 3' actions=(check, showContextMenu) checkable:true
+++[push button] name='ARIA Button' actions=(click, showContextMenu)
+++[push button] name='ARIA button with tab index' actions=(press, showContextMenu)
+++[push button] name='ARIA button with negative tab index' actions=(press, showContextMenu)
+++[section] actions=(click, showContextMenu)
+++++[push button] name='ARIA button that is an active descendant' actions=(press, showContextMenu)
+++[section] actions=(click, showContextMenu)
+++++[toggle button] name='ARIA switch in clickable container' actions=(check, showContextMenu) checkable:true
+++++[section] actions=(clickAncestor, showContextMenu)
+++++++[static] name='Generic in clickable container' actions=(doDefault, showContextMenu)

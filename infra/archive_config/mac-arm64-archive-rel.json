@@ -1,0 +1,74 @@
+{
+	"archive_datas": [
+        {
+            "dirs": ["Chromium.app"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-mac"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac_Arm/{%position%}/chrome-mac.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP",
+            "latest_upload": {
+                "gcs_path": "Mac_Arm/LAST_CHANGE",
+                "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "Mac_Arm/{%position%}/REVISIONS"
+            }
+        },
+        {
+            "files": [
+                "chromedriver"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chromedriver_mac64"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac_Arm/{%position%}/chromedriver_mac64.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "content_shell.pak",
+                "icudtl.dat"
+            ],
+            "dirs": [
+                "blink_deprecated_test_plugin.plugin",
+                "blink_test_plugin.plugin",
+                "Content Shell.app",
+                "resources"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "content-shell"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac_Arm/{%position%}/content-shell.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "dirs": ["gen/third_party/devtools-frontend/src/front_end"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "devtools-frontend"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac_Arm/{%position%}/devtools-frontend.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "remoting-me2me-host-mac.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac_Arm/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
+        },
+        {
+            "files": [
+                "updater.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac_Arm/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
+        }
+    ]
+}

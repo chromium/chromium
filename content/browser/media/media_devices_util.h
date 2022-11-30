@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,11 +29,17 @@ struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
   MediaDeviceSaltAndOrigin();
   MediaDeviceSaltAndOrigin(std::string device_id_salt,
                            std::string group_id_salt,
-                           url::Origin origin);
+                           url::Origin origin,
+                           bool has_focus,
+                           bool is_background);
+  MediaDeviceSaltAndOrigin(const MediaDeviceSaltAndOrigin& other);
+  ~MediaDeviceSaltAndOrigin() = default;
 
   std::string device_id_salt;
   std::string group_id_salt;
   url::Origin origin;
+  bool has_focus;
+  bool is_background;
 };
 
 // Returns the current media device ID salt and security origin for the given

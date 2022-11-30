@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
@@ -152,7 +153,9 @@ int Version::CompareTo(const Version& other) const {
 }
 
 std::string Version::GetString() const {
-  DCHECK(IsValid());
+  if (!IsValid())
+    return "invalid";
+
   std::string version_str;
   size_t count = components_.size();
   for (size_t i = 0; i < count - 1; ++i) {

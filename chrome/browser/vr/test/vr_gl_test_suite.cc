@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/test/vr_gl_test_suite.h"
 
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/test/gl_image_test_support.h"
 
@@ -19,21 +20,19 @@ VrGlTestSuite::VrGlTestSuite(int argc, char** argv) : VrTestSuite(argc, argv) {}
 void VrGlTestSuite::Initialize() {
   VrTestSuite::Initialize();
 
-  gl::GLImageTestSupport::InitializeGL(base::nullopt);
+  display_ = gl::GLImageTestSupport::InitializeGL(absl::nullopt);
 
 #if defined(VR_USE_COMMAND_BUFFER)
   // Always enable gpu and oop raster, regardless of platform and denylist.
   auto* gpu_feature_info = gpu::GetTestGpuThreadHolder()->GetGpuFeatureInfo();
   gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
-  gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-      gpu::kGpuFeatureStatusEnabled;
   gles2::Initialize();
 #endif  // defined(VR_USE_COMMAND_BUFFER)
 }
 
 void VrGlTestSuite::Shutdown() {
-  gl::GLImageTestSupport::CleanupGL();
+  gl::GLImageTestSupport::CleanupGL(display_);
   vr::VrTestSuite::Shutdown();
 }
 

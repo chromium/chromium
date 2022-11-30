@@ -1,13 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/media_message_center/media_notification_controller.h"
-#include "components/media_message_center/media_notification_view.h"
+#include "components/global_media_controls/public/test/mock_media_item_manager.h"
+#include "components/media_message_center/mock_media_notification_view.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
@@ -34,7 +41,7 @@ constexpr char kSinkName[] = "My Sink";
 media_router::MediaRoute CreateMediaRoute() {
   media_router::MediaRoute route(
       kRouteId, media_router::MediaSource("source_id"), "sink_id", kRouteDesc,
-      /* is_local */ true, /* for_display */ true);
+      /* is_local */ true);
   route.set_media_sink_name(kSinkName);
   return route;
 }
@@ -47,43 +54,17 @@ class MockBitmapFetcher : public BitmapFetcher {
       : BitmapFetcher(url, delegate, traffic_annotation) {}
   ~MockBitmapFetcher() override = default;
 
-  MOCK_METHOD3(Init,
-               void(const std::string& referrer,
-                    net::ReferrerPolicy referrer_policy,
-                    network::mojom::CredentialsMode credentials_mode));
-  MOCK_METHOD1(Start, void(network::mojom::URLLoaderFactory* loader_factory));
-};
-
-class MockMediaNotificationController
-    : public media_message_center::MediaNotificationController {
- public:
-  MOCK_METHOD(void, ShowNotification, (const std::string&));
-  MOCK_METHOD(void, HideNotification, (const std::string&));
-  MOCK_METHOD(void, RemoveItem, (const std::string&));
-  MOCK_METHOD(scoped_refptr<base::SequencedTaskRunner>,
-              GetTaskRunner,
-              (),
-              (const));
   MOCK_METHOD(void,
-              LogMediaSessionActionButtonPressed,
-              (const std::string&, MediaSessionAction));
-};
-
-class MockMediaNotificationView
-    : public media_message_center::MediaNotificationView {
- public:
-  MOCK_METHOD1(SetExpanded, void(bool));
-  MOCK_METHOD2(UpdateCornerRadius, void(int, int));
-  MOCK_METHOD1(SetForcedExpandedState, void(bool*));
-  MOCK_METHOD1(UpdateWithMediaSessionInfo, void(const MediaSessionInfoPtr&));
-  MOCK_METHOD1(UpdateWithMediaMetadata,
-               void(const media_session::MediaMetadata&));
-  MOCK_METHOD1(UpdateWithMediaActions,
-               void(const base::flat_set<MediaSessionAction>&));
-  MOCK_METHOD1(UpdateWithMediaArtwork, void(const gfx::ImageSkia&));
-  MOCK_METHOD1(UpdateWithFavicon, void(const gfx::ImageSkia&));
-  MOCK_METHOD1(UpdateWithVectorIcon, void(const gfx::VectorIcon& vector_icon));
-  MOCK_METHOD1(UpdateDeviceSelectorAvailability, void(bool availability));
+              Init,
+              (net::ReferrerPolicy referrer_policy,
+               network::mojom::CredentialsMode credentials_mode,
+               const net::HttpRequestHeaders& additional_headers,
+               const url::Origin& initiator),
+              (override));
+  MOCK_METHOD(void,
+              Start,
+              (network::mojom::URLLoaderFactory * loader_factory),
+              (override));
 };
 
 class MockSessionController : public CastMediaSessionController {
@@ -92,8 +73,13 @@ class MockSessionController : public CastMediaSessionController {
       mojo::Remote<media_router::mojom::MediaController> remote)
       : CastMediaSessionController(std::move(remote)) {}
 
-  MOCK_METHOD1(Send, void(media_session::mojom::MediaSessionAction));
-  MOCK_METHOD1(OnMediaStatusUpdated, void(media_router::mojom::MediaStatusPtr));
+  MOCK_METHOD(void, Send, (media_session::mojom::MediaSessionAction));
+  MOCK_METHOD(void,
+              OnMediaStatusUpdated,
+              (media_router::mojom::MediaStatusPtr));
+  MOCK_METHOD(void, SeekTo, (base::TimeDelta));
+  MOCK_METHOD(void, SetVolume, (float));
+  MOCK_METHOD(void, SetMute, (bool));
 };
 
 }  // namespace
@@ -101,12 +87,13 @@ class MockSessionController : public CastMediaSessionController {
 class CastMediaNotificationItemTest : public testing::Test {
  public:
   void SetUp() override {
-    auto session_controller = std::make_unique<MockSessionController>(
-        mojo::Remote<media_router::mojom::MediaController>());
+    auto session_controller =
+        std::make_unique<testing::NiceMock<MockSessionController>>(
+            mojo::Remote<media_router::mojom::MediaController>());
     session_controller_ = session_controller.get();
     item_ = std::make_unique<CastMediaNotificationItem>(
-        CreateMediaRoute(), &notification_controller_,
-        std::move(session_controller), &profile_);
+        CreateMediaRoute(), &item_manager_, std::move(session_controller),
+        &profile_);
     item_->set_bitmap_fetcher_factory_for_testing_(
         base::BindRepeating(&CastMediaNotificationItemTest::CreateBitmapFetcher,
                             base::Unretained(this)));
@@ -149,9 +136,14 @@ class CastMediaNotificationItemTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  MockMediaNotificationController notification_controller_;
-  MockSessionController* session_controller_ = nullptr;
-  MockMediaNotificationView view_;
+  testing::NiceMock<global_media_controls::test::MockMediaItemManager>
+      item_manager_;
+  raw_ptr<MockSessionController> session_controller_ = nullptr;
+  // This needs to be a NiceMock, because the uninteresting mock function calls
+  // slow down the tests enough to make
+  // CastMediaNotificationItemTest.MediaPositionUpdate flaky.
+  testing::NiceMock<media_message_center::test::MockMediaNotificationView>
+      view_;
   std::unique_ptr<CastMediaNotificationItem> item_;
 };
 
@@ -235,13 +227,12 @@ TEST_F(CastMediaNotificationItemTest, SetViewToNull) {
 }
 
 TEST_F(CastMediaNotificationItemTest, HideNotificationOnDismiss) {
-  EXPECT_CALL(notification_controller_, HideNotification(kRouteId))
-      .Times(AtLeast(1));
+  EXPECT_CALL(item_manager_, HideItem(kRouteId)).Times(AtLeast(1));
   item_->Dismiss();
 }
 
 TEST_F(CastMediaNotificationItemTest, HideNotificationOnDelete) {
-  EXPECT_CALL(notification_controller_, HideNotification(kRouteId));
+  EXPECT_CALL(item_manager_, HideItem(kRouteId));
   item_.reset();
 }
 
@@ -261,6 +252,25 @@ TEST_F(CastMediaNotificationItemTest, SendActionToController) {
 
   EXPECT_CALL(*session_controller_, Send(MediaSessionAction::kPlay));
   item_->OnMediaSessionActionButtonPressed(MediaSessionAction::kPlay);
+}
+
+TEST_F(CastMediaNotificationItemTest, SendVolumeStatusToController) {
+  auto status = MediaStatus::New();
+  item_->OnMediaStatusUpdated(std::move(status));
+
+  float volume = 0.5;
+  EXPECT_CALL(*session_controller_, SetVolume(volume));
+  item_->SetVolume(volume);
+
+  bool muted = false;
+  EXPECT_CALL(*session_controller_, SetMute(muted));
+  item_->SetMute(muted);
+}
+
+TEST_F(CastMediaNotificationItemTest, SendSeekCommandToController) {
+  auto seek_time = base::Seconds(2);
+  EXPECT_CALL(*session_controller_, SeekTo(seek_time));
+  item_->SeekTo(seek_time);
 }
 
 TEST_F(CastMediaNotificationItemTest, DownloadImage) {
@@ -283,7 +293,7 @@ TEST_F(CastMediaNotificationItemTest, DownloadImage) {
             bitmap_fetcher_delegate = delegate;
 
             EXPECT_EQ(url, image_url);
-            EXPECT_CALL(*bitmap_fetcher, Init(_, _, _));
+            EXPECT_CALL(*bitmap_fetcher, Init);
             EXPECT_CALL(*bitmap_fetcher, Start(_));
             return bitmap_fetcher;
           });
@@ -292,4 +302,80 @@ TEST_F(CastMediaNotificationItemTest, DownloadImage) {
   SkBitmap bitmap;
   EXPECT_CALL(view_, UpdateWithMediaArtwork(_));
   bitmap_fetcher_delegate->OnFetchComplete(image_url, &bitmap);
+}
+
+TEST_F(CastMediaNotificationItemTest, MediaPositionUpdate) {
+  SetView();
+  const base::TimeDelta duration = base::Seconds(100);
+  const base::TimeDelta current_time = base::Seconds(70);
+
+  {
+    // Test that media position updated correctly with playing video.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PLAYING;
+    status->duration = duration;
+    status->current_time = current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_))
+        .WillOnce([&](const media_session::MediaPosition& position) {
+          EXPECT_EQ(1.0, position.playback_rate());
+          EXPECT_EQ(duration, position.duration());
+          EXPECT_NEAR(current_time.InSecondsF(),
+                      position.GetPosition().InSecondsF(), 1e-3);
+        });
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+
+  {
+    // Test that media position updated correctly with paused video.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PAUSED;
+    status->duration = duration;
+    status->current_time = current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_))
+        .WillOnce([&](const media_session::MediaPosition& position) {
+          EXPECT_EQ(0.0, position.playback_rate());
+          EXPECT_EQ(duration, position.duration());
+          EXPECT_NEAR(current_time.InSecondsF(),
+                      position.GetPosition().InSecondsF(), 1e-3);
+        });
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+
+  {
+    // Test that media position should not be updated with 0 duration.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PLAYING;
+    status->duration = base::TimeDelta();
+    status->current_time = current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_)).Times(0);
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+
+  {
+    // Test that current time should not exceed duration.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PLAYING;
+    status->duration = duration;
+    status->current_time = duration + current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_))
+        .WillOnce([&](const media_session::MediaPosition& position) {
+          EXPECT_EQ(1.0, position.playback_rate());
+          EXPECT_EQ(duration, position.duration());
+          EXPECT_NEAR(duration.InSecondsF(),
+                      position.GetPosition().InSecondsF(), 1e-3);
+        });
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+}
+
+TEST_F(CastMediaNotificationItemTest, StopCasting) {
+  media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+      &profile_, base::BindRepeating(&media_router::MockMediaRouter::Create));
+  auto* mock_router = static_cast<media_router::MockMediaRouter*>(
+      media_router::MediaRouterFactory::GetApiForBrowserContext(&profile_));
+
+  EXPECT_CALL(*mock_router, TerminateRoute(item_->route_id()));
+  EXPECT_CALL(item_manager_, FocusDialog());
+  item_->StopCasting(
+      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
 }

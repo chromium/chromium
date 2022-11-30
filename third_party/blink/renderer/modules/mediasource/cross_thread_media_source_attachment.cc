@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,15 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
+#include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_public.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -29,16 +35,14 @@ std::ostream& operator<<(
 
 CrossThreadMediaSourceAttachment::CrossThreadMediaSourceAttachment(
     MediaSource* media_source,
-    base::PassKey<URLMediaSource> /* passkey */)
+    AttachmentCreationPassKeyProvider::PassKey /* passkey */)
     : registered_media_source_(media_source),
-      // TODO(https://crbug.com/878133): Confirm if kMediaElementEvent remains
-      // the appropriate task type when standardizing MSE-in-Workers, for
-      // |worker_runner_| and similar in MediaSource, SourceBuffer, etc.
+      // To use scheduling priority that is the same as postMessage, we use
+      // kPostedMessage here instead of, say, kMediaElementEvent.
       worker_runner_(media_source->GetExecutionContext()->GetTaskRunner(
-          TaskType::kMediaElementEvent)),
+          TaskType::kPostedMessage)),
       media_source_context_destroyed_(false),
       media_element_context_destroyed_(false),
-      recent_element_time_(0.0),
       have_ever_attached_(false),
       have_ever_started_closing_(false) {
   // This kind of attachment can only be constructed by the worker thread.
@@ -58,8 +62,8 @@ CrossThreadMediaSourceAttachment::~CrossThreadMediaSourceAttachment() {
 
 void CrossThreadMediaSourceAttachment::NotifyDurationChanged(
     MediaSourceTracer* /* tracer */,
-    double /* duration */) {
-  DVLOG(1) << __func__ << " this=" << this << " (no-op)";
+    double new_duration) {
+  DVLOG(1) << __func__ << " this=" << this << ", new_duration=" << new_duration;
 
   attachment_state_lock_.AssertAcquired();
 
@@ -70,15 +74,20 @@ void CrossThreadMediaSourceAttachment::NotifyDurationChanged(
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
-  // This is a no-op helper in Cross-Thread case. Even in same-thread case,
-  // there is a redundant duration update hopping via WebMediaSource through the
-  // media pipeline to the main thread and notifying the media element of
-  // updated duration, so this optimization that existed to align same-thread
-  // synchronous agreement of HTMLMediaElement.duration and MediaSource.duration
-  // is inapplicable in cross-thread attachments.
+  // Changing the duration has side effect of potentially new values for the
+  // buffered and seekable ranges. Furthermore, duration-changed notification of
+  // the media element, when attached cross-thread, needs to be done in a posted
+  // task's dispatch (to both mitigate high-res timer creation by apps, and to
+  // not require locks in the media element itself.) Finally, when that task is
+  // executed on the main thread, the way of updating the media element's
+  // duration correctly depends upon the element's current readyState. In short,
+  // send updated values and indicate that the recipient on the main thread also
+  // needs to correctly update the element's duration.
+  SendUpdatedInfoToMainThreadCacheInternal(/* has_duration */ true,
+                                           new_duration);
 }
 
-double CrossThreadMediaSourceAttachment::GetRecentMediaTime(
+base::TimeDelta CrossThreadMediaSourceAttachment::GetRecentMediaTime(
     MediaSourceTracer* /* tracer */) {
   attachment_state_lock_.AssertAcquired();
 
@@ -178,7 +187,7 @@ void CrossThreadMediaSourceAttachment::RemoveTracksFromMediaElementInternal(
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
-  DCHECK(!track_ids.IsEmpty());
+  DCHECK(!track_ids.empty());
 
   // Detachment might have started, and could lead to MSE teardown calling us.
   // In such case, media element must forget all its tracks directly (see
@@ -219,10 +228,10 @@ void CrossThreadMediaSourceAttachment::RemoveTracksFromMediaElementOnMainThread(
     TrackAddRemovalType track_type,
     Vector<String> track_ids,
     bool enqueue_change_event) {
-  DCHECK(!track_ids.IsEmpty());
+  DCHECK(!track_ids.empty());
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     DCHECK(IsMainThread());
     DCHECK(main_runner_->BelongsToCurrentThread());
@@ -346,7 +355,7 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementOnMainThread(
     String label,
     String language,
     bool enable_or_select) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(IsMainThread());
   DCHECK(main_runner_->BelongsToCurrentThread());
@@ -420,10 +429,27 @@ void CrossThreadMediaSourceAttachment::OnMediaSourceContextDestroyed() {
   media_source_context_destroyed_ = true;
 }
 
+bool CrossThreadMediaSourceAttachment::FullyAttachedOrSameThread(
+    SourceBufferPassKey) const {
+  attachment_state_lock_.AssertAcquired();
+
+  // We must only be used by the MSE API on the worker thread.
+  DCHECK(!IsMainThread());
+  DCHECK(worker_runner_->BelongsToCurrentThread());
+
+  // We might be called while MSE worker context is being destroyed, but we must
+  // not be called if we've never been used yet to attach.
+  DCHECK(attached_media_source_);
+  DCHECK(have_ever_attached_);
+
+  return !media_element_context_destroyed_ && attached_element_ &&
+         !have_ever_started_closing_;
+}
+
 bool CrossThreadMediaSourceAttachment::RunExclusively(
     bool abort_if_not_fully_attached,
     RunExclusivelyCB cb) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // We must only be used by the MSE API on the worker thread.
   DCHECK(!IsMainThread());
@@ -452,11 +478,6 @@ void CrossThreadMediaSourceAttachment::Unregister() {
   DVLOG(1) << __func__ << " this=" << this
            << ", IsMainThread=" << IsMainThread();
 
-  // The only expected caller is a MediaSourceRegistryImpl on the main thread
-  // (or possibly on the worker thread, if MediaSourceInWorkers is enabled).
-  DCHECK(IsMainThread() ||
-         RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
-
   // Release our strong reference to the MediaSource. Note that revokeObjectURL
   // of the url associated with this attachment could commonly follow this path
   // while the MediaSource (and any attachment to an HTMLMediaElement) may still
@@ -470,8 +491,20 @@ void CrossThreadMediaSourceAttachment::Unregister() {
   // races attempted usage of the object URL (or |registered_media_source_|
   // here).
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
     DCHECK(registered_media_source_);
+
+    // MSE-in-Worker using MediaSourceHandle for attachment does NOT use object
+    // URLs, so we must not be called if MediaSourceHandle feature is enabled.
+    DCHECK(!RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+        registered_media_source_->GetExecutionContext()));
+
+    // The only expected caller is a MediaSourceRegistryImpl on the main thread
+    // (or possibly on the worker thread, if MediaSourceInWorkers is enabled).
+    DCHECK(IsMainThread() ||
+           RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
+               registered_media_source_->GetExecutionContext()));
+
     registered_media_source_ = nullptr;
   }
 }
@@ -489,7 +522,7 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
   DCHECK(success);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // There should not be the ability for a previous (or current) element's
     // context to have been destroyed (main thread), yet us being called again
@@ -500,10 +533,21 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
     // Prevent sequential re-use of this attachment for multiple successful
     // attachments. See declaration of |have_ever_attached_|.
     if (have_ever_attached_) {
-      DVLOG(1) << __func__ << " this=" << this << ", element=" << element
-               << ": failed: reuse of MediaSource object URL by disabling "
-                  "RevokeMediaSourceObjectURLOnAttach is not supported for "
-                  "MSE-in-Workers";
+      if (RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+              element->GetExecutionContext())) {
+        // With current restrictions on ability to only ever obtain at most one
+        // MediaSourceHandle per MediaSource and only allow loading to succeed
+        // at most once per each MediaSourceHandle, fail if there is attempt to
+        // reuse either in a load.
+        DVLOG(1) << __func__ << " this=" << this << ", element=" << element
+                 << ": failed: reuse of MediaSource for more than one load "
+                    "is not supported for MSE-in-Workers";
+      } else {
+        DVLOG(1) << __func__ << " this=" << this << ", element=" << element
+                 << ": failed: reuse of MediaSource object URL by disabling "
+                    "RevokeMediaSourceObjectURLOnAttach is not supported for "
+                    "MSE-in-Workers";
+      }
       *success = false;
       return nullptr;
     }
@@ -551,13 +595,13 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
 
     attached_element_ = element;
     attached_media_source_ = registered_media_source_;
-    main_runner_ = element->GetExecutionContext()->GetTaskRunner(
-        TaskType::kMediaElementEvent);
+    main_runner_ =
+        element->GetExecutionContext()->GetTaskRunner(TaskType::kPostedMessage);
     DCHECK(main_runner_->BelongsToCurrentThread());
 
     // Before element starts pumping time and error status to us, use its
     // current status initially.
-    recent_element_time_ = element->currentTime();
+    recent_element_time_ = base::Seconds(element->currentTime());
     element_has_error_ = !!element->error();
 
     // Media element should not call this method if it already has an error.
@@ -579,7 +623,7 @@ void CrossThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
   DCHECK(web_media_source);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
@@ -593,6 +637,11 @@ void CrossThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
     // We must have succeeded with StartAttachingToMediaElement().
     DCHECK(have_ever_attached_);
     DCHECK(worker_runner_);
+
+    // In unlikely case this attachment is reused, clear the cached state of
+    // previous attachment.
+    cached_buffered_.Clear();
+    cached_seekable_.Clear();
 
     // Verify the rest of the status once we're completing this in the worker
     // thread. Using WTF::RetainedRef(this) here to ensure we are still alive
@@ -612,7 +661,7 @@ void CrossThreadMediaSourceAttachment::
   DCHECK(web_media_source);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     DCHECK(!IsMainThread());
     DCHECK(worker_runner_->BelongsToCurrentThread());
@@ -658,7 +707,7 @@ void CrossThreadMediaSourceAttachment::
 }
 
 void CrossThreadMediaSourceAttachment::Close(MediaSourceTracer* /* tracer */) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
   DVLOG(1) << __func__ << " this=" << this;
 
   // Note, this method may be called either explicitly to detach a loading
@@ -693,7 +742,7 @@ void CrossThreadMediaSourceAttachment::Close(MediaSourceTracer* /* tracer */) {
 }
 
 void CrossThreadMediaSourceAttachment::CloseOnWorkerThread() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
@@ -740,7 +789,7 @@ void CrossThreadMediaSourceAttachment::CloseOnWorkerThread() {
 
 WebTimeRanges CrossThreadMediaSourceAttachment::BufferedInternal(
     MediaSourceTracer* /* tracer */) const {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -759,25 +808,28 @@ WebTimeRanges CrossThreadMediaSourceAttachment::BufferedInternal(
   DCHECK(have_ever_attached_);
 
   DVLOG(1) << __func__ << " this=" << this;
-
   // The worker context might have already been destroyed, but the media element
-  // might not yet have realized there is error (that signal hops threads), so
-  // just return "nothing buffered" here in that case.
+  // might not yet have realized there is error (that signal, if any, hops
+  // threads).  Until there is resolution on spec behavior here (see
+  // https://github.com/w3c/media-source/issues/277), override any cached value
+  // and return an empty range here if the worker's context has been destroyed.
   if (media_source_context_destroyed_) {
     DVLOG(1) << __func__ << " this=" << this
-             << ": worker context destroyed. returning 'nothing buffered'";
+             << ": worker context destroyed. Returning 'nothing buffered'";
     return {};
   }
 
-  // Here, since we are in scope of |lock| holding |attachment_state_lock_|, we
-  // can correctly acquire an ExclusiveKey to give to MediaSource so it can know
-  // that it is safe to access the underlying demuxer.
-  return attached_media_source_->BufferedInternal(GetExclusiveKey());
+  // In CrossThread attachments, we use kPostedMessage cross-thread task posting
+  // to have similar information propagation latency and causality as an
+  // application using postMessage() from worker to main thread. See
+  // SendUpdatedInfoToMainThreadCache() for where the MSE API initiates updates
+  // of the main thread's cache of buffered and seekable values.
+  return cached_buffered_;
 }
 
 WebTimeRanges CrossThreadMediaSourceAttachment::SeekableInternal(
     MediaSourceTracer* /* tracer */) const {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -798,24 +850,28 @@ WebTimeRanges CrossThreadMediaSourceAttachment::SeekableInternal(
   DVLOG(1) << __func__ << " this=" << this;
 
   // The worker context might have already been destroyed, but the media element
-  // might not yet have realized there is error (that signal hops threads), so
-  // just return "nothing seekable" here in that case.
+  // might not yet have realized there is error (that signal, if any, hops
+  // threads).  Until there is resolution on spec behavior here (see
+  // https://github.com/w3c/media-source/issues/277), override any cached value
+  // and return an empty range here if the worker's context has been destroyed.
   if (media_source_context_destroyed_) {
     DVLOG(1) << __func__ << " this=" << this
-             << ": worker context destroyed. returning 'nothing seekable'";
+             << ": worker context destroyed. Returning 'nothing seekable'";
     return {};
   }
 
-  // Here, since we are in scope of |lock| holding |attachment_state_lock_|, we
-  // can correctly acquire an ExclusiveKey to give to MediaSource so it can know
-  // that it is safe to access the underlying demuxer.
-  return attached_media_source_->SeekableInternal(GetExclusiveKey());
+  // In CrossThread attachments, we use kPostedMessage cross-thread task posting
+  // to have similar information propagation latency and causality as an
+  // application using postMessage() from worker to main thread. See
+  // SendUpdatedInfoToMainThreadCache() for where the MSE API initiates updates
+  // of the main thread's cache of buffered and seekable values.
+  return cached_seekable_;
 }
 
 void CrossThreadMediaSourceAttachment::OnTrackChanged(
     MediaSourceTracer* /* tracer */,
     TrackBase* track) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -829,19 +885,38 @@ void CrossThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
   DVLOG(1) << __func__ << " this=" << this << ", time=" << time;
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
     DCHECK(main_runner_->BelongsToCurrentThread());
     DCHECK(!media_element_context_destroyed_);
 
+    // Post the updated info to the worker thread.
+    DCHECK(worker_runner_);
+
+    // TODO(https://crbug.com/878133): Consider coalescing frequent calls to
+    // this using a timer.
+
+    PostCrossThreadTask(
+        *worker_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &CrossThreadMediaSourceAttachment::UpdateWorkerThreadTimeCache,
+            WTF::RetainedRef(this), base::Seconds(time)));
+  }
+}
+
+void CrossThreadMediaSourceAttachment::UpdateWorkerThreadTimeCache(
+    base::TimeDelta time) {
+  {
+    base::AutoLock lock(attachment_state_lock_);
+    DCHECK(!IsMainThread());
+    DCHECK(worker_runner_->BelongsToCurrentThread());
+
     // Worker context might have destructed, and if so, we don't really need to
     // update the time since there should be no further reads of it. Similarly,
     // attached_media_source_ might have been cleared already (by Oilpan for
     // that CrossThreadPersistent on it's owning context's destruction).
-    // However, conditionally returning early in these rare scenarios is likely
-    // more costly than just updating the cached time.
     recent_element_time_ = time;
 
     DVLOG(1) << __func__ << " this=" << this
@@ -853,26 +928,36 @@ void CrossThreadMediaSourceAttachment::OnElementError() {
   DVLOG(1) << __func__ << " this=" << this;
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
     DCHECK(main_runner_->BelongsToCurrentThread());
     DCHECK(!media_element_context_destroyed_);
-    DCHECK(!element_has_error_)
-        << "At most one transition to element error per attachment is expected";
 
-    // Worker context might have destructed. But conditionally returning early
-    // in that rare scenario is likely more costly than just setting the error
-    // flag.
-    element_has_error_ = true;
-
-    DVLOG(1) << __func__ << " this=" << this << ": error flag set";
+    PostCrossThreadTask(
+        *worker_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &CrossThreadMediaSourceAttachment::HandleElementErrorOnWorkerThread,
+            WTF::RetainedRef(this)));
   }
 }
 
+void CrossThreadMediaSourceAttachment::HandleElementErrorOnWorkerThread() {
+  base::AutoLock lock(attachment_state_lock_);
+  DCHECK(!IsMainThread());
+  DCHECK(worker_runner_->BelongsToCurrentThread());
+
+  DCHECK(!element_has_error_)
+      << "At most one transition to element error per attachment is expected";
+
+  element_has_error_ = true;
+
+  DVLOG(1) << __func__ << " this=" << this << ": error flag set";
+}
+
 void CrossThreadMediaSourceAttachment::OnElementContextDestroyed() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -897,6 +982,102 @@ void CrossThreadMediaSourceAttachment::OnElementContextDestroyed() {
 void CrossThreadMediaSourceAttachment::
     AssertCrossThreadMutexIsAcquiredForDebugging() {
   attachment_state_lock_.AssertAcquired();
+}
+
+void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCache() {
+  // No explicit duration update was done by application in this case.
+  SendUpdatedInfoToMainThreadCacheInternal(false, 0);
+}
+
+void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCacheInternal(
+    bool has_new_duration,
+    double new_duration) {
+  attachment_state_lock_.AssertAcquired();
+  VerifyCalledWhileContextsAliveForDebugging();
+  DCHECK(main_runner_);
+
+  DVLOG(1) << __func__ << " this=" << this;
+
+  // Called only by the MSE API on worker thread.
+  DCHECK(!IsMainThread());
+  DCHECK(worker_runner_->BelongsToCurrentThread());
+
+  // TODO(https://crbug.com/878133): Consider coalescing frequent calls to this
+  // using a timer, except when |has_new_duration| is true.
+
+  // Here, since we are in scope of |lock| holding |attachment_state_lock_|, we
+  // can correctly acquire an ExclusiveKey to give to MediaSource so it can know
+  // that it is safe to access the underlying demuxer.
+  WebTimeRanges new_buffered =
+      attached_media_source_->BufferedInternal(GetExclusiveKey());
+  WebTimeRanges new_seekable =
+      attached_media_source_->SeekableInternal(GetExclusiveKey());
+
+  PostCrossThreadTask(
+      *main_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          &CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache,
+          WTF::RetainedRef(this), std::move(new_buffered),
+          std::move(new_seekable), has_new_duration, new_duration));
+}
+
+void CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache(
+    WebTimeRanges new_buffered,
+    WebTimeRanges new_seekable,
+    bool has_new_duration,
+    double new_duration) {
+  base::AutoLock lock(attachment_state_lock_);
+
+  DCHECK(IsMainThread());
+  DCHECK(main_runner_->BelongsToCurrentThread());
+
+  DVLOG(1) << __func__ << " this=" << this;
+
+  // While awaiting task scheduling, media element could have begun detachment
+  // or main context could have been destroyed. Return early in these cases.
+  if (have_ever_started_closing_) {
+    DVLOG(1) << __func__ << " this=" << this
+             << ": media element has begun detachment (::Close). no-op";
+    return;
+  }
+
+  if (media_element_context_destroyed_) {
+    DVLOG(1) << __func__ << " this=" << this
+             << ": media element context is destroyed: no-op";
+    return;
+  }
+
+  // Detection of |have_ever_started_closing_|, above, should prevent this
+  // from failing.
+  DCHECK(attached_element_);
+
+  cached_buffered_ = std::move(new_buffered);
+  cached_seekable_ = std::move(new_seekable);
+
+  if (has_new_duration) {
+    // We may need to let the media element know duration has changed. Whether
+    // we do this needs to be conditioned upon the media element's current
+    // readyState.
+    if (attached_element_->getReadyState() == HTMLMediaElement::kHaveNothing) {
+      DVLOG(1) << __func__ << " this=" << this
+               << ": new_duration=" << new_duration
+               << " and media element readyState is HAVE_NOTHING";
+      // Explicitly notify the media element of the updated duration. This
+      // happens when app sets MediaSource duration before the pipeline has
+      // reached HAVE_METADATA.
+      bool request_seek = attached_element_->currentTime() > new_duration;
+      attached_element_->DurationChanged(new_duration, request_seek);
+      return;
+    }
+
+    // The pipeline will deliver explicit duration changed notifications to the
+    // element at and after the transition to HAVE_METADATA, including when the
+    // app sets MediaSource duration in those cases, so don't deliver any extra
+    // notification to the element here.
+    DVLOG(1) << __func__ << " this=" << this
+             << ": new_duration=" << new_duration
+             << " and media element readyState is beyond HAVE_NOTHING (no-op)";
+  }
 }
 
 void CrossThreadMediaSourceAttachment::

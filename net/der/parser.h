@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,13 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/der/input.h"
 #include "net/der/tag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 class BitString;
 struct GeneralizedTime;
@@ -97,6 +93,9 @@ class NET_EXPORT Parser {
   // the Parser object.
   explicit Parser(const Input& input);
 
+  Parser(const Parser&) = default;
+  Parser& operator=(const Parser&) = default;
+
   // Returns whether there is any more data left in the input to parse. This
   // does not guarantee that the data is parseable.
   bool HasMore();
@@ -105,12 +104,12 @@ class NET_EXPORT Parser {
   // encoding for the current value is invalid, this method returns false and
   // does not advance the input. Otherwise, it returns true, putting the
   // read tag in |tag| and the value in |out|.
-  bool ReadTagAndValue(Tag* tag, Input* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadTagAndValue(Tag* tag, Input* out);
 
   // Reads the current TLV from the input and advances. Unlike ReadTagAndValue
   // where only the value is put in |out|, this puts the raw bytes from the
   // tag, length, and value in |out|.
-  bool ReadRawTLV(Input* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadRawTLV(Input* out);
 
   // Basic methods for reading or skipping the current TLV, with an
   // expectation of what the current tag should be. It should be possible
@@ -122,40 +121,38 @@ class NET_EXPORT Parser {
   // something else, then |out| is set to nullopt and the input is not
   // advanced. Like ReadTagAndValue, it returns false if the encoding is
   // invalid and does not advance the input.
-  bool ReadOptionalTag(Tag tag, base::Optional<Input>* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadOptionalTag(Tag tag, absl::optional<Input>* out);
 
   // If the current tag in the input is |tag|, it puts the corresponding value
   // in |out|, sets |was_present| to true, and advances the input to the next
   // TLV. If the current tag is something else, then |was_present| is set to
   // false and the input is not advanced. Like ReadTagAndValue, it returns
   // false if the encoding is invalid and does not advance the input.
-  // DEPRECATED: use the base::Optional version above in new code.
+  // DEPRECATED: use the absl::optional version above in new code.
   // TODO(mattm): convert the existing callers and remove this override.
-  bool ReadOptionalTag(Tag tag,
-                       Input* out,
-                       bool* was_present) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadOptionalTag(Tag tag, Input* out, bool* was_present);
 
   // Like ReadOptionalTag, but the value is discarded.
-  bool SkipOptionalTag(Tag tag, bool* was_present) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SkipOptionalTag(Tag tag, bool* was_present);
 
   // If the current tag matches |tag|, it puts the current value in |out|,
   // advances the input, and returns true. Otherwise, it returns false.
-  bool ReadTag(Tag tag, Input* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadTag(Tag tag, Input* out);
 
   // Advances the input and returns true if the current tag matches |tag|;
   // otherwise it returns false.
-  bool SkipTag(Tag tag) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SkipTag(Tag tag);
 
   // Convenience methods to combine parsing the TLV with parsing the DER
   // encoding for a specific type.
 
   // Reads the current TLV from the input, checks that the tag matches |tag|
   // and is a constructed tag, and creates a new Parser from the value.
-  bool ReadConstructed(Tag tag, Parser* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadConstructed(Tag tag, Parser* out);
 
   // A more specific form of ReadConstructed that expects the current tag
   // to be 0x30 (SEQUENCE).
-  bool ReadSequence(Parser* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadSequence(Parser* out);
 
   // Expects the current tag to be kInteger, and calls ParseUint8 on the
   // current value. Note that DER-encoded integers are arbitrary precision,
@@ -164,7 +161,7 @@ class NET_EXPORT Parser {
   //
   // Note that on failure the Parser is left in an undefined state (the
   // input may or may not have been advanced).
-  bool ReadUint8(uint8_t* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadUint8(uint8_t* out);
 
   // Expects the current tag to be kInteger, and calls ParseUint64 on the
   // current value. Note that DER-encoded integers are arbitrary precision,
@@ -173,19 +170,20 @@ class NET_EXPORT Parser {
   //
   // Note that on failure the Parser is left in an undefined state (the
   // input may or may not have been advanced).
-  bool ReadUint64(uint64_t* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadUint64(uint64_t* out);
 
-  // Reads a BIT STRING. On success fills |out| and returns true.
+  // Reads a BIT STRING. On success returns BitString. On failure, returns
+  // absl::nullopt.
   //
   // Note that on failure the Parser is left in an undefined state (the
   // input may or may not have been advanced).
-  bool ReadBitString(BitString* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<BitString> ReadBitString();
 
   // Reads a GeneralizeTime. On success fills |out| and returns true.
   //
   // Note that on failure the Parser is left in an undefined state (the
   // input may or may not have been advanced).
-  bool ReadGeneralizedTime(GeneralizedTime* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadGeneralizedTime(GeneralizedTime* out);
 
   // Lower level methods. The previous methods couple reading data from the
   // input with advancing the Parser's internal pointer to the next TLV; these
@@ -196,7 +194,7 @@ class NET_EXPORT Parser {
   // Reads the current TLV from the input, putting the tag in |tag| and the raw
   // value in |out|, but does not advance the input. Returns true if the tag
   // and length are successfully read and the output exists.
-  bool PeekTagAndValue(Tag* tag, Input* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool PeekTagAndValue(Tag* tag, Input* out);
 
   // Advances the input to the next TLV. This method only needs to be called
   // after PeekTagAndValue; all other methods will advance the input if they
@@ -205,13 +203,9 @@ class NET_EXPORT Parser {
 
  private:
   CBS cbs_;
-  size_t advance_len_;
-
-  DISALLOW_COPY(Parser);
+  size_t advance_len_ = 0;
 };
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_PARSER_H_

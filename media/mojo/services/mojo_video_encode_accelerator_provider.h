@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 #define MEDIA_MOJO_SERVICES_MOJO_VIDEO_ENCODE_ACCELERATOR_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_info.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
@@ -30,18 +31,28 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
           const ::media::VideoEncodeAccelerator::Config& config,
           VideoEncodeAccelerator::Client* client,
           const gpu::GpuPreferences& gpu_preferences,
-          const gpu::GpuDriverBugWorkarounds& gpu_workarounds)>;
+          const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+          const gpu::GPUInfo::GPUDevice& gpu_device,
+          std::unique_ptr<MediaLog> media_log)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver,
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo::GPUDevice& gpu_device);
 
   MojoVideoEncodeAcceleratorProvider(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo::GPUDevice& gpu_device);
+
+  MojoVideoEncodeAcceleratorProvider(
+      const MojoVideoEncodeAcceleratorProvider&) = delete;
+  MojoVideoEncodeAcceleratorProvider& operator=(
+      const MojoVideoEncodeAcceleratorProvider&) = delete;
+
   ~MojoVideoEncodeAcceleratorProvider() override;
 
   // mojom::VideoEncodeAcceleratorProvider impl.
@@ -52,10 +63,9 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
 
  private:
   const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
-  const gpu::GpuPreferences& gpu_preferences_;
+  const gpu::GpuPreferences gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorProvider);
+  const gpu::GPUInfo::GPUDevice gpu_device_;
 };
 
 }  // namespace media

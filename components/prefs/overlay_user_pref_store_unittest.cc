@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,22 +51,22 @@ TEST_F(OverlayUserPrefStoreTest, Observer) {
   overlay_->AddObserver(&obs);
 
   // Check that underlay first value is reported.
-  underlay_->SetValue(regular_key, std::make_unique<Value>(42),
+  underlay_->SetValue(regular_key, Value(42),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   obs.VerifyAndResetChangedKey(regular_key);
 
   // Check that underlay overwriting is reported.
-  underlay_->SetValue(regular_key, std::make_unique<Value>(43),
+  underlay_->SetValue(regular_key, Value(43),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   obs.VerifyAndResetChangedKey(regular_key);
 
   // Check that overwriting change in overlay is reported.
-  overlay_->SetValue(regular_key, std::make_unique<Value>(44),
+  overlay_->SetValue(regular_key, Value(44),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   obs.VerifyAndResetChangedKey(regular_key);
 
   // Check that hidden underlay change is not reported.
-  underlay_->SetValue(regular_key, std::make_unique<Value>(45),
+  underlay_->SetValue(regular_key, Value(45),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(obs.changed_keys.empty());
 
@@ -81,16 +81,16 @@ TEST_F(OverlayUserPrefStoreTest, Observer) {
   obs.VerifyAndResetChangedKey(regular_key);
 
   // Check respecting of silence.
-  overlay_->SetValueSilently(regular_key, std::make_unique<Value>(46),
+  overlay_->SetValueSilently(regular_key, Value(46),
                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(obs.changed_keys.empty());
 
   overlay_->RemoveObserver(&obs);
 
   // Check successful unsubscription.
-  underlay_->SetValue(regular_key, std::make_unique<Value>(47),
+  underlay_->SetValue(regular_key, Value(47),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValue(regular_key, std::make_unique<Value>(48),
+  overlay_->SetValue(regular_key, Value(48),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(obs.changed_keys.empty());
 }
@@ -100,39 +100,39 @@ TEST_F(OverlayUserPrefStoreTest, GetAndSet) {
   EXPECT_FALSE(overlay_->GetValue(regular_key, &value));
   EXPECT_FALSE(underlay_->GetValue(regular_key, &value));
 
-  underlay_->SetValue(regular_key, std::make_unique<Value>(42),
+  underlay_->SetValue(regular_key, Value(42),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   // Value shines through:
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   EXPECT_TRUE(underlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
-  overlay_->SetValue(regular_key, std::make_unique<Value>(43),
+  overlay_->SetValue(regular_key, Value(43),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
 
   EXPECT_TRUE(underlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   overlay_->RemoveValue(regular_key,
                         WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   // Value shines through:
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   EXPECT_TRUE(underlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 }
 
 // Check that GetMutableValue does not return the dictionary of the underlay.
 TEST_F(OverlayUserPrefStoreTest, ModifyDictionaries) {
-  underlay_->SetValue(regular_key, std::make_unique<DictionaryValue>(),
+  underlay_->SetValue(regular_key, DictionaryValue(),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   Value* modify = nullptr;
@@ -145,7 +145,7 @@ TEST_F(OverlayUserPrefStoreTest, ModifyDictionaries) {
   EXPECT_TRUE(underlay_->GetMutableValue(regular_key, &original_in_underlay));
   ASSERT_TRUE(original_in_underlay);
   ASSERT_TRUE(original_in_underlay->is_dict());
-  EXPECT_TRUE(static_cast<DictionaryValue*>(original_in_underlay)->empty());
+  EXPECT_TRUE(original_in_underlay->DictEmpty());
 
   Value* modified = nullptr;
   EXPECT_TRUE(overlay_->GetMutableValue(regular_key, &modified));
@@ -162,29 +162,29 @@ TEST_F(OverlayUserPrefStoreTest, GlobalPref) {
   const Value* value = nullptr;
 
   // Check that underlay first value is reported.
-  underlay_->SetValue(persistent_key, std::make_unique<Value>(42),
+  underlay_->SetValue(persistent_key, Value(42),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   obs.VerifyAndResetChangedKey(persistent_key);
 
   // Check that underlay overwriting is reported.
-  underlay_->SetValue(persistent_key, std::make_unique<Value>(43),
+  underlay_->SetValue(persistent_key, Value(43),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   obs.VerifyAndResetChangedKey(persistent_key);
 
   // Check that we get this value from the overlay
   EXPECT_TRUE(overlay_->GetValue(persistent_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
 
   // Check that overwriting change in overlay is reported.
-  overlay_->SetValue(persistent_key, std::make_unique<Value>(44),
+  overlay_->SetValue(persistent_key, Value(44),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   obs.VerifyAndResetChangedKey(persistent_key);
 
   // Check that we get this value from the overlay and the underlay.
   EXPECT_TRUE(overlay_->GetValue(persistent_key, &value));
-  EXPECT_TRUE(base::Value(44).Equals(value));
+  EXPECT_EQ(base::Value(44), *value);
   EXPECT_TRUE(underlay_->GetValue(persistent_key, &value));
-  EXPECT_TRUE(base::Value(44).Equals(value));
+  EXPECT_EQ(base::Value(44), *value);
 
   // Check that overlay remove is reported.
   overlay_->RemoveValue(persistent_key,
@@ -196,16 +196,16 @@ TEST_F(OverlayUserPrefStoreTest, GlobalPref) {
   EXPECT_FALSE(underlay_->GetValue(persistent_key, &value));
 
   // Check respecting of silence.
-  overlay_->SetValueSilently(persistent_key, std::make_unique<Value>(46),
+  overlay_->SetValueSilently(persistent_key, Value(46),
                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(obs.changed_keys.empty());
 
   overlay_->RemoveObserver(&obs);
 
   // Check successful unsubscription.
-  underlay_->SetValue(persistent_key, std::make_unique<Value>(47),
+  underlay_->SetValue(persistent_key, Value(47),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValue(persistent_key, std::make_unique<Value>(48),
+  overlay_->SetValue(persistent_key, Value(48),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(obs.changed_keys.empty());
 }
@@ -213,66 +213,68 @@ TEST_F(OverlayUserPrefStoreTest, GlobalPref) {
 // Check that mutable values are removed correctly.
 TEST_F(OverlayUserPrefStoreTest, ClearMutableValues) {
   // Set in overlay and underlay the same preference.
-  underlay_->SetValue(regular_key, std::make_unique<Value>(42),
+  underlay_->SetValue(regular_key, Value(42),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValue(regular_key, std::make_unique<Value>(43),
+  overlay_->SetValue(regular_key, Value(43),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   const Value* value = nullptr;
   // Check that an overlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
   overlay_->ClearMutableValues();
 
   // Check that an underlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 }
 
 // Check that mutable values are removed correctly when using a silent set.
 TEST_F(OverlayUserPrefStoreTest, ClearMutableValues_Silently) {
   // Set in overlay and underlay the same preference.
-  underlay_->SetValueSilently(regular_key, std::make_unique<Value>(42),
+  underlay_->SetValueSilently(regular_key, Value(42),
                               WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValueSilently(regular_key, std::make_unique<Value>(43),
+  overlay_->SetValueSilently(regular_key, Value(43),
                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   const Value* value = nullptr;
   // Check that an overlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
   overlay_->ClearMutableValues();
 
   // Check that an underlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 }
 
 TEST_F(OverlayUserPrefStoreTest, GetValues) {
   // To check merge behavior, create underlay and overlay so each has a key the
   // other doesn't have and they have one key in common.
-  underlay_->SetValue(persistent_key, std::make_unique<Value>(42),
+  underlay_->SetValue(persistent_key, Value(42),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValue(regular_key, std::make_unique<Value>(43),
+  overlay_->SetValue(regular_key, Value(43),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  underlay_->SetValue(shared_key, std::make_unique<Value>(42),
+  underlay_->SetValue(shared_key, Value(42),
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  overlay_->SetValue(shared_key, std::make_unique<Value>(43),
+  overlay_->SetValue(shared_key, Value(43),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   auto values = overlay_->GetValues();
-  const Value* value = nullptr;
   // Check that an overlay preference is returned.
-  ASSERT_TRUE(values->Get(persistent_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  const Value* value = values.FindByDottedPath(persistent_key);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(42), *value);
 
   // Check that an underlay preference is returned.
-  ASSERT_TRUE(values->Get(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  value = values.FindByDottedPath(regular_key);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(43), *value);
 
   // Check that the overlay is preferred.
-  ASSERT_TRUE(values->Get(shared_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  value = values.FindByDottedPath(shared_key);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(43), *value);
 }
 
 TEST_F(OverlayUserPrefStoreTest, CommitPendingWriteWithCallback) {

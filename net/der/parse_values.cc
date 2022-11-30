@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,14 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/sys_byteorder.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 namespace {
 
@@ -231,7 +234,7 @@ bool BitString::AssertsBit(size_t bit_index) const {
   return 0 != (byte & (1 << bit_index_in_byte));
 }
 
-bool ParseBitString(const Input& in, BitString* out) {
+absl::optional<BitString> ParseBitString(const Input& in) {
   ByteReader reader(in);
 
   // From ITU-T X.690, section 8.6.2.2 (applies to BER, CER, DER):
@@ -241,13 +244,13 @@ bool ParseBitString(const Input& in, BitString* out) {
   // subsequent octet. The number shall be in the range zero to seven.
   uint8_t unused_bits;
   if (!reader.ReadByte(&unused_bits))
-    return false;
+    return absl::nullopt;
   if (unused_bits > 7)
-    return false;
+    return absl::nullopt;
 
   Input bytes;
   if (!reader.ReadBytes(reader.BytesLeft(), &bytes))
-    return false;  // Not reachable.
+    return absl::nullopt;  // Not reachable.
 
   // Ensure that unused bits in the last byte are set to 0.
   if (unused_bits > 0) {
@@ -256,7 +259,7 @@ bool ParseBitString(const Input& in, BitString* out) {
     // If the bitstring is empty, there shall be no subsequent octets,
     // and the initial octet shall be zero.
     if (bytes.Length() == 0)
-      return false;
+      return absl::nullopt;
     uint8_t last_byte = bytes.UnsafeData()[bytes.Length() - 1];
 
     // From ITU-T X.690, section 11.2.1 (applies to CER and DER, but not BER):
@@ -265,11 +268,10 @@ bool ParseBitString(const Input& in, BitString* out) {
     // shall be set to zero.
     uint8_t mask = 0xFF >> (8 - unused_bits);
     if ((mask & last_byte) != 0)
-      return false;
+      return absl::nullopt;
   }
 
-  *out = BitString(bytes, unused_bits);
-  return true;
+  return BitString(bytes, unused_bits);
 }
 
 bool GeneralizedTime::InUTCTimeRange() const {
@@ -292,48 +294,6 @@ bool operator<=(const GeneralizedTime& lhs, const GeneralizedTime& rhs) {
 
 bool operator>=(const GeneralizedTime& lhs, const GeneralizedTime& rhs) {
   return !(lhs < rhs);
-}
-
-// A UTC Time in DER encoding should be YYMMDDHHMMSSZ, but some CAs encode
-// the time following BER rules, which allows for YYMMDDHHMMZ. If the length
-// is 11, assume it's YYMMDDHHMMZ, and in converting it to a GeneralizedTime,
-// add in the seconds (set to 0).
-bool ParseUTCTimeRelaxed(const Input& in, GeneralizedTime* value) {
-  ByteReader reader(in);
-  GeneralizedTime time;
-  if (!DecimalStringToUint(reader, 2, &time.year) ||
-      !DecimalStringToUint(reader, 2, &time.month) ||
-      !DecimalStringToUint(reader, 2, &time.day) ||
-      !DecimalStringToUint(reader, 2, &time.hours) ||
-      !DecimalStringToUint(reader, 2, &time.minutes)) {
-    return false;
-  }
-
-  // Try to read the 'Z' at the end. If we read something else, then for it to
-  // be valid the next bytes should be seconds (and then followed by 'Z').
-  uint8_t zulu;
-  ByteReader zulu_reader = reader;
-  if (!zulu_reader.ReadByte(&zulu))
-    return false;
-  if (zulu == 'Z' && !zulu_reader.HasMore()) {
-    time.seconds = 0;
-    *value = time;
-  } else {
-    if (!DecimalStringToUint(reader, 2, &time.seconds))
-      return false;
-    if (!reader.ReadByte(&zulu) || zulu != 'Z' || reader.HasMore())
-      return false;
-  }
-
-  if (time.year < 50) {
-    time.year += 2000;
-  } else {
-    time.year += 1900;
-  }
-  if (!ValidateGeneralizedTime(time))
-    return false;
-  *value = time;
-  return true;
 }
 
 bool ParseUTCTime(const Input& in, GeneralizedTime* value) {
@@ -381,6 +341,103 @@ bool ParseGeneralizedTime(const Input& in, GeneralizedTime* value) {
   return true;
 }
 
-}  // namespace der
+bool ParseIA5String(Input in, std::string* out) {
+  for (char c : in.AsStringPiece()) {
+    if (static_cast<uint8_t>(c) > 127)
+      return false;
+  }
+  *out = in.AsString();
+  return true;
+}
 
-}  // namespace net
+bool ParseVisibleString(Input in, std::string* out) {
+  // ITU-T X.680:
+  // VisibleString : "Defining registration number 6" + SPACE
+  // 6 includes all the characters from '!' .. '~' (33 .. 126), space is 32.
+  // Also ITU-T X.691 says it much more clearly:
+  // "for VisibleString [the range] is 32 to 126 ... For VisibleString .. all
+  // the values in the range are present."
+  for (char c : in.AsStringPiece()) {
+    if (static_cast<uint8_t>(c) < 32 || static_cast<uint8_t>(c) > 126)
+      return false;
+  }
+  *out = in.AsString();
+  return true;
+}
+
+bool ParsePrintableString(Input in, std::string* out) {
+  for (char c : in.AsStringPiece()) {
+    if (!(base::IsAsciiAlpha(c) || c == ' ' || (c >= '\'' && c <= ':') ||
+          c == '=' || c == '?')) {
+      return false;
+    }
+  }
+  *out = in.AsString();
+  return true;
+}
+
+bool ParseTeletexStringAsLatin1(Input in, std::string* out) {
+  out->clear();
+  // Convert from Latin-1 to UTF-8.
+  size_t utf8_length = in.Length();
+  for (size_t i = 0; i < in.Length(); i++) {
+    if (in.UnsafeData()[i] > 0x7f)
+      utf8_length++;
+  }
+  out->reserve(utf8_length);
+  for (size_t i = 0; i < in.Length(); i++) {
+    uint8_t u = in.UnsafeData()[i];
+    if (u <= 0x7f) {
+      out->push_back(u);
+    } else {
+      out->push_back(0xc0 | (u >> 6));
+      out->push_back(0x80 | (u & 0x3f));
+    }
+  }
+  DCHECK_EQ(utf8_length, out->size());
+  return true;
+}
+
+bool ParseUniversalString(Input in, std::string* out) {
+  if (in.Length() % 4 != 0)
+    return false;
+
+  out->clear();
+  std::vector<uint32_t> in_32bit(in.Length() / 4);
+  if (in.Length())
+    memcpy(in_32bit.data(), in.UnsafeData(), in.Length());
+  for (const uint32_t c : in_32bit) {
+    // UniversalString is UCS-4 in big-endian order.
+    auto codepoint = static_cast<base_icu::UChar32>(base::NetToHost32(c));
+    if (!CBU_IS_UNICODE_CHAR(codepoint))
+      return false;
+
+    base::WriteUnicodeCharacter(codepoint, out);
+  }
+  return true;
+}
+
+bool ParseBmpString(Input in, std::string* out) {
+  if (in.Length() % 2 != 0)
+    return false;
+
+  out->clear();
+  std::vector<uint16_t> in_16bit(in.Length() / 2);
+  if (in.Length())
+    memcpy(in_16bit.data(), in.UnsafeData(), in.Length());
+  for (const uint16_t c : in_16bit) {
+    // BMPString is UCS-2 in big-endian order.
+    base_icu::UChar32 codepoint = base::NetToHost16(c);
+
+    // BMPString only supports codepoints in the Basic Multilingual Plane;
+    // surrogates are not allowed. CBU_IS_UNICODE_CHAR excludes the surrogate
+    // code points, among other invalid values.
+    if (!CBU_IS_UNICODE_CHAR(codepoint))
+      return false;
+
+    base::WriteUnicodeCharacter(codepoint, out);
+  }
+  return true;
+}
+
+}  // namespace net::der

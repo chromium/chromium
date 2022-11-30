@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 24: WebSocket connection to 'ws://127.0.0.1:8888/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
 Test that WebSocket fires error event if no WebSocket Server can be connected.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

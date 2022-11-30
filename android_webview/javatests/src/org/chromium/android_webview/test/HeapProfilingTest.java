@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1370781")
     public void testModeBrowserDynamicPseudo() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", false, false));
@@ -59,6 +60,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1370781")
     public void testModeBrowserDynamicPseudoSamplePartial() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", true, false));

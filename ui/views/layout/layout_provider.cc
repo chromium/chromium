@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,25 +47,25 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
   switch (metric) {
     case InsetsMetric::INSETS_DIALOG:
     case InsetsMetric::INSETS_DIALOG_SUBSECTION:
-      return gfx::Insets(13, 13);
+      return gfx::Insets(13);
     case InsetsMetric::INSETS_DIALOG_BUTTON_ROW: {
       const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);
-      return gfx::Insets(0, dialog_insets.left(), dialog_insets.bottom(),
-                         dialog_insets.right());
+      return gfx::Insets::TLBR(0, dialog_insets.left(), dialog_insets.bottom(),
+                               dialog_insets.right());
     }
     case InsetsMetric::INSETS_DIALOG_TITLE: {
       const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);
-      return gfx::Insets(dialog_insets.top(), dialog_insets.left(), 0,
-                         dialog_insets.right());
+      return gfx::Insets::TLBR(dialog_insets.top(), dialog_insets.left(), 0,
+                               dialog_insets.right());
     }
     case InsetsMetric::INSETS_TOOLTIP_BUBBLE:
       return gfx::Insets(8);
     case InsetsMetric::INSETS_CHECKBOX_RADIO_BUTTON:
-      return gfx::Insets(5, 6);
+      return gfx::Insets::VH(5, 6);
     case InsetsMetric::INSETS_VECTOR_IMAGE_BUTTON:
       return gfx::Insets(4);
     case InsetsMetric::INSETS_LABEL_BUTTON:
-      return gfx::Insets(5, 6);
+      return gfx::Insets::VH(5, 6);
   }
   NOTREACHED();
   return gfx::Insets();
@@ -85,7 +85,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_CLOSE_BUTTON_MARGIN:
       return 4;
     case DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
-      return 6;
+      return 8;
     case DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
       // Minimum label size plus padding.
       return 32 + 2 * GetDistanceMetric(DISTANCE_BUTTON_HORIZONTAL_PADDING);
@@ -149,52 +149,46 @@ gfx::Insets LayoutProvider::GetDialogInsetsForContentType(
     DialogContentType leading,
     DialogContentType trailing) const {
   const int top_margin =
-      leading == CONTROL
+      leading == DialogContentType::kControl
           ? GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL)
           : GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT);
   const int bottom_margin =
-      trailing == CONTROL
+      trailing == DialogContentType::kControl
           ? GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL)
           : GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT);
   const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);
-  return gfx::Insets(top_margin, dialog_insets.left(), bottom_margin,
-                     dialog_insets.right());
+  return gfx::Insets::TLBR(top_margin, dialog_insets.left(), bottom_margin,
+                           dialog_insets.right());
 }
 
-int LayoutProvider::GetCornerRadiusMetric(EmphasisMetric emphasis_metric,
+int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
                                           const gfx::Size& size) const {
-  switch (emphasis_metric) {
-    case EMPHASIS_NONE:
+  switch (emphasis) {
+    case Emphasis::kNone:
       return 0;
-    case EMPHASIS_LOW:
-    case EMPHASIS_MEDIUM:
+    case Emphasis::kLow:
+    case Emphasis::kMedium:
       return 4;
-    case EMPHASIS_HIGH:
+    case Emphasis::kHigh:
       return 8;
-    case EMPHASIS_MAXIMUM:
+    case Emphasis::kMaximum:
       return std::min(size.width(), size.height()) / 2;
   }
 }
 
-int LayoutProvider::GetShadowElevationMetric(
-    EmphasisMetric emphasis_metric) const {
-  switch (emphasis_metric) {
-    case EMPHASIS_NONE:
+int LayoutProvider::GetShadowElevationMetric(Emphasis emphasis) const {
+  switch (emphasis) {
+    case Emphasis::kNone:
       return 0;
-    case EMPHASIS_LOW:
+    case Emphasis::kLow:
       return 1;
-    case EMPHASIS_MEDIUM:
+    case Emphasis::kMedium:
       return 2;
-    case EMPHASIS_HIGH:
+    case Emphasis::kHigh:
       return 3;
-    case EMPHASIS_MAXIMUM:
+    case Emphasis::kMaximum:
       return 16;
   }
-}
-
-gfx::ShadowValues LayoutProvider::MakeShadowValues(int elevation,
-                                                   SkColor color) const {
-  return gfx::ShadowValue::MakeMdShadowValues(elevation, color);
 }
 
 }  // namespace views

@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINT_ORDER_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINT_ORDER_ITERATOR_H_
 
+#include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -42,12 +44,12 @@ class CORE_EXPORT PaintLayerPaintOrderIterator {
   STACK_ALLOCATED();
 
  public:
-  PaintLayerPaintOrderIterator(const PaintLayer& root,
+  PaintLayerPaintOrderIterator(const PaintLayer* root,
                                PaintLayerIteration which_children)
       : root_(root),
         remaining_children_(which_children),
         index_(0),
-        current_normal_flow_child_(root.FirstChild())
+        current_normal_flow_child_(root->FirstChild())
 #if DCHECK_IS_ON()
         ,
         mutation_detector_(root)
@@ -60,16 +62,16 @@ class CORE_EXPORT PaintLayerPaintOrderIterator {
 
   PaintLayer* Next();
 
-  const Vector<PaintLayer*>* LayersPaintingOverlayOverflowControlsAfter(
-      const PaintLayer* layer) const {
-    return root_.stacking_node_
-               ? root_.stacking_node_
+  const HeapVector<Member<PaintLayer>>*
+  LayersPaintingOverlayOverflowControlsAfter(const PaintLayer* layer) const {
+    return root_->stacking_node_
+               ? root_->stacking_node_
                      ->LayersPaintingOverlayOverflowControlsAfter(layer)
                : nullptr;
   }
 
  private:
-  const PaintLayer& root_;
+  const PaintLayer* root_;
   unsigned remaining_children_;
   unsigned index_;
   PaintLayer* current_normal_flow_child_;
@@ -84,7 +86,7 @@ class CORE_EXPORT PaintLayerPaintOrderReverseIterator {
   STACK_ALLOCATED();
 
  public:
-  PaintLayerPaintOrderReverseIterator(const PaintLayer& root,
+  PaintLayerPaintOrderReverseIterator(const PaintLayer* root,
                                       unsigned which_children)
       : root_(root),
         remaining_children_(which_children)
@@ -105,7 +107,7 @@ class CORE_EXPORT PaintLayerPaintOrderReverseIterator {
  private:
   void SetIndexToLastItem();
 
-  const PaintLayer& root_;
+  const PaintLayer* root_;
   unsigned remaining_children_;
   int index_;
   PaintLayer* current_normal_flow_child_;

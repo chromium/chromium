@@ -1,11 +1,22 @@
 include_rules = [
   "+components/back_forward_cache",
+  "+components/content_settings/core/common",
   "+components/history/core/browser",
-  "+components/safe_browsing/core/proto/csd.pb.h",
+  "+components/no_state_prefetch/browser",
+  "+components/page_info",
+  "+components/safe_browsing/core/browser",
+  "+components/safe_browsing/core/common",
+  "+components/security_interstitials/content",
+  "+components/sessions/content",
   "+components/sessions/core/session_id.h",
+  "+components/version_info",
+  "+components/zoom",
   "+content/public/browser",
+  "+content/public/common",
+  "+content/public/test",
   "+crypto/sha2.h",
   "+ipc/ipc_message.h",
+  "+ipc/ipc_channel_proxy.h",
   "+net/cookies",
   "+net/extras",
   "+net/http",
@@ -14,11 +25,7 @@ include_rules = [
   "+services/network/network_context.h",
   "+services/network/public",
   "+services/service_manager/public/cpp",
+  "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/blink/public/mojom/loader",
+  "+ui/base",
 ]
-
-specific_include_rules = {
-  ".*test\.cc": [
-    "+content/public/test/browser_task_environment.h",
-  ],
-}

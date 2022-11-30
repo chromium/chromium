@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,10 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/task_runner_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
 namespace storage {
-
-std::unique_ptr<FileStreamReader> FileStreamReader::CreateForMemoryFile(
-    scoped_refptr<base::TaskRunner> task_runner,
-    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
-    const base::FilePath& file_path,
-    int64_t initial_offset,
-    const base::Time& expected_modification_time) {
-  return base::WrapUnique(new MemoryFileStreamReader(
-      std::move(task_runner), std::move(memory_file_util), file_path,
-      initial_offset, expected_modification_time));
-}
 
 MemoryFileStreamReader::MemoryFileStreamReader(
     scoped_refptr<base::TaskRunner> task_runner,

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace content {
@@ -28,7 +29,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-sync-account-control> element.
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Adds strings used by the <settings-password-prompt-dialog> element.
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 #endif
@@ -41,6 +42,8 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source);
 void AddNearbyShareData(content::WebUIDataSource* html_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Adds strings used by the <settings-secure-dns> element.
+void AddSecureDnsStrings(content::WebUIDataSource* html_source);
 }  // namespace settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_

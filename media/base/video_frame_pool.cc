@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 
 namespace media {
 
@@ -19,6 +20,8 @@ class VideoFramePool::PoolImpl
     : public base::RefCountedThreadSafe<VideoFramePool::PoolImpl> {
  public:
   PoolImpl();
+  PoolImpl(const PoolImpl&) = delete;
+  PoolImpl& operator=(const PoolImpl&) = delete;
 
   // See VideoFramePool::CreateFrame() for usage. Attempts to keep |frames_| in
   // LRU order by always pulling from the back of |frames_|.
@@ -64,9 +67,7 @@ class VideoFramePool::PoolImpl
   base::circular_deque<FrameEntry> frames_ GUARDED_BY(lock_);
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
-  const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PoolImpl);
+  raw_ptr<const base::TickClock> tick_clock_;
 };
 
 VideoFramePool::PoolImpl::PoolImpl()
@@ -133,7 +134,7 @@ void VideoFramePool::PoolImpl::FrameReleased(scoped_refptr<VideoFrame> frame) {
   // After this loop, |stale_index| is the index of the oldest non-stale frame.
   // Such an index must exist because |frame| is never stale.
   int stale_index = -1;
-  constexpr base::TimeDelta kStaleFrameLimit = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kStaleFrameLimit = base::Seconds(10);
   while (now - frames_[++stale_index].last_use_time > kStaleFrameLimit) {
     // Last frame should never be included since we just added it.
     DCHECK_LE(static_cast<size_t>(stale_index), frames_.size());

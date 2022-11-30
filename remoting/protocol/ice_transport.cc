@@ -1,8 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/ice_transport.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "remoting/protocol/channel_authenticator.h"
@@ -13,8 +15,7 @@
 #include "remoting/protocol/stream_message_pipe_adapter.h"
 #include "remoting/protocol/transport_context.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Delay after candidate creation before sending transport-info message to
 // accumulate multiple candidates. This is an optimization to reduce number of
@@ -41,16 +42,18 @@ void IceTransport::Start(
   DCHECK(!pseudotcp_channel_factory_);
 
   send_transport_info_callback_ = std::move(send_transport_info_callback);
-  pseudotcp_channel_factory_.reset(new PseudoTcpChannelFactory(this));
-  secure_channel_factory_.reset(new SecureChannelFactory(
-      pseudotcp_channel_factory_.get(), authenticator));
-  message_channel_factory_.reset(new StreamMessageChannelFactoryAdapter(
-      secure_channel_factory_.get(),
-      base::BindRepeating(&IceTransport::OnChannelError,
-                          weak_factory_.GetWeakPtr())));
+  pseudotcp_channel_factory_ = std::make_unique<PseudoTcpChannelFactory>(this);
+  secure_channel_factory_ = std::make_unique<SecureChannelFactory>(
+      pseudotcp_channel_factory_.get(), authenticator);
+  message_channel_factory_ =
+      std::make_unique<StreamMessageChannelFactoryAdapter>(
+          secure_channel_factory_.get(),
+          base::BindRepeating(&IceTransport::OnChannelError,
+                              weak_factory_.GetWeakPtr()));
 }
 
-bool IceTransport::ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info_xml) {
+bool IceTransport::ProcessTransportInfo(
+    jingle_xmpp::XmlElement* transport_info_xml) {
   IceTransportInfo transport_info;
   if (!transport_info.ParseXml(transport_info_xml))
     return false;
@@ -88,12 +91,12 @@ MessageChannelFactory* IceTransport::GetChannelFactory() {
 
 MessageChannelFactory* IceTransport::GetMultiplexedChannelFactory() {
   if (!channel_multiplexer_) {
-    channel_multiplexer_.reset(
-        new ChannelMultiplexer(secure_channel_factory_.get(), kMuxChannelName));
-    mux_channel_factory_.reset(new StreamMessageChannelFactoryAdapter(
+    channel_multiplexer_ = std::make_unique<ChannelMultiplexer>(
+        secure_channel_factory_.get(), kMuxChannelName);
+    mux_channel_factory_ = std::make_unique<StreamMessageChannelFactoryAdapter>(
         channel_multiplexer_.get(),
         base::BindRepeating(&IceTransport::OnChannelError,
-                            weak_factory_.GetWeakPtr())));
+                            weak_factory_.GetWeakPtr()));
   }
   return mux_channel_factory_.get();
 }
@@ -178,12 +181,12 @@ void IceTransport::EnsurePendingTransportInfoMessage() {
             transport_info_timer_.IsRunning());
 
   if (!pending_transport_info_message_) {
-    pending_transport_info_message_.reset(new IceTransportInfo());
+    pending_transport_info_message_ = std::make_unique<IceTransportInfo>();
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.
-    transport_info_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kTransportInfoSendDelayMs),
-        this, &IceTransport::SendTransportInfo);
+    transport_info_timer_.Start(FROM_HERE,
+                                base::Milliseconds(kTransportInfoSendDelayMs),
+                                this, &IceTransport::SendTransportInfo);
   }
 }
 
@@ -201,5 +204,4 @@ void IceTransport::OnChannelError(int error) {
   event_handler_->OnIceTransportError(error ? CHANNEL_CONNECTION_ERROR : OK);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

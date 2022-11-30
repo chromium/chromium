@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include <cstdint>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -39,8 +38,8 @@ class SiteDataCacheInspector {
   // the number can't be determined. |on_disk_size_kb| is the on-disk size of
   // the database, or -1 if the on-disk size can't be determined.
   using DataStoreSizeCallback =
-      base::OnceCallback<void(base::Optional<int64_t> num_rows,
-                              base::Optional<int64_t> on_disk_size_kb)>;
+      base::OnceCallback<void(absl::optional<int64_t> num_rows,
+                              absl::optional<int64_t> on_disk_size_kb)>;
   virtual void GetDataStoreSize(DataStoreSizeCallback on_have_data) = 0;
 
   // Retrieves the in-memory data for a given origin.

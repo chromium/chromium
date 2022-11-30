@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <iterator>
 #include <ostream>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/values.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
@@ -80,7 +80,7 @@ URLPatternSet URLPatternSet::CreateIntersection(
   // they have with the other patterns.
   for (const auto* pattern : unique_set1) {
     for (const auto* pattern2 : unique_set2) {
-      base::Optional<URLPattern> intersection =
+      absl::optional<URLPattern> intersection =
           pattern->CreateIntersection(*pattern2);
       if (intersection)
         result.patterns_.insert(std::move(*intersection));
@@ -95,38 +95,6 @@ URLPatternSet URLPatternSet::CreateUnion(const URLPatternSet& set1,
                                          const URLPatternSet& set2) {
   return URLPatternSet(
       base::STLSetUnion<std::set<URLPattern>>(set1.patterns_, set2.patterns_));
-}
-
-// static
-URLPatternSet URLPatternSet::CreateUnion(
-    const std::vector<URLPatternSet>& sets) {
-  URLPatternSet result;
-  if (sets.empty())
-    return result;
-
-  // N-way union algorithm is basic O(nlog(n)) merge algorithm.
-  //
-  // Do the first merge step into a working set so that we don't mutate any of
-  // the input.
-  // TODO(devlin): Looks like this creates a bunch of copies; we can probably
-  // clean that up.
-  std::vector<URLPatternSet> working;
-  for (size_t i = 0; i < sets.size(); i += 2) {
-    if (i + 1 < sets.size())
-      working.push_back(CreateUnion(sets[i], sets[i + 1]));
-    else
-      working.push_back(sets[i].Clone());
-  }
-
-  for (size_t skip = 1; skip < working.size(); skip *= 2) {
-    for (size_t i = 0; i < (working.size() - skip); i += skip) {
-      URLPatternSet u = CreateUnion(working[i], working[i + skip]);
-      working[i].patterns_.swap(u.patterns_);
-    }
-  }
-
-  result.patterns_.swap(working[0].patterns_);
-  return result;
 }
 
 URLPatternSet::URLPatternSet() = default;
@@ -193,7 +161,12 @@ bool URLPatternSet::AddOrigin(int valid_schemes, const GURL& origin) {
   if (origin.is_empty())
     return false;
   const url::Origin real_origin = url::Origin::Create(origin);
-  DCHECK(real_origin.IsSameOriginWith(url::Origin::Create(origin.GetOrigin())));
+  DCHECK(real_origin.IsSameOriginWith(
+      url::Origin::Create(origin.DeprecatedGetOriginAsURL())));
+  // TODO(devlin): Implement this in terms of the `AddOrigin()` call that takes
+  // an url::Origin? It's interesting because this doesn't currently supply an
+  // extra path, so if the GURL has not path ("https://example.com"), it would
+  // fail to add - which is probably a bug.
   URLPattern origin_pattern(valid_schemes);
   // Origin adding could fail if |origin| does not match |valid_schemes|.
   if (origin_pattern.Parse(origin.spec()) !=
@@ -201,6 +174,18 @@ bool URLPatternSet::AddOrigin(int valid_schemes, const GURL& origin) {
     return false;
   }
   origin_pattern.SetPath("/*");
+  return AddPattern(origin_pattern);
+}
+
+bool URLPatternSet::AddOrigin(int valid_schemes, const url::Origin& origin) {
+  DCHECK(!origin.opaque());
+  URLPattern origin_pattern(valid_schemes);
+  // Origin adding could fail if |origin| does not match |valid_schemes|.
+  std::string string_pattern = origin.Serialize() + "/*";
+  if (origin_pattern.Parse(string_pattern) !=
+      URLPattern::ParseResult::kSuccess) {
+    return false;
+  }
   return AddPattern(origin_pattern);
 }
 
@@ -240,6 +225,19 @@ bool URLPatternSet::MatchesAllURLs() const {
   return false;
 }
 
+bool URLPatternSet::MatchesHost(const GURL& test,
+                                bool require_match_subdomains) const {
+  if (!test.is_valid())
+    return false;
+
+  return std::any_of(
+      patterns_.begin(), patterns_.end(),
+      [&test, require_match_subdomains](const URLPattern& pattern) {
+        return pattern.MatchesHost(test) &&
+               (!require_match_subdomains || pattern.match_subdomains());
+      });
+}
+
 bool URLPatternSet::MatchesSecurityOrigin(const GURL& origin) const {
   for (auto pattern = patterns_.begin(); pattern != patterns_.end();
        ++pattern) {
@@ -264,11 +262,14 @@ bool URLPatternSet::OverlapsWith(const URLPatternSet& other) const {
   return false;
 }
 
-std::unique_ptr<base::ListValue> URLPatternSet::ToValue() const {
-  std::unique_ptr<base::ListValue> value(new base::ListValue);
-  for (auto i = patterns_.cbegin(); i != patterns_.cend(); ++i)
-    value->AppendIfNotPresent(std::make_unique<base::Value>(i->GetAsString()));
-  return value;
+base::Value::List URLPatternSet::ToValue() const {
+  base::Value::List result;
+  for (const auto& pattern : patterns_) {
+    base::Value pattern_str_value(pattern.GetAsString());
+    if (!base::Contains(result, pattern_str_value))
+      result.Append(std::move(pattern_str_value));
+  }
+  return result;
 }
 
 bool URLPatternSet::Populate(const std::vector<std::string>& patterns,
@@ -296,25 +297,24 @@ bool URLPatternSet::Populate(const std::vector<std::string>& patterns,
   return true;
 }
 
-std::unique_ptr<std::vector<std::string>> URLPatternSet::ToStringVector()
-    const {
-  std::unique_ptr<std::vector<std::string>> value(new std::vector<std::string>);
-  for (auto i = patterns_.cbegin(); i != patterns_.cend(); ++i) {
-    value->push_back(i->GetAsString());
+std::vector<std::string> URLPatternSet::ToStringVector() const {
+  std::vector<std::string> result;
+  for (const auto& pattern : patterns_) {
+    result.push_back(pattern.GetAsString());
   }
-  return value;
+  return result;
 }
 
-bool URLPatternSet::Populate(const base::ListValue& value,
+bool URLPatternSet::Populate(const base::Value::List& value,
                              int valid_schemes,
                              bool allow_file_access,
                              std::string* error) {
   std::vector<std::string> patterns;
-  for (size_t i = 0; i < value.GetSize(); ++i) {
-    std::string item;
-    if (!value.GetString(i, &item))
+  for (const base::Value& pattern : value) {
+    const std::string* item = pattern.GetIfString();
+    if (!item)
       return false;
-    patterns.push_back(item);
+    patterns.push_back(*item);
   }
   return Populate(patterns, valid_schemes, allow_file_access, error);
 }

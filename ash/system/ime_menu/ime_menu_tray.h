@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
-#include "base/macros.h"
-#include "ui/base/ime/chromeos/ime_keyset.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/ime/ash/ime_keyset.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;
@@ -43,7 +42,7 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
 
   // Shows the virtual keyboard with the given keyset: emoji, handwriting or
   // voice.
-  void ShowKeyboardWithKeyset(chromeos::input_method::ImeKeyset keyset);
+  void ShowKeyboardWithKeyset(input_method::ImeKeyset keyset);
 
   // Returns true if the menu should show emoji, handwriting and voice buttons
   // on the bottom. Otherwise, the menu will show a 'Customize...' bottom row
@@ -65,6 +64,7 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
   void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
+  void AddedToWidget() override;
 
   // IMEObserver:
   void OnIMERefresh() override;

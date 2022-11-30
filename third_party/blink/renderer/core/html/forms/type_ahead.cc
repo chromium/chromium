@@ -31,13 +31,14 @@
 
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 
 TypeAhead::TypeAhead(TypeAheadDataSource* data_source)
     : data_source_(data_source), repeating_char_(0) {}
 
-constexpr base::TimeDelta kTypeAheadTimeout = base::TimeDelta::FromSecondsD(1);
+constexpr base::TimeDelta kTypeAheadTimeout = base::Seconds(1);
 
 static String StripLeadingWhiteSpace(const String& string) {
   unsigned length = string.length();
@@ -63,7 +64,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
     // If |last_type_time_| is null, there should be no type ahead session in
     // progress. Thus, |buffer_|, which represents a partial match, should be
     // empty.
-    DCHECK(buffer_.IsEmpty());
+    DCHECK(buffer_.empty());
   }
   last_type_time_ = event.PlatformTimeStamp();
 
@@ -79,7 +80,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
   if (match_mode & kCycleFirstChar && c == repeating_char_) {
     // The user is likely trying to cycle through all the items starting
     // with this character, so just search on the character.
-    prefix = String(&c, 1);
+    prefix = String(&c, 1u);
     repeating_char_ = c;
   } else if (match_mode & kMatchPrefix) {
     prefix = buffer_.ToString();
@@ -91,7 +92,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
     }
   }
 
-  if (!prefix.IsEmpty()) {
+  if (!prefix.empty()) {
     int selected = data_source_->IndexOfSelectedOption();
     int index = (selected < 0 ? 0 : selected) + search_start_offset;
     index %= option_count;

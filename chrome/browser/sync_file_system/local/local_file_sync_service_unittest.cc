@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -135,14 +136,14 @@ class LocalFileSyncServiceTest
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("LocalFileSyncServiceTest");
 
-    file_system_.reset(new CannedSyncableFileSystem(
+    file_system_ = std::make_unique<CannedSyncableFileSystem>(
         GURL(kOrigin), in_memory_env_.get(), content::GetIOThreadTaskRunner({}),
-        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()})));
+        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()}));
 
     local_service_ = LocalFileSyncService::CreateForTesting(
         &profile_, in_memory_env_.get());
 
-    file_system_->SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_->SetUp();
 
     base::RunLoop run_loop;
     SyncStatusCode status = SYNC_STATUS_UNKNOWN;
@@ -233,7 +234,7 @@ TEST_F(LocalFileSyncServiceTest, RemoteSyncStepsSimple) {
   const FileSystemURL kFile(file_system_->URL("file"));
   const FileSystemURL kDir(file_system_->URL("dir"));
   const char kTestFileData[] = "0123456789";
-  const int kTestFileDataSize = static_cast<int>(base::size(kTestFileData) - 1);
+  const int kTestFileDataSize = static_cast<int>(std::size(kTestFileData) - 1);
 
   base::FilePath local_path;
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &local_path));
@@ -293,7 +294,7 @@ TEST_F(LocalFileSyncServiceTest, LocalChangeObserver) {
   const FileSystemURL kFile(file_system_->URL("file"));
   const FileSystemURL kDir(file_system_->URL("dir"));
   const char kTestFileData[] = "0123456789";
-  const int kTestFileDataSize = static_cast<int>(base::size(kTestFileData) - 1);
+  const int kTestFileDataSize = static_cast<int>(std::size(kTestFileData) - 1);
 
   EXPECT_EQ(base::File::FILE_OK, file_system_->CreateFile(kFile));
 
@@ -306,7 +307,7 @@ TEST_F(LocalFileSyncServiceTest, LocalChangeObserver) {
   EXPECT_EQ(2, num_changes_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky: http://crbug.com/171487
 #define MAYBE_LocalChangeObserverMultipleContexts\
     DISABLED_LocalChangeObserverMultipleContexts
@@ -320,7 +321,7 @@ TEST_F(LocalFileSyncServiceTest, MAYBE_LocalChangeObserverMultipleContexts) {
   CannedSyncableFileSystem file_system2(
       GURL(kOrigin2), in_memory_env_.get(), content::GetIOThreadTaskRunner({}),
       base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()}));
-  file_system2.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+  file_system2.SetUp();
 
   base::RunLoop run_loop;
   SyncStatusCode status = SYNC_STATUS_UNKNOWN;
@@ -351,7 +352,7 @@ TEST_F(LocalFileSyncServiceTest, MAYBE_LocalChangeObserverMultipleContexts) {
 TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_CreateFile) {
   const FileSystemURL kFile(file_system_->URL("foo"));
   const char kTestFileData[] = "0123456789";
-  const int kTestFileDataSize = static_cast<int>(base::size(kTestFileData) - 1);
+  const int kTestFileDataSize = static_cast<int>(std::size(kTestFileData) - 1);
 
   base::RunLoop run_loop;
 
@@ -654,7 +655,7 @@ TEST_F(OriginChangeMapTest, Basic) {
 
   const GURL kOrigins[] = { kOrigin1, kOrigin2, kOrigin3 };
   std::set<GURL> all_origins;
-  all_origins.insert(kOrigins, kOrigins + base::size(kOrigins));
+  all_origins.insert(kOrigins, kOrigins + std::size(kOrigins));
 
   GURL origin;
   while (!all_origins.empty()) {
@@ -691,7 +692,7 @@ TEST_F(OriginChangeMapTest, Basic) {
   SetOriginChangeCount(kOrigin2, 8);
   ASSERT_EQ(1 + 4 + 8, GetTotalChangeCount());
 
-  all_origins.insert(kOrigins, kOrigins + base::size(kOrigins));
+  all_origins.insert(kOrigins, kOrigins + std::size(kOrigins));
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
     ASSERT_TRUE(base::Contains(all_origins, origin));
@@ -714,7 +715,7 @@ TEST_F(OriginChangeMapTest, WithDisabled) {
   ASSERT_EQ(1 + 2 + 4, GetTotalChangeCount());
 
   std::set<GURL> all_origins;
-  all_origins.insert(kOrigins, kOrigins + base::size(kOrigins));
+  all_origins.insert(kOrigins, kOrigins + std::size(kOrigins));
 
   GURL origin;
   while (!all_origins.empty()) {

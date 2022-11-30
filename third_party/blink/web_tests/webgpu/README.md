@@ -4,60 +4,59 @@ The WebGPU conformance test suite (CTS) is developed at
 <https://github.com/gpuweb/cts>. It is written in TypeScript and compiled to
 JavaScript to run as part of WPT.
 
-The `roll_webgpu_cts.sh` script in this directory rolls Chromium's
-`third_party/webgpu-cts/src/` to the latest revision, builds
-it, and saves the built files into `.../wpt_internal/webgpu/`.
-Once this is done, `.../wpt_internal/webgpu/cts.html` must also be regenerated.
-This is done with the `regenerate_internal_cts_html.sh` script.
-This must be done after a roll and after changes to `WebGPUExpectations`.
-
 (Note: there is no copy of the WebGPU CTS in WPT. This is because browsers are
 at different stages of implementation, and it is more useful to pin a particular
 revision of the CTS rather than use the latest version.)
 
-These scripts should work on Linux and macOS.
-See the comments in those scripts for more details, and below for step-by-step
-instructions on performing a roll.
+Most of the WebGPU CTS runs on Chrome's infrastructure using the GPU Telemetry
+harness (see content/test/gpu/gpu_tests/webgpu_cts_integration_test.py). Only
+the reftests run using the web tests infrastructure.
 
-## How to roll the WebGPU CTS into Chromium
+An autoroller (https://autoroll.skia.org/r/webgpu-cts-chromium-autoroll) rolls the WebGPU
+CTS into Chromium regularly. Part of the roll requires regenerating a few files which the
+autoroller attempts to do.
+1. `third_party/webgpu-cts/ts_sources.txt` is a generated file which tells GN the list of Typescript sources to be transpiled to Javascript.
+1. `third_party/webgpu-cts/resource_files.txt` is a generated file which tells GN the list of resources that should be included in the test isolate for CTS test pages to load.
+1. `third_party/blink/web_tests/wpt_internal/webgpu/web_platform/reftests/**/*.html` are the
+reftests and reference files which run on the web tests test infrastructure.
 
-1. Run `third_party/blink/web_tests/webgpu/roll_webgpu_cts.sh`.
-1. Repeat until regeneration succeeds:
-    1. Run `third_party/blink/web_tests/webgpu/regenerate_internal_cts_html.sh`.
-    1. In `third_party/blink/web_tests/WebGPUExpectations`,
-        delete any expectations that caused regeneration errors
-        (or try to update them if there was a rename).
-1. Commit changes, upload patch (ignore line-length warnings in generated files).
-1. Run these tryjobs: `dawn-.*-deps-rel`.
-1. Make sure there isn't anything terribly wrong
-    (e.g. a harness bug that causes all tests to fail, or not run at all).
-1. Remove stale expectations:
-    1. Look at the output of `webgpu_blink_web_tests` (and related)
-        on those tryjobs.
-    1. Remove any expectations for "passed unexpectedly" test variants
-        in `WebGPUExpectations`.
-1. Repeat until CQ passes:
-    1. Look at output of `webgpu_blink_web_tests` on all bots.
-    1. Look at the output of `webgpu_blink_web_tests` (and related)
-        on any failing bots.
-    1. Add `WebGPUExpectations` lines for any test variants that
-        "failed unexpectedly" on any tryjob.
-        If they failed on all tryjobs, add them to the "Untriaged" section.
-        If they failed on a specific tryjob, add them to a platform-specific section.
-        1. Optionally, make some expectations more precise than
-            a whole file; **re-run `regenerate_internal_cts_html.sh`
-            to automatically subdivide tests to fulfill the expectations**.
-        1. If a test variant times out simply because it's very long,
-            add a Pass expectation for one of its immediate children
-            under "Test file splits."
-            (TODO: Try to figure out if we can "ping" the harness to prevent
-            timeouts due to there being many CTS test cases in one WPT variant.)
-    1. Run `dawn-.*-deps-rel`.
-1. Get a review and land the CL!
+### Running reftests through WPT (Blink web_tests)
 
-## Testing Locally
+(If you want to test unlanded reftest changes to the WebGPU CTS, first check them out in
+`third_party/webgpu-cts/src`, then run
+`third_party/webgpu-cts/scripts/gen_ts_dep_lists.py` and
+`third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py`.)
 
-This is not necessary for the roll process, but if you want to run a test
-locally with `--enable-unsafe-webgpu`, you can easily do so here:
+Build the `webgpu_blink_web_tests` target (change build directory name as needed):
 
-*   <https://gpuweb.github.io/cts/standalone/>
+```sh
+autoninja -C out/YOUR_TARGET webgpu_blink_web_tests
+```
+
+Then, do one of the following:
+
+#### Manually, without expectations
+
+- Run `third_party/blink/tools/run_blink_wptserve.py -t YOUR_TARGET`
+- Open <http://localhost:8001/wpt_internal/webgpu/your_reftest.https.html> in the browser of your choice.
+
+#### Through the automated harness, with expectations
+
+Run tests with expectations applied (arguments copied from `test_suites.pyl`;
+check there to see if this documentation is outdated):
+
+```sh
+./out/YOUR_TARGET/bin/run_webgpu_blink_web_tests --target YOUR_TARGET --flag-specific=webgpu
+```
+
+- On Linux, add:
+    `--no-xvfb --additional-driver-flag=--enable-features=Vulkan`.
+- For backend validation, `--flag-specific` may be changed from `webgpu` to
+    `webgpu-with-backend-validation` or `webgpu-with-partial-backend-validation`.
+
+To run a particular test rather than all the reftests, add a test filter.
+Examples:
+- `--isolated-script-test-filter='wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html`
+- `--isolated-script-test-filter='wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html`
+
+Finally, to view the results, open `out/YOUR_TARGET/layout-test-results/results.html`.

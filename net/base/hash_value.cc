@@ -1,12 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/base/hash_value.h"
-#include "base/strings/string_util.h"
 
 #include <stdlib.h>
+
 #include <algorithm>
+#include <ostream>
 
 #include "base/base64.h"
 #include "base/check_op.h"

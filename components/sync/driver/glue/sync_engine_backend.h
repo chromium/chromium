@@ -1,11 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_DRIVER_GLUE_SYNC_ENGINE_BACKEND_H_
 #define COMPONENTS_SYNC_DRIVER_GLUE_SYNC_ENGINE_BACKEND_H_
-
-#include <stdint.h>
 
 #include <map>
 #include <memory>
@@ -13,34 +11,33 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "components/invalidation/impl/invalidation_switches.h"
+#include "base/time/time.h"
 #include "components/invalidation/public/invalidation.h"
-#include "components/sync/base/system_encryptor.h"
-#include "components/sync/driver/glue/sync_engine_impl.h"
+#include "components/invalidation/public/invalidator_state.h"
+#include "components/invalidation/public/topic_invalidation_map.h"
+#include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/engine/sync_status_observer.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "url/gurl.h"
 
 namespace syncer {
 
+class KeyDerivationParams;
 class ModelTypeController;
+class Nigori;
 class SyncEngineImpl;
 
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
-                          public SyncManager::Observer,
-                          public SyncStatusObserver {
+                          public SyncManager::Observer {
  public:
   using AllNodesCallback =
-      base::OnceCallback<void(const ModelType,
-                              std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(const ModelType, base::Value::List)>;
 
   // Struct that allows passing back data upon init, for data previously
   // produced by SyncEngineBackend (which doesn't itself have the ability to
@@ -51,8 +48,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
     RestoredLocalTransportData(const RestoredLocalTransportData&) = delete;
     ~RestoredLocalTransportData();
 
-    std::string encryption_bootstrap_token;
-    std::string keystore_encryption_bootstrap_token;
     std::map<ModelType, int64_t> invalidation_versions;
 
     // Initial authoritative values (usually read from prefs).
@@ -64,25 +59,46 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
     base::TimeDelta poll_interval;
   };
 
+  // Used to record result of handling of incoming sync invalidations. These
+  // values are persisted to logs. Entries should not be renumbered and numeric
+  // values should never be reused.
+  enum class IncomingInvalidationStatus {
+    // The payload parsed successfully and contains at least one valid data
+    // type.
+    kSuccess = 0,
+
+    // Failed to parse incoming payload, relevant only for sync standalone
+    // invalidations.
+    kPayloadParseFailed = 1,
+
+    // All data types in the payload are unknown.
+    kUnknownModelType = 2,
+
+    kMaxValue = kUnknownModelType,
+  };
+
   SyncEngineBackend(const std::string& name,
                     const base::FilePath& sync_data_folder,
                     const base::WeakPtr<SyncEngineImpl>& host);
 
-  // SyncManager::Observer implementation.  The Core just acts like an air
+  SyncEngineBackend(const SyncEngineBackend&) = delete;
+  SyncEngineBackend& operator=(const SyncEngineBackend&) = delete;
+
+  // SyncManager::Observer implementation.  The Backend just acts like an air
   // traffic controller here, forwarding incoming messages to appropriate
   // landing threads.
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
-  void OnInitializationComplete(
-      const WeakHandle<JsBackend>& js_backend,
-      const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      bool success) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
-
-  // SyncStatusObserver implementation.
   void OnSyncStatusChanged(const SyncStatus& status) override;
+
+  // Note:
+  //
+  // The Do* methods are the various entry points from our SyncEngineImpl.
+  // They are all called on the sync thread to actually perform synchronous (and
+  // potentially blocking) operations.
 
   // Forwards an invalidation state change to the sync manager.
   void DoOnInvalidatorStateChange(invalidation::InvalidatorState state);
@@ -91,12 +107,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoOnIncomingInvalidation(
       const invalidation::TopicInvalidationMap& invalidation_map);
 
-  // Note:
-  //
-  // The Do* methods are the various entry points from our SyncEngineImpl.
-  // They are all called on the sync thread to actually perform synchronous (and
-  // potentially blocking) syncapi operations.
-  //
   // Called to perform initialization of the syncapi on behalf of
   // SyncEngine::Initialize.
   void DoInitialize(SyncEngine::InitParams params,
@@ -120,10 +130,13 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoStartSyncing(base::Time last_poll_time);
 
   // Called to set the passphrase for encryption.
-  void DoSetEncryptionPassphrase(const std::string& passphrase);
+  void DoSetEncryptionPassphrase(
+      const std::string& passphrase,
+      const KeyDerivationParams& key_derivation_params);
 
-  // Called to decrypt the pending keys using user-entered passphrases.
-  void DoSetDecryptionPassphrase(const std::string& passphrase);
+  // Called to decrypt the pending keys using the |key| derived from
+  // user-entered passphrase.
+  void DoSetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key);
 
   // Called to decrypt the pending keys using trusted vault keys.
   void DoAddTrustedVaultDecryptionKeys(
@@ -143,7 +156,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   //    sync manager.
   void ShutdownOnUIThread();
   void DoShutdown(ShutdownReason reason);
-  void DoDestroySyncManager();
 
   // Configuration methods that must execute on sync loop.
   void DoPurgeDisabledTypes(const ModelTypeSet& to_purge);
@@ -152,27 +164,23 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
       ModelTypeSet types_to_config,
       base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task);
 
-  // Set the base request context to use when making HTTP calls.
-  // This method will add a reference to the context to persist it
-  // on the IO thread. Must be removed from IO thread.
-
-  SyncManager* sync_manager() { return sync_manager_.get(); }
-
   void SendBufferedProtocolEventsAndEnableForwarding();
   void DisableProtocolEventForwarding();
 
   // Notify the syncer that the cookie jar has changed.
-  void DoOnCookieJarChanged(bool account_mismatch,
-                            base::OnceClosure callback);
+  void DoOnCookieJarChanged(bool account_mismatch, base::OnceClosure callback);
 
   // Notify about change in client id.
   void DoOnInvalidatorClientIdChange(const std::string& client_id);
 
-  // Forwards an invalidation to the sync manager for all data types from the
-  // |payload|.
-  void DoOnInvalidationReceived(const std::string& payload);
+  // Forwards an invalidation to the sync manager for all data types extracted
+  // from the |payload|. This method is called for sync standalone
+  // invalidations.
+  void DoOnStandaloneInvalidationReceived(
+      const std::string& payload,
+      const ModelTypeSet& interested_data_types);
 
-  // Returns a ListValue representing Nigori node.
+  // Returns a Value::List representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
 
   bool HasUnsyncedItemsForTest() const;
@@ -182,21 +190,22 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // tokens for all known active devices (if available and excluding the local
   // device if reflections are disabled).
   void DoOnActiveDevicesChanged(
-      size_t active_devices,
-      std::vector<std::string> fcm_registration_tokens);
+      ActiveDevicesInvalidationInfo active_devices_invalidation_info);
 
  private:
   friend class base::RefCountedThreadSafe<SyncEngineBackend>;
 
   ~SyncEngineBackend() override;
 
-  // For the olg tango based invalidations method returns true if the
-  // invalidation has version lower than last seen version for this datatype.
-  bool ShouldIgnoreRedundantInvalidation(
+  void RecordRedundantInvalidationsMetric(
       const invalidation::Invalidation& invalidation,
-      ModelType Type);
+      ModelType Type) const;
 
   void LoadAndConnectNigoriController();
+
+  IncomingInvalidationStatus DoOnStandaloneInvalidationReceivedImpl(
+      const std::string& payload,
+      const ModelTypeSet& interested_data_types);
 
   // Name used for debugging.
   const std::string name_;
@@ -207,9 +216,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Our parent SyncEngineImpl.
   WeakHandle<SyncEngineImpl> host_;
 
-  // Our encryptor, which uses Chrome's encryption functions.
-  SystemEncryptor encryptor_;
-
   // Should outlive |sync_manager_|.
   std::unique_ptr<SyncEncryptionHandler> sync_encryption_handler_;
 
@@ -219,15 +225,8 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Required for |nigori_controller_| LoadModels().
   CoreAccountId authenticated_account_id_;
 
-  // Initialized in OnInitializationComplete() iff USS implementation of Nigori
-  // is enabled.
+  // Initialized in Init().
   std::unique_ptr<ModelTypeController> nigori_controller_;
-
-  // Temporary holder of sync manager's initialization results. Set by
-  // OnInitializeComplete, and consumed when we pass it via OnEngineInitialized
-  // in the final state of HandleInitializationSuccessOnFrontendLoop.
-  WeakHandle<JsBackend> js_backend_;
-  WeakHandle<DataTypeDebugInfoListener> debug_info_listener_;
 
   // This signal allows us to send requests to shut down the
   // ServerConnectionManager without having to wait for it to finish
@@ -249,8 +248,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncEngineBackend> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineBackend);
 };
 
 }  // namespace syncer

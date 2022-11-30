@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Inner iframe</title>
+    <style>
+        .scrolled { margin-top: 400px; };
+    </style>
+    <script>
+        function print(msg) {
+            document.getElementById('message').textContent = msg;
+            document.getElementById('message').classList.add('result');
+        }
+        window.onload = function() {
+            if (window.location.href.includes('scroll=true')) {
+                document.getElementById('b').classList.add('scrolled');
+            }
+        }
+    </script>
+</head>
+<body>
+    <button id="b" onclick='print("clicked");'>Some button</button>
+    <div id="message">
+    </div>
+</body>
+</html>

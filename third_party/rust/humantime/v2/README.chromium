@@ -1,0 +1,6 @@
+Name: humantime
+URL: https://crates.io/crates/humantime
+Description:     A parser and formatter for std::time::{Duration, SystemTime}
+Version: 2.1.0
+Security Critical: no
+License: Apache 2.0

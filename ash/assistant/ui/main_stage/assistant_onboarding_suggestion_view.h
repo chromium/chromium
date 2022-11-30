@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/unguessable_token.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-
-namespace chromeos {
-namespace assistant {
-struct AssistantSuggestion;
-}  // namespace assistant
-}  // namespace chromeos
 
 namespace views {
 class ImageView;
@@ -23,6 +17,10 @@ class Label;
 }  // namespace views
 
 namespace ash {
+
+namespace assistant {
+struct AssistantSuggestion;
+}
 
 class AssistantViewDelegate;
 
@@ -33,7 +31,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
 
   AssistantOnboardingSuggestionView(
       AssistantViewDelegate* delegate,
-      const chromeos::assistant::AssistantSuggestion& suggestion,
+      const assistant::AssistantSuggestion& suggestion,
       int index);
 
   AssistantOnboardingSuggestionView(const AssistantOnboardingSuggestionView&) =
@@ -47,15 +45,16 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   void ChildPreferredSizeChanged(views::View* child) override;
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
+  void OnThemeChanged() override;
 
   // Returns the icon for the suggestion.
-  const gfx::ImageSkia& GetIcon() const;
+  gfx::ImageSkia GetIcon() const;
 
   // Returns the text for the suggestion.
   const std::u16string& GetText() const;
 
  private:
-  void InitLayout(const chromeos::assistant::AssistantSuggestion& suggestion);
+  void InitLayout(const assistant::AssistantSuggestion& suggestion);
   void UpdateIcon(const gfx::ImageSkia& icon);
 
   void OnButtonPressed();
@@ -63,6 +62,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   AssistantViewDelegate* const delegate_;  // Owned by AssistantController.
   const base::UnguessableToken suggestion_id_;
   const int index_;
+  GURL url_;
 
   // Owned by view hierarchy.
   views::ImageView* icon_ = nullptr;

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,22 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
+
+base::Lock tis_lock_;
+
+UniChar GetCharacter(UInt16 mac_key_code, UInt32 modifier_key_state) {
+  UInt32 dead_key_state = 0;
+
+  base::AutoLock lock(tis_lock_);
+  base::ScopedCFTypeRef<TISInputSourceRef> input_source(
+      TISCopyCurrentKeyboardLayoutInputSource());
+  return ui::TranslatedUnicodeCharFromKeyCode(
+      input_source.get(), mac_key_code, kUCKeyActionDown, modifier_key_state,
+      LMGetKbdLast(), &dead_key_state);
+}
 
 bool ConvertKeyCodeToText(
     ui::KeyboardCode key_code, int modifiers, std::string* text,
@@ -37,12 +51,8 @@ bool ConvertKeyCodeToText(
   // on UCKeyTranslate for more info.
   UInt32 modifier_key_state = (mac_modifiers >> 8) & 0xFF;
 
-  UInt32 dead_key_state = 0;
-  base::ScopedCFTypeRef<TISInputSourceRef> input_source(
-      TISCopyCurrentKeyboardLayoutInputSource());
-  UniChar character = ui::TranslatedUnicodeCharFromKeyCode(
-      input_source.get(), static_cast<UInt16>(mac_key_code), kUCKeyActionDown,
-      modifier_key_state, LMGetKbdLast(), &dead_key_state);
+  UniChar character =
+      GetCharacter(static_cast<UInt16>(mac_key_code), modifier_key_state);
 
   if (character && !std::iscntrl(character)) {
     std::u16string text16;
@@ -58,9 +68,7 @@ bool ConvertCharToKeyCode(char16_t key,
                           ui::KeyboardCode* key_code,
                           int* necessary_modifiers,
                           std::string* error_msg) {
-  std::u16string key_string;
-  key_string.push_back(key);
-  std::string key_string_utf8 = base::UTF16ToUTF8(key_string);
+  std::string key_string_utf8 = base::UTF16ToUTF8(std::u16string(1, key));
   bool found_code = false;
   *error_msg = std::string();
   // There doesn't seem to be a way to get a mac key code for a given unicode

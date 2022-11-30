@@ -1,17 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/media/unified_media_controls_container.h"
 
 #include "ash/system/tray/tray_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/border.h"
 
 namespace ash {
 
 namespace {
 constexpr int kContainerHeight = 72;
-constexpr gfx::Insets kContainerInsets = gfx::Insets(0, 16, 16, 16);
+constexpr auto kContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 }  // namespace
 
 UnifiedMediaControlsContainer::UnifiedMediaControlsContainer()

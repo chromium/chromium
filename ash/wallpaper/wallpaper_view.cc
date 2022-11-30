@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,14 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_animations.h"
@@ -42,6 +43,9 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     view->SetPaintToLayer();
   }
 
+  WallpaperWidgetDelegate(const WallpaperWidgetDelegate&) = delete;
+  WallpaperWidgetDelegate& operator=(const WallpaperWidgetDelegate&) = delete;
+
   // Overrides views::View.
   void Layout() override {
     aura::Window* window = GetWidget()->GetNativeWindow();
@@ -50,8 +54,6 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     window->parent()->StackChildAtBottom(window);
     display::Display display =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-    display::ManagedDisplayInfo info =
-        Shell::Get()->display_manager()->GetDisplayInfo(display.id());
 
     for (auto* child : children()) {
       child->SetBounds(0, 0, display.size().width(), display.size().height());
@@ -62,9 +64,6 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
       child->SetTransform(transform);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperWidgetDelegate);
 };
 
 }  // namespace
@@ -96,7 +95,7 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
   } else {
     DCHECK(shield_view_);
-    parent()->RemoveChildView(shield_view_);
+    parent()->RemoveChildViewT(shield_view_);
     shield_view_ = nullptr;
   }
 }
@@ -138,7 +137,7 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
     small_canvas.DrawImageInt(wallpaper, src.x(), src.y(), src.width(),
                               src.height(), 0, 0, quality_adjusted_rect.width(),
                               quality_adjusted_rect.height(), true);
-    small_image_ = base::make_optional(
+    small_image_ = absl::make_optional(
         gfx::ImageSkia::CreateFrom1xBitmap(small_canvas.GetBitmap()));
   }
 
@@ -220,8 +219,9 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
   *out_wallpaper_view = wallpaper_view;
   int animation_type =
       controller->ShouldShowInitialAnimation()
-          ? WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE
-          : wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE;
+          ? static_cast<int>(
+                WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE)
+          : static_cast<int>(wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
   aura::Window* wallpaper_window = wallpaper_widget->GetNativeWindow();
   ::wm::SetWindowVisibilityAnimationType(wallpaper_window, animation_type);
 

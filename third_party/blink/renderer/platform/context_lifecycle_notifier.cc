@@ -1,10 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 
+<<<<<<< HEAD
 #include "base/record_replay.h"
+||||||| 80c960997e61f
+=======
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
 namespace blink {
@@ -15,13 +20,21 @@ ContextLifecycleNotifier::ContextLifecycleNotifier() {
 }
 
 ContextLifecycleNotifier::~ContextLifecycleNotifier() {
+<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-806
   recordreplay::UnregisterPointer(this);
 
 #if DCHECK_IS_ON()
+||||||| 80c960997e61f
+#if DCHECK_IS_ON()
+=======
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // `NotifyContextDestroyed()` must be called prior to destruction.
-  DCHECK(did_notify_observers_);
-#endif
+  DCHECK(context_destroyed_);
+}
+
+bool ContextLifecycleNotifier::IsContextDestroyed() const {
+  return context_destroyed_;
 }
 
 void ContextLifecycleNotifier::AddContextLifecycleObserver(
@@ -46,6 +59,7 @@ void ContextLifecycleNotifier::RemoveContextLifecycleObserver(
 }
 
 void ContextLifecycleNotifier::NotifyContextDestroyed() {
+<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-806
   recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed %d",
                        recordreplay::PointerId(this));
@@ -56,8 +70,19 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
   std::vector<ContextLifecycleObserver*> observers;
   observers_.ForEachObserver([&](ContextLifecycleObserver* observer) {
     observers.push_back(observer);
+||||||| 80c960997e61f
+  observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
+    observer->NotifyContextDestroyed();
+=======
+  context_destroyed_ = true;
+
+  ScriptForbiddenScope forbid_script;
+  observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
+    observer->NotifyContextDestroyed();
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   });
   observers_.Clear();
+<<<<<<< HEAD
 
   std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId());
   for (ContextLifecycleObserver* observer : observers) {
@@ -71,6 +96,13 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
 #if DCHECK_IS_ON()
   did_notify_observers_ = true;
 #endif
+||||||| 80c960997e61f
+
+#if DCHECK_IS_ON()
+  did_notify_observers_ = true;
+#endif
+=======
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void ContextLifecycleNotifier::Trace(Visitor* visitor) const {

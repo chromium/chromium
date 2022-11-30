@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,11 @@ namespace ash {
 class AlwaysOnTopControllerTest : public AshTestBase {
  public:
   AlwaysOnTopControllerTest() = default;
+
+  AlwaysOnTopControllerTest(const AlwaysOnTopControllerTest&) = delete;
+  AlwaysOnTopControllerTest& operator=(const AlwaysOnTopControllerTest&) =
+      delete;
+
   ~AlwaysOnTopControllerTest() override = default;
 
   void SetUp() override {
@@ -33,9 +38,6 @@ class AlwaysOnTopControllerTest : public AshTestBase {
         keyboard::switches::kEnableVirtualKeyboard);
     AshTestBase::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnTopControllerTest);
 };
 
 class TestLayoutManager : public WorkspaceLayoutManager {
@@ -43,6 +45,9 @@ class TestLayoutManager : public WorkspaceLayoutManager {
   explicit TestLayoutManager(aura::Window* window)
       : WorkspaceLayoutManager(window),
         keyboard_displacing_bounds_changed_(false) {}
+
+  TestLayoutManager(const TestLayoutManager&) = delete;
+  TestLayoutManager& operator=(const TestLayoutManager&) = delete;
 
   ~TestLayoutManager() override = default;
 
@@ -57,7 +62,6 @@ class TestLayoutManager : public WorkspaceLayoutManager {
 
  private:
   bool keyboard_displacing_bounds_changed_;
-  DISALLOW_COPY_AND_ASSIGN(TestLayoutManager);
 };
 
 // Verifies that the always on top controller is notified of keyboard bounds
@@ -100,7 +104,7 @@ TEST_F(AlwaysOnTopControllerTest,
   aura::Window* container =
       always_on_top_controller->GetContainer(always_on_top_window.get());
   ASSERT_TRUE(container);
-  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, container->id());
+  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, container->GetId());
 }
 
 TEST_F(AlwaysOnTopControllerTest, PipContainerReturnedForFloatingPipWindow) {
@@ -122,7 +126,7 @@ TEST_F(AlwaysOnTopControllerTest, PipContainerReturnedForFloatingPipWindow) {
   aura::Window* container =
       always_on_top_controller->GetContainer(pip_window.get());
   ASSERT_TRUE(container);
-  EXPECT_EQ(kShellWindowId_PipContainer, container->id());
+  EXPECT_EQ(kShellWindowId_PipContainer, container->GetId());
 }
 
 TEST_F(AlwaysOnTopControllerTest,
@@ -138,7 +142,7 @@ TEST_F(AlwaysOnTopControllerTest,
   aura::Window* container =
       always_on_top_controller->GetContainer(window.get());
   ASSERT_TRUE(container);
-  EXPECT_EQ(desks_util::GetActiveDeskContainerId(), container->id());
+  EXPECT_EQ(desks_util::GetActiveDeskContainerId(), container->GetId());
 }
 
 TEST_F(AlwaysOnTopControllerTest,
@@ -149,20 +153,20 @@ TEST_F(AlwaysOnTopControllerTest,
   window->SetProperty(aura::client::kZOrderingKey,
                       ui::ZOrderLevel::kFloatingWindow);
 
-  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->id());
+  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->GetId());
 
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
   window_state->OnWMEvent(&enter_pip);
   EXPECT_TRUE(window_state->IsPip());
 
-  EXPECT_EQ(kShellWindowId_PipContainer, window->parent()->id());
+  EXPECT_EQ(kShellWindowId_PipContainer, window->parent()->GetId());
 
   const WMEvent enter_normal(WM_EVENT_NORMAL);
   window_state->OnWMEvent(&enter_normal);
   EXPECT_FALSE(window_state->IsPip());
 
-  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->id());
+  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->GetId());
 }
 
 }  // namespace ash

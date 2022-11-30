@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,10 +126,10 @@ CWV_EXPORT
 @property(nonatomic, readonly, nonnull) CWVBackForwardList* backForwardList;
 
 // Enables Chrome's custom logic to handle long press and force touch. Defaults
-// to YES. To use the system context menu this must be set to NO.
+// to NO.
 // This class property setting should only be changed BEFORE any
 // CWVWebViewConfiguration instance is initialized.
-@property(nonatomic, class) BOOL chromeLongPressAndForceTouchHandlingEnabled;
+@property(nonatomic, class) BOOL chromeContextMenuEnabled;
 
 // Set this to customize the underlying WKWebView's inputAccessoryView. Setting
 // to nil means to use the WKWebView's default inputAccessoryView instead.
@@ -182,6 +182,8 @@ CWV_EXPORT
 // |*createdWKWebView| if |createdWKWebView| is not nil.
 // |*createdWKWebView| will be provided only if |wkConfiguration| is provided,
 // otherwise it will always be reset to nil.
+// IMPORTANT NOTE: Also create a new WKUserContentController and set it in the
+// |wkConfiguration| before calling this method.
 //
 // IMPORTANT: Use |*createdWKWebView| just as a return value of
 // -[WKNavigationDelegate
@@ -244,8 +246,20 @@ CWV_EXPORT
 // To workaround the issue, you can use |var| instead, or an explicit reference
 // to window.xxx. This is because |let| and |const| are scoped by braces while
 // |var| isn't, and due to tricky behavior of WebKit in non-strict mode.
+// DEPRECATED. Use `evaluateJavaScript:completion:` instead.
 - (void)evaluateJavaScript:(NSString*)javaScriptString
          completionHandler:(void (^)(id, NSError*))completionHandler;
+
+// Evaluates a JavaScript string in the main frame of the page content world.
+// `completion` is invoked with the result of evaluating the script and a
+// boolean representing success (`YES`) or failure (`NO`) of the evaluation.
+//
+// Evaluation of `javaScriptString` will fail (and return NO to `completion`) if
+// there is no current internal representation of the main frame. This can occur
+// when the web view is navigating or if the current page content does not allow
+// JavaScript execution (ex: JS disabled or PDF content).
+- (void)evaluateJavaScript:(NSString*)javaScriptString
+                completion:(void (^)(id result, NSError* error))completion;
 
 // Registers a handler that will be called when a command matching
 // |commandPrefix| is received.
@@ -262,11 +276,37 @@ CWV_EXPORT
 //
 // This provides a similar functionarity to -[WKUserContentController
 // addScriptMessageHandler:name:].
+// DEPRECATED: Use `addMessageHandler:forCommand:` instead.
 - (void)addScriptCommandHandler:(id<CWVScriptCommandHandler>)handler
                   commandPrefix:(NSString*)commandPrefix;
 
 // Removes the handler associated with |commandPrefix|.
+// DEPRECATED: Use `removeMessageHandlerForCommand:` instead.
 - (void)removeScriptCommandHandlerForCommandPrefix:(NSString*)commandPrefix;
+
+// Adds a message handler for messages sent from JavaScript.
+// `handler` will be called each time a message is sent with the corresponding
+// value of `command`. To send messages from JavaScript, use the WebKit
+// message handler `CWVWebViewMessage` and provide values for the `command` and
+// `payload` keys.
+// `command` must be a string and match the registered handler `command` string
+// `payload` must be a dictionary.
+//
+// Example call from JavaScript:
+//
+//  let message = {
+//    'command': 'myFeatureMessage',
+//    'payload' : {'key1':'value1', 'key2':42}
+//  }
+//  window.webkit.messageHandlers['CWVWebViewMessage'].postMessage(message);
+//
+// NOTE: Only a single `handler` may be registered for a given `command`.
+- (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
+               forCommand:(NSString*)command;
+
+// Removes the message handler associated with `command` previously added with
+// `addMessageHandler:forCommand:`.
+- (void)removeMessageHandlerForCommand:(NSString*)command;
 
 @end
 

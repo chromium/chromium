@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -46,7 +47,8 @@ class PartitionAllocSupport {
   void ReconfigureAfterFeatureListInit(const std::string& process_type);
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
-  void OnForegrounded();
+  // |has_main_frame| tells us if the renderer contains a main frame.
+  void OnForegrounded(bool has_main_frame);
   void OnBackgrounded();
 
   static PartitionAllocSupport* Get() {
@@ -67,7 +69,7 @@ class PartitionAllocSupport {
 #if defined(PA_THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   size_t largest_cached_size_ =
-      base::internal::ThreadCache::kDefaultSizeThreshold;
+      ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
 #endif
 };
 

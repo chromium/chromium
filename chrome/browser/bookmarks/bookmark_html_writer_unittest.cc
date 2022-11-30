@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -138,15 +138,16 @@ class BookmarksObserver : public BookmarksExportObserver {
     DCHECK(loop);
   }
 
+  BookmarksObserver(const BookmarksObserver&) = delete;
+  BookmarksObserver& operator=(const BookmarksObserver&) = delete;
+
   void OnExportFinished(Result result) override {
     EXPECT_EQ(Result::kSuccess, result);
     loop_->Quit();
   }
 
  private:
-  base::RunLoop* loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarksObserver);
+  raw_ptr<base::RunLoop> loop_;
 };
 
 // Tests bookmark_html_writer by populating a BookmarkModel, writing it out by
@@ -208,9 +209,9 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   GURL url4("javascript:alert(\"Hello!\");");
   GURL unnamed_bookmark_url("about:blank");
   base::Time t1(base::Time::Now());
-  base::Time t2(t1 + base::TimeDelta::FromHours(1));
-  base::Time t3(t1 + base::TimeDelta::FromHours(1));
-  base::Time t4(t1 + base::TimeDelta::FromHours(1));
+  base::Time t2(t1 + base::Hours(1));
+  base::Time t3(t1 + base::Hours(1));
+  base::Time t4(t1 + base::Hours(1));
   const BookmarkNode* f1 = model->AddFolder(
       model->bookmark_bar_node(), 0, f1_title);
   model->AddURL(f1, 0, url1_title, url1, nullptr, t1);

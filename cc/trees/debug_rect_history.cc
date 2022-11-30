@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/memory/ptr_util.h"
-#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer_impl.h"
@@ -71,6 +70,11 @@ void DebugRectHistory::SaveDebugRectsForCurrentFrame(
 }
 
 void DebugRectHistory::SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud) {
+  // We store the layout shift rects on the hud layer. If we don't have the hud
+  // layer, then there is nothing to store.
+  if (!hud)
+    return;
+
   for (gfx::Rect rect : hud->LayoutShiftRects()) {
     debug_rects_.push_back(DebugRect(
         LAYOUT_SHIFT_RECT_TYPE,
@@ -86,7 +90,7 @@ void DebugRectHistory::SavePaintRects(LayerTreeImpl* tree_impl) {
   // list.
   for (auto* layer : *tree_impl) {
     Region invalidation_region = layer->GetInvalidationRegionForDebugging();
-    if (invalidation_region.IsEmpty() || !layer->DrawsContent())
+    if (invalidation_region.IsEmpty() || !layer->draws_content())
       continue;
 
     for (gfx::Rect rect : invalidation_region) {
@@ -166,35 +170,14 @@ void DebugRectHistory::SaveWheelEventHandlerRects(LayerTreeImpl* tree_impl) {
   // TODO(https://crbug.com/1136591): Need behavior confirmation.
   // TODO(https://crbug.com/1136591): Need to check results in dev tools layer
   // view.
-  if (base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
-    for (auto* layer : *tree_impl) {
-      const Region& region = layer->wheel_event_handler_region();
-      for (gfx::Rect rect : region) {
-        debug_rects_.emplace_back(
-            DebugRect(WHEEL_EVENT_HANDLER_RECT_TYPE,
-                      MathUtil::MapEnclosingClippedRect(
-                          layer->ScreenSpaceTransform(), rect)));
-      }
+  for (auto* layer : *tree_impl) {
+    const Region& region = layer->wheel_event_handler_region();
+    for (gfx::Rect rect : region) {
+      debug_rects_.emplace_back(
+          DebugRect(WHEEL_EVENT_HANDLER_RECT_TYPE,
+                    MathUtil::MapEnclosingClippedRect(
+                        layer->ScreenSpaceTransform(), rect)));
     }
-  } else {
-    EventListenerProperties event_properties =
-        tree_impl->event_listener_properties(EventListenerClass::kMouseWheel);
-    if (event_properties == EventListenerProperties::kNone ||
-        event_properties == EventListenerProperties::kPassive) {
-      return;
-    }
-
-    // Since the wheel event handlers property is on the entire layer tree just
-    // mark inner viewport if have listeners.
-    ScrollNode* inner_scroll = tree_impl->InnerViewportScrollNode();
-    if (!inner_scroll)
-      return;
-    debug_rects_.emplace_back(
-        DebugRect(WHEEL_EVENT_HANDLER_RECT_TYPE,
-                  MathUtil::MapEnclosingClippedRect(
-                      tree_impl->property_trees()->transform_tree.ToScreen(
-                          inner_scroll->transform_id),
-                      gfx::Rect(inner_scroll->bounds))));
   }
 }
 
@@ -228,7 +211,7 @@ void DebugRectHistory::SaveNonFastScrollableRectsCallback(LayerImpl* layer) {
 
 void DebugRectHistory::SaveMainThreadScrollingReasonRects(
     LayerTreeImpl* tree_impl) {
-  const auto& scroll_tree = tree_impl->property_trees()->scroll_tree;
+  const auto& scroll_tree = tree_impl->property_trees()->scroll_tree();
   for (auto* layer : *tree_impl) {
     if (const auto* scroll_node =
             scroll_tree.FindNodeFromElementId(layer->element_id())) {

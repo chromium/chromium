@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "courgette/courgette.h"
 #include "courgette/image_utils.h"
 #include "courgette/instruction_utils.h"
@@ -44,6 +43,10 @@ class SourceStreamSet;
 class EncodedProgram {
  public:
   EncodedProgram();
+
+  EncodedProgram(const EncodedProgram&) = delete;
+  EncodedProgram& operator=(const EncodedProgram&) = delete;
+
   ~EncodedProgram();
 
   // Generating an EncodedProgram:
@@ -53,23 +56,22 @@ class EncodedProgram {
 
   // (2) Address tables and indexes imported first.
 
-  CheckBool ImportLabels(const LabelManager& abs32_label_manager,
-                         const LabelManager& rel32_label_manager)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool ImportLabels(const LabelManager& abs32_label_manager,
+                                       const LabelManager& rel32_label_manager);
 
   // (3) Add instructions in the order needed to generate bytes of file.
   // NOTE: If any of these methods ever fail, the EncodedProgram instance
   // has failed and should be discarded.
-  CheckBool AddOrigin(RVA rva) WARN_UNUSED_RESULT;
-  CheckBool AddCopy(size_t count, const void* bytes) WARN_UNUSED_RESULT;
-  CheckBool AddRel32(int label_index) WARN_UNUSED_RESULT;
-  CheckBool AddAbs32(int label_index) WARN_UNUSED_RESULT;
-  CheckBool AddAbs64(int label_index) WARN_UNUSED_RESULT;
-  CheckBool AddPeMakeRelocs(ExecutableType kind) WARN_UNUSED_RESULT;
-  CheckBool AddElfMakeRelocs() WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool AddOrigin(RVA rva);
+  [[nodiscard]] CheckBool AddCopy(size_t count, const void* bytes);
+  [[nodiscard]] CheckBool AddRel32(int label_index);
+  [[nodiscard]] CheckBool AddAbs32(int label_index);
+  [[nodiscard]] CheckBool AddAbs64(int label_index);
+  [[nodiscard]] CheckBool AddPeMakeRelocs(ExecutableType kind);
+  [[nodiscard]] CheckBool AddElfMakeRelocs();
 
   // (3) Serialize binary assembly language tables to a set of streams.
-  CheckBool WriteTo(SinkStreamSet* streams) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteTo(SinkStreamSet* streams);
 
   // Using an EncodedProgram to generate a byte stream:
   //
@@ -77,7 +79,7 @@ class EncodedProgram {
   bool ReadFrom(SourceStreamSet* streams);
 
   // (5) Assembles the 'binary assembly language' into final file.
-  CheckBool AssembleTo(SinkStream* buffer) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool AssembleTo(SinkStream* buffer);
 
   // Calls |gen| to extract all instructions, which are then encoded and stored.
   CheckBool GenerateInstructions(ExecutableType exe_type,
@@ -119,10 +121,11 @@ class EncodedProgram {
   // Helper for ImportLabels().
   static void FillUnassignedRvaSlots(RvaVector* rvas);
 
-  CheckBool GeneratePeRelocations(SinkStream* buffer,
-                                  uint8_t type) WARN_UNUSED_RESULT;
-  CheckBool GenerateElfRelocations(Elf32_Word pending_elf_relocation_table,
-                                   SinkStream* buffer) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool GeneratePeRelocations(SinkStream* buffer,
+                                                uint8_t type);
+  [[nodiscard]] CheckBool GenerateElfRelocations(
+      Elf32_Word pending_elf_relocation_table,
+      SinkStream* buffer);
 
   // Binary assembly language tables.
   uint64_t image_base_ = 0;
@@ -138,8 +141,6 @@ class EncodedProgram {
   // Table of the addresses containing abs32 relocations; computed during
   // assembly, used to generate base relocation table.
   UInt32Vector abs32_relocs_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodedProgram);
 };
 
 // Deserializes program from a stream set to |*output|. Returns C_OK if

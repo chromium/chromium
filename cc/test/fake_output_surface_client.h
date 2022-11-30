@@ -1,9 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_TEST_FAKE_OUTPUT_SURFACE_CLIENT_H_
 #define CC_TEST_FAKE_OUTPUT_SURFACE_CLIENT_H_
+
+#include <vector>
 
 #include "components/viz/service/display/output_surface_client.h"
 
@@ -14,9 +16,8 @@ class FakeOutputSurfaceClient : public viz::OutputSurfaceClient {
   FakeOutputSurfaceClient() = default;
 
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect) override {}
-  void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings) override;
-  void DidReceiveTextureInUseResponses(
-      const gpu::TextureInUseResponses& responses) override {}
+  void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
+                                gfx::GpuFenceHandle release_fence) override;
   void DidReceiveCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override {}
   void DidSwapWithSize(const gfx::Size& pixel_size) override {}

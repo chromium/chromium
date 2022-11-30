@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -153,10 +152,7 @@ class SupervisedUserExtensionTest : public ExtensionServiceTestWithInstall {
 
     std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
         function.get(), "[\"" + extension_id + "\"]", browser_context()));
-
-    bool copy_bool_result = false;
-    EXPECT_TRUE(result->GetAsBoolean(&copy_bool_result));
-    return copy_bool_result;
+    return result->GetBool();
   }
 
   base::FilePath base_path() const {
@@ -229,8 +225,7 @@ TEST_F(SupervisedUserExtensionTest, ExtensionsDisabledAfterGellerization) {
   CheckEnabled(id);
 
   // Now make the profile supervised.
-  profile()->AsTestingProfile()->SetSupervisedUserId(
-      supervised_users::kChildAccountSUID);
+  profile()->AsTestingProfile()->SetIsSupervisedProfile();
 
   // The extension should be disabled now pending custodian approval.
   CheckDisabledForCustodianApproval(id);
@@ -449,9 +444,9 @@ TEST_F(SupervisedUserExtensionTest, UpdateWithoutPermissionIncrease) {
   // Prefs are updated via sync.
   PrefService* pref_service = profile()->GetPrefs();
   ASSERT_TRUE(pref_service);
-  const base::DictionaryValue* approved_extensions =
-      pref_service->GetDictionary(prefs::kSupervisedUserApprovedExtensions);
-  EXPECT_TRUE(approved_extensions->FindStringKey(id));
+  const base::Value::Dict& approved_extensions =
+      pref_service->GetDict(prefs::kSupervisedUserApprovedExtensions);
+  EXPECT_TRUE(approved_extensions.FindString(id));
 }
 
 // Tests that the kApprovalGranted UMA metric only increments once without

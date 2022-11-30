@@ -1,8 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
@@ -139,7 +140,7 @@ TEST_F(VirtualDeviceTest, OnFrameReadyInBufferWithReceiver) {
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _))
       .Times(
           SharedMemoryVirtualDeviceMojoAdapter::max_buffer_pool_buffer_count());
-  EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _, _))
+  EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
       .Times(
           SharedMemoryVirtualDeviceMojoAdapter::max_buffer_pool_buffer_count());
   device_adapter_->Start(media::VideoCaptureParams(),

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ namespace invalidation {
 
 class FakeInvalidationHandler : public InvalidationHandler {
  public:
-  FakeInvalidationHandler();
   explicit FakeInvalidationHandler(const std::string& owner);
   FakeInvalidationHandler(const FakeInvalidationHandler& other) = delete;
   FakeInvalidationHandler& operator=(const FakeInvalidationHandler& other) =
@@ -24,6 +23,7 @@ class FakeInvalidationHandler : public InvalidationHandler {
   InvalidatorState GetInvalidatorState() const;
   const TopicInvalidationMap& GetLastInvalidationMap() const;
   int GetInvalidationCount() const;
+  const std::string& GetInvalidatorClientId() const;
 
   // InvalidationHandler implementation.
   void OnInvalidatorStateChange(InvalidatorState state) override;
@@ -31,12 +31,14 @@ class FakeInvalidationHandler : public InvalidationHandler {
       const TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
   bool IsPublicTopic(const Topic& topic) const override;
+  void OnInvalidatorClientIdChange(const std::string& client_id) override;
 
  private:
-  InvalidatorState state_;
+  InvalidatorState state_ = DEFAULT_INVALIDATION_ERROR;
   TopicInvalidationMap last_invalidation_map_;
-  int invalidation_count_;
+  int invalidation_count_ = 0;
   std::string owner_name_;
+  std::string client_id_;
 };
 
 }  // namespace invalidation

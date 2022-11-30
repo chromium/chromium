@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,16 +20,20 @@
 
 namespace image_annotation {
 
+// Whether or not to override service parameters for experimentation.
+BASE_DECLARE_FEATURE(kImageAnnotationServiceExperimental);
+
 class ImageAnnotationService : public mojom::ImageAnnotationService {
  public:
-  // Whether or not to override service parameters for experimentation.
-  static const base::Feature kExperiment;
-
   ImageAnnotationService(
       mojo::PendingReceiver<mojom::ImageAnnotationService> receiver,
       std::string api_key,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       std::unique_ptr<Annotator::Client> annotator_client);
+
+  ImageAnnotationService(const ImageAnnotationService&) = delete;
+  ImageAnnotationService& operator=(const ImageAnnotationService&) = delete;
+
   ~ImageAnnotationService() override;
 
  private:
@@ -38,30 +41,28 @@ class ImageAnnotationService : public mojom::ImageAnnotationService {
 
   // The url of the service that fetches descriptions given image pixels.
   static constexpr base::FeatureParam<std::string> kPixelsServerUrl{
-      &kExperiment, "server_url",
+      &kImageAnnotationServiceExperimental, "server_url",
       "https://ckintersect-pa.googleapis.com/v1/intersect/pixels"};
   // The url of the service that returns the supported languages.
   static constexpr base::FeatureParam<std::string> kLangsServerUrl{
-      &kExperiment, "langs_server_url",
+      &kImageAnnotationServiceExperimental, "langs_server_url",
       "https://ckintersect-pa.googleapis.com/v1/intersect/langs"};
   // An override Google API key. If empty, the API key with which the browser
   // was built (if any) will be used instead.
-  static constexpr base::FeatureParam<std::string> kApiKey{&kExperiment,
-                                                           "api_key", ""};
-  static constexpr base::FeatureParam<int> kThrottleMs{&kExperiment,
-                                                       "throttle_ms", 300};
-  static constexpr base::FeatureParam<int> kBatchSize{&kExperiment,
-                                                      "batch_size", 10};
+  static constexpr base::FeatureParam<std::string> kApiKey{
+      &kImageAnnotationServiceExperimental, "api_key", ""};
+  static constexpr base::FeatureParam<int> kThrottleMs{
+      &kImageAnnotationServiceExperimental, "throttle_ms", 300};
+  static constexpr base::FeatureParam<int> kBatchSize{
+      &kImageAnnotationServiceExperimental, "batch_size", 10};
   static constexpr base::FeatureParam<double> kMinOcrConfidence{
-      &kExperiment, "min_ocr_confidence", 0.7};
+      &kImageAnnotationServiceExperimental, "min_ocr_confidence", 0.7};
 
   // mojom::ImageAnnotationService implementation:
   void BindAnnotator(mojo::PendingReceiver<mojom::Annotator> receiver) override;
 
   mojo::Receiver<mojom::ImageAnnotationService> receiver_;
   Annotator annotator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageAnnotationService);
 };
 
 }  // namespace image_annotation

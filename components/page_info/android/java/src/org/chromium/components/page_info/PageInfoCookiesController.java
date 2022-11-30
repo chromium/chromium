@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@ package org.chromium.components.page_info;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.FragmentManager;
-
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -27,10 +26,9 @@ import java.util.Collection;
  * Class for controlling the page info cookies section.
  */
 public class PageInfoCookiesController
-        implements PageInfoSubpageController, CookieControlsObserver {
+        extends PageInfoPreferenceSubpageController implements CookieControlsObserver {
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
-    private final PageInfoControllerDelegate mDelegate;
     private final String mFullUrl;
     private final String mTitle;
     private CookieControlsBridge mBridge;
@@ -43,12 +41,13 @@ public class PageInfoCookiesController
     private Website mWebsite;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
-            PageInfoControllerDelegate delegate, String fullUrl) {
+            PageInfoControllerDelegate delegate) {
+        super(delegate);
         mMainController = mainController;
         mRowView = rowView;
-        mDelegate = delegate;
-        mFullUrl = fullUrl;
-        mTitle = mRowView.getContext().getResources().getString(R.string.cookies_title);
+        mFullUrl = mainController.getURL().getSpec();
+        mTitle = mRowView.getContext().getResources().getString(R.string.page_info_cookies_title);
+        mBridge = delegate.createCookieControlsBridge(this);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = delegate.isSiteSettingsAvailable();
@@ -72,22 +71,18 @@ public class PageInfoCookiesController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
-
-        FragmentManager fragmentManager = mDelegate.getFragmentManager();
-        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager.isStateSaved()) return null;
+        if (!canCreateSubpageFragment()) return null;
 
         mSubPage = new PageInfoCookiesPreference();
-        mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
-        fragmentManager.beginTransaction().add(mSubPage, null).commitNow();
-
+        View view = addSubpageFragment(mSubPage);
         PageInfoCookiesPreference.PageInfoCookiesViewParams params =
                 new PageInfoCookiesPreference.PageInfoCookiesViewParams();
-        params.thirdPartyCookieBlockingEnabled = mDelegate.cookieControlsShown();
+        params.thirdPartyCookieBlockingEnabled = getDelegate().cookieControlsShown();
         params.onCheckedChangedCallback = this::onCheckedChangedCallback;
         params.onClearCallback = this::onClearCookiesClicked;
-        params.onCookieSettingsLinkClicked = mDelegate::showCookieSettings;
+        params.onCookieSettingsLinkClicked = getDelegate()::showCookieSettings;
         params.disableCookieDeletion = isDeletionDisabled();
+        params.hostName = mMainController.getURL().getHost();
         mSubPage.setParams(params);
         mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
         mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
@@ -95,9 +90,11 @@ public class PageInfoCookiesController
         SiteSettingsCategory storageCategory = SiteSettingsCategory.createFromType(
                 mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
         new WebsitePermissionsFetcher(mMainController.getBrowserContext())
-                .fetchPreferencesForCategory(storageCategory, this::onStorageFetched);
+                .fetchPreferencesForCategoryAndPopulateFpsInfo(
+                        getDelegate().getSiteSettingsDelegate(), storageCategory,
+                        this::onStorageFetched);
 
-        return mSubPage.requireView();
+        return view;
     }
 
     private void onStorageFetched(Collection<Website> result) {
@@ -109,12 +106,19 @@ public class PageInfoCookiesController
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
         }
+
+        boolean isFPSInfoShown = mSubPage.maybeShowFPSInfo(
+                mWebsite.getFPSCookieInfo(), mWebsite.getAddress().getOrigin());
+        RecordHistogram.recordBooleanHistogram(
+                "Security.PageInfo.Cookies.HasFPSInfo", isFPSInfoShown);
     }
 
     private void onCheckedChangedCallback(boolean state) {
-        mMainController.recordAction(state ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
-                                           : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
-        mBridge.setThirdPartyCookieBlockingEnabledForSite(state);
+        if (mBridge != null) {
+            mMainController.recordAction(state ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
+                                               : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
+            mBridge.setThirdPartyCookieBlockingEnabledForSite(state);
+        }
     }
 
     private void onClearCookiesClicked() {
@@ -132,14 +136,15 @@ public class PageInfoCookiesController
     }
 
     @Override
+    public void updateRowIfNeeded() {}
+
+    @Override
+    public void onNativeInitialized() {}
+
+    @Override
     public void onSubpageRemoved() {
-        assert mSubPage != null;
-        FragmentManager fragmentManager = mDelegate.getFragmentManager();
-        PageInfoCookiesPreference subPage = mSubPage;
         mSubPage = null;
-        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager == null || fragmentManager.isStateSaved()) return;
-        fragmentManager.beginTransaction().remove(subPage).commitNow();
+        removeSubpageFragment();
     }
 
     @Override
@@ -167,11 +172,18 @@ public class PageInfoCookiesController
         }
     }
 
-    public void setCookieControlsBridge(CookieControlsBridge cookieBridge) {
-        mBridge = cookieBridge;
-    }
-
     private boolean isDeletionDisabled() {
         return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
+    }
+
+    void onUiClosing() {
+        if (mBridge != null) {
+            mBridge.onUiClosing();
+        }
+    }
+
+    void destroy() {
+        mBridge.destroy();
+        mBridge = null;
     }
 }

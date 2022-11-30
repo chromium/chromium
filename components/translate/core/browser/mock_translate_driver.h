@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +20,7 @@ namespace testing {
 class MockTranslateDriver : public TranslateDriver {
  public:
   MockTranslateDriver();
+  ~MockTranslateDriver() override;
 
   void Reset();
 
@@ -55,6 +55,9 @@ class MockTranslateDriver : public TranslateDriver {
   bool TranslatePage_is_called() const { return translate_page_is_called_; }
 
   void SetLastCommittedURL(const GURL& url);
+  void SetVisibleURL(const GURL& url);
+
+  void SetPageMimeType(const std::string& mime_type);
 
  private:
   bool is_incognito_;
@@ -63,6 +66,8 @@ class MockTranslateDriver : public TranslateDriver {
   bool translate_page_is_called_;
   LanguageState language_state_;
   GURL last_committed_url_;
+  std::string page_mime_type_ = "text/html";
+  GURL visible_url_;
 };
 
 }  // namespace testing

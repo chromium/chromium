@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 7: PASS: SharedWorker creation threw 'SecurityError: Failed to construct 'SharedWorker': Access to shared workers is denied to origin 'null'.'.
+CONSOLE MESSAGE: PASS: SharedWorker creation threw 'SecurityError: Failed to construct 'SharedWorker': Access to shared workers is denied to origin 'null'.'.
 This test verifies that shared workers are not available in a sandboxed iframe.
 
 --------

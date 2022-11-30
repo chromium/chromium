@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/performance_manager/test_support/site_data_utils.h"
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -72,7 +71,7 @@ void MarkWebContentsAsLoadedInBackgroundInSiteDataDb(
             impl->NotifyLoadedSiteBackgrounded();
             std::move(closure).Run();
           },
-          PerformanceManager::GetPageNodeForWebContents(web_contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
           run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -90,7 +89,7 @@ void MarkWebContentsAsUnloadedInBackgroundInSiteDataDb(
             impl->NotifySiteUnloaded(TabVisibility::kBackground);
             std::move(closure).Run();
           },
-          PerformanceManager::GetPageNodeForWebContents(web_contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
           run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -108,7 +107,7 @@ void ExpireSiteDataObservationWindowsForWebContents(
             impl->ExpireAllObservationWindowsForTesting();
             std::move(closure).Run();
           },
-          PerformanceManager::GetPageNodeForWebContents(web_contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
           run_loop.QuitClosure()));
   run_loop.Run();
 }

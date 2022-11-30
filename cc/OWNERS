@@ -7,7 +7,6 @@
 
 set noparent
 # layers
-danakj@chromium.org
 pdr@chromium.org
 wangxianzhu@chromium.org
 
@@ -16,6 +15,7 @@ ccameron@chromium.org
 
 # scheduling / begin frames
 sunnyps@chromium.org
+szager@chromium.org
 
 # tiles, tile management, and raster work
 vmpstr@chromium.org
@@ -24,11 +24,11 @@ vmpstr@chromium.org
 sunnyps@chromium.org
 
 # math / geometry
+dbaron@chromium.org
 flackr@chromium.org
 
 # property trees
 chrishtr@chromium.org
-weiliangc@chromium.org
 pdr@chromium.org
 wangxianzhu@chromium.org
 
@@ -45,17 +45,18 @@ jonross@chromium.org
 
 # input, scrolling
 bokan@chromium.org
-
-# scroll snap
-majidvp@chromium.org
+flackr@chromium.org
+skobes@chromium.org
 
 # metrics
-sadrul@chromium.org
+jonross@chromium.org
 
 # paint
 sunnyps@chromium.org
 vasilyt@chromium.org
+reed@google.com
+fmalita@chromium.org
 
 # general
-danakj@chromium.org
 vmpstr@chromium.org
+khushalsagar@chromium.org

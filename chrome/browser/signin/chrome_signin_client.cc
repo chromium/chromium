@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -52,14 +54,24 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/net/delay_network_call.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
+#include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "chromeos/startup/browser_params_proxy.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profile_picker.h"
 #endif
@@ -67,24 +79,43 @@
 namespace {
 
 // List of sources for which sign out is always allowed.
+// TODO(crbug.com/1161966): core product logic should not rely on metric
+// sources/callsites.  Consider removing such logic, potentially as part of
+// introducing a cross-platform SigninManager.
 signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Allowed, because data has not been synced yet.
     signin_metrics::ProfileSignout::ABORT_SIGNIN,
-#endif
     // Allowed, because only used on Android and the primary account must be
     // cleared when the account is removed from device
     signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
     // Allowed to force finish the account id migration.
     signin_metrics::ACCOUNT_ID_MIGRATION,
     // Allowed, for tests.
-    signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST};
+    signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
+    // Allowed, because access to this entry point is controlled to only be
+    // enabled if the user may turn off sync.
+    signin_metrics::ProfileSignout::USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
+    // Allowed, because the dialog offers the option to the user to sign out.
+    // Note that the dialog is only shown on iOS and isn't planned to be shown
+    // on the other platforms since they already support user policies (no need
+    // for a notification in that case). Still, the metric is added to the
+    // kAlwaysAllowedSignoutSources for coherence.
+    signin_metrics::ProfileSignout::
+        USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG,
+};
 
 SigninClient::SignoutDecision IsSignoutAllowed(
     Profile* profile,
     const signin_metrics::ProfileSignout signout_source) {
   if (signin_util::IsUserSignoutAllowedForProfile(profile))
     return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  if (identity_manager &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+  }
 
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
     if (signout_source == always_allowed_source)
@@ -126,12 +157,12 @@ ChromeSigninClient::GetURLLoaderFactory() {
   if (url_loader_factory_for_testing_)
     return url_loader_factory_for_testing_;
 
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
+  return profile_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 network::mojom::CookieManager* ChromeSigninClient::GetCookieManager() {
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
+  return profile_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -164,17 +195,23 @@ void ChromeSigninClient::PreSignOut(
   DCHECK(!on_signout_decision_reached_) << "SignOut already in-progress!";
   on_signout_decision_reached_ = std::move(on_signout_decision_reached);
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // `signout_source_metric` is `signin_metrics::ABORT_SIGNIN` if the user
+  // declines sync in the signin process. In case the user accepts the managed
+  // account but declines sync, we should keep the window open.
+  bool user_declines_sync_after_consenting_to_management =
+      signout_source_metric == signin_metrics::ABORT_SIGNIN &&
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   // These sign out won't remove the policy cache, keep the window opened.
   bool keep_window_opened =
       signout_source_metric ==
           signin_metrics::GOOGLE_SERVICE_NAME_PATTERN_CHANGED ||
       signout_source_metric == signin_metrics::SERVER_FORCED_DISABLE ||
-      signout_source_metric == signin_metrics::SIGNOUT_PREF_CHANGED;
+      signout_source_metric == signin_metrics::SIGNOUT_PREF_CHANGED ||
+      user_declines_sync_after_consenting_to_management;
   if (signin_util::IsForceSigninEnabled() && !profile_->IsSystemProfile() &&
-      !profile_->IsGuestSession() && !profile_->IsEphemeralGuestProfile() &&
-      !profile_->IsSupervised() && !keep_window_opened) {
+      !profile_->IsGuestSession() && !profile_->IsChild() &&
+      !keep_window_opened) {
     if (signout_source_metric ==
         signin_metrics::SIGNIN_PREF_CHANGED_DURING_SIGNIN) {
       // SIGNIN_PREF_CHANGED_DURING_SIGNIN will be triggered when
@@ -219,9 +256,15 @@ void ChromeSigninClient::OnConnectionChanged(
 
 void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::DelayNetworkCall(
-      base::TimeDelta::FromMilliseconds(chromeos::kDefaultNetworkRetryDelayMS),
-      std::move(callback));
+  // Do not make network requests in unit tests. ash::NetworkHandler should
+  // not be used and is not expected to have been initialized in unit tests.
+  if (url_loader_factory_for_testing_ &&
+      !ash::NetworkHandler::IsInitialized()) {
+    std::move(callback).Run();
+    return;
+  }
+  ash::DelayNetworkCall(base::Milliseconds(ash::kDefaultNetworkRetryDelayMS),
+                        std::move(callback));
   return;
 #else
   // Don't bother if we don't have any kind of network connection.
@@ -246,26 +289,83 @@ std::unique_ptr<GaiaAuthFetcher> ChromeSigninClient::CreateGaiaAuthFetcher(
 }
 
 void ChromeSigninClient::VerifySyncToken() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // We only verifiy the token once when Profile is just created.
   if (signin_util::IsForceSigninEnabled() && !force_signin_verifier_)
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
-        IdentityManagerFactory::GetForProfile(profile_));
+        profile_, IdentityManagerFactory::GetForProfile(profile_));
 #endif
 }
 
-void ChromeSigninClient::SetDiceMigrationCompleted() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  AccountConsistencyModeManager::GetForProfile(profile_)
-      ->SetDiceMigrationCompleted();
-#else
-  NOTREACHED();
-#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns the account that must be auto-signed-in to the Main Profile in
+// Lacros.
+// This is, when available, the account used to sign into the Chrome OS
+// session. This may be a Gaia account or a Microsoft Active Directory
+// account. This field will be null for Guest sessions, Managed Guest
+// sessions, Demo mode, and Kiosks. Note that this is different from the
+// concept of a Primary Account in the browser. A user may not be signed into
+// a Lacros browser Profile, or may be signed into a browser Profile with an
+// account which is different from the account which they used to sign into
+// the device - aka Device Account.
+// Also note that this will be null for Secondary / non-Main Profiles in
+// Lacros, because they do not start with the Chrome OS Device Account
+// signed-in by default.
+absl::optional<account_manager::Account>
+ChromeSigninClient::GetInitialPrimaryAccount() {
+  if (!profile_->IsMainProfile())
+    return absl::nullopt;
+
+  const crosapi::mojom::AccountPtr& device_account =
+      chromeos::BrowserParamsProxy::Get()->DeviceAccount();
+  if (!device_account)
+    return absl::nullopt;
+
+  return account_manager::FromMojoAccount(device_account);
 }
 
-bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
-  return policy::BrowserPolicyConnector::IsNonEnterpriseUser(username);
+// Returns whether the account that must be auto-signed-in to the main profile
+// in Lacros is a child account.
+// Returns false for guest session, public session, kiosk, demo mode and Active
+// Directory account.
+// Returns null for secondary / non-main profiles in LaCrOS.
+absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
+  if (!profile_->IsMainProfile())
+    return absl::nullopt;
+
+  const bool is_child_session =
+      chromeos::BrowserParamsProxy::Get()->SessionType() ==
+      crosapi::mojom::SessionType::kChildSession;
+  return is_child_session;
 }
+
+void ChromeSigninClient::RemoveAccount(
+    const account_manager::AccountKey& account_key) {
+  absl::optional<account_manager::Account> device_account =
+      GetInitialPrimaryAccount();
+  if (device_account.has_value() && device_account->key == account_key) {
+    DLOG(ERROR)
+        << "The primary account should not be removed from the main profile";
+    return;
+  }
+
+  g_browser_process->profile_manager()
+      ->GetAccountProfileMapper()
+      ->RemoveAccount(profile_->GetPath(), account_key);
+}
+
+void ChromeSigninClient::RemoveAllAccounts() {
+  if (GetInitialPrimaryAccount().has_value()) {
+    DLOG(ERROR) << "It is not allowed to remove the initial primary account.";
+    return;
+  }
+
+  DCHECK(!profile_->IsMainProfile());
+  g_browser_process->profile_manager()
+      ->GetAccountProfileMapper()
+      ->RemoveAllAccounts(profile_->GetPath());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ChromeSigninClient::SetURLLoaderFactoryForTest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -275,7 +375,7 @@ void ChromeSigninClient::SetURLLoaderFactoryForTest(
 void ChromeSigninClient::OnCloseBrowsersSuccess(
     const signin_metrics::ProfileSignout signout_source_metric,
     const base::FilePath& profile_path) {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (signin_util::IsForceSigninEnabled() && force_signin_verifier_.get()) {
     force_signin_verifier_->Cancel();
   }
@@ -314,7 +414,8 @@ void ChromeSigninClient::LockForceSigninProfile(
 }
 
 void ChromeSigninClient::ShowUserManager(const base::FilePath& profile_path) {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileLocked));
 #endif
 }

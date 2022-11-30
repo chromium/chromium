@@ -1,13 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECODER_H_
-#define GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECODER_H_
+#ifndef GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECORDER_H_
+#define GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECORDER_H_
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 
 namespace gcm {
@@ -16,6 +15,10 @@ namespace gcm {
 class FakeGCMStatsRecorder : public GCMStatsRecorder {
  public:
   FakeGCMStatsRecorder();
+
+  FakeGCMStatsRecorder(const FakeGCMStatsRecorder&) = delete;
+  FakeGCMStatsRecorder& operator=(const FakeGCMStatsRecorder&) = delete;
+
   ~FakeGCMStatsRecorder() override;
 
   void RecordCheckinInitiated(uint64_t android_id) override;
@@ -66,11 +69,8 @@ class FakeGCMStatsRecorder : public GCMStatsRecorder {
   void RecordIncomingSendError(const std::string& app_id,
                                const std::string& receiver_id,
                                const std::string& message_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMStatsRecorder);
 };
 
 }  // namespace gcm
 
-#endif  // GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECODER_H_
+#endif  // GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECORDER_H_

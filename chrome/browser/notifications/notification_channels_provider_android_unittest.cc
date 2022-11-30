@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,23 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
-#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/content_settings_mock_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/content_settings/core/browser/content_settings_pref.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
-#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -55,11 +56,9 @@ class FakeNotificationChannelsBridge
   void SetChannelStatus(const std::string& origin,
                         NotificationChannelStatus status) {
     DCHECK_NE(NotificationChannelStatus::UNAVAILABLE, status);
-    auto it = std::find_if(
-        channels_.begin(), channels_.end(),
-        [&origin](const std::pair<std::string, NotificationChannel>& pair) {
-          return pair.second.origin == origin;
-        });
+    auto it = base::ranges::find(
+        channels_, origin,
+        [](const Channels::value_type& pair) { return pair.second.origin; });
     DCHECK(it != channels_.end())
         << "Must call bridge.CreateChannel before SetChannelStatus.";
     it->second.status = status;
@@ -104,10 +103,12 @@ class FakeNotificationChannelsBridge
   }
 
  private:
+  using Channels = std::map<std::string, NotificationChannel>;
+
   bool should_use_channels_;
 
   // Map from channel_id - channel.
-  std::map<std::string, NotificationChannel> channels_;
+  Channels channels_;
 };
 
 class NotificationChannelsProviderAndroidTest : public testing::Test {
@@ -137,7 +138,7 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
     // Can't use std::make_unique because the provider's constructor is private.
     channels_provider_ =
         base::WrapUnique(new NotificationChannelsProviderAndroid(
-            base::WrapUnique(fake_bridge_)));
+            base::WrapUnique(fake_bridge_.get())));
   }
 
   ContentSettingsPattern GetTestPattern() {
@@ -151,7 +152,7 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
   std::unique_ptr<NotificationChannelsProviderAndroid> channels_provider_;
 
   // No leak because ownership is passed to channels_provider_ in constructor.
-  FakeNotificationChannelsBridge* fake_bridge_;
+  raw_ptr<FakeNotificationChannelsBridge> fake_bridge_;
 };
 
 TEST_F(NotificationChannelsProviderAndroidTest,
@@ -159,8 +160,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   this->InitChannelsProvider(false /* should_use_channels */);
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
 
   EXPECT_FALSE(result);
 }
@@ -171,8 +171,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
   EXPECT_TRUE(result);
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
@@ -182,7 +181,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   content_settings::Rule rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            content_settings::ValueToContentSetting(&rule.value));
+            content_settings::ValueToContentSetting(rule.value));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -192,8 +191,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
 
   EXPECT_TRUE(result);
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
@@ -203,7 +201,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   content_settings::Rule rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(&rule.value));
+            content_settings::ValueToContentSetting(rule.value));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -213,12 +211,10 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
 
   EXPECT_TRUE(result);
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
@@ -228,7 +224,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   content_settings::Rule rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            content_settings::ValueToContentSetting(&rule.value));
+            content_settings::ValueToContentSetting(rule.value));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -238,12 +234,10 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
 
   EXPECT_TRUE(result);
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
@@ -253,7 +247,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   content_settings::Rule rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule.primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(&rule.value));
+            content_settings::ValueToContentSetting(rule.value));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -262,12 +256,11 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, nullptr);
+      ContentSettingsType::NOTIFICATIONS, base::Value());
 
   EXPECT_FALSE(result)
       << "SetWebsiteSetting should return false when passed a null value.";
@@ -286,8 +279,7 @@ TEST_F(NotificationChannelsProviderAndroidTest, NoRulesInIncognito) {
   InitChannelsProvider(true /* should_use_channels */);
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
   EXPECT_FALSE(channels_provider_->GetRuleIterator(
       ContentSettingsType::NOTIFICATIONS, true /* incognito */));
 }
@@ -306,12 +298,12 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://abc.com"));
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
-  channels_provider_->SetWebsiteSetting(
-      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
-  channels_provider_->SetWebsiteSetting(
-      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  channels_provider_->SetWebsiteSetting(abc_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_ALLOW));
+  channels_provider_->SetWebsiteSetting(xyz_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_BLOCK));
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
       channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
@@ -320,12 +312,12 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   content_settings::Rule first_rule = rule_iterator->Next();
   EXPECT_EQ(abc_pattern, first_rule.primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            content_settings::ValueToContentSetting(&first_rule.value));
+            content_settings::ValueToContentSetting(first_rule.value));
   EXPECT_TRUE(rule_iterator->HasNext());
   content_settings::Rule second_rule = rule_iterator->Next();
   EXPECT_EQ(xyz_pattern, second_rule.primary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(&second_rule.value));
+            content_settings::ValueToContentSetting(second_rule.value));
   EXPECT_FALSE(rule_iterator->HasNext());
 }
 
@@ -341,7 +333,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://example.com"),
       ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW));
   content::RunAllTasksUntilIdle();
 
   // Emulate user blocking the channel.
@@ -368,32 +360,34 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->AddObserver(&mock_observer);
 
   // Set up some channels.
+  GURL abc_url("https://abc.com");
   ContentSettingsPattern abc_pattern =
-      ContentSettingsPattern::FromURLNoWildcard(GURL("https://abc.com"));
+      ContentSettingsPattern::FromURLNoWildcard(abc_url);
+  GURL xyz_url("https://xyz.com");
   ContentSettingsPattern xyz_pattern =
-      ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
-  channels_provider_->SetWebsiteSetting(
-      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
-  channels_provider_->SetWebsiteSetting(
-      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsPattern::FromURLNoWildcard(xyz_url);
+  channels_provider_->SetWebsiteSetting(abc_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_ALLOW));
+  channels_provider_->SetWebsiteSetting(xyz_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_BLOCK));
 
-  EXPECT_NE(base::Time(), channels_provider_->GetWebsiteSettingLastModified(
-                              abc_pattern, ContentSettingsPattern(),
+  EXPECT_NE(base::Time(), content_settings::TestUtils::GetLastModified(
+                              channels_provider_.get(), abc_url, abc_url,
                               ContentSettingsType::NOTIFICATIONS));
 
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(ContentSettingsPattern(),
-                                      ContentSettingsPattern(),
+              OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsPattern::Wildcard(),
                                       ContentSettingsType::NOTIFICATIONS));
 
   channels_provider_->ClearAllContentSettingsRules(
       ContentSettingsType::NOTIFICATIONS);
 
   // Ensure cached data is erased.
-  EXPECT_EQ(base::Time(), channels_provider_->GetWebsiteSettingLastModified(
-                              abc_pattern, ContentSettingsPattern(),
+  EXPECT_EQ(base::Time(), content_settings::TestUtils::GetLastModified(
+                              channels_provider_.get(), abc_url, abc_url,
                               ContentSettingsType::NOTIFICATIONS));
 
   // Check no rules are returned.
@@ -410,12 +404,12 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://abc.com"));
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
-  channels_provider_->SetWebsiteSetting(
-      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
-  channels_provider_->SetWebsiteSetting(
-      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  channels_provider_->SetWebsiteSetting(abc_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_ALLOW));
+  channels_provider_->SetWebsiteSetting(xyz_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_BLOCK));
 
   channels_provider_->ClearAllContentSettingsRules(
       ContentSettingsType::COOKIES);
@@ -439,8 +433,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
        GetWebsiteSettingLastModifiedReturnsNullIfNoModifications) {
   InitChannelsProvider(true /* should_use_channels */);
 
-  auto result = channels_provider_->GetWebsiteSettingLastModified(
-      GetTestPattern(), ContentSettingsPattern(),
+  auto result = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
       ContentSettingsType::NOTIFICATIONS);
 
   EXPECT_TRUE(result.is_null());
@@ -452,17 +446,17 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
 
-  auto result = channels_provider_->GetWebsiteSettingLastModified(
-      GetTestPattern(), ContentSettingsPattern(),
+  auto result = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
       ContentSettingsType::GEOLOCATION);
 
   EXPECT_TRUE(result.is_null());
 
-  result = channels_provider_->GetWebsiteSettingLastModified(
-      GetTestPattern(), ContentSettingsPattern(), ContentSettingsType::COOKIES);
+  result = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
+      ContentSettingsType::COOKIES);
 
   EXPECT_TRUE(result.is_null());
 }
@@ -476,48 +470,48 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->SetClockForTesting(&clock);
 
   // Create channel and check last-modified time is the creation time.
-  std::string first_origin = "https://example.com";
-  channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  GURL first_origin("https://example.com");
+  ContentSettingsPattern first_pattern =
+      ContentSettingsPattern::FromString(first_origin.spec());
+  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_ALLOW));
+  clock.Advance(base::Seconds(1));
 
-  base::Time last_modified = channels_provider_->GetWebsiteSettingLastModified(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS);
+  base::Time last_modified = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), first_origin, first_origin,
+      ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(last_modified, t1);
 
   // Delete and recreate the same channel after some time has passed.
   // This simulates the user clearing data and regranting permisison.
-  clock.Advance(base::TimeDelta::FromSeconds(3));
+  clock.Advance(base::Seconds(3));
   base::Time t2 = clock.Now();
-  channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS, nullptr);
-  channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value());
+  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_ALLOW));
 
   // Last modified time should be updated.
-  last_modified = channels_provider_->GetWebsiteSettingLastModified(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS);
+  last_modified = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), first_origin, first_origin,
+      ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(last_modified, t2);
 
   // Create an unrelated channel after some more time has passed.
-  clock.Advance(base::TimeDelta::FromSeconds(5));
+  clock.Advance(base::Seconds(5));
   std::string second_origin = "https://other.com";
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString(second_origin),
       ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW));
 
   // Expect first origin's last-modified time to be unchanged.
-  last_modified = channels_provider_->GetWebsiteSettingLastModified(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS);
+  last_modified = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), first_origin, first_origin,
+      ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(last_modified, t2);
 }
 
@@ -528,7 +522,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK));
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());
@@ -544,11 +538,11 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK));
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://allowed.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW));
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());
@@ -564,11 +558,11 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK));
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://allowed.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW));
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());
@@ -604,7 +598,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK));
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());

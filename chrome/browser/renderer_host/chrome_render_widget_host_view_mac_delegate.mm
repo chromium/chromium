@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
@@ -29,7 +28,6 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "ui/base/cocoa/nsmenuitem_additions.h"
 
 using content::RenderViewHost;
 
@@ -40,7 +38,8 @@ using content::RenderViewHost;
   BOOL _resigningFirstResponder;
 }
 
-- (id)initWithRenderWidgetHost:(content::RenderWidgetHost*)renderWidgetHost {
+- (instancetype)initWithRenderWidgetHost:
+    (content::RenderWidgetHost*)renderWidgetHost {
   self = [super init];
   if (self) {
     _renderWidgetHost = renderWidgetHost;
@@ -59,31 +58,6 @@ using content::RenderViewHost;
 // NO if normal processing should take place.
 - (BOOL)handleEvent:(NSEvent*)event {
   return [_historySwiper handleEvent:event];
-}
-
-- (BOOL)webContentShouldHandleKeyEquivalent:(NSEvent*)theEvent {
-  // Nasty hack warning: we check specifically for the quit and close-window key
-  // bindings here and prevent webcontents from eating them unless they have
-  // keyboard lock. This really does not belong in this delegate, which is
-  // otherwise designed to support HistorySwiper and to help
-  // RenderWidgetHostViewCocoa behave properly as an NSResponder.
-  //
-  // This code path isn't hit for WebContents that are part of a BrowserWindow,
-  // because BrowserWindows use a special CommandDispatcherDelegate
-  // (ChromeCommandDispatcherDelegate) that tries running main menu key
-  // equivalents before it ever considers dispatching an event to the
-  // WebContents. This code path only affects other WebContents, like WebViews
-  // within dialogs.
-  //
-  // TODO(https://crbug.com/1132810): Do "the ~CommandDispatcher refactor" and
-  // get rid of the weird non-browser WebContents special case.
-  NSMenu* chrome_menu = [NSApp.mainMenu itemWithTag:IDC_CHROME_MENU].submenu;
-  NSMenu* file_menu = [NSApp.mainMenu itemWithTag:IDC_FILE_MENU].submenu;
-  if ([[chrome_menu itemWithTag:IDC_EXIT] cr_firesForKeyEvent:theEvent] ||
-      [[file_menu itemWithTag:IDC_CLOSE_WINDOW] cr_firesForKeyEvent:theEvent]) {
-    return NO;
-  }
-  return YES;
 }
 
 // NSWindow events.
@@ -134,6 +108,30 @@ using content::RenderViewHost;
 
 - (NSView*)viewThatWantsHistoryOverlay {
   return _renderWidgetHost->GetView()->GetNativeView().GetNativeNSView();
+}
+
+- (BOOL)canNavigateInDirection:(history_swiper::NavigationDirection)direction
+                      onWindow:(NSWindow*)window {
+  Browser* browser = chrome::FindBrowserWithWindow(window);
+  if (!browser)
+    return NO;
+
+  if (direction == history_swiper::kForwards) {
+    return chrome::CanGoForward(browser);
+  } else {
+    return chrome::CanGoBack(browser);
+  }
+}
+
+- (void)navigateInDirection:(history_swiper::NavigationDirection)direction
+                   onWindow:(NSWindow*)window {
+  Browser* browser = chrome::FindBrowserWithWindow(window);
+  if (browser) {
+    if (direction == history_swiper::kForwards)
+      chrome::GoForward(browser, WindowOpenDisposition::CURRENT_TAB);
+    else
+      chrome::GoBack(browser, WindowOpenDisposition::CURRENT_TAB);
+  }
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item

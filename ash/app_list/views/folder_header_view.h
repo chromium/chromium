@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -19,21 +18,20 @@ namespace ash {
 class AppListFolderItem;
 class FolderHeaderViewDelegate;
 
-namespace test {
-class FolderHeaderViewTest;
-}
-
 // FolderHeaderView contains an editable folder name field.
 class ASH_EXPORT FolderHeaderView : public views::View,
                                     public views::TextfieldController,
                                     public AppListItemObserver {
  public:
   explicit FolderHeaderView(FolderHeaderViewDelegate* delegate);
+
+  FolderHeaderView(const FolderHeaderView&) = delete;
+  FolderHeaderView& operator=(const FolderHeaderView&) = delete;
+
   ~FolderHeaderView() override;
 
   void SetFolderItem(AppListFolderItem* folder_item);
   void UpdateFolderNameVisibility(bool visible);
-  void OnFolderItemRemoved();
   bool HasTextFocus() const;
   void SetTextFocus();
   bool is_tablet_mode() const { return is_tablet_mode_; }
@@ -46,10 +44,12 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   views::Textfield* GetFolderNameViewForTest() const;
 
+  int GetMaxFolderNameCharLengthForTest() const;
+
  private:
   class FolderNameView;
-  friend class test::FolderHeaderViewTest;
-  friend class PopulatedAppListTest;
+  friend class FolderHeaderViewTest;
+  friend class PopulatedAppListTestBase;
 
   // Updates UI.
   void Update();
@@ -64,10 +64,11 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   // Returns true if folder name is enabled, only for testing use.
   bool IsFolderNameEnabledForTest() const;
 
-  int GetMaxFolderNameWidth() const;
+  // Returns the folder name.
+  std::u16string GetFolderName() const;
 
-  // Returns elided folder name from |folder_name|.
-  std::u16string GetElidedFolderName(const std::u16string& folder_name) const;
+  // Returns elided folder name.
+  std::u16string GetElidedFolderName() const;
 
   // Returns whether |folder_name_view_| should clear focus based on
   // |key_event_|.
@@ -81,24 +82,9 @@ class ASH_EXPORT FolderHeaderView : public views::View,
                        const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
-  void OnBeforeUserAction(views::Textfield* sender) override;
 
   // AppListItemObserver overrides:
   void ItemNameChanged() override;
-
-  // Sets the |previous_cursor_position_|, only for testing use
-  void SetPreviousCursorPositionForTest(const size_t cursor_position);
-
-  // Sets the |previous_folder_name_|, only for testing use
-  void SetPreviousFolderNameForTest(const std::u16string& previous_name);
-
-  // Used to restore the folder name if the new folder name is longer than the
-  // max chars folder length allowed
-  base::Optional<std::u16string> previous_folder_name_;
-
-  // Used to restore the cursor position to its last known location when
-  // resetting the folder name in textfield
-  base::Optional<size_t> previous_cursor_position_;
 
   AppListFolderItem* folder_item_;  // Not owned.
 
@@ -112,7 +98,8 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   bool is_tablet_mode_;
 
-  DISALLOW_COPY_AND_ASSIGN(FolderHeaderView);
+  // Used to restore the folder name when the user presses the escape key.
+  std::u16string previous_folder_name_;
 };
 
 }  // namespace ash

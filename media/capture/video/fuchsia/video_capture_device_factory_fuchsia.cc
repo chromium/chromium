@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/system_monitor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "media/capture/video/fuchsia/video_capture_device_fuchsia.h"
@@ -99,8 +100,8 @@ class VideoCaptureDeviceFactoryFuchsia::DeviceConfigFetcher {
 
   uint64_t device_id_;
   fuchsia::camera3::DevicePtr device_;
-  base::Optional<std::string> description_;
-  base::Optional<VideoCaptureFormats> formats_;
+  absl::optional<std::string> description_;
+  absl::optional<VideoCaptureFormats> formats_;
   base::OnceClosure on_fetched_callback_;
 };
 
@@ -112,8 +113,7 @@ VideoCaptureDeviceFactoryFuchsia::~VideoCaptureDeviceFactoryFuchsia() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-std::unique_ptr<VideoCaptureDevice>
-VideoCaptureDeviceFactoryFuchsia::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryFuchsia::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   uint64_t device_id;
@@ -122,7 +122,9 @@ VideoCaptureDeviceFactoryFuchsia::CreateDevice(
 
   // Test may call CreateDevice() with an invalid |device_id|.
   if (!converted)
-    return nullptr;
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
 
   // CreateDevice() may be called before GetDeviceDescriptors(). Make sure
   // |device_watcher_| is initialized.
@@ -131,7 +133,8 @@ VideoCaptureDeviceFactoryFuchsia::CreateDevice(
 
   fidl::InterfaceHandle<fuchsia::camera3::Device> device;
   device_watcher_->ConnectToDevice(device_id, device.NewRequest());
-  return std::make_unique<VideoCaptureDeviceFuchsia>(std::move(device));
+  return VideoCaptureErrorOrDevice(
+      std::make_unique<VideoCaptureDeviceFuchsia>(std::move(device)));
 }
 
 void VideoCaptureDeviceFactoryFuchsia::GetDevicesInfo(
@@ -178,7 +181,7 @@ void VideoCaptureDeviceFactoryFuchsia::OnDeviceWatcherDisconnected(
   // Clear the list of devices, so we don't report any camera devices while
   // DeviceWatcher is disconnected. We will try connecting DeviceWatcher again
   // when GetDevicesInfo() is called.
-  devices_ = base::nullopt;
+  devices_ = absl::nullopt;
   num_pending_device_info_requests_ = 0;
 
   MaybeResolvePendingDeviceInfoCallbacks();
@@ -251,6 +254,25 @@ void VideoCaptureDeviceFactoryFuchsia::OnWatchDevicesResult(
 
   // Watch for further updates.
   WatchDevices();
+
+  // Notify system monitor that the list of the devices has changed, except if
+  // this is the first WatchDevices() response we've received. The first
+  // time WatchDevices() is called it responds immediately with the current list
+  // of the devices, i.e. there is no need to emit notification in that case. If
+  // the `device_watcher_` was disconnected and reconnected later then we still
+  // want to emit the notification as the list could change while
+  // `device_watcher_` was disconnected. There is no need to compare the content
+  // of the list: `MediaDeviceManager` will notify applications only if the list
+  // has actually changed.
+  if (received_initial_list_) {
+    auto* system_monitor = base::SystemMonitor::Get();
+    if (system_monitor) {
+      system_monitor->ProcessDevicesChanged(
+          base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+    }
+  } else {
+    received_initial_list_ = true;
+  }
 
   // Calls callbacks, which may delete |this|.
   MaybeResolvePendingDeviceInfoCallbacks();

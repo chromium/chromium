@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,16 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -22,13 +26,12 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -38,18 +41,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/test_support/request_handler_for_check_android_management.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -62,10 +61,6 @@
 
 namespace {
 
-// Set managed auth token for Android managed accounts.
-constexpr char kManagedAuthToken[] = "managed-auth-token";
-// Set unmanaged auth token for other Android unmanaged accounts.
-constexpr char kUnmanagedAuthToken[] = "unmanaged-auth-token";
 constexpr char kWellKnownConsumerName[] = "test@gmail.com";
 constexpr char kFakeUserName[] = "test@example.com";
 constexpr char kFakeGaiaId[] = "1234567890";
@@ -83,6 +78,10 @@ namespace arc {
 class ArcPlayStoreDisabledWaiter : public ArcSessionManagerObserver {
  public:
   ArcPlayStoreDisabledWaiter() { ArcSessionManager::Get()->AddObserver(this); }
+
+  ArcPlayStoreDisabledWaiter(const ArcPlayStoreDisabledWaiter&) = delete;
+  ArcPlayStoreDisabledWaiter& operator=(const ArcPlayStoreDisabledWaiter&) =
+      delete;
 
   ~ArcPlayStoreDisabledWaiter() override {
     ArcSessionManager::Get()->RemoveObserver(this);
@@ -104,13 +103,15 @@ class ArcPlayStoreDisabledWaiter : public ArcSessionManagerObserver {
   }
 
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreDisabledWaiter);
 };
 
 class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
  protected:
   ArcSessionManagerTest() = default;
+
+  ArcSessionManagerTest(const ArcSessionManagerTest&) = delete;
+  ArcSessionManagerTest& operator=(const ArcSessionManagerTest&) = delete;
+
   ~ArcSessionManagerTest() override = default;
 
   // MixinBasedInProcessBrowserTest:
@@ -134,7 +135,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ExpandPropertyFilesForTesting(ArcSessionManager::Get());
 
-    chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
@@ -150,9 +151,12 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
 
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        GetFakeUserManager()->GetPrimaryUser(), profile_.get());
 
     // Seed account info properly.
-    identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kFakeUserName);
+    identity_test_env()->MakePrimaryAccountAvailable(
+        kFakeUserName, signin::ConsentLevel::kSignin);
 
     profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
     profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
@@ -193,7 +197,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     profile_.reset();
     base::RunLoop().RunUntilIdle();
     user_manager_enabler_.reset();
-    chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -223,21 +227,19 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
  private:
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ConsumerAccount) {
   EnableArc();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      kUnmanagedAuthToken, base::Time::Max());
+      policy::kUnmanagedAuthToken, base::Time::Max());
   ASSERT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());
 }
@@ -263,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedAndroidAccount) {
   EnableArc();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      kManagedAuthToken, base::Time::Max());
+      policy::kManagedAuthToken, base::Time::Max());
   ArcPlayStoreDisabledWaiter().Wait();
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
 }
@@ -286,9 +288,10 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ArcDisabledInLockedFullscreen) {
           .Build());
   function->set_extension(extension.get());
 
-  extension_function_test_utils::RunFunctionAndReturnSingleResult(
-      function.get(), base::StringPrintf(kStateLockedFullscreen, window_id),
-      browser());
+  std::unique_ptr<base::Value> value(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), base::StringPrintf(kStateLockedFullscreen, window_id),
+          browser()));
 
   ASSERT_EQ(ArcSessionManager::State::STOPPED,
             ArcSessionManager::Get()->state());

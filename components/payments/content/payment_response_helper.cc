@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,17 @@
 #include "base/check.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payment_request_delegate.h"
+#include "content/public/common/content_features.h"
 
 namespace payments {
 
@@ -26,7 +29,7 @@ PaymentResponseHelper::PaymentResponseHelper(
     const std::string& app_locale,
     base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<PaymentApp> selected_app,
-    PaymentRequestDelegate* payment_request_delegate,
+    base::WeakPtr<PaymentRequestDelegate> payment_request_delegate,
     autofill::AutofillProfile* selected_shipping_profile,
     autofill::AutofillProfile* selected_contact_profile,
     base::WeakPtr<Delegate> delegate)
@@ -50,11 +53,13 @@ PaymentResponseHelper::PaymentResponseHelper(
 
     is_waiting_for_shipping_address_normalization_ = true;
 
-    payment_request_delegate_->GetAddressNormalizer()->NormalizeAddressAsync(
-        *selected_shipping_profile,
-        /*timeout_seconds=*/5,
-        base::BindOnce(&PaymentResponseHelper::OnAddressNormalized,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (payment_request_delegate_) {
+      payment_request_delegate_->GetAddressNormalizer()->NormalizeAddressAsync(
+          *selected_shipping_profile,
+          /*timeout_seconds=*/5,
+          base::BindOnce(&PaymentResponseHelper::OnAddressNormalized,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   // Start to get the instrument details. Will call back into
@@ -166,13 +171,7 @@ void PaymentResponseHelper::GeneratePaymentResponse() {
 
   mojom::PaymentResponsePtr payment_response = mojom::PaymentResponse::New();
 
-  // Make sure that we return the method name that the merchant specified for
-  // this app: cards can be either specified through their name (e.g., "visa")
-  // or through basic-card's supportedNetworks.
-  payment_response->method_name =
-      spec_->IsMethodSupportedThroughBasicCard(method_name_)
-          ? methods::kBasicCard
-          : method_name_;
+  payment_response->method_name = method_name_;
   payment_response->stringified_details = stringified_details_;
 
   // Shipping Address section
@@ -192,6 +191,9 @@ void PaymentResponseHelper::GeneratePaymentResponse() {
 
   // Contact Details section.
   payment_response->payer = GeneratePayerDetail(selected_contact_profile_);
+
+  payment_response =
+      selected_app_->SetAppSpecificResponseFields(std::move(payment_response));
 
   delegate_->OnPaymentResponseReady(std::move(payment_response));
 }

@@ -1,0 +1,11 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++IMAGE label='pipe'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++IMAGE label='  '
+++++++STATIC_TEXT label=' '
+++++++IMAGE label='SVG face'

@@ -18,7 +18,7 @@ build configurations:
 ## Common setup
 
 First, follow the [normal Linux build
-instructions](https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md)
+instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md)
 as usual to get a Chromium checkout.
 
 You'll also need to add `'chromeos'` to the `target_os` list in your `.gclient`
@@ -50,6 +50,9 @@ tested on a Linux workstation. This build is called "linux-chromeos". In this
 configuration most system services (like the power manager, bluetooth daemon,
 etc.) are stubbed out. The entire system UI runs in a single X11 window on your
 desktop.
+
+You can test sign-in/sync in this mode by adding the --login-manager flag, see
+the [Login notes](#Login-notes) section.
 
 ### Building and running Chromium with Chromium OS UI on your local machine
 
@@ -95,8 +98,8 @@ Some useful flags:
      virtual screens, by display position and size.
 *    `--enable-features=Feature1,OtherFeature2`: Enable specified features.
      Features are often listed in chrome://flags, or in source files such as
-     [chrome_features.cc](https://source.chromium.org/chromium/chromium/src/+/master:chrome/common/chrome_features.cc)
-     or [ash_features.cc](https://source.chromium.org/chromium/chromium/src/+/master:ash/constants/ash_features.cc).
+     [chrome_features.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_features.cc)
+     or [ash_features.cc](https://source.chromium.org/chromium/chromium/src/+/main:ash/constants/ash_features.cc).
      Note that changing values in chrome://flags does not work for
      linux-chromeos, and this flag must be used.
 *    `--enable-ui-devtools[=9223]`: Allow debugging of the system UI through
@@ -114,9 +117,10 @@ By default this build signs in with a stub user. To specify a real user:
 *   For first run, add the following options to chrome's command line:
     `--user-data-dir=/tmp/chrome --login-manager`
 *   Go through the out-of-the-box UX and sign in with a real Gmail account.
-*   For subsequent runs, add:
+*   For subsequent runs, if you want to skip the login manager page, add:
     `--user-data-dir=/tmp/chrome --login-user=username@gmail.com
-    --login-profile=username@gmail.com-hash`
+    --login-profile=username@gmail.com-hash`. It's also fine to just keep
+    --login-manager instead.
 *   To run in guest mode instantly, add:
     `--user-data-dir=/tmp/chrome --bwsi --incognito --login-user='$guest'
     --login-profile=user`
@@ -131,7 +135,7 @@ testing it through Chromium Remote Desktop you might face drawing
 problems (e.g. Aura window not painting anything). Possible remedies:
 
 *   `--ui-enable-software-compositing --ui-disable-threaded-compositing`
-*   `--use-gl=swiftshader`, but it's slow.
+*   `--use-gl=angle --use-angle=swiftshader`, but it's slow.
 
 To more closely match the UI used on devices, you can install fonts used
 by Chrome OS, such as Roboto, on your Linux distro.
@@ -197,4 +201,4 @@ supplied in the imported .gni file after the `import()` line.
 
 For more information (like copying the locally-built Chrome to a device, or
 running Tast tests), consult Simple Chrome's
-[full documentation](https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md).
+[full documentation](https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md).

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -19,8 +19,8 @@ enum class KioskAppType { kArcApp, kChromeApp, kWebApp };
 class KioskAppId {
  public:
   KioskAppType type;
-  base::Optional<std::string> app_id;
-  base::Optional<AccountId> account_id;
+  absl::optional<std::string> app_id;
+  absl::optional<AccountId> account_id;
 
   KioskAppId();
   ~KioskAppId();
@@ -39,6 +39,9 @@ class KioskAppId {
   KioskAppId(KioskAppType type, const std::string& app_id);
   KioskAppId(KioskAppType type, const AccountId& account_id);
 };
+
+// Overload << operator to allow logging of KioskAppId.
+std::ostream& operator<<(std::ostream& stream, const KioskAppId& app_id);
 
 }  // namespace ash
 

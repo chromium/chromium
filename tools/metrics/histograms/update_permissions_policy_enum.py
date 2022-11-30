@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Updates the FeaturePolicyFeature enum in enums.xml file with
@@ -25,7 +25,7 @@ if __name__ == '__main__':
                 'permissions_policy_feature.mojom'
   UpdateHistogramEnum(histogram_enum_name='FeaturePolicyFeature',
                       source_enum_path=source_file,
-                      start_marker='^enum FeaturePolicyFeature {',
+                      start_marker='^enum PermissionsPolicyFeature {',
                       end_marker='^};',
                       strip_k_prefix=True,
                       calling_script=os.path.basename(__file__))

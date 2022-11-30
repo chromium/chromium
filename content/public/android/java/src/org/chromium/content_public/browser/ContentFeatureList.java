@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,64 @@ public class ContentFeatureList {
         return ContentFeatureListImpl.isEnabled(featureName);
     }
 
+    /**
+     * Returns a field trial param as an int for the specified feature.
+     *
+     * @param featureName The name of the feature to retrieve a param for.
+     * @param paramName The name of the param for which to get as an integer.
+     * @param defaultValue The integer value to use if the param is not available.
+     * @return The parameter value as an int. Default value if the feature does not exist or the
+     *         specified parameter does not exist or its string value does not represent an int.
+     */
+    public static int getFieldTrialParamByFeatureAsInt(
+            String featureName, String paramName, int defaultValue) {
+        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
+        if (testValue != null) return Integer.valueOf(testValue);
+        if (FeatureList.hasTestFeatures()) return defaultValue;
+        assert FeatureList.isInitialized();
+        return ContentFeatureListImpl.getFieldTrialParamByFeatureAsInt(
+                featureName, paramName, defaultValue);
+    }
+
+    /**
+     * Returns a field trial param as a boolean for the specified feature.
+     *
+     * @param featureName The name of the feature to retrieve a param for.
+     * @param paramName The name of the param for which to get as a boolean.
+     * @param defaultValue The boolean value to use if the param is not available.
+     * @return The parameter value as a boolean. Default value if the feature does not exist or the
+     *         specified parameter does not exist or its string value is neither "true" nor "false".
+     */
+    public static boolean getFieldTrialParamByFeatureAsBoolean(
+            String featureName, String paramName, boolean defaultValue) {
+        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
+        if (testValue != null) return Boolean.valueOf(testValue);
+        if (FeatureList.hasTestFeatures()) return defaultValue;
+        assert FeatureList.isInitialized();
+        return ContentFeatureListImpl.getFieldTrialParamByFeatureAsBoolean(
+                featureName, paramName, defaultValue);
+    }
+
     // Alphabetical:
+    public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";
+
+    public static final String AUTO_DISABLE_ACCESSIBILITY = "AutoDisableAccessibility";
+
+    public static final String AUTO_DISABLE_ACCESSIBILITY_V2 = "AutoDisableAccessibilityV2";
+
     public static final String BACKGROUND_MEDIA_RENDERER_HAS_MODERATE_BINDING =
             "BackgroundMediaRendererHasModerateBinding";
 
-    public static final String BINDING_MANAGEMENT_WAIVE_CPU = "BindingManagementWaiveCpu";
+    public static final String COMPUTE_AX_MODE = "ComputeAXMode";
 
-    public static final String EXPERIMENTAL_ACCESSIBILITY_LABELS =
-            "ExperimentalAccessibilityLabels";
+    public static final String ON_DEMAND_ACCESSIBILITY_EVENTS = "OnDemandAccessibilityEvents";
+
+    public static final String PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES =
+            "ProcessSharingWithStrictSiteInstances";
+
+    public static final String REQUEST_DESKTOP_SITE_ADDITIONS = "RequestDesktopSiteAdditions";
+
+    public static final String REQUEST_DESKTOP_SITE_EXCEPTIONS = "RequestDesktopSiteExceptions";
 
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
             "WebBluetoothNewPermissionsBackend";

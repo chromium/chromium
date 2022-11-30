@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -191,7 +191,7 @@ void RecoveryComponent::Run() {
   ran_ = true;
   // We must make sure that the crx expansion is complete.
   if (!done_expanding_crx_.TimedWait(
-          base::TimeDelta::FromMinutes(kDownloadCrxWaitTimeInMin))) {
+          base::Minutes(kDownloadCrxWaitTimeInMin))) {
     LOG(WARNING) << "Timed out waiting for crx expansion completion.";
     return;
   }
@@ -217,7 +217,7 @@ void RecoveryComponent::Run() {
 
   int exit_code = -1;
   bool success = recovery_process.WaitForExitWithTimeout(
-      base::TimeDelta::FromMinutes(kExecutionCrxWaitTimeInMin), &exit_code);
+      base::Minutes(kExecutionCrxWaitTimeInMin), &exit_code);
   LOG_IF(INFO, success) << "ChromeRecovery returned code: " << exit_code;
   PLOG_IF(ERROR, !success) << "ChromeRecovery failed to start in time.";
 }
@@ -274,8 +274,7 @@ void RecoveryComponent::FetchOnIOThread() {
     return;
   }
 
-  base::ScopedClosureRunner delete_file(
-      base::BindOnce(base::GetDeleteFileCallback(), crx_file));
+  base::ScopedClosureRunner delete_file(base::GetDeleteFileCallback(crx_file));
 
   if (!SaveHttpResponseDataToFile(crx_file, http_response.get())) {
     LOG(WARNING) << "Failed to save downloaded recovery component";

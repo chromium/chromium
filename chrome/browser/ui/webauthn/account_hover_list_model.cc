@@ -1,71 +1,98 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webauthn/account_hover_list_model.h"
 
+#include <string>
+
+#include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 
+constexpr size_t kIconSize = 20;
+
+namespace {
+std::u16string NameTokenForDisplay(base::StringPiece name_token) {
+  if (name_token.empty())
+    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
+  return base::UTF8ToUTF16(name_token);
+}
+}  // namespace
+
 AccountHoverListModel::AccountHoverListModel(
-    const std::vector<device::PublicKeyCredentialUserEntity>* users_list,
+    base::span<const device::DiscoverableCredentialMetadata> creds,
     Delegate* delegate)
-    : users_list_(users_list), delegate_(delegate) {}
+    : delegate_(delegate) {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    for (const device::DiscoverableCredentialMetadata& cred : creds) {
+      items_.emplace_back(
+          NameTokenForDisplay(cred.user.name.value_or("")), u"",
+          ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
+                                         ui::kColorAccent, kIconSize));
+    }
+    return;
+  }
+
+  for (const device::DiscoverableCredentialMetadata& cred : creds) {
+    items_.emplace_back(
+        NameTokenForDisplay(cred.user.display_name.value_or("")),
+        NameTokenForDisplay(cred.user.name.value_or("")), ui::ImageModel());
+  }
+}
 
 AccountHoverListModel::~AccountHoverListModel() = default;
 
-bool AccountHoverListModel::ShouldShowPlaceholderForEmptyList() const {
-  return false;
-}
-
-std::u16string AccountHoverListModel::GetPlaceholderText() const {
-  return std::u16string();
-}
-
-const gfx::VectorIcon* AccountHoverListModel::GetPlaceholderIcon() const {
-  return &kUserAccountAvatarIcon;
-}
-
-std::vector<int> AccountHoverListModel::GetThrobberTags() const {
-  return {};
-}
-
 std::vector<int> AccountHoverListModel::GetButtonTags() const {
-  std::vector<int> tag_list(users_list_->size());
-  for (size_t i = 0; i < users_list_->size(); ++i)
+  std::vector<int> tag_list(items_.size());
+  for (size_t i = 0; i < items_.size(); ++i) {
     tag_list[i] = i;
+  }
   return tag_list;
 }
 
 std::u16string AccountHoverListModel::GetItemText(int item_tag) const {
-  const device::PublicKeyCredentialUserEntity& user = users_list_->at(item_tag);
-  if (user.display_name && !user.display_name->empty())
-    return base::UTF8ToUTF16(user.display_name.value());
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
+  return items_.at(item_tag).text;
 }
 
 std::u16string AccountHoverListModel::GetDescriptionText(int item_tag) const {
-  const device::PublicKeyCredentialUserEntity& user = users_list_->at(item_tag);
-  return base::UTF8ToUTF16(user.name.value_or(""));
+  return items_.at(item_tag).description;
 }
 
-const gfx::VectorIcon* AccountHoverListModel::GetItemIcon(int item_tag) const {
-  return nullptr;
+ui::ImageModel AccountHoverListModel::GetItemIcon(int item_tag) const {
+  return items_.at(item_tag).icon;
 }
 
 void AccountHoverListModel::OnListItemSelected(int item_tag) {
-  delegate_->OnItemSelected(item_tag);
+  delegate_->CredentialSelected(item_tag);
 }
 
 size_t AccountHoverListModel::GetPreferredItemCount() const {
-  return users_list_->size();
+  return items_.size();
 }
 
 bool AccountHoverListModel::StyleForTwoLines() const {
-  return true;
+  // With `kWebAuthnNewDiscoverableCredentialsUi`, we don't show a display name.
+  return !base::FeatureList::IsEnabled(
+      device::kWebAuthnNewDiscoverableCredentialsUi);
 }
+
+AccountHoverListModel::Item::Item(std::u16string text,
+                                  std::u16string description,
+                                  ui::ImageModel icon)
+    : text(std::move(text)), description(std::move(description)), icon(icon) {}
+AccountHoverListModel::Item::Item(Item&&) = default;
+AccountHoverListModel::Item& AccountHoverListModel::Item::operator=(Item&&) =
+    default;
+AccountHoverListModel::Item::~Item() = default;

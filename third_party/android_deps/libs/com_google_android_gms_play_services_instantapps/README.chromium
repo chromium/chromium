@@ -1,9 +1,10 @@
 Name: play-services-instantapps
 Short Name: play-services-instantapps
 URL: https://developers.google.com/android/guides/setup
-Version: 17.0.0
+Version: 18.0.1
 License: Android Software Development Kit License
 License File: LICENSE
+CPEPrefix: unknown
 Security Critical: yes
 
 Description:

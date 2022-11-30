@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -24,15 +24,19 @@ class SurfaceResourceHolderClient;
 class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
  public:
   explicit SurfaceResourceHolder(SurfaceResourceHolderClient* client);
+
+  SurfaceResourceHolder(const SurfaceResourceHolder&) = delete;
+  SurfaceResourceHolder& operator=(const SurfaceResourceHolder&) = delete;
+
   ~SurfaceResourceHolder();
 
   void Reset();
   void ReceiveFromChild(const std::vector<TransferableResource>& resources);
   void RefResources(const std::vector<TransferableResource>& resources);
-  void UnrefResources(const std::vector<ReturnedResource>& resources);
+  void UnrefResources(std::vector<ReturnedResource> resources);
 
  private:
-  SurfaceResourceHolderClient* client_;
+  raw_ptr<SurfaceResourceHolderClient> client_;
 
   struct ResourceRefs {
     int refs_received_from_child = 0;
@@ -46,8 +50,6 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   using ResourceIdInfoMap =
       std::unordered_map<ResourceId, ResourceRefs, ResourceIdHasher>;
   ResourceIdInfoMap resource_id_info_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceResourceHolder);
 };
 
 }  // namespace viz

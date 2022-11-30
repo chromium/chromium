@@ -1,15 +1,20 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/features.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace em = enterprise_management;
 
@@ -84,10 +89,19 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
       return dm_protocol::kValueRequestPsmHasDeviceState;
+    case DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT:
+      return dm_protocol::kValueCheckUserAccount;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
+      return dm_protocol::kValueBrowserUploadPublicKey;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_ENCRYPTED_REPORT:
       NOTREACHED() << "Not a DMServer request type " << type;
       break;
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
+      return dm_protocol::kValueRequestUploadEuiccInfo;
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+      return dm_protocol::kValueRequestChromeProfileReport;
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";
@@ -101,7 +115,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
     const std::string& client_id,
     bool critical,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     Callback callback)
     : JobConfigurationBase(type, std::move(auth_data), oauth_token, factory),
@@ -126,7 +140,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
     CloudPolicyClient* client,
     bool critical,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     Callback callback)
     : DMServerJobConfiguration(client->service(),
                                type,
@@ -140,87 +154,89 @@ DMServerJobConfiguration::DMServerJobConfiguration(
 DMServerJobConfiguration::~DMServerJobConfiguration() {}
 
 DeviceManagementStatus
-DMServerJobConfiguration::MapNetErrorAndResponseCodeToDMStatus(
+DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
     int net_error,
-    int response_code) {
-  DeviceManagementStatus code;
-  if (net_error != net::OK) {
-    code = DM_STATUS_REQUEST_FAILED;
-  } else {
-    switch (response_code) {
-      case DeviceManagementService::kSuccess:
-        code = DM_STATUS_SUCCESS;
-        break;
-      case DeviceManagementService::kInvalidArgument:
-        code = DM_STATUS_REQUEST_INVALID;
-        break;
-      case DeviceManagementService::kInvalidAuthCookieOrDMToken:
-        code = DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID;
-        break;
-      case DeviceManagementService::kMissingLicenses:
-        code = DM_STATUS_SERVICE_MISSING_LICENSES;
-        break;
-      case DeviceManagementService::kDeviceManagementNotAllowed:
-        code = DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED;
-        break;
-      case DeviceManagementService::kPendingApproval:
-        code = DM_STATUS_SERVICE_ACTIVATION_PENDING;
-        break;
-      case DeviceManagementService::kRequestTooLarge:
-        code = DM_STATUS_REQUEST_TOO_LARGE;
-        break;
-      case DeviceManagementService::kConsumerAccountWithPackagedLicense:
-        code = DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE;
-        break;
-      case DeviceManagementService::kInvalidURL:
-      case DeviceManagementService::kInternalServerError:
-      case DeviceManagementService::kServiceUnavailable:
-        code = DM_STATUS_TEMPORARY_UNAVAILABLE;
-        break;
-      case DeviceManagementService::kDeviceNotFound:
-        code = DM_STATUS_SERVICE_DEVICE_NOT_FOUND;
-        break;
-      case DeviceManagementService::kPolicyNotFound:
-        code = DM_STATUS_SERVICE_POLICY_NOT_FOUND;
-        break;
-      case DeviceManagementService::kInvalidSerialNumber:
-        code = DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER;
-        break;
-      case DeviceManagementService::kTooManyRequests:
-        code = DM_STATUS_SERVICE_TOO_MANY_REQUESTS;
-        break;
-      case DeviceManagementService::kDomainMismatch:
-        code = DM_STATUS_SERVICE_DOMAIN_MISMATCH;
-        break;
-      case DeviceManagementService::kDeprovisioned:
-        code = DM_STATUS_SERVICE_DEPROVISIONED;
-        break;
-      case DeviceManagementService::kDeviceIdConflict:
-        code = DM_STATUS_SERVICE_DEVICE_ID_CONFLICT;
-        break;
-      case DeviceManagementService::kArcDisabled:
-        code = DM_STATUS_SERVICE_ARC_DISABLED;
-        break;
-      case DeviceManagementService::kInvalidDomainlessCustomer:
-        code = DM_STATUS_SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL;
-        break;
-      case DeviceManagementService::kTosHasNotBeenAccepted:
-        code = DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED;
-        break;
-      case DeviceManagementService::kIllegalAccountForPackagedEDULicense:
-        code = DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE;
-        break;
-      default:
-        // Handle all unknown 5xx HTTP error codes as temporary and any other
-        // unknown error as one that needs more time to recover.
-        if (response_code >= 500 && response_code <= 599)
-          code = DM_STATUS_TEMPORARY_UNAVAILABLE;
-        else
-          code = DM_STATUS_HTTP_STATUS_ERROR;
-        break;
+    int response_code,
+    const std::string& response_body) {
+  if (net_error != net::OK)
+    return DM_STATUS_REQUEST_FAILED;
+
+  switch (response_code) {
+    case DeviceManagementService::kSuccess:
+      return DM_STATUS_SUCCESS;
+    case DeviceManagementService::kInvalidArgument:
+      return DM_STATUS_REQUEST_INVALID;
+    case DeviceManagementService::kInvalidAuthCookieOrDMToken:
+      return DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID;
+    case DeviceManagementService::kMissingLicenses:
+      return DM_STATUS_SERVICE_MISSING_LICENSES;
+    case DeviceManagementService::kDeviceManagementNotAllowed:
+      return DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED;
+    case DeviceManagementService::kPendingApproval:
+      return DM_STATUS_SERVICE_ACTIVATION_PENDING;
+    case DeviceManagementService::kRequestTooLarge:
+      return DM_STATUS_REQUEST_TOO_LARGE;
+    case DeviceManagementService::kConsumerAccountWithPackagedLicense:
+      return DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE;
+    case DeviceManagementService::kInvalidURL:
+    case DeviceManagementService::kInternalServerError:
+    case DeviceManagementService::kServiceUnavailable:
+      return DM_STATUS_TEMPORARY_UNAVAILABLE;
+    case DeviceManagementService::kDeviceNotFound: {
+#if !BUILDFLAG(IS_CHROMEOS)
+      if (!base::FeatureList::IsEnabled(features::kDmTokenDeletion))
+        return DM_STATUS_SERVICE_DEVICE_NOT_FOUND;
+
+      // If the DMToken deletion feature is enabled and forced, the DM status
+      // corresponding to DMToken deletion will be returned regardless of
+      // whether DMServer signals for deletion or invalidation. This is a
+      // temporary feature intended for testing purposes only.
+      if (base::GetFieldTrialParamByFeatureAsBool(features::kDmTokenDeletion,
+                                                  /*param_name=*/"forced",
+                                                  /*default_value=*/false))
+        return DM_STATUS_SERVICE_DEVICE_NEEDS_RESET;
+
+      // The `kDeviceNotFound` response code can correspond to different DM
+      // statuses depending on the contents of the response body.
+      em::DeviceManagementResponse response;
+      if (response.ParseFromString(response_body) &&
+          base::Contains(response.error_detail(),
+                         em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN)) {
+        return DM_STATUS_SERVICE_DEVICE_NEEDS_RESET;
+      }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+      return DM_STATUS_SERVICE_DEVICE_NOT_FOUND;
     }
+    case DeviceManagementService::kPolicyNotFound:
+      return DM_STATUS_SERVICE_POLICY_NOT_FOUND;
+    case DeviceManagementService::kInvalidSerialNumber:
+      return DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER;
+    case DeviceManagementService::kTooManyRequests:
+      return DM_STATUS_SERVICE_TOO_MANY_REQUESTS;
+    case DeviceManagementService::kDomainMismatch:
+      return DM_STATUS_SERVICE_DOMAIN_MISMATCH;
+    case DeviceManagementService::kDeprovisioned:
+      return DM_STATUS_SERVICE_DEPROVISIONED;
+    case DeviceManagementService::kDeviceIdConflict:
+      return DM_STATUS_SERVICE_DEVICE_ID_CONFLICT;
+    case DeviceManagementService::kArcDisabled:
+      return DM_STATUS_SERVICE_ARC_DISABLED;
+    case DeviceManagementService::kInvalidDomainlessCustomer:
+      return DM_STATUS_SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL;
+    case DeviceManagementService::kTosHasNotBeenAccepted:
+      return DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED;
+    case DeviceManagementService::kIllegalAccountForPackagedEDULicense:
+      return DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE;
+    case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
+      return DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK;
+    default:
+      // Handle all unknown 5xx HTTP error codes as temporary and any other
+      // unknown error as one that needs more time to recover.
+      if (response_code >= 500 && response_code <= 599)
+        return DM_STATUS_TEMPORARY_UNAVAILABLE;
+
+      return DM_STATUS_HTTP_STATUS_ERROR;
   }
-  return code;
 }
 
 std::string DMServerJobConfiguration::GetPayload() {
@@ -239,16 +255,13 @@ void DMServerJobConfiguration::OnURLLoadComplete(
     int response_code,
     const std::string& response_body) {
   DeviceManagementStatus code =
-      MapNetErrorAndResponseCodeToDMStatus(net_error, response_code);
+      MapNetErrorAndResponseToDMStatus(net_error, response_code, response_body);
 
-  // Parse the response even if |response_code| is not a success since the
-  // response data may contain an error message.
   em::DeviceManagementResponse response;
-  if (code == DM_STATUS_SUCCESS &&
-      (!response.ParseFromString(response_body) ||
-       response_code != DeviceManagementService::kSuccess)) {
+  if (code == DM_STATUS_SUCCESS && !response.ParseFromString(response_body)) {
     code = DM_STATUS_RESPONSE_DECODING_ERROR;
-    em::DeviceManagementResponse response;
+    LOG(WARNING) << "DMServer sent an invalid response";
+  } else if (response_code != DeviceManagementService::kSuccess) {
     if (response.ParseFromString(response_body)) {
       LOG(WARNING) << "DMServer sent an error response: " << response_code
                    << ". " << response.error_message();
@@ -257,7 +270,8 @@ void DMServerJobConfiguration::OnURLLoadComplete(
     }
   }
 
-  std::move(callback_).Run(job, code, net_error, response);
+  std::move(callback_).Run(
+      DMServerJobResult{job, net_error, code, std::move(response)});
 }
 
 GURL DMServerJobConfiguration::GetURL(int last_error) const {
@@ -282,7 +296,7 @@ RegistrationJobConfiguration::RegistrationJobConfiguration(
     JobType type,
     CloudPolicyClient* client,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     Callback callback)
     : DMServerJobConfiguration(type,
                                client,
@@ -290,6 +304,10 @@ RegistrationJobConfiguration::RegistrationJobConfiguration(
                                std::move(auth_data),
                                oauth_token,
                                std::move(callback)) {}
+
+void RegistrationJobConfiguration::SetTimeoutDuration(base::TimeDelta timeout) {
+  timeout_ = timeout;
+}
 
 void RegistrationJobConfiguration::OnBeforeRetry(
     int response_code,

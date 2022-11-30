@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,10 +133,10 @@ testCases.push({
   expected_activity: [
     'webRequestInternal.addEventListener',
     'webRequestInternal.addEventListener',
-    'webRequest.onBeforeSendHeaders/1',
+    'webRequest.onBeforeSendHeaders/g1',
     'webRequestInternal.eventHandled',
     'webRequest.onBeforeSendHeaders',
-    'webRequest.onHeadersReceived/2',
+    'webRequest.onHeadersReceived/g2',
     'webRequestInternal.eventHandled',
     'webRequest.onHeadersReceived',
     'tabs.onUpdated',
@@ -156,10 +156,10 @@ testCases.push({
     'webRequestInternal.addEventListener',
     'webRequestInternal.addEventListener',
     'windows.create',
-    'webRequest.onBeforeSendHeaders/3',
+    'webRequest.onBeforeSendHeaders/g3',
     'webRequestInternal.eventHandled',
     'webRequest.onBeforeSendHeaders',
-    'webRequest.onHeadersReceived/4',
+    'webRequest.onHeadersReceived/g4',
     'webRequestInternal.eventHandled',
     'webRequest.onHeadersReceived',
     'tabs.onUpdated',

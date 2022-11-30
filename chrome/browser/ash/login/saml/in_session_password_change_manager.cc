@@ -1,33 +1,33 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/saml/password_change_success_notification.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_dialogs.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 using PasswordSource = InSessionPasswordChangeManager::PasswordSource;
@@ -103,18 +103,18 @@ InSessionPasswordChangeManager* g_test_instance = nullptr;
 
 // Traits for running RecheckPasswordExpiryTask.
 // Runs from the UI thread to show notification.
-const base::TaskTraits kRecheckTaskTraits = {
-    content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT,
+const content::BrowserTaskTraits kRecheckUITaskTraits = {
+    base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 // A time delta of length one hour.
-const base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
+const base::TimeDelta kOneHour = base::Hours(1);
 
 // A time delta of length one day.
-const base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
+const base::TimeDelta kOneDay = base::Days(1);
 
 // A time delta with length of a half day.
-const base::TimeDelta kHalfDay = base::TimeDelta::FromHours(12);
+const base::TimeDelta kHalfDay = base::Hours(12);
 
 // A time delta with length zero.
 const base::TimeDelta kZeroTime = base::TimeDelta();
@@ -143,7 +143,8 @@ void RecheckPasswordExpiryTask::Recheck() {
 
 void RecheckPasswordExpiryTask::RecheckAfter(base::TimeDelta delay) {
   CancelPendingRecheck();
-  base::PostDelayedTask(FROM_HERE, kRecheckTaskTraits,
+  content::GetUIThreadTaskRunner(kRecheckUITaskTraits)
+      ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&RecheckPasswordExpiryTask::Recheck,
                                        weak_ptr_factory_.GetWeakPtr()),
                         std::max(delay, kOneHour));
@@ -158,7 +159,7 @@ void RecheckPasswordExpiryTask::CancelPendingRecheck() {
 // static
 std::unique_ptr<InSessionPasswordChangeManager>
 InSessionPasswordChangeManager::CreateIfEnabled(Profile* primary_profile) {
-  if (base::FeatureList::IsEnabled(features::kInSessionPasswordChange) &&
+  if (base::FeatureList::IsEnabled(::features::kInSessionPasswordChange) &&
       primary_profile->GetPrefs()->GetBoolean(
           prefs::kSamlInSessionPasswordChangeEnabled)) {
     std::unique_ptr<InSessionPasswordChangeManager> manager =
@@ -194,7 +195,7 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
   DCHECK(primary_user_);
 
   // Add `this` as a SessionActivationObserver to see when the screen is locked.
-  auto* session_controller = ash::SessionController::Get();
+  auto* session_controller = SessionController::Get();
   if (session_controller) {
     session_controller->AddSessionActivationObserverForAccountId(
         primary_user_->GetAccountId(), this);
@@ -203,7 +204,7 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
 
 InSessionPasswordChangeManager::~InSessionPasswordChangeManager() {
   // Remove `this` as a SessionActivationObserver.
-  auto* session_controller = ash::SessionController::Get();
+  auto* session_controller = SessionController::Get();
   if (session_controller) {
     session_controller->RemoveSessionActivationObserverForAccountId(
         primary_user_->GetAccountId(), this);
@@ -273,7 +274,7 @@ void InSessionPasswordChangeManager::MaybeShowExpiryNotification() {
     // We have not yet reached the advance warning threshold. Check again
     // once we have arrived at expiry_time minus advance_warning_days...
     base::TimeDelta recheck_delay =
-        time_until_expiry - base::TimeDelta::FromDays(advance_warning_days);
+        time_until_expiry - base::Days(advance_warning_days);
     // But, wait an extra hour so that when this code is next run, it is clear
     // we are now inside advance_warning_days (and not right on the boundary).
     recheck_delay += kOneHour;
@@ -410,6 +411,9 @@ void InSessionPasswordChangeManager::OnAuthSuccess(
   DismissExpiryNotification();
   PasswordChangeDialog::Dismiss();
   ConfirmPasswordChangeDialog::Dismiss();
+  if (features::IsSamlNotificationOnPasswordChangeSuccessEnabled()) {
+    PasswordChangeSuccessNotification::Show(primary_profile_);
+  }
   // We request a new sync token. It will be updated locally and signal the fact
   // of password change to other devices owned by the user.
   CreateTokenAsync();
@@ -433,8 +437,8 @@ void InSessionPasswordChangeManager::OnTokenCreated(
   // Set token value in prefs for in-session operations and ephemeral users and
   // local settings for login screen sync.
   prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
-  user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
-                                                 sync_token);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), sync_token);
 }
 
 void InSessionPasswordChangeManager::OnTokenFetched(
@@ -472,4 +476,4 @@ void InSessionPasswordChangeManager::NotifyObservers(Event event) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

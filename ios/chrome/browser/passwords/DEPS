@@ -1,0 +1,15 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^ios_chrome_password_manager_client.mm": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+  "^notify_auto_signin_view_controller.mm": [
+    "+ios/chrome/browser/ui/util/rtl_geometry.h",
+    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+  ],
+  "^password_controller.mm": [
+    "+ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h",
+  ],
+
+}
+

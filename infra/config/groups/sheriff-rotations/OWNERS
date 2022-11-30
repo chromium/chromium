@@ -1,0 +1,6 @@
+set noparent
+
+file://infra/config/groups/sheriff-rotations/ANDROID_OWNERS
+file://infra/config/groups/sheriff-rotations/CHROMIUM_CLANG_OWNERS
+file://infra/config/groups/sheriff-rotations/CHROMIUM_GPU_OWNERS
+file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_SHELF_SHELF_WINDOW_TARGETER_H_
 
 #include "ash/shelf/shelf_observer.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
@@ -22,6 +21,10 @@ class ShelfWindowTargeter : public ::wm::EasyResizeWindowTargeter,
                             public ShelfObserver {
  public:
   ShelfWindowTargeter(aura::Window* container, Shelf* shelf);
+
+  ShelfWindowTargeter(const ShelfWindowTargeter&) = delete;
+  ShelfWindowTargeter& operator=(const ShelfWindowTargeter&) = delete;
+
   ~ShelfWindowTargeter() override;
 
  private:
@@ -38,8 +41,6 @@ class ShelfWindowTargeter : public ::wm::EasyResizeWindowTargeter,
   void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
 
   Shelf* shelf_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWindowTargeter);
 };
 
 }  // namespace ash

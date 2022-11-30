@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,16 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/launch.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
 #include "base/test/launcher/test_results_tracker.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -111,7 +112,7 @@ class TestLauncher {
 
     int flags = 0;
     // These mirror values in base::LaunchOptions, see it for details.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::LaunchOptions::Inherit inherit_mode =
         base::LaunchOptions::Inherit::kSpecific;
     base::HandlesToInheritVector handles_to_inherit;
@@ -125,13 +126,17 @@ class TestLauncher {
   TestLauncher(TestLauncherDelegate* launcher_delegate,
                size_t parallel_jobs,
                size_t retry_limit = 1U);
+
+  TestLauncher(const TestLauncher&) = delete;
+  TestLauncher& operator=(const TestLauncher&) = delete;
+
   // virtual to mock in testing.
   virtual ~TestLauncher();
 
   // Runs the launcher. Must be called at most once.
   // command_line is null by default.
   // if null, uses command line for current process.
-  bool Run(CommandLine* command_line = nullptr) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Run(CommandLine* command_line = nullptr);
 
   // Launches a child process (assumed to be gtest-based binary) which runs
   // tests indicated by |test_names|.
@@ -153,7 +158,7 @@ class TestLauncher {
   // Returns true if child test processes should have dedicated temporary
   // directories.
   static constexpr bool SupportsPerChildTempDirs() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return true;
 #else
     // TODO(https://crbug.com/1038857): Enable for macOS, Linux, and Fuchsia.
@@ -162,7 +167,7 @@ class TestLauncher {
   }
 
  private:
-  bool Init(CommandLine* command_line) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Init(CommandLine* command_line);
 
   // Gets tests from the delegate, and converts to TestInfo objects.
   // Catches and logs uninstantiated parameterized tests.
@@ -200,7 +205,7 @@ class TestLauncher {
   // Rest counters, retry tests list, and test result tracker.
   void OnTestIterationStart();
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void OnShutdownPipeReadable();
 #endif
 
@@ -216,7 +221,7 @@ class TestLauncher {
   // Creates and starts a ThreadPoolInstance with |num_parallel_jobs| dedicated
   // to foreground blocking tasks (corresponds to the traits used to launch and
   // wait for child processes). virtual to mock in testing.
-  virtual void CreateAndStartThreadPool(int num_parallel_jobs);
+  virtual void CreateAndStartThreadPool(size_t num_parallel_jobs);
 
   // Callback to receive result of a test.
   // |result_file| is a path to xml file written by child process.
@@ -224,6 +229,8 @@ class TestLauncher {
   // EXPECT/ASSERT/DCHECK statements. Test launcher parses that
   // file to get additional information about test run (status,
   // error-messages, stack-traces and file/line for failures).
+  // |thread_id| is the actual worker thread that launching the child process.
+  // |process_num| is a sequence number of the process executed in the run.
   // |leaked_items| is the number of files and/or directories remaining in the
   // child process's temporary directory upon its termination.
   void ProcessTestResults(const std::vector<std::string>& test_names,
@@ -232,6 +239,8 @@ class TestLauncher {
                           TimeDelta elapsed_time,
                           int exit_code,
                           bool was_timeout,
+                          PlatformThreadId thread_id,
+                          int process_num,
                           int leaked_items);
 
   std::vector<std::string> CollectTests();
@@ -242,7 +251,7 @@ class TestLauncher {
   // is running on the correct thread.
   ThreadChecker thread_checker_;
 
-  TestLauncherDelegate* launcher_delegate_;
+  raw_ptr<TestLauncherDelegate> launcher_delegate_;
 
   // Support for outer sharding, just like gtest does.
   int32_t total_shards_;  // Total number of outer shards, at least one.
@@ -283,6 +292,9 @@ class TestLauncher {
   // Maximum number of retries per iteration.
   size_t retry_limit_;
 
+  // Maximum number of output bytes per test.
+  size_t output_bytes_limit_;
+
   // If true will not early exit nor skip retries even if too many tests are
   // broken.
   bool force_run_broken_tests_;
@@ -302,7 +314,7 @@ class TestLauncher {
   StdioRedirect print_test_stdio_;
 
   // Skip disabled tests unless explicitly requested.
-  bool skip_diabled_tests_;
+  bool skip_disabled_tests_;
 
   // Stop test iterations due to failure.
   bool stop_on_failure_;
@@ -320,8 +332,43 @@ class TestLauncher {
   // 1 if gtest_repeat is not specified or gtest_break_on_failure is specified.
   // Otherwise it matches gtest_repeat value.
   int repeats_per_iteration_ = 1;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TestLauncher);
+// Watch a gtest XML result file for tests run in a batch to complete.
+class ResultWatcher {
+ public:
+  ResultWatcher(FilePath result_file, size_t num_tests);
+
+  // Poll the incomplete result file, blocking until the batch completes or a
+  // test timed out. Returns true iff no tests timed out.
+  bool PollUntilDone(TimeDelta timeout_per_test);
+
+  // Wait and block for up to `timeout` before we poll the result file again.
+  // Returns true iff we should stop polling the results early.
+  virtual bool WaitWithTimeout(TimeDelta timeout) = 0;
+
+ private:
+  // Read the results, check if a timeout occurred, and then return how long
+  // the polling loop should wait for. A nonpositive return value indicates a
+  // timeout (i.e., the next check is overdue).
+  //
+  // If a timeout did not occur, this method tries to schedule the next check
+  // for `timeout_per_test` since the last test completed.
+  TimeDelta PollOnce(TimeDelta timeout_per_test);
+
+  // Get the timestamp of the test that completed most recently. If no tests
+  // have completed, return the null time.
+  Time LatestCompletionTimestamp(const std::vector<TestResult>& test_results);
+
+  // Path to the results file.
+  FilePath result_file_;
+
+  // The number of tests that run in this batch.
+  size_t num_tests_;
+
+  // The threshold past which we attribute a large time since latest completion
+  // to daylight savings time instead of a timed out test.
+  static constexpr TimeDelta kDaylightSavingsThreshold = Minutes(50);
 };
 
 // Return the number of parallel jobs to use, or 0U in case of error.
@@ -330,6 +377,11 @@ size_t NumParallelJobs(unsigned int cores_per_job);
 // Extract part from |full_output| that applies to |result|.
 std::string GetTestOutputSnippet(const TestResult& result,
                                  const std::string& full_output);
+
+// Truncates a snippet to approximately the allowed length, while trying to
+// retain fatal messages. Exposed for testing only.
+std::string TruncateSnippetFocused(const base::StringPiece snippet,
+                                   size_t byte_limit);
 
 }  // namespace base
 

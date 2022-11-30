@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "content/browser/isolated_origin_util.h"
 
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -35,7 +36,7 @@ IsolatedOriginPattern& IsolatedOriginPattern::operator=(
     IsolatedOriginPattern&& other) = default;
 
 bool IsolatedOriginPattern::Parse(const base::StringPiece& unparsed_pattern) {
-  pattern_ = unparsed_pattern.as_string();
+  pattern_ = std::string(unparsed_pattern);
   origin_ = url::Origin();
   isolate_all_subdomains_ = false;
   is_valid_ = false;
@@ -118,6 +119,15 @@ bool IsolatedOriginUtil::IsValidOriginForOptInIsolation(
   // non-secure contexts cannot be isolated via opt-in origin isolation.
   return IsValidIsolatedOriginImpl(origin, false) &&
          network::IsOriginPotentiallyTrustworthy(origin);
+}
+
+// static
+bool IsolatedOriginUtil::IsValidOriginForOptOutIsolation(
+    const url::Origin& origin) {
+  // Per https://html.spec.whatwg.org/C/#initialise-the-document-object,
+  // non-secure contexts cannot be isolated via opt-in origin isolation,
+  // but we allow non-secure contexts to opt-out for legacy sites.
+  return IsValidIsolatedOriginImpl(origin, false);
 }
 
 // static

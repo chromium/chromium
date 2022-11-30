@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
 
@@ -54,7 +56,7 @@ void EmptyURLLoaderClient::Drain(
 }
 
 void EmptyURLLoaderClient::MaybeDone() {
-  if (done_status_ && callback_)
+  if (done_status_ && !response_body_drainer_ && callback_)
     std::move(callback_).Run(*done_status_);
 }
 
@@ -62,7 +64,18 @@ void EmptyURLLoaderClient::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void EmptyURLLoaderClient::OnReceiveResponse(
-    const mojom::URLResponseHeadPtr head) {}
+    const mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+  if (!body)
+    return;
+
+  // TODO(bashi): Consider failing the request rather than DCHECK in case a
+  // URLLoader is misbehaved.
+  DCHECK(!response_body_drainer_);
+  response_body_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+}
 
 void EmptyURLLoaderClient::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
@@ -74,16 +87,7 @@ void EmptyURLLoaderClient::OnUploadProgress(int64_t current_position,
   std::move(callback).Run();
 }
 
-void EmptyURLLoaderClient::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {}
-
 void EmptyURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {}
-
-void EmptyURLLoaderClient::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(!response_body_drainer_);
-  response_body_drainer_ =
-      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-}
 
 void EmptyURLLoaderClient::OnComplete(const URLLoaderCompletionStatus& status) {
   done_status_ = status;
@@ -93,6 +97,9 @@ void EmptyURLLoaderClient::OnComplete(const URLLoaderCompletionStatus& status) {
 void EmptyURLLoaderClient::OnDataAvailable(const void* data, size_t num_bytes) {
 }
 
-void EmptyURLLoaderClient::OnDataComplete() {}
+void EmptyURLLoaderClient::OnDataComplete() {
+  response_body_drainer_.reset();
+  MaybeDone();
+}
 
 }  // namespace network

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,22 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
+#include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
@@ -30,16 +36,14 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/multidevice/beacon_seed.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/components/proximity_auth/fake_lock_handler.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/multidevice/beacon_seed.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/proximity_auth/fake_lock_handler.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -50,31 +54,103 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/views/test/test_views_delegate.h"
 
-using device::MockBluetoothAdapter;
-using testing::_;
-using testing::AnyNumber;
-using testing::Return;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::device::MockBluetoothAdapter;
+using ::testing::Return;
+
+struct SmartLockStateTestCase {
+  SmartLockState smart_lock_state;
+  EasyUnlockAuthEvent easy_unlock_auth_event;
+  SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
+      smart_lock_auth_event_password_state;
+  bool should_be_valid_on_remote_auth_failure;
+};
+
+constexpr SmartLockStateTestCase kSmartLockStateTestCases[] = {
+    {SmartLockState::kInactive,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_SERVICE_NOT_ACTIVE,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kServiceNotActive,
+     true},
+    {SmartLockState::kDisabled,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_SERVICE_NOT_ACTIVE,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kServiceNotActive,
+     true},
+    {SmartLockState::kBluetoothDisabled,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_NO_BLUETOOTH,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::kNoBluetooth,
+     true},
+    {SmartLockState::kConnectingToPhone,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_BLUETOOTH_CONNECTING,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kBluetoothConnecting,
+     false},
+    {SmartLockState::kPhoneNotFound,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_NO_PHONE,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kCouldNotConnectToPhone,
+     false},
+    {SmartLockState::kPhoneNotAuthenticated,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_PHONE_NOT_AUTHENTICATED,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kNotAuthenticated,
+     false},
+    {SmartLockState::kPhoneFoundLockedAndProximate,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_PHONE_LOCKED,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::kPhoneLocked,
+     true},
+    {SmartLockState::kPhoneFoundUnlockedAndDistant,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_RSSI_TOO_LOW,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::kRssiTooLow,
+     false},
+    {SmartLockState::kPhoneFoundLockedAndDistant,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_PHONE_LOCKED_AND_RSSI_TOO_LOW,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kPhoneLockedAndRssiTooLow,
+     false},
+    {SmartLockState::kPhoneAuthenticated,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_WITH_AUTHENTICATED_PHONE,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kAuthenticatedPhone,
+     false},
+    {SmartLockState::kPasswordReentryRequired,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_FORCED_REAUTH,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::kForcedReauth,
+     false},
+    {SmartLockState::kPhoneNotLockable,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_PHONE_NOT_LOCKABLE,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kPhoneNotLockable,
+     false},
+    {SmartLockState::kPrimaryUserAbsent,
+     EasyUnlockAuthEvent::PASSWORD_ENTRY_PRIMARY_USER_ABSENT,
+     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+         kPrimaryUserAbsent,
+     false}};
 
 class MockEasyUnlockNotificationController
     : public EasyUnlockNotificationController {
  public:
   MockEasyUnlockNotificationController()
       : EasyUnlockNotificationController(nullptr) {}
+
+  MockEasyUnlockNotificationController(
+      const MockEasyUnlockNotificationController&) = delete;
+  MockEasyUnlockNotificationController& operator=(
+      const MockEasyUnlockNotificationController&) = delete;
+
   ~MockEasyUnlockNotificationController() override {}
 
   // EasyUnlockNotificationController:
   MOCK_METHOD0(ShowChromebookAddedNotification, void());
   MOCK_METHOD0(ShowPairingChangeNotification, void());
   MOCK_METHOD1(ShowPairingChangeAppliedNotification, void(const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEasyUnlockNotificationController);
 };
 
 // Define a stub MultiDeviceSetupDialog because the base class has a protected
@@ -88,14 +164,19 @@ class FakeMultiDeviceSetupDialog
 }  // namespace
 
 class EasyUnlockServiceRegularTest : public testing::Test {
+ public:
+  EasyUnlockServiceRegularTest(const EasyUnlockServiceRegularTest&) = delete;
+  EasyUnlockServiceRegularTest& operator=(const EasyUnlockServiceRegularTest&) =
+      delete;
+
  protected:
   EasyUnlockServiceRegularTest()
       : test_local_device_(
             multidevice::RemoteDeviceRefBuilder()
                 .SetPublicKey("local device")
                 .SetSoftwareFeatureState(
-                    chromeos::multidevice::SoftwareFeature::kSmartLockClient,
-                    chromeos::multidevice::SoftwareFeatureState::kEnabled)
+                    multidevice::SoftwareFeature::kSmartLockClient,
+                    multidevice::SoftwareFeatureState::kEnabled)
                 .SetBeaconSeeds(multidevice::FromCryptAuthSeedList(
                     std::vector<cryptauth::BeaconSeed>(4)))
                 .Build()),
@@ -103,8 +184,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
             multidevice::RemoteDeviceRefBuilder()
                 .SetPublicKey("local device")
                 .SetSoftwareFeatureState(
-                    chromeos::multidevice::SoftwareFeature::kSmartLockHost,
-                    chromeos::multidevice::SoftwareFeatureState::kEnabled)
+                    multidevice::SoftwareFeature::kSmartLockHost,
+                    multidevice::SoftwareFeatureState::kEnabled)
                 .SetBeaconSeeds(multidevice::FromCryptAuthSeedList(
                     std::vector<cryptauth::BeaconSeed>(4)))
                 .Build()) {}
@@ -112,10 +193,9 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   void SetUp() override {
     display::Screen::SetScreenInstance(&test_screen_);
-    display::Display::SetInternalDisplayId(
-        test_screen_.GetPrimaryDisplay().id());
+    display::SetInternalDisplayIds({test_screen_.GetPrimaryDisplay().id()});
 
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     // Note: this is necessary because objects owned by EasyUnlockService
     // depend on the BluetoothAdapter -- fetching the real one causes tests
@@ -130,18 +210,18 @@ class EasyUnlockServiceRegularTest : public testing::Test {
         multidevice::RemoteDeviceRefBuilder()
             .SetPublicKey("potential, but disabled, host device")
             .SetSoftwareFeatureState(
-                chromeos::multidevice::SoftwareFeature::kSmartLockHost,
-                chromeos::multidevice::SoftwareFeatureState::kSupported)
+                multidevice::SoftwareFeature::kSmartLockHost,
+                multidevice::SoftwareFeatureState::kSupported)
             .Build();
     test_remote_devices_.push_back(test_remote_device_smart_lock_host_);
     test_remote_devices_.push_back(test_other_remote_device);
 
     fake_secure_channel_client_ =
-        std::make_unique<chromeos::secure_channel::FakeSecureChannelClient>();
+        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
-    fake_multidevice_setup_client_ = std::make_unique<
-        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_multidevice_setup_client_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
 
     TestingProfile::Builder builder;
     profile_ = builder.Build();
@@ -161,8 +241,9 @@ class EasyUnlockServiceRegularTest : public testing::Test {
   void TearDown() override {
     SetScreenLockState(false /* is_locked */);
     easy_unlock_service_regular_->Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+    display::Screen::SetScreenInstance(nullptr);
   }
 
   // Most tests will want to pass `should_initialize_all_dependencies` == true,
@@ -188,7 +269,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
   }
 
   void SetLocalDevice(
-      const base::Optional<multidevice::RemoteDeviceRef>& local_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& local_device) {
     fake_device_sync_client_->set_local_device_metadata(test_local_device_);
     fake_device_sync_client_->NotifyEnrollmentFinished();
   }
@@ -200,11 +281,9 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   void SetIsEnabled(bool is_enabled) {
     fake_multidevice_setup_client_->SetFeatureState(
-        chromeos::multidevice_setup::mojom::Feature::kSmartLock,
-        is_enabled
-            ? chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser
-            : chromeos::multidevice_setup::mojom::FeatureState::
-                  kDisabledByUser);
+        multidevice_setup::mojom::Feature::kSmartLock,
+        is_enabled ? multidevice_setup::mojom::FeatureState::kEnabledByUser
+                   : multidevice_setup::mojom::FeatureState::kDisabledByUser);
   }
 
   void SetEasyUnlockAllowedPolicy(bool allowed) {
@@ -216,17 +295,20 @@ class EasyUnlockServiceRegularTest : public testing::Test {
     if (is_locked)
       proximity_auth::ScreenlockBridge::Get()->SetFocusedUser(account_id_);
 
+    fake_lock_handler_->ClearSmartLockState();
+    fake_lock_handler_->ClearSmartLockAuthResult();
+
     proximity_auth::ScreenlockBridge::Get()->SetLockHandler(
         is_locked ? fake_lock_handler_.get() : nullptr);
   }
 
   void VerifyGetRemoteDevices(bool are_local_and_remote_devices_expected) {
-    const base::ListValue* remote_devices =
+    const base::Value::List* remote_devices =
         static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get())
             ->GetRemoteDevices();
     if (are_local_and_remote_devices_expected)
       // 2 devices are expected: the local device and the remote device.
-      EXPECT_EQ(2u, remote_devices->GetSize());
+      EXPECT_EQ(2u, remote_devices->size());
     else
       EXPECT_FALSE(remote_devices);
   }
@@ -237,6 +319,28 @@ class EasyUnlockServiceRegularTest : public testing::Test {
     test_screen_.display_list().RemoveDisplay(display.id());
     test_screen_.display_list().AddDisplay(display,
                                            display::DisplayList::Type::PRIMARY);
+  }
+
+  EasyUnlockAuthEvent GetPasswordAuthEvent() {
+    return easy_unlock_service_regular_->GetPasswordAuthEvent();
+  }
+
+  SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
+  GetSmartUnlockPasswordAuthEvent() {
+    return easy_unlock_service_regular_->GetSmartUnlockPasswordAuthEvent();
+  }
+
+  void ResetSmartLockState() {
+    easy_unlock_service_regular_->ResetSmartLockState();
+  }
+
+  void SetScreenIdleStateAndWait(bool is_screen_dimmed, bool is_off) {
+    power_manager::ScreenIdleState screen_idle_state;
+    screen_idle_state.set_dimmed(is_screen_dimmed);
+    screen_idle_state.set_off(is_off);
+    chromeos::FakePowerManagerClient::Get()->SendScreenIdleStateChanged(
+        screen_idle_state);
+    base::RunLoop().RunUntilIdle();
   }
 
   // Must outlive TestingProfiles.
@@ -283,15 +387,13 @@ class EasyUnlockServiceRegularTest : public testing::Test {
                                             false /* browser_restart */,
                                             false /* is_child */);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceRegularTest);
 };
 
 TEST_F(EasyUnlockServiceRegularTest, NotAllowedWhenProhibited) {
   InitializeService(true /* should_initialize_all_dependencies */);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kSmartLock,
-      chromeos::multidevice_setup::mojom::FeatureState::kProhibitedByPolicy);
+      multidevice_setup::mojom::Feature::kSmartLock,
+      multidevice_setup::mojom::FeatureState::kProhibitedByPolicy);
 
   EXPECT_FALSE(easy_unlock_service_regular_->IsAllowed());
 }
@@ -425,9 +527,8 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_SmartLockHostChanged) {
   auto new_remote_device =
       multidevice::RemoteDeviceRefBuilder()
           .SetPublicKey("new smartlock host")
-          .SetSoftwareFeatureState(
-              chromeos::multidevice::SoftwareFeature::kSmartLockHost,
-              chromeos::multidevice::SoftwareFeatureState::kEnabled)
+          .SetSoftwareFeatureState(multidevice::SoftwareFeature::kSmartLockHost,
+                                   multidevice::SoftwareFeatureState::kEnabled)
           .Build();
   multidevice::RemoteDeviceRefList new_remote_devices;
   new_remote_devices.push_back(new_remote_device);
@@ -444,6 +545,8 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_SmartLockHostChanged) {
 // Test through the core flow of unlocking the screen with Smart Lock.
 // Unfortunately, the only observable side effect we have available is verifying
 // that the success metric is emitted.
+// The "SmartLock.AuthResult" Failure bucket is incorrectly emitted to during
+// this test. See crbug.com/1255964 for more info.
 TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
@@ -451,23 +554,39 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   auto* service =
       static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
 
+  // service->AttemptAuth() will fail if the SmartLockState is not
+  // kPhoneAuthenticated.
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+
   EXPECT_TRUE(service->AttemptAuth(account_id_));
   service->FinalizeUnlock(true);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
 
   SetScreenLockState(false /* is_locked */);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
 }
 
 // Regression test for crbug.com/974410.
+// The "SmartLock.AuthResult" Failure bucket is incorrectly emitted to during
+// this test. See crbug.com/1255964 for more info.
 TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
 
   auto* service =
       static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+
+  // service->AttemptAuth() will fail if the SmartLockState is not
+  // kPhoneAuthenticated.
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_TRUE(service->AttemptAuth(account_id_));
   service->FinalizeUnlock(true);
@@ -477,10 +596,232 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   EXPECT_FALSE(service->AttemptAuth(account_id_));
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
 
   SetScreenLockState(false /* is_locked */);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
 }
 
-}  // namespace chromeos
+// Regression test for b/213941298.
+// Authenticate with Easy Unlock twice, calling UpdateSmartLockState in between.
+// Ordinarily, this call to UpdateSmartLockState would be made by
+// ProximityAuthClient during the OnScreenDidUnlock event. Check that the second
+// call to AttemptAuth succeeds since UpdateSmartLockState clears out the last
+// auth attempt, allowing the next auth attempt to proceed.
+TEST_F(EasyUnlockServiceRegularTest,
+       UpdateSmartLockStateClearsLastAuthAttempt) {
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  ASSERT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().value());
+
+  SetScreenLockState(false /* is_locked */);
+  service->UpdateSmartLockState(SmartLockState::kInactive);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state().has_value());
+
+  SetScreenLockState(true /* is_locked */);
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  ASSERT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().value());
+
+  SetScreenLockState(false /* is_locked */);
+}
+
+TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureEnabled) {
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            service->GetInitialSmartLockState());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureDisabled) {
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetIsEnabled(false);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+  EXPECT_EQ(SmartLockState::kDisabled, service->GetInitialSmartLockState());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, ShowInitialSmartLockState_FeatureEnabled) {
+  InitializeService(true /* should_initialize_all_dependencies */);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state());
+
+  SetScreenLockState(true /* is_locked */);
+
+  // Before EasyUnlockService::UpdateSmartLockState() is called externally,
+  // ensure that internal state is updated to an "initial" state to prevent
+  // UI jank.
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_lock_handler_->smart_lock_state().value());
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+  service->UpdateSmartLockState(SmartLockState::kConnectingToPhone);
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_lock_handler_->smart_lock_state().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest,
+       ShowInitialSmartLockState_FeatureDisabled) {
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetIsEnabled(false);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state());
+
+  SetScreenLockState(true /* is_locked */);
+
+  // Before EasyUnlockService::UpdateSmartLockState() is called externally,
+  // ensure that internal state is updated to an "initial" state to prevent
+  // UI jank.
+  EXPECT_EQ(SmartLockState::kDisabled,
+            fake_lock_handler_->smart_lock_state().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, PrepareForSuspend) {
+  InitializeService(/*should_initialize_all_dependencies=*/true);
+  SetScreenLockState(/*is_locked=*/true);
+  EasyUnlockService* service = easy_unlock_service_regular_.get();
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+  EXPECT_EQ(SmartLockState::kPhoneAuthenticated,
+            fake_lock_handler_->smart_lock_state().value());
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_lock_handler_->smart_lock_state().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, OnScreenOff) {
+  base::test::ScopedFeatureList feature_list(
+      features::kSmartLockBluetoothScreenOffFix);
+  InitializeService(/*should_initialize_all_dependencies=*/true);
+  SetScreenLockState(/*is_locked=*/true);
+  EasyUnlockService* service = easy_unlock_service_regular_.get();
+
+  // Dimming screen shouldn't reset Smart Lock state.
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+  EXPECT_EQ(SmartLockState::kPhoneAuthenticated,
+            fake_lock_handler_->smart_lock_state().value());
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  EXPECT_EQ(SmartLockState::kPhoneAuthenticated,
+            fake_lock_handler_->smart_lock_state().value());
+
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/false, /*is_off=*/true);
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_lock_handler_->smart_lock_state().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, HandleAuthFailureInUpdateSmartLockState) {
+  InitializeService(/*should_initialize_all_dependencies=*/true);
+  SetScreenLockState(/*is_locked=*/true);
+  EasyUnlockService* service = easy_unlock_service_regular_.get();
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+  EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
+            fake_lock_handler_->GetAuthType(account_id_));
+  service->AttemptAuth(account_id_);
+  service->FinalizeUnlock(true);
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().value());
+  service->UpdateSmartLockState(SmartLockState::kPhoneNotAuthenticated);
+  EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
+            fake_lock_handler_->GetAuthType(account_id_));
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_auth_result().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, IsSmartLockStateValidOnRemoteAuthFailure) {
+  InitializeService(/*should_initialize_all_dependencies=*/true);
+  SetScreenLockState(/*is_locked=*/true);
+  EasyUnlockService* service = easy_unlock_service_regular_.get();
+  for (const SmartLockStateTestCase& testcase : kSmartLockStateTestCases) {
+    fake_lock_handler_->ClearSmartLockState();
+    fake_lock_handler_->ClearSmartLockAuthResult();
+    service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+    service->AttemptAuth(account_id_);
+    service->UpdateSmartLockState(testcase.smart_lock_state);
+    if (testcase.smart_lock_state != SmartLockState::kPhoneAuthenticated) {
+      EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
+                fake_lock_handler_->GetAuthType(account_id_));
+      if (testcase.should_be_valid_on_remote_auth_failure) {
+        EXPECT_FALSE(fake_lock_handler_->smart_lock_auth_result().has_value());
+      } else {
+        EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+        EXPECT_FALSE(fake_lock_handler_->smart_lock_auth_result().value());
+      }
+    }
+  }
+}
+
+TEST_F(EasyUnlockServiceRegularTest, FinalizeUnlock) {
+  InitializeService(/*should_initialize_all_dependencies=*/true);
+  SetScreenLockState(/*is_locked=*/true);
+  EasyUnlockService* service = easy_unlock_service_regular_.get();
+  service->FinalizeUnlock(true);
+  EXPECT_EQ(0, fake_lock_handler_->unlock_called());
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+  service->AttemptAuth(account_id_);
+  service->FinalizeUnlock(true);
+  EXPECT_EQ(1, fake_lock_handler_->unlock_called());
+  service->FinalizeUnlock(false);
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_auth_result().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, GetPasswordAuthEvent) {
+  InitializeService(/*should_initialize_all_dependencies=*/true);
+  SetScreenLockState(/*is_locked=*/true);
+  EasyUnlockService* service = easy_unlock_service_regular_.get();
+  ResetSmartLockState();
+  EXPECT_EQ(EasyUnlockAuthEvent::PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER,
+            GetPasswordAuthEvent());
+  for (const SmartLockStateTestCase& testcase : kSmartLockStateTestCases) {
+    fake_lock_handler_->ClearSmartLockState();
+    fake_lock_handler_->ClearSmartLockAuthResult();
+    service->UpdateSmartLockState(testcase.smart_lock_state);
+    EXPECT_EQ(testcase.easy_unlock_auth_event, GetPasswordAuthEvent());
+  }
+}
+
+TEST_F(EasyUnlockServiceRegularTest, GetSmartUnlockPasswordAuthEvent) {
+  InitializeService(/*should_initialize_all_dependencies=*/true);
+  SetScreenLockState(/*is_locked=*/true);
+  EasyUnlockService* service = easy_unlock_service_regular_.get();
+  ResetSmartLockState();
+  EXPECT_EQ(
+      SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::kUnknownState,
+      GetSmartUnlockPasswordAuthEvent());
+  for (const SmartLockStateTestCase& testcase : kSmartLockStateTestCases) {
+    fake_lock_handler_->ClearSmartLockState();
+    fake_lock_handler_->ClearSmartLockAuthResult();
+    service->UpdateSmartLockState(testcase.smart_lock_state);
+    EXPECT_EQ(testcase.smart_lock_auth_event_password_state,
+              GetSmartUnlockPasswordAuthEvent());
+  }
+}
+
+}  // namespace ash

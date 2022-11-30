@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  const numberOfURLs = 2;
+  const numberOfURLs = 8;
 
   // Test traces
   var {page, session, dp} = await testRunner.startHTML(`
@@ -24,6 +24,46 @@
       non_async_script.src = "../resources/empty.js?dynamicNonAsync";
       non_async_script.async = false;
       document.head.appendChild(non_async_script);
+
+      // Add a dynamic explicitly async script
+      const async_script = document.createElement("script");
+      async_script.src = "../resources/empty.js?dynamicAsync";
+      async_script.async = true;
+      document.head.appendChild(async_script);
+
+      // Add a dynamic defer script
+      const defer_script = document.createElement("script");
+      defer_script.src = "../resources/empty.js?dynamicDefer";
+      defer_script.defer = true;
+      document.head.appendChild(defer_script);
+
+      // Add a dynamic explicitly render-blocking script
+      const blocking_script = document.createElement("script");
+      blocking_script.src = "../resources/empty.js?dynamicBlocking";
+      blocking_script.blocking = "render";
+      document.head.appendChild(blocking_script);
+
+      // Add a dynamic explicitly render-blocking module script
+      const blocking_module_script = document.createElement("script");
+      blocking_module_script.src = "../resources/empty.js?dynamicModuleBlocking";
+      blocking_module_script.type = "module";
+      blocking_module_script.blocking = "render";
+      document.head.appendChild(blocking_module_script);
+
+      // Add a dynamic async module script
+      const async_module_script = document.createElement("script");
+      async_module_script.src = "../resources/empty.js?dynamicAsyncModule";
+      async_module_script.type = "module";
+      async_module_script.async = true;
+      document.head.appendChild(async_module_script);
+
+      // Add a dynamic async render-blocking module script
+      const async_blocking_module_script = document.createElement("script");
+      async_blocking_module_script.src = "../resources/empty.js?dynamicAsyncModuleBlocking";
+      async_blocking_module_script.type = "module";
+      async_blocking_module_script.async = true;
+      async_blocking_module_script.blocking = "render"
+      document.head.appendChild(async_blocking_module_script);
     })();
   `);
 

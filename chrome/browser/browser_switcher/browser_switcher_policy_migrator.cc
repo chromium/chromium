@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,9 +35,9 @@ void SecondsToMilliseconds(base::Value* val) {
 // pre-parsed. This is why we need to convert the string to a list, when
 // migrating from the old policy.
 void StringToList(base::Value* val) {
-  std::string str = val->GetString();
-  *val = base::Value(base::Value::Type::LIST);
-  val->Append(base::Value(std::move(str)));
+  base::Value::List list;
+  list.Append(val->GetString());
+  *val = base::Value(std::move(list));
 }
 
 }  // namespace
@@ -56,7 +56,8 @@ void BrowserSwitcherPolicyMigrator::Migrate(policy::PolicyBundle* bundle) {
       bundle->Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, ""));
 
   const auto* entry = chrome_map.Get("BrowserSwitcherEnabled");
-  if (!entry || !entry->value() || !entry->value()->GetBool()) {
+  if (!entry || !entry->value(base::Value::Type::BOOLEAN) ||
+      !entry->value(base::Value::Type::BOOLEAN)->GetBool()) {
     VLOG(3) << "BrowserSwitcherEnabled is false, aborting policy migration.";
     return;
   }

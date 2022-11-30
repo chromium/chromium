@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/media_router/media_router_e2e_browsertest.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -24,15 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-// Use the following command to run e2e browser tests:
-// ./out/Debug/browser_tests --user-data-dir=<empty user data dir>
-//   --extension-unpacked=<mr extension dir>
-//   --receiver=<chromecast device name>
-//   --enable-pixel-output-in-tests --run-manual
-//   --gtest_filter=MediaRouterE2EBrowserTest.<test case name>
-//   --enable-logging=stderr
-//   --ui-test-action-timeout=200000
-
 namespace {
 // URL to launch Castv2Player_Staging app on Chromecast
 const char kCastAppPresentationUrl[] =
@@ -51,7 +43,7 @@ MediaRouterE2EBrowserTest::MediaRouterE2EBrowserTest()
 MediaRouterE2EBrowserTest::~MediaRouterE2EBrowserTest() {}
 
 void MediaRouterE2EBrowserTest::SetUpOnMainThread() {
-  MediaRouterBaseBrowserTest::SetUpOnMainThread();
+  MediaRouterIntegrationBrowserTest::SetUpOnMainThread();
   media_router_ =
       MediaRouterFactory::GetApiForBrowserContext(browser()->profile());
   DCHECK(media_router_);
@@ -61,13 +53,14 @@ void MediaRouterE2EBrowserTest::TearDownOnMainThread() {
   observer_.reset();
   route_id_.clear();
   media_router_ = nullptr;
-  MediaRouterBaseBrowserTest::TearDownOnMainThread();
+  MediaRouterIntegrationBrowserTest::TearDownOnMainThread();
 }
 
 void MediaRouterE2EBrowserTest::OnRouteResponseReceived(
     mojom::RoutePresentationConnectionPtr,
     const RouteRequestResult& result) {
-  ASSERT_TRUE(result.route());
+  ASSERT_TRUE(result.route())
+      << "RouteRequestResult code: " << result.result_code();
   route_id_ = result.route()->media_route_id();
 }
 
@@ -76,13 +69,16 @@ void MediaRouterE2EBrowserTest::CreateMediaRoute(
     const url::Origin& origin,
     content::WebContents* web_contents) {
   DCHECK(media_router_);
-  observer_.reset(new TestMediaSinksObserver(media_router_, source, origin));
+  observer_ =
+      std::make_unique<TestMediaSinksObserver>(media_router_, source, origin);
   observer_->Init();
 
   DVLOG(1) << "Receiver name: " << receiver_;
-  // Wait for MediaSinks compatible with |source| to be discovered.
+  // Wait for MediaSinks compatible with |source| to be discovered.  Waiting is
+  // needed here because tests that use this method are always executed using a
+  // real device, as opposed to a fake device provided by the test MRP.
   ASSERT_TRUE(ConditionalWait(
-      base::TimeDelta::FromSeconds(30), base::TimeDelta::FromSeconds(1),
+      base::Seconds(60), base::Seconds(1),
       base::BindRepeating(&MediaRouterE2EBrowserTest::IsSinkDiscovered,
                           base::Unretained(this))));
 
@@ -99,7 +95,7 @@ void MediaRouterE2EBrowserTest::CreateMediaRoute(
 
   // Wait for the route request to be fulfilled (and route to be started).
   ASSERT_TRUE(ConditionalWait(
-      base::TimeDelta::FromSeconds(30), base::TimeDelta::FromSeconds(1),
+      base::Seconds(60), base::Seconds(1),
       base::BindRepeating(&MediaRouterE2EBrowserTest::IsRouteCreated,
                           base::Unretained(this))));
 }
@@ -128,7 +124,7 @@ void MediaRouterE2EBrowserTest::OpenMediaPage() {
 
 // Test cases
 
-IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_TabMirroring) {
+IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_TabMirroring) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -141,23 +137,26 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_TabMirroring) {
   // Wait for 30 seconds to make sure the route is stable.
   CreateMediaRoute(MediaSource::ForTab(tab_id.id()),
                    url::Origin::Create(GURL(kOrigin)), web_contents);
-  Wait(base::TimeDelta::FromSeconds(30));
+  Wait(base::Seconds(30));
 
   // Wait for 10 seconds to make sure route has been stopped.
   StopMediaRoute();
-  Wait(base::TimeDelta::FromSeconds(10));
+  Wait(base::Seconds(10));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_CastApp) {
+IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_CastApp) {
   // Wait for 30 seconds to make sure the route is stable.
   CreateMediaRoute(
       MediaSource::ForPresentationUrl(GURL(kCastAppPresentationUrl)),
       url::Origin::Create(GURL(kOrigin)), nullptr);
-  Wait(base::TimeDelta::FromSeconds(30));
+  Wait(base::Seconds(30));
 
   // Wait for 10 seconds to make sure route has been stopped.
   StopMediaRoute();
-  Wait(base::TimeDelta::FromSeconds(10));
+  Wait(base::Seconds(10));
 }
+
+INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
+    MediaRouterE2EBrowserTest);
 
 }  // namespace media_router

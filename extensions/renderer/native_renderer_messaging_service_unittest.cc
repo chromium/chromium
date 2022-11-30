@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,18 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/child_process_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
+#include "extensions/renderer/bindings/api_response_validator.h"
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -25,10 +27,50 @@
 
 namespace extensions {
 
+namespace {
+
+// Unfortunately, we have a layering violation in the runtime API. The runtime
+// API is defined at the //extensions layer, but the `MessageSender` type has an
+// optional `tabs.Tab` property. This causes issues in type validation because
+// when we try to look up the `tabs.Tab` property, it fails (since it's only
+// defined in //chrome). This is a "real bug" in that it's a layering violation,
+// but it doesn't have real-world implications since right now the only consumer
+// of //extensions is //chrome (and thus, the tabs API will always be defined).
+// Ignore validation for the affected runtime message-related events.
+class RuntimeMessageValidationIgnorer {
+ public:
+  RuntimeMessageValidationIgnorer()
+      : test_handler_(base::BindRepeating(
+            &RuntimeMessageValidationIgnorer::HardValidationFailure)) {
+    test_handler_.IgnoreSignature("runtime.onMessage");
+    test_handler_.IgnoreSignature("runtime.onMessageExternal");
+    test_handler_.IgnoreSignature("runtime.onConnect");
+  }
+  ~RuntimeMessageValidationIgnorer() = default;
+
+ private:
+  // Hard-fail on any unexpected validation errors.
+  static void HardValidationFailure(const std::string& name,
+                                    const std::string& failure) {
+    NOTREACHED() << "Unexpected validation failure: " << name << ", "
+                 << failure;
+  }
+
+  APIResponseValidator::TestHandler test_handler_;
+};
+
+}  // namespace
+
 class NativeRendererMessagingServiceTest
     : public NativeExtensionBindingsSystemUnittest {
  public:
   NativeRendererMessagingServiceTest() {}
+
+  NativeRendererMessagingServiceTest(
+      const NativeRendererMessagingServiceTest&) = delete;
+  NativeRendererMessagingServiceTest& operator=(
+      const NativeRendererMessagingServiceTest&) = delete;
+
   ~NativeRendererMessagingServiceTest() override {}
 
   // NativeExtensionBindingsSystemUnittest:
@@ -67,15 +109,13 @@ class NativeRendererMessagingServiceTest
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeRendererMessagingServiceTest);
 };
 
 TEST_F(NativeRendererMessagingServiceTest, ValidateMessagePort) {
   v8::HandleScope handle_scope(isolate());
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false);
+  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
 
   EXPECT_FALSE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
@@ -96,11 +136,13 @@ TEST_F(NativeRendererMessagingServiceTest, ValidateMessagePort) {
 }
 
 TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
+  RuntimeMessageValidationIgnorer message_validation_ignorer;
+
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false);
+  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
   EXPECT_FALSE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
 
@@ -109,8 +151,8 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab.Swap(
-      DictionaryBuilder().Set("tabId", tab_id).Build().get());
+  tab_connection_info.tab =
+      std::move(DictionaryBuilder().Set("tabId", tab_id).Build()->GetDict());
   ExtensionMsg_ExternalConnectionInfo external_connection_info;
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
@@ -159,8 +201,8 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
   v8::Local<v8::Context> context = MainContext();
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id1(other_context_id, 0, false);
-  const PortId port_id2(other_context_id, 1, false);
+  const PortId port_id1(other_context_id, 0, false, SerializationFormat::kJson);
+  const PortId port_id2(other_context_id, 1, false, SerializationFormat::kJson);
 
   gin::Handle<GinPort> port1 = messaging_service()->CreatePortForTesting(
       script_context(), "channel1", port_id1);
@@ -180,14 +222,14 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
     v8::Local<v8::Function> add_on_message_listener = FunctionFromString(
         context, base::StringPrintf(kOnMessageListenerTemplate, kPort1Message));
     v8::Local<v8::Value> args[] = {port1.ToV8()};
-    RunFunctionOnGlobal(add_on_message_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_message_listener, context, std::size(args),
                         args);
   }
   {
     v8::Local<v8::Function> add_on_message_listener = FunctionFromString(
         context, base::StringPrintf(kOnMessageListenerTemplate, kPort2Message));
     v8::Local<v8::Value> args[] = {port2.ToV8()};
-    RunFunctionOnGlobal(add_on_message_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_message_listener, context, std::size(args),
                         args);
   }
 
@@ -200,8 +242,9 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
             GetStringPropertyFromObject(global, context, kPort2Message));
 
   const char kMessageString[] = R"({"data":"hello"})";
-  messaging_service()->DeliverMessage(script_context_set(), port_id1,
-                                      Message(kMessageString, false), nullptr);
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id1,
+      Message(kMessageString, SerializationFormat::kJson, false), nullptr);
 
   // Only port1 should have been notified of the message (ports only receive
   // messages directed to themselves).
@@ -216,8 +259,8 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectMessagePort) {
   v8::Local<v8::Context> context = MainContext();
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id1(other_context_id, 0, false);
-  const PortId port_id2(other_context_id, 1, false);
+  const PortId port_id1(other_context_id, 0, false, SerializationFormat::kJson);
+  const PortId port_id2(other_context_id, 1, false, SerializationFormat::kJson);
 
   gin::Handle<GinPort> port1 = messaging_service()->CreatePortForTesting(
       script_context(), "channel1", port_id1);
@@ -237,7 +280,7 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectMessagePort) {
         context,
         base::StringPrintf(kOnDisconnectListenerTemplate, kPort1Disconnect));
     v8::Local<v8::Value> args[] = {port1.ToV8()};
-    RunFunctionOnGlobal(add_on_disconnect_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_disconnect_listener, context, std::size(args),
                         args);
   }
   {
@@ -245,7 +288,7 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectMessagePort) {
         context,
         base::StringPrintf(kOnDisconnectListenerTemplate, kPort2Disconnect));
     v8::Local<v8::Value> args[] = {port2.ToV8()};
-    RunFunctionOnGlobal(add_on_disconnect_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_disconnect_listener, context, std::size(args),
                         args);
   }
 
@@ -269,7 +312,7 @@ TEST_F(NativeRendererMessagingServiceTest, PostMessageFromJS) {
   v8::Local<v8::Context> context = MainContext();
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false);
+  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
 
   gin::Handle<GinPort> port = messaging_service()->CreatePortForTesting(
       script_context(), "channel", port_id);
@@ -283,10 +326,11 @@ TEST_F(NativeRendererMessagingServiceTest, PostMessageFromJS) {
       FunctionFromString(context, kDispatchMessage);
   v8::Local<v8::Value> args[] = {port_object};
 
-  EXPECT_CALL(
-      *ipc_message_sender(),
-      SendPostMessageToPort(port_id, Message(R"({"data":"hello"})", false)));
-  RunFunctionOnGlobal(post_message, context, base::size(args), args);
+  EXPECT_CALL(*ipc_message_sender(),
+              SendPostMessageToPort(
+                  port_id, Message(R"({"data":"hello"})",
+                                   SerializationFormat::kJson, false)));
+  RunFunctionOnGlobal(post_message, context, std::size(args), args);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
 
@@ -295,7 +339,7 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectFromJS) {
   v8::Local<v8::Context> context = MainContext();
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false);
+  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
 
   gin::Handle<GinPort> port = messaging_service()->CreatePortForTesting(
       script_context(), "channel", port_id);
@@ -311,7 +355,7 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectFromJS) {
 
   EXPECT_CALL(*ipc_message_sender(),
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
-  RunFunctionOnGlobal(post_message, context, base::size(args), args);
+  RunFunctionOnGlobal(post_message, context, std::size(args), args);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
 
@@ -319,13 +363,14 @@ TEST_F(NativeRendererMessagingServiceTest, Connect) {
   v8::HandleScope handle_scope(isolate());
 
   const std::string kChannel = "channel";
-  PortId expected_port_id(script_context()->context_id(), 0, true);
+  PortId expected_port_id(script_context()->context_id(), 0, true,
+                          SerializationFormat::kJson);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessageChannel(script_context(), expected_port_id, target,
                                      kChannel));
-  gin::Handle<GinPort> new_port =
-      messaging_service()->Connect(script_context(), target, "channel");
+  gin::Handle<GinPort> new_port = messaging_service()->Connect(
+      script_context(), target, "channel", SerializationFormat::kJson);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ASSERT_FALSE(new_port.IsEmpty());
 
@@ -334,30 +379,36 @@ TEST_F(NativeRendererMessagingServiceTest, Connect) {
   EXPECT_FALSE(new_port->is_closed_for_testing());
 }
 
-// Tests sending a one-time message through the messaging service. Note that
-// this is more thoroughly tested in the OneTimeMessageHandler tests; this is
-// just to ensure NativeRendererMessagingService correctly forwards the calls.
-TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessage) {
+// Tests sending a one-time message through the messaging service and getting a
+// response to a callback. Note that this is more thoroughly tested in the
+// OneTimeMessageHandler tests; this is just to ensure
+// NativeRendererMessagingService correctly forwards the calls.
+TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
   const std::string kChannel = "chrome.runtime.sendMessage";
-  PortId port_id(script_context()->context_id(), 0, true);
+  PortId port_id(script_context()->context_id(), 0, true,
+                 SerializationFormat::kJson);
   const char kEchoArgs[] =
       "(function() { this.replyArgs = Array.from(arguments); })";
   v8::Local<v8::Function> response_callback =
       FunctionFromString(context, kEchoArgs);
 
-  // Send a message and expect a reply. A new port should be created, and should
-  // remain open (waiting for the response).
-  const Message message("\"hi\"", false);
+  // Send a message and expect a reply to a passed in callback. A new port
+  // should be created, and should remain open until the response is sent.
+  const Message message("\"hi\"", SerializationFormat::kJson, false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(
       *ipc_message_sender(),
       SendOpenMessageChannel(script_context(), port_id, target, kChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
-  messaging_service()->SendOneTimeMessage(script_context(), target, kChannel,
-                                          message, response_callback);
+  v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
+      script_context(), target, kChannel, message,
+      binding::AsyncResponseType::kCallback, response_callback);
+  // Since this is a callback based request, the returned promise should be
+  // empty.
+  EXPECT_TRUE(promise.IsEmpty());
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
@@ -366,11 +417,53 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessage) {
   // port should be closed.
   EXPECT_CALL(*ipc_message_sender(),
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
-  messaging_service()->DeliverMessage(script_context_set(), port_id,
-                                      Message("\"reply\"", false), nullptr);
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id,
+      Message("\"reply\"", SerializationFormat::kJson, false), nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_EQ("[\"reply\"]", GetStringPropertyFromObject(context->Global(),
                                                        context, "replyArgs"));
+  EXPECT_FALSE(
+      messaging_service()->HasPortForTesting(script_context(), port_id));
+}
+
+// Similar to the above test, tests sending a one-time message through the
+// messaging service, but this time using a Promise for the response.
+TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  const std::string kChannel = "chrome.runtime.sendMessage";
+  PortId port_id(script_context()->context_id(), 0, true,
+                 SerializationFormat::kJson);
+
+  // Send a message and expect a reply fulfilling a promise. A new port should
+  // be created, and should remain open until the response is sent.
+  const Message message("\"hi\"", SerializationFormat::kJson, false);
+  MessageTarget target(MessageTarget::ForExtension(extension()->id()));
+  EXPECT_CALL(
+      *ipc_message_sender(),
+      SendOpenMessageChannel(script_context(), port_id, target, kChannel));
+  EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
+  v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
+      script_context(), target, kChannel, message,
+      binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
+  ASSERT_FALSE(promise.IsEmpty());
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  EXPECT_TRUE(
+      messaging_service()->HasPortForTesting(script_context(), port_id));
+
+  // Respond to the message. The response callback should be triggered, and the
+  // port should be closed.
+  EXPECT_CALL(*ipc_message_sender(),
+              SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id,
+      Message("\"reply\"", SerializationFormat::kJson, false), nullptr);
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ("\"reply\"", V8ToString(promise->Result(), context));
   EXPECT_FALSE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
 }
@@ -379,6 +472,8 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessage) {
 // this is more thoroughly tested in the OneTimeMessageHandler tests; this is
 // just to ensure NativeRendererMessagingService correctly forwards the calls.
 TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
+  RuntimeMessageValidationIgnorer message_validation_ignorer;
+
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -396,14 +491,14 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
 
   const std::string kChannel = "chrome.runtime.sendMessage";
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false);
+  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
 
   ExtensionMsg_TabConnectionInfo tab_connection_info;
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab.Swap(
-      DictionaryBuilder().Set("tabId", tab_id).Build().get());
+  tab_connection_info.tab =
+      std::move(DictionaryBuilder().Set("tabId", tab_id).Build()->GetDict());
   ExtensionMsg_ExternalConnectionInfo external_connection_info;
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
@@ -425,13 +520,15 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
 
   // Post the message to the receiver. The receiver should respond, and the
   // port should close.
-  EXPECT_CALL(
-      *ipc_message_sender(),
-      SendPostMessageToPort(port_id, Message(R"({"data":"hi"})", false)));
+  EXPECT_CALL(*ipc_message_sender(),
+              SendPostMessageToPort(
+                  port_id, Message(R"({"data":"hi"})",
+                                   SerializationFormat::kJson, false)));
   EXPECT_CALL(*ipc_message_sender(),
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
-  messaging_service()->DeliverMessage(script_context_set(), port_id,
-                                      Message("\"message\"", false), nullptr);
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id,
+      Message("\"message\"", SerializationFormat::kJson, false), nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_FALSE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
@@ -440,6 +537,8 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
 // Test sending a one-time message from an external source (e.g., a different
 // extension). This shouldn't conflict with messages sent from the same source.
 TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
+  RuntimeMessageValidationIgnorer message_validation_ignorer;
+
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -461,17 +560,18 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
   int next_port_id = 0;
-  const PortId on_message_port_id(other_context_id, ++next_port_id, false);
+  const PortId on_message_port_id(other_context_id, ++next_port_id, false,
+                                  SerializationFormat::kJson);
   const PortId on_message_external_port_id(other_context_id, ++next_port_id,
-                                           false);
+                                           false, SerializationFormat::kJson);
 
   auto open_port = [this](const PortId& port_id, const ExtensionId& source_id) {
     ExtensionMsg_TabConnectionInfo tab_connection_info;
     tab_connection_info.frame_id = 0;
     const int tab_id = 10;
     GURL source_url("http://example.com");
-    tab_connection_info.tab.Swap(
-        DictionaryBuilder().Set("tabId", tab_id).Build().get());
+    tab_connection_info.tab =
+        std::move(DictionaryBuilder().Set("tabId", tab_id).Build()->GetDict());
 
     ExtensionMsg_ExternalConnectionInfo external_connection_info;
     external_connection_info.target_id = extension()->id();
@@ -498,8 +598,11 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
       crx_file::id_util::GenerateId("different");
   open_port(on_message_external_port_id, other_extension);
 
-  messaging_service()->DeliverMessage(script_context_set(), on_message_port_id,
-                                      Message("\"onMessage\"", false), nullptr);
+  EXPECT_CALL(*ipc_message_sender(),
+              SendMessageResponsePending(MSG_ROUTING_NONE, on_message_port_id));
+  messaging_service()->DeliverMessage(
+      script_context_set(), on_message_port_id,
+      Message("\"onMessage\"", SerializationFormat::kJson, false), nullptr);
   EXPECT_EQ("\"onMessage\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "onMessageReceived"));
@@ -509,7 +612,8 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
 
   messaging_service()->DeliverMessage(
       script_context_set(), on_message_external_port_id,
-      Message("\"onMessageExternal\"", false), nullptr);
+      Message("\"onMessageExternal\"", SerializationFormat::kJson, false),
+      nullptr);
   EXPECT_EQ("\"onMessage\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "onMessageReceived"));

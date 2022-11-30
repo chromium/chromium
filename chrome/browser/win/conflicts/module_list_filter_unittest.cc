@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/proto/module_list.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -46,9 +46,12 @@ class ModuleListBuilder {
     module_list_.mutable_allowlist();
   }
 
+  ModuleListBuilder(const ModuleListBuilder&) = delete;
+  ModuleListBuilder& operator=(const ModuleListBuilder&) = delete;
+
   // Adds a module to the allowlist.
-  void AddAllowlistedModule(base::Optional<std::u16string> basename,
-                            base::Optional<std::string> code_id) {
+  void AddAllowlistedModule(absl::optional<std::u16string> basename,
+                            absl::optional<std::string> code_id) {
     CHECK(basename.has_value() || code_id.has_value());
 
     chrome::conflicts::ModuleGroup* module_group =
@@ -112,8 +115,6 @@ class ModuleListBuilder {
   const base::FilePath module_list_path_;
 
   chrome::conflicts::ModuleList module_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListBuilder);
 };
 
 // Creates a pair of ModuleInfoKey and ModuleInfoData with the necessary
@@ -127,7 +128,7 @@ ModuleInfo CreateModuleInfo(const base::FilePath& module_path,
       std::forward_as_tuple());
 
   result.second.inspection_result =
-      base::make_optional<ModuleInspectionResult>();
+      absl::make_optional<ModuleInspectionResult>();
   result.second.inspection_result->basename =
       module_path.BaseName().AsUTF16Unsafe();
 
@@ -140,6 +141,10 @@ constexpr wchar_t kDllPath2[] = L"c:\\some\\shellextension.dll";
 }  // namespace
 
 class ModuleListFilterTest : public ::testing::Test {
+ public:
+  ModuleListFilterTest(const ModuleListFilterTest&) = delete;
+  ModuleListFilterTest& operator=(const ModuleListFilterTest&) = delete;
+
  protected:
   ModuleListFilterTest()
       : dll1_(kDllPath1),
@@ -165,8 +170,6 @@ class ModuleListFilterTest : public ::testing::Test {
   base::FilePath module_list_path_;
 
   scoped_refptr<ModuleListFilter> module_list_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListFilterTest);
 };
 
 TEST_F(ModuleListFilterTest, IsAllowlistedStringPieceVersion) {
@@ -240,7 +243,7 @@ TEST_F(ModuleListFilterTest, BasenameOnly) {
 
   ModuleListBuilder module_list_builder(module_list_path());
   module_list_builder.AddAllowlistedModule(
-      original.second.inspection_result->basename, base::nullopt);
+      original.second.inspection_result->basename, absl::nullopt);
   ASSERT_TRUE(module_list_builder.Finalize());
 
   ASSERT_TRUE(module_list_filter().Initialize(module_list_path()));
@@ -265,7 +268,7 @@ TEST_F(ModuleListFilterTest, CodeIdOnly) {
 
   ModuleListBuilder module_list_builder(module_list_path());
   module_list_builder.AddAllowlistedModule(
-      base::nullopt, GetCodeId(original.first.module_time_date_stamp,
+      absl::nullopt, GetCodeId(original.first.module_time_date_stamp,
                                original.first.module_size));
   ASSERT_TRUE(module_list_builder.Finalize());
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,24 +65,26 @@ JavaTestEndpointService::~JavaTestEndpointService() {}
 void JavaTestEndpointService::GetScriptsForUrl(
     const GURL& url,
     const TriggerContext& trigger_context,
-    ResponseCallback callback) {
+    ServiceRequestSender::ResponseCallback callback) {
   service_impl_->GetScriptsForUrl(
       url, trigger_context,
       base::BindOnce(&JavaTestEndpointService::OnGetScriptsForUrl,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void JavaTestEndpointService::OnGetScriptsForUrl(ResponseCallback callback,
-                                                 int http_status,
-                                                 const std::string& response) {
+void JavaTestEndpointService::OnGetScriptsForUrl(
+    ServiceRequestSender::ResponseCallback callback,
+    int http_status,
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info) {
   if (http_status != ::net::HTTP_OK) {
-    std::move(callback).Run(http_status, response);
+    std::move(callback).Run(http_status, response, response_info);
     return;
   }
 
   SupportsScriptResponseProto proto_response;
   if (!proto_response.ParseFromString(response)) {
-    std::move(callback).Run(http_status, response);
+    std::move(callback).Run(http_status, response, response_info);
     return;
   }
 
@@ -93,15 +95,16 @@ void JavaTestEndpointService::OnGetScriptsForUrl(ResponseCallback callback,
 
   std::string modified_response;
   proto_response.SerializeToString(&modified_response);
-  std::move(callback).Run(http_status, modified_response);
+  std::move(callback).Run(http_status, modified_response, response_info);
 }
 
-void JavaTestEndpointService::GetActions(const std::string& script_path,
-                                         const GURL& url,
-                                         const TriggerContext& trigger_context,
-                                         const std::string& global_payload,
-                                         const std::string& script_payload,
-                                         ResponseCallback callback) {
+void JavaTestEndpointService::GetActions(
+    const std::string& script_path,
+    const GURL& url,
+    const TriggerContext& trigger_context,
+    const std::string& global_payload,
+    const std::string& script_payload,
+    ServiceRequestSender::ResponseCallback callback) {
   service_impl_->GetActions(script_path, url, trigger_context, global_payload,
                             script_payload, std::move(callback));
 }
@@ -112,10 +115,26 @@ void JavaTestEndpointService::GetNextActions(
     const std::string& previous_script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
     const RoundtripTimingStats& timing_stats,
-    ResponseCallback callback) {
-  service_impl_->GetNextActions(trigger_context, previous_global_payload,
-                                previous_script_payload, processed_actions,
-                                timing_stats, std::move(callback));
+    const RoundtripNetworkStats& network_stats,
+    ServiceRequestSender::ResponseCallback callback) {
+  service_impl_->GetNextActions(
+      trigger_context, previous_global_payload, previous_script_payload,
+      processed_actions, timing_stats, network_stats, std::move(callback));
+}
+
+void JavaTestEndpointService::GetUserData(
+    const CollectUserDataOptions& options,
+    uint64_t run_id,
+    const UserData* user_data,
+    ServiceRequestSender::ResponseCallback callback) {
+  service_impl_->GetUserData(options, run_id, user_data, std::move(callback));
+}
+
+void JavaTestEndpointService::ReportProgress(
+    const std::string& token,
+    const std::string& payload,
+    ServiceRequestSender::ResponseCallback callback) {
+  service_impl_->ReportProgress(token, payload, std::move(callback));
 }
 
 }  // namespace autofill_assistant

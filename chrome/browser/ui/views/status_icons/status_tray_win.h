@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/status_icons/status_tray.h"
 
 class StatusIconWin;
@@ -31,6 +29,10 @@ class StatusTrayStateChangerProxy {
 class StatusTrayWin : public StatusTray {
  public:
   StatusTrayWin();
+
+  StatusTrayWin(const StatusTrayWin&) = delete;
+  StatusTrayWin& operator=(const StatusTrayWin&) = delete;
+
   ~StatusTrayWin() override;
 
   void UpdateIconVisibilityInBackground(StatusIconWin* status_icon);
@@ -77,9 +79,6 @@ class StatusTrayWin : public StatusTray {
   // Manages changes performed on a background thread to manipulate visibility
   // of notification icons.
   std::unique_ptr<StatusTrayStateChangerProxy> state_changer_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_TRAY_WIN_H_
-

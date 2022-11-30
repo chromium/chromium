@@ -1,13 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/tap_suppression_controller.h"
 
@@ -19,15 +16,17 @@ class TouchscreenTapSuppressionController : public TapSuppressionController {
  public:
   TouchscreenTapSuppressionController(
       const TapSuppressionController::Config& config);
+
+  TouchscreenTapSuppressionController(
+      const TouchscreenTapSuppressionController&) = delete;
+  TouchscreenTapSuppressionController& operator=(
+      const TouchscreenTapSuppressionController&) = delete;
+
   ~TouchscreenTapSuppressionController() override;
 
   // Should be called on arrival of any tap-related events. Returns true if the
   // caller should stop normal handling of the gesture.
   bool FilterTapEvent(const GestureEventWithLatencyInfo& event);
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(TouchscreenTapSuppressionController);
 };
 
 }  // namespace content

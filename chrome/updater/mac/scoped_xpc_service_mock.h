@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -43,7 +44,7 @@ class ScopedXPCServiceMock {
     // code under test. Will not be populated before that request is issued.
     // If the remote object is requested via .remoteObjectProxy rather than
     // remoteObjectProxyWithErrorHandler:, this field is never populated.
-    base::Optional<base::mac::ScopedBlock<void (^)(NSError*)>>
+    absl::optional<base::mac::ScopedBlock<void (^)(NSError*)>>
         xpc_error_handler;
 
     explicit RemoteObjectMockRecord(base::scoped_nsprotocol<id> mock_ptr);

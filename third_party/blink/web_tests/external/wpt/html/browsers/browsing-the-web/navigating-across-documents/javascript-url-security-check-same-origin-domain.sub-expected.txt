@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL javascript: URL security check for same-origin-domain but not same-origin Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+Harness: the test ran to completion.
+

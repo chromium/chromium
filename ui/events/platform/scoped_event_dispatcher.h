@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define UI_EVENTS_PLATFORM_SCOPED_EVENT_DISPATCHER_H_
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -24,15 +24,17 @@ class EVENTS_EXPORT ScopedEventDispatcher {
  public:
   ScopedEventDispatcher(PlatformEventDispatcher** scoped_dispatcher,
                         PlatformEventDispatcher* new_dispatcher);
+
+  ScopedEventDispatcher(const ScopedEventDispatcher&) = delete;
+  ScopedEventDispatcher& operator=(const ScopedEventDispatcher&) = delete;
+
   ~ScopedEventDispatcher();
 
   operator PlatformEventDispatcher*() const { return original_; }
 
  private:
-  PlatformEventDispatcher* original_;
+  raw_ptr<PlatformEventDispatcher> original_;
   base::AutoReset<PlatformEventDispatcher*> restore_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedEventDispatcher);
 };
 
 }  // namespace ui

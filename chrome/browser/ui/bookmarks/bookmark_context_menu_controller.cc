@@ -1,10 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// DELETE LATER
+#include "base/logging.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -30,15 +36,14 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
 using bookmarks::BookmarkNode;
-using content::PageNavigator;
 
 namespace {
 
@@ -54,12 +59,18 @@ constexpr UserMetricsAction kAppMenuBookmarksNewWindow(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kAppMenuBookmarksIncognito(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllIncognito");
+constexpr UserMetricsAction kSidePanelBookmarksNewBackgroundTab(
+    "SidePanel_Bookmarks_ContextMenu_OpenAll");
+constexpr UserMetricsAction kSidePanelBookmarksNewWindow(
+    "SidePanel_Bookmarks_ContextMenu_OpenAllInNewWindow");
+constexpr UserMetricsAction kSidePanelBookmarksIncognito(
+    "SidePanel_Bookmarks_ContextMenu_OpenAllIncognito");
 
 const UserMetricsAction* GetActionForLocationAndDisposition(
     BookmarkLaunchLocation location,
     WindowOpenDisposition disposition) {
   switch (location) {
-    case BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR:
+    case BookmarkLaunchLocation::kAttachedBar:
       switch (disposition) {
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:
           return &kBookmarkBarNewBackgroundTab;
@@ -70,8 +81,7 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
         default:
           return nullptr;
       }
-      break;
-    case BOOKMARK_LAUNCH_LOCATION_APP_MENU:
+    case BookmarkLaunchLocation::kAppMenu:
       switch (disposition) {
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:
           return &kAppMenuBookmarksNewBackgroundTab;
@@ -82,23 +92,20 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
         default:
           return nullptr;
       }
+    case BookmarkLaunchLocation::kSidePanelContextMenu:
+      switch (disposition) {
+        case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+          return &kSidePanelBookmarksNewBackgroundTab;
+        case WindowOpenDisposition::NEW_WINDOW:
+          return &kSidePanelBookmarksNewWindow;
+        case WindowOpenDisposition::OFF_THE_RECORD:
+          return &kSidePanelBookmarksIncognito;
+        default:
+          return nullptr;
+      }
     default:
       return nullptr;
   }
-}
-
-// Returns true if |command_id| corresponds to a command related to bookmark bar
-// management.
-bool IsBookmarkBarManagementCommand(int command_id) {
-  switch (command_id) {
-    case IDC_BOOKMARK_MANAGER:
-    case IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT:
-    case IDC_BOOKMARK_BAR_SHOW_READING_LIST:
-    case IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS:
-    case IDC_BOOKMARK_BAR_ALWAYS_SHOW:
-      return true;
-  }
-  return false;
 }
 
 }  // namespace
@@ -108,7 +115,6 @@ BookmarkContextMenuController::BookmarkContextMenuController(
     BookmarkContextMenuControllerDelegate* delegate,
     Browser* browser,
     Profile* profile,
-    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& selection)
@@ -116,7 +122,6 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       delegate_(delegate),
       browser_(browser),
       profile_(profile),
-      get_navigator_(std::move(get_navigator)),
       opened_from_(opened_from),
       parent_(parent),
       selection_(selection),
@@ -156,6 +161,10 @@ void BookmarkContextMenuController::BuildMenu() {
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+
+    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
   }
 
   AddSeparator();
@@ -189,10 +198,6 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
-    AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_READING_LIST,
-                    IDS_BOOKMARK_BAR_SHOW_READING_LIST);
-  }
   AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
                   IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
   AddCheckboxItem(IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_SHOW_BOOKMARK_BAR);
@@ -224,9 +229,11 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
   switch (id) {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
+    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW: {
       WindowOpenDisposition initial_disposition;
-      if (id == IDC_BOOKMARK_BAR_OPEN_ALL) {
+      if (id == IDC_BOOKMARK_BAR_OPEN_ALL ||
+          id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
         initial_disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
       } else if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW) {
         initial_disposition = WindowOpenDisposition::NEW_WINDOW;
@@ -237,14 +244,16 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
           GetActionForLocationAndDisposition(opened_from_, initial_disposition);
       if (action)
         base::RecordAction(*action);
-      chrome::OpenAllIfAllowed(browser_, std::move(get_navigator_), selection_,
-                               initial_disposition);
+
+      chrome::OpenAllIfAllowed(browser_, selection_, initial_disposition,
+                               id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
       break;
     }
 
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Edit"));
+      RecordBookmarkEdited(opened_from_);
 
       if (selection_.size() != 1) {
         NOTREACHED();
@@ -275,12 +284,10 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
 
     case IDC_BOOKMARK_BAR_REMOVE: {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Remove"));
+      RecordBookmarkRemoved(opened_from_);
 
-      for (size_t i = 0; i < selection_.size(); ++i) {
-        int index = selection_[i]->parent()->GetIndexOf(selection_[i]);
-        if (index > -1)
-          model_->Remove(selection_[i]);
-      }
+      for (const auto* node : selection_)
+        model_->Remove(node);
       selection_.clear();
       break;
     }
@@ -293,9 +300,11 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
           bookmarks::GetParentForNewNodes(parent_, selection_, &index);
       GURL url;
       std::u16string title;
-      chrome::GetURLAndTitleToBookmark(
-          browser_->tab_strip_model()->GetActiveWebContents(),
-          &url, &title);
+      if (!chrome::GetURLAndTitleToBookmark(
+              browser_->tab_strip_model()->GetActiveWebContents(), &url,
+              &title)) {
+        break;
+      }
       BookmarkEditor::Show(parent_window_,
                            profile_,
                            BookmarkEditor::EditDetails::AddNodeInFolder(
@@ -328,14 +337,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       prefs->SetBoolean(
           bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
           !prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar));
-      break;
-    }
-
-    case IDC_BOOKMARK_BAR_SHOW_READING_LIST: {
-      PrefService* prefs = profile_->GetPrefs();
-      prefs->SetBoolean(
-          bookmarks::prefs::kShowReadingListInBookmarkBar,
-          !prefs->GetBoolean(bookmarks::prefs::kShowReadingListInBookmarkBar));
       break;
     }
 
@@ -427,9 +428,6 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
     return prefs->GetBoolean(
         bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
   }
-  if (command_id == IDC_BOOKMARK_BAR_SHOW_READING_LIST) {
-    return prefs->GetBoolean(bookmarks::prefs::kShowReadingListInBookmarkBar);
-  }
 
   DCHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id);
   return prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
@@ -437,12 +435,6 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
-
-  // If the context menu is being shown from the reading list button then only
-  // the bookmark bar management options should be enabled.
-  if (!parent_ && selection_.empty()) {
-    return IsBookmarkBarManagementCommand(command_id);
-  }
 
   bool is_root_node = selection_.size() == 1 &&
                       selection_[0]->parent() == model_->root_node();
@@ -454,19 +446,19 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
     case IDC_BOOKMARK_BAR_OPEN_INCOGNITO:
       return !profile_->IsOffTheRecord() &&
-             incognito_avail != IncognitoModePrefs::DISABLED;
+             incognito_avail != IncognitoModePrefs::Availability::kDisabled;
 
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
-      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_, profile_)
-             &&
+      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_,
+                                                           profile_) &&
              !profile_->IsOffTheRecord() &&
-             incognito_avail != IncognitoModePrefs::DISABLED;
-
+             incognito_avail != IncognitoModePrefs::Availability::kDisabled;
     case IDC_BOOKMARK_BAR_OPEN_ALL:
+    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return chrome::HasBookmarkURLs(selection_);
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
       return chrome::HasBookmarkURLs(selection_) &&
-             incognito_avail != IncognitoModePrefs::FORCED;
+             incognito_avail != IncognitoModePrefs::Availability::kForced;
 
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:

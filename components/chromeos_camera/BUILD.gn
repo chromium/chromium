@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -58,7 +58,10 @@ source_set("utils") {
     "//ui/gfx/geometry",
   ]
 
-  deps = [ "//mojo/public/cpp/system" ]
+  deps = [
+    "//media/gpu:buffer_validation",
+    "//mojo/public/cpp/system",
+  ]
 }
 
 # TODO(crbug.com/960243): Don't compile these codes for build without vaapi/v4l2
@@ -179,11 +182,6 @@ if (use_v4l2_codec || use_vaapi) {
       deps += [ "//media/gpu/vaapi:common" ]
     }
 
-    # TODO(crbug.com/1029942): consider removing use_x11 support here. This is
-    # no longer needed.
-    if (use_x11) {
-      deps += [ "//ui/gfx/x" ]
-    }
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
@@ -219,11 +217,6 @@ test("jpeg_decode_accelerator_unittest") {
     deps += [ "//media/gpu/vaapi:common" ]
   }
 
-  # TODO(crbug.com/1029942): consider removing use_x11 support here. This is no
-  # longer needed.
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }

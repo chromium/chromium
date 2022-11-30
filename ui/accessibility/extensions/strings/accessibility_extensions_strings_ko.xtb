@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">모든 이미지 애니메이션을 사용하지 않습니다.</translation>
 <translation id="1703735871906654364">캐럿 브라우징</translation>
 <translation id="1791496371305830581">모든 애니메이션 이미지를 허용합니다.</translation>
+<translation id="1974060860693918893">고급</translation>
 <translation id="1996252509865389616">사용하기</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2179565792157161713">새 탭에서 상세 설명 열기</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">색상 개선 도구</translation>
 <translation id="633394792577263429">&lt;span class='key'&gt;Control&lt;/span&gt;을 눌러 단어별로 이동합니다.</translation>
 <translation id="6550675742724504774">옵션</translation>
+<translation id="6699630355767768222">3단계: 보정을 위한 색상 축을 재정의합니다</translation>
 <translation id="6838518108677880446">설정:</translation>
 <translation id="690628312087070417">캐럿이 멀리 이동하는 경우:</translation>
 <translation id="6965382102122355670">확인</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">애니메이션 정책</translation>
 <translation id="8480209185614411573">고대비</translation>
 <translation id="8609925175482059018">&lt;span class='key'&gt;F7&lt;/span&gt;을 눌러 캐럿 브라우징을 사용 설정합니다. 사용 중지하려면 F7을 다시 누르세요.</translation>
+<translation id="8798099450830957504">기본값</translation>
 <translation id="894241283505723656">컨텍스트 메뉴의 상세 설명</translation>
 </translationbundle>

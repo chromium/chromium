@@ -1,5 +1,10 @@
 Tests name sources in invisible nodes.
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 110
+    }
     domNode : div#link1
     ignored : false
     name : {
@@ -29,6 +34,7 @@ Tests name sources in invisible nodes.
         value : 1 2 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -44,6 +50,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input2
     ignored : false
     name : {
@@ -97,6 +108,7 @@ Tests name sources in invisible nodes.
         value : 1 2 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -167,6 +179,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input3
     ignored : false
     name : {
@@ -250,6 +267,7 @@ Tests name sources in invisible nodes.
         value : 1 2 3 4 5 6 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -350,6 +368,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input4
     ignored : false
     name : {
@@ -403,6 +426,7 @@ Tests name sources in invisible nodes.
         value : 1 2 3 4 5 6 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -473,6 +497,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button1
     ignored : false
     name : {
@@ -520,6 +549,7 @@ Tests name sources in invisible nodes.
         value : Hidden text
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -555,6 +585,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button2
     ignored : false
     name : {
@@ -602,6 +637,7 @@ Tests name sources in invisible nodes.
         value : Before After
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -637,6 +673,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button3
     ignored : false
     name : {
@@ -684,6 +725,7 @@ Tests name sources in invisible nodes.
         value : Text within hidden subtree
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -719,6 +761,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button4
     ignored : false
     name : {
@@ -730,7 +777,7 @@ Tests name sources in invisible nodes.
                         [0] : {
                             idref : heading4
                             nodeResult : h3#heading4
-                            text : Before After
+                            text : Before Text within hidden subtree After
                         }
                     ]
                     type : idrefList
@@ -739,7 +786,7 @@ Tests name sources in invisible nodes.
                 type : relatedElement
                 value : {
                     type : computedString
-                    value : Before After
+                    value : Before Text within hidden subtree After
                 }
             }
             [1] : {
@@ -763,9 +810,10 @@ Tests name sources in invisible nodes.
             }
         ]
         type : computedString
-        value : Before After
+        value : Before Text within hidden subtree After
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -788,7 +836,7 @@ Tests name sources in invisible nodes.
                     [0] : {
                         idref : heading4
                         nodeResult : h3#heading4
-                        text : Before After
+                        text : Before Text within hidden subtree After
                     }
                 ]
                 type : nodeList
@@ -801,6 +849,11 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input5
     ignored : false
     name : {
@@ -819,7 +872,7 @@ Tests name sources in invisible nodes.
                     relatedNodes : [
                         [0] : {
                             backendDOMNodeId : <number>
-                            text : Before After
+                            text : 
                         }
                     ]
                     type : nodeList
@@ -827,7 +880,7 @@ Tests name sources in invisible nodes.
                 type : relatedElement
                 value : {
                     type : computedString
-                    value : Before After
+                    value : 
                 }
             }
             [3] : {
@@ -847,9 +900,10 @@ Tests name sources in invisible nodes.
             }
         ]
         type : computedString
-        value : Before After
+        value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -906,7 +960,7 @@ Tests name sources in invisible nodes.
                 relatedNodes : [
                     [0] : {
                         nodeResult : label
-                        text : Before After
+                        text : 
                     }
                 ]
                 type : nodeList

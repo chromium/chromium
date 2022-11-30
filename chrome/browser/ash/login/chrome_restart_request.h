@@ -1,11 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_CHROME_RESTART_REQUEST_H_
 #define CHROME_BROWSER_ASH_LOGIN_CHROME_RESTART_REQUEST_H_
 
-#include <string>
+#include <stdint.h>
 
 class GURL;
 
@@ -13,10 +13,10 @@ namespace base {
 class CommandLine;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Keep in sync with RestartJobReason in
-// chromeos/dbus/session_manager/session_manager_client.h
+// chromeos/ash/components/dbus/session_manager/session_manager_client.h
 enum class RestartChromeReason : uint32_t {
   // Restart browser for Guest session.
   kGuest = 0,
@@ -26,7 +26,6 @@ enum class RestartChromeReason : uint32_t {
 
 // Determines the `command_line` to be used for the OTR process.
 void GetOffTheRecordCommandLine(const GURL& start_url,
-                                bool is_oobe_completed,
                                 const base::CommandLine& base_command_line,
                                 base::CommandLine* command_line);
 
@@ -36,6 +35,6 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
 void RestartChrome(const base::CommandLine& command_line,
                    RestartChromeReason reason);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_CHROME_RESTART_REQUEST_H_

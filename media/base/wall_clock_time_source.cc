@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,8 +94,8 @@ base::TimeDelta WallClockTimeSource::CurrentMediaTime_Locked() {
 
   base::TimeTicks now = tick_clock_->NowTicks();
   return base_timestamp_ +
-         base::TimeDelta::FromMicroseconds(
-             (now - reference_time_).InMicroseconds() * playback_rate_);
+         base::Microseconds((now - reference_time_).InMicroseconds() *
+                            playback_rate_);
 }
 
 }  // namespace media

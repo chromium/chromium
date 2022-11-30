@@ -1,13 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+function waitUntilIdle() {
+  return new Promise(resolve=>{
+    window.requestIdleCallback(()=>resolve());
+  });
+}
 
 (async function() {
   TestRunner.addResult('Tests V8 code cache for resources revalidated with 304.\n');
   // The main purpose of the test is to demonstrate that after producing the
   // code cache on the 2nd load, it gets cleared on disk by subsequent loads of
   // the subresource, even if the response instructs to reuse the old resource.
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   // Clear browser cache to avoid any existing entries for the fetched scripts
@@ -26,7 +32,8 @@
   async function stopAndPrintTimeline() {
     await PerformanceTestRunner.stopTimeline();
     await PerformanceTestRunner.printTimelineRecordsWithDetails(
-        TimelineModel.TimelineModel.RecordType.CompileScript);
+        TimelineModel.TimelineModel.RecordType.CompileScript,
+        TimelineModel.TimelineModel.RecordType.CacheScript);
   }
 
   async function expectationComment(msg) {
@@ -44,6 +51,7 @@
 
   await expectationComment('2nd load. Produce code cache. -->');
   await TestRunner.addIframe(resource);
+  await waitUntilIdle();
 
   await expectationComment('3rd load. Consume code cache. -->');
   await TestRunner.addIframe(resource);

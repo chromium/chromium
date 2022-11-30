@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
-
-class Profile;
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -23,18 +23,24 @@ class IncidentReceiver;
 // for preference validation failures. The profile for which the delegate
 // operates must outlive the delegate itself.
 class PreferenceValidationDelegate
-    : public prefs::mojom::TrackedPreferenceValidationDelegate {
+    : public prefs::mojom::TrackedPreferenceValidationDelegate,
+      public ProfileObserver {
  public:
   PreferenceValidationDelegate(
       Profile* profile,
       std::unique_ptr<IncidentReceiver> incident_receiver);
+
+  PreferenceValidationDelegate(const PreferenceValidationDelegate&) = delete;
+  PreferenceValidationDelegate& operator=(const PreferenceValidationDelegate&) =
+      delete;
+
   ~PreferenceValidationDelegate() override;
 
  private:
   // TrackedPreferenceValidationDelegate methods.
   void OnAtomicPreferenceValidation(
       const std::string& pref_path,
-      base::Optional<base::Value> value,
+      absl::optional<base::Value> value,
       prefs::mojom::TrackedPreferenceValidationDelegate::ValueState value_state,
       prefs::mojom::TrackedPreferenceValidationDelegate::ValueState
           external_validation_value_state,
@@ -48,10 +54,13 @@ class PreferenceValidationDelegate
           external_validation_value_state,
       bool is_personal) override;
 
-  Profile* profile_;
+  // ProfileManagerObserver methods:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  raw_ptr<Profile> profile_;
   std::unique_ptr<IncidentReceiver> incident_receiver_;
 
-  DISALLOW_COPY_AND_ASSIGN(PreferenceValidationDelegate);
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,9 +79,8 @@ IN_PROC_BROWSER_TEST_F(TopSitesExtensionTest, GetTopSites) {
 
   std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
       get_top_sites_function.get(), "[]", browser()));
-  base::ListValue* list;
-  ASSERT_TRUE(result->GetAsList(&list));
-  EXPECT_GE(list->GetSize(), top_sites_prepopulated_pages_size());
+  ASSERT_TRUE(result->is_list());
+  EXPECT_GE(result->GetList().size(), top_sites_prepopulated_pages_size());
 }
 
 }  // namespace extensions

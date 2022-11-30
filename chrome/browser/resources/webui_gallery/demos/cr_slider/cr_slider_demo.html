@@ -1,0 +1,33 @@
+<link rel="stylesheet" href="../demo.css">
+<style>
+  cr-slider {
+    width: 200px;
+  }
+</style>
+
+<h1>cr-slider</h1>
+
+<h2>Indiscrete</h2>
+<div class="demos">
+  <cr-slider id="basicSlider" min="0" max="20" value="[[basicValue_]]"
+      on-cr-slider-value-changed="onBasicValueChanged_">
+  </cr-slider>
+  <div>Value of slider: [[basicValue_]]</div>
+</div>
+
+<h2>5 ticks, increments of 5</h2>
+<div class="demos">
+  <cr-slider id="tickedSlider" ticks="[[ticks_]]"
+      marker-count="[[getMarkerCount_(showMarkers_)]]"
+      value="[[tickedValue_]]"
+      on-cr-slider-value-changed="onTickedValueChanged_">
+  </cr-slider>
+  <div>Value of slider, the index of selected tick: [[tickedValue_]]</div>
+  <div>Value of selected tick: [[getTickValue_(tickedValue_)]]</div>
+  <cr-checkbox checked="{{showMarkers_}}">Show markers</cr-checkbox>
+</div>
+
+<h2>Disabled</h2>
+<div class="demos">
+  <cr-slider min="0" max="20" value="12" disabled></cr-slider>
+</div>

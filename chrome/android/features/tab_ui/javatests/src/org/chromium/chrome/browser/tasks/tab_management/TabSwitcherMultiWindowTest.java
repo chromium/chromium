@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllIncognitoTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
@@ -22,10 +22,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -42,7 +43,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
+import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -55,7 +56,7 @@ import org.chromium.ui.test.util.UiRestriction;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING})
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @MinAndroidSdkLevel(Build.VERSION_CODES.N)
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class TabSwitcherMultiWindowTest {
@@ -65,21 +66,22 @@ public class TabSwitcherMultiWindowTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startMainActivityOnBlankPage();
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @Test
-    @MediumTest
-    @TargetApi(Build.VERSION_CODES.N)
+    @LargeTest
+    @RequiresApi(Build.VERSION_CODES.N)
     public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
-        // Initially, we have 4 normal tabs and 3 incognito tabs in cta1.
-        createTabs(cta1, false, 4);
-        createTabs(cta1, true, 3);
+        // Initially, we have 4 normal tabs (including the one created at activity start) and 3
+        // incognito tabs in cta1.
+        TabUiTestHelper.addBlankTabs(cta1, false, 3);
+        TabUiTestHelper.addBlankTabs(cta1, true, 3);
         verifyTabModelTabCount(cta1, 4, 3);
 
         // Enter tab switcher in cta1 in incognito mode.
@@ -155,16 +157,16 @@ public class TabSwitcherMultiWindowTest {
     }
 
     @Test
-    @MediumTest
-    @TargetApi(Build.VERSION_CODES.N)
+    @LargeTest
+    @RequiresApi(Build.VERSION_CODES.N)
     @Features.
     EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_REPARENTING})
-    @DisabledTest(message = "https://crbug.com/1163569")
     public void testMoveTabsAcrossWindow_GTS_WithGroup() {
-        // Initially, we have 5 normal tabs and 5 incognito tabs in cta1.
+        // Initially, we have 5 normal tabs (including the one created at activity start) and 5
+        // incognito tabs in cta1.
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
-        createTabs(cta1, false, 5);
-        createTabs(cta1, true, 5);
+        TabUiTestHelper.addBlankTabs(cta1, false, 4);
+        TabUiTestHelper.addBlankTabs(cta1, true, 5);
         verifyTabModelTabCount(cta1, 5, 5);
 
         // Enter tab switcher in cta1 in incognito mode.
@@ -242,16 +244,16 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @MediumTest
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "https://crbug.com/1363248")
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
         ChromeFeatureList.TAB_REPARENTING})
     public void testMoveLastIncognitoTab() {
         // clang-format on
-        // Initially, we have 1 normal tab and 1 incognito tab in cta1.
+        // Initially, we have 1 normal tab (created in #setup()) and 1 incognito tab in cta1.
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
-        createTabs(cta1, false, 1);
-        createTabs(cta1, true, 1);
+        TabUiTestHelper.addBlankTabs(cta1, true, 1);
         verifyTabModelTabCount(cta1, 1, 1);
 
         // Move the incognito tab to cta2.

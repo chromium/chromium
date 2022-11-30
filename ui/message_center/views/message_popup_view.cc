@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,17 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
@@ -29,18 +29,19 @@
 
 namespace message_center {
 
-MessagePopupView::MessagePopupView(const Notification& notification,
-                                   MessagePopupCollection* popup_collection)
-    : message_view_(MessageViewFactory::Create(notification)),
+MessagePopupView::MessagePopupView(MessageView* message_view,
+                                   MessagePopupCollection* popup_collection,
+                                   bool a11y_feedback_on_init)
+    : message_view_(message_view),
       popup_collection_(popup_collection),
-      a11y_feedback_on_init_(
-          notification.rich_notification_data()
-              .should_make_spoken_feedback_for_popup_updates) {
+      a11y_feedback_on_init_(a11y_feedback_on_init) {
+  set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   if (!message_view_->IsManuallyExpandedOrCollapsed())
     message_view_->SetExpanded(message_view_->IsAutoExpandingAllowed());
-  AddChildView(message_view_);
+  AddChildView(message_view_.get());
+
   SetNotifyEnterExitOnChild(true);
 }
 
@@ -48,11 +49,14 @@ MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
     : message_view_(nullptr),
       popup_collection_(popup_collection),
       a11y_feedback_on_init_(false) {
+  set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
 MessagePopupView::~MessagePopupView() {
   popup_collection_->NotifyPopupClosed(this);
+  if (focus_manager_)
+    focus_manager_->RemoveFocusChangeListener(this);
 }
 
 void MessagePopupView::UpdateContents(const Notification& notification) {
@@ -81,7 +85,7 @@ void MessagePopupView::UpdateContents(const Notification& notification) {
   }
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 float MessagePopupView::GetOpacity() const {
   if (!IsWidgetValid())
     return 0.f;
@@ -114,10 +118,10 @@ void MessagePopupView::Show() {
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Make the widget explicitly activatable as TYPE_POPUP is not activatable by
   // default but we need focus for the inline reply textarea.
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
 #else
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -126,9 +130,8 @@ void MessagePopupView::Show() {
   views::Widget* widget = new views::Widget();
   popup_collection_->ConfigureWidgetInitParamsForContainer(widget, &params);
   widget->set_focus_on_creation(false);
-  observation_.Observe(widget);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We want to ensure that this toast always goes to the native desktop,
   // not the Ash desktop (since there is already another toast contents view
   // there.
@@ -164,6 +167,11 @@ void MessagePopupView::Close() {
     GetWidget()->CloseNow();
 }
 
+void MessagePopupView::OnDidChangeFocus(views::View* before, views::View* now) {
+  is_focused_ = Contains(now);
+  popup_collection_->Update();
+}
+
 void MessagePopupView::OnMouseEntered(const ui::MouseEvent& event) {
   is_hovered_ = true;
   popup_collection_->Update();
@@ -179,7 +187,10 @@ void MessagePopupView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 void MessagePopupView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  message_view_->GetAccessibleNodeData(node_data);
+  // TODO(pbos): Consider removing the test-only constructor that has
+  // `message_view_` as nullptr.
+  if (message_view_)
+    message_view_->GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
@@ -207,15 +218,17 @@ void MessagePopupView::OnFocus() {
   GetFocusManager()->SetFocusedView(message_view_);
 }
 
-void MessagePopupView::OnWidgetActivationChanged(views::Widget* widget,
-                                                 bool active) {
-  is_active_ = active;
-  popup_collection_->Update();
+void MessagePopupView::AddedToWidget() {
+  focus_manager_ = GetFocusManager();
+  if (focus_manager_) {
+    focus_manager_->AddFocusChangeListener(this);
+  }
 }
 
-void MessagePopupView::OnWidgetDestroyed(views::Widget* widget) {
-  DCHECK(observation_.IsObservingSource(widget));
-  observation_.Reset();
+void MessagePopupView::RemovedFromWidget() {
+  if (focus_manager_)
+    focus_manager_->RemoveFocusChangeListener(this);
+  focus_manager_ = nullptr;
 }
 
 bool MessagePopupView::IsWidgetValid() const {

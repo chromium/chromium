@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,5 @@ TrialTokenResult::TrialTokenResult(OriginTrialTokenStatus status,
     : status_(status), parsed_token_(std::move(parsed_token)) {
   DCHECK(parsed_token_);
 }
-
-// TrialTokenResult::~TrialTokenResult() = default;
 
 }  // namespace blink

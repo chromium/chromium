@@ -1,20 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/type_converters.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace mojo {
 
-base::Optional<blink::XRPlane::Orientation>
-TypeConverter<base::Optional<blink::XRPlane::Orientation>,
+absl::optional<blink::XRPlane::Orientation>
+TypeConverter<absl::optional<blink::XRPlane::Orientation>,
               device::mojom::blink::XRPlaneOrientation>::
     Convert(const device::mojom::blink::XRPlaneOrientation& orientation) {
   switch (orientation) {
     case device::mojom::blink::XRPlaneOrientation::UNKNOWN:
-      return base::nullopt;
+      return absl::nullopt;
     case device::mojom::blink::XRPlaneOrientation::HORIZONTAL:
       return blink::XRPlane::Orientation::kHorizontal;
     case device::mojom::blink::XRPlaneOrientation::VERTICAL:

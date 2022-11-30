@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -29,16 +28,20 @@ class TestCookieManager : public network::mojom::CookieManager {
   void GetAllCookies(GetAllCookiesCallback callback) override {}
   void GetAllCookiesWithAccessSemantics(
       GetAllCookiesWithAccessSemanticsCallback callback) override {}
-  void GetCookieList(const GURL& url,
-                     const net::CookieOptions& cookie_options,
-                     GetCookieListCallback callback) override {}
+  void GetCookieList(
+      const GURL& url,
+      const net::CookieOptions& cookie_options,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
+      GetCookieListCallback callback) override {}
   void DeleteCanonicalCookie(const net::CanonicalCookie& cookie,
                              DeleteCanonicalCookieCallback callback) override {}
   void DeleteCookies(network::mojom::CookieDeletionFilterPtr filter,
                      DeleteCookiesCallback callback) override {}
+  void DeleteSessionOnlyCookies(
+      DeleteSessionOnlyCookiesCallback callback) override {}
   void AddCookieChangeListener(
       const GURL& url,
-      const base::Optional<std::string>& name,
+      const absl::optional<std::string>& name,
       mojo::PendingRemote<network::mojom::CookieChangeListener> listener)
       override;
   void AddGlobalChangeListener(
@@ -61,6 +64,10 @@ class TestCookieManager : public network::mojom::CookieManager {
       SetStorageAccessGrantSettingsCallback callback) override {}
 
   void DispatchCookieChange(const net::CookieChangeInfo& change);
+
+  // TODO(crbug.com/1296161): Delete this when the partitioned cookies origin
+  // trial is over.
+  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override {}
 
  private:
   // List of observers receiving cookie change notifications.

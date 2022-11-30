@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,9 @@ enum class FromAdState {
   kMaxValue = kNonAdScriptAndNonAdFrame,
 };
 
-// Returns the FromAdState corresponded to the cross product of |is_ad_subframe|
+// Returns the FromAdState corresponded to the cross product of |is_ad_frame|
 // and |is_ad_script_in_stack|.
-FromAdState BLINK_COMMON_EXPORT GetFromAdState(bool is_ad_subframe,
+FromAdState BLINK_COMMON_EXPORT GetFromAdState(bool is_ad_frame,
                                                bool is_ad_script_in_stack);
 
 }  // namespace blink

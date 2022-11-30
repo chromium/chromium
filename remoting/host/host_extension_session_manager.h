@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace remoting {
 
@@ -32,6 +32,11 @@ class HostExtensionSessionManager {
   // Creates an extension manager for the specified |extensions|.
   HostExtensionSessionManager(const HostExtensions& extensions,
                               ClientSessionDetails* client_session_details);
+
+  HostExtensionSessionManager(const HostExtensionSessionManager&) = delete;
+  HostExtensionSessionManager& operator=(const HostExtensionSessionManager&) =
+      delete;
+
   virtual ~HostExtensionSessionManager();
 
   // Returns the union of all capabilities supported by registered extensions.
@@ -53,8 +58,8 @@ class HostExtensionSessionManager {
 
   // Passed to HostExtensionSessions to allow them to send messages,
   // disconnect the session, etc.
-  ClientSessionDetails* client_session_details_;
-  protocol::ClientStub* client_stub_;
+  raw_ptr<ClientSessionDetails> client_session_details_;
+  raw_ptr<protocol::ClientStub> client_stub_;
 
   // The HostExtensions to instantiate for the session, if it reaches the
   // authenticated state.
@@ -62,8 +67,6 @@ class HostExtensionSessionManager {
 
   // The instantiated HostExtensionSessions, used to handle extension messages.
   HostExtensionSessions extension_sessions_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostExtensionSessionManager);
 };
 
 }  // namespace remoting

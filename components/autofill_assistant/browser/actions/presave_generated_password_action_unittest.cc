@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -23,10 +23,8 @@ const char kMemoryKeyForGeneratedPassword[] = "memory-key-for-generation";
 }  // namespace
 
 namespace autofill_assistant {
-using ::base::test::RunOnceCallback;
+
 using ::testing::_;
-using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
@@ -50,10 +48,10 @@ class PresaveGeneratedPasswordActionTest : public testing::Test {
 };
 
 TEST_F(PresaveGeneratedPasswordActionTest, PresaveGeneratedPassword) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
   user_data_.password_form_data_ = autofill::FormData();
 
   PresaveGeneratedPasswordProto* presave_password_proto =
@@ -63,15 +61,15 @@ TEST_F(PresaveGeneratedPasswordActionTest, PresaveGeneratedPassword) {
   PresaveGeneratedPasswordAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(mock_website_login_manager_,
-              OnPresaveGeneratedPassword(_, kGeneratedPassword, _, _))
+              PresaveGeneratedPassword(_, kGeneratedPassword, _, _))
       .Times(1);
 
   action.ProcessAction(callback_.Get());
 }
 
 TEST_F(PresaveGeneratedPasswordActionTest, LoginDataMissing) {
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
   user_data_.password_form_data_ = autofill::FormData();
 
   PresaveGeneratedPasswordProto* presave_password_proto =
@@ -87,7 +85,7 @@ TEST_F(PresaveGeneratedPasswordActionTest, LoginDataMissing) {
 }
 
 TEST_F(PresaveGeneratedPasswordActionTest, GeneratedPasswordMissing) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
   user_data_.password_form_data_ = autofill::FormData();
 
@@ -104,10 +102,10 @@ TEST_F(PresaveGeneratedPasswordActionTest, GeneratedPasswordMissing) {
 }
 
 TEST_F(PresaveGeneratedPasswordActionTest, FormDataMissing) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
 
   PresaveGeneratedPasswordProto* presave_password_proto =
       proto_.mutable_presave_generated_password();

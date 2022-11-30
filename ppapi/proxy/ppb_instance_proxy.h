@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,14 +55,6 @@ class PPB_Instance_Proxy : public InterfaceProxy,
   uint32_t GetAudioHardwareOutputSampleRate(PP_Instance instance) override;
   uint32_t GetAudioHardwareOutputBufferSize(PP_Instance instance) override;
   PP_Var GetDefaultCharSet(PP_Instance instance) override;
-  void SetPluginToHandleFindRequests(PP_Instance instance) override;
-  void NumberOfFindResultsChanged(PP_Instance instance,
-                                  int32_t total,
-                                  PP_Bool final_result) override;
-  void SelectedFindResultChanged(PP_Instance instance, int32_t index) override;
-  void SetTickmarks(PP_Instance instance,
-                    const PP_Rect* tickmarks,
-                    uint32_t count) override;
   PP_Bool IsFullscreen(PP_Instance instance) override;
   PP_Bool SetFullscreen(PP_Instance instance, PP_Bool fullscreen) override;
   PP_Bool GetScreenSize(PP_Instance instance, PP_Size* size) override;
@@ -99,7 +91,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                              uint32_t anchor) override;
   PP_Var GetDocumentURL(PP_Instance instance,
                         PP_URLComponents_Dev* components) override;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   PP_Var ResolveRelativeToDocument(PP_Instance instance,
                                    PP_Var relative,
                                    PP_URLComponents_Dev* components) override;
@@ -110,7 +102,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                               PP_URLComponents_Dev* components) override;
   PP_Var GetPluginReferrerURL(PP_Instance instance,
                               PP_URLComponents_Dev* components) override;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   static const ApiID kApiID = API_ID_PPB_INSTANCE;
 
@@ -133,14 +125,6 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                                                  uint32_t *result);
   void OnHostMsgGetDefaultCharSet(PP_Instance instance,
                                   SerializedVarReturnValue result);
-  void OnHostMsgSetPluginToHandleFindRequests(PP_Instance instance);
-  void OnHostMsgNumberOfFindResultsChanged(PP_Instance instance,
-                                           int32_t total,
-                                           PP_Bool final_result);
-  void OnHostMsgSelectFindResultChanged(PP_Instance instance,
-                                        int32_t index);
-  void OnHostMsgSetTickmarks(PP_Instance instance,
-                             const std::vector<PP_Rect>& tickmarks);
   void OnHostMsgSetFullscreen(PP_Instance instance,
                               PP_Bool fullscreen,
                               PP_Bool* result);
@@ -174,7 +158,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                                PP_URLComponents_Dev* components,
                                SerializedVarReturnValue result);
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   void OnHostMsgResolveRelativeToDocument(PP_Instance instance,
                                           SerializedVarReceiveInput relative,
                                           SerializedVarReturnValue result);
@@ -188,7 +172,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                                      SerializedVarReturnValue result);
   void OnHostMsgGetPluginReferrerURL(PP_Instance instance,
                                      SerializedVarReturnValue result);
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   // Host -> Plugin message handlers.
   void OnPluginMsgMouseLockComplete(PP_Instance instance, int32_t result);

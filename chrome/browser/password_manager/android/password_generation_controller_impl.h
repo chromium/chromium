@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -33,6 +34,12 @@ class PasswordGenerationControllerImpl
  public:
   using CreateDialogFactory = base::RepeatingCallback<std::unique_ptr<
       PasswordGenerationDialogViewInterface>(PasswordGenerationController*)>;
+
+  PasswordGenerationControllerImpl(const PasswordGenerationControllerImpl&) =
+      delete;
+  PasswordGenerationControllerImpl& operator=(
+      const PasswordGenerationControllerImpl&) = delete;
+
   ~PasswordGenerationControllerImpl() override;
 
   // PasswordGenerationController:
@@ -57,7 +64,8 @@ class PasswordGenerationControllerImpl
       autofill::password_generation::PasswordGenerationType type) override;
   void GeneratedPasswordRejected(
       autofill::password_generation::PasswordGenerationType type) override;
-  gfx::NativeWindow top_level_native_window() const override;
+  gfx::NativeWindow top_level_native_window() override;
+  content::WebContents* web_contents() override;
 
   // Like |CreateForWebContents|, it creates the controller and attaches it to
   // the given |web_contents|. Additionally, it allows injecting mocks for
@@ -102,12 +110,9 @@ class PasswordGenerationControllerImpl
   // and the generation element data.
   void ResetState();
 
-  // The tab for which this class is scoped.
-  content::WebContents* web_contents_;
-
   // The PasswordManagerClient associated with the current |web_contents_|.
   // Used to tell the renderer that manual generation was requested.
-  password_manager::PasswordManagerClient* client_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   // Data for the generation element used to generate the password.
   std::unique_ptr<GenerationElementData> generation_element_data_;
@@ -131,8 +136,6 @@ class PasswordGenerationControllerImpl
   bool manual_generation_requested_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_GENERATION_CONTROLLER_IMPL_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,6 +93,7 @@
           "enableSoundOnKeypress": { "type": "boolean", "optional": true, "description": "Whether to enable sound on keypress."},
           "physicalKeyboardAutoCorrectionLevel": { "type": "integer", "optional": true, "description": "The level of auto correction for physical keyboard (0: Off, 1: Modest, 2: Aggressive)."},
           "physicalKeyboardEnableCapitalization": { "type": "boolean", "optional": true, "description": "Whether to enable auto capitalization for physical keyboard."},
+          "physicalKeyboardEnableDiacriticsOnLongpress": { "type": "boolean", "optional": true, "description": "Whether to enable diacritics on longpress for physical keyboard."},
           "virtualKeyboardAutoCorrectionLevel": { "type": "integer", "optional": true, "description": "The level of auto correction for virtual keyboard (0: Off, 1: Modest, 2: Aggressive)."},
           "virtualKeyboardEnableCapitalization": { "type": "boolean", "optional": true, "description": "Whether enable auto capitalization for virtual keyboard."},
           "xkbLayout": { "type": "string", "optional": true, "description": "The xkb keyboard (system provided keyboard) layout."},
@@ -160,7 +161,7 @@
       }, {
         "name": "getInputMethods",
         "type": "function",
-        "description": "Gets all whitelisted input methods.",
+        "description": "Gets all enabled input methods, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
         "parameters": [
           {
             "name": "callback",
@@ -170,7 +171,7 @@
               {
                 "name": "inputMethods",
                 "type": "array",
-                "description": "Whitelisted input method objects.",
+                "description": "Enabled input method objects, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
                 "items": {
                   "type": "object",
                   "properties": {
@@ -219,6 +220,19 @@
             "parameters": []
           }
         ]
+        }, {
+          "name": "switchToLastUsedInputMethod",
+          "type": "function",
+          "description": "Switches to the last used input method. If no last used input method, this is a no-op.",
+          "parameters": [
+            {
+              "name": "callback",
+              "type": "function",
+              "optional": true,
+              "description": "Callback which is called once the input method is swapped (if applicable). If unsuccessful $(ref:runtime.lastError) is set.",
+              "parameters": []
+            }
+          ]
       }, {
         "name": "fetchAllDictionaryWords",
         "type": "function",
@@ -439,7 +453,7 @@
       }, {
         "name": "getSurroundingText",
         "type": "function",
-        "description": "Gets the surrounding text of the current selection",
+        "description": "Gets the surrounding text of the current selection. WARNING: This could return a stale cache that doesn't reflect reality, due to async between IMF and TextInputClient.",
         "parameters": [
           {
             "name": "beforeLength",
@@ -688,19 +702,19 @@
                 "type": "object",
                 "properties": {
                   "x": {
-                    "description": "The x-coordinate of the autocorrected word's bounds.",
+                    "description": "The x-coordinate of the autocorrected word's bounds in px.",
                     "type": "integer"
                   },
                   "y": {
-                    "description": "The y-coordinate of the autocorrected word's bounds.",
+                    "description": "The y-coordinate of the autocorrected word's bounds in px.",
                     "type": "integer"
                   },
                   "width": {
-                    "description": "The width of the autocorrected word's bounds.",
+                    "description": "The width of the autocorrected word's bounds in px.",
                     "type": "integer"
                   },
                   "height":{
-                    "description": "The height of the autocorrected word's bounds.",
+                    "description": "The height of the autocorrected word's bounds in px.",
                     "type": "integer"
                   }
                 }
@@ -768,7 +782,7 @@
                 },
                 "correctedWord": {
                     "type": "string",
-                    "description": "Needed to know the length of the autocorrected text to show the correct length of underline."
+                    "description": "Needed primarily to know the length of the autocorrected text to show the correct length of underline. String content technically redundant; required however, as what IMF knows may be stale due to async."
                 },
                 "startIndex": {
                     "type": "integer",
@@ -776,9 +790,79 @@
                 }
             }
         }]
+    },
+    {
+      "name" : "getTextFieldBounds",
+      "type" : "function",
+      "description" : "Get the bounds of the current text field",
+      "parameters" :[
+        {
+            "name": "parameters",
+            "type": "object",
+            "properties": {
+              "contextID": {
+                "description": "ID of the context.",
+                "type": "integer"
+              }
+            }
+        },
+        {
+            "type": "function",
+            "name": "callback",
+            "description": "Called with screen coordinates of the text field when the operation completes. On failure, $(ref:runtime.lastError) is set.",
+            "parameters": [
+              {
+                "name": "textFieldBounds",
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "description": "The x-coordinate of the text field's bounds.",
+                    "type": "integer"
+                  },
+                  "y": {
+                    "description": "The y-coordinate of the text field's bounds.",
+                    "type": "integer"
+                  },
+                  "width": {
+                    "description": "The width of the text field's bounds.",
+                    "type": "integer"
+                  },
+                  "height":{
+                    "description": "The height of the  bounds.",
+                    "type": "integer"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+    },
+    {
+      "name" : "notifyInputMethodReadyForTesting",
+      "type" : "function",
+      "description" : "Notifies Chrome that the current input method is ready to accept key events from Tast.",
+      "parameters": []
     }
     ],
     "events": [
+      {
+        "name": "onCaretBoundsChanged",
+        "type": "function",
+        "description": "Fired when the caret bounds change.",
+        "parameters": [
+          {
+            "name": "caretBounds",
+            "type": "object",
+            "description": "The bounds information for the caret.",
+            "properties": {
+              "x": {"type": "integer"},
+              "y": {"type": "integer"},
+              "w": {"type": "integer"},
+              "h": {"type": "integer"}
+            }
+          }
+        ]
+      },
       {
         "name": "onChanged",
         "type": "function",
@@ -890,6 +974,17 @@
             "$ref": "InputContext",
             "name": "context",
             "description": "Describes the text field that has acquired focus."
+          }
+        ]
+      }, {
+        "name": "onTouch",
+        "type": "function",
+        "description": "This event is sent when a touch occurs in a text field. Should only happen after onFocus()",
+        "parameters": [
+          {
+            "$ref": "FocusReason",
+            "name": "pointerType",
+            "description": "Pointer type used to touch the text field"
           }
         ]
       }, {

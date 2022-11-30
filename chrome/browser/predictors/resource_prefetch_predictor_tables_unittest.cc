@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/predictors/loading_test_util.h"
@@ -396,6 +396,11 @@ void ResourcePrefetchPredictorTablesTest::InitializeSampleData() {
 }
 
 void ResourcePrefetchPredictorTablesTest::ReopenDatabase() {
+  // Ensure that the database is closed before attempting to reopen it.
+  db_ = nullptr;
+  tables_ = nullptr;
+  content::RunAllTasksUntilIdle();
+
   db_ = std::make_unique<PredictorDatabase>(&profile_, task_runner_);
   content::RunAllTasksUntilIdle();
   tables_ = db_->resource_prefetch_tables();

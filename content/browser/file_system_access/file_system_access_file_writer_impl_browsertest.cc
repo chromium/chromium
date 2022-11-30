@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -24,6 +25,10 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace content {
 
@@ -107,8 +112,7 @@ class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        ContentsWrittenToSwapFileFirst) {
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, swap_file] = CreateTestFilesAndEntry("");
   const std::string file_contents = "file contents to write";
 
   EXPECT_EQ(0,
@@ -131,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   }
 
   // Contents now in destination file.
-  EXPECT_EQ(int{file_contents.size()},
+  EXPECT_EQ(static_cast<int>(file_contents.size()),
             EvalJs(shell(),
                    "(async () => {"
                    "  await self.writer.close();"
@@ -150,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        KeepExistingDataHasPreviousContent) {
   const std::string initial_contents = "fooks";
   const std::string expected_contents = "barks";
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry(initial_contents);
+  auto [test_file, swap_file] = CreateTestFilesAndEntry(initial_contents);
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -167,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
     EXPECT_EQ(initial_contents, swap_contents);
   }
 
-  EXPECT_EQ(int{expected_contents.size()},
+  EXPECT_EQ(static_cast<int>(expected_contents.size()),
             EvalJs(shell(),
                    "(async () => {"
                    "  await self.writer.write(new Blob(['bar']));"
@@ -185,8 +188,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        CreateWriterNoKeepExistingWithEmptyFile) {
   const std::string initial_contents = "very long string";
   const std::string expected_contents = "bar";
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry(initial_contents);
+  auto [test_file, swap_file] = CreateTestFilesAndEntry(initial_contents);
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -202,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
     EXPECT_EQ("", swap_contents);
   }
 
-  EXPECT_EQ(int{expected_contents.size()},
+  EXPECT_EQ(static_cast<int>(expected_contents.size()),
             EvalJs(shell(),
                    "(async () => {"
                    "  await self.writer.write(new Blob(['bar']));"
@@ -218,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFile) {
-  base::FilePath test_file, base_swap_file;
-  std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
 
   int num_writers = 5;
   for (int index = 0; index < num_writers; index++) {
@@ -245,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFileRacy) {
-  base::FilePath test_file, base_swap_file;
-  std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
 
   int num_writers = 5;
   for (int index = 0; index < num_writers; index++) {
@@ -277,16 +277,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 // TODO(https://crbug.com/992089): Files are only quarantined on windows in
 // browsertests unfortunately. Change this when more platforms are enabled.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FileAnnotated FileAnnotated
 #else
 #define MAYBE_FileAnnotated DISABLED_FileAnnotated
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        MAYBE_FileAnnotated) {
-  base::FilePath test_file, swap_file, lib_file;
-
-  std::tie(test_file, swap_file) = CreateQuarantineTestFilesAndEntry();
+  auto [test_file, swap_file] = CreateQuarantineTestFilesAndEntry();
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -303,5 +301,33 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
     EXPECT_TRUE(quarantine::IsFileQuarantined(test_file, GURL(), test_url_));
   }
 }
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
+                       RespectOSPermissions) {
+  auto [test_file, swap_file] = CreateTestFilesAndEntry("");
+
+  // Make the file read-only.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+#if BUILDFLAG(IS_POSIX)
+    int mode = 0444;
+    EXPECT_TRUE(base::SetPosixFilePermissions(test_file, mode));
+#elif BUILDFLAG(IS_WIN)
+    DWORD attributes = ::GetFileAttributes(test_file.value().c_str());
+    ASSERT_NE(attributes, INVALID_FILE_ATTRIBUTES);
+    attributes |= FILE_ATTRIBUTE_READONLY;
+    EXPECT_TRUE(::SetFileAttributes(test_file.value().c_str(), attributes));
+#endif  // BUILDFLAG(IS_POSIX)
+  }
+
+  auto result = EvalJs(
+      shell(), JsReplace("(async () => {"
+                         "  return (await self.entry.createWritable()); })()"));
+  EXPECT_TRUE(result.error.find("Cannot write to a read-only file.") !=
+              std::string::npos)
+      << result.error;
+}
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 }  // namespace content

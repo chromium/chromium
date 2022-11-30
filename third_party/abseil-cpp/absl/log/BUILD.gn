@@ -1,0 +1,365 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/abseil-cpp/absl.gni")
+
+absl_source_set("check") {
+  public = [ "check.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/log/internal:check_op",
+    "//third_party/abseil-cpp/absl/log/internal:conditions",
+    "//third_party/abseil-cpp/absl/log/internal:log_message",
+    "//third_party/abseil-cpp/absl/log/internal:strip",
+  ]
+}
+
+absl_source_set("die_if_null") {
+  sources = [ "die_if_null.cc" ]
+  public = [ "die_if_null.h" ]
+  deps = [
+    ":log",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
+absl_source_set("flags") {
+  sources = [ "flags.cc" ]
+  public = [ "flags.h" ]
+  deps = [
+    ":globals",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/flags:flag",
+    "//third_party/abseil-cpp/absl/flags:marshalling",
+    "//third_party/abseil-cpp/absl/log/internal:config",
+    "//third_party/abseil-cpp/absl/log/internal:flags",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
+absl_source_set("globals") {
+  sources = [ "globals.cc" ]
+  public = [ "globals.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:atomic_hook",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/hash",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
+absl_source_set("initialize") {
+  sources = [ "initialize.cc" ]
+  public = [ "initialize.h" ]
+  deps = [
+    ":globals",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/log/internal:globals",
+    "//third_party/abseil-cpp/absl/time",
+  ]
+}
+
+absl_source_set("log") {
+  public = [ "log.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/log/internal:conditions",
+    "//third_party/abseil-cpp/absl/log/internal:log_message",
+    "//third_party/abseil-cpp/absl/log/internal:strip",
+  ]
+}
+
+absl_source_set("log_entry") {
+  sources = [ "log_entry.cc" ]
+  public = [ "log_entry.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/log/internal:config",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/time",
+    "//third_party/abseil-cpp/absl/types:span",
+  ]
+}
+
+absl_source_set("log_sink") {
+  sources = [ "log_sink.cc" ]
+  public = [ "log_sink.h" ]
+  deps = [
+    ":log_entry",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
+}
+
+absl_source_set("log_sink_registry") {
+  public = [ "log_sink_registry.h" ]
+  deps = [
+    ":log_sink",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/log/internal:log_sink_set",
+  ]
+}
+
+absl_source_set("log_streamer") {
+  public = [ "log_streamer.h" ]
+  deps = [
+    ":log",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:internal",
+    "//third_party/abseil-cpp/absl/types:optional",
+    "//third_party/abseil-cpp/absl/utility",
+  ]
+}
+
+absl_source_set("scoped_mock_log") {
+  testonly = true
+  sources = [ "scoped_mock_log.cc" ]
+  public = [ "scoped_mock_log.h" ]
+  deps = [
+    ":log_entry",
+    ":log_sink",
+    ":log_sink_registry",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+# Test targets
+visibility = []
+visibility = [ "//third_party/abseil-cpp/:*" ]
+
+absl_source_set("basic_log_test") {
+  sources = [ "basic_log_test.cc" ]
+  testonly = true
+  deps = [
+    ":globals",
+    ":log",
+    ":log_entry",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/log/internal:test_actions",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/log/internal:test_matchers",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("check_test") {
+  sources = [ "check_test.cc" ]
+  testonly = true
+  if (is_ios) {
+    sources = []
+  }
+  deps = [
+    ":check",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("die_if_null_test") {
+  sources = [ "die_if_null_test.cc" ]
+  testonly = true
+  deps = [
+    ":die_if_null",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("flags_test") {
+  sources = [ "flags_test.cc" ]
+  testonly = true
+  deps = [
+    ":flags",
+    ":globals",
+    ":log",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/flags:flag",
+    "//third_party/abseil-cpp/absl/flags:reflection",
+    "//third_party/abseil-cpp/absl/log/internal:flags",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/log/internal:test_matchers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("globals_test") {
+  sources = [ "globals_test.cc" ]
+  testonly = true
+  deps = [
+    ":globals",
+    ":log",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/log/internal:globals",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("log_entry_test") {
+  sources = [ "log_entry_test.cc" ]
+  testonly = true
+  deps = [
+    ":log_entry",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/log/internal:format",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/time",
+    "//third_party/abseil-cpp/absl/types:span",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("log_format_test") {
+  sources = [ "log_format_test.cc" ]
+  testonly = true
+  deps = [
+    ":log",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/log/internal:config",
+    "//third_party/abseil-cpp/absl/log/internal:test_matchers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("log_macro_hygiene_test") {
+  sources = [ "log_macro_hygiene_test.cc" ]
+  testonly = true
+  deps = [
+    ":log",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("log_sink_test") {
+  sources = [ "log_sink_test.cc" ]
+  if (is_ios) {
+    sources = []
+  }
+  testonly = true
+  deps = [
+    ":log",
+    ":log_sink",
+    ":log_sink_registry",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/log/internal:test_actions",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/log/internal:test_matchers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("log_streamer_test") {
+  sources = [ "log_streamer_test.cc" ]
+  testonly = true
+  deps = [
+    ":log",
+    ":log_streamer",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/log/internal:test_actions",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/log/internal:test_matchers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("log_modifier_methods_test") {
+  sources = [ "log_modifier_methods_test.cc" ]
+  testonly = true
+  deps = [
+    ":log",
+    ":log_sink",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/log/internal:test_actions",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/log/internal:test_matchers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/time",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("scoped_mock_log_test") {
+  sources = [ "scoped_mock_log_test.cc" ]
+  if (is_ios) {
+    sources = []
+  }
+  testonly = true
+  deps = [
+    ":globals",
+    ":log",
+    ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/log/internal:test_matchers",
+    "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/synchronization",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("stripping_test") {
+  sources = [ "stripping_test.cc" ]
+  testonly = true
+  deps = [
+    ":check",
+    ":log",
+    "//third_party/abseil-cpp/absl/base:strerror",
+    "//third_party/abseil-cpp/absl/flags:program_name",
+    "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:str_format",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}

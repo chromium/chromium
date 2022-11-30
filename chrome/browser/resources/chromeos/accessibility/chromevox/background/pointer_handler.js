@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,48 +6,61 @@
  * @fileoverview ChromeVox pointer handler. A pointer, in this context, is
  * either user touch or mouse input.
  */
+import {AutomationPredicate} from '../../common/automation_predicate.js';
+import {EventGenerator} from '../../common/event_generator.js';
+import {Earcon} from '../common/abstract_earcons.js';
+import {CustomAutomationEvent} from '../common/custom_automation_event.js';
+import {QueueMode} from '../common/tts_interface.js';
 
-goog.provide('PointerHandler');
+import {BaseAutomationHandler} from './base_automation_handler.js';
+import {ChromeVox} from './chromevox.js';
+import {ChromeVoxState} from './chromevox_state.js';
+import {DesktopAutomationInterface} from './desktop_automation_interface.js';
+import {Output} from './output/output.js';
 
-goog.require('BaseAutomationHandler');
-
+const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 
-PointerHandler = class extends BaseAutomationHandler {
+export class PointerHandler extends BaseAutomationHandler {
   constructor() {
     super(null);
 
-    /** @private {boolean|undefined} */
-    this.hasPendingEvents_;
     /** @private {number|undefined} */
     this.mouseX_;
     /** @private {number|undefined} */
     this.mouseY_;
     /** @private {!Date} */
     this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
-    /** @private {!AutomationNode|undefined} */
-    this.lastValidNodeBeforePointerInvalidation_;
+    /** @private {number} */
+    this.expectingHoverCount_ = 0;
     /** @private {boolean} */
-    this.isExpectingHover_ = false;
+    this.isChromebox_ = false;
+    /** @private {!Date} */
+    this.lastHoverRequested_ = new Date();
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       this.node_ = desktop;
       this.addListener_(EventType.MOUSE_MOVED, this.onMouseMove);
 
-      // This is needed for ARC++ which sends back hovers when we send mouse
-      // moves.
-      this.addListener_(EventType.HOVER, (evt) => {
-        if (!this.isExpectingHover_) {
+      // This is needed for ARC++ and Lacros. They send mouse move and hit test
+      // respectively. Each responds with hover.
+      this.addListener_(EventType.HOVER, evt => {
+        if (this.expectingHoverCount_ === 0) {
           return;
         }
-        this.isExpectingHover_ = false;
+
+        // Stop honoring expectingHoverCount_ if it comes far after its
+        // corresponding requested hit test.
+        if (new Date() - this.lastHoverRequested_ > 500) {
+          this.expectingHoverCount_ = 0;
+        }
+
+        this.expectingHoverCount_--;
         this.handleHitTestResult(evt.target);
-        this.runHitTest();
       });
 
-      this.hasPendingEvents_ = false;
       this.mouseX_ = 0;
       this.mouseY_ = 0;
     });
@@ -55,38 +68,37 @@ PointerHandler = class extends BaseAutomationHandler {
     if (localStorage['speakTextUnderMouse'] === String(true)) {
       chrome.accessibilityPrivate.enableMouseEvents(true);
     }
+
+    chrome.chromeosInfoPrivate.get(['deviceType'], result => {
+      this.isChromebox_ = result['deviceType'] ===
+          chrome.chromeosInfoPrivate.DeviceType.CHROMEBOX;
+    });
   }
 
   /**
    * Performs a hit test using the most recent mouse coordinates received in
    * onMouseMove or onMove (a e.g. for touch explore).
-   *
-   * Note that runHitTest only ever does a hit test when |hasPendingEvents| is
-   * true.
    * @param {boolean} isTouch
+   * @param {AutomationNode} specificNode
    */
-  runHitTest(isTouch = false) {
+  runHitTest(isTouch = false, specificNode = null) {
     if (this.mouseX_ === undefined || this.mouseY_ === undefined) {
       return;
     }
-    if (!this.hasPendingEvents_) {
-      return;
-    }
 
-    if (isTouch) {
+    if (isTouch && this.isChromebox_) {
       // TODO(accessibility): hit testing seems to be broken in some cases e.g.
       // on the main CFM UI. Synthesize mouse moves with the touch
       // accessibility flag for now for touch-based user gestures. Eliminate
       // this branch once hit testing is fixed.
       this.synthesizeMouseMove();
-    } else {
-      // Otherwise, use hit testing.
-      this.node_.hitTestWithReply(this.mouseX_, this.mouseY_, (target) => {
-        this.handleHitTestResult(target);
-        this.runHitTest();
-      });
+      return;
     }
-    this.hasPendingEvents_ = false;
+
+    const actOnNode = specificNode ? specificNode : this.node_;
+    actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, target => {
+      this.handleHitTestResult(target);
+    });
   }
 
   /**
@@ -115,7 +127,6 @@ PointerHandler = class extends BaseAutomationHandler {
   onMove(x, y, isTouch = false) {
     this.mouseX_ = x;
     this.mouseY_ = y;
-    this.hasPendingEvents_ = true;
     this.runHitTest(isTouch);
   }
 
@@ -127,7 +138,8 @@ PointerHandler = class extends BaseAutomationHandler {
       return;
     }
 
-    this.isExpectingHover_ = true;
+    this.expectingHoverCount_++;
+    this.lastHoverRequested_ = new Date();
     EventGenerator.sendMouseMove(
         this.mouseX_, this.mouseY_, true /* touchAccessibility */);
   }
@@ -143,12 +155,11 @@ PointerHandler = class extends BaseAutomationHandler {
 
     let target = result;
 
-    // If the target is in an ExoSurface, which hosts remote content, trigger a
-    // mouse move. This only occurs when we programmatically hit test content
-    // within ARC++ for now. Mouse moves automatically trigger Android to send
-    // hover events back.
+    // The target is in an ExoSurface, which hosts remote content.
     if (target.role === RoleType.WINDOW &&
         target.className.indexOf('ExoSurface') === 0) {
+      // We're in ARC++, which still requires a synthesized mouse
+      // event.
       this.synthesizeMouseMove();
       return;
     }
@@ -167,11 +178,6 @@ PointerHandler = class extends BaseAutomationHandler {
 
     target = targetLeaf || targetObject;
     if (!target) {
-      if (ChromeVoxState.instance.currentRange) {
-        this.lastValidNodeBeforePointerInvalidation_ =
-            ChromeVoxState.instance.currentRange.start.node;
-      }
-
       // This clears the anchor point in the TouchExplorationController (so when
       // a user touch explores back to the previous range, it will be announced
       // again).
@@ -193,21 +199,12 @@ PointerHandler = class extends BaseAutomationHandler {
     }
 
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
-    DesktopAutomationHandler.instance.onEventDefault(new CustomAutomationEvent(
-        EventType.HOVER, target,
-        {eventFromAction: chrome.automation.ActionType.HIT_TEST}));
+    DesktopAutomationInterface.instance.onEventDefault(
+        new CustomAutomationEvent(
+            EventType.HOVER, target,
+            {eventFromAction: chrome.automation.ActionType.HIT_TEST}));
   }
-
-  /**
-   * @return {!AutomationNode|undefined} The last valid ChromeVox range start
-   *     node prior to an explicit invalidation/clearing of the range triggered
-   *     by a touch or mouse event on a "unpointable" target. That is, a target
-   *     ChromeVox never wants to place its range upon.
-   */
-  get lastValidNodeBeforePointerInvalidation() {
-    return this.lastValidNodeBeforePointerInvalidation_;
-  }
-};
+}
 
 /** @const {number} */
 PointerHandler.MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS = 500;

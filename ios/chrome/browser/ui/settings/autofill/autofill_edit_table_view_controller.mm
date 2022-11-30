@@ -1,14 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -61,6 +63,12 @@
               object:nil];
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  self.formInputAccessoryView.hidden = IsCompactHeight(self);
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
@@ -83,7 +91,9 @@
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   _currentEditingCell = cell;
-  self.formInputAccessoryView.hidden = NO;
+  if (!IsCompactHeight(self)) {
+    self.formInputAccessoryView.hidden = NO;
+  }
   [textField setInputAccessoryView:self.formInputAccessoryView];
   [self updateAccessoryViewButtonState];
 }
@@ -98,19 +108,19 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField {
   DCHECK([_currentEditingCell textField] == textField);
-  [self moveToAnotherCellWithOffset:1];
+  [self moveToAnotherTextFieldWithOffset:1];
   return NO;
 }
 
 #pragma mark - FormInputAccessoryViewDelegate
 
 - (void)formInputAccessoryViewDidTapNextButton:(FormInputAccessoryView*)sender {
-  [self moveToAnotherCellWithOffset:1];
+  [self moveToAnotherTextFieldWithOffset:1];
 }
 
 - (void)formInputAccessoryViewDidTapPreviousButton:
     (FormInputAccessoryView*)sender {
-  [self moveToAnotherCellWithOffset:-1];
+  [self moveToAnotherTextFieldWithOffset:-1];
 }
 
 - (void)formInputAccessoryViewDidTapCloseButton:
@@ -118,9 +128,14 @@
   [[_currentEditingCell textField] resignFirstResponder];
 }
 
+- (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
+    (FormInputAccessoryView*)sender {
+  return ChromiumAccessoryViewTextData();
+}
+
 #pragma mark - Helper methods
 
-// Returns the cell containing |textField|.
+// Returns the cell containing `textField`.
 - (TableViewTextEditCell*)autofillEditCellForTextField:(UITextField*)textField {
   TableViewTextEditCell* settingsCell = nil;
   for (UIView* view = textField; view; view = [view superview]) {
@@ -137,22 +152,35 @@
   return settingsCell;
 }
 
-- (NSIndexPath*)indexForCellPathWithOffset:(NSInteger)offset
-                                  fromPath:(NSIndexPath*)cellPath {
-  if (!cellPath || !offset)
+- (NSIndexPath*)indexForNextCellPathWithOffset:(NSInteger)offset
+                                      fromPath:(NSIndexPath*)cellPath {
+  if (!cellPath || !offset) {
     return nil;
+  }
 
   NSInteger cellSection = [cellPath section];
   NSInteger nextCellRow = [cellPath row] + offset;
 
-  if (nextCellRow >= 0 && nextCellRow < [self.tableView
-                                            numberOfRowsInSection:cellSection])
-    return [NSIndexPath indexPathForRow:nextCellRow inSection:cellSection];
+  while (cellSection >= 0 && cellSection < [self.tableView numberOfSections]) {
+    while (nextCellRow >= 0 &&
+           nextCellRow < [self.tableView numberOfRowsInSection:cellSection]) {
+      NSIndexPath* cellIndexPath = [NSIndexPath indexPathForRow:nextCellRow
+                                                      inSection:cellSection];
+      if ([self isItemAtIndexPathTextEditCell:cellIndexPath]) {
+        return cellIndexPath;
+      }
+      nextCellRow += offset;
+    }
 
-  NSInteger nextCellSection = cellSection + offset;
-  if (nextCellSection >= 0 &&
-      nextCellSection < [self.tableView numberOfSections])
-    return [NSIndexPath indexPathForRow:0 inSection:nextCellSection];
+    cellSection += offset;
+    if (offset > 0) {
+      nextCellRow = 0;
+    } else {
+      if (cellSection >= 0) {
+        nextCellRow = [self.tableView numberOfRowsInSection:cellSection] - 1;
+      }
+    }
+  }
 
   return nil;
 }
@@ -166,28 +194,29 @@
   return YES;
 }
 
-- (void)moveToAnotherCellWithOffset:(NSInteger)offset {
-  NSIndexPath* cellPath = [self indexPathForCurrentTextField];
-  DCHECK(cellPath);
-  NSIndexPath* nextCellPath = [self indexForCellPathWithOffset:offset
-                                                      fromPath:cellPath];
+- (void)moveToAnotherTextFieldWithOffset:(NSInteger)offset {
+  NSIndexPath* currentCellPath = [self indexPathForCurrentTextField];
+  DCHECK(currentCellPath);
 
-  if (!nextCellPath || ![self isItemAtIndexPathTextEditCell:nextCellPath]) {
-    [[_currentEditingCell textField] resignFirstResponder];
-  } else {
+  NSIndexPath* nextCellPath =
+      [self indexForNextCellPathWithOffset:offset fromPath:currentCellPath];
+
+  if (nextCellPath) {
     TableViewTextEditCell* nextCell =
         base::mac::ObjCCastStrict<TableViewTextEditCell>(
             [self.tableView cellForRowAtIndexPath:nextCellPath]);
     [nextCell.textField becomeFirstResponder];
+  } else {
+    [[_currentEditingCell textField] resignFirstResponder];
   }
 }
 
 - (void)updateAccessoryViewButtonState {
   NSIndexPath* currentPath = [self indexPathForCurrentTextField];
-  NSIndexPath* nextPath = [self indexForCellPathWithOffset:1
-                                                  fromPath:currentPath];
-  NSIndexPath* previousPath = [self indexForCellPathWithOffset:-1
+  NSIndexPath* nextPath = [self indexForNextCellPathWithOffset:1
                                                       fromPath:currentPath];
+  NSIndexPath* previousPath = [self indexForNextCellPathWithOffset:-1
+                                                          fromPath:currentPath];
 
   BOOL isValidPreviousPath =
       previousPath && [[self.tableView cellForRowAtIndexPath:previousPath]

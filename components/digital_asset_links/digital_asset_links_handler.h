@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
-#include "base/values.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -43,13 +45,17 @@ using RelationshipCheckResultCallback =
 // relationships between different asset types like web domains or Android apps.
 // The lifecycle of this handler will be governed by the owner.
 // The WebContents are used for logging console messages.
-class DigitalAssetLinksHandler : public content::WebContentsObserver {
+class DigitalAssetLinksHandler {
  public:
   // Optionally include |web_contents| for logging error messages to DevTools.
   explicit DigitalAssetLinksHandler(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       content::WebContents* web_contents = nullptr);
-  ~DigitalAssetLinksHandler() override;
+
+  DigitalAssetLinksHandler(const DigitalAssetLinksHandler&) = delete;
+  DigitalAssetLinksHandler& operator=(const DigitalAssetLinksHandler&) = delete;
+
+  ~DigitalAssetLinksHandler();
 
   // Checks whether the given "relationship" has been declared by the target
   // |web_domain| for the source Android app which is uniquely defined by the
@@ -65,7 +71,7 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
   bool CheckDigitalAssetLinkRelationshipForAndroidApp(
       const std::string& web_domain,
       const std::string& relationship,
-      const std::string& fingerprint,
+      std::vector<std::string> fingerprints,
       const std::string& package,
       RelationshipCheckResultCallback callback);
 
@@ -88,7 +94,7 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
   bool CheckDigitalAssetLinkRelationship(
       const std::string& web_domain,
       const std::string& relationship,
-      const base::Optional<std::string>& fingerprint,
+      absl::optional<std::vector<std::string>> fingerprints,
       const std::map<std::string, std::set<std::string>>& target_values,
       RelationshipCheckResultCallback callback);
 
@@ -100,14 +106,14 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
  private:
   void OnURLLoadComplete(
       std::string relationship,
-      base::Optional<std::string> fingerprint,
+      absl::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
       std::unique_ptr<std::string> response_body);
 
   // Callback for the DataDecoder.
   void OnJSONParseResult(
       std::string relationship,
-      base::Optional<std::string> fingerprint,
+      absl::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
       data_decoder::DataDecoder::ValueOrError result);
 
@@ -121,9 +127,9 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
 
   base::TimeDelta timeout_duration_ = base::TimeDelta();
 
-  base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_{this};
+  base::WeakPtr<content::WebContents> web_contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(DigitalAssetLinksHandler);
+  base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace digital_asset_links

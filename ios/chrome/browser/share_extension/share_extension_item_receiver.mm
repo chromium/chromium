@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,26 +6,25 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/bind.h"
-#include "base/ios/block_types.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "components/reading_list/core/reading_list_model_observer.h"
-#include "ios/chrome/browser/system_flags.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "base/bind.h"
+#import "base/ios/block_types.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/core/reading_list_model_observer.h"
+#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "net/base/mac/url_conversions.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -80,16 +79,16 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
 - (void)readingListFolderCreated;
 
 // Processes the data sent by the share extension. Data should be a NSDictionary
-// serialized by +|NSKeyedArchiver archivedDataWithRootObject:|.
-// |completion| is called if |data| has been fully processed.
+// serialized by +|NSKeyedArchiver archivedDataWithRootObject:`.
+// `completion` is called if `data` has been fully processed.
 - (BOOL)receivedData:(NSData*)data withCompletion:(ProceduralBlock)completion;
 
-// Reads the file pointed by |url| and calls |receivedData:| on the content.
+// Reads the file pointed by `url` and calls `receivedData:` on the content.
 // If the file is processed, delete it.
-// |completion| is only called if the file handling is completed without error.
+// `completion` is only called if the file handling is completed without error.
 - (void)handleFileAtURL:(NSURL*)url withCompletion:(ProceduralBlock)completion;
 
-// Deletes the file pointed by |url| then call |completion|.
+// Deletes the file pointed by `url` then call `completion`.
 - (void)deleteFileAtURL:(NSURL*)url withCompletion:(ProceduralBlock)completion;
 
 // Called on UIApplicationDidBecomeActiveNotification notification.
@@ -182,9 +181,10 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   }
 
   __weak ShareExtensionItemReceiver* weakSelf = self;
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                   [weakSelf readingListFolderCreated];
-                 }));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf readingListFolderCreated];
+      }));
 }
 
 - (void)readingListFolderCreated {
@@ -250,21 +250,22 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     return NO;
   }
 
-  UMA_HISTOGRAM_TIMES("IOS.ShareExtension.ReceivedEntryDelay",
-                      base::TimeDelta::FromSecondsD(
-                          [[NSDate date] timeIntervalSinceDate:entryDate]));
+  UMA_HISTOGRAM_TIMES(
+      "IOS.ShareExtension.ReceivedEntryDelay",
+      base::Seconds([[NSDate date] timeIntervalSinceDate:entryDate]));
 
   UMA_HISTOGRAM_ENUMERATION("IOS.ShareExtension.Source",
                             SourceIDFromSource(entrySource),
                             SHARE_EXTENSION_SOURCE_COUNT);
 
   __weak ShareExtensionItemReceiver* weakSelf = self;
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                   [weakSelf processEntryWithType:entryType
-                                            title:entryTitle
-                                              URL:entryURL
-                                       completion:completion];
-                 }));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf processEntryWithType:entryType
+                                 title:entryTitle
+                                   URL:entryURL
+                            completion:completion];
+      }));
   return YES;
 }
 
@@ -326,7 +327,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     if (!weakSelf) {
       return;
     }
-    base::ScopedBlockingCall scoped_blocking_call(
+    base::ScopedBlockingCall inner_scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
     NSFileManager* manager = [NSFileManager defaultManager];
     NSData* data = [manager contentsAtPath:[newURL path]];
@@ -348,7 +349,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   void (^deletingAccessor)(NSURL*) = ^(NSURL* newURL) {
-    base::ScopedBlockingCall scoped_blocking_call(
+    base::ScopedBlockingCall inner_scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     NSFileManager* manager = [NSFileManager defaultManager];
     [manager removeItemAtURL:newURL error:nil];
@@ -405,9 +406,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
 
   if ([files count]) {
     __weak ShareExtensionItemReceiver* weakSelf = self;
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                     [weakSelf entriesReceived:files];
-                   }));
+    web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                               [weakSelf entriesReceived:files];
+                                             }));
   }
 }
 
@@ -422,14 +423,14 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     __block std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate>
         batchToken(_readingListModel->BeginBatchUpdates());
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                            [weakSelf handleFileAtURL:fileURL
-                                       withCompletion:^{
-                                         base::PostTask(FROM_HERE,
-                                                        {web::WebThread::UI},
-                                                        base::BindOnce(^{
-                                                          batchToken.reset();
-                                                        }));
-                                       }];
+                            [weakSelf
+                                handleFileAtURL:fileURL
+                                 withCompletion:^{
+                                   web::GetUIThreadTaskRunner({})->PostTask(
+                                       FROM_HERE, base::BindOnce(^{
+                                         batchToken.reset();
+                                       }));
+                                 }];
                           }));
   }
 }

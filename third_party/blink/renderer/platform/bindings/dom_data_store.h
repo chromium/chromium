@@ -31,13 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
-#include "third_party/blink/renderer/platform/heap/unified_heap_marking_visitor.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -94,11 +92,10 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   // is associated with the object, or false if the object is already
   // associated with a wrapper.  In the latter case, |wrapper| will be updated
   // to the existing wrapper.
-  WARN_UNUSED_RESULT static bool SetWrapper(
-      v8::Isolate* isolate,
-      ScriptWrappable* object,
-      const WrapperTypeInfo* wrapper_type_info,
-      v8::Local<v8::Object>& wrapper) {
+  [[nodiscard]] static bool SetWrapper(v8::Isolate* isolate,
+                                       ScriptWrappable* object,
+                                       const WrapperTypeInfo* wrapper_type_info,
+                                       v8::Local<v8::Object>& wrapper) {
     if (CanUseMainWorldWrapper())
       return object->SetWrapper(isolate, wrapper_type_info, wrapper);
     return Current(isolate).Set(isolate, object, wrapper_type_info, wrapper);
@@ -110,6 +107,8 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   }
 
   DOMDataStore(v8::Isolate* isolate, bool is_main_world);
+  DOMDataStore(const DOMDataStore&) = delete;
+  DOMDataStore& operator=(const DOMDataStore&) = delete;
 
   // Clears all references.
   void Dispose();
@@ -119,14 +118,14 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->MainWorldWrapper(isolate);
     auto it = wrapper_map_.find(object);
     if (it != wrapper_map_.end())
-      return it->value.NewLocal(isolate);
+      return it->value.Get(isolate);
     return v8::Local<v8::Object>();
   }
 
-  WARN_UNUSED_RESULT bool Set(v8::Isolate* isolate,
-                              ScriptWrappable* object,
-                              const WrapperTypeInfo* wrapper_type_info,
-                              v8::Local<v8::Object>& wrapper) {
+  [[nodiscard]] bool Set(v8::Isolate* isolate,
+                         ScriptWrappable* object,
+                         const WrapperTypeInfo* wrapper_type_info,
+                         v8::Local<v8::Object>& wrapper) {
     DCHECK(object);
     DCHECK(!wrapper.IsEmpty());
     if (is_main_world_)
@@ -135,10 +134,10 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     auto result = wrapper_map_.insert(
         object, TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
     if (LIKELY(result.is_new_entry)) {
-      wrapper_type_info->ConfigureWrapper(&result.stored_value->value.Get());
+      wrapper_type_info->ConfigureWrapper(&result.stored_value->value);
     } else {
       DCHECK(!result.stored_value->value.IsEmpty());
-      wrapper = result.stored_value->value.NewLocal(isolate);
+      wrapper = result.stored_value->value.Get(isolate);
     }
     return result.is_new_entry;
   }
@@ -149,8 +148,8 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     DCHECK(!is_main_world_);
     const auto& it = wrapper_map_.find(object);
     if (it != wrapper_map_.end()) {
-      if (it->value.Get() == handle) {
-        it->value.Clear();
+      if (it->value == handle) {
+        it->value.Reset();
         wrapper_map_.erase(it);
         return true;
       }
@@ -164,7 +163,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->SetReturnValue(return_value);
     auto it = wrapper_map_.find(object);
     if (it != wrapper_map_.end()) {
-      return_value.Set(it->value.Get());
+      return_value.Set(it->value);
       return true;
     }
     return false;
@@ -203,8 +202,6 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   HeapHashMap<WeakMember<const ScriptWrappable>,
               TraceWrapperV8Reference<v8::Object>>
       wrapper_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMDataStore);
 };
 
 }  // namespace blink

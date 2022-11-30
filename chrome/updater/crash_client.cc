@@ -1,42 +1,40 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/crash_client.h"
 
-#include <algorithm>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
-#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/tag.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/prune_crash_reports.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/wrapped_window_proc.h"
-#endif
 
 namespace {
-
-#if defined(OS_WIN)
 
 int __cdecl HandleWinProcException(EXCEPTION_POINTERS* exception_pointers) {
   crashpad::CrashpadClient::DumpAndCrash(exception_pointers);
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
-#endif
-
 }  // namespace
+
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 
@@ -49,13 +47,11 @@ CrashClient* CrashClient::GetInstance() {
   return crash_client.get();
 }
 
-bool CrashClient::InitializeDatabaseOnly() {
+bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::FilePath handler_path;
-  base::PathService::Get(base::FILE_EXE, &handler_path);
-
-  base::Optional<base::FilePath> database_path = GetVersionedDirectory();
+  const absl::optional<base::FilePath> database_path =
+      GetVersionedDataDirectory(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return false;
@@ -70,18 +66,22 @@ bool CrashClient::InitializeDatabaseOnly() {
   return true;
 }
 
-bool CrashClient::InitializeCrashReporting() {
+bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!InitializeDatabaseOnly())
+  static bool initialized = false;
+  DCHECK(!initialized);
+  initialized = true;
+
+  if (!InitializeDatabaseOnly(updater_scope))
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Catch exceptions thrown from a window procedure.
   base::win::WinProcExceptionFilter exception_filter =
       base::win::SetWinProcExceptionFilter(&HandleWinProcException);
   LOG_IF(DFATAL, exception_filter) << "Exception filter already present";
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   std::vector<crashpad::CrashReportDatabase::Report> reports_completed;
   const crashpad::CrashReportDatabase::OperationStatus status_completed =
@@ -116,45 +116,15 @@ bool CrashClient::InitializeCrashReporting() {
     LOG(ERROR) << "Failed to fetch pending crash reports: " << status_pending;
   }
 
-  // TODO(sorin): fix before shipping to users, crbug.com/940098.
-  crashpad::Settings* crashpad_settings = database_->GetSettings();
-  DCHECK(crashpad_settings);
-  crashpad_settings->SetUploadsEnabled(true);
+  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  if (tag_args && tag_args->usage_stats_enable &&
+      *tag_args->usage_stats_enable) {
+    crashpad::Settings* crashpad_settings = database_->GetSettings();
+    DCHECK(crashpad_settings);
+    crashpad_settings->SetUploadsEnabled(true);
+  }
 
   return true;
-}
-
-// static
-std::string CrashClient::GetClientId() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance()->sequence_checker_);
-  DCHECK(GetInstance()->database_) << "Crash reporting not initialized";
-  crashpad::Settings* settings = GetInstance()->database_->GetSettings();
-  DCHECK(settings);
-
-  crashpad::UUID uuid;
-  if (!settings->GetClientID(&uuid)) {
-    LOG(ERROR) << "Unable to retrieve client ID from Crashpad database";
-    return {};
-  }
-
-  std::string uuid_string = uuid.ToString();
-  base::ReplaceSubstringsAfterOffset(&uuid_string, 0, "-", "");
-  return uuid_string;
-}
-
-// static
-bool CrashClient::IsUploadEnabled() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance()->sequence_checker_);
-  DCHECK(GetInstance()->database_) << "Crash reporting not initialized";
-  crashpad::Settings* settings = GetInstance()->database_->GetSettings();
-  DCHECK(settings);
-
-  bool upload_enabled = false;
-  if (!settings->GetUploadsEnabled(&upload_enabled)) {
-    LOG(ERROR) << "Unable to verify if crash uploads are enabled or not";
-    return false;
-  }
-  return upload_enabled;
 }
 
 }  // namespace updater

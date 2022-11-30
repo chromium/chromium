@@ -1,24 +1,24 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 
-#include "base/stl_util.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_list_sorter.h"
-#include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/passwords/save_passwords_consumer.h"
+#import "base/containers/cxx20_erase.h"
+#import "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_list_sorter.h"
+#import "components/password_manager/core/browser/password_store_consumer.h"
+#import "components/password_manager/core/browser/password_store_interface.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 // Protocol to observe changes on the Password Store.
-@protocol PasswordStoreObserver<NSObject>
+@protocol PasswordStoreObserver <NSObject>
 
 // The logins in the Password Store changed.
 - (void)loginsDidChange;
@@ -29,7 +29,7 @@ namespace {
 
 // Objective-C bridge to observe changes in the Password Store.
 class PasswordStoreObserverBridge
-    : public password_manager::PasswordStore::Observer {
+    : public password_manager::PasswordStoreInterface::Observer {
  public:
   explicit PasswordStoreObserverBridge(id<PasswordStoreObserver> observer)
       : observer_(observer) {}
@@ -38,23 +38,33 @@ class PasswordStoreObserverBridge
 
  private:
   void OnLoginsChanged(
-      const password_manager::PasswordStoreChangeList& changes) override {
+      password_manager::PasswordStoreInterface* /*store*/,
+      const password_manager::PasswordStoreChangeList& /*changes*/) override {
     [observer_ loginsDidChange];
   }
+
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* /*store*/,
+                        const std::vector<password_manager::PasswordForm>&
+                        /*retained_passwords*/) override {
+    [observer_ loginsDidChange];
+  }
+
   __weak id<PasswordStoreObserver> observer_ = nil;
 };
 
 }  // namespace
 
-@interface PasswordFetcher ()<SavePasswordsConsumerDelegate,
-                              PasswordStoreObserver> {
+@interface PasswordFetcher () <SavePasswordsConsumerDelegate,
+                               PasswordStoreObserver> {
   // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> _passwordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _passwordStore;
   // A helper object for passing data about saved passwords from a finished
   // password store request to the SavePasswordsCollectionViewController.
   std::unique_ptr<ios::SavePasswordsConsumer> _savedPasswordsConsumer;
   // The object to observe changes in the Password Store.
   std::unique_ptr<PasswordStoreObserverBridge> _passwordStoreObserver;
+  // URL to fetch logins for. May be empty if no filtering is needed.
+  GURL _URL;
 }
 
 // Delegate to send the fetchted passwords.
@@ -69,7 +79,7 @@ class PasswordStoreObserverBridge
 #pragma mark - Initialization
 
 - (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStore>)
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
                              delegate:(id<PasswordFetcherDelegate>)delegate
                                   URL:(const GURL&)URL {
@@ -82,21 +92,28 @@ class PasswordStoreObserverBridge
     _savedPasswordsConsumer.reset(new ios::SavePasswordsConsumer(self));
     _passwordStoreObserver.reset(new PasswordStoreObserverBridge(self));
     _passwordStore->AddObserver(_passwordStoreObserver.get());
-
-    if (URL.is_empty()) {
-      _passwordStore->GetAutofillableLogins(_savedPasswordsConsumer.get());
-    } else {
-      password_manager::PasswordStore::FormDigest digest = {
-          password_manager::PasswordForm::Scheme::kHtml, std::string(), URL};
-      digest.signon_realm = URL.spec();
-      _passwordStore->GetLogins(digest, _savedPasswordsConsumer.get());
-    }
+    _URL = URL;
+    [self fetchLogins];
   }
   return self;
 }
 
 - (void)dealloc {
   _passwordStore->RemoveObserver(_passwordStoreObserver.get());
+}
+
+#pragma mark - Private methods
+
+- (void)fetchLogins {
+  if (_URL.is_empty()) {
+    _passwordStore->GetAutofillableLogins(
+        _savedPasswordsConsumer->GetWeakPtr());
+  } else {
+    password_manager::PasswordFormDigest digest = {
+        password_manager::PasswordForm::Scheme::kHtml, std::string(), _URL};
+    digest.signon_realm = _URL.spec();
+    _passwordStore->GetLogins(digest, _savedPasswordsConsumer->GetWeakPtr());
+  }
 }
 
 #pragma mark - SavePasswordsConsumerDelegate
@@ -118,7 +135,7 @@ class PasswordStoreObserverBridge
 #pragma mark - PasswordStoreObserver
 
 - (void)loginsDidChange {
-  _passwordStore->GetAutofillableLogins(_savedPasswordsConsumer.get());
+  [self fetchLogins];
 }
 
 @end

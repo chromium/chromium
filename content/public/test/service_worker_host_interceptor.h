@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_TEST_SERVICE_WORKER_HOST_INTERCEPTOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -29,6 +29,11 @@ class ServiceWorkerHostInterceptor
     : public blink::mojom::ServiceWorkerHostInterceptorForTesting {
  public:
   ServiceWorkerHostInterceptor();
+
+  ServiceWorkerHostInterceptor(const ServiceWorkerHostInterceptor&) = delete;
+  ServiceWorkerHostInterceptor& operator=(const ServiceWorkerHostInterceptor&) =
+      delete;
+
   ~ServiceWorkerHostInterceptor() override;
 
   // Looks for the service worker with the |scope| and starts intercepting calls
@@ -56,14 +61,11 @@ class ServiceWorkerHostInterceptor
       const GURL& url,
       OpenPaymentHandlerWindowCallback callback) override;
 
-  void FindRegistrationOnServiceWorkerCoreThread(
-      scoped_refptr<ServiceWorkerContextWrapper> context,
-      const GURL& scope,
-      BrowserThread::ID run_done_thread,
-      base::OnceClosure done);
+  void FindRegistration(scoped_refptr<ServiceWorkerContextWrapper> context,
+                        const GURL& scope,
+                        base::OnceClosure done);
 
-  void OnFoundRegistrationOnServiceWorkerCoreThread(
-      BrowserThread::ID run_done_thread,
+  void OnFoundRegistration(
       base::OnceClosure done,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
@@ -71,10 +73,8 @@ class ServiceWorkerHostInterceptor
   blink::ServiceWorkerStatusCode status_ =
       blink::ServiceWorkerStatusCode::kErrorFailed;
   int service_worker_process_id_ = -1;
-  ServiceWorkerVersion* service_worker_version_ = nullptr;
-  blink::mojom::ServiceWorkerHost* forwarding_interface_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHostInterceptor);
+  raw_ptr<ServiceWorkerVersion> service_worker_version_ = nullptr;
+  raw_ptr<blink::mojom::ServiceWorkerHost> forwarding_interface_ = nullptr;
 };
 
 }  // namespace content

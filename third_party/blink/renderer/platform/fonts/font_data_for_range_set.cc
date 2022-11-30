@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ FontDataForRangeSet::FontDataForRangeSet(const FontDataForRangeSet& other) {
 
 FontDataForRangeSetFromCache::~FontDataForRangeSetFromCache() {
   if (font_data_ && !font_data_->IsCustomFont()) {
-    FontCache::GetFontCache()->ReleaseFontData(font_data_.get());
+    FontCache::Get().ReleaseFontData(font_data_.get());
   }
 }
 

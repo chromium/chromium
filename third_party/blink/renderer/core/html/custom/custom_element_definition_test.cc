@@ -1,35 +1,37 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/node.h"  // CustomElementState
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_descriptor.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_test_helpers.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
 
 namespace {
 
+using CustomElementDefinitionTest = PageTestBase;
+
 class ConstructorFails : public TestCustomElementDefinition {
  public:
   ConstructorFails(const CustomElementDescriptor& descriptor)
       : TestCustomElementDefinition(descriptor) {}
+  ConstructorFails(const ConstructorFails&) = delete;
+  ConstructorFails& operator=(const ConstructorFails&) = delete;
   ~ConstructorFails() override = default;
   bool RunConstructor(Element&) override { return false; }
-
-  DISALLOW_COPY_AND_ASSIGN(ConstructorFails);
 };
 
 }  // namespace
 
-TEST(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
-  Element& element = *CreateElement("a-a");
+TEST_F(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
+  Element& element = *CreateElement("a-a").InDocument(&GetDocument());
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";
   {
@@ -46,9 +48,9 @@ TEST(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
       << "failing to construct should have set the 'failed' element state";
 }
 
-TEST(CustomElementDefinitionTest,
-     upgrade_clearsReactionQueueOnFailure_backupStack) {
-  Element& element = *CreateElement("a-a");
+TEST_F(CustomElementDefinitionTest,
+       upgrade_clearsReactionQueueOnFailure_backupStack) {
+  Element& element = *CreateElement("a-a").InDocument(&GetDocument());
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";
   ResetCustomElementReactionStackForTest reset_reaction_stack;

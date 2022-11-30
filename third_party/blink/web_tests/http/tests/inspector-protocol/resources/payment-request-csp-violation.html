@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+<title>Webpage for testing Content-Security-Policy in PaymentRequest</title>
+<!-- Deny connections to all payment method identifiers. -->
+<meta http-equiv="Content-Security-Policy" content="connect-src 'none'">
+</head>
+<body>
+<script>
+// Bypassing CSP (deprecated):
+new PaymentRequest(
+    [{supportedMethods: 'https://example.test/web-payments',}],
+    {total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}}})
+  .canMakePayment();
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
@@ -22,6 +22,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetche
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,30 +31,40 @@ import java.util.List;
  * Class for controlling the page info permissions section.
  */
 public class PageInfoPermissionsController
-        implements PageInfoSubpageController, SingleWebsiteSettings.Observer {
+        extends PageInfoPreferenceSubpageController implements SingleWebsiteSettings.Observer {
+    /**  Parameters to represent a single permission. */
+    public static class PermissionObject {
+        public @ContentSettingsType int type;
+        public CharSequence name;
+        public CharSequence nameMidSentence;
+        public boolean allowed;
+        public @StringRes int warningTextResource;
+    }
+
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
-    private final PageInfoControllerDelegate mDelegate;
     private final String mTitle;
     private final String mPageUrl;
+    private boolean mHasSoundPermission;
+    private boolean mDataIsStale;
     private SingleWebsiteSettings mSubPage;
     @ContentSettingsType
-    private int mHighlightedPermission = ContentSettingsType.DEFAULT;
+    private int mHighlightedPermission;
     @ColorRes
     private int mHighlightColor;
     private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
             new PageInfoDiscoverabilityMetrics();
 
     public PageInfoPermissionsController(PageInfoMainController mainController,
-            PageInfoRowView view, PageInfoControllerDelegate delegate, String pageUrl,
+            PageInfoRowView view, PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
+        super(delegate);
         mMainController = mainController;
         mRowView = view;
-        mDelegate = delegate;
-        mPageUrl = pageUrl;
+        mPageUrl = mainController.getURL().getSpec();
         mHighlightedPermission = highlightedPermission;
         Resources resources = mRowView.getContext().getResources();
-        mHighlightColor = resources.getColor(R.color.iph_highlight_blue);
+        mHighlightColor = R.color.iph_highlight_blue;
         mTitle = resources.getString(R.string.page_info_permissions_title);
     }
 
@@ -74,47 +85,48 @@ public class PageInfoPermissionsController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
-        FragmentManager fragmentManager = mDelegate.getFragmentManager();
-        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager.isStateSaved()) return null;
+        if (!canCreateSubpageFragment()) return null;
 
         Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
+        fragmentArgs.putBoolean(SingleWebsiteSettings.EXTRA_SHOW_SOUND, mHasSoundPermission);
+
         mSubPage = (SingleWebsiteSettings) Fragment.instantiate(
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
-        mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
         mSubPage.setHideNonPermissionPreferences(true);
         mSubPage.setWebsiteSettingsObserver(this);
         if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
             mSubPage.setHighlightedPermission(mHighlightedPermission, mHighlightColor);
         }
-        fragmentManager.beginTransaction().add(mSubPage, null).commitNow();
-        return mSubPage.requireView();
+        return addSubpageFragment(mSubPage);
     }
 
     @Override
     public void onSubpageRemoved() {
-        assert mSubPage != null;
-        FragmentManager fragmentManager = mDelegate.getFragmentManager();
-        SingleWebsiteSettings subPage = mSubPage;
+        removeSubpageFragment();
         mSubPage = null;
-        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager == null || fragmentManager.isStateSaved()) return;
-        fragmentManager.beginTransaction().remove(subPage).commitNow();
     }
 
-    public void setPermissions(PageInfoView.PermissionParams params) {
+    public void setPermissions(List<PermissionObject> permissions) {
         Resources resources = mRowView.getContext().getResources();
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = mTitle;
         rowParams.iconResId = R.drawable.ic_tune_24dp;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
-        rowParams.subtitle = getPermissionSummaryString(params.permissions, resources);
-        rowParams.visible = mDelegate.isSiteSettingsAvailable() && rowParams.subtitle != null;
+        rowParams.subtitle = getPermissionSummaryString(permissions, resources);
+        rowParams.visible = getDelegate().isSiteSettingsAvailable() && rowParams.subtitle != null;
         if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
             rowParams.rowTint = mHighlightColor;
         }
         mRowView.setParams(rowParams);
+
+        mHasSoundPermission = false;
+        for (PermissionObject permission : permissions) {
+            if (permission.type == ContentSettingsType.SOUND) {
+                mHasSoundPermission = true;
+                break;
+            }
+        }
     }
 
     /**
@@ -122,15 +134,15 @@ public class PageInfoPermissionsController
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static String getPermissionSummaryString(
-            List<PageInfoView.PermissionRowParams> permissions, Resources resources) {
+            List<PermissionObject> permissions, Resources resources) {
         int numPermissions = permissions.size();
         if (numPermissions == 0) {
             return null;
         }
 
-        PageInfoView.PermissionRowParams perm1 = permissions.get(0);
+        PermissionObject perm1 = permissions.get(0);
         boolean same = true;
-        for (PageInfoView.PermissionRowParams perm : permissions) {
+        for (PermissionObject perm : permissions) {
             if (perm.warningTextResource != 0) {
                 // Show the first (most important warning) only, if there is one.
                 return resources.getString(R.string.page_info_permissions_os_warning,
@@ -146,18 +158,20 @@ public class PageInfoPermissionsController
             return resources.getString(resId, perm1.name.toString());
         }
 
-        PageInfoView.PermissionRowParams perm2 = permissions.get(1);
+        PermissionObject perm2 = permissions.get(1);
         if (numPermissions == 2) {
             if (same) {
                 int resId = perm1.allowed ? R.string.page_info_permissions_summary_2_allowed
                                           : R.string.page_info_permissions_summary_2_blocked;
-                return resources.getString(resId, perm1.name.toString(), perm2.name.toString());
+                return resources.getString(
+                        resId, perm1.name.toString(), perm2.nameMidSentence.toString());
             }
             int resId = R.string.page_info_permissions_summary_2_mixed;
             // Put the allowed permission first.
             return resources.getString(resId,
                     perm1.allowed ? perm1.name.toString() : perm2.name.toString(),
-                    perm1.allowed ? perm2.name.toString() : perm1.name.toString());
+                    perm1.allowed ? perm2.nameMidSentence.toString()
+                                  : perm1.nameMidSentence.toString());
         }
 
         // More than 2 permissions.
@@ -165,36 +179,47 @@ public class PageInfoPermissionsController
             int resId = perm1.allowed ? R.plurals.page_info_permissions_summary_more_allowed
                                       : R.plurals.page_info_permissions_summary_more_blocked;
             return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
-                    perm2.name.toString(), numPermissions - 2);
+                    perm2.nameMidSentence.toString(), numPermissions - 2);
         }
         int resId = R.plurals.page_info_permissions_summary_more_mixed;
         return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
-                perm2.name.toString(), numPermissions - 2);
+                perm2.nameMidSentence.toString(), numPermissions - 2);
     }
 
     @Override
     public void clearData() {
-        // Need to fetch data in order to clear it
-        WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(mDelegate.getBrowserContext());
+        // Need to fetch data in order to clear it.
+        BrowserContextHandle browserContext = getDelegate().getBrowserContext();
+        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(browserContext);
         String origin = Origin.createOrThrow(mPageUrl).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
 
-        // Asynchronous function, callback will clear the data
+        // Asynchronous function, callback will clear the data.
         fetcher.fetchAllPreferences((Collection<Website> sites) -> {
             Website site = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
                     address, sites);
-            new SiteDataCleaner().resetPermissions(mDelegate.getBrowserContext(), site);
+            new SiteDataCleaner().resetPermissions(browserContext, site);
             mMainController.refreshPermissions();
         });
     }
+
+    @Override
+    public void updateRowIfNeeded() {
+        if (mDataIsStale) {
+            mMainController.refreshPermissions();
+        }
+        mDataIsStale = false;
+    }
+
+    @Override
+    public void onNativeInitialized() {}
 
     // SingleWebsiteSettings.Observer methods
 
     @Override
     public void onPermissionsReset() {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CLEARED);
-        mMainController.refreshPermissions();
+        mDataIsStale = true;
         mMainController.exitSubpage();
     }
 
@@ -205,6 +230,6 @@ public class PageInfoPermissionsController
                     DiscoverabilityAction.PERMISSION_CHANGED);
         }
         mMainController.recordAction(PageInfoAction.PAGE_INFO_CHANGED_PERMISSION);
-        mMainController.refreshPermissions();
+        mDataIsStale = true;
     }
 }

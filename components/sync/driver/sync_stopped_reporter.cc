@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -19,6 +18,9 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace syncer {
 
 namespace {
 
@@ -28,27 +30,43 @@ const char kEventEndpoint[] = "event";
 // plenty of time. Since sync is off when this request is started, we don't
 // want anything sync-related hanging around for very long from a human
 // perspective either. This seems like a good compromise.
-constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kRequestTimeout = base::Seconds(10);
+
+void LogSyncStoppedRequestTimeout(bool timed_out) {
+  base::UmaHistogramBoolean("Sync.SyncStoppedURLFetchTimedOut", timed_out);
+}
+
+void LogSyncStoppedRequestResult(const network::SimpleURLLoader& url_loader) {
+  int http_status_code = -1;
+  if (url_loader.ResponseInfo() && url_loader.ResponseInfo()->headers) {
+    http_status_code = url_loader.ResponseInfo()->headers->response_code();
+  }
+  const int net_error_code = url_loader.NetError();
+  const bool request_succeeded =
+      net_error_code == net::OK && http_status_code != -1;
+  if (request_succeeded) {
+    LogSyncStoppedRequestTimeout(/*timed_out=*/false);
+  }
+  base::UmaHistogramSparse(
+      "Sync.SyncStoppedURLFetchResponse",
+      request_succeeded ? http_status_code : net_error_code);
+}
 
 }  // namespace
-
-namespace syncer {
 
 SyncStoppedReporter::SyncStoppedReporter(
     const GURL& sync_service_url,
     const std::string& user_agent,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    ResultCallback callback)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : sync_event_url_(GetSyncEventURL(sync_service_url)),
       user_agent_(user_agent),
-      url_loader_factory_(std::move(url_loader_factory)),
-      callback_(std::move(callback)) {
+      url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK(!sync_service_url.is_empty());
   DCHECK(!user_agent_.empty());
   DCHECK(url_loader_factory_);
 }
 
-SyncStoppedReporter::~SyncStoppedReporter() {}
+SyncStoppedReporter::~SyncStoppedReporter() = default;
 
 void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
                                             const std::string& cache_guid,
@@ -112,21 +130,15 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
 
 void SyncStoppedReporter::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
-  Result result = response_body ? RESULT_SUCCESS : RESULT_ERROR;
+  DCHECK(simple_url_loader_);
+  LogSyncStoppedRequestResult(*simple_url_loader_);
   simple_url_loader_.reset();
   timer_.Stop();
-  if (!callback_.is_null()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), result));
-  }
 }
 
 void SyncStoppedReporter::OnTimeout() {
+  LogSyncStoppedRequestTimeout(/*timed_out=*/true);
   simple_url_loader_.reset();
-  if (!callback_.is_null()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), RESULT_TIMEOUT));
-  }
 }
 
 // Static.

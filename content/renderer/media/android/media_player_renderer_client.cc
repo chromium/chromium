@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,7 +73,7 @@ void MediaPlayerRendererClient::OnStreamTextureWrapperInitialized(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   if (!success) {
     std::move(init_cb_).Run(
-        media::PipelineStatus::PIPELINE_ERROR_INITIALIZATION_FAILED);
+        media::PipelineStatus::Codes::PIPELINE_ERROR_INITIALIZATION_FAILED);
     return;
   }
 
@@ -108,10 +108,10 @@ void MediaPlayerRendererClient::OnRemoteRendererInitialized(
     // Signal that we're using MediaPlayer so that we can properly differentiate
     // within our metrics.
     media::PipelineStatistics stats;
-    stats.video_decoder_info = {true, false,
-                                media::VideoDecoderType::kMediaCodec};
-    stats.audio_decoder_info = {true, false,
-                                media::AudioDecoderType::kMediaCodec};
+    stats.video_pipeline_info = {true, false,
+                                 media::VideoDecoderType::kMediaCodec};
+    stats.audio_pipeline_info = {true, false,
+                                 media::AudioDecoderType::kMediaCodec};
     client_->OnStatisticsUpdate(stats);
   }
   std::move(init_cb_).Run(status);

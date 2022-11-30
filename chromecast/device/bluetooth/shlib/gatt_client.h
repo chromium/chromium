@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class GattClient {
   virtual ~GattClient() = default;
   virtual bool IsSupported() = 0;
   virtual void SetDelegate(Gatt::Client::Delegate* delegate) = 0;
-  virtual bool Connect(const Addr& addr) = 0;
+  virtual bool Connect(const Addr& addr, Gatt::Client::Transport transport) = 0;
   virtual bool Disconnect(const Addr& addr) = 0;
   virtual bool CreateBond(const Addr& addr) = 0;
   virtual bool RemoveBond(const Addr& addr) = 0;

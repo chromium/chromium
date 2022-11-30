@@ -1,4 +1,15 @@
 <style include="cr-hidden-style cr-icons">
+  cr-button {
+    --border-color: var(--color-new-tab-page-action-button-border);
+    --hover-border-color:
+        var(--color-new-tab-page-action-button-border-hovered);
+    --text-color-action: var(--color-new-tab-page-background-override);
+  }
+
+  cr-dialog {
+    --cr-dialog-background-color: var(--color-new-tab-page-background-override);
+  }
+
   cr-dialog::part(dialog) {
     height: 100%;
     max-height: 520px;
@@ -15,7 +26,7 @@
 
   div[slot=title] {
     align-items: center;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: row;
     height: 64px;
@@ -24,7 +35,7 @@
   }
 
   div[slot=body] {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -41,14 +52,9 @@
     padding-top: 16px;
   }
 
-  #menuContainer,
-  #pagesContainer {
-    overflow: hidden;
-  }
-
   #leftTitleSpacer,
-  #menuContainer {
-    flex-basis: 232px;
+  #menu {
+    width: 218px;
   }
 
   #title {
@@ -58,9 +64,12 @@
     user-select: none;
   }
 
+  /* We pad the pages to allow content to overflow horizontally. We can't use
+   * overflow-x: visible since that will be ignored if overflow-y: auto. */
   #title,
-  #pagesContainer {
+  #pages {
     flex-grow: 1;
+    padding-inline-start: 14px;
   }
 
   #menu,
@@ -80,7 +89,7 @@
 
   div[scroll-border][show-1],
   div[scroll-border][show-2] {
-    border-bottom-color: var(--ntp-border-color);
+    border-bottom-color: var(--color-new-tab-page-border);
   }
 
   #menu {
@@ -96,7 +105,7 @@
   .menu-item {
     align-items: center;
     border-radius: 0 16px 16px 0;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -116,7 +125,7 @@
   }
 
   .menu-item:hover {
-    background-color: var(--ntp-hover-background-color);
+    background-color: var(--color-new-tab-page-control-background-hovered);
   }
 
   :host-context(.focus-outline-visible) .menu-item:focus {
@@ -124,18 +133,18 @@
   }
 
   .menu-item:active {
-    background-color: var(--ntp-active-background-color);
+    background-color: var(--color-new-tab-page-active-background);
   }
 
   .menu-item[selected] {
-    background-color: var(--ntp-selected-background-color);
-    color: var(--ntp-selected-primary-text-color);
+    background-color: var(--color-new-tab-page-selected-background);
+    color: var(--color-new-tab-page-selected-foreground);
   }
 
   .menu-item-icon {
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--cr-primary-text-color);
+    background-color: var(--color-new-tab-page-primary-foreground);
     height: 20px;
     margin-inline-end: 16px;
     margin-inline-start: 24px;
@@ -143,7 +152,24 @@
   }
 
   .menu-item[selected] .menu-item-icon {
-    background-color: var(--ntp-selected-primary-text-color);
+    background-color: var(--color-new-tab-page-selected-foreground);
+  }
+
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .menu-item:focus {
+      /* Use outline instead of box-shadow (which does not work) in Windows
+         HCM. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    .menu-item-icon,
+    .menu-item-icon[selected] {
+      background-color: ButtonText;
+    }
+
+    .menu-item[selected] {
+      background-color: SelectedItem;
+    }
   }
 
   #backgroundsIcon {
@@ -163,7 +189,7 @@
   }
 
   #backButton {
-    --cr-icon-button-fill-color: var(--cr-primary-text-color);
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
     margin-inline-end: 4px;
     /* So that the arrow aligns with the grid. */
     margin-inline-start: -12px;
@@ -205,49 +231,44 @@
   <div slot="body">
     <div id="topPageScrollBorder" scroll-border></div>
     <div id="bodyContainer">
-      <div id="menuContainer">
-        <div id="menu">
-          <iron-selector id="menuSelector" selected-attribute="selected"
-              attr-for-selected="page-name" selected="{{selectedPage}}"
-              on-keydown="onMenuItemKeyDown_" fallback-selection="backgrounds">
-            <div class="menu-item" page-name="backgrounds" tabindex="0">
-              <div id="backgroundsIcon" class="menu-item-icon"></div>
-              $i18n{backgroundsMenuItem}
-            </div>
-            <div class="menu-item" page-name="shortcuts" tabindex="0"
-                hidden$="[[!shortcutsEnabled_]]">
-              <div id="shortcutsIcon" class="menu-item-icon"></div>
-              $i18n{shortcutsMenuItem}
-            </div>
-            <div class="menu-item" page-name="modules" tabindex="0"
-                hidden$="[[!modulesEnabled_]]">
-              <div id="modulesIcon" class="menu-item-icon"></div>
-              $i18n{modulesMenuItem}
-            </div>
-            <div class="menu-item" page-name="themes" tabindex="0">
-              <div id="themesIcon" class="menu-item-icon"></div>
-              $i18n{themesMenuItem}
-            </div>
-          </iron-selector>
-        </div>
+      <div id="menu">
+        <iron-selector id="menuSelector" selected-attribute="selected"
+            attr-for-selected="page-name" selected="{{selectedPage}}"
+            on-keydown="onMenuItemKeyDown_" fallback-selection="backgrounds">
+          <div class="menu-item" page-name="backgrounds" tabindex="0">
+            <div id="backgroundsIcon" class="menu-item-icon"></div>
+            $i18n{backgroundsMenuItem}
+          </div>
+          <div class="menu-item" page-name="shortcuts" tabindex="0"
+              hidden$="[[!shortcutsEnabled_]]">
+            <div id="shortcutsIcon" class="menu-item-icon"></div>
+            $i18n{shortcutsMenuItem}
+          </div>
+          <div class="menu-item" page-name="modules" tabindex="0"
+              hidden$="[[!modulesEnabled_]]">
+            <div id="modulesIcon" class="menu-item-icon"></div>
+            $i18n{modulesMenuItem}
+          </div>
+          <div class="menu-item" page-name="themes" tabindex="0">
+            <div id="themesIcon" class="menu-item-icon"></div>
+            $i18n{themesMenuItem}
+          </div>
+        </iron-selector>
       </div>
-      <div id="pagesContainer">
-        <div id="pages">
-          <iron-pages selected="[[selectedPage]]"
-              attr-for-selected="page-name">
-            <ntp-customize-backgrounds id="backgrounds" page-name="backgrounds"
-                selected-collection="{{selectedCollection_}}" theme="[[theme]]"
-                background-selection="{{backgroundSelection}}">
-            </ntp-customize-backgrounds>
-            <ntp-customize-shortcuts page-name="shortcuts">
-            </ntp-customize-shortcuts>
-            <ntp-customize-modules page-name="modules"
-                hidden$="[[!modulesEnabled_]]">
-            </ntp-customize-modules>
-            <cr-customize-themes id="customizeThemes" page-name="themes">
-            </cr-customize-themes>
-          </iron-pages>
-        </div>
+      <div id="pages">
+        <iron-pages selected="[[selectedPage]]" attr-for-selected="page-name">
+          <ntp-customize-backgrounds id="backgrounds" page-name="backgrounds"
+              selected-collection="{{selectedCollection_}}" theme="[[theme]]"
+              background-selection="{{backgroundSelection}}">
+          </ntp-customize-backgrounds>
+          <ntp-customize-shortcuts page-name="shortcuts">
+          </ntp-customize-shortcuts>
+          <ntp-customize-modules page-name="modules"
+              hidden$="[[!modulesEnabled_]]">
+          </ntp-customize-modules>
+          <cr-customize-themes id="customizeThemes" page-name="themes">
+          </cr-customize-themes>
+        </iron-pages>
       </div>
     </div>
     <div id="bottomPageScrollBorder" scroll-border></div>

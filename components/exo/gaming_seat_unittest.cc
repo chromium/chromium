@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/exo/gaming_seat.h"
 
+#include <memory>
 #include <vector>
 
 #include "ash/shell.h"
@@ -53,14 +54,18 @@ class MockGamingSeatDelegate : public GamingSeatDelegate {
   MOCK_METHOD(void, GamepadAdded, (Gamepad & gamepad), (override));
   MOCK_METHOD(void, Die, (), ());
   void OnGamingSeatDestroying(GamingSeat*) override { delete this; }
-  ~MockGamingSeatDelegate() { Die(); }
+  ~MockGamingSeatDelegate() override { Die(); }
 };
 
 class GamingSeatTest : public test::ExoTestBase {
  public:
   GamingSeatTest() {}
+
+  GamingSeatTest(const GamingSeatTest&) = delete;
+  GamingSeatTest& operator=(const GamingSeatTest&) = delete;
+
   void InitializeGamingSeat(MockGamingSeatDelegate* delegate) {
-    gaming_seat_.reset(new GamingSeat(delegate));
+    gaming_seat_ = std::make_unique<GamingSeat>(delegate);
   }
 
   void DestroyGamingSeat(MockGamingSeatDelegate* delegate) {
@@ -99,7 +104,6 @@ class GamingSeatTest : public test::ExoTestBase {
 
  protected:
   std::unique_ptr<GamingSeat> gaming_seat_;
-  DISALLOW_COPY_AND_ASSIGN(GamingSeatTest);
 };
 
 TEST_F(GamingSeatTest, ConnectionChange) {

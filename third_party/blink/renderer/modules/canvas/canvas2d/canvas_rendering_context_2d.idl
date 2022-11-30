@@ -45,33 +45,27 @@ typedef (CSSImageValue or
 enum CanvasFillRule { "nonzero", "evenodd" };
 enum ImageSmoothingQuality {"low", "medium", "high"};
 
-[Exposed=Window]
+[
+    ActiveScriptWrappable,
+    Exposed=Window
+]
 interface CanvasRenderingContext2D {
     // back-reference to the canvas
     readonly attribute HTMLCanvasElement canvas;
 
     // state
-    [NoAllocDirectCall] void save(); // push state on state stack
-    [NoAllocDirectCall] void restore(); // pop state stack and restore state
+    void save(); // push state on state stack
+    [NoAllocDirectCall] void restore(); // pop state stack if top state was pushed by save, and restore state
+    [RuntimeEnabled=Canvas2dLayers] void beginLayer(); // push state on state stack and creates bitmap for subsequent draw ops
+    [RuntimeEnabled=Canvas2dLayers] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
-    [RuntimeEnabled=NewCanvas2DAPI] void reset();
+    void reset();
 
     // transformations (default transform is the identity matrix)
     void scale(unrestricted double x, unrestricted double y);
-    [RuntimeEnabled=NewCanvas2DAPI] void scale(unrestricted double x, unrestricted double y, unrestricted double z);
     [NoAllocDirectCall] void rotate(unrestricted double angle);
-    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void rotate3d(unrestricted double angleX, unrestricted double angleY, unrestricted double angleZ);
-    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void rotateAxis(unrestricted double axisX, unrestricted double axisY, unrestricted double axisZ, unrestricted double angle);
     void translate(unrestricted double x, unrestricted double y);
-    [RuntimeEnabled=NewCanvas2DAPI] void translate(unrestricted double x, unrestricted double y, unrestricted double z);
-    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void perspective(unrestricted double length);
     void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
-    [RuntimeEnabled=NewCanvas2DAPI] void transform(
-        unrestricted double m11, unrestricted double m12, unrestricted double m13, unrestricted double m14,
-        unrestricted double m21, unrestricted double m22, unrestricted double m23, unrestricted double m24,
-        unrestricted double m31, unrestricted double m32, unrestricted double m33, unrestricted double m34,
-        unrestricted double m41, unrestricted double m42, unrestricted double m43, unrestricted double m44
-    );
     void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
     DOMMatrix getTransform();
@@ -87,12 +81,12 @@ interface CanvasRenderingContext2D {
     [MeasureAs=Canvas2DImageSmoothingQuality]attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles (see also the CanvasDrawingStyles interface)
-    attribute (DOMString or CanvasGradient or CanvasPattern) strokeStyle; // (default black)
-    attribute (DOMString or CanvasGradient or CanvasPattern) fillStyle; // (default black)
+    attribute (DOMString or CanvasGradient or CanvasPattern or CSSColorValue) strokeStyle; // (default black)
+    attribute (DOMString or CanvasGradient or CanvasPattern or CSSColorValue) fillStyle; // (default black)
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
-    [RuntimeEnabled=NewCanvas2DAPI] CanvasGradient createConicGradient(double startAngle, double cx, double cy);
-    [CallWith=ScriptState, RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
+    CanvasGradient createConicGradient(double startAngle, double cx, double cy);
+    [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
 
     // shadows
     attribute unrestricted double shadowOffsetX;
@@ -128,33 +122,26 @@ interface CanvasRenderingContext2D {
     void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     TextMetrics measureText(DOMString text);
 
-    // Render entire CanvasFormattedText with line wrapping (one-shot)
-    [RuntimeEnabled=CanvasFormattedText] void fillFormattedText(CanvasFormattedText formattedText, double x, double y, double wrapWidth);
+    // Render entire FormattedText with line wrapping (one-shot)
+    [RuntimeEnabled=FormattedText, RaisesException] void drawFormattedText(FormattedText formattedText, double x, double y);
 
     // drawing images
-    [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
-    [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
-
-    // hit regions
-    [RuntimeEnabled=CanvasHitRegion, RaisesException] void addHitRegion(optional HitRegionOptions options = {});
-    [RuntimeEnabled=CanvasHitRegion] void removeHitRegion(DOMString id);
-    [RuntimeEnabled=CanvasHitRegion, NoAllocDirectCall] void clearHitRegions();
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);
     [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh);
+    [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
     [RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh);
+    [RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy);
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy, [EnforceRange] long dirtyX, [EnforceRange] long dirtyY, [EnforceRange] long dirtyWidth, [EnforceRange] long dirtyHeight);
 
-    // https://github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md
-    [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
-    [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
-
     // Context state
     // Should be merged with WebGL counterpart in CanvasRenderingContext, once no-longer experimental
-    [RuntimeEnabled=NewCanvas2DAPI] boolean isContextLost();
+    boolean isContextLost();
 
     [MeasureAs=GetCanvas2DContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
 
@@ -175,12 +162,12 @@ interface CanvasRenderingContext2D {
     attribute DOMString textAlign; // "start", "end", "left", "right", "center" (default: "start")
     attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
     attribute DOMString direction; // "inherit", "rtl", "ltr" (default: "inherit")
-    [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontKerning; // "auto", "normal", "none" (default: "auto")
-    [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontStretch; // "ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded" (default: normal)
-    [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontVariantCaps; // "normal", "small-caps", "all-small-caps", "petite-caps", "all-petite-caps", "unicase", "titling-caps" (default: "normal")
-    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textLetterSpacing; // length in pixel (default: 0)
-    [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString textRendering; // "auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision" (default: auto)
-    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textWordSpacing; // length in pixel (default: 0)
+    attribute DOMString fontKerning; // "auto", "normal", "none" (default: "auto")
+    attribute DOMString fontStretch; // "ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded" (default: normal)
+    attribute DOMString fontVariantCaps; // "normal", "small-caps", "all-small-caps", "petite-caps", "all-petite-caps", "unicase", "titling-caps" (default: "normal")
+    attribute DOMString letterSpacing; // length in pixel (default: "0px")
+    attribute DOMString textRendering; // "auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision" (default: auto)
+    attribute DOMString wordSpacing; // length in pixel (default: "0px")
 };
 
 CanvasRenderingContext2D includes CanvasPath;

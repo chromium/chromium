@@ -1,11 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_OBSERVER_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_OBSERVER_H_
-
-#include "base/macros.h"
 
 namespace gfx {
 class Image;
@@ -37,6 +35,10 @@ class FaviconDriverObserver {
   };
 
   FaviconDriverObserver() {}
+
+  FaviconDriverObserver(const FaviconDriverObserver&) = delete;
+  FaviconDriverObserver& operator=(const FaviconDriverObserver&) = delete;
+
   virtual ~FaviconDriverObserver() {}
 
   // Called when either:
@@ -66,9 +68,6 @@ class FaviconDriverObserver {
                                 const GURL& icon_url,
                                 bool icon_url_changed,
                                 const gfx::Image& image) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FaviconDriverObserver);
 };
 
 }  // namespace favicon

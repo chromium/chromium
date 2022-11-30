@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,8 +21,7 @@
 #include "third_party/webrtc/rtc_base/socket_address.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -33,7 +33,7 @@ class ConstantScopedFakeClock : public rtc::ClockInterface {
   int64_t TimeNanos() const override { return 1337L * 1000L * 1000L; }
 
  private:
-  ClockInterface* prev_clock_;
+  raw_ptr<ClockInterface> prev_clock_;
 };
 
 }  // namespace
@@ -75,7 +75,7 @@ class ChromiumSocketFactoryTest : public testing::Test,
   void VerifyCanSendAndReceive(rtc::AsyncPacketSocket* sender) {
     // UDP packets may be lost, so we have to retry sending it more than once.
     const int kMaxAttempts = 3;
-    const base::TimeDelta kAttemptPeriod = base::TimeDelta::FromSeconds(1);
+    const base::TimeDelta kAttemptPeriod = base::Seconds(1);
     std::string test_packet("TEST PACKET");
     int attempts = 0;
     rtc::PacketOptions options;
@@ -190,5 +190,4 @@ TEST_F(ChromiumSocketFactoryTest, CheckSendTime) {
   ASSERT_EQ(last_packet_time_, rtc::TimeMicros());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

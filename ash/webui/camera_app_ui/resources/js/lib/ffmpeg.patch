@@ -1,0 +1,79 @@
+diff --git a/fftools/cmdutils.c b/fftools/cmdutils.c
+index 4148285971..adb235b864 100644
+--- a/fftools/cmdutils.c
++++ b/fftools/cmdutils.c
+@@ -19,6 +19,8 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
++#include <emscripten.h>
++
+ #include <string.h>
+ #include <stdint.h>
+ #include <stdlib.h>
+@@ -134,7 +136,7 @@ void exit_program(int ret)
+     if (program_exit)
+         program_exit(ret);
+ 
+-    exit(ret);
++    emscripten_force_exit(ret);
+ }
+ 
+ double parse_number_or_die(const char *context, const char *numstr, int type,
+diff --git a/lib.js b/lib.js
+new file mode 100644
+index 0000000000..00d42701af
+--- /dev/null
++++ b/lib.js
+@@ -0,0 +1,8 @@
++mergeInto(LibraryManager.library, {
++  // Returns 0 if the processing is canceled.
++  wait_readable: function() {
++    return Asyncify.handleSleep(function(wakeUp) {
++      waitReadable(wakeUp);
++    });
++  }
++});
+\ No newline at end of file
+diff --git a/libavformat/file.c b/libavformat/file.c
+index 8303436be0..8d6bff43c5 100644
+--- a/libavformat/file.c
++++ b/libavformat/file.c
+@@ -19,6 +19,8 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
++#include <emscripten.h>
++
+ #include "libavutil/avstring.h"
+ #include "libavutil/internal.h"
+ #include "libavutil/opt.h"
+@@ -106,11 +108,17 @@ static const AVClass pipe_class = {
+     .version    = LIBAVUTIL_VERSION_INT,
+ };
+ 
++extern int wait_readable(void);
++
+ static int file_read(URLContext *h, unsigned char *buf, int size)
+ {
+     FileContext *c = h->priv_data;
+     int ret;
+     size = FFMIN(size, c->blocksize);
++    if (wait_readable() == 0) {
++        // Quit ffmpeg if the processing is canceled.
++        emscripten_force_exit(0);
++    }
+     ret = read(c->fd, buf, size);
+     if (ret == 0 && c->follow)
+         return AVERROR(EAGAIN);
+@@ -396,6 +404,10 @@ static int pipe_open(URLContext *h, const char *filename, int flags)
+ #endif
+     c->fd = fd;
+     h->is_streamed = 1;
++
++    // increase the packet size since file operations in WASM is emulated in
++    // JavaScript, and the context switching is expensive.
++    h->max_packet_size = 256 << 10;
+     return 0;
+ }
+ 

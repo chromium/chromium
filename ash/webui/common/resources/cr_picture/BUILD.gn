@@ -1,0 +1,49 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash)
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_camera",
+    ":cr_picture_list",
+    ":cr_picture_pane",
+    ":png",
+    ":webcam_utils",
+  ]
+}
+
+js_library("png") {
+}
+
+js_library("webcam_utils") {
+}
+
+js_library("cr_picture_types") {
+}
+
+js_library("cr_picture_pane") {
+  deps = [
+    ":cr_camera",
+    ":cr_picture_types",
+    ":png",
+  ]
+}
+
+js_library("cr_camera") {
+  deps = [ ":webcam_utils" ]
+}
+
+js_library("cr_picture_list") {
+  deps = [
+    ":cr_picture_types",
+    ":png",
+    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
+    "//ui/webui/resources/js:assert",
+  ]
+}

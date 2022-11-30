@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -180,7 +180,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
     }
 
    private:
-    T* shader_variable_;  // Pointer to *_info_ vector entry.
+    raw_ptr<T> shader_variable_;  // Pointer to *_info_ vector entry.
     bool inactive_;
   };
 
@@ -543,7 +543,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
 
   void ClearVertexInputMasks();
 
-  ProgramManager* manager_;
+  raw_ptr<ProgramManager> manager_;
 
   int use_count_;
 
@@ -653,6 +653,10 @@ class GPU_GLES2_EXPORT ProgramManager {
                  const GpuPreferences& gpu_preferences,
                  FeatureInfo* feature_info,
                  gl::ProgressReporter* progress_reporter);
+
+  ProgramManager(const ProgramManager&) = delete;
+  ProgramManager& operator=(const ProgramManager&) = delete;
+
   ~ProgramManager();
 
   // Must call before destruction.
@@ -738,7 +742,7 @@ class GPU_GLES2_EXPORT ProgramManager {
   // Used to clear uniforms.
   std::vector<uint8_t> zero_;
 
-  ProgramCache* program_cache_;
+  raw_ptr<ProgramCache> program_cache_;
 
   uint32_t max_varying_vectors_;
   uint32_t max_draw_buffers_;
@@ -751,9 +755,7 @@ class GPU_GLES2_EXPORT ProgramManager {
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  gl::ProgressReporter* progress_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgramManager);
+  raw_ptr<gl::ProgressReporter> progress_reporter_;
 };
 
 inline const FeatureInfo& Program::feature_info() const {

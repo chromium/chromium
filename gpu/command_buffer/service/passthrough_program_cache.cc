@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "ui/gl/gl_bindings.h"
 
 #if defined(USE_EGL)
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif  // defined(USE_EGL)
 
@@ -21,14 +22,12 @@ namespace gles2 {
 
 namespace {
 
-bool BlobCacheExtensionAvailable() {
 #if defined(USE_EGL)
+bool BlobCacheExtensionAvailable(gl::GLDisplayEGL* gl_display) {
   // The display should be initialized if the extension is available.
-  return gl::g_driver_egl.ext.b_EGL_ANDROID_blob_cache;
-#else
-  return false;
-#endif  // defined(USE_EGL)
+  return gl_display->ext->b_EGL_ANDROID_blob_cache;
 }
+#endif  // defined(USE_EGL)
 
 // EGL_ANDROID_blob_cache doesn't give user pointer to the callbacks so we are
 // forced to have this be global.
@@ -42,17 +41,19 @@ PassthroughProgramCache::PassthroughProgramCache(
     : ProgramCache(max_cache_size_bytes),
       disable_gpu_shader_disk_cache_(disable_gpu_shader_disk_cache),
       curr_size_bytes_(0),
-      store_(ProgramMRUCache::NO_AUTO_EVICT) {
+      store_(ProgramLRUCache::NO_AUTO_EVICT) {
 #if defined(USE_EGL)
-  EGLDisplay display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  EGLDisplay egl_display = gl_display->GetDisplay();
 
   DCHECK(!g_program_cache);
   g_program_cache = this;
 
   // display is EGL_NO_DISPLAY during unittests.
-  if (display != EGL_NO_DISPLAY && BlobCacheExtensionAvailable()) {
+  if (egl_display != EGL_NO_DISPLAY &&
+      BlobCacheExtensionAvailable(gl_display)) {
     // Register the blob cache callbacks.
-    eglSetBlobCacheFuncsANDROID(display, BlobCacheSet, BlobCacheGet);
+    eglSetBlobCacheFuncsANDROID(egl_display, BlobCacheSet, BlobCacheGet);
   }
 #endif  // defined(USE_EGL)
 }
@@ -110,9 +111,6 @@ void PassthroughProgramCache::LoadProgram(const std::string& key,
   Value entry_value(program_decoded.begin(), program_decoded.end());
 
   store_.Put(entry_key, ProgramCacheValue(std::move(entry_value), this));
-
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeAfterKb",
-                          curr_size_bytes_ / 1024);
 }
 
 size_t PassthroughProgramCache::Trim(size_t limit) {
@@ -133,12 +131,9 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
   if (value.size() > max_size_bytes())
     return;
 
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeBeforeKb",
-                          curr_size_bytes_ / 1024);
-
   // Evict any cached program with the same key in favor of the least recently
   // accessed.
-  ProgramMRUCache::iterator existing = store_.Peek(key);
+  ProgramLRUCache::iterator existing = store_.Peek(key);
   if (existing != store_.end())
     store_.Erase(existing);
 
@@ -163,14 +158,11 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
   }
 
   store_.Put(key, ProgramCacheValue(std::move(value), this));
-
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeAfterKb",
-                          curr_size_bytes_ / 1024);
 }
 
 const PassthroughProgramCache::ProgramCacheValue* PassthroughProgramCache::Get(
     const Key& key) {
-  ProgramMRUCache::iterator found = store_.Get(key);
+  ProgramLRUCache::iterator found = store_.Get(key);
   return found == store_.end() ? nullptr : &found->second;
 }
 

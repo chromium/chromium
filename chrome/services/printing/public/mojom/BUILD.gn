@@ -1,9 +1,10 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   sources = [
@@ -20,14 +21,16 @@ mojom("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 
+  if (is_chromeos) {
+    sources += [ "pdf_flattener.mojom" ]
+  }
+
   if (is_chromeos_ash) {
-    sources += [
-      "pdf_flattener.mojom",
-      "pdf_thumbnailer.mojom",
-    ]
+    sources += [ "pdf_thumbnailer.mojom" ]
     deps += [ "//skia/public/mojom" ]
   }
 
@@ -35,9 +38,14 @@ mojom("mojom") {
     sources += [ "pdf_to_emf_converter.mojom" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos) {
+  if (enable_oop_printing) {
     sources += [ "print_backend_service.mojom" ]
-    deps += [ "//printing/backend/mojom" ]
+    public_deps += [
+      "//printing/backend/mojom",
+      "//printing/mojom",
+      "//printing/mojom:printing_context",
+      "//ui/gfx/geometry/mojom",
+    ]
   }
 
   cpp_typemaps = [

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 
@@ -19,8 +20,7 @@ class TestStatsDictionary;
 class TestStatsReportDictionary
     : public base::RefCounted<TestStatsReportDictionary> {
  public:
-  explicit TestStatsReportDictionary(
-      std::unique_ptr<base::DictionaryValue> report);
+  explicit TestStatsReportDictionary(base::Value::Dict report);
 
   void ForEach(std::function<void(const TestStatsDictionary&)> iteration);
   std::vector<TestStatsDictionary> Filter(
@@ -34,13 +34,13 @@ class TestStatsReportDictionary
   friend class base::RefCounted<TestStatsReportDictionary>;
   ~TestStatsReportDictionary();
 
-  std::unique_ptr<base::DictionaryValue> report_;
+  base::Value::Dict report_;
 };
 
 class TestStatsDictionary {
  public:
   TestStatsDictionary(TestStatsReportDictionary* report,
-                     const base::DictionaryValue* stats);
+                      const base::Value::Dict* stats);
   TestStatsDictionary(const TestStatsDictionary& other);
   ~TestStatsDictionary();
 
@@ -67,7 +67,6 @@ class TestStatsDictionary {
  private:
   bool GetBoolean(const std::string& key, bool* out) const;
   bool GetNumber(const std::string& key, double* out) const;
-  bool GetString(const std::string& key, std::string* out) const;
   bool GetSequenceBoolean(
       const std::string& key, std::vector<bool>* out) const;
   bool GetSequenceNumber(
@@ -77,7 +76,7 @@ class TestStatsDictionary {
 
   // The reference keeps the report alive which indirectly owns |stats_|.
   scoped_refptr<TestStatsReportDictionary> report_;
-  const base::DictionaryValue* stats_;
+  raw_ptr<const base::Value::Dict> stats_;
 };
 
 }  // namespace content

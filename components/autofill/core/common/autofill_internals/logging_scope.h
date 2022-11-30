@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@ class LogBuffer;
   T(Context)                                                           \
   /* Discovery and parsing of forms. */                                \
   T(Parsing)                                                           \
+  /* Rationalization-induced changes to parsing. */                    \
+  T(Rationalization)                                                   \
   /* Reasons to stop parsing a form. */                                \
   T(AbortParsing)                                                      \
   /* Filling of forms. */                                              \
@@ -30,7 +32,13 @@ class LogBuffer;
   /* Metrics collection. */                                            \
   T(Metrics)                                                           \
   /* Import of address profiles from form submissions. */              \
-  T(AddressProfileFormImport)
+  T(AddressProfileFormImport)                                          \
+  /* If credit card upload is either enabled or disabled. */           \
+  T(CreditCardUploadStatus)                                            \
+  /* Whether or not card upload was offered to the user. */            \
+  T(CardUploadDecision)                                                \
+  /* The website modified a field */                                   \
+  T(WebsiteModifiedFieldValue)
 
 // Define a bunch of logging scopes: kContext, kParsing, ...
 #define AUTOFILL_TEMPLATE(NAME) k##NAME,

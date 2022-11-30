@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/usb/usb_device_manager_helper.h"
@@ -58,15 +58,16 @@ class AdbMessage {
              uint32_t arg0,
              uint32_t arg1,
              const std::string& body);
+
+  AdbMessage(const AdbMessage&) = delete;
+  AdbMessage& operator=(const AdbMessage&) = delete;
+
   ~AdbMessage();
 
   uint32_t command;
   uint32_t arg0;
   uint32_t arg1;
   std::string body;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdbMessage);
 };
 
 class AndroidUsbDevice;
@@ -82,6 +83,9 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
   AndroidUsbDevice(crypto::RSAPrivateKey* rsa_key,
                    const AndroidDeviceInfo& android_device_info,
                    mojo::Remote<device::mojom::UsbDevice> device);
+
+  AndroidUsbDevice(const AndroidUsbDevice&) = delete;
+  AndroidUsbDevice& operator=(const AndroidUsbDevice&) = delete;
 
   void InitOnCallerThread();
 
@@ -110,7 +114,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
 
   void ReadHeader();
   void ParseHeader(device::mojom::UsbTransferStatus status,
-                   const std::vector<uint8_t>& buffer);
+                   base::span<const uint8_t> buffer);
 
   void ReadBody(std::unique_ptr<AdbMessage> message,
                 uint32_t data_length,
@@ -119,7 +123,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
                  uint32_t data_length,
                  uint32_t data_check,
                  device::mojom::UsbTransferStatus status,
-                 const std::vector<uint8_t>& buffer);
+                 base::span<const uint8_t> buffer);
 
   void HandleIncoming(std::unique_ptr<AdbMessage> message);
 
@@ -154,8 +158,6 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
   PendingMessages pending_messages_;
 
   base::WeakPtrFactory<AndroidUsbDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidUsbDevice);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_USB_ANDROID_USB_DEVICE_H_

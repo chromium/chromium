@@ -1,13 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 
 namespace content {
 // Mock FileSystemAccessPermissionContext implementation.
@@ -33,30 +36,32 @@ class MockFileSystemAccessPermissionContext
                FileSystemAccessPermissionContext::UserAction user_action),
               (override));
 
-  void ConfirmSensitiveDirectoryAccess(
+  void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
-      GlobalFrameRoutingId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
+      UserAction user_action,
+      GlobalRenderFrameHostId frame_id,
+      base::OnceCallback<void(SensitiveEntryResult)> callback) override;
   MOCK_METHOD(void,
-              ConfirmSensitiveDirectoryAccess_,
+              ConfirmSensitiveEntryAccess_,
               (const url::Origin& origin,
                PathType path_type,
                const base::FilePath& path,
                HandleType handle_type,
-               GlobalFrameRoutingId frame_id,
-               base::OnceCallback<void(SensitiveDirectoryResult)>& callback));
+               UserAction user_action,
+               GlobalRenderFrameHostId frame_id,
+               base::OnceCallback<void(SensitiveEntryResult)>& callback));
 
   void PerformAfterWriteChecks(
       std::unique_ptr<FileSystemAccessWriteItem> item,
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
   MOCK_METHOD(void,
               PerformAfterWriteChecks_,
               (FileSystemAccessWriteItem * item,
-               GlobalFrameRoutingId frame_id,
+               GlobalRenderFrameHostId frame_id,
                base::OnceCallback<void(AfterWriteCheckResult)>& callback));
 
   MOCK_METHOD(bool,
@@ -82,7 +87,13 @@ class MockFileSystemAccessPermissionContext
 
   MOCK_METHOD(base::FilePath,
               GetWellKnownDirectoryPath,
-              (blink::mojom::WellKnownDirectory directory),
+              (blink::mojom::WellKnownDirectory directory,
+               const url::Origin& origin),
+              (override));
+
+  MOCK_METHOD(std::u16string,
+              GetPickerTitle,
+              (const blink::mojom::FilePickerOptionsPtr& options),
               (override));
 };
 

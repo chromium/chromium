@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,7 +127,7 @@ bool ParseWavData(const base::StringPiece wav_data,
   DCHECK(params_out);
 
   // The header should look like: |R|I|F|F|1|2|3|4|W|A|V|E|
-  base::BigEndianReader reader(wav_data.data(), wav_data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(wav_data);
 
   // Read the chunk ID and compare to "RIFF".
   base::StringPiece chunk_id;
@@ -304,8 +304,7 @@ bool WavAudioHandler::CopyTo(AudioBus* bus,
 }
 
 base::TimeDelta WavAudioHandler::GetDuration() const {
-  return base::TimeDelta::FromSecondsD(total_frames_ /
-                                       static_cast<double>(sample_rate_));
+  return base::Seconds(total_frames_ / static_cast<double>(sample_rate_));
 }
 
 }  // namespace media

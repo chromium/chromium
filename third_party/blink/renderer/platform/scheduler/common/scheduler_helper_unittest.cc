@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,6 +62,8 @@ class SchedulerHelperTest : public testing::Test {
     default_task_runner_ = scheduler_helper_->DefaultTaskRunner();
   }
 
+  SchedulerHelperTest(const SchedulerHelperTest&) = delete;
+  SchedulerHelperTest& operator=(const SchedulerHelperTest&) = delete;
   ~SchedulerHelperTest() override = default;
 
   void TearDown() override {
@@ -87,8 +88,6 @@ class SchedulerHelperTest : public testing::Test {
       sequence_manager_;
   std::unique_ptr<NonMainThreadSchedulerHelper> scheduler_helper_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerHelperTest);
 };
 
 TEST_F(SchedulerHelperTest, TestPostDefaultTask) {
@@ -131,8 +130,10 @@ TEST_F(SchedulerHelperTest, GetNumberOfPendingTasks) {
       FROM_HERE, base::BindOnce(&AppendToVectorTestTask, &run_order, "D1"));
   scheduler_helper_->DefaultTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AppendToVectorTestTask, &run_order, "D2"));
-  scheduler_helper_->ControlNonMainThreadTaskQueue()->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&AppendToVectorTestTask, &run_order, "C1"));
+  scheduler_helper_->ControlNonMainThreadTaskQueue()
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&AppendToVectorTestTask, &run_order, "C1"));
   EXPECT_EQ(3U, sequence_manager_->PendingTasksCount());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0U, sequence_manager_->PendingTasksCount());
@@ -166,8 +167,9 @@ TEST_F(SchedulerHelperTest, ObserversNotNotifiedFor_ControlTaskQueue) {
   MockTaskObserver observer;
   scheduler_helper_->AddTaskObserver(&observer);
 
-  scheduler_helper_->ControlNonMainThreadTaskQueue()->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&NopTask));
+  scheduler_helper_->ControlNonMainThreadTaskQueue()
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE, base::BindOnce(&NopTask));
 
   EXPECT_CALL(observer, WillProcessTask(_, _)).Times(0);
   EXPECT_CALL(observer, DidProcessTask(_)).Times(0);

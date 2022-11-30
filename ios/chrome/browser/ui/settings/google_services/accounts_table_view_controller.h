@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,11 @@ class Browser;
 @interface AccountsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// |browser| must not be nil.
-// If |closeSettingsOnAddAccount| is YES, then this account table view
+// ApplicationCommands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
+// `browser` must not be nil.
+// If `closeSettingsOnAddAccount` is YES, then this account table view
 // controller will close the settings view when an account is added.
 - (instancetype)initWithBrowser:(Browser*)browser
       closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount

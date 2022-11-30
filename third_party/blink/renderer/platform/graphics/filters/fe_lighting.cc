@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_lighting.h"
 
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/distant_light_source.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/filters/point_light_source.h"
@@ -50,59 +51,86 @@ FELighting::FELighting(Filter* filter,
       surface_scale_(surface_scale),
       diffuse_constant_(std::max(diffuse_constant, 0.0f)),
       specular_constant_(std::max(specular_constant, 0.0f)),
-      specular_exponent_(clampTo(specular_exponent, 1.0f, 128.0f)) {}
+      specular_exponent_(ClampTo(specular_exponent, 1.0f, 128.0f)) {}
+
+Color FELighting::LightingColor() const {
+  return lighting_color_;
+}
+
+bool FELighting::SetLightingColor(const Color& lighting_color) {
+  if (lighting_color_ == lighting_color)
+    return false;
+  lighting_color_ = lighting_color;
+  return true;
+}
+
+float FELighting::SurfaceScale() const {
+  return surface_scale_;
+}
+
+bool FELighting::SetSurfaceScale(float surface_scale) {
+  if (surface_scale_ == surface_scale)
+    return false;
+  surface_scale_ = surface_scale;
+  return true;
+}
 
 sk_sp<PaintFilter> FELighting::CreateImageFilter() {
   if (!light_source_)
     return CreateTransparentBlack();
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
-  const PaintFilter::CropRect* rect = base::OptionalOrNullptr(crop_rect);
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  const PaintFilter::CropRect* rect = base::OptionalToPtr(crop_rect);
   Color light_color = AdaptColorToOperatingInterpolationSpace(lighting_color_);
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
   switch (light_source_->GetType()) {
-    case LS_DISTANT: {
+    case kLsDistant: {
       DistantLightSource* distant_light_source =
           static_cast<DistantLightSource*>(light_source_.get());
-      float azimuth_rad = deg2rad(distant_light_source->Azimuth());
-      float elevation_rad = deg2rad(distant_light_source->Elevation());
+      float azimuth_rad = Deg2rad(distant_light_source->Azimuth());
+      float elevation_rad = Deg2rad(distant_light_source->Elevation());
       const SkPoint3 direction = SkPoint3::Make(
           cosf(azimuth_rad) * cosf(elevation_rad),
           sinf(azimuth_rad) * cosf(elevation_rad), sinf(elevation_rad));
+      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
       return sk_make_sp<LightingDistantPaintFilter>(
-          GetLightingType(), direction, light_color.Rgb(), surface_scale_,
-          GetFilterConstant(), specular_exponent_, std::move(input), rect);
+          GetLightingType(), direction, SkColor4f::FromColor(light_color.Rgb()),
+          surface_scale_, GetFilterConstant(), specular_exponent_,
+          std::move(input), rect);
     }
-    case LS_POINT: {
+    case kLsPoint: {
       PointLightSource* point_light_source =
           static_cast<PointLightSource*>(light_source_.get());
-      const FloatPoint3D position = point_light_source->GetPosition();
+      const gfx::Point3F position = point_light_source->GetPosition();
       const SkPoint3 sk_position =
-          SkPoint3::Make(position.X(), position.Y(), position.Z());
+          SkPoint3::Make(position.x(), position.y(), position.z());
+      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
       return sk_make_sp<LightingPointPaintFilter>(
-          GetLightingType(), sk_position, light_color.Rgb(), surface_scale_,
+          GetLightingType(), sk_position,
+          SkColor4f::FromColor(light_color.Rgb()), surface_scale_,
           GetFilterConstant(), specular_exponent_, std::move(input), rect);
     }
-    case LS_SPOT: {
+    case kLsSpot: {
       SpotLightSource* spot_light_source =
           static_cast<SpotLightSource*>(light_source_.get());
       const SkPoint3 location =
-          SkPoint3::Make(spot_light_source->GetPosition().X(),
-                         spot_light_source->GetPosition().Y(),
-                         spot_light_source->GetPosition().Z());
-      const SkPoint3 target =
-          SkPoint3::Make(spot_light_source->Direction().X(),
-                         spot_light_source->Direction().Y(),
-                         spot_light_source->Direction().Z());
+          SkPoint3::Make(spot_light_source->GetPosition().x(),
+                         spot_light_source->GetPosition().y(),
+                         spot_light_source->GetPosition().z());
+      const SkPoint3 target = SkPoint3::Make(spot_light_source->PointsAt().x(),
+                                             spot_light_source->PointsAt().y(),
+                                             spot_light_source->PointsAt().z());
       float specular_exponent = spot_light_source->SpecularExponent();
       float limiting_cone_angle = spot_light_source->LimitingConeAngle();
       if (!limiting_cone_angle || limiting_cone_angle > 90 ||
           limiting_cone_angle < -90)
         limiting_cone_angle = 90;
+      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
       return sk_make_sp<LightingSpotPaintFilter>(
           GetLightingType(), location, target, specular_exponent,
-          limiting_cone_angle, light_color.Rgb(), surface_scale_,
-          GetFilterConstant(), specular_exponent_, std::move(input), rect);
+          limiting_cone_angle, SkColor4f::FromColor(light_color.Rgb()),
+          surface_scale_, GetFilterConstant(), specular_exponent_,
+          std::move(input), rect);
     }
     default:
       NOTREACHED();

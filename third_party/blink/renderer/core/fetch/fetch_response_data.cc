@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "storage/common/quota/padding_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 using Type = network::mojom::FetchResponseType;
 using ResponseSource = network::mojom::FetchResponseSource;
@@ -26,7 +26,7 @@ namespace {
 
 Vector<String> HeaderSetToVector(const HTTPHeaderSet& headers) {
   Vector<String> result;
-  result.ReserveInitialCapacity(SafeCast<wtf_size_t>(headers.size()));
+  result.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(headers.size()));
   // HTTPHeaderSet stores headers using Latin1 encoding.
   for (const auto& header : headers)
     result.push_back(String(header.data(), header.size()));
@@ -137,7 +137,7 @@ FetchResponseData* FetchResponseData::CreateOpaqueRedirectFilteredResponse()
 const KURL* FetchResponseData::Url() const {
   // "A response has an associated url. It is a pointer to the last response URL
   // in response’s url list and null if response’s url list is the empty list."
-  if (url_list_.IsEmpty())
+  if (url_list_.empty())
     return nullptr;
   return &url_list_.back();
 }
@@ -174,6 +174,11 @@ String FetchResponseData::InternalMIMEType() const {
   return mime_type_;
 }
 
+bool FetchResponseData::RequestIncludeCredentials() const {
+  return internal_response_ ? internal_response_->RequestIncludeCredentials()
+                            : request_include_credentials_;
+}
+
 void FetchResponseData::SetURLList(const Vector<KURL>& url_list) {
   url_list_ = url_list;
 }
@@ -208,6 +213,7 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->alpn_negotiated_protocol_ = alpn_negotiated_protocol_;
   new_response->was_fetched_via_spdy_ = was_fetched_via_spdy_;
   new_response->has_range_requested_ = has_range_requested_;
+  new_response->request_include_credentials_ = request_include_credentials_;
   if (auth_challenge_info_) {
     new_response->auth_challenge_info_ =
         std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info_);
@@ -286,6 +292,7 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
   response->alpn_negotiated_protocol = alpn_negotiated_protocol_;
   response->was_fetched_via_spdy = was_fetched_via_spdy_;
   response->has_range_requested = has_range_requested_;
+  response->request_include_credentials = request_include_credentials_;
   for (const auto& header : HeaderList()->List())
     response->headers.insert(header.first, header.second);
   response->parsed_headers = ParseHeaders(
@@ -318,7 +325,7 @@ void FetchResponseData::InitFromResourceResponse(
   // Corresponds to https://fetch.spec.whatwg.org/#main-fetch step:
   // "If |internalResponse|’s URL list is empty, then set it to a clone of
   // |request|’s URL list."
-  if (response.UrlListViaServiceWorker().IsEmpty()) {
+  if (response.UrlListViaServiceWorker().empty()) {
     // Note: |UrlListViaServiceWorker()| is empty, unless the response came from
     // a service worker, in which case it will only be empty if it was created
     // through new Response().
@@ -331,6 +338,7 @@ void FetchResponseData::InitFromResourceResponse(
   SetMimeType(response.MimeType());
   SetRequestMethod(request_method);
   SetResponseTime(response.ResponseTime());
+  SetCacheStorageCacheName(response.CacheStorageCacheName());
 
   if (response.WasCached()) {
     SetResponseSource(network::mojom::FetchResponseSource::kHttpCache);
@@ -367,6 +375,7 @@ void FetchResponseData::InitFromResourceResponse(
   }
 
   SetAuthChallengeInfo(response.AuthChallengeInfo());
+  SetRequestIncludeCredentials(response.RequestIncludeCredentials());
 }
 
 FetchResponseData::FetchResponseData(Type type,
@@ -383,14 +392,21 @@ FetchResponseData::FetchResponseData(Type type,
       connection_info_(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN),
       alpn_negotiated_protocol_("unknown"),
       was_fetched_via_spdy_(false),
-      has_range_requested_(false) {}
+      has_range_requested_(false),
+      request_include_credentials_(true) {}
 
 void FetchResponseData::SetAuthChallengeInfo(
-    const base::Optional<net::AuthChallengeInfo>& auth_challenge_info) {
+    const absl::optional<net::AuthChallengeInfo>& auth_challenge_info) {
   if (auth_challenge_info) {
     auth_challenge_info_ =
         std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info);
   }
+}
+
+void FetchResponseData::SetRequestIncludeCredentials(
+    bool request_include_credentials) {
+  DCHECK(!internal_response_);
+  request_include_credentials_ = request_include_credentials;
 }
 
 void FetchResponseData::ReplaceBodyStreamBuffer(BodyStreamBuffer* buffer) {

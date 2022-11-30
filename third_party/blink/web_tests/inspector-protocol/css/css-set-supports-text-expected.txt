@@ -1,0 +1,49 @@
+Tests CSS.setSupportsText method.
+==== Initial style sheet text ====
+@supports (display: grid) {
+  div {
+    display: grid;
+  }
+}
+
+
+Running test: testSimpleEdit
+==== Style sheet text ====
+@supports (display: flex) {
+  div {
+    display: grid;
+  }
+}
+
+
+Running test: testInvalidParameters
+Expected protocol error: Invalid parameters (Failed to deserialize params.range.startLine - BINDINGS: int32 value expected <somewhere>)
+
+Running test: testInvalidText
+Expected protocol error: SyntaxError Selector or supports rule text is not valid.
+
+Running test: testEditSequentially
+==== Style sheet text ====
+@supports (display: flex) {
+  div {
+    display: grid;
+  }
+}
+
+==== Style sheet text ====
+@supports (display: none) {
+  div {
+    display: grid;
+  }
+}
+
+
+Running test: testAfterSequentially
+==== Style sheet text ====
+@supports (display: inline) {
+  div {
+    display: grid;
+  }
+}
+
+

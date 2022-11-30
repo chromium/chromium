@@ -1,12 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/shell/browser/shell_platform_data_aura.h"
 
-#include "base/macros.h"
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/layout_manager.h"
@@ -16,18 +19,17 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/default_activation_client.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
 #if defined(USE_OZONE)
 #include "ui/aura/screen_ozone.h"
-#include "ui/base/ui_base_features.h"
 #endif
 
 namespace content {
@@ -38,6 +40,9 @@ class FillLayout : public aura::LayoutManager {
  public:
   explicit FillLayout(aura::Window* root)
       : root_(root), has_bounds_(!root->bounds().IsEmpty()) {}
+
+  FillLayout(const FillLayout&) = delete;
+  FillLayout& operator=(const FillLayout&) = delete;
 
   ~FillLayout() override {}
 
@@ -69,10 +74,8 @@ class FillLayout : public aura::LayoutManager {
     SetChildBoundsDirect(child, requested_bounds);
   }
 
-  aura::Window* root_;
+  raw_ptr<aura::Window> root_;
   bool has_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FillLayout);
 };
 
 }
@@ -82,14 +85,13 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
 
 #if defined(USE_OZONE)
   // Setup global display::Screen singleton.
-  if (features::IsUsingOzonePlatform() && !display::Screen::GetScreen())
-    screen_ = std::make_unique<aura::ScreenOzone>();
+  screen_ = std::make_unique<aura::ScopedScreenOzone>();
 #endif  // defined(USE_OZONE)
 
   ui::PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(initial_size);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // When using Scenic Ozone platform we need to supply a view_token to the
   // window. This is not necessary when using the headless ozone platform.
   if (ui::OzonePlatform::GetInstance()
@@ -102,7 +104,8 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
   host_ = aura::WindowTreeHost::Create(std::move(properties));
   host_->InitHost();
   host_->window()->Show();
-  host_->window()->SetLayoutManager(new FillLayout(host_->window()));
+  host_->window()->SetLayoutManager(
+      std::make_unique<FillLayout>(host_->window()));
 
   focus_client_ =
       std::make_unique<aura::test::TestFocusClient>(host_->window());
@@ -112,9 +115,17 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
       std::make_unique<aura::client::DefaultCaptureClient>(host_->window());
   window_parenting_client_ =
       std::make_unique<aura::test::TestWindowParentingClient>(host_->window());
+
+  // TODO(https://crbug.com/1336055): this is needed for
+  // mouse_cursor_overlay_controller_browsertest.cc on cast_shell_linux as
+  // currently, when is_castos = true, the views toolkit isn't used.
+  cursor_shape_client_ = std::make_unique<wm::CursorLoader>();
+  aura::client::SetCursorShapeClient(cursor_shape_client_.get());
 }
 
-ShellPlatformDataAura::~ShellPlatformDataAura() = default;
+ShellPlatformDataAura::~ShellPlatformDataAura() {
+  aura::client::SetCursorShapeClient(nullptr);
+}
 
 void ShellPlatformDataAura::ShowWindow() {
   host_->Show();

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -67,6 +65,9 @@ class FileDestructionWatcher {
       : watched_file_path_(watched_file_path) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
+
+  FileDestructionWatcher(const FileDestructionWatcher&) = delete;
+  FileDestructionWatcher& operator=(const FileDestructionWatcher&) = delete;
 
   void WaitForDestruction() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -123,8 +124,6 @@ class FileDestructionWatcher {
   // Created and destroyed off of the UI thread, on the sequence used to watch
   // for changes.
   std::unique_ptr<base::FilePathWatcher> watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDestructionWatcher);
 };
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -23,13 +21,11 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-
-namespace content {
-class BackgroundTracingManager;
-}  // namespace content
 
 namespace performance_manager {
 
@@ -59,6 +55,9 @@ class ProcessNodeImpl
   ProcessNodeImpl(content::ProcessType process_type,
                   RenderProcessHostProxy render_process_proxy);
 
+  ProcessNodeImpl(const ProcessNodeImpl&) = delete;
+  ProcessNodeImpl& operator=(const ProcessNodeImpl&) = delete;
+
   ~ProcessNodeImpl() override;
 
   void Bind(mojo::PendingReceiver<mojom::ProcessCoordinationUnit> receiver);
@@ -82,7 +81,8 @@ class ProcessNodeImpl
   void FireBackgroundTracingTrigger(const std::string& trigger_name) override;
 
   void SetProcessExitStatus(int32_t exit_status);
-  void SetProcess(base::Process process, base::Time launch_time);
+  void SetProcessMetricsName(const std::string& metrics_name);
+  void SetProcess(base::Process process, base::TimeTicks launch_time);
 
   // Private implementation properties.
   void set_private_footprint_kb(uint64_t private_footprint_kb) {
@@ -104,6 +104,7 @@ class ProcessNodeImpl
   }
 
   const base::flat_set<FrameNodeImpl*>& frame_nodes() const;
+  const base::flat_set<WorkerNodeImpl*>& worker_nodes() const;
 
   // Returns the render process id (equivalent to RenderProcessHost::GetID()),
   // or ChildProcessHost::kInvalidUniqueID if this is not a renderer.
@@ -128,13 +129,17 @@ class ProcessNodeImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return process_.value();
   }
-  base::Time launch_time() const {
+  base::TimeTicks launch_time() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return launch_time_;
   }
-  base::Optional<int32_t> exit_status() const {
+  absl::optional<int32_t> exit_status() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return exit_status_;
+  }
+  const std::string& metrics_name() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return metrics_name_;
   }
 
   bool main_thread_task_load_is_low() const {
@@ -151,6 +156,11 @@ class ProcessNodeImpl
     return priority_.value();
   }
 
+  ContentTypes hosted_content_types() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return hosted_content_types_;
+  }
+
   // Add |frame_node| to this process.
   void AddFrame(FrameNodeImpl* frame_node);
   // Removes |frame_node| from the set of frames hosted by this process. Invoked
@@ -165,10 +175,13 @@ class ProcessNodeImpl
 
   void set_priority(base::TaskPriority priority);
 
+  // Adds a new type of hosted content to the |hosted_content_types| bit field.
+  void add_hosted_content_type(ContentType content_type);
+
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
   static void FireBackgroundTracingTriggerOnUIForTesting(
       const std::string& trigger_name,
-      content::BackgroundTracingManager* manager);
+      content::BackgroundTracingManager& manager);
 
   base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();
@@ -178,7 +191,7 @@ class ProcessNodeImpl
  protected:
   void SetProcessImpl(base::Process process,
                       base::ProcessId process_id,
-                      base::Time launch_time);
+                      base::TimeTicks launch_time);
 
  private:
   friend class FrozenFrameAggregatorAccess;
@@ -190,8 +203,9 @@ class ProcessNodeImpl
   content::ProcessType GetProcessType() const override;
   base::ProcessId GetProcessId() const override;
   const base::Process& GetProcess() const override;
-  base::Time GetLaunchTime() const override;
-  base::Optional<int32_t> GetExitStatus() const override;
+  base::TimeTicks GetLaunchTime() const override;
+  absl::optional<int32_t> GetExitStatus() const override;
+  const std::string& GetMetricsName() const override;
   bool VisitFrameNodes(const FrameNodeVisitor& visitor) const override;
   base::flat_set<const FrameNode*> GetFrameNodes() const override;
   base::flat_set<const WorkerNode*> GetWorkerNodes() const override;
@@ -201,11 +215,13 @@ class ProcessNodeImpl
   RenderProcessHostId GetRenderProcessHostId() const override;
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
   base::TaskPriority GetPriority() const override;
+  ContentTypes GetHostedContentTypes() const override;
 
   void OnAllFramesInProcessFrozen();
 
   // NodeBase:
   void OnBeforeLeavingGraph() override;
+  void RemoveNodeAttachedData() override;
 
   mojo::Receiver<mojom::ProcessCoordinationUnit> receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
@@ -220,8 +236,9 @@ class ProcessNodeImpl
       &ProcessNodeObserver::OnProcessLifetimeChange>
       process_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::Time launch_time_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::Optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeTicks launch_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::string metrics_name_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const content::ProcessType process_type_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -245,6 +262,10 @@ class ProcessNodeImpl
       priority_ GUARDED_BY_CONTEXT(sequence_checker_){
           base::TaskPriority::LOWEST};
 
+  // A bit field that indicates which type of content this process has hosted,
+  // either currently or in the past.
+  ContentTypes hosted_content_types_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::flat_set<FrameNodeImpl*> frame_nodes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -262,8 +283,6 @@ class ProcessNodeImpl
   base::WeakPtr<ProcessNodeImpl> weak_this_;
   base::WeakPtrFactory<ProcessNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessNodeImpl);
 };
 
 }  // namespace performance_manager

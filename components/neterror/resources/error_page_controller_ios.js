@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@ window.errorPageController = {
   downloadButtonClick: function() {},
 
   // Execute a click on the reload button.
-  reloadButtonClick: function() {},
+  reloadButtonClick: function(url) {
+    window.location = url;
+  },
 
   // Execute a "Details" button click.
   detailsButtonClick: function() {},
@@ -30,14 +32,14 @@ window.errorPageController = {
   updateEasterEggHighScore: function(highScore) {
     __gCrWeb.message.invokeOnHost({
       'command': 'errorPageController.updateEasterEggHighScore',
-      'highScore': highScore.toString()
+      'highScore': highScore.toString(),
     });
   },
 
   resetEasterEggHighScore: function() {
     __gCrWeb.message.invokeOnHost(
         {'command': 'errorPageController.resetEasterEggHighScore'});
-  }
+  },
 };
 
 // Create a __gCrWeb binding of initializeEasterEggHighScore so it can be

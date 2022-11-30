@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,6 @@
 
 #include "base/strings/string_util.h"
 #include "ui/gfx/image/image.h"
-
-std::unique_ptr<OmniboxNavigationObserver>
-OmniboxClient::CreateOmniboxNavigationObserver(
-    const std::u16string& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternate_nav_match) {
-  return nullptr;
-}
 
 bool OmniboxClient::CurrentPageExists() const {
   return true;
@@ -69,6 +61,10 @@ int OmniboxClient::GetHttpsPortForTesting() const {
   return 0;
 }
 
+bool OmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
+  return false;
+}
+
 gfx::Image OmniboxClient::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   return gfx::Image();
@@ -83,11 +79,10 @@ gfx::Image OmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   return gfx::Image();
 }
 
-bool OmniboxClient::ProcessExtensionKeyword(
-    const TemplateURL* template_url,
-    const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    OmniboxNavigationObserver* observer) {
+bool OmniboxClient::ProcessExtensionKeyword(const std::u16string& text,
+                                            const TemplateURL* template_url,
+                                            const AutocompleteMatch& match,
+                                            WindowOpenDisposition disposition) {
   return false;
 }
 

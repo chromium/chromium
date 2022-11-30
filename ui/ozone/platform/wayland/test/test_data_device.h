@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
-#include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
-struct wl_client;
 struct wl_resource;
 
 namespace wl {
@@ -22,26 +21,31 @@ extern const struct wl_data_device_interface kTestDataDeviceImpl;
 
 class TestDataOffer;
 class TestDataSource;
+class TestDataDeviceManager;
 
-class TestDataDevice : public ServerObject {
+class TestDataDevice : public TestSelectionDevice {
  public:
-  struct Delegate {
+  struct DragDelegate {
     virtual void StartDrag(TestDataSource* source,
                            MockSurface* origin,
                            uint32_t serial) = 0;
   };
 
-  TestDataDevice(wl_resource* resource, wl_client* client);
+  TestDataDevice(wl_resource* resource, TestDataDeviceManager* manager);
+
+  TestDataDevice(const TestDataDevice&) = delete;
+  TestDataDevice& operator=(const TestDataDevice&) = delete;
+
   ~TestDataDevice() override;
 
-  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
+  void set_drag_delegate(DragDelegate* delegate) { drag_delegate_ = delegate; }
 
+  TestDataOffer* CreateAndSendDataOffer();
   void SetSelection(TestDataSource* data_source, uint32_t serial);
   void StartDrag(TestDataSource* data_source,
                  MockSurface* origin,
                  uint32_t serial);
 
-  TestDataOffer* OnDataOffer();
   void OnEnter(uint32_t serial,
                wl_resource* surface,
                wl_fixed_t x,
@@ -50,14 +54,11 @@ class TestDataDevice : public ServerObject {
   void OnLeave();
   void OnMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
   void OnDrop();
-  void OnSelection(TestDataOffer* data_offer);
 
  private:
-  TestDataOffer* data_offer_;
-  wl_client* client_ = nullptr;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(TestDataDevice);
+  const raw_ptr<TestDataDeviceManager> manager_;
 };
 
 }  // namespace wl

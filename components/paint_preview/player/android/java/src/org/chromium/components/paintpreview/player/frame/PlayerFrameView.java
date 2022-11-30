@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.paintpreview.player.frame;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -37,6 +38,7 @@ public class PlayerFrameView extends FrameLayout {
     private List<View> mSubFrameViews;
     private List<Rect> mSubFrameRects;
     private Matrix mScaleMatrix;
+    private Matrix mOffset = new Matrix();
     protected WebContentsAccessibility mWebContentsAccessibility;
 
     /**
@@ -87,6 +89,7 @@ public class PlayerFrameView extends FrameLayout {
 
     /**
      * Updates the sub-frame views that this {@link PlayerFrameView} should display.
+     *
      * @param subFrameViews List of all sub-frame views.
      */
     void updateSubFrameViews(List<View> subFrameViews) {
@@ -95,10 +98,15 @@ public class PlayerFrameView extends FrameLayout {
 
     /**
      * Updates clip rects for sub-frames that this {@link PlayerFrameView} should display.
+     *
      * @param subFrameRects List of all sub-frames clip rects.
      */
     void updateSubFrameRects(List<Rect> subFrameRects) {
         mSubFrameRects = subFrameRects;
+    }
+
+    void updateOffset(int left, int top) {
+        mOffset.setTranslate(left, top);
     }
 
     void updateViewPort(int left, int top, int right, int bottom) {
@@ -106,7 +114,7 @@ public class PlayerFrameView extends FrameLayout {
         layoutSubFrames();
     }
 
-    void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
+    void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
         mBitmapPainter.updateBitmapMatrix(bitmapMatrix);
     }
 
@@ -125,6 +133,7 @@ public class PlayerFrameView extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
+        canvas.concat(mOffset);
         canvas.concat(mScaleMatrix);
         mBitmapPainter.onDraw(canvas);
         canvas.restore();
@@ -134,6 +143,15 @@ public class PlayerFrameView extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
         return mGestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        if (mWebContentsAccessibility != null
+                && mWebContentsAccessibility.isTouchExplorationEnabled()) {
+            return mWebContentsAccessibility.onHoverEventNoRenderer(event);
+        }
+        return super.onHoverEvent(event);
     }
 
     private void layoutSubFrames() {
@@ -177,6 +195,10 @@ public class PlayerFrameView extends FrameLayout {
         return (provider != null) ? provider : super.getAccessibilityNodeProvider();
     }
 
+    void destroy() {
+        mBitmapPainter.destroy();
+    }
+
     /**
      * Override onProvideVirtualStructure on API level 23.
      */
@@ -187,6 +209,7 @@ public class PlayerFrameView extends FrameLayout {
                 @Nullable Runnable firstPaintListener) {
             super(context, canDetectZoom, playerFrameViewDelegate, gestureDetectorDelegate,
                     firstPaintListener);
+            setWillNotDraw(false);
         }
 
         @Override

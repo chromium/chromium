@@ -26,9 +26,10 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -52,7 +53,7 @@ const struct {
     {3, CAST_UNIT(kUserUnits)},
 };
 static_assert(static_cast<size_t>(SVGLength::Initial::kNumValues) ==
-                  base::size(g_initial_lengths_table),
+                  std::size(g_initial_lengths_table),
               "the enumeration is synchronized with the value table");
 static_assert(static_cast<size_t>(SVGLength::Initial::kNumValues) <=
                   1u << SVGLength::kInitialValueBits,
@@ -63,7 +64,7 @@ static_assert(static_cast<size_t>(SVGLength::Initial::kNumValues) <=
 const CSSPrimitiveValue& CreateInitialCSSValue(
     SVGLength::Initial initial_value) {
   size_t initial_value_index = static_cast<size_t>(initial_value);
-  DCHECK_LT(initial_value_index, base::size(g_initial_lengths_table));
+  DCHECK_LT(initial_value_index, std::size(g_initial_lengths_table));
   const auto& entry = g_initial_lengths_table[initial_value_index];
   return *CSSNumericLiteralValue::Create(
       entry.value, static_cast<CSSPrimitiveValue::UnitType>(entry.unit));
@@ -105,7 +106,7 @@ bool SVGLength::operator==(const SVGLength& other) const {
 }
 
 float SVGLength::Value(const SVGLengthContext& context) const {
-  if (IsCalculated())
+  if (IsCalculated() || HasContainerRelativeUnits())
     return context.ResolveValue(AsCSSPrimitiveValue(), UnitMode());
 
   return context.ConvertValueToUserUnits(value_->GetFloatValue(), UnitMode(),
@@ -119,7 +120,7 @@ void SVGLength::SetValueAsNumber(float value) {
 
 void SVGLength::SetValue(float value, const SVGLengthContext& context) {
   // |value| is in user units.
-  if (IsCalculated()) {
+  if (IsCalculated() || HasContainerRelativeUnits()) {
     value_ = CSSNumericLiteralValue::Create(
         value, CSSPrimitiveValue::UnitType::kUserUnits);
     return;
@@ -257,7 +258,7 @@ SVGLengthMode SVGLength::LengthModeForAnimatedLengthAttribute(
   typedef HashMap<QualifiedName, SVGLengthMode> LengthModeForLengthAttributeMap;
   DEFINE_STATIC_LOCAL(LengthModeForLengthAttributeMap, length_mode_map, ());
 
-  if (length_mode_map.IsEmpty()) {
+  if (length_mode_map.empty()) {
     length_mode_map.Set(svg_names::kXAttr, SVGLengthMode::kWidth);
     length_mode_map.Set(svg_names::kYAttr, SVGLengthMode::kHeight);
     length_mode_map.Set(svg_names::kCxAttr, SVGLengthMode::kWidth);
@@ -331,17 +332,13 @@ void SVGLength::CalculateAnimatedValue(
 
   // TODO(shanmuga.m): Construct a calc() expression if the units fall in
   // different categories.
+  const SVGLength* unit_determining_length =
+      (percentage < 0.5) ? from_length : to_length;
   CSSPrimitiveValue::UnitType result_unit =
-      CSSPrimitiveValue::UnitType::kUserUnits;
-  if (percentage < 0.5) {
-    if (!from_length->IsCalculated()) {
-      result_unit = from_length->NumericLiteralType();
-    }
-  } else {
-    if (!to_length->IsCalculated()) {
-      result_unit = to_length->NumericLiteralType();
-    }
-  }
+      (!unit_determining_length->IsCalculated() &&
+       !unit_determining_length->HasContainerRelativeUnits())
+          ? unit_determining_length->NumericLiteralType()
+          : CSSPrimitiveValue::UnitType::kUserUnits;
 
   if (parameters.is_additive)
     result += Value(length_context);

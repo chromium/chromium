@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <dwmapi.h>
 
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -55,10 +56,9 @@ bool VSyncProviderWin::GetVSyncParametersIfAvailable(
     if (timing_info.rateRefresh.uiDenominator > 0 &&
         timing_info.rateRefresh.uiNumerator > 0) {
       // Swap the numerator/denominator to convert frequency to period.
-      rate_interval = base::TimeDelta::FromMicroseconds(
-          timing_info.rateRefresh.uiDenominator *
-          base::Time::kMicrosecondsPerSecond /
-          timing_info.rateRefresh.uiNumerator);
+      rate_interval = base::Microseconds(timing_info.rateRefresh.uiDenominator *
+                                         base::Time::kMicrosecondsPerSecond /
+                                         timing_info.rateRefresh.uiNumerator);
     }
 
     if (base::TimeTicks::IsHighResolution()) {
@@ -70,7 +70,7 @@ bool VSyncProviderWin::GetVSyncParametersIfAvailable(
           static_cast<LONGLONG>(timing_info.qpcRefreshPeriod));
       // Check for interval values that are impossibly low. A 29 microsecond
       // interval was seen (from a qpcRefreshPeriod of 60).
-      if (interval < base::TimeDelta::FromMilliseconds(1)) {
+      if (interval < base::Milliseconds(1)) {
         interval = rate_interval;
       }
       // Check for the qpcRefreshPeriod interval being improbably small
@@ -98,15 +98,14 @@ bool VSyncProviderWin::GetVSyncParametersIfAvailable(
     HMONITOR monitor = MonitorFromWindow(window_, MONITOR_DEFAULTTONEAREST);
     MONITORINFOEX monitor_info;
     monitor_info.cbSize = sizeof(MONITORINFOEX);
-    BOOL result = GetMonitorInfo(monitor, &monitor_info);
-    if (result) {
+    if (GetMonitorInfo(monitor, &monitor_info)) {
       DEVMODE display_info;
       display_info.dmSize = sizeof(DEVMODE);
       display_info.dmDriverExtra = 0;
-      result = EnumDisplaySettings(monitor_info.szDevice, ENUM_CURRENT_SETTINGS,
-                                   &display_info);
-      if (result && display_info.dmDisplayFrequency > 1) {
-        interval = base::TimeDelta::FromMicroseconds(
+      if (EnumDisplaySettings(monitor_info.szDevice, ENUM_CURRENT_SETTINGS,
+                              &display_info) &&
+          display_info.dmDisplayFrequency > 1) {
+        interval = base::Microseconds(
             (1.0 / static_cast<double>(display_info.dmDisplayFrequency)) *
             base::Time::kMicrosecondsPerSecond);
       }

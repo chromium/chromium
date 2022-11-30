@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,11 @@ using CertPolicyTest = PlatformTest;
 
 TEST_F(CertPolicyTest, Policy) {
   scoped_refptr<net::X509Certificate> google_cert(
-      net::X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(google_der), sizeof(google_der)));
+      net::X509Certificate::CreateFromBytes(google_der));
   ASSERT_TRUE(google_cert);
 
   scoped_refptr<net::X509Certificate> webkit_cert(
-      net::X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(webkit_der), sizeof(webkit_der)));
+      net::X509Certificate::CreateFromBytes(webkit_der));
   ASSERT_TRUE(webkit_cert);
 
   CertPolicy policy;

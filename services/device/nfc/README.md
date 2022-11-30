@@ -13,12 +13,16 @@ interface defined in the `services/device/public/mojom/nfc.mojom` file and
 implemented by the `services/device/nfc` module.
 
 NDEFReader is the primary interface of Web NFC. The NDEFReader interface has
-both, write and scan methods:
+write, makeReadOnly, and scan methods:
 
 - The write method is for writing data to an NFC tag. This method returns a
   promise, which will be resolved when the message is successfully written to an
   NFC tag, or rejected either when errors happened or process is aborted by
   setting the AbortSignal in the NDEFWriteOptions.
+- The makeReadOnly method is for making an NFC tag permanently read-only. This
+  method returns a promise, which will be resolved when an NFC tag has been made
+  read-only, or rejected either when errors happened or process is aborted by
+  setting the AbortSignal in the NDEFMakeReadOnlyOptions.
 - The scan method tries to read data from any NFC tag that comes within
   proximity. Once there is some data found, an NDEFReadingEvent carrying the
   data is dispatched to the NDEFReader.

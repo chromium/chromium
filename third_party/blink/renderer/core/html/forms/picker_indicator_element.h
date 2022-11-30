@@ -52,7 +52,7 @@ class PickerIndicatorElement final : public HTMLDivElement,
     virtual Element& PickerOwnerElement() const = 0;
     virtual bool SetupDateTimeChooserParameters(DateTimeChooserParameters&) = 0;
     virtual void DidEndChooser() = 0;
-    virtual String AriaRoleForPickerIndicator() const = 0;
+    virtual String AriaLabelForPickerIndicator() const = 0;
   };
 
   PickerIndicatorElement(Document&, PickerIndicatorOwner&);
@@ -91,4 +91,4 @@ struct DowncastTraits<PickerIndicatorElement> {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_PICKER_INDICATOR_ELEMENT_H_

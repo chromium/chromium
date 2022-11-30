@@ -1,3 +1,3 @@
-monorail: {
-  component: "Content>Core"
+monorail {
+  component: "Internals>Core"
 }

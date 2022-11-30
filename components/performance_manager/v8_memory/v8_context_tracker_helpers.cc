@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -162,7 +162,7 @@ V8ContextDescriptionStatus ValidateV8ContextDescription(
   return V8ContextDescriptionStatus::kValid;
 }
 
-base::Optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
+absl::optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
     const mojom::V8ContextDescription& description,
     Graph* graph) {
   switch (description.world_type) {
@@ -174,18 +174,17 @@ base::Optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
       if (auto* ec = GetExecutionContext(*description.execution_context_token,
                                          graph)) {
         return IsSynchronousIframeAttributionDataExpected(ec);
-      } else {
-        // Unable to be determined.
-        return base::nullopt;
       }
-    } break;
+      // Unable to be determined.
+      return absl::nullopt;
+    }
 
     case mojom::V8ContextWorldType::kWorkerOrWorklet:
     case mojom::V8ContextWorldType::kExtension:
     case mojom::V8ContextWorldType::kIsolated:
     case mojom::V8ContextWorldType::kInspector:
-    case mojom::V8ContextWorldType::kRegExp: {
-    } break;
+    case mojom::V8ContextWorldType::kRegExp:
+      break;
   }
 
   return false;

@@ -1,0 +1,156 @@
+/*
+ * Copyright (C) 2012 Google Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+ * DAMAGE.
+ */
+
+body {
+    --color-swatch-border-width: 1px;
+    --color-swatch-padding: 0;
+    --color-swatch-margin: 3px;
+    --color-swatch-height: 18px;
+    --color-swatch-width: 18px;
+    --scrollbar-width: 4px;
+    user-select: none;
+    background-color: white;
+    font: -webkit-small-control;
+    margin: 0;
+    overflow: hidden;
+}
+
+.color-suggestion-picker-main {
+    background-color: white;
+    float: left;
+    border: 1px solid #bfbfbf;
+    box-shadow: none;
+    padding: 8px 8px 4px 8px;
+}
+
+.color-swatch {
+    float: left;
+    width: var(--color-swatch-width);
+    height: var(--color-swatch-height);
+    margin: var(--color-swatch-margin);
+    padding: var(--color-swatch-padding);
+    box-sizing: content-box;
+    border: var(--color-swatch-border-width) solid rgba(0, 0, 0, 0.19);
+    border-radius: 2px;
+}
+
+.color-swatch:focus {
+    border: var(--color-swatch-border-width) solid #000000;
+    outline: solid 2px -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+.color-swatch-container {
+    width: 100%;
+    max-height: 104px;
+    overflow: auto;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    margin: 4px;
+}
+
+.color-swatch-container::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+}
+
+.color-swatch-container::-webkit-scrollbar-thumb {
+    background-color: #cecece;
+    border-radius: 2px;
+    height: 47px;
+    margin: 20px;
+    width: 4px;
+}
+
+.other-color {
+    width: 100%;
+    background-color: #ffffff;
+    border-color: transparent;
+    border-radius: 2px;
+    color: #000000;
+    font-size: 12px;
+    line-height: 16px;
+    margin: 0;
+    text-align: left;
+}
+
+.other-color:hover {
+    background-color: #f3f3f3;
+}
+
+@media (forced-colors: active) {
+    .color-suggestion-picker-main {
+        border: 1px solid WindowText;
+    }
+
+    .color-swatch {
+        forced-color-adjust: none;
+        border-color: WindowText;
+    }
+
+    .color-swatch:focus {
+        outline-color: Highlight;
+    }
+
+    .color-swatch-container {
+        forced-color-adjust: none;
+    }
+
+    .color-swatch-container::-webkit-scrollbar-thumb {
+        background-color: WindowText;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .color-suggestion-picker-main {
+        background: #3B3B3B;
+        color: #FFFFFF;
+        border: 1px solid #858585;
+        box-shadow: none;
+    }
+
+    .color-swatch {
+        border-color: #858585;
+    }
+
+    .color-swatch:focus {
+        outline-color: Highlight;
+    }
+
+    .other-color,
+    .other-color:hover {
+        background: #3B3B3B;
+        color: #FFFFFF;
+        border: 1px solid #858585;
+    }
+
+    .other-color:hover{
+        border: 1px solid #ACACAC;
+    }
+
+    .color-swatch-container::-webkit-scrollbar-thumb {
+        background-color: WindowText;
+    }
+}

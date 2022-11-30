@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,14 +30,21 @@ source_set("hardware_keyboarr_support") {
   deps = [ "//base/test:test_support" ]
 }
 
+source_set("open_url_context") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "open_url_context.h",
+    "open_url_context.mm",
+  ]
+}
+
 source_set("block_swizzler") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "scoped_block_swizzler.h",
     "scoped_block_swizzler.mm",
-    "scoped_method_swizzler.h",
-    "scoped_method_swizzler.mm",
   ]
   deps = [ "//base" ]
 }
@@ -91,7 +98,6 @@ test("ios_testing_unittests") {
   sources = [
     "ocmock_complex_type_helper_unittest.mm",
     "scoped_block_swizzler_unittest.mm",
-    "scoped_method_swizzler_unittest.mm",
   ]
 
   assert_no_deps = ios_assert_no_deps
@@ -110,6 +116,7 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/console_with_iframe.html",
     "data/http_server_files/context_menu.html",
     "data/http_server_files/destination.html",
+    "data/http_server_files/download_test_page.html",
     "data/http_server_files/fullscreen.html",
     "data/http_server_files/generic.pkpass",
     "data/http_server_files/history.html",
@@ -124,11 +131,16 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/onload_replacestate_reload.html",
     "data/http_server_files/onload_replacestate_reload.js",
     "data/http_server_files/opensearch.xml",
+    "data/http_server_files/permissions/camera_and_microphone.html",
+    "data/http_server_files/permissions/camera_only.html",
+    "data/http_server_files/permissions/microphone_only.html",
     "data/http_server_files/pony.html",
     "data/http_server_files/profile_form.html",
     "data/http_server_files/readonly_form.html",
     "data/http_server_files/redchair.usdz",
     "data/http_server_files/redirect_refresh.html",
+    "data/http_server_files/sample.ics",
+    "data/http_server_files/sample.mobileconfig",
     "data/http_server_files/simple_login_form.html",
     "data/http_server_files/simple_signup_form.html",
     "data/http_server_files/single_page_wide.pdf",
@@ -139,6 +151,7 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/two_pages.pdf",
     "data/http_server_files/user_agent_test_page.html",
     "data/http_server_files/username_password_field_form.html",
+    "data/http_server_files/vcard.vcf",
     "data/http_server_files/video_sample.mov",
     "data/http_server_files/window_close.html",
     "data/http_server_files/window_location.html",

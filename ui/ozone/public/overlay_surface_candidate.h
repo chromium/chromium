@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,16 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace ui {
@@ -31,14 +36,16 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   ~OverlaySurfaceCandidate();
   OverlaySurfaceCandidate& operator=(const OverlaySurfaceCandidate& other);
 
-  // Note that |clip_rect|, |is_clipped|, |overlay_handled| and |native_pixmap|
-  // are *not* used as part of the comparison.
+  // Note that |clip_rect|, |overlay_handled| and |native_pixmap| are *not* used
+  // as part of the comparison.
   bool operator<(const OverlaySurfaceCandidate& other) const;
 
   // Transformation to apply to layer during composition.
   gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
   // Format of the buffer to composite.
   gfx::BufferFormat format = gfx::BufferFormat::BGRA_8888;
+  // Color space of the buffer
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   // Stacking order of the overlay plane relative to the main surface,
   // which is 0. Signed to allow for "underlays".
   int plane_z_order = 0;
@@ -50,15 +57,17 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   gfx::RectF display_rect;
   // Crop within the buffer to be placed inside |display_rect|.
   gfx::RectF crop_rect;
-  // Clip rect in the target content space after composition.
-  gfx::Rect clip_rect;
-  // If the quad is clipped after composition.
-  bool is_clipped = false;
+  // If the quad is clipped, the clip rect in the target content space after
+  // composition.
+  absl::optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
+  // Opacity of the overlay independent of buffer alpha. When rendered:
+  // src-alpha = |opacity| * buffer-component-alpha.
+  float opacity = 1.0f;
   // Optionally contains a pointer to the NativePixmap corresponding to this
   // candidate.
-  scoped_refptr<gfx::NativePixmap> native_pixmap = nullptr;
+  scoped_refptr<gfx::NativePixmap> native_pixmap;
   // A unique ID corresponding to |native_pixmap|. The ID is not reused even if
   // |native_pixmap| is destroyed. Zero if |native_pixmap| is null.
   // TODO(samans): This will not be necessary once Ozone/DRM not longer uses a
@@ -69,6 +78,12 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   bool overlay_handled = false;
   // If this candidate requires an overlay for proper display.
   bool requires_overlay = false;
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+  // Specifies the rounded corners of overlay in radii.
+  gfx::RRectF rounded_corners;
+  // Specifies the background color of the overlay.
+  absl::optional<SkColor> background_color;
 };
 
 using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;

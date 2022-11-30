@@ -1,23 +1,23 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ui.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 
-component("constants") {
-  output_name = "assistant_ui_constants"
-
+source_set("constants") {
   defines = [ "IS_ASSISTANT_UI_CONSTANTS_IMPL" ]
 
   sources = [
     "assistant_ui_constants.cc",
     "assistant_ui_constants.h",
+    "assistant_view_ids.h",
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//skia",
     "//ui/aura",
@@ -26,14 +26,11 @@ component("constants") {
   ]
 }
 
-component("ui") {
-  output_name = "assistant_ui"
-
+source_set("ui") {
   defines = [ "IS_ASSISTANT_UI_IMPL" ]
 
   sources = [
     "assistant_view_delegate.h",
-    "assistant_view_ids.h",
     "assistant_web_container_view.cc",
     "assistant_web_container_view.h",
     "assistant_web_view_delegate.h",
@@ -89,18 +86,23 @@ component("ui") {
   deps = [
     "//ash/assistant/model",
     "//ash/assistant/ui:constants",
+    "//ash/assistant/ui/colors:assistant_colors_util",
+    "//ash/assistant/ui/colors:assistant_colors_views",
     "//ash/assistant/util",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//ash/strings",
+    "//ash/style",
     "//base",
-    "//chromeos/assistant:buildflags",
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/mojom",
-    "//chromeos/services/libassistant/public/cpp:structs",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/assistant/public/mojom",
+    "//chromeos/ash/services/libassistant/public/cpp:structs",
     "//chromeos/ui/vector_icons",
+    "//components/vector_icons",
     "//ui/aura",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/compositor",
     "//ui/gfx",
     "//ui/views",

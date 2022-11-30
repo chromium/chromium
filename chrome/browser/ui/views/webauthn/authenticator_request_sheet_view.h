@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_VIEW_H_
 
 #include <memory>
-#include <string>
+#include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -76,13 +76,22 @@ class AuthenticatorRequestSheetView : public views::View {
   // Returns the control on this sheet that should initially have focus instead
   // of the OK/Cancel buttons on the dialog; or returns nullptr if the regular
   // dialog button should have focus.
-  virtual views::View* GetInitiallyFocusedView();
+  views::View* GetInitiallyFocusedView();
 
   AuthenticatorRequestSheetModel* model() { return model_.get(); }
 
  protected:
-  // Returns the step-specific view the derived sheet wishes to provide, if any.
-  virtual std::unique_ptr<views::View> BuildStepSpecificContent();
+  // AutoFocus is a named boolean that indicates whether step-specific content
+  // should automatically get focus when displayed.
+  enum class AutoFocus {
+    kNo,
+    kYes,
+  };
+
+  // Returns the step-specific view the derived sheet wishes to provide, if any,
+  // and whether that content should be initially focused.
+  virtual std::pair<std::unique_ptr<views::View>, AutoFocus>
+  BuildStepSpecificContent();
 
  private:
   // Creates the upper half of the sheet, consisting of a pretty illustration
@@ -104,11 +113,13 @@ class AuthenticatorRequestSheetView : public views::View {
   void OnThemeChanged() override;
 
   std::unique_ptr<AuthenticatorRequestSheetModel> model_;
-  views::Button* back_arrow_button_ = nullptr;
-  views::ImageButton* back_arrow_ = nullptr;
-  views::View* step_specific_content_ = nullptr;
-  NonAccessibleImageView* step_illustration_ = nullptr;
-  views::Label* error_label_ = nullptr;
+  raw_ptr<views::Button> back_arrow_button_ = nullptr;
+  raw_ptr<views::ImageButton> back_arrow_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::View> step_specific_content_ = nullptr;
+  AutoFocus should_focus_step_specific_content_ = AutoFocus::kNo;
+  raw_ptr<NonAccessibleImageView> step_illustration_ = nullptr;
+  raw_ptr<views::Label> error_label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_VIEW_H_

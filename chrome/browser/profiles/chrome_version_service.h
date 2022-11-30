@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_PROFILES_CHROME_VERSION_SERVICE_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 class PrefService;
 
@@ -19,6 +17,10 @@ class PrefRegistrySyncable;
 // Chrome by which the profile was created.
 class ChromeVersionService {
  public:
+  ChromeVersionService() = delete;
+  ChromeVersionService(const ChromeVersionService&) = delete;
+  ChromeVersionService& operator=(const ChromeVersionService&) = delete;
+
   // Register the user pref we use.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -30,9 +32,6 @@ class ChromeVersionService {
 
   // Handles setting the profile.created_by_version Pref
   static void OnProfileLoaded(PrefService* prefs, bool is_new_profile);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ChromeVersionService);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_CHROME_VERSION_SERVICE_H_

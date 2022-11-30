@@ -1,6 +1,8 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -15,6 +17,7 @@ static_library("ntp_tiles") {
     "custom_links_manager_impl.h",
     "custom_links_store.cc",
     "custom_links_store.h",
+    "deleted_tile_type.h",
     "features.cc",
     "features.h",
     "icon_cacher.h",
@@ -48,7 +51,6 @@ static_library("ntp_tiles") {
   public_deps = [
     "//base",
     "//components/history/core/browser",
-    "//components/suggestions",
   ]
   deps = [
     "//build:branding_buildflags",
@@ -65,6 +67,8 @@ static_library("ntp_tiles") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",
+    "//components/webapps/common:common",
+    "//extensions/buildflags",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//ui/base",
@@ -75,6 +79,10 @@ static_library("ntp_tiles") {
       "country_code_ios.h",
       "country_code_ios.mm",
     ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
   }
 }
 
@@ -100,7 +108,10 @@ source_set("unit_tests") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/pref_registry:pref_registry",
+    "//components/prefs:prefs",
     "//components/sync_preferences:test_support",
+    "//components/webapps/common:common",
+    "//extensions/buildflags",
     "//net:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",

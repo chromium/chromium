@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_METRICS_FINALIZATION_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_METRICS_FINALIZATION_TASK_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -21,6 +21,10 @@ class PrefetchStore;
 class MetricsFinalizationTask : public Task {
  public:
   explicit MetricsFinalizationTask(PrefetchStore* prefetch_store);
+
+  MetricsFinalizationTask(const MetricsFinalizationTask&) = delete;
+  MetricsFinalizationTask& operator=(const MetricsFinalizationTask&) = delete;
+
   ~MetricsFinalizationTask() override;
 
  private:
@@ -28,10 +32,9 @@ class MetricsFinalizationTask : public Task {
   void Run() override;
   void MetricsFinalized(bool result);
 
-  PrefetchStore* prefetch_store_;
+  raw_ptr<PrefetchStore> prefetch_store_;
 
   base::WeakPtrFactory<MetricsFinalizationTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MetricsFinalizationTask);
 };
 
 }  // namespace offline_pages

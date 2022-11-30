@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,13 @@
 // The current search string.
 @property(copy, nonatomic, readonly) NSString* text;
 
-// The number of matches for |text|.
+// The number of matches for `text`.
 @property(nonatomic, readonly) NSUInteger matches;
 
 // The currently higlighted index.
 @property(nonatomic, readonly) NSUInteger currentIndex;
 
-// The content offset needed to display the |currentIndex| match.
+// The content offset needed to display the `currentIndex` match.
 @property(nonatomic, readonly) CGPoint currentPoint;
 
 // Update the query string and the number of matches.

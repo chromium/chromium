@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@ option java_outer_classname = "HintsProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
-import "loading_predictor_metadata.proto";
-import "performance_hints_metadata.proto";
-import "public_image_metadata.proto";
+import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/loading_predictor_metadata.proto";
 
 // Information about the hint that the client already has for a host.
 message MatchedHintInfo {
@@ -37,14 +35,27 @@ message UrlInfo {
   optional string url = 1;
 }
 
+// Information about the set of host hashes to retrieve hints for.
+message HashedHostInfos {
+  // The partial host hash will be the first num_hash_bits least significant bit
+  // of the hashed host.
+  repeated uint32 partial_host_hashes = 1;
+  optional uint32 num_hash_bits = 2;
+}
+
 // Request to return a set of hints that guide what optimizations to perform
 // on those hosts.
 message GetHintsRequest {
+  reserved 6;
+
   // Information about the set of hosts to retrieve hints for.
   repeated HostInfo hosts = 1;
 
   // Information about the set of URLs to retrieve hints for.
   repeated UrlInfo urls = 4;
+
+  // Information about the set of host hashes to retrieve hints for.
+  optional HashedHostInfos hashed_hosts = 8;
 
   // The set of optimization types that the requesting client can support
   // and perform.
@@ -63,8 +74,15 @@ message GetHintsRequest {
   // Context in which this request is made.
   optional RequestContext context = 3;
 
-  // The field trials that are currently active when this request is made.
-  repeated FieldTrial active_field_trials = 6;
+  // The locale to associate with this request.
+  //
+  // It is the IETF language tag, defined in BCP 47. The region subtag is not
+  // included when it adds no distinguishing information to the language tag
+  // (e.g. both "en-US" and "fr" are correct here).
+  optional string locale = 7;
+
+  // Information about the request origin.
+  optional OriginInfo origin_info = 9;
 }
 
 // Response to the GetHints request.
@@ -92,8 +110,11 @@ message GetHintsResponse {
   repeated MatchedHintInfo hints_to_remove = 3;
 }
 
-
+// Must sync with enum OptimizationType in enums.xml for metric recording.
 enum OptimizationType {
+  // Values for obsolete optimizations.
+  reserved 11, 12;
+
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
   NOSCRIPT = 1;
@@ -102,8 +123,8 @@ enum OptimizationType {
   RESOURCE_LOADING = 2;
   // This optimization redirects the navigation through a lite page server.
   LITE_PAGE_REDIRECT = 3;
-  // This optimization does nothing (no-op).
-  OPTIMIZATION_NONE = 4;
+  // This optimization does validation of metadata fetch on navigation.
+  METADATA_FETCH_VALIDATION = 4;
   // This optimization defers execution of parser-blocking script until after
   // parsing completes.
   DEFER_ALL_SCRIPT = 5;
@@ -121,12 +142,6 @@ enum OptimizationType {
   // This optimization provides information about hosts that historically
   // provide a fast and responsive user experience.
   FAST_HOST_HINTS = 10;
-  // This optimization provides information about the effective delay for async
-  // script execution.
-  DELAY_ASYNC_SCRIPT_EXECUTION = 11;
-  // This optimization provides information about the effective delay and
-  // priority thresholds for delaying low priority requests.
-  DELAY_COMPETING_LOW_PRIORITY_REQUESTS = 12;
   // This optimization provides information about how to throttle meda requests
   // to reduce the bitrate of adaptively streamed media.
   LITE_VIDEO = 13;
@@ -141,6 +156,28 @@ enum OptimizationType {
   // This optimization provides information about hosts that are identified as
   // commonly logged-in.
   LOGIN_DETECTION = 16;
+  // Provides key information about the merchant represented by the current
+  // host.
+  MERCHANT_TRUST_SIGNALS = 17;
+  // Provides pricing data so the user can track prices and price updates.
+  PRICE_TRACKING = 18;
+  // This optimization does validation of bloom filter.
+  BLOOM_FILTER_VALIDATION = 19;
+  // Provides 'About this site' data about the site being visited.
+  ABOUT_THIS_SITE = 20;
+  // Provides key information about the merchant represented by the current
+  // host -- VERSION 2.
+  MERCHANT_TRUST_SIGNALS_V2 = 21;
+  // Provides the entities that are present on the page.
+  PAGE_ENTITIES = 22;
+  // This optimization provides information for whether a page should be
+  // included in a history cluster.
+  HISTORY_CLUSTERS = 23;
+  // Determines if a page is eligible for 'Thank creator' functionality.
+  THANK_CREATOR_ELIGIBLE = 24;
+  // This optimization provides information about hosts that are blocked for
+  // IBAN autofill.
+  IBAN_AUTOFILL_BLOCKED = 25;
 }
 
 // Presents semantics for how page load URLs should be matched.
@@ -160,10 +197,12 @@ enum KeyRepresentation {
   //
   // This will be an exact match of a page load host.
   HOST = 3;
+  // This will be a partial hash of a page load host.
+  HASHED_HOST = 4;
 }
 
 message Optimization {
-  reserved 2, 3, 4, 5, 10, 14;
+  reserved 2, 3, 4, 5, 10, 11, 12, 14;
   // The type of optimization the hint applies to.
   optional OptimizationType optimization_type = 1;
   // The version of the tuning group for the optimization type.
@@ -180,8 +219,6 @@ message Optimization {
   //
   // New clients should utilize any_metadata rather than adding another field.
   oneof metadata {
-    PerformanceHintsMetadata performance_hints_metadata = 11;
-    PublicImageMetadata public_image_metadata = 12;
     LoadingPredictorMetadata loading_predictor_metadata = 13;
     Any any_metadata = 15;
   }
@@ -197,11 +234,11 @@ message PageHint {
   // separated by the ‘*’ wildcard character (with an implicit ‘*’ at the
   // beginning and end).
   optional string page_pattern = 1;
-  // An ordered set of optimizations that should be whitelisted for this page
+  // An ordered set of optimizations that should be allowlisted for this page
   // pattern.
   //
   // The client will use the first optimization that it supports.
-  repeated Optimization whitelisted_optimizations = 3;
+  repeated Optimization allowlisted_optimizations = 3;
 }
 
 message Hint {
@@ -210,11 +247,11 @@ message Hint {
   // The key that applies to this hint. The key_representation field describes
   // the form in which this key takes. Guaranteed to be non-empty.
   optional string key = 2;
-  // An unordered set of optimizations that should be whitelisted for this
+  // An unordered set of optimizations that should be allowlisted for this
   // hint.
   //
   // This field is currently only specified for key_representation of HOST.
-  repeated Optimization whitelisted_optimizations = 3;
+  repeated Optimization allowlisted_optimizations = 3;
   // An ordered set of per-page hints. Only the first PageHint record
   // that matches a committed page URL should be used for that page load.
   repeated PageHint page_hints = 4;
@@ -286,29 +323,16 @@ message Configuration {
   // details for that key that it wants to provide as the client will only
   // look at that one record to decide which optimization to apply.
   repeated Hint hints = 1;
-  // A set of per-optimization blacklists.
+  // A set of per-optimization blocklists.
   //
   // It is guaranteed that an optimization type will not have filters in both
-  // |optimization_blacklists| and |optimization_allowlists|.
-  repeated OptimizationFilter optimization_blacklists = 2;
+  // |optimization_blocklists| and |optimization_allowlists|.
+  repeated OptimizationFilter optimization_blocklists = 2;
   // A set of per-optimization allowlists.
   //
   // It is guaranteed that an optimization type will not have filters in both
-  // |optimization_blacklists| and |optimization_allowlists|.
+  // |optimization_blocklists| and |optimization_allowlists|.
   repeated OptimizationFilter optimization_allowlists = 3;
-}
-
-message Timestamp {
-  // Represents seconds of UTC time since Unix epoch
-  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
-  // 9999-12-31T23:59:59Z inclusive.
-  optional int64 seconds = 1;
-
-  // Non-negative fractions of a second at nanosecond resolution. Negative
-  // second values with fractions must still have non-negative nanos values
-  // that count forward in time. Must be from 0 to 999,999,999
-  // inclusive.
-  optional int32 nanos = 2;
 }
 
 enum HintSource {

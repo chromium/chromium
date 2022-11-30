@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/deferred-promise-utils.js"></script>
+<script type="module">
+
+// Access external/wpt/credential-management/support/otpcredential-helper.js in
+// order to test navigator.credentials.get() which needs to use a mock
+// OTPRequest.
+import {Status, expectOTPRequest} from
+    '/credential-management/support/otpcredential-helper.js';
+
+const params = new URLSearchParams(location.search);
+
+// The main test page (restriction-web-auth.https.html) loads the initiator
+// page, then the initiator page will prerender itself with the `prerendering`
+// parameter.
+const isPrerendering = params.has('prerendering');
+
+if (!isPrerendering) {
+  loadInitiatorPage();
+} else {
+  const prerenderEventCollector = new PrerenderEventCollector();
+  const promise = new Promise(async (resolve, reject) => {
+    await expectOTPRequest().andReturn(
+        () => ({status: Status.SUCCESS, otp: "ABC123"}));
+    const sms = await navigator.credentials.get({otp: {transport: ["sms"]}});
+    prerenderEventCollector.addEvent(`SMS Code: ${sms.code}`);
+    resolve();
+  });
+  prerenderEventCollector.start(promise, 'navigator.credentials.get');
+}
+
+</script>

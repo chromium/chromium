@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -30,7 +29,8 @@ struct StructTraits<gfx::mojom::InsetsDataView, gfx::Insets> {
   static int bottom(const gfx::Insets& p) { return p.bottom(); }
   static int right(const gfx::Insets& p) { return p.right(); }
   static bool Read(gfx::mojom::InsetsDataView data, gfx::Insets* out) {
-    out->Set(data.top(), data.left(), data.bottom(), data.right());
+    *out =
+        gfx::Insets::TLBR(data.top(), data.left(), data.bottom(), data.right());
     return true;
   }
 };
@@ -42,7 +42,8 @@ struct StructTraits<gfx::mojom::InsetsFDataView, gfx::InsetsF> {
   static float bottom(const gfx::InsetsF& p) { return p.bottom(); }
   static float right(const gfx::InsetsF& p) { return p.right(); }
   static bool Read(gfx::mojom::InsetsFDataView data, gfx::InsetsF* out) {
-    out->Set(data.top(), data.left(), data.bottom(), data.right());
+    *out = gfx::InsetsF::TLBR(data.top(), data.left(), data.bottom(),
+                              data.right());
     return true;
   }
 };
@@ -165,18 +166,6 @@ struct StructTraits<gfx::mojom::Vector3dFDataView, gfx::Vector3dF> {
     out->set_x(data.x());
     out->set_y(data.y());
     out->set_z(data.z());
-    return true;
-  }
-};
-
-template <>
-struct StructTraits<gfx::mojom::ScrollOffsetDataView, gfx::ScrollOffset> {
-  static float x(const gfx::ScrollOffset& v) { return v.x(); }
-  static float y(const gfx::ScrollOffset& v) { return v.y(); }
-  static bool Read(gfx::mojom::ScrollOffsetDataView data,
-                   gfx::ScrollOffset* out) {
-    out->set_x(data.x());
-    out->set_y(data.y());
     return true;
   }
 };

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@ namespace message_center {
 class FakeLockScreenController : public LockScreenController {
  public:
   FakeLockScreenController();
+
+  FakeLockScreenController(const FakeLockScreenController&) = delete;
+  FakeLockScreenController& operator=(const FakeLockScreenController&) = delete;
+
   ~FakeLockScreenController() override;
 
   void DismissLockScreenThenExecute(base::OnceClosure pending_callback,
@@ -29,10 +33,8 @@ class FakeLockScreenController : public LockScreenController {
   bool is_screen_locked_ = false;
   base::OnceClosure pending_callback_;
   base::OnceClosure cancel_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLockScreenController);
 };
 
 }  // namespace message_center
 
-#endif  // UI_MESSAGE_CENTER_LOCK_SCREEN_FAkE_LOCK_SCREEN_CONTROLLER_H_
+#endif  // UI_MESSAGE_CENTER_LOCK_SCREEN_FAKE_LOCK_SCREEN_CONTROLLER_H_

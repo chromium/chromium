@@ -1,0 +1,50 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom_component("mojom") {
+  sources = [
+    "file_path.mojom",
+    "ip_address.mojom",
+    "smbfs.mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "smbfs.mojom.FilePath"
+          cpp = "::base::FilePath"
+        },
+      ]
+      traits_headers =
+          [ "//chromeos/ash/components/smbfs/file_path_mojom_traits.h" ]
+      traits_sources =
+          [ "//chromeos/ash/components/smbfs/file_path_mojom_traits.cc" ]
+      traits_public_deps = [ "//base" ]
+    },
+    {
+      types = [
+        {
+          mojom = "smbfs.mojom.IPAddress"
+          cpp = "::net::IPAddress"
+        },
+      ]
+      traits_headers =
+          [ "//chromeos/ash/components/smbfs/ip_address_mojom_traits.h" ]
+      traits_sources =
+          [ "//chromeos/ash/components/smbfs/ip_address_mojom_traits.cc" ]
+      traits_public_deps = [ "//net" ]
+    },
+  ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  output_prefix = "smbfs_mojom"
+  macro_prefix = "SMBFS_MOJOM"
+}

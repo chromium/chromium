@@ -17,7 +17,7 @@
         testRunner.dumpAsText();
         testRunner.keepWebHistory();
         testRunner.waitUntilDone();
-        testRunner.setCanOpenWindows(true);
+        testRunner.setPopupBlockingEnabled(false);
         document.getElementById("result").innerText = "FAIL: Test did not complete";
         var button = document.getElementById("button");
         eventSender.mouseMoveTo(button.offsetParent.offsetLeft + button.offsetLeft + button.offsetWidth / 2, button.offsetParent.offsetTop +  button.offsetTop + button.offsetHeight / 2);

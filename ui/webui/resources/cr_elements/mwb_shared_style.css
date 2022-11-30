@@ -1,0 +1,43 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./cr_shared_vars.css.js
+ * #import=./mwb_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--mwb-scrollbar-thumb-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--mwb-scrollbar-thumb-hover-color);
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--mwb-scrollbar-track-color);
+}
+
+::-webkit-scrollbar {
+  width: var(--mwb-scrollbar-width);
+}
+
+.mwb-list-item {
+  align-items: center;
+  background-color: var(--mwb-background-color);
+  contain-intrinsic-size: var(--mwb-item-height);
+  content-visibility: auto;
+  display: flex;
+  height: var(--mwb-item-height);
+  padding: 0 var(--mwb-list-item-horizontal-margin);
+}
+
+.mwb-list-item.hovered {
+  background-color: var(--mwb-list-item-hover-background-color);
+}
+
+.mwb-list-item.selected {
+  background-color: var(--mwb-list-item-selected-background-color);
+}

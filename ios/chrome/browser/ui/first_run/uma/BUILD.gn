@@ -1,0 +1,41 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("uma") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "uma_coordinator.h",
+    "uma_coordinator.mm",
+  ]
+  deps = [
+    ":uma_ui",
+    "//base",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/common",
+    "//ui/base",
+  ]
+}
+
+source_set("uma_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "uma_table_view_controller.h",
+    "uma_table_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base",
+  ]
+}

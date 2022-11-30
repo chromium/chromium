@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 
@@ -17,22 +19,28 @@
 #include "ui/gl/gl_surface_egl.h"
 #endif  // defined(USE_EGL)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/posix/eintr_wrapper.h"
 #include "third_party/libsync/src/include/sync/sync.h"
 #endif
 
-#if defined(OS_WIN)
-#include "ui/gl/direct_composition_surface_win.h"
-#endif
-
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"  // nogncheck
-#include "ui/gl/gl_implementation.h"                     // nogncheck
-#include "ui/gl/gl_visual_picker_glx.h"                  // nogncheck
+#if BUILDFLAG(IS_WIN)
+#include <d3d11_1.h>
+#include "base/strings/stringprintf.h"
+#include "media/base/win/mf_helpers.h"
+#include "ui/gl/direct_composition_support.h"
 #endif
 
 namespace gl {
+namespace {
+
+int GetIntegerv(unsigned int name) {
+  int value = 0;
+  glGetIntegerv(name, &value);
+  return value;
+}
+
+}  // namespace
 
 // Used by chrome://gpucrash and gpu_benchmarking_extension's
 // CrashForTesting.
@@ -61,7 +69,7 @@ void Hang() {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedFD MergeFDs(base::ScopedFD a, base::ScopedFD b) {
   if (!a.is_valid())
     return b;
@@ -87,41 +95,32 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
     return false;
   } else {
     // Unrecognized or missing switch, use the default.
-    return base::FeatureList::IsEnabled(
-        features::kDefaultPassthroughCommandDecoder);
+    return features::UsePassthroughCommandDecoder();
   }
 }
 
 bool PassthroughCommandDecoderSupported() {
 #if defined(USE_EGL)
+  GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   // Using the passthrough command buffer requires that specific ANGLE
   // extensions are exposed
-  return gl::GLSurfaceEGL::IsCreateContextBindGeneratesResourceSupported() &&
-         gl::GLSurfaceEGL::IsCreateContextWebGLCompatabilitySupported() &&
-         gl::GLSurfaceEGL::IsRobustResourceInitSupported() &&
-         gl::GLSurfaceEGL::IsDisplayTextureShareGroupSupported() &&
-         gl::GLSurfaceEGL::IsCreateContextClientArraysSupported();
+  return display->ext->b_EGL_CHROMIUM_create_context_bind_generates_resource &&
+         display->ext->b_EGL_ANGLE_create_context_webgl_compatibility &&
+         display->ext->b_EGL_ANGLE_robust_resource_initialization &&
+         display->ext->b_EGL_ANGLE_display_texture_share_group &&
+         display->ext->b_EGL_ANGLE_create_context_client_arrays;
 #else
   // The passthrough command buffer is only supported on top of ANGLE/EGL
   return false;
 #endif  // defined(USE_EGL)
 }
 
-#if defined(OS_WIN)
-// This function is thread safe.
-bool AreOverlaysSupportedWin() {
-  return gl::DirectCompositionSurfaceWin::AreOverlaysSupported();
-}
-
+#if BUILDFLAG(IS_WIN)
 unsigned int FrameRateToPresentDuration(float frame_rate) {
   if (frame_rate == 0)
     return 0u;
   // Present duration unit is 100 ns.
   return static_cast<unsigned int>(1.0E7 / frame_rate);
-}
-
-UINT GetOverlaySupportFlags(DXGI_FORMAT format) {
-  return gl::DirectCompositionSurfaceWin::GetOverlaySupportFlags(format);
 }
 
 unsigned int DirectCompositionRootSurfaceBufferCount() {
@@ -130,62 +129,113 @@ unsigned int DirectCompositionRootSurfaceBufferCount() {
              : 2u;
 }
 
-bool ShouldForceDirectCompositionRootSurfaceFullDamage() {
-  static bool should_force = []() {
-    const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-    if (cmd_line->HasSwitch(
-            switches::kDirectCompositionForceFullDamageForTesting)) {
-      return true;
-    }
-    UINT brga_flags = DirectCompositionSurfaceWin::GetOverlaySupportFlags(
-        DXGI_FORMAT_B8G8R8A8_UNORM);
-    constexpr UINT kSupportBits =
-        DXGI_OVERLAY_SUPPORT_FLAG_DIRECT | DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
-    if ((brga_flags & kSupportBits) == 0)
-      return false;
-    if (!base::FeatureList::IsEnabled(
-            features::kDirectCompositionForceFullDamage)) {
-      return false;
-    }
-    return true;
-  }();
-  return should_force;
-}
-#endif  // OS_WIN
-
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-void CollectX11GpuExtraInfo(bool enable_native_gpu_memory_buffers,
-                            gfx::GpuExtraInfo& info) {
-  // TODO(https://crbug.com/1031269): Enable by default.
-  if (enable_native_gpu_memory_buffers) {
-    info.gpu_memory_buffer_support_x11 =
-        ui::GpuMemoryBufferSupportX11::GetInstance()->supported_configs();
+// Labels swapchain buffers with the string name_prefix + _Buffer_ +
+// <buffer_number>
+void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
+                           const char* name_prefix) {
+  DXGI_SWAP_CHAIN_DESC desc;
+  HRESULT hr = swap_chain->GetDesc(&desc);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to GetDesc from swap chain: "
+                << logging::SystemErrorCodeToString(hr);
+    return;
   }
-
-  if (GetGLImplementation() == kGLImplementationDesktopGL) {
-    // Create the GLVisualPickerGLX singleton now while the GbmSupportX11
-    // singleton is busy being created on another thread.
-    GLVisualPickerGLX* visual_picker = GLVisualPickerGLX::GetInstance();
-
-    info.system_visual = visual_picker->system_visual();
-    info.rgba_visual = visual_picker->rgba_visual();
-
-    // With GLX, only BGR(A) buffer formats are supported.  EGL does not have
-    // this restriction.
-    info.gpu_memory_buffer_support_x11.erase(
-        std::remove_if(info.gpu_memory_buffer_support_x11.begin(),
-                       info.gpu_memory_buffer_support_x11.end(),
-                       [&](gfx::BufferUsageAndFormat usage_and_format) {
-                         return visual_picker->GetFbConfigForFormat(
-                                    usage_and_format.format) ==
-                                x11::Glx::FbConfig{};
-                       }),
-        info.gpu_memory_buffer_support_x11.end());
-  } else if (GetGLImplementation() == kGLImplementationEGLANGLE) {
-    // ANGLE does not yet support EGL_EXT_image_dma_buf_import[_modifiers].
-    info.gpu_memory_buffer_support_x11.clear();
+  for (unsigned int i = 0; i < desc.BufferCount; i++) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
+    hr = swap_chain->GetBuffer(i, IID_PPV_ARGS(&swap_chain_buffer));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "GetBuffer on swap chain buffer " << i
+                  << "failed: " << logging::SystemErrorCodeToString(hr);
+      return;
+    }
+    const std::string buffer_name =
+        base::StringPrintf("%s_Buffer_%d", name_prefix, i);
+    hr = media::SetDebugName(swap_chain_buffer.Get(), buffer_name.c_str());
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to label swap chain buffer " << i << ": "
+                  << logging::SystemErrorCodeToString(hr);
+    }
   }
 }
-#endif  // defined(USE_X11) || BUILDFLAG(OZONE_PLATFORM_X11)
+
+// Same as LabelSwapChainAndBuffers, but only does the buffers. Used for resize
+// operations
+void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
+                              const char* name_prefix) {
+  media::SetDebugName(swap_chain, name_prefix);
+  LabelSwapChainBuffers(swap_chain, name_prefix);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+GLDisplay* GetDisplay(GpuPreference gpu_preference) {
+#if defined(USE_GLX)
+  if (!GLDisplayManagerX11::GetInstance()->IsEmpty()) {
+    return GLDisplayManagerX11::GetInstance()->GetDisplay(gpu_preference);
+  }
+#endif
+#if defined(USE_EGL)
+  return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference);
+#endif
+  NOTREACHED();
+  return nullptr;
+}
+
+GLDisplay* GetDefaultDisplay() {
+  return GetDisplay(GpuPreference::kDefault);
+}
+
+#if defined(USE_EGL)
+void SetGpuPreferenceEGL(GpuPreference preference, uint64_t system_device_id) {
+  GLDisplayManagerEGL::GetInstance()->SetGpuPreference(preference,
+                                                       system_device_id);
+}
+
+GLDisplayEGL* GetDefaultDisplayEGL() {
+  return GLDisplayManagerEGL::GetInstance()->GetDisplay(
+      GpuPreference::kDefault);
+}
+
+GLDisplayEGL* GetDisplayEGL(uint64_t system_device_id) {
+  return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+}
+#endif  // USE_EGL
+
+#if defined(USE_GLX)
+GLDisplayX11* GetDisplayX11(uint64_t system_device_id) {
+  return GLDisplayManagerX11::GetInstance()->GetDisplay(system_device_id);
+}
+#endif  // USE_GLX
+
+#if BUILDFLAG(IS_MAC)
+
+ScopedEnableTextureRectangleInShaderCompiler::
+    ScopedEnableTextureRectangleInShaderCompiler(gl::GLApi* gl_api) {
+  if (gl_api) {
+    DCHECK(!gl_api->glIsEnabledFn(GL_TEXTURE_RECTANGLE_ANGLE));
+    gl_api->glEnableFn(GL_TEXTURE_RECTANGLE_ANGLE);
+    gl_api_ = gl_api;
+  } else {
+    gl_api_ = nullptr;  // Signal to the destructor that this is a no-op.
+  }
+}
+
+ScopedEnableTextureRectangleInShaderCompiler::
+    ~ScopedEnableTextureRectangleInShaderCompiler() {
+  if (gl_api_)
+    gl_api_->glDisableFn(GL_TEXTURE_RECTANGLE_ANGLE);
+}
+
+#endif  // BUILDFLAG(IS_MAC)
+
+ScopedPixelStore::ScopedPixelStore(unsigned int name, int value)
+    : name_(name), old_value_(GetIntegerv(name)), value_(value) {
+  if (value_ != old_value_)
+    glPixelStorei(name_, value_);
+}
+
+ScopedPixelStore::~ScopedPixelStore() {
+  if (value_ != old_value_)
+    glPixelStorei(name_, old_value_);
+}
 
 }  // namespace gl

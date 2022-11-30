@@ -23,7 +23,7 @@ function window2Loaded() {
 function startTest() {
     if (window.testRunner) {
         testRunner.waitUntilDone();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
     }
     window2 = window.open('resources/move-event-handler-between-framehosts-popup.html');
     window2.addEventListener("load", window2Loaded, false);

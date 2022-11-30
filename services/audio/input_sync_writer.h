@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,14 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "input_glitch_counter.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/input_controller.h"
-
-#if defined(OS_POSIX)
-#include "base/file_descriptor_posix.h"
-#endif
 
 namespace audio {
 
@@ -38,6 +34,8 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // media::AudioBuses.
   enum { kMaxOverflowBusesSize = 100 };
 
+  InputSyncWriter() = delete;
+
   // Create() automatically initializes the InputSyncWriter correctly,
   // and should be strongly preferred over calling the constructor directly!
   InputSyncWriter(
@@ -45,7 +43,11 @@ class InputSyncWriter final : public InputController::SyncWriter {
       base::MappedReadOnlyRegion shared_memory,
       std::unique_ptr<base::CancelableSyncSocket> socket,
       uint32_t shared_memory_segment_count,
-      const media::AudioParameters& params);
+      const media::AudioParameters& params,
+      std::unique_ptr<InputGlitchCounter> glitch_counter);
+
+  InputSyncWriter(const InputSyncWriter&) = delete;
+  InputSyncWriter& operator=(const InputSyncWriter&) = delete;
 
   ~InputSyncWriter() final;
 
@@ -79,20 +81,18 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // Push |data| and metadata to |audio_buffer_fifo_|. Returns true if
   // successful. Logs error and returns false if the fifo already reached the
   // maximum size.
-  bool PushDataToFifo(const media::AudioBus* data,
+  bool PushDataToFifo(const media::AudioBus& data,
                       double volume,
                       bool key_pressed,
                       base::TimeTicks capture_time);
 
-  // Writes as much data as possible from the fifo (|overflow_buses_|) to the
-  // shared memory ring buffer. Returns true if all operations were successful,
-  // otherwise false.
-  bool WriteDataFromFifoToSharedMemory();
-
-  // Write audio parameters to current segment in shared memory.
-  void WriteParametersToCurrentSegment(double volume,
-                                       bool key_pressed,
-                                       base::TimeTicks capture_time);
+  // Write data and audio parameters to current segment in shared memory.
+  // Returns true if the data was successfully written, returns false if it was
+  // dropped.
+  bool WriteDataToCurrentSegment(const media::AudioBus& data,
+                                 double volume,
+                                 bool key_pressed,
+                                 base::TimeTicks capture_time);
 
   // Signals over the socket that data has been written to the current segment.
   // Updates counters and returns true if successful. Logs error and returns
@@ -136,25 +136,12 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // ensure the we don't overwrite data that hasn't been read yet.
   size_t number_of_filled_segments_ = 0;
 
-  // Counts the total number of calls to Write().
-  size_t write_count_ = 0;
-
-  // Counts the number of writes to the fifo instead of to the shared memory.
-  size_t write_to_fifo_count_ = 0;
-
-  // Counts the number of errors that causes data to be dropped, due to either
-  // the fifo or the socket buffer being full.
-  size_t write_error_count_ = 0;
+  // Used for logging.
+  size_t fifo_full_count_ = 0;
 
   // Denotes that the most recent socket error has been logged. Used to avoid
   // log spam.
   bool had_socket_error_ = false;
-
-  // Counts the fifo writes and errors we get during renderer process teardown
-  // so that we can account for that (subtract) when we calculate the overall
-  // counts.
-  size_t trailing_write_to_fifo_count_ = 0;
-  size_t trailing_write_error_count_ = 0;
 
   // Vector of audio buses allocated during construction and deleted in the
   // destructor.
@@ -170,21 +157,24 @@ class InputSyncWriter final : public InputController::SyncWriter {
                  bool key_pressed,
                  base::TimeTicks capture_time,
                  std::unique_ptr<media::AudioBus> audio_bus);
-    ~OverflowData();
+
+    OverflowData(const OverflowData&) = delete;
+    OverflowData& operator=(const OverflowData&) = delete;
+
     OverflowData(OverflowData&&);
     OverflowData& operator=(OverflowData&& other);
+
+    ~OverflowData();
+
     double volume_;
     bool key_pressed_;
     base::TimeTicks capture_time_;
     std::unique_ptr<media::AudioBus> audio_bus_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(OverflowData);
   };
 
   std::vector<OverflowData> overflow_data_;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InputSyncWriter);
+  std::unique_ptr<InputGlitchCounter> glitch_counter_;
 };
 
 }  // namespace audio

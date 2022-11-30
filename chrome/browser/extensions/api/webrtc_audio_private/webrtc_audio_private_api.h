@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/system/system_monitor.h"
 #include "chrome/common/extensions/api/webrtc_audio_private.h"
@@ -47,7 +47,7 @@ class WebrtcAudioPrivateEventService
 
   void SignalEvent();
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 // Common base for WebrtcAudioPrivate functions, that provides a
@@ -55,6 +55,11 @@ class WebrtcAudioPrivateEventService
 class WebrtcAudioPrivateFunction : public ExtensionFunction {
  protected:
   WebrtcAudioPrivateFunction();
+
+  WebrtcAudioPrivateFunction(const WebrtcAudioPrivateFunction&) = delete;
+  WebrtcAudioPrivateFunction& operator=(const WebrtcAudioPrivateFunction&) =
+      delete;
+
   ~WebrtcAudioPrivateFunction() override;
 
  protected:
@@ -74,8 +79,6 @@ class WebrtcAudioPrivateFunction : public ExtensionFunction {
  private:
   std::string device_id_salt_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcAudioPrivateFunction);
 };
 
 class WebrtcAudioPrivateGetSinksFunction : public WebrtcAudioPrivateFunction {
@@ -117,7 +120,7 @@ class WebrtcAudioPrivateGetAssociatedSinkFunction
       media::AudioDeviceDescriptions source_devices);
 
   // Receives the raw sink ID, calculates HMAC and calls Reply().
-  void CalculateHMACAndReply(const base::Optional<std::string>& raw_sink_id);
+  void CalculateHMACAndReply(const absl::optional<std::string>& raw_sink_id);
 
   // Receives the associated sink ID as HMAC and sends the response.
   void Reply(const std::string& hmac);

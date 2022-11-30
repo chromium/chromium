@@ -1,0 +1,81 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generates cross-language JSON data from json5 files. Use this generator
+# if you want to share JSON data between different languages. The generator
+# will render your designate template file with the JSON content.
+#
+# Variables:
+#   sources: (mandatory)
+#     The json data source files.
+#
+#   output_dir: (optional)
+#     The output directory for the generated files. By default it will be the
+#     $target_gen_dir, which is the directory where the gn task is invoked.
+#
+#   templates: (mandatory)
+#     List of Jinja template files to be generated. The generated file name
+#     will be the template file name without the '.jinja' suffix, e.g. template
+#     'abc.cc.jinja' will generate 'abc.cc'.
+#   template_helper: (optional)
+#     A python file to provide custom globals and filters for Jinja templates.
+#     Jinja template only supports very limited python expressions, to provide
+#     custom globals/filter specific to your source JSON files, you can pass a
+#     additional python path to this parameter, the python file you pass must
+#     include 2 functions: `get_custom_globals(model)` and
+#     `get_custom_filters(model)`, the parsed JSON model will be passed to your
+#     custom functions.
+#
+# Example:
+#   json_data_generator("my_json_data") {
+#     sources = [ "my_json_data.json5" ]
+#     templates = [
+#       "my_json_data.cc.jinja",
+#       "my_json_data.js.jinja",
+#     ]
+#     output_dir = "$root_gen_dir/my_dir"
+#   }
+#
+# See README.md for more information.
+
+template("json_data_generator") {
+  script_file = "//tools/json_data_generator/main.py"
+  common_inputs = [ "//tools/json_data_generator/generator.py" ]
+
+  action(target_name) {
+    script = script_file
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+
+    assert(defined(sources), "Source json files must be defined.")
+    assert(defined(invoker.templates), "Template files must be defined.")
+
+    inputs = common_inputs + invoker.templates
+    output_dir = invoker.output_dir
+    if (!defined(invoker.output_dir)) {
+      output_dir = target_gen_dir
+    }
+    outputs = []
+    foreach(t, get_path_info(invoker.templates, "name")) {
+      outputs += [ "$output_dir/$t" ]
+    }
+
+    args =
+        [ "--templates" ] + rebase_path(invoker.templates, root_build_dir) + [
+          "--out-dir",
+          rebase_path(output_dir, root_build_dir),
+          "--sources",
+        ] + rebase_path(sources, root_build_dir)
+
+    if (defined(invoker.template_helper)) {
+      args += [
+        "--template-helper",
+        rebase_path(invoker.template_helper, root_build_dir),
+      ]
+    }
+  }
+}

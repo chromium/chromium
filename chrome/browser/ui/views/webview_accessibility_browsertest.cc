@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
@@ -27,7 +28,7 @@ namespace {
 
 int CountOffscreenButtons(const ui::AXTree* tree, const ui::AXNode* node) {
   int count = 0;
-  if (node->data().role == ax::mojom::Role::kButton) {
+  if (node->GetRole() == ax::mojom::Role::kButton) {
     bool offscreen = false;
     tree->GetTreeBounds(node, &offscreen, /* clip = */ true);
     if (offscreen)
@@ -54,6 +55,9 @@ class WebViewBrowserTest : public InProcessBrowserTest {
     https_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
   }
 
+  WebViewBrowserTest(const WebViewBrowserTest&) = delete;
+  WebViewBrowserTest& operator=(const WebViewBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -70,15 +74,12 @@ class WebViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   net::EmbeddedTestServer https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewBrowserTest);
 };
 
 // Flaky. https://crbug.com/1013805
 IN_PROC_BROWSER_TEST_F(WebViewBrowserTest, DISABLED_ResizeWebView) {
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/fixed_size_document.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/fixed_size_document.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

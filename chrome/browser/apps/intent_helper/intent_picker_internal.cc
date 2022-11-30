@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,17 @@
 #include <utility>
 
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -39,10 +41,10 @@ bool IsGoogleRedirectorUrl(const GURL& url) {
 }  // namespace
 
 bool ShouldCheckAppsForUrl(content::WebContents* web_contents) {
-  // Do not check apps for url if no apps can be installed.
-  // Do not check apps for url in incognito or for a no-state prefetcher
-  // navigation.
-  if (web_contents->GetBrowserContext()->IsOffTheRecord() ||
+  // Do not check apps for url if no apps can be installed, e.g. in incognito.
+  // Do not check apps for a no-state prefetcher navigation.
+  if (!web_app::AreWebAppsUserInstallable(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())) ||
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr) {
     return false;
@@ -54,7 +56,7 @@ bool ShouldCheckAppsForUrl(content::WebContents* web_contents) {
   // find a browser at this moment, skip the check and this will be handled
   // in later stage.
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (browser && browser->deprecated_is_app())
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup()))
     return false;
 
   return true;
@@ -69,13 +71,18 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, url,
                                               /*window_only=*/true);
   if (!app_id)
     return apps;
 
-  auto* const provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* const provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (provider->registrar().GetAppUserDisplayMode(*app_id) ==
+      web_app::UserDisplayMode::kBrowser) {
+    return apps;
+  }
+
   ui::ImageModel icon_model =
       ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
           provider->icon_manager().GetFavicon(*app_id)));
@@ -103,15 +110,15 @@ void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
   if (!browser)
     return;
 
-  IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
   browser->window()->ShowIntentPickerBubble(
       std::move(apps), show_stay_in_chrome, show_remember_selection,
-      PageActionIconType::kIntentPicker, base::nullopt, std::move(callback));
+      IntentPickerBubbleType::kLinkCapturing, absl::nullopt,
+      std::move(callback));
 }
 
 bool InAppBrowser(content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  return !browser || browser->deprecated_is_app();
+  return !browser || browser->is_type_app() || browser->is_type_app_popup();
 }
 
 // Compares the host name of the referrer and target URL to decide whether
@@ -176,13 +183,11 @@ bool IsNavigateFromLink(content::NavigationHandle* navigation_handle) {
   // such submissions anyway.
   constexpr bool kAllowFormSubmit = false;
 
-  // Ignore navigations with the CLIENT_REDIRECT qualifier on.
-  constexpr bool kAllowClientRedirect = true;
-
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
 
   return !ShouldIgnoreNavigation(page_transition, kAllowFormSubmit,
-                                 kAllowClientRedirect) &&
+                                 navigation_handle->IsInFencedFrameTree(),
+                                 navigation_handle->HasUserGesture()) &&
          !navigation_handle->WasStartedFromContextMenu() &&
          !navigation_handle->IsSameDocument();
 }
@@ -193,6 +198,35 @@ void CloseOrGoBack(content::WebContents* web_contents) {
     web_contents->GetController().GoBack();
   else
     web_contents->ClosePage();
+}
+
+PickerEntryType GetPickerEntryType(AppType app_type) {
+  PickerEntryType picker_entry_type = PickerEntryType::kUnknown;
+  switch (app_type) {
+    case AppType::kUnknown:
+    case AppType::kBuiltIn:
+    case AppType::kCrostini:
+    case AppType::kPluginVm:
+    case AppType::kChromeApp:
+    case AppType::kExtension:
+    case AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kRemote:
+    case AppType::kBorealis:
+    case AppType::kStandaloneBrowserExtension:
+      break;
+    case AppType::kArc:
+      picker_entry_type = PickerEntryType::kArc;
+      break;
+    case AppType::kWeb:
+    case AppType::kSystemWeb:
+      picker_entry_type = PickerEntryType::kWeb;
+      break;
+    case AppType::kMacOs:
+      picker_entry_type = PickerEntryType::kMacOs;
+      break;
+  }
+  return picker_entry_type;
 }
 
 }  // namespace apps

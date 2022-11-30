@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,13 @@
 
 #include <string>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -19,18 +23,19 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
  public:
@@ -46,42 +51,51 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     ASSERT_TRUE(app_service_proxy);
 
     base::RunLoop run_loop;
-    app_service_proxy->UninstallForTesting(app_id_, nullptr,
-                                           run_loop.QuitClosure());
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr,
+        base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }));
     run_loop.Run();
 
     ASSERT_NE(nullptr, ActiveView());
     EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
               ActiveView()->GetDialogButtons());
     std::u16string title =
-        base::ASCIIToUTF16("Uninstall \"" + app_name_ + "\"?");
+        u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
     EXPECT_EQ(title, ActiveView()->GetWindowTitle());
 
     if (name == "accept") {
-      ActiveView()->AcceptDialog();
+      if (app_service_proxy->AppRegistryCache().GetAppType(app_id_) ==
+          apps::AppType::kWeb) {
+        web_app::WebAppTestUninstallObserver app_listener(browser()->profile());
+        app_listener.BeginListening();
+        ActiveView()->AcceptDialog();
+        app_listener.Wait();
+      } else {
+        ActiveView()->AcceptDialog();
+      }
 
-      app_service_proxy->FlushMojoCallsForTesting();
       bool is_uninstalled = false;
       app_service_proxy->AppRegistryCache().ForOneApp(
           app_id_, [&is_uninstalled, name](const apps::AppUpdate& update) {
-            is_uninstalled = (update.Readiness() ==
-                              apps::mojom::Readiness::kUninstalledByUser);
+            is_uninstalled =
+                (update.Readiness() == apps::Readiness::kUninstalledByUser);
           });
 
       EXPECT_TRUE(is_uninstalled);
     } else {
       ActiveView()->CancelDialog();
 
-      app_service_proxy->FlushMojoCallsForTesting();
       bool is_installed = true;
       app_service_proxy->AppRegistryCache().ForOneApp(
           app_id_, [&is_installed, name](const apps::AppUpdate& update) {
-            is_installed =
-                (update.Readiness() == apps::mojom::Readiness::kReady);
+            is_installed = (update.Readiness() == apps::Readiness::kReady);
           });
 
       EXPECT_TRUE(is_installed);
     }
+    // Wait for the dialog window to be closed to destroy the Uninstall
+    // dialog.
+    base::RunLoop().RunUntilIdle();
     EXPECT_EQ(nullptr, ActiveView());
   }
 
@@ -129,17 +143,17 @@ class ArcAppsUninstallDialogViewBrowserTest
   }
 
   void CreateApp() {
-    arc::mojom::AppInfo app;
-    app.name = "Fake App 0";
-    app.package_name = "fake.package.0";
-    app.activity = "fake.app.0.activity";
-    app.sticky = false;
-    app_instance_->SendRefreshAppList(std::vector<arc::mojom::AppInfo>(1, app));
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(arc::mojom::AppInfo::New("Fake App 0", "fake.package.0",
+                                               "fake.app.0.activity",
+                                               false /* sticky */));
+    app_instance_->SendRefreshAppList(apps);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1u, arc_app_list_pref_->GetAppIds().size());
-    app_id_ = arc_app_list_pref_->GetAppId(app.package_name, app.activity);
-    app_name_ = app.name;
+    app_id_ =
+        arc_app_list_pref_->GetAppId(apps[0]->package_name, apps[0]->activity);
+    app_name_ = apps[0]->name;
   }
 
  private:
@@ -168,19 +182,18 @@ class WebAppsUninstallDialogViewBrowserTest
   }
 
   void CreateApp() {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 
-    app_id_ =
-        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    app_id_ = web_app::test::InstallWebApp(browser()->profile(),
+                                           std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
     web_app::LaunchWebAppBrowser(browser()->profile(), app_id_);
     navigation_observer.WaitForNavigationFinished();
 
-    auto* provider =
-        web_app::WebAppProviderBase::GetProviderBase(browser()->profile());
+    auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider);
     app_name_ = provider->registrar().GetAppShortName(app_id_);
   }
@@ -202,4 +215,113 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest, InvokeUi_Accept) {
 IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest, InvokeUi_Cancel) {
   CreateApp();
   ShowUi("cancel");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
+                       ExistingDialogFocus) {
+  CreateApp();
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(app_service_proxy);
+
+  // First call to uninstall should return true in callback for successful.
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_TRUE(dialog_opened);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  views::Widget* first_widget = ActiveView()->GetWidget();
+  first_widget->Hide();
+  EXPECT_FALSE(first_widget->IsVisible());
+
+  // Second call should be unsuccessful.
+  {
+    base::RunLoop run_loop;
+
+    // The shown widget should be the one opened in the first call to uninstall.
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    observer.set_shown_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          EXPECT_EQ(first_widget, widget);
+          EXPECT_TRUE(first_widget->IsVisible());
+        }));
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_FALSE(dialog_opened);
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
+                       PreventDuplicateUninstallDialogs) {
+  CreateApp();
+
+  EXPECT_EQ(nullptr, ActiveView());
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(app_service_proxy);
+
+  // First call to uninstall should return true in callback for successful.
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_TRUE(dialog_opened);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  // Second call should be unsuccessful.
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_FALSE(dialog_opened);
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+  }
+
+  ASSERT_NE(nullptr, ActiveView());
+  EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+            ActiveView()->GetDialogButtons());
+  std::u16string title =
+      u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
+  EXPECT_EQ(title, ActiveView()->GetWindowTitle());
+
+  // Cancelling the active dialog should not uninstall the web app.
+  ActiveView()->CancelDialog();
+  // Wait for the dialog window to be closed to destroy the Uninstall dialog.
+  base::RunLoop().RunUntilIdle();
+
+  bool is_installed = true;
+  app_service_proxy->AppRegistryCache().ForOneApp(
+      app_id_, [&is_installed](const apps::AppUpdate& update) {
+        is_installed = update.Readiness() == apps::Readiness::kReady;
+      });
+  EXPECT_TRUE(is_installed);
+
+  // Uninstall dialog should be reopenable.
+  EXPECT_EQ(nullptr, ActiveView());
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_TRUE(dialog_opened);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  ASSERT_NE(nullptr, ActiveView());
 }

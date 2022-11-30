@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gpu {
 namespace raster {
@@ -201,17 +200,29 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
 void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
     const gpu::Mailbox& dest_mailbox,
     SkYUVColorSpace planes_yuv_color_space,
+    const SkColorSpace* planes_rgb_color_space,
     SkYUVAInfo::PlaneConfig plane_config,
     SkYUVAInfo::Subsampling subsampling,
     const gpu::Mailbox yuva_plane_mailboxes[]) {
   NOTREACHED();
 }
 
+void RasterImplementationGLES::ConvertRGBAToYUVAMailboxes(
+    SkYUVColorSpace planes_yuv_color_space,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[],
+    const gpu::Mailbox& source_mailbox) {
+  NOTREACHED();
+}
+
 void RasterImplementationGLES::BeginRasterCHROMIUM(
-    GLuint sk_color,
+    SkColor4f sk_color_4f,
     GLboolean needs_clear,
     GLuint msaa_sample_count,
+    MsaaMode msaa_mode,
     GLboolean can_use_lcd_text,
+    GLboolean visible,
     const gfx::ColorSpace& color_space,
     const GLbyte* mailbox) {
   NOTREACHED();
@@ -224,9 +235,10 @@ void RasterImplementationGLES::RasterCHROMIUM(
     const gfx::Rect& full_raster_rect,
     const gfx::Rect& playback_rect,
     const gfx::Vector2dF& post_translate,
-    GLfloat post_scale,
+    const gfx::Vector2dF& post_scale,
     bool requires_clear,
-    size_t* max_op_size_hint) {
+    size_t* max_op_size_hint,
+    bool preserve_recording) {
   NOTREACHED();
 }
 
@@ -251,18 +263,36 @@ SyncToken RasterImplementationGLES::ScheduleImageDecode(
 void RasterImplementationGLES::ReadbackARGBPixelsAsync(
     const gpu::Mailbox& source_mailbox,
     GLenum source_target,
-    const gfx::Size& dst_size,
+    GrSurfaceOrigin src_origin,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
     unsigned char* out,
-    GLenum format,
     base::OnceCallback<void(bool)> readback_done) {
   DCHECK(!readback_done.is_null());
-
+  DCHECK(dst_info.colorType() == kRGBA_8888_SkColorType ||
+         dst_info.colorType() == kBGRA_8888_SkColorType);
+  GLenum format =
+      dst_info.colorType() == kRGBA_8888_SkColorType ? GL_RGBA : GL_BGRA_EXT;
+  gfx::Size dst_gfx_size(dst_info.width(), dst_info.height());
   GLuint texture_id = CreateAndConsumeForGpuRaster(source_mailbox);
   BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
+  // Convert bottom-left GL coordinates to top-left coordinates expected
+  // by RI clients.
+  bool flip_y;
+  switch (src_origin) {
+    case kTopLeft_GrSurfaceOrigin:
+      flip_y = false;
+      break;
+    case kBottomLeft_GrSurfaceOrigin:
+      flip_y = true;
+      break;
+  }
+
   GetGLHelper()->ReadbackTextureAsync(
-      texture_id, source_target, dst_size, out, format,
+      texture_id, source_target, dst_gfx_size, out, dst_row_bytes, flip_y,
+      format,
       base::BindOnce(&RasterImplementationGLES::OnReadARGBPixelsAsync,
                      weak_ptr_factory_.GetWeakPtr(), texture_id,
                      std::move(readback_done)));

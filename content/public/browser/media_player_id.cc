@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 namespace content {
 
-MediaPlayerId::MediaPlayerId(GlobalFrameRoutingId frame_routing_id,
+MediaPlayerId::MediaPlayerId(GlobalRenderFrameHostId frame_routing_id,
                              int delegate_id)
     : frame_routing_id(frame_routing_id), delegate_id(delegate_id) {}
 
 MediaPlayerId MediaPlayerId::CreateMediaPlayerIdForTests() {
-  return MediaPlayerId(GlobalFrameRoutingId(), 0);
+  return MediaPlayerId(GlobalRenderFrameHostId(), 0);
 }
 
 bool MediaPlayerId::operator==(const MediaPlayerId& other) const {

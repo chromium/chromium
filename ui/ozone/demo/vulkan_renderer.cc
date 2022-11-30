@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,7 +144,7 @@ bool VulkanRenderer::Initialize() {
       /* .pipelineBindPoint = */ VK_PIPELINE_BIND_POINT_GRAPHICS,
       /* .inputAttachmentCount = */ 0,
       /* .pInputAttachments = */ nullptr,
-      /* .colorAttachmentCount = */ base::size(color_attachment_references),
+      /* .colorAttachmentCount = */ std::size(color_attachment_references),
       /* .pColorAttachments = */ color_attachment_references,
       /* .pResolveAttachments = */ nullptr,
       /* .pDepthStencilAttachment = */ nullptr,
@@ -156,9 +156,9 @@ bool VulkanRenderer::Initialize() {
       /* .sType = */ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
       /* .pNext = */ nullptr,
       /* .flags = */ 0,
-      /* .attachmentCount = */ base::size(render_pass_attachments),
+      /* .attachmentCount = */ std::size(render_pass_attachments),
       /* .pAttachments = */ render_pass_attachments,
-      /* .subpassCount = */ base::size(render_pass_subpasses),
+      /* .subpassCount = */ std::size(render_pass_subpasses),
       /* .pSubpasses = */ render_pass_subpasses,
       /* .dependencyCount = */ 0,
       /* .pDependencies = */ nullptr,
@@ -169,7 +169,7 @@ bool VulkanRenderer::Initialize() {
            VK_SUCCESS);
 
   command_pool_ = std::make_unique<gpu::VulkanCommandPool>(device_queue_.get());
-  CHECK(command_pool_->Initialize(false /* use_protected_memory */));
+  CHECK(command_pool_->Initialize());
 
   RecreateFramebuffers();
 
@@ -281,8 +281,10 @@ void VulkanRenderer::RenderFrame() {
               },
               /* .extent = */
               {
-                  /* .width = */ vulkan_swap_chain->size().width(),
-                  /* .height = */ vulkan_swap_chain->size().height(),
+                  /* .width = */ static_cast<uint32_t>(
+                      vulkan_swap_chain->size().width()),
+                  /* .height = */
+                  static_cast<uint32_t>(vulkan_swap_chain->size().height()),
               },
           },
           /* .clearValueCount = */ 1,
@@ -330,7 +332,8 @@ void VulkanRenderer::RenderFrame() {
     VkSemaphore end_semaphore = scoped_write.end_semaphore();
     CHECK(command_buffer.Submit(1, &begin_semaphore, 1, &end_semaphore));
   }
-  vulkan_surface_->SwapBuffers();
+  vulkan_surface_->SwapBuffers(
+      base::DoNothingAs<void(const gfx::PresentationFeedback&)>());
 
   PostRenderFrameTask();
 }
@@ -397,8 +400,8 @@ VulkanRenderer::Framebuffer::Create(gpu::VulkanDeviceQueue* vulkan_device_queue,
       /* .renderPass = */ vk_render_pass,
       /* .attachmentCount = */ 1,
       /* .pAttachments = */ &vk_image_view,
-      /* .width = */ vulkan_swap_chain->size().width(),
-      /* .height = */ vulkan_swap_chain->size().height(),
+      /* .width = */ static_cast<uint32_t>(vulkan_swap_chain->size().width()),
+      /* .height = */ static_cast<uint32_t>(vulkan_swap_chain->size().height()),
       /* .layers = */ 1,
   };
 
@@ -410,8 +413,7 @@ VulkanRenderer::Framebuffer::Create(gpu::VulkanDeviceQueue* vulkan_device_queue,
   }
 
   auto command_buffer = std::make_unique<gpu::VulkanCommandBuffer>(
-      vulkan_device_queue, vulkan_command_pool, true /* primary */,
-      false /* use_protected_memory */);
+      vulkan_device_queue, vulkan_command_pool, true /* primary */);
   CHECK(command_buffer->Initialize());
 
   return std::make_unique<VulkanRenderer::Framebuffer>(

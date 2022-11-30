@@ -1,18 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_OFFSET_MAPPING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_OFFSET_MAPPING_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -73,10 +73,12 @@ class CORE_EXPORT NGOffsetMappingUnit {
 
   void AssertValid() const;
 
+  void Trace(Visitor*) const;
+
  private:
   NGOffsetMappingUnitType type_ = NGOffsetMappingUnitType::kIdentity;
 
-  const LayoutObject* layout_object_;
+  Member<const LayoutObject> layout_object_;
   // TODO(yosin): We should rename |dom_start_| and |dom_end_| to appropriate
   // names since |layout_object_| is for generated text, these offsets are
   // offset in |LayoutText::text_| instead of DOM node.
@@ -96,13 +98,12 @@ class CORE_EXPORT NGOffsetMappingUnit {
 // object that stores the mapping information between DOM positions and offsets
 // in the text content string of the context.
 // See design doc https://goo.gl/CJbxky for details.
-class CORE_EXPORT NGOffsetMapping {
-  USING_FAST_MALLOC(NGOffsetMapping);
-
+class CORE_EXPORT NGOffsetMapping final
+    : public GarbageCollected<NGOffsetMapping> {
  public:
-  using UnitVector = Vector<NGOffsetMappingUnit>;
+  using UnitVector = HeapVector<NGOffsetMappingUnit>;
   using RangeMap =
-      HashMap<Persistent<const Node>, std::pair<unsigned, unsigned>>;
+      HeapHashMap<Member<const Node>, std::pair<unsigned, unsigned>>;
 
   NGOffsetMapping(UnitVector&&, RangeMap&&, String);
   NGOffsetMapping(const NGOffsetMapping&) = delete;
@@ -126,6 +127,12 @@ class CORE_EXPORT NGOffsetMapping {
   // Returns the mapping object of the inline formatting context laying out the
   // given position.
   static const NGOffsetMapping* GetFor(const Position&);
+
+  // Returns the mapping object of the inline formatting context laying out the
+  // given position even if legacy layout tree.
+  // TODO(yosin): Once we get rid of legacy layout, we should get rid of
+  // |ForceGetFor()|.
+  static const NGOffsetMapping* ForceGetFor(const Position&);
 
   // Returns the mapping object of the inline formatting context containing the
   // given LayoutObject, if it's laid out with LayoutNG. If the LayoutObject is
@@ -173,7 +180,7 @@ class CORE_EXPORT NGOffsetMapping {
 
   // Returns the text content offset corresponding to the given position.
   // Returns nullopt when the position is not laid out in this context.
-  base::Optional<unsigned> GetTextContentOffset(const Position&) const;
+  absl::optional<unsigned> GetTextContentOffset(const Position&) const;
 
   // Starting from the given position, searches for non-collapsed content in
   // the anchor node in forward/backward direction and returns the position
@@ -190,7 +197,7 @@ class CORE_EXPORT NGOffsetMapping {
 
   // Maps the given position to a text content offset, and then returns the text
   // content character before the offset. Returns nullopt if it does not exist.
-  base::Optional<UChar> GetCharacterBefore(const Position&) const;
+  absl::optional<UChar> GetCharacterBefore(const Position&) const;
 
   // ------ Mapping APIs from text content to DOM ------
 
@@ -230,6 +237,11 @@ class CORE_EXPORT NGOffsetMapping {
   // control characters. Returns true otherwise.
   bool HasBidiControlCharactersOnly(unsigned start, unsigned end) const;
 
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(units_);
+    visitor->Trace(ranges_);
+  }
+
  private:
   // The NGOffsetMappingUnits of the inline formatting context in osrted order.
   UnitVector units_;
@@ -245,5 +257,16 @@ class CORE_EXPORT NGOffsetMapping {
 CORE_EXPORT LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct VectorTraits<blink::NGOffsetMappingUnit>
+    : VectorTraitsBase<blink::NGOffsetMappingUnit> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+  static constexpr bool kCanTraceConcurrently = true;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_OFFSET_MAPPING_H_

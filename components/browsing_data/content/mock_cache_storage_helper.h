@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 
 namespace content {
@@ -24,6 +23,9 @@ namespace browsing_data {
 class MockCacheStorageHelper : public CacheStorageHelper {
  public:
   explicit MockCacheStorageHelper(content::BrowserContext* browser_context);
+
+  MockCacheStorageHelper(const MockCacheStorageHelper&) = delete;
+  MockCacheStorageHelper& operator=(const MockCacheStorageHelper&) = delete;
 
   // Adds some StorageUsageInfo samples.
   void AddCacheStorageSamples();
@@ -49,8 +51,6 @@ class MockCacheStorageHelper : public CacheStorageHelper {
   bool fetched_ = false;
   std::map<url::Origin, bool> origins_;
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCacheStorageHelper);
 };
 
 }  // namespace browsing_data

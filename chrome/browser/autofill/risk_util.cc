@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,14 @@
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,7 +49,7 @@ void PassRiskData(base::OnceCallback<void(const std::string&)> callback,
   std::move(callback).Run(risk_data);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the containing window for the given |web_contents|. The containing
 // window might be a browser window for a Chrome tab, or it might be an app
 // window for a platform app.
@@ -75,18 +76,28 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
   // useful anyway (given that we're also including the bounds of the web
   // contents).
   gfx::Rect window_bounds;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   window_bounds = GetBaseWindowForWebContents(web_contents)->GetBounds();
 #endif
 
-  const PrefService* user_prefs =
+  const raw_ptr<PrefService> user_prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
+
+  LoadRiskDataHelper(obfuscated_gaia_id, user_prefs, std::move(callback),
+                     web_contents, window_bounds);
+}
+
+void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
+                        const raw_ptr<PrefService> user_prefs,
+                        base::OnceCallback<void(const std::string&)> callback,
+                        const raw_ptr<content::WebContents> web_contents,
+                        gfx::Rect window_bounds) {
   std::string charset = user_prefs->GetString(::prefs::kDefaultCharset);
   std::string accept_languages =
       user_prefs->GetString(::language::prefs::kAcceptLanguages);
   base::Time install_time = base::Time::FromTimeT(
-      g_browser_process->metrics_service()->GetInstallDate());
+      g_browser_process->local_state()->GetInt64(metrics::prefs::kInstallDate));
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   risk::GetFingerprint(obfuscated_gaia_id, window_bounds, web_contents,

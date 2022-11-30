@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -174,10 +174,9 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
 
     @Override
     public NotificationWrapperBuilder addAction(
-            Notification.Action action, int flags, int actionType) {
-        // TODO(xingliu): Plumb requestCode from action intent.
-        action.actionIntent =
-                new PendingIntentProvider(action.actionIntent, flags, 0).getPendingIntent();
+            Notification.Action action, int flags, int actionType, int requestCode) {
+        action.actionIntent = new PendingIntentProvider(action.actionIntent, flags, requestCode)
+                                      .getPendingIntent();
         addAction(action);
         return this;
     }
@@ -190,7 +189,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
 
     @Override
     public NotificationWrapperBuilder addAction(
-            NotificationCompat.Action action, int flags, int actionType) {
+            NotificationCompat.Action action, int flags, int actionType, int requestCode) {
         Log.w(TAG, "Ignoring compat action in standard builder.");
         return this;
     }
@@ -330,6 +329,14 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @Override
     public NotificationWrapperBuilder setCategory(String category) {
         mBuilder.setCategory(category);
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder setTimeoutAfter(long ms) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ApiHelperForO.setTimeoutAfter(mBuilder, ms);
+        }
         return this;
     }
 

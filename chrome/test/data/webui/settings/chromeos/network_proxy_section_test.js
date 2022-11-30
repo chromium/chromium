@@ -1,12 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkProxySection', function() {
   /** @type {!NetworkProxySectionElement|undefined} */
@@ -24,46 +23,51 @@ suite('NetworkProxySection', function() {
           value: true,
         },
       },
+      'ash': {
+        'lacros_proxy_controlling_extension': {
+          key: 'ash.lacros_proxy_controlling_extension',
+          type: chrome.settingsPrivate.PrefType.DICTIONARY,
+          value: {},
+        },
+      },
     };
     document.body.appendChild(proxySection);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Visibility of Allow Shared toggle', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
     const allowSharedToggle = proxySection.$.allowShared;
     assertTrue(!!allowSharedToggle);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kNone,
+      source: OncSource.kNone,
     };
     assertTrue(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kDevice,
+      source: OncSource.kDevice,
     };
     assertFalse(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kDevicePolicy,
+      source: OncSource.kDevicePolicy,
     };
     assertFalse(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kUser,
+      source: OncSource.kUser,
     };
     assertTrue(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kUserPolicy,
+      source: OncSource.kUserPolicy,
     };
     assertTrue(allowSharedToggle.hidden);
   });
 
   test('Disabled UI state', function() {
     const allowSharedToggle = proxySection.$.allowShared;
-    const networkProxy = proxySection.$$('network-proxy');
+    const networkProxy = proxySection.shadowRoot.querySelector('network-proxy');
 
     assertFalse(allowSharedToggle.disabled);
     assertTrue(networkProxy.editable);

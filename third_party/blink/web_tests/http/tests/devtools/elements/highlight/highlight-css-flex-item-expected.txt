@@ -5,6 +5,7 @@ fixed-flex-basis{
     {
       "baseSize": 20,
       "isHorizontalFlow": true,
+      "boxSizing": "content",
       "flexItemHighlightConfig": {
         "baseSizeBox": {
           "fillColor": "rgba(255, 0, 0, 0)",
@@ -32,6 +33,7 @@ fixed-width{
     {
       "baseSize": 30,
       "isHorizontalFlow": true,
+      "boxSizing": "content",
       "flexItemHighlightConfig": {
         "baseSizeBox": {
           "fillColor": "rgba(255, 0, 0, 0)",
@@ -59,6 +61,7 @@ column-fixed-height{
     {
       "baseSize": 40,
       "isHorizontalFlow": false,
+      "boxSizing": "content",
       "flexItemHighlightConfig": {
         "baseSizeBox": {
           "fillColor": "rgba(255, 0, 0, 0)",

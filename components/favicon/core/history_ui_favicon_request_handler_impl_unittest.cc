@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -73,20 +74,24 @@ class MockFaviconServiceWithFake : public MockFaviconService {
  public:
   MockFaviconServiceWithFake() {
     // Fake won't respond with any icons at first.
-    ON_CALL(*this, GetRawFaviconForPageURL(_, _, _, _, _, _))
+    ON_CALL(*this, GetRawFaviconForPageURL)
         .WillByDefault([](auto, auto, auto, auto,
                           favicon_base::FaviconRawBitmapCallback callback,
                           auto) {
           std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
           return kTaskId;
         });
-    ON_CALL(*this, GetFaviconImageForPageURL(_, _, _))
+    ON_CALL(*this, GetFaviconImageForPageURL)
         .WillByDefault(
             [](auto, favicon_base::FaviconImageCallback callback, auto) {
               std::move(callback).Run(favicon_base::FaviconImageResult());
               return kTaskId;
             });
   }
+
+  MockFaviconServiceWithFake(const MockFaviconServiceWithFake&) = delete;
+  MockFaviconServiceWithFake& operator=(const MockFaviconServiceWithFake&) =
+      delete;
 
   ~MockFaviconServiceWithFake() override = default;
 
@@ -111,9 +116,6 @@ class MockFaviconServiceWithFake : public MockFaviconService {
           return kTaskId;
         });
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFaviconServiceWithFake);
 };
 
 class MockLargeIconServiceWithFake : public LargeIconService {
@@ -133,6 +135,10 @@ class MockLargeIconServiceWithFake : public LargeIconService {
                            FAILURE_HTTP_ERROR);
             });
   }
+
+  MockLargeIconServiceWithFake(const MockLargeIconServiceWithFake&) = delete;
+  MockLargeIconServiceWithFake& operator=(const MockLargeIconServiceWithFake&) =
+      delete;
 
   ~MockLargeIconServiceWithFake() override = default;
 
@@ -191,9 +197,7 @@ class MockLargeIconServiceWithFake : public LargeIconService {
   MOCK_METHOD1(TouchIconFromGoogleServer, void(const GURL& icon_url));
 
  private:
-  MockFaviconServiceWithFake* const mock_favicon_service_with_fake_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLargeIconServiceWithFake);
+  const raw_ptr<MockFaviconServiceWithFake> mock_favicon_service_with_fake_;
 };
 
 class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
@@ -206,6 +210,11 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
     // Allow sending history data by default.
     ON_CALL(can_send_history_data_getter_, Run()).WillByDefault(Return(true));
   }
+
+  HistoryUiFaviconRequestHandlerImplTest(
+      const HistoryUiFaviconRequestHandlerImplTest&) = delete;
+  HistoryUiFaviconRequestHandlerImplTest& operator=(
+      const HistoryUiFaviconRequestHandlerImplTest&) = delete;
 
  protected:
   testing::NiceMock<MockFaviconServiceWithFake> mock_favicon_service_;
@@ -224,9 +233,6 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
   const std::string kOriginHistogramSuffix = ".HISTORY";
   const std::string kAvailabilityHistogramName =
       "Sync.SyncedHistoryFaviconAvailability";
-  const std::string kLatencyHistogramName = "Sync.SyncedHistoryFaviconLatency";
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryUiFaviconRequestHandlerImplTest);
 };
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {
@@ -241,8 +247,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kNotAvailable, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalBitmap) {
@@ -259,8 +263,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalBitmap) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
@@ -282,8 +284,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyImage) {
@@ -295,8 +295,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyImage) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kNotAvailable, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalImage) {
@@ -310,8 +308,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalImage) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
@@ -330,8 +326,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest,

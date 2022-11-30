@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ const char kOutputHeader[] =
     "digest\tPostScript name string digest";
 const char kOutputSeparator[] = "\t";
 
-FontIndexer::FontIndexer() : font_cache_(blink::FontCache::GetFontCache()) {}
+FontIndexer::FontIndexer() : font_cache_(&blink::FontCache::Get()) {}
 FontIndexer::~FontIndexer() = default;
 
 void FontIndexer::PrintAllFonts() {
@@ -97,18 +97,14 @@ void FontIndexer::PrintAllFonts() {
   WaitForFontListToLoad();
 }
 
-void FontIndexer::FontListHasLoaded(std::unique_ptr<base::ListValue> list) {
+void FontIndexer::FontListHasLoaded(base::Value::List list) {
   std::cout << kOutputHeader << std::endl;
 
-  for (size_t i = 0; i < list->GetSize(); i++) {
-    base::ListValue* font;
-    bool has_font = list->GetList(i, &font);
-    DCHECK(has_font);
+  for (const auto& i : list) {
+    DCHECK(i.is_list());
+    const base::Value::List& font = i.GetList();
 
-    std::string non_localized_name;
-    bool has_value = font->GetString(0, &non_localized_name);
-    DCHECK(has_value);
-
+    std::string non_localized_name = font[0].GetString();
     PrintAllFontsWithName(non_localized_name.c_str());
   }
 
@@ -124,7 +120,7 @@ bool FontIndexer::DoesFontHaveDigest(WTF::AtomicString name,
       font_cache_->GetFontData(font_description, name);
   DCHECK(font_data);
   return blink::FontGlobalContext::Get()
-             ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+             .GetOrComputeTypefaceDigest(font_data->PlatformData())
              .ToUkmMetricValue() == digest;
 }
 
@@ -178,7 +174,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
         font_cache_->GetFontData(blink::FontDescription(), name);
     default_font_digest =
         font_data ? blink::FontGlobalContext::Get()
-                        ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                        .GetOrComputeTypefaceDigest(font_data->PlatformData())
                         .ToUkmMetricValue()
                   : 0;
   }
@@ -239,7 +235,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
                 font_cache_->GetFontData(font_description, name)) {
           uint64_t typeface_digest =
               blink::FontGlobalContext::Get()
-                  ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                  .GetOrComputeTypefaceDigest(font_data->PlatformData())
                   .ToUkmMetricValue();
           if (set_of_digests.insert(typeface_digest).is_new_entry) {
             WTF::String postscript_name =

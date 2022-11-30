@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // Tracks changes to 'DeviceLoginScreenExtensions' policy and clears its data
 // stored in the login screen storage whenever a login screen extension is
@@ -38,12 +37,12 @@ class LoginScreenExtensionsStorageCleaner {
   void ClearPersistentDataForUninstalledExtensionsImpl(
       const std::vector<std::string>& installed_extension_ids,
       std::vector<std::string> keys,
-      base::Optional<std::string> error);
+      absl::optional<std::string> error);
 
   PrefService* prefs_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_SCREEN_EXTENSIONS_STORAGE_CLEANER_H_

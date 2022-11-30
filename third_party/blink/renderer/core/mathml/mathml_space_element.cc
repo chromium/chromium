@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ void MathMLSpaceElement::CollectStyleForPresentationAttribute(
     // width/height.
     String height = FastGetAttribute(mathml_names::kHeightAttr);
     String depth = FastGetAttribute(mathml_names::kDepthAttr);
-    if (!height.IsEmpty() && !depth.IsEmpty()) {
+    if (!height.empty() && !depth.empty()) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kHeight,
           "calc(" + height + " + " + depth + ")");

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,9 +28,14 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 
+using testing::AllOf;
+using testing::Eq;
+using testing::Matcher;
+using testing::Property;
 using version_info::GetProductNameAndVersionForUserAgent;
 
 namespace autofill {
@@ -57,19 +62,23 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
   void OnPersonalDataChanged() override { message_loop_runner_->Quit(); }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
 class WindowedNetworkObserver {
  public:
-  explicit WindowedNetworkObserver(const std::string& expected_upload_data)
+  explicit WindowedNetworkObserver(Matcher<std::string> expected_upload_data)
       : expected_upload_data_(expected_upload_data),
         message_loop_runner_(new content::MessageLoopRunner) {
     interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             &WindowedNetworkObserver::OnIntercept, base::Unretained(this)));
   }
+
+  WindowedNetworkObserver(const WindowedNetworkObserver&) = delete;
+  WindowedNetworkObserver& operator=(const WindowedNetworkObserver&) = delete;
+
   ~WindowedNetworkObserver() {}
 
   // Waits for a network request with the |expected_upload_data_|.
@@ -111,19 +120,17 @@ class WindowedNetworkObserver {
             ? GetLookupContent(resource_request.url.path())
             : network::GetUploadData(resource_request);
 
-    if (data == expected_upload_data_)
+    if (expected_upload_data_.Matches(data))
       message_loop_runner_->Quit();
 
     return false;
   }
 
  private:
-  const std::string expected_upload_data_;
+  Matcher<std::string> expected_upload_data_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedNetworkObserver);
 };
 
 }  // namespace
@@ -138,7 +145,7 @@ class AutofillServerTest : public InProcessBrowserTest {
         // Enabled.
         {features::kAutofillAllowNonHttpActivation},
         // Disabled.
-        {features::kAutofillMetadataUploads});
+        {});
 
     // Note that features MUST be enabled/disabled before continuing with
     // SetUp(); otherwise, the feature state doesn't propagate to the test
@@ -155,6 +162,38 @@ class AutofillServerTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+MATCHER_P(EqualsUploadProto, expected_const, "") {
+  AutofillUploadRequest expected = expected_const;
+  AutofillUploadRequest request;
+  if (!request.ParseFromString(arg))
+    return false;
+
+  // Remove metadata because it is randomised and won't match.
+  EXPECT_EQ(request.upload().has_randomized_form_metadata(),
+            expected.upload().has_randomized_form_metadata());
+  request.mutable_upload()->clear_randomized_form_metadata();
+  expected.mutable_upload()->clear_randomized_form_metadata();
+  EXPECT_EQ(request.upload().field_size(), expected.upload().field_size());
+  if (request.upload().field_size() != expected.upload().field_size())
+    return false;
+  for (int i = 0; i < request.upload().field_size(); i++) {
+    request.mutable_upload()
+        ->mutable_field(i)
+        ->clear_randomized_field_metadata();
+    expected.mutable_upload()
+        ->mutable_field(i)
+        ->clear_randomized_field_metadata();
+  }
+
+  // TODO(crbug.com/1251119): The language is sometimes missing from the upload,
+  // making the test flaky. Add the language back to the comparison when the
+  // root cause is fixed.
+  request.mutable_upload()->clear_language();
+  expected.mutable_upload()->clear_language();
+
+  return request.SerializeAsString() == expected.SerializeAsString();
+}
 
 // Regression test for http://crbug.com/177419
 IN_PROC_BROWSER_TEST_F(AutofillServerTest,
@@ -198,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(kDataURIPrefix) + kFormHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
   query_network_observer.Wait();
 
   // Submit the form, using a simulated mouse click because form submissions not
@@ -219,37 +258,35 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   // The resulting bit mask in this test is hard-coded to capture regressions in
   // the calculation of the mask.
 
-  // TODO(crbug.com/1103421): Clean legacy implementation once structured names
-  // are fully launched.
-  // For structured names, there is additional data for new name types present.
-
-  const bool structured_names = base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-  const bool structured_address = base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
   const bool honorific_prefix = base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForHonorificPrefixes);
 
   // Combinations of honorific_prefix without structured_names are omitted
-  // because honorific_prefix can only be enabled ontop of structured_names.
-  if (structured_names && !structured_address && !honorific_prefix) {
-    upload->set_data_present("1f7e000378000008000400000004");
-  } else if (structured_names && honorific_prefix && !structured_address) {
-    upload->set_data_present("1f7e00037800000800040000000404");
-  } else if (structured_names && !honorific_prefix && structured_address) {
-    upload->set_data_present("1f7e0003780000080004000001c4");
-  } else if (structured_names && honorific_prefix && structured_address) {
-    upload->set_data_present("1f7e0003780000080004000001c404");
-  } else if (!structured_names && !honorific_prefix && structured_address) {
-    upload->set_data_present("1f7e0003780000080004000001c");
+  // because honorific_prefix can only be enabled on top of structured_names.
+  std::string data_present;
+  if (!honorific_prefix) {
+    data_present = "1f7e0003780000080004000001c40018";
   } else {
-    upload->set_data_present("1f7e0003780000080004");
+    data_present = "1f7e0003780000080004000001c40418";
   }
+
+  // TODO(crbug.com/1311937): Additional phone number trunk types are present
+  // if AutofillEnableSupportForPhoneNumberTrunkTypes is enabled. Clean-up
+  // implementation when launched.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
+    data_present.rbegin()[1] = '7';
+  }
+  upload->set_data_present(data_present);
 
   upload->set_passwords_revealed(false);
   upload->set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload->set_has_form_tag(true);
+  // We don't set metadata, because the matcher will skip them.
+  upload->set_language("und");
+  *upload->mutable_randomized_form_metadata() =
+      autofill::AutofillRandomizedFormMetadata();
 
   // Enabling raw form data uploading (e.g., field name) is too complicated in
   // this test. So, don't expect it in the upload.
@@ -262,10 +299,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   test::FillUploadField(upload->add_field(), 1236501728U, nullptr, nullptr,
                         nullptr, 2U);
 
-  std::string expected_upload_string;
-  ASSERT_TRUE(request.SerializeToString(&expected_upload_string));
-
-  WindowedNetworkObserver upload_network_observer(expected_upload_string);
+  WindowedNetworkObserver upload_network_observer(EqualsUploadProto(request));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::SimulateMouseClick(web_contents, 0,
@@ -299,8 +333,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(kDataURIPrefix) + kFormHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
   query_network_observer.Wait();
 }
 

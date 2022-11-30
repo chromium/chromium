@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -26,6 +27,8 @@ class HttpRequestHeaders;
 
 namespace signin {
 
+enum class Tribool;
+
 // Profile mode flags.
 enum ProfileMode {
   PROFILE_MODE_DEFAULT = 0,
@@ -39,6 +42,13 @@ extern const char kChromeConnectedHeader[];
 extern const char kChromeManageAccountsHeader[];
 extern const char kDiceRequestHeader[];
 extern const char kDiceResponseHeader[];
+
+// The X-Auto-Login header detects when a user is prompted to enter their
+// credentials on the Gaia sign-in page. It is sent with an empty email if the
+// user is on the Gaia sign-in email page or a pre-filled email if the user has
+// selected an account on the AccountChooser. X-Auto-Login is not sent following
+// a reauth request.
+extern const char kAutoLoginHeader[];
 
 // The ServiceType specified by Gaia in the response header accompanying the 204
 // response. This indicates the action Chrome is supposed to lead the user to
@@ -77,13 +87,14 @@ struct ManageAccountsParams {
   std::string continue_url;
   // Whether the continue URL should be loaded in the same tab.
   bool is_same_tab = false;
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Whether to show consistency promo.
   bool show_consistency_promo = false;
 #endif
 
   ManageAccountsParams();
   ManageAccountsParams(const ManageAccountsParams& other);
+  ManageAccountsParams& operator=(const ManageAccountsParams& other);
 };
 
 // Struct describing the parameters received in the Dice response header.
@@ -140,9 +151,14 @@ struct DiceResponseParams {
   };
 
   DiceResponseParams();
-  ~DiceResponseParams();
+
+  DiceResponseParams(const DiceResponseParams&) = delete;
+  DiceResponseParams& operator=(const DiceResponseParams&) = delete;
+
   DiceResponseParams(DiceResponseParams&&);
   DiceResponseParams& operator=(DiceResponseParams&&);
+
+  ~DiceResponseParams();
 
   DiceAction user_intention = DiceAction::NONE;
 
@@ -154,9 +170,6 @@ struct DiceResponseParams {
 
   // Populated when |user_intention| is ENABLE_SYNC.
   std::unique_ptr<EnableSyncInfo> enable_sync_info;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiceResponseParams);
 };
 
 class RequestAdapter {
@@ -165,6 +178,10 @@ class RequestAdapter {
                  const net::HttpRequestHeaders& original_headers,
                  net::HttpRequestHeaders* modified_headers,
                  std::vector<std::string>* headers_to_remove);
+
+  RequestAdapter(const RequestAdapter&) = delete;
+  RequestAdapter& operator=(const RequestAdapter&) = delete;
+
   virtual ~RequestAdapter();
 
   const GURL& GetUrl();
@@ -175,15 +192,16 @@ class RequestAdapter {
  private:
   const GURL url_;
   const net::HttpRequestHeaders& original_headers_;
-  net::HttpRequestHeaders* const modified_headers_;
-  std::vector<std::string>* const headers_to_remove_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestAdapter);
+  const raw_ptr<net::HttpRequestHeaders> modified_headers_;
+  const raw_ptr<std::vector<std::string>> headers_to_remove_;
 };
 
 // Base class for managing the signin headers (Dice and Chrome-Connected).
 class SigninHeaderHelper {
  public:
+  SigninHeaderHelper(const SigninHeaderHelper&) = delete;
+  SigninHeaderHelper& operator=(const SigninHeaderHelper&) = delete;
+
   // Appends or remove the header to a network request if necessary.
   // Returns whether the request has the request header.
   bool AppendOrRemoveRequestHeader(RequestAdapter* request,
@@ -197,10 +215,6 @@ class SigninHeaderHelper {
       const GURL& url,
       const content_settings::CookieSettings* cookie_settings) = 0;
 
- protected:
-  SigninHeaderHelper();
-  virtual ~SigninHeaderHelper();
-
   // Dictionary of fields in a account consistency response header.
   using ResponseHeaderDictionary = std::multimap<std::string, std::string>;
 
@@ -209,11 +223,12 @@ class SigninHeaderHelper {
   static ResponseHeaderDictionary ParseAccountConsistencyResponseHeader(
       const std::string& header_value);
 
+ protected:
+  SigninHeaderHelper();
+  virtual ~SigninHeaderHelper();
+
   // Returns whether the url is eligible for the request header.
   virtual bool IsUrlEligibleForRequestHeader(const GURL& url) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SigninHeaderHelper);
 };
 
 // Returns whether the url is eligible for account consistency on Google
@@ -238,7 +253,7 @@ void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
     const std::string& gaia_id,
-    const base::Optional<bool>& is_child_account,
+    Tribool is_child_account,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask,

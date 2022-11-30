@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,11 +19,16 @@ class Size;
 namespace media {
 
 // Tracker specifics for Windows GpuMemoryBuffer.
+// This class is not thread-safe.
 class CAPTURE_EXPORT GpuMemoryBufferTracker final
     : public VideoCaptureBufferTracker {
  public:
   explicit GpuMemoryBufferTracker(
       scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
+
+  GpuMemoryBufferTracker(const GpuMemoryBufferTracker&) = delete;
+  GpuMemoryBufferTracker& operator=(const GpuMemoryBufferTracker&) = delete;
+
   ~GpuMemoryBufferTracker() override;
 
   // Implementation of VideoCaptureBufferTracker:
@@ -44,12 +49,11 @@ class CAPTURE_EXPORT GpuMemoryBufferTracker final
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
   base::UnsafeSharedMemoryRegion region_;
+  base::WritableSharedMemoryMapping mapping_;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
   gfx::Size buffer_size_;
   bool CreateBufferInternal();
-  bool EnsureD3DDevice();
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferTracker);
+  bool IsD3DDeviceChanged();
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -277,7 +277,7 @@ TEST(SequenceManagerFuzzerProcessorTest, SetQueueEnabled) {
 
   // All the tasks posted to the task queue with id 1 do not get executed since
   // this task queue is disabled.
-  EXPECT_TRUE(executed_tasks.IsEmpty());
+  EXPECT_TRUE(executed_tasks.empty());
 }
 
 TEST(SequenceManagerFuzzerProcessorTest, SetQueueEnabledWDelays) {
@@ -441,7 +441,7 @@ TEST(SequenceManagerFuzzerProcessorTest, MultipleVoters) {
   Vector<TaskForTest> expected_tasks;
 
   // Queue is enabled only if all voters enable it.
-  EXPECT_TRUE(executed_tasks.IsEmpty());
+  EXPECT_TRUE(executed_tasks.empty());
 }
 
 TEST(SequenceManagerFuzzerProcessorTest, ShutdownTaskQueue) {
@@ -698,7 +698,7 @@ TEST(SequenceManagerFuzzerProcessorTest, CancelTask) {
   expected_actions.emplace_back(2, ActionForTest::ActionType::kCancelTask, 0);
   EXPECT_THAT(executed_actions, ContainerEq(expected_actions));
 
-  EXPECT_TRUE(executed_tasks.IsEmpty());
+  EXPECT_TRUE(executed_tasks.empty());
 }
 
 TEST(SequenceManagerFuzzerProcessorTest, CancelTaskWhenNoneArePending) {
@@ -1089,7 +1089,7 @@ TEST(SequenceManagerFuzzerProcessorTest, ThrottleTaskQueue) {
   EXPECT_THAT(executed_actions, ContainerEq(expected_actions));
 
   // Task queue with id 1 is throttled, so posted tasks will not get executed.
-  EXPECT_TRUE(executed_tasks.IsEmpty());
+  EXPECT_TRUE(executed_tasks.empty());
 }
 
 TEST(SequenceManagerFuzzerProcessorTest, MultipleThreadsButNotInteracting) {

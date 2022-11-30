@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,19 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Accesses private data from a UserSessionManager for testing.
 class UserSessionManagerTestApi {
  public:
   explicit UserSessionManagerTestApi(UserSessionManager* session_manager);
+
+  UserSessionManagerTestApi(const UserSessionManagerTestApi&) = delete;
+  UserSessionManagerTestApi& operator=(const UserSessionManagerTestApi&) =
+      delete;
 
   // Injects `user_context` that will be used to create StubAuthenticator
   // instance when UserSessionManager::CreateAuthenticator() is called.
@@ -37,13 +40,21 @@ class UserSessionManagerTestApi {
   void SetAttemptRestartClosureInTests(
       const base::RepeatingClosure& attempt_restart_closure);
 
+  OnboardingUserActivityCounter* get_onboarding_user_activity_counter();
+
  private:
   UserSessionManager* session_manager_;  // not owned
-
-  DISALLOW_COPY_AND_ASSIGN(UserSessionManagerTestApi);
 };
 
 }  // namespace test
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::UserSessionManagerTestApi;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SESSION_USER_SESSION_MANAGER_TEST_API_H_

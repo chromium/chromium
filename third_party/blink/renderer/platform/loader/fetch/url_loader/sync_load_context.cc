@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -86,7 +87,7 @@ class SyncLoadContext::SignalHelper final {
   base::WaitableEvent* redirect_or_response_event_;
   base::WaitableEvent* abort_event_;
   base::WaitableEventWatcher abort_watcher_;
-  base::Optional<base::OneShotTimer> timeout_timer_;
+  absl::optional<base::OneShotTimer> timeout_timer_;
 };
 
 // static
@@ -172,8 +173,7 @@ bool SyncLoadContext::OnReceivedRedirect(
   response_->head = std::move(head);
   response_->redirect_info = redirect_info;
   *context_for_redirect_ = this;
-  resource_request_sender_->SetDefersLoading(
-      WebURLLoader::DeferType::kDeferred);
+  resource_request_sender_->Freeze(WebLoaderFreezeMode::kStrict);
   signals_->SignalRedirectOrResponseComplete();
   return true;
 }
@@ -187,8 +187,7 @@ void SyncLoadContext::FollowRedirect() {
   response_->redirect_info = net::RedirectInfo();
   *context_for_redirect_ = nullptr;
 
-  resource_request_sender_->SetDefersLoading(
-      WebURLLoader::DeferType::kNotDeferred);
+  resource_request_sender_->Freeze(WebLoaderFreezeMode::kNone);
 }
 
 void SyncLoadContext::CancelRedirect() {
@@ -200,7 +199,8 @@ void SyncLoadContext::CancelRedirect() {
 }
 
 void SyncLoadContext::OnReceivedResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    base::TimeTicks response_arrival_at_renderer) {
   DCHECK(!Completed());
   response_->head = std::move(head);
 }
@@ -303,6 +303,8 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
 
 void SyncLoadContext::OnAbort(base::WaitableEvent* event) {
   DCHECK(!Completed());
+  body_handle_.reset();
+  body_watcher_.Cancel();
   response_->error_code = net::ERR_ABORTED;
   CompleteRequest();
 }
@@ -311,6 +313,8 @@ void SyncLoadContext::OnTimeout() {
   // OnTimeout() must not be called after CompleteRequest() was called, because
   // the OneShotTimer must have been stopped.
   DCHECK(!Completed());
+  body_handle_.reset();
+  body_watcher_.Cancel();
   response_->error_code = net::ERR_TIMED_OUT;
   CompleteRequest();
 }

@@ -1,0 +1,92 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms
+related to video tutorials along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="VideoTutorialFeatureTopic">
+  <variant name="ChromeIntro"/>
+  <variant name="Download"/>
+  <variant name="Search"/>
+  <variant name="Summary"/>
+  <variant name="Unknown"/>
+  <variant name="VoiceSearch"/>
+</variants>
+
+<histogram name="VideoTutorials.LanguagePicker.Action"
+    enum="VideoTutorials.LanguagePickerAction" expires_after="2022-08-07">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Recorded whenever the user interacts with the video player language picker
+    UI. Records various user actions such as language selection, back press, or
+    dismiss actions.
+  </summary>
+</histogram>
+
+<histogram name="VideoTutorials.LanguagePicker.LanguageSelected"
+    units="position" expires_after="2022-08-28">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Recorded whenever the user taps on a language in the video player language
+    picker UI. Only the position of the language in the list of available
+    languages will be recorded.
+  </summary>
+</histogram>
+
+<histogram name="VideoTutorials.Player.LoadTimeLatency" units="ms"
+    expires_after="2022-09-18">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records the latency in bringing up the video player for video tutorials.
+    Measures the time difference between user clicking on a video to the time
+    when it actually starts playing.
+  </summary>
+</histogram>
+
+<histogram name="VideoTutorials.{Feature}.Player.Progress"
+    enum="VideoTutorials.WatchState" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records video watch progress events such as play, pause, resume, completion,
+    failure etc. encountered during when watching video tutorial for the
+    {Feature} feature.
+  </summary>
+  <token key="Feature" variants="VideoTutorialFeatureTopic"/>
+</histogram>
+
+<histogram name="VideoTutorials.{Feature}.Player.UserAction"
+    enum="VideoTutorials.UserAction" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records user actions on the video player UI, such as clicking on various
+    buttons, encountered when watching video tutorial for the {Feature} feature.
+  </summary>
+  <token key="Feature" variants="VideoTutorialFeatureTopic"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

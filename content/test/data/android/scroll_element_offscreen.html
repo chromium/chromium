@@ -1,0 +1,20 @@
+<!-- Simple test page to scroll an element partially off-screen and check bounding box -->
+<html>
+  <head>
+    <script>
+      function createText() {
+        var containingDiv = document.getElementById("scroll_view");
+        for (i = 0; i < 100; i++) {
+          var paragraph = document.createElement('p');
+          paragraph.innerHTML = "Example Text " + i;
+
+          containingDiv.appendChild(paragraph);
+        }
+      }
+    </script>
+  </head>
+  <body onload="createText()">
+    <div id="scroll_view">
+    </div>
+  </body>
+</html>

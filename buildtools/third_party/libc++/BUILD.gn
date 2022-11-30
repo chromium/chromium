@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,12 +10,24 @@ import("//build/toolchain/toolchain.gni")
 config("config") {
   cflags = [ "-fstrict-aliasing" ]
   if (is_win) {
-    # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S in
-    # its implementation.
-    cflags += [ "-Wno-macro-redefined" ]
+    cflags += [
+      # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S
+      # in its implementation.
+      "-Wno-macro-redefined",
+    ]
+
+    cflags_cc = [
+      # We want to use a uniform C++ version across all of chromium, but
+      # upstream libc++ requires C++20 so we have to make an exception here.
+      # No other target should override the default -std= flag.
+      "-std:c++20",
+    ]
   } else {
     cflags += [ "-fPIC" ]
+    cflags_cc = [ "-std=c++20" ]
   }
+
+  defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
 }
 
 # Explicitly set version macros to Windows 7 to prevent libc++ from adding a
@@ -42,7 +54,7 @@ target(_libcxx_target_type, "libc++") {
     "//build/config:common_deps",
     "//third_party/catapult/devil:devil",
   ]
-  if (is_linux && !is_chromeos) {
+  if (is_linux) {
     # This target packages libc++.so, so must have an explicit dependency on
     # libc++.
     visibility +=
@@ -55,7 +67,9 @@ target(_libcxx_target_type, "libc++") {
   if (is_linux && !is_clang) {
     libs = [ "atomic" ]
   }
-  
+
+  inputs = [ "__config_site" ]
+
   sources = [
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
@@ -66,14 +80,15 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/chrono.cpp",
     "trunk/src/condition_variable.cpp",
     "trunk/src/condition_variable_destructor.cpp",
-    "trunk/src/debug.cpp",
     "trunk/src/exception.cpp",
+    "trunk/src/format.cpp",
     "trunk/src/functional.cpp",
     "trunk/src/future.cpp",
     "trunk/src/hash.cpp",
     "trunk/src/ios.cpp",
     "trunk/src/ios.instantiations.cpp",
     "trunk/src/iostream.cpp",
+    "trunk/src/legacy_pointer_safety.cpp",
     "trunk/src/locale.cpp",
     "trunk/src/memory.cpp",
     "trunk/src/mutex.cpp",
@@ -83,6 +98,9 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/random.cpp",
     "trunk/src/random_shuffle.cpp",
     "trunk/src/regex.cpp",
+    "trunk/src/ryu/d2fixed.cpp",
+    "trunk/src/ryu/d2s.cpp",
+    "trunk/src/ryu/f2s.cpp",
     "trunk/src/shared_mutex.cpp",
     "trunk/src/stdexcept.cpp",
     "trunk/src/string.cpp",
@@ -94,7 +112,17 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/valarray.cpp",
     "trunk/src/variant.cpp",
     "trunk/src/vector.cpp",
+    "trunk/src/verbose_abort.cpp",
   ]
+
+  if (enable_iterator_debugging) {
+    sources += [
+      "trunk/src/debug.cpp",
+      "trunk/src/legacy_debug_handler.cpp",
+    ]
+  }
+
+  include_dirs = [ "trunk/src" ]
   if (is_win) {
     sources += [
       "trunk/src/support/win32/locale_win32.cpp",
@@ -104,7 +132,7 @@ target(_libcxx_target_type, "libc++") {
     configs -= [ "//build/config/win:winver" ]
     configs += [ ":winver" ]
     if (libcxx_natvis_include) {
-      inputs = [
+      inputs += [
         # libc++.natvis listed as an input here instead of in
         # //build/config/c++:runtime_library to prevent unnecessary size
         # increase in generated build files.
@@ -118,30 +146,30 @@ target(_libcxx_target_type, "libc++") {
     "//build/config/compiler:no_rtti",
     "//build/config/coverage:default_coverage",
   ]
-  if (is_android && libcxx_is_shared) {
+  if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
-    # See crbug.com/1076244#c11 for more detail.
     output_name = "libc++_chrome"
-    configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    if (is_android) {
+      # See crbug.com/1076244#c11 for more detail.
+      configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    }
   }
   configs += [
     ":config",
     "//build/config/compiler:no_chromium_code",
     "//build/config/compiler:exceptions",
     "//build/config/compiler:rtti",
-    "//build/config/sanitizers:sanitizer_options_link_helper",
   ]
+
   if (libcxx_is_shared && !is_win) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 
-  defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
+  defines = []
 
   if (!libcxx_is_shared) {
-    # TODO(https://crbug.com/946629): Remove use_xcode_clang condition once
-    # XCode clang is updated to support -fvisibility-global-new-delete-hidden.
-    if ((is_mac || (is_ios && !use_xcode_clang)) && is_clang) {
+    if (is_apple && is_clang) {
       # We want operator new/delete to be private on Mac, but these functions
       # are implicitly created by the compiler for each translation unit, as
       # specified in the C++ spec 3.7.4p2, which makes them always have default
@@ -181,5 +209,9 @@ target(_libcxx_target_type, "libc++") {
     if (!export_libcxxabi_from_executables) {
       deps = [ "//buildtools/third_party/libc++abi" ]
     }
+  }
+
+  if (!is_debug) {
+    defines += [ "_LIBCPP_AVAILABILITY_CUSTOM_VERBOSE_ABORT_PROVIDED=1" ]
   }
 }

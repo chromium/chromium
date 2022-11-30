@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,21 +21,28 @@
 
 namespace {
 
-base::Optional<content::TtsControllerDelegate::PreferredVoiceId>
-PreferredVoiceIdFromString(const base::DictionaryValue* pref,
+absl::optional<content::TtsControllerDelegate::PreferredVoiceId>
+PreferredVoiceIdFromString(const base::Value::Dict& pref,
                            const std::string& pref_key) {
-  std::string voice_id;
-  pref->GetString(l10n_util::GetLanguage(pref_key), &voice_id);
-  if (voice_id.empty())
-    return base::nullopt;
+  const std::string* voice_id =
+      pref.FindStringByDottedPath(l10n_util::GetLanguage(pref_key));
+  if (!voice_id || voice_id->empty())
+    return absl::nullopt;
 
-  std::unique_ptr<base::DictionaryValue> json =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(voice_id));
+  absl::optional<base::Value> json = base::JSONReader::Read(*voice_id);
   std::string name;
   std::string id;
-  json->GetString("name", &name);
-  json->GetString("extension", &id);
-  return base::Optional<content::TtsControllerDelegate::PreferredVoiceId>(
+  if (json && json->is_dict()) {
+    const base::Value::Dict& dict = json->GetDict();
+    const std::string* name_str = dict.FindString("name");
+    if (name_str)
+      name = *name_str;
+    const std::string* id_str = dict.FindString("extension");
+    if (id_str)
+      id = *id_str;
+  }
+
+  return absl::optional<content::TtsControllerDelegate::PreferredVoiceId>(
       {name, id});
 }
 
@@ -57,8 +64,7 @@ TtsControllerDelegateImpl::~TtsControllerDelegateImpl() = default;
 std::unique_ptr<content::TtsControllerDelegate::PreferredVoiceIds>
 TtsControllerDelegateImpl::GetPreferredVoiceIdsForUtterance(
     content::TtsUtterance* utterance) {
-  const base::DictionaryValue* lang_to_voice_pref =
-      GetLangToVoicePref(utterance);
+  const base::Value::Dict* lang_to_voice_pref = GetLangToVoicePref(utterance);
   if (!lang_to_voice_pref)
     return nullptr;
 
@@ -67,15 +73,15 @@ TtsControllerDelegateImpl::GetPreferredVoiceIdsForUtterance(
 
   if (!utterance->GetLang().empty()) {
     preferred_ids->lang_voice_id = PreferredVoiceIdFromString(
-        lang_to_voice_pref, l10n_util::GetLanguage(utterance->GetLang()));
+        *lang_to_voice_pref, l10n_util::GetLanguage(utterance->GetLang()));
   }
 
   const std::string app_lang = g_browser_process->GetApplicationLocale();
   preferred_ids->locale_voice_id = PreferredVoiceIdFromString(
-      lang_to_voice_pref, l10n_util::GetLanguage(app_lang));
+      *lang_to_voice_pref, l10n_util::GetLanguage(app_lang));
 
   preferred_ids->any_locale_voice_id =
-      PreferredVoiceIdFromString(lang_to_voice_pref, "noLanguageCode");
+      PreferredVoiceIdFromString(*lang_to_voice_pref, "noLanguageCode");
   return preferred_ids;
 }
 
@@ -112,10 +118,10 @@ const PrefService* TtsControllerDelegateImpl::GetPrefService(
   return profile ? profile->GetPrefs() : nullptr;
 }
 
-const base::DictionaryValue* TtsControllerDelegateImpl::GetLangToVoicePref(
+const base::Value::Dict* TtsControllerDelegateImpl::GetLangToVoicePref(
     content::TtsUtterance* utterance) {
   const PrefService* prefs = GetPrefService(utterance);
   return prefs == nullptr
              ? nullptr
-             : prefs->GetDictionary(prefs::kTextToSpeechLangToVoiceName);
+             : &prefs->GetDict(prefs::kTextToSpeechLangToVoiceName);
 }

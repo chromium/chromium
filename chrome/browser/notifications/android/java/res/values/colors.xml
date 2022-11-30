@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+  <color name="permission_rationale_illustration_outer_border_baseline">@color/default_bg_color_light_elev_4_baseline</color>
+  <color name="permission_rationale_illustration_inner_border_baseline">@color/default_bg_color_light_elev_2_baseline</color>
+</resources>

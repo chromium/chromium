@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.suggestions;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -30,6 +31,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
@@ -114,21 +116,21 @@ public class TabSuggestionsServerFetcherUnitTest {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[7];
+                Callback callback = (Callback) invocation.getArguments()[8];
                 callback.onResult(new EndpointResponse(response));
                 return null;
             }
         })
                 .when(mEndpointFetcherJniMock)
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), anyLong(), any(String[].class), any(Callback.class));
+                        anyString(), anyLong(), any(String[].class), anyInt(), any(Callback.class));
     }
 
     private void verifyEndpointArguments() {
         verify(mEndpointFetcherJniMock)
                 .nativeFetchChromeAPIKey(eq(mProfile), eq(EXPECTED_ENDPOINT_URL),
                         eq(EXPECTED_METHOD), eq(EXPECTED_CONTENT_TYPE), any(String.class),
-                        eq(EXPECTED_TIMEOUT), any(String[].class), any(Callback.class));
+                        eq(EXPECTED_TIMEOUT), any(String[].class), anyInt(), any(Callback.class));
     }
 
     @Test
@@ -210,7 +212,8 @@ public class TabSuggestionsServerFetcherUnitTest {
     public void testServerFetcherEnabled() {
         for (boolean isSignedIn : new boolean[] {false, true}) {
             for (boolean isServerFetcherFlagEnabled : new boolean[] {false, true}) {
-                TabSuggestionsServerFetcher fetcher = spy(new TabSuggestionsServerFetcher());
+                TabSuggestionsServerFetcher fetcher =
+                        spy(new TabSuggestionsServerFetcher(ContextUtils.getApplicationContext()));
                 doReturn(isSignedIn).when(fetcher).isSignedIn();
                 doReturn(isServerFetcherFlagEnabled).when(fetcher).isServerFetcherFlagEnabled();
                 if (isSignedIn && isServerFetcherFlagEnabled) {
@@ -225,7 +228,8 @@ public class TabSuggestionsServerFetcherUnitTest {
     @Test
     @Features.DisableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void testServerFetcherDisabledWithDisableGroup() {
-        TabSuggestionsServerFetcher fetcher = spy(new TabSuggestionsServerFetcher());
+        TabSuggestionsServerFetcher fetcher =
+                spy(new TabSuggestionsServerFetcher(ContextUtils.getApplicationContext()));
         doReturn(true).when(fetcher).isSignedIn();
         doReturn(true).when(fetcher).isServerFetcherFlagEnabled();
         Assert.assertThat("The Fetcher is enabled", fetcher.isEnabled(), is(false));

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,14 +22,15 @@ class FormSubmissionTrackerUtilTest
     : public content::RenderViewHostTestHarness {
  public:
   FormSubmissionTrackerUtilTest() = default;
+  FormSubmissionTrackerUtilTest(const FormSubmissionTrackerUtilTest&) = delete;
+  FormSubmissionTrackerUtilTest& operator=(
+      const FormSubmissionTrackerUtilTest&) = delete;
   ~FormSubmissionTrackerUtilTest() override = default;
 
   FormSubmissionObserverMock& observer() { return observer_; }
 
  private:
   FormSubmissionObserverMock observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormSubmissionTrackerUtilTest);
 };
 
 TEST_F(FormSubmissionTrackerUtilTest, NotRendererInitiated) {

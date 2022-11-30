@@ -1,9 +1,9 @@
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#ifndef QUEUE_H_
-#define QUEUE_H_
+#ifndef EXAMPLES_DEMO_NACL_IO_DEMO_QUEUE_H_
+#define EXAMPLES_DEMO_NACL_IO_DEMO_QUEUE_H_
 
 #include "ppapi/c/pp_var.h"
 
@@ -28,4 +28,4 @@ void InitializeMessageQueue();
 int EnqueueMessage(struct PP_Var message);
 struct PP_Var DequeueMessage();
 
-#endif  /* QUEUE_H_ */
+#endif  // EXAMPLES_DEMO_NACL_IO_DEMO_QUEUE_H_

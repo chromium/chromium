@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,12 @@ const char kDesktopTaskSwitchUserAction[] = "Desktop_SwitchTask";
 class DesktopTaskSwitchMetricRecorderTest : public AshTestBase {
  public:
   DesktopTaskSwitchMetricRecorderTest();
+
+  DesktopTaskSwitchMetricRecorderTest(
+      const DesktopTaskSwitchMetricRecorderTest&) = delete;
+  DesktopTaskSwitchMetricRecorderTest& operator=(
+      const DesktopTaskSwitchMetricRecorderTest&) = delete;
+
   ~DesktopTaskSwitchMetricRecorderTest() override;
 
   // AshTestBase:
@@ -62,9 +68,6 @@ class DesktopTaskSwitchMetricRecorderTest : public AshTestBase {
 
   // The test target.
   std::unique_ptr<DesktopTaskSwitchMetricRecorder> metrics_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopTaskSwitchMetricRecorderTest);
 };
 
 DesktopTaskSwitchMetricRecorderTest::DesktopTaskSwitchMetricRecorderTest() =
@@ -75,8 +78,8 @@ DesktopTaskSwitchMetricRecorderTest::~DesktopTaskSwitchMetricRecorderTest() =
 
 void DesktopTaskSwitchMetricRecorderTest::SetUp() {
   AshTestBase::SetUp();
-  metrics_recorder_.reset(new DesktopTaskSwitchMetricRecorder);
-  user_action_tester_.reset(new base::UserActionTester);
+  metrics_recorder_ = std::make_unique<DesktopTaskSwitchMetricRecorder>();
+  user_action_tester_ = std::make_unique<base::UserActionTester>();
 }
 
 void DesktopTaskSwitchMetricRecorderTest::TearDown() {
@@ -203,7 +206,7 @@ TEST_F(DesktopTaskSwitchMetricRecorderTest,
 TEST_F(DesktopTaskSwitchMetricRecorderTest, ActivateNullWindow) {
   std::unique_ptr<aura::Window> positionable_window =
       CreatePositionableWindow();
-  std::unique_ptr<aura::Window> null_window = nullptr;
+  std::unique_ptr<aura::Window> null_window;
 
   ActiveTaskWindowWithUserInput(positionable_window.get());
   ResetActionCounts();
@@ -251,6 +254,12 @@ class DesktopTaskSwitchMetricRecorderWithShellIntegrationTest
     : public AshTestBase {
  public:
   DesktopTaskSwitchMetricRecorderWithShellIntegrationTest();
+
+  DesktopTaskSwitchMetricRecorderWithShellIntegrationTest(
+      const DesktopTaskSwitchMetricRecorderWithShellIntegrationTest&) = delete;
+  DesktopTaskSwitchMetricRecorderWithShellIntegrationTest& operator=(
+      const DesktopTaskSwitchMetricRecorderWithShellIntegrationTest&) = delete;
+
   ~DesktopTaskSwitchMetricRecorderWithShellIntegrationTest() override;
 
   // AshTestBase:
@@ -273,10 +282,6 @@ class DesktopTaskSwitchMetricRecorderWithShellIntegrationTest
   // Delegate used when creating new windows using the
   // CreatePositionableWindowInShellWithBounds(...) method.
   aura::test::TestWindowDelegate test_window_delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      DesktopTaskSwitchMetricRecorderWithShellIntegrationTest);
 };
 
 DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::
@@ -287,7 +292,7 @@ DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::
 
 void DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::SetUp() {
   AshTestBase::SetUp();
-  user_action_tester_.reset(new base::UserActionTester);
+  user_action_tester_ = std::make_unique<base::UserActionTester>();
 }
 
 void DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::TearDown() {

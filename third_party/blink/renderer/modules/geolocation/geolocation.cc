@@ -31,8 +31,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
@@ -40,9 +39,10 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_error.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 
 namespace blink {
 namespace {
@@ -65,8 +65,7 @@ Geoposition* CreateGeoposition(
       position.heading >= 0. && position.heading <= 360., position.heading,
       position.speed >= 0., position.speed);
   return MakeGarbageCollected<Geoposition>(
-      coordinates,
-      ConvertSecondsToDOMTimeStamp(position.timestamp.ToDoubleT()));
+      coordinates, ConvertTimeToEpochTimeStamp(position.timestamp));
 }
 
 GeolocationPositionError* CreatePositionError(
@@ -308,8 +307,8 @@ bool Geolocation::HaveSuitableCachedPosition(const PositionOptions* options) {
     return false;
   if (!options->maximumAge())
     return false;
-  DOMTimeStamp current_time_millis =
-      ConvertSecondsToDOMTimeStamp(base::Time::Now().ToDoubleT());
+  EpochTimeStamp current_time_millis =
+      ConvertTimeToEpochTimeStamp(base::Time::Now());
   return last_position_->timestamp() >
          current_time_millis - options->maximumAge();
 }
@@ -343,7 +342,7 @@ void Geolocation::HandleError(GeolocationPositionError* error) {
   DCHECK(error);
 
   DCHECK(one_shots_being_invoked_->IsEmpty());
-  DCHECK(watchers_being_invoked_.IsEmpty());
+  DCHECK(watchers_being_invoked_.empty());
 
   if (error->IsFatal()) {
     // Stop the timers of |one_shots_| and |watchers_| before swapping/copying
@@ -406,7 +405,7 @@ void Geolocation::MakeSuccessCallbacks() {
   DCHECK(last_position_);
 
   DCHECK(one_shots_being_invoked_->IsEmpty());
-  DCHECK(watchers_being_invoked_.IsEmpty());
+  DCHECK(watchers_being_invoked_.empty());
 
   // Set |one_shots_being_invoked_| and |watchers_being_invoked_| to the
   // callbacks to be invoked, which must not change during invocation of
@@ -479,10 +478,10 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
   geolocation_service_->CreateGeolocation(
       geolocation_.BindNewPipeAndPassReceiver(std::move(task_runner)),
       LocalFrame::HasTransientUserActivation(GetFrame()),
-      WTF::Bind(&Geolocation::OnGeolocationPermissionStatusUpdated,
-                WrapWeakPersistent(this), WrapWeakPersistent(notifier)));
+      WTF::BindOnce(&Geolocation::OnGeolocationPermissionStatusUpdated,
+                    WrapWeakPersistent(this), WrapWeakPersistent(notifier)));
 
-  geolocation_.set_disconnect_handler(WTF::Bind(
+  geolocation_.set_disconnect_handler(WTF::BindOnce(
       &Geolocation::OnGeolocationConnectionError, WrapWeakPersistent(this)));
   if (enable_high_accuracy_)
     geolocation_->SetHighAccuracy(true);
@@ -491,7 +490,7 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
 
 void Geolocation::QueryNextPosition() {
   geolocation_->QueryNextPosition(
-      WTF::Bind(&Geolocation::OnPositionUpdated, WrapPersistent(this)));
+      WTF::BindOnce(&Geolocation::OnPositionUpdated, WrapPersistent(this)));
 }
 
 void Geolocation::OnPositionUpdated(
@@ -503,6 +502,16 @@ void Geolocation::OnPositionUpdated(
   } else {
     GeolocationPositionError* position_error =
         CreatePositionError(position->error_code, position->error_message);
+
+    auto* context = GetExecutionContext();
+    DCHECK(context);
+    if (!position->error_technical.empty()) {
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kNetwork,
+          mojom::blink::ConsoleMessageLevel::kError,
+          position->error_technical));
+    }
+
     if (position_error->code() == GeolocationPositionError::kPermissionDenied) {
       position_error->SetIsFatal(true);
     }
@@ -513,12 +522,18 @@ void Geolocation::OnPositionUpdated(
 }
 
 void Geolocation::PageVisibilityChanged() {
-  UpdateGeolocationConnection(nullptr);
+  for (auto& notifier : *one_shots_)
+    UpdateGeolocationConnection(notifier);
+
+  HeapVector<Member<GeoNotifier>> watchers;
+  watchers_->CopyNotifiersToVector(watchers);
+  for (auto& notifier : watchers)
+    UpdateGeolocationConnection(notifier);
 }
 
 bool Geolocation::HasPendingActivity() const {
   return !one_shots_->IsEmpty() || !one_shots_being_invoked_->IsEmpty() ||
-         !watchers_->IsEmpty() || !watchers_being_invoked_.IsEmpty();
+         !watchers_->IsEmpty() || !watchers_being_invoked_.empty();
 }
 
 void Geolocation::OnGeolocationConnectionError() {

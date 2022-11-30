@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 
+#include "base/strings/stringprintf.h"
 #include "components/plugins/renderer/plugin_placeholder.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/web_test/common/web_test_string_util.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_testing_support.h"
@@ -105,7 +107,8 @@ const char* WebNavigationTypeToString(blink::WebNavigationType type) {
       return kBackForwardString;
     case blink::kWebNavigationTypeReload:
       return kReloadString;
-    case blink::kWebNavigationTypeFormResubmitted:
+    case blink::kWebNavigationTypeFormResubmittedBackForward:
+    case blink::kWebNavigationTypeFormResubmittedReload:
       return kFormResubmittedString;
     case blink::kWebNavigationTypeOther:
       return kOtherString;
@@ -126,6 +129,9 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   TestRenderFrameObserver(RenderFrame* frame, TestRunner* test_runner)
       : RenderFrameObserver(frame), test_runner_(test_runner) {}
 
+  TestRenderFrameObserver(const TestRenderFrameObserver&) = delete;
+  TestRenderFrameObserver& operator=(const TestRenderFrameObserver&) = delete;
+
   ~TestRenderFrameObserver() override {}
 
  private:
@@ -138,7 +144,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
 
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override {
+      absl::optional<blink::WebNavigationType> navigation_type) override {
     if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
       test_runner_->PrintMessage(description + " - DidStartNavigation\n");
@@ -164,14 +170,9 @@ class TestRenderFrameObserver : public RenderFrameObserver {
       test_runner_->PrintMessage(description + " - didCommitLoadForFrame\n");
     }
 
-    if (render_frame()->IsMainFrame()) {
-      // Track main frames once they are swapped in, if they started
-      // provisional.
+    // Track main frames once they are swapped in, if they started provisional.
+    if (render_frame()->IsMainFrame())
       test_runner_->AddMainFrame(frame_proxy());
-
-      // Looking for navigations to about:blank after a test completes.
-      test_runner_->DidCommitNavigationInMainFrame(frame_proxy());
-    }
   }
 
   void DidFinishSameDocumentNavigation() override {
@@ -189,7 +190,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     }
   }
 
-  void DidFinishDocumentLoad() override {
+  void DidDispatchDOMContentLoadedEvent() override {
     if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
       test_runner_->PrintMessage(description +
@@ -225,7 +226,6 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   }
 
   TestRunner* const test_runner_;
-  DISALLOW_COPY_AND_ASSIGN(TestRenderFrameObserver);
 };
 
 }  // namespace
@@ -253,7 +253,7 @@ void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
   spell_check_ = std::make_unique<SpellCheckClient>(GetWebFrame());
   GetWebFrame()->SetTextCheckClient(spell_check_.get());
 
-  GetAssociatedInterfaceRegistry()->AddInterface(
+  GetAssociatedInterfaceRegistry()->AddInterface<mojom::WebTestRenderFrame>(
       base::BindRepeating(&WebFrameTestProxy::BindReceiver,
                           // The registry goes away and stops using this
                           // callback when RenderFrameImpl (which is this class)
@@ -270,6 +270,7 @@ void WebFrameTestProxy::Reset() {
   CHECK(IsMainFrame());
 
   if (IsMainFrame()) {
+    GetWebFrame()->ClearActiveFindMatchForTesting();
     GetWebFrame()->SetName(blink::WebString());
     GetWebFrame()->ClearOpener();
 
@@ -350,12 +351,6 @@ void WebFrameTestProxy::DidAddMessageToConsole(
       level = "MESSAGE";
   }
   std::string console_message(std::string("CONSOLE ") + level + ": ");
-  // Do not print line numbers if there is no associated source file name.
-  // TODO(crbug.com/896194): Figure out why the source line is flaky for empty
-  // source names.
-  if (!source_name.IsEmpty() && source_line) {
-    console_message += base::StringPrintf("line %d: ", source_line);
-  }
   // Console messages shouldn't be included in the expected output for
   // web-platform-tests because they may create non-determinism not
   // intended by the test author. They are still included in the stderr
@@ -392,13 +387,14 @@ void WebFrameTestProxy::DidStopLoading() {
   test_runner()->RemoveLoadingFrame(GetWebFrame());
 }
 
-void WebFrameTestProxy::DidChangeSelection(bool is_selection_empty) {
+void WebFrameTestProxy::DidChangeSelection(bool is_selection_empty,
+                                           blink::SyncCondition force_sync) {
   if (test_runner()->ShouldDumpEditingCallbacks()) {
     test_runner()->PrintMessage(
         "EDITING DELEGATE: "
         "webViewDidChangeSelection:WebViewDidChangeSelectionNotification\n");
   }
-  RenderFrameImpl::DidChangeSelection(is_selection_empty);
+  RenderFrameImpl::DidChangeSelection(is_selection_empty, force_sync);
 }
 
 void WebFrameTestProxy::DidChangeContents() {
@@ -420,7 +416,7 @@ WebFrameTestProxy::GetEffectiveConnectionType() {
 
 void WebFrameTestProxy::UpdateContextMenuDataForTesting(
     const blink::ContextMenuData& context_menu_data,
-    const base::Optional<gfx::Point>& location) {
+    const absl::optional<gfx::Point>& location) {
   blink::FrameWidgetTestHelper* frame_widget =
       GetLocalRootFrameWidgetTestHelper();
   frame_widget->GetEventSender()->SetContextMenuData(context_menu_data);
@@ -561,9 +557,6 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kAriaAttributeChanged:
       event_name = "AriaAttributeChanged";
       break;
-    case ax::mojom::Event::kAutocorrectionOccured:
-      event_name = "AutocorrectionOccured";
-      break;
     case ax::mojom::Event::kBlur:
       event_name = "Blur";
       break;
@@ -582,8 +575,14 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kDocumentTitleChanged:
       event_name = "DocumentTitleChanged";
       break;
+    case ax::mojom::Event::kExpandedChanged:
+      event_name = "ExpandedChanged";
+      break;
     case ax::mojom::Event::kFocus:
       event_name = "Focus";
+      break;
+    case ax::mojom::Event::kHide:
+      event_name = "Hide";
       break;
     case ax::mojom::Event::kHover:
       event_name = "Hover";
@@ -591,11 +590,11 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kLayoutComplete:
       event_name = "LayoutComplete";
       break;
-    case ax::mojom::Event::kLiveRegionChanged:
-      event_name = "LiveRegionChanged";
-      break;
     case ax::mojom::Event::kLoadComplete:
       event_name = "LoadComplete";
+      break;
+    case ax::mojom::Event::kLoadStart:
+      event_name = "LoadStart";
       break;
     case ax::mojom::Event::kLocationChanged:
       event_name = "LocationChanged";
@@ -621,8 +620,8 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kSelectedChildrenChanged:
       event_name = "SelectedChildrenChanged";
       break;
-    case ax::mojom::Event::kTextSelectionChanged:
-      event_name = "SelectedTextChanged";
+    case ax::mojom::Event::kShow:
+      event_name = "Show";
       break;
     case ax::mojom::Event::kTextChanged:
       event_name = "TextChanged";
@@ -630,9 +629,45 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kValueChanged:
       event_name = "ValueChanged";
       break;
-    default:
-      event_name = "Unknown";
-      break;
+
+    // These events are not fired from Blink.
+    // This list is duplicated in
+    // RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent().
+    case ax::mojom::Event::kAlert:
+    case ax::mojom::Event::kAutocorrectionOccured:
+    case ax::mojom::Event::kControlsChanged:
+    case ax::mojom::Event::kEndOfTest:
+    case ax::mojom::Event::kFocusAfterMenuClose:
+    case ax::mojom::Event::kFocusContext:
+    case ax::mojom::Event::kHitTestResult:
+    case ax::mojom::Event::kImageFrameUpdated:
+    case ax::mojom::Event::kLiveRegionCreated:
+    case ax::mojom::Event::kLiveRegionChanged:
+    case ax::mojom::Event::kMediaStartedPlaying:
+    case ax::mojom::Event::kMediaStoppedPlaying:
+    case ax::mojom::Event::kMenuEnd:
+    case ax::mojom::Event::kMenuPopupEnd:
+    case ax::mojom::Event::kMenuPopupStart:
+    case ax::mojom::Event::kMenuStart:
+    case ax::mojom::Event::kMouseCanceled:
+    case ax::mojom::Event::kMouseDragged:
+    case ax::mojom::Event::kMouseMoved:
+    case ax::mojom::Event::kMousePressed:
+    case ax::mojom::Event::kMouseReleased:
+    case ax::mojom::Event::kNone:
+    case ax::mojom::Event::kSelection:
+    case ax::mojom::Event::kSelectionAdd:
+    case ax::mojom::Event::kSelectionRemove:
+    case ax::mojom::Event::kStateChanged:
+    case ax::mojom::Event::kTextSelectionChanged:
+    case ax::mojom::Event::kTooltipClosed:
+    case ax::mojom::Event::kTooltipOpened:
+    case ax::mojom::Event::kTreeChanged:
+    case ax::mojom::Event::kWindowActivated:
+    case ax::mojom::Event::kWindowDeactivated:
+    case ax::mojom::Event::kWindowVisibilityChanged:
+      // Never fired from Blink.
+      NOTREACHED() << "Event not expected from Blink: " << event.event_type;
   }
 
   blink::WebDocument document = GetWebFrame()->GetDocument();
@@ -643,10 +678,8 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
   RenderFrameImpl::PostAccessibilityEvent(event);
 }
 
-void WebFrameTestProxy::MarkWebAXObjectDirty(
-    const blink::WebAXObject& object,
-    bool subtree,
-    ax::mojom::Action event_from_action) {
+void WebFrameTestProxy::NotifyWebAXObjectMarkedDirty(
+    const blink::WebAXObject& object) {
   HandleWebAccessibilityEvent(object, "MarkDirty",
                               std::vector<ui::AXEventIntent>());
 
@@ -656,7 +689,7 @@ void WebFrameTestProxy::MarkWebAXObjectDirty(
   if (object.IsDetached())
     return;  // |this| is invalid.
 
-  RenderFrameImpl::MarkWebAXObjectDirty(object, subtree, event_from_action);
+  RenderFrameImpl::NotifyWebAXObjectMarkedDirty(object);
 }
 
 void WebFrameTestProxy::HandleWebAccessibilityEvent(
@@ -697,7 +730,7 @@ void WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(
     blink::WebSetSinkIdCompleteCallback completion_callback) {
   std::string device_id = sink_id.Utf8();
   if (device_id == "valid" || device_id.empty())
-    std::move(completion_callback).Run(/*error =*/base::nullopt);
+    std::move(completion_callback).Run(/*error =*/absl::nullopt);
   else if (device_id == "unauthorized")
     std::move(completion_callback)
         .Run(blink::WebSetSinkIdError::kNotAuthorized);
@@ -711,6 +744,8 @@ void WebFrameTestProxy::DidClearWindowObject() {
   // Avoid installing bindings on the about:blank in between tests. This is
   // especially problematic for web platform tests that would inject javascript
   // into the page when installing bindings.
+  v8::MicrotasksScope microtask_scope(blink::MainThreadIsolate(),
+                                      v8::MicrotasksScope::kDoNotRunMicrotasks);
   if (test_runner()->TestIsRunning()) {
     blink::WebLocalFrame* frame = GetWebFrame();
     // These calls will install the various JS bindings for web tests into the
@@ -719,7 +754,7 @@ void WebFrameTestProxy::DidClearWindowObject() {
     test_runner()->Install(this, spell_check_.get());
     accessibility_controller_.Install(frame);
     text_input_controller_.Install(frame);
-    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(frame);
+    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(this);
     blink::WebTestingSupport::InjectInternalsObject(frame);
   }
   RenderFrameImpl::DidClearWindowObject();

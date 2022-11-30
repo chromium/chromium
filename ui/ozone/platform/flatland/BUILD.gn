@@ -1,0 +1,109 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//gpu/vulkan/features.gni")
+
+assert(enable_vulkan)
+
+visibility = [ "//ui/ozone/*" ]
+
+source_set("flatland") {
+  sources = [
+    "client_native_pixmap_factory_flatland.cc",
+    "client_native_pixmap_factory_flatland.h",
+    "flatland_connection.cc",
+    "flatland_connection.h",
+    "flatland_gpu_host.cc",
+    "flatland_gpu_host.h",
+    "flatland_gpu_service.cc",
+    "flatland_gpu_service.h",
+    "flatland_screen.cc",
+    "flatland_screen.h",
+    "flatland_surface.cc",
+    "flatland_surface.h",
+    "flatland_surface_factory.cc",
+    "flatland_surface_factory.h",
+    "flatland_sysmem_buffer_collection.cc",
+    "flatland_sysmem_buffer_collection.h",
+    "flatland_sysmem_buffer_manager.cc",
+    "flatland_sysmem_buffer_manager.h",
+    "flatland_sysmem_native_pixmap.cc",
+    "flatland_sysmem_native_pixmap.h",
+    "flatland_window.cc",
+    "flatland_window.h",
+    "flatland_window_manager.cc",
+    "flatland_window_manager.h",
+    "overlay_manager_flatland.cc",
+    "overlay_manager_flatland.h",
+    "ozone_platform_flatland.cc",
+    "ozone_platform_flatland.h",
+    "vulkan_implementation_flatland.cc",
+    "vulkan_implementation_flatland.h",
+  ]
+
+  defines = [
+    "OZONE_IMPLEMENTATION",
+    "VK_USE_PLATFORM_FUCHSIA",
+  ]
+
+  deps = [
+    "//base",
+    "//gpu/ipc/common:vulkan_ycbcr_info",
+    "//mojo/public/cpp/system",
+    "//services/service_manager/public/cpp",
+    "//skia",
+    "//third_party/angle/src/common/fuchsia_egl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//ui/base",
+    "//ui/base/cursor",
+    "//ui/base/ime/fuchsia",
+    "//ui/display/fake",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events/ozone/layout",
+    "//ui/ozone:ozone_base",
+    "//ui/ozone/common",
+    "//ui/ozone/platform/scenic/mojom",
+  ]
+
+  public_deps = [
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views",
+    "//ui/gfx/geometry",
+    "//ui/platform_window",
+  ]
+
+  data_deps = [
+    "//third_party/angle:libEGL",
+    "//third_party/angle:libGLESv2",
+  ]
+}
+
+source_set("flatland_unittests") {
+  testonly = true
+  sources = [
+    "flatland_connection_unittest.cc",
+    "flatland_surface_unittest.cc",
+    "flatland_window_unittest.cc",
+    "tests/fake_flatland.cc",
+    "tests/fake_flatland.h",
+    "tests/fake_view_ref_focused.cc",
+    "tests/fake_view_ref_focused.h",
+  ]
+  deps = [
+    ":flatland",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//ui/ozone:platform",
+    "//ui/ozone:test_support",
+  ]
+}

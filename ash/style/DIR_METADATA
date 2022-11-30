@@ -1,0 +1,10 @@
+team_email: "chromeos-wm-corexp@google.com"
+buganizer: {
+  component_id:1253063
+}
+buganizer_public: {
+  component_id:1253110
+}
+monorail {
+  component: "UI>Shell>SysUIComponents"
+}

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
   SkRect sk_bounds;
   uint16_t glyph = codepoint;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(drott): Remove this once we have better metrics bounds
   // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
   SkPath path;
@@ -112,7 +112,7 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
 }
 
 void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(drott): Remove this once we have better metrics bounds
   // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
   SkPath path;
@@ -136,7 +136,7 @@ void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
 void SkFontGetBoundsForGlyphs(const SkFont& font,
                               const Vector<Glyph, 256>& glyphs,
                               SkRect* bounds) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   for (unsigned i = 0; i < glyphs.size(); i++) {
     SkFontGetBoundsForGlyph(font, glyphs[i], &bounds[i]);
   }
@@ -167,7 +167,7 @@ float SkFontGetWidthForGlyph(const SkFont& font, Glyph glyph) {
 hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value) {
   // We treat HarfBuzz hb_position_t as 16.16 fixed-point.
   static const int kHbPosition1 = 1 << 16;
-  return clampTo<int>(value * kHbPosition1);
+  return ClampTo<int>(value * kHbPosition1);
 }
 
 }  // namespace blink

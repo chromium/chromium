@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 
+#include "base/time/time.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -80,11 +81,11 @@ TEST_F(AppBannerSettingsHelperTest, SingleEvents) {
   NavigateAndCommit(url);
 
   base::Time reference_time = GetReferenceTime();
-  base::Time other_time = reference_time - base::TimeDelta::FromDays(3);
+  base::Time other_time = reference_time - base::Days(3);
   for (int event = AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW;
        event < AppBannerSettingsHelper::APP_BANNER_EVENT_NUM_EVENTS; ++event) {
     // Check that by default, there is no event.
-    base::Optional<base::Time> event_time =
+    absl::optional<base::Time> event_time =
         AppBannerSettingsHelper::GetSingleBannerEvent(
             web_contents(), url, kTestPackageName,
             AppBannerSettingsHelper::AppBannerEvent(event));
@@ -142,8 +143,8 @@ TEST_F(AppBannerSettingsHelperTest, ReportsWhetherBannerWasRecentlyBlocked) {
   NavigateAndCommit(url);
 
   base::Time reference_time = GetReferenceTime();
-  base::Time two_months_ago = reference_time - base::TimeDelta::FromDays(60);
-  base::Time one_year_ago = reference_time - base::TimeDelta::FromDays(366);
+  base::Time two_months_ago = reference_time - base::Days(60);
+  base::Time one_year_ago = reference_time - base::Days(366);
 
   EXPECT_FALSE(AppBannerSettingsHelper::WasBannerRecentlyBlocked(
       web_contents(), url, kTestPackageName, reference_time));
@@ -174,8 +175,8 @@ TEST_F(AppBannerSettingsHelperTest, ReportsWhetherBannerWasRecentlyIgnored) {
   NavigateAndCommit(url);
 
   base::Time reference_time = GetReferenceTime();
-  base::Time one_week_ago = reference_time - base::TimeDelta::FromDays(7);
-  base::Time one_year_ago = reference_time - base::TimeDelta::FromDays(366);
+  base::Time one_week_ago = reference_time - base::Days(7);
+  base::Time one_year_ago = reference_time - base::Days(366);
 
   EXPECT_FALSE(AppBannerSettingsHelper::WasBannerRecentlyIgnored(
       web_contents(), url, kTestPackageName, reference_time));
@@ -203,7 +204,7 @@ TEST_F(AppBannerSettingsHelperTest, ReportsWhetherBannerWasRecentlyIgnored) {
 
 TEST_F(AppBannerSettingsHelperTest, ReportsWhetherSiteWasEverAdded) {
   GURL url(kTestURL);
-  base::Time one_year_ago = GetReferenceTime() - base::TimeDelta::FromDays(366);
+  base::Time one_year_ago = GetReferenceTime() - base::Days(366);
 
   EXPECT_FALSE(AppBannerSettingsHelper::HasBeenInstalled(web_contents(), url,
                                                          kTestPackageName));
@@ -239,7 +240,7 @@ TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
       service->GetScore(otherURL)));
 
   base::Time reference_time = GetReferenceTime();
-  base::Time one_week_ago = reference_time - base::TimeDelta::FromDays(7);
+  base::Time one_week_ago = reference_time - base::Days(7);
 
   // If url is blocked, otherURL will also be reported as blocked.
   EXPECT_FALSE(AppBannerSettingsHelper::WasBannerRecentlyBlocked(
@@ -299,10 +300,10 @@ TEST_F(AppBannerSettingsHelperTest, WasLaunchedRecently) {
   NavigateAndCommit(url);
 
   base::Time reference_time = GetReferenceTime();
-  base::Time first_day = reference_time + base::TimeDelta::FromDays(1);
-  base::Time ninth_day = reference_time + base::TimeDelta::FromDays(9);
-  base::Time tenth_day = reference_time + base::TimeDelta::FromDays(10);
-  base::Time eleventh_day = reference_time + base::TimeDelta::FromDays(11);
+  base::Time first_day = reference_time + base::Days(1);
+  base::Time ninth_day = reference_time + base::Days(9);
+  base::Time tenth_day = reference_time + base::Days(10);
+  base::Time eleventh_day = reference_time + base::Days(11);
 
   EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(
       browser_context(), url, reference_time));
@@ -369,7 +370,7 @@ TEST_F(AppBannerSettingsHelperTest, NulloptSingleBannerEvent) {
   NavigateAndCommit(url);
 
   base::Time reference_time = GetReferenceTime();
-  base::Time one_day_ago = reference_time - base::TimeDelta::FromDays(1);
+  base::Time one_day_ago = reference_time - base::Days(1);
 
   AppBannerSettingsHelper::RecordBannerEvent(
       web_contents(), url, url.spec(),
@@ -380,7 +381,7 @@ TEST_F(AppBannerSettingsHelperTest, NulloptSingleBannerEvent) {
   AppBannerSettingsHelper::RecordBannerEvent(
       web_contents(), url, url_same_origin2,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW, one_day_ago);
-  base::Optional<base::Time> event_time =
+  absl::optional<base::Time> event_time =
       AppBannerSettingsHelper::GetSingleBannerEvent(
           web_contents(), url, url_same_origin2,
           AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW);

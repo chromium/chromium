@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -34,6 +35,10 @@ class GetOperationTask : public Task {
   GetOperationTask(PrefetchStore* store,
                    PrefetchNetworkRequestFactory* request_factory,
                    GetOperationFinishedCallback callback);
+
+  GetOperationTask(const GetOperationTask&) = delete;
+  GetOperationTask& operator=(const GetOperationTask&) = delete;
+
   ~GetOperationTask() override;
 
  private:
@@ -41,13 +46,11 @@ class GetOperationTask : public Task {
   void Run() override;
   void StartGetOperationRequests(OperationResultList list);
 
-  PrefetchStore* prefetch_store_;
-  PrefetchNetworkRequestFactory* request_factory_;
+  raw_ptr<PrefetchStore> prefetch_store_;
+  raw_ptr<PrefetchNetworkRequestFactory> request_factory_;
   GetOperationFinishedCallback callback_;
 
   base::WeakPtrFactory<GetOperationTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetOperationTask);
 };
 
 }  // namespace offline_pages

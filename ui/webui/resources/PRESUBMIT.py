@@ -1,7 +1,9 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
+USE_PYTHON3 = True
 
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)
@@ -87,7 +89,7 @@ def _CheckJsModulizer(input_api, output_api):
     sources = [input_api.os_path.join('tools', 'js_modulizer_test.py')]
     tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
     results += input_api.canned_checks.RunUnitTests(
-        input_api, output_api, tests)
+        input_api, output_api, tests, run_on_python2=False)
   return results
 
 
@@ -101,7 +103,8 @@ def _CheckGenerateGrd(input_api, output_api):
     sources = [input_api.os_path.join('tools', 'generate_grd_test.py')]
     tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
     results += input_api.canned_checks.RunUnitTests(
-        input_api, output_api, tests)
+        input_api, output_api, tests, skip_shebang_check=True,
+        run_on_python2=False)
   return results
 
 

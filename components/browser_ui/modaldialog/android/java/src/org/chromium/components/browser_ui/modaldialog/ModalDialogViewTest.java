@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,16 @@ import static org.hamcrest.Matchers.not;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
@@ -32,54 +38,86 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Tests for {@link ModalDialogView}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class ModalDialogViewTest extends DummyUiActivityTestCase {
-    private Resources mResources;
-    private PropertyModel.Builder mModelBuilder;
-    private FrameLayout mContentView;
+@Batch(Batch.PER_CLASS)
+public class ModalDialogViewTest {
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+    private static Resources sResources;
+    private static FrameLayout sContentView;
     private ModalDialogView mModalDialogView;
     private TextView mCustomTextView1;
     private TextView mCustomTextView2;
+    private PropertyModel.Builder mModelBuilder;
+    private RelativeLayout mCustomButtonBar1;
+    private RelativeLayout mCustomButtonBar2;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        setUpViews();
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivity = activityTestRule.getActivity();
+            sResources = sActivity.getResources();
+            sContentView = new FrameLayout(sActivity);
+            sActivity.setContentView(sContentView);
+        });
     }
 
-    private void setUpViews() {
+    @Before
+    public void setupTest() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            mResources = activity.getResources();
+            sContentView.removeAllViews();
             mModelBuilder = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS);
-
-            mContentView = new FrameLayout(activity);
             mModalDialogView =
                     (ModalDialogView) LayoutInflater
-                            .from(new ContextThemeWrapper(
-                                    activity, R.style.Theme_Chromium_ModalDialog_TextPrimaryButton))
+                            .from(new ContextThemeWrapper(sActivity,
+                                    R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton))
                             .inflate(R.layout.modal_dialog_view, null);
-            activity.setContentView(mContentView);
-            mContentView.addView(mModalDialogView, MATCH_PARENT, WRAP_CONTENT);
+            sContentView.addView(mModalDialogView, MATCH_PARENT, WRAP_CONTENT);
 
-            mCustomTextView1 = new TextView(activity);
+            mCustomTextView1 = new TextView(sActivity);
             mCustomTextView1.setId(R.id.test_view_one);
-            mCustomTextView2 = new TextView(activity);
+            mCustomTextView2 = new TextView(sActivity);
             mCustomTextView2.setId(R.id.test_view_two);
+
+            mCustomButtonBar1 = new RelativeLayout(sActivity);
+            mCustomButtonBar1.setId(R.id.test_button_bar_one);
+            mCustomButtonBar2 = new RelativeLayout(sActivity);
+            mCustomButtonBar2.setId(R.id.test_button_bar_two);
+            Button button1 = new Button(sActivity);
+            button1.setText(R.string.ok);
+            Button button2 = new Button(sActivity);
+            button2.setText(R.string.cancel);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+            mCustomButtonBar1.addView(button1, params);
+            mCustomButtonBar2.addView(button2, params);
         });
     }
 
@@ -92,11 +130,14 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_2)).check(matches(not(isDisplayed())));
         onView(withId(R.id.custom)).check(matches(not(isDisplayed())));
         onView(withId(R.id.button_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.positive_button)).check(matches(allOf(not(isDisplayed()), isEnabled())));
         onView(withId(R.id.negative_button)).check(matches(allOf(not(isDisplayed()), isEnabled())));
+        onView(withId(R.id.custom_button_bar))
+                .check(matches(allOf(not(isDisplayed()), isEnabled())));
     }
 
     @Test
@@ -105,7 +146,7 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
     public void testTitle() {
         // Verify that the title set from builder is displayed.
         PropertyModel model = createModel(
-                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title));
+                mModelBuilder.with(ModalDialogProperties.TITLE, sResources, R.string.title));
         onView(allOf(withId(R.id.title), withParent(withId(R.id.title_container))))
                 .check(matches(allOf(isDisplayed(), withText(R.string.title))));
         onView(withId(R.id.title_container)).check(matches(isDisplayed()));
@@ -133,14 +174,14 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
     public void testTitle_Scrollable() {
         // Verify that the title set from builder is displayed.
         PropertyModel model = createModel(
-                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                mModelBuilder.with(ModalDialogProperties.TITLE, sResources, R.string.title)
                         .with(ModalDialogProperties.TITLE_SCROLLABLE, true));
         onView(allOf(withId(R.id.title), withParent(withId(R.id.scrollable_title_container))))
                 .check(matches(allOf(isDisplayed(), withText(R.string.title))));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(isDisplayed()));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
 
         // Set title to not scrollable and verify that non-scrollable title is displayed.
         TestThreadUtils.runOnUiThreadBlocking(
@@ -150,7 +191,7 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
         onView(withId(R.id.title_container)).check(matches(isDisplayed()));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -159,7 +200,7 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
     public void testTitleIcon() {
         // Verify that the icon set from builder is displayed.
         PropertyModel model = createModel(mModelBuilder.with(
-                ModalDialogProperties.TITLE_ICON, getActivity(), R.drawable.ic_business));
+                ModalDialogProperties.TITLE_ICON, sActivity, R.drawable.ic_business));
         onView(allOf(withId(R.id.title), withParent(withId(R.id.title_container))))
                 .check(matches(not(isDisplayed())));
         onView(allOf(withId(R.id.title_icon), withParent(withId(R.id.title_container))))
@@ -181,21 +222,59 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
-    public void testMessage() {
-        // Verify that the message set from builder is displayed.
-        PropertyModel model = createModel(
-                mModelBuilder.with(ModalDialogProperties.MESSAGE, mResources, R.string.more));
+    public void testMessageParagraph1() {
+        // Verify that the message_paragraph_1 set from builder is displayed.
+        String msg = sResources.getString(R.string.more);
+        PropertyModel model =
+                createModel(mModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, msg));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message)).check(matches(allOf(isDisplayed(), withText(R.string.more))));
+        onView(withId(R.id.message_paragraph_1))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
 
-        // Set an empty message and verify that message is not shown.
-        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(ModalDialogProperties.MESSAGE, ""));
+        // Set an empty message_paragraph_1 and verify that message_paragraph_1 is not shown.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_1, ""));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+
+        // Use CharSequence for the message_paragraph_1.
+        SpannableStringBuilder sb = new SpannableStringBuilder(msg);
+        sb.setSpan(new ForegroundColorSpan(0xffff0000), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_1, sb));
+        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_paragraph_1))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testMessageParagraph2() {
+        // Verify that the message_paragraph_2 set from builder is displayed.
+        String msg = "Incognito warning message";
+        PropertyModel model =
+                createModel(mModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_2, msg));
+        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.modal_dialog_scroll_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_2))
+                .check(matches(allOf(isDisplayed(), withText(msg))));
+
+        // Set an empty message_paragraph_2 and verify that it's not shown.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2, ""));
+        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.modal_dialog_scroll_view)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraph_2)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -226,12 +305,47 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
+    public void testCustomButtonBarView() {
+        // Verify custom button bar view set from builder is displayed.
+        PropertyModel model = createModel(
+                mModelBuilder.with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mCustomButtonBar1)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, sResources,
+                                R.string.cancel));
+        onView(withId(R.id.custom_button_bar))
+                .check(matches(allOf(isDisplayed(), withChild(withId(R.id.test_button_bar_one)))));
+
+        // There are no positive and negative buttons when the custom button bar is present.
+        onView(withId(R.id.button_bar)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.positive_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.negative_button)).check(matches(not(isDisplayed())));
+
+        // Change custom button bar view.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mCustomButtonBar2));
+        onView(withId(R.id.custom_button_bar))
+                .check(matches(allOf(isDisplayed(), withChild(withId(R.id.test_button_bar_two)))));
+
+        // Set custom button bar view to null.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, null));
+        onView(withId(R.id.custom_button_bar)).check(matches(not(isDisplayed())));
+
+        // The positive and negative buttons are back since the custom button bar is not there.
+        onView(withId(R.id.button_bar)).check(matches(isDisplayed()));
+        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.negative_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
     public void testButtonBar() {
         // Set text for both positive button and negative button.
         PropertyModel model = createModel(
                 mModelBuilder
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, sResources,
                                 R.string.cancel));
         onView(withId(R.id.button_bar)).check(matches(isDisplayed()));
         onView(withId(R.id.positive_button))
@@ -278,8 +392,8 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
     public void testTouchFilter() {
         PropertyModel model = createModel(
                 mModelBuilder
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, sResources,
                                 R.string.cancel)
                         .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true));
         onView(withId(R.id.positive_button)).check(matches(touchFilterEnabled()));
@@ -292,11 +406,39 @@ public class ModalDialogViewTest extends DummyUiActivityTestCase {
     public void testTouchFilterDisabled() {
         PropertyModel model = createModel(
                 mModelBuilder
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, sResources,
                                 R.string.cancel));
         onView(withId(R.id.positive_button)).check(matches(not(touchFilterEnabled())));
         onView(withId(R.id.negative_button)).check(matches(not(touchFilterEnabled())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testFooterMessage() {
+        // Verify that the footer message set from builder is displayed.
+        String msg = sResources.getString(R.string.more);
+        PropertyModel model =
+                createModel(mModelBuilder.with(ModalDialogProperties.FOOTER_MESSAGE, msg));
+        onView(withId(R.id.footer)).check(matches(isDisplayed()));
+        onView(withId(R.id.footer_message))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+
+        // Set an empty footer message and verify that footer message is not shown.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.FOOTER_MESSAGE, ""));
+        onView(withId(R.id.footer)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.footer_message)).check(matches(not(isDisplayed())));
+
+        // Use CharSequence for the footer message.
+        SpannableStringBuilder sb = new SpannableStringBuilder(msg);
+        sb.setSpan(new ForegroundColorSpan(0xffff0000), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.FOOTER_MESSAGE, sb));
+        onView(withId(R.id.footer)).check(matches(isDisplayed()));
+        onView(withId(R.id.footer_message))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
     }
 
     private static Matcher<View> touchFilterEnabled() {

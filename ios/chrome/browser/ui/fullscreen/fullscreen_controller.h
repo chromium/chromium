@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 
 class Browser;
@@ -23,7 +22,7 @@ class FullscreenController : public base::SupportsUserData::Data {
  public:
   explicit FullscreenController() = default;
 
-  // Retrieves the FullscreenController for |browser|. This should only be
+  // Retrieves the FullscreenController for `browser`. This should only be
   // called with the kFullscreenControllerBrowserScoped turned on.
   static FullscreenController* FromBrowser(Browser* browser);
 

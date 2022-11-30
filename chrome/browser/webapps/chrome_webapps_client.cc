@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
 #include "base/logging.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -42,14 +44,14 @@ ChromeWebappsClient::GetSecurityLevelForWebContents(
 infobars::ContentInfoBarManager*
 ChromeWebappsClient::GetInfoBarManagerForWebContents(
     content::WebContents* web_contents) {
-  return InfoBarService::FromWebContents(web_contents);
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
 WebappInstallSource ChromeWebappsClient::GetInstallSource(
     content::WebContents* web_contents,
     InstallTrigger trigger) {
   bool is_custom_tab = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto* delegate = static_cast<android::TabWebContentsDelegateAndroid*>(
       web_contents->GetDelegate());
   is_custom_tab = delegate->IsCustomTab();
@@ -80,19 +82,20 @@ WebappInstallSource ChromeWebappsClient::GetInstallSource(
 
 AppBannerManager* ChromeWebappsClient::GetAppBannerManager(
     content::WebContents* web_contents) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
 #else
   return AppBannerManagerDesktop::FromWebContents(web_contents);
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool ChromeWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
-    const GURL& manifest_url) {
+    const GURL& manifest_url,
+    const GURL& manifest_id) {
   return WebApkInstallService::Get(web_contents->GetBrowserContext())
-      ->IsInstallInProgress(manifest_url);
+      ->IsInstallInProgress(manifest_url, manifest_id);
 }
 
 bool ChromeWebappsClient::CanShowAppBanners(
@@ -123,7 +126,7 @@ void ChromeWebappsClient::InstallShortcut(content::WebContents* web_contents,
                                           const AddToHomescreenParams& params) {
   ShortcutHelper::AddToLauncherWithSkBitmap(
       web_contents, *(params.shortcut_info), params.primary_icon,
-      params.has_maskable_primary_icon);
+      params.has_maskable_primary_icon, params.installable_status);
 }
 #endif
 

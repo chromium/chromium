@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "device/fido/cable/fido_ble_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -20,6 +19,10 @@ class BluetoothAdapter;
 class MockFidoBleConnection : public FidoBleConnection {
  public:
   MockFidoBleConnection(BluetoothAdapter* adapter, std::string device_address);
+
+  MockFidoBleConnection(const MockFidoBleConnection&) = delete;
+  MockFidoBleConnection& operator=(const MockFidoBleConnection&) = delete;
+
   ~MockFidoBleConnection() override;
 
   // GMock cannot mock a method taking a move-only type.
@@ -36,9 +39,6 @@ class MockFidoBleConnection : public FidoBleConnection {
                          WriteCallback cb) override;
 
   ReadCallback& read_callback() { return read_callback_; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFidoBleConnection);
 };
 
 }  // namespace device

@@ -1,14 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/services/mojo_audio_decoder_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/types/optional_util.h"
 #include "media/base/content_decryption_module.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
@@ -35,7 +37,7 @@ void MojoAudioDecoderService::Construct(
 
 void MojoAudioDecoderService::Initialize(
     const AudioDecoderConfig& config,
-    const base::Optional<base::UnguessableToken>& cdm_id,
+    const absl::optional<base::UnguessableToken>& cdm_id,
     InitializeCallback callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
 
@@ -52,7 +54,7 @@ void MojoAudioDecoderService::Initialize(
       // TODO(xhwang): Replace with mojo::ReportBadMessage().
       NOTREACHED() << "The caller should not switch CDM";
       OnInitialized(std::move(callback),
-                    StatusCode::kDecoderMissingCdmForEncryptedContent);
+                    DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
   }
@@ -63,10 +65,10 @@ void MojoAudioDecoderService::Initialize(
 
   if (config.is_encrypted() && !cdm_context) {
     DVLOG(1) << "CdmContext for "
-             << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id))
+             << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id))
              << " not found for encrypted audio";
     OnInitialized(std::move(callback),
-                  StatusCode::kDecoderMissingCdmForEncryptedContent);
+                  DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -83,8 +85,8 @@ void MojoAudioDecoderService::SetDataSource(
     mojo::ScopedDataPipeConsumerHandle receive_pipe) {
   DVLOG(1) << __func__;
 
-  mojo_decoder_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(receive_pipe)));
+  mojo_decoder_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(receive_pipe));
 }
 
 void MojoAudioDecoderService::Decode(mojom::DecoderBufferPtr buffer,
@@ -105,7 +107,7 @@ void MojoAudioDecoderService::Reset(ResetCallback callback) {
 }
 
 void MojoAudioDecoderService::OnInitialized(InitializeCallback callback,
-                                            Status status) {
+                                            DecoderStatus status) {
   DVLOG(1) << __func__ << " success:" << status.is_ok();
 
   if (!status.is_ok()) {
@@ -130,7 +132,7 @@ void MojoAudioDecoderService::OnReadDone(DecodeCallback callback,
   DVLOG(3) << __func__ << " success:" << !!buffer;
 
   if (!buffer) {
-    std::move(callback).Run(DecodeStatus::DECODE_ERROR);
+    std::move(callback).Run(DecoderStatus::Codes::kFailedToGetDecoderBuffer);
     return;
   }
 
@@ -145,8 +147,9 @@ void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {
 }
 
 void MojoAudioDecoderService::OnDecodeStatus(DecodeCallback callback,
-                                             const Status status) {
-  DVLOG(3) << __func__ << " status:" << status.code();
+                                             const DecoderStatus status) {
+  DVLOG(3) << __func__ << " status=" << status.group() << ":"
+           << static_cast<int>(status.code());
   std::move(callback).Run(std::move(status));
 }
 

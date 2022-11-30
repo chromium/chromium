@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,18 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
+#include "media/gpu/buildflags.h"
 #include "media/gpu/test/video.h"
+#include "media/gpu/test/video_player/decoder_listener.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
-#include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
+#include "sandbox/linux/services/resource_limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -27,40 +32,69 @@ namespace {
 // documentation under docs/media/gpu/video_decoder_perf_test_usage.md when
 // making changes here.
 constexpr const char* usage_msg =
-    "usage: video_decode_accelerator_perf_tests\n"
-    "           [-v=<level>] [--vmodule=<config>] [--output_folder]\n"
-    "           ([--use_vd]|[--use_vd_vda]) [--gtest_help] [--help]\n"
-    "           [<video path>] [<video metadata path>]\n";
+    R"(usage: video_decode_accelerator_perf_tests
+           [-v=<level>] [--vmodule=<config>] [--output_folder]
+           ([--use-legacy]|[--use_vd_vda]) [--linear_output]
+           [--disable_vaapi_lock]
+           [--gtest_help] [--help]
+           [<video path>] [<video metadata path>]
+)";
 
 // Video decoder perf tests help message.
-constexpr const char* help_msg =
-    "Run the video decode accelerator performance tests on the video\n"
-    "specified by <video path>. If no <video path> is given the default\n"
-    "\"test-25fps.h264\" video will be used.\n"
-    "\nThe <video metadata path> should specify the location of a json file\n"
-    "containing the video's metadata, such as frame checksums. By default\n"
-    "<video path>.json will be used.\n"
-    "\nThe following arguments are supported:\n"
-    "   -v                  enable verbose mode, e.g. -v=2.\n"
-    "  --vmodule            enable verbose mode for the specified module,\n"
-    "                       e.g. --vmodule=*media/gpu*=2.\n"
-    "  --output_folder      overwrite the output folder used to store\n"
-    "                       performance metrics, if not specified results\n"
-    "                       will be stored in the current working directory.\n"
-    "  --use_vd             use the new VD-based video decoders, instead of\n"
-    "                       the default VDA-based video decoders.\n"
-    "  --use_vd_vda         use the new VD-based video decoders with a\n"
-    "                       wrapper that translates to the VDA interface,\n"
-    "                       used to test interaction with older components\n"
-    "                       expecting the VDA interface.\n"
-    "  --gtest_help         display the gtest help and exit.\n"
-    "  --help               display this help and exit.\n";
+const std::string help_msg =
+    std::string(
+        R"""(Run the video decode accelerator performance tests on the video
+specified by <video path>. If no <video path> is given the default
+"test-25fps.h264" video will be used.
+
+The <video metadata path> should specify the location of a json file
+containing the video's metadata, such as frame checksums. By default
+<video path>.json will be used.
+
+The following arguments are supported:
+   -v                   enable verbose mode, e.g. -v=2.
+  --vmodule             enable verbose mode for the specified module,
+                        e.g. --vmodule=*media/gpu*=2.
+
+  --output_folder       overwrite the output folder used to store
+                        performance metrics, if not specified results
+                        will be stored in the current working directory.
+  --use-legacy          use the legacy VDA-based video decoders.
+  --use_vd_vda          use the new VD-based video decoders with a
+                        wrapper that translates to the VDA interface,
+                        used to test interaction with older components
+                        expecting the VDA interface.
+  --linear_output       use linear buffers as the final output of the
+                        decoder which may require the use of an image
+                        processor internally. This flag only works in
+                        conjunction with --use_vd_vda.
+                        Disabled by default.
+  --disable_vaapi_lock  disable the global VA-API lock if applicable,
+                        i.e., only on devices that use the VA-API with a libva
+                        backend that's known to be thread-safe and only in
+                        portions of the Chrome stack that should be able to
+                        deal with the absence of the lock
+                        (not the VaapiVideoDecodeAccelerator).)""") +
+#if defined(ARCH_CPU_ARM_FAMILY)
+    R"""(
+  --disable-libyuv      use hw format conversion instead of libYUV.
+                        libYUV will be used by default, unless the
+                        video decoder format is not supported;
+                        in that case the code will try to use the
+                        v4l2 image processor.)""" +
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+    R"""(
+  --gtest_help          display the gtest help and exit.
+  --help                display this help and exit.
+)""";
 
 media::test::VideoPlayerTestEnvironment* g_env;
 
 // Default output folder used to store performance metrics.
 constexpr const base::FilePath::CharType* kDefaultOutputFolder =
     FILE_PATH_LITERAL("perf_metrics");
+
+constexpr base::TimeDelta kMultipleDecodersTimeout = base::Seconds(120);
 
 // Struct storing various time-related statistics.
 struct PerformanceTimeStats {
@@ -140,7 +174,7 @@ class PerformanceEvaluator : public VideoFrameProcessor {
 
   // Frame renderer used to get the dropped frame rate, owned by the creator of
   // the performance evaluator.
-  const FrameRendererDummy* const frame_renderer_;
+  const raw_ptr<const FrameRendererDummy> frame_renderer_;
 };
 
 void PerformanceEvaluator::ProcessVideoFrame(
@@ -297,17 +331,18 @@ class VideoDecoderTest : public ::testing::Test {
   // which the video player will simulate rendering frames, if 0 no rendering is
   // simulated. The |vsync_rate| is used during simulated rendering, if 0 Vsync
   // is disabled.
-  std::unique_ptr<VideoPlayer> CreateVideoPlayer(const Video* video,
-                                                 uint32_t render_frame_rate = 0,
-                                                 uint32_t vsync_rate = 0) {
+  std::unique_ptr<DecoderListener> CreateDecoderListener(
+      const Video* video,
+      uint32_t render_frame_rate = 0,
+      uint32_t vsync_rate = 0) {
     LOG_ASSERT(video);
 
     // Create dummy frame renderer, simulates rendering at specified frame rate.
     base::TimeDelta frame_duration;
     base::TimeDelta vsync_interval_duration;
     if (render_frame_rate > 0) {
-      frame_duration = base::TimeDelta::FromSeconds(1) / render_frame_rate;
-      vsync_interval_duration = base::TimeDelta::FromSeconds(1) / vsync_rate;
+      frame_duration = base::Seconds(1) / render_frame_rate;
+      vsync_interval_duration = base::Seconds(1) / vsync_rate;
     }
     auto frame_renderer =
         FrameRendererDummy::Create(frame_duration, vsync_interval_duration);
@@ -319,16 +354,12 @@ class VideoDecoderTest : public ::testing::Test {
     frame_processors.push_back(std::move(performance_evaluator));
 
     // Use the new VD-based video decoders if requested.
-    VideoDecoderClientConfig config;
+    DecoderWrapperConfig config;
     config.implementation = g_env->GetDecoderImplementation();
+    config.linear_output = g_env->ShouldOutputLinearBuffers();
 
-    // Force allocate mode if import mode is not supported.
-    if (!g_env->ImportSupported())
-      config.allocation_mode = AllocationMode::kAllocate;
-
-    auto video_player = VideoPlayer::Create(
-        config, g_env->GetGpuMemoryBufferFactory(), std::move(frame_renderer),
-        std::move(frame_processors));
+    auto video_player = DecoderListener::Create(
+        config, std::move(frame_renderer), std::move(frame_processors));
     LOG_ASSERT(video_player);
     LOG_ASSERT(video_player->Initialize(video));
 
@@ -338,7 +369,7 @@ class VideoDecoderTest : public ::testing::Test {
     return video_player;
   }
 
-  PerformanceEvaluator* performance_evaluator_;
+  raw_ptr<PerformanceEvaluator> performance_evaluator_;
 };
 
 }  // namespace
@@ -347,7 +378,7 @@ class VideoDecoderTest : public ::testing::Test {
 // will decode a video as fast as possible, and gives an idea about the maximum
 // output of the decoder.
 TEST_F(VideoDecoderTest, MeasureUncappedPerformance) {
-  auto tvp = CreateVideoPlayer(g_env->Video());
+  auto tvp = CreateDecoderListener(g_env->Video());
 
   performance_evaluator_->StartMeasuring();
   tvp->Play();
@@ -363,7 +394,8 @@ TEST_F(VideoDecoderTest, MeasureUncappedPerformance) {
 // will simulate rendering the video at its actual frame rate, and will
 // calculate the number of frames that were dropped. Vsync is enabled at 60 FPS.
 TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
-  auto tvp = CreateVideoPlayer(g_env->Video(), g_env->Video()->FrameRate(), 60);
+  auto tvp =
+      CreateDecoderListener(g_env->Video(), g_env->Video()->FrameRate(), 60);
 
   performance_evaluator_->StartMeasuring();
   tvp->Play();
@@ -374,6 +406,41 @@ TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
 
   EXPECT_EQ(tvp->GetFlushDoneCount(), 1u);
   EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+}
+
+// TODO(b/211783279) The |performance_evaluator_| only keeps track of the last
+// created decoder. We should instead keep track of multiple evaluators, and
+// then decide how to aggregate/report those metrics.
+// Play multiple videos simultaneously from start to finish.
+TEST_F(VideoDecoderTest, MeasureUncappedPerformance_TenConcurrentDecoders) {
+  // Set RLIMIT_NOFILE soft limit to its hard limit value.
+  if (sandbox::ResourceLimits::AdjustCurrent(
+          RLIMIT_NOFILE, std::numeric_limits<long long int>::max())) {
+    DPLOG(ERROR) << "Unable to increase soft limit of RLIMIT_NOFILE";
+  }
+
+  constexpr size_t kNumConcurrentDecoders = 10;
+
+  std::vector<std::unique_ptr<DecoderListener>> players(kNumConcurrentDecoders);
+  for (auto&& player : players) {
+    player = CreateDecoderListener(g_env->Video());
+    // Increase the timeout for older machines that cannot decode as
+    // efficiently.
+    player->SetEventWaitTimeout(kMultipleDecodersTimeout);
+  }
+
+  performance_evaluator_->StartMeasuring();
+
+  for (auto&& player : players)
+    player->Play();
+
+  for (auto&& player : players) {
+    EXPECT_TRUE(player->WaitForFlushDone());
+    EXPECT_EQ(player->GetFlushDoneCount(), 1u);
+    EXPECT_EQ(player->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  }
+  performance_evaluator_->StopMeasuring();
+  performance_evaluator_->WriteMetricsToFile();
 }
 
 }  // namespace test
@@ -402,10 +469,18 @@ int main(int argc, char** argv) {
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
-  bool use_vd = false;
+  bool use_legacy = false;
   bool use_vd_vda = false;
+  bool linear_output = false;
+  std::vector<base::test::FeatureRef> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+  enabled_features.push_back(media::kPreferLibYuvImageProcessor);
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+
   media::test::DecoderImplementation implementation =
-      media::test::DecoderImplementation::kVDA;
+      media::test::DecoderImplementation::kVD;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
@@ -416,12 +491,20 @@ int main(int argc, char** argv) {
 
     if (it->first == "output_folder") {
       output_folder = it->second;
-    } else if (it->first == "use_vd") {
-      use_vd = true;
-      implementation = media::test::DecoderImplementation::kVD;
+    } else if (it->first == "use-legacy") {
+      use_legacy = true;
+      implementation = media::test::DecoderImplementation::kVDA;
     } else if (it->first == "use_vd_vda") {
       use_vd_vda = true;
       implementation = media::test::DecoderImplementation::kVDVDA;
+    } else if (it->first == "linear_output") {
+      linear_output = true;
+    } else if (it->first == "disable_vaapi_lock") {
+      disabled_features.push_back(media::kGlobalVaapiLock);
+#if defined(ARCH_CPU_ARM_FAMILY)
+    } else if (it->first == "disable-libyuv") {
+      enabled_features.clear();
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -429,8 +512,14 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (use_vd && use_vd_vda) {
-    std::cout << "--use_vd and --use_vd_vda cannot be enabled together.\n"
+  if (use_legacy && use_vd_vda) {
+    std::cout << "--use-legacy and --use_vd_vda cannot be enabled together.\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
+  }
+  if (linear_output && !use_vd_vda) {
+    std::cout << "--linear_output must be used with the VDVDA (--use_vd_vda)\n"
+                 "implementation.\n"
               << media::test::usage_msg;
     return EXIT_FAILURE;
   }
@@ -446,8 +535,9 @@ int main(int argc, char** argv) {
       media::test::VideoPlayerTestEnvironment::Create(
           video_path, video_metadata_path, /*validator_type=*/
           media::test::VideoPlayerTestEnvironment::ValidatorType::kNone,
-          implementation,
-          base::FilePath(output_folder));
+          implementation, linear_output, base::FilePath(output_folder),
+          media::test::FrameOutputConfig(), enabled_features,
+          disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;
 

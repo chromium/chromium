@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -35,16 +37,24 @@ namespace apps {
 // CapabilityAccessUpdate.
 //
 // See components/services/app_service/README.md for more details.
+//
+// TODO(crbug.com/1253250): Remove all mojom related code.
+// 1. Modify comments.
+// 2. Replace mojom related functions with non-mojom functions.
 class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
  public:
   // Modifies |state| by copying over all of |delta|'s known fields: those
   // fields whose values aren't "unknown". The |state| may not be nullptr.
   static void Merge(apps::mojom::CapabilityAccess* state,
                     const apps::mojom::CapabilityAccess* delta);
+  static void Merge(CapabilityAccess* state, const CapabilityAccess* delta);
 
   // At most one of |state| or |delta| may be nullptr.
   CapabilityAccessUpdate(const apps::mojom::CapabilityAccess* state,
                          const apps::mojom::CapabilityAccess* delta,
+                         const AccountId& account_id);
+  CapabilityAccessUpdate(const CapabilityAccess* state,
+                         const CapabilityAccess* delta,
                          const AccountId& account_id);
 
   CapabilityAccessUpdate(const CapabilityAccessUpdate&) = delete;
@@ -56,17 +66,23 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
 
   const std::string& AppId() const;
 
-  apps::mojom::OptionalBool Camera() const;
+  absl::optional<bool> Camera() const;
   bool CameraChanged() const;
 
-  apps::mojom::OptionalBool Microphone() const;
+  absl::optional<bool> Microphone() const;
   bool MicrophoneChanged() const;
 
   const ::AccountId& AccountId() const;
 
  private:
-  const apps::mojom::CapabilityAccess* state_;
-  const apps::mojom::CapabilityAccess* delta_;
+  // TODO(crbug.com/1253250): Remove when the non mojom struct is used.
+  bool ShouldUseNonMojomStruct() const;
+
+  raw_ptr<const apps::mojom::CapabilityAccess> mojom_state_ = nullptr;
+  raw_ptr<const apps::mojom::CapabilityAccess> mojom_delta_ = nullptr;
+
+  raw_ptr<const CapabilityAccess> state_ = nullptr;
+  raw_ptr<const CapabilityAccess> delta_ = nullptr;
 
   const ::AccountId& account_id_;
 };

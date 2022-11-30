@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,26 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/thread_pool.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 
 namespace device {
-
 class PlatformSensorAndroid : public PlatformSensor {
  public:
+  // Creates a new PlatformSensorAndroid for the given sensor type, returning
+  // nullptr if it is not supported by the platform.
+  static scoped_refptr<PlatformSensorAndroid> Create(
+      mojom::SensorType type,
+      SensorReadingSharedBuffer* reading_buffer,
+      PlatformSensorProvider* provider,
+      const base::android::JavaRef<jobject>& java_provider);
+
   PlatformSensorAndroid(mojom::SensorType type,
                         SensorReadingSharedBuffer* reading_buffer,
-                        PlatformSensorProvider* provider,
-                        const base::android::JavaRef<jobject>& java_sensor);
+                        PlatformSensorProvider* provider);
+
+  PlatformSensorAndroid(const PlatformSensorAndroid&) = delete;
+  PlatformSensorAndroid& operator=(const PlatformSensorAndroid&) = delete;
 
   mojom::ReportingMode GetReportingMode() override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;
@@ -44,9 +54,9 @@ class PlatformSensorAndroid : public PlatformSensor {
  private:
   // Java object org.chromium.device.sensors.PlatformSensor
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorAndroid);
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 };
-
 }  // namespace device
 
 #endif  // SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_ANDROID_H_

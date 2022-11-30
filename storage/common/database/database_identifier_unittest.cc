@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -166,7 +164,7 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     {"x\x80x", "__0", false},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     GURL origin_url("http://" + cases[i].hostname);
     url::Origin origin = url::Origin::Create(origin_url);
     DatabaseIdentifier identifier_from_url =
@@ -291,8 +289,8 @@ static void TestValidOriginIdentifier(bool expected_result,
 }
 
 TEST(DatabaseIdentifierTest, OriginIdentifiers) {
-  const GURL kFileOriginURL(GURL("file:///").GetOrigin());
-  const GURL kHttpOriginURL(GURL("http://bar/").GetOrigin());
+  const GURL kFileOriginURL(GURL("file:///").DeprecatedGetOriginAsURL());
+  const GURL kHttpOriginURL(GURL("http://bar/").DeprecatedGetOriginAsURL());
   const url::Origin kFileOrigin = url::Origin::Create(kFileOriginURL);
   const url::Origin kHttpOrigin = url::Origin::Create(kHttpOriginURL);
 

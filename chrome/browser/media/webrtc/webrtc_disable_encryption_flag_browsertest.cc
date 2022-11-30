@@ -1,9 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
@@ -31,6 +30,12 @@ static const char kMainWebrtcTestHtmlPage[] =
 class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
  public:
   WebRtcDisableEncryptionFlagBrowserTest() {}
+
+  WebRtcDisableEncryptionFlagBrowserTest(
+      const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
+  WebRtcDisableEncryptionFlagBrowserTest& operator=(
+      const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
+
   ~WebRtcDisableEncryptionFlagBrowserTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -41,18 +46,15 @@ class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
     // Disable encryption with the command line flag.
     command_line->AppendSwitch(switches::kDisableWebRtcEncryption);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcDisableEncryptionFlagBrowserTest);
 };
 
 // Makes a call and checks that there's encryption or not in the SDP offer.
 // TODO(crbug.com/910216): De-flake this for ChromeOs.
-// TODO(crbug.com/984879): De-flake this for ASAN/MSAN Linux.
-#if defined(OS_CHROMEOS) ||                                        \
-    (defined(OS_LINUX) &&                                          \
-     (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))) || \
-    (defined(OS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/984879): De-flake this for ASAN/MSAN Linux, also Windows
+// TODO(crbug.com/1211144): De-flake this for MacOS.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(IS_LINUX) &&                                             \
+     (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)))
 #define MAYBE_VerifyEncryption DISABLED_VerifyEncryption
 #else
 #define MAYBE_VerifyEncryption VerifyEncryption
@@ -84,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcDisableEncryptionFlagBrowserTest,
       channel == version_info::Channel::DEV) {
     should_detect_encryption = false;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (channel == version_info::Channel::BETA)
     should_detect_encryption = false;
 #endif

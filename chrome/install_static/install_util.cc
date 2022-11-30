@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 
 #include <algorithm>
-#include <iterator>
 #include <limits>
 #include <memory>
 #include <sstream>
 
+#include "base/compiler_specific.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/buildflags.h"
@@ -30,7 +31,6 @@ enum class ProcessType {
   UNINITIALIZED,
   OTHER_PROCESS,
   BROWSER_PROCESS,
-  CLOUD_PRINT_SERVICE_PROCESS,
 #if BUILDFLAG(ENABLE_NACL)
   NACL_BROKER_PROCESS,
   NACL_LOADER_PROCESS,
@@ -77,14 +77,9 @@ constexpr wchar_t kChromeChannelStableExplicit[] = L"stable";
 // http://crbug.com/604923
 // These constants are defined in the chrome/installer directory as well. We
 // need to unify them.
-#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-constexpr wchar_t kRegValueAp[] = L"ap";
-constexpr wchar_t kRegValueName[] = L"name";
-#endif
 constexpr wchar_t kRegValueUsageStats[] = L"usagestats";
 constexpr wchar_t kMetricsReportingEnabled[] = L"MetricsReportingEnabled";
 
-constexpr wchar_t kCloudPrintServiceProcess[] = L"service";
 #if BUILDFLAG(ENABLE_NACL)
 constexpr wchar_t kNaClBrokerProcess[] = L"nacl-broker";
 constexpr wchar_t kNaClLoaderProcess[] = L"nacl-loader";
@@ -164,8 +159,8 @@ bool GetValueFromVersionResource(const char* version_resource,
 
   for (i = 0; i < array_size;) {
     wchar_t sub_block[MAX_PATH];
-    WORD language = lang_codepage[i++];
-    WORD code_page = lang_codepage[i++];
+    language = lang_codepage[i++];
+    code_page = lang_codepage[i++];
     _snwprintf_s(sub_block, MAX_PATH, MAX_PATH,
                  L"\\StringFileInfo\\%04hx%04hx\\%ls", language, code_page,
                  name.c_str());
@@ -185,59 +180,6 @@ bool DirectoryExists(const std::wstring& path) {
   if (file_attributes == INVALID_FILE_ATTRIBUTES)
     return false;
   return (file_attributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-}
-
-// Returns true if the |source| string matches the |pattern|. The pattern
-// may contain wildcards like '?' which matches one character or a '*'
-// which matches 0 or more characters.
-// Please note that pattern matches the whole string. If you want to find
-// something in the middle of the string then you need to specify the pattern
-// as '*xyz*'.
-// |source_index| is the index of the current character being matched in
-// |source|.
-// |pattern_index| is the index of the current pattern character in |pattern|
-// which is matched with source.
-bool MatchPatternImpl(const std::wstring& source,
-                      const std::wstring& pattern,
-                      size_t source_index,
-                      size_t pattern_index) {
-  if (source.empty() && pattern.empty())
-    return true;
-
-  if (source_index > source.length() || pattern_index > pattern.length())
-    return false;
-
-  // If we reached the end of both strings, then we are done.
-  if ((source_index == source.length()) &&
-      (pattern_index == pattern.length())) {
-    return true;
-  }
-
-  // If the current character in the pattern is a '*' then make sure that
-  // characters after the pattern are present in the source string. This
-  // assumes that you won't have two consecutive '*' characters in the pattern.
-  if ((pattern[pattern_index] == L'*') &&
-      (pattern_index + 1 < pattern.length()) &&
-      (source_index >= source.length())) {
-    return false;
-  }
-
-  // If the pattern contains wildcard characters '?' or '.' or there is a match
-  // then move ahead in both strings.
-  if ((pattern[pattern_index] == L'?') ||
-      (pattern[pattern_index] == source[source_index])) {
-    return MatchPatternImpl(source, pattern, source_index + 1,
-                            pattern_index + 1);
-  }
-
-  // If we have a '*' then there are two possibilities
-  // 1. We consider current character of source.
-  // 2. We ignore current character of source.
-  if (pattern[pattern_index] == L'*') {
-    return MatchPatternImpl(source, pattern, source_index + 1, pattern_index) ||
-           MatchPatternImpl(source, pattern, source_index, pattern_index + 1);
-  }
-  return false;
 }
 
 // Define specializations for white spaces based on the type of the string.
@@ -276,50 +218,29 @@ std::vector<StringType> TokenizeStringT(
 }
 
 #if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-// Returns Chrome's update channel name based on the contents of the given "ap"
-// value from Chrome's ClientState key.
-std::wstring ChannelFromAdditionalParameters(const InstallConstants& mode,
-                                             const std::wstring& ap_value) {
-  static constexpr wchar_t kChromeChannelBetaPattern[] = L"1?1-*";
-  static constexpr wchar_t kChromeChannelBetaX64Pattern[] = L"*x64-beta*";
-  static constexpr wchar_t kChromeChannelDevPattern[] = L"2?0-d*";
-  static constexpr wchar_t kChromeChannelDevX64Pattern[] = L"*x64-dev*";
-
-  std::wstring value;
-  value.reserve(ap_value.size());
-  std::transform(ap_value.begin(), ap_value.end(), std::back_inserter(value),
-                 ::tolower);
-
-  // Empty channel names or those containing "stable" should be reported as
-  // an empty string.
-  if (value.empty() ||
-      (value.find(kChromeChannelStableExplicit) != std::wstring::npos)) {
-    return std::wstring();
-  }
-  if (MatchPattern(value, kChromeChannelDevPattern) ||
-      MatchPattern(value, kChromeChannelDevX64Pattern)) {
-    return kChromeChannelDev;
-  }
-  if (MatchPattern(value, kChromeChannelBetaPattern) ||
-      MatchPattern(value, kChromeChannelBetaX64Pattern)) {
-    return kChromeChannelBeta;
-  }
-  // Else report values with garbage as stable since they will match the stable
-  // rules in the update configs.
-  return std::wstring();
-}
-
+// Returns true if `channel_test` is a valid name of a Chrome update channel
+// (irrespective of case), or false otherwise. When returning true, `channel` is
+// populated with the canonical channel name and `is_extended_stable` is set to
+// true if `channel_test` identifies the extended stable update channel. The
+// accepted channel names and their canonical names are:
+//
+// channel            inputs            canonical name
+// ---------------------------------------------------
+// extended stable    "extended"        "extended"
+// stable             "" or "stable"    ""
+// beta               "beta"            "beta"
+// dev                "dev"             "dev"
 bool GetChromeChannelNameFromString(const wchar_t* channel_test,
                                     std::wstring& channel,
                                     bool& is_extended_stable) {
-  if (!channel_test)
-    return false;
+  assert(channel_test);
+
   if (!*channel_test ||
       !lstrcmpiW(channel_test, kChromeChannelStableExplicit)) {
-    channel = std::wstring();
+    channel.clear();
     is_extended_stable = false;
   } else if (!lstrcmpiW(channel_test, kChromeChannelExtended)) {
-    channel = std::wstring();
+    channel.clear();
     is_extended_stable = true;
   } else if (!lstrcmpiW(channel_test, kChromeChannelBeta)) {
     channel = kChromeChannelBeta;
@@ -339,8 +260,6 @@ bool GetChromeChannelNameFromString(const wchar_t* channel_test,
 ProcessType GetProcessType(const std::wstring& process_type) {
   if (process_type.empty())
     return ProcessType::BROWSER_PROCESS;
-  if (process_type == kCloudPrintServiceProcess)
-    return ProcessType::CLOUD_PRINT_SERVICE_PROCESS;
 #if BUILDFLAG(ENABLE_NACL)
   if (process_type == kNaClBrokerProcess)
     return ProcessType::NACL_BROKER_PROCESS;
@@ -359,7 +278,6 @@ bool ProcessNeedsProfileDir(ProcessType process_type) {
   // lies on a network share the sandbox will prevent us from accessing it.
   switch (process_type) {
     case ProcessType::BROWSER_PROCESS:
-    case ProcessType::CLOUD_PRINT_SERVICE_PROCESS:
 #if BUILDFLAG(ENABLE_NACL)
     case ProcessType::NACL_BROKER_PROCESS:
     case ProcessType::NACL_LOADER_PROCESS:
@@ -430,7 +348,7 @@ const CLSID& GetElevatorClsid() {
   return InstallDetails::Get().elevator_clsid();
 }
 
-const CLSID& GetElevatorIid() {
+const IID& GetElevatorIid() {
   return InstallDetails::Get().elevator_iid();
 }
 
@@ -722,11 +640,6 @@ bool IsExtendedStableChannel() {
   return InstallDetails::Get().is_extended_stable_channel();
 }
 
-bool MatchPattern(const std::wstring& source, const std::wstring& pattern) {
-  assert(pattern.find(L"**") == std::wstring::npos);
-  return MatchPatternImpl(source, pattern, 0, 0);
-}
-
 std::string WideToUTF8(const std::wstring& source) {
   if (source.empty() ||
       static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
@@ -953,47 +866,41 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
 #if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   return {std::wstring(), ChannelOrigin::kInstallMode,
           /*is_extended_stable=*/false};
-#else
-  // Read the "ap" value and cache it if requested.
-  std::wstring client_state(GetClientStateKeyPath(mode.app_guid));
-  std::wstring ap_value;
-  // An empty |ap_value| is used in case of error.
-  nt::QueryRegValueSZ(system_level ? nt::HKLM : nt::HKCU, nt::WOW6432,
-                      client_state.c_str(), kRegValueAp, &ap_value);
-  if (update_ap)
-    *update_ap = ap_value;
+#else   // !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  // Cache the "ap" value if requested.
+  if (update_ap &&
+      !nt::QueryRegValueSZ(system_level ? nt::HKLM : nt::HKCU, nt::WOW6432,
+                           GetClientStateKeyPath(mode.app_guid).c_str(), L"ap",
+                           update_ap)) {
+    update_ap->erase();
+  }
 
   // Cache the cohort name if requested.
-  if (update_cohort_name) {
-    nt::QueryRegValueSZ(system_level ? nt::HKLM : nt::HKCU, nt::WOW6432,
-                        client_state.append(L"\\cohort").c_str(), kRegValueName,
-                        update_cohort_name);
+  if (update_cohort_name &&
+      !nt::QueryRegValueSZ(
+          system_level ? nt::HKLM : nt::HKCU, nt::WOW6432,
+          GetClientStateKeyPath(mode.app_guid).append(L"\\cohort").c_str(),
+          L"name", update_cohort_name)) {
+    update_cohort_name->erase();
   }
 
   switch (mode.channel_strategy) {
-    case ChannelStrategy::UNSUPPORTED:
-      assert(false);
-      break;
-    case ChannelStrategy::ADDITIONAL_PARAMETERS: {
-      std::wstring channel_override_value;
+    case ChannelStrategy::FLOATING: {
+      std::wstring channel_from_override;
       bool is_extended_stable = false;
       if (channel_override &&
           GetChromeChannelNameFromString(
-              channel_override, channel_override_value, is_extended_stable)) {
-        return {std::move(channel_override_value), ChannelOrigin::kPolicy,
+              channel_override, channel_from_override, is_extended_stable)) {
+        return {std::move(channel_from_override), ChannelOrigin::kPolicy,
                 is_extended_stable};
       }
-      return {ChannelFromAdditionalParameters(mode, ap_value),
-              ChannelOrigin::kAdditionalParameters,
-              /*is_extended_stable=*/false};
+      [[fallthrough]];  // Return the default channel name for the mode.
     }
     case ChannelStrategy::FIXED:
       return {mode.default_channel_name, ChannelOrigin::kInstallMode,
               /*is_extended_stable=*/false};
   }
-  return {std::wstring(), ChannelOrigin::kInstallMode,
-          /*is_extended_stable=*/false};
-#endif
+#endif  // !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
 }
 
 }  // namespace install_static

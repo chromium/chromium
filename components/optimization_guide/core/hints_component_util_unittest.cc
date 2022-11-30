@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/bloom_filter.h"
@@ -26,6 +25,9 @@ const base::FilePath::CharType kFileName[] = FILE_PATH_LITERAL("somefile.pb");
 class HintsComponentUtilTest : public testing::Test {
  public:
   HintsComponentUtilTest() {}
+
+  HintsComponentUtilTest(const HintsComponentUtilTest&) = delete;
+  HintsComponentUtilTest& operator=(const HintsComponentUtilTest&) = delete;
 
   ~HintsComponentUtilTest() override {}
 
@@ -44,8 +46,6 @@ class HintsComponentUtilTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintsComponentUtilTest);
 };
 
 TEST_F(HintsComponentUtilTest, RecordProcessHintsComponentResult) {
@@ -347,10 +347,10 @@ TEST_F(HintsComponentUtilTest,
       optimization_filter_proto.mutable_bloom_filter();
   bloom_filter_proto->set_num_hash_functions(num_hash_functions);
   bloom_filter_proto->set_num_bits(num_bits);
-  std::string blacklist_data(
+  std::string blocklist_data(
       reinterpret_cast<const char*>(&bloom_filter.bytes()[0]),
       bloom_filter.bytes().size());
-  bloom_filter_proto->set_data(blacklist_data);
+  bloom_filter_proto->set_data(blocklist_data);
 
   std::unique_ptr<OptimizationFilter> optimization_filter =
       ProcessOptimizationFilter(optimization_filter_proto,

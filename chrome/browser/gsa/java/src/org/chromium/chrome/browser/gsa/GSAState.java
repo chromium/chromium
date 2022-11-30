@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -29,7 +28,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -155,19 +153,24 @@ public class GSAState {
      */
     public boolean isGsaAvailable() {
         if (mGsaAvailable != null) return mGsaAvailable;
-        mGsaAvailable = false;
+
         Intent searchIntent = new Intent(SEARCH_INTENT_ACTION);
         searchIntent.setPackage(GSAState.SEARCH_INTENT_PACKAGE);
-        List<ResolveInfo> resolveInfo = PackageManagerUtils.queryIntentActivities(searchIntent, 0);
-        if (resolveInfo.size() == 0) {
-            mGsaAvailable = false;
-        } else if (!isPackageAboveVersion(SEARCH_INTENT_PACKAGE, GSA_VERSION_FOR_DOCUMENT)
-                || !isPackageAboveVersion(GMS_CORE_PACKAGE, GMS_CORE_VERSION)) {
-            mGsaAvailable = false;
-        } else {
-            mGsaAvailable = true;
-        }
+        mGsaAvailable = PackageManagerUtils.canResolveActivity(searchIntent)
+                && isPackageAboveVersion(SEARCH_INTENT_PACKAGE, GSA_VERSION_FOR_DOCUMENT)
+                && isPackageAboveVersion(GMS_CORE_PACKAGE, GMS_CORE_VERSION);
+
         return mGsaAvailable;
+    }
+
+    /** Returns whether the GSA package is installed on device. */
+    public boolean isGsaInstalled() {
+        try {
+            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
+            return true;
+        } catch (NameNotFoundException e) {
+            return false;
+        }
     }
 
     /**

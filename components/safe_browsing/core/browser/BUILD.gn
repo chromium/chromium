@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,50 +6,53 @@ import("//build/config/features.gni")
 
 source_set("browser") {
   sources = [
+    "ping_manager.cc",
+    "ping_manager.h",
     "safe_browsing_url_checker_impl.cc",
     "safe_browsing_url_checker_impl.h",
     "url_checker_delegate.h",
+    "user_population.cc",
+    "user_population.h",
   ]
+
+  public_deps = [ "//google_apis:google_apis" ]
+
   deps = [
-    "//components/safe_browsing/core:csd_proto",
-    "//components/safe_browsing/core:features",
-    "//components/safe_browsing/core:realtimeapi_proto",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser:sync_observer",
+    "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:hit_report",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/realtime:policy_engine",
+    "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/common:common",
-    "//components/safe_browsing/core/common:thread_utils",
-    "//components/safe_browsing/core/db:database_manager",
-    "//components/safe_browsing/core/db:util",
-    "//components/safe_browsing/core/realtime:policy_engine",
-    "//components/safe_browsing/core/realtime:url_lookup_service_base",
-    "//components/safe_browsing/core/web_ui:constants",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/unified_consent",
+    "//components/version_info",
+    "//net",
     "//net:extras",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
-  if (is_ios) {
-    sources += [ "//components/safe_browsing/ios/browser/safe_browsing_url_checker_impl_ios.cc" ]
-  } else {
-    sources += [ "//components/safe_browsing/content/browser/safe_browsing_url_checker_impl_content.cc" ]
-    deps += [ "//components/safe_browsing/content/web_ui" ]
-  }
 }
 
-# TODO(crbug.com/1028755): Remove this condition once there are no longer any
-# dependencies on content/.
-if (!is_ios) {
-  source_set("network_context") {
-    sources = [
-      "safe_browsing_network_context.cc",
-      "safe_browsing_network_context.h",
-    ]
+source_set("ping_manager_unittest") {
+  testonly = true
+  sources = [ "ping_manager_unittest.cc" ]
 
-    deps = [
-      "//components/safe_browsing/core/common:common",
-      "//components/safe_browsing/core/common:thread_utils",
-      "//content/public/browser:browser",
-      "//net:extras",
-    ]
-  }
+  deps = [
+    ":browser",
+    "//base:base",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//net:net",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
 }
 
 source_set("safe_browsing_url_checker_unittest") {
@@ -58,25 +61,75 @@ source_set("safe_browsing_url_checker_unittest") {
   deps = [
     ":browser",
     "//base/test:test_support",
-    "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core/browser:token_fetcher",
-    "//components/safe_browsing/core/common:test_support",
-    "//components/safe_browsing/core/common:thread_utils",
-    "//components/safe_browsing/core/db:test_database_manager",
-    "//components/safe_browsing/core/db:util",
-    "//components/safe_browsing/core/realtime:url_lookup_service",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/realtime:url_lookup_service",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gtest",
   ]
 }
 
+# NOTE: This target is separated from :browser as
+# //components/safe_browsing/core/browser/realtime:url_lookup_service_base,
+# which :browser depends on, depends on this.
+# TODO(crbug.com/1216341): Consider folding all of three these together into
+# :browser, along with the rest of //components/safe_browsing/core/browser.
+source_set("verdict_cache_manager") {
+  sources = [
+    "verdict_cache_manager.cc",
+    "verdict_cache_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/history/core/browser",
+    "//components/keyed_service/core:core",
+    "//components/password_manager/core/browser:browser",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser:sync_observer",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//url",
+  ]
+}
+
+source_set("verdict_cache_manager_unittest") {
+  testonly = true
+  sources = [ "verdict_cache_manager_unittest.cc" ]
+
+  deps = [
+    ":verdict_cache_manager",
+    "//base",
+    "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/safe_browsing/core/browser:sync_observer",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+  ]
+}
 source_set("referrer_chain_provider") {
   sources = [ "referrer_chain_provider.h" ]
   deps = [
-    "//components/safe_browsing/core:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/sessions",
   ]
+}
+
+source_set("sync_observer") {
+  sources = [ "safe_browsing_sync_observer.h" ]
+
+  deps = [ "//base" ]
 }
 
 source_set("token_fetcher") {
@@ -86,10 +139,7 @@ source_set("token_fetcher") {
     "safe_browsing_token_fetcher.h",
   ]
 
-  deps = [
-    "//base",
-    "//components/safe_browsing/core/common:thread_utils",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("token_fetcher_unit_tests") {
@@ -99,7 +149,71 @@ source_set("token_fetcher_unit_tests") {
   deps = [
     ":token_fetcher",
     "//base/test:test_support",
-    "//components/safe_browsing/core/common:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("token_fetcher_testing_helper") {
+  testonly = true
+  sources = [
+    "test_safe_browsing_token_fetcher.cc",
+    "test_safe_browsing_token_fetcher.h",
+  ]
+
+  deps = [
+    ":token_fetcher",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
+source_set("download_check_result") {
+  sources = [ "download_check_result.h" ]
+}
+
+source_set("safe_browsing_metrics_collector") {
+  sources = [
+    "safe_browsing_metrics_collector.cc",
+    "safe_browsing_metrics_collector.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser/db:hit_report",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+  ]
+}
+
+source_set("safe_browsing_metrics_collector_unittest") {
+  testonly = true
+  sources = [ "safe_browsing_metrics_collector_unittest.cc" ]
+  deps = [
+    ":safe_browsing_metrics_collector",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//testing/gtest",
+  ]
+}
+
+source_set("user_population_unittest") {
+  testonly = true
+  sources = [ "user_population_unittest.cc" ]
+  deps = [
+    ":browser",
+    "////components/safe_browsing/core/common",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync_preferences:test_support",
+    "//components/unified_consent:unified_consent",
+    "//components/version_info",
     "//testing/gtest",
   ]
 }

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<title>Test for auto-fit and auto-fill with huge grids (lots of tracks)</title>
+<link href="resources/grid.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/width-keyword-classes.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/height-keyword-classes.css" rel="stylesheet">
+<link href="resources/huge-grids.css" rel="stylesheet">
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+<script src="resources/grid-tracks-length.js"></script>
+
+<div id="wideAutoFillGridFewRepetitions" class="grid wideGrid lotsOfAutoRepeatWithAutoFillCols"></div>
+<div id="wideAutoFitGridFewRepetitions" class="grid wideGrid lotsOfAutoRepeatWithAutoFitCols">
+    <div>Item1</div>
+    <div>Item2</div>
+    <div class="lastColumn">Item3</div>
+</div>
+
+<div id="tallAutoFillGridFewRepetitions" class="grid tallGrid lotsOfAutoRepeatWithAutoFillRows"></div>
+<div id="tallAutoFitGridFewRepetitions" class="grid tallGrid lotsOfAutoRepeatWithAutoFitRows">
+    <div>Item1</div>
+    <div>Item2</div>
+    <div class="lastRow">Item3</div>
+</div>
+
+<script>
+
+test(function() {
+     var fillGridElement = document.getElementById("wideAutoFillGridFewRepetitions");
+     var fitGridElement = document.getElementById("wideAutoFitGridFewRepetitions");
+
+     fillGridElement.style.gridGap = "100px";
+     fitGridElement.style.gridGap = "100px";
+
+     var autoFillGrid = testElement("wideAutoFillGridFewRepetitions", "grid-template-columns", 306710);
+     var autoFitGrid = testElement("wideAutoFitGridFewRepetitions", "grid-template-columns", 314572);
+
+     assert_equals(autoFillGrid[306710 - 1], "1px");
+     assert_equals(autoFillGrid[306710 - 2], "1px");
+     assert_equals(autoFitGrid[314572 - 1], "1px");
+     assert_equals(autoFitGrid[314572 - 2], "1px");
+
+     fillGridElement.style.gridGap = "1000000px";
+     fitGridElement.style.gridGap = "1000000px";
+
+     testElement("wideAutoFillGridFewRepetitions", "grid-template-columns", 30);
+     testElement("wideAutoFitGridFewRepetitions", "grid-template-columns", 34);
+
+     fillGridElement.style.gridGap = "0px";
+     fitGridElement.style.gridGap = "0px";
+}, "Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps.");
+
+test(function() {
+     var autoFillGridElement = document.getElementById("tallAutoFillGridFewRepetitions");
+     var autoFitGridElement = document.getElementById("tallAutoFitGridFewRepetitions");
+
+     autoFillGridElement.style.gridGap = "100px";
+     autoFitGridElement.style.gridGap = "100px";
+
+     var autoFillGrid = testElement("tallAutoFillGridFewRepetitions", "grid-template-rows", 306710);
+     var autoFitGrid = testElement("tallAutoFitGridFewRepetitions", "grid-template-rows", 314572);
+
+     assert_equals(autoFillGrid[306710 - 1], "1px");
+     assert_equals(autoFillGrid[306710 - 2], "1px");
+     assert_equals(autoFitGrid[314572 - 1], "1px");
+     assert_equals(autoFitGrid[314572 - 2], "1px");
+
+     autoFillGridElement.style.gridGap = "1000000px";
+     autoFitGridElement.style.gridGap = "1000000px";
+
+     testElement("tallAutoFillGridFewRepetitions", "grid-template-rows", 30);
+     testElement("tallAutoFitGridFewRepetitions", "grid-template-rows", 34);
+
+     autoFillGridElement.style.gridGap = "0px";
+     autoFitGridElement.style.gridGap = "0px";
+}, "Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps.");
+
+</script>

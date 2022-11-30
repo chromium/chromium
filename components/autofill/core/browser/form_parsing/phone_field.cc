@@ -1,25 +1,27 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
 
-#include <string.h>
-
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_regex_constants.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
 namespace {
@@ -45,146 +47,119 @@ constexpr int kMinCandidatePercentageForCountryCode = 90;
 constexpr int kHeuristicThresholdForCountryCode = 10;
 
 // This string includes all area code separators, including NoText.
-std::string GetAreaRegex() {
-  std::string area_code = kAreaCodeRe;
-  area_code.append("|");  // Regexp separator.
-  area_code.append(kAreaCodeNotextRe);
-  return area_code;
+std::u16string GetAreaRegex() {
+  return base::StrCat({kAreaCodeRe, u"|", kAreaCodeNotextRe});
 }
 
 }  // namespace
 
-PhoneField::~PhoneField() {}
-
-// Phone field grammars - first matched grammar will be parsed. Grammars are
-// separated by { REGEX_SEPARATOR, FIELD_NONE, 0 }. Suffix and extension are
-// parsed separately unless they are necessary parts of the match.
+// Phone field grammars - first matched grammar will be parsed. Suffix and
+// extension are parsed separately unless they are necessary parts of the match.
 // The following notation is used to describe the patterns:
 // <cc> - country code field.
 // <ac> - area code field.
+// TODO(crbug.com/1348137): Add a separate prefix type.
 // <phone> - phone or prefix.
 // <suffix> - suffix.
-// <ext> - extension.
 // :N means field is limited to N characters, otherwise it is unlimited.
 // (pattern <field>)? means pattern is optional and matched separately.
-const PhoneField::Parser PhoneField::kPhoneFieldGrammars[] = {
-    // Country code: <cc> Area Code: <ac> Phone: <phone> (- <suffix>
-    // (Ext: <ext>)?)?
-    {REGEX_COUNTRY, FIELD_COUNTRY_CODE, 0},
-    {REGEX_AREA, FIELD_AREA_CODE, 0},
-    {REGEX_PHONE, FIELD_PHONE, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // \( <ac> \) <phone>:3 <suffix>:4 (Ext: <ext>)?
-    {REGEX_AREA_NOTEXT, FIELD_AREA_CODE, 3},
-    {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
-    {REGEX_PHONE, FIELD_SUFFIX, 4},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4 (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_COUNTRY_CODE, 0},
-    {REGEX_PHONE, FIELD_AREA_CODE, 3},
-    {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
-    {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 4},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <cc>:3 <ac>:3 <phone>:3 <suffix>:4 (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_COUNTRY_CODE, 3},
-    {REGEX_PHONE, FIELD_AREA_CODE, 3},
-    {REGEX_PHONE, FIELD_PHONE, 3},
-    {REGEX_PHONE, FIELD_SUFFIX, 4},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Area Code: <ac> Phone: <phone> (- <suffix> (Ext: <ext>)?)?
-    {REGEX_AREA, FIELD_AREA_CODE, 0},
-    {REGEX_PHONE, FIELD_PHONE, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <ac> <phone>:3 <suffix>:4 (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_AREA_CODE, 0},
-    {REGEX_PHONE, FIELD_PHONE, 3},
-    {REGEX_PHONE, FIELD_SUFFIX, 4},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <cc> \( <ac> \) <phone> (- <suffix> (Ext: <ext>)?)?
-    {REGEX_PHONE, FIELD_COUNTRY_CODE, 0},
-    {REGEX_AREA_NOTEXT, FIELD_AREA_CODE, 0},
-    {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: \( <ac> \) <phone> (- <suffix> (Ext: <ext>)?)?
-    {REGEX_PHONE, FIELD_COUNTRY_CODE, 0},
-    {REGEX_AREA_NOTEXT, FIELD_AREA_CODE, 0},
-    {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <cc> - <ac> - <phone> - <suffix> (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_COUNTRY_CODE, 0},
-    {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE, 0},
-    {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 0},
-    {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Area code: <ac>:3 Prefix: <prefix>:3 Suffix: <suffix>:4 (Ext: <ext>)?
-    {REGEX_AREA, FIELD_AREA_CODE, 3},
-    {REGEX_PREFIX, FIELD_PHONE, 3},
-    {REGEX_SUFFIX, FIELD_SUFFIX, 4},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <ac> Prefix: <phone> Suffix: <suffix> (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_AREA_CODE, 0},
-    {REGEX_PREFIX, FIELD_PHONE, 0},
-    {REGEX_SUFFIX, FIELD_SUFFIX, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <ac> - <phone>:3 - <suffix>:4 (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_AREA_CODE, 0},
-    {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
-    {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 4},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <cc> - <ac> - <phone> (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_COUNTRY_CODE, 0},
-    {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE, 0},
-    {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <ac> - <phone> (Ext: <ext>)?
-    {REGEX_AREA, FIELD_AREA_CODE, 0},
-    {REGEX_PHONE, FIELD_PHONE, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <cc>:3 - <phone>:10 (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_COUNTRY_CODE, 3},
-    {REGEX_PHONE, FIELD_PHONE, 14},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Ext: <ext>
-    {REGEX_EXTENSION, FIELD_EXTENSION, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <phone> (Ext: <ext>)?
-    {REGEX_PHONE, FIELD_PHONE, 0},
-    {REGEX_SEPARATOR, FIELD_NONE, 0},
-};
+// static
+const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
+  static const base::NoDestructor<std::vector<PhoneGrammar>> grammars({
+      // Country code: <cc> Area Code: <ac> Phone: <phone>
+      {{REGEX_COUNTRY, FIELD_COUNTRY_CODE},
+       {REGEX_AREA, FIELD_AREA_CODE},
+       {REGEX_PHONE, FIELD_PHONE}},
+      // \( <ac> \) <phone>:3 <suffix>:4
+      {{REGEX_AREA_NOTEXT, FIELD_AREA_CODE, 3},
+       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
+       {REGEX_PHONE, FIELD_SUFFIX, 4}},
+      // Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+       {REGEX_PHONE, FIELD_AREA_CODE, 3},
+       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
+       {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 4}},
+      // Phone: <cc>:3 <ac>:3 <phone>:3 <suffix>:4
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3},
+       {REGEX_PHONE, FIELD_AREA_CODE, 3},
+       {REGEX_PHONE, FIELD_PHONE, 3},
+       {REGEX_PHONE, FIELD_SUFFIX, 4}},
+      // Area Code: <ac> Phone: <phone>
+      {{REGEX_AREA, FIELD_AREA_CODE}, {REGEX_PHONE, FIELD_PHONE}},
+      // Phone: <ac> <phone>:3 <suffix>:4
+      {{REGEX_PHONE, FIELD_AREA_CODE},
+       {REGEX_PHONE, FIELD_PHONE, 3},
+       {REGEX_PHONE, FIELD_SUFFIX, 4}},
+      // Phone: <cc> \( <ac> \) <phone>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+       {REGEX_AREA_NOTEXT, FIELD_AREA_CODE},
+       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
+      // Phone: <cc> - <ac> - <phone> - <suffix>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+       {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
+       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE},
+       {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX}},
+      // Area code: <ac>:3 Prefix: <prefix>:3 Suffix: <suffix>:4
+      {{REGEX_AREA, FIELD_AREA_CODE, 3},
+       {REGEX_PREFIX, FIELD_PHONE, 3},
+       {REGEX_SUFFIX, FIELD_SUFFIX, 4}},
+      // Phone: <ac> Prefix: <phone> Suffix: <suffix>
+      {{REGEX_PHONE, FIELD_AREA_CODE},
+       {REGEX_PREFIX, FIELD_PHONE},
+       {REGEX_SUFFIX, FIELD_SUFFIX}},
+      // Phone: <ac> - <phone>:3 - <suffix>:4
+      {{REGEX_PHONE, FIELD_AREA_CODE},
+       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
+       {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 4}},
+      // Phone: <cc> - <ac> - <phone>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+       {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
+       {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE}},
+      // Phone: <ac> - <phone>
+      {{REGEX_AREA, FIELD_AREA_CODE}, {REGEX_PHONE, FIELD_PHONE}},
+      // Phone: <cc>:3 - <phone>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
+      // Phone: <cc> <ac> <phone>
+      // Indistinguishable from <area> <prefix> <suffix>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+       {EMPTY_LABEL, FIELD_AREA_CODE},
+       {EMPTY_LABEL, FIELD_PHONE}},
+      // Phone: <cc> <phone>
+      // Indistinguishable from <area> <phone>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE}, {EMPTY_LABEL, FIELD_PHONE}},
+      // Phone: <phone>
+      {{REGEX_PHONE, FIELD_PHONE}},
+  });
+  return *grammars;
+}
 
 // static
 bool PhoneField::LikelyAugmentedPhoneCountryCode(
     AutofillScanner* scanner,
     AutofillField** matched_field) {
-  // If the experiment |kAutofillEnableAugmentedPhoneCountryCode| is not
-  // enabled, return false.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableAugmentedPhoneCountryCode))
-    return false;
-
   AutofillField* field = scanner->Cursor();
 
   // Return false if the field is not a selection box.
-  if (!MatchesFormControlType(field->form_control_type, MATCH_SELECT))
+  if (!MatchesFormControlType(field->form_control_type,
+                              {MatchFieldType::kSelect}))
     return false;
 
   // If the number of the options is less than the minimum limit or more than
   // the maximum limit, return false.
-  if (field->option_contents.size() < kMinSelectOptionsForCountryCode ||
-      field->option_contents.size() >= kMaxSelectOptionsForCountryCode)
+  if (field->options.size() < kMinSelectOptionsForCountryCode ||
+      field->options.size() >= kMaxSelectOptionsForCountryCode)
     return false;
 
   // |total_covered_options| stores the count of the options that are
   // compared with the regex.
-  int total_num_options = static_cast<int>(field->option_contents.size());
+  int total_num_options = static_cast<int>(field->options.size());
 
   // |total_positive_options| stores the count of the options that match the
   // regex.
   int total_positive_options = 0;
 
-  for (const auto& option : field->option_contents) {
-    if (MatchesPattern(option,
-                       base::ASCIIToUTF16(kAugmentedPhoneCountryCodeRe)))
+  for (const auto& option : field->options) {
+    if (MatchesRegexWithCache(option.content, kAugmentedPhoneCountryCodeRe))
       total_positive_options++;
   }
 
@@ -212,116 +187,120 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
 }
 
 // static
+bool PhoneField::ParseGrammar(const PhoneGrammar& grammar,
+                              ParsedPhoneFields& parsed_fields,
+                              AutofillScanner* scanner,
+                              const LanguageCode& page_language,
+                              PatternSource pattern_source,
+                              LogManager* log_manager) {
+  for (const auto& rule : grammar) {
+    const bool is_country_code_field = rule.phone_part == FIELD_COUNTRY_CODE;
+
+    // The field length comparison with |rule.max_size| is not required in case
+    // of the selection boxes that are of phone country code type.
+    if (is_country_code_field &&
+        LikelyAugmentedPhoneCountryCode(scanner,
+                                        &parsed_fields[FIELD_COUNTRY_CODE])) {
+      continue;
+    }
+
+    bool is_empty_label = rule.regex == EMPTY_LABEL;
+    if (is_empty_label &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillEnableParsingEmptyPhoneNumberLabels)) {
+      // This `grammar` contains empty labels and doesn't apply when
+      // `kAutofillEnableParsingEmptyPhoneNumberLabels` is disabled.
+      return false;
+    }
+    // Try parsing either a field with an empty label or a field matching the
+    // regex of this rule.
+    bool parsed =
+        is_empty_label
+            ? ParseEmptyLabel(scanner, &parsed_fields[rule.phone_part])
+            : ParsePhoneField(scanner, GetRegExp(rule.regex),
+                              &parsed_fields[rule.phone_part],
+                              {log_manager, GetRegExpName(rule.regex)},
+                              is_country_code_field,
+                              GetJSONFieldType(rule.regex), page_language,
+                              pattern_source);
+    if (!parsed)
+      return false;
+
+    if (rule.max_size != 0 &&
+        (parsed_fields[rule.phone_part]->max_length == 0 ||
+         rule.max_size < parsed_fields[rule.phone_part]->max_length)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// static
 std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
                                              const LanguageCode& page_language,
+                                             PatternSource pattern_source,
                                              LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
 
   size_t start_cursor = scanner->SaveCursor();
+  ParsedPhoneFields parsed_fields;
 
-  // The form owns the following variables, so they should not be deleted.
-  AutofillField* parsed_fields[FIELD_MAX];
-
-  for (size_t i = 0; i < base::size(kPhoneFieldGrammars); ++i) {
-    memset(parsed_fields, 0, sizeof(parsed_fields));
-    size_t saved_cursor = scanner->SaveCursor();
-
-    // Attempt to parse according to the next grammar.
-    for (; i < base::size(kPhoneFieldGrammars) &&
-           kPhoneFieldGrammars[i].regex != REGEX_SEPARATOR;
-         ++i) {
-      const bool is_country_code_field =
-          kPhoneFieldGrammars[i].phone_part == FIELD_COUNTRY_CODE;
-
-      // The field length comparison with |kPhoneFieldGrammars[i].max_size| is
-      // not required in case of the selection boxes that are of phone country
-      // code type.
-      if (is_country_code_field &&
-          LikelyAugmentedPhoneCountryCode(scanner,
-                                          &parsed_fields[FIELD_COUNTRY_CODE]))
-        continue;
-
-      if (!ParsePhoneField(
-              scanner, GetRegExp(kPhoneFieldGrammars[i].regex),
-              &parsed_fields[kPhoneFieldGrammars[i].phone_part],
-              {log_manager, GetRegExpName(kPhoneFieldGrammars[i].regex)},
-              is_country_code_field,
-              GetJSONFieldType(kPhoneFieldGrammars[i].regex), page_language))
-        break;
-      if (kPhoneFieldGrammars[i].max_size &&
-          (!parsed_fields[kPhoneFieldGrammars[i].phone_part]->max_length ||
-           kPhoneFieldGrammars[i].max_size <
-               parsed_fields[kPhoneFieldGrammars[i].phone_part]->max_length)) {
-        break;
-      }
+  // Find the first matching grammar.
+  bool found_matching_grammar = false;
+  int grammar_id = 0;
+  for (const PhoneGrammar& grammar : GetPhoneGrammars()) {
+    std::fill(parsed_fields.begin(), parsed_fields.end(), nullptr);
+    if (ParseGrammar(grammar, parsed_fields, scanner, page_language,
+                     pattern_source, log_manager)) {
+      found_matching_grammar = true;
+      break;
     }
-
-    if (i >= base::size(kPhoneFieldGrammars)) {
-      scanner->RewindTo(saved_cursor);
-      return nullptr;  // Parsing failed.
-    }
-    if (kPhoneFieldGrammars[i].regex == REGEX_SEPARATOR)
-      break;  // Parsing succeeded.
-
-    // Proceed to the next grammar.
-    do {
-      ++i;
-    } while (i < base::size(kPhoneFieldGrammars) &&
-             kPhoneFieldGrammars[i].regex != REGEX_SEPARATOR);
-
-    scanner->RewindTo(saved_cursor);
-    if (i + 1 == base::size(kPhoneFieldGrammars)) {
-      return nullptr;  // Tried through all the possibilities - did not match.
-    }
-  }
-
-  if (!parsed_fields[FIELD_PHONE]) {
     scanner->RewindTo(start_cursor);
+    grammar_id++;
+  }
+  if (!found_matching_grammar)
     return nullptr;
+  // No grammar without FIELD_PHONE should be defined.
+  DCHECK(parsed_fields[FIELD_PHONE] != nullptr);
+
+  // Look for a suffix field using two different regex.
+  // TODO(crbug.com/1348137): Revise or remove.
+  bool suffix_matched = false;
+  if (!parsed_fields[FIELD_SUFFIX]) {
+    suffix_matched =
+        ParsePhoneField(scanner, kPhoneSuffixRe, &parsed_fields[FIELD_SUFFIX],
+                        {log_manager, "kPhoneSuffixRe"},
+                        /*is_country_code_field=*/false, "PHONE_SUFFIX",
+                        page_language, pattern_source) ||
+        ParsePhoneField(
+            scanner, kPhoneSuffixSeparatorRe, &parsed_fields[FIELD_SUFFIX],
+            {log_manager, "kPhoneSuffixSeparatorRe"},
+            /*is_country_code_field=*/false, "PHONE_SUFFIX_SEPARATOR",
+            page_language, pattern_source);
   }
-
-  std::unique_ptr<PhoneField> phone_field(new PhoneField);
-  for (int i = 0; i < FIELD_MAX; ++i)
-    phone_field->parsed_phone_fields_[i] = parsed_fields[i];
-
-  // Look for optional fields.
-
-  // Look for a third text box.
-  if (!phone_field->parsed_phone_fields_[FIELD_SUFFIX]) {
-    if (!ParsePhoneField(scanner, kPhoneSuffixRe,
-                         &phone_field->parsed_phone_fields_[FIELD_SUFFIX],
-                         {log_manager, "kPhoneSuffixRe"},
-                         /*is_country_code_field=*/false, "PHONE_SUFFIX",
-                         page_language)) {
-      ParsePhoneField(scanner, kPhoneSuffixSeparatorRe,
-                      &phone_field->parsed_phone_fields_[FIELD_SUFFIX],
-                      {log_manager, "kPhoneSuffixSeparatorRe"},
-                      /*is_country_code_field=*/false, "PHONE_SUFFIX_SEPARATOR",
-                      page_language);
-    }
-  }
+  AutofillMetrics::LogPhoneNumberGrammarMatched(grammar_id, suffix_matched,
+                                                GetPhoneGrammars().size());
 
   // Now look for an extension.
-  // The extension is not actually used, so this just eats the field so other
-  // parsers do not mistaken it for something else.
-  ParsePhoneField(scanner, kPhoneExtensionRe,
-                  &phone_field->parsed_phone_fields_[FIELD_EXTENSION],
+  // The extension is unused, but it is parsed to prevent other parsers from
+  // misclassifying it as something else.
+  ParsePhoneField(scanner, kPhoneExtensionRe, &parsed_fields[FIELD_EXTENSION],
                   {log_manager, "kPhoneExtensionRe"},
                   /*is_country_code_field=*/false, "PHONE_EXTENSION",
-                  page_language);
+                  page_language, pattern_source);
 
-  return std::move(phone_field);
+  return base::WrapUnique(new PhoneField(std::move(parsed_fields)));
 }
 
 void PhoneField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   DCHECK(parsed_phone_fields_[FIELD_PHONE]);  // Phone was correctly parsed.
 
-  if ((parsed_phone_fields_[FIELD_COUNTRY_CODE]) ||
-      (parsed_phone_fields_[FIELD_AREA_CODE]) ||
-      (parsed_phone_fields_[FIELD_SUFFIX])) {
-    if (parsed_phone_fields_[FIELD_COUNTRY_CODE]) {
+  bool has_country_code = parsed_phone_fields_[FIELD_COUNTRY_CODE] != nullptr;
+  if (has_country_code || parsed_phone_fields_[FIELD_AREA_CODE] ||
+      parsed_phone_fields_[FIELD_SUFFIX]) {
+    if (has_country_code) {
       AddClassification(parsed_phone_fields_[FIELD_COUNTRY_CODE],
                         PHONE_HOME_COUNTRY_CODE, kBasePhoneParserScore,
                         field_candidates);
@@ -329,24 +308,36 @@ void PhoneField::AddClassifications(
 
     ServerFieldType field_number_type = PHONE_HOME_NUMBER;
     if (parsed_phone_fields_[FIELD_AREA_CODE]) {
-      AddClassification(parsed_phone_fields_[FIELD_AREA_CODE],
-                        PHONE_HOME_CITY_CODE, kBasePhoneParserScore,
-                        field_candidates);
-    } else if (parsed_phone_fields_[FIELD_COUNTRY_CODE]) {
-      // Only if we can find country code without city code, it means the phone
-      // number include city code.
-      field_number_type = PHONE_HOME_CITY_AND_NUMBER;
+      ServerFieldType area_code_type =
+          has_country_code ||
+                  !base::FeatureList::IsEnabled(
+                      features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+              ? PHONE_HOME_CITY_CODE
+              : PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX;
+      AddClassification(parsed_phone_fields_[FIELD_AREA_CODE], area_code_type,
+                        kBasePhoneParserScore, field_candidates);
+    } else if (has_country_code) {
+      field_number_type =
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+              ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
+              : PHONE_HOME_CITY_AND_NUMBER;
     }
-    // We tag the prefix as PHONE_HOME_NUMBER, then when filling the form
-    // we fill only the prefix depending on the size of the input field.
+    // PHONE_HOME_NUMBER = PHONE_HOME_NUMBER_PREFIX + PHONE_HOME_NUMBER_SUFFIX
+    // is technically dialable (seven-digit dialing), and thus not contained in
+    // the area code branch.
+    if (parsed_phone_fields_[FIELD_SUFFIX]) {
+      // TODO(crbug.com/1348137): Ideally we want to DCHECK that
+      // `parsed_phone_fields_[FIELD_AREA_CODE] || !has_country_code` here.
+      // With the current grammars this can be violated, even though it
+      // seemingly never happens in practice according to our metrics.
+      field_number_type = PHONE_HOME_NUMBER_PREFIX;
+      AddClassification(parsed_phone_fields_[FIELD_SUFFIX],
+                        PHONE_HOME_NUMBER_SUFFIX, kBasePhoneParserScore,
+                        field_candidates);
+    }
     AddClassification(parsed_phone_fields_[FIELD_PHONE], field_number_type,
                       kBasePhoneParserScore, field_candidates);
-    // We tag the suffix as PHONE_HOME_NUMBER, then when filling the form
-    // we fill only the suffix depending on the size of the input field.
-    if (parsed_phone_fields_[FIELD_SUFFIX]) {
-      AddClassification(parsed_phone_fields_[FIELD_SUFFIX], PHONE_HOME_NUMBER,
-                        kBasePhoneParserScore, field_candidates);
-    }
   } else {
     AddClassification(parsed_phone_fields_[FIELD_PHONE],
                       PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,
@@ -360,12 +351,11 @@ void PhoneField::AddClassifications(
   }
 }
 
-PhoneField::PhoneField() {
-  memset(parsed_phone_fields_, 0, sizeof(parsed_phone_fields_));
-}
+PhoneField::PhoneField(ParsedPhoneFields fields)
+    : parsed_phone_fields_(std::move(fields)) {}
 
 // static
-std::string PhoneField::GetRegExp(RegexType regex_id) {
+std::u16string PhoneField::GetRegExp(RegexType regex_id) {
   switch (regex_id) {
     case REGEX_COUNTRY:
       return kCountryCodeRe;
@@ -385,11 +375,12 @@ std::string PhoneField::GetRegExp(RegexType regex_id) {
       return kPhoneSuffixRe;
     case REGEX_EXTENSION:
       return kPhoneExtensionRe;
+    case EMPTY_LABEL:
     default:
       NOTREACHED();
       break;
   }
-  return std::string();
+  return std::u16string();
 }
 
 // static
@@ -413,6 +404,7 @@ const char* PhoneField::GetRegExpName(RegexType regex_id) {
       return "kPhoneSuffixRe";
     case REGEX_EXTENSION:
       return "kPhoneExtensionRe";
+    case EMPTY_LABEL:
     default:
       NOTREACHED();
       break;
@@ -442,6 +434,7 @@ std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
       return "PHONE_SUFFIX";
     case REGEX_EXTENSION:
       return "PHONE_EXTENSION";
+    case EMPTY_LABEL:
     default:
       NOTREACHED();
       break;
@@ -451,23 +444,27 @@ std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
 
 // static
 bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
-                                 const std::string& regex,
+                                 base::StringPiece16 regex,
                                  AutofillField** field,
                                  const RegExLogging& logging,
                                  const bool is_country_code_field,
                                  const std::string& json_field_type,
-                                 const LanguageCode& page_language) {
-  int match_type = MATCH_DEFAULT | MATCH_TELEPHONE | MATCH_NUMBER;
+                                 const LanguageCode& page_language,
+                                 PatternSource pattern_source) {
+  MatchParams match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
+                                                   MatchFieldType::kNumber>;
   // Include the selection boxes too for the matching of the phone country code.
-  if (is_country_code_field)
-    match_type |= MATCH_SELECT;
+  if (is_country_code_field) {
+    match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
+                                         MatchFieldType::kNumber,
+                                         MatchFieldType::kSelect>;
+  }
 
-  const std::vector<MatchingPattern>& patterns =
-      PatternProvider::GetInstance().GetMatchPatterns(json_field_type,
-                                                      page_language);
+  base::span<const MatchPatternRef> patterns =
+      GetMatchPatterns(json_field_type, page_language, pattern_source);
 
-  return ParseFieldSpecifics(scanner, base::UTF8ToUTF16(regex), match_type,
-                             patterns, field, logging);
+  return ParseFieldSpecifics(scanner, regex, match_type, patterns, field,
+                             logging);
 }
 
 }  // namespace autofill

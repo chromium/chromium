@@ -1,0 +1,37 @@
+# These owners approve changes to VirtualTestSuites.
+#
+# The following things should be checked whether they are justified in the
+# CL description:
+# - If the CL adds a new virtual suite, there will need a justification if
+#   the test suite will run on more than one platform. It is preferred to
+#   run the test suite on Linux if it can be run on any platform.
+#
+# - If the CL adds virtual tests (by adding new virtual suites or new
+#   directories to existing virtual suties), how many tests the CL adds.
+#
+# - If the number of new tests is big (e.g. >=200)
+#   - Whether the new tests need to run on platforms other than Linux.
+#   - Whether the new directories are essential for test coverage.
+#   - Whether other alternatives [1] are more suitable than virtual suites.
+#   - The percentage of time the virtual suite will take. The author can
+#     find this data in "layout_test_results" page ("Timing stats" in the
+#     top-right corner) linked from "archive results for blink_web_tests"
+#     step on try bots like linux-rel, mac-rel and win10_chromium_x64_rel_ng.
+#     Normally the percentage should be less than 5%.
+#
+# - The prefix of the virtual test suites should not be too long. There is
+#   a 260 characters limit for the length of the path on Windows. The prefix
+#   will be part of the path should a baseline be needed, and will cause
+#   trouble at that time.
+#
+# [1] https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags
+
+dom@chromium.org
+ikilpatrick@chromium.org
+kojii@chromium.org
+masonf@chromium.org
+pdr@chromium.org
+schenney@chromium.org
+tkent@chromium.org
+wangxianzhu@chromium.org
+weizhong@google.com

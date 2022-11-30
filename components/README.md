@@ -3,7 +3,7 @@
 This directory is meant to house features or subsystems that are used in more
 than one part of the Chromium codebase.
 
-## Example use cases:
+## Use cases:
 
   * Features that are shared by Chrome on iOS (`//ios/chrome`) and Chrome on
     other platforms (`//chrome`).
@@ -22,6 +22,10 @@ than one part of the Chromium codebase.
         conceptually Blink code that is shared by iOS, raise the question on
         chromium-dev@, where the right folks will see it).
 
+Note that the above list is meant to be exhaustive. A component should not be
+added just to separate it from other code in the same layer that is the only
+consumer; that can be done with strict DEPS or GN visibility rules.
+
 ## Guidelines for adding a new component
 
   * You will be added to an OWNERS file under `//components/{your component}`
@@ -30,6 +34,9 @@ than one part of the Chromium codebase.
   * Code must be needed in at least 2 places in Chrome that don't have a "higher
     layered" directory that could facilitate sharing (e.g. `//content/common`,
     `//chrome/utility`, etc.).
+  * The CL adding a new component should be substantial enough so that
+    //components/OWNERS can see its basic intended structure and usage before
+    approving the addition (e.g., it should not just be an empty shell).
 
 ## Dependencies of a component
 
@@ -54,10 +61,10 @@ Components **can** depend on the lower layers of the Chromium codebase:
 Components **can** depend on each other. This must be made explicit in the
 `DEPS` file of the component.
 
-Components **can** depend on `//content/public` and `//ipc`. This must be made
-explicit in the `DEPS` file of the component. If such a component is used by
-Chrome for iOS (which does not use content or IPC), the component will have to
-be in the form of a [layered
+Components **can** depend on `//content/public`, `//ipc`, and
+`//third_party/blink/public`. This must be made explicit in the `DEPS` file of
+the component. If such a component is used by Chrome for iOS (which does not
+use content or IPC), the component will have to be in the form of a [layered
 component](http://www.chromium.org/developers/design-documents/layered-components-design).
 
 `//chrome`, `//ios/chrome`, `//content` and `//ios/web` **can** depend on
@@ -68,8 +75,8 @@ component cannot depend on  `//content/public`, directly or indirectly.
 
 ## Structure of a component
 
-As mentioned above, components that depend on `//content/public` or `//ipc`
-might have to be in the form of a [layered
+As mentioned above, components that depend on `//content/public`, `//ipc`, or
+`third_party/blink/public` might have to be in the form of a [layered
 component](http://www.chromium.org/developers/design-documents/layered-components-design).
 
 Components that have bits of code that need to live in different processes (e.g.
@@ -85,7 +92,9 @@ not used by iOS and thus does not need to be a layered component):
 
 These subdirectories should have DEPS files with the relevant restrictions in
 place, i.e. only `components/foo/browser` should be allowed to #include from
-`content/public/browser`.
+`content/public/browser`. Note that `third_party/blink/public` is a
+renderer process directory except for `third_party/blink/public/common` which
+can be used by all processes.
 
 Note that there may also be an `android` subdir, with a Java source code
 structure underneath it where the package name is org.chromium.components.foo,
@@ -99,7 +108,3 @@ and with subdirs after 'foo' to illustrate process, e.g. 'browser' or
 Code in a component should be placed in a namespace corresponding to the name of
 the component; e.g. for a component living in `//components/foo`, code in that
 component should be in the `foo::` namespace.
-
-## How does this differ from //base/util?
-
-See the explanation in [//base/util/README.md](https://chromium.googlesource.com/chromium/src/+/HEAD/base/util/README.md#how-does-this-differ-from-components).

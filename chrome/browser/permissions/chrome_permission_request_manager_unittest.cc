@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,17 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
+#include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/common/chrome_features.h"
@@ -27,11 +27,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
-#include "components/permissions/notification_permission_ui_selector.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/pref_names.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -42,6 +44,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -56,32 +59,30 @@ class ChromePermissionRequestManagerTest
   ChromePermissionRequestManagerTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        request1_("test1",
-                  permissions::RequestType::kDiskQuota,
+        request1_(permissions::RequestType::kGeolocation,
                   permissions::PermissionRequestGestureType::GESTURE),
-        request2_("test2",
-                  permissions::RequestType::kMultipleDownloads,
+        request2_(permissions::RequestType::kMultipleDownloads,
                   permissions::PermissionRequestGestureType::NO_GESTURE),
-        request_mic_("mic",
-                     permissions::RequestType::kMicStream,
+        request_mic_(permissions::RequestType::kMicStream,
                      permissions::PermissionRequestGestureType::NO_GESTURE),
-        request_camera_("cam",
-                        permissions::RequestType::kCameraStream,
+        request_camera_(permissions::RequestType::kCameraStream,
                         permissions::PermissionRequestGestureType::NO_GESTURE) {
   }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    url_ = GURL("http://www.google.com");
-    NavigateAndCommit(url_);
+    NavigateAndCommit(GURL(permissions::MockPermissionRequest::kDefaultOrigin));
 
     site_engagement::SiteEngagementService::Get(profile())
-        ->ResetBaseScoreForURL(url_, kTestEngagementScore);
+        ->ResetBaseScoreForURL(
+            GURL(permissions::MockPermissionRequest::kDefaultOrigin),
+            kTestEngagementScore);
 
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     manager_ =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
+    manager_->set_enabled_app_level_notification_permission_for_testing(true);
     prompt_factory_ =
         std::make_unique<permissions::MockPermissionPromptFactory>(manager_);
   }
@@ -102,12 +103,12 @@ class ChromePermissionRequestManagerTest
   }
 
   void Closing() {
-    manager_->Closing();
+    manager_->Dismiss();
     base::RunLoop().RunUntilIdle();
   }
 
   void WaitForBubbleToBeShown() {
-    manager_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+    manager_->DocumentOnLoadCompletedInPrimaryMainFrame();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -137,46 +138,45 @@ class ChromePermissionRequestManagerTest
 
     NavigateAndCommit(url);
     auto request = std::make_unique<permissions::MockPermissionRequest>(
-        /*text*/ "test", permissions::RequestType::kGeolocation, url);
-    manager_->AddRequest(web_contents()->GetMainFrame(), request.get());
+        url, permissions::RequestType::kGeolocation);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), request.get());
     return request;
   }
 #endif
 
  protected:
-  GURL url_;
   permissions::MockPermissionRequest request1_;
   permissions::MockPermissionRequest request2_;
   permissions::MockPermissionRequest request_mic_;
   permissions::MockPermissionRequest request_camera_;
-  permissions::PermissionRequestManager* manager_;
+  raw_ptr<permissions::PermissionRequestManager> manager_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 
 TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
   base::HistogramTester histograms;
 
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request1_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShown,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::QUOTA),
+          permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShownGesture,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::QUOTA),
+          permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptShownNoGesture, 0);
-  histograms.ExpectTotalCount("Permissions.Engagement.Accepted.Quota", 0);
+  histograms.ExpectTotalCount("Permissions.Engagement.Accepted.Geolocation", 0);
 
   Accept();
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::QUOTA),
+          permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptDenied, 0);
@@ -184,18 +184,18 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAcceptedGesture,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::QUOTA),
+          permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptAcceptedNoGesture, 0);
-  histograms.ExpectUniqueSample("Permissions.Engagement.Accepted.Quota",
+  histograms.ExpectUniqueSample("Permissions.Engagement.Accepted.Geolocation",
                                 kTestEngagementScore, 1);
 }
 
 TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
   base::HistogramTester histograms;
 
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request2_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
   WaitForBubbleToBeShown();
 
   histograms.ExpectTotalCount(
@@ -234,8 +234,8 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
 TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
   base::HistogramTester histograms;
 
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_mic_);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_camera_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   WaitForBubbleToBeShown();
 
   histograms.ExpectUniqueSample(
@@ -265,8 +265,8 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
 TEST_F(ChromePermissionRequestManagerTest, UMAForMergedDeniedBubble) {
   base::HistogramTester histograms;
 
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_mic_);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_camera_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   WaitForBubbleToBeShown();
   histograms.ExpectTotalCount(
       "Permissions.Engagement.Denied.AudioAndVideoCapture", 0);
@@ -288,23 +288,23 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedDeniedBubble) {
 TEST_F(ChromePermissionRequestManagerTest, UMAForIgnores) {
   base::HistogramTester histograms;
 
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request1_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
-  histograms.ExpectTotalCount("Permissions.Engagement.Ignored.Quota", 0);
+  histograms.ExpectTotalCount("Permissions.Engagement.Ignored.Geolocation", 0);
 
   GURL youtube("http://www.youtube.com/");
   NavigateAndCommit(youtube);
-  histograms.ExpectUniqueSample("Permissions.Engagement.Ignored.Quota",
+  histograms.ExpectUniqueSample("Permissions.Engagement.Ignored.Geolocation",
                                 kTestEngagementScore, 1);
 
   permissions::MockPermissionRequest youtube_request(
-      "request2", permissions::RequestType::kGeolocation, youtube);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &youtube_request);
+      youtube, permissions::RequestType::kCameraStream);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &youtube_request);
   WaitForBubbleToBeShown();
 
-  NavigateAndCommit(GURL("http://www.google.com/"));
-  histograms.ExpectUniqueSample("Permissions.Engagement.Ignored.Geolocation", 0,
-                                1);
+  NavigateAndCommit(GURL(permissions::MockPermissionRequest::kDefaultOrigin));
+  histograms.ExpectUniqueSample("Permissions.Engagement.Ignored.VideoCapture",
+                                0, 1);
 }
 
 TEST_F(ChromePermissionRequestManagerTest,
@@ -325,11 +325,11 @@ TEST_F(ChromePermissionRequestManagerTest,
           "true"},
          {QuietNotificationPermissionUiConfig::kEnableAdaptiveActivationDryRun,
           "true"}}}},
-      {});
+      {features::kPermissionPredictions});
 
   ASSERT_TRUE(
       QuietNotificationPermissionUiConfig::IsAdaptiveActivationDryRunEnabled());
-  base::Optional<bool> has_three_consecutive_denies =
+  absl::optional<bool> has_three_consecutive_denies =
       permissions::PermissionsClient::Get()
           ->HadThreeConsecutiveNotificationPermissionDenies(profile());
   ASSERT_TRUE(has_three_consecutive_denies.has_value());
@@ -340,8 +340,9 @@ TEST_F(ChromePermissionRequestManagerTest,
     GURL requesting_origin(origin_spec);
     NavigateAndCommit(requesting_origin);
     permissions::MockPermissionRequest notification_request(
-        "request", permissions::RequestType::kNotifications, requesting_origin);
-    manager_->AddRequest(web_contents()->GetMainFrame(), &notification_request);
+        requesting_origin, permissions::RequestType::kNotifications);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         &notification_request);
     WaitForBubbleToBeShown();
     EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
     Deny();
@@ -361,8 +362,9 @@ TEST_F(ChromePermissionRequestManagerTest,
     GURL requesting_origin("http://www.notification.com/");
     NavigateAndCommit(requesting_origin);
     permissions::MockPermissionRequest notification_request(
-        "request", permissions::RequestType::kNotifications, requesting_origin);
-    manager_->AddRequest(web_contents()->GetMainFrame(), &notification_request);
+        requesting_origin, permissions::RequestType::kNotifications);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         &notification_request);
     WaitForBubbleToBeShown();
     // Only show quiet UI after 3 consecutive denies of the permission prompt.
     EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
@@ -377,8 +379,9 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL requesting_origin("http://www.notification2.com/");
   NavigateAndCommit(requesting_origin);
   permissions::MockPermissionRequest notification_request(
-      "request2", permissions::RequestType::kNotifications, requesting_origin);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification_request);
+      requesting_origin, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification_request);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   Accept();
@@ -396,7 +399,7 @@ TEST_F(ChromePermissionRequestManagerTest,
 TEST_F(ChromePermissionRequestManagerTest,
        NotificationsAdaptiveActivationQuietUIWindowSize) {
   EXPECT_EQ(
-      base::TimeDelta::FromDays(90),  // Default value.
+      base::Days(90),  // Default value.
       QuietNotificationPermissionUiConfig::GetAdaptiveActivationWindowSize());
 
   base::test::ScopedFeatureList feature_list;
@@ -407,10 +410,10 @@ TEST_F(ChromePermissionRequestManagerTest,
          {QuietNotificationPermissionUiConfig::
               kAdaptiveActivationActionWindowSizeInDays,
           "7"}}}},
-      {});
+      {features::kPermissionPredictions});
 
   ASSERT_EQ(
-      base::TimeDelta::FromDays(7),
+      base::Days(7),
       QuietNotificationPermissionUiConfig::GetAdaptiveActivationWindowSize());
 
   const char* origin_spec[]{"https://a.com", "https://b.com", "https://c.com",
@@ -419,8 +422,9 @@ TEST_F(ChromePermissionRequestManagerTest,
     GURL requesting_origin(origin_spec[i]);
     NavigateAndCommit(requesting_origin);
     permissions::MockPermissionRequest notification_request(
-        "request", permissions::RequestType::kNotifications, requesting_origin);
-    manager_->AddRequest(web_contents()->GetMainFrame(), &notification_request);
+        requesting_origin, permissions::RequestType::kNotifications);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         &notification_request);
     WaitForBubbleToBeShown();
     EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
     Deny();
@@ -428,15 +432,16 @@ TEST_F(ChromePermissionRequestManagerTest,
     if (i == 0) {
       // The history window size is 7 days. That will ignore previous denied
       // permission request as obsolete.
-      task_environment()->AdvanceClock(base::TimeDelta::FromDays(10));
+      task_environment()->AdvanceClock(base::Days(10));
     }
   }
 
   GURL requesting_origin("http://www.notification.com/");
   NavigateAndCommit(requesting_origin);
   permissions::MockPermissionRequest notification_request(
-      "request", permissions::RequestType::kNotifications, requesting_origin);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification_request);
+      requesting_origin, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification_request);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
@@ -451,7 +456,8 @@ TEST_F(ChromePermissionRequestManagerTest,
       {{features::kQuietNotificationPrompts,
         {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
           "true"}}}},
-      {permissions::features::kBlockRepeatedNotificationPermissionPrompts});
+      {permissions::features::kBlockRepeatedNotificationPermissionPrompts,
+       features::kPermissionPredictions});
 
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
       prefs::kEnableQuietNotificationPermissionUi));
@@ -459,16 +465,18 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL notification1("http://www.notification1.com/");
   NavigateAndCommit(notification1);
   permissions::MockPermissionRequest notification1_request(
-      "request1", permissions::RequestType::kNotifications, notification1);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification1_request);
+      notification1, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification1_request);
   WaitForBubbleToBeShown();
   Deny();
 
   GURL notification2("http://www.notification2.com/");
   NavigateAndCommit(notification2);
   permissions::MockPermissionRequest notification2_request(
-      "request2", permissions::RequestType::kNotifications, notification2);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification2_request);
+      notification2, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification2_request);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
@@ -476,8 +484,9 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL notification3("http://www.notification3.com/");
   NavigateAndCommit(notification3);
   permissions::MockPermissionRequest notification3_request(
-      "request3", permissions::RequestType::kNotifications, notification3);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification3_request);
+      notification3, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification3_request);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Accept();
@@ -486,8 +495,9 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL notification4("http://www.notification4.com/");
   NavigateAndCommit(notification4);
   permissions::MockPermissionRequest notification4_request(
-      "request4", permissions::RequestType::kNotifications, notification4);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification4_request);
+      notification4, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification4_request);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
@@ -495,8 +505,9 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL notification5("http://www.notification5.com/");
   NavigateAndCommit(notification5);
   permissions::MockPermissionRequest notification5_request(
-      "request5", permissions::RequestType::kNotifications, notification5);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification5_request);
+      notification5, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification5_request);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
@@ -505,14 +516,14 @@ TEST_F(ChromePermissionRequestManagerTest,
   // other permissions should not.
   GURL camera_url("http://www.camera.com/");
   NavigateAndCommit(camera_url);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_camera_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_camera_);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
   GURL microphone_url("http://www.microphone.com/");
   NavigateAndCommit(microphone_url);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &request_mic_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_mic_);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
@@ -520,8 +531,9 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL notification6("http://www.notification6.com/");
   NavigateAndCommit(notification6);
   permissions::MockPermissionRequest notification6_request(
-      "request6", permissions::RequestType::kNotifications, notification6);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification6_request);
+      notification6, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification6_request);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
@@ -531,10 +543,11 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL notification7("http://www.notification7.com/");
   NavigateAndCommit(notification7);
   permissions::MockPermissionRequest notification7_request(
-      "request7", permissions::RequestType::kNotifications, notification7);
+      notification7, permissions::RequestType::kNotifications);
   // For the first quiet permission prompt, show a promo.
   EXPECT_TRUE(QuietNotificationPermissionUiState::ShouldShowPromo(profile()));
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification7_request);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification7_request);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
@@ -546,62 +559,65 @@ TEST_F(ChromePermissionRequestManagerTest,
   GURL notification8("http://www.notification8.com/");
   NavigateAndCommit(notification8);
   permissions::MockPermissionRequest notification8_request(
-      "request8", permissions::RequestType::kNotifications, notification8);
-  // For the rest of the quiet permission prompts, do not show promo.
-  EXPECT_TRUE(QuietNotificationPermissionUiState::ShouldShowPromo(profile()));
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification8_request);
+      notification8, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification8_request);
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
 
   // Clearing interaction history, or turning off quiet mode in preferences does
   // not change the state of the currently showing quiet UI.
-  PermissionActionsHistory::GetForProfile(profile())->ClearHistory(
+  PermissionActionsHistoryFactory::GetForProfile(profile())->ClearHistory(
       base::Time(), base::Time::Max());
   profile()->GetPrefs()->ClearPref(prefs::kEnableQuietNotificationPermissionUi);
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
   base::Time recorded_time = base::Time::Now();
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->AdvanceClock(base::Days(1));
   base::Time from_time = base::Time::Now();
   GURL notification9("http://www.notification9.com/");
   NavigateAndCommit(notification9);
   permissions::MockPermissionRequest notification9_request(
-      "request9", permissions::RequestType::kNotifications, notification9);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification9_request);
+      notification9, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification9_request);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->AdvanceClock(base::Days(1));
   base::Time to_time = base::Time::Now();
   GURL notification10("http://www.notification10.com/");
   NavigateAndCommit(notification10);
   permissions::MockPermissionRequest notification10_request(
-      "request10", permissions::RequestType::kNotifications, notification10);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification10_request);
+      notification10, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification10_request);
   WaitForBubbleToBeShown();
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
-  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment()->AdvanceClock(base::Days(1));
   GURL notification11("http://www.notification11.com/");
   NavigateAndCommit(notification11);
   permissions::MockPermissionRequest notification11_request(
-      "request11", permissions::RequestType::kNotifications, notification11);
-  manager_->AddRequest(web_contents()->GetMainFrame(), &notification11_request);
+      notification11, permissions::RequestType::kNotifications);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &notification11_request);
   WaitForBubbleToBeShown();
   Deny();
 
-  DictionaryPrefUpdate update(profile()->GetPrefs(), prefs::kPermissionActions);
+  DictionaryPrefUpdate update(profile()->GetPrefs(),
+                              permissions::prefs::kPermissionActions);
   const auto permissions_actions =
-      update->FindListPath("notifications")->GetList();
-  PermissionActionsHistory::GetForProfile(profile())->ClearHistory(from_time,
-                                                                   to_time);
+      update->FindListPath("notifications")->GetListDeprecated();
+  PermissionActionsHistoryFactory::GetForProfile(profile())->ClearHistory(
+      from_time, to_time);
 
   // Check that we have cleared all entries >= |from_time| and <|end_time|.
   EXPECT_EQ(permissions_actions.size(), 3u);
-  EXPECT_EQ((util::ValueToTime(permissions_actions[0].FindKey("time")))
+  EXPECT_EQ((base::ValueToTime(permissions_actions[0].FindKey("time")))
                 .value_or(base::Time()),
             recorded_time);
 }
@@ -628,3 +644,39 @@ TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
   EXPECT_TRUE(request->finished());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+class ChromePermissionRequestManagerAdaptiveQuietUiActivationTest
+    : public ChromePermissionRequestManagerTest {
+ public:
+  ChromePermissionRequestManagerAdaptiveQuietUiActivationTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kQuietNotificationPrompts,
+          {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
+            "true"}}}},
+        {features::kPermissionPredictions});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChromePermissionRequestManagerAdaptiveQuietUiActivationTest,
+       EnableDisabledQuietNotificationToggleUponThreeConsecutiveBlocks) {
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kEnableQuietNotificationPermissionUi));
+
+  for (const char* origin_spec :
+       {"https://a.com", "https://b.com", "https://c.com"}) {
+    GURL requesting_origin(origin_spec);
+    NavigateAndCommit(requesting_origin);
+    permissions::MockPermissionRequest notification_request(
+        requesting_origin, permissions::RequestType::kNotifications);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         &notification_request);
+    WaitForBubbleToBeShown();
+    Deny();
+  }
+
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kEnableQuietNotificationPermissionUi));
+}

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 
 /**
@@ -91,6 +92,8 @@ public class WebappActivity extends BaseCustomTabActivity {
 
     @Override
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
-        return new WebappLaunchCauseMetrics(this, mWebappActivityCoordinator.getWebappInfo());
+        return new WebappLaunchCauseMetrics(this,
+                mWebappActivityCoordinator == null ? null
+                                                   : mWebappActivityCoordinator.getWebappInfo());
     }
 }

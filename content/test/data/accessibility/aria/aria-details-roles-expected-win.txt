@@ -1,12 +1,12 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION name='comment' details-roles:comment
-++IA2_ROLE_SECTION name='comment-group' details-roles:comment
-++IA2_ROLE_SECTION name='comment-region' details-roles:comment
-++IA2_ROLE_SECTION name='comment-section' details-roles:*
-++IA2_ROLE_SECTION name='definition' details-roles:definition
-++IA2_ROLE_SECTION name='doc-endnote' details-roles:doc-endnote
-++IA2_ROLE_SECTION name='doc-footnote' details-roles:doc-footnote
-++IA2_ROLE_SECTION name='many' details-roles:comment definition doc-footnote
+++IA2_ROLE_SECTION details-roles:comment description='comment'
+++IA2_ROLE_SECTION details-roles:comment description='comment-group'
+++IA2_ROLE_SECTION details-roles:* description='comment-region'
+++IA2_ROLE_SECTION details-roles:* description='comment-section'
+++IA2_ROLE_SECTION details-roles:definition description='definition'
+++IA2_ROLE_SECTION details-roles:doc-endnote description='doc-endnote'
+++IA2_ROLE_SECTION details-roles:doc-footnote description='doc-footnote'
+++IA2_ROLE_SECTION details-roles:comment definition doc-footnote description='many'
 ++IA2_ROLE_COMMENT
 ++++ROLE_SYSTEM_STATICTEXT name='x'
 ++ROLE_SYSTEM_GROUPING
@@ -15,7 +15,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_GROUPING
 ++++++IA2_ROLE_COMMENT
 ++++++++ROLE_SYSTEM_STATICTEXT name='x'
-++IA2_ROLE_LANDMARK
+++IA2_ROLE_SECTION
 ++++IA2_ROLE_COMMENT
 ++++++ROLE_SYSTEM_STATICTEXT name='x'
 ++IA2_ROLE_SECTION

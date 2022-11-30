@@ -1,53 +1,207 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browser_features.h"
 
+#include "base/feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/net/system_network_context_manager.h"
+#endif
 
 namespace features {
 
 // Enables using the ClosedTabCache to instantly restore recently closed tabs
 // using the "Reopen Closed Tab" button.
-const base::Feature kClosedTabCache{"ClosedTabCache",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kClosedTabCache,
+             "ClosedTabCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether or not to delegate color queries from the ThemeProvider to the
+// ColorProvider.
+BASE_FEATURE(kColorProviderRedirectionForThemeProvider,
+             "ColorProviderRedirectionForThemeProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
-const base::Feature kDestroyProfileOnBrowserClose{
-    "DestroyProfileOnBrowserClose", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDestroyProfileOnBrowserClose,
+             "DestroyProfileOnBrowserClose",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+// DestroyProfileOnBrowserClose only covers deleting regular (non-System)
+// Profiles. This flags lets us destroy the System Profile, as well.
+BASE_FEATURE(kDestroySystemProfiles,
+             "DestroySystemProfiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Let DevTools front-end talk to the target of type "tab" rather than
+// "frame" when inspecting a WebContents.
+BASE_FEATURE(kDevToolsTabTarget,
+             "DevToolsTabTarget",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Nukes profile directory before creating a new profile using
+// ProfileManager::CreateMultiProfileAsync().
+BASE_FEATURE(kNukeProfileBeforeCreateMultiAsync,
+             "NukeProfileBeforeCreateMultiAsync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables executing the browser commands sent by the NTP promos.
-const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPromoBrowserCommands,
+             "PromoBrowserCommands",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Parameter name for the promo browser command ID provided along with
 // kPromoBrowserCommands.
 // The value of this parameter should be parsable as an unsigned integer and
 // should map to one of the browser commands specified in:
-// chrome/browser/promo_browser_command/promo_browser_command.mojom
-const char kPromoBrowserCommandIdParam[] = "PromoBrowserCommandIdParam";
+// ui/webui/resources/js/browser_command/browser_command.mojom
+const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
+
+// Enables using policy::ManagementService to get the browser's and platform
+// management state everywhere.
+BASE_FEATURE(kUseManagementService,
+             "UseManagementService",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_MAC)
+// Enables integration with the macOS feature Universal Links.
+BASE_FEATURE(kEnableUniveralLinks,
+             "EnableUniveralLinks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables reading and writing PWA notification permissions from quick settings
+// menu.
+BASE_FEATURE(kQuickSettingsPWANotifications,
+             "QuickSettingsPWA",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 // Enables being able to zoom a web page by double tapping in Chrome OS tablet
 // mode.
-const base::Feature kDoubleTapToZoomInTabletMode{
-    "DoubleTapToZoomInTabletMode", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDoubleTapToZoomInTabletMode,
+             "DoubleTapToZoomInTabletMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Adds an item to the context menu that copies a link to the page with the
 // selected text highlighted.
-const base::Feature kCopyLinkToText{"CopyLinkToText",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCopyLinkToText,
+             "CopyLinkToText",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Adds a "Snooze" action to mute notifications during screen sharing sessions.
+BASE_FEATURE(kMuteNotificationSnoozeAction,
+             "MuteNotificationSnoozeAction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables taking snapshots of the user data directory after a major
-// milestone update and restoring them after a version rollback.
-const base::Feature kUserDataSnapshot{"UserDataSnapshot",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// Gates sandboxed iframe navigation toward external protocol behind any of:
+// - allow-top-navigation
+// - allow-top-navigation-to-custom-protocols
+// - allow-top-navigation-with-user-gesture (+ user gesture)
+// - allow-popups
+//
+// Motivation:
+// Developers are surprised that a sandboxed iframe can navigate and/or
+// redirect the user toward an external application.
+// General iframe navigation in sandboxed iframe are not blocked normally,
+// because they stay within the iframe. However they can be seen as a popup or
+// a top-level navigation when it leads to opening an external application. In
+// this case, it makes sense to extend the scope of sandbox flags, to block
+// malvertising.
+//
+// Implementation bug: https://crbug.com/1253379
+// I2S: https://groups.google.com/a/chromium.org/g/blink-dev/c/-t-f7I6VvOI
+//
+// Enabled in M103. Flag to be removed in M106
+BASE_FEATURE(kSandboxExternalProtocolBlocked,
+             "SandboxExternalProtocolBlocked",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enabled in M100. Flag to be removed in M106
+BASE_FEATURE(kSandboxExternalProtocolBlockedWarning,
+             "SandboxExternalProtocolBlockedWarning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables migration of the network context data from `unsandboxed_data_path` to
+// `data_path`. See the explanation in network_context.mojom.
+BASE_FEATURE(kTriggerNetworkDataMigration,
+             "TriggerNetworkDataMigration",
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+// Enables runtime detection of USB devices which provide a WebUSB landing page
+// descriptor.
+BASE_FEATURE(kWebUsbDeviceDetection,
+             "WebUsbDeviceDetection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables Certificate Transparency on Android.
+BASE_FEATURE(kCertificateTransparencyAndroid,
+             "CertificateTransparencyAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kLargeFaviconFromGoogle,
+             "LargeFaviconFromGoogle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
+    &kLargeFaviconFromGoogle, "favicon_size_in_dip", 128};
+
+// Enables the use of a `ProfileManagerObserver` to trigger the post profile
+// init step of the browser startup. This affects the initialization order of
+// some features with the goal to improve startup performance in some cases.
+// See https://bit.ly/chromium-startup-no-guest-profile.
+BASE_FEATURE(kObserverBasedPostProfileInit,
+             "ObserverBasedPostProfileInit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the static key pinning list can be updated via component
+// updater.
+BASE_FEATURE(kKeyPinningComponentUpdater,
+             "KeyPinningComponentUpdater",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When this feature is enabled, the network service will restart unsandboxed if
+// a previous attempt to launch it sandboxed failed.
+BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,
+             "RestartNetworkServiceUnsandboxedForFailedLaunch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN)
+// When this feature is enabled, metrics are gathered regarding the performance
+// and reliability of app-bound encryption primitives on a background thread.
+BASE_FEATURE(kAppBoundEncryptionMetrics,
+             "AppBoundEncryptionMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+// Enables showing the email of the flex org admin that setup CBCM in the
+// management disclosures.
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kFlexOrgManagementDisclosure,
+             "FlexOrgManagementDisclosure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kFlexOrgManagementDisclosure,
+             "FlexOrgManagementDisclosure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace features

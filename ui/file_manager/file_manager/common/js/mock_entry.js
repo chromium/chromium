@@ -1,8 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import * as wrappedUtil from './util.m.js'; const {util} = wrappedUtil;
+import {util} from './util.js';
 
 /**
  * Joins paths so that the two paths are connected by only 1 '/'.
@@ -10,7 +10,7 @@
  * @param {string} b Path.
  * @return {string} Joined path.
  */
-/* #export */ function joinPath(a, b) {
+export function joinPath(a, b) {
   return a.replace(/\/+$/, '') + '/' + b.replace(/^\/+/, '');
 }
 
@@ -19,7 +19,7 @@
  *
  * @extends {FileSystem}
  */
-/* #export */ class MockFileSystem {
+export class MockFileSystem {
   /**
    * @param {string} volumeId Volume ID.
    * @param {string=} opt_rootURL URL string of root which is used in
@@ -107,7 +107,7 @@
 }
 
 /** @interface */
-/* #export */ class MockEntryInterface {
+export class MockEntryInterface {
   /**
    * Clones the entry with the new fullpath.
    *
@@ -124,7 +124,7 @@
  * @extends {Entry}
  * @implements {MockEntryInterface}
  */
-/* #export */ class MockEntry {
+export class MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path of the entry.
@@ -156,7 +156,8 @@
     if (this.filesystem.entries[this.fullPath]) {
       onSuccess(this.metadata);
     } else {
-      onError(/** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+      onError(
+          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
     }
   }
 
@@ -187,7 +188,8 @@
     if (this.filesystem.entries[path]) {
       onSuccess(this.filesystem.entries[path]);
     } else {
-      onError(/** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+      onError(
+          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
     }
   }
 
@@ -198,8 +200,8 @@
    * @param {string=} opt_newName New name.
    * @param {function(!Entry)=} opt_successCallback Callback invoked with the
    *     moved entry.
-   * @param {function(!FileError)=} opt_errorCallback Callback invoked with an
-   *     error object.
+   * @param {function(!FileError)=} opt_errorCallback Callback invoked with
+   *     an error object.
    */
   moveTo(parent, opt_newName, opt_successCallback, opt_errorCallback) {
     Promise.resolve()
@@ -281,7 +283,11 @@
     }
   }
 
-  /** @override */
+  /**
+   * @param {string} fullpath New fullpath.
+   * @param {FileSystem=} opt_filesystem New file system
+   * @return {Entry} Cloned entry.
+   */
   clone(fullpath, opt_filesystem) {
     throw new Error('Not implemented.');
   }
@@ -292,7 +298,7 @@
  *
  * @implements {MockEntryInterface}
  */
-/* #export */ class MockFileEntry extends MockEntry {
+export class MockFileEntry extends MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path for the entry.
@@ -367,7 +373,7 @@
  * Mock class for FileWriter.
  * @extends {FileWriter}
  */
-/* #export */ class MockFileWriter {
+export class MockFileWriter {
   /**
    * @param {!MockFileEntry} entry
    */
@@ -392,7 +398,7 @@
  *
  * @implements {MockEntryInterface}
  */
-/* #export */ class MockDirectoryEntry extends MockEntry {
+export class MockDirectoryEntry extends MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path for the entry.
@@ -520,7 +526,7 @@
  * Mock class for DirectoryReader.
  * @extends {DirectoryReader}
  */
-/* #export */ class MockDirectoryReader {
+export class MockDirectoryReader {
   /**
    * @param {!Array<!Entry>} entries
    */

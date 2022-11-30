@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
@@ -17,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.filters.SmallTest;
@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -62,7 +64,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -79,6 +80,11 @@ import java.util.concurrent.TimeoutException;
 public class TrustedCdnPublisherUrlTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
+                    .build();
 
     private static final String PAGE_WITH_TITLE =
             "<!DOCTYPE html><html><head><title>Example title</title></head></html>";
@@ -130,11 +136,11 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     @Test
-    //@SmallTest
-    //@Feature({"UiCatalogue"})
+    @SmallTest
+    @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    @DisabledTest // Disabled for flakiness! See http://crbug.com/851950
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttps() throws Exception {
         runTrustedCdnPublisherUrlTest("https://www.example.com/test", "com.example.test",
                 "example.com", org.chromium.chrome.R.drawable.omnibox_https_valid);
@@ -146,7 +152,7 @@ public class TrustedCdnPublisherUrlTest {
     @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    @DisabledTest // Disabled for flakiness! See http://crbug.com/847341
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttp() throws Exception {
         runTrustedCdnPublisherUrlTest("http://example.com/test", "com.example.test", "example.com",
                 org.chromium.chrome.R.drawable.omnibox_info);
@@ -158,7 +164,7 @@ public class TrustedCdnPublisherUrlTest {
     @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    @DisabledTest // Disabled for flakiness! See http://crbug.com/847341
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testRtl() throws Exception {
         String publisher = "\u200e\u202b\u0645\u0648\u0642\u0639\u002e\u0648\u0632\u0627\u0631"
                 + "\u0629\u002d\u0627\u0644\u0623\u062a\u0635\u0627\u0644\u0627\u062a\u002e\u0645"
@@ -169,24 +175,7 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private int getDefaultSecurityIcon() {
-        // On tablets an info icon is shown for ConnectionSecurityLevel.NONE pages,
-        // on smaller form factors nothing.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                    InstrumentationRegistry.getTargetContext())) {
-            return org.chromium.chrome.R.drawable.omnibox_info;
-        }
-
-        return 0;
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
-    @OverrideTrustedCdn
-    public void testUntrustedClient() throws Exception {
-        runTrustedCdnPublisherUrlTest(
-                "https://example.com/test", "com.someoneelse.bla", null, getDefaultSecurityIcon());
+        return org.chromium.chrome.R.drawable.omnibox_info;
     }
 
     @Test
@@ -211,16 +200,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.DisableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
-    @OverrideTrustedCdn
-    public void testDisabled() throws Exception {
-        runTrustedCdnPublisherUrlTest(
-                "https://example.com/test", "com.example.test", null, getDefaultSecurityIcon());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     // No @OverrideTrustedCdn
     public void testUntrustedCdn() throws Exception {
@@ -233,7 +212,7 @@ public class TrustedCdnPublisherUrlTest {
     @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    @DisabledTest // Disabled for flakiness! See http://crbug.com/847341
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testPageInfo() throws Exception {
         runTrustedCdnPublisherUrlTest("https://example.com/test", "com.example.test", "example.com",
                 R.drawable.omnibox_https_valid);
@@ -250,7 +229,7 @@ public class TrustedCdnPublisherUrlTest {
     @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    @DisabledTest // Disabled for flakiness! See http://crbug.com/847341
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testNavigateAway() throws Exception {
         runTrustedCdnPublisherUrlTest("https://example.com/test", "com.example.test", "example.com",
                 R.drawable.omnibox_https_valid);
@@ -269,7 +248,7 @@ public class TrustedCdnPublisherUrlTest {
     @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    @DisabledTest // Disabled for flakiness! See http://crbug.com/847341
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testReparent() throws Exception {
         String publisherUrl = "https://example.com/test";
         runTrustedCdnPublisherUrlTest(
@@ -316,7 +295,7 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    @DisabledTest // Disabled for flakiness! See http://crbug.com/847341
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testOfflinePage() throws TimeoutException {
         String publisherUrl = "https://example.com/test";
         runTrustedCdnPublisherUrlTest(
@@ -350,7 +329,7 @@ public class TrustedCdnPublisherUrlTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
             Tab tab = customTabActivity.getActivityTab();
-            String pageUrl = tab.getUrlString();
+            String pageUrl = tab.getUrl().getSpec();
             offlinePageBridge.savePage(tab.getWebContents(),
                     new ClientId(OfflinePageBridge.DOWNLOAD_NAMESPACE, "1234"),
                     (savePageResult, url, offlineId) -> {
@@ -384,7 +363,8 @@ public class TrustedCdnPublisherUrlTest {
         }
         String testUrl = mWebServer.setResponse("/test.html", PAGE_WITH_TITLE, headers);
         Context targetContext = InstrumentationRegistry.getTargetContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
@@ -415,15 +395,24 @@ public class TrustedCdnPublisherUrlTest {
     private void verifySecurityIcon(int expectedSecurityIcon) {
         ImageView securityButton =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
+
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());
         } else {
+            Assert.assertEquals(org.chromium.chrome.R.drawable.omnibox_info, expectedSecurityIcon);
             Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
-            Bitmap expectedIcon = BitmapFactory.decodeResource(
-                    InstrumentationRegistry.getTargetContext().getResources(),
-                    expectedSecurityIcon);
-            Assert.assertTrue(expectedIcon.sameAs(
-                    ((BitmapDrawable) securityButton.getDrawable()).getBitmap()));
+
+            ColorStateList colorStateList =
+                    AppCompatResources.getColorStateList(InstrumentationRegistry.getTargetContext(),
+                            R.color.default_icon_color_light_tint_list);
+            ImageView expectedSecurityButton =
+                    new ImageView(InstrumentationRegistry.getTargetContext());
+            expectedSecurityButton.setImageResource(expectedSecurityIcon);
+            ApiCompatibilityUtils.setImageTintList(expectedSecurityButton, colorStateList);
+
+            BitmapDrawable expectedDrawable = (BitmapDrawable) expectedSecurityButton.getDrawable();
+            BitmapDrawable actualDrawable = (BitmapDrawable) securityButton.getDrawable();
+            Assert.assertTrue(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap()));
         }
     }
 }

@@ -41,7 +41,7 @@ namespace {
 
 // Computes ideal band-limited half-band filter coefficients.
 // In other words, filter out all frequencies higher than 0.25 * Nyquist.
-std::unique_ptr<AudioFloatArray> MakeReducedKernel(size_t size) {
+std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
   auto reduced_kernel = std::make_unique<AudioFloatArray>(size / 2);
 
   // Blackman window parameters.
@@ -82,7 +82,7 @@ std::unique_ptr<AudioFloatArray> MakeReducedKernel(size_t size) {
 
 }  // namespace
 
-DownSampler::DownSampler(size_t input_block_size)
+DownSampler::DownSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
       convolver_(input_block_size / 2,  // runs at 1/2 source sample-rate
                  MakeReducedKernel(kDefaultKernelSize)),
@@ -91,10 +91,10 @@ DownSampler::DownSampler(size_t input_block_size)
 
 void DownSampler::Process(const float* source_p,
                           float* dest_p,
-                          size_t source_frames_to_process) {
+                          uint32_t source_frames_to_process) {
   DCHECK_EQ(source_frames_to_process, input_block_size_);
 
-  size_t dest_frames_to_process = source_frames_to_process / 2;
+  uint32_t dest_frames_to_process = source_frames_to_process / 2;
 
   DCHECK_EQ(dest_frames_to_process, temp_buffer_.size());
   DCHECK_EQ(convolver_.ConvolutionKernelSize(),
@@ -113,8 +113,9 @@ void DownSampler::Process(const float* source_p,
   // (destination sample-rate) to match shifting forward in time in
   // m_reducedKernel.
   float* odd_samples_p = temp_buffer_.Data();
-  for (unsigned i = 0; i < dest_frames_to_process; ++i)
+  for (unsigned i = 0; i < dest_frames_to_process; ++i) {
     odd_samples_p[i] = *((input_p - 1) + i * 2);
+  }
 
   // Actually process oddSamplesP with m_reducedKernel for efficiency.
   // The theoretical kernel is double this size with 0 values for even terms
@@ -126,8 +127,9 @@ void DownSampler::Process(const float* source_p,
   // sample-rate), scaled by 0.5.
 
   // Sum into the destination.
-  for (unsigned i = 0; i < dest_frames_to_process; ++i)
+  for (unsigned i = 0; i < dest_frames_to_process; ++i) {
     dest_p[i] += 0.5 * *((input_p - half_size) + i * 2);
+  }
 
   // Copy 2nd half of input buffer to 1st half.
   memcpy(input_buffer_.Data(), input_p,

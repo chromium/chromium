@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,8 @@ class TimeTicks;
 // Contains information about the startup.
 @protocol StartupInformation<NSObject>
 
-// Whether First Run UI (terms of service & sync sign-in) is being presented
-// in a modal dialog.
-@property(nonatomic, readonly) BOOL isPresentingFirstRunUI;
+// Whether the app is starting in first run.
+@property(nonatomic, assign) BOOL isFirstRun;
 // Whether the current session began from a cold start. NO if the app has
 // entered the background at least once since start up.
 @property(nonatomic) BOOL isColdStart;
@@ -25,6 +24,10 @@ class TimeTicks;
 @property(nonatomic, assign) base::TimeTicks appLaunchTime;
 // An object to record metrics related to the user's first action.
 @property(nonatomic, readonly) FirstUserActionRecorder* firstUserActionRecorder;
+// Tick of the call to didFinishLaunching, used for UMA.
+@property(nonatomic, assign) base::TimeTicks didFinishLaunchingTime;
+// Tick of the first scene connection, used for UMA.
+@property(nonatomic, assign) base::TimeTicks firstSceneConnectionTime;
 
 // Keeps track of the restore state during startup.
 @property(nonatomic, strong) CrashRestoreHelper* restoreHelper;

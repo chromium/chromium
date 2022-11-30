@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/metrics/stability_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/testing_pref_service.h"
@@ -19,13 +20,14 @@ class StabilityMetricsProviderTest : public testing::Test {
     StabilityMetricsProvider::RegisterPrefs(prefs_.registry());
   }
 
+  StabilityMetricsProviderTest(const StabilityMetricsProviderTest&) = delete;
+  StabilityMetricsProviderTest& operator=(const StabilityMetricsProviderTest&) =
+      delete;
+
   ~StabilityMetricsProviderTest() override {}
 
  protected:
   TestingPrefServiceSimple prefs_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsProviderTest);
 };
 
 TEST_F(StabilityMetricsProviderTest, ProvideStabilityMetrics) {
@@ -35,18 +37,17 @@ TEST_F(StabilityMetricsProviderTest, ProvideStabilityMetrics) {
   SystemProfileProto system_profile;
   provider->ProvideStabilityMetrics(&system_profile);
 
-  const SystemProfileProto_Stability& stability = system_profile.stability();
+#if BUILDFLAG(IS_ANDROID)
   // Initial log metrics: only expected if non-zero.
+  const SystemProfileProto_Stability& stability = system_profile.stability();
+  // The launch count field is used on Android only.
   EXPECT_FALSE(stability.has_launch_count());
-  EXPECT_FALSE(stability.has_crash_count());
-  EXPECT_FALSE(stability.has_incomplete_shutdown_count());
+#endif
 
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kLaunch, 0);
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kBrowserCrash, 0);
-  histogram_tester.ExpectBucketCount(
-      "Stability.Counts2", StabilityEventType::kIncompleteShutdown, 0);
 }
 
 TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
@@ -55,8 +56,6 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
     StabilityMetricsProvider recorder(&prefs_);
     recorder.LogLaunch();
     recorder.LogCrash(base::Time());
-    recorder.MarkSessionEndCompleted(false);
-    recorder.CheckLastSessionEndCompleted();
   }
 
   {
@@ -65,22 +64,21 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
     SystemProfileProto system_profile;
     provider->ProvideStabilityMetrics(&system_profile);
 
-    const SystemProfileProto_Stability& stability = system_profile.stability();
+#if BUILDFLAG(IS_ANDROID)
     // Initial log metrics: only expected if non-zero.
+    const SystemProfileProto_Stability& stability = system_profile.stability();
+    // The launch count field is populated only on Android.
     EXPECT_EQ(1, stability.launch_count());
-    EXPECT_EQ(1, stability.crash_count());
-    EXPECT_EQ(1, stability.incomplete_shutdown_count());
+#endif
 
     histogram_tester.ExpectBucketCount("Stability.Counts2",
                                        StabilityEventType::kLaunch, 1);
     histogram_tester.ExpectBucketCount("Stability.Counts2",
                                        StabilityEventType::kBrowserCrash, 1);
-    histogram_tester.ExpectBucketCount(
-        "Stability.Counts2", StabilityEventType::kIncompleteShutdown, 1);
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 class TestingStabilityMetricsProvider : public StabilityMetricsProvider {
@@ -112,20 +110,16 @@ TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
     recorder.LogCrash(unclean_time);
 
     // Record a crash with no system crash.
-    recorder.LogCrash(unclean_time - base::TimeDelta::FromMinutes(1));
+    recorder.LogCrash(unclean_time - base::Minutes(1));
   }
 
   {
     StabilityMetricsProvider stability_provider(&prefs_);
     MetricsProvider* provider = &stability_provider;
     SystemProfileProto system_profile;
-
     provider->ProvideStabilityMetrics(&system_profile);
 
-    const SystemProfileProto_Stability& stability = system_profile.stability();
     // Two crashes, one system crash.
-    EXPECT_EQ(2, stability.crash_count());
-
     histogram_tester.ExpectUniqueSample("Stability.Counts2",
                                         StabilityEventType::kBrowserCrash, 2);
     histogram_tester.ExpectTotalCount("Stability.Internals.SystemCrashCount",

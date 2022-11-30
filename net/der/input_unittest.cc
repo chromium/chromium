@@ -1,17 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/der/input.h"
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace der {
-namespace test {
+namespace net::der::test {
 
-const uint8_t kInput[] = {'t', 'e', 's', 't'};
+constexpr uint8_t kInput[] = {'t', 'e', 's', 't'};
 const uint8_t kInput2[] = {'t', 'e', 'a', 'l'};
 
 TEST(InputTest, Equals) {
@@ -19,12 +16,12 @@ TEST(InputTest, Equals) {
   Input test2(kInput);
   EXPECT_EQ(test, test2);
 
-  uint8_t input_copy[base::size(kInput)] = {0};
-  memcpy(input_copy, kInput, base::size(kInput));
+  uint8_t input_copy[std::size(kInput)] = {0};
+  memcpy(input_copy, kInput, std::size(kInput));
   Input test_copy(input_copy);
   EXPECT_EQ(test, test_copy);
 
-  Input test_truncated(kInput, base::size(kInput) - 1);
+  Input test_truncated(kInput, std::size(kInput) - 1);
   EXPECT_NE(test, test_truncated);
   EXPECT_NE(test_truncated, test);
 }
@@ -37,7 +34,7 @@ TEST(InputTest, LessThan) {
   EXPECT_FALSE(test < test2);
   EXPECT_TRUE(test2 < test);
 
-  Input test_truncated(kInput, base::size(kInput) - 1);
+  Input test_truncated(kInput, std::size(kInput) - 1);
   EXPECT_FALSE(test < test_truncated);
   EXPECT_TRUE(test_truncated < test);
 }
@@ -45,16 +42,35 @@ TEST(InputTest, LessThan) {
 TEST(InputTest, AsString) {
   Input input(kInput);
   std::string expected_string(reinterpret_cast<const char*>(kInput),
-                              base::size(kInput));
+                              std::size(kInput));
   EXPECT_EQ(expected_string, input.AsString());
 }
 
 TEST(InputTest, StaticArray) {
   Input input(kInput);
-  EXPECT_EQ(base::size(kInput), input.Length());
+  EXPECT_EQ(std::size(kInput), input.Length());
 
   Input input2(kInput);
   EXPECT_EQ(input, input2);
+}
+
+TEST(InputTest, ConstExpr) {
+  constexpr Input default_input;
+  static_assert(default_input.Length() == 0);
+  static_assert(default_input.UnsafeData() == nullptr);
+
+  constexpr Input const_array_input(kInput);
+  static_assert(const_array_input.Length() == 4);
+  static_assert(const_array_input.UnsafeData() == kInput);
+  static_assert(default_input < const_array_input);
+
+  constexpr Input ptr_len_input(kInput, 2);
+  static_assert(ptr_len_input.Length() == 2);
+  static_assert(ptr_len_input.UnsafeData() == kInput);
+  static_assert(ptr_len_input < const_array_input);
+
+  Input runtime_input(kInput2, 2);
+  EXPECT_EQ(runtime_input, ptr_len_input);
 }
 
 TEST(ByteReaderTest, NoReadPastEnd) {
@@ -84,10 +100,8 @@ TEST(ByteReaderTest, HasMore) {
   ByteReader reader((Input(kInput)));
 
   ASSERT_TRUE(reader.HasMore());
-  ASSERT_TRUE(reader.ReadBytes(base::size(kInput), &out));
+  ASSERT_TRUE(reader.ReadBytes(std::size(kInput), &out));
   ASSERT_FALSE(reader.HasMore());
 }
 
-}  // namespace test
-}  // namespace der
-}  // namespace net
+}  // namespace net::der::test

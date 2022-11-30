@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace media {
 class AudioBus;
@@ -21,6 +20,9 @@ namespace audio {
 class FakeConsumer {
  public:
   FakeConsumer(int channels, int sample_rate);
+
+  FakeConsumer(const FakeConsumer&) = delete;
+  FakeConsumer& operator=(const FakeConsumer&) = delete;
 
   ~FakeConsumer();
 
@@ -55,8 +57,6 @@ class FakeConsumer {
  private:
   const int sample_rate_;
   std::vector<std::vector<float>> recorded_channel_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConsumer);
 };
 
 }  // namespace audio

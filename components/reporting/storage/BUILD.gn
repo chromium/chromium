@@ -1,5 +1,5 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD - style license that can be
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
@@ -10,7 +10,11 @@ static_library("storage_configuration") {
     "storage_configuration.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/resources:resource_interface",
+  ]
 }
 
 static_library("storage_uploader_interface") {
@@ -23,6 +27,7 @@ static_library("storage_uploader_interface") {
     "//base",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/resources:resource_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_proto",
   ]
@@ -38,11 +43,13 @@ static_library("storage_queue") {
     ":storage_configuration",
     ":storage_uploader_interface",
     "//base",
+    "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:verification",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/storage/resources:resource_interface",
+    "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",
@@ -63,12 +70,17 @@ static_library("storage") {
     ":storage_queue",
     ":storage_uploader_interface",
     "//base",
+    "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:primitives",
     "//components/reporting/encryption:verification",
+    "//components/reporting/health:health_module",
+    "//components/reporting/proto:pipeline_id_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",
@@ -77,20 +89,33 @@ static_library("storage") {
   ]
 }
 
+static_library("storage_module_interface") {
+  sources = [
+    "storage_module_interface.cc",
+    "storage_module_interface.h",
+  ]
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+}
+
 static_library("storage_module") {
   sources = [
     "storage_module.cc",
     "storage_module.h",
-    "storage_module_interface.cc",
-    "storage_module_interface.h",
   ]
 
   public_deps = [ ":storage_configuration" ]
 
   deps = [
     ":storage",
+    ":storage_module_interface",
     ":storage_uploader_interface",
     "//base",
+    "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/proto:record_constants",
@@ -105,14 +130,13 @@ static_library("missive_storage_module") {
     "missive_storage_module.h",
     "missive_storage_module_delegate_impl.cc",
     "missive_storage_module_delegate_impl.h",
-    "storage_module_interface.cc",
-    "storage_module_interface.h",
   ]
 
   public_deps = [ ":storage_configuration" ]
 
   deps = [
     ":storage",
+    ":storage_module_interface",
     ":storage_uploader_interface",
     "//base",
     "//components/reporting/proto:record_constants",
@@ -134,6 +158,7 @@ static_library("test_support") {
     ":storage_queue",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/storage:storage_module_interface",
     "//components/reporting/util:status",
   ]
   deps = [
@@ -161,6 +186,9 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/reporting/compression:compression_module",
+    "//components/reporting/compression:test_support",
     "//components/reporting/encryption:decryption",
     "//components/reporting/encryption:encryption",
     "//components/reporting/encryption:encryption_module",
@@ -168,7 +196,8 @@ source_set("unit_tests") {
     "//components/reporting/encryption:test_support",
     "//components/reporting/encryption:testing_primitives",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/storage/resources:resource_interface",
+    "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:test_callbacks_support",

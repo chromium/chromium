@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace internal {
@@ -22,7 +23,7 @@ class InterfaceProperties final {
  public:
   // Creates an |InterfaceProperties| if |properties| are valid complete
   // properties as reported by |VerifyCompleteInterfaceProperties|.
-  static base::Optional<InterfaceProperties> VerifyAndCreate(
+  static absl::optional<InterfaceProperties> VerifyAndCreate(
       fuchsia::net::interfaces::Properties properties);
   InterfaceProperties(InterfaceProperties&& interface);
   InterfaceProperties& operator=(InterfaceProperties&& interface);
@@ -76,9 +77,9 @@ bool VerifyCompleteInterfaceProperties(
 // Consumes events describing existing interfaces from |watcher| and
 // returns a vector of interface Id & properties pairs.  |watcher| must
 // be a newly-connected Watcher channel.
-// Returns base::nullopt if any protocol error is encountered, e.g.
+// Returns absl::nullopt if any protocol error is encountered, e.g.
 // |watcher| supplies an invalid event, or disconnects.
-base::Optional<internal::ExistingInterfaceProperties> GetExistingInterfaces(
+absl::optional<internal::ExistingInterfaceProperties> GetExistingInterfaces(
     const fuchsia::net::interfaces::WatcherSyncPtr& watcher);
 
 }  // namespace internal

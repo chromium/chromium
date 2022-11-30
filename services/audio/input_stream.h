@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,14 +22,13 @@
 #include "services/audio/input_controller.h"
 
 namespace media {
-
+class AecdumpRecordingManager;
 class AudioManager;
 class AudioParameters;
-
 }  // namespace media
 
 namespace audio {
-
+class DeviceOutputListener;
 class InputSyncWriter;
 class UserInputMonitor;
 
@@ -39,7 +38,7 @@ class InputStream final : public media::mojom::AudioInputStream,
   using CreatedCallback =
       base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr,
                               bool,
-                              const base::Optional<base::UnguessableToken>&)>;
+                              const absl::optional<base::UnguessableToken>&)>;
   using DeleteCallback = base::OnceCallback<void(InputStream*)>;
 
   InputStream(
@@ -50,11 +49,18 @@ class InputStream final : public media::mojom::AudioInputStream,
       mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
       mojo::PendingRemote<media::mojom::AudioLog> log,
       media::AudioManager* manager,
+      media::AecdumpRecordingManager* aecdump_recording_manager,
       std::unique_ptr<UserInputMonitor> user_input_monitor,
+      DeviceOutputListener* device_output_listener,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       const std::string& device_id,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       bool enable_agc);
+
+  InputStream(const InputStream&) = delete;
+  InputStream& operator=(const InputStream&) = delete;
+
   ~InputStream() override;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -71,9 +77,14 @@ class InputStream final : public media::mojom::AudioInputStream,
   void OnMuted(bool is_muted) override;
 
  private:
-  void OnStreamError(bool signalPlatformError);
+  void OnStreamError(
+      absl::optional<media::mojom::AudioInputStreamObserver::DisconnectReason>
+          reason_to_report);
+  void OnStreamPlatformError();
   void CallDeleter();
   void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+
+  SEQUENCE_CHECKER(owning_sequence_);
 
   const base::UnguessableToken id_;
 
@@ -93,11 +104,7 @@ class InputStream final : public media::mojom::AudioInputStream,
   std::unique_ptr<InputController> controller_;
   const std::unique_ptr<UserInputMonitor> user_input_monitor_;
 
-  SEQUENCE_CHECKER(owning_sequence_);
-
   base::WeakPtrFactory<InputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputStream);
 };
 
 }  // namespace audio

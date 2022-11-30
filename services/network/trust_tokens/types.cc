@@ -1,21 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/trust_tokens/types.h"
 
+#include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 
-namespace network {
-namespace internal {
+namespace network::internal {
 
-base::Optional<base::Time> StringToTime(base::StringPiece my_string) {
-  return util::ValueToTime(base::Value(my_string));
+absl::optional<base::Time> StringToTime(base::StringPiece my_string) {
+  return base::ValueToTime(base::Value(my_string));
 }
 
 std::string TimeToString(base::Time my_time) {
-  return util::TimeToValue(my_time).GetString();
+  return base::TimeToValue(my_time).GetString();
 }
 
 base::StringPiece TrustTokenOperationTypeToString(
@@ -36,12 +35,11 @@ base::StringPiece TrustTokenOperationTypeToString(
 std::string ProtocolVersionToString(
     mojom::TrustTokenProtocolVersion my_version) {
   switch (my_version) {
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb:
-      return "TrustTokenV2PMB";
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf:
-      return "TrustTokenV2VOPRF";
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb:
+      return "TrustTokenV3PMB";
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
+      return "TrustTokenV3VOPRF";
   }
 }
 
-}  // namespace internal
-}  // namespace network
+}  // namespace network::internal

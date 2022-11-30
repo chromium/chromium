@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2013 The Android Open Source Project
 #
@@ -16,6 +16,8 @@
 
 """stack symbolizes native crash dumps."""
 
+from __future__ import print_function
+
 import getopt
 import glob
 import logging
@@ -26,6 +28,7 @@ import stack_core
 import subprocess
 import symbol
 import sys
+import zipfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__),
                                 os.pardir, os.pardir, os.pardir, os.pardir,
@@ -44,59 +47,62 @@ _ANDROID_M_MAJOR_VERSION=6
 
 def PrintUsage():
   """Print usage and exit with error."""
-  print
-  print "  usage: " + sys.argv[0] + " [options] [FILE]"
-  print
-  print "  --symbols-dir=path"
-  print "       the path to a symbols dir, such as"
-  print "       =/tmp/out/target/product/dream/symbols"
-  print
-  print "  --chrome-symbols-dir=path"
-  print "       the path to a Chrome symbols dir (can be absolute or relative"
-  print "       to src), such as =out/Debug/lib.unstripped"
-  print
-  print "  --output-directory=path"
-  print "       the path to the build output directory, such as out/Debug."
-  print "       Ignored if --chrome-symbols-dir is passed."
-  print
-  print "  --apks-directory=path"
-  print "       Overrides the default apks directory. Useful if a bundle APKS"
-  print "       file has been unzipped into a temporary directory."
-  print
-  print "  --symbols-zip=path"
-  print "       the path to a symbols zip file, such as"
-  print "       =dream-symbols-12345.zip"
-  print
-  print "  --more-info"
-  print "  --less-info"
-  print "       Change the level of detail in the output."
-  print "       --more-info is slower and more verbose, but more functions will"
-  print "       be fully qualified with namespace/classname and have full"
-  print "       argument information. Also, the 'stack data' section will be"
-  print "       printed."
-  print
-  print "  --arch=arm|arm64|x64|x86|mips"
-  print "       the target architecture"
-  print
-  print "  --fallback-monochrome"
-  print "       fallback to monochrome instead of chrome if fail to detect"
-  print "       shared lib which is loaded from APK, this doesn't work for"
-  print "       component build."
-  print
-  print "  --quiet"
-  print "       Show less logging"
-  print
-  print "  --verbose"
-  print "       enable extra logging, particularly for debugging failed"
-  print "       symbolization"
-  print
-  print "  FILE should contain a stack trace in it somewhere"
-  print "       the tool will find that and re-print it with"
-  print "       source files and line numbers.  If you don't"
-  print "       pass FILE, or if file is -, it reads from"
-  print "       stdin."
-  print
+  print("Usage: " + sys.argv[0] + " [options] [FILE]")
+  print()
+  print("Find all parts in FILE belonging to stack traces and symbolize")
+  print("them: copy to stdout augmenting with source file names and line")
+  print("numbers.")
+  print()
+  print("Not providing FILE or setting it to '-' implies reading from stdin.")
+  print()
+  print("  -p, --pass-through")
+  print("       Copy all lines from stdin to stdout in addition to")
+  print("       symbolizing relevant lines. This way ADB logcat can")
+  print("       be piped through the tool to symbolize on the fly.")
+  print()
+  print("  --symbols-dir=path")
+  print("       path to the Android OS symbols dir, such as")
+  print("       =/tmp/out/target/product/dream/symbols")
+  print()
+  print("  --chrome-symbols-dir=path")
+  print("       path to a Chrome symbols dir. E.g.: out/Debug/lib.unstripped")
+  print()
+  print("  --output-directory=path")
+  print("       the path to the build output directory, such as out/Debug.")
+  print("       Ignored if --chrome-symbols-dir is passed.")
+  print()
+  print("  --apks-directory=path")
+  print("       Overrides the default apks directory. Useful if a bundle APKS")
+  print("       file has been unzipped into a temporary directory.")
+  print()
+  print("  --symbols-zip=path")
+  print("       the path to a symbols zip file, such as")
+  print("       =dream-symbols-12345.zip")
+  print()
+  print("  --more-info")
+  print("  --less-info")
+  print("       Change the level of detail in the output.")
+  print("       --more-info is slower and more verbose, but more functions")
+  print("       will be fully qualified with namespace/classname and have full")
+  print("       argument information. Also, the 'stack data' section will be")
+  print("       printed.")
+  print()
+  print("  --arch=arm|arm64|x64|x86|mips")
+  print("       the target architecture")
+  print()
+  print("  --fallback-so-file=name")
+  print("     fallback to given .so file (eg. libmonochrome_64.so) instead")
+  print("     of libmonochrome.so if we fail to detect the shared lib which")
+  print("     is loaded from APK, this doesn't work for component build.")
+  print()
+  print("  --quiet")
+  print("       Show less logging")
+  print()
+  print("  --verbose")
+  print("       enable extra logging, particularly for debugging failed")
+  print("       symbolization")
   sys.exit(1)
+
 
 def UnzipSymbols(symbolfile, symdir=None):
   """Unzips a file to DEFAULT_SYMROOT and returns the unzipped location.
@@ -119,46 +125,46 @@ def UnzipSymbols(symbolfile, symdir=None):
     os.makedirs(symdir)
 
   logging.info('extracting %s...', symbolfile)
-  saveddir = os.getcwd()
-  os.chdir(symdir)
-  try:
-    unzipcode = subprocess.call(["unzip", "-qq", "-o", symbolfile])
-    if unzipcode > 0:
-      os.remove(symbolfile)
-      raise SymbolDownloadException("failed to extract symbol files (%s)."
-                                    % symbolfile)
-  finally:
-    os.chdir(saveddir)
+  with zipfile.ZipFile(symbolfile, 'r') as zip_ref:
+    zip_ref.extractall(symdir)
 
-  android_symbols = glob.glob("%s/out/target/product/*/symbols" % symdir)
-  if android_symbols:
-    return (symdir, android_symbols[0])
-  else:
-    # This is a zip of Chrome symbols, so symbol.CHROME_SYMBOLS_DIR needs to be
-    # updated to point here.
-    symbol.CHROME_SYMBOLS_DIR = symdir
-    return (symdir, symdir)
+  return symdir
 
 
 def main(argv, test_symbolizer=None):
   try:
-    options, arguments = getopt.getopt(argv, "", [
-        "more-info", "less-info", "chrome-symbols-dir=", "output-directory=",
-        "apks-directory=", "symbols-dir=", "symbols-zip=", "arch=",
-        "fallback-monochrome", "verbose", "quiet", "help",
+    options, arguments = getopt.getopt(argv, "p", [
+        "pass-through",
+        "more-info",
+        "less-info",
+        "chrome-symbols-dir=",
+        "output-directory=",
+        "apks-directory=",
+        "symbols-dir=",
+        "symbols-zip=",
+        "arch=",
+        "fallback-so-file=",
+        "verbose",
+        "quiet",
+        "help",
     ])
-  except getopt.GetoptError, _:
+  except getopt.GetoptError:
     PrintUsage()
 
+  pass_through = False
   zip_arg = None
   more_info = False
-  fallback_monochrome = False
+  fallback_so_file = None
   arch_defined = False
   apks_directory = None
   log_level = logging.INFO
   for option, value in options:
     if option == "--help":
       PrintUsage()
+    elif option == "--pass-through":
+      pass_through = True
+    elif option == "-p":
+      pass_through = True
     elif option == "--symbols-dir":
       symbol.SYMBOLS_DIR = os.path.abspath(os.path.expanduser(value))
     elif option == "--symbols-zip":
@@ -167,8 +173,7 @@ def main(argv, test_symbolizer=None):
       symbol.ARCH = value
       arch_defined = True
     elif option == "--chrome-symbols-dir":
-      symbol.CHROME_SYMBOLS_DIR = os.path.join(constants.DIR_SOURCE_ROOT,
-                                               value)
+      symbol.CHROME_SYMBOLS_DIR = value
     elif option == "--output-directory":
       constants.SetOutputDirectory(os.path.abspath(value))
     elif option == "--apks-directory":
@@ -177,8 +182,8 @@ def main(argv, test_symbolizer=None):
       more_info = True
     elif option == "--less-info":
       more_info = False
-    elif option == "--fallback-monochrome":
-      fallback_monochrome = True
+    elif option == "--fallback-so-file":
+      fallback_so_file = value
     elif option == "--verbose":
       log_level = logging.DEBUG
     elif option == "--quiet":
@@ -186,6 +191,15 @@ def main(argv, test_symbolizer=None):
 
   if len(arguments) > 1:
     PrintUsage()
+
+  rootdir = None
+  if zip_arg:
+    rootdir = UnzipSymbols(zip_arg)
+    for subdir, dirs, _ in os.walk(rootdir):
+      if 'lib.unstripped' in dirs:
+        unzipped_output_dir = subdir
+        break
+    constants.SetOutputDirectory(unzipped_output_dir)
 
   logging.basicConfig(level=log_level)
   # Do an up-front test that the output directory is known.
@@ -195,23 +209,24 @@ def main(argv, test_symbolizer=None):
   logging.info('Reading Android symbols from: %s',
                os.path.normpath(symbol.SYMBOLS_DIR))
   chrome_search_path = symbol.GetLibrarySearchPaths()
-  logging.info('Searching for Chrome symbols from within: %s',
-               ':'.join((os.path.normpath(d) for d in chrome_search_path)))
+  logging.info('Searching for Chrome symbols from within: %s', ':'.join(
+      (os.path.normpath(d) for d in chrome_search_path)))
 
-  rootdir = None
-  if zip_arg:
-    rootdir, symbol.SYMBOLS_DIR = UnzipSymbols(zip_arg)
-
-  if not arguments or arguments[0] == "-":
-    logging.info('Reading native crash info from stdin')
+  if not arguments or arguments[0] == '-':
+    logging.info('Reading native crash info from stdin (symbolization starts '
+                 'on the first unrelated line or EOF)')
     with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
       stack_core.StreamingConvertTrace(sys.stdin, {}, more_info,
-                                       fallback_monochrome, arch_defined,
-                                       symbolizer, apks_directory)
+                                       fallback_so_file, arch_defined,
+                                       symbolizer, apks_directory, pass_through)
   else:
     logging.info('Searching for native crashes in: %s',
                  os.path.realpath(arguments[0]))
-    f = open(arguments[0], "r")
+    if pass_through:
+      logging.error('Processing files in --pass-through mode is not supported')
+      return 1
+
+    f = open(arguments[0], 'r')
 
     lines = f.readlines()
     f.close()
@@ -222,17 +237,20 @@ def main(argv, test_symbolizer=None):
     load_vaddrs = {}
 
     with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
-      logging.info('Searching for Chrome symbols from within: %s',
-                   ':'.join((os.path.normpath(d) for d in chrome_search_path)))
-      stack_core.ConvertTrace(lines, load_vaddrs, more_info,
-                              fallback_monochrome, arch_defined,
-                              test_symbolizer or symbolizer, apks_directory)
+      logging.info('Searching for Chrome symbols from within: %s', ':'.join(
+          (os.path.normpath(d) for d in chrome_search_path)))
+      stack_core.ConvertTrace(lines, load_vaddrs, more_info, fallback_so_file,
+                              arch_defined, test_symbolizer or symbolizer,
+                              apks_directory)
 
   if rootdir:
     # be a good citizen and clean up...os.rmdir and os.removedirs() don't work
     cmd = "rm -rf \"%s\"" % rootdir
     logging.info('cleaning up (%s)', cmd)
     os.system(cmd)
+
+  return 0
+
 
 if __name__ == "__main__":
   sys.exit(main(sys.argv[1:]))

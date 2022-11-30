@@ -1,9 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -98,13 +100,13 @@ void GCMUnregistrationRequestTest::CreateRequest() {
                                                   std::string() /* subtype */);
   std::unique_ptr<GCMUnregistrationRequestHandler> request_handler(
       new GCMUnregistrationRequestHandler(kAppId));
-  request_.reset(new UnregistrationRequest(
+  request_ = std::make_unique<UnregistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&UnregistrationRequestTest::UnregistrationCallback,
                      base::Unretained(this)),
       max_retry_count_, url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string()));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string());
 }
 
 TEST_F(GCMUnregistrationRequestTest, RequestDataPassedToFetcher) {
@@ -126,11 +128,11 @@ TEST_F(GCMUnregistrationRequestTest, RequestDataPassedToFetcher) {
   headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
   base::StringTokenizer auth_tokenizer(auth_header, " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(kLoginHeader, auth_tokenizer.token());
+  EXPECT_EQ(kLoginHeader, auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token_piece());
 
   std::map<std::string, std::string> expected_pairs;
   expected_pairs["app"] = kAppId;
@@ -315,13 +317,13 @@ void InstaceIDDeleteTokenRequestTest::CreateRequest(
   std::unique_ptr<InstanceIDDeleteTokenRequestHandler> request_handler(
       new InstanceIDDeleteTokenRequestHandler(instance_id, authorized_entity,
                                               scope, kGCMVersion));
-  request_.reset(new UnregistrationRequest(
+  request_ = std::make_unique<UnregistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&UnregistrationRequestTest::UnregistrationCallback,
                      base::Unretained(this)),
       max_retry_count(), url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string()));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string());
 }
 
 TEST_F(InstaceIDDeleteTokenRequestTest, RequestDataPassedToFetcher) {
@@ -336,11 +338,11 @@ TEST_F(InstaceIDDeleteTokenRequestTest, RequestDataPassedToFetcher) {
   headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
   base::StringTokenizer auth_tokenizer(auth_header, " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(kLoginHeader, auth_tokenizer.token());
+  EXPECT_EQ(kLoginHeader, auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kAndroidId), auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
-  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token());
+  EXPECT_EQ(base::NumberToString(kSecurityToken), auth_tokenizer.token_piece());
 
   std::map<std::string, std::string> expected_pairs;
   expected_pairs["gmsv"] = base::NumberToString(kGCMVersion);

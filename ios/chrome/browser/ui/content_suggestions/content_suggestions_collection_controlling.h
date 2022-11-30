@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 // Controller for the ContentSuggestions collection.
 @protocol ContentSuggestionsCollectionControlling
 
-// |YES| if the collection scrollView is scrolled all the way to the top. Used
-// to lock this position in place on various frame changes.
-@property(nonatomic, assign, getter=isScrolledToTop) BOOL scrolledToTop;
+// `YES` if the collection is scrolled to the point where the omnibox is stuck
+// to the top of the NTP. Used to lock this position in place on various frame
+// changes.
+@property(nonatomic, assign, getter=isScrolledToMinimumHeight)
+    BOOL scrolledToMinimumHeight;
 
 // Synchronizer for the collection controller, allowing it to synchronize with
 // its header.

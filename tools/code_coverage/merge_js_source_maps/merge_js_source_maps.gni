@@ -1,0 +1,31 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/webui_features.gni")
+
+template("merge_js_source_maps") {
+  assert(enable_webui_inline_sourcemaps)
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "outputs",
+                             "deps",
+                           ])
+    script =
+        "//tools/code_coverage/merge_js_source_maps/merge_js_source_maps.py"
+    args = [ "--manifest-files" ] +
+           rebase_path(invoker.manifest_files, root_out_dir) + [ "--sources" ] +
+           rebase_path(invoker.sources, root_out_dir) + [ "--outputs" ] +
+           rebase_path(invoker.outputs, root_out_dir)
+    inputs =
+        [ "//tools/code_coverage/merge_js_source_maps/merge_js_source_maps.js" ]
+    foreach(manifest, invoker.manifest_files) {
+      outputs += [ get_path_info(manifest, "dir") + "/" +
+                   get_path_info(manifest, "name") + "__processed." +
+                   get_path_info(manifest, "extension") ]
+    }
+  }
+}

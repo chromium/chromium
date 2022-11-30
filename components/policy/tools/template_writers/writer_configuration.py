@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,13 +28,13 @@ def GetConfigurationForBuild(defines):
     config = {
         'build': 'chromium',
         'app_name': 'Chromium',
+        'doc_url': 'https://chromeenterprise.google/policies/',
         'frame_name': 'Chromium Frame',
-        'os_name': 'Chromium OS',
+        'os_name': 'ChromiumOS',
         'webview_name': 'Chromium WebView',
         'win_config': {
             'win': {
-                'reg_mandatory_key_name':
-                'Software\\Policies\\Chromium',
+                'reg_mandatory_key_name': 'Software\\Policies\\Chromium',
                 'reg_recommended_key_name':
                 'Software\\Policies\\Chromium\\Recommended',
                 'mandatory_category_path': ['chromium'],
@@ -43,23 +43,19 @@ def GetConfigurationForBuild(defines):
                     'chromium': 'Chromium',
                     'chromium_recommended': 'Chromium - {doc_recommended}',
                 },
-                'namespace':
-                'Chromium.Policies.Chromium',
+                'namespace': 'Chromium.Policies.Chromium',
             },
             'chrome_os': {
-                'reg_mandatory_key_name':
-                'Software\\Policies\\ChromiumOS',
+                'reg_mandatory_key_name': 'Software\\Policies\\ChromiumOS',
                 'reg_recommended_key_name':
                 'Software\\Policies\\ChromiumOS\\Recommended',
                 'mandatory_category_path': ['chromium_os'],
                 'recommended_category_path': ['chromium_os_recommended'],
                 'category_path_strings': {
-                    'chromium_os': 'Chromium OS',
-                    'chromium_os_recommended':
-                    'Chromium OS - {doc_recommended}',
+                    'chromium_os': 'ChromiumOS',
+                    'chromium_os_recommended': 'ChromiumOS - {doc_recommended}',
                 },
-                'namespace':
-                'Chromium.Policies.ChromiumOS'
+                'namespace': 'Chromium.Policies.ChromiumOS'
             },
         },
         'admx_prefix': 'chromium',
@@ -70,8 +66,9 @@ def GetConfigurationForBuild(defines):
     config = {
         'build': 'chrome',
         'app_name': 'Google Chrome',
+        'doc_url': 'https://chromeenterprise.google/policies/',
         'frame_name': 'Google Chrome Frame',
-        'os_name': 'Google Chrome OS',
+        'os_name': 'Google ChromeOS',
         'webview_name': 'Android System WebView',
         'win_config': {
             'win': {
@@ -102,9 +99,9 @@ def GetConfigurationForBuild(defines):
                 ['Google:Cat_Google', 'googlechromeos_recommended'],
                 'category_path_strings': {
                     'googlechromeos':
-                    'Google Chrome OS',
+                    'Google ChromeOS',
                     'googlechromeos_recommended':
-                    'Google Chrome OS - {doc_recommended}'
+                    'Google ChromeOS - {doc_recommended}'
                 },
                 'namespace':
                 'Google.Policies.ChromeOS',

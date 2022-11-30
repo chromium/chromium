@@ -1,18 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/managed/managed_bookmark_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/signin/authentication_service.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "base/no_destructor.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/managed/managed_bookmark_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,13 +27,14 @@ std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
   if (!auth_service)
     return std::string();
 
-  ChromeIdentity* identity = auth_service->GetAuthenticatedIdentity();
-  if (!identity)
+  ios::ChromeIdentityService* identity_service =
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
+  if (!identity_service)
     return std::string();
 
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  if (!identity_service)
+  id<SystemIdentity> identity =
+      auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity)
     return std::string();
 
   return base::SysNSStringToUTF8(

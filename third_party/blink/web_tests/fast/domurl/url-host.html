@@ -14,7 +14,7 @@ test(function() {
 test(function() {
     var url = new URL('https://www.mydomain.com:8080/path/?key=value');
     url.host = 'www.other?domain.com:8080';
-    assert_equals(url.href, 'https://www.other%3Fdomain.com:8080/path/?key=value');
+    assert_equals(url.href, 'https://www.other:8080/path/?key=value');
 }, 'Set host with ? in it');
 
 test(function() {
@@ -69,7 +69,7 @@ test(function() {
 test(function() {
     var url = new URL('https://www.mydomain.com:8080/path/');
     url.host = 'www.other\\dom/ain.com';
-    assert_equals(url.href, 'https://www.other%5Cdom%2Fain.com:8080/path/');
+    assert_equals(url.href, 'https://www.other:8080/path/');
 }, 'Set host containing slashes in it');
 
 test(function() {
@@ -100,11 +100,15 @@ test(function() {
 
 test(function() {
     var url = new URL('http://abc.de/path/file?query#fragment');
-    url.href = 'invalid';
-    assert_equals(url.host, '');
+    var expected = 'abc.de';
+    assert_equals(url.host, expected);
+
+    assert_throws_js(TypeError, () => { url.href = 'invalid'; });
+    assert_equals(url.host, expected);
+
     url.host = 'changed';
-    assert_equals(url.host, '');
-    assert_equals(url.href, 'invalid');
+    assert_equals(url.host, 'changed');
+    assert_equals(url.href, 'http://changed/path/file?query#fragment');
 }, 'host property invalid URL');
 
 test(function() {
@@ -112,7 +116,7 @@ test(function() {
     assert_equals(url.host, 'www.domain.com');
 
     url.host = 'www.bo\udc01\ud802gus.org';
-    assert_equals(url.host, '');
+    assert_equals(url.host, 'www.domain.com');
 }, 'hostname with unmatched surrogates');
 
 </script>

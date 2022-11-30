@@ -1,0 +1,19 @@
+include_rules = [
+  "-components/feed/core/v2/stream_model",
+  "-components/feed/core/v2/tasks",
+  "-components/feed/core/v2/web_feed_subscriptions",
+  "+components/reading_list/features",
+ ]
+
+specific_include_rules = {
+  "feed_stream\.(h|cc)": [
+    "+components/feed/core/v2/tasks",
+    "+components/feed/core/v2/stream",
+  ],
+  "stream_model\.(h|cc)": [
+    "+components/feed/core/v2/stream_model",
+  ],
+  "web_feed_subscription_coordinator\.(h|cc)": [
+    "+components/feed/core/v2/web_feed_subscriptions",
+  ],
+}

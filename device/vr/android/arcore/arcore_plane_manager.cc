@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "device/vr/android/arcore/type_converters.h"
 
 namespace device {
@@ -126,6 +126,13 @@ void ArCorePlaneManager::ForEachArCorePlane(ArTrackableList* arcore_planes,
 }
 
 void ArCorePlaneManager::Update(ArFrame* ar_frame) {
+#if DCHECK_IS_ON()
+  DCHECK(was_plane_data_retrieved_in_current_frame_)
+      << "Update() must not be called twice in a row without a call to "
+         "GetDetectedPlanesData() in between";
+  was_plane_data_retrieved_in_current_frame_ = false;
+#endif
+
   ArTrackableType plane_tracked_type = AR_TRACKABLE_PLANE;
 
   // First, ask ARCore about all Plane trackables updated in the current frame.
@@ -196,12 +203,17 @@ void ArCorePlaneManager::Update(ArFrame* ar_frame) {
         return !base::Contains(new_plane_id_to_plane_info,
                                plane_address_and_id.second);
       });
+
   plane_id_to_plane_info_.swap(new_plane_id_to_plane_info);
   updated_plane_ids_.swap(updated_plane_ids);
 }
 
 mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
     const {
+  DVLOG(3) << __func__ << ": plane_id_to_plane_info_.size()="
+           << plane_id_to_plane_info_.size()
+           << ", updated_plane_ids_.size()=" << updated_plane_ids_.size();
+
   std::vector<uint64_t> all_plane_ids;
   all_plane_ids.reserve(plane_id_to_plane_info_.size());
   for (const auto& plane_id_and_object : plane_id_to_plane_info_) {
@@ -257,15 +269,19 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
 
       updated_planes.push_back(mojom::XRPlaneData::New(
           plane_id.GetUnsafeValue(), device::mojom::XRPlaneOrientation::UNKNOWN,
-          base::nullopt, std::vector<mojom::XRPlanePointDataPtr>{}));
+          absl::nullopt, std::vector<mojom::XRPlanePointDataPtr>{}));
     }
   }
+
+#if DCHECK_IS_ON()
+  was_plane_data_retrieved_in_current_frame_ = true;
+#endif
 
   return mojom::XRPlaneDetectionData::New(std::move(all_plane_ids),
                                           std::move(updated_planes));
 }
 
-base::Optional<PlaneId> ArCorePlaneManager::GetPlaneId(
+absl::optional<PlaneId> ArCorePlaneManager::GetPlaneId(
     void* plane_address) const {
   return plane_address_to_id_.GetId(plane_address);
 }
@@ -274,11 +290,11 @@ bool ArCorePlaneManager::PlaneExists(PlaneId id) const {
   return base::Contains(plane_id_to_plane_info_, id);
 }
 
-base::Optional<gfx::Transform> ArCorePlaneManager::GetMojoFromPlane(
+absl::optional<gfx::Transform> ArCorePlaneManager::GetMojoFromPlane(
     PlaneId id) const {
   auto it = plane_id_to_plane_info_.find(id);
   if (it == plane_id_to_plane_info_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Naked pointer is fine here, ArAsPlane does not increase the internal

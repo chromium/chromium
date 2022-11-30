@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,9 +6,11 @@ config("eigen_includes") {
   include_dirs = [ "src" ]
 
   cflags = [
-    "-Wno-unused-result",
+    "-Wno-deprecated-copy",
+    "-Wno-deprecated-declarations",
     "-Wno-extra-semi",
     "-Wno-unused-function",
+    "-Wno-unused-result",
   ]
 
   defines = [

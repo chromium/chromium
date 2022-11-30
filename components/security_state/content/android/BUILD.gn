@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,7 +25,8 @@ android_library("java") {
     "java/src/org/chromium/components/security_state/SecurityStateModel.java",
   ]
   deps = [
-    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/security_state/core:security_state_enums_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

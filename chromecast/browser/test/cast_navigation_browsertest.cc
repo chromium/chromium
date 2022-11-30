@@ -1,8 +1,7 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/browser/test/cast_browser_test.h"
@@ -16,9 +15,9 @@
 namespace chromecast {
 namespace shell {
 namespace {
-const char kEnded[] = "ENDED";
-const char kError[] = "ERROR";
-const char kFailed[] = "FAILED";
+const char16_t kEnded[] = u"ENDED";
+const char16_t kError[] = u"ERROR";
+const char16_t kFailed[] = u"FAILED";
 
 const char kClearKeyKeySystem[] = "org.w3.clearkey";
 const char kWebMAudioOnly[] = "audio/webm; codecs=\"vorbis\"";
@@ -27,6 +26,10 @@ const char kWebMAudioOnly[] = "audio/webm; codecs=\"vorbis\"";
 class CastNavigationBrowserTest : public CastBrowserTest {
  public:
   CastNavigationBrowserTest() {}
+
+  CastNavigationBrowserTest(const CastNavigationBrowserTest&) = delete;
+  CastNavigationBrowserTest& operator=(const CastNavigationBrowserTest&) =
+      delete;
 
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -37,10 +40,9 @@ class CastNavigationBrowserTest : public CastBrowserTest {
   void LoadAboutBlank() {
     content::WebContents* web_contents =
         NavigateToURL(GURL(url::kAboutBlankURL));
-    content::TitleWatcher title_watcher(
-        web_contents, base::ASCIIToUTF16(url::kAboutBlankURL));
+    content::TitleWatcher title_watcher(web_contents, url::kAboutBlankURL16);
     std::u16string result = title_watcher.WaitAndGetTitle();
-    EXPECT_EQ(url::kAboutBlankURL, base::UTF16ToASCII(result));
+    EXPECT_EQ(url::kAboutBlankURL16, result);
   }
   void PlayAudio(const std::string& media_file) {
     PlayMedia("audio", media_file);
@@ -69,25 +71,22 @@ class CastNavigationBrowserTest : public CastBrowserTest {
 
   void RunMediaTestPage(const std::string& html_page,
                         const base::StringPairs& query_params,
-                        const std::string& expected_title) {
+                        const std::u16string& expected_title) {
     std::string query = ::media::GetURLQueryString(query_params);
     GURL gurl = embedded_test_server()->GetURL("/" + html_page + "?" + query);
-    std::string final_title = RunTest(gurl, expected_title);
+    std::u16string final_title = RunTest(gurl, expected_title);
     EXPECT_EQ(expected_title, final_title);
   }
 
-  std::string RunTest(const GURL& gurl, const std::string& expected_title) {
+  std::u16string RunTest(const GURL& gurl,
+                         const std::u16string& expected_title) {
     content::WebContents* web_contents = NavigateToURL(gurl);
-    content::TitleWatcher title_watcher(web_contents,
-                                        base::ASCIIToUTF16(expected_title));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kEnded));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kError));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kFailed));
-    std::u16string result = title_watcher.WaitAndGetTitle();
-    return base::UTF16ToASCII(result);
+    content::TitleWatcher title_watcher(web_contents, expected_title);
+    title_watcher.AlsoWaitForTitle(kEnded);
+    title_watcher.AlsoWaitForTitle(kError);
+    title_watcher.AlsoWaitForTitle(kFailed);
+    return title_watcher.WaitAndGetTitle();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CastNavigationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, EmptyTest) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_KEYBOARD_EVENT_HANDLER_H_
 
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 
@@ -17,6 +16,10 @@ namespace keyboard {
 class KEYBOARD_EXPORT KeyboardEventHandler : public ui::EventHandler {
  public:
   KeyboardEventHandler() = default;
+
+  KeyboardEventHandler(const KeyboardEventHandler&) = delete;
+  KeyboardEventHandler& operator=(const KeyboardEventHandler&) = delete;
+
   ~KeyboardEventHandler() override = default;
 
   // ui::EventHandler overrides:
@@ -26,8 +29,6 @@ class KEYBOARD_EXPORT KeyboardEventHandler : public ui::EventHandler {
 
  private:
   void ProcessPointerEvent(ui::LocatedEvent* event);
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEventHandler);
 };
 
 }  // namespace keyboard

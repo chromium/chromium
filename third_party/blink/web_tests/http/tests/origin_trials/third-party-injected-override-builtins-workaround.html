@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Test that trial is enabled by third-party token, injected via a classic script with a workaround
+  for the appendChild function being overridden, with all the related builtin functions overridden
+</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/origintrials.js"></script>
+<script src="resources/override-builtins.php?apply=all"></script>
+<script src="http://localhost:8000/origin_trials/resources/inject-third-party-token-appendchild-workaround.js"></script>
+<script>
+  // The trial is enabled, by the third party token added in the script with
+  // the workaround, served from a different origin.
+  expect_success_third_party();
+</script>

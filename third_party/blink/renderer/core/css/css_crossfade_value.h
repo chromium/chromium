@@ -29,86 +29,41 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_image_generator_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
-#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class CrossfadeSubimageObserverProxy;
+class ImageResourceObserver;
 
 namespace cssvalue {
 
 class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
-  friend class blink::CrossfadeSubimageObserverProxy;
-  USING_PRE_FINALIZER(CSSCrossfadeValue, Dispose);
-
  public:
   CSSCrossfadeValue(CSSValue* from_value,
                     CSSValue* to_value,
                     CSSPrimitiveValue* percentage_value);
   ~CSSCrossfadeValue();
 
+  CSSValue& From() const { return *from_value_; }
+  CSSValue& To() const { return *to_value_; }
+  CSSPrimitiveValue& Percentage() const { return *percentage_value_; }
+
+  bool HasClients() const { return !Clients().empty(); }
+  ImageResourceObserver* GetObserverProxy();
+
   String CustomCSSText() const;
-
-  scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
-                                const ComputedStyle&,
-                                const FloatSize& target_size) const;
-  bool IsFixedSize() const { return true; }
-  FloatSize FixedSize(const Document&, const FloatSize&) const;
-
-  bool IsPending() const;
-  bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-
-  void LoadSubimages(const Document&);
-
   bool HasFailedOrCanceledSubresources() const;
-
   bool Equals(const CSSCrossfadeValue&) const;
 
-  CSSCrossfadeValue* ComputedCSSValue(const ComputedStyle&,
-                                      bool allow_visited_style);
-
-  void TraceAfterDispatch(blink::Visitor*) const;
+  void TraceAfterDispatch(Visitor*) const;
 
  private:
-  void Dispose();
-
-  class CrossfadeSubimageObserverProxy final : public ImageResourceObserver {
-    DISALLOW_NEW();
-
-   public:
-    explicit CrossfadeSubimageObserverProxy(CSSCrossfadeValue* owner_value)
-        : owner_value_(owner_value), ready_(false) {}
-
-    ~CrossfadeSubimageObserverProxy() override = default;
-    void Trace(Visitor* visitor) const { visitor->Trace(owner_value_); }
-
-    void ImageChanged(ImageResourceContent*, CanDeferInvalidation) override;
-    bool WillRenderImage() override;
-    String DebugName() const override {
-      return "CrossfadeSubimageObserverProxy";
-    }
-    void SetReady(bool ready) { ready_ = ready; }
-
-   private:
-    Member<CSSCrossfadeValue> owner_value_;
-    bool ready_;
-  };
-
-  bool WillRenderImage() const;
-  void CrossfadeChanged(ImageResourceObserver::CanDeferInvalidation);
+  class ObserverProxy;
 
   Member<CSSValue> from_value_;
   Member<CSSValue> to_value_;
   Member<CSSPrimitiveValue> percentage_value_;
-
-  Member<ImageResourceContent> cached_from_image_;
-  Member<ImageResourceContent> cached_to_image_;
-
-  CrossfadeSubimageObserverProxy crossfade_subimage_observer_;
+  Member<ObserverProxy> observer_proxy_;
 };
 
 }  // namespace cssvalue

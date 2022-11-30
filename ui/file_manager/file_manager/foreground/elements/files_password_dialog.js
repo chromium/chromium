@@ -1,55 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-/**
- * FilesPasswordDialog template.
- * @const @type {string}
- */
-const filesPasswordDialogTemplate = `
-  <style>
-    [slot='body'] > div {
-      margin-bottom: var(--cr-form-field-bottom-spacing);
-    }
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    [slot='body'] > #input {
-      margin-bottom: 0;
-      padding-bottom: 2px;
-    }
+import {AsyncUtil} from '../../common/js/async_util.js';
 
-    cr-dialog::part(dialog) {
-      width: 384px;
-      border-radius: 12px;
-    }
-
-    cr-dialog::part(wrapper) {
-      /* subtract the internal padding in <cr-dialog> */
-      padding: calc(24px - 20px);
-    }
-  </style>
-
-  <cr-dialog id="password-dialog">
-    <div slot="title">
-      $i18n{PASSWORD_DIALOG_TITLE}
-    </div>
-    <div slot="body">
-      <div id="name" ></div>
-      <cr-input id="input" type="password" auto-validate="true">
-      </cr-input>
-    </div>
-    <div slot="button-container">
-      <cr-button class="cancel-button" id="cancel">
-      $i18n{CANCEL_LABEL}
-      </cr-button>
-      <cr-button class="action-button" id="unlock">
-          $i18n{PASSWORD_DIALOG_CONFIRM_LABEL}
-      </cr-button>
-    </div>
-  </cr-dialog>
-`;
+/** @type {!HTMLTemplateElement} */
+const htmlTemplate = html`{__html_template__}`;
 
 /**
  * Dialog to request user to enter password. Uses the askForPassword() which
@@ -57,13 +18,13 @@ const filesPasswordDialogTemplate = `
  * FilesPasswordDialog.USER_CANCELLED.
  * @extends HTMLElement
  */
-/* #export */ class FilesPasswordDialog extends HTMLElement {
+export class FilesPasswordDialog extends HTMLElement {
   constructor() {
-    /*
-     * Create element content.
-     */
-    super().attachShadow({mode: 'open'}).innerHTML =
-        filesPasswordDialogTemplate;
+    super();
+
+    // Create element content.
+    const fragment = htmlTemplate.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     /**
      * Mutex used to serialize modal dialogs and error notifications.
@@ -98,9 +59,11 @@ const filesPasswordDialogTemplate = `
 
     /**
      * Password dialog.
-     * @private {!CrDialogElement}
+     * TODO(https://crbug.com/1353205): This type should be CrDialogElement, and
+     * an import of that type from cr_dialog.js should be added to this file.
+     * @private {!HTMLElement}
      */
-    this.dialog_ = /** @type {!CrDialogElement} */
+    this.dialog_ = /** @type {!HTMLElement} */
         (this.shadowRoot.querySelector('#password-dialog'));
     this.dialog_.consumeKeydownEvent = true;
 
@@ -161,7 +124,7 @@ const filesPasswordDialogTemplate = `
           this.input_.invalid = false;
         }
         this.showModal_(filename);
-        this.input_.focus();
+        this.input_.inputElement.select();
       });
     } finally {
       mutexUnlock();

@@ -1,0 +1,158 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package nearby.fastpair;
+
+// Represents the format of the final device notification (which is directly
+// correlated to the action taken by the notification).
+enum NotificationType {
+  // Unspecified notification type.
+  NOTIFICATION_TYPE_UNSPECIFIED = 0;
+  // Notification launches the fast pair intent.
+  // Example Notification Title: "Bose SoundLink II"
+  // Notification Description: "Tap to pair with this device"
+  FAST_PAIR = 1;
+  // Notification launches an app.
+  // Notification Title: "[X]" where X is type/name of the device.
+  // Notification Description: "Tap to setup this device"
+  APP_LAUNCH = 2;
+  // Notification launches for Nearby Setup. The notification title and
+  // description is the same as APP_LAUNCH.
+  NEARBY_SETUP = 3;
+  // Notification launches the fast pair intent, but doesn't include an anti-
+  // spoofing key. The notification title and description is the same as
+  // FAST_PAIR.
+  FAST_PAIR_ONE = 4;
+  // Notification launches Smart Setup on devices.
+  // These notifications are identical to APP_LAUNCH except that they always
+  // launch Smart Setup intents within GMSCore.
+  SMART_SETUP = 5;
+}
+
+// How the device will be interacted with when it is seen.
+enum InteractionType {
+  INTERACTION_TYPE_UNKNOWN = 0;
+  AUTO_LAUNCH = 1;
+  NOTIFICATION = 2;
+}
+
+// The status of the user's consent opt-in.
+enum OptInStatus {
+  STATUS_UNKNOWN = 0;
+  STATUS_OPTED_IN = 1;
+  STATUS_OPTED_OUT = 2;
+  STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER = 3;
+}
+
+// The type of a NearbyItem. Determines how the item is handled (e.g. we may
+// display a different notification style for different types). It may not
+// indicate the source of the data (e.g., an attachment on the Proximity Beacon
+// Service that represents a device needing to be set up might become a
+// NearbyItem with type=DEVICE).
+enum NearbyType {
+  NEARBY_TYPE_UNKNOWN = 0;
+  // Proximity Beacon Service (PBS). This is the only type of nearbyItems which
+  // can be customized by 3p and therefore the intents passed should not be
+  // completely trusted. Deprecated already.
+  NEARBY_PROXIMITY_BEACON = 1;
+  // Physical Web URL beacon. Deprecated already.
+  NEARBY_PHYSICAL_WEB = 2;
+  // Chromecast beacon. Used on client-side only.
+  NEARBY_CHROMECAST = 3;
+  // Wear beacon. Used on client-side only.
+  NEARBY_WEAR = 4;
+  // A device (e.g. a Magic Pair device that needs to be set up). The special-
+  // case devices above (e.g. ChromeCast, Wear) might migrate to this type.
+  NEARBY_DEVICE = 6;
+  // Popular apps/urls based on user's current geo-location.
+  NEARBY_POPULAR_HERE = 7;
+
+  reserved 5;
+}
+
+enum ResolvedUrlType {
+  RESOLVED_URL_TYPE_UNKNOWN = 0;
+
+  // The url is resolved to a web page that is not a play store app.
+  // This can be considered as the default resolved type when it's
+  // not the other specific types.
+  WEBPAGE = 1;
+
+  // The url is resolved to the Google Play store app
+  // ie. play.google.com/store
+  APP = 2;
+}
+
+enum DiscoveryAttachmentType {
+  DISCOVERY_ATTACHMENT_TYPE_UNKNOWN = 0;
+
+  // The attachment is posted in the prod namespace (without "-debug")
+  DISCOVERY_ATTACHMENT_TYPE_NORMAL = 1;
+
+  // The attachment is posted in the debug namespace (with "-debug")
+  DISCOVERY_ATTACHMENT_TYPE_DEBUG = 2;
+}
+
+// Used when evaluating Relevance of a NearbyItem
+// Values correspond to levels in the Discoverer Notification Policy Worksheet:
+enum Evaluation {
+  EVALUATION_UNKNOWN = 0;
+  EVALUATION_BAD = 100;
+  EVALUATION_POOR = 200;
+  EVALUATION_NEUTRAL = 300;
+  EVALUATION_OK = 400;
+  EVALUATION_GOOD = 500;
+  EVALUATION_GREAT = 600;
+  EVALUATION_AMAZING = 700;
+}
+
+// Represents the type for the manufacturer.
+enum ManufacturerType {
+  // Unknown manufacturer type.
+  MANUFACTURER_TYPE_UNKNOWN = 0;
+  // Manufacturer of 1P devices.
+  FIRST_PARTY = 1;
+  // Manufacturer of 3P devices.
+  THIRD_PARTY = 2;
+}
+
+// Features that can be enabled for a Fast Pair device.
+enum FastPairFeature {
+  FAST_PAIR_FEATURE_UNKNOWN = 0;
+  SILENCE_MODE = 1;
+  WIRELESS_CHARGING = 2;
+  DYNAMIC_BUFFER_SIZE = 3;
+  NO_PERSONALIZED_NAME = 4;
+}
+
+// Represents the type of device that is being registered.
+enum DeviceType {
+  // Unspecified device type.
+  DEVICE_TYPE_UNSPECIFIED = 0;
+  // Headphones or Earbuds.
+  HEADPHONES = 1;
+  // Speaker.
+  SPEAKER = 2;
+  // Wearable such as a watch.
+  WEARABLE = 3;
+  // Input devices such as keyboards, mice, etc.
+  INPUT_DEVICE = 4;
+  // Cars.
+  AUTOMOTIVE = 5;
+  // TODO(b/115353368): Add a custom description field for devices of type
+  // OTHER (referencing how Status is structured).
+  OTHER = 6;
+  // True Wireless headphones (these include additional configuration options).
+  TRUE_WIRELESS_HEADPHONES = 7;
+  // WearOS watch. This should trigger explicit functionality on clients when
+  // used, such as specifying BR/EDR transport type when creating a bond. It is
+  // a subset of wearables working around specific issues on that platform.
+  WEAR_OS = 8;
+  // Android Auto has the particular Fast Pair UX flows which may not be bought
+  // in by some car manufacturers (e.g. BMW). Sees go/fastpair-android-auto for
+  // more details.
+  ANDROID_AUTO = 9;
+}

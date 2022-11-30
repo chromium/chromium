@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
@@ -42,8 +43,7 @@ void ConfigureBottomSheetAction::InternalProcessAction(
     if (expect_resize) {
       callback_ = std::move(callback);
 
-      timer_.Start(FROM_HERE,
-                   base::TimeDelta::FromMilliseconds(proto.resize_timeout_ms()),
+      timer_.Start(FROM_HERE, base::Milliseconds(proto.resize_timeout_ms()),
                    base::BindOnce(&ConfigureBottomSheetAction::OnTimeout,
                                   weak_ptr_factory_.GetWeakPtr()));
 

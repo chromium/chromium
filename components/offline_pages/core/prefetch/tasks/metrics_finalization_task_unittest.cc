@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ TEST_F(MetricsFinalizationTaskTest, FinalizesMultipleItems) {
 
   // Overrides the offline clock and set a current time in the future.
   TestScopedOfflineClock clock;
-  clock.SetNow(before_insert_time + base::TimeDelta::FromHours(1));
+  clock.SetNow(before_insert_time + base::Hours(1));
 
   // Execute the metrics task.
   RunTask(metrics_finalization_task_.get());

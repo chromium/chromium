@@ -1,0 +1,14 @@
+<body>
+  <h1 id="result"></h1>
+  <script>
+    let img = new Image();
+    img.src = "./blank.jpg";
+    img.onload = () => {
+      document.getElementById('result').innerText = 'loaded';
+    }
+    img.onerror = () => {
+      document.getElementById('result').innerText = 'blocked';
+    }
+    document.body.appendChild(img);
+  </script>
+</body>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 
 #include "util/win/ntstatus_logging.h"
 
+#include <iterator>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace {
@@ -30,7 +30,7 @@ std::string FormatNtstatus(DWORD ntstatus) {
       ntstatus,
       0,
       msgbuf,
-      static_cast<DWORD>(base::size(msgbuf)),
+      static_cast<DWORD>(std::size(msgbuf)),
       nullptr);
   if (len) {
     // Most system messages end in a period and a space. Remove the space if

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/testing/mock_hyphenation.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -57,7 +59,7 @@ class NGLineBreakerTest : public NGLayoutTest {
     builder.SetAvailableSize({available_width, kIndefiniteSize});
     NGConstraintSpace space = builder.ToConstraintSpace();
 
-    scoped_refptr<NGInlineBreakToken> break_token;
+    const NGInlineBreakToken* break_token = nullptr;
 
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
@@ -68,21 +70,22 @@ class NGLineBreakerTest : public NGLayoutTest {
       NGLineInfo line_info;
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
                                  line_opportunity, leading_floats, 0u,
-                                 break_token.get(), &exclusion_space);
+                                 break_token, /* column_spanner_path */ nullptr,
+                                 &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (callback)
         callback(line_breaker, line_info);
       trailing_whitespaces_.push_back(
           line_breaker.TrailingWhitespaceForTesting());
 
-      if (line_info.Results().IsEmpty())
+      if (line_info.Results().empty())
         break;
 
       break_token = line_breaker.CreateBreakToken(line_info);
-      if (fill_first_space_ && lines.IsEmpty()) {
+      if (fill_first_space_ && lines.empty()) {
         first_should_hang_trailing_space_ =
             line_info.ShouldHangTrailingSpaces();
-        first_hang_width_ = line_info.HangWidth();
+        first_hang_width_ = line_info.HangWidthForAlignment();
       }
       lines.push_back(std::make_pair(ToString(line_info.Results(), node),
                                      line_info.Results().back().item_index));
@@ -161,6 +164,91 @@ TEST_F(NGLineBreakerTest, SingleNode) {
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
   EXPECT_EQ("789", lines[2].first);
+}
+
+// For "text-combine-upright-break-inside-001a.html"
+TEST_F(NGLineBreakerTest, TextCombineCloseTag) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node = CreateInlineNode(
+      "<div id=container>"
+      "abc<tcy style='white-space:pre'>XYZ</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(1u, lines.size());
+  // |NGLineBreaker::auto_wrap_| doesn't care about CSS "white-space" property
+  // in the element with "text-combine-upright:all".
+  //  NGInlineItemResult
+  //    [0] kText 0-3 can_break_after_=false
+  //    [1] kOpenTag 3-3 can_break_after_=false
+  //    [2] kStartTag 3-3 can_break_after _= fasle
+  //    [3] kAtomicInline 3-4 can_break_after _= false
+  //    [4] kCloseTag 4-4 can_break_after _= false
+  EXPECT_EQ(String(u"abc\uFFFCdef"), lines[0].first);
+}
+
+TEST_F(NGLineBreakerTest, TextCombineBreak) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node = CreateInlineNode("<div id=container>abc<tcy>-</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(2u, lines.size());
+  // NGLineBreaker attempts to break line for "abc-def".
+  EXPECT_EQ(String(u"abc\uFFFC"), lines[0].first);
+  EXPECT_EQ(String(u"def"), lines[1].first);
+}
+
+TEST_F(NGLineBreakerTest, TextCombineNoBreak) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node =
+      CreateInlineNode("<div id=container>abc<tcy>XYZ</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(1u, lines.size());
+  // NGLineBreaker attempts to break line for "abcXYZdef".
+  EXPECT_EQ(String(u"abc\uFFFCdef"), lines[0].first);
+}
+
+TEST_F(NGLineBreakerTest, TextCombineNoBreakWithSpace) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node =
+      CreateInlineNode("<div id=container>abc<tcy>X Z</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(1u, lines.size());
+  // NGLineBreaker checks whether can break after "Z" in "abcX Zdef".
+  EXPECT_EQ(String(u"abc\uFFFCdef"), lines[0].first);
 }
 
 TEST_F(NGLineBreakerTest, OverflowWord) {
@@ -289,7 +377,7 @@ TEST_F(NGLineBreakerTest, OverflowMargin) {
     </style>
     <div id=container><span>123 456</span> 789</div>
   )HTML");
-  const Vector<NGInlineItem>& items = node.ItemsData(false).items;
+  const HeapVector<NGInlineItem>& items = node.ItemsData(false).items;
 
   // While "123 456" can fit in a line, "456" has a right margin that cannot
   // fit. Since "456" and its right margin is not breakable, "456" should be on
@@ -582,8 +670,105 @@ TEST_F(NGLineBreakerTest, MinMaxWithTrailingSpaces) {
   )HTML");
 
   const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(60));
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
   EXPECT_EQ(sizes.max_size, LayoutUnit(110));
+}
+
+// `word-break: break-word` can break a space run.
+TEST_F(NGLineBreakerTest, MinMaxBreakSpaces) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    div {
+      font: 10px/1 Ahem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    span {
+      font-size: 200%;
+    }
+    </style>
+    <div id=container>M):
+<span>    </span>p</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(10));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
+}
+
+TEST_F(NGLineBreakerTest, MinMaxWithSoftHyphen) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+    }
+    </style>
+    <div id=container>abcd&shy;ef xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
+}
+
+TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabled) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+      hyphens: none;
+    }
+    </style>
+    <div id=container>abcd&shy;ef xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(60));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
+}
+
+TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabledWithTrailingSpaces) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+      hyphens: none;
+    }
+    </style>
+    <div id=container>abcd&shy; ef xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(100));
+}
+
+TEST_F(NGLineBreakerTest, MinMaxWithHyphensAuto) {
+  LoadAhem();
+  LayoutLocale::SetHyphenationForTesting("en-us", MockHyphenation::Create());
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+      hyphens: auto;
+    }
+    </style>
+    <div id=container lang="en-us">zz hyphenation xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(170));
+  LayoutLocale::SetHyphenationForTesting("en-us", nullptr);
 }
 
 // For http://crbug.com/1104534
@@ -667,6 +852,13 @@ TEST_F(NGLineBreakerTest, TableCellWidthCalculationQuirkOutOfFlow) {
   // Pass if |ComputeMinMaxSizes| doesn't hit DCHECK failures.
 }
 
+TEST_F(NGLineBreakerTest, BoxDecorationBreakCloneWithoutBoxDecorations) {
+  SetBodyInnerHTML(R"HTML(
+    <span style="-webkit-box-decoration-break: clone"></span>
+  )HTML");
+  // Pass if it does not hit DCHECK.
+}
+
 TEST_F(NGLineBreakerTest, RewindPositionedFloat) {
   SetBodyInnerHTML(R"HTML(
 <div style="float: left">
@@ -705,13 +897,13 @@ B AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   // This test passes if no CHECK failures.
 }
 
-TEST_F(NGLineBreakerTest, SplitTextByGlyphs) {
+TEST_F(NGLineBreakerTest, SplitTextIntoSegements) {
   RuntimeEnabledFeaturesTestHelpers::ScopedSVGTextNG svg_text_ng(true);
   NGInlineNode node = CreateInlineNode(
       uR"HTML(
       <!DOCTYPE html>
       <svg viewBox="0 0 800 600">
-      <text id="container" style="font-family:Times">AV)HTML"
+      <text id="container" rotate="1" style="font-family:Times">AV)HTML"
       u"\U0001F197\u05E2\u05B4\u05D1\u05E8\u05B4\u05D9\u05EA</text></svg>)");
   BreakLines(
       node, LayoutUnit::Max(),
@@ -730,6 +922,90 @@ TEST_F(NGLineBreakerTest, SplitTextByGlyphs) {
         EXPECT_EQ(1u, line_info.Results()[6].Length());  // U+05D9
         EXPECT_EQ(1u, line_info.Results()[7].Length());  // U+05EA
       });
+}
+
+// crbug.com/1251960
+TEST_F(NGLineBreakerTest, SplitTextIntoSegementsCrash) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedSVGTextNG svg_text_ng(true);
+  NGInlineNode node = CreateInlineNode(R"HTML(<!DOCTYPE html>
+      <svg viewBox="0 0 800 600">
+      <text id="container" x="50 100 150">&#x0343;&#x2585;&#x0343;&#x2585;<!--
+      -->&#x0343;&#x2585;</text>
+      </svg>)HTML");
+  BreakLines(
+      node, LayoutUnit::Max(),
+      [](const NGLineBreaker& line_breaker, const NGLineInfo& line_info) {
+        Vector<const NGInlineItemResult*> text_results;
+        for (const auto& result : line_info.Results()) {
+          if (result.item->Type() == NGInlineItem::kText)
+            text_results.push_back(&result);
+        }
+        EXPECT_EQ(4u, text_results.size());
+        EXPECT_EQ(1u, text_results[0]->Length());  // U+0343
+        EXPECT_EQ(1u, text_results[1]->Length());  // U+2585
+        EXPECT_EQ(2u, text_results[2]->Length());  // U+0343 U+2585
+        EXPECT_EQ(2u, text_results[3]->Length());  // U+0343 U+2585
+      });
+}
+
+// crbug.com/1214232
+TEST_F(NGLineBreakerTest, GetOverhangCrash) {
+  NGInlineNode node = CreateInlineNode(
+      R"HTML(
+<!DOCTYPE html>
+<style>
+* { margin-inline-end: -7%; }
+rb { float: right; }
+rt { margin: 17179869191em; }
+</style>
+<div id="container">
+<ruby>
+<rb>
+C c
+<rt>
+)HTML");
+  // The test passes if we have no DCHECK failures in BreakLines().
+  BreakLines(node, LayoutUnit::Max());
+}
+
+// https://crbug.com/1292848
+// Test that, if it's not possible to break after an ideographic space (as
+// happens before an end bracket), previous break opportunities are considered.
+TEST_F(NGLineBreakerTest, IdeographicSpaceBeforeEndBracket) {
+  LoadAhem();
+  // Atomic inline, and ideographic space before the ideographic full stop.
+  NGInlineNode node1 = CreateInlineNode(
+      uR"HTML(
+<!DOCTYPE html>
+<style>
+body { margin: 0; padding: 0; font: 10px/10px Ahem; }
+</style>
+<div id="container">
+全角空白の前では、変な行末があります。　]
+</div>
+)HTML");
+  auto lines1 = BreakLines(node1, LayoutUnit(190));
+
+  // Test that it doesn't overflow.
+  EXPECT_EQ(lines1.size(), 2u);
+
+  // No ideographic space.
+  NGInlineNode node2 = CreateInlineNode(
+      uR"HTML(
+<!DOCTYPE html>
+<style>
+body { margin: 0; padding: 0; font: 10px/10px Ahem; }
+</style>
+<div id="container">
+全角空白の前では、変な行末があります。]
+</div>
+)HTML");
+  auto lines2 = BreakLines(node2, LayoutUnit(190));
+
+  // node1 and node2 should break at the same point because there aren't break
+  // opportunities after the ideographic period, and any opportunities before it
+  // should be the same.
+  EXPECT_EQ(lines1[0].first, lines2[0].first);
 }
 
 }  // namespace

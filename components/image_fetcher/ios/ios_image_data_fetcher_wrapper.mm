@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#import "base/ios/ios_util.h"
 #include "base/task/thread_pool.h"
 #import "components/image_fetcher/ios/webp_decoder.h"
 #include "net/http/http_response_headers.h"
@@ -58,8 +58,10 @@ IOSImageDataFetcherWrapper::CallbackForImageDataFetcher(
     // Create a NSData from the returned data and notify the callback.
     NSData* data =
         [NSData dataWithBytes:image_data.data() length:image_data.size()];
-
-    if (!webp_transcode::WebpDecoder::IsWebpImage(image_data)) {
+    // TODO(crbug.com/1129484): Remove once minimum supported version is at
+    // least 14 for all consumers of ios/web_view
+    if (base::ios::IsRunningOnIOS14OrLater() ||
+        !webp_transcode::WebpDecoder::IsWebpImage(image_data)) {
       callback(data, metadata);
       return;
     }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,10 @@ namespace clients {
 class Blur : public wayland::clients::ClientBase {
  public:
   Blur();
+
+  Blur(const Blur&) = delete;
+  Blur& operator=(const Blur&) = delete;
+
   ~Blur() override;
 
   void Run(double sigma_x,
@@ -28,8 +32,6 @@ class Blur : public wayland::clients::ClientBase {
 
  private:
   sk_sp<SkImage> grid_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(Blur);
 };
 
 }  // namespace clients

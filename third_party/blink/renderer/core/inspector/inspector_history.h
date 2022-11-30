@@ -31,10 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_HISTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_HISTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -69,6 +69,8 @@ class CORE_EXPORT InspectorHistory final
   };
 
   InspectorHistory();
+  InspectorHistory(const InspectorHistory&) = delete;
+  InspectorHistory& operator=(const InspectorHistory&) = delete;
   void Trace(Visitor*) const;
 
   bool Perform(Action*, ExceptionState&);
@@ -82,10 +84,8 @@ class CORE_EXPORT InspectorHistory final
  private:
   HeapVector<Member<Action>> history_;
   wtf_size_t after_last_action_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorHistory);
 };
 
 }  // namespace blink
 
-#endif  // !defined(InspectorHistory_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_HISTORY_H_

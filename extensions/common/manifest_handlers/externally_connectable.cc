@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,7 @@
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/url_pattern.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
-
-namespace rcd = net::registry_controlled_domains;
 
 namespace extensions {
 
@@ -32,11 +29,6 @@ const char kErrorInvalidId[] = "Invalid ID '*'";
 const char kErrorNothingSpecified[] =
     "'externally_connectable' specifies neither 'matches' nor 'ids'; "
     "nothing will be able to connect";
-const char kErrorTopLevelDomainsNotAllowed[] =
-    "\"*\" is an effective top level domain for which wildcard subdomains such "
-    "as \"*\" are not allowed";
-const char kErrorWildcardHostsNotAllowed[] =
-    "Wildcard domain patterns such as \"*\" are not allowed";
 }  // namespace externally_connectable_errors
 
 namespace keys = extensions::manifest_keys;
@@ -63,16 +55,14 @@ ExternallyConnectableHandler::~ExternallyConnectableHandler() {
 
 bool ExternallyConnectableHandler::Parse(Extension* extension,
                                          std::u16string* error) {
-  const base::Value* externally_connectable = NULL;
-  CHECK(extension->manifest()->Get(keys::kExternallyConnectable,
-                                   &externally_connectable));
-  bool allow_all_urls = PermissionsParser::HasAPIPermission(
-      extension, mojom::APIPermissionID::kExternallyConnectableAllUrls);
+  const base::Value* externally_connectable =
+      extension->manifest()->FindPath(keys::kExternallyConnectable);
+  CHECK(externally_connectable != nullptr);
 
   std::vector<InstallWarning> install_warnings;
   std::unique_ptr<ExternallyConnectableInfo> info =
-      ExternallyConnectableInfo::FromValue(
-          *externally_connectable, allow_all_urls, &install_warnings, error);
+      ExternallyConnectableInfo::FromValue(*externally_connectable,
+                                           &install_warnings, error);
   if (!info)
     return false;
 
@@ -96,13 +86,12 @@ ExternallyConnectableInfo* ExternallyConnectableInfo::Get(
 // static
 std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
     const base::Value& value,
-    bool allow_all_urls,
     std::vector<InstallWarning>* install_warnings,
     std::u16string* error) {
   std::unique_ptr<ExternallyConnectable> externally_connectable =
       ExternallyConnectable::FromValue(value, error);
   if (!externally_connectable)
-    return std::unique_ptr<ExternallyConnectableInfo>();
+    return nullptr;
 
   URLPatternSet matches;
 
@@ -115,41 +104,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
       if (pattern.Parse(*it) != URLPattern::ParseResult::kSuccess) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             externally_connectable_errors::kErrorInvalidMatchPattern, *it);
-        return std::unique_ptr<ExternallyConnectableInfo>();
-      }
-
-      bool matches_all_hosts =
-          pattern.match_all_urls() ||  // <all_urls>
-          (pattern.host().empty() &&
-           pattern.match_subdomains());  // e.g., https://*/*
-
-      if (allow_all_urls && matches_all_hosts) {
-        matches.AddPattern(pattern);
-        continue;
-      }
-
-      // Wildcard hosts are not allowed.
-      if (pattern.host().empty()) {
-        // Warning not error for forwards compatibility.
-        install_warnings->push_back(InstallWarning(
-            ErrorUtils::FormatErrorMessage(
-                externally_connectable_errors::kErrorWildcardHostsNotAllowed,
-                *it),
-            keys::kExternallyConnectable, *it));
-        continue;
-      }
-
-      // Broad match patterns like "*.com", "*.co.uk", and even "*.appspot.com"
-      // are not allowed. However just "appspot.com" is ok.
-      if (pattern.MatchesEffectiveTld(rcd::INCLUDE_PRIVATE_REGISTRIES,
-                                      rcd::INCLUDE_UNKNOWN_REGISTRIES)) {
-        // Warning not error for forwards compatibility.
-        install_warnings->push_back(InstallWarning(
-            ErrorUtils::FormatErrorMessage(
-                externally_connectable_errors::kErrorTopLevelDomainsNotAllowed,
-                pattern.host().c_str(), *it),
-            keys::kExternallyConnectable, *it));
-        continue;
+        return nullptr;
       }
 
       matches.AddPattern(pattern);
@@ -169,7 +124,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
       } else {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             externally_connectable_errors::kErrorInvalidId, *it);
-        return std::unique_ptr<ExternallyConnectableInfo>();
+        return nullptr;
       }
     }
   }
@@ -181,8 +136,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
   }
 
   bool accepts_tls_channel_id =
-      externally_connectable->accepts_tls_channel_id.get() &&
-      *externally_connectable->accepts_tls_channel_id;
+      externally_connectable->accepts_tls_channel_id.value_or(false);
   return base::WrapUnique(new ExternallyConnectableInfo(
       std::move(matches), ids, all_ids, accepts_tls_channel_id));
 }

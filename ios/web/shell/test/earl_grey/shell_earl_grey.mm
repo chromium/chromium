@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,13 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/shell/test/earl_grey/shell_earl_grey_app_interface.h"
 
-using base::test::ios::kWaitForPageLoadTimeout;
-using base::test::ios::kWaitForUIElementTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShellEarlGreyAppInterface)
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation ShellEarlGreyImpl
 
@@ -33,7 +31,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShellEarlGreyAppInterface)
                     return !
                         [ShellEarlGreyAppInterface isCurrentWebStateLoading];
                   }];
-  BOOL pageLoaded = [condition waitWithTimeout:kWaitForPageLoadTimeout];
+  BOOL pageLoaded =
+      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, loadingErrorDescription);
 
   EG_TEST_HELPER_ASSERT_NO_ERROR(
@@ -54,7 +53,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShellEarlGreyAppInterface)
                                        currentWebStateContainsText:text];
                                  }];
 
-  BOOL containsText = [condition waitWithTimeout:kWaitForPageLoadTimeout];
+  BOOL containsText =
+      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, description);
 }
 

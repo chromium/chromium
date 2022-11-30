@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -21,33 +23,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-class UnittestProfileManager : public ProfileManagerWithoutInit {
- public:
-  explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : ProfileManagerWithoutInit(user_data_dir) {}
-  ~UnittestProfileManager() override = default;
-
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    if (!base::PathExists(path) && !base::CreateDirectory(path))
-      return nullptr;
-    return std::make_unique<TestingProfile>(path);
-  }
-
-  std::unique_ptr<Profile> CreateProfileAsyncHelper(
-      const base::FilePath& path,
-      Delegate* delegate) override {
-    // ThreadTaskRunnerHandle::Get() is TestingProfile's "async" IOTaskRunner
-    // (ref. TestingProfile::GetIOTaskRunner()).
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
-
-    return std::make_unique<TestingProfile>(path, this);
-  }
-};
 
 class StartupBrowserPolicyUnitTest : public testing::Test {
  public:
@@ -65,17 +40,18 @@ class StartupBrowserPolicyUnitTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
-  // Helper function to add a profile with |profile_name| to |profile_manager|'s
+  // Helper function to add a profile to |profile_manager|'s
   // ProfileAttributesStorage, and return the profile created.
-  Profile* CreateTestingProfile(ProfileManager* profile_manager,
-                                const std::string& profile_name) {
+  Profile* CreateTestingProfile(ProfileManager* profile_manager) {
+    const std::string kProfileName = "Default";
     ProfileAttributesStorage& storage =
         profile_manager->GetProfileAttributesStorage();
     size_t num_profiles = storage.GetNumberOfProfiles();
-    base::FilePath path = temp_dir_.GetPath().AppendASCII(profile_name);
-    storage.AddProfile(path, base::ASCIIToUTF16(profile_name.c_str()),
-                       std::string(), std::u16string(), false, 0, std::string(),
-                       EmptyAccountId());
+    base::FilePath path = temp_dir_.GetPath().AppendASCII(kProfileName);
+    ProfileAttributesInitParams params;
+    params.profile_path = path;
+    params.profile_name = base::ASCIIToUTF16(kProfileName.c_str());
+    storage.AddProfile(std::move(params));
     EXPECT_EQ(num_profiles + 1u, storage.GetNumberOfProfiles());
     return profile_manager->GetProfile(path);
   }
@@ -173,10 +149,10 @@ TEST_F(StartupBrowserPolicyUnitTest, ForceEphemeralProfiles) {
   RegisterLocalState(local_state.registry());
 
   TestingBrowserProcess::GetGlobal()->SetProfileManager(
-      new UnittestProfileManager(temp_dir_.GetPath()));
+      std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = CreateTestingProfile(profile_manager, "path_1");
+  Profile* profile = CreateTestingProfile(profile_manager);
 
   EXPECT_TRUE(welcome::HasModulesToShow(profile));
 

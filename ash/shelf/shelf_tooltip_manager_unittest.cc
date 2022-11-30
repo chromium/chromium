@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_bubble.h"
@@ -26,6 +27,10 @@ namespace ash {
 class ShelfTooltipManagerTest : public AshTestBase {
  public:
   ShelfTooltipManagerTest() = default;
+
+  ShelfTooltipManagerTest(const ShelfTooltipManagerTest&) = delete;
+  ShelfTooltipManagerTest& operator=(const ShelfTooltipManagerTest&) = delete;
+
   ~ShelfTooltipManagerTest() override = default;
 
   void SetUp() override {
@@ -42,7 +47,7 @@ class ShelfTooltipManagerTest : public AshTestBase {
   views::Widget* GetTooltip() { return tooltip_manager_->bubble_->GetWidget(); }
 
   void ShowTooltipForFirstAppIcon() {
-    EXPECT_GE(shelf_view_->number_of_visible_apps(), 1);
+    EXPECT_GE(shelf_view_->number_of_visible_apps(), 1u);
     tooltip_manager_->ShowTooltip(
         shelf_view_->first_visible_button_for_testing());
   }
@@ -51,9 +56,6 @@ class ShelfTooltipManagerTest : public AshTestBase {
   ShelfView* shelf_view_;
   ShelfTooltipManager* tooltip_manager_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfTooltipManagerTest);
 };
 
 TEST_F(ShelfTooltipManagerTest, ShowTooltip) {
@@ -90,7 +92,8 @@ TEST_F(ShelfTooltipManagerTest, DoNotShowForInvalidView) {
   ShelfItem item;
   item.id = ShelfID("foo");
   item.type = TYPE_PINNED_APP;
-  const int index = model->Add(item);
+  const int index =
+      model->Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
   ShelfViewTestAPI(GetPrimaryShelf()->GetShelfViewForTesting())
       .RunMessageLoopUntilAnimationsDone();
 

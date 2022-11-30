@@ -23,7 +23,12 @@ enum MediaSessionAction {
   "nexttrack",
   "skipad",
   "stop",
-  "seekto"
+  "seekto",
+  "togglemicrophone",
+  "togglecamera",
+  "hangup",
+  "previousslide",
+  "nextslide"
 };
 
 callback MediaSessionActionHandler = undefined(MediaSessionActionDetails details);
@@ -37,6 +42,10 @@ interface MediaSession {
   undefined setActionHandler(MediaSessionAction action, MediaSessionActionHandler? handler);
 
   undefined setPositionState(optional MediaPositionState state = {});
+
+  undefined setMicrophoneActive(boolean active);
+
+  undefined setCameraActive(boolean active);
 };
 
 [Exposed=Window]
@@ -69,7 +78,7 @@ dictionary MediaPositionState {
 
 dictionary MediaSessionActionDetails {
   required MediaSessionAction action;
-  double? seekOffset;
-  double? seekTime;
-  boolean? fastSeek;
+  double seekOffset;
+  double seekTime;
+  boolean fastSeek;
 };

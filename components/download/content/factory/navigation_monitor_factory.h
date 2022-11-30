@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
@@ -21,6 +20,9 @@ class NavigationMonitorFactory : public SimpleKeyedServiceFactory {
   static NavigationMonitorFactory* GetInstance();
   static download::NavigationMonitor* GetForKey(SimpleFactoryKey* key);
 
+  NavigationMonitorFactory(const NavigationMonitorFactory&) = delete;
+  NavigationMonitorFactory& operator=(const NavigationMonitorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<NavigationMonitorFactory>;
 
@@ -31,8 +33,6 @@ class NavigationMonitorFactory : public SimpleKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationMonitorFactory);
 };
 
 }  // namespace download

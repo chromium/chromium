@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,10 @@ class BrowserServiceHostObserver : public base::CheckedObserver {
   // When this is called, mojom::BrowserService is already destroyed.
   virtual void OnBrowserServiceDisconnected(CrosapiId id,
                                             mojo::RemoteSetElementId mojo_id) {}
+
+  // Called when BrowserServiceHost::RequestRelaunch is called from
+  // the Crosapi client.
+  virtual void OnBrowserRelaunchRequested(CrosapiId id) {}
 };
 
 }  // namespace crosapi

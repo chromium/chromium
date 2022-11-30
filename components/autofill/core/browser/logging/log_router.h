@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace autofill {
 
-class LogManager;
+class RoutingLogManager;
 class LogReceiver;
 
 // The router stands between LogManager and LogReceiver instances. Both managers
@@ -27,14 +25,18 @@ class LogReceiver;
 class LogRouter : public KeyedService {
  public:
   LogRouter();
+
+  LogRouter(const LogRouter&) = delete;
+  LogRouter& operator=(const LogRouter&) = delete;
+
   ~LogRouter() override;
 
   // Returns a JSON entry that can be fed into the logger.
-  static base::Value CreateEntryForText(const std::string& text);
+  static base::Value::Dict CreateEntryForText(const std::string& text);
 
   // Passes logs to the router. Only call when there are receivers registered.
   void ProcessLog(const std::string& text);
-  void ProcessLog(base::Value&& node);
+  void ProcessLog(const base::Value::Dict& node);
 
   // All four (Unr|R)egister* methods below are safe to call from the
   // constructor of the registered object, because they do not call that object,
@@ -43,16 +45,12 @@ class LogRouter : public KeyedService {
   // The managers must register to be notified about whether there are some
   // receivers or not. RegisterManager adds |manager| to the right observer list
   // and returns true iff there are some receivers registered.
-  bool RegisterManager(LogManager* manager);
+  bool RegisterManager(RoutingLogManager* manager);
   // Remove |manager| from the observers list.
-  void UnregisterManager(LogManager* manager);
+  void UnregisterManager(RoutingLogManager* manager);
 
   // The receivers must register to get updates with new logs in the future.
-  // RegisterReceiver adds |receiver| to the right observer list, and returns
-  // the logs accumulated so far. (It returns by value, not const ref, to
-  // provide a snapshot as opposed to a link to |accumulated_logs_|.)
-  const std::vector<base::Value>& RegisterReceiver(LogReceiver* receiver)
-      WARN_UNUSED_RESULT;
+  void RegisterReceiver(LogReceiver* receiver);
   // Remove |receiver| from the observers list.
   void UnregisterReceiver(LogReceiver* receiver);
 
@@ -60,13 +58,8 @@ class LogRouter : public KeyedService {
   // Observer lists for managers and receivers. The |true| in the template
   // specialisation means that they will check that all observers were removed
   // on destruction.
-  base::ObserverList<LogManager, true>::Unchecked managers_;
+  base::ObserverList<RoutingLogManager, true>::Unchecked managers_;
   base::ObserverList<LogReceiver, true>::Unchecked receivers_;
-
-  // Logs accumulated since the first receiver was registered.
-  std::vector<base::Value> accumulated_logs_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogRouter);
 };
 
 }  // namespace autofill

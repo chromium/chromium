@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-#import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
+#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_configuring.h"
 
 namespace web {
 class WebState;
@@ -20,13 +22,18 @@ class WebState;
 
 // Coordinator handling the NTP.
 @interface NewTabPageCoordinator
-    : ChromeCoordinator <LogoAnimationControllerOwnerOwner>
+    : ChromeCoordinator <LogoAnimationControllerOwnerOwner,
+                         NewTabPageConfiguring>
 
-// Initializes this Coordinator with its |browser|.
+// Initializes this Coordinator with its `browser` and a nil base view
+// controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// The base view controller for this coordinator
+@property(weak, nonatomic, readwrite) UIViewController* baseViewController;
 
 // ViewController associated with this coordinator.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
@@ -37,7 +44,7 @@ class WebState;
 // The toolbar delegate to pass to ContentSuggestionsCoordinator.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
-// Returns |YES| if the coordinator is started.
+// Returns `YES` if the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
 
 // The pan gesture handler for the view controller.
@@ -47,15 +54,11 @@ class WebState;
 @property(nonatomic, weak, readonly) id<ThumbStripSupporting>
     thumbStripSupporting;
 
-// Exposes content inset of contentSuggestions collectionView to ensure all of
-// content is visible under the bottom toolbar.
-@property(nonatomic, readonly) UIEdgeInsets contentInset;
-
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
-// Dismisses all modals owned by the NTP.
-- (void)dismissModals;
+// Currently selected feed.
+@property(nonatomic, assign, readonly) FeedType selectedFeed;
 
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
@@ -67,10 +70,10 @@ class WebState;
 // Stop any scrolling in the scroll view.
 - (void)stopScrolling;
 
-// The content offset of the scroll view.
-- (CGPoint)contentOffset;
+// Whether the NTP is scrolled to the top.
+- (BOOL)isScrolledToTop;
 
-// Reloads the content of the NewTabPage.
+// Reloads the content of the NewTabPage. Does not do anything on Incognito.
 - (void)reload;
 
 // Calls when the visibility of the NTP changes.
@@ -84,6 +87,13 @@ class WebState;
 
 // Constrains the named layout guide for the Discover header menu button.
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide;
+
+// Updates the new tab page based on if there is unseen content in the Following
+// feed.
+- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
+
+// Called when the given `feedType` has completed updates.
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
 @end
 

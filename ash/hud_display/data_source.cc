@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "ash/hud_display/memory_status.h"
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#include "base/cxx17_backports.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 
@@ -33,9 +33,10 @@ CpuStats Delta(const CpuStats& newer, const CpuStats& older) {
 
   // Calculates (left - right) assuming |left| and |right| are increasing
   // unsigned counters with respect to possible counter overflow.
-  auto minus = [](const size_t& left, const size_t right) {
-    return left > right ? (left - right)
-                        : (left + (std::numeric_limits<size_t>::max() - right));
+  auto minus = [](const uint64_t& left, const uint64_t right) {
+    return left > right
+               ? (left - right)
+               : (left + (std::numeric_limits<uint64_t>::max() - right));
   };
 
   CpuStats result;
@@ -54,7 +55,7 @@ CpuStats Delta(const CpuStats& newer, const CpuStats& older) {
 
 // Returns sum of all entries. This is useful for deltas to calculate
 // percentage.
-size_t Sum(const CpuStats& stats) {
+uint64_t Sum(const CpuStats& stats) {
   static_assert(sizeof(CpuStats) == sizeof(uint64_t) * 10,
                 "This method should be updated when CpuStats is changed.");
 
@@ -72,6 +73,8 @@ size_t Sum(const CpuStats& stats) {
 
 DataSource::Snapshot::Snapshot() = default;
 DataSource::Snapshot::Snapshot(const Snapshot&) = default;
+DataSource::Snapshot& DataSource::Snapshot::operator=(const Snapshot&) =
+    default;
 
 DataSource::DataSource() {
   cpu_stats_base_ = {0};
@@ -94,7 +97,7 @@ DataSource::Snapshot DataSource::GetSnapshotAndReset() {
     // Makes sure that the given value is between 0 and 1 and converts to
     // float.
     auto to_0_1 = [](const double& value) -> float {
-      return std::min(1.0f, std::max(0.0f, static_cast<float>(value)));
+      return base::clamp(static_cast<float>(value), 0.0f, 1.0f);
     };
 
     snapshot.cpu_idle_part = cpu_stats_delta.idle / cpu_ticks_total;

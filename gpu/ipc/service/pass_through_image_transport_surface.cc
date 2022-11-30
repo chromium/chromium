@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "ui/gfx/vsync_provider.h"
@@ -47,20 +48,25 @@ bool PassThroughImageTransportSurface::Initialize(gl::GLSurfaceFormat format) {
 }
 
 gfx::SwapResult PassThroughImageTransportSurface::SwapBuffers(
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
-  gfx::SwapResult result = gl::GLSurfaceAdapter::SwapBuffers(base::BindOnce(
-      &PassThroughImageTransportSurface::BufferPresented,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), local_swap_id_));
+  gfx::SwapResult result = gl::GLSurfaceAdapter::SwapBuffers(
+      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     local_swap_id_),
+      std::move(data));
   response.result = result;
-  FinishSwapBuffers(std::move(response), local_swap_id_);
+  FinishSwapBuffers(std::move(response), local_swap_id_,
+                    /*release_fence=*/gfx::GpuFenceHandle());
   return result;
 }
 
 void PassThroughImageTransportSurface::SwapBuffersAsync(
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
 
@@ -71,24 +77,28 @@ void PassThroughImageTransportSurface::SwapBuffersAsync(
   gl::GLSurfaceAdapter::SwapBuffersAsync(
       base::BindOnce(&PassThroughImageTransportSurface::FinishSwapBuffersAsync,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(completion_callback), std::move(response),
-                     local_swap_id_),
+                     std::move(completion_callback), response, local_swap_id_),
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(presentation_callback), local_swap_id_));
+                     std::move(presentation_callback), local_swap_id_),
+      std::move(data));
 }
 
 gfx::SwapResult PassThroughImageTransportSurface::SwapBuffersWithBounds(
     const std::vector<gfx::Rect>& rects,
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gfx::SwapResult result = gl::GLSurfaceAdapter::SwapBuffersWithBounds(
-      rects, base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
-                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                            local_swap_id_));
+      rects,
+      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     local_swap_id_),
+      std::move(data));
   response.result = result;
-  FinishSwapBuffers(std::move(response), local_swap_id_);
+  FinishSwapBuffers(response, local_swap_id_,
+                    /*release_fence=*/gfx::GpuFenceHandle());
   return result;
 }
 
@@ -97,16 +107,19 @@ gfx::SwapResult PassThroughImageTransportSurface::PostSubBuffer(
     int y,
     int width,
     int height,
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gfx::SwapResult result = gl::GLSurfaceAdapter::PostSubBuffer(
       x, y, width, height,
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     local_swap_id_));
+                     local_swap_id_),
+      std::move(data));
   response.result = result;
-  FinishSwapBuffers(std::move(response), local_swap_id_);
+  FinishSwapBuffers(response, local_swap_id_,
+                    /*release_fence=*/gfx::GpuFenceHandle());
 
   return result;
 }
@@ -117,45 +130,51 @@ void PassThroughImageTransportSurface::PostSubBufferAsync(
     int width,
     int height,
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gl::GLSurfaceAdapter::PostSubBufferAsync(
       x, y, width, height,
       base::BindOnce(&PassThroughImageTransportSurface::FinishSwapBuffersAsync,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(completion_callback), std::move(response),
-                     local_swap_id_),
+                     std::move(completion_callback), response, local_swap_id_),
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(presentation_callback), local_swap_id_));
+                     std::move(presentation_callback), local_swap_id_),
+      std::move(data));
 }
 
 gfx::SwapResult PassThroughImageTransportSurface::CommitOverlayPlanes(
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
-  gfx::SwapResult result =
-      gl::GLSurfaceAdapter::CommitOverlayPlanes(base::BindOnce(
-          &PassThroughImageTransportSurface::BufferPresented,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback), local_swap_id_));
+  gfx::SwapResult result = gl::GLSurfaceAdapter::CommitOverlayPlanes(
+      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     local_swap_id_),
+      std::move(data));
   response.result = result;
-  FinishSwapBuffers(std::move(response), local_swap_id_);
+  FinishSwapBuffers(response, local_swap_id_,
+                    /*release_fence=*/gfx::GpuFenceHandle());
   return result;
 }
 
 void PassThroughImageTransportSurface::CommitOverlayPlanesAsync(
     SwapCompletionCallback callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gl::GLSurfaceAdapter::CommitOverlayPlanesAsync(
       base::BindOnce(&PassThroughImageTransportSurface::FinishSwapBuffersAsync,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(response), local_swap_id_),
+                     response, local_swap_id_),
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(presentation_callback), local_swap_id_));
+                     std::move(presentation_callback), local_swap_id_),
+      std::move(data));
 }
 
 void PassThroughImageTransportSurface::SetVSyncEnabled(bool enabled) {
@@ -220,7 +239,8 @@ void PassThroughImageTransportSurface::StartSwapBuffers(
 
 void PassThroughImageTransportSurface::FinishSwapBuffers(
     gfx::SwapResponse response,
-    uint64_t local_swap_id) {
+    uint64_t local_swap_id,
+    gfx::GpuFenceHandle release_fence) {
   response.timings.swap_end = base::TimeTicks::Now();
 
 #if DCHECK_IS_ON()
@@ -236,9 +256,9 @@ void PassThroughImageTransportSurface::FinishSwapBuffers(
 
     if (!multiple_surfaces_swapped_) {
       static constexpr base::TimeDelta kTimingMetricsHistogramMin =
-          base::TimeDelta::FromMicroseconds(5);
+          base::Microseconds(5);
       static constexpr base::TimeDelta kTimingMetricsHistogramMax =
-          base::TimeDelta::FromMilliseconds(500);
+          base::Milliseconds(500);
       static constexpr uint32_t kTimingMetricsHistogramBuckets = 50;
 
       base::TimeDelta delta =
@@ -256,10 +276,6 @@ void PassThroughImageTransportSurface::FinishSwapBuffers(
             kTimingMetricsHistogramBuckets);
       }
     }
-
-    SwapBuffersCompleteParams params;
-    params.swap_response = std::move(response);
-    delegate_->DidSwapBuffersComplete(std::move(params));
   }
 }
 
@@ -268,16 +284,8 @@ void PassThroughImageTransportSurface::FinishSwapBuffersAsync(
     gfx::SwapResponse response,
     uint64_t local_swap_id,
     gfx::SwapCompletionResult result) {
-  // TODO(afrantzis): It's probably not ideal to introduce a wait here.
-  // However, since this is a temporary step to maintain existing behavior
-  // until we are ready to expose the gpu_fence further, and fences are only
-  // enabled with a flag, this should be fine for now.
-  if (result.gpu_fence) {
-    result.gpu_fence->Wait();
-    result.gpu_fence.reset();
-  }
   response.result = result.swap_result;
-  FinishSwapBuffers(std::move(response), local_swap_id);
+  FinishSwapBuffers(response, local_swap_id, result.release_fence.Clone());
   std::move(callback).Run(std::move(result));
 }
 
@@ -298,8 +306,6 @@ void PassThroughImageTransportSurface::BufferPresented(
 #endif
 
   std::move(callback).Run(feedback);
-  if (delegate_)
-    delegate_->BufferPresented(feedback);
 }
 
 }  // namespace gpu

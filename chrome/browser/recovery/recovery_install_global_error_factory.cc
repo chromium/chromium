@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/recovery/recovery_install_global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 RecoveryInstallGlobalErrorFactory::RecoveryInstallGlobalErrorFactory()
-    : BrowserContextKeyedServiceFactory(
-        "RecoveryInstallGlobalError",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("RecoveryInstallGlobalError") {
   DependsOn(GlobalErrorServiceFactory::GetInstance());
 }
 
@@ -35,7 +32,7 @@ RecoveryInstallGlobalErrorFactory::GetInstance() {
 
 KeyedService* RecoveryInstallGlobalErrorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return new RecoveryInstallGlobalError(static_cast<Profile*>(context));
 #else
   return NULL;

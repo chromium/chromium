@@ -30,6 +30,8 @@
 
 #include "third_party/blink/public/web/web_scoped_window_focus_allowed_indicator.h"
 
+#include <memory>
+
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scoped_window_focus_allowed_indicator.h"
@@ -40,8 +42,8 @@ WebScopedWindowFocusAllowedIndicator::WebScopedWindowFocusAllowedIndicator(
     WebDocument* web_document) {
   Document* document = web_document->Unwrap<Document>();
   DCHECK(document);
-  private_.reset(
-      new ScopedWindowFocusAllowedIndicator(document->GetExecutionContext()));
+  private_ = std::make_unique<ScopedWindowFocusAllowedIndicator>(
+      document->GetExecutionContext());
 }
 
 WebScopedWindowFocusAllowedIndicator::~WebScopedWindowFocusAllowedIndicator() =

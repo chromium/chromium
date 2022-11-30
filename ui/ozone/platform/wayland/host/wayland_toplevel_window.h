@@ -1,26 +1,37 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
-#include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/platform_window/extensions/desk_extension.h"
+#include "ui/platform_window/extensions/pinned_mode_extension.h"
+#include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/extensions/workspace_extension.h"
+#include "ui/platform_window/extensions/workspace_extension_delegate.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 
 namespace ui {
 
+class GtkSurface1;
 class ShellToplevelWrapper;
 
 class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveResizeHandler,
                               public WmMoveLoopHandler,
-                              public WaylandExtension {
+                              public WaylandExtension,
+                              public WorkspaceExtension,
+                              public DeskExtension,
+                              public PinnedModeExtension,
+                              public SystemModalExtension {
  public:
   WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                         WaylandConnection* connection);
@@ -32,7 +43,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Apply the bounds specified in the most recent configure event. This should
   // be called after processing all pending events in the wayland connection.
-  void ApplyPendingBounds();
+  void ApplyPendingBounds() override;
 
   // WmMoveResizeHandler
   void DispatchHostWindowDragMovement(
@@ -50,47 +61,123 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Restore() override;
   PlatformWindowState GetPlatformWindowState() const override;
   void Activate() override;
+  void Deactivate() override;
   void SizeConstraintsChanged() override;
+  // `SetZOrderLevel()` must be called on `z_order_` in
+  // `SetUpShellIntegration()`.
+  void SetZOrderLevel(ZOrderLevel order) override;
+  ZOrderLevel GetZOrderLevel() const override;
   std::string GetWindowUniqueId() const override;
   // SetUseNativeFrame and ShouldUseNativeFrame decide on
   // xdg-decoration mode for a window.
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
+  bool ShouldUpdateWindowShape() const override;
+  bool CanSetDecorationInsets() const override;
+  void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) override;
+  void SetInputRegion(const gfx::Rect* region_px) override;
+  void NotifyStartupComplete(const std::string& startup_id) override;
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
+
+  // Sets the window's origin.
+  void SetOrigin(const gfx::Point& origin);
 
   // WaylandWindow overrides:
-  base::Optional<std::vector<gfx::Rect>> GetWindowShape() const override;
+  bool IsScreenCoordinatesEnabled() const override;
+
+  // Client-side decorations on Wayland take some portion of the window surface,
+  // and when they are turned on or off, the window geometry is changed.  That
+  // happens only once at the moment of switching the decoration mode, and has
+  // no further impact on the user experience, but the initial geometry of a
+  // top-level window is different on Wayland if compared to other platforms,
+  // which affects certain tests.
+  static void AllowSettingDecorationInsetsForTest(bool allow);
 
  private:
   // WaylandWindow overrides:
+  void UpdateWindowScale(bool update_bounds) override;
   void HandleToplevelConfigure(int32_t width,
                                int32_t height,
-                               bool is_maximized,
-                               bool is_fullscreen,
-                               bool is_activated) override;
+                               const WindowStates& window_states) override;
+  void HandleAuraToplevelConfigure(int32_t x,
+                                   int32_t y,
+                                   int32_t width,
+                                   int32_t height,
+                                   const WindowStates& window_states) override;
   void HandleSurfaceConfigure(uint32_t serial) override;
   void UpdateVisualSize(const gfx::Size& size_px) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
+  bool IsSurfaceConfigured() override;
+  void SetWindowGeometry(gfx::Rect bounds) override;
+  void AckConfigure(uint32_t serial) override;
+  void UpdateDecorations() override;
+
+  // PlatformWindow overrides:
+  bool IsClientControlledWindowMovementSupported() const override;
+
+  // WmDragHandler overrides:
+  bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;
 
   // zaura_surface listeners
+  static void OcclusionChanged(void* data,
+                               zaura_surface* surface,
+                               wl_fixed_t occlusion_fraction,
+                               uint32_t occlusion_reason);
   static void LockFrame(void* data, zaura_surface* surface);
   static void UnlockFrame(void* data, zaura_surface* surface);
+  static void OcclusionStateChanged(void* data,
+                                    zaura_surface* surface,
+                                    uint32_t mode);
+  static void DeskChanged(void* data, zaura_surface* surface, int state);
+  static void StartThrottle(void* data, zaura_surface* surface);
+  static void EndThrottle(void* data, zaura_surface* surface);
 
-  // Calls UpdateWindowShape, set_input_region and set_opaque_region
-  // for this toplevel window.
+  // Calls UpdateWindowShape, set_input_region and set_opaque_region for this
+  // toplevel window.
   void UpdateWindowMask() override;
-  // Update the window shape using the window mask of PlatformWindowDelegate.
-  void UpdateWindowShape() override;
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
   void EndMoveLoop() override;
 
   // WaylandExtension:
-  void StartWindowDraggingSessionIfNeeded() override;
+  void StartWindowDraggingSessionIfNeeded(bool allow_system_drag) override;
   void SetImmersiveFullscreenStatus(bool status) override;
-  void ShowSnapPreview(WaylandWindowSnapDirection snap) override;
+  void ShowSnapPreview(WaylandWindowSnapDirection snap,
+                       bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap) override;
+  void SetCanGoBack(bool value) override;
+  void SetPip() override;
+  bool SupportsPointerLock() override;
+  void LockPointer(bool enabled) override;
+  void Lock(WaylandOrientationLockType lock_Type) override;
+  void Unlock() override;
+  bool GetTabletMode() override;
+  void SetFloat(bool value) override;
+
+  // DeskExtension:
+  int GetNumberOfDesks() const override;
+  int GetActiveDeskIndex() const override;
+  std::u16string GetDeskName(int index) const override;
+  void SendToDeskAtIndex(int index) override;
+
+  // WorkspaceExtension:
+  std::string GetWorkspace() const override;
+  void SetVisibleOnAllWorkspaces(bool always_visible) override;
+  bool IsVisibleOnAllWorkspaces() const override;
+  void SetWorkspaceExtensionDelegate(
+      WorkspaceExtensionDelegate* delegate) override;
+
+  // PinnedModeExtension:
+  void Pin(bool trusted) const override;
+  void Unpin() const override;
+
+  // SystemModalExtension:
+  void SetSystemModal(bool modal) override;
+  void UpdateSystemModal();
 
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);
@@ -100,14 +187,17 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   WmMoveResizeHandler* AsWmMoveResizeHandler();
 
-  // Propagates the |min_size_| and |max_size_| to the ShellToplevel.
+  // Propagates the minimum size and maximum size to the ShellToplevel.
   void SetSizeConstraints();
 
+  // If current state is not PlatformWindowState::kNormal, stores the current
+  // size into restored_bounds_dip_ so that they can be restored when the
+  // window gets back to normal state.  Otherwise, resets the restored bounds.
   void SetOrResetRestoredBounds();
 
-  // Initializes the aura-shell surface, in the case aura-shell EXO extension
-  // is available.
-  void InitializeAuraShellSurface();
+  // Initializes additional shell integration, if the appropriate interfaces are
+  // available.
+  void SetUpShellIntegration();
 
   // Sets decoration mode for a window.
   void OnDecorationModeChanged();
@@ -116,25 +206,27 @@ class WaylandToplevelWindow : public WaylandWindow,
   // previously locked state.
   void OnFrameLockingChanged(bool lock);
 
+  // Called when the occlusion state is updated.
+  void OnOcclusionStateChanged(PlatformWindowOcclusionState occlusion_state);
+
+  // Called when a window is moved to another desk or assigned to
+  // all desks state.
+  void OnDeskChanged(int state);
+
+  // Sets |workspace_| to |aura_surface_|.
+  // This must be called in SetUpShellIntegration().
+  void SetInitialWorkspace();
+
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 
-  // These bounds attributes below have suffices that indicate units used.
-  // Wayland operates in DIP but the platform operates in physical pixels so
-  // our WaylandToplevelWindow is the link that has to translate the units.  See
-  // also comments in the implementation.
-  //
-  // Bounds that will be applied when the window state is finalized.  The window
-  // may get several configuration events that update the pending bounds, and
-  // only upon finalizing the state is the latest value stored as the current
-  // bounds via |ApplyPendingBounds|.  Measured in DIP because updated in the
-  // handler that receives DIP from Wayland.
-  gfx::Rect pending_bounds_dip_;
-
   // Contains the current state of the window.
-  PlatformWindowState state_;
+  PlatformWindowState state_ = PlatformWindowState::kUnknown;
   // Contains the previous state of the window.
-  PlatformWindowState previous_state_;
+  PlatformWindowState previous_state_ = PlatformWindowState::kUnknown;
+
+  // Contains the current state of the tiled edges.
+  WindowTiledEdges tiled_state_;
 
   bool is_active_ = false;
 
@@ -144,20 +236,19 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::string window_unique_id_;
 #else
   // Id of the chromium app passed through
-  // PlatformWindowInitProperties::wm_class_class. This is used by Wayland
+  // PlatformWindowInitProperties::wm_class_name. This is used by Wayland
   // compositor to identify the app, unite it's windows into the same stack of
   // windows and find *.desktop file to set various preferences including icons.
-  std::string wm_class_class_;
+  std::string app_id_;
 #endif
 
   // Title of the ShellToplevel.
   std::u16string window_title_;
 
-  // Max and min sizes of the WaylandToplevelWindow window.
-  base::Optional<gfx::Size> min_size_;
-  base::Optional<gfx::Size> max_size_;
-
   wl::Object<zaura_surface> aura_surface_;
+  // |gtk_surface1_| is the optional GTK surface that provides better
+  // integration with the desktop shell.
+  std::unique_ptr<GtkSurface1> gtk_surface1_;
 
   // When use_native_frame is false, client-side decoration is set,
   // e.g. lacros-browser.
@@ -165,15 +256,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
 
-  base::Optional<std::vector<gfx::Rect>> window_shape_in_dips_;
-
-  // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
-  // ack_configure with |serial| will be sent to the Wayland compositor.
-  struct PendingConfigure {
-    gfx::Rect bounds_dip;
-    uint32_t serial;
-  };
-  base::circular_deque<PendingConfigure> pending_configures_;
+  absl::optional<std::vector<gfx::Rect>> opaque_region_px_;
+  absl::optional<gfx::Rect> input_region_px_;
 
   // Tracks how many the window show state requests by made by the Browser
   // are currently being processed by the Wayland Compositor. In practice,
@@ -184,6 +268,45 @@ class WaylandToplevelWindow : public WaylandWindow,
   // (PlatformWindowDelegate) more than once, for the same window show state
   // change.
   uint32_t requested_window_show_state_count_ = 0;
+  // Prevents the window geometry from being changed during transitions of the
+  // window state.
+  //
+  // Due to expectations of the higher levels, when the window changes its
+  // state, the DWTH is notified about the state change before the one actually
+  // happens, see TriggerStateChanges().  However, one of consequences of the
+  // DWTH being notified is that it wants to update the decoration insets, which
+  // implies updating the window geometry.  This flag is used to skip updating
+  // the geometry until new window bounds are applied.
+  //
+  // See https://crbug.com/1223005
+  bool state_change_in_transit_ = false;
+  // Some use cases such as changing the theme need to update the window
+  // geometry without changing its configuration.  They should set this flag.
+  // It will result in sending the updated geometry in the next frame update.
+  //
+  // See https://crbug.com/1223005
+  bool set_geometry_on_next_frame_ = false;
+
+  // Information used by the compositor to restore the window state upon
+  // creation.
+  int32_t restore_session_id_ = 0;
+  absl::optional<int32_t> restore_window_id_ = 0;
+  absl::optional<std::string> restore_window_id_source_;
+
+  // Current modal status.
+  bool system_modal_ = false;
+
+  // The desk index for the window.
+  // If |workspace_| is -1, window is visible on all workspaces.
+  absl::optional<int> workspace_ = absl::nullopt;
+
+  // The z order for the window.
+  ZOrderLevel z_order_ = ZOrderLevel::kNormal;
+
+  // True when screen coordinates is enabled.
+  bool screen_coordinates_enabled_;
+
+  raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 };
 
 }  // namespace ui

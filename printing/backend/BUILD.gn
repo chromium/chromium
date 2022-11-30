@@ -1,0 +1,161 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
+if (use_cups && is_chromeos) {
+  import("//printing/backend/tools/code_generator.gni")
+
+  ipp_handler_map_path = "$target_gen_dir/backend/ipp_handler_map.cc"
+
+  ipp_code_generate("ipp_handlers_generate") {
+    outputs = [ ipp_handler_map_path ]
+    args = [ "--ipp-handler-map=" +
+             rebase_path(ipp_handler_map_path, root_build_dir) ]
+  }
+}
+
+component("backend") {
+  # Avoid producing a very generic "backend.dll" or "libbackend.so".
+  output_name = "printing_backend"
+
+  sources = [
+    "print_backend.cc",
+    "print_backend.h",
+    "print_backend_consts.cc",
+    "print_backend_consts.h",
+    "print_backend_dummy.cc",
+    "print_backend_utils.cc",
+    "print_backend_utils.h",
+    "printing_restrictions.cc",
+    "printing_restrictions.h",
+  ]
+
+  public_configs = []
+  cflags = []
+  defines = [ "IS_PRINT_BACKEND_IMPL" ]
+
+  public_deps = [ "//printing/buildflags" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//printing:printing_base",
+    "//printing/mojom",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    # PRINT_BACKEND_AVAILABLE disables the default dummy implementation
+    # print backend and enables a custom implementation instead.
+    defines += [ "PRINT_BACKEND_AVAILABLE" ]
+
+    sources += [ "print_backend_chromeos.cc" ]
+  }
+
+  if (is_win) {
+    # PRINT_BACKEND_AVAILABLE disables the default dummy implementation of the
+    # print backend and enables a custom implementation instead.
+    defines += [ "PRINT_BACKEND_AVAILABLE" ]
+    sources += [
+      "print_backend_win.cc",
+      "printing_info_win.cc",
+      "printing_info_win.h",
+      "win_helper.cc",
+      "win_helper.h",
+      "xps_utils_win.cc",
+      "xps_utils_win.h",
+    ]
+    deps += [ "//services/data_decoder/public/cpp:safe_xml_parser" ]
+  }
+
+  if (use_cups) {
+    public_configs += [ "//printing:cups" ]
+
+    if (is_linux || is_chromeos) {
+      # CUPS 1.6 deprecated the PPD APIs, but we will stay with this API
+      # for now as the suitability of the replacement is unclear.
+      # More info: crbug.com/226176
+      cflags += [ "-Wno-deprecated-declarations" ]
+    }
+
+    if (is_mac) {
+      # CUPS 1.6 deprecated the PPD APIs. We need to evaluate the
+      # effect of migrating Mac. More info: crbug.com/226176
+      cflags += [ "-Wno-deprecated-declarations" ]
+    }
+
+    # PRINT_BACKEND_AVAILABLE disables the default dummy implementation
+    # of the print backend and enables a custom implementation instead.
+    defines += [ "PRINT_BACKEND_AVAILABLE" ]
+
+    if (use_cups_ipp) {
+      sources += [
+        "cups_connection.cc",
+        "cups_connection.h",
+        "cups_deleters.cc",
+        "cups_deleters.h",
+        "cups_ipp_constants.cc",
+        "cups_ipp_constants.h",
+        "cups_ipp_helper.cc",
+        "cups_ipp_helper.h",
+        "cups_ipp_utils.cc",
+        "cups_ipp_utils.h",
+        "cups_jobs.cc",
+        "cups_jobs.h",
+        "cups_printer.cc",
+        "cups_printer.h",
+        "print_backend_cups_ipp.cc",
+        "print_backend_cups_ipp.h",
+      ]
+    }
+
+    if (is_chromeos) {
+      deps += [ ":ipp_handlers_generate" ]
+
+      sources += [
+        "cups_connection_pool.cc",
+        "cups_connection_pool.h",
+        "ipp_handler_map.h",
+        "ipp_handlers.cc",
+        "ipp_handlers.h",
+        ipp_handler_map_path,
+      ]
+    }
+    if (!is_chromeos_ash) {
+      # TODO(crbug.com/1062136): Remove the original CUPS backend for macOS
+      # when Cloud Print support is terminated. Follow up after Jan 1, 2021.
+      sources += [
+        "cups_helper.cc",
+        "cups_helper.h",
+        "print_backend_cups.cc",
+        "print_backend_cups.h",
+      ]
+
+      # We still build the utils for fuzzing if not already built.
+      if (use_fuzzing_engine && !use_cups_ipp) {
+        sources += [
+          "cups_ipp_constants.cc",
+          "cups_ipp_constants.h",
+          "cups_ipp_helper.cc",
+          "cups_ipp_helper.h",
+        ]
+      }
+    }
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_print_backend.cc",
+    "test_print_backend.h",
+  ]
+
+  deps = [
+    ":backend",
+    "//base",
+    "//printing/mojom",
+  ]
+}

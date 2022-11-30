@@ -1,14 +1,15 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_COLLECTED_COOKIES_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_COLLECTED_COOKIES_INFOBAR_DELEGATE_H_
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // This class configures an infobar shown when the collected cookies dialog
 // is closed and the settings for one or more cookies have been changed.  The
@@ -17,9 +18,14 @@ class InfoBarService;
 // the reload right from the infobar.
 class CollectedCookiesInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  CollectedCookiesInfoBarDelegate(const CollectedCookiesInfoBarDelegate&) =
+      delete;
+  CollectedCookiesInfoBarDelegate& operator=(
+      const CollectedCookiesInfoBarDelegate&) = delete;
+
   // Creates a collected cookies infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service);
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
  private:
   CollectedCookiesInfoBarDelegate();
@@ -32,8 +38,6 @@ class CollectedCookiesInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_COLLECTED_COOKIES_INFOBAR_DELEGATE_H_

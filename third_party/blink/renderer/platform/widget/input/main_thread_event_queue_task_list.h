@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,9 @@ class MainThreadEventQueueTaskList {
   enum class EnqueueResult { kCoalesced, kEnqueued };
 
   MainThreadEventQueueTaskList();
+  MainThreadEventQueueTaskList(const MainThreadEventQueueTaskList&) = delete;
+  MainThreadEventQueueTaskList& operator=(const MainThreadEventQueueTaskList&) =
+      delete;
   ~MainThreadEventQueueTaskList();
 
   // Adds an event to the queue. The event may be coalesced with previously
@@ -43,8 +46,6 @@ class MainThreadEventQueueTaskList {
   using EventQueue =
       base::circular_deque<std::unique_ptr<MainThreadEventQueueTask>>;
   EventQueue queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadEventQueueTaskList);
 };
 
 }  // namespace blink

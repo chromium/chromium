@@ -1,28 +1,32 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
 
-class NetworkState;
-
 class InternetDetailDialog : public SystemWebDialogDelegate {
  public:
+  InternetDetailDialog(const InternetDetailDialog&) = delete;
+  InternetDetailDialog& operator=(const InternetDetailDialog&) = delete;
+
   // Returns whether the dialog is being shown.
   static bool IsShown();
 
   // Shows an internet details dialog for |network_id|. If no NetworkState
   // exists for |network_id|, does nothing.
-  static void ShowDialog(const std::string& network_id);
+  static void ShowDialog(const std::string& network_id,
+                         gfx::NativeWindow parent = nullptr);
 
  protected:
   explicit InternetDetailDialog(const NetworkState& network);
@@ -39,8 +43,6 @@ class InternetDetailDialog : public SystemWebDialogDelegate {
   std::string network_id_;
   std::string network_type_;
   std::string network_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetDetailDialog);
 };
 
 // A WebUI to host a subset of the network details page to allow setting of
@@ -48,6 +50,10 @@ class InternetDetailDialog : public SystemWebDialogDelegate {
 class InternetDetailDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit InternetDetailDialogUI(content::WebUI* web_ui);
+
+  InternetDetailDialogUI(const InternetDetailDialogUI&) = delete;
+  InternetDetailDialogUI& operator=(const InternetDetailDialogUI&) = delete;
+
   ~InternetDetailDialogUI() override;
 
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo interface
@@ -58,10 +64,14 @@ class InternetDetailDialogUI : public ui::MojoWebDialogUI {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(InternetDetailDialogUI);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::InternetDetailDialog;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_

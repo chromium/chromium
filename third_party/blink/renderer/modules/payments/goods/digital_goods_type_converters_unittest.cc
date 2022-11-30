@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
 #include "base/time/time.h"
+#include "components/digital_goods/mojom/digital_goods.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink.h"
+#include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_item_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_type_converters.h"
@@ -42,6 +44,9 @@ TEST(DigitalGoodsTypeConvertersTest, MojoItemDetailsToIdl_WithOptionalFields) {
   const String introductory_price_currency = "USD";
   const String introductory_price_value = "1.00";
   const String introductory_price_period = "P1W";
+  const uint64_t introductory_price_cycles = 123;
+  const String icon_url_1 = "https://foo.com/icon_url_1.png";
+  const String icon_url_2 = "https://foo.com/icon_url_2.png";
 
   mojo_item_details->item_id = item_id;
   mojo_item_details->title = title;
@@ -55,6 +60,9 @@ TEST(DigitalGoodsTypeConvertersTest, MojoItemDetailsToIdl_WithOptionalFields) {
       introductory_price_currency, introductory_price_value);
   mojo_item_details->introductory_price = std::move(introductory_price);
   mojo_item_details->introductory_price_period = introductory_price_period;
+  mojo_item_details->introductory_price_cycles = introductory_price_cycles;
+  mojo_item_details->type = payments::mojom::ItemType::kSubscription;
+  mojo_item_details->icon_urls = {KURL(icon_url_1), KURL(icon_url_2)};
 
   auto* idl_item_details = mojo_item_details.To<ItemDetails*>();
   EXPECT_EQ(idl_item_details->itemId(), item_id);
@@ -70,6 +78,12 @@ TEST(DigitalGoodsTypeConvertersTest, MojoItemDetailsToIdl_WithOptionalFields) {
             introductory_price_value);
   EXPECT_EQ(idl_item_details->introductoryPricePeriod(),
             introductory_price_period);
+  EXPECT_EQ(idl_item_details->introductoryPriceCycles(),
+            introductory_price_cycles);
+  EXPECT_EQ(idl_item_details->type(), "subscription");
+  ASSERT_EQ(idl_item_details->iconURLs().size(), 2u);
+  EXPECT_EQ(idl_item_details->iconURLs()[0], icon_url_1);
+  EXPECT_EQ(idl_item_details->iconURLs()[1], icon_url_2);
 }
 
 TEST(DigitalGoodsTypeConvertersTest,
@@ -99,6 +113,9 @@ TEST(DigitalGoodsTypeConvertersTest,
   EXPECT_FALSE(idl_item_details->hasFreeTrialPeriod());
   EXPECT_FALSE(idl_item_details->hasIntroductoryPrice());
   EXPECT_FALSE(idl_item_details->hasIntroductoryPricePeriod());
+  EXPECT_FALSE(idl_item_details->hasIntroductoryPriceCycles());
+  EXPECT_FALSE(idl_item_details->hasType());
+  EXPECT_EQ(idl_item_details->iconURLs().size(), 0u);
 }
 
 TEST(DigitalGoodsTypeConvertersTest, NullMojoItemDetailsToIdl) {
@@ -108,69 +125,24 @@ TEST(DigitalGoodsTypeConvertersTest, NullMojoItemDetailsToIdl) {
   EXPECT_EQ(idl_item_details, nullptr);
 }
 
-TEST(DigitalGoodsTypeConvertersTest, MojoPurchaseDetailsToIdl) {
-  auto mojo_purchase_details = payments::mojom::blink::PurchaseDetails::New();
+TEST(DigitalGoodsTypeConvertersTest, MojoPurchaseReferenceToIdl) {
+  auto mojo_purchase_reference =
+      payments::mojom::blink::PurchaseReference::New();
   const String item_id = "shiny-sword-id";
   const String purchase_token = "purchase-token-for-shiny-sword";
-  const bool acknowledged = true;
-  // Time in ms since Unix epoch.
-  const uint64_t purchase_time_ms = 1600123456789L;
-  const base::TimeDelta purchase_time =
-      base::TimeDelta::FromMilliseconds(purchase_time_ms);
-  const bool will_auto_renew = false;
 
-  mojo_purchase_details->item_id = item_id;
-  mojo_purchase_details->purchase_token = purchase_token;
-  mojo_purchase_details->acknowledged = acknowledged;
-  mojo_purchase_details->purchase_state =
-      payments::mojom::blink::PurchaseState::kPurchased;
-  mojo_purchase_details->purchase_time = purchase_time;
-  mojo_purchase_details->will_auto_renew = will_auto_renew;
+  mojo_purchase_reference->item_id = item_id;
+  mojo_purchase_reference->purchase_token = purchase_token;
 
-  auto* idl_purchase_details = mojo_purchase_details.To<PurchaseDetails*>();
+  auto* idl_purchase_details = mojo_purchase_reference.To<PurchaseDetails*>();
   EXPECT_EQ(idl_purchase_details->itemId(), item_id);
   EXPECT_EQ(idl_purchase_details->purchaseToken(), purchase_token);
-  EXPECT_EQ(idl_purchase_details->acknowledged(), acknowledged);
-  EXPECT_EQ(idl_purchase_details->purchaseState(), "purchased");
-  EXPECT_EQ(idl_purchase_details->purchaseTime(), purchase_time_ms);
-  EXPECT_EQ(idl_purchase_details->willAutoRenew(), will_auto_renew);
 }
 
-TEST(DigitalGoodsTypeConvertersTest, MojoPurchaseDetailsToIdl2) {
-  auto mojo_purchase_details = payments::mojom::blink::PurchaseDetails::New();
-  const bool acknowledged = false;
-  const bool will_auto_renew = true;
+TEST(DigitalGoodsTypeConvertersTest, NullMojoPurchaseReferenceToIdl) {
+  payments::mojom::blink::PurchaseReferencePtr mojo_purchase_reference;
 
-  mojo_purchase_details->item_id = "item_id";
-  mojo_purchase_details->purchase_token = "purchase_token";
-  mojo_purchase_details->acknowledged = acknowledged;
-  mojo_purchase_details->purchase_state =
-      payments::mojom::blink::PurchaseState::kPending;
-  // "null" purchase time.
-  mojo_purchase_details->purchase_time = base::TimeDelta();
-  mojo_purchase_details->will_auto_renew = will_auto_renew;
-
-  auto* idl_purchase_details = mojo_purchase_details.To<PurchaseDetails*>();
-  EXPECT_EQ(idl_purchase_details->acknowledged(), acknowledged);
-  EXPECT_EQ(idl_purchase_details->purchaseState(), "pending");
-  EXPECT_EQ(idl_purchase_details->purchaseTime(), 0UL);
-  EXPECT_EQ(idl_purchase_details->willAutoRenew(), will_auto_renew);
-}
-
-TEST(DigitalGoodsTypeConvertersTest,
-     MojoPurchaseDetailsToIdlUnknownPurchaseState) {
-  auto mojo_purchase_details = payments::mojom::blink::PurchaseDetails::New();
-  mojo_purchase_details->purchase_state =
-      payments::mojom::blink::PurchaseState::kUnknown;
-
-  auto* idl_purchase_details = mojo_purchase_details.To<PurchaseDetails*>();
-  EXPECT_FALSE(idl_purchase_details->hasPurchaseState());
-}
-
-TEST(DigitalGoodsTypeConvertersTest, NullMojoPurchaseDetailsToIdl) {
-  payments::mojom::blink::PurchaseDetailsPtr mojo_purchase_details;
-
-  auto* idl_purchase_details = mojo_purchase_details.To<PurchaseDetails*>();
+  auto* idl_purchase_details = mojo_purchase_reference.To<PurchaseDetails*>();
   EXPECT_EQ(idl_purchase_details, nullptr);
 }
 

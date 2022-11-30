@@ -1,19 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/init/web_main_runner.h"
+#import "ios/web/public/init/web_main_runner.h"
 
-#include "base/check.h"
-#include "base/i18n/icu_util.h"
-#include "base/macros.h"
-#include "ios/web/init/web_main_loop.h"
-#include "ios/web/public/init/ios_global_state.h"
-#include "ios/web/public/navigation/url_schemes.h"
+#import "base/check.h"
+#import "base/i18n/icu_util.h"
+#import "ios/web/init/web_main_loop.h"
+#import "ios/web/public/init/ios_global_state.h"
+#import "ios/web/public/navigation/url_schemes.h"
 #import "ios/web/public/web_client.h"
-#include "ios/web/web_thread_impl.h"
-#include "mojo/core/embedder/embedder.h"
-#include "ui/base/ui_base_paths.h"
+#import "ios/web/web_thread_impl.h"
+#import "mojo/core/embedder/embedder.h"
+#import "ui/base/ui_base_paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,6 +27,9 @@ class WebMainRunnerImpl : public WebMainRunner {
         is_shutdown_(false),
         completed_basic_startup_(false),
         delegate_(nullptr) {}
+
+  WebMainRunnerImpl(const WebMainRunnerImpl&) = delete;
+  WebMainRunnerImpl& operator=(const WebMainRunnerImpl&) = delete;
 
   ~WebMainRunnerImpl() override {
     if (is_initialized_ && !is_shutdown_) {
@@ -72,7 +74,7 @@ class WebMainRunnerImpl : public WebMainRunner {
     main_loop_.reset(new WebMainLoop());
     main_loop_->Init();
     main_loop_->EarlyInitialization();
-    main_loop_->MainMessageLoopStart();
+    main_loop_->CreateMainMessageLoop();
     main_loop_->CreateStartupTasks();
     int result_code = main_loop_->GetResultCode();
     if (result_code > 0)
@@ -94,7 +96,7 @@ class WebMainRunnerImpl : public WebMainRunner {
     ////////////////////////////////////////////////////////////////////
     // ContentMainRunner::Shutdown()
     //
-    if (completed_basic_startup_ && delegate_) {
+    if (delegate_) {
       delegate_->ProcessExiting();
     }
 
@@ -121,8 +123,6 @@ class WebMainRunnerImpl : public WebMainRunner {
   WebClient empty_web_client_;
 
   std::unique_ptr<WebMainLoop> main_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMainRunnerImpl);
 };
 
 // static

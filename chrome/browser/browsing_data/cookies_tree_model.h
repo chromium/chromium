@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/browsing_data/local_data_container.h"
@@ -20,8 +20,6 @@
 
 class AccessContextAuditService;
 class CookiesTreeModel;
-class CookieTreeAppCacheNode;
-class CookieTreeAppCachesNode;
 class CookieTreeCacheStorageNode;
 class CookieTreeCacheStoragesNode;
 class CookieTreeCookieNode;
@@ -35,8 +33,6 @@ class CookieTreeIndexedDBNode;
 class CookieTreeIndexedDBsNode;
 class CookieTreeLocalStorageNode;
 class CookieTreeLocalStoragesNode;
-class CookieTreeMediaLicenseNode;
-class CookieTreeMediaLicensesNode;
 class CookieTreeQuotaNode;
 class CookieTreeServiceWorkerNode;
 class CookieTreeServiceWorkersNode;
@@ -81,8 +77,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_LOCAL_STORAGE,     // This is used for CookieTreeLocalStorageNode.
       TYPE_SESSION_STORAGES,  // This is used for CookieTreeSessionStoragesNode.
       TYPE_SESSION_STORAGE,   // This is used for CookieTreeSessionStorageNode.
-      TYPE_APPCACHES,         // This is used for CookieTreeAppCachesNode.
-      TYPE_APPCACHE,          // This is used for CookieTreeAppCacheNode.
       TYPE_INDEXED_DBS,       // This is used for CookieTreeIndexedDBsNode.
       TYPE_INDEXED_DB,        // This is used for CookieTreeIndexedDBNode.
       TYPE_FILE_SYSTEMS,      // This is used for CookieTreeFileSystemsNode.
@@ -94,8 +88,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_SHARED_WORKER,     // This is used for CookieTreeSharedWorkerNode.
       TYPE_CACHE_STORAGES,    // This is used for CookieTreeCacheStoragesNode.
       TYPE_CACHE_STORAGE,     // This is used for CookieTreeCacheStorageNode.
-      TYPE_MEDIA_LICENSES,    // This is used for CookieTreeMediaLicensesNode.
-      TYPE_MEDIA_LICENSE,     // This is used for CookieTreeMediaLicenseNode.
     };
 
     DetailedInfo();
@@ -103,48 +95,47 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     ~DetailedInfo();
 
     DetailedInfo& Init(NodeType type);
-    DetailedInfo& InitHost(const GURL& origin);
-    DetailedInfo& InitCookie(const net::CanonicalCookie* cookie);
-    DetailedInfo& InitDatabase(const content::StorageUsageInfo* usage_info);
+    DetailedInfo& InitHost(const GURL& host);
+    DetailedInfo& InitCookie(const net::CanonicalCookie* canonical_cookie);
+    DetailedInfo& InitDatabase(
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitLocalStorage(
-        const content::StorageUsageInfo* local_storage_info);
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitSessionStorage(
-        const content::StorageUsageInfo* session_storage_info);
-    DetailedInfo& InitAppCache(const content::StorageUsageInfo* usage_info);
-    DetailedInfo& InitIndexedDB(const content::StorageUsageInfo* usage_info);
+        const content::StorageUsageInfo* storage_usage_info);
+    DetailedInfo& InitIndexedDB(
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitFileSystem(
-        const browsing_data::FileSystemHelper::FileSystemInfo*
-            file_system_info);
-    DetailedInfo& InitQuota(
-        const BrowsingDataQuotaHelper::QuotaInfo* quota_info);
+        const browsing_data::FileSystemHelper::FileSystemInfo* file_system);
+    DetailedInfo& InitQuota(const BrowsingDataQuotaHelper::QuotaInfo* quota);
     DetailedInfo& InitServiceWorker(
-        const content::StorageUsageInfo* usage_info);
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitSharedWorker(
         const browsing_data::SharedWorkerHelper::SharedWorkerInfo*
-            shared_worker_info);
-    DetailedInfo& InitCacheStorage(const content::StorageUsageInfo* usage_info);
-    DetailedInfo& InitMediaLicense(
-        const BrowsingDataMediaLicenseHelper::MediaLicenseInfo*
-            media_license_info);
+            shared_worker);
+    DetailedInfo& InitCacheStorage(
+        const content::StorageUsageInfo* storage_usage_info);
 
     NodeType node_type;
     url::Origin origin;
-    const net::CanonicalCookie* cookie = nullptr;
-    // Used for AppCache, Database (WebSQL), IndexedDB, Service Worker, and
+    raw_ptr<const net::CanonicalCookie> cookie = nullptr;
+    // Used for Database (WebSQL), IndexedDB, Service Worker, and
     // Cache Storage node types.
-    const content::StorageUsageInfo* usage_info = nullptr;
-    const browsing_data::FileSystemHelper::FileSystemInfo* file_system_info =
-        nullptr;
-    const BrowsingDataQuotaHelper::QuotaInfo* quota_info = nullptr;
-    const browsing_data::SharedWorkerHelper::SharedWorkerInfo*
+    raw_ptr<const content::StorageUsageInfo> usage_info = nullptr;
+    raw_ptr<const browsing_data::FileSystemHelper::FileSystemInfo>
+        file_system_info = nullptr;
+    raw_ptr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
+    raw_ptr<const browsing_data::SharedWorkerHelper::SharedWorkerInfo>
         shared_worker_info = nullptr;
-    const BrowsingDataMediaLicenseHelper::MediaLicenseInfo* media_license_info =
-        nullptr;
   };
 
   CookieTreeNode() {}
   explicit CookieTreeNode(const std::u16string& title)
       : ui::TreeNode<CookieTreeNode>(title) {}
+
+  CookieTreeNode(const CookieTreeNode&) = delete;
+  CookieTreeNode& operator=(const CookieTreeNode&) = delete;
+
   ~CookieTreeNode() override {}
 
   // Recursively traverse the child nodes of this node and collect the storage
@@ -174,9 +165,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
   void ReportDeletionToAuditService(
       const url::Origin& origin,
       AccessContextAuditDatabase::StorageAPIType type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeNode);
 };
 
 // CookieTreeRootNode ---------------------------------------------------------
@@ -184,6 +172,10 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
 class CookieTreeRootNode : public CookieTreeNode {
  public:
   explicit CookieTreeRootNode(CookiesTreeModel* model);
+
+  CookieTreeRootNode(const CookieTreeRootNode&) = delete;
+  CookieTreeRootNode& operator=(const CookieTreeRootNode&) = delete;
+
   ~CookieTreeRootNode() override;
 
   CookieTreeHostNode* GetOrCreateHostNode(const GURL& url);
@@ -193,9 +185,7 @@ class CookieTreeRootNode : public CookieTreeNode {
   DetailedInfo GetDetailedInfo() const override;
 
  private:
-  CookiesTreeModel* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeRootNode);
+  raw_ptr<CookiesTreeModel> model_;
 };
 
 // CookieTreeHostNode -------------------------------------------------------
@@ -205,6 +195,10 @@ class CookieTreeHostNode : public CookieTreeNode {
   static std::u16string TitleForUrl(const GURL& url);
 
   explicit CookieTreeHostNode(const GURL& url);
+
+  CookieTreeHostNode(const CookieTreeHostNode&) = delete;
+  CookieTreeHostNode& operator=(const CookieTreeHostNode&) = delete;
+
   ~CookieTreeHostNode() override;
 
   // CookieTreeNode methods:
@@ -216,7 +210,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   CookieTreeDatabasesNode* GetOrCreateDatabasesNode();
   CookieTreeLocalStoragesNode* GetOrCreateLocalStoragesNode();
   CookieTreeSessionStoragesNode* GetOrCreateSessionStoragesNode();
-  CookieTreeAppCachesNode* GetOrCreateAppCachesNode();
   CookieTreeIndexedDBsNode* GetOrCreateIndexedDBsNode();
   CookieTreeFileSystemsNode* GetOrCreateFileSystemsNode();
   CookieTreeServiceWorkersNode* GetOrCreateServiceWorkersNode();
@@ -224,7 +217,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   CookieTreeCacheStoragesNode* GetOrCreateCacheStoragesNode();
   CookieTreeQuotaNode* UpdateOrCreateQuotaNode(
       std::list<BrowsingDataQuotaHelper::QuotaInfo>::iterator quota_info);
-  CookieTreeMediaLicensesNode* GetOrCreateMediaLicensesNode();
 
   std::string canonicalized_host() const { return canonicalized_host_; }
 
@@ -241,30 +233,26 @@ class CookieTreeHostNode : public CookieTreeNode {
   void UpdateHostUrl(const GURL& url);
 
  private:
-  // Pointers to the cookies, databases, local and session storage and appcache
-  // nodes.  When we build up the tree we need to quickly get a reference to
+  // Pointers to the cookies, databases, local and session storage nodes.
+  // When we build up the tree we need to quickly get a reference to
   // the COOKIES node to add children. Checking each child and interrogating
-  // them to see if they are a COOKIES, APPCACHES, DATABASES etc node seems
+  // them to see if they are a COOKIES, DATABASES, etc node seems
   // less preferable than storing an extra pointer per origin.
-  CookieTreeCookiesNode* cookies_child_ = nullptr;
-  CookieTreeDatabasesNode* databases_child_ = nullptr;
-  CookieTreeLocalStoragesNode* local_storages_child_ = nullptr;
-  CookieTreeSessionStoragesNode* session_storages_child_ = nullptr;
-  CookieTreeAppCachesNode* appcaches_child_ = nullptr;
-  CookieTreeIndexedDBsNode* indexed_dbs_child_ = nullptr;
-  CookieTreeFileSystemsNode* file_systems_child_ = nullptr;
-  CookieTreeQuotaNode* quota_child_ = nullptr;
-  CookieTreeServiceWorkersNode* service_workers_child_ = nullptr;
-  CookieTreeSharedWorkersNode* shared_workers_child_ = nullptr;
-  CookieTreeCacheStoragesNode* cache_storages_child_ = nullptr;
-  CookieTreeMediaLicensesNode* media_licenses_child_ = nullptr;
+  raw_ptr<CookieTreeCookiesNode> cookies_child_ = nullptr;
+  raw_ptr<CookieTreeDatabasesNode> databases_child_ = nullptr;
+  raw_ptr<CookieTreeLocalStoragesNode> local_storages_child_ = nullptr;
+  raw_ptr<CookieTreeSessionStoragesNode> session_storages_child_ = nullptr;
+  raw_ptr<CookieTreeIndexedDBsNode> indexed_dbs_child_ = nullptr;
+  raw_ptr<CookieTreeFileSystemsNode> file_systems_child_ = nullptr;
+  raw_ptr<CookieTreeQuotaNode> quota_child_ = nullptr;
+  raw_ptr<CookieTreeServiceWorkersNode> service_workers_child_ = nullptr;
+  raw_ptr<CookieTreeSharedWorkersNode> shared_workers_child_ = nullptr;
+  raw_ptr<CookieTreeCacheStoragesNode> cache_storages_child_ = nullptr;
 
   // The URL for which this node was initially created.
   GURL url_;
 
   std::string canonicalized_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeHostNode);
 };
 
 // CookiesTreeModel -----------------------------------------------------------
@@ -290,8 +278,8 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
 
   // Because non-cookie nodes are fetched in a background thread, they are not
   // present at the time the Model is created. The Model then notifies its
-  // observers for every item added from databases, local storage, and
-  // appcache. We extend the Observer interface to add notifications before and
+  // observers for every item added from databases and local storage.
+  // We extend the Observer interface to add notifications before and
   // after these batch inserts.
   class Observer : public ui::TreeModelObserver {
    public:
@@ -311,22 +299,15 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
     void StartBatchUpdate();
 
    private:
-    CookiesTreeModel* model_;
-    CookieTreeNode* node_;
+    raw_ptr<CookiesTreeModel> model_;
+    raw_ptr<CookieTreeNode> node_;
     bool batch_in_progress_ = false;
   };
 
-  // ui::TreeModel methods:
-  // Returns the set of icons for the nodes in the tree. You only need override
-  // this if you don't want to use the default folder icons.
-  void GetIcons(std::vector<gfx::ImageSkia>* icons) override;
+  // ui::TreeModel:
+  void GetIcons(std::vector<ui::ImageModel>* icons) override;
+  absl::optional<size_t> GetIconIndex(ui::TreeModelNode* node) override;
 
-  // Returns the index of the icon to use for |node|. Return -1 to use the
-  // default icon. The index is relative to the list of icons returned from
-  // GetIcons.
-  int GetIconIndex(ui::TreeModelNode* node) override;
-
-  // CookiesTreeModel methods:
   void DeleteAllStoredObjects();
 
   // Deletes a specific node in the tree, identified by |cookie_node|, and its
@@ -354,7 +335,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
 
   // Methods that update the model based on the data retrieved by the browsing
   // data helpers.
-  void PopulateAppCacheInfo(LocalDataContainer* container);
   void PopulateCookieInfo(LocalDataContainer* container);
   void PopulateDatabaseInfo(LocalDataContainer* container);
   void PopulateLocalStorageInfo(LocalDataContainer* container);
@@ -365,7 +345,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateServiceWorkerUsageInfo(LocalDataContainer* container);
   void PopulateSharedWorkerInfo(LocalDataContainer* container);
   void PopulateCacheStorageUsageInfo(LocalDataContainer* container);
-  void PopulateMediaLicenseInfo(LocalDataContainer* container);
 
   // Returns the Access Context Audit service provided to the cookies tree model
   // as part of the constructor, or nullptr if no service was provided.
@@ -384,14 +363,16 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void SetBatchExpectation(int batches_expected, bool reset);
 
   // Create CookiesTreeModel by profile info.
-  static std::unique_ptr<CookiesTreeModel> CreateForProfile(Profile* profile);
+  // DEPRECATED(crbug.com/1271155): The cookies tree model is slowly being
+  // deprecated, during this process the semantics of the model are nuanced
+  // w.r.t partitioned storage, and should not be used in new locations.
+  static std::unique_ptr<CookiesTreeModel> CreateForProfileDeprecated(
+      Profile* profile);
 
   static browsing_data::CookieHelper::IsDeletionDisabledCallback
   GetCookieDeletionDisabledCallback(Profile* profile);
 
  private:
-  enum CookieIconIndex { COOKIE = 0, DATABASE = 1 };
-
   // Record that one batch has been delivered.
   void RecordBatchSeen();
 
@@ -407,9 +388,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // batches have finished processing.
   void MaybeNotifyBatchesEnded();
 
-  void PopulateAppCacheInfoWithFilter(LocalDataContainer* container,
-                                      ScopedBatchUpdateNotifier* notifier,
-                                      const std::u16string& filter);
   void PopulateCookieInfoWithFilter(LocalDataContainer* container,
                                     ScopedBatchUpdateNotifier* notifier,
                                     const std::u16string& filter);
@@ -442,9 +420,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
       LocalDataContainer* container,
       ScopedBatchUpdateNotifier* notifier,
       const std::u16string& filter);
-  void PopulateMediaLicenseInfoWithFilter(LocalDataContainer* container,
-                                          ScopedBatchUpdateNotifier* notifier,
-                                          const std::u16string& filter);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The extension special storage policy; see ExtensionsProtectingNode() above.
@@ -459,7 +434,7 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // specifically of the type CookiesTreeModel::Observer.
   base::ObserverList<Observer>::Unchecked cookies_observer_list_;
 
-  AccessContextAuditService* access_context_audit_service_ = nullptr;
+  raw_ptr<AccessContextAuditService> access_context_audit_service_ = nullptr;
 
   // Keeps track of how many batches the consumer of this class says it is going
   // to send.

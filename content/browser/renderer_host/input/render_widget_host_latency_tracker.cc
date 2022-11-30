@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "ui/events/blink/web_input_event_traits.h"
-#include "ui/latency/latency_histogram_macros.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -57,6 +57,7 @@ const char* GetTraceNameFromType(blink::WebInputEvent::Type type) {
     CASE_TYPE(GestureTapCancel);
     CASE_TYPE(GestureDoubleTap);
     CASE_TYPE(GestureTwoFingerTap);
+    CASE_TYPE(GestureShortPress);
     CASE_TYPE(GestureLongPress);
     CASE_TYPE(GestureLongTap);
     CASE_TYPE(GesturePinchBegin);
@@ -84,6 +85,7 @@ RenderWidgetHostLatencyTracker::RenderWidgetHostLatencyTracker(
     RenderWidgetHostDelegate* delegate)
     : has_seen_first_gesture_scroll_update_(false),
       gesture_scroll_id_(-1),
+      touch_trace_id_(-1),
       active_multi_finger_gesture_(false),
       touch_start_default_prevented_(false),
       render_widget_host_delegate_(delegate) {}
@@ -154,20 +156,23 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
               ? ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT
               : ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
           original_event_timestamp);
-      latency->AddLatencyNumberWithTimestamp(
-          ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-          original_event_timestamp);
     }
 
     has_seen_first_gesture_scroll_update_ = true;
     latency->set_gesture_scroll_id(gesture_scroll_id_);
-    latency->set_scroll_update_delta(
-        static_cast<const WebGestureEvent&>(event).data.scroll_update.delta_y);
-    latency->set_predicted_scroll_update_delta(
-        static_cast<const WebGestureEvent&>(event).data.scroll_update.delta_y);
   } else if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd) {
     latency->set_gesture_scroll_id(gesture_scroll_id_);
     gesture_scroll_id_ = -1;
+  } else if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
+    // Store the trace id for the TouchStart event on all other Touch events
+    // until the corresponding end or cancel event so they can be grouped
+    // together.
+    if (event.GetType() == blink::WebInputEvent::Type::kTouchStart)
+      touch_trace_id_ = latency->trace_id();
+    latency->set_touch_trace_id(touch_trace_id_);
+    if (event.GetType() == blink::WebInputEvent::Type::kTouchEnd ||
+        event.GetType() == blink::WebInputEvent::Type::kTouchCancel)
+      touch_trace_id_ = -1;
   }
 }
 

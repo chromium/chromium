@@ -1,0 +1,382 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=//resources/cr_elements/cr_shared_style.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/search_highlight_style.css.js
+ * #import=./settings_vars.css.js
+<if expr='not chromeos_ash'>
+ * #include=cr-shared-style search-highlight-style
+</if>
+<if expr='chromeos_ash'>
+ * #import=//resources/cr_elements/chromeos/cros_color_overrides.css.js
+ * #include=cr-shared-style search-highlight-style cros-color-overrides
+</if>
+ * #css_wrapper_metadata_end */
+
+/* Common styles for Material Design settings. */
+
+/* Prevent action-links from being selected to avoid accidental
+ * selection when trying to click it. */
+a[is=action-link] {
+  user-select: none;
+}
+
+/* Use <h2> as the "sub-header" mentioned in the UX design docs. */
+h2 {
+  align-items: center;
+  align-self: flex-start;
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  font-size: inherit;
+  font-weight: 500;
+  margin: 0;
+  padding-bottom: 12px;
+  padding-top: 32px;
+}
+
+iron-icon {
+  flex-shrink: 0;  /* Prevent distortion of icons in cramped UI. */
+}
+
+iron-icon.policy {
+  margin-inline-end: var(--cr-controlled-by-spacing);
+}
+
+iron-list {
+  /* Text selection in an iron-list is problematic because the items are
+   * reused. The result is the selection happens somewhat arbitrarily.
+   * Add a |risk-selection| attribute to enabled selection in an
+   * iron-list. */
+  user-select: none;
+}
+
+iron-list[risk-selection] {
+  /* On short lists where selection is likely desired, we'll risk having
+   * text selection enabled. If the list is short enough that items are
+   * not actually reused, the bugs with selection are not evident. */
+  user-select: text;
+}
+
+.separator + cr-icon-button {
+  margin-inline-start: var(--cr-icon-ripple-margin);
+}
+
+/* Special case for buttons inside of toggle-buttons. */
+.settings-box settings-toggle-button cr-button:last-of-type {
+  margin-inline-end: 16px;
+}
+
+/* Space out multiple buttons in the same row. */
+.settings-box cr-button + cr-button,
+.settings-box cr-button + controlled-button,
+.settings-box controlled-button + controlled-button,
+.settings-box controlled-button + cr-button {
+  margin-inline-start: 8px;
+}
+
+span ~ a {
+  margin-inline-start: var(--cr-subsequent-anchors-of-span-margin, 4px);
+}
+
+a[href] {
+  color: var(--cr-link-color);
+}
+
+/* For elements that are simple out-links but don't look like anchors. */
+.inherit-color {
+  color: inherit !important;
+}
+
+.primary-toggle {
+  color: var(--cr-secondary-text-color);
+  font-weight: 500;
+}
+
+.primary-toggle[checked] {
+  color: var(--google-blue-500);
+}
+
+collapse-radio-button,
+controlled-radio-button,
+cr-radio-button {
+  min-height: var(--settings-row-min-height);
+}
+
+cr-radio-group {
+  width: 100%;
+}
+
+cr-radio-group:focus {
+  /* TODO(dbeam): why is this here? It looks weird and I'm not sure how to
+   * actually trigger it with mouse/keyboard/screenreader. */
+  background-color: var(--google-grey-300);
+  outline: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  cr-radio-group:focus {
+    background-color: var(--google-grey-800);
+  }
+}
+
+/* See also: .no-min-width below. */
+.text-elide {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* By default, flexbox children have min-width calculated to be the width
+ * of the content. However, in some cases we might want to allow the
+ * width to be smaller than the content (i.e. for long text to ellipsis).
+ * In such cases this class should be applied.
+ * (See: https://bugzilla.mozilla.org/show_bug.cgi?id=1108514#c5) */
+.no-min-width {
+  min-width: 0;
+}
+
+.header-aligned-button {
+  margin-top: 12px;  /* Align cr-button with <h2>. */
+}
+
+.link-wrapper {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+}
+
+/* A list-frame is an outer container for list-items. It is intended to be
+ * outside of a settings-box. A list-frame is likely to follow a
+ * settings box. */
+.list-frame {
+  display: block;
+  padding-block-end: 0;
+  padding-block-start: 0;
+  padding-inline-end: var(--cr-section-padding);
+  padding-inline-start: var(--cr-section-indent-padding);
+}
+
+/* A list-item is intended to be contained within a list-frame. The list
+ * frame will set up the initial start margin. */
+.list-item {
+  align-items: center;
+  display: flex;
+  min-height: var(--settings-row-min-height);
+  padding: 0;
+}
+
+/* A thin separator line under a list item. */
+.list-item.underbar {
+  border-bottom: var(--cr-separator-line);
+}
+
+.list-item.selected {
+  font-weight: 500;
+}
+
+/* The middle part (horizontally) of a list item. */
+.list-item .middle {
+  flex: 1;
+  margin: 8px 16px;
+}
+
+/* The start (left in LTR) part (horizontally) of a list item. */
+.list-item > .start {
+  flex: 1;
+}
+
+.list-item > label span[disabled] {
+  opacity: var(--settings-disabled-opacity);
+}
+
+/* This button has no ink ripple. */
+.list-button[is='action-link'] {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  font-weight: 500;
+  min-height: inherit;
+}
+
+/* Link buttons use FocusOutlineManager to only show outlines when focus
+ * was triggered by keyboard. */
+:host-context(html:not(.focus-outline-visible))
+    .list-button[is='action-link'] {
+  outline: none;
+}
+
+/* A row with two lines of text. Often the lower line will be .secondary.
+ */
+.two-line {
+  min-height: var(--settings-row-two-line-min-height);
+}
+
+/* A settings-box is a horizontal row of text or controls within a
+ * setting section (page or subpage). */
+.settings-box {
+  align-items: center;
+  border-top: var(--cr-separator-line);
+  display: flex;
+  min-height: var(--cr-section-min-height);
+  padding: 0 var(--cr-section-padding);
+}
+
+.settings-box.no-padding {
+  padding: 0;
+}
+
+.settings-box.no-padding .margin-matches-padding {
+  margin: 0 var(--cr-section-padding);
+}
+
+.settings-box.no-padding > .link-wrapper {
+  padding: 0 var(--cr-section-padding);
+}
+
+.settings-box.two-line {
+  min-height: var(--settings-row-two-line-min-height);
+}
+
+.settings-box-text {
+  box-sizing: border-box;
+  padding-bottom: var(--cr-section-vertical-padding);
+  padding-top: var(--cr-section-vertical-padding);
+}
+
+/* We use an explicit tag to remove the top border, rather than a
+ * :first-of-type modifier. This is a conscious choice, please consult
+ * with dbeam@ or dschuyler@ prior to changing it. */
+.settings-box.first,
+.settings-box.continuation {
+  border-top: none;
+}
+
+h2.first {
+  padding-top: 0;
+}
+
+.settings-box.block {
+  display: block;
+}
+
+/* A start-aligned column. */
+.single-column {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* A settings-box with no height other than the separator line. */
+.settings-box.line-only {
+  min-height: 0;
+}
+
+/* A settings-box that is embedded in another settings-box (e.g. a control
+ * that is associated with a toggle button). */
+.settings-box.embedded {
+  padding-inline-start: var(--cr-section-indent-padding);
+}
+
+/* The lower line of text in a two-line row. */
+/* TODO: Remove and merge with .cr-secondary-text. */
+.secondary {
+  color: var(--cr-secondary-text-color);
+  font-weight: 400;
+}
+
+/* The |:empty| CSS selector only works when there is no whitespace.
+ * E.g. <div>[[foo]]</div> will be |:empty| when foo === ""; and
+ * <div> [[foo]] </div> will not be |:empty| when foo === "". Ensure there
+ * is no extra whitespace when the contents of .secondary may be "".
+ */
+.secondary:empty {
+  margin: 0;
+}
+
+/* The middle part (horizontally) of a row. */
+.settings-box .middle {
+  align-items: center;
+  flex: auto;
+  padding-inline-start: 16px;
+}
+
+.settings-box .middle.two-line,
+.settings-box .start.two-line {
+  display: flex;
+}
+
+/* The start (left in LTR) part (horizontally) of a row. */
+.settings-box .start {
+  align-items: center;
+  flex: auto;
+}
+
+/* For grouping elements with common flex options. */
+.settings-row {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  max-width: 100%;
+  min-width: 0;  /* Workaround for text elision in sub-elements. */
+}
+
+.no-outline {
+  background: none;
+  outline: none;
+}
+
+/* Prevent icon-button's ripples from fighting with potential scrollbars.
+ * Also apply to all iron-lists to align the buttons across them all.*/
+[scrollable],
+iron-list,
+.list-item {
+  --cr-icon-button-margin-end: 0;
+}
+
+/* Helper for a list frame to automatically avoid the separator line. */
+.vertical-list > *:not(:first-of-type) {
+  border-top: var(--cr-separator-line);
+}
+
+/* The separator a vertical line like a horizontal rule <hr> tag, but goes
+ * the other way. An example is near the |sign out| button on the People
+ * settings. */
+.separator {
+  border-inline-start: var(--cr-separator-line);
+  flex-shrink: 0;
+  /* Match cr-button's default height. */
+  height: 32px;
+  margin: 0 16px;
+}
+
+.settings-box.no-padding > .link-wrapper ~ .separator {
+  margin: 0;
+}
+
+.column-header {
+  color: var(--cr-secondary-text-color);
+  font-size: inherit;
+  font-weight: 400;
+}
+
+/* Error message that appears in a toast to indicate the success or
+ * failure of an operation. An example is when adding a printer. */
+.error-message {
+  color: white;
+  font: 13px;
+  padding-bottom: 15px;
+  padding-top: 15px;
+  text-align: center;
+  white-space: normal;
+}
+
+/* URLs should always be displayed using a LTR embedding - see
+ * https://url.spec.whatwg.org/#url-rendering. */
+.url-directionality {
+  direction: ltr;
+  unicode-bidi: embed;
+}

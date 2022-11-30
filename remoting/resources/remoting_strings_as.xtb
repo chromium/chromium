@@ -11,20 +11,21 @@
 <translation id="1546934824884762070">কোনো অপ্ৰত্যাশিত আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি এই সমস্যা সম্পর্কে বিকাশকর্তাক অভিযোগ কৰক।</translation>
 <translation id="1697532407822776718">আপুনি সম্পূৰ্ণ সাজু!</translation>
 <translation id="1742469581923031760">সংযোগ কৰি থকা হৈছে…</translation>
+<translation id="177040763384871009">ৰিম’ট ডিভাইচত ক্লিক কৰা লিংক ক্লায়েণ্টৰ ব্ৰাউজাৰত খোল খোৱাৰ অনুমতি দিবলৈ আপুনি ছিষ্টেমৰ ৱেব ব্ৰাউজাৰ "<ph name="URL_FORWARDER_NAME" />"লৈ সলনি কৰিব লাগিব।</translation>
 <translation id="177096447311351977">ক্লাইণ্টৰ চেনেল আইপি: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip=’<ph name="CLIENT_IP_ADDRESS_AND_PORT" />’ host_ip=’<ph name="HOST_IP_ADDRESS_AND_PORT" />’ চেনেল=’<ph name="CHANNEL_TYPE" />’ সংযোগ=’<ph name="CONNECTION_TYPE" />’।</translation>
 <translation id="1897488610212723051">মচক</translation>
 <translation id="2009755455353575666">সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="2038229918502634450">নীতিত হোৱা সালসলনি প্ৰয়োগ কৰিবলৈ হ‘ষ্ট ৰিষ্টাৰ্ট হৈছে।</translation>
 <translation id="2078880767960296260">হ'ষ্ট প্ৰ'চেছ</translation>
 <translation id="20876857123010370">ট্ৰেকপেড ম’ড</translation>
-<translation id="2198363917176605566"><ph name="PRODUCT_NAME" />টো ব্যৱহাৰ কৰিবলৈ আপুনি 'স্ক্রীণ ৰেকৰ্ডিঙৰ' অনুমতি দিয়াৰ প্ৰয়োজন যাতে এই Macটোত থকা স্ক্ৰীণৰ সমলসমূহক দূৰৰ মেচিনটোলৈ পঠিয়াব পৰা যায়।
+<translation id="2198363917176605566"><ph name="PRODUCT_NAME" />টো ব্যৱহাৰ কৰিবলৈ আপুনি 'স্ক্রীণ ৰেকৰ্ডিঙৰ' অনুমতি দিয়াৰ প্ৰয়োজন যাতে এই Macটোত থকা স্ক্ৰীনৰ সমলসমূহক দূৰৰ মেচিনটোলৈ পঠিয়াব পৰা যায়।
 
 এই অনুমতিটো দিবলৈ, স্ক্রীণ ৰেকৰ্ডিঙৰ অগ্ৰাধিকাৰসমূহৰ ক্ষেত্ৰখন খুলিবলৈ তলত থকা <ph name="BUTTON_NAME" />ত ক্লিক কৰক আৰু তাৰ পাছত '<ph name="SERVICE_SCRIPT_NAME" />' নামৰ কাষত থকা বাকচটো টিক মাৰ্ক দিয়ক।
 
 যদি '<ph name="SERVICE_SCRIPT_NAME" />'ত ইতিমধ্যে টিক মাৰ্ক দিয়া আছে, সেইটো আঁতৰাই পুনৰাই দিয়ক।</translation>
 <translation id="225614027745146050">স্বাগতম</translation>
 <translation id="2320166752086256636">কীব'ৰ্ড লুকুৱাওক</translation>
-<translation id="2333212046079545895">স্বত্বাধিকাৰ ২০২১ Google LLC। সকলো চৰ্ত সংৰক্ষিত।</translation>
+<translation id="2329392777730037872">ক্লায়েণ্টৰ ডিভাইচটোত <ph name="URL" /> খুলিব পৰা নগ’ল।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2366718077645204424">হ‘ষ্টৰ সৈতে সংযোগ কৰিব পৰা নগ‘ল। এইটো সম্ভৱতঃ আপুনি ব্যৱহাৰ কৰি থকা নেটৱৰ্কটোৰ কনফিগাৰেশ্বনৰ কাৰণে হৈছে।</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  অন্তিমবাৰ অনলাইন দেখা গৈছিল <ph name="RELATIVE_TIMESTAMP" />ত।</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">এই সেৱাটোৱে Chrome ৰিম’ট ডেস্কটপ ক্লাইণ্টসমূহৰ পৰা অন্তৰ্গামী সংযোগসমূহ সক্ষম কৰে।</translation>
 <translation id="2647232381348739934">Chromoting সেৱা</translation>
 <translation id="2676780859508944670">কাম কৰি আছে…</translation>
+<translation id="2692522824157224199">স্বত্বাধিকাৰ ২০২২ Google LLC। সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ কৰি থাকোঁতে কিবা আসোঁৱাহ হ’ল।</translation>
 <translation id="2803375539583399270">পিন দিয়ক</translation>
@@ -55,26 +57,29 @@
 <translation id="369442766917958684">অফলাইন।</translation>
 <translation id="3695446226812920698">কেনেকৈ কৰিব সেয়া জানক</translation>
 <translation id="3776024066357219166">আপোনাৰ Chrome ৰিম’ট ডেস্কটপ ছেশ্বন অন্ত পৰিছে।</translation>
+<translation id="3858860766373142691">নাম</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3905196214175737742">অমান্য হ’ষ্টৰ গৰাকীৰ ড’মেইন।</translation>
 <translation id="3931191050278863510">হ’ষ্ট বন্ধ হ’ল৷</translation>
 <translation id="3950820424414687140">ছাইন ইন কৰক</translation>
 <translation id="405887016757208221">ৰিম’ট কম্পিউটাৰটোৱে ছেশ্বনটো আৰম্ভ কৰিব নোৱাৰিলে। যদি সমস্যাটো চলি থাকে অনুগ্ৰহ কৰি হ’ষ্টটো আকৌ কনফিগাৰ কৰাৰ চেষ্টা কৰক।</translation>
 <translation id="4060747889721220580">ফাইল ডাউনল’ড কৰক</translation>
-<translation id="4126409073460786861">ছেটআপ সম্পূৰ্ণ হোৱাৰ পিছত পৃষ্ঠাটো ৰিফ্ৰেশ্ব কৰক, তাৰপিছত আপুনি নিজৰ ডিভাইচ বাছনি কৰি আৰু পিনটো দি কম্পিউটাৰ এক্সেছ কৰিব পাৰিব।</translation>
+<translation id="4126409073460786861">ছেটআপ সম্পূৰ্ণ হোৱাৰ পাছত পৃষ্ঠাটো ৰিফ্ৰেশ্ব কৰক, তাৰপাছত আপুনি নিজৰ ডিভাইচ বাছনি কৰি আৰু পিনটো দি কম্পিউটাৰ এক্সেছ কৰিব পাৰিব।</translation>
 <translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> হিচাপে ছাইন ইন কৰা হৈছে।</translation>
 <translation id="4155497795971509630">কিছুমান প্ৰয়োজনীয় সমল নাই। অনুগ্ৰহ কৰি আপুনি শেহতীয়া ছফ্টৱেৰটো ইনষ্টল কৰিছেনে নাই নিশ্চিত হৈ আকৌ চেষ্টা কৰক।</translation>
 <translation id="4176825807642096119">এক্সেছ ক’ড</translation>
 <translation id="4227991223508142681">হ’ষ্ট প্ৰভিজনিং ইউটিলিটি</translation>
 <translation id="4240294130679914010">Chromoting হ’ষ্ট আনইনষ্টলাৰ</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">এক্সেছ ক’ডটো অমান্য। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="4281844954008187215">সেৱাৰ চৰ্তাৱলী</translation>
+<translation id="4372650392690220936">স্বত্বাধিকাৰ ২০২২ The Chromium Authors। সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="4405930547258349619">মুখ্য লাইব্ৰেৰী</translation>
 <translation id="443560535555262820">সাধ্য সুবিধাৰ অগ্ৰাধিকাৰসমূহ খোলক</translation>
 <translation id="4450893287417543264">পুনৰ নেদেখুৱাব</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="4513946894732546136">মতামত</translation>
 <translation id="4563926062592110512">ক্লায়েণ্টৰ লগত সংযোগ বিচ্ছিন্ন হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> সঠিকভাৱে কনফিগাৰ হৈ থকা নাই। অনুগ্ৰহ কৰি এটা পৃথক ডিফ'ল্ট ৱেব ব্ৰাউজাৰ বাছনি কৰক আৰু তাৰ পাছত পুনৰ URL ফৰৱাৰ্ডিং সক্ষম কৰক।</translation>
 <translation id="4635770493235256822">ৰিম’ট ডিভাইচ</translation>
 <translation id="4660011489602794167">কীব’র্ড দেখুৱাওক</translation>
 <translation id="4703799847237267011">আপোনাৰ Chromoting ছেশ্বন অন্ত পৰিছে।</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">PrtScn পঠিয়াওক</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" />ৰ সংযোগ বন্ধ</translation>
 <translation id="4985296110227979402">ৰিম’ট এক্সেছৰ বাবে আপুনি প্ৰথমে নিজৰ কম্পিউটাৰটো ছেট আপ কৰিব লাগিব</translation>
+<translation id="4987330545941822761">Chrome ৰিম’ট ডেস্কটপে URLসমূহ স্থানীয়ভাৱে খুলিবলৈ ব্ৰাউজাৰটো চিনাক্ত কৰিব পৰা নাই। অনুগ্ৰহ কৰি এইটোক তলৰ সূচীখনৰ পৰা বাছনি কৰক।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (অফলাইন হৈ আছে)</translation>
 <translation id="507204348399810022">আপুনি নিশ্চিতভাৱে <ph name="HOSTNAME" />ৰ ৰিম‘ট সংযোগ অক্ষম কৰিব বিচাৰেনে?</translation>
 <translation id="5170982930780719864">অমান্য হ'ষ্টৰ আইডি।</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5308380583665731573">সংযোগ কৰক</translation>
-<translation id="5327248766486351172">নাম</translation>
 <translation id="533625276787323658">সংযোগ কৰিবলৈ একো নাই</translation>
 <translation id="5397086374758643919">Chrome ৰিম’ট ডেস্কটপ হ’ষ্ট আনইনষ্টল কৰোঁতা</translation>
 <translation id="5419418238395129586">অন্তিমবাৰ অনলাইন দেখা গৈছিল: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ৰূপে ছাইন ইন কৰা হৈছে।</translation>
 <translation id="579702532610384533">পুনৰ সংযোগ কৰক</translation>
 <translation id="5810269635982033450">স্ক্ৰীণে ট্ৰেকপেড হিচাপে কার্য কৰে</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" />এ আপোনাৰ স্ক্ৰীনখন চাবলৈ আৰু আপোনাৰ কীব’ৰ্ড আৰু মাউছ নিয়ন্ত্ৰণ কৰিবলৈ এক্সেছৰ অনুৰোধ কৰিছে। যদি এই অনুৰোধটো আপোনাৰ বাবে অনাকাংক্ষিত, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''ত টিপক। অন্যথা, সাজু হ’লে সংযোগটোক অনুমতি দিবলৈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বাছনি কৰক।</translation>
 <translation id="5823658491130719298">আপুনি ৰিম'টৰ যোগে এক্সেছ কৰিব খোজা কম্পিউটাৰটোত Chrome খোলক আৰু <ph name="INSTALLATION_LINK" /> চাওক</translation>
 <translation id="5841343754884244200">প্ৰদৰ্শনৰ বিকল্পসমূহ</translation>
 <translation id="6033507038939587647">কীব’র্ড বিকল্পসমূহ</translation>
@@ -115,12 +121,13 @@
 <translation id="6178645564515549384">ৰিম'ট সহায়তাৰ বাবে স্থানীয় মেছেজিং হ'ষ্ট</translation>
 <translation id="618120821413932081">ৱিণ্ড’ৰ আকাৰৰ সৈতে মিলাবলৈ ৰিম'ট ৰিজ'লিউছন আপডে'ট কৰক</translation>
 <translation id="6223301979382383752">স্ক্রীণ ৰেকৰ্ডিঙৰ অগ্ৰাধিকাৰসমূহ খোলক</translation>
-<translation id="6284412385303060032">ব্যৱহাৰকাৰী-নিৰ্দিষ্ট ছেশ্বনত চলি থকা হ’ষ্টলৈ সলনি কৰি কাৰ্টেইন ম’ড ব্যৱহাৰৰ সুবিধা দিবলৈ ক’নছ’ল লজিক স্ক্ৰীণত চলি থকা হ’ষ্টক বন্ধ কৰা হৈছে।</translation>
+<translation id="6284412385303060032">ব্যৱহাৰকাৰী-নিৰ্দিষ্ট ছেশ্বনত চলি থকা হ’ষ্টলৈ সলনি কৰি কাৰ্টেইন ম’ড ব্যৱহাৰৰ সুবিধা দিবলৈ ক’নছ’ল লজিক স্ক্ৰীনত চলি থকা হ’ষ্টক বন্ধ কৰা হৈছে।</translation>
 <translation id="6542902059648396432">সমস্যাৰ অভিযোগ দিয়ক…</translation>
 <translation id="6583902294974160967">সহায়</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del দবাই পঠিয়াওক</translation>
 <translation id="6654753848497929428">শ্বেয়াৰ কৰক</translation>
 <translation id="677755392401385740">এই ব্যৱহাৰকাৰীজনৰ বাবে হ’ষ্ট আৰম্ভ কৰা হৈছে: <ph name="HOST_USERNAME" />৷</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> ক্লায়েণ্টত এটা URL খুলিবলৈ সহায় কৰা এপ্লিকেশ্বন</translation>
 <translation id="6939719207673461467">কীব'র্ড দেখুৱাওক/লুকুৱাওক।</translation>
 <translation id="6963936880795878952">ৰিম’ট কম্পিউটাৰৰ সৈতে সংযোগ সাময়িকভাৱে অৱৰোধ কৰা হৈছে কাৰণ কোনোবাই এটা অমান্য পিন ব্যৱহাৰ কৰি ইয়াৰ সৈতে সংযোগ কৰাৰ চেষ্টা কৰি আছিল। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
@@ -128,15 +135,17 @@
 <translation id="7019153418965365059">চিনাক্ত কৰিব নোৱাৰা হ'ষ্টৰ আসোঁৱাহ: <ph name="HOST_OFFLINE_REASON" />।</translation>
 <translation id="701976023053394610">ৰিম'ট সহায়ক</translation>
 <translation id="7026930240735156896">আপোনাৰ কম্পিউটাৰটো ৰিম’ট এক্সেছৰ বাবে ছেট আপ কৰিবলৈ নিৰ্দেশনাখিনি অনুসৰণ কৰক</translation>
-<translation id="7067321367069083429">স্ক্ৰীণখনে টাচ্চ স্ক্ৰীণৰ দৰে আচৰণ কৰে</translation>
+<translation id="7067321367069083429">স্ক্ৰীণখনে টাচ্চ স্ক্ৰীনৰ দৰে আচৰণ কৰে</translation>
 <translation id="7116737094673640201">Chrome ৰিম’ট ডেস্কটপলৈ স্বাগতম</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7312846573060934304">হ’ষ্ট অফলাইন আছে।</translation>
 <translation id="7319983568955948908">শ্বেয়াৰ কৰা বন্ধ কৰক</translation>
+<translation id="7359298090707901886">স্থানীয় মেচিনটোত URL খুলিবলৈ বাছনি কৰা ব্ৰাউজাৰটো ব্যৱহাৰ কৰিব নোৱাৰি।</translation>
 <translation id="7401733114166276557">Chrome ৰিম’ট ডেস্কটপ</translation>
 <translation id="7434397035092923453">ক্লায়েণ্টৰ বাবে এক্সেছ প্ৰত্যাখ্যান কৰা হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7444276978508498879">এইজন ক্লায়েণ্ট সংযোজিত হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7526139040829362392">একাউণ্ট সলনি কৰক</translation>
+<translation id="7535110896613603182">ডিফ’ল্ট এপৰ ছেটিং খোলক</translation>
 <translation id="7628469622942688817">এই ডিভাইচটোত মোৰ পিনটো মনত ৰাখিব।</translation>
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
@@ -161,6 +170,7 @@
 এই অনুমতি দিবলৈ, তলত থকা '<ph name="BUTTON_NAME" />'ত ক্লিক কৰক। খোল খোৱা 'সাধ্য সুবিধা'ৰ অগ্ৰাধিকাৰসমূহৰ ক্ষেত্ৰখনত, '<ph name="SERVICE_SCRIPT_NAME" />'ৰ কাষত থকা বাকচটোত টিক মাৰ্ক দিয়ক।
 
 যদি '<ph name="SERVICE_SCRIPT_NAME" />' ত ইতিমধ্যে টিক মাৰ্ক দিয়া আছে, তেন্তে সেইটো আঁতৰাওক আৰু পুনৰ টিক মাৰ্ক দিয়ক।</translation>
+<translation id="8305209735512572429">ৱেবৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ ৰিম’টিং প্ৰক্ৰিয়া</translation>
 <translation id="8383794970363966105">Chromoting ব্যৱহাৰ কৰিবলৈ আপুনি নিজৰ ডিভাইচটোত এটা Google একাউণ্ট যোগ কৰিব লাগিব।</translation>
 <translation id="8386846956409881180">হ’ষ্টক অমান্য OAuth ক্ৰেডেনশ্বিয়েল ব্যৱহাৰ কৰি কনফিগাৰ কৰা হৈছে৷</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />ক অনুমতি দিয়ক</translation>
@@ -169,13 +179,13 @@
 <translation id="8445362773033888690">Google Play Storeত চাওক</translation>
 <translation id="8509907436388546015">ডেস্কটপ ইণ্টিগ্ৰেছন প্ৰক্ৰিয়া</translation>
 <translation id="8513093439376855948">ৰিম’টিং হ’ষ্ট পৰিচালনাৰ বাবে স্থানীয় মেছেজিং হ’ষ্ট</translation>
-<translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীণ</translation>
+<translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীন</translation>
 <translation id="858006550102277544">মন্তব্য</translation>
 <translation id="8743328882720071828">আপুনি <ph name="CLIENT_USERNAME" />ক আপোনাৰ কম্পিউটাৰটো চাবলৈ আৰু নিয়ন্ত্ৰণ কৰিবলৈ অনুমতি দিব বিচাৰেনে?</translation>
 <translation id="8747048596626351634">ছেশ্বন ক্ৰেশ্ব হ’ল বা আৰম্ভ কৰিব পৰা নগ’ল৷ যদি দূৰৱৰ্তী কম্পিউটাৰত ~/.chrome-remote-desktop-session থাকে, তেন্তে ই ডেস্কট’পৰ পৰিৱেশ বা ৱিণ্ড’ পৰিচালকৰ দৰে দীৰ্ঘ সময় ধৰি চলা অগ্ৰভূমিৰ প্ৰক্ৰিয়া আৰম্ভ কৰাটো সুনিশ্চিত কৰক৷</translation>
 <translation id="8804164990146287819">গোপনীয়তা নীতি</translation>
 <translation id="8906511416443321782">অডিঅ' কেপচাৰ কৰি সেয়া Chrome ৰিম’ট ডেস্কটপ ক্লায়েণ্টটোত ষ্ট্ৰীম কৰিবলৈ মাইক্ৰ’ফ’নৰ এক্সেছৰ আৱশ্যক।</translation>
-<translation id="9111855907838866522">আপুনি নিজৰ ৰিম’ট ডিভাইচৰ সৈতে সংযোজিত হৈ আছে। মেনু খুলিবলৈ স্ক্ৰীণত চাৰিটা আঙুলিৰে টিপক।</translation>
+<translation id="9111855907838866522">আপুনি নিজৰ ৰিম’ট ডিভাইচৰ সৈতে সংযোজিত হৈ আছে। মেনু খুলিবলৈ স্ক্ৰীনত চাৰিটা আঙুলিৰে টিপক।</translation>
 <translation id="9126115402994542723">এই ডিভাইচটোৰ পৰা এই হ'ষ্টটোৰ সৈতে সংযোগ কৰোঁতে পুনৰ পিন নিবিচাৰিব।</translation>
 <translation id="916856682307586697">ডিফ’ল্ট XSessionটো লঞ্চ কৰক</translation>
 <translation id="9187628920394877737"><ph name="PRODUCT_NAME" />ক 'স্ক্রীণ ৰেকৰ্ডিঙ'ৰ অনুমতি দিয়ক</translation>

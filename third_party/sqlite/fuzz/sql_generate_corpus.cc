@@ -47,7 +47,7 @@ constexpr int kMaxNumOthers = 10;
 }  // namespace
 
 fuzzer::Random& GetRandom() {
-  static base::NoDestructor<fuzzer::Random> rand([] {
+  static fuzzer::Random rand([] {
     unsigned seed = base::DefaultClock::GetInstance()
                         ->Now()
                         .ToDeltaSinceWindowsEpoch()
@@ -55,7 +55,7 @@ fuzzer::Random& GetRandom() {
                     getpid();
     return fuzzer::Random(seed);
   }());
-  return *rand;
+  return rand;
 }
 
 // Inclusive range.
@@ -255,7 +255,7 @@ void GenerateValuesStatement(ValuesStatement* v,
                          table->col_types[*it]);
     it++;
     el->mutable_extra_exprs()->Reserve(cols.size() - 1);
-    for (size_t i = 0; i < cols.size() - 1; i++) {
+    for (size_t c = 0; c < cols.size() - 1; c++) {
       GenerateLiteralValue(el->mutable_extra_exprs()->Add()->mutable_lit_val(),
                            table->col_types[*it]);
       it++;
@@ -807,7 +807,7 @@ SQLQueries GenCorpusEntry() {
   GenQueries(
       queries, 1, 1, false, main_schema.num_tables, [&](SQLQuery* q, int i) {
         i::Table t = i::Table{
-            .table_num = i,
+            .table_num = static_cast<uint32_t>(i),
             .num_columns = RandInt(1, 8),
         };
         for (int j = 0; j < t.num_columns; j++) {

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,23 +19,33 @@ sxg_test_data_dir=../../../../content/test/data/sxg
 signature_date=2019-07-28T00:00:00Z
 
 gen-bundle \
-  -version b1 \
+  -version b2 \
   -baseURL https://test.example.org/ \
   -primaryURL https://test.example.org/ \
   -dir hello/ \
-  -manifestURL https://test.example.org/manifest.webmanifest \
-  -o hello.wbn
+  -o hello_b2.wbn
 
 gen-bundle \
+  -version b2 \
   -har simple.har \
-  -o simple.wbn \
-  -primaryURL https://test.example.org/ \
+  -o simple_b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -har 24_responses.har \
+  -o 24_responses.wbn
 
 sign-bundle \
-  -i hello.wbn \
+  -i hello_b2.wbn \
   -certificate $sxg_test_data_dir/test.example.org.public.pem.cbor \
   -privateKey $sxg_test_data_dir/prime256v1.key \
   -date $signature_date \
   -expire 168h \
   -validityUrl https://test.example.org/resource.validity.msg \
-  -o hello_signed.wbn
+  -o hello_vouched_subsets.wbn
+
+sign-bundle \
+  -i simple_b2.wbn \
+  -signType integrityblock \
+  -privateKey signed_web_bundle_private_key.pem \
+  -o simple_b2_signed.wbn

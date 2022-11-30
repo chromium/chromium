@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,4 +27,4 @@ class CONTROLLER_EXPORT V8DetailedMemoryReporterImpl
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_CONTROLLER_PERFORMANCE_MANAGER_V8_DETAILED_MEMORY_REPORTER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PERFORMANCE_MANAGER_V8_DETAILED_MEMORY_REPORTER_IMPL_H_

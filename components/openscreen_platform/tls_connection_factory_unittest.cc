@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -65,7 +64,7 @@ class MockTlsConnectionFactoryClient
 class FakeNetworkContext : public network::TestNetworkContext {
  public:
   void CreateTCPConnectedSocket(
-      const base::Optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -79,7 +78,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
   int times_called() { return times_called_; }
 
   void ExecuteCreateCallback(int32_t net_result) {
-    std::move(callback_).Run(net_result, base::nullopt, base::nullopt,
+    std::move(callback_).Run(net_result, absl::nullopt, absl::nullopt,
                              mojo::ScopedDataPipeConsumerHandle{},
                              mojo::ScopedDataPipeProducerHandle{});
   }

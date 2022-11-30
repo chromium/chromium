@@ -1,0 +1,4 @@
+EVENT_OBJECT_REORDER on <#document> role=ROLE_SYSTEM_DOCUMENT value~=[doc-url] FOCUSED,FOCUSABLE
+EVENT_OBJECT_REORDER on <div#group> role=ROLE_SYSTEM_GROUPING
+IA2_EVENT_TEXT_INSERTED on <div#group> role=ROLE_SYSTEM_GROUPING new_text={'<obj>' start=0 end=1}
+IA2_EVENT_TEXT_REMOVED on <#document> role=ROLE_SYSTEM_DOCUMENT value~=[doc-url] FOCUSED,FOCUSABLE old_text={'<obj>' start=1 end=2}

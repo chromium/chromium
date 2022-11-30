@@ -1,20 +1,22 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/runtime_hooks_delegate.h"
 
 #include "base/containers/span.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
-#include "extensions/renderer/bindings/api_signature.h"
+#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/get_script_context.h"
@@ -24,6 +26,12 @@
 #include "extensions/renderer/script_context.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 namespace extensions {
 
@@ -35,7 +43,7 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
                     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -44,6 +52,23 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
   if (script_context && script_context->extension()) {
     info.GetReturnValue().Set(
         gin::StringToSymbol(isolate, script_context->extension()->id()));
+  }
+}
+
+// Handler for the dynamicId property on chrome.runtime.
+void GetDynamicId(v8::Local<v8::Name> property_name,
+                  const v8::PropertyCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
+  // This could potentially be invoked after the script context is removed
+  // (unlike the handler calls, which should only be invoked for valid
+  // contexts).
+  if (script_context && script_context->extension()) {
+    info.GetReturnValue().Set(
+        gin::StringToSymbol(isolate, script_context->extension()->guid()));
   }
 }
 
@@ -57,17 +82,19 @@ constexpr char kGetBackgroundPage[] = "runtime.getBackgroundPage";
 constexpr char kGetPackageDirectoryEntry[] = "runtime.getPackageDirectoryEntry";
 
 // The custom callback supplied to runtime.getBackgroundPage to find and return
-// the background page to the original callback. The original callback is
-// curried in through the Data.
+// the background page to the original callback.
 void GetBackgroundPageCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
 
-  DCHECK(!info.Data().IsEmpty());
-  if (info.Data()->IsNull())
-    return;
+  // Custom callbacks are called with the arguments of the callback function and
+  // the response from the API. Since the custom callback here handles all the
+  // logic we should have just received the callback function to call with the
+  // result.
+  DCHECK_EQ(1, info.Length());
+  CHECK(info[0]->IsFunction());
 
   // The ScriptContext should always be valid, because otherwise the
   // getBackgroundPage() request should have been invalidated (and this should
@@ -78,8 +105,8 @@ void GetBackgroundPageCallback(
       ExtensionFrameHelper::GetV8BackgroundPageMainFrame(
           isolate, script_context->extension()->id());
   v8::Local<v8::Value> args[] = {background_page};
-  script_context->SafeCallFunction(info.Data().As<v8::Function>(),
-                                   base::size(args), args);
+  script_context->SafeCallFunction(info[0].As<v8::Function>(), std::size(args),
+                                   args);
 }
 
 }  // namespace
@@ -99,10 +126,18 @@ RequestResult RuntimeHooksDelegate::GetURL(
 
   v8::Isolate* isolate = script_context->isolate();
   std::string path = gin::V8ToString(isolate, arguments[0]);
+  const auto* extension = script_context->extension();
+  bool use_dynamic_url = false;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDynamicURLRedirection)) {
+    use_dynamic_url =
+        WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, path);
+  }
+  std::string id = use_dynamic_url ? extension->guid() : extension->id();
 
   RequestResult result(RequestResult::HANDLED);
   std::string url = base::StringPrintf(
-      "chrome-extension://%s%s%s", script_context->extension()->id().c_str(),
+      "chrome-extension://%s%s%s", id.c_str(),
       !path.empty() && path[0] == '/' ? "" : "/", path.c_str());
   // GURL considers any possible path valid. Since the argument is only appended
   // as part of the path, there should be no way this could conceivably fail.
@@ -118,7 +153,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
     std::vector<v8::Local<v8::Value>>* arguments,
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (RuntimeHooksDelegate::*)(
-      ScriptContext*, const std::vector<v8::Local<v8::Value>>&);
+      ScriptContext*, const APISignature::V8ParseResult&);
   static const struct {
     Handler handler;
     base::StringPiece method;
@@ -169,7 +204,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
     return result;
   }
 
-  return (this->*handler)(script_context, *parse_result.arguments);
+  return (this->*handler)(script_context, parse_result);
 }
 
 void RuntimeHooksDelegate::InitializeTemplate(
@@ -178,16 +213,24 @@ void RuntimeHooksDelegate::InitializeTemplate(
     const APITypeReferenceMap& type_refs) {
   object_template->SetAccessor(gin::StringToSymbol(isolate, "id"),
                                &GetExtensionId);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDynamicURLRedirection)) {
+    object_template->SetAccessor(gin::StringToSymbol(isolate, "dynamicId"),
+                                 &GetDynamicId);
+  }
 }
 
 RequestResult RuntimeHooksDelegate::HandleGetManifest(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
-  DCHECK(script_context->extension());
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  CHECK(script_context->extension());
+  CHECK(script_context->extension()->manifest());
+  CHECK(script_context->extension()->manifest()->value());
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = content::V8ValueConverter::Create()->ToV8Value(
-      script_context->extension()->manifest()->value(),
+      *script_context->extension()->manifest()->value(),
       script_context->v8_context());
 
   return result;
@@ -195,13 +238,15 @@ RequestResult RuntimeHooksDelegate::HandleGetManifest(
 
 RequestResult RuntimeHooksDelegate::HandleGetURL(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
-  return GetURL(script_context, arguments);
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  return GetURL(script_context, *parse_result.arguments);
 }
 
 RequestResult RuntimeHooksDelegate::HandleSendMessage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(4u, arguments.size());
 
   std::string target_id;
@@ -217,8 +262,9 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
   v8::Local<v8::Context> v8_context = script_context->v8_context();
 
   v8::Local<v8::Value> v8_message = arguments[1];
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(v8_context, v8_message, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      v8_context, v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -234,16 +280,26 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
   if (!arguments[3]->IsNull())
     response_callback = arguments[3].As<v8::Function>();
 
-  messaging_service_->SendOneTimeMessage(
+  v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      messaging_util::kSendMessageChannel, *message, response_callback);
+      messaging_util::kSendMessageChannel, *message, parse_result.async_type,
+      response_callback);
+  DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
+            !promise.IsEmpty())
+      << "SendOneTimeMessage should only return a Promise for promise based "
+         "API calls, otherwise it should be empty";
 
-  return RequestResult(RequestResult::HANDLED);
+  RequestResult result(RequestResult::HANDLED);
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    result.return_value = promise;
+  }
+  return result;
 }
 
 RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
 
   std::string application_name =
@@ -252,8 +308,12 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   v8::Local<v8::Value> v8_message = arguments[1];
   DCHECK(!v8_message.IsEmpty());
   std::string error;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+
+  // Native messaging always uses JSON since a native host doesn't understand
+  // structured cloning serialization.
+  std::unique_ptr<Message> message =
+      messaging_util::MessageFromV8(script_context->v8_context(), v8_message,
+                                    SerializationFormat::kJson, &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -264,17 +324,27 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   if (!arguments[2]->IsNull())
     response_callback = arguments[2].As<v8::Function>();
 
-  messaging_service_->SendOneTimeMessage(
+  v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string(), *message, response_callback);
+      std::string(), *message, parse_result.async_type, response_callback);
+  DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
+            !promise.IsEmpty())
+      << "SendOneTimeMessage should only return a Promise for promise based "
+         "API calls, otherwise it should be empty";
 
-  return RequestResult(RequestResult::HANDLED);
+  RequestResult result(RequestResult::HANDLED);
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    result.return_value = promise;
+  }
+  return result;
 }
 
 RequestResult RuntimeHooksDelegate::HandleConnect(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(2u, arguments.size());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   std::string target_id;
   std::string error;
@@ -295,8 +365,10 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
 
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForExtension(target_id),
-      options.channel_name);
+      options.channel_name,
+      messaging_util::GetSerializationFormat(*script_context));
   DCHECK(!port.IsEmpty());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = port.ToV8();
@@ -305,15 +377,21 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
 
 RequestResult RuntimeHooksDelegate::HandleConnectNative(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(1u, arguments.size());
   DCHECK(arguments[0]->IsString());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   std::string application_name =
       gin::V8ToString(script_context->isolate(), arguments[0]);
+
+  // Native messaging always uses JSON since a native host doesn't understand
+  // structured cloning serialization.
+  auto format = SerializationFormat::kJson;
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string());
+      std::string(), format);
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = port.ToV8();
@@ -322,12 +400,12 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
 
 RequestResult RuntimeHooksDelegate::HandleGetBackgroundPage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
   DCHECK(script_context->extension());
 
   RequestResult result(RequestResult::NOT_HANDLED);
   if (!v8::Function::New(script_context->v8_context(),
-                         &GetBackgroundPageCallback, arguments[0])
+                         &GetBackgroundPageCallback)
            .ToLocal(&result.custom_callback)) {
     return RequestResult(RequestResult::THROWN);
   }
@@ -337,7 +415,7 @@ RequestResult RuntimeHooksDelegate::HandleGetBackgroundPage(
 
 RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
   // TODO(devlin): This is basically just copied and translated from
   // the JS bindings, and still relies on the custom JS bindings for
   // getBindDirectoryEntryCallback. This entire API is a bit crazy, and needs
@@ -359,7 +437,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     // allow native code to run in the background page, we'll also need a
     // NativesEnabledScope for that context.
     DCHECK(v8_context == isolate->GetCurrentContext());
-    base::Optional<ModuleSystem::NativesEnabledScope> background_page_natives;
+    absl::optional<ModuleSystem::NativesEnabledScope> background_page_natives;
     if (background_page &&
         background_page != script_context->GetRenderFrame() &&
         blink::WebFrame::ScriptCanAccess(background_page->GetWebFrame())) {

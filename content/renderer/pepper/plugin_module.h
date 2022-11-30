@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,19 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
-#include "base/optional.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/ppb_core.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 typedef void* NPIdentifier;
@@ -75,6 +74,9 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
                const base::FilePath& path,
                const ppapi::PpapiPermissions& perms);
 
+  PluginModule(const PluginModule&) = delete;
+  PluginModule& operator=(const PluginModule&) = delete;
+
   // Sets the given class as being associated with this module. It will be
   // deleted when the module is destroyed. You can only set it once, subsequent
   // sets will assert.
@@ -83,7 +85,7 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   // Initializes this module as an internal plugin with the given entrypoints.
   // This is used for "plugins" compiled into Chrome. Returns true on success.
   // False means that the plugin can not be used.
-  bool InitAsInternalPlugin(const PepperPluginInfo::EntryPoints& entry_points);
+  bool InitAsInternalPlugin(const ContentPluginInfo::EntryPoints& entry_points);
 
   // Initializes this module using the given library path as the plugin.
   // Returns true on success. False means that the plugin can not be used.
@@ -212,7 +214,7 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   static scoped_refptr<PluginModule> Create(
       RenderFrameImpl* render_frame,
       const WebPluginInfo& webplugin_info,
-      const base::Optional<url::Origin>& origin_lock,
+      const absl::optional<url::Origin>& origin_lock,
       bool* pepper_plugin_was_registered,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -222,7 +224,7 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   // Calls the InitializeModule entrypoint. The entrypoint must have been
   // set and the plugin must not be out of process (we don't maintain
   // entrypoints in that case).
-  bool InitializeModule(const PepperPluginInfo::EntryPoints& entry_points);
+  bool InitializeModule(const ContentPluginInfo::EntryPoints& entry_points);
 
   std::unique_ptr<RendererPpapiHostImpl> renderer_ppapi_host_;
 
@@ -253,7 +255,7 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   // Contains pointers to the entry points of the actual plugin implementation.
   // These will be NULL for out-of-process plugins, which is indicated by the
   // presence of the host_dispatcher_wrapper_ value.
-  PepperPluginInfo::EntryPoints entry_points_;
+  ContentPluginInfo::EntryPoints entry_points_;
 
   // The name, version, and file location of the module.
   const std::string name_;
@@ -267,8 +269,6 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   PluginInstanceSet instances_;
 
   PP_Bool (*reserve_instance_id_)(PP_Module, PP_Instance);
-
-  DISALLOW_COPY_AND_ASSIGN(PluginModule);
 };
 
 }  // namespace content

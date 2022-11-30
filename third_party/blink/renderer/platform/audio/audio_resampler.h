@@ -27,8 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_RESAMPLER_H_
 
 #include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_resampler_kernel.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
@@ -41,12 +39,14 @@ namespace blink {
 // The audio stream may be single or multi-channel.
 // The default constructor defaults to single-channel (mono).
 
-class PLATFORM_EXPORT AudioResampler {
+class AudioResampler {
   DISALLOW_NEW();
 
  public:
   AudioResampler();
-  AudioResampler(unsigned number_of_channels);
+  explicit AudioResampler(unsigned number_of_channels);
+  AudioResampler(const AudioResampler&) = delete;
+  AudioResampler& operator=(const AudioResampler&) = delete;
   ~AudioResampler() = default;
 
   // Given an AudioSourceProvider, process() resamples the source stream into
@@ -70,8 +70,6 @@ class PLATFORM_EXPORT AudioResampler {
   double rate_;
   Vector<std::unique_ptr<AudioResamplerKernel>> kernels_;
   scoped_refptr<AudioBus> source_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioResampler);
 };
 
 }  // namespace blink

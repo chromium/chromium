@@ -1,11 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -18,29 +20,33 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
-#include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/public/mojom/virtual_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "ui/compositor/compositor.h"
 
 // ImageTransportFactory::GetInstance is not available on all build configs.
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 #define CAN_USE_IMAGE_TRANSPORT_FACTORY 1
 #endif
 
@@ -50,18 +56,6 @@
 namespace content {
 
 namespace {
-
-class InvokeClosureOnDelete
-    : public video_capture::mojom::ScopedAccessPermission {
- public:
-  explicit InvokeClosureOnDelete(base::OnceClosure closure)
-      : closure_(std::move(closure)) {}
-
-  ~InvokeClosureOnDelete() override { std::move(closure_).Run(); }
-
- private:
-  base::OnceClosure closure_;
-};
 
 static const char kVideoCaptureHtmlFile[] = "/media/video_capture_test.html";
 static const char kStartVideoCaptureAndVerify[] =
@@ -108,11 +102,14 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
     gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
     CHECK(gl);
 
+    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+    CHECK(sii);
+
     const uint8_t kDarkFrameByteValue = 0;
     const uint8_t kLightFrameByteValue = 200;
-    CreateDummyRgbFrame(gl, kDarkFrameByteValue,
+    CreateDummyRgbFrame(gl, sii, kDarkFrameByteValue,
                         &dummy_frame_0_mailbox_holder_);
-    CreateDummyRgbFrame(gl, kLightFrameByteValue,
+    CreateDummyRgbFrame(gl, sii, kLightFrameByteValue,
                         &dummy_frame_1_mailbox_holder_);
   }
 
@@ -142,13 +139,20 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
       return;
     }
 
-    mojo::PendingRemote<video_capture::mojom::ScopedAccessPermission>
-        access_permission_proxy;
-    mojo::MakeSelfOwnedReceiver<video_capture::mojom::ScopedAccessPermission>(
-        std::make_unique<InvokeClosureOnDelete>(
-            base::BindOnce(&TextureDeviceExerciser::OnFrameConsumptionFinished,
-                           weak_factory_.GetWeakPtr(), dummy_frame_index_)),
-        access_permission_proxy.InitWithNewPipeAndPassReceiver());
+    if (!virtual_device_has_frame_access_handler_) {
+      mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+          pending_frame_access_handler;
+      mojo::MakeSelfOwnedReceiver<
+          video_capture::mojom::VideoFrameAccessHandler>(
+          std::make_unique<video_capture::FakeVideoFrameAccessHandler>(
+              base::BindRepeating(
+                  &TextureDeviceExerciser::OnFrameConsumptionFinished,
+                  weak_factory_.GetWeakPtr())),
+          pending_frame_access_handler.InitWithNewPipeAndPassReceiver());
+      virtual_device_->OnFrameAccessHandlerReady(
+          std::move(pending_frame_access_handler));
+      virtual_device_has_frame_access_handler_ = true;
+    }
 
     media::VideoFrameMetadata metadata;
     metadata.frame_rate = kDummyFrameRate;
@@ -162,9 +166,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
     info->metadata = metadata;
 
     frame_being_consumed_[dummy_frame_index_] = true;
-    virtual_device_->OnFrameReadyInBuffer(dummy_frame_index_,
-                                          std::move(access_permission_proxy),
-                                          std::move(info));
+    virtual_device_->OnFrameReadyInBuffer(dummy_frame_index_, std::move(info));
 
     dummy_frame_index_ = (dummy_frame_index_ + 1) % 2;
   }
@@ -177,12 +179,13 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
 
  private:
   void CreateDummyRgbFrame(gpu::gles2::GLES2Interface* gl,
+                           gpu::SharedImageInterface* sii,
                            uint8_t value_for_all_rgb_bytes,
                            std::vector<gpu::MailboxHolder>* target) {
-    const int32_t kBytesPerRGBPixel = 3;
+    const int32_t kBytesPerRGBAPixel = 4;
     int32_t frame_size_in_bytes = kDummyFrameCodedSize.width() *
                                   kDummyFrameCodedSize.height() *
-                                  kBytesPerRGBPixel;
+                                  kBytesPerRGBAPixel;
     std::unique_ptr<uint8_t[]> dummy_frame_data(
         new uint8_t[frame_size_in_bytes]);
     memset(dummy_frame_data.get(), value_for_all_rgb_bytes,
@@ -195,30 +198,41 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
         continue;
       }
 
-      GLuint texture_id = 0;
-      gl->GenTextures(1, &texture_id);
-      gl->BindTexture(GL_TEXTURE_2D, texture_id);
-      gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      gl->TexImage2D(GL_TEXTURE_2D, 0, GL_RGB, kDummyFrameCodedSize.width(),
-                     kDummyFrameCodedSize.height(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-                     dummy_frame_data.get());
+      gpu::Mailbox mailbox = sii->CreateSharedImage(
+          viz::ResourceFormat::RGBA_8888,
+          gfx::Size(kDummyFrameCodedSize.width(),
+                    kDummyFrameCodedSize.height()),
+          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+          kOpaque_SkAlphaType,
+          gpu::SHARED_IMAGE_USAGE_RASTER |
+              gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+              gpu::SHARED_IMAGE_USAGE_GLES2 |
+              gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
+          gpu::kNullSurfaceHandle);
+
+      gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
+      gl->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
+      GLuint texture =
+          gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+      gl->BeginSharedImageAccessDirectCHROMIUM(
+          texture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+      gl->BindTexture(GL_TEXTURE_2D, texture);
+      gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, kDummyFrameCodedSize.width(),
+                        kDummyFrameCodedSize.height(), GL_RGBA,
+                        GL_UNSIGNED_BYTE, dummy_frame_data.get());
       gl->BindTexture(GL_TEXTURE_2D, 0);
+      gl->EndSharedImageAccessDirectCHROMIUM(texture);
+      gl->DeleteTextures(1, &texture);
+      gpu::SyncToken gl_token;
+      gl->GenSyncTokenCHROMIUM(gl_token.GetData());
 
-      gpu::Mailbox mailbox;
-      gl->ProduceTextureDirectCHROMIUM(texture_id, mailbox.name);
-      gpu::SyncToken sync_token;
-      gl->GenSyncTokenCHROMIUM(sync_token.GetData());
-
-      target->push_back(gpu::MailboxHolder(mailbox, sync_token, GL_TEXTURE_2D));
+      target->push_back(gpu::MailboxHolder(mailbox, gl_token, GL_TEXTURE_2D));
     }
     gl->ShallowFlushCHROMIUM();
     CHECK_EQ(gl->GetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 
-  void OnFrameConsumptionFinished(int frame_index) {
+  void OnFrameConsumptionFinished(int32_t frame_index) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     frame_being_consumed_[frame_index] = false;
   }
@@ -226,6 +240,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<viz::ContextProvider> context_provider_;
   mojo::Remote<video_capture::mojom::TextureVirtualDevice> virtual_device_;
+  bool virtual_device_has_frame_access_handler_ = false;
   int dummy_frame_index_ = 0;
   std::vector<gpu::MailboxHolder> dummy_frame_0_mailbox_holder_;
   std::vector<gpu::MailboxHolder> dummy_frame_1_mailbox_holder_;
@@ -250,11 +265,9 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
       mojo::Remote<video_capture::mojom::DeviceFactory>* factory,
       const media::VideoCaptureDeviceInfo& info) override {
     mojo::PendingRemote<video_capture::mojom::Producer> producer;
-    static const bool kSendBufferHandlesToProducerAsRawFileDescriptors = false;
     producer_receiver_.Bind(producer.InitWithNewPipeAndPassReceiver());
     (*factory)->AddSharedMemoryVirtualDevice(
         info, std::move(producer),
-        kSendBufferHandlesToProducerAsRawFileDescriptors,
         virtual_device_.BindNewPipeAndPassReceiver());
   }
   gfx::Size GetVideoSize() override {
@@ -278,10 +291,9 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle,
                    OnNewBufferCallback callback) override {
-    CHECK(buffer_handle->is_shared_buffer_handle());
+    CHECK(buffer_handle->is_unsafe_shmem_region());
     base::UnsafeSharedMemoryRegion region =
-        mojo::UnwrapUnsafeSharedMemoryRegion(
-            std::move(buffer_handle->get_shared_buffer_handle()));
+        std::move(buffer_handle->get_unsafe_shmem_region());
     CHECK(region.IsValid());
     base::WritableSharedMemoryMapping mapping = region.Map();
     CHECK(mapping.IsValid());
@@ -410,6 +422,11 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
     virtual_device_thread_.Start();
   }
 
+  WebRtcVideoCaptureServiceBrowserTest(
+      const WebRtcVideoCaptureServiceBrowserTest&) = delete;
+  WebRtcVideoCaptureServiceBrowserTest& operator=(
+      const WebRtcVideoCaptureServiceBrowserTest&) = delete;
+
   ~WebRtcVideoCaptureServiceBrowserTest() override {}
 
   void AddVirtualDeviceAndStartCapture(VirtualDeviceExerciser* device_exerciser,
@@ -457,7 +474,7 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
         base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
                            PushDummyFrameAndScheduleNextPush,
                        weak_factory_.GetWeakPtr(), device_exerciser),
-        base::TimeDelta::FromMilliseconds(1000 / kDummyFrameRate));
+        base::Milliseconds(1000 / kDummyFrameRate));
   }
 
   void ShutDownVirtualDeviceAndContinue(
@@ -480,11 +497,9 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
 
     std::string javascript_to_execute = base::StringPrintf(
         kStartVideoCaptureAndVerify, video_size_.width(), video_size_.height());
-    std::string result;
     // Start video capture and wait until it started rendering
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractString(shell(), javascript_to_execute, &result));
-    ASSERT_EQ("OK", result);
+    ASSERT_EQ("OK", EvalJs(shell(), javascript_to_execute,
+                           EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
     std::move(finish_test_cb).Run();
   }
@@ -523,13 +538,20 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
   base::TimeTicks first_frame_time_;
   base::WeakPtrFactory<WebRtcVideoCaptureServiceBrowserTest> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureServiceBrowserTest);
 };
 
+// TODO(https://crbug.com/1318247): Fix and enable on Fuchsia.
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#define MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage \
+  DISABLED_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
+#else
+#define MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage \
+  FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcVideoCaptureServiceBrowserTest,
-    FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage) {
+    MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage) {
   Initialize();
   auto device_exerciser = std::make_unique<TextureDeviceExerciser>();
   device_exerciser->Initialize();
@@ -544,9 +566,17 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  DISABLED_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#else
+#define MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcVideoCaptureServiceBrowserTest,
-    FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
+    MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
   Initialize();
   auto device_exerciser = std::make_unique<SharedMemoryDeviceExerciser>();
   device_exerciser->Initialize();
@@ -561,9 +591,17 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  DISABLED_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#else
+#define MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcVideoCaptureServiceBrowserTest,
-    PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
+    MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
   Initialize();
   auto device_exerciser = std::make_unique<SharedMemoryDeviceExerciser>(
       media::mojom::PlaneStrides::New(

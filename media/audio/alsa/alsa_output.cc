@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -37,12 +37,12 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -156,7 +156,7 @@ AlsaPcmOutputStream::AlsaPcmOutputStream(const std::string& device_name,
       bytes_per_frame_(params.GetBytesPerFrame(kSampleFormat)),
       packet_size_(params.GetBytesPerBuffer(kSampleFormat)),
       latency_(std::max(
-          base::TimeDelta::FromMicroseconds(kMinLatencyMicros),
+          base::Microseconds(kMinLatencyMicros),
           AudioTimestampHelper::FramesToTime(params.frames_per_buffer() * 2,
                                              sample_rate_))),
       bytes_per_output_frame_(bytes_per_frame_),
@@ -230,7 +230,7 @@ bool AlsaPcmOutputStream::Open() {
       channel_mixer_ ? mixed_audio_bus_->channels() * bytes_per_sample_
                      : bytes_per_frame_;
   uint32_t output_packet_size = frames_per_packet_ * bytes_per_output_frame_;
-  buffer_.reset(new SeekableBuffer(0, output_packet_size));
+  buffer_ = std::make_unique<SeekableBuffer>(0, output_packet_size);
 
   // Get alsa buffer size.
   snd_pcm_uframes_t buffer_size;
@@ -257,10 +257,11 @@ void AlsaPcmOutputStream::Close() {
 
   // Shutdown the audio device.
   if (playback_handle_) {
-    if (alsa_util::CloseDevice(wrapper_, playback_handle_) < 0) {
+    int res =
+        alsa_util::CloseDevice(wrapper_, playback_handle_.ExtractAsDangling());
+    if (res < 0) {
       LOG(WARNING) << "Unable to close audio device. Leaking handle.";
     }
-    playback_handle_ = nullptr;
 
     // Release the buffer.
     buffer_.reset();
@@ -525,7 +526,7 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
     // Polling in this manner allows us to ensure a more consistent callback
     // schedule.  In testing this yields a variance of +/- 5ms versus the non-
     // polling strategy which is around +/- 30ms and bimodal.
-    next_fill_time = base::TimeDelta::FromMilliseconds(5);
+    next_fill_time = base::Milliseconds(5);
   } else if (available_frames < kTargetFramesAvailable) {
     // Schedule the next write for the moment when the available buffer of the
     // sound card hits |kTargetFramesAvailable|.
@@ -538,13 +539,16 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
   } else {
     // The sound card has frames available, but our source is exhausted, so
     // avoid busy looping by delaying a bit.
-    next_fill_time = base::TimeDelta::FromMilliseconds(10);
+    next_fill_time = base::Milliseconds(10);
   }
 
-  task_runner_->PostDelayedTask(FROM_HERE,
-                                base::BindOnce(&AlsaPcmOutputStream::WriteTask,
-                                               weak_factory_.GetWeakPtr()),
-                                next_fill_time);
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+      base::BindOnce(&AlsaPcmOutputStream::WriteTask,
+                     weak_factory_.GetWeakPtr()),
+      next_fill_time.is_zero() ? base::TimeTicks()
+                               : base::TimeTicks::Now() + next_fill_time,
+      base::subtle::DelayPolicy::kPrecise);
 }
 
 std::string AlsaPcmOutputStream::FindDeviceForChannels(uint32_t channels) {
@@ -710,8 +714,8 @@ snd_pcm_t* AlsaPcmOutputStream::AutoSelectDevice(unsigned int latency) {
   // downmixing.
   uint32_t default_channels = channels_;
   if (default_channels > 2) {
-    channel_mixer_.reset(
-        new ChannelMixer(channel_layout_, kDefaultOutputChannelLayout));
+    channel_mixer_ = std::make_unique<ChannelMixer>(
+        channel_layout_, kDefaultOutputChannelLayout);
     default_channels = 2;
     mixed_audio_bus_ = AudioBus::Create(
         default_channels, audio_bus_->frames());

@@ -1,8 +1,7 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
@@ -23,6 +22,10 @@ static const SyncToken g_sync_token(gpu::CommandBufferNamespace::GPU_IO,
 class MailboxManagerTest : public GpuServiceTest {
  public:
   MailboxManagerTest() = default;
+
+  MailboxManagerTest(const MailboxManagerTest&) = delete;
+  MailboxManagerTest& operator=(const MailboxManagerTest&) = delete;
+
   ~MailboxManagerTest() override = default;
 
  protected:
@@ -72,8 +75,6 @@ class MailboxManagerTest : public GpuServiceTest {
 
  private:
   scoped_refptr<FeatureInfo> feature_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxManagerTest);
 };
 
 // Tests basic produce/consume behavior.

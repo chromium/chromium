@@ -1,0 +1,25 @@
+Document
+++Table Grid.ColumnCount=3 Grid.RowCount=3 Table.RowOrColumnMajor='RowMajor'
+++++Group
+++++++DataItem
+++++++++DataItem Name='row1 colheader1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++++Text Name='row1 colheader1' IsControlElement=false
+++++++++DataItem Name='row1 colheader2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++++Text Name='row1 colheader2' IsControlElement=false
+++++++++DataItem Name='row1 colheader3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++++Text Name='row1 colheader3' IsControlElement=false
+++++Group
+++++++DataItem
+++++++++DataItem Name='row2 col1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++++Text Name='row2 col1' IsControlElement=false
+++++++++DataItem Name='row2 col2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++++Text Name='row2 col2' IsControlElement=false
+++++++++DataItem Name='row2 col3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++++Text Name='row2 col3' IsControlElement=false
+++++++DataItem
+++++++++DataItem Name='row3 col1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++++Text Name='row3 col1' IsControlElement=false
+++++++++DataItem Name='row3 col2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++++Text Name='row3 col2' IsControlElement=false
+++++++++DataItem Name='row3 col3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++++Text Name='row3 col3' IsControlElement=false

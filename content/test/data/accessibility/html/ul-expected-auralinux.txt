@@ -1,14 +1,11 @@
 [document web]
 ++[list]
 ++++[list item]
-++++++[panel]
-++++++++[static] name='%E2%80%A2 '
+++++++[static] name='%E2%80%A2 '
 ++++++[static] name='Item 1'
 ++++[list item]
-++++++[panel]
-++++++++[static] name='%E2%80%A2 '
+++++++[static] name='%E2%80%A2 '
 ++++++[static] name='Item 2'
 ++++[list item]
-++++++[panel]
-++++++++[static] name='%E2%80%A2 '
+++++++[static] name='%E2%80%A2 '
 ++++++[static] name='Item 3'

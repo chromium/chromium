@@ -1,0 +1,48 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+component("proxy_resolver_win") {
+  sources = [
+    "windows_system_proxy_resolver_impl.cc",
+    "windows_system_proxy_resolver_impl.h",
+    "winhttp_api_wrapper.h",
+    "winhttp_api_wrapper_impl.cc",
+    "winhttp_api_wrapper_impl.h",
+    "winhttp_proxy_resolver_functions.cc",
+    "winhttp_proxy_resolver_functions.h",
+  ]
+
+  libs = [ "winhttp.lib" ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+
+  public_deps = [
+    "//net",
+    "//services/proxy_resolver_win/public/mojom",
+  ]
+
+  defines = [ "IS_PROXY_RESOLVER_WIN_IMPL" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "windows_system_proxy_resolver_impl_unittest.cc" ]
+
+  deps = [
+    ":proxy_resolver_win",
+    "//base",
+    "//base/test:test_support",
+    "//net:test_support",
+    "//services/proxy_resolver_win/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

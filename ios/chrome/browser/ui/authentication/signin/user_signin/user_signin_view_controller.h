@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,12 +37,20 @@
 // The delegate.
 @property(nonatomic, weak) id<UserSigninViewControllerDelegate> delegate;
 
-// View controller that handles the user consent before the user signs in.
-@property(nonatomic, weak) UIViewController* unifiedConsentViewController;
-
 @property(nonatomic, assign, readonly) int acceptSigninButtonStringId;
 
 @property(nonatomic, assign) BOOL useFirstRunSkipButton;
+
+// See `initWithEmbeddedViewController:`.
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNAme
+                         bundle:(NSBundle*)nibBundle NS_UNAVAILABLE;
+
+// Initializer with the UnifiedConsentViewController that is embedded in the
+// UserSigninViewController.
+- (instancetype)initWithEmbeddedViewController:
+    (UIViewController*)embeddedViewController NS_DESIGNATED_INITIALIZER;
 
 // Informs the view controller that the unified consent has reached the bottom
 // of the screen.
@@ -51,10 +59,10 @@
 // Sets the title, styling, and other button properties for the confirmation
 // button based on the user consent text that is currently displayed on-screen
 // and the whether the user has previously been signed-in.
-- (void)setConfirmationButtonProperties;
+- (void)updatePrimaryActionButtonStyle;
 
 // Returns the supported orientations for the device type:
-// |UIInterfaceOrientationPortrait| orientation on iPhone and all other
+// `UIInterfaceOrientationPortrait` orientation on iPhone and all other
 // orientations on iPad.
 - (NSUInteger)supportedInterfaceOrientations;
 

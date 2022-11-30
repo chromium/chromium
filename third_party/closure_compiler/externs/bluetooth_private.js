@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.bluetoothPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 // IMPORTANT NOTE: Work-around for crbug.com/543822
 // s/chrome.bluetoothPrivate.bluetooth.Device/chrome.bluetooth.Device/
 // s/chrome.bluetoothPrivate.bluetooth.Transport/chrome.bluetooth.Transport/
 
-/** @fileoverview Externs generated from namespace: bluetoothPrivate */
+/**
+ * @fileoverview Externs generated from namespace: bluetoothPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.bluetoothPrivate = {};

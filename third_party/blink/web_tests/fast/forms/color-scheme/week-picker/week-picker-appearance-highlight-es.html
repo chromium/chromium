@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+<script src="../../resources/common.js"></script>
+<script src="../../calendar-picker/resources/calendar-picker-common.js"></script>
+<script src="../../resources/picker-common.js"></script>
+
+<input type="week" value="2018-W06" lang="es">
+
+<script>
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
+    hoverOverDayCellAt(3, 4);
+  });
+</script>

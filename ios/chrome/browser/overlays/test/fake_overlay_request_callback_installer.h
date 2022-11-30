@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,14 @@ class OverlayResponseSupport;
 // by FakeOverlayRequestCallbackInstaller.
 class FakeOverlayRequestCallbackReceiver {
  public:
-  // Function used as the completion callback for |request|.  |response| is
-  // |request|'s completion response.  Executes CompletionCallback() with
-  // |request|.
+  // Function used as the completion callback for `request`.  `response` is
+  // `request`'s completion response.  Executes CompletionCallback() with
+  // `request`.
   void RunCompletionCallback(OverlayRequest* request,
                              OverlayResponse* response);
-  // Function used as the callback when |response| is dispatched through
-  // |request|.  Only executed if |response| is supported by |response_support|.
-  // Executes DispatchCallback() with |request| and |response_support|.
+  // Function used as the callback when `response` is dispatched through
+  // `request`.  Only executed if `response` is supported by `response_support`.
+  // Executes DispatchCallback() with `request` and `response_support`.
   void RunDispatchCallback(OverlayRequest* request,
                            const OverlayResponseSupport* response_support,
                            OverlayResponse* response);
@@ -61,12 +61,12 @@ class FakeOverlayRequestCallbackInstaller
     : public OverlayRequestCallbackInstaller {
  public:
   // Constructor for a fake callback installer that creates callbacks that are
-  // forwarded to |receiver|.  |receiver| must be non-null, and must outlive any
-  // requests passed to InstallCallback().  |dispatch_supports| is a list of
+  // forwarded to `receiver`.  `receiver` must be non-null, and must outlive any
+  // requests passed to InstallCallback().  `dispatch_supports` is a list of
   // OverlayResponseSupports for each dispatch response InfoType being tested
   // by this fake installer.  Every supported OverlayResponse dispatched through
   // a request with callbacks installed by this instance will trigger
-  // DispatchCallback() on |receiver| with the response support for that
+  // DispatchCallback() on `receiver` with the response support for that
   // response.
   FakeOverlayRequestCallbackInstaller(
       FakeOverlayRequestCallbackReceiver* receiver,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,12 +69,12 @@ std::string FakeNearbyShareLocalDeviceDataManager::GetDeviceName() const {
   return device_name_;
 }
 
-base::Optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetFullName()
+absl::optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetFullName()
     const {
   return full_name_;
 }
 
-base::Optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetIconUrl()
+absl::optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetIconUrl()
     const {
   return icon_url_;
 }
@@ -96,7 +96,7 @@ FakeNearbyShareLocalDeviceDataManager::SetDeviceName(const std::string& name) {
     NotifyLocalDeviceDataChanged(
         /*did_device_name_change=*/true,
         /*did_full_name_change=*/false,
-        /*did_icon_url_change=*/false);
+        /*did_icon_change=*/false);
   }
 
   return nearby_share::mojom::DeviceNameValidationResult::kValid;
@@ -119,7 +119,7 @@ void FakeNearbyShareLocalDeviceDataManager::UploadCertificates(
                                           std::move(callback));
 }
 void FakeNearbyShareLocalDeviceDataManager::SetFullName(
-    const base::Optional<std::string>& full_name) {
+    const absl::optional<std::string>& full_name) {
   if (full_name_ == full_name)
     return;
 
@@ -127,11 +127,11 @@ void FakeNearbyShareLocalDeviceDataManager::SetFullName(
   NotifyLocalDeviceDataChanged(
       /*did_device_name_change=*/false,
       /*did_full_name_change=*/true,
-      /*did_icon_url_change=*/false);
+      /*did_icon_change=*/false);
 }
 
 void FakeNearbyShareLocalDeviceDataManager::SetIconUrl(
-    const base::Optional<std::string>& icon_url) {
+    const absl::optional<std::string>& icon_url) {
   if (icon_url_ == icon_url)
     return;
 
@@ -139,7 +139,7 @@ void FakeNearbyShareLocalDeviceDataManager::SetIconUrl(
   NotifyLocalDeviceDataChanged(
       /*did_device_name_change=*/false,
       /*did_full_name_change=*/false,
-      /*did_icon_url_change=*/true);
+      /*did_icon_change=*/true);
 }
 
 void FakeNearbyShareLocalDeviceDataManager::OnStart() {}

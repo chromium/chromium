@@ -1,11 +1,10 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
 import("//build/config/ios/asset_catalog.gni")
 import("//build/config/ios/rules.gni")
-import("//build/config/python.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/remoting_locales.gni")
 
@@ -80,7 +79,6 @@ appiconset("remoting_icons") {
     "chromium/AppIcon.appiconset/Icon-29.png",
     "chromium/AppIcon.appiconset/Icon-40.png",
     "chromium/AppIcon.appiconset/Icon-58.png",
-    "chromium/AppIcon.appiconset/Icon-76.png",
     "chromium/AppIcon.appiconset/Icon-80.png",
     "chromium/AppIcon.appiconset/Icon-87.png",
   ]
@@ -88,8 +86,7 @@ appiconset("remoting_icons") {
 
 # i18n
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("infoplist_strings") {
+action("infoplist_strings") {
   _source = "InfoPlist.strings.jinja2"
   sources = [ _source ]
 

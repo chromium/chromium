@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app.proto;
+
+// Represents all the common OS Integration states to be stored in the web_app
+// DB that matches the values in the OS.
+message WebAppOsIntegrationState {
+  // Add data states for ShortcutMenu registration.
+  // Add data states for FileHandler registration.
+  // Add data states for ProtocolHandler registration.
+  // Add data states for UrlHandler registration.
+  // Add data states for RunOnOSLogin registration.
+  // Add data states for RegisterWebAppOsUninstall registration.
+  // Are other data required? If so, add them here.
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,16 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+
+using HttpsRecordPriority = uint16_t;
 
 class AliasFormHttpsRecordRdata;
 class ServiceFormHttpsRecordRdata;
@@ -28,6 +30,7 @@ class NET_EXPORT_PRIVATE HttpsRecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeHttps;
 
+  // Returns `nullptr` on malformed input.
   static std::unique_ptr<HttpsRecordRdata> Parse(base::StringPiece data);
 
   HttpsRecordRdata(const HttpsRecordRdata& rdata) = delete;
@@ -45,23 +48,8 @@ class NET_EXPORT_PRIVATE HttpsRecordRdata : public RecordRdata {
   ServiceFormHttpsRecordRdata* AsServiceForm();
   const ServiceFormHttpsRecordRdata* AsServiceForm() const;
 
-  // For experimental query metrics.
-  // TODO(crbug.com/1138620): Remove as HTTPS use becomes non-experimental.
-  virtual bool IsMalformed() const;
-
  protected:
   HttpsRecordRdata() = default;
-};
-
-// For experimental query metrics.
-// TODO(crbug.com/1138620): Remove as HTTPS use becomes non-experimental.
-class NET_EXPORT_PRIVATE MalformedHttpsRecordRdata : public HttpsRecordRdata {
- public:
-  MalformedHttpsRecordRdata();
-
-  bool IsEqual(const HttpsRecordRdata* other) const override;
-  bool IsAlias() const override;
-  bool IsMalformed() const override;
 };
 
 class NET_EXPORT_PRIVATE AliasFormHttpsRecordRdata : public HttpsRecordRdata {
@@ -97,7 +85,7 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
                               std::set<uint16_t> mandatory_keys,
                               std::vector<std::string> alpn_ids,
                               bool default_alpn,
-                              base::Optional<uint16_t> port,
+                              absl::optional<uint16_t> port,
                               std::vector<IPAddress> ipv4_hint,
                               std::string ech_config,
                               std::vector<IPAddress> ipv6_hint,
@@ -110,12 +98,12 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
   bool IsEqual(const HttpsRecordRdata* other) const override;
   bool IsAlias() const override;
 
-  uint16_t priority() const { return priority_; }
+  HttpsRecordPriority priority() const { return priority_; }
   base::StringPiece service_name() const { return service_name_; }
   const std::set<uint16_t>& mandatory_keys() const { return mandatory_keys_; }
   const std::vector<std::string>& alpn_ids() const { return alpn_ids_; }
   bool default_alpn() const { return default_alpn_; }
-  base::Optional<uint16_t> port() const { return port_; }
+  absl::optional<uint16_t> port() const { return port_; }
   const std::vector<IPAddress>& ipv4_hint() const { return ipv4_hint_; }
   base::StringPiece ech_config() const { return ech_config_; }
   const std::vector<IPAddress>& ipv6_hint() const { return ipv6_hint_; }
@@ -132,14 +120,14 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
  private:
   static bool IsSupportedKey(uint16_t key);
 
-  const uint16_t priority_;
+  const HttpsRecordPriority priority_;
   const std::string service_name_;
 
   // Supported service parameters.
   const std::set<uint16_t> mandatory_keys_;
   const std::vector<std::string> alpn_ids_;
   const bool default_alpn_;
-  const base::Optional<uint16_t> port_;
+  const absl::optional<uint16_t> port_;
   const std::vector<IPAddress> ipv4_hint_;
   const std::string ech_config_;
   const std::vector<IPAddress> ipv6_hint_;

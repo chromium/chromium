@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.multiwindow.CloseConfirmationDialogView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="@dimen/confirmation_dialog_width"
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/modal_dialog_title"
+        android:id="@+id/title_container"/>
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dialog_padding_sides"
+        android:layout_marginVertical="16dp"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/dialog_padding_sides" >
+        <CheckBox
+            android:id="@+id/no_more_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
+        <TextView
+            android:id="@+id/no_more"
+            android:text="@string/dont_ask_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
+    </LinearLayout>
+
+    <org.chromium.components.browser_ui.widget.DualControlLayout
+        android:id="@+id/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="?attr/dualControlLayoutVerticalPadding"
+        android:paddingHorizontal="?attr/dualControlLayoutHorizontalPadding"
+        app:stackedMargin="@dimen/button_bar_stacked_margin"
+        app:buttonAlignment="end">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/positive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?attr/buttonBarPositiveButtonStyle" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/negative_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?attr/buttonBarNegativeButtonStyle" />
+
+    </org.chromium.components.browser_ui.widget.DualControlLayout>
+</org.chromium.chrome.browser.multiwindow.CloseConfirmationDialogView>

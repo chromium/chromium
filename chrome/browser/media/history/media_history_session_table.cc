@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "chrome/browser/media/history/media_history_store.h"
 #include "services/media_session/public/cpp/media_image.h"
@@ -67,14 +67,14 @@ sql::InitStatus MediaHistorySessionTable::CreateTableIfNonExistent() {
   return sql::INIT_OK;
 }
 
-base::Optional<int64_t> MediaHistorySessionTable::SavePlaybackSession(
+absl::optional<int64_t> MediaHistorySessionTable::SavePlaybackSession(
     const GURL& url,
     const url::Origin& origin,
     const media_session::MediaMetadata& metadata,
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   DCHECK_LT(0, DB()->transaction_nesting());
   if (!CanAccessDatabase())
-    return base::nullopt;
+    return absl::nullopt;
 
   sql::Statement statement(DB()->GetCachedStatement(
       SQL_FROM_HERE,
@@ -111,13 +111,13 @@ base::Optional<int64_t> MediaHistorySessionTable::SavePlaybackSession(
     return DB()->GetLastInsertRowId();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<mojom::MediaHistoryPlaybackSessionRowPtr>
 MediaHistorySessionTable::GetPlaybackSessions(
-    base::Optional<unsigned int> num_sessions,
-    base::Optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter) {
+    absl::optional<unsigned int> num_sessions,
+    absl::optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter) {
   std::vector<mojom::MediaHistoryPlaybackSessionRowPtr> sessions;
   if (!CanAccessDatabase())
     return sessions;
@@ -131,8 +131,8 @@ MediaHistorySessionTable::GetPlaybackSessions(
           .c_str()));
 
   while (statement.Step()) {
-    auto duration = base::TimeDelta::FromMilliseconds(statement.ColumnInt64(2));
-    auto position = base::TimeDelta::FromMilliseconds(statement.ColumnInt64(3));
+    auto duration = base::Milliseconds(statement.ColumnInt64(2));
+    auto position = base::Milliseconds(statement.ColumnInt64(3));
 
     // Skip any that should not be shown.
     if (filter.has_value() && !filter->Run(duration, position))
@@ -147,10 +147,9 @@ MediaHistorySessionTable::GetPlaybackSessions(
     session->metadata.artist = statement.ColumnString16(5);
     session->metadata.album = statement.ColumnString16(6);
     session->metadata.source_title = statement.ColumnString16(7);
-    session->last_updated_time =
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromSeconds(statement.ColumnInt64(8)))
-            .ToJsTime();
+    session->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
+                                     base::Seconds(statement.ColumnInt64(8)))
+                                     .ToJsTime();
 
     sessions.push_back(std::move(session));
 

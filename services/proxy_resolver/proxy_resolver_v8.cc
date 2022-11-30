@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -13,8 +14,8 @@
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -98,6 +99,11 @@ class V8ExternalStringFromScriptData
       const scoped_refptr<net::PacFileData>& script_data)
       : script_data_(script_data) {}
 
+  V8ExternalStringFromScriptData(const V8ExternalStringFromScriptData&) =
+      delete;
+  V8ExternalStringFromScriptData& operator=(
+      const V8ExternalStringFromScriptData&) = delete;
+
   const uint16_t* data() const override {
     return reinterpret_cast<const uint16_t*>(script_data_->utf16().data());
   }
@@ -106,7 +112,6 @@ class V8ExternalStringFromScriptData
 
  private:
   const scoped_refptr<net::PacFileData> script_data_;
-  DISALLOW_COPY_AND_ASSIGN(V8ExternalStringFromScriptData);
 };
 
 // External string wrapper so V8 can access a string literal.
@@ -120,6 +125,9 @@ class V8ExternalASCIILiteral
     DCHECK(base::IsStringASCII(ascii));
   }
 
+  V8ExternalASCIILiteral(const V8ExternalASCIILiteral&) = delete;
+  V8ExternalASCIILiteral& operator=(const V8ExternalASCIILiteral&) = delete;
+
   const char* data() const override { return ascii_; }
 
   size_t length() const override { return length_; }
@@ -127,7 +135,6 @@ class V8ExternalASCIILiteral
  private:
   const char* ascii_;
   size_t length_;
-  DISALLOW_COPY_AND_ASSIGN(V8ExternalASCIILiteral);
 };
 
 // When creating a v8::String from a C++ string we have two choices: create
@@ -364,6 +371,9 @@ class SharedIsolateFactory {
  public:
   SharedIsolateFactory() : has_initialized_v8_(false) {}
 
+  SharedIsolateFactory(const SharedIsolateFactory&) = delete;
+  SharedIsolateFactory& operator=(const SharedIsolateFactory&) = delete;
+
   // Lazily creates a v8::Isolate, or returns the already created instance.
   v8::Isolate* GetSharedIsolate() {
     base::AutoLock lock(lock_);
@@ -371,8 +381,13 @@ class SharedIsolateFactory {
     if (!holder_) {
       // Do one-time initialization for V8.
       if (!has_initialized_v8_) {
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+        gin::V8Initializer::LoadV8Snapshot(
+            gin::V8SnapshotFileType::kWithAdditionalContext);
+#else
         gin::V8Initializer::LoadV8Snapshot();
+#endif
 #endif
 
         // The performance of the proxy resolver is limited by DNS resolution,
@@ -397,9 +412,9 @@ class SharedIsolateFactory {
         has_initialized_v8_ = true;
       }
 
-      holder_.reset(new gin::IsolateHolder(
+      holder_ = std::make_unique<gin::IsolateHolder>(
           base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
-          gin::IsolateHolder::IsolateType::kUtility));
+          gin::IsolateHolder::IsolateType::kUtility);
     }
 
     return holder_->isolate();
@@ -414,8 +429,6 @@ class SharedIsolateFactory {
   base::Lock lock_;
   std::unique_ptr<gin::IsolateHolder> holder_;
   bool has_initialized_v8_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedIsolateFactory);
 };
 
 base::LazyInstance<SharedIsolateFactory>::Leaky g_isolate_factory =
@@ -469,7 +482,7 @@ class ProxyResolverV8::Context {
     v8::TryCatch try_catch(isolate_);
     v8::Local<v8::Value> ret;
     if (!v8::Function::Cast(*function)
-             ->Call(context, context->Global(), base::size(argv), argv)
+             ->Call(context, context->Global(), std::size(argv), argv)
              .ToLocal(&ret)) {
       DCHECK(try_catch.HasCaught());
       HandleError(try_catch.Message());
@@ -490,9 +503,7 @@ class ProxyResolverV8::Context {
       //               converting them to ASCII punycode.
       //               crbug.com/47234
       std::u16string error_message =
-          base::ASCIIToUTF16(
-              "FindProxyForURL() returned a non-ASCII string "
-              "(crbug.com/47234): ") +
+          u"FindProxyForURL() returned a non-ASCII string (crbug.com/47234): " +
           ret_str;
       js_bindings()->OnError(-1, error_message);
       return net::ERR_PAC_SCRIPT_FAILED;
@@ -622,8 +633,7 @@ class ProxyResolverV8::Context {
 
     if (!(*function)->IsFunction()) {
       js_bindings()->OnError(
-          -1, base::ASCIIToUTF16(
-                  "FindProxyForURL is undefined or not a function."));
+          -1, u"FindProxyForURL is undefined or not a function.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
@@ -851,7 +861,7 @@ class ProxyResolverV8::Context {
 
   mutable base::Lock lock_;
   ProxyResolverV8::JSBindings* js_bindings_;
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   v8::Persistent<v8::External> v8_this_;
   v8::Persistent<v8::Context> v8_context_;
 };

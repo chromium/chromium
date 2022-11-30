@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_info.h"
@@ -59,7 +58,7 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
         details = l10n_util::GetStringFUTF16(
             IDS_CERT_ERROR_COMMON_NAME_INVALID_DETAILS,
             UTF8ToUTF16(request_url.host()),
-            net::EscapeForHTML(UTF8ToUTF16(dns_names[i])));
+            base::EscapeForHTML(UTF8ToUTF16(dns_names[i])));
       }
 
       short_description = l10n_util::GetStringUTF16(
@@ -177,12 +176,6 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
       short_description = l10n_util::GetStringUTF16(
           IDS_CERT_ERROR_CERTIFICATE_TRANSPARENCY_REQUIRED_DESCRIPTION);
       break;
-    case LEGACY_TLS:
-      details =
-          l10n_util::GetStringUTF16(IDS_SSL_ERROR_OBSOLETE_VERSION_DETAILS);
-      short_description =
-          l10n_util::GetStringUTF16(IDS_SSL_ERROR_OBSOLETE_VERSION_DESCRIPTION);
-      break;
     case UNKNOWN:
       details = l10n_util::GetStringUTF16(IDS_CERT_ERROR_UNKNOWN_ERROR_DETAILS);
       short_description =
@@ -231,8 +224,6 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
       return CERT_SYMANTEC_LEGACY;
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return CERT_KNOWN_INTERCEPTION_BLOCKED;
-    case net::ERR_SSL_OBSOLETE_VERSION:
-      return LEGACY_TLS;
     default:
       NOTREACHED();
       return UNKNOWN;
@@ -260,7 +251,6 @@ void ErrorInfo::GetErrorsForCertStatus(
       net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED,
       net::CERT_STATUS_SYMANTEC_LEGACY,
       net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED,
-      net::CERT_STATUS_LEGACY_TLS,
   };
 
   const ErrorType kErrorTypes[] = {
@@ -278,11 +268,10 @@ void ErrorInfo::GetErrorsForCertStatus(
       CERTIFICATE_TRANSPARENCY_REQUIRED,
       CERT_SYMANTEC_LEGACY,
       CERT_KNOWN_INTERCEPTION_BLOCKED,
-      LEGACY_TLS,
   };
-  DCHECK(base::size(kErrorFlags) == base::size(kErrorTypes));
+  DCHECK(std::size(kErrorFlags) == std::size(kErrorTypes));
 
-  for (size_t i = 0; i < base::size(kErrorFlags); ++i) {
+  for (size_t i = 0; i < std::size(kErrorFlags); ++i) {
     if ((cert_status & kErrorFlags[i]) && errors) {
       errors->push_back(
           ErrorInfo::CreateError(kErrorTypes[i], cert.get(), url));

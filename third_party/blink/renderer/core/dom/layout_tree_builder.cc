@@ -75,11 +75,34 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
     return;
   if (!parent_layout_object->CanHaveChildren())
     return;
+
+  // If we are in the top layer and the parent layout object without top layer
+  // adjustment can't have children, then don't render.
+  // https://github.com/w3c/csswg-drafts/issues/6939#issuecomment-1016671534
+  if (node_->IsInTopLayer() && context_.parent &&
+      !context_.parent->CanHaveChildren() &&
+      node_->GetPseudoId() != kPseudoIdBackdrop) {
+    return;
+  }
+
   if (node_->IsPseudoElement() &&
       !CanHaveGeneratedChildren(*parent_layout_object))
     return;
   if (!node_->LayoutObjectIsNeeded(*style_))
     return;
+
+  // Table internals require the same writing-mode and direction for
+  // the whole table.
+  const ComputedStyle& parent_style = parent_layout_object->StyleRef();
+  if (style_->IsDisplayTableInternalType() &&
+      style_->GetWritingDirection() != parent_style.GetWritingDirection()) {
+    scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*style_);
+    new_style->SetWritingMode(parent_style.GetWritingMode());
+    new_style->SetDirection(parent_style.Direction());
+    new_style->SetTextOrientation(parent_style.GetTextOrientation());
+    new_style->UpdateFontOrientation();
+    style_ = std::move(new_style);
+  }
 
   LayoutObject* new_layout_object = node_->CreateLayoutObject(*style_, legacy_);
   if (!new_layout_object)
@@ -109,18 +132,23 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   parent_layout_object->AddChild(new_layout_object, next_layout_object);
 }
 
-LayoutObject*
-LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded() {
+scoped_refptr<ComputedStyle>
+LayoutTreeBuilderForText::CreateInlineWrapperStyleForDisplayContentsIfNeeded()
+    const {
   // If the parent element is not a display:contents element, the style and the
   // parent style will be the same ComputedStyle object. Early out here.
   if (style_ == context_.parent->Style())
     return nullptr;
 
-  scoped_refptr<ComputedStyle> wrapper_style =
-      node_->GetDocument()
-          .GetStyleResolver()
-          .CreateInheritedDisplayContentsStyleIfNeeded(
-              *style_, context_.parent->StyleRef());
+  return node_->GetDocument()
+      .GetStyleResolver()
+      .CreateInheritedDisplayContentsStyleIfNeeded(*style_,
+                                                   context_.parent->StyleRef());
+}
+
+LayoutObject*
+LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded(
+    ComputedStyle* wrapper_style) const {
   if (!wrapper_style)
     return nullptr;
 
@@ -140,20 +168,28 @@ LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded() {
 }
 
 void LayoutTreeBuilderForText::CreateLayoutObject() {
-  const ComputedStyle& style = *style_;
+  const ComputedStyle* style = style_.get();
   LayoutObject* layout_object_parent = context_.parent;
   LayoutObject* next_layout_object = NextLayoutObject();
-  if (LayoutObject* wrapper = CreateInlineWrapperForDisplayContentsIfNeeded()) {
+  scoped_refptr<ComputedStyle> nullable_wrapper_style =
+      CreateInlineWrapperStyleForDisplayContentsIfNeeded();
+  if (LayoutObject* wrapper = CreateInlineWrapperForDisplayContentsIfNeeded(
+          nullable_wrapper_style.get())) {
     layout_object_parent = wrapper;
     next_layout_object = nullptr;
   }
+  // SVG <text> doesn't accept anonymous LayoutInlines. But the Text should have
+  // the adjusted ComputedStyle.
+  if (nullable_wrapper_style)
+    style = nullable_wrapper_style.get();
 
-  LegacyLayout legacy_layout = layout_object_parent->ForceLegacyLayout()
-                                   ? LegacyLayout::kForce
-                                   : LegacyLayout::kAuto;
+  LegacyLayout legacy_layout =
+      layout_object_parent->ForceLegacyLayoutForChildren()
+          ? LegacyLayout::kForce
+          : LegacyLayout::kAuto;
   LayoutText* new_layout_object =
-      node_->CreateTextLayoutObject(style, legacy_layout);
-  if (!layout_object_parent->IsChildAllowed(new_layout_object, style)) {
+      node_->CreateTextLayoutObject(*style, legacy_layout);
+  if (!layout_object_parent->IsChildAllowed(new_layout_object, *style)) {
     new_layout_object->Destroy();
     return;
   }
@@ -167,7 +203,7 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
 
   node_->SetLayoutObject(new_layout_object);
   DCHECK(!new_layout_object->Style());
-  new_layout_object->SetStyle(&style);
+  new_layout_object->SetStyle(style);
 
   layout_object_parent->AddChild(new_layout_object, next_layout_object);
 }

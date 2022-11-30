@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/back_to_top_bubble"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/back_to_top_bubble_horizontal_padding"
+    android:paddingEnd="@dimen/back_to_top_bubble_horizontal_padding"
+    android:paddingTop="@dimen/back_to_top_bubble_vertical_padding"
+    android:paddingBottom="@dimen/back_to_top_bubble_vertical_padding"
+    android:gravity="center" >
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/image"
+        android:layout_width="@dimen/back_to_top_bubble_image_size"
+        android:layout_height="@dimen/back_to_top_bubble_image_size"
+        android:layout_marginEnd="@dimen/back_to_top_bubble_image_margin_end"
+        tools:ignore="ContentDescription"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+</LinearLayout>

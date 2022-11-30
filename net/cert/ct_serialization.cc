@@ -1,19 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cert/ct_serialization.h"
 
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "crypto/sha2.h"
 #include "net/cert/merkle_tree_leaf.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/signed_tree_head.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -39,12 +38,8 @@ bool ReadSCTList(CBS* in, std::vector<base::StringPiece>* out) {
 
   while (CBS_len(&sct_list_data) != 0) {
     CBS sct_list_item;
-    if (!CBS_get_u16_length_prefixed(&sct_list_data, &sct_list_item)) {
-      DVLOG(1) << "Failed to read item in list.";
-      return false;
-    }
-    if (CBS_len(&sct_list_item) == 0) {
-      DVLOG(1) << "Empty item in list";
+    if (!CBS_get_u16_length_prefixed(&sct_list_data, &sct_list_item) ||
+        CBS_len(&sct_list_item) == 0) {
       return false;
     }
 
@@ -168,14 +163,11 @@ bool DecodeDigitallySigned(CBS* input, DigitallySigned* output) {
   }
 
   DigitallySigned result;
-  if (!ConvertHashAlgorithm(hash_algo, &result.hash_algorithm)) {
-    DVLOG(1) << "Invalid hash algorithm " << hash_algo;
+  if (!ConvertHashAlgorithm(hash_algo, &result.hash_algorithm) ||
+      !ConvertSignatureAlgorithm(sig_algo, &result.signature_algorithm)) {
     return false;
   }
-  if (!ConvertSignatureAlgorithm(sig_algo, &result.signature_algorithm)) {
-    DVLOG(1) << "Invalid signature algorithm " << sig_algo;
-    return false;
-  }
+
   result.signature_data.assign(
       reinterpret_cast<const char*>(CBS_data(&sig_data)), CBS_len(&sig_data));
 
@@ -227,14 +219,11 @@ static bool ReadTimeSinceEpoch(CBS* input, base::Time* output) {
   base::CheckedNumeric<int64_t> time_since_epoch_signed = time_since_epoch;
 
   if (!time_since_epoch_signed.IsValid()) {
-    DVLOG(1) << "Timestamp value too big to cast to int64_t: "
-             << time_since_epoch;
     return false;
   }
 
-  *output =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(time_since_epoch_signed.ValueOrDie());
+  *output = base::Time::UnixEpoch() +
+            base::Milliseconds(int64_t{time_since_epoch_signed.ValueOrDie()});
 
   return true;
 }
@@ -329,16 +318,13 @@ bool DecodeSCTList(base::StringPiece input,
 bool DecodeSignedCertificateTimestamp(
     base::StringPiece* input,
     scoped_refptr<SignedCertificateTimestamp>* output) {
-  scoped_refptr<SignedCertificateTimestamp> result(
-      new SignedCertificateTimestamp());
+  auto result = base::MakeRefCounted<SignedCertificateTimestamp>();
   uint8_t version;
   CBS input_cbs;
   CBS_init(&input_cbs, reinterpret_cast<const uint8_t*>(input->data()),
            input->size());
-  if (!CBS_get_u8(&input_cbs, &version))
-    return false;
-  if (version != SignedCertificateTimestamp::V1) {
-    DVLOG(1) << "Unsupported/invalid version " << version;
+  if (!CBS_get_u8(&input_cbs, &version) ||
+      version != SignedCertificateTimestamp::V1) {
     return false;
   }
 
@@ -412,6 +398,4 @@ bool EncodeSCTListForTesting(const base::StringPiece& sct,
   return true;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

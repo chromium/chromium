@@ -1,8 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
+#include "base/memory/raw_ptr.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -111,9 +112,9 @@ class ValidationTestInputParser {
   const std::string& input_;
   size_t input_cursor_;
 
-  std::vector<uint8_t>* data_;
-  size_t* num_handles_;
-  std::string* error_message_;
+  raw_ptr<std::vector<uint8_t>> data_;
+  raw_ptr<size_t> num_handles_;
+  raw_ptr<std::string> error_message_;
 
   std::map<std::string, PendingDistanceItem> pending_distance_items_;
   std::set<std::string> anchors_;
@@ -217,7 +218,6 @@ bool ValidationTestInputParser::GetNextItem(Range* range) {
       return true;
     }
   }
-  return false;
 }
 
 bool ValidationTestInputParser::ParseItem(const Range& range) {

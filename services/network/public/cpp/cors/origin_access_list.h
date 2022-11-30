@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/cpp/cors/origin_access_entry.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-shared.h"
@@ -43,6 +42,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessList {
   };
 
   OriginAccessList();
+
+  OriginAccessList(const OriginAccessList&) = delete;
+  OriginAccessList& operator=(const OriginAccessList&) = delete;
+
   ~OriginAccessList();
 
   // Clears the old allow list for |source_origin|, and set |patterns| to the
@@ -128,8 +131,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessList {
       MapType type);
 
   OriginPatternsMap map_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAccessList);
 };
 
 }  // namespace cors

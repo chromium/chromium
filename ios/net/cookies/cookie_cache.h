@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
 
@@ -24,6 +23,10 @@ namespace net {
 class CookieCache {
  public:
   CookieCache();
+
+  CookieCache(const CookieCache&) = delete;
+  CookieCache& operator=(const CookieCache&) = delete;
+
   ~CookieCache();
 
   // Update the cookie cache with cookies named |name| that would be sent for a
@@ -69,8 +72,6 @@ class CookieCache {
   typedef std::map<CookieKey, CookieSet> CookieKeyPathMap;
 
   CookieKeyPathMap cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieCache);
 };
 
 }  // namespace net

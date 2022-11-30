@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/logging.h"
@@ -35,7 +36,7 @@
 #include "util/mach/notify_server.h"
 #include "util/misc/clock.h"
 #include "util/misc/implicit_cast.h"
-#include "util/posix/double_fork_and_exec.h"
+#include "util/posix/spawn_subprocess.h"
 
 namespace crashpad {
 
@@ -94,6 +95,9 @@ class ScopedPthreadAttrDestroy {
       : pthread_attr_(pthread_attr) {
   }
 
+  ScopedPthreadAttrDestroy(const ScopedPthreadAttrDestroy&) = delete;
+  ScopedPthreadAttrDestroy& operator=(const ScopedPthreadAttrDestroy&) = delete;
+
   ~ScopedPthreadAttrDestroy() {
     errno = pthread_attr_destroy(pthread_attr_);
     PLOG_IF(WARNING, errno != 0) << "pthread_attr_destroy";
@@ -101,13 +105,14 @@ class ScopedPthreadAttrDestroy {
 
  private:
   pthread_attr_t* pthread_attr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPthreadAttrDestroy);
 };
 
 //! \brief Starts a Crashpad handler, possibly restarting it if it dies.
 class HandlerStarter final : public NotifyServer::DefaultInterface {
  public:
+  HandlerStarter(const HandlerStarter&) = delete;
+  HandlerStarter& operator=(const HandlerStarter&) = delete;
+
   ~HandlerStarter() {}
 
   //! \brief Starts a Crashpad handler initially, as opposed to starting it for
@@ -173,7 +178,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
         handler_restarter->StartRestartThread(
             handler, database, metrics_dir, url, annotations, arguments)) {
       // The thread owns the object now.
-      ignore_result(handler_restarter.release());
+      std::ignore = handler_restarter.release();
     }
 
     // If StartRestartThread() failed, proceed without the ability to restart.
@@ -338,7 +343,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
     // this parent process, which was probably using the exception server now
     // being restarted. The handler can’t monitor itself for its own crashes via
     // this interface.
-    if (!DoubleForkAndExec(
+    if (!SpawnSubprocess(
             argv,
             nullptr,
             server_write_fd.get(),
@@ -357,7 +362,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
       return false;
     }
 
-    ignore_result(receive_right.release());
+    std::ignore = receive_right.release();
     return true;
   }
 
@@ -427,8 +432,6 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
   std::vector<std::string> arguments_;
   base::mac::ScopedMachReceiveRight notify_port_;
   uint64_t last_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandlerStarter);
 };
 
 }  // namespace
@@ -491,7 +494,7 @@ bool CrashpadClient::SetHandlerMachPort(
     return false;
   }
 
-  exception_port_.swap(exception_port);
+  exception_port_ = std::move(exception_port);
   return true;
 }
 

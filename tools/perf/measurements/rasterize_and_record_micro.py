@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -80,7 +80,6 @@ class RasterizeAndRecordMicro(legacy_page_test.LegacyPageTest):
     for metric in ('rasterize_time', 'record_time',
                    'record_time_caching_disabled',
                    'record_time_subsequence_caching_disabled',
-                   'record_time_partial_invalidation',
                    'raster_invalidation_and_convert_time',
                    'paint_artifact_compositor_update_time'):
       results.AddMeasurement(metric, 'ms', data.get(metric + '_ms', 0))

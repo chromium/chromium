@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,10 +29,6 @@ target(link_target_type, "renderer_sources") {
     "chrome_object_extensions_utils.h",
     "content_renderer_client.cc",
     "content_renderer_client.h",
-    "document_state.cc",
-    "document_state.h",
-    "pepper_plugin_instance.h",
-    "plugin_ax_tree_source.h",
     "render_accessibility.h",
     "render_frame.h",
     "render_frame_media_playback_options.h",
@@ -44,9 +40,6 @@ target(link_target_type, "renderer_sources") {
     "render_thread.h",
     "render_thread_observer.cc",
     "render_thread_observer.h",
-    "render_view.h",
-    "render_view_visitor.h",
-    "renderer_ppapi_host.h",
     "v8_value_converter.h",
     "video_encode_accelerator.cc",
     "video_encode_accelerator.h",
@@ -57,9 +50,13 @@ target(link_target_type, "renderer_sources") {
 
   configs += [ "//content:content_implementation" ]
 
-  public_deps = [ "//media" ]
+  public_deps = [
+    "//media",
+    "//ui/accessibility",
+  ]
 
   deps = [
+    "//components/cast_streaming/renderer:resource_provider",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//content/renderer",
@@ -68,7 +65,6 @@ target(link_target_type, "renderer_sources") {
     "//media/gpu/ipc/client",
     "//net",
     "//ppapi/buildflags",
-    "//ppapi/c",
     "//skia",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
@@ -85,6 +81,19 @@ target(link_target_type, "renderer_sources") {
     # include headers from each other.
     "//content/renderer",
   ]
+
+  if (enable_plugins) {
+    sources += [ "plugin_ax_tree_source.h" ]
+  }
+
+  if (enable_ppapi) {
+    sources += [
+      "pepper_plugin_instance.h",
+      "ppapi_gfx_conversion.h",
+      "renderer_ppapi_host.h",
+    ]
+    deps += [ "//ppapi/c" ]
+  }
 
   if (is_android) {
     sources += [ "seccomp_sandbox_status_android.h" ]

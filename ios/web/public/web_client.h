@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/values.h"
 #include "ios/web/common/user_agent.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
 
 namespace base {
@@ -25,6 +24,7 @@ class RefCountedMemory;
 
 class GURL;
 
+@protocol UITraitEnvironment;
 @class UIWebView;
 @class NSString;
 
@@ -37,7 +37,6 @@ namespace web {
 class BrowserState;
 class BrowserURLRewriter;
 class JavaScriptFeature;
-class SerializableUserDataManager;
 class WebClient;
 class WebMainParts;
 class WebState;
@@ -62,8 +61,8 @@ class WebClient {
 
   // An embedder may support schemes that are otherwise unknown to lower-level
   // components. To control how /net/url and other components interpret urls of
-  // such schemes, the embedder overrides |AddAdditionalSchemes| and adds to the
-  // vectors inside the |Schemes| structure.
+  // such schemes, the embedder overrides `AddAdditionalSchemes` and adds to the
+  // vectors inside the `Schemes` structure.
   struct Schemes {
     Schemes();
     ~Schemes();
@@ -85,10 +84,6 @@ class WebClient {
   // browser would return true for "chrome://about" URL.
   virtual bool IsAppSpecificURL(const GURL& url) const;
 
-  // Allow embedder to inject data.
-  virtual void AddSerializableData(
-      web::SerializableUserDataManager* user_data_manager,
-      web::WebState* web_state);
   // Returns text to be displayed for an unsupported plugin.
   virtual std::u16string GetPluginNotSupportedText() const;
 
@@ -99,8 +94,9 @@ class WebClient {
   virtual std::u16string GetLocalizedString(int message_id) const;
 
   // Returns the contents of a resource in a StringPiece given the resource id.
-  virtual base::StringPiece GetDataResource(int resource_id,
-                                            ui::ScaleFactor scale_factor) const;
+  virtual base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor) const;
 
   // Returns the raw bytes of a scale independent data resource.
   virtual base::RefCountedMemory* GetDataResourceBytes(int resource_id) const;
@@ -141,24 +137,18 @@ class WebClient {
       BrowserState* browser_state) const;
 
   // Allows the embedder to bind an interface request for a WebState-scoped
-  // interface that originated from the main frame of |web_state|. Called if
-  // |web_state| could not bind the receiver itself.
+  // interface that originated from the main frame of `web_state`. Called if
+  // `web_state` could not bind the receiver itself.
   virtual void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,
       mojo::GenericPendingReceiver receiver) {}
 
-  // Allows the embedder to specify legacy TLS enforcement on a per-host basis,
-  // for example to allow users to bypass interstitial warnings on affected
-  // hosts.
-  virtual bool IsLegacyTLSAllowedForHost(WebState* web_state,
-                                         const std::string& hostname);
-
-  // Calls the given |callback| with the contents of an error page to display
-  // when a navigation error occurs. |error| is always a valid pointer. The
-  // string passed to |callback| will be nil if no error page should be
+  // Calls the given `callback` with the contents of an error page to display
+  // when a navigation error occurs. `error` is always a valid pointer. The
+  // string passed to `callback` will be nil if no error page should be
   // displayed. Otherwise, this string will contain the details of the error
-  // and maybe links to more info. |info| will have a value for SSL cert errors
-  // and otherwise be nullopt. |navigation_id| is passed into this method so
+  // and maybe links to more info. `info` will have a value for SSL cert errors
+  // and otherwise be nullopt. `navigation_id` is passed into this method so
   // that in the case of an SSL cert error, the blocking page can be associated
   // with the tab.
   virtual void PrepareErrorPage(WebState* web_state,
@@ -166,32 +156,40 @@ class WebClient {
                                 NSError* error,
                                 bool is_post,
                                 bool is_off_the_record,
-                                const base::Optional<net::SSLInfo>& info,
+                                const absl::optional<net::SSLInfo>& info,
                                 int64_t navigation_id,
                                 base::OnceCallback<void(NSString*)> callback);
 
   // Instructs the embedder to return a container that is attached to a window.
   virtual UIView* GetWindowedContainer();
 
-  // Enables the logic to handle long press and force
-  // touch through action sheet. Should return false to use the context menu
-  // API. Defaults to return true.
-  virtual bool EnableLongPressAndForceTouchHandling() const;
-
   // Enables the logic to handle long press context menu with UIContextMenu.
   virtual bool EnableLongPressUIContextMenu() const;
 
-  // This method is used when the user didn't express any preference for the
-  // version of |url|. Returning true allows to make sure that for |url|, the
-  // mobile version will be used, unless the user explicitly requested the
-  // desktop version. This method can be overriden to avoid having specific URL
-  // being requested in desktop mode when the default mode is desktop.
-  virtual bool ForceMobileVersionByDefault(const GURL& url);
-
   // Returns the UserAgentType that should be used by default for the web
-  // content, based on the size class of |web_view| and the |url|.
-  virtual UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
-                                            const GURL& url);
+  // content, based on the `web_state`.
+  virtual UserAgentType GetDefaultUserAgent(web::WebState* web_state,
+                                            const GURL& url) const;
+
+  // Logs the default mode used (Mobile or Desktop). This is supposed to be
+  // called only if the user didn't force the mode.
+  virtual void LogDefaultUserAgent(web::WebState* web_state,
+                                   const GURL& url) const;
+
+  // Returns true if URL was restored via session restoration cache.
+  virtual bool RestoreSessionFromCache(web::WebState* web_state) const;
+
+  // Correct missing NTP and reading list virtualURLs and titles. Native session
+  // restoration may not properly restore these items.
+  virtual void CleanupNativeRestoreURLs(web::WebState* web_state) const;
+
+  // Notify the embedder that `web_state` will display a prompt for the user.
+  virtual void WillDisplayMediaCapturePermissionPrompt(
+      web::WebState* web_state) const;
+
+  // Returns whether `url1` and `url2` are actually pointing to the same page.
+  virtual bool IsPointingToSameDocument(const GURL& url1,
+                                        const GURL& url2) const;
 };
 
 }  // namespace web

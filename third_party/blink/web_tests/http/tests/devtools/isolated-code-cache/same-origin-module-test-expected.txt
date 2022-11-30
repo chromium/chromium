@@ -28,25 +28,22 @@ v8.compileModule Properties:
     type : "v8.compileModule"
 }
 Text details for v8.compileModule: v8-cache-script.cgi
-v8.compileModule Properties:
+v8.produceModuleCache Properties:
 {
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "module script"
         producedCacheSize : <number>
-        streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.compileModule"
+    type : "v8.produceModuleCache"
 }
-Text details for v8.compileModule: v8-cache-script.cgi
+Text details for v8.produceModuleCache: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
-        cacheConsumeOptions : "code"
         cacheRejected : false
         columnNumber : 1
         consumedCacheSize : <number>
@@ -76,7 +73,6 @@ Text details for v8.compileModule: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
-        cacheConsumeOptions : "code"
         cacheRejected : false
         columnNumber : 1
         consumedCacheSize : <number>
@@ -93,7 +89,6 @@ Text details for v8.compileModule: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
-        cacheConsumeOptions : "code"
         cacheRejected : false
         columnNumber : 1
         consumedCacheSize : <number>

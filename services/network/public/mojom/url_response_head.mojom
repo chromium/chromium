@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/alternate_protocol_usage.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/http_raw_request_response_info.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "services/network/public/mojom/origin_policy_manager.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
@@ -53,29 +53,20 @@ struct URLResponseHead {
   // True if the request accessed the network in the process of retrieving data.
   bool network_accessed = false;
 
-  // The appcache this response was loaded from, or
-  // kAppCacheNoCacheId (hard-coded as 0 because services/network
-  // can't take a dependency on Blink).
-  // TODO(rdsmith): Remove conceptual dependence on appcache.
-  int64 appcache_id = 0;
-
-  // The manifest url of the appcache this response was loaded from.
-  // Note: this value is only populated for main resource requests.
-  url.mojom.Url appcache_manifest_url;
-
   // Detailed timing information used by the WebTiming, HAR and Developer
   // Tools.  Includes socket ID and socket reuse information.
   LoadTimingInfo load_timing;
 
-  // Actual request and response headers, as obtained from the network stack.
-  // Only present if the renderer set report_raw_headers to true and had the
-  // CanReadRawCookies permission.
-  HttpRawRequestResponseInfo? raw_request_response_info;
+  // Set to true if the request had devtools_request_id set and OnRawRequest
+  // and OnRawResponse are called on the corresponding DevToolsObserver. This
+  // allows Chrome DevTools Protocol clients to know whether they should wait
+  // for the signals from OnRawRequest and OnRawResponse for this request.
+  bool emitted_extra_info = false;
 
   // True if the response was delivered using SPDY.
   bool was_fetched_via_spdy = false;
 
-  // True if the response was delivered after NPN is negotiated.
+  // True if the response was delivered over a connection that negotiated ALPN.
   bool was_alpn_negotiated = false;
 
   // True if response could use alternate protocol. However, browser will
@@ -88,8 +79,24 @@ struct URLResponseHead {
   // ALPN protocol negotiated with the server.
   string alpn_negotiated_protocol;
 
+  // The reason why Chrome uses a specific transport protocol
+  // for HTTP semantics.
+  AlternateProtocolUsage alternate_protocol_usage;
+
   // Remote address of the socket which fetched this resource.
   IPEndPoint remote_endpoint;
+
+  // The IP address space of the request client/the request's policy container.
+  // https://wicg.github.io/private-network-access/#policy-container-ip-address-space
+  IPAddressSpace client_address_space = IPAddressSpace.kUnknown;
+
+  // The IP address space of the response, derived from the remote IP endpoint.
+  // https://wicg.github.io/private-network-access/#response-ip-address-space
+  IPAddressSpace response_address_space = IPAddressSpace.kUnknown;
+
+  // True if the response was fetched from the cache and validated over the
+  // network.
+  bool is_validated = false;
 
   // True if the response came from cache.
   bool was_fetched_via_cache = false;
@@ -99,10 +106,7 @@ struct URLResponseHead {
 
   // True if a service worker responded to the request. If the service worker
   // received a fetch event and did not call respondWith(), or was bypassed due
-  // to absence of a fetch event handler, this function typically returns false
-  // but returns true if "fallback to renderer" was required (however in this
-  // case the response is not an actual resource and the request will be
-  // reissued by the renderer).
+  // to absence of a fetch event handler, this is false.
   bool was_fetched_via_service_worker = false;
 
   // Source of a serviceworker response - CacheStorage, HttpCache, Network or
@@ -114,12 +118,6 @@ struct URLResponseHead {
   // `respondWith(new Response(...))`.
   FetchResponseSource service_worker_response_source =
       FetchResponseSource.kUnspecified;
-
-  // True when a request whose mode is |CORS| or |CORS-with-forced-preflight|
-  // is sent to a ServiceWorker but FetchEvent.respondWith is not called. So the
-  // renderer has to resend the request with skip service worker flag
-  // considering the CORS preflight logic.
-  bool was_fallback_required_by_service_worker = false;
 
   // The URL list of the Response object the service worker passed to
   // respondWith() to create this response. For example, if the service worker
@@ -150,7 +148,7 @@ struct URLResponseHead {
 
   // Only provided if kURLLoadOptionSendSSLInfoWithResponse was specified to
   // the URLLoaderFactory::CreateLoaderAndStart option or
-  // if ResourceRequest::report_raw_headers is set. When set via
+  // if ResourceRequest::devtools_request_id is set. When set via
   // |report_raw_headers|, the SSLInfo is not guaranteed to be fully populated
   // and may only contain certain fields of interest (namely, connection
   // parameters and certificate information).
@@ -217,22 +215,32 @@ struct URLResponseHead {
   // it wasn't implemented or not allowed from its process.
   ParsedHeaders? parsed_headers;
 
-  // Origin Policy associated with this response or nullptr if not applicable.
-  // Spec: https://wicg.github.io/origin-policy/
-  OriginPolicy? origin_policy;
-
   // Set by the browser process on cross-origin prefetch responses. This token
   // is propagated to the renderer and set on recursive prefetch requests
   // (see corresponding documentation in url_loader.mojom).
   mojo_base.mojom.UnguessableToken? recursive_prefetch_token;
 
   // Aliases, if any, for the destination URL, as read from DNS CNAME records.
-  // The first entry of `dns_aliases`, if it exists, is the canonical name.
-  // The alias chain is preserved in reverse order, from canonical name (i.e.
-  // address record name) through to query name.
+  // Includes all known aliases, e.g. from A, AAAA, or HTTPS, not just from the
+  // address used for the connection, in no particular order.
   array<string> dns_aliases;
 
   // The URL of WebBundle this response was loaded from. This value is only
   // populated for resources loaded from a WebBundle.
   url.mojom.Url web_bundle_url;
+
+  // True when there is an "authorization" header on the request and it is
+  // covered by the wildcard in the preflight response.
+  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  bool has_authorization_covered_by_wildcard_on_preflight = false;
+
+  // [spec] https://fetch.spec.whatwg.org/#response-request-includes-credentials
+  // The request's |includeCredentials| value from the "HTTP-network fetch"
+  // algorithm.
+  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
+  bool request_include_credentials = true;
+
+  // This boolean is set to true if the response has a Set-Cookie header with the Partitioned attribute.
+  // TODO(https://crbug.com/1296161): Delete this field.
+  bool has_partitioned_cookie = false;
 };

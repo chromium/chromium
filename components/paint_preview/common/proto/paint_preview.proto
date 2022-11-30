@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ message ContentIdEmbeddingTokenPairProto {
 }
 
 // A paint preview of a single frame.
-// NEXT_TAG = 10
+// NEXT_TAG = 11
 message PaintPreviewFrameProto {
   // The embedding token for this frame to its parent. Every frame other than
   // the main frame should have a non-zero value here.
@@ -73,6 +73,10 @@ message PaintPreviewFrameProto {
   // Position information for this frame.
   optional uint32 scroll_offset_x = 7;
   optional uint32 scroll_offset_y = 8;
+
+  // Position information for this frame if it is clipped.
+  optional uint32 frame_offset_x = 9;
+  optional uint32 frame_offset_y = 10;
 }
 
 // Stores Chrome version.
@@ -85,7 +89,7 @@ message ChromeVersionProto {
 }
 
 // Metadata for the capture.
-// NEXT_TAG = 4
+// NEXT_TAG = 5
 message MetadataProto {
   // URL of the root frame.
   // required
@@ -98,6 +102,9 @@ message MetadataProto {
 
   // Records the version of Chrome when the capture occurred.
   optional ChromeVersionProto chrome_version = 3;
+
+  // Records the page scale factor of the page when it was captured.
+  optional float page_scale_factor = 4;
 }
 
 // A paint preview of the entire page.

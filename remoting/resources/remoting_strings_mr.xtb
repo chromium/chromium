@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">एक अनपेक्षित एरर आली. कृपया डेव्हलपरकडे या समस्येची तक्रार करा.</translation>
 <translation id="1697532407822776718">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="1742469581923031760">कनेक्ट करीत आहे...</translation>
+<translation id="177040763384871009">रिमोट डिव्हाइसवर क्लिक केलेल्या लिंक या क्लायंट ब्राउझरवर उघडता येण्यासाठी, तुम्ही सिस्टमचा वेब ब्राउझर "<ph name="URL_FORWARDER_NAME" />" वर बदलणे आवश्यक आहे.</translation>
 <translation id="177096447311351977">क्लायंट साठी चॅनल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">हटवा</translation>
 <translation id="2009755455353575666">कनेक्शन अयशस्वी</translation>
@@ -24,7 +25,7 @@
 '<ph name="SERVICE_SCRIPT_NAME" />' वर आधीच खूण केली असल्यास, ती काढा आणि त्यावर पुन्हा खूण करा.</translation>
 <translation id="225614027745146050">सुस्वागतम</translation>
 <translation id="2320166752086256636">कीबोर्ड लपवा</translation>
-<translation id="2333212046079545895">कॉपीराइट २०२१ Google LLC. सर्व हक्क राखीव.</translation>
+<translation id="2329392777730037872">क्लायंट वर <ph name="URL" /> उघडता आली नाही.</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2366718077645204424">होस्‍टवर पोहोचण्‍यात अक्षम. हे बहुदा तुम्ही वापरत असलेल्या नेटवर्कच्या कॉन्फिगरेशनमुळे झाले आहे.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> अंतिम ऑनलाइन पाहिले <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">ही सेवा Chrome रिमोट डेस्कटॉप क्लायंटकडील येणारी कनेक्शन सक्षम करते.</translation>
 <translation id="2647232381348739934">Chromoting सेवा</translation>
 <translation id="2676780859508944670">कार्यरत आहे...</translation>
+<translation id="2692522824157224199">कॉपीराइट २०२२ Google LLC. सर्व हक्क राखीव.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">प्रमाणीकृत करताना समस्या आली, कृपया पुन्हा लॉगिन करा.</translation>
 <translation id="2803375539583399270">पिन एंटर करा</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">ऑफलाइन.</translation>
 <translation id="3695446226812920698">कसे ते जाणून घ्या</translation>
 <translation id="3776024066357219166">तुमचे Chrome रिमोट डेस्कटॉप सेशन समाप्त झाले आहे.</translation>
+<translation id="3858860766373142691">नाव</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3905196214175737742">चुकीचे होस्ट मालक डोमेन.</translation>
 <translation id="3931191050278863510">होस्ट थांबले.</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">ॲक्सेस कोड</translation>
 <translation id="4227991223508142681">होस्ट तरतूद उपयुक्तता</translation>
 <translation id="4240294130679914010">Chromoting होस्ट विस्थापनकर्ता</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">ॲक्सेस कोड अवैध आहे. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="4281844954008187215">सेवा अटी</translation>
+<translation id="4372650392690220936">कॉपीराइट २०२२ Chromium लेखक. सर्व हक्क राखीव.</translation>
 <translation id="4405930547258349619">कोअर लायब्ररी</translation>
 <translation id="443560535555262820">अ‍ॅक्सेसिबिलिटी प्राधान्ये उघडा</translation>
 <translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
-<translation id="4512952200932940229">कॉपीराइट २०२१ Chromium लेखक. सर्व हक्क राखीव.</translation>
-<translation id="4513946894732546136">अभिप्राय</translation>
+<translation id="4513946894732546136">फीडबॅक</translation>
 <translation id="4563926062592110512">डिस्कनेक्ट केलेला क्लायंट: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> योग्यरीत्या कॉंफिगर केलेला नाही. कृपया वेगळा डीफॉल्ट वेब ब्राउझर निवडा आणि त्यानंतर URL फॉरवर्ड करणे पुन्हा सुरू करा.</translation>
 <translation id="4635770493235256822">रिमोट डिव्हाइस</translation>
 <translation id="4660011489602794167">कीबोर्ड दाखवा</translation>
 <translation id="4703799847237267011">तुमचे Chromoting सेशन समाप्त झाले.</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">PrtScn पाठवा</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> चे कनेक्शन बंद झाले</translation>
 <translation id="4985296110227979402">रिमोट ॲक्सेस करण्यासाठी तुम्हाला प्रथम तुमचा कॉंप्युटर सेट करणे आवश्यक आहे</translation>
+<translation id="4987330545941822761">Chrome रिमोट डेस्कटॉपवर स्थानिकरीत्या URL उघडण्यासाठी ब्राउझर निश्चित करू शकत नाही. कृपया खालील सूचीमधून निवडा.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ऑफलाइन)</translation>
 <translation id="507204348399810022">तुम्हाला खात्री आहे की तुम्ही <ph name="HOSTNAME" /> शी असलेले रिमोट कनेक्शन अक्षम करू इच्छिता?</translation>
 <translation id="5170982930780719864">चुकीचे होस्ट आयडी .</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
-<translation id="5327248766486351172">नाव</translation>
 <translation id="533625276787323658">कनेक्ट करण्यासाठी काहीही नाही</translation>
 <translation id="5397086374758643919">Chrome रिमोट डेस्कटॉप होस्ट विस्थापनकर्ता</translation>
 <translation id="5419418238395129586">अखेरचे ऑनलाइन होते: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> म्हणून साइन इन केले.</translation>
 <translation id="579702532610384533">रीकनेक्ट करा</translation>
 <translation id="5810269635982033450">स्क्रीन ट्रॅकपॅडसारखी काम करत आहे</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने तुमची स्क्रीन पाहण्यासाठी आणि तुमचा कीबोर्ड व माउस नियंत्रित करण्यासाठी ॲक्सेसची विनंती केली आहे. तुम्हाला ही विनंती अपेक्षित नसल्यास, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' दाबा. अन्यथा तयार असाल तेव्हा, कनेक्शनची अनुमती देण्यासाठी ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' निवडा.</translation>
 <translation id="5823658491130719298">तुम्हाला दुरून ॲक्सेस करायच्या असलेल्या काँप्युटरवर, Chrome उघडा आणि <ph name="INSTALLATION_LINK" /> वर जा</translation>
 <translation id="5841343754884244200">डिस्प्ले पर्याय</translation>
 <translation id="6033507038939587647">कीबोर्ड पर्याय</translation>
@@ -116,11 +122,12 @@
 <translation id="618120821413932081">विंडोशी जुळवण्यासाठी रिमोट रिझोल्यूशन अपडेट करा</translation>
 <translation id="6223301979382383752">स्क्रीन रेकॉर्डिंग प्राधान्ये उघडा</translation>
 <translation id="6284412385303060032">पडदा मोडला सपोर्ट देण्‍यासाठी वापरकर्ता-विशिष्‍ट सेशनमध्‍ये चालत असलेल्या होस्टवर स्विच करून कन्सोल लॉजिक स्क्रीनवर सुरू असलेल्या होस्टने बंद केले आहे.</translation>
-<translation id="6542902059648396432">समस्येची तक्रार करा…</translation>
+<translation id="6542902059648396432">समस्या नोंदवा…</translation>
 <translation id="6583902294974160967">साहय्य</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del पाठवा</translation>
 <translation id="6654753848497929428">शेअर करा</translation>
 <translation id="677755392401385740">वापरकर्त्यासाठी सुरू केलेला होस्ट: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> क्लायंट वर URL उघडण्यासाठी मदतनीस अ‍ॅप्लिकेशन</translation>
 <translation id="6939719207673461467">कीबोर्ड दर्शवा/लपवा.</translation>
 <translation id="6963936880795878952">रिमोट कॉंप्युटरशी कनेक्शन तात्पुरते ब्लॉक केली आहेत, कारण कोणीतरी अवैध पिन सह त्यावर कनेक्ट करण्‍याचा प्रयत्न करत होते. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
@@ -133,10 +140,12 @@
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7312846573060934304">होस्ट ऑफलाइन आहे.</translation>
 <translation id="7319983568955948908">सामायिकरण थांबवा</translation>
+<translation id="7359298090707901886">निवडलेला ब्राउझर स्थानिक मशीनवर URL उघडण्यासाठी वापरला जाऊ शकत नाही.</translation>
 <translation id="7401733114166276557">Chrome रिमोट डेस्कटॉप</translation>
 <translation id="7434397035092923453">क्लायंटसाठी ॲक्सेस नाकारला: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">कनेक्ट केलेला क्लायंट: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">खाते बदला</translation>
+<translation id="7535110896613603182">डीफॉल्ट अ‍ॅप्ससंबंधित सेटिंग्ज उघडा</translation>
 <translation id="7628469622942688817">या डीव्हाइसवर माझा पिन लक्षात ठेवा.</translation>
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
@@ -161,6 +170,7 @@
 ही परवानगी देण्यासाठी, खालील '<ph name="BUTTON_NAME" />' वर क्लिक करा. उघडलेल्या 'अ‍ॅक्सेसिबिलिटी' प्राधान्ये पेनमध्ये, '<ph name="SERVICE_SCRIPT_NAME" />' च्या बाजूच्या बॉक्समध्ये खूण करा.
 
 '<ph name="SERVICE_SCRIPT_NAME" />' वर आधीच खूण केलेली असल्यास, ती काढा आणि त्यावर पुन्हा खूण करा.</translation>
+<translation id="8305209735512572429">वेब ऑथेंटिकेशन रिमोटिंगची प्रक्रिया</translation>
 <translation id="8383794970363966105">Chromoting वापरण्यासाठी, तुम्हाला आपल्या डिव्हाइसमध्ये एक Google खाते जोडणे आवश्यक असेल.</translation>
 <translation id="8386846956409881180">अवैध OAuth क्रेडेंशियलसह होस्ट कॉंफिगर केला आहे.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> ला परवानगी द्या</translation>

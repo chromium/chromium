@@ -30,7 +30,7 @@ namespace cssvalue {
 
 CSSCursorImageValue::CSSCursorImageValue(const CSSValue& image_value,
                                          bool hot_spot_specified,
-                                         const IntPoint& hot_spot)
+                                         const gfx::Point& hot_spot)
     : CSSValue(kCursorImageClass),
       image_value_(&image_value),
       hot_spot_(hot_spot),
@@ -43,18 +43,18 @@ String CSSCursorImageValue::CustomCSSText() const {
   result.Append(image_value_->CssText());
   if (hot_spot_specified_) {
     result.Append(' ');
-    result.AppendNumber(hot_spot_.X());
+    result.AppendNumber(hot_spot_.x());
     result.Append(' ');
-    result.AppendNumber(hot_spot_.Y());
+    result.AppendNumber(hot_spot_.y());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSCursorImageValue::Equals(const CSSCursorImageValue& other) const {
   return (hot_spot_specified_
               ? other.hot_spot_specified_ && hot_spot_ == other.hot_spot_
               : !other.hot_spot_specified_) &&
-         DataEquivalent(image_value_, other.image_value_);
+         base::ValuesEquivalent(image_value_, other.image_value_);
 }
 
 void CSSCursorImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {

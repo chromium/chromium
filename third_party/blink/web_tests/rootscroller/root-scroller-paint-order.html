@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.runtimeFlags.implicitRootScrollerEnabled = true;
+</script>
+<style>
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+  body {
+    margin: 0;
+  }
+  #scroller {
+    background: yellow;
+    padding: 50px;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+  }
+  #negative-margin {
+    width: 100vw;
+    height: 100vh;
+    background: green;
+    margin-top: -100vh;
+  }
+  #foreground1 {
+    display: inline-block;
+    width: 2000px;
+    height: 2000px;
+    background: blue;
+  }
+  #foreground2 {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background: magenta;
+  }
+</style>
+<!-- The paint order should be:
+  scroller background (invisible)
+  negative-margin background (visible)
+  foreground1 (visible)
+  foreground2 (visible)
+-->
+<div id="scroller">
+  <div id="foreground1"></div>
+</div>
+<div id="negative-margin">
+  <div id="foreground2"></div>
+</div>
+
+<script>
+  window.onload = function() {
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+    requestAnimationFrame(() => { setTimeout(() => {
+      if (!window.internals || scroller != internals.effectiveRootScroller(document)) {
+        document.body.innerHTML = "FAIL: #scroller is expected to be the effective rootScroller";
+        return;
+      }
+      // This is needed to reproduce the bug without the fix.
+      scroller.style.background = 'red';
+      if (window.testRunner) {
+        testRunner.notifyDone();
+      }
+    })});
+  };
+</script>

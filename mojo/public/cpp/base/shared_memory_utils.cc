@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -25,12 +26,14 @@ base::WritableSharedMemoryRegion CreateWritableSharedMemoryRegion(size_t size) {
   return mojo::UnwrapWritableSharedMemoryRegion(std::move(handle));
 }
 
-base::MappedReadOnlyRegion CreateReadOnlySharedMemoryRegion(size_t size) {
+base::MappedReadOnlyRegion CreateReadOnlySharedMemoryRegion(
+    size_t size,
+    base::SharedMemoryMapper* mapper) {
   auto writable_region = CreateWritableSharedMemoryRegion(size);
   if (!writable_region.IsValid())
     return {};
 
-  base::WritableSharedMemoryMapping mapping = writable_region.Map();
+  base::WritableSharedMemoryMapping mapping = writable_region.Map(mapper);
   return {base::WritableSharedMemoryRegion::ConvertToReadOnly(
               std::move(writable_region)),
           std::move(mapping)};
@@ -48,6 +51,11 @@ base::UnsafeSharedMemoryRegion CreateUnsafeSharedMemoryRegion(size_t size) {
 }  // namespace
 
 void SharedMemoryUtils::InstallBaseHooks() {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    mojo::core::InstallMojoIpczBaseSharedMemoryHooks();
+    return;
+  }
+
   base::SharedMemoryHooks::SetCreateHooks(&CreateReadOnlySharedMemoryRegion,
                                           &CreateUnsafeSharedMemoryRegion,
                                           &CreateWritableSharedMemoryRegion);

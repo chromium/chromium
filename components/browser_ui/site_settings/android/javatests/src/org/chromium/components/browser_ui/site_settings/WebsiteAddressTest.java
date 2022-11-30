@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,24 @@ package org.chromium.components.browser_ui.site_settings;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 /**
  * Tests for WebsiteAddress.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class WebsiteAddressTest {
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         LibraryLoader.getInstance().ensureInitialized();
     }
@@ -38,26 +40,31 @@ public class WebsiteAddressTest {
         Assert.assertEquals("http://a.google.com", httpAddress.getOrigin());
         Assert.assertEquals("a.google.com", httpAddress.getHost());
         Assert.assertEquals("a.google.com", httpAddress.getTitle());
+        Assert.assertFalse(httpAddress.getIsAnySubdomainPattern());
 
         WebsiteAddress http8080Address = WebsiteAddress.create("http://a.google.com:8080/");
         Assert.assertEquals("http://a.google.com:8080", http8080Address.getOrigin());
         Assert.assertEquals("a.google.com", http8080Address.getHost());
         Assert.assertEquals("http://a.google.com:8080", http8080Address.getTitle());
+        Assert.assertFalse(http8080Address.getIsAnySubdomainPattern());
 
         WebsiteAddress httpsAddress = WebsiteAddress.create("https://a.google.com/");
         Assert.assertEquals("https://a.google.com", httpsAddress.getOrigin());
         Assert.assertEquals("a.google.com", httpsAddress.getHost());
         Assert.assertEquals("https://a.google.com", httpsAddress.getTitle());
+        Assert.assertFalse(httpsAddress.getIsAnySubdomainPattern());
 
         WebsiteAddress hostAddress = WebsiteAddress.create("a.google.com");
         Assert.assertEquals("http://a.google.com", hostAddress.getOrigin());
         Assert.assertEquals("a.google.com", hostAddress.getHost());
         Assert.assertEquals("a.google.com", hostAddress.getTitle());
+        Assert.assertFalse(hostAddress.getIsAnySubdomainPattern());
 
         WebsiteAddress anySubdomainAddress = WebsiteAddress.create("[*.]google.com");
         Assert.assertEquals("http://google.com", anySubdomainAddress.getOrigin());
         Assert.assertEquals("google.com", anySubdomainAddress.getHost());
         Assert.assertEquals("google.com", anySubdomainAddress.getTitle());
+        Assert.assertTrue(anySubdomainAddress.getIsAnySubdomainPattern());
     }
 
     @Test

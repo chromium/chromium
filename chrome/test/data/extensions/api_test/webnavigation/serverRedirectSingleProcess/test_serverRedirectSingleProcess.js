@@ -1,8 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-onload = async function() {
+const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
   let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
   let config = await promise(chrome.test.getConfig);
   let port = config.testServer.port;
@@ -21,7 +24,9 @@ onload = async function() {
       expect([
         { label: "a-onBeforeNavigate",
           event: "onBeforeNavigate",
-          details: { frameId: 0,
+          details: { documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: -1,
                      tabId: 0,
@@ -29,7 +34,10 @@ onload = async function() {
                      url: URL_LOAD }},
         { label: "a-onCommitted",
           event: "onCommitted",
-          details: { frameId: 0,
+          details: { documentId: 1,
+                     documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
@@ -39,7 +47,10 @@ onload = async function() {
                      url: URL_LOAD }},
         { label: "a-onDOMContentLoaded",
           event: "onDOMContentLoaded",
-          details: { frameId: 0,
+          details: { documentId: 1,
+                     documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
@@ -47,7 +58,10 @@ onload = async function() {
                      url: URL_LOAD }},
         { label: "a-onCompleted",
           event: "onCompleted",
-          details: { frameId: 0,
+          details: { documentId: 1,
+                     documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
@@ -55,7 +69,9 @@ onload = async function() {
                      url: URL_LOAD }},
         { label: "b-onBeforeNavigate",
           event: "onBeforeNavigate",
-          details: { frameId: 0,
+          details: { documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: -1,
                      tabId: 0,
@@ -63,7 +79,10 @@ onload = async function() {
                      url: URL_REDIRECT }},
         { label: "b-onCommitted",
           event: "onCommitted",
-          details: { frameId: 0,
+          details: { documentId: 2,
+                     documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: 1,
                      tabId: 0,
@@ -73,7 +92,10 @@ onload = async function() {
                      url: URL_TARGET }},
         { label: "b-onDOMContentLoaded",
           event: "onDOMContentLoaded",
-          details: { frameId: 0,
+          details: { documentId: 2,
+                     documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: 1,
                      tabId: 0,
@@ -81,7 +103,10 @@ onload = async function() {
                      url: URL_TARGET }},
         { label: "b-onCompleted",
           event: "onCompleted",
-          details: { frameId: 0,
+          details: { documentId: 2,
+                     documentLifecycle: "active",
+                     frameId: 0,
+                     frameType: "outermost_frame",
                      parentFrameId: -1,
                      processId: 1,
                      tabId: 0,
@@ -93,4 +118,4 @@ onload = async function() {
       chrome.test.notifyPass();
     },
   ]);
-};
+});

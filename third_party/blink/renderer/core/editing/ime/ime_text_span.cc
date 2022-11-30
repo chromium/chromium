@@ -1,10 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/editing/ime/ime_text_span.h"
 
 #include <algorithm>
+
+#include "base/numerics/safe_conversions.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/mojom/ime_types.mojom-blink.h"
 
@@ -20,6 +22,8 @@ ImeTextSpan::Type ConvertUiTypeToType(ui::ImeTextSpan::Type type) {
       return ImeTextSpan::Type::kMisspellingSuggestion;
     case ui::ImeTextSpan::Type::kAutocorrect:
       return ImeTextSpan::Type::kAutocorrect;
+    case ui::ImeTextSpan::Type::kGrammarSuggestion:
+      return ImeTextSpan::Type::kGrammarSuggestion;
   }
 
   NOTREACHED();
@@ -27,8 +31,8 @@ ImeTextSpan::Type ConvertUiTypeToType(ui::ImeTextSpan::Type type) {
 }
 
 ImeTextSpan::ImeTextSpan(Type type,
-                         unsigned start_offset,
-                         unsigned end_offset,
+                         wtf_size_t start_offset,
+                         wtf_size_t end_offset,
                          const Color& underline_color,
                          ui::mojom::ImeTextSpanThickness thickness,
                          ui::mojom::ImeTextSpanUnderlineStyle underline_style,
@@ -52,7 +56,7 @@ ImeTextSpan::ImeTextSpan(Type type,
   // possible position.
   // TODO(wkorman): Consider replacing with DCHECK_LT(startOffset, endOffset).
   start_offset_ =
-      std::min(start_offset, std::numeric_limits<unsigned>::max() - 1u);
+      std::min(start_offset, std::numeric_limits<wtf_size_t>::max() - 1u);
   end_offset_ = std::max(start_offset_ + 1u, end_offset);
 }
 
@@ -61,9 +65,19 @@ namespace {
 Vector<String> ConvertStdVectorOfStdStringsToVectorOfStrings(
     const std::vector<std::string>& input) {
   Vector<String> output;
-  output.ReserveInitialCapacity(input.size());
+  output.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(input.size()));
   for (const std::string& val : input) {
     output.UncheckedAppend(String::FromUTF8(val));
+  }
+  return output;
+}
+
+std::vector<std::string> ConvertVectorOfStringsToStdVectorOfStdStrings(
+    const Vector<String>& input) {
+  std::vector<std::string> output;
+  output.reserve(input.size());
+  for (const String& val : input) {
+    output.push_back(val.Utf8());
   }
   return output;
 }
@@ -108,6 +122,8 @@ ui::ImeTextSpan::Type ConvertImeTextSpanTypeToUiType(ImeTextSpan::Type type) {
       return ui::ImeTextSpan::Type::kAutocorrect;
     case ImeTextSpan::Type::kComposition:
       return ui::ImeTextSpan::Type::kComposition;
+    case ImeTextSpan::Type::kGrammarSuggestion:
+      return ui::ImeTextSpan::Type::kGrammarSuggestion;
     case ImeTextSpan::Type::kMisspellingSuggestion:
       return ui::ImeTextSpan::Type::kMisspellingSuggestion;
     case ImeTextSpan::Type::kSuggestion:
@@ -119,22 +135,25 @@ ui::ImeTextSpan::Type ConvertImeTextSpanTypeToUiType(ImeTextSpan::Type type) {
 
 ImeTextSpan::ImeTextSpan(const ui::ImeTextSpan& ime_text_span)
     : ImeTextSpan(ConvertUiTypeToType(ime_text_span.type),
-                  ime_text_span.start_offset,
-                  ime_text_span.end_offset,
-                  Color(ime_text_span.underline_color),
+                  base::checked_cast<wtf_size_t>(ime_text_span.start_offset),
+                  base::checked_cast<wtf_size_t>(ime_text_span.end_offset),
+                  Color::FromSkColor(ime_text_span.underline_color),
                   ConvertUiThicknessToThickness(ime_text_span.thickness),
                   ConvertUiUnderlineToUnderline(ime_text_span.underline_style),
-                  Color(ime_text_span.text_color),
-                  Color(ime_text_span.background_color),
-                  Color(ime_text_span.suggestion_highlight_color),
+                  Color::FromSkColor(ime_text_span.text_color),
+                  Color::FromSkColor(ime_text_span.background_color),
+                  Color::FromSkColor(ime_text_span.suggestion_highlight_color),
                   ime_text_span.remove_on_finish_composing,
                   ime_text_span.interim_char_selection,
                   ConvertStdVectorOfStdStringsToVectorOfStrings(
                       ime_text_span.suggestions)) {}
 
 ui::ImeTextSpan ImeTextSpan::ToUiImeTextSpan() {
-  return ui::ImeTextSpan(ConvertImeTextSpanTypeToUiType(GetType()),
-                         StartOffset(), EndOffset());
+  auto span = ui::ImeTextSpan(ConvertImeTextSpanTypeToUiType(GetType()),
+                              StartOffset(), EndOffset());
+  span.suggestions =
+      ConvertVectorOfStringsToStdVectorOfStdStrings(Suggestions());
+  return span;
 }
 
 }  // namespace blink

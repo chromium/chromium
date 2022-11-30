@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ GetUpdatesResponseEvent::GetUpdatesResponseEvent(
     SyncerError error)
     : timestamp_(timestamp), response_(response), error_(error) {}
 
-GetUpdatesResponseEvent::~GetUpdatesResponseEvent() {}
+GetUpdatesResponseEvent::~GetUpdatesResponseEvent() = default;
 
 std::unique_ptr<ProtocolEvent> GetUpdatesResponseEvent::Clone() const {
   return std::make_unique<GetUpdatesResponseEvent>(timestamp_, response_,
@@ -39,7 +39,6 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
       return base::StringPrintf("Received %d update(s).  Some updates remain.",
                                 response_.get_updates().entries_size());
     case SyncerError::UNSET:
-    case SyncerError::CANNOT_DO_WORK:
     case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:
     case SyncerError::NETWORK_IO_ERROR:
     case SyncerError::SYNC_SERVER_ERROR:
@@ -53,17 +52,17 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
     case SyncerError::SERVER_RETURN_CONFLICT:
     case SyncerError::SERVER_RESPONSE_VALIDATION_FAILED:
     case SyncerError::SERVER_RETURN_DISABLED_BY_ADMIN:
-    case SyncerError::SERVER_RETURN_PARTIAL_FAILURE:
     case SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE:
     case SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE:
-    case SyncerError::DATATYPE_TRIGGERED_RETRY:
       return "Received error: " + error_.ToString();
   }
 }
 
 std::unique_ptr<base::DictionaryValue> GetUpdatesResponseEvent::GetProtoMessage(
     bool include_specifics) const {
-  return ClientToServerResponseToValue(response_, include_specifics);
+  return ClientToServerResponseToValue(
+      response_, {.include_specifics = include_specifics,
+                  .include_full_get_update_triggers = false});
 }
 
 }  // namespace syncer

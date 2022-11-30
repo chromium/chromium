@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
@@ -59,8 +58,8 @@ int GetSystemReservedKb() {
 }  // namespace
 
 CastSystemMemoryPressureEvaluator::CastSystemMemoryPressureEvaluator(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       critical_memory_fraction_command_line_(
           GetSwitchValueDouble(switches::kCastMemoryPressureCriticalFraction,
                                -1.0f)),
@@ -120,21 +119,11 @@ void CastSystemMemoryPressureEvaluator::PollPressureLevel() {
 
   UpdateMemoryPressureLevel(level);
 
-  UMA_HISTOGRAM_PERCENTAGE("Platform.MeminfoMemFree",
-                           (info.free * 100.0) / info.total);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Platform.Cast.MeminfoMemFreeDerived2",
-                              (info.free + info.buffers + info.cached) / 1024,
-                              1, 2000, 100);
-  if (info.available != 0) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Platform.Cast.MeminfoMemAvailable2",
-                                info.available / 1024, 1, 2000, 100);
-  }
-
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CastSystemMemoryPressureEvaluator::PollPressureLevel,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMS));
+      base::Milliseconds(kPollingIntervalMS));
 }
 
 void CastSystemMemoryPressureEvaluator::UpdateMemoryPressureLevel(

@@ -1,11 +1,11 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk_overrides.gni")
 import("//build/toolchain/goma.gni")
-import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -46,7 +46,11 @@ declare_args() {
   # Prefix for CFBundleIdentifier property of iOS bundles (correspond to the
   # "Organization Identifier" in Xcode). Code signing will fail if no mobile
   # provisioning for the selected code signing identify support that prefix.
-  ios_app_bundle_id_prefix = "org.chromium"
+  ios_app_bundle_id_prefix = "org.chromium.ost"
+
+  # Paths to the mobileprovision files for the chosen code signing
+  # identity description and app bundle id prefix.
+  ios_mobileprovision_files = []
 
   # If non-empty, this list must contain valid cpu architecture, and the final
   # build will be a multi-architecture build (aka fat build) supporting the
@@ -62,6 +66,9 @@ declare_args() {
   # You can also pass the value via "--args" parameter for "gn gen" command by
   # using the syntax --args='additional_target_cpus=["arm"] target_cpu="arm64"'.
   additional_target_cpus = []
+
+  # Set to true if all test apps should use the same bundle id.
+  ios_use_shared_bundle_id_for_test_apps = true
 }
 
 declare_args() {
@@ -73,11 +80,6 @@ declare_args() {
   # toolchain for the fat build (could be current_toolchain).
   primary_fat_toolchain_name = ""
 }
-
-# Official builds may not use goma.
-assert(!(use_goma && is_chrome_branded && is_official_build &&
-             target_cpu == "arm64"),
-       "goma use is forbidden for official iOS builds.")
 
 assert(custom_toolchain == "" || additional_target_cpus == [],
        "cannot define both custom_toolchain and additional_target_cpus")
@@ -98,12 +100,12 @@ if (target_environment == "device" && ios_enable_code_signing) {
 # that the list does not contains $target_cpu nor duplicates as this would
 # cause weird errors during the build.
 additional_toolchains = []
-if (additional_target_cpus != []) {
+if (additional_target_cpus != [] && !is_fat_secondary_toolchain) {
   foreach(_additional_target_cpu, additional_target_cpus) {
     assert(_additional_target_cpu != target_cpu,
            "target_cpu must not be listed in additional_target_cpus")
 
-    _toolchain = "//build/toolchain/ios:ios_clang_${_additional_target_cpu}_fat"
+    _toolchain = "${current_toolchain}_fat_${_additional_target_cpu}"
     foreach(_additional_toolchain, additional_toolchains) {
       assert(_toolchain != _additional_toolchain,
              "additional_target_cpus must not contains duplicate values")
@@ -139,10 +141,12 @@ if (ios_sdk_path == "") {
       ios_sdk_developer_dir,
     ]
   }
-  if (use_system_xcode && use_goma) {
+  if (use_system_xcode && (use_goma || use_remoteexec)) {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",
+      "--root_build_dir",
+      root_build_dir,
     ]
   }
   script_name = "//build/config/apple/sdk_info.py"
@@ -182,4 +186,9 @@ if (target_environment == "device" && ios_enable_code_signing) {
                                             find_signing_identity_args,
                                             "trim string")
   }
+}
+
+if (ios_use_shared_bundle_id_for_test_apps) {
+  shared_bundle_id_for_test_apps =
+      "$ios_app_bundle_id_prefix.chrome.unittests.dev"
 }

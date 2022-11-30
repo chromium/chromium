@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,15 @@
     { "field": "search_url_post_params", "type": "string", "optional": true },
     { "field": "suggest_url_post_params", "type": "string", "optional": true },
     { "field": "image_url_post_params", "type": "string", "optional": true },
+    // The parameter appended to the engine's search URL when constructing the
+    // URL for the side search side panel.
+    { "field": "side_search_param", "type": "string", "optional": true },
+    // The parameter appended to the engine's |image_url| URL when constructing the
+    // URL for the image search entry in the side panel.
+    { "field": "side_image_search_param", "type": "string", "optional": true },
+    // The label to use for image search related queries. If omitted, will use the
+    // value under the "name" field for image search queries.
+    { "field": "image_search_branding_label", "type": "string16", "optional": true},
     // A list of URL patterns that can be used, in addition to |search_url|,
     // to extract search terms from a URL.
     // If "search_url_post_params" is not empty, then all alternate URLs are
@@ -65,6 +74,14 @@
       "default": "SEARCH_ENGINE_OTHER",
       "optional": true
     },
+    // Whether a connection to search_url should regularly be established when
+    // the engine is set as the "default search engine". "ALLOWED" is the only
+    // value that will enable the pre-connections.
+    { "field": "preconnect_to_search_url", "type": "string", "optional": true },
+    // Whether the client is allowed to prefetch Search queries that are likely
+    // (in addition to queries that are recommended via suggestion server). This
+    // is experimental.
+    { "field": "prefetch_likely_navigations", "type": "string", "optional": true },
     // Unique id for this prepopulate engine (corresponds to
     // TemplateURL::prepopulate_id). This ID must be greater than zero and must
     // remain the same for a particular site regardless of how the url changes;

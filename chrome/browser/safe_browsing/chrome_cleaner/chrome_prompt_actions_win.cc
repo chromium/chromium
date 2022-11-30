@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ ChromePromptActions::~ChromePromptActions() {}
 
 void ChromePromptActions::PromptUser(
     const std::vector<base::FilePath>& files_to_delete,
-    const base::Optional<std::vector<std::wstring>>& registry_keys,
+    const absl::optional<std::vector<std::wstring>>& registry_keys,
     PromptUserReplyCallback callback) {
   using FileCollection = ChromeCleanerScannerResults::FileCollection;
   using RegistryKeyCollection =

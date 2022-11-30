@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ class PresentationServiceDelegateObservers {
   virtual void RemoveObserver(int render_process_id, int render_frame_id);
 
  private:
-  std::map<content::GlobalFrameRoutingId,
+  std::map<content::GlobalRenderFrameHostId,
            content::PresentationServiceDelegate::Observer*>
       observers_;
 };

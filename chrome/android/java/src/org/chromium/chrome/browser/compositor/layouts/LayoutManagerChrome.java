@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,41 +8,42 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ObserverList;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.TitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
@@ -51,8 +52,8 @@ import java.util.List;
  * A {@link Layout} controller for the more complicated Chrome browser.  This is currently a
  * superset of {@link LayoutManagerImpl}.
  */
-public class LayoutManagerChrome extends LayoutManagerImpl
-        implements OverviewModeController, ChromeAccessibilityUtil.Observer {
+public class LayoutManagerChrome
+        extends LayoutManagerImpl implements ChromeAccessibilityUtil.Observer {
     // Layouts
     /** An {@link Layout} that should be used as the accessibility tab switcher. */
     protected OverviewListLayout mOverviewListLayout;
@@ -64,44 +65,37 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     // Event Filter Handlers
     private final SwipeHandler mToolbarSwipeHandler;
 
-    // Internal State
-    /** A {@link TitleCache} instance that stores all title/favicon bitmaps as CC resources. */
-    protected TitleCache mTitleCache;
-
     /** Whether or not animations are enabled.  This can disable certain layouts or effects. */
     private boolean mEnableAnimations = true;
     private boolean mCreatingNtp;
-    private final ObserverList<OverviewModeObserver> mOverviewModeObservers;
+    private LayoutStateObserver mTabSwitcherFocusLayoutStateObserver;
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    private boolean mFinishNativeInitialization;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
      * @param host         A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param createOverviewLayout Whether overview layout should be created or not.
-     * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
-     *                     should be used, otherwise GTS should be used.
+     * @param startSurfaceSupplier Supplier for an interface to talk to the Grid Tab Switcher.
+     *         Creates overviewLayout with this surface if this is has value. If not, {@link
+     *         #showLayout(int, boolean)} will create overviewLayout.
+     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
+     *         Start surface refactor is enabled. Used to create overviewLayout if it has value,
+     *         otherwise will use the accessibility overview layout.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
-     * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
-     * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param jankTracker Tracker for surface jank.
+     * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
+     *         when overview is visible.
+     * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
-            boolean createOverviewLayout, @Nullable StartSurface startSurface,
+            Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
-        super(host, contentContainer, tabContentManagerSupplier, layerTitleCacheSupplier,
-                layoutStateProviderOneshotSupplier, topUiThemeColorProvider);
-        Context context = host.getContext();
-        LayoutRenderHost renderHost = host.getLayoutRenderHost();
-
-        mOverviewModeObservers = new ObserverList<OverviewModeObserver>();
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
+            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
+        super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
 
         // Build Event Filter Handlers
         mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown = */ true);
@@ -110,6 +104,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         mTabContentManagerSupplier.addObserver(new Callback<TabContentManager>() {
             @Override
             public void onResult(TabContentManager manager) {
+                manager.addThumbnailChangeListener((id) -> requestUpdate());
                 if (mOverviewLayout != null) {
                     mOverviewLayout.setTabContentManager(manager);
                 }
@@ -117,22 +112,80 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             }
         });
 
-        if (createOverviewLayout) {
-            if (startSurface != null) {
-                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled();
-                TabManagementDelegate tabManagementDelegate =
-                        TabManagementModuleProvider.getDelegate();
-                assert tabManagementDelegate != null;
+        Context context = host.getContext();
+        if (tabSwitcherSupplier.hasValue()) {
+            assert ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(context);
+            createOverviewLayout(/*startSurface=*/null, tabSwitcherSupplier.get(), jankTracker,
+                    scrimCoordinator, tabSwitcherScrimAnchor);
+        } else if (startSurfaceSupplier.hasValue()) {
+            createOverviewLayout(startSurfaceSupplier.get(), /*tabSwitcher=*/null, jankTracker,
+                    scrimCoordinator, tabSwitcherScrimAnchor);
+        }
+    }
 
-                final ObservableSupplier<? extends BrowserControlsStateProvider>
-                        browserControlsSupplier = mHost.getBrowserControlsManagerSupplier();
-                mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(
-                        context, this, renderHost, startSurface);
-            }
+    /**
+     * Creates @{@link org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout}
+     * @param startSurface An interface to talk to the Grid Tab Switcher when Start surface refactor
+     *         is disabled.
+     * @param tabSwitcher An interface to talk to the Grid Tab Switcher when Start surface refactor
+     *         is enabled.
+     * @param jankTracker Jank tracker.
+     * @param scrimCoordinator scrim coordinator for GTS
+     * @param tabSwitcherScrimAnchor scrim anchor view for GTS
+     */
+    protected void createOverviewLayout(@Nullable StartSurface startSurface,
+            @Nullable TabSwitcher tabSwitcher, @NonNull JankTracker jankTracker,
+            ScrimCoordinator scrimCoordinator, ViewGroup tabSwitcherScrimAnchor) {
+        assert mOverviewLayout == null
+                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mHost.getContext());
+        boolean isRefactorEnabled =
+                ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mHost.getContext());
+
+        if (isRefactorEnabled) {
+            assert tabSwitcher != null;
+            TabManagementDelegate tabManagementDelegate = TabManagementModuleProvider.getDelegate();
+            assert tabManagementDelegate != null;
+
+            mOverviewLayout = tabManagementDelegate.createTabSwitcherLayout(mHost.getContext(),
+                    this, mHost.getLayoutRenderHost(), tabSwitcher, jankTracker,
+                    tabSwitcherScrimAnchor, scrimCoordinator);
+            // TODO(crbug.com/1315676): Extends the refactor to allow Start Surface enabled
+            // case. That means we will split "mOverviewLayout" into "mTabSwitcherLayout" and
+            // "mStartSurfaceHomeLayout".
+        } else {
+            assert startSurface != null;
+            mOverviewLayout = StartSurfaceDelegate.createTabSwitcherAndStartSurfaceLayout(
+                    mHost.getContext(), this, mHost.getLayoutRenderHost(), startSurface,
+                    jankTracker, tabSwitcherScrimAnchor, scrimCoordinator);
         }
 
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplier.set(this);
+        if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mHost.getContext())) {
+            mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {
+                @Override
+                public void onFinishedShowing(int layoutType) {
+                    if (layoutType == LayoutType.TAB_SWITCHER) {
+                        if (isRefactorEnabled) {
+                            tabSwitcher.getTabListDelegate().requestFocusOnCurrentTab();
+                        } else {
+                            startSurface.getGridTabListDelegate().requestFocusOnCurrentTab();
+                        }
+                    }
+                }
+            };
+            addObserver(mTabSwitcherFocusLayoutStateObserver);
+        }
+
+        if (mTabContentManagerSupplier.hasValue()) {
+            mOverviewLayout.setTabContentManager(mTabContentManagerSupplier.get());
+        }
+
+        if (getTabModelSelector() != null) {
+            mOverviewLayout.setTabModelSelector(
+                    getTabModelSelector(), mTabContentManagerSupplier.get());
+        }
+        if (mFinishNativeInitialization) {
+            mOverviewLayout.onFinishNativeInitialization();
+        }
     }
 
     /**
@@ -162,7 +215,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            ControlContainer controlContainer, DynamicResourceLoader dynamicResourceLoader) {
+            ControlContainer controlContainer, DynamicResourceLoader dynamicResourceLoader,
+            TopUiThemeColorProvider topUiColorProvider) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         BrowserControlsStateProvider browserControlsStateProvider =
@@ -171,12 +225,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         // Build Layouts
         mOverviewListLayout =
                 new OverviewListLayout(context, this, renderHost, browserControlsStateProvider);
-        mToolbarSwipeLayout = new ToolbarSwipeLayout(context, this, renderHost);
+        mToolbarSwipeLayout = new ToolbarSwipeLayout(context, this, renderHost,
+                browserControlsStateProvider, this, topUiColorProvider);
 
-        super.init(selector, creator, controlContainer, dynamicResourceLoader);
-
-        // TODO: TitleCache should be a part of the ResourceManager.
-        mTitleCache = mHost.getTitleCache();
+        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
 
         // Initialize Layouts
         TabContentManager content = mTabContentManagerSupplier.get();
@@ -186,6 +238,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             mOverviewLayout.setTabModelSelector(selector, content);
             mOverviewLayout.onFinishNativeInitialization();
         }
+        mFinishNativeInitialization = true;
     }
 
     @Override
@@ -199,10 +252,14 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @Override
     public void destroy() {
         super.destroy();
-        mOverviewModeObservers.clear();
 
         if (mTabContentManagerSupplier != null) {
             mTabContentManagerSupplier = null;
+        }
+
+        if (mTabSwitcherFocusLayoutStateObserver != null) {
+            removeObserver(mTabSwitcherFocusLayoutStateObserver);
+            mTabSwitcherFocusLayoutStateObserver = null;
         }
 
         if (mOverviewLayout != null) {
@@ -222,71 +279,57 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
+    protected Layout getLayoutForType(@LayoutType int layoutType) {
+        Layout layout;
+        if (layoutType == LayoutType.TOOLBAR_SWIPE) {
+            layout = mToolbarSwipeLayout;
+        } else if (layoutType == LayoutType.TAB_SWITCHER) {
+            if (shouldUseAccessibilityTabSwitcher()) {
+                layout = mOverviewListLayout;
+            } else {
+                layout = mOverviewLayout;
+            }
+        } else {
+            layout = super.getLayoutForType(layoutType);
+        }
+        return layout;
+    }
+
+    /** @return Whether to use the accessibility tab switcher instead of the default one. */
+    private boolean shouldUseAccessibilityTabSwitcher() {
+        boolean useAccessibility = DeviceClassManager.enableAccessibilityLayout(mHost.getContext());
+
+        boolean accessibilityIsVisible =
+                useAccessibility && getActiveLayout() == mOverviewListLayout;
+        boolean normalIsVisible = getActiveLayout() == mOverviewLayout && mOverviewLayout != null;
+
+        // We only want to use the AccessibilityOverviewLayout if the following are all valid:
+        // 1. We're already showing the AccessibilityOverviewLayout OR we're using accessibility.
+        // 2. We're not already showing the normal OverviewLayout (or we are on a tablet, in which
+        //    case the normal layout is always visible).
+        return (accessibilityIsVisible || useAccessibility) && !normalIsVisible;
+    }
+
+    @Override
     protected void startShowing(Layout layout, boolean animate) {
         mCreatingNtp = false;
         super.startShowing(layout, animate);
-
-        Layout layoutBeingShown = getActiveLayout();
-
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
-        // Check if we should notify OverviewModeObservers.
-        if (isOverviewLayout(layoutBeingShown)) {
-            boolean showToolbar = animate && (!mEnableAnimations
-                    || getTabModelSelector().getCurrentModel().getCount() <= 0);
-            notifyObserversStartedShowing(showToolbar);
-        }
-    }
-
-    @Override
-    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
-        super.startHiding(nextTabId, hintAtTabSelection);
-
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
-        Layout layoutBeingHidden = getActiveLayout();
-        if (isOverviewLayout(layoutBeingHidden)) {
-            boolean showToolbar = true;
-            if (mEnableAnimations && layoutBeingHidden == mOverviewLayout) {
-                final LayoutTab tab = layoutBeingHidden.getLayoutTab(nextTabId);
-                showToolbar = tab != null ? !tab.showToolbar() : true;
-            }
-
-            boolean creatingNtp = layoutBeingHidden == mOverviewLayout && mCreatingNtp;
-
-            notifyObserversStartedHiding(showToolbar, creatingNtp);
-        }
-    }
-
-    @Override
-    public void doneShowing() {
-        super.doneShowing();
-
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
-        if (isOverviewLayout(getActiveLayout())) {
-            notifyObserversFinishedShowing();
-        }
     }
 
     @Override
     public void doneHiding() {
-        Layout layoutBeingHidden = getActiveLayout();
-
         if (getNextLayout() == getDefaultLayout()) {
             Tab tab = getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
-            emptyCachesExcept(tab != null ? tab.getId() : Tab.INVALID_TAB_ID);
+            emptyTabCachesExcept(tab != null ? tab.getId() : Tab.INVALID_TAB_ID);
         }
 
         super.doneHiding();
-
-        // TODO(crbug.com/1108496): Remove after migrates to Observer.
-        if (isOverviewLayout(layoutBeingHidden)) {
-            notifyObserversFinishedHiding();
-        }
     }
 
     @Override
     protected boolean shouldDelayHideAnimation(Layout layoutBeingHidden) {
         return mEnableAnimations && layoutBeingHidden == mOverviewLayout && mCreatingNtp
-                && !TabUiFeatureUtilities.isGridTabSwitcherEnabled();
+                && !TabUiFeatureUtilities.isGridTabSwitcherEnabled(mHost.getContext());
     }
 
     @Override
@@ -314,24 +357,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
-    public boolean closeAllTabsRequest(boolean incognito) {
-        if (!isOverviewLayout(getActiveLayout())) return false;
+    public void onTabsAllClosing(boolean incognito) {
+        if (!isOverviewLayout(getActiveLayout())) return;
 
-        return super.closeAllTabsRequest(incognito);
-    }
-
-    @Override
-    public void initLayoutTabFromHost(final int tabId) {
-        if (mTitleCache != null) {
-            mTitleCache.remove(tabId);
-        }
-        super.initLayoutTabFromHost(tabId);
-    }
-
-    @Override
-    public void releaseResourcesForTab(int tabId) {
-        super.releaseResourcesForTab(tabId);
-        mTitleCache.remove(tabId);
+        super.onTabsAllClosing(incognito);
     }
 
     /**
@@ -359,44 +388,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     /**
-     * Show the overview {@link Layout}.  This is generally a {@link Layout} that visibly represents
-     * all of the {@link Tab}s opened by the user.
-     * @param animate Whether or not to animate the transition to overview mode.
-     */
-    @Override
-    public void showOverview(boolean animate) {
-        boolean useAccessibility = DeviceClassManager.enableAccessibilityLayout();
-
-        boolean accessibilityIsVisible =
-                useAccessibility && getActiveLayout() == mOverviewListLayout;
-        boolean normalIsVisible = getActiveLayout() == mOverviewLayout && mOverviewLayout != null;
-
-        // We only want to use the AccessibilityOverviewLayout if the following are all valid:
-        // 1. We're already showing the AccessibilityOverviewLayout OR we're using accessibility.
-        // 2. We're not already showing the normal OverviewLayout (or we are on a tablet, in which
-        //    case the normal layout is always visible).
-        if ((accessibilityIsVisible || useAccessibility) && !normalIsVisible) {
-            startShowing(mOverviewListLayout, animate);
-        } else if (mOverviewLayout != null) {
-            startShowing(mOverviewLayout, animate);
-        }
-    }
-
-    /**
-     * Hides the current {@link Layout}, returning to the default {@link Layout}.
-     * @param animate Whether or not to animate the transition to the default {@link Layout}.
-     */
-    @Override
-    public void hideOverview(boolean animate) {
-        Layout activeLayout = getActiveLayout();
-        if (!isOverviewLayout(activeLayout)) return;
-
-        if (activeLayout != null && !activeLayout.isStartingToHide()) {
-            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
-        }
-    }
-
-    /**
      * @param enabled Whether or not to allow model-reactive animations (tab creation, closing,
      *                etc.).
      */
@@ -410,22 +401,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @VisibleForTesting
     public boolean animationsEnabled() {
         return mEnableAnimations;
-    }
-
-    @Override
-    public boolean overviewVisible() {
-        Layout activeLayout = getActiveLayout();
-        return isOverviewLayout(activeLayout) && !activeLayout.isStartingToHide();
-    }
-
-    @Override
-    public void addOverviewModeObserver(OverviewModeObserver listener) {
-        mOverviewModeObservers.addObserver(listener);
-    }
-
-    @Override
-    public void removeOverviewModeObserver(OverviewModeObserver listener) {
-        mOverviewModeObservers.removeObserver(listener);
     }
 
     // ChromeAccessibilityUtil.Observer
@@ -482,7 +457,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             if (mSupportSwipeDown && mOverviewLayout != null
                     && mScrollDirection == ScrollDirection.DOWN) {
                 RecordUserAction.record("MobileToolbarSwipeOpenStackView");
-                showOverview(true);
+                showLayout(LayoutType.TAB_SWITCHER, true);
             } else if (mScrollDirection == ScrollDirection.LEFT
                     || mScrollDirection == ScrollDirection.RIGHT) {
                 startShowing(mToolbarSwipeLayout, true);
@@ -567,48 +542,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             super.switchToTab(tab, lastTabId);
             return;
         }
-        startShowing(mToolbarSwipeLayout, false);
-        mToolbarSwipeLayout.switchToTab(tab.getId(), lastTabId);
 
-        // Close the previous tab if the previous tab is a NTP.
-        Tab lastTab = getTabById(lastTabId);
-        if (UrlUtilities.isNTPUrl(lastTab.getUrl()) && !lastTab.canGoBack()
-                && !lastTab.canGoForward()) {
-            getTabModelSelector()
-                    .getModel(lastTab.isIncognito())
-                    .closeTab(lastTab, tab, false, false, false);
-        }
-    }
-
-    private void notifyObserversStartedShowing(boolean showToolbar) {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeStartedShowing(showToolbar);
-            }
-        });
-    }
-
-    private void notifyObserversFinishedShowing() {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeFinishedShowing();
-            }
-        });
-    }
-
-    private void notifyObserversStartedHiding(boolean showToolbar, boolean creatingNtp) {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeStartedHiding(showToolbar, creatingNtp);
-            }
-        });
-    }
-
-    private void notifyObserversFinishedHiding() {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeFinishedHiding();
-            }
-        });
+        mToolbarSwipeLayout.setSwitchToTab(tab.getId(), lastTabId);
+        showLayout(LayoutType.TOOLBAR_SWIPE, false);
     }
 }

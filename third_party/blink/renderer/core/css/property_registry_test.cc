@@ -1,20 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class PropertyRegistryTest : public PageTestBase,
-                             private ScopedCSSVariables2AtPropertyForTest {
+class PropertyRegistryTest : public PageTestBase {
  public:
-  PropertyRegistryTest() : ScopedCSSVariables2AtPropertyForTest(true) {}
-
   PropertyRegistry& Registry() {
     return GetDocument().EnsurePropertyRegistry();
   }
@@ -23,14 +21,30 @@ class PropertyRegistryTest : public PageTestBase,
     return Registry().Registration(name);
   }
 
-  const PropertyRegistration* RegisterProperty(AtomicString name) {
-    auto* registration = css_test_helpers::CreatePropertyRegistration(name);
+  const CSSValue* MaybeParseInitialValue(String syntax, String value) {
+    if (value.IsNull()) {
+      DCHECK_EQ(syntax, "*");
+      return nullptr;
+    }
+    return css_test_helpers::ParseValue(GetDocument(), syntax, value);
+  }
+
+  const PropertyRegistration* RegisterProperty(
+      AtomicString name,
+      String syntax = "*",
+      String initial_value = g_null_atom) {
+    auto* registration = css_test_helpers::CreatePropertyRegistration(
+        name, syntax, MaybeParseInitialValue(syntax, initial_value));
     Registry().RegisterProperty(name, *registration);
     return registration;
   }
 
-  const PropertyRegistration* DeclareProperty(AtomicString name) {
-    auto* registration = css_test_helpers::CreatePropertyRegistration(name);
+  const PropertyRegistration* DeclareProperty(
+      AtomicString name,
+      String syntax = "*",
+      String initial_value = g_null_atom) {
+    auto* registration = css_test_helpers::CreatePropertyRegistration(
+        name, syntax, MaybeParseInitialValue(syntax, initial_value));
     Registry().DeclareProperty(name, *registration);
     return registration;
   }
@@ -314,6 +328,70 @@ TEST_F(PropertyRegistryTest, MarkReferencedAtProperty) {
   // now takes precedence over @property.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(Registry().WasReferenced("--x"));
+}
+
+TEST_F(PropertyRegistryTest, GetViewportUnitFlagsRegistered) {
+  ScopedCSSViewportUnits4ForTest scoped_feature(true);
+
+  EXPECT_EQ(
+      0u, RegisterProperty("--px", "<length>", "1px")->GetViewportUnitFlags());
+  EXPECT_EQ(
+      static_cast<unsigned>(ViewportUnitFlag::kStatic),
+      RegisterProperty("--vh", "<length>", "1vh")->GetViewportUnitFlags());
+  EXPECT_EQ(
+      static_cast<unsigned>(ViewportUnitFlag::kStatic),
+      RegisterProperty("--svh", "<length>", "1svh")->GetViewportUnitFlags());
+  EXPECT_EQ(
+      static_cast<unsigned>(ViewportUnitFlag::kStatic),
+      RegisterProperty("--lvh", "<length>", "1lvh")->GetViewportUnitFlags());
+  EXPECT_EQ(
+      static_cast<unsigned>(ViewportUnitFlag::kDynamic),
+      RegisterProperty("--dvh", "<length>", "1dvh")->GetViewportUnitFlags());
+  EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic) |
+                static_cast<unsigned>(ViewportUnitFlag::kDynamic),
+            RegisterProperty("--mixed", "<length>", "calc(1dvh + 1svh)")
+                ->GetViewportUnitFlags());
+}
+
+TEST_F(PropertyRegistryTest, GetViewportUnitFlagsDeclared) {
+  ScopedCSSViewportUnits4ForTest scoped_feature(true);
+
+  EXPECT_EQ(0u,
+            DeclareProperty("--px", "<length>", "1px")->GetViewportUnitFlags());
+  EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic),
+            DeclareProperty("--vh", "<length>", "1vh")->GetViewportUnitFlags());
+  EXPECT_EQ(
+      static_cast<unsigned>(ViewportUnitFlag::kStatic),
+      DeclareProperty("--svh", "<length>", "1svh")->GetViewportUnitFlags());
+  EXPECT_EQ(
+      static_cast<unsigned>(ViewportUnitFlag::kStatic),
+      DeclareProperty("--lvh", "<length>", "1lvh")->GetViewportUnitFlags());
+  EXPECT_EQ(
+      static_cast<unsigned>(ViewportUnitFlag::kDynamic),
+      DeclareProperty("--dvh", "<length>", "1dvh")->GetViewportUnitFlags());
+  EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic) |
+                static_cast<unsigned>(ViewportUnitFlag::kDynamic),
+            DeclareProperty("--mixed", "<length>", "calc(1dvh + 1svh)")
+                ->GetViewportUnitFlags());
+}
+
+TEST_F(PropertyRegistryTest, GetViewportUnitFlagsRegistry) {
+  ScopedCSSViewportUnits4ForTest scoped_feature(true);
+
+  EXPECT_EQ(0u, Registry().GetViewportUnitFlags());
+
+  RegisterProperty("--vh", "<length>", "1vh");
+  EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic),
+            Registry().GetViewportUnitFlags());
+
+  DeclareProperty("--dvh", "<length>", "1dvh");
+  EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic) |
+                static_cast<unsigned>(ViewportUnitFlag::kDynamic),
+            Registry().GetViewportUnitFlags());
+
+  Registry().RemoveDeclaredProperties();
+  EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic),
+            Registry().GetViewportUnitFlags());
 }
 
 }  // namespace blink

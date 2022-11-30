@@ -1,18 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
@@ -20,6 +18,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
@@ -65,6 +64,10 @@ class MediaCaptureDevicesDispatcher
   };
 
   static MediaCaptureDevicesDispatcher* GetInstance();
+
+  MediaCaptureDevicesDispatcher(const MediaCaptureDevicesDispatcher&) = delete;
+  MediaCaptureDevicesDispatcher& operator=(
+      const MediaCaptureDevicesDispatcher&) = delete;
 
   // Registers the preferences related to Media Stream default devices.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -119,7 +122,7 @@ class MediaCaptureDevicesDispatcher
       content::BrowserContext* context,
       bool audio,
       bool video,
-      blink::MediaStreamDevices* devices) override;
+      blink::mojom::StreamDevices& devices) override;
 
   // content::MediaObserver:
   void OnAudioCaptureDevicesChanged() override;
@@ -165,7 +168,6 @@ class MediaCaptureDevicesDispatcher
       int render_process_id,
       int render_frame_id,
       int page_request_id,
-      const GURL& security_origin,
       blink::mojom::MediaStreamType stream_type,
       content::MediaRequestState state);
   void OnCreatingAudioStreamOnUIThread(int render_process_id,
@@ -192,8 +194,6 @@ class MediaCaptureDevicesDispatcher
 
   // Handlers for processing media access requests.
   std::vector<std::unique_ptr<MediaAccessHandler>> media_access_handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCaptureDevicesDispatcher);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_

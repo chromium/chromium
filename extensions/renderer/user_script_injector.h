@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -33,21 +32,25 @@ class UserScriptInjector : public ScriptInjector,
   UserScriptInjector(const UserScript* user_script,
                      UserScriptSet* user_script_set,
                      bool is_declarative);
+
+  UserScriptInjector(const UserScriptInjector&) = delete;
+  UserScriptInjector& operator=(const UserScriptInjector&) = delete;
+
   ~UserScriptInjector() override;
 
  private:
   // UserScriptSet::Observer implementation.
-  void OnUserScriptsUpdated(const std::set<mojom::HostID>& changed_hosts,
-                            const UserScriptList& scripts) override;
+  void OnUserScriptsUpdated() override;
+  void OnUserScriptSetDestroyed() override;
 
   // ScriptInjector implementation.
   mojom::InjectionType script_type() const override;
-  bool IsUserGesture() const override;
+  blink::mojom::UserActivationOption IsUserGesture() const override;
+  mojom::ExecutionWorld GetExecutionWorld() const override;
   mojom::CSSOrigin GetCssOrigin() const override;
-  bool IsRemovingCSS() const override;
-  bool IsAddingCSS() const override;
-  const base::Optional<std::string> GetInjectionKey() const override;
-  bool ExpectsResults() const override;
+  mojom::CSSInjection::Operation GetCSSInjectionOperation() const override;
+  blink::mojom::WantResultOption ExpectsResults() const override;
+  blink::mojom::PromiseResultOption ShouldWaitForPromise() const override;
   bool ShouldInjectJs(
       mojom::RunLocation run_location,
       const std::set<std::string>& executing_scripts) const override;
@@ -62,11 +65,11 @@ class UserScriptInjector : public ScriptInjector,
       mojom::RunLocation run_location,
       std::set<std::string>* executing_scripts,
       size_t* num_injected_js_scripts) const override;
-  std::vector<blink::WebString> GetCssSources(
+  std::vector<CSSSource> GetCssSources(
       mojom::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const override;
-  void OnInjectionComplete(std::unique_ptr<base::Value> execution_result,
+  void OnInjectionComplete(absl::optional<base::Value> execution_result,
                            mojom::RunLocation run_location) override;
   void OnWillNotInject(InjectFailureReason reason) override;
 
@@ -75,12 +78,12 @@ class UserScriptInjector : public ScriptInjector,
   const UserScript* script_;
 
   // The UserScriptSet that eventually owns the UserScript this
-  // UserScriptInjector points to.
-  // Outlives |this|.
+  // UserScriptInjector points to. Outlives `this` unless the UserScriptSet may
+  // be destroyed first, and `this` will be destroyed immediately after.
   UserScriptSet* const user_script_set_;
 
   // The id of the associated user script. We cache this because when we update
-  // the |script_| associated with this injection, the old referance may be
+  // the |script_| associated with this injection, the old reference may be
   // deleted.
   std::string script_id_;
 
@@ -93,8 +96,6 @@ class UserScriptInjector : public ScriptInjector,
 
   base::ScopedObservation<UserScriptSet, UserScriptSet::Observer>
       user_script_set_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptInjector);
 };
 
 }  // namespace extensions

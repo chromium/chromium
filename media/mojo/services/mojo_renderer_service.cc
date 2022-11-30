@@ -1,20 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/services/mojo_renderer_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_url_demuxer.h"
 #include "media/base/renderer.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/services/media_resource_shim.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -53,7 +54,7 @@ MojoRendererService::~MojoRendererService() = default;
 
 void MojoRendererService::Initialize(
     mojo::PendingAssociatedRemote<mojom::RendererClient> client,
-    base::Optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
+    absl::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
         streams,
     mojom::MediaUrlParamsPtr media_url_params,
     InitializeCallback callback) {
@@ -73,10 +74,10 @@ void MojoRendererService::Initialize(
   }
 
   DCHECK(!media_url_params->media_url.is_empty());
-  media_resource_.reset(new MediaUrlDemuxer(
+  media_resource_ = std::make_unique<MediaUrlDemuxer>(
       nullptr, media_url_params->media_url, media_url_params->site_for_cookies,
       media_url_params->top_frame_origin, media_url_params->allow_credentials,
-      media_url_params->is_hls));
+      media_url_params->is_hls);
   renderer_->Initialize(
       media_resource_.get(), this,
       base::BindOnce(&MojoRendererService::OnRendererInitializeDone, weak_this_,
@@ -111,7 +112,7 @@ void MojoRendererService::SetVolume(float volume) {
 }
 
 void MojoRendererService::SetCdm(
-    const base::Optional<base::UnguessableToken>& cdm_id,
+    const absl::optional<base::UnguessableToken>& cdm_id,
     SetCdmCallback callback) {
   if (cdm_context_ref_) {
     DVLOG(1) << "Switching CDM not supported";
@@ -153,9 +154,11 @@ void MojoRendererService::SetCdm(
 void MojoRendererService::OnError(PipelineStatus error) {
   DVLOG(1) << __func__ << "(" << error << ")";
   state_ = STATE_ERROR;
-  StatusCode status_code = PipelineStatusToStatusCode(error);
-  auto status = Status(status_code, PipelineStatusToString(error));
-  client_->OnError(status);
+  client_->OnError(std::move(error));
+}
+
+void MojoRendererService::OnFallback(PipelineStatus error) {
+  NOTREACHED();
 }
 
 void MojoRendererService::OnEnded() {
@@ -203,7 +206,7 @@ void MojoRendererService::OnVideoOpacityChange(bool opaque) {
   client_->OnVideoOpacityChange(opaque);
 }
 
-void MojoRendererService::OnVideoFrameRateChange(base::Optional<int> fps) {
+void MojoRendererService::OnVideoFrameRateChange(absl::optional<int> fps) {
   DVLOG(2) << __func__ << "(" << (fps ? *fps : -1) << ")";
   // TODO(liberato): plumb to |client_|.
 }
@@ -242,7 +245,7 @@ void MojoRendererService::UpdateMediaTime(bool force) {
   base::TimeDelta max_time = media_time;
   // Allow some slop to account for delays in scheduling time update tasks.
   if (time_update_timer_.IsRunning() && (playback_rate_ > 0))
-    max_time += base::TimeDelta::FromMilliseconds(2 * kTimeUpdateIntervalMs);
+    max_time += base::Milliseconds(2 * kTimeUpdateIntervalMs);
 
   client_->OnTimeUpdate(media_time, max_time, base::TimeTicks::Now());
   last_media_time_ = media_time;
@@ -260,7 +263,7 @@ void MojoRendererService::SchedulePeriodicMediaTimeUpdates() {
 
   UpdateMediaTime(true);
   time_update_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kTimeUpdateIntervalMs),
+      FROM_HERE, base::Milliseconds(kTimeUpdateIntervalMs),
       base::BindRepeating(&MojoRendererService::UpdateMediaTime, weak_this_,
                           false));
 }

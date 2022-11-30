@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,14 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 class Location;
-enum class ThreadPriority : int;
+enum class ThreadType : int;
 
 // INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(name) produces an identifier by
 // appending the current line number to |name|. This is used to avoid name
@@ -63,6 +63,20 @@ enum class ThreadPriority : int;
       INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                  \
           scoped_may_load_library_at_background_priority)(FROM_HERE, nullptr);
 
+// Boosts the current thread's priority to match the priority of threads of
+// |target_thread_type| in this scope.
+class BASE_EXPORT ScopedBoostPriority {
+ public:
+  explicit ScopedBoostPriority(ThreadType target_thread_type);
+  ~ScopedBoostPriority();
+
+  ScopedBoostPriority(const ScopedBoostPriority&) = delete;
+  ScopedBoostPriority& operator=(const ScopedBoostPriority&) = delete;
+
+ private:
+  absl::optional<ThreadType> original_thread_type_;
+};
+
 namespace internal {
 
 class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
@@ -72,16 +86,20 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
   explicit ScopedMayLoadLibraryAtBackgroundPriority(
       const Location& from_here,
       std::atomic_bool* already_loaded);
+
+  ScopedMayLoadLibraryAtBackgroundPriority(
+      const ScopedMayLoadLibraryAtBackgroundPriority&) = delete;
+  ScopedMayLoadLibraryAtBackgroundPriority& operator=(
+      const ScopedMayLoadLibraryAtBackgroundPriority&) = delete;
+
   ~ScopedMayLoadLibraryAtBackgroundPriority();
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The original priority when invoking entering the scope().
-  base::Optional<ThreadPriority> original_thread_priority_;
-  std::atomic_bool* const already_loaded_;
+  absl::optional<ThreadType> original_thread_type_;
+  const raw_ptr<std::atomic_bool> already_loaded_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMayLoadLibraryAtBackgroundPriority);
 };
 
 }  // namespace internal

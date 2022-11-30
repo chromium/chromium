@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,11 @@ class FakeInfobarDelegate;
 // Fake version of InfoBarIOS set up with fake delegates to use in tests.
 class FakeInfobarIOS : public InfoBarIOS {
  public:
-  // Creates a FakeInfobarIOS with |type| that has a delegate that uses
-  // |message_text| as its message.
+  // Creates a FakeInfobarIOS with `type` that has a delegate that uses
+  // `message_text` as its message.
   FakeInfobarIOS(InfobarType type = InfobarType::kInfobarTypeConfirm,
                  std::u16string message_text = u"FakeInfobar");
-  // Creates a FakeInfobarIOS with |fake_delegate|. Uses
+  // Creates a FakeInfobarIOS with `fake_delegate`. Uses
   // InfobarType::kInfobarTypeConfirm as a default type value.}
   FakeInfobarIOS(std::unique_ptr<FakeInfobarDelegate> fake_delegate);
   ~FakeInfobarIOS() override;

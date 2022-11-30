@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #define DEVICE_BLUETOOTH_TEST_TEST_BLUETOOTH_ADAPTER_OBSERVER_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace device {
@@ -20,6 +22,11 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
  public:
   explicit TestBluetoothAdapterObserver(
       scoped_refptr<BluetoothAdapter> adapter);
+
+  TestBluetoothAdapterObserver(const TestBluetoothAdapterObserver&) = delete;
+  TestBluetoothAdapterObserver& operator=(const TestBluetoothAdapterObserver&) =
+      delete;
+
   ~TestBluetoothAdapterObserver() override;
 
   // Reset counters and cached values.
@@ -43,16 +50,16 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
                             const std::string& old_address) override;
   void DeviceAdvertisementReceived(
       const std::string& device_id,
-      const base::Optional<std::string>& device_name,
-      const base::Optional<std::string>& advertisement_name,
-      base::Optional<int8_t> rssi,
-      base::Optional<int8_t> tx_power,
-      base::Optional<uint16_t> appearance,
+      const absl::optional<std::string>& device_name,
+      const absl::optional<std::string>& advertisement_name,
+      absl::optional<int8_t> rssi,
+      absl::optional<int8_t> tx_power,
+      absl::optional<uint16_t> appearance,
       const device::BluetoothDevice::UUIDList& advertised_uuids,
       const device::BluetoothDevice::ServiceDataMap& service_data_map,
       const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map)
       override;
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
                            device::BluetoothDevice* device,
                            bool new_paired_status) override;
@@ -100,6 +107,11 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   void GattDescriptorValueChanged(BluetoothAdapter* adapter,
                                   BluetoothRemoteGattDescriptor* descriptor,
                                   const std::vector<uint8_t>& value) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void LowEnergyScanSessionHardwareOffloadingStatusChanged(
+      BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus status)
+      override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Adapter related:
   int present_changed_count() const { return present_changed_count_; }
@@ -122,15 +134,15 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
     return device_advertisement_raw_received_count_;
   }
   std::string last_device_address() const { return last_device_address_; }
-  const base::Optional<std::string>& last_device_name() const {
+  const absl::optional<std::string>& last_device_name() const {
     return last_device_name_;
   }
-  const base::Optional<std::string>& last_advertisement_name() const {
+  const absl::optional<std::string>& last_advertisement_name() const {
     return last_advertisement_name_;
   }
-  const base::Optional<int8_t>& last_rssi() const { return last_rssi_; }
-  const base::Optional<int8_t>& last_tx_power() const { return last_tx_power_; }
-  const base::Optional<uint16_t>& last_appearance() const {
+  const absl::optional<int8_t>& last_rssi() const { return last_rssi_; }
+  const absl::optional<int8_t>& last_tx_power() const { return last_tx_power_; }
+  const absl::optional<uint16_t>& last_appearance() const {
     return last_appearance_;
   }
   const device::BluetoothDevice::UUIDList& last_advertised_uuids() const {
@@ -144,7 +156,7 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
     return last_manufacturer_data_map_;
   }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count() const {
     return device_paired_changed_count_;
   }
@@ -216,6 +228,12 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   std::vector<uint8_t> last_changed_descriptor_value() const {
     return last_changed_descriptor_value_;
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+  last_low_energy_scan_session_hardware_offloading_status() const {
+    return last_low_energy_scan_session_hardware_offloading_status_;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   // Some tests use a message loop since background processing is simulated;
@@ -241,11 +259,11 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   // Advertisement related
   int device_advertisement_raw_received_count_;
   std::string last_device_address_;
-  base::Optional<std::string> last_device_name_;
-  base::Optional<std::string> last_advertisement_name_;
-  base::Optional<int8_t> last_rssi_;
-  base::Optional<int8_t> last_tx_power_;
-  base::Optional<uint16_t> last_appearance_;
+  absl::optional<std::string> last_device_name_;
+  absl::optional<std::string> last_advertisement_name_;
+  absl::optional<int8_t> last_rssi_;
+  absl::optional<int8_t> last_tx_power_;
+  absl::optional<uint16_t> last_appearance_;
   device::BluetoothDevice::UUIDList last_advertised_uuids_;
   device::BluetoothDevice::ServiceDataMap last_service_data_map_;
   device::BluetoothDevice::ManufacturerDataMap last_manufacturer_data_map_;
@@ -253,7 +271,7 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   base::RepeatingClosure discovering_changed_callback_;
   base::RepeatingClosure discovery_change_completed_callback_;
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count_;
   bool device_new_paired_status_;
   int device_mtu_changed_count_;
@@ -263,7 +281,7 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   std::vector<bool> device_connected_state_changed_values_;
 #endif
   int device_removed_count_;
-  BluetoothDevice* last_device_;
+  raw_ptr<BluetoothDevice> last_device_;
 
   // GATT related:
   int gatt_service_added_count_;
@@ -288,7 +306,12 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   BluetoothUUID last_gatt_descriptor_uuid_;
   std::vector<uint8_t> last_changed_descriptor_value_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestBluetoothAdapterObserver);
+#if BUILDFLAG(IS_CHROMEOS)
+  BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+      last_low_energy_scan_session_hardware_offloading_status_ =
+          BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+              kUndetermined;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace device

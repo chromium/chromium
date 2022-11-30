@@ -1,6 +1,6 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 #
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generate owners (.owners file) by looking at commit author for
@@ -19,7 +19,8 @@ AUTHOR_REGEX = re.compile('author-mail <(.+)>')
 CHROMIUM_SRC_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OWNERS_FILENAME = 'OWNERS'
-THIRD_PARTY_SEARCH_STRING = 'third_party' + os.sep
+THIRD_PARTY = 'third_party'
+THIRD_PARTY_SEARCH_STRING = THIRD_PARTY + os.path.sep
 
 
 def GetAuthorFromGitBlame(blame_output):
@@ -40,26 +41,30 @@ def GetGitCommand():
 
 
 def GetOwnersIfThirdParty(source):
-  """Return owners using OWNERS file if in third_party."""
+  """Return owners using the closest OWNERS file if in third_party."""
   match_index = source.find(THIRD_PARTY_SEARCH_STRING)
   if match_index == -1:
     # Not in third_party, skip.
     return None
 
-  match_index_with_library = source.find(
-      os.sep, match_index + len(THIRD_PARTY_SEARCH_STRING))
-  if match_index_with_library == -1:
-    # Unable to determine library name, skip.
-    return None
+  path_prefix = source[:match_index + len(THIRD_PARTY_SEARCH_STRING)]
+  path_after_third_party = source[len(path_prefix):].split(os.path.sep)
 
-  owners_file_path = os.path.join(source[:match_index_with_library],
-                                  OWNERS_FILENAME)
-  if not os.path.exists(owners_file_path):
-    return None
+  # Test all the paths after third_party/<libname>, making sure that we don't
+  # test third_party/OWNERS itself, otherwise we'd default to CCing them for
+  # all fuzzer issues without OWNERS, which wouldn't be nice.
+  while path_after_third_party:
+    owners_file_path = path_prefix + \
+        os.path.join(*(path_after_third_party + [OWNERS_FILENAME]))
 
-  return open(owners_file_path).read()
+    if os.path.exists(owners_file_path):
+      return open(owners_file_path).read()
 
+    path_after_third_party.pop()
 
+  return None
+
+# pylint: disable=inconsistent-return-statements
 def GetOwnersForFuzzer(sources):
   """Return owners given a list of sources as input."""
   if not sources:
@@ -97,7 +102,7 @@ def GetOwnersForFuzzer(sources):
       return GetAuthorFromGitBlame(blame_output)
 
   return None
-
+# pylint: enable=inconsistent-return-statements
 
 def FindGroupsAndDepsInDeps(deps_list, build_dir):
   """Return list of groups, as well as their deps, from a list of deps."""
@@ -188,7 +193,7 @@ def GNPath():
 
 def SubStringExistsIn(substring_list, string):
   """Return true if one of the substring in the list is found in |string|."""
-  return any([substring in string for substring in substring_list])
+  return any(substring in string for substring in substring_list)
 
 
 def main():

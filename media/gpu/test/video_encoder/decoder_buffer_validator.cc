@@ -1,10 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 
+#include <set>
+
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
 #include "media/gpu/h264_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +42,9 @@ int VideoCodecProfileToVP9Profile(VideoCodecProfile profile) {
 }
 }  // namespace
 
-DecoderBufferValidator::DecoderBufferValidator(const gfx::Rect& visible_rect)
-    : visible_rect_(visible_rect) {}
+DecoderBufferValidator::DecoderBufferValidator(const gfx::Rect& visible_rect,
+                                               size_t num_temporal_layers)
+    : visible_rect_(visible_rect), num_temporal_layers_(num_temporal_layers) {}
 
 DecoderBufferValidator::~DecoderBufferValidator() = default;
 
@@ -53,57 +59,11 @@ bool DecoderBufferValidator::WaitUntilDone() {
   return num_errors_ == 0;
 }
 
-TemporalLayerValidator::TemporalLayerValidator(size_t num_temporal_layers)
-    : num_temporal_layers_(num_temporal_layers) {
-  reference_frames_.fill(0);
-}
-
-TemporalLayerValidator::~TemporalLayerValidator() = default;
-
-bool TemporalLayerValidator::ValidateAndUpdate(bool keyframe,
-                                               uint8_t temporal_index,
-                                               uint8_t reference_index,
-                                               uint8_t refresh_frame_index) {
-  if (temporal_index >= num_temporal_layers_) {
-    LOG(ERROR) << "Temporal layer index is not less than the number of temporal"
-               << " layers, temporal_index=" << temporal_index
-               << ", num_temporal_layers=" << num_temporal_layers_;
-    return false;
-  }
-  if (keyframe) {
-    if (temporal_index != 0) {
-      LOG(ERROR) << "Key frame exists in non base layer, temporal_index="
-                 << temporal_index;
-      return false;
-    }
-    reference_frames_.fill(temporal_index);
-    return true;
-  }
-
-  const std::bitset<kReferenceFramePoolSize> reference(reference_index);
-  for (size_t i = 0; i < kReferenceFramePoolSize; ++i) {
-    if (!reference[i])
-      continue;
-    const uint8_t referenced_index = reference_frames_[i];
-    if (referenced_index > temporal_index) {
-      LOG(ERROR) << "Frame in upper layer referenced, temporal_index="
-                 << temporal_index
-                 << ", referenced temporal index=" << referenced_index;
-      return false;
-    }
-  }
-  const std::bitset<kReferenceFramePoolSize> refresh(refresh_frame_index);
-  for (size_t i = 0; i < kReferenceFramePoolSize; ++i) {
-    if (refresh[i])
-      reference_frames_[i] = temporal_index;
-  }
-  return true;
-}
-
 H264Validator::H264Validator(VideoCodecProfile profile,
                              const gfx::Rect& visible_rect,
-                             base::Optional<uint8_t> level)
-    : DecoderBufferValidator(visible_rect),
+                             size_t num_temporal_layers,
+                             absl::optional<uint8_t> level)
+    : DecoderBufferValidator(visible_rect, num_temporal_layers),
       cur_pic_(new H264Picture),
       profile_(VideoCodecProfileToH264ProfileIDC(profile)),
       level_(level) {}
@@ -113,6 +73,18 @@ H264Validator::~H264Validator() = default;
 bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
                              const BitstreamBufferMetadata& metadata) {
   parser_.SetStream(decoder_buffer.data(), decoder_buffer.data_size());
+
+  if (num_temporal_layers_ > 1) {
+    if (!metadata.h264) {
+      LOG(ERROR) << "H264Metadata must be filled in temporal layer encoding";
+      return false;
+    }
+    if (metadata.h264->temporal_idx >= num_temporal_layers_) {
+      LOG(ERROR) << "Invalid temporal_idx: "
+                 << base::strict_cast<int32_t>(metadata.h264->temporal_idx);
+      return false;
+    }
+  }
 
   size_t num_frames = 0;
   H264NALU nalu;
@@ -130,7 +102,23 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           return false;
         }
         seen_idr_ = true;
-        FALLTHROUGH;
+
+        if (!metadata.key_frame) {
+          LOG(ERROR) << "metadata.key_frame is false on IDR frame";
+          return false;
+        }
+
+        if (metadata.h264 &&
+            (metadata.h264->temporal_idx != 0 || metadata.h264->layer_sync)) {
+          LOG(ERROR) << "temporal_idx="
+                     << base::strict_cast<int>(metadata.h264->temporal_idx)
+                     << " or layer_sync="
+                     << base::strict_cast<int>(metadata.h264->layer_sync)
+                     << " is unexpected";
+          return false;
+        }
+
+        [[fallthrough]];
       case H264NALU::kNonIDRSlice: {
         if (!seen_idr_) {
           LOG(ERROR) << "Non IDR frame before IDR frame";
@@ -142,13 +130,24 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           LOG(ERROR) << "Failed parsing slice";
           return false;
         }
-        // TODO(hiroh): Add more checks.
+
         if (IsNewPicture(slice_hdr)) {
           // A new frame is found. Initialize |cur_pic|.
           num_frames++;
           if (!UpdateCurrentPicture(slice_hdr))
             return false;
         }
+
+        if (slice_hdr.disable_deblocking_filter_idc != 0) {
+          LOG(ERROR) << "Deblocking filter is not enabled";
+          return false;
+        }
+
+        if (slice_hdr.slice_type == H264SliceHeader::Type::kBSlice) {
+          LOG(ERROR) << "Found B slice";
+          return false;
+        }
+
         break;
       }
       case H264NALU::kSPS: {
@@ -193,6 +192,20 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           return false;
         }
         seen_pps_ = true;
+
+        const H264PPS* pps = parser_.GetPPS(pps_id);
+        if ((profile_ == H264SPS::kProfileIDCMain ||
+             profile_ == H264SPS::kProfileIDCHigh) &&
+            !pps->entropy_coding_mode_flag) {
+          // CABAC must be selected if a profile is Main and High.
+          LOG(ERROR) << "The entropy coding is not CABAC";
+          return false;
+        }
+
+        // 8x8 transform should be enabled if a profile is High. However, we
+        // don't check it because it is not enabled due to a hardware limitation
+        // on AMD stoneyridge and picasso.
+
         break;
       }
       default:
@@ -233,8 +246,9 @@ bool H264Validator::UpdateCurrentPicture(const H264SliceHeader& slice_hdr) {
   return true;
 }
 
-VP8Validator::VP8Validator(const gfx::Rect& visible_rect)
-    : DecoderBufferValidator(visible_rect) {}
+VP8Validator::VP8Validator(const gfx::Rect& visible_rect,
+                           size_t num_temporal_layers)
+    : DecoderBufferValidator(visible_rect, num_temporal_layers) {}
 
 VP8Validator::~VP8Validator() = default;
 
@@ -250,6 +264,11 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
+  if (!header.show_frame) {
+    LOG(ERROR) << "|show_frame| should be always true";
+    return false;
+  }
+
   if (header.IsKeyframe()) {
     seen_keyframe_ = true;
     if (gfx::Rect(header.width, header.height) != visible_rect_) {
@@ -260,27 +279,102 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     }
   }
 
-  return seen_keyframe_ && header.show_frame;
+  if (!seen_keyframe_) {
+    LOG(ERROR) << "Bitstream cannot start with a delta frame";
+    return false;
+  }
+
+  if (num_temporal_layers_ == 1)
+    return true;
+
+  if (!metadata.vp8) {
+    LOG(ERROR) << "Metadata must be populated if temporal scalability is used.";
+    return false;
+  }
+
+  const uint8_t temporal_idx = metadata.vp8->temporal_idx;
+  if (temporal_idx >= num_temporal_layers_) {
+    LOG(ERROR) << "Invalid temporal id: "
+               << base::strict_cast<int>(temporal_idx);
+    return false;
+  }
+
+  if (header.IsKeyframe()) {
+    if (temporal_idx != 0) {
+      LOG(ERROR) << "Temporal id must be 0 on keyframe";
+      return false;
+    }
+    return true;
+  }
+
+  if (header.copy_buffer_to_golden != Vp8FrameHeader::NO_GOLDEN_REFRESH ||
+      header.copy_buffer_to_alternate != Vp8FrameHeader::NO_ALT_REFRESH) {
+    LOG(ERROR) << "Each reference frame is either updated by the current "
+               << "frame or unchanged in temporal layer encoding.";
+    return false;
+  }
+
+  const bool update_reference = header.refresh_last ||
+                                header.refresh_golden_frame ||
+                                header.refresh_alternate_frame;
+  if (metadata.vp8->non_reference != !update_reference) {
+    LOG(ERROR) << "|non_reference| must be true iff the frame does not update"
+               << "any reference buffer.";
+    return false;
+  }
+
+  if (num_temporal_layers_ == temporal_idx + 1) {
+    if (update_reference) {
+      LOG(ERROR) << "The frame in top temporal layer must not update "
+                    "reference frame.";
+      return false;
+    }
+  } else {
+    // TL0 can update last frame only and TL1 can update golden frame only when
+    // it is not top temporal layer.
+    if (temporal_idx == 0) {
+      if (!header.refresh_last || header.refresh_golden_frame ||
+          header.refresh_alternate_frame) {
+        LOG(ERROR) << "|refresh_last| only must be set on temporal layer 0";
+        return false;
+      }
+    } else if (temporal_idx == 1) {
+      if (header.refresh_last || !header.refresh_golden_frame ||
+          header.refresh_alternate_frame) {
+        LOG(ERROR) << "|refresh_golden_frame| only must be set on temporal "
+                   << "layer 1";
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 VP9Validator::VP9Validator(VideoCodecProfile profile,
                            const gfx::Rect& visible_rect,
+                           size_t max_num_spatial_layers,
                            size_t num_temporal_layers)
-    : DecoderBufferValidator(visible_rect),
-      parser_(false /* parsing_compressed_header */),
+    : DecoderBufferValidator(visible_rect, num_temporal_layers),
+      parser_(/*parsing_compressed_header=*/false),
       profile_(VideoCodecProfileToVP9Profile(profile)),
-      temporal_layer_validator_(
-          num_temporal_layers > 1u
-              ? std::make_unique<TemporalLayerValidator>(num_temporal_layers)
-              : nullptr) {}
+      max_num_spatial_layers_(max_num_spatial_layers),
+      cur_num_spatial_layers_(max_num_spatial_layers_),
+      next_picture_id_(0) {}
 
 VP9Validator::~VP9Validator() = default;
 
 bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                             const BitstreamBufferMetadata& metadata) {
-  // TODO(hiroh): We could be getting more frames in the buffer, but there is
-  // no simple way to detect this. We'd need to parse the frames and go through
-  // partition numbers/sizes. For now assume one frame per buffer.
+  // See Annex B "Superframes" in VP9 spec.
+  constexpr uint8_t kSuperFrameMarkerMask = 0b11100000;
+  constexpr uint8_t kSuperFrameMarker = 0b11000000;
+  if ((decoder_buffer.data()[decoder_buffer.data_size() - 1] &
+       kSuperFrameMarkerMask) == kSuperFrameMarker) {
+    LOG(ERROR) << "Support for super-frames not yet implemented.";
+    return false;
+  }
+
   Vp9FrameHeader header;
   gfx::Size allocate_size;
   parser_.SetStream(decoder_buffer.data(), decoder_buffer.data_size(), nullptr);
@@ -289,59 +383,218 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     LOG(ERROR) << "Failed parsing";
     return false;
   }
+
   if (metadata.key_frame != header.IsKeyframe()) {
     LOG(ERROR) << "Keyframe info in metadata is wrong, metadata.keyframe="
                << metadata.key_frame;
     return false;
   }
 
+  if (next_picture_id_ == 0 &&
+      (max_num_spatial_layers_ == 1 ||
+       (max_num_spatial_layers_ > 1 && metadata.vp9->spatial_idx == 0)) &&
+      !header.IsKeyframe()) {
+    LOG(ERROR) << "First frame must be a key-frame.";
+    return false;
+  }
+
+  BufferState new_buffer_state{};
+  if (max_num_spatial_layers_ > 1 || num_temporal_layers_ > 1) {
+    if (!metadata.vp9) {
+      LOG(ERROR) << "Metadata must be populated if spatial/temporal "
+                    "scalability is used.";
+      return false;
+    }
+    if (!header.error_resilient_mode) {
+      LOG(ERROR) << "Error resilient mode must be used if spatial or temporal "
+                    "scaliblity is enabled.";
+      return false;
+    }
+    new_buffer_state.spatial_id = metadata.vp9->spatial_idx;
+    new_buffer_state.temporal_id = metadata.vp9->temporal_idx;
+
+    if (metadata.vp9->spatial_idx >= cur_num_spatial_layers_ ||
+        metadata.vp9->temporal_idx >= num_temporal_layers_) {
+      LOG(ERROR) << "Invalid spatial_idx="
+                 << base::strict_cast<int>(metadata.vp9->spatial_idx)
+                 << ", temporal_idx="
+                 << base::strict_cast<int>(metadata.vp9->temporal_idx);
+      return false;
+    }
+
+    new_buffer_state.picture_id = next_picture_id_;
+    if (metadata.vp9->spatial_idx == cur_num_spatial_layers_ - 1)
+      next_picture_id_++;
+  } else {
+    new_buffer_state.picture_id = next_picture_id_++;
+  }
+
+  if (metadata.vp9 &&
+      metadata.vp9->inter_pic_predicted != !metadata.vp9->p_diffs.empty()) {
+    LOG(ERROR) << "Inconsistent metadata, inter_pic_predicted implies p_diffs "
+                  "is non-empty.";
+    return false;
+  }
+
   if (header.IsKeyframe()) {
-    seen_keyframe_ = true;
     if (header.profile != static_cast<uint8_t>(profile_)) {
       LOG(ERROR) << "Profile mismatched. Actual profile: "
                  << static_cast<int>(header.profile)
                  << ", expected profile: " << profile_;
       return false;
     }
-    if (gfx::Rect(header.render_width, header.render_height) != visible_rect_) {
-      LOG(ERROR)
-          << "Visible rectangle mismatched. Actual visible_rect: "
-          << gfx::Rect(header.render_width, header.render_height).ToString()
-          << ", expected visible_rect: " << visible_rect_.ToString();
+
+    if (new_buffer_state.spatial_id != 0 || new_buffer_state.temporal_id != 0) {
+      LOG(ERROR) << "Spatial and temporal id must be 0 for key-frames.";
       return false;
     }
-  }
 
-  if (!seen_keyframe_) {
-    LOG(ERROR) << "First frame is not key frame";
-    return false;
-  }
+    if (metadata.vp9.has_value()) {
+      if (metadata.vp9->spatial_layer_resolutions.empty()) {
+        LOG(ERROR) << "spatial_layer_resolution must not be empty on key frame";
+        return false;
+      }
 
-  if (!header.show_frame) {
-    LOG(ERROR) << "VideoEncodeAccelerator outputs non showable frame";
-    return false;
-  }
+      cur_num_spatial_layers_ = metadata.vp9->spatial_layer_resolutions.size();
+      spatial_layer_resolutions_ = metadata.vp9->spatial_layer_resolutions;
+    }
 
-  if (!temporal_layer_validator_)
+    new_buffer_state.picture_id = 0;
+    next_picture_id_ = 0;
+    if (!metadata.vp9 ||
+        metadata.vp9->spatial_idx == cur_num_spatial_layers_ - 1) {
+      next_picture_id_ = 1;
+    }
+  } else if (header.show_existing_frame) {
+    if (!reference_buffers_[header.frame_to_show_map_idx]) {
+      LOG(ERROR) << "Attempting to show an existing frame, but the selected "
+                    "reference buffer is invalid.";
+      return false;
+    }
+    // No decoder state is updated if showing existing frame, but the picture id
+    // is still incremented.
+    if (metadata.vp9) {
+      int expected_diff =
+          new_buffer_state.picture_id -
+          reference_buffers_[header.frame_to_show_map_idx]->picture_id;
+      if (metadata.vp9->p_diffs.size() != 1 ||
+          metadata.vp9->p_diffs[0] != expected_diff) {
+        LOG(ERROR)
+            << "Inconsistency between p_diff and existing frame to show.";
+        return false;
+      }
+    }
+
     return true;
-
-  if (!metadata.vp9.has_value()) {
-    LOG(ERROR) << "No metadata in temporal layer encoding";
-    return false;
   }
-  uint8_t reference_index = 0;
-  for (size_t i = 0; i < kVp9NumRefsPerFrame; ++i) {
-    uint8_t ref_frame_index = header.ref_frame_idx[i];
-    if (ref_frame_index >= static_cast<uint8_t>(kVp9NumRefFrames)) {
-      LOG(ERROR) << "Invalid reference frame index: "
-                 << static_cast<int>(ref_frame_index);
+
+  // Check the resolution is expected.
+  const gfx::Rect visible_rect(header.render_width, header.render_height);
+  if (spatial_layer_resolutions_.empty()) {
+    // Simple stream encoding.
+    if (visible_rect_ != visible_rect) {
+      LOG(ERROR) << "Visible rectangle mismatched. Actual visible_rect: "
+                 << visible_rect.ToString()
+                 << ", expected visible_rect: " << visible_rect_.ToString();
       return false;
     }
-    reference_index |= (1u << ref_frame_index);
+  } else {
+    // SVC encoding.
+    CHECK(metadata.vp9.has_value());
+    if (visible_rect.size() !=
+        spatial_layer_resolutions_[metadata.vp9->spatial_idx]) {
+      LOG(ERROR)
+          << "Resolution mismatched. Actual resolution: "
+          << visible_rect.size().ToString() << ", expected resolution: "
+          << spatial_layer_resolutions_[metadata.vp9->spatial_idx].ToString();
+      return false;
+    }
   }
-  return temporal_layer_validator_->ValidateAndUpdate(
-      header.IsKeyframe(), metadata.vp9->temporal_idx, reference_index,
-      header.refresh_frame_flags);
+
+  // Check that referenced frames are OK.
+  if (header.IsIntra()) {
+    if (metadata.vp9 && !metadata.vp9->p_diffs.empty()) {
+      // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+      LOG(ERROR) << "|p_diffs| should be empty in intra-frames.";
+      return false;
+    }
+  } else {
+    std::vector<int> expected_pdiffs;
+    std::set<uint8_t> used_indices;
+    for (uint8_t ref_frame_index : header.ref_frame_idx) {
+      if (ref_frame_index >= static_cast<uint8_t>(kVp9NumRefFrames)) {
+        LOG(ERROR) << "Invalid reference frame index: "
+                   << static_cast<int>(ref_frame_index);
+        return false;
+      }
+
+      if (base::Contains(used_indices, ref_frame_index)) {
+        // |header.ref_frame_index| might have the same indices because an
+        // encoder fills the same index if the actually used ref frames is less
+        // than |kVp9NumRefsPerFrame|.
+        continue;
+      }
+
+      used_indices.insert(ref_frame_index);
+
+      if (!reference_buffers_[ref_frame_index]) {
+        LOG(ERROR) << "Frame is trying to reference buffer with invalid state.";
+        return false;
+      }
+      const BufferState& ref = *reference_buffers_[ref_frame_index];
+      if (ref.spatial_id > new_buffer_state.spatial_id) {
+        LOG(ERROR)
+            << "Frame is trying to reference buffer from higher spatial layer.";
+        return false;
+      }
+      if (ref.temporal_id > new_buffer_state.temporal_id) {
+        LOG(ERROR) << "Frame is trying to reference buffer from higher "
+                      "temporal layer.";
+        return false;
+      }
+
+      // For key picture (|new_buffer_state.picture_id| == 0), we don't fill
+      // |p_diffs| even though it reference lower spatial layer frame. Skip
+      // inserting |expected_pdiffs|.
+      if (new_buffer_state.picture_id == 0)
+        continue;
+
+      expected_pdiffs.push_back(new_buffer_state.picture_id - ref.picture_id);
+    }
+    if (metadata.vp9) {
+      for (uint8_t p_diff : metadata.vp9->p_diffs) {
+        if (!base::Erase(expected_pdiffs, p_diff)) {
+          LOG(ERROR)
+              << "Frame is referencing buffer not contained in the p_diff.";
+          return false;
+        }
+      }
+      if (!expected_pdiffs.empty()) {
+        // TODO(crbug.com/1186051): Consider if this is truly an error-state.
+        LOG(ERROR)
+            << "|p_diff| contains frame that is not actually referenced.";
+        return false;
+      }
+    }
+  }
+
+  if (metadata.vp9 && metadata.vp9->temporal_up_switch) {
+    // Temporal up-switch, invalidate any buffers containing frames with higher
+    // temporal id.
+    for (auto& buffer : reference_buffers_) {
+      if (buffer && buffer->temporal_id > new_buffer_state.temporal_id) {
+        buffer.reset();
+      }
+    }
+  }
+
+  // Update current state with the new buffer.
+  for (size_t i = 0; i < kVp9NumRefFrames; ++i) {
+    if (header.RefreshFlag(i))
+      reference_buffers_[i] = new_buffer_state;
+  }
+
+  return true;
 }
 }  // namespace test
 }  // namespace media

@@ -1,9 +1,9 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -15,38 +15,30 @@ js_type_check("closure_compile") {
 
 js_library("smb_share_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/smb_shares:add_smb_share_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/smb_shares:add_smb_share_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("smb_credentials_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/smb_shares:smb_browser_proxy.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/smb_shares:smb_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 
-polymer_modulizer("smb_share_dialog") {
-  js_file = "smb_share_dialog.js"
-  html_file = "smb_share_dialog.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("smb_credentials_dialog") {
-  js_file = "smb_credentials_dialog.js"
-  html_file = "smb_credentials_dialog.html"
-  html_type = "v3-ready"
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":smb_credentials_dialog_module",
-    ":smb_share_dialog_module",
+html_to_js("web_components") {
+  js_files = [
+    "smb_share_dialog.js",
+    "smb_credentials_dialog.js",
   ]
 }

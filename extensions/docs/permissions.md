@@ -26,7 +26,7 @@ multiple hosts, so a single pattern may provide access to many different domains
 (or even, every domain).  For more information, see the public
 [match pattern documentation](https://developer.chrome.com/extensions/match_patterns).
 In the codebase, match patterns are implemented as
-[URLPattern](https://chromium.googlesource.com/chromium/src/+/master/extensions/common/url_pattern.h).
+[URLPattern](https://chromium.googlesource.com/chromium/src/+/main/extensions/common/url_pattern.h).
 
 #### Explicit Hosts
 Explicit host permissions are match patterns specified in the `permissions` key

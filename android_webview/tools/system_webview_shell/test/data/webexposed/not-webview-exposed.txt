@@ -65,14 +65,17 @@ interface HTMLMediaElement : HTMLElement
 # permissions API (crbug.com/490120), presentation API (crbug.com/521319),
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
 # media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
-# WebXr API (crbug.com/1012899), and WebHID API (crbug.com/1164125) are not
-# supported in webview.
+# WebXr API (crbug.com/1012899), WebHID API (crbug.com/1164125), Web
+# Bluetooth API (crbug.com/1100993), and WebUSB API (crbug.com/933055) are
+# not supported in webview.
 interface Navigator
+    getter bluetooth                   # crbug.com/1100993
     getter hid                         # crbug.com/1164125
     getter mediaSession                # crbug.com/925997
     getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
     getter serial                      # crbug.com/1164036
+    getter usb                         # crbug.com/1012899
     getter xr                          # crbug.com/1012899
     method registerProtocolHandler     # crbug.com/589502
     method unregisterProtocolHandler   # crbug.com/589502
@@ -91,6 +94,10 @@ interface ServiceWorkerRegistration : EventTarget
     method getNotifications
     method showNotification
 
+# EyeDropper API should not be exposed in WebView because it is not supported
+# on Android, crbug.com/1249967
+interface EyeDropper
+
 # File System API disabled in WebView, crbug.com/589504, crbug.com/589843, b/6930981
 interface HTMLInputElement : HTMLElement
     getter webkitEntries
@@ -105,17 +112,30 @@ interface FileSystemDirectoryHandle : FileSystemHandle
 interface FileSystemFileHandle : FileSystemHandle
 interface FileSystemWritableFileStream : WritableStream
 
-# MediaDevices devicechange disabled on Android, crbug.com/671461
 interface MediaDevices : EventTarget
+    # MediaDevices devicechange disabled on Android, crbug.com/671461
     getter ondevicechange
     setter ondevicechange
     method getDisplayMedia
+    method setCaptureHandleConfig
+
+# Because getDisplayMedia() is not supported on Android, dependent features
+# such as Capture Handle and Region Capture are also unsupported.
+interface MediaStreamTrack : EventTarget
+  getter oncapturehandlechange
+  setter oncapturehandlechange
+  method getCaptureHandle
+interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
+interface CropTarget
 
 # WebAuthN API should not be exposed in WebView, crbug.com/828168
 interface AuthenticatorAssertionResponse : AuthenticatorResponse
 interface PublicKeyCredential : Credential
 interface AuthenticatorResponse
 interface AuthenticatorAttestationResponse : AuthenticatorResponse
+
+# WebOTP API should not be exposed in WebView, crbug.com/1224417
+interface OTPCredential : Credential
 
 # Picture-in-Picture API is disabled in Android WebView, crbug.com/852449
 interface PictureInPictureEvent : Event
@@ -186,11 +206,13 @@ interface XRAnchorSet
 interface XRLightEstimate
 interface XRLightProbe : EventTarget
 interface XRWebGLBinding
+    method getCameraImage
     method getDepthInformation
     method getReflectionCubeMap
 interface XRDepthInformation
 interface XRCPUDepthInformation : XRDepthInformation
 interface XRWebGLDepthInformation : XRDepthInformation
+interface XRCamera
 
 # Web Serial API is not implemented on Android. If Bluetooth Classic support
 # were added this could change. https://crbug.com/1164036
@@ -203,6 +225,63 @@ interface HIDInputReportEvent : Event
 interface HIDConnectionEvent : Event
 interface HID : EventTarget
 
+# Window Controls Overlay API is not implemented on Android.
+interface WindowControlsOverlay : EventTarget
+interface WindowControlsOverlayGeometryChangeEvent : Event
+interface Navigator
+    getter windowControlsOverlay
+
+# Web Bluetooth is not implemented on WebView. crbug.com/1100993
+interface Bluetooth : EventTarget
+interface BluetoothCharacteristicProperties
+interface BluetoothDevice : EventTarget
+interface BluetoothRemoteGATTCharacteristic : EventTarget
+interface BluetoothRemoteGATTDescriptor
+interface BluetoothRemoteGATTServer
+interface BluetoothRemoteGATTService
+interface BluetoothUUID
+
+# WebUSB is not implemented on WebView. crbug.com/933055
+interface USB : EventTarget
+interface USBConnectionEvent : Event
+interface USBDevice
+interface USBInTransferResult
+interface USBOutTransferResult
+interface USBIsochronousInTransferPacket
+interface USBIsochronousInTransferResult
+interface USBIsochronousOutTransferPacket
+interface USBIsochronousOutTransferResult
+interface USBConfiguration
+interface USBInterface
+interface USBAlternateInterface
+interface USBEndpoint
+
+# File Handling API is not implemented in WebView (or Android). crbug.com/829689
+interface LaunchParams
+interface LaunchQueue
+
+# Local Font Access API is not implemented in WebView (or Android).
+# crbug.com/1326898
+interface FontData
+
+# Event.path is disabled in pre-Beta channels to help the deprecation.
+interface Event
+    getter path                        # crbug.com/1277431
+
+# The Pop-Up API (crbug.com/1307772) is enabled by the fieldtrial_testing_config,
+# but only for desktop and Android platforms. It is not shipped to stable yet,
+# on any platform.
+interface Element : Node
+	  getter popUp
+	  method hidePopUp
+	  setter defaultOpen
+	  method showPopUp
+	  setter popUp
+	  getter defaultOpen
+
+# FedCM API is not implemented on WebView. crbug.com/1340252
+interface IdentityCredential : Credential
+
 [GLOBAL OBJECT]
     method openDatabase
     attribute eventSender                    # test only
@@ -212,14 +291,17 @@ interface HID : EventTarget
     attribute textInputController            # test only
     attribute gamepadController              # test only
     attribute GCController                   # test only
+    getter launchQueue                       # PWA File Handling API, crbug.com/829689
     getter speechSynthesis                   # Speech API, crbug.com/487255
     attribute chrome                         # crbug.com/618471
     method gc                                # test only
+    method getDigitalGoodsService            # Digital Goods API, crbug.com/1312827
     method webkitRequestFileSystem           # File System API, crbug.com/589843
     method webkitResolveLocalFileSystemURL   # File System API, crbug.com/589843
     method showOpenFilePicker                # File System Access API, crbug.com/1011535
     method showSaveFilePicker                # File System Access API, crbug.com/1011535
     method showDirectoryPicker               # File System Access API, crbug.com/1011535
+    method queryLocalFonts                   # Local Font Access API, crbug.com/1326898
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers

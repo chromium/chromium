@@ -1,0 +1,6 @@
+PASS picker.selectElement_.options[0].title is "bar\nbaz"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+foo

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
-#include "base/macros.h"
+#include "base/containers/circular_deque.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -37,25 +39,25 @@ struct ASH_EXPORT PhotoWithDetails {
   gfx::ImageSkia photo;
   gfx::ImageSkia related_photo;
   std::string details;
+  std::string related_details;
   // Hash of this image data. Used for de-duping images.
   std::string hash;
+  // Whether the image is portrait or not.
+  bool is_portrait = false;
+  ::ambient::TopicType topic_type = ::ambient::TopicType::kOther;
 };
 
 // Stores necessary information fetched from the backdrop server to render
-// the photo frame and glanceable weather information on Ambient Mode. Owned
-// by |AmbientController|.
+// the photo frame in Ambient Mode. Owned by |AmbientController|.
 class ASH_EXPORT AmbientBackendModel {
  public:
-  AmbientBackendModel();
+  explicit AmbientBackendModel(AmbientPhotoConfig photo_config);
   AmbientBackendModel(const AmbientBackendModel&) = delete;
   AmbientBackendModel& operator=(AmbientBackendModel&) = delete;
   ~AmbientBackendModel();
 
   void AddObserver(AmbientBackendModelObserver* observer);
   void RemoveObserver(AmbientBackendModelObserver* observer);
-
-  void AppendTopics(const std::vector<AmbientModeTopic>& topics);
-  const std::vector<AmbientModeTopic>& topics() const { return topics_; }
 
   // If enough images are loaded to start ambient mode.
   bool ImagesReady() const;
@@ -81,51 +83,53 @@ class ASH_EXPORT AmbientBackendModel {
   // Clear local storage.
   void Clear();
 
-  // Get images from local storage. Could be null image.
-  const PhotoWithDetails& GetNextImage() const { return next_image_; }
-  const PhotoWithDetails& GetCurrentImage() const { return current_image_; }
+  // Sets the new AmbientPhotoConfig to use. This automatically |Clear()|s the
+  // model of any existing topics.
+  void SetPhotoConfig(AmbientPhotoConfig photo_config);
 
-  // Updates the weather information and notifies observers if the icon image is
-  // not null.
-  void UpdateWeatherInfo(const gfx::ImageSkia& weather_condition_icon,
-                         float temperature_fahrenheit,
-                         bool show_celsius);
-
-  // Returns the cached condition icon. Will return a null image if it has not
-  // been set yet.
-  const gfx::ImageSkia& weather_condition_icon() const {
-    return weather_condition_icon_;
+  // Returns all available decoded topics. The number of decoded topics in the
+  // output will always be <= |AmbientPhotoConfig.num_decoded_topics_to_buffer|.
+  //
+  // Every PhotoWithDetails instance in the output shall be non-null.
+  const base::circular_deque<PhotoWithDetails>& all_decoded_topics() const {
+    return all_decoded_topics_;
   }
 
-  // Returns the cached temperature value in Fahrenheit.
-  float temperature_fahrenheit() const { return temperature_fahrenheit_; }
-
-  // Calculate the temperature in celsius.
-  float GetTemperatureInCelsius() const;
+  // Gets the 2 oldest decoded topics. It's possible to accomplish this as well
+  // by calling GetAllAvailableDecodedTopics() directly, but this wrapper
+  // function is provided as a convenience.
+  //
+  // If an output PhotoWithDetails argument is nullptr, that specific topic is
+  // ignored and not fetched.
+  //
+  // If one of the requested topics is unavailable, its corresponding output
+  // argument is set to an empty PhotoWithDetails instance.
+  void GetCurrentAndNextImages(PhotoWithDetails* current_image_out,
+                               PhotoWithDetails* next_image_out) const;
 
   base::TimeDelta GetPhotoRefreshInterval() const;
 
-  bool show_celsius() const { return show_celsius_; }
+  const AmbientPhotoConfig& photo_config() const { return photo_config_; }
 
  private:
   friend class AmbientBackendModelTest;
   friend class AmbientAshTestBase;
 
-  void NotifyTopicsChanged();
   void NotifyImageAdded();
   void NotifyImagesReady();
-  void NotifyWeatherInfoUpdated();
+  void OnImagesReadyTimeoutFired();
 
+  AmbientPhotoConfig photo_config_;
   std::vector<AmbientModeTopic> topics_;
 
-  // Local cache of downloaded images for photo transition animation.
-  PhotoWithDetails current_image_;
-  PhotoWithDetails next_image_;
+  // All available decoded topics. The size of the ring buffer is capped
+  // according to |AmbientPhotoConfig.num_decoded_topics_to_buffer|. The most
+  // recently decoded topics are pushed to the back of the ring buffer and the
+  // oldest topics are popped from the front.
+  base::circular_deque<PhotoWithDetails> all_decoded_topics_;
 
-  // Current weather information.
-  gfx::ImageSkia weather_condition_icon_;
-  float temperature_fahrenheit_ = 0.0f;
-  bool show_celsius_ = false;
+  base::OneShotTimer images_ready_timeout_timer_;
+  bool images_ready_timed_out_ = false;
 
   // The number of consecutive failures to load the next image.
   int failures_ = 0;

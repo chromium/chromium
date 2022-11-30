@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Datastructure: Pool.
@@ -50,6 +42,7 @@ goog.require('goog.Disposable');
  * @template T
  */
 goog.structs.SimplePool = function(initialCount, maxCount) {
+  'use strict';
   goog.Disposable.call(this);
 
   /**
@@ -91,6 +84,7 @@ goog.inherits(goog.structs.SimplePool, goog.Disposable);
  *     newly created object.
  */
 goog.structs.SimplePool.prototype.setCreateObjectFn = function(createObjectFn) {
+  'use strict';
   this.createObjectFn_ = createObjectFn;
 };
 
@@ -103,16 +97,18 @@ goog.structs.SimplePool.prototype.setCreateObjectFn = function(createObjectFn) {
  */
 goog.structs.SimplePool.prototype.setDisposeObjectFn = function(
     disposeObjectFn) {
+  'use strict';
   this.disposeObjectFn_ = disposeObjectFn;
 };
 
 
 /**
- * Gets an unused object from the the pool, if there is one available,
+ * Gets an unused object from the pool, if there is one available,
  * otherwise creates a new one.
  * @return {T} An object from the pool or a new one if necessary.
  */
 goog.structs.SimplePool.prototype.getObject = function() {
+  'use strict';
   if (this.freeQueue_.length) {
     return this.freeQueue_.pop();
   }
@@ -126,6 +122,7 @@ goog.structs.SimplePool.prototype.getObject = function() {
  * @param {T} obj The object to release.
  */
 goog.structs.SimplePool.prototype.releaseObject = function(obj) {
+  'use strict';
   if (this.freeQueue_.length < this.maxCount_) {
     this.freeQueue_.push(obj);
   } else {
@@ -140,6 +137,7 @@ goog.structs.SimplePool.prototype.releaseObject = function(obj) {
  * @private
  */
 goog.structs.SimplePool.prototype.createInitial_ = function(initialCount) {
+  'use strict';
   if (initialCount > this.maxCount_) {
     throw new Error(
         '[goog.structs.SimplePool] Initial cannot be greater than max');
@@ -156,6 +154,7 @@ goog.structs.SimplePool.prototype.createInitial_ = function(initialCount) {
  * @return {T} The created object.
  */
 goog.structs.SimplePool.prototype.createObject = function() {
+  'use strict';
   if (this.createObjectFn_) {
     return this.createObjectFn_();
   } else {
@@ -171,10 +170,11 @@ goog.structs.SimplePool.prototype.createObject = function() {
  * @param {T} obj The object to dispose.
  */
 goog.structs.SimplePool.prototype.disposeObject = function(obj) {
+  'use strict';
   if (this.disposeObjectFn_) {
     this.disposeObjectFn_(obj);
   } else if (goog.isObject(obj)) {
-    if (goog.isFunction(obj.dispose)) {
+    if (typeof obj.dispose === 'function') {
       obj.dispose();
     } else {
       for (var i in obj) {
@@ -191,6 +191,7 @@ goog.structs.SimplePool.prototype.disposeObject = function(obj) {
  * @protected
  */
 goog.structs.SimplePool.prototype.disposeInternal = function() {
+  'use strict';
   goog.structs.SimplePool.superClass_.disposeInternal.call(this);
   // Call disposeObject on each object held by the pool.
   var freeQueue = this.freeQueue_;

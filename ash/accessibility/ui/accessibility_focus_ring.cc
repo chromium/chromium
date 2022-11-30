@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -209,7 +209,7 @@ AccessibilityFocusRing AccessibilityFocusRing::CreateWithParagraphShape(
   gfx::Rect bottom = orig_bottom_line;
 
   gfx::Rect screen_bounds = GetScreenBoundsForRect(middle);
-  screen_bounds.Inset(kScreenPaddingDip, kScreenPaddingDip);
+  screen_bounds.Inset(kScreenPaddingDip);
 
   // Don't force a focus ring that is entirely offscreen to display.
   if (IsFocusRingOffscreen(top, middle, bottom, screen_bounds))

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,13 +83,13 @@ class QueuedTouchpadPinchEvent : public GestureEventWithLatencyInfo {
                              this);
   }
 
+  QueuedTouchpadPinchEvent(const QueuedTouchpadPinchEvent&) = delete;
+  QueuedTouchpadPinchEvent& operator=(const QueuedTouchpadPinchEvent&) = delete;
+
   ~QueuedTouchpadPinchEvent() {
     TRACE_EVENT_ASYNC_END0("input", "TouchpadPinchEventQueue::QueueEvent",
                            this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueuedTouchpadPinchEvent);
 };
 
 TouchpadPinchEventQueue::TouchpadPinchEventQueue(

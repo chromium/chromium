@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -32,8 +30,7 @@ void SanitizeFormData(FormData* form) {
     field.label.clear();
     field.value.clear();
     field.autocomplete_attribute.clear();
-    field.option_values.clear();
-    field.option_contents.clear();
+    field.options.clear();
     field.placeholder.clear();
     field.css_classes.clear();
     field.id_attribute.clear();
@@ -45,7 +42,7 @@ void SanitizeFormData(FormData* form) {
 void PostProcessMatches(const PasswordForm& pending,
                         const std::vector<const PasswordForm*>& matches,
                         const std::u16string& old_password,
-                        PasswordStore* store) {
+                        PasswordStoreInterface* store) {
   DCHECK(!pending.blocked_by_user);
 
   // Update existing matches in the password store.
@@ -57,7 +54,9 @@ void PostProcessMatches(const PasswordForm& pending,
     const bool same_password = match->password_value == pending.password_value;
     const bool username_was_added =
         match->username_value.empty() && !pending.username_value.empty();
-    if (same_password && username_was_added && !match->is_public_suffix_match) {
+    if (same_password && username_was_added &&
+        password_manager_util::GetMatchType(*match) ==
+            password_manager_util::GetLoginMatchType::kExact) {
       store->RemoveLogin(*match);
       continue;
     }
@@ -68,6 +67,7 @@ void PostProcessMatches(const PasswordForm& pending,
       if (form_has_old_password) {
         PasswordForm form_to_update = *match;
         form_to_update.password_value = pending.password_value;
+        form_to_update.date_password_modified = base::Time::Now();
         SanitizeFormData(&form_to_update.form_data);
         store->UpdateLogin(std::move(form_to_update));
       }
@@ -77,13 +77,13 @@ void PostProcessMatches(const PasswordForm& pending,
 
 }  // namespace
 
-FormSaverImpl::FormSaverImpl(PasswordStore* store) : store_(store) {
+FormSaverImpl::FormSaverImpl(PasswordStoreInterface* store) : store_(store) {
   DCHECK(store);
 }
 
 FormSaverImpl::~FormSaverImpl() = default;
 
-PasswordForm FormSaverImpl::Blocklist(PasswordStore::FormDigest digest) {
+PasswordForm FormSaverImpl::Blocklist(PasswordFormDigest digest) {
   PasswordForm blocklisted =
       password_manager_util::MakeNormalizedBlocklistedForm(std::move(digest));
   blocklisted.date_created = base::Time::Now();
@@ -91,14 +91,15 @@ PasswordForm FormSaverImpl::Blocklist(PasswordStore::FormDigest digest) {
   return blocklisted;
 }
 
-void FormSaverImpl::Unblocklist(const PasswordStore::FormDigest& digest) {
-  store_->Unblocklist(digest, /*completion=*/base::DoNothing());
+void FormSaverImpl::Unblocklist(const PasswordFormDigest& digest) {
+  store_->Unblocklist(digest);
 }
 
 void FormSaverImpl::Save(PasswordForm pending,
                          const std::vector<const PasswordForm*>& matches,
                          const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
+  pending.date_password_modified = base::Time::Now();
   store_->AddLogin(pending);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);
@@ -108,6 +109,8 @@ void FormSaverImpl::Update(PasswordForm pending,
                            const std::vector<const PasswordForm*>& matches,
                            const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
+  if (old_password != pending.password_value)
+    pending.date_password_modified = base::Time::Now();
   store_->UpdateLogin(pending);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);
@@ -119,6 +122,7 @@ void FormSaverImpl::UpdateReplace(
     const std::u16string& old_password,
     const PasswordForm& old_unique_key) {
   SanitizeFormData(&pending.form_data);
+  pending.date_password_modified = base::Time::Now();
   store_->UpdateLoginWithPrimaryKey(pending, old_unique_key);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);

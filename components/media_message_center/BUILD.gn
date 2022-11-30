@@ -1,9 +1,11 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 component("media_message_center") {
   sources = [
+    "media_artwork_view.cc",
+    "media_artwork_view.h",
     "media_controls_progress_view.cc",
     "media_controls_progress_view.h",
     "media_notification_background.h",
@@ -11,10 +13,7 @@ component("media_message_center") {
     "media_notification_background_ash_impl.h",
     "media_notification_background_impl.cc",
     "media_notification_background_impl.h",
-    "media_notification_constants.cc",
-    "media_notification_constants.h",
     "media_notification_container.h",
-    "media_notification_controller.h",
     "media_notification_item.cc",
     "media_notification_item.h",
     "media_notification_util.cc",
@@ -24,11 +23,14 @@ component("media_message_center") {
     "media_notification_view_impl.h",
     "media_notification_view_modern_impl.cc",
     "media_notification_view_modern_impl.h",
-    "media_session_notification_item.cc",
-    "media_session_notification_item.h",
+    "media_notification_volume_slider_view.cc",
+    "media_notification_volume_slider_view.h",
+    "notification_theme.h",
   ]
 
   defines = [ "IS_MEDIA_MESSAGE_CENTER_IMPL" ]
+
+  public_deps = [ "//services/media_session/public/mojom" ]
 
   deps = [
     "//base",
@@ -36,9 +38,9 @@ component("media_message_center") {
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
     "//services/media_session/public/cpp",
-    "//services/media_session/public/mojom",
     "//skia",
     "//ui/accessibility",
+    "//ui/color",
     "//ui/message_center",
     "//ui/native_theme",
     "//ui/views",
@@ -54,10 +56,12 @@ source_set("unit_tests") {
     "media_notification_background_impl_unittest.cc",
     "media_notification_view_impl_unittest.cc",
     "media_notification_view_modern_impl_unittest.cc",
+    "media_notification_volume_slider_view_unittest.cc",
   ]
 
   deps = [
     ":media_message_center",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//services/media_session/public/cpp/test:test_support",
@@ -70,5 +74,23 @@ source_set("unit_tests") {
     "//ui/native_theme:test_support",
     "//ui/views",
     "//ui/views:test_support",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_media_notification_item.cc",
+    "mock_media_notification_item.h",
+    "mock_media_notification_view.cc",
+    "mock_media_notification_view.h",
+  ]
+
+  deps = [
+    ":media_message_center",
+    "//services/media_session/public/mojom",
+    "//skia",
+    "//testing/gmock",
   ]
 }

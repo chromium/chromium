@@ -1,14 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_URL_HANDLER_INFO_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_URL_HANDLER_INFO_H_
 
-#include <ostream>
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/values.h"
 #include "url/origin.h"
 
 namespace apps {
@@ -35,7 +36,9 @@ struct UrlHandlerInfo {
   ~UrlHandlerInfo();
 
   // Reset the url handler to its default state.
-  void Reset();
+  REINITIALIZES_AFTER_MOVE void Reset();
+
+  base::Value AsDebugValue() const;
 
   url::Origin origin;
 
@@ -58,8 +61,6 @@ bool operator!=(const UrlHandlerInfo& url_handler1,
 bool operator<(const UrlHandlerInfo& url_handler1,
                const UrlHandlerInfo& url_handler2);
 
-std::ostream& operator<<(std::ostream& out,
-                         const UrlHandlerInfo& url_handler_info);
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_URL_HANDLER_INFO_H_

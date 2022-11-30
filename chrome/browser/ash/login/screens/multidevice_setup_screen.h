@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace multidevice_setup {
-
 class MultiDeviceSetupClient;
-
-}  // namespace multidevice_setup
-
-class MultiDeviceSetupScreenView;
+}
 
 class MultiDeviceSetupScreen : public BaseScreen {
  public:
@@ -29,8 +27,12 @@ class MultiDeviceSetupScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  MultiDeviceSetupScreen(MultiDeviceSetupScreenView* view,
+  MultiDeviceSetupScreen(base::WeakPtr<MultiDeviceSetupScreenView> view,
                          const ScreenExitCallback& exit_callback);
+
+  MultiDeviceSetupScreen(const MultiDeviceSetupScreen&) = delete;
+  MultiDeviceSetupScreen& operator=(const MultiDeviceSetupScreen&) = delete;
+
   ~MultiDeviceSetupScreen() override;
 
   void AddExitCallbackForTesting(const ScreenExitCallback& testing_callback) {
@@ -50,10 +52,10 @@ class MultiDeviceSetupScreen : public BaseScreen {
 
  protected:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
  private:
   friend class MultiDeviceSetupScreenTest;
@@ -76,12 +78,16 @@ class MultiDeviceSetupScreen : public BaseScreen {
 
   multidevice_setup::MultiDeviceSetupClient* setup_client_ = nullptr;
 
-  MultiDeviceSetupScreenView* view_;
+  base::WeakPtr<MultiDeviceSetupScreenView> view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MultiDeviceSetupScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MULTIDEVICE_SETUP_SCREEN_H_

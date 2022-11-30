@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,18 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -60,9 +62,10 @@ class NET_EXPORT_PRIVATE HttpAuthController
   //       If |target| is PROXY, then |auth_url| should have no hierarchical
   //       part since that is meaningless.
   //
-  // * |network_isolation_key| specifies the NetworkIsolationKey associated with
+  // * |network_anonymization_key| specifies the NetworkAnonymizationKey
+  // associated with
   //       the resource load. Depending on settings, credentials may be scoped
-  //       to a single NetworkIsolationKey.
+  //       to a single NetworkAnonymizationKey.
   //
   // * |http_auth_cache| specifies the credentials cache to use. During
   //       authentication if explicit (user-provided) credentials are used and
@@ -85,7 +88,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   //       context allows ambient authentication using default credentials.
   HttpAuthController(HttpAuth::Target target,
                      const GURL& auth_url,
-                     const NetworkIsolationKey& network_isolation_key,
+                     const NetworkAnonymizationKey& network_anonymization_key,
                      HttpAuthCache* http_auth_cache,
                      HttpAuthHandlerFactory* http_auth_handler_factory,
                      HostResolver* host_resolver);
@@ -123,7 +126,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   bool NeedsHTTP11() const;
 
   // Swaps the authentication challenge info into |other|.
-  void TakeAuthInfo(base::Optional<AuthChallengeInfo>* other);
+  void TakeAuthInfo(absl::optional<AuthChallengeInfo>* other);
 
   bool IsAuthSchemeDisabled(HttpAuth::Scheme scheme) const;
   void DisableAuthScheme(HttpAuth::Scheme scheme);
@@ -195,14 +198,14 @@ class NET_EXPORT_PRIVATE HttpAuthController
   const GURL auth_url_;
 
   // Holds the {scheme, host, port} for the authentication target.
-  const GURL auth_origin_;
+  const url::SchemeHostPort auth_scheme_host_port_;
 
   // The absolute path of the resource needing authentication.
   // For proxy authentication, the path is empty.
   const std::string auth_path_;
 
-  // NetworkIsolationKey associated with the request.
-  const NetworkIsolationKey network_isolation_key_;
+  // NetworkAnonymizationKey associated with the request.
+  const NetworkAnonymizationKey network_anonymization_key_;
 
   // |handler_| encapsulates the logic for the particular auth-scheme.
   // This includes the challenge's parameters. If nullptr, then there is no
@@ -219,23 +222,23 @@ class NET_EXPORT_PRIVATE HttpAuthController
   std::string auth_token_;
 
   // Contains information about the auth challenge.
-  base::Optional<AuthChallengeInfo> auth_info_;
+  absl::optional<AuthChallengeInfo> auth_info_;
 
   // True if we've used the username:password embedded in the URL.  This
   // makes sure we use the embedded identity only once for the transaction,
   // preventing an infinite auth restart loop.
-  bool embedded_identity_used_;
+  bool embedded_identity_used_ = false;
 
   // True if default credentials have already been tried for this transaction
   // in response to an HTTP authentication challenge.
-  bool default_credentials_used_;
+  bool default_credentials_used_ = false;
 
   // These two are owned by the HttpNetworkSession/IOThread, which own the
   // objects which reference |this|. Therefore, these raw pointers are valid
   // for the lifetime of this object.
-  HttpAuthCache* const http_auth_cache_;
-  HttpAuthHandlerFactory* const http_auth_handler_factory_;
-  HostResolver* const host_resolver_;
+  const raw_ptr<HttpAuthCache> http_auth_cache_;
+  const raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
+  const raw_ptr<HostResolver> host_resolver_;
 
   std::set<HttpAuth::Scheme> disabled_schemes_;
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service_factory.h"
 
@@ -24,9 +23,7 @@ ManagedConfigurationAPI* ManagedConfigurationAPIFactory::GetForProfile(
 }
 
 ManagedConfigurationAPIFactory::ManagedConfigurationAPIFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ManagedConfigurationAPI",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ManagedConfigurationAPI") {}
 
 ManagedConfigurationAPIFactory::~ManagedConfigurationAPIFactory() = default;
 

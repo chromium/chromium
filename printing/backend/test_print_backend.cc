@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,69 +10,124 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
 
-TestPrintBackend::TestPrintBackend() : PrintBackend(/*locale=*/std::string()) {}
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+// Default XML with feature not of interest.
+constexpr char kXmlDefaultCapabilities[] =
+    R"(<?xml version="1.0" encoding="UTF-8"?>
+    <psf:PrintCapabilities>
+      <!-- Need at least one psf:Feature for
+      ParseValueForXpsPrinterCapabilities() to consider it valid XML -->
+      <psf:Feature name="TestFeature">
+      </psf:Feature>
+    </psf:PrintCapabilities>)";
+#endif  // BUILDFLAG(IS_WIN)
+
+mojom::ResultCode ReportErrorAccessDenied(const base::Location& from_here) {
+  DLOG(ERROR) << from_here.ToString() << " failed, access denied";
+  return mojom::ResultCode::kAccessDenied;
+}
+
+mojom::ResultCode ReportErrorNoData(const base::Location& from_here) {
+  DLOG(ERROR) << from_here.ToString() << " failed, no data";
+  return mojom::ResultCode::kFailed;
+}
+
+mojom::ResultCode ReportErrorNoDevice(const base::Location& from_here) {
+  DLOG(ERROR) << from_here.ToString() << " failed, no such device";
+  return mojom::ResultCode::kFailed;
+}
+
+mojom::ResultCode ReportErrorNotImplemented(const base::Location& from_here) {
+  DLOG(ERROR) << from_here.ToString() << " failed, method not implemented";
+  return mojom::ResultCode::kFailed;
+}
+
+}  // namespace
+
+TestPrintBackend::TestPrintBackend() = default;
 
 TestPrintBackend::~TestPrintBackend() = default;
 
-bool TestPrintBackend::EnumeratePrinters(PrinterList* printer_list) {
+mojom::ResultCode TestPrintBackend::EnumeratePrinters(
+    PrinterList& printer_list) {
+  DCHECK(printer_list.empty());
   if (printer_map_.empty())
-    return false;
+    return mojom::ResultCode::kSuccess;
 
   for (const auto& entry : printer_map_) {
     const std::unique_ptr<PrinterData>& data = entry.second;
 
     // Can only return basic info for printers which have registered info.
     if (data->info)
-      printer_list->emplace_back(*data->info);
+      printer_list.emplace_back(*data->info);
   }
-  return true;
+  return mojom::ResultCode::kSuccess;
 }
 
-std::string TestPrintBackend::GetDefaultPrinterName() {
-  return default_printer_name_;
+mojom::ResultCode TestPrintBackend::GetDefaultPrinterName(
+    std::string& default_printer) {
+  default_printer = default_printer_name_;
+  return mojom::ResultCode::kSuccess;
 }
 
-bool TestPrintBackend::GetPrinterBasicInfo(const std::string& printer_name,
-                                           PrinterBasicInfo* printer_info) {
+mojom::ResultCode TestPrintBackend::GetPrinterBasicInfo(
+    const std::string& printer_name,
+    PrinterBasicInfo* printer_info) {
   auto found = printer_map_.find(printer_name);
-  if (found == printer_map_.end())
-    return false;  // Matching entry not found.
+  if (found == printer_map_.end()) {
+    // Matching entry not found.
+    return ReportErrorNoDevice(FROM_HERE);
+  }
+
+  const std::unique_ptr<PrinterData>& data = found->second;
+  if (data->blocked_by_permissions)
+    return ReportErrorAccessDenied(FROM_HERE);
 
   // Basic info might not have been provided.
-  const std::unique_ptr<PrinterData>& data = found->second;
   if (!data->info)
-    return false;
+    return ReportErrorNoData(FROM_HERE);
 
   *printer_info = *data->info;
-  return true;
+  return mojom::ResultCode::kSuccess;
 }
 
-bool TestPrintBackend::GetPrinterSemanticCapsAndDefaults(
+mojom::ResultCode TestPrintBackend::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     PrinterSemanticCapsAndDefaults* printer_caps) {
   auto found = printer_map_.find(printer_name);
   if (found == printer_map_.end())
-    return false;
+    return ReportErrorNoDevice(FROM_HERE);
+
+  const std::unique_ptr<PrinterData>& data = found->second;
+  if (data->blocked_by_permissions)
+    return ReportErrorAccessDenied(FROM_HERE);
 
   // Capabilities might not have been provided.
-  const std::unique_ptr<PrinterData>& data = found->second;
   if (!data->caps)
-    return false;
+    return ReportErrorNoData(FROM_HERE);
 
   *printer_caps = *data->caps;
-  return true;
+  return mojom::ResultCode::kSuccess;
 }
 
-bool TestPrintBackend::GetPrinterCapsAndDefaults(
+mojom::ResultCode TestPrintBackend::GetPrinterCapsAndDefaults(
     const std::string& printer_name,
     PrinterCapsAndDefaults* printer_caps) {
-  // not implemented
-  return false;
+  return ReportErrorNotImplemented(FROM_HERE);
 }
 
 std::string TestPrintBackend::GetPrinterDriverInfo(
@@ -84,6 +139,26 @@ std::string TestPrintBackend::GetPrinterDriverInfo(
 bool TestPrintBackend::IsValidPrinter(const std::string& printer_name) {
   return base::Contains(printer_map_, printer_name);
 }
+
+#if BUILDFLAG(IS_WIN)
+base::expected<std::string, mojom::ResultCode>
+TestPrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
+    const std::string& printer_name) {
+  auto found = printer_map_.find(printer_name);
+  if (found == printer_map_.end())
+    return base::unexpected(ReportErrorNoDevice(FROM_HERE));
+
+  const PrinterData* data = found->second.get();
+  if (data->blocked_by_permissions)
+    return base::unexpected(ReportErrorAccessDenied(FROM_HERE));
+
+  // XML capabilities might not have been provided.
+  if (data->capabilities_xml.empty())
+    return base::unexpected(ReportErrorNoData(FROM_HERE));
+
+  return data->capabilities_xml;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void TestPrintBackend::SetDefaultPrinterName(const std::string& printer_name) {
   if (default_printer_name_ == printer_name)
@@ -111,11 +186,50 @@ void TestPrintBackend::AddValidPrinter(
     const std::string& printer_name,
     std::unique_ptr<PrinterSemanticCapsAndDefaults> caps,
     std::unique_ptr<PrinterBasicInfo> info) {
+  AddPrinter(printer_name, std::move(caps), std::move(info),
+             /*blocked_by_permissions=*/false);
+#if BUILDFLAG(IS_WIN)
+  SetXmlCapabilitiesForPrinter(printer_name, kXmlDefaultCapabilities);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void TestPrintBackend::AddInvalidDataPrinter(const std::string& printer_name) {
+  // The blank fields in default `PrinterBasicInfo` cause Mojom data validation
+  // errors.
+  AddPrinter(printer_name, std::make_unique<PrinterSemanticCapsAndDefaults>(),
+             std::make_unique<PrinterBasicInfo>(),
+             /*blocked_by_permissions=*/false);
+}
+
+void TestPrintBackend::AddAccessDeniedPrinter(const std::string& printer_name) {
+  AddPrinter(printer_name, /*caps=*/nullptr, /*info=*/nullptr,
+             /*blocked_by_permissions=*/true);
+}
+
+#if BUILDFLAG(IS_WIN)
+void TestPrintBackend::SetXmlCapabilitiesForPrinter(
+    const std::string& printer_name,
+    const std::string& capabilities_xml) {
+  auto found = printer_map_.find(printer_name);
+  if (found == printer_map_.end()) {
+    DLOG(ERROR) << "Unable to find printer.  Unknown printer name: "
+                << printer_name;
+    return;
+  }
+  found->second->capabilities_xml = capabilities_xml;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+void TestPrintBackend::AddPrinter(
+    const std::string& printer_name,
+    std::unique_ptr<PrinterSemanticCapsAndDefaults> caps,
+    std::unique_ptr<PrinterBasicInfo> info,
+    bool blocked_by_permissions) {
   DCHECK(!printer_name.empty());
 
   const bool is_default = info && info->is_default;
-  printer_map_[printer_name] =
-      std::make_unique<PrinterData>(std::move(caps), std::move(info));
+  printer_map_[printer_name] = std::make_unique<PrinterData>(
+      std::move(caps), std::move(info), blocked_by_permissions);
 
   // Ensure that default settings are honored if more than one is attempted to
   // be marked as default or if this prior default should no longer be so.
@@ -127,8 +241,11 @@ void TestPrintBackend::AddValidPrinter(
 
 TestPrintBackend::PrinterData::PrinterData(
     std::unique_ptr<PrinterSemanticCapsAndDefaults> caps,
-    std::unique_ptr<PrinterBasicInfo> info)
-    : caps(std::move(caps)), info(std::move(info)) {}
+    std::unique_ptr<PrinterBasicInfo> info,
+    bool blocked_by_permissions)
+    : caps(std::move(caps)),
+      info(std::move(info)),
+      blocked_by_permissions(blocked_by_permissions) {}
 
 TestPrintBackend::PrinterData::~PrinterData() = default;
 

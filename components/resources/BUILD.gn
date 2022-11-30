@@ -1,9 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
-import("//build/config/python.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
@@ -47,16 +46,20 @@ grit("components_resources") {
     "is_fuchsia=$is_fuchsia",
   ]
 
-  deps = [ ":about_credits" ]
+  deps = [
+    ":about_credits",
+    "//components/flags_ui/resources:build_ts",
+    "//components/security_interstitials/content/resources:build_ts",
+  ]
 
   if (!is_ios) {
     deps += [ "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf" ]
   }
 
-  # TODO(crbug/1056278): Enable this on Fuchsia
-  if (safe_browsing_mode > 0 && !is_fuchsia) {
-    deps +=
-        [ "//components/safe_browsing/core/resources:make_file_types_protobuf" ]
+  if (safe_browsing_mode > 0) {
+    deps += [
+      "//components/safe_browsing/content/resources:make_file_types_protobuf",
+    ]
   }
 }
 
@@ -66,6 +69,11 @@ grit("dev_ui_components_resources") {
   outputs = [
     "grit/dev_ui_components_resources.h",
     "dev_ui_components_resources.pak",
+  ]
+
+  deps = [
+    "//components/local_state:build",
+    "//components/policy/resources/webui:html_wrapper_files",
   ]
   output_dir = "$root_gen_dir/components"
 }
@@ -84,8 +92,7 @@ grit("components_scaled_resources") {
   output_dir = "$root_gen_dir/components"
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("about_credits") {
+action("about_credits") {
   script = "//tools/licenses.py"
   depfile = "$target_gen_dir/$target_name.d"
 

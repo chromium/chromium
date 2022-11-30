@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 // Cell representation for SettingsCheckItem.
 //  +---------------------------------------------------------+
 //  | +--------+                                +---------+   |
-//  | |        |  One line title                |trailing |   |
-//  | | leading|                                |image    |   |
-//  | | image  |  Multiline detail text         |spinner  |   |
-//  | |        |  Multiline detail text         |or button|   |
+//  | |        |  One line title                `trailing |   |
+//  | | leading`                                `image    |   |
+//  | | image  |  Multiline detail text         `spinner  |   |
+//  | |        |  Multiline detail text         `or button`   |
 //  | +--------+                                +---------+   |
 //  +---------------------------------------------------------+
 @interface SettingsCheckCell : TableViewCell
@@ -24,28 +24,36 @@
 // information.
 @property(nonatomic, readonly, strong) UIButton* infoButton;
 
-// Shows |activityIndicator| and starts animation. It will hide |imageView| if
+// Shows `activityIndicator` and starts animation. It will hide `imageView` if
 // it was shown.
 - (void)showActivityIndicator;
 
-// Hides |activityIndicator| and stops animation.
+// Hides `activityIndicator` and stops animation.
 - (void)hideActivityIndicator;
 
-// Sets the |trailingImage| and tint |trailingColor| for it that should be
-// displayed at the trailing edge of the cell. If set to nil, |trailingImage|
-// will be hidden, otherwise |imageView| will be shown and |activityIndicator|
+// Sets the `trailingImage` and tint `trailingColor` for it that should be
+// displayed at the trailing edge of the cell. If set to nil, `trailingImage`
+// will be hidden, otherwise `imageView` will be shown and `activityIndicator`
 // will be hidden.
 - (void)setTrailingImage:(UIImage*)trailingImage
            withTintColor:(UIColor*)tintColor;
 
-// Sets the [leadingImage] and tint [leadingColor] for it that should be
-// displayed at the leading edge of the cell.  If set to nil, the image is
-// hidden.
-- (void)setLeadingImage:(UIImage*)leadingImage
-          withTintColor:(UIColor*)tintColor;
+// Sets the `image` that should be displayed at the leading edge of the cell
+// with a `tintColor`. If set to nil, the icon will be hidden and the rest of
+// the content will expand to fill the full width of the cell. The image view
+// will be configured with a `backgroundColor` and a `cornerRadius`.
+- (void)setLeadingIconImage:(UIImage*)image
+                  tintColor:(UIColor*)tintColor
+            backgroundColor:(UIColor*)backgroundColor
+               cornerRadius:(CGFloat)cornerRadius;
 
-// Shows/Hides |infoButton|.
+// Shows/Hides `infoButton`.
 - (void)setInfoButtonHidden:(BOOL)hidden;
+
+// If `enabled`, `infoButton` image's tint color is set to blue otherwise to
+// [UIColor colorNamed:kTextSecondaryColor]. Also, enable/disable the
+// `infoButton` based on `enabled`.
+- (void)setInfoButtonEnabled:(BOOL)enabled;
 
 @end
 

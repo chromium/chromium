@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -64,6 +63,9 @@ struct ProcessedField {
 
   // True if the server predicts that this field is not a username field.
   bool server_hints_not_username = false;
+
+  // True if the field accepts WebAuthn credentials, false otherwise.
+  bool accepts_webauthn_credentials = false;
 
   Interactability interactability = Interactability::kUnlikely;
 };
@@ -118,6 +120,9 @@ class FormDataParser {
 
   FormDataParser();
 
+  FormDataParser(const FormDataParser&) = delete;
+  FormDataParser& operator=(const FormDataParser&) = delete;
+
   ~FormDataParser();
 
   void set_predictions(FormPredictions predictions) {
@@ -126,7 +131,7 @@ class FormDataParser {
 
   void reset_predictions() { predictions_.reset(); }
 
-  const base::Optional<FormPredictions>& predictions() { return predictions_; }
+  const absl::optional<FormPredictions>& predictions() { return predictions_; }
 
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
@@ -138,14 +143,12 @@ class FormDataParser {
  private:
   // Predictions are an optional source of server-side information about field
   // types.
-  base::Optional<FormPredictions> predictions_;
+  absl::optional<FormPredictions> predictions_;
 
   // Records whether readonly password fields were seen during the last call to
   // Parse().
   ReadonlyPasswordFields readonly_status_ =
       ReadonlyPasswordFields::kNoHeuristics;
-
-  DISALLOW_COPY_AND_ASSIGN(FormDataParser);
 };
 
 // Returns the value of PasswordForm::signon_realm for an HTML form with the
@@ -162,4 +165,4 @@ const autofill::FormFieldData* FindUsernameInPredictions(
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_PARSING_IOS_FORM_PARSER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_PARSING_FORM_PARSER_H_

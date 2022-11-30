@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_ANDROID_NETWORK_LIBRARY_H_
 #define NET_ANDROID_NETWORK_LIBRARY_H_
 
+#include <android/multinetwork.h>
 #include <jni.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -19,10 +20,11 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/socket/socket_descriptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace net {
-namespace android {
+namespace net::android {
 
 // |cert_chain| is DER encoded chain of certificates, with the server's own
 // certificate listed first.
@@ -56,12 +58,9 @@ bool GetMimeTypeFromExtension(const std::string& extension,
                               std::string* result);
 
 // Returns MCC+MNC (mobile country code + mobile network code) as
-// the numeric name of the current registered operator.
+// the numeric name of the current registered operator. This function
+// potentially blocks the thread, so use with care.
 NET_EXPORT std::string GetTelephonyNetworkOperator();
-
-// Returns MCC+MNC (mobile country code + mobile network code) as
-// the numeric name of the current SIM operator.
-NET_EXPORT std::string GetTelephonySimOperator();
 
 // Returns true if the device is roaming on the currently active network. When
 // true, it suggests that use of data may incur extra costs.
@@ -82,18 +81,21 @@ NET_EXPORT bool GetIsCaptivePortal();
 // point or its SSID is unavailable, an empty string is returned.
 NET_EXPORT_PRIVATE std::string GetWifiSSID();
 
+// Call WifiManager.setWifiEnabled.
+NET_EXPORT_PRIVATE void SetWifiEnabledForTesting(bool enabled);
+
 // Returns the signal strength level (between 0 and 4, both inclusive) of the
 // currently registered Wifi connection. If the value is unavailable, an
 // empty value is returned.
-NET_EXPORT_PRIVATE base::Optional<int32_t> GetWifiSignalLevel();
+NET_EXPORT_PRIVATE absl::optional<int32_t> GetWifiSignalLevel();
 
-// Gets the DNS servers and puts them in |dns_servers|. Sets
-// |dns_over_tls_active| and |dns_over_tls_hostname| based on the private DNS
-// settings. |dns_over_tls_hostname| will only be non-empty if
-// |dns_over_tls_active| is true.
+// Gets the DNS servers for the current default network and puts them in
+// `dns_servers`. Sets `dns_over_tls_active` and `dns_over_tls_hostname` based
+// on the private DNS settings. `dns_over_tls_hostname` will only be non-empty
+// if `dns_over_tls_active` is true.
 // Only callable on Marshmallow and newer releases.
 // Returns false when a valid server config could not be read.
-NET_EXPORT_PRIVATE bool GetDnsServers(
+NET_EXPORT_PRIVATE bool GetCurrentDnsServers(
     std::vector<IPEndPoint>* dns_servers,
     bool* dns_over_tls_active,
     std::string* dns_over_tls_hostname,
@@ -103,6 +105,17 @@ using DnsServerGetter =
                                  bool* dns_over_tls_active,
                                  std::string* dns_over_tls_hostname,
                                  std::vector<std::string>* search_suffixes)>;
+
+// Works as GetCurrentDnsServers but gets info specific to `network` instead
+// of the current default network.
+// Only callable on Pie and newer releases.
+// Returns false when a valid server config could not be read.
+NET_EXPORT_PRIVATE bool GetDnsServersForNetwork(
+    std::vector<IPEndPoint>* dns_servers,
+    bool* dns_over_tls_active,
+    std::string* dns_over_tls_hostname,
+    std::vector<std::string>* search_suffixes,
+    handles::NetworkHandle network);
 
 // Reports to the framework that the current default network appears to have
 // connectivity issues. This may serve as a signal for the OS to consider
@@ -116,7 +129,24 @@ NET_EXPORT_PRIVATE void TagSocket(SocketDescriptor socket,
                                   uid_t uid,
                                   int32_t tag);
 
-}  // namespace android
-}  // namespace net
+// Binds this socket to `network`. All data traffic on the socket will be sent
+// and received via `network`. This call will fail if `network` has
+// disconnected. Communication using this socket will fail if `network`
+// disconnects.
+// Returns a net error code.
+NET_EXPORT_PRIVATE int BindToNetwork(SocketDescriptor socket,
+                                     handles::NetworkHandle network);
+
+// Perform hostname resolution via the DNS servers associated with `network`.
+// All arguments are used identically as those passed to Android NDK API
+// android_getaddrinfofornetwork:
+// https://developer.android.com/ndk/reference/group/networking#group___networking_1ga0ae9e15612e6411855e295476a98ceee
+NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(handles::NetworkHandle network,
+                                             const char* node,
+                                             const char* service,
+                                             const struct addrinfo* hints,
+                                             struct addrinfo** res);
+
+}  // namespace net::android
 
 #endif  // NET_ANDROID_NETWORK_LIBRARY_H_

@@ -1,19 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_THREADING_THREAD_CHECKER_H_
 #define BASE_THREADING_THREAD_CHECKER_H_
 
-#include "base/check.h"
-#include "base/compiler_specific.h"
+#include "base/base_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker_impl.h"
-
-#if DCHECK_IS_ON()
-#include "base/debug/stack_trace.h"
-#endif
 
 // ThreadChecker is a helper class used to help verify that some methods of a
 // class are called from the same thread (for thread-affinity).  It supports
@@ -112,19 +108,19 @@ class LOCKABLE ThreadCheckerDoNothing {
 
   ThreadCheckerDoNothing() = default;
 
+  ThreadCheckerDoNothing(const ThreadCheckerDoNothing&) = delete;
+  ThreadCheckerDoNothing& operator=(const ThreadCheckerDoNothing&) = delete;
+
   // Moving between matching threads is allowed to help classes with
   // ThreadCheckers that want a default move-construct/assign.
   ThreadCheckerDoNothing(ThreadCheckerDoNothing&& other) = default;
   ThreadCheckerDoNothing& operator=(ThreadCheckerDoNothing&& other) = default;
 
-  bool CalledOnValidThread(std::unique_ptr<void*> = nullptr) const
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool CalledOnValidThread(
+      std::unique_ptr<void*> = nullptr) const {
     return true;
   }
   void DetachFromThread() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckerDoNothing);
 };
 
 // Note that ThreadCheckerImpl::CalledOnValidThread() returns false when called
@@ -140,30 +136,19 @@ class ThreadChecker : public ThreadCheckerDoNothing {
 #endif  // DCHECK_IS_ON()
 
 #if DCHECK_IS_ON()
-class SCOPED_LOCKABLE ScopedValidateThreadChecker {
+class BASE_EXPORT SCOPED_LOCKABLE ScopedValidateThreadChecker {
  public:
   explicit ScopedValidateThreadChecker(const ThreadChecker& checker)
-      EXCLUSIVE_LOCK_FUNCTION(checker) {
-    std::unique_ptr<debug::StackTrace> bound_at;
-    DCHECK(checker.CalledOnValidThread(&bound_at))
-        << (bound_at ? "\nWas attached to thread at:\n" + bound_at->ToString()
-                     : "");
-  }
+      EXCLUSIVE_LOCK_FUNCTION(checker);
+  ScopedValidateThreadChecker(const ThreadChecker& checker,
+                              const StringPiece& msg)
+      EXCLUSIVE_LOCK_FUNCTION(checker);
 
-  explicit ScopedValidateThreadChecker(const ThreadChecker& checker,
-                                       const StringPiece& msg)
-      EXCLUSIVE_LOCK_FUNCTION(checker) {
-    std::unique_ptr<debug::StackTrace> bound_at;
-    DCHECK(checker.CalledOnValidThread(&bound_at))
-        << msg
-        << (bound_at ? "\nWas attached to thread at:\n" + bound_at->ToString()
-                     : "");
-  }
+  ScopedValidateThreadChecker(const ScopedValidateThreadChecker&) = delete;
+  ScopedValidateThreadChecker& operator=(const ScopedValidateThreadChecker&) =
+      delete;
 
-  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedValidateThreadChecker);
+  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION();
 };
 #endif
 

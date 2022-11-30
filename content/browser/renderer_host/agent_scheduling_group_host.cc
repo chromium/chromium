@@ -1,22 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/state_transitions.h"
 #include "base/supports_user_data.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/state_transitions.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_mojo.h"
@@ -54,10 +56,10 @@ struct AgentSchedulingGroupHostUserData : public base::SupportsUserData::Data {
 
   std::set<std::unique_ptr<AgentSchedulingGroupHost>, base::UniquePtrComparator>
       owned_host_set;
-  // This is used solely to DCHECK the invariant that a SiteInstance cannot
+  // This is used solely to DCHECK the invariant that a SiteInstanceGroup cannot
   // request an AgentSchedulingGroup twice from the same RenderProcessHost.
 #if DCHECK_IS_ON()
-  std::set<const SiteInstance*> site_instances;
+  std::set<const SiteInstanceGroup*> site_instance_groups;
 #endif
 };
 
@@ -71,7 +73,7 @@ static features::MBIMode GetMBIMode() {
 
 // static
 AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
-    const SiteInstance& instance,
+    const SiteInstanceGroup& site_instance_group,
     RenderProcessHost& process) {
   AgentSchedulingGroupHostUserData* data =
       static_cast<AgentSchedulingGroupHostUserData*>(
@@ -88,10 +90,10 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
 
   if (GetMBIMode() == features::MBIMode::kLegacy ||
       GetMBIMode() == features::MBIMode::kEnabledPerRenderProcessHost) {
-    // We don't use |data->site_instances| at all when AgentSchedulingGroupHost
-    // is 1:1 with RenderProcessHost.
+    // We don't use |data->site_instance_groups| at all when
+    // AgentSchedulingGroupHost is 1:1 with RenderProcessHost.
 #if DCHECK_IS_ON()
-    DCHECK(data->site_instances.empty());
+    DCHECK(data->site_instance_groups.empty());
 #endif
 
     if (data->owned_host_set.empty()) {
@@ -120,13 +122,13 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
       std::make_unique<AgentSchedulingGroupHost>(process);
   AgentSchedulingGroupHost* return_host = host.get();
 
-  // In the MBI mode where we AgentSchedulingGroupHosts are 1:1 with
-  // SiteInstances, a SiteInstance may see different RenderProcessHosts
-  // throughout its lifetime, but it should only ever see a single
-  // AgentSchedulingGroupHost for a given RenderProcessHost.
+  // In the MBI mode where AgentSchedulingGroupHosts are 1:1 with
+  // SiteInstanceGroups, a SiteInstanceGroup may see different
+  // RenderProcessHosts throughout its lifetime, but it should only ever see a
+  // single AgentSchedulingGroupHost for a given RenderProcessHost.
 #if DCHECK_IS_ON()
-  DCHECK(!base::Contains(data->site_instances, &instance));
-  data->site_instances.insert(&instance);
+  DCHECK(!base::Contains(data->site_instance_groups, &site_instance_group));
+  data->site_instance_groups.insert(&site_instance_group);
 #endif
 
   data->owned_host_set.insert(std::move(host));
@@ -263,6 +265,11 @@ bool AgentSchedulingGroupHost::Init() {
   return process_.Init();
 }
 
+base::SafeRef<AgentSchedulingGroupHost> AgentSchedulingGroupHost::GetSafeRef()
+    const {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
   DCHECK_EQ(state_, LifecycleState::kBound);
 
@@ -325,29 +332,13 @@ void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
   mojo_remote_.get()->CreateView(std::move(params));
 }
 
-void AgentSchedulingGroupHost::DestroyView(
-    int32_t routing_id,
-    mojom::AgentSchedulingGroup::DestroyViewCallback callback) {
+void AgentSchedulingGroupHost::CreateSharedStorageWorkletService(
+    mojo::PendingReceiver<
+        shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
   DCHECK_EQ(state_, LifecycleState::kBound);
-  if (mojo_remote_.is_bound()) {
-    mojo_remote_.get()->DestroyView(routing_id, std::move(callback));
-  } else {
-    std::move(callback).Run();
-  }
-}
-
-void AgentSchedulingGroupHost::CreateFrameProxy(
-    const blink::RemoteFrameToken& token,
-    int32_t routing_id,
-    const base::Optional<blink::FrameToken>& opener_frame_token,
-    int32_t view_routing_id,
-    int32_t parent_routing_id,
-    blink::mojom::FrameReplicationStatePtr replicated_state,
-    const base::UnguessableToken& devtools_frame_token) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  mojo_remote_.get()->CreateFrameProxy(
-      token, routing_id, opener_frame_token, view_routing_id, parent_routing_id,
-      std::move(replicated_state), devtools_frame_token);
+  DCHECK(process_.IsInitializedAndNotDead());
+  DCHECK(mojo_remote_.is_bound());
+  mojo_remote_.get()->CreateSharedStorageWorkletService(std::move(receiver));
 }
 
 void AgentSchedulingGroupHost::ReportNoBinderForInterface(
@@ -380,35 +371,11 @@ void AgentSchedulingGroupHost::DidUnloadRenderFrame(
   }
 }
 
-void AgentSchedulingGroupHost::GetRoute(
-    int32_t routing_id,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-        receiver) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  DCHECK(receiver.is_valid());
-  associated_interface_provider_receivers_.Add(this, std::move(receiver),
-                                               routing_id);
-}
-
-void AgentSchedulingGroupHost::GetAssociatedInterface(
-    const std::string& name,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-        receiver) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  int32_t routing_id =
-      associated_interface_provider_receivers_.current_context();
-
-  if (auto* listener = GetListener(routing_id))
-    listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
-}
-
 void AgentSchedulingGroupHost::ResetIPC() {
   DCHECK_EQ(state_, LifecycleState::kRenderProcessExited);
   receiver_.reset();
   mojo_remote_.reset();
   remote_route_provider_.reset();
-  route_provider_receiver_.reset();
-  associated_interface_provider_receivers_.Clear();
   broker_receiver_.reset();
   channel_ = nullptr;
 }
@@ -429,7 +396,6 @@ void AgentSchedulingGroupHost::SetUpIPC() {
   DCHECK(!mojo_remote_.is_bound());
   DCHECK(!receiver_.is_bound());
   DCHECK(!remote_route_provider_.is_bound());
-  DCHECK(!route_provider_receiver_.is_bound());
   DCHECK(!broker_receiver_.is_bound());
 
   // After this function returns, all of `this`'s mojo interfaces need to be
@@ -485,15 +451,14 @@ void AgentSchedulingGroupHost::SetUpIPC() {
 
   mojo_remote_.get()->BindAssociatedInterfaces(
       receiver_.BindNewEndpointAndPassRemote(),
-      route_provider_receiver_.BindNewEndpointAndPassRemote(),
       remote_route_provider_.BindNewEndpointAndPassReceiver());
   SetState(LifecycleState::kBound);
 }
 
 void AgentSchedulingGroupHost::SetState(
     AgentSchedulingGroupHost::LifecycleState state) {
-  static const base::NoDestructor<StateTransitions<LifecycleState>> transitions(
-      StateTransitions<LifecycleState>({
+  static const base::NoDestructor<base::StateTransitions<LifecycleState>>
+      transitions(base::StateTransitions<LifecycleState>({
           {LifecycleState::kNewborn, {LifecycleState::kBound}},
           {LifecycleState::kBound,
            {LifecycleState::kRenderProcessExited,

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -147,11 +147,9 @@ void ShelfWindowWatcher::AddShelfItem(aura::Window* window) {
   ShelfItem item;
   UpdateShelfItemForWindow(&item, window);
 
-  model_->SetShelfItemDelegate(
-      item.id,
+  model_->AddAt(
+      model_->item_count(), item,
       std::make_unique<ShelfWindowWatcherItemDelegate>(item.id, window));
-
-  model_->AddAt(model_->item_count(), item);
 }
 
 void ShelfWindowWatcher::RemoveShelfItem(aura::Window* window) {
@@ -189,7 +187,7 @@ void ShelfWindowWatcher::OnUserWindowDestroying(aura::Window* window) {
 
 void ShelfWindowWatcher::OnUserWindowPropertyChanged(aura::Window* window) {
   // ShelfWindowWatcher only handles dialogs for now, all other shelf item
-  // types are handled by ChromeLauncherController.
+  // types are handled by ChromeShelfController.
   const ShelfItemType item_type = GetShelfItemType(window);
   if (item_type != TYPE_DIALOG || GetShelfID(window).IsNull()) {
     // Remove |window|'s ShelfItem if it was added by ShelfWindowWatcher.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,20 @@ String ToString(TextRenderingMode mode) {
       return "OptimizeLegibility";
     case TextRenderingMode::kGeometricPrecision:
       return "GeometricPrecision";
+  }
+  return "Unknown";
+}
+
+String ToStringForIdl(TextRenderingMode mode) {
+  switch (mode) {
+    case TextRenderingMode::kAutoTextRendering:
+      return "auto";
+    case TextRenderingMode::kOptimizeSpeed:
+      return "optimizeSpeed";
+    case TextRenderingMode::kOptimizeLegibility:
+      return "optimizeLegibility";
+    case TextRenderingMode::kGeometricPrecision:
+      return "geometricPrecision";
   }
   return "Unknown";
 }

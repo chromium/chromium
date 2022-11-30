@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #include "content/public/test/browser_test.h"
 
 // This class allows to wait until the kIncompatibleApplications preference is
@@ -47,6 +46,11 @@ class IncompatibleApplicationsObserver {
                                 OnIncompatibleApplicationsChanged,
                             base::Unretained(this)));
   }
+
+  IncompatibleApplicationsObserver(const IncompatibleApplicationsObserver&) =
+      delete;
+  IncompatibleApplicationsObserver& operator=(
+      const IncompatibleApplicationsObserver&) = delete;
 
   ~IncompatibleApplicationsObserver() = default;
 
@@ -74,11 +78,15 @@ class IncompatibleApplicationsObserver {
   PrefChangeRegistrar pref_change_registrar_;
 
   base::RepeatingClosure run_loop_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsObserver);
 };
 
 class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
+ public:
+  IncompatibleApplicationsBrowserTest(
+      const IncompatibleApplicationsBrowserTest&) = delete;
+  IncompatibleApplicationsBrowserTest& operator=(
+      const IncompatibleApplicationsBrowserTest&) = delete;
+
  protected:
   // The name of the application deemed incompatible.
   static constexpr wchar_t kApplicationName[] = L"FooBar123";
@@ -95,10 +103,8 @@ class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
 
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIncompatibleApplicationsWarning,
-         quarantine::kOutOfProcessQuarantine},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kIncompatibleApplicationsWarning);
 
     ASSERT_NO_FATAL_FAILURE(CreateModuleList());
     ASSERT_NO_FATAL_FAILURE(InstallThirdPartyApplication());
@@ -183,8 +189,6 @@ class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
 
   // Enables the IncompatibleApplicationsWarning feature.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsBrowserTest);
 };
 
 // static
@@ -215,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(IncompatibleApplicationsBrowserTest,
         ModuleDatabase* module_database = ModuleDatabase::GetInstance();
 
         // Speed up the test.
-        module_database->IncreaseInspectionPriority();
+        module_database->ForceStartInspection();
 
         // Simulate the download of the module list component.
         module_database->third_party_conflicts_manager()->LoadModuleList(

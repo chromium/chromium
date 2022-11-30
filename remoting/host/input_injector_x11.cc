@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,20 +13,21 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/clipboard.h"
+#include "remoting/host/input_injector_constants_linux.h"
 #include "remoting/host/linux/unicode_to_keysym.h"
 #include "remoting/host/linux/x11_character_injector.h"
 #include "remoting/host/linux/x11_keyboard_impl.h"
 #include "remoting/host/linux/x11_util.h"
 #include "remoting/proto/internal.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -51,12 +52,6 @@ using protocol::MouseEvent;
 using protocol::TextEvent;
 using protocol::TouchEvent;
 
-enum class ScrollDirection {
-  DOWN = -1,
-  UP = 1,
-  NONE = 0,
-};
-
 ScrollDirection WheelDeltaToScrollDirection(float num) {
   return (num > 0)   ? ScrollDirection::UP
          : (num < 0) ? ScrollDirection::DOWN
@@ -79,14 +74,17 @@ bool IsDomModifierKey(ui::DomCode dom_code) {
 const float kWheelTicksPerPixel = 3.0f / 160.0f;
 
 // When the user is scrolling, generate at least one tick per time period.
-const base::TimeDelta kContinuousScrollTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+const base::TimeDelta kContinuousScrollTimeout = base::Milliseconds(500);
 
 // A class to generate events on X11.
 class InputInjectorX11 : public InputInjector {
  public:
   explicit InputInjectorX11(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  InputInjectorX11(const InputInjectorX11&) = delete;
+  InputInjectorX11& operator=(const InputInjectorX11&) = delete;
+
   ~InputInjectorX11() override;
 
   void Init();
@@ -109,6 +107,9 @@ class InputInjectorX11 : public InputInjector {
   class Core : public base::RefCountedThreadSafe<Core> {
    public:
     explicit Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     void Init();
 
@@ -144,8 +145,8 @@ class InputInjectorX11 : public InputInjector {
     bool IsLockKey(x11::KeyCode keycode);
 
     // Sets the keyboard lock states to those provided.
-    void SetLockStates(base::Optional<bool> caps_lock,
-                       base::Optional<bool> num_lock);
+    void SetLockStates(absl::optional<bool> caps_lock,
+                       absl::optional<bool> num_lock);
 
     void InjectScrollWheelClicks(int button, int count);
     // Compensates for global button mappings and resets the XTest device
@@ -168,7 +169,7 @@ class InputInjectorX11 : public InputInjector {
     ScrollDirection latest_tick_y_direction_ = ScrollDirection::NONE;
 
     // X11 graphics context. Must only be accessed on the input thread.
-    x11::Connection* connection_;
+    raw_ptr<x11::Connection> connection_;
 
     // Number of buttons we support.
     // Left, Right, Middle, VScroll Up/Down, HScroll Left/Right, back, forward.
@@ -185,13 +186,9 @@ class InputInjectorX11 : public InputInjector {
     std::unique_ptr<X11CharacterInjector> character_injector_;
 
     bool saved_auto_repeat_enabled_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorX11);
 };
 
 InputInjectorX11::InputInjectorX11(
@@ -292,12 +289,13 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
         return;
       // Key is already held down, so lift the key up to ensure this repeated
       // press takes effect.
-      connection_->xtest().FakeInput({x11::KeyEvent::Release, keycode});
+      connection_->xtest().FakeInput(
+          {x11::KeyEvent::Release, static_cast<uint8_t>(keycode)});
     }
 
     if (!IsLockKey(static_cast<x11::KeyCode>(keycode))) {
-      base::Optional<bool> caps_lock;
-      base::Optional<bool> num_lock;
+      absl::optional<bool> caps_lock;
+      absl::optional<bool> num_lock;
 
       // For caps lock, check both the new caps_lock field and the old
       // lock_states field.
@@ -329,8 +327,9 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
     pressed_keys_.erase(keycode);
   }
 
-  auto opcode = event.pressed() ? x11::KeyEvent::Press : x11::KeyEvent::Release;
-  connection_->xtest().FakeInput({opcode, keycode});
+  uint8_t opcode =
+      event.pressed() ? x11::KeyEvent::Press : x11::KeyEvent::Release;
+  connection_->xtest().FakeInput({opcode, static_cast<uint8_t>(keycode)});
   connection_->Flush();
 }
 
@@ -349,12 +348,13 @@ void InputInjectorX11::Core::InjectTextEvent(const TextEvent& event) {
   // any interference with the currently pressed keys. E.g. if Shift is pressed
   // when TextEvent is received.
   for (int key : pressed_keys_)
-    connection_->xtest().FakeInput({x11::KeyEvent::Release, key});
+    connection_->xtest().FakeInput(
+        {x11::KeyEvent::Release, static_cast<uint8_t>(key)});
   pressed_keys_.clear();
 
   const std::string text = event.text();
-  for (int32_t index = 0; index < static_cast<int32_t>(text.size()); ++index) {
-    uint32_t code_point;
+  for (size_t index = 0; index < text.size(); ++index) {
+    base_icu::UChar32 code_point;
     if (!base::ReadUnicodeCharacter(text.c_str(), text.size(), &index,
                                     &code_point)) {
       continue;
@@ -399,8 +399,8 @@ bool InputInjectorX11::Core::IsLockKey(x11::KeyCode keycode) {
     return false;
 }
 
-void InputInjectorX11::Core::SetLockStates(base::Optional<bool> caps_lock,
-                                           base::Optional<bool> num_lock) {
+void InputInjectorX11::Core::SetLockStates(absl::optional<bool> caps_lock,
+                                           absl::optional<bool> num_lock) {
   // The lock bits associated with each lock key.
   auto caps_lock_mask = static_cast<unsigned int>(x11::ModMask::Lock);
   auto num_lock_mask = static_cast<unsigned int>(x11::ModMask::c_2);
@@ -443,8 +443,10 @@ void InputInjectorX11::Core::InjectScrollWheelClicks(int button, int count) {
   }
   for (int i = 0; i < count; i++) {
     // Generate a button-down and a button-up to simulate a wheel click.
-    connection_->xtest().FakeInput({x11::ButtonEvent::Press, button});
-    connection_->xtest().FakeInput({x11::ButtonEvent::Release, button});
+    connection_->xtest().FakeInput(
+        {x11::ButtonEvent::Press, static_cast<uint8_t>(button)});
+    connection_->xtest().FakeInput(
+        {x11::ButtonEvent::Release, static_cast<uint8_t>(button)});
   }
 }
 
@@ -466,8 +468,8 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
     connection_->xtest().FakeInput({
         .type = x11::MotionNotifyEvent::opcode,
         .detail = true,
-        .rootX = event.delta_x(),
-        .rootY = event.delta_y(),
+        .rootX = static_cast<int16_t>(event.delta_x()),
+        .rootY = static_cast<int16_t>(event.delta_y()),
     });
   } else if (event.has_x() && event.has_y()) {
     // Injecting a motion event immediately before a button release results in
@@ -498,8 +500,8 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
           .type = x11::MotionNotifyEvent::opcode,
           .detail = false,
           .root = connection_->default_root(),
-          .rootX = latest_mouse_position_.x(),
-          .rootY = latest_mouse_position_.y(),
+          .rootX = static_cast<int16_t>(latest_mouse_position_.x()),
+          .rootY = static_cast<int16_t>(latest_mouse_position_.y()),
       });
     }
   }
@@ -514,9 +516,10 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
 
     VLOG(3) << "Button " << event.button() << " received, sending "
             << (event.button_down() ? "down " : "up ") << button_number;
-    auto opcode = event.button_down() ? x11::ButtonEvent::Press
-                                      : x11::ButtonEvent::Release;
-    connection_->xtest().FakeInput({opcode, button_number});
+    uint8_t opcode = event.button_down() ? x11::ButtonEvent::Press
+                                         : x11::ButtonEvent::Release;
+    connection_->xtest().FakeInput(
+        {opcode, static_cast<uint8_t>(button_number)});
   }
 
   // remotedesktop.google.com currently sends scroll events in pixels, which

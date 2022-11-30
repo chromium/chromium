@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,12 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "services/device/usb/usb_device_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct usbdevfs_urb;
 
@@ -34,6 +37,7 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
       scoped_refptr<UsbDevice> device,
       base::ScopedFD fd,
       base::ScopedFD lifeline_fd,
+      const std::string& client_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
   // UsbDeviceHandle implementation.
@@ -84,11 +88,11 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   }
 
   // Destroys |helper_| and releases ownership of |fd_| without closing it.
-  void ReleaseFileDescriptor();
+  void ReleaseFileDescriptor(base::OnceClosure callback);
 
   // Destroys |helper_| and closes |fd_|. Override to call
   // ReleaseFileDescriptor() if necessary.
-  virtual void CloseBlocking();
+  virtual void FinishClose();
 
  private:
   class BlockingTaskRunnerHelper;
@@ -98,17 +102,22 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   };
   struct EndpointInfo {
     mojom::UsbTransferType type;
-    const mojom::UsbInterfaceInfo* interface;
+    raw_ptr<const mojom::UsbInterfaceInfo> interface;
   };
 
   void SetConfigurationComplete(int configuration_value,
-                                bool success,
-                                ResultCallback callback);
+                                ResultCallback callback,
+                                bool success);
   void SetAlternateInterfaceSettingComplete(int interface_number,
                                             int alternate_setting,
-                                            bool success,
-                                            ResultCallback callback);
-  void ReleaseInterfaceComplete(int interface_number, ResultCallback callback);
+                                            ResultCallback callback,
+                                            bool success);
+  void DetachInterfaceComplete(int interface_number,
+                               ResultCallback callback,
+                               bool success);
+  void ReleaseInterfaceComplete(int interface_number,
+                                ResultCallback callback,
+                                bool success);
   void IsochronousTransferInternal(uint8_t endpoint_address,
                                    scoped_refptr<base::RefCountedBytes> buffer,
                                    size_t total_length,
@@ -130,9 +139,10 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   void UrbDiscarded(Transfer* transfer);
 
   scoped_refptr<UsbDevice> device_;
-  int fd_;  // Copy of the base::ScopedFD held by |helper_| valid if |device_|.
+  int fd_;  // Copy of the base::ScopedFD held by |helper_|. Valid if |device_|.
+  absl::optional<std::string>
+      client_id_;  // Client ID assigned by the Permission Broker.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   // Maps claimed interfaces by interface number to their current alternate
   // setting.
@@ -145,10 +155,13 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
 
   // Helper object exists on the blocking task thread and all calls to it and
   // its destruction must be posted there.
-  std::unique_ptr<BlockingTaskRunnerHelper> helper_;
+  base::SequenceBound<BlockingTaskRunnerHelper> helper_;
 
   std::list<std::unique_ptr<Transfer>> transfers_;
-  base::SequenceChecker sequence_checker_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<UsbDeviceHandleUsbfs> weak_factory_{this};
 };
 
 }  // namespace device

@@ -46,14 +46,14 @@ function test() {
     shouldBeEqualToString('search.value', 'Search value');
 
     // Both the foreground and background colors should change.
+    // Note that the background color of <input> and <textarea> are
+    // determined by the native theme, which overrides CSS
+    // background colors. So we skip testing background colors in
+    // this test.
     shouldNotBe('foregroundOf(field)', 'originalForeground');
-    shouldNotBe('backgroundOf(field)', 'originalBackground');
     shouldNotBe('foregroundOf(search)', 'originalForeground');
-    shouldNotBe('backgroundOf(search)', 'originalBackground');
     shouldNotBe('foregroundOf(textarea1)', 'originalForeground');
-    shouldNotBe('backgroundOf(textarea1)', 'originalBackground');
     shouldNotBe('foregroundOf(textarea2)', 'originalForeground');
-    shouldNotBe('backgroundOf(textarea2)', 'originalBackground');
     shouldNotBe('foregroundOf(select1)', 'originalForeground');
     shouldNotBe('backgroundOf(select1)', 'originalBackground');
     shouldNotBe('foregroundOf(select2)', 'originalForeground');
@@ -97,13 +97,9 @@ function test() {
 
     // Colors should be restored.
     shouldBe('foregroundOf(field)', 'originalForeground');
-    shouldBe('backgroundOf(field)', 'originalBackground');
     shouldBe('foregroundOf(search)', 'originalForeground');
-    shouldBe('backgroundOf(search)', 'originalBackground');
     shouldBe('foregroundOf(textarea1)', 'originalForeground');
-    shouldBe('backgroundOf(textarea1)', 'originalBackground');
     shouldBe('foregroundOf(textarea2)', 'originalForeground');
-    shouldBe('backgroundOf(textarea2)', 'originalBackground');
     shouldBe('foregroundOf(select1)', 'originalForeground');
     shouldBe('backgroundOf(select1)', 'originalBackground');
     shouldBe('foregroundOf(select2)', 'originalForeground');

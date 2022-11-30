@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,17 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,10 +41,29 @@ import java.util.List;
 class TabSelectionEditorCoordinator {
     static final String COMPONENT_NAME = "TabSelectionEditor";
 
+    // TODO(977271): Unify similar interfaces in other components that used the TabListCoordinator.
+    /**
+     * Interface for resetting the selectable tab grid.
+     */
+    interface ResetHandler {
+        /**
+         * Handles the reset event.
+         * @param tabs List of {@link Tab}s to reset.
+         * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
+         * @param quickMode whether to use quick mode.
+         */
+        void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode);
+
+        /**
+         * Handles cleanup.
+         */
+        void postHiding();
+    }
+
     /**
      * An interface to control the TabSelectionEditor.
      */
-    interface TabSelectionEditorController {
+    interface TabSelectionEditorController extends BackPressHandler {
         /**
          * Shows the TabSelectionEditor with the given {@link Tab}s.
          * @param tabs List of {@link Tab}s to show.
@@ -75,11 +98,22 @@ class TabSelectionEditorCoordinator {
          * @param actionButtonEnablingThreshold The minimum threshold to enable the action button.
          *         If it's -1 use the default value.
          * @param navigationProvider The {@link TabSelectionEditorNavigationProvider} that specifies
+         *         the back action.
          */
         void configureToolbar(@Nullable String actionButtonText,
                 @Nullable Integer actionButtonDescriptionResourceId,
                 @Nullable TabSelectionEditorActionProvider actionProvider,
                 int actionButtonEnablingThreshold,
+                @Nullable TabSelectionEditorNavigationProvider navigationProvider);
+
+        /**
+         * Configure the Toolbar for TabSelectionEditor with multiple actions. Requires
+         * {@link ChromeFeatureList.TAB_SELECTION_EDITOR_V2} to be enabled.
+         * @param actions The {@link TabSelectionEditorAction} to make available.
+         * @param navigationProvider The {@link TabSelectionEditorNavigationProvider} that specifies
+         *         the back action.
+         */
+        void configureToolbarWithMenuItems(List<TabSelectionEditorAction> actions,
                 @Nullable TabSelectionEditorNavigationProvider navigationProvider);
 
         /**
@@ -94,10 +128,12 @@ class TabSelectionEditorCoordinator {
     public static class TabSelectionEditorNavigationProvider {
         private final TabSelectionEditorCoordinator
                 .TabSelectionEditorController mTabSelectionEditorController;
+        private final Context mContext;
 
-        public TabSelectionEditorNavigationProvider(
+        public TabSelectionEditorNavigationProvider(Context context,
                 TabSelectionEditorCoordinator
                         .TabSelectionEditorController tabSelectionEditorController) {
+            mContext = context;
             mTabSelectionEditorController = tabSelectionEditorController;
         }
 
@@ -105,7 +141,11 @@ class TabSelectionEditorCoordinator {
          * Defines what to do when the navigation button is clicked.
          */
         public void goBack() {
-            RecordUserAction.record("TabMultiSelect.Cancelled");
+            if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+                RecordUserAction.record("TabMultiSelectV2.ClosedByUser");
+            } else {
+                RecordUserAction.record("TabMultiSelect.Cancelled");
+            }
             mTabSelectionEditorController.hide();
         }
     }
@@ -122,62 +162,99 @@ class TabSelectionEditorCoordinator {
 
     public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            @TabListMode int mode) {
-        mContext = context;
-        mParentView = parentView;
-        mTabModelSelector = tabModelSelector;
-        assert mode == TabListCoordinator.TabListMode.GRID
-                || mode == TabListCoordinator.TabListMode.LIST;
+            @TabListMode int mode, ViewGroup rootView, boolean displayGroups) {
+        try (TraceEvent e = TraceEvent.scoped("TabSelectionEditorCoordinator.constructor")) {
+            mContext = context;
+            mParentView = parentView;
+            mTabModelSelector = tabModelSelector;
+            assert mode == TabListCoordinator.TabListMode.GRID
+                    || mode == TabListCoordinator.TabListMode.LIST;
+            assert !displayGroups
+                    || (displayGroups
+                            && ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.TAB_SELECTION_EDITOR_V2));
 
-        mTabSelectionEditorLayout =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.tab_selection_editor_layout, parentView, false)
-                        .findViewById(R.id.selectable_list);
+            mTabSelectionEditorLayout =
+                    LayoutInflater.from(context)
+                            .inflate(R.layout.tab_selection_editor_layout, parentView, false)
+                            .findViewById(R.id.selectable_list);
 
-        mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
-                tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
-                TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
-                mTabSelectionEditorLayout, false, COMPONENT_NAME);
+            TabListMediator.ThumbnailProvider thumbnailProvider = displayGroups
+                    ? new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector)
+                    : (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
+                tabContentManager.getTabThumbnailWithCallback(
+                        tabId, thumbnailSize, callback, forceUpdate, writeBack);
+            };
+            PseudoTab.TitleProvider titleProvider = displayGroups ? this::getTitle : null;
 
-        // Note: The TabSelectionEditorCoordinator is always created after native is initialized.
-        assert LibraryLoader.getInstance().isInitialized();
-        mTabListCoordinator.initWithNative(null);
+            // TODO(ckitagawa): Lazily instantiate the TabSelectionEditorCoordinator. When doing so,
+            // the Coordinator hosting the TabSelectionEditorCoordinator could share and reconfigure
+            // its TabListCoordinator to work with the editor as an optimization.
+            mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
+                    thumbnailProvider, titleProvider, displayGroups, null, null,
+                    TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
+                    mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView, null);
 
-        mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
-                new LayoutViewBuilder(R.layout.divider_preference),
-                (model, view, propertyKey) -> {});
-        RecyclerView.LayoutManager layoutManager =
-                mTabListCoordinator.getContainerView().getLayoutManager();
-        if (layoutManager instanceof GridLayoutManager) {
-            ((GridLayoutManager) layoutManager)
-                    .setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                        @Override
-                        public int getSpanSize(int i) {
-                            int itemType = mTabListCoordinator.getContainerView()
-                                                   .getAdapter()
-                                                   .getItemViewType(i);
+            // Note: The TabSelectionEditorCoordinator is always created after native is
+            // initialized.
+            assert LibraryLoader.getInstance().isInitialized();
+            mTabListCoordinator.initWithNative(null);
+            if (thumbnailProvider instanceof MultiThumbnailCardProvider) {
+                ((MultiThumbnailCardProvider) thumbnailProvider).initWithNative();
+            }
 
-                            if (itemType == TabProperties.UiType.DIVIDER) {
-                                return ((GridLayoutManager) layoutManager).getSpanCount();
+            mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
+                    new LayoutViewBuilder(R.layout.divider_preference),
+                    (model, view, propertyKey) -> {});
+            RecyclerView.LayoutManager layoutManager =
+                    mTabListCoordinator.getContainerView().getLayoutManager();
+            if (layoutManager instanceof GridLayoutManager) {
+                ((GridLayoutManager) layoutManager)
+                        .setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                            @Override
+                            public int getSpanSize(int i) {
+                                int itemType = mTabListCoordinator.getContainerView()
+                                                       .getAdapter()
+                                                       .getItemViewType(i);
+
+                                if (itemType == TabProperties.UiType.DIVIDER) {
+                                    return ((GridLayoutManager) layoutManager).getSpanCount();
+                                }
+                                return 1;
                             }
-                            return 1;
-                        }
-                    });
+                        });
+            }
+
+            mTabSelectionEditorLayout.initialize(mParentView,
+                    mTabListCoordinator.getContainerView(),
+                    mTabListCoordinator.getContainerView().getAdapter(), mSelectionDelegate);
+            mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
+
+            mModel = new PropertyModel.Builder(TabSelectionEditorProperties.ALL_KEYS)
+                             .with(IS_VISIBLE, false)
+                             .build();
+
+            mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
+                    mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
+
+            ResetHandler resetHandler = new ResetHandler() {
+                @Override
+                public void resetWithListOfTabs(
+                        @Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode) {
+                    TabSelectionEditorCoordinator.this.resetWithListOfTabs(
+                            tabs, preSelectedCount, quickMode);
+                }
+
+                @Override
+                public void postHiding() {
+                    mTabListCoordinator.postHiding();
+                    mTabListCoordinator.softCleanup();
+                }
+            };
+            mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
+                    mTabModelSelector, mTabListCoordinator, resetHandler, mModel,
+                    mSelectionDelegate, mTabSelectionEditorLayout.getToolbar(), displayGroups);
         }
-
-        mTabSelectionEditorLayout.initialize(mParentView, mTabListCoordinator.getContainerView(),
-                mTabListCoordinator.getContainerView().getAdapter(), mSelectionDelegate);
-        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
-
-        mModel = new PropertyModel.Builder(TabSelectionEditorProperties.ALL_KEYS)
-                         .with(IS_VISIBLE, false)
-                         .build();
-
-        mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
-
-        mTabSelectionEditorMediator = new TabSelectionEditorMediator(
-                mContext, mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate);
     }
 
     /**
@@ -191,14 +268,25 @@ class TabSelectionEditorCoordinator {
      * Resets {@link TabListCoordinator} with the provided list.
      * @param tabs List of {@link Tab}s to reset.
      * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
+     * @param quickMode whether to use quick mode.
      */
-    void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount) {
-        mTabListCoordinator.resetWithListOfTabs(tabs);
+    void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode) {
+        mTabListCoordinator.resetWithListOfTabs(
+                PseudoTab.getListOfPseudoTab(tabs), quickMode, /*mruMode=*/false);
 
         if (tabs != null && preSelectedCount > 0 && preSelectedCount < tabs.size()) {
             mTabListCoordinator.addSpecialListItem(preSelectedCount, TabProperties.UiType.DIVIDER,
                     new PropertyModel.Builder(CARD_TYPE).with(CARD_TYPE, OTHERS).build());
         }
+    }
+
+    private String getTitle(Context context, PseudoTab tab) {
+        int numRelatedTabs = PseudoTab.getRelatedTabs(context, tab, mTabModelSelector).size();
+
+        if (numRelatedTabs == 1) return tab.getTitle();
+
+        return context.getResources().getQuantityString(
+                R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
     }
 
     /**
@@ -212,7 +300,7 @@ class TabSelectionEditorCoordinator {
      * Destroy any members that needs clean up.
      */
     public void destroy() {
-        mTabListCoordinator.destroy();
+        mTabListCoordinator.onDestroy();
         mTabSelectionEditorLayout.destroy();
         mTabSelectionEditorMediator.destroy();
         mTabSelectionEditorLayoutChangeProcessor.destroy();

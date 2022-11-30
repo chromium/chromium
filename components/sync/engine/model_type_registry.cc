@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine/model_type_worker.h"
@@ -21,35 +19,6 @@
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 
 namespace syncer {
-
-namespace {
-
-class CommitQueueProxy : public CommitQueue {
- public:
-  CommitQueueProxy(const base::WeakPtr<CommitQueue>& worker,
-                   const scoped_refptr<base::SequencedTaskRunner>& sync_thread);
-  ~CommitQueueProxy() override;
-
-  void NudgeForCommit() override;
-
- private:
-  base::WeakPtr<CommitQueue> worker_;
-  scoped_refptr<base::SequencedTaskRunner> sync_thread_;
-};
-
-CommitQueueProxy::CommitQueueProxy(
-    const base::WeakPtr<CommitQueue>& worker,
-    const scoped_refptr<base::SequencedTaskRunner>& sync_thread)
-    : worker_(worker), sync_thread_(sync_thread) {}
-
-CommitQueueProxy::~CommitQueueProxy() {}
-
-void CommitQueueProxy::NudgeForCommit() {
-  sync_thread_->PostTask(FROM_HERE,
-                         base::BindOnce(&CommitQueue::NudgeForCommit, worker_));
-}
-
-}  // namespace
 
 ModelTypeRegistry::ModelTypeRegistry(
     NudgeHandler* nudge_handler,
@@ -68,28 +37,22 @@ ModelTypeRegistry::~ModelTypeRegistry() {
 void ModelTypeRegistry::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
-  DCHECK(!IsProxyType(type));
+  DCHECK(ProtocolTypes().Has(type));
   DCHECK(update_handler_map_.find(type) == update_handler_map_.end());
   DCHECK(commit_contributor_map_.find(type) == commit_contributor_map_.end());
-  DVLOG(1) << "Enabling an off-thread sync type: " << ModelTypeToString(type);
+  DCHECK(activation_response);
+  DCHECK(!activation_response->skip_engine_connection);
+  DCHECK(activation_response->type_processor);
 
-  // Save a raw pointer to the processor for connecting later.
-  ModelTypeProcessor* type_processor =
-      activation_response->type_processor.get();
-
-  bool initial_sync_done =
-      activation_response->model_type_state.initial_sync_done();
+  DVLOG(1) << "Enabling an off-thread sync type: "
+           << ModelTypeToDebugString(type);
 
   auto worker = std::make_unique<ModelTypeWorker>(
       type, activation_response->model_type_state,
-      /*trigger_initial_sync=*/!initial_sync_done,
-      encrypted_types_.Has(type) ? sync_encryption_handler_->GetCryptographer()
-                                 : nullptr,
-      passphrase_type_, nudge_handler_,
-      std::move(activation_response->type_processor), cancelation_signal_);
-
-  worker->SetFallbackCryptographerForUma(
-      sync_encryption_handler_->GetCryptographer());
+      sync_encryption_handler_->GetCryptographer(),
+      sync_encryption_handler_->GetEncryptedTypes().Has(type),
+      sync_encryption_handler_->GetPassphraseType(), nudge_handler_,
+      cancelation_signal_);
 
   // Save a raw pointer and add the worker to our structures.
   ModelTypeWorker* worker_ptr = worker.get();
@@ -97,15 +60,19 @@ void ModelTypeRegistry::ConnectDataType(
   update_handler_map_.insert(std::make_pair(type, worker_ptr));
   commit_contributor_map_.insert(std::make_pair(type, worker_ptr));
 
-  // Initialize Processor -> Worker communication channel.
-  type_processor->ConnectSync(std::make_unique<CommitQueueProxy>(
-      worker_ptr->AsWeakPtr(), base::SequencedTaskRunnerHandle::Get()));
+  worker_ptr->ConnectSync(std::move(activation_response->type_processor));
 }
 
 void ModelTypeRegistry::DisconnectDataType(ModelType type) {
-  DVLOG(1) << "Disabling an off-thread sync type: " << ModelTypeToString(type);
+  if (update_handler_map_.count(type) == 0) {
+    // Type not connected. Simply ignore.
+    return;
+  }
 
-  DCHECK(!IsProxyType(type));
+  DVLOG(1) << "Disabling an off-thread sync type: "
+           << ModelTypeToDebugString(type);
+
+  DCHECK(ProtocolTypes().Has(type));
   DCHECK(update_handler_map_.find(type) != update_handler_map_.end());
   DCHECK(commit_contributor_map_.find(type) != commit_contributor_map_.end());
 
@@ -125,35 +92,30 @@ void ModelTypeRegistry::DisconnectDataType(ModelType type) {
   }
 }
 
-void ModelTypeRegistry::ConnectProxyType(ModelType type) {
-  DCHECK(IsProxyType(type));
-  enabled_proxy_types_.Put(type);
+void ModelTypeRegistry::SetProxyTabsDatatypeEnabled(bool enabled) {
+  proxy_tabs_datatype_enabled_ = enabled;
 }
 
-void ModelTypeRegistry::DisconnectProxyType(ModelType type) {
-  DCHECK(IsProxyType(type));
-  enabled_proxy_types_.Remove(type);
+ModelTypeSet ModelTypeRegistry::GetConnectedTypes() const {
+  ModelTypeSet types;
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
+    types.Put(worker->GetModelType());
+  }
+  return types;
 }
 
-ModelTypeSet ModelTypeRegistry::GetEnabledTypes() const {
-  return Union(GetEnabledDataTypes(), enabled_proxy_types_);
+bool ModelTypeRegistry::proxy_tabs_datatype_enabled() const {
+  return proxy_tabs_datatype_enabled_;
 }
 
 ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
   ModelTypeSet result;
-  for (const auto& kv : update_handler_map_) {
-    if (kv.second->IsInitialSyncEnded())
-      result.Put(kv.first);
+  for (const auto& [type, update_handler] : update_handler_map_) {
+    if (update_handler->IsInitialSyncEnded())
+      result.Put(type);
   }
   return result;
-}
-
-ModelTypeSet ModelTypeRegistry::GetEnabledDataTypes() const {
-  ModelTypeSet enabled_types;
-  for (const auto& worker : connected_model_type_workers_) {
-    enabled_types.Put(worker->GetModelType());
-  }
-  return enabled_types;
 }
 
 const UpdateHandler* ModelTypeRegistry::GetUpdateHandler(ModelType type) const {
@@ -175,7 +137,8 @@ KeystoreKeysHandler* ModelTypeRegistry::keystore_keys_handler() {
 
 bool ModelTypeRegistry::HasUnsyncedItems() const {
   // For model type workers, we ask them individually.
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     if (worker->HasLocalChangesForTest()) {
       return true;
     }
@@ -192,61 +155,39 @@ void ModelTypeRegistry::OnPassphraseRequired(
     const KeyDerivationParams& key_derivation_params,
     const sync_pb::EncryptedData& pending_keys) {}
 
-void ModelTypeRegistry::OnPassphraseAccepted() {
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->EncryptionAcceptedMaybeApplyUpdates();
-    }
-  }
-}
+void ModelTypeRegistry::OnPassphraseAccepted() {}
 
 void ModelTypeRegistry::OnTrustedVaultKeyRequired() {}
 
-void ModelTypeRegistry::OnTrustedVaultKeyAccepted() {
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->EncryptionAcceptedMaybeApplyUpdates();
-    }
-  }
-}
-
-void ModelTypeRegistry::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token,
-    BootstrapTokenType type) {}
+void ModelTypeRegistry::OnTrustedVaultKeyAccepted() {}
 
 void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                                 bool encrypt_everything) {
-  // TODO(skym): This does not handle reducing the number of encrypted types
-  // correctly. They're removed from |encrypted_types_| but corresponding
-  // workers never have their Cryptographers removed. This probably is not a use
-  // case that currently needs to be supported, but it should be guarded against
-  // here.
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types.Has(worker->GetModelType()) &&
-        !encrypted_types_.Has(worker->GetModelType())) {
-      worker->EnableEncryption(sync_encryption_handler_->GetCryptographer());
+  // This does NOT support disabling encryption without reconnecting the
+  // type, i.e. recreating its ModelTypeWorker.
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
+    if (encrypted_types.Has(worker->GetModelType())) {
+      // No-op if the type was already encrypted.
+      worker->EnableEncryption();
     }
   }
-  encrypted_types_ = encrypted_types;
 }
 
 void ModelTypeRegistry::OnCryptographerStateChanged(
     Cryptographer* cryptographer,
     bool has_pending_keys) {
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->OnCryptographerChange();
-    }
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
+    worker->OnCryptographerChange();
   }
 }
 
 void ModelTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
                                                 base::Time passphrase_time) {
-  passphrase_type_ = type;
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->UpdatePassphraseType(type);
-    }
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
+    worker->UpdatePassphraseType(type);
   }
 }
 

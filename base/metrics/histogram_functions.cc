@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,16 +26,16 @@ void UmaHistogramBoolean(const char* name, bool sample) {
 void UmaHistogramExactLinear(const std::string& name,
                              int sample,
                              int exclusive_max) {
-  HistogramBase* histogram =
-      LinearHistogram::FactoryGet(name, 1, exclusive_max, exclusive_max + 1,
-                                  HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      name, 1, exclusive_max, static_cast<size_t>(exclusive_max + 1),
+      HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
 void UmaHistogramExactLinear(const char* name, int sample, int exclusive_max) {
-  HistogramBase* histogram =
-      LinearHistogram::FactoryGet(name, 1, exclusive_max, exclusive_max + 1,
-                                  HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      name, 1, exclusive_max, static_cast<size_t>(exclusive_max + 1),
+      HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
@@ -59,20 +59,22 @@ void UmaHistogramPercentageObsoleteDoNotUse(const char* name, int percent) {
 void UmaHistogramCustomCounts(const std::string& name,
                               int sample,
                               int min,
-                              int max,
-                              int buckets) {
-  HistogramBase* histogram = Histogram::FactoryGet(
-      name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
+                              int exclusive_max,
+                              size_t buckets) {
+  HistogramBase* histogram =
+      Histogram::FactoryGet(name, min, exclusive_max, buckets,
+                            HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
 void UmaHistogramCustomCounts(const char* name,
                               int sample,
                               int min,
-                              int max,
-                              int buckets) {
-  HistogramBase* histogram = Histogram::FactoryGet(
-      name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
+                              int exclusive_max,
+                              size_t buckets) {
+  HistogramBase* histogram =
+      Histogram::FactoryGet(name, min, exclusive_max, buckets,
+                            HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
@@ -128,7 +130,7 @@ void UmaHistogramCustomTimes(const std::string& name,
                              TimeDelta sample,
                              TimeDelta min,
                              TimeDelta max,
-                             int buckets) {
+                             size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMillisecondsGranularity(sample);
@@ -138,57 +140,49 @@ void UmaHistogramCustomTimes(const char* name,
                              TimeDelta sample,
                              TimeDelta min,
                              TimeDelta max,
-                             int buckets) {
+                             size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMillisecondsGranularity(sample);
 }
 
 void UmaHistogramTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromSeconds(10), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Seconds(10), 50);
 }
 
 void UmaHistogramTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromSeconds(10), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Seconds(10), 50);
 }
 
 void UmaHistogramMediumTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromMinutes(3), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Minutes(3), 50);
 }
 
 void UmaHistogramMediumTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromMinutes(3), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Minutes(3), 50);
 }
 
 void UmaHistogramLongTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 50);
 }
 
 void UmaHistogramLongTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 50);
 }
 
 void UmaHistogramLongTimes100(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 100);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
 }
 
 void UmaHistogramLongTimes100(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 100);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
 }
 
 void UmaHistogramCustomMicrosecondsTimes(const std::string& name,
                                          TimeDelta sample,
                                          TimeDelta min,
                                          TimeDelta max,
-                                         int buckets) {
+                                         size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryMicrosecondsTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMicrosecondsGranularity(sample);
@@ -198,40 +192,20 @@ void UmaHistogramCustomMicrosecondsTimes(const char* name,
                                          TimeDelta sample,
                                          TimeDelta min,
                                          TimeDelta max,
-                                         int buckets) {
+                                         size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryMicrosecondsTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMicrosecondsGranularity(sample);
 }
 
 void UmaHistogramMicrosecondsTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomMicrosecondsTimes(name, sample,
-                                      TimeDelta::FromMicroseconds(1),
-                                      TimeDelta::FromSeconds(10), 50);
+  UmaHistogramCustomMicrosecondsTimes(name, sample, Microseconds(1),
+                                      Seconds(10), 50);
 }
 
 void UmaHistogramMicrosecondsTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomMicrosecondsTimes(name, sample,
-                                      TimeDelta::FromMicroseconds(1),
-                                      TimeDelta::FromSeconds(10), 50);
-}
-
-// TODO(crbug.com/983261) Remove this method after moving to
-// UmaHistogramMicrosecondsTimes.
-void UmaHistogramMicrosecondsTimesUnderTenMilliseconds(const std::string& name,
-                                                       TimeDelta sample) {
-  UmaHistogramCustomMicrosecondsTimes(name, sample,
-                                      TimeDelta::FromMicroseconds(1),
-                                      TimeDelta::FromMilliseconds(10), 50);
-}
-
-// TODO(crbug.com/983261) Remove this method after moving to
-// UmaHistogramMicrosecondsTimes.
-void UmaHistogramMicrosecondsTimesUnderTenMilliseconds(const char* name,
-                                                       TimeDelta sample) {
-  UmaHistogramCustomMicrosecondsTimes(name, sample,
-                                      TimeDelta::FromMicroseconds(1),
-                                      TimeDelta::FromMilliseconds(10), 50);
+  UmaHistogramCustomMicrosecondsTimes(name, sample, Microseconds(1),
+                                      Seconds(10), 50);
 }
 
 void UmaHistogramMemoryKB(const std::string& name, int sample) {

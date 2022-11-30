@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,10 @@ component("views_examples_lib") {
   testonly = true
 
   sources = [
+    "animated_image_view_example.cc",
+    "animated_image_view_example.h",
+    "animation_example.cc",
+    "animation_example.h",
     "ax_example.cc",
     "ax_example.h",
     "box_layout_example.cc",
@@ -25,20 +29,33 @@ component("views_examples_lib") {
     "checkbox_example.h",
     "colored_dialog_example.cc",
     "colored_dialog_example.h",
+    "colors_example.cc",
+    "colors_example.h",
     "combobox_example.cc",
     "combobox_example.h",
     "create_examples.cc",
     "create_examples.h",
+    "designer_example.cc",
+    "designer_example.h",
     "dialog_example.cc",
     "dialog_example.h",
     "example_base.cc",
     "example_base.h",
     "example_combobox_model.cc",
     "example_combobox_model.h",
+    "examples_color_id.h",
+    "examples_color_mixer.cc",
+    "examples_color_mixer.h",
+    "examples_themed_label.cc",
+    "examples_themed_label.h",
     "examples_window.cc",
     "examples_window.h",
+    "fade_animation.cc",
+    "fade_animation.h",
     "flex_layout_example.cc",
     "flex_layout_example.h",
+    "ink_drop_example.cc",
+    "ink_drop_example.h",
     "label_example.cc",
     "label_example.h",
     "layout_example_base.cc",
@@ -53,8 +70,6 @@ component("views_examples_lib") {
     "message_box_example.h",
     "multiline_example.cc",
     "multiline_example.h",
-    "native_theme_example.cc",
-    "native_theme_example.h",
     "notification_example.cc",
     "notification_example.h",
     "progress_bar_example.cc",
@@ -65,6 +80,8 @@ component("views_examples_lib") {
     "scroll_view_example.h",
     "slider_example.cc",
     "slider_example.h",
+    "square_ink_drop_example.cc",
+    "square_ink_drop_example.h",
     "tabbed_pane_example.cc",
     "tabbed_pane_example.h",
     "table_example.cc",
@@ -88,8 +105,12 @@ component("views_examples_lib") {
     "widget_example.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  if (is_linux || is_chromeos || is_fuchsia) {
+    sources += [
+      "color_chooser_example.cc",
+      "color_chooser_example.h",
+    ]
+  }
 
   defines = [
     "GFX_VECTOR_ICONS_UNSAFE",
@@ -104,9 +125,11 @@ component("views_examples_lib") {
     "//skia",
     "//third_party/icu",
     "//ui/base",
+    "//ui/color",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/lottie",
     "//ui/message_center",
     "//ui/native_theme",
     "//ui/resources",
@@ -144,6 +167,7 @@ source_set("views_examples_proc") {
     "//mojo/core/embedder",
     "//skia",
     "//ui/base",
+    "//ui/color:mixers",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/gfx",
@@ -151,7 +175,7 @@ source_set("views_examples_proc") {
     "//ui/views:test_support",
   ]
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "examples_skia_gold_pixel_diff.cc",
       "examples_skia_gold_pixel_diff.h",
@@ -171,9 +195,6 @@ source_set("views_examples_proc") {
       "//ui/aura",
       "//ui/wm",
     ]
-  }
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
   }
   if (is_chromeos_ash) {
     sources += [
@@ -195,6 +216,7 @@ executable("views_examples") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
+    "//ui/color:mixers",
     "//ui/resources:ui_test_pak",
   ]
 }
@@ -240,6 +262,7 @@ executable("views_examples_with_content") {
     "//content",
     "//content:sandbox_helper_win",
     "//sandbox",
+    "//ui/color:mixers",
     "//ui/views_content_client",
   ]
 
@@ -311,8 +334,16 @@ test("views_examples_unittests") {
     ]
   }
 
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+    ]
+  }
+
   data_deps = [
     ":views_examples_resources_pak",
+    "//testing/buildbot/filters:views_examples_unittests_filters",
     "//ui/resources:ui_test_pak_data",
   ]
 

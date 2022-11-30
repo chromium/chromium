@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,6 +75,12 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
 
   if (data.impression)
     params.impression = data.impression;
+
+  if (data.form_renderer_id)
+    params.form_renderer_id = data.form_renderer_id;
+
+  if (data.field_renderer_id)
+    params.field_renderer_id = data.field_renderer_id;
 
   params.source_type = static_cast<ui::MenuSourceType>(data.source_type);
 

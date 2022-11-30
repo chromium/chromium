@@ -62,4 +62,4 @@ class WebSandboxSupport {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SANDBOX_SUPPORT_H_

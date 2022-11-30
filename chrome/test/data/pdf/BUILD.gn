@@ -1,241 +1,86 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//chrome/browser/resources/pdf/pdf.gni")
+import("//pdf/features.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/=../../chrome/test/data/\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/=../../chrome/browser/resources/pdf/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-  deps = [
-    #":annotations_feature_enabled_test",
-    ":basic_plugin_test",
-    ":basic_test",
-    ":beep_test",
-    ":bookmarks_test",
-    ":download_controls_test",
-    ":fullscreen_test",
-    ":gesture_detector_test",
-    ":layout_test",
-    ":material_elements_test",
+assert(enable_pdf, "enable_pdf check failed")
 
-    #":metrics_test",
-    ":navigator_test",
-    ":nobeep_test",
-    ":page_change_test",
-    ":params_parser_test",
-    ":printing_icon_test",
-
-    #":redirects_fail_test",
-    ":test_util",
-    ":title_test",
-
-    #":toolbar_manager_test",
-    #":touch_handling_test",
-    ":viewer_password_dialog_test",
-    ":viewer_pdf_sidenav_test",
-    ":viewer_pdf_toolbar_test",
-    ":viewer_properties_dialog_test",
-    ":viewer_thumbnail_bar_test",
-    ":viewer_thumbnail_test",
-    ":viewport_test",
-    ":whitespace_title_test",
-
-    #":zoom_manager_test",
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  path_mappings = [
+    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "basic_plugin_test.ts",
+    "basic_test.ts",
+    "beep_test.ts",
+    "bookmarks_test.ts",
+    "download_controls_test.ts",
+    "fullscreen_test.ts",
+    "gesture_detector_test.ts",
+    "layout_test.ts",
+    "material_elements_test.ts",
+    "metrics_test.ts",
+    "navigator_test.ts",
+    "nobeep_test.ts",
+    "page_change_test.ts",
+    "params_parser_test.ts",
+    "plugin_controller_test.ts",
+    "post_message_proxy_test.ts",
+    "scroll_with_form_field_focused_test.ts",
+    "swipe_detector_test.ts",
+    "test_util.ts",
+    "title_test.ts",
+    "touch_handling_test.ts",
+    "viewer_password_dialog_test.ts",
+    "viewer_pdf_sidenav_test.ts",
+    "viewer_properties_dialog_test.ts",
+    "viewer_thumbnail_bar_test.ts",
+    "viewer_thumbnail_test.ts",
+    "viewer_toolbar_test.ts",
+    "viewport_scroller_test.ts",
+    "viewport_test.ts",
+    "whitespace_title_test.ts",
+    "zoom_manager_test.ts",
   ]
 
-  if (is_chromeos) {
-    deps += [ ":material_elements_cros_test" ]
+  if (enable_ink) {
+    in_files += [
+      "annotations_feature_enabled_test.ts",
+      "annotations_toolbar_test.ts",
+      "viewer_toolbar_dropdown_test.ts",
+    ]
   }
-}
 
-js_library("basic_plugin_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("basic_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("beep_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("bookmarks_test") {
-  deps = [
-    ":test_util",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("gesture_detector_test") {
-  deps = [
-    ":test_util",
-    "//chrome/browser/resources/pdf:gesture_detector",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("layout_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("material_elements_test") {
-  deps = [
-    ":test_util",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-if (is_chromeos) {
-  js_library("material_elements_cros_test") {
-    deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-    externs_list = [ "$externs_path/test.js" ]
+  if (is_chromeos_ash) {
+    in_files += [ "printing_icon_test.ts" ]
   }
-}
 
-js_library("download_controls_test") {
+  definitions =
+      ts_definitions + [ "//tools/typescript/definitions/chrome_test.d.ts" ]
   deps = [
-    "../webui:test_util.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:util.m",
+    "../webui:build_ts",
+    "//chrome/browser/resources/pdf:build_ts",
   ]
-  externs_list = [ "$externs_path/test.js" ]
+  extra_deps = [ "../webui:generate_definitions" ]
 }
 
-js_library("fullscreen_test") {
-  deps = [
-    ":test_util",
-    "../webui:test_util.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
+generate_grd("build_grdp") {
+  grd_prefix = "pdf"
+  out_grd = "$target_gen_dir/resources.grdp"
 
-js_library("navigator_test") {
-  deps = [
-    ":test_util",
-    "../webui:test_browser_proxy.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("nobeep_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("page_change_test") {
-  deps = [
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("printing_icon_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("params_parser_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("test_util") {
-  deps = [
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("title_test") {
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("viewer_password_dialog_test") {
-  deps = [
-    "../webui:test_util.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("viewer_pdf_sidenav_test") {
-  deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("viewer_pdf_toolbar_test") {
-  deps = [
-    "../webui:test_util.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("viewer_properties_dialog_test") {
-  deps = [
-    "../webui:test_util.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("viewer_thumbnail_bar_test") {
-  deps = [
-    "../webui:test_util.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("viewer_thumbnail_test") {
-  deps = [
-    "../webui:test_util.m",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("viewport_test") {
-  deps = [
-    ":test_util",
-    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
-  ]
-  externs_list = [ "$externs_path/test.js" ]
-}
-
-js_library("whitespace_title_test") {
-  externs_list = [ "$externs_path/test.js" ]
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "pdf"
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,14 +29,7 @@ void RecordPasswordDecryptionResult(PasswordDecryptionResult result) {
 
 LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
-    std::string* cipher_text) const {
-#if !defined(OS_FUCHSIA)
-  if (!use_encryption_) {
-    *cipher_text = base::UTF16ToUTF8(plain_text);
-    return ENCRYPTION_RESULT_SUCCESS;
-  }
-#endif
-
+    std::string* cipher_text) {
   return OSCrypt::EncryptString16(plain_text, cipher_text)
              ? ENCRYPTION_RESULT_SUCCESS
              : ENCRYPTION_RESULT_SERVICE_FAILURE;
@@ -44,17 +37,17 @@ LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
 
 LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    std::u16string* plain_text) const {
-#if !defined(OS_FUCHSIA)
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+    std::u16string* plain_text) {
+#if !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // On Android and ChromeOS, we have a mix of obfuscated and plain-text
   // passwords. Obfuscated passwords always start with "v10", therefore anything
   // else is plain-text.
   // TODO(crbug.com/960322): Remove this when there isn't a mix of plain-text
   // and obfuscated passwords.
-  bool use_encryption = use_encryption_ && (cipher_text.find("v10", 0) == 0);
+  bool use_encryption = base::StartsWith(cipher_text, "v10");
 #else
-  bool use_encryption = use_encryption_;
+  bool use_encryption = true;
 #endif
 
   if (!use_encryption) {
@@ -63,10 +56,10 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
         PasswordDecryptionResult::kSucceededBySkipping);
     return ENCRYPTION_RESULT_SUCCESS;
   }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   bool decryption_success = OSCrypt::DecryptString16(cipher_text, plain_text);
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // If decryption failed, we assume it was because the value was actually a
   // plain-text password which started with "v10".
   // TODO(crbug.com/960322): Remove this when there isn't a mix of plain-text

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/sandbox_export.h"
@@ -31,6 +30,10 @@ class SANDBOX_EXPORT BaselinePolicy : public bpf_dsl::Policy {
   // |fs_denied_errno| is the errno returned when a filesystem access system
   // call is denied.
   explicit BaselinePolicy(int fs_denied_errno);
+
+  BaselinePolicy(const BaselinePolicy&) = delete;
+  BaselinePolicy& operator=(const BaselinePolicy&) = delete;
+
   ~BaselinePolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
@@ -42,8 +45,6 @@ class SANDBOX_EXPORT BaselinePolicy : public bpf_dsl::Policy {
 
   // The PID that the policy applies to (should be equal to the current pid).
   pid_t policy_pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaselinePolicy);
 };
 
 }  // namespace sandbox.

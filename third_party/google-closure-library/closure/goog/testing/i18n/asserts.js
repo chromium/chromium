@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Assert functions that account for locale data changes.
@@ -65,6 +57,7 @@ goog.testing.i18n.asserts.EXPECTED_VALUE_MAP_ = {
  * @param {string} actual The actual value.
  */
 goog.testing.i18n.asserts.assertI18nEquals = function(expected, actual) {
+  'use strict';
   if (expected === actual) {
     return;
   }
@@ -86,6 +79,7 @@ goog.testing.i18n.asserts.assertI18nEquals = function(expected, actual) {
  * @param {string} haystack The string to search within.
  */
 goog.testing.i18n.asserts.assertI18nContains = function(needle, haystack) {
+  'use strict';
   if (needle === haystack) {
     return;
   }
@@ -107,6 +101,7 @@ goog.testing.i18n.asserts.assertI18nContains = function(needle, haystack) {
  * @param {string} equivalent A string which is i18n-equal.
  */
 goog.testing.i18n.asserts.addI18nMapping = function(expected, equivalent) {
+  'use strict';
   if (goog.testing.i18n.asserts.EXPECTED_VALUE_MAP_.hasOwnProperty(expected)) {
     throw new RangeError('Mapping for string already exists');
   }

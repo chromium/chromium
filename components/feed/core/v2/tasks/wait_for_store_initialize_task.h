@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,20 @@
 
 namespace feed {
 class FeedStore;
+class FeedStream;
 
 // Initializes |store|. This task is run first so that other tasks can assume
 // storage is initialized.
 class WaitForStoreInitializeTask : public offline_pages::Task {
  public:
   struct Result {
-    feedstore::Metadata metadata;
+    FeedStore::StartupData startup_data;
     FeedStore::WebFeedStartupData web_feed_startup_data;
   };
 
   explicit WaitForStoreInitializeTask(
       FeedStore* store,
+      FeedStream* stream,
       base::OnceCallback<void(Result)> callback);
   ~WaitForStoreInitializeTask() override;
   WaitForStoreInitializeTask(const WaitForStoreInitializeTask&) = delete;
@@ -35,11 +37,15 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
   void OnStoreInitialized();
   void OnMetadataLoaded(std::unique_ptr<feedstore::Metadata> metadata);
 
-  void MetadataDone(feedstore::Metadata metadata);
+  void ClearAllDone(bool clear_ok);
+  void MaybeUpgradeStreamSchema();
+  void UpgradeDone(feedstore::Metadata metadata);
+  void ReadStartupDataDone(FeedStore::StartupData startup_data);
   void WebFeedStartupDataDone(FeedStore::WebFeedStartupData data);
   void Done();
 
-  FeedStore* store_;
+  FeedStore& store_;
+  FeedStream& stream_;
   base::OnceCallback<void(Result)> callback_;
   Result result_;
   int done_count_ = 0;

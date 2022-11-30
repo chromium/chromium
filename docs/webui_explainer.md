@@ -14,7 +14,6 @@
 
 [TOC]
 
-<a name="What_is_webui"></a>
 ## What is "WebUI"?
 
 "WebUI" is a term used to loosely describe **parts of Chrome's UI
@@ -32,7 +31,6 @@ Not all web-based UIs in Chrome have chrome:// URLs.
 
 This document explains how WebUI works.
 
-<a name="bindings"></a>
 ## What's different from a web page?
 
 WebUIs are granted super powers so that they can manage Chrome itself. For
@@ -52,7 +50,6 @@ Specifically, these bindings:
   [`chrome.send()`](#chrome_send) and friends
 * ignore content settings regarding showing images or executing JavaScript
 
-<a name="chrome_urls"></a>
 ## How `chrome:` URLs work
 
 <div class="note">
@@ -192,7 +189,6 @@ Because they run in a separate process and can exist before a corresponding
 renderer process has been created, special care is required to communicate with
 the renderer if reliable message passing is required.
 
-<a name="WebUIController"></a>
 ### WebUIController
 
 A `WebUIController` is the brains of the operation, and is responsible for
@@ -207,7 +203,6 @@ an existing [`WebUI`](#WebUI) when the correct one is determined via URL
 inspection (i.e. chrome://settings creates a generic [`WebUI`](#WebUI) with a
 settings-specific `WebUIController`).
 
-<a name="WebUIDataSource"></a>
 ### WebUIDataSource
 
 The `WebUIDataSource` class provides a place for data to live for WebUI pages.
@@ -247,7 +242,6 @@ For more about each of the methods called on `WebUIDataSource` and the utility
 method that performs additional configuration, see [DataSources](#DataSources)
 and [WebUIDataSourceUtils](#WebUIDataSourceUtils)
 
-<a name="WebUIMessageHandler"></a>
 ### WebUIMessageHandler
 
 Because some pages have many messages or share code that sends messages, message
@@ -264,13 +258,14 @@ void OvenHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
+void OvenHandler::HandleBakeDonuts(const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1u, args->GetSize());
-  // JavaScript numbers are doubles.
-  double num_donuts = args->GetList()[0].GetDouble();
-  GetOven()->BakeDonuts(static_cast<int>(num_donuts));
+  // IMPORTANT: Fully validate `args`.
+  CHECK_EQ(1u, args.size());
+  int num_donuts = args[0].GetInt();
+  CHECK_GT(num_donuts, 0);
+  GetOven()->BakeDonuts(num_donuts);
 }
 ```
 
@@ -282,17 +277,14 @@ $('bakeDonutsButton').onclick = function() {
 };
 ```
 
-<a name="DataSources">
 ## Data Sources
 
-<a name="Create"></a>
 ### WebUIDataSource::Create()
 
 This is a factory method required to create a WebUIDataSource instance. The
 argument to `Create()` is typically the host name of the page. Caller owns the
 result.
 
-<a name="Add"></a>
 ### WebUIDataSource::Add()
 
 Once you've created and added some things to a data source, it'll need to be
@@ -306,7 +298,6 @@ It's unsafe to keep references to a <code>WebUIDataSource</code> after calling
 <code>Add()</code>. Don't do this.
 </div>
 
-<a name="AddLocalizedString"></a>
 ### WebUIDataSource::AddLocalizedString()
 
 Using an int reference to a grit string (starts with "IDS" and lives in a .grd
@@ -314,53 +305,6 @@ or .grdp file), adding a string with a key name will be possible to reference
 via the `$i18n{}` syntax (and will be replaced when requested) or later
 dynamically in JavaScript via `loadTimeData.getString()` (or `getStringF`).
 
-<a name="AddResourcePath"></a>
-### WebUIDataSource::AddResourcePath()
-
-Using an int reference to a grit resource (starts with "IDR" and lives in a .grd
-or .grdp file), adds a resource to the UI with the specified path.
-
-It's generally a good idea to call <code>AddResourcePath()</code> with the empty
-path and a resource ID that should be served as the "catch all" resource to
-respond with. This resource will be served for requests like "chrome://history",
-or "chrome://history/pathThatDoesNotExist". It will not be served for requests
-that look like they are attempting to fetch a specific file, like
-"chrome://history/file\_that\_does\_not\_exist.js". This is so that if a user
-enters a typo when trying to load a subpage like "chrome://history/syncedTabs"
-they will be redirected to the main history page, instead of seeing an error,
-but incorrect imports in the source code will fail, so that they can be more
-easily found and corrected.
-
-<a name="AddBoolean"></a>
-### WebUIDataSource::AddBoolean()
-
-Often a page needs to know whether a feature is enabled. This is a good use case
-for `WebUIDataSource::AddBoolean()`.  Then, in the Javascript, one can write
-code like this:
-
-```js
-if (loadTimeData.getBoolean('myFeatureIsEnabled')) {
-  ...
-}
-```
-
-<div class="note">
-Data sources are not recreated on refresh, and therefore values that are dynamic
-(i.e. that can change while Chrome is running) may easily become stale. It may
-be preferable to use <code>cr.sendWithPromise()</code> to initialize dynamic
-values and call <code>FireWebUIListener()</code> to update them.
-
-If you really want or need to use <code>AddBoolean()</code> for a dynamic value,
-make sure to call <code>WebUIDataSource::Update()</code> when the value changes.
-</div>
-
-<a name="WebUIDataSourceUtils"></a>
-## WebUI utils for working with data sources
-
-chrome/browser/ui/webui/webui\_util.\* contains a number of methods to simplify
-common configuration tasks.
-
-<a name="AddLocalizedStringsBulk"></a>
 ### WebUIDataSource::AddLocalizedStrings()
 
 Many Web UI data sources need to be set up with a large number of localized
@@ -377,7 +321,22 @@ an array of all the strings and use <code>AddLocalizedStrings()</code>:
   source->AddLocalizedStrings(kStrings);
 ```
 
-<a name="AddResourcePaths"></a>
+### WebUIDataSource::AddResourcePath()
+
+Using an int reference to a grit resource (starts with "IDR" and lives in a .grd
+or .grdp file), adds a resource to the UI with the specified path.
+
+It's generally a good idea to call <code>AddResourcePath()</code> with the empty
+path and a resource ID that should be served as the "catch all" resource to
+respond with. This resource will be served for requests like "chrome://history",
+or "chrome://history/pathThatDoesNotExist". It will not be served for requests
+that look like they are attempting to fetch a specific file, like
+"chrome://history/file\_that\_does\_not\_exist.js". This is so that if a user
+enters a typo when trying to load a subpage like "chrome://history/syncedTabs"
+they will be redirected to the main history page, instead of seeing an error,
+but incorrect imports in the source code will fail, so that they can be more
+easily found and corrected.
+
 ### WebUIDataSource::AddResourcePaths()
 
 Similar to the localized strings, many Web UIs need to add a large number of
@@ -385,12 +344,12 @@ resource paths. In this case, use <code>AddResourcePaths()</code> to
 replace repeated calls to <code>AddResourcePath()</code>.
 
 ```c++
-  static constexpr webui::ResourcePath kPdfResources[] = {
-      {"pdf/browser_api.js", IDR_PDF_BROWSER_API_JS},
-      {"pdf/constants.js", IDR_PDF_CONSTANTS_JS},
-      {"pdf/controller.js", IDR_PDF_CONTROLLER_JS},
+  static constexpr webui::ResourcePath kResources[] = {
+      {"browser_api.js", IDR_BROWSER_API_JS},
+      {"constants.js", IDR_CONSTANTS_JS},
+      {"controller.js", IDR_CONTROLLER_JS},
   };
-  source->AddResourcePaths(kStrings);
+  source->AddResourcePaths(kResources);
 ```
 
 The same method can be leveraged for cases that directly use constants defined
@@ -405,7 +364,33 @@ resource map can be added as follows:
       base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize));
 ```
 
-<a name="SetupWebUIDataSource"></a>
+### WebUIDataSource::AddBoolean()
+
+Often a page needs to know whether a feature is enabled. This is a good use case
+for `WebUIDataSource::AddBoolean()`.  Then, in the Javascript, one can write
+code like this:
+
+```js
+if (loadTimeData.getBoolean('myFeatureIsEnabled')) {
+  ...
+}
+```
+
+<div class="note">
+Data sources are not recreated on refresh, and therefore values that are dynamic
+(i.e. that can change while Chrome is running) may easily become stale. It may
+be preferable to use <code>sendWithPromise()</code> to initialize dynamic
+values and call <code>FireWebUIListener()</code> to update them.
+
+If you really want or need to use <code>AddBoolean()</code> for a dynamic value,
+make sure to call <code>WebUIDataSource::Update()</code> when the value changes.
+</div>
+
+## WebUI utils for working with data sources
+
+chrome/browser/ui/webui/webui\_util.\* contains a number of methods to simplify
+common configuration tasks.
+
 ### webui::SetupWebUIDataSource()
 
 This method performs common configuration tasks on a data source for a Web UI
@@ -425,7 +410,6 @@ Specific setup steps include:
 
 ## Browser (C++) &rarr; Renderer (JS)
 
-<a name="AllowJavascript"></a>
 ### WebUIMessageHandler::AllowJavascript()
 
 A tab that has been used for settings UI may be reloaded, or may navigate to an
@@ -490,7 +474,6 @@ detect page readiness omits <i>application-specific</i> initialization, and a
 custom <code>'initialized'</code> message is often necessary.
 </div>
 
-<a name="CallJavascriptFunction"></a>
 ### WebUIMessageHandler::CallJavascriptFunction()
 
 When the browser process needs to tell the renderer/JS of an event or otherwise
@@ -530,13 +513,12 @@ alternatives:
 * [`FireWebUIListener()`](#FireWebUIListener) allows easily notifying the page
   when an event occurs in C++ and is more loosely coupled (nothing blows up if
   the event dispatch is ignored). JS subscribes to notifications via
-  [`cr.addWebUIListener`](#cr_addWebUIListener).
+  [`addWebUIListener`](#addWebUIListener).
 * [`ResolveJavascriptCallback`](#ResolveJavascriptCallback) and
   [`RejectJavascriptCallback`](#RejectJavascriptCallback) are useful
   when Javascript requires a response to an inquiry about C++-canonical state
   (i.e. "Is Autofill enabled?", "Is the user incognito?")
 
-<a name="FireWebUIListener"></a>
 ### WebUIMessageHandler::FireWebUIListener()
 
 `FireWebUIListener()` is used to notify a registered set of listeners that an
@@ -547,7 +529,7 @@ happen in timely manner, or may be caused to happen by unpredictable events
 Here's some example to detect a change to Chrome's theme:
 
 ```js
-cr.addWebUIListener("theme-changed", refreshThemeStyles);
+addWebUIListener("theme-changed", refreshThemeStyles);
 ```
 
 This Javascript event listener can be triggered in C++ via:
@@ -562,10 +544,9 @@ Because it's not clear when a user might want to change their theme nor what
 theme they'll choose, this is a good candidate for an event listener.
 
 If you simply need to get a response in Javascript from C++, consider using
-[`cr.sendWithPromise()`](#cr_sendWithPromise) and
+[`sendWithPromise()`](#sendWithPromise) and
 [`ResolveJavascriptCallback`](#ResolveJavascriptCallback).
 
-<a name="OnJavascriptAllowed"></a>
 ### WebUIMessageHandler::OnJavascriptAllowed()
 
 `OnJavascriptDisallowed()` is a lifecycle method called in response to
@@ -596,20 +577,18 @@ A safer way to set up communication is:
 ```c++
 class MyHandler : public content::WebUIMessageHandler {
  public:
-  MyHandler() : observer_(this) {}
   void OnJavascriptAllowed() override {
-    observer_.Add(GetGlobalService());  // <-- DO THIS.
+    observation_.Observe(GetGlobalService());  // <-- DO THIS.
   }
   void OnJavascriptDisallowed() override {
-    observer_.RemoveAll();  // <-- AND THIS.
+    observation_.Reset();  // <-- AND THIS.
   }
-  ScopedObserver<MyHandler, GlobalService> observer_;  // <-- ALSO HANDY.
+  base::ScopedObservation<MyHandler, GlobalService> observation_{this};  // <-- ALSO HANDY.
 ```
 when a renderer has been created and the
 document has loaded enough to signal to the C++ that it's ready to respond to
 messages.
 
-<a name="OnJavascriptDisallowed"></a>
 ### WebUIMessageHandler::OnJavascriptDisallowed()
 
 `OnJavascriptDisallowed` is a lifecycle method called when it's unclear whether
@@ -635,7 +614,7 @@ Often, it makes sense to disconnect from observers in
 
 ```c++
 void OvenHandler::OnJavascriptDisallowed() {
-  scoped_oven_observer_.RemoveAll()
+  scoped_oven_observation_.Reset()
 }
 ```
 
@@ -644,11 +623,10 @@ Because `OnJavascriptDisallowed()` is not guaranteed to be called before a
 scoped observer that automatically unsubscribes on destruction but can also
 imperatively unsubscribe in `OnJavascriptDisallowed()`.
 
-<a name="RejectJavascriptCallback"></a>
 ### WebUIMessageHandler::RejectJavascriptCallback()
 
 This method is called in response to
-[`cr.sendWithPromise()`](#cr_sendWithPromise) to reject the issued Promise. This
+[`sendWithPromise()`](#sendWithPromise) to reject the issued Promise. This
 runs the rejection (second) callback in the [Promise's
 executor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 and any
@@ -676,20 +654,19 @@ CallJavascriptFunction("cr.webUIResponse", callback_id, base::Value(false),
 
 See also: [`ResolveJavascriptCallback`](#ResolveJavascriptCallback)
 
-<a name="ResolveJavascriptCallback"></a>
 ### WebUIMessageHandler::ResolveJavascriptCallback()
 
 This method is called in response to
-[`cr.sendWithPromise()`](#cr_sendWithPromise) to fulfill an issued Promise,
+[`sendWithPromise()`](#sendWithPromise) to fulfill an issued Promise,
 often with a value. This results in runnings any fulfillment (first) callbacks
 in the associate Promise executor and any registered
 [`then()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
 callbacks.
 
-So, given this JS code:
+So, given this TypeScript code:
 
 ```js
-cr.sendWithPromise('bakeDonuts').then(function(numDonutsBaked) {
+sendWithPromise('bakeDonuts').then(function(numDonutsBaked: number) {
   shop.donuts += numDonutsBaked;
 });
 ```
@@ -700,13 +677,12 @@ Some handling C++ might do this:
 void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
   AllowJavascript();
   double num_donuts_baked = GetOven()->BakeDonuts();
-  ResolveJavascriptCallback(args->GetList()[0], num_donuts_baked);
+  ResolveJavascriptCallback(args->GetList()[0], base::Value(num_donuts_baked));
 }
 ```
 
 ## Renderer (JS) &rarr; Browser (C++)
 
-<a name="chrome_send"></a>
 ### chrome.send()
 
 When the JavaScript `window` object is created, a renderer is checked for [WebUI
@@ -758,8 +734,7 @@ callback with the deserialized arguments:
 message_callbacks_.find(message)->second.Run(&args);
 ```
 
-<a name="cr_addWebUIListener">
-### cr.addWebUIListener()
+### addWebUIListener()
 
 WebUI listeners are a convenient way for C++ to inform JavaScript of events.
 
@@ -770,7 +745,9 @@ listening for events in some cases. **cr.addWebUIListener** is preferred in new
 code.
 
 Adding WebUI listeners creates and inserts a unique ID into a map in JavaScript,
-just like [cr.sendWithPromise()](#cr_sendWithPromise).
+just like [sendWithPromise()](#sendWithPromise).
+
+addWebUIListener can be imported from 'chrome://resources/js/cr.m.js'.
 
 ```js
 // addWebUIListener():
@@ -795,23 +772,22 @@ should be communicated to the JavaScript running in a tab.
 
 ```c++
 void OvenHandler::OnBakingDonutsFinished(size_t num_donuts) {
-  FireWebUIListener("donuts-baked", base::FundamentalValue(num_donuts));
+  FireWebUIListener("donuts-baked", base::Value(num_donuts));
 }
 ```
 
-JavaScript can listen for WebUI events via:
+TypeScript can listen for WebUI events via:
 
 ```js
-var donutsReady = 0;
-cr.addWebUIListener('donuts-baked', function(numFreshlyBakedDonuts) {
+let donutsReady: number = 0;
+addWebUIListener('donuts-baked', function(numFreshlyBakedDonuts: number) {
   donutsReady += numFreshlyBakedDonuts;
 });
 ```
 
-<a name="cr_sendWithPromise"></a>
-### cr.sendWithPromise()
+### sendWithPromise()
 
-`cr.sendWithPromise()` is a wrapper around `chrome.send()`. It's used when
+`sendWithPromise()` is a wrapper around `chrome.send()`. It's used when
 triggering a message requires a response:
 
 ```js
@@ -825,16 +801,18 @@ to make request specific or do from deeply nested code.
 In newer WebUI pages, you see code like this:
 
 ```js
-cr.sendWithPromise('getNumberOfDonuts').then(function(numDonuts) {
+sendWithPromise('getNumberOfDonuts').then(function(numDonuts: number) {
   alert('Yay, there are ' + numDonuts + ' delicious donuts left!');
 });
 ```
+
+Note that sendWithPromise can be imported from 'chrome://resources/js/cr.m.js';
 
 On the C++ side, the message registration is similar to
 [`chrome.send()`](#chrome_send) except that the first argument in the
 message handler's list is a callback ID. That ID is passed to
 `ResolveJavascriptCallback()`, which ends up resolving the `Promise` in
-JavaScript and calling the `then()` function.
+JavaScript/TypeScript and calling the `then()` function.
 
 ```c++
 void DonutHandler::HandleGetNumberOfDonuts(const base::ListValue* args) {
@@ -842,7 +820,7 @@ void DonutHandler::HandleGetNumberOfDonuts(const base::ListValue* args) {
 
   const base::Value& callback_id = args->GetList()[0];
   size_t num_donuts = GetOven()->GetNumberOfDonuts();
-  ResolveJavascriptCallback(callback_id, base::FundamentalValue(num_donuts));
+  ResolveJavascriptCallback(callback_id, base::Value(num_donuts));
 }
 ```
 
@@ -852,7 +830,7 @@ The callback ID is just a namespaced, ever-increasing number. It's used to
 insert a `Promise` into the JS-side map when created.
 
 ```js
-// cr.sendWithPromise():
+// sendWithPromise():
 var id = methodName + '_' + uidCounter++;
 chromeSendResolverMap[id] = new PromiseResolver;
 chrome.send(methodName, [id].concat(args));
@@ -912,6 +890,205 @@ StoragePartition, a separate frame tree, and restricts postMessage communication
 by default. However, `<webview>` does not support Site Isolation and
 therefore it is not advisable to use for any sensitive content.
 
+## JavaScript Error Reporting
+
+By default, errors in the JavaScript or TypeScript of a WebUI page will generate
+error reports which appear in Google's internal [go/crash](http://go/crash)
+reports page. These error reports will only be generated for Google Chrome
+builds, not Chromium or other Chromium-based browsers.
+
+Specifically, an error report will be generated when the JavaScript or
+TypeScript for a WebUI-based chrome:// page does one of the following:
+* Generates an uncaught exception,
+* Has a promise which is rejected, and no rejection handler is provided, or
+* Calls `console.error()`.
+
+Such errors will appear alongside other crashes in the
+`product_name=Chrome_ChromeOS`, `product_name=Chrome_Lacros`, or
+`product_name=Chrome_Linux` lists on [go/crash](http://go/crash).
+
+The signature of the error is the error message followed by the URL on which the
+error appeared. For example, if chrome://settings/lazy_load.js throws a
+TypeError with a message `Cannot read properties of null (reading 'select')` and
+does not catch it, the magic signature would be 
+```
+Uncaught TypeError: Cannot read properties of null (reading 'select') (chrome://settings)
+```
+To avoid spamming the system, only one error report with a given message will be
+generated per hour.
+
+If you are getting error reports for an expected condition, you can turn off the
+reports simply by changing `console.error()` into `console.warn()`. For
+instance, if JavaScript is calling `console.error()` when the user tries to
+connect to an unavailable WiFi network at the same time the page shows the user
+an error message, the `console.error()` should be replaced with a
+`console.warn()`.
+
+If you wish to get more control of the JavaScript error messages, for example
+to change the product name or to add additional data, you may wish to switch to
+using `CrashReportPrivate.reportError()`. If you do so, be sure to override
+`WebUIController::IsJavascriptErrorReportingEnabled()` to return false for your
+page; this will avoid generating redundant error reports.
+
+### Are JavaScript errors actually crashes?
+JavaScript errors are not "crashes" in the C++ sense. They do not stop a process
+from running, they do not cause a "sad tab" page. Some tooling refers to them as
+crashes because they are going through the same pipeline as the C++ crashes, and
+that pipeline was originally designed to handle crashes.
+
+### How much impact does this JavaScript error have?
+That depends on the JavaScript error. In some cases, the errors have no user
+impact; for instance, the "unavailable WiFi network calling `console.error()`"
+example above. In other cases, JavaScript errors may be serious errors that
+block the user from completing critical user journeys. For example, if the
+JavaScript is supposed to un-hide one of several variants of settings page, but
+the JavaScript has an unhandled exception before un-hiding any of them, then
+the user will see a blank page and be unable to change that setting.
+
+Because it is difficult to automatically determine the severity of a given
+error, JavaScript errors are currently all classified as "WARNING" level when
+computing stability metrics.
+
+### Known issues
+1. Error reporting is currently enabled only on ChromeOS (ash and Lacros) and
+   Linux.
+2. Errors are only reported for chrome:// URLs.
+3. Unhandled promise rejections do not have a good stack.
+4. The line numbers and column numbers in the stacks are for the minified
+   JavaScript and do not correspond to the line and column numbers of the
+   original source files.
+5. Error messages with variable strings do not group well. For example, if the
+   error message includes the name of a network, each network name will be its
+   own signature.
+
+## Common TypeScript build issue: Missing dependencies
+Similar to how builds can flakily fail when a C++ file adds an include without
+updating the DEPS file appropriately, builds can flakily (or consistently) fail
+if TypeScript code adds an import but doesn't update the dependencies for its
+`ts_library()` target to include the library that contains that import. This
+has caused confusion for both developers and sheriffs in the past.
+
+### Example Failure
+The following is an example build flake that occurred due to the file
+`personalization_app.ts` adding an import of `colors_css_updater.js`, but not
+updating its dependencies appropriately:
+
+```
+gen/ash/webui/personalization_app/resources/preprocessed/js/personalization_app.ts:38:39 - error TS2792: Cannot find module 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js'. Did you mean to set the 'moduleResolution' option to 'node', or to add aliases to the 'paths' option?
+
+38 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Found 1 error in gen/ash/webui/personalization_app/resources/preprocessed/js/personalization_app.ts:38
+```
+
+### For Chromium Sheriffs
+If you see a failure like the one in the example, there is a high chance that
+the regression range given by automated tools will not include the CL that is
+the root cause of the failure. There are 2 possible approaches to take to fix
+the build. One is described below at "fixing the error" - typically these are 1
+line fixes, but do require a few steps to identify the exact fix. An
+alternative workaround is as follows:
+1. Note that the file that failed ("1 error in") is `personalization_app.ts`.
+   Find this file in the repo: in this case, it was at
+   `ash/webui/personalization_app/resources/js/personalization_app.ts`.
+2. Find the failed import in the repo (line 38, as noted by the bot failure).
+3. Use "Blame" in Chromium code search to find out what CL added this import
+   line.
+4. Either contact the CL owner or try reverting the CL that made the addition.
+
+### Fixing the error
+The [fix](https://chromium-review.googlesource.com/c/chromium/src/+/3952957)
+for this example was just 1 line and was identified as follows:
+
+1. Observe from this failure that the module that can't be found is
+   `chrome://resources/cr_components/color_change_listener/colors_css_updater.js`.
+2. Find `colors_css_updater.ts` in the repository at
+   `ui/webui/resources/cr_components/color_change_listener/colors_css_updater.ts`.
+3. Find the BUILD.gn file that compiles this TS file. The BUILD.gn file will in
+   most cases be in the same folder as the TS file or one of its ancestors. In
+   this case, it was
+   `ui/webui/resources/cr_components/color_change_listener/BUILD.gn`.
+4. Observe the target name for the `ts_library()` target that compiled the file
+   is `"build_ts"`, so the full target path is
+   `//ui/webui/resources/cr_components/color_change_listener:build_ts`.
+5. Observe that the file where the import failed is `personalization_app.ts`,
+   which is `ash/webui/personalization_app/resourcesjs/personalization_app.ts` in
+   the repo.
+6. Find the `ts_library` target that compiles `personalization_app.ts` at
+   `ash/webui/personalization_app/resources/BUILD.gn`.
+7. Observe that this target doesn't have the
+   `//ui/webui/resources/cr_components/color_change_listener:build_ts` target
+   listed in `deps`. Add the missing dependency there.
+
+Note that if `colors_css_updater.js` was actually checked into the repo as a
+JavaScript file, steps 3, 4, and 7 would be slightly different as follows:
+
+3. Find the BUILD.gn file that either copies or generates a
+   `colors_css_updater.d.ts`. Generally, this will contain a
+   `ts_definitions()` target, where the JS file is either passed as an input,
+   or a target copying the checked in definitions file is a dependency.
+4. Observe the name of the target - usually `"generate_definitions"`.
+7. Look for this target in the `extra_deps` of the `ts_library()` target that
+   depends on it. Add it to `extra_deps` if it's missing.
+
+### For developers - Prevent missing dependency build errors
+When adding a new import (e.g. `import {FooSharedClass} from 'chrome://resources/foo/foo_shared.js';`) to a TypeScript file in your project:
+1. If the file in the repo is TypeScript (e.g.
+   `ui/webui/resources/foo/foo_shared.ts`), find which `ts_library()` target
+   compiles this file.
+2. If, for example, `ui/webui/resources/foo/BUILD.gn` contains:
+   `ts_library("library")`, which has `foo_shared.ts` listed in its `in_files`,
+   then add `//ui/webui/resources/foo:library` to your `ts_library()` target's
+   deps as follows:
+
+```
+ts_library("build_ts") {
+  root_dir = my_root_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/foo:library", # This line is new
+  ]
+  in_files = my_project_ts_files
+}
+```
+
+Alternatively:
+1. If the file in the repo is JavaScript (i.e.
+   `ui/webui/resources/foo/foo_shared.js`), look for which `ts_definitions()`
+   target generates the corresponding `.d.ts` file or depends on a target
+   copying a manually checked in `foo_shared.d.ts` file.
+2. If, for example, `ui/webui/resources/foo/BUILD.gn` contains
+   `ts_definitions("generate_definitions")`, which lists `foo_shared.js` in
+   `js_files` or alternatively depends on `:copy_definitions` which copies
+   `foo_shared.d.ts`, then add `//ui/webui/resources/foo:generate_definitions`
+   to your `ts_library()` target's `extra_deps` as follows:
+
+```
+ts_library("build_ts") {
+  root_dir = my_root_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  deps = [ "//ui/webui/resources:library" ]
+
+  # This line is new
+  extra_deps = [ "//ui/webui/resources/foo:generate_definitions" ]
+
+  in_files = my_project_ts_files
+}
+```
+
+Note: If using the `build_webui()` wrapper rule, add the new dependency to
+`ts_deps` (for a TypeScript file) or `ts_extra_deps` (for a JavaScript file
+with definitions).
+
+Failure to follow these steps can lead to other developers hitting flaky build
+errors and/or having their unrelated CLs reverted by sheriffs who aren't always
+aware that the regression range given in automated tools may not contain the
+true culprit for TypeScript related build flakes.
 
 ## See also
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,15 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/strings/escape.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/base/escape.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_instance.h"
@@ -36,15 +38,83 @@
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_file_ref_api.h"
 #include "ppapi/thunk/ppb_file_system_api.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using ppapi::host::PpapiHost;
 using ppapi::host::ResourceHost;
 
 namespace content {
+
+namespace {
+
+void CallCreateDirectory(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL& url,
+    bool exclusive,
+    bool recursive,
+    storage::FileSystemOperationRunner::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  file_system_context->operation_runner()->CreateDirectory(
+      url, exclusive, recursive, std::move(callback));
+}
+
+void CallReadDirectory(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL& url,
+    const storage::FileSystemOperationRunner::ReadDirectoryCallback& callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  file_system_context->operation_runner()->ReadDirectory(url,
+                                                         std::move(callback));
+}
+
+void CallRemove(scoped_refptr<storage::FileSystemContext> file_system_context,
+                const storage::FileSystemURL& url,
+                bool recursive,
+                storage::FileSystemOperationRunner::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  file_system_context->operation_runner()->Remove(url, recursive,
+                                                  std::move(callback));
+}
+
+void CallTouchFile(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL& url,
+    const base::Time& last_access_time,
+    const base::Time& last_modified_time,
+    storage::FileSystemOperationRunner::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  file_system_context->operation_runner()->TouchFile(
+      url, last_access_time, last_modified_time, std::move(callback));
+}
+
+void CallMove(scoped_refptr<storage::FileSystemContext> file_system_context,
+              const storage::FileSystemURL& src_path,
+              const storage::FileSystemURL& dest_path,
+              storage::FileSystemOperationRunner::CopyOrMoveOptionSet options,
+              storage::FileSystemOperationRunner::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  file_system_context->operation_runner()->Move(
+      src_path, dest_path, options,
+      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      std::make_unique<storage::CopyOrMoveHookDelegate>(), std::move(callback));
+}
+
+void CallGetMetadata(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL& url,
+    int fields,
+    storage::FileSystemOperationRunner::GetMetadataCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  file_system_context->operation_runner()->GetMetadata(url, fields,
+                                                       std::move(callback));
+}
+
+}  // namespace
 
 PepperInternalFileRefBackend::PepperInternalFileRefBackend(
     PpapiHost* host,
@@ -64,11 +134,12 @@ PepperInternalFileRefBackend::~PepperInternalFileRefBackend() {}
 storage::FileSystemURL PepperInternalFileRefBackend::GetFileSystemURL() const {
   if (!fs_url_.is_valid() && fs_host_.get() && fs_host_->IsOpened()) {
     GURL fs_path =
-        fs_host_->GetRootUrl().Resolve(net::EscapePath(path_.substr(1)));
+        fs_host_->GetRootUrl().Resolve(base::EscapePath(path_.substr(1)));
     scoped_refptr<storage::FileSystemContext> fs_context =
         GetFileSystemContext();
     if (fs_context.get())
-      fs_url_ = fs_context->CrackURL(fs_path);
+      fs_url_ = fs_context->CrackURL(
+          fs_path, blink::StorageKey(url::Origin::Create(fs_path)));
   }
   return fs_url_;
 }
@@ -79,9 +150,8 @@ base::FilePath PepperInternalFileRefBackend::GetExternalFilePath() const {
 
 scoped_refptr<storage::FileSystemContext>
 PepperInternalFileRefBackend::GetFileSystemContext() const {
-  if (!fs_host_.get())
-    return nullptr;
-  return fs_host_->GetFileSystemContext();
+  return PepperFileSystemBrowserHost::GetFileSystemContextFromRenderId(
+      render_process_id_);
 }
 
 void PepperInternalFileRefBackend::DidFinish(
@@ -92,35 +162,95 @@ void PepperInternalFileRefBackend::DidFinish(
   host_->SendReply(context, msg);
 }
 
+void PepperInternalFileRefBackend::DidFinishOnIOThread(
+    base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+    ppapi::host::ReplyMessageContext reply_context,
+    const IPC::Message& msg,
+    base::File::Error error) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
+                                weak_ptr, reply_context, msg, error));
+}
+
+void PepperInternalFileRefBackend::ReadDirectoryCompleteOnIOThread(
+    base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+    ppapi::host::ReplyMessageContext reply_context,
+    storage::FileSystemOperation::FileEntryList* accumulated_file_list,
+    base::File::Error error,
+    storage::FileSystemOperation::FileEntryList file_list,
+    bool has_more) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Don't insert the last |file_list| since it'll be added in the post task
+  // below.
+  if (has_more) {
+    accumulated_file_list->insert(accumulated_file_list->end(),
+                                  file_list.begin(), file_list.end());
+    return;
+  }
+
+  // If there are no more, this callback will be deleted and with it
+  // |accumulated_file_list| so make a new copy.
+  auto* accumulated_file_list2 =
+      new storage::FileSystemOperation::FileEntryList;
+  accumulated_file_list2->swap(*accumulated_file_list);
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PepperInternalFileRefBackend::ReadDirectoryComplete,
+                     weak_ptr, reply_context,
+                     base::Owned(accumulated_file_list2), error, file_list,
+                     false));
+}
+
+void PepperInternalFileRefBackend::GetMetadataCompleteOnIOThread(
+    base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+    ppapi::host::ReplyMessageContext reply_context,
+    base::File::Error result,
+    const base::File::Info& file_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PepperInternalFileRefBackend::GetMetadataComplete,
+                     weak_ptr, reply_context, result, file_info));
+}
+
 int32_t PepperInternalFileRefBackend::MakeDirectory(
     ppapi::host::ReplyMessageContext reply_context,
     int32_t make_directory_flags) {
   if (!GetFileSystemURL().is_valid())
     return PP_ERROR_FAILED;
 
-  GetFileSystemContext()->operation_runner()->CreateDirectory(
-      GetFileSystemURL(),
-      !!(make_directory_flags & PP_MAKEDIRECTORYFLAG_EXCLUSIVE),
-      !!(make_directory_flags & PP_MAKEDIRECTORYFLAG_WITH_ANCESTORS),
-      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
-                     weak_factory_.GetWeakPtr(), reply_context,
-                     PpapiPluginMsg_FileRef_MakeDirectoryReply()));
+  bool exclusive = !!(make_directory_flags & PP_MAKEDIRECTORYFLAG_EXCLUSIVE);
+  bool recursive =
+      !!(make_directory_flags & PP_MAKEDIRECTORYFLAG_WITH_ANCESTORS);
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallCreateDirectory, GetFileSystemContext(), GetFileSystemURL(),
+          exclusive, recursive,
+          base::BindOnce(&PepperInternalFileRefBackend::DidFinishOnIOThread,
+                         weak_factory_.GetWeakPtr(), reply_context,
+                         PpapiPluginMsg_FileRef_MakeDirectoryReply())));
   return PP_OK_COMPLETIONPENDING;
 }
 
 int32_t PepperInternalFileRefBackend::Touch(
     ppapi::host::ReplyMessageContext reply_context,
-    PP_Time last_access_time,
-    PP_Time last_modified_time) {
+    PP_Time last_access_time_in,
+    PP_Time last_modified_time_in) {
   if (!GetFileSystemURL().is_valid())
     return PP_ERROR_FAILED;
 
-  GetFileSystemContext()->operation_runner()->TouchFile(
-      GetFileSystemURL(), ppapi::PPTimeToTime(last_access_time),
-      ppapi::PPTimeToTime(last_modified_time),
-      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
-                     weak_factory_.GetWeakPtr(), reply_context,
-                     PpapiPluginMsg_FileRef_TouchReply()));
+  base::Time last_access_time = ppapi::PPTimeToTime(last_access_time_in);
+  base::Time last_modified_time = ppapi::PPTimeToTime(last_modified_time_in);
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallTouchFile, GetFileSystemContext(), GetFileSystemURL(),
+          last_access_time, last_modified_time,
+          base::BindOnce(&PepperInternalFileRefBackend::DidFinishOnIOThread,
+                         weak_factory_.GetWeakPtr(), reply_context,
+                         PpapiPluginMsg_FileRef_TouchReply())));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -129,11 +259,13 @@ int32_t PepperInternalFileRefBackend::Delete(
   if (!GetFileSystemURL().is_valid())
     return PP_ERROR_FAILED;
 
-  GetFileSystemContext()->operation_runner()->Remove(
-      GetFileSystemURL(), false,
-      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
-                     weak_factory_.GetWeakPtr(), reply_context,
-                     PpapiPluginMsg_FileRef_DeleteReply()));
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallRemove, GetFileSystemContext(), GetFileSystemURL(), false,
+          base::BindOnce(&PepperInternalFileRefBackend::DidFinishOnIOThread,
+                         weak_factory_.GetWeakPtr(), reply_context,
+                         PpapiPluginMsg_FileRef_DeleteReply())));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -149,11 +281,17 @@ int32_t PepperInternalFileRefBackend::Rename(
   if (!new_url.IsInSameFileSystem(GetFileSystemURL()))
     return PP_ERROR_FAILED;
 
-  GetFileSystemContext()->operation_runner()->Move(
-      GetFileSystemURL(), new_url, storage::FileSystemOperation::OPTION_NONE,
-      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
-                     weak_factory_.GetWeakPtr(), reply_context,
-                     PpapiPluginMsg_FileRef_RenameReply()));
+  storage::FileSystemOperationRunner::CopyOrMoveOptionSet options =
+      storage::FileSystemOperation::CopyOrMoveOptionSet();
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallMove, GetFileSystemContext(), GetFileSystemURL(), new_url,
+          options,
+          base::BindOnce(&PepperInternalFileRefBackend::DidFinishOnIOThread,
+                         weak_factory_.GetWeakPtr(), reply_context,
+                         PpapiPluginMsg_FileRef_RenameReply())));
+
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -162,13 +300,16 @@ int32_t PepperInternalFileRefBackend::Query(
   if (!GetFileSystemURL().is_valid())
     return PP_ERROR_FAILED;
 
-  GetFileSystemContext()->operation_runner()->GetMetadata(
-      GetFileSystemURL(),
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
-      base::BindOnce(&PepperInternalFileRefBackend::GetMetadataComplete,
-                     weak_factory_.GetWeakPtr(), reply_context));
+  int fields = storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
+               storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
+               storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallGetMetadata, GetFileSystemContext(), GetFileSystemURL(), fields,
+          base::BindRepeating(
+              &PepperInternalFileRefBackend::GetMetadataCompleteOnIOThread,
+              weak_factory_.GetWeakPtr(), reply_context)));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -195,11 +336,14 @@ int32_t PepperInternalFileRefBackend::ReadDirectoryEntries(
 
   storage::FileSystemOperation::FileEntryList* accumulated_file_list =
       new storage::FileSystemOperation::FileEntryList;
-  GetFileSystemContext()->operation_runner()->ReadDirectory(
-      GetFileSystemURL(),
-      base::BindRepeating(&PepperInternalFileRefBackend::ReadDirectoryComplete,
-                          weak_factory_.GetWeakPtr(), reply_context,
-                          base::Owned(accumulated_file_list)));
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallReadDirectory, GetFileSystemContext(), GetFileSystemURL(),
+          base::BindRepeating(
+              &PepperInternalFileRefBackend::ReadDirectoryCompleteOnIOThread,
+              weak_factory_.GetWeakPtr(), reply_context,
+              base::Owned(accumulated_file_list))));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -209,8 +353,8 @@ void PepperInternalFileRefBackend::ReadDirectoryComplete(
     base::File::Error error,
     storage::FileSystemOperation::FileEntryList file_list,
     bool has_more) {
-  accumulated_file_list->insert(
-      accumulated_file_list->end(), file_list.begin(), file_list.end());
+  accumulated_file_list->insert(accumulated_file_list->end(), file_list.begin(),
+                                file_list.end());
   if (has_more)
     return;
 
@@ -239,9 +383,8 @@ void PepperInternalFileRefBackend::ReadDirectoryComplete(
     }
   }
 
-  host_->SendReply(
-      context,
-      PpapiPluginMsg_FileRef_ReadDirectoryEntriesReply(infos, file_types));
+  host_->SendReply(context, PpapiPluginMsg_FileRef_ReadDirectoryEntriesReply(
+                                infos, file_types));
 }
 
 int32_t PepperInternalFileRefBackend::GetAbsolutePath(

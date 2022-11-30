@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/ui/container_behavior.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/test/test_keyboard_controller_observer.h"
 #include "ash/session/session_controller_impl.h"
@@ -22,11 +22,11 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -121,12 +121,17 @@ class TestContainerBehavior : public keyboard::ContainerBehavior {
   gfx::Rect occluded_bounds_;
   gfx::Rect draggable_area_;
   gfx::Rect area_to_remain_on_screen_;
-  base::Optional<gfx::Rect> adjusted_bounds_in_screen_;
+  absl::optional<gfx::Rect> adjusted_bounds_in_screen_;
 };
 
 class KeyboardControllerImplTest : public AshTestBase {
  public:
   KeyboardControllerImplTest() = default;
+
+  KeyboardControllerImplTest(const KeyboardControllerImplTest&) = delete;
+  KeyboardControllerImplTest& operator=(const KeyboardControllerImplTest&) =
+      delete;
+
   ~KeyboardControllerImplTest() override = default;
 
   void SetUp() override {
@@ -197,9 +202,6 @@ class KeyboardControllerImplTest : public AshTestBase {
     EXPECT_EQ(test_observer()->config().spell_check, expected_value);
     EXPECT_EQ(test_observer()->config().voice_input, expected_value);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerImplTest);
 };
 
 }  // namespace
@@ -539,7 +541,7 @@ TEST_F(KeyboardControllerImplTest, OccludedBoundsInMultipleDisplays) {
 // Test for http://crbug.com/303429. |GetContainerForDisplay| should move
 // keyboard to specified display even when it's not touchable.
 TEST_F(KeyboardControllerImplTest, GetContainerForDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make primary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -569,7 +571,7 @@ TEST_F(KeyboardControllerImplTest, GetContainerForDisplay) {
 // no window is focused.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerInPrimaryDisplayWhenNoDisplayHasTouch) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   EXPECT_NE(display::Display::TouchSupport::AVAILABLE,
             GetPrimaryDisplay().touch_support());
@@ -585,7 +587,7 @@ TEST_F(KeyboardControllerImplTest,
 // move keyboard to focused display if no display has touch capability.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerIsInFocusedDisplayWhenNoDisplayHasTouch) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   EXPECT_NE(display::Display::TouchSupport::AVAILABLE,
             GetPrimaryDisplay().touch_support());
@@ -601,7 +603,7 @@ TEST_F(KeyboardControllerImplTest,
 // Test for http://crbug.com/303429. |GetContainerForDefaultDisplay| should
 // move keyboard to first touchable display when there is one.
 TEST_F(KeyboardControllerImplTest, DefaultContainerIsInFirstTouchableDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make secondary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -624,7 +626,7 @@ TEST_F(KeyboardControllerImplTest, DefaultContainerIsInFirstTouchableDisplay) {
 TEST_F(
     KeyboardControllerImplTest,
     DefaultContainerIsInFirstTouchableDisplayIfFocusedDisplayIsNotTouchable) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make secondary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -648,7 +650,7 @@ TEST_F(
 // move keyborad to first touchable display when there is one.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerIsInFocusedDisplayIfTouchable) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make both displays touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -678,7 +680,7 @@ TEST_F(KeyboardControllerImplTest,
 
 // Test for https://crbug.com/897007.
 TEST_F(KeyboardControllerImplTest, ShowKeyboardInSecondaryDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
 
@@ -707,7 +709,7 @@ TEST_F(KeyboardControllerImplTest, SwipeUpToShowHotSeat) {
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -80));
-  const base::TimeDelta time_delta = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta time_delta = base::Milliseconds(100);
   const int num_scroll_steps = 4;
   GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
                                              num_scroll_steps);
@@ -746,6 +748,28 @@ TEST_F(KeyboardControllerImplTest, FlingUpToShowOverviewMode) {
   ASSERT_TRUE(keyboard::WaitUntilHidden());
   EXPECT_EQ(HotseatState::kShownHomeLauncher,
             GetShelfLayoutManager()->hotseat_state());
+}
+
+TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start(display_bounds.bottom_center());
+  const gfx::Point end(start + gfx::Vector2d(0, -80));
+  const base::TimeDelta time_delta = base::Milliseconds(100);
+  const int num_scroll_steps = 4;
+  GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
+                                             num_scroll_steps);
+
+  EXPECT_FALSE(keyboard::IsKeyboardHiding());
 }
 
 }  // namespace ash

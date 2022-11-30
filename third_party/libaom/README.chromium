@@ -1,10 +1,10 @@
 Name: Alliance for Open Media Video Codec
 Short Name: libaom
 URL: https://aomedia.googlesource.com/aom/
-Version: 0
-Date: Tuesday March 16 2021
-Branch: master
-Commit: 79b775799699eb00b7d65e9b8892bde1094ae91e
+Version: 3.4.0
+Date: Friday October 07 2022
+Revision: 7f32eb35ff2589369f095388701e3dfc4d6a9381
+CPEPrefix: cpe:/a:aomedia:aomedia:3.4.0
 License: BSD
 License File: source/libaom/LICENSE
 Security Critical: yes
@@ -26,9 +26,22 @@ Please follow these steps to update libaom source code:
    Use the generated commit message for the roll.
 
 2. Generate the config files:
-    ./cmake_update.sh
-    # See prerequisites in file comments.
+     # See prerequisites in file comments.
+     ./cmake_update.sh
 
-  This will also update this file with the new revision.
+   This will also update this file with the new revision.
+   Update 'Version' and 'CPEPrefix' in this file if necessary.
 
-Local Modifications:
+3. Amend the commit created by the first step:
+
+     git commit -a --amend
+
+4. Upload the change to Gerrit:
+
+     git cl upload
+
+   Run tryjobs:
+
+     git cl try
+
+5. Send out for review when all tryjobs pass. Submit it when +1 is granted.

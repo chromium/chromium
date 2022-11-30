@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@ namespace media_router {
 
 CastSessionClient::CastSessionClient(const std::string& client_id,
                                      const url::Origin& origin,
-                                     int tab_id)
-    : client_id_(client_id), origin_(origin), tab_id_(tab_id) {}
+                                     int frame_tree_node_id)
+    : client_id_(client_id),
+      origin_(origin),
+      frame_tree_node_id_(frame_tree_node_id) {}
 
 CastSessionClient::~CastSessionClient() = default;
 

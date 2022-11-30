@@ -1,22 +1,22 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/base_paths.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/base_paths.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/string_response_provider.h"
 #import "ios/web/test/web_int_test.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/http/http_response_headers.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/http/http_response_headers.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -57,7 +57,7 @@ class HttpServerTest : public web::WebIntTest {
 };
 
 // Tests that a web::test::HttpServer can be started and can send and receive
-// requests and response from |TestResponseProvider|.
+// requests and response from `TestResponseProvider`.
 TEST_F(HttpServerTest, StartAndInterfaceWithResponseProvider) {
   __block NSString* page_result;
   id completion_handler =

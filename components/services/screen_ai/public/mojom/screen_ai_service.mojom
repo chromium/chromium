@@ -1,0 +1,65 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module screen_ai.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+
+// Main interface a client uses for Visual Annotation function of Screen AI
+// service. Each browser can have one AXScreenAIAnnotator which contains an
+// ScreenAIAnnotator.
+// All annotators of one browser profile use one ScreenAIService.
+interface ScreenAIAnnotator {
+  // Receives a snapshot, schedules image processing, and returns the ID of the
+  // child tree which would be created by the service upon successful
+  // completion of this request.
+  Annotate(skia.mojom.BitmapN32 image) =>
+    (ax.mojom.AXTreeID child_tree_id);
+};
+
+// This interface sends accessibility messages from the Screen AI Service to
+// `AXScreenAIAnnotator` in the browser process in non-ChromeOS or the extension
+// in ChromeOS.
+interface ScreenAIAnnotatorClient {
+  // Sent to inform about the creation of a new accessibility tree or an update
+  // to an existing one.
+  // TODO(https://crbug.com/1278249): Add
+  // HandleAXTreeUpdate(ax.mojom.AXTreeUpdate update);
+};
+
+// Main interface a client uses for Main Content Extraction function of Screen
+// AI service. Each RenderFrameImpl can have one AXTreeDistiller which contains
+// an Screen2xMainContentExtractor.
+// All interfaces of one browser profile use one ScreenAIService.
+interface Screen2xMainContentExtractor {
+  // Receives the accessibility tree, schedules processing, and returns the main
+  // content of the given tree.
+  // TODO(https://crbug.com/1278249): Add an interface for sending back the
+  // result.
+  ExtractMainContent(ax.mojom.AXTreeUpdate snapshot) =>
+    (array<int32> content_node_ids);
+};
+
+
+// The service runs in a sandboxed process to run Screen AI service library. The
+// library provides two AI modules:
+//   1) An image processing module to analyze snapshots of the browser or an
+//      image in a PDF and add more details to the accessibility tree.
+//   2) A text processing module that receives the accessibility tree and
+//      returns the main content of the tree.
+[ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
+interface ScreenAIService {
+  // Binds a new annotator to the service.
+  BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
+
+  // Binds a client to receive update messages for annotation service.
+  BindAnnotatorClient(pending_remote<ScreenAIAnnotatorClient> annotator_client);
+
+  // Binds a new main content extractor to the service.
+  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>
+    main_content_extractor);
+};

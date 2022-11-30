@@ -1,0 +1,23 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN hidden
+++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='1.'
+++++++++++++++++STATIC_TEXT label='1.'
+++++++++++++++++++UNKNOWN label='1.'
+++++++++++++++UNKNOWN label='2.'
+++++++++++++++++STATIC_TEXT label='2.'
+++++++++++++++++++UNKNOWN label='2.'
+++++++UNKNOWN focusable label='3. 4.'
+++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='3.'
+++++++++++++++++STATIC_TEXT label='3.'
+++++++++++++++++++UNKNOWN label='3.'
+++++++++++++++UNKNOWN label='4.'
+++++++++++++++++STATIC_TEXT label='4.'
+++++++++++++++++++UNKNOWN label='4.'

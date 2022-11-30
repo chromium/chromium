@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
@@ -47,6 +48,9 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
   // Extract color info from a InterpolableValue-result, the input value must be
   // a InterpolableList.
   static Color GetRGBA(const InterpolableValue&);
+
+  // Determines if an interpolation values represents an RGBA color value.
+  static bool IsRGBA(const InterpolableValue&);
 
  private:
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,

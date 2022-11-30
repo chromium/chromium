@@ -1,0 +1,28 @@
+caption: Allow usage of <ph name="LACROS_NAME">Lacros</ph>
+default: false
+default_for_enterprise_users: false
+deprecated: true
+desc: |-
+  This setting is deprecated. Use <ph name="LACROS_AVAILABILITY_POLICY_NAME">LacrosAvailability</ph> instead.
+
+        If this policy is set to Disabled or unset, the user cannot use <ph name="LACROS_NAME">Lacros</ph>.
+
+        If this policy is set to Enabled, the user can use the <ph name="LACROS_NAME">Lacros</ph> browser.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Allow users to use the <ph name="LACROS_NAME">Lacros</ph> browser
+  value: true
+- caption: Prevent users from using the <ph name="LACROS_NAME">Lacros</ph> browser
+  value: false
+owners:
+- igorcov@chromium.org
+- okalitova@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:88-95
+tags: []
+type: main

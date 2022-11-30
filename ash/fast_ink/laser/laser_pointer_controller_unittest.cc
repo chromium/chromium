@@ -1,14 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/fast_ink/laser/laser_pointer_controller_test_api.h"
 #include "ash/fast_ink/laser/laser_pointer_view.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -330,6 +333,61 @@ TEST_F(LaserPointerControllerTest, MouseCursorState) {
   event_generator->MoveMouseTo(gfx::Point(7, 7));
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
+}
+
+// Base class for tests that rely on palette.
+class LaserPointerControllerTestWithPalette
+    : public LaserPointerControllerTest {
+ public:
+  LaserPointerControllerTestWithPalette() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kAshEnablePaletteOnAllDisplays);
+    stylus_utils::SetHasStylusInputForTesting();
+  }
+  LaserPointerControllerTestWithPalette(
+      const LaserPointerControllerTestWithPalette&) = delete;
+  LaserPointerControllerTestWithPalette& operator=(
+      const LaserPointerControllerTestWithPalette&) = delete;
+  ~LaserPointerControllerTestWithPalette() override = default;
+};
+
+// Verify that clicking a palette with the laser pointer does not
+// cause the laser to show.
+TEST_F(LaserPointerControllerTestWithPalette, LaserPointerPaletteDisable) {
+  // Make the two displays different size to catch root coordinates
+  // being used as screen coordinates.
+  UpdateDisplay("800x600,1024x768");
+
+  std::vector<display::Display> testcases{
+      GetPrimaryDisplay(),
+      GetSecondaryDisplay(),
+  };
+
+  for (std::size_t i = 0; i < testcases.size(); i++) {
+    display::Display display = testcases[i];
+    PaletteTray* palette =
+        controller_test_api_->GetPaletteTrayOnDisplay(display.id());
+    ASSERT_TRUE(palette) << "While processing testcase " << i;
+
+    // The laser pointer mode only works with stylus.
+    ui::test::EventGenerator* event_generator = GetEventGenerator();
+    event_generator->EnterPenPointerMode();
+
+    // Palette does not appear until a stylus is seen for the first time.
+    event_generator->PressMoveAndReleaseTouchTo(display.bounds().CenterPoint());
+    gfx::Point center = palette->GetBoundsInScreen().CenterPoint();
+
+    // Tap the laser pointer both on and off of the palette.
+    controller_test_api_->SetEnabled(true);
+    event_generator->PressTouch(center);
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer())
+        << "While processing testcase " << i;
+    event_generator->ReleaseTouch();
+    event_generator->PressTouch(display.bounds().CenterPoint());
+    EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer())
+        << "While processing testcase " << i;
+    event_generator->ReleaseTouch();
+  }
 }
 
 }  // namespace ash

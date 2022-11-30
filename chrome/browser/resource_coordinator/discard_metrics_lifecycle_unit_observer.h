@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 
@@ -19,6 +18,12 @@ using ::mojom::LifecycleUnitState;
 class DiscardMetricsLifecycleUnitObserver : public LifecycleUnitObserver {
  public:
   DiscardMetricsLifecycleUnitObserver();
+
+  DiscardMetricsLifecycleUnitObserver(
+      const DiscardMetricsLifecycleUnitObserver&) = delete;
+  DiscardMetricsLifecycleUnitObserver& operator=(
+      const DiscardMetricsLifecycleUnitObserver&) = delete;
+
   ~DiscardMetricsLifecycleUnitObserver() override;
 
   // LifecycleUnitObserver:
@@ -50,8 +55,6 @@ class DiscardMetricsLifecycleUnitObserver : public LifecycleUnitObserver {
   // The last time at which the LifecycleUnit was reloaded after being
   // discarded.
   base::TimeTicks reload_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardMetricsLifecycleUnitObserver);
 };
 
 }  // namespace resource_coordinator

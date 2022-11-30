@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 
@@ -37,8 +36,10 @@ class CC_EXPORT EventsMetricsManager {
     using DoneCallback =
         base::OnceCallback<std::unique_ptr<EventMetrics>(bool handled)>;
 
-    ScopedMonitor() = default;
-    virtual ~ScopedMonitor() = 0;
+    ScopedMonitor();
+    virtual ~ScopedMonitor();
+
+    virtual void SetSaveMetrics() = 0;
 
     ScopedMonitor(const ScopedMonitor&) = delete;
     ScopedMonitor& operator=(const ScopedMonitor&) = delete;

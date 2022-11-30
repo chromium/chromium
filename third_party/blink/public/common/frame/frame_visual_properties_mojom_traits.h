@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_VISUAL_PROPERTIES_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_VISUAL_PROPERTIES_MOJOM_TRAITS_H_
 
+#include "base/check_op.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/frame_visual_properties.mojom-shared.h"
@@ -15,9 +17,9 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FrameVisualPropertiesDataView,
                  blink::FrameVisualProperties> {
-  static const blink::ScreenInfo& screen_info(
+  static const display::ScreenInfos& screen_infos(
       const blink::FrameVisualProperties& r) {
-    return r.screen_info;
+    return r.screen_infos;
   }
 
   static bool auto_resize_enabled(const blink::FrameVisualProperties& r) {
@@ -73,9 +75,9 @@ struct BLINK_COMMON_EXPORT
     return r.compositor_viewport;
   }
 
-  static const gfx::Rect& screen_space_rect(
+  static const gfx::Rect& rect_in_local_root(
       const blink::FrameVisualProperties& r) {
-    return r.screen_space_rect;
+    return r.rect_in_local_root;
   }
 
   static const gfx::Size& local_frame_size(
@@ -83,7 +85,7 @@ struct BLINK_COMMON_EXPORT
     return r.local_frame_size;
   }
 
-  static base::Optional<viz::LocalSurfaceId> local_surface_id(
+  static const viz::LocalSurfaceId& local_surface_id(
       const blink::FrameVisualProperties& r) {
     return r.local_surface_id;
   }

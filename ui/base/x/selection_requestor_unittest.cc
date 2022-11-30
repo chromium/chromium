@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,15 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/x/selection_utils.h"
+#include "ui/base/x/x11_clipboard_helper.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/x11_atom_cache.h"
@@ -28,6 +28,9 @@ namespace ui {
 class SelectionRequestorTest : public testing::Test {
  public:
   explicit SelectionRequestorTest() : connection_(x11::Connection::Get()) {}
+
+  SelectionRequestorTest(const SelectionRequestorTest&) = delete;
+  SelectionRequestorTest& operator=(const SelectionRequestorTest&) = delete;
 
   ~SelectionRequestorTest() override = default;
 
@@ -53,31 +56,27 @@ class SelectionRequestorTest : public testing::Test {
   void SetUp() override {
     // Create a window for the selection requestor to use.
     x_window_ = x11::CreateDummyWindow();
-
-    event_source_ = PlatformEventSource::CreateDefault();
-    CHECK(PlatformEventSource::GetInstance());
-    requestor_ = std::make_unique<SelectionRequestor>(x_window_, nullptr);
+    helper_ = std::make_unique<XClipboardHelper>(
+        base::BindRepeating([](ClipboardBuffer buffer) {}));
+    requestor_ = helper_->GetSelectionRequestorForTest();
   }
 
   void TearDown() override {
-    requestor_.reset();
-    event_source_.reset();
+    helper_.reset();
+    requestor_ = nullptr;
     connection_->DestroyWindow({x_window_});
   }
 
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
 
   // |requestor_|'s window.
   x11::Window x_window_ = x11::Window::None;
 
-  std::unique_ptr<PlatformEventSource> event_source_;
-  std::unique_ptr<SelectionRequestor> requestor_;
+  std::unique_ptr<XClipboardHelper> helper_;
+  raw_ptr<SelectionRequestor> requestor_ = nullptr;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectionRequestorTest);
 };
 
 namespace {
@@ -113,7 +112,7 @@ TEST_F(SelectionRequestorTest, DISABLED_NestedRequests) {
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PerformBlockingConvertSelection,
-                                base::Unretained(requestor_.get()), selection,
+                                base::Unretained(requestor_), selection,
                                 target2, "Data2"));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -123,8 +122,7 @@ TEST_F(SelectionRequestorTest, DISABLED_NestedRequests) {
       FROM_HERE,
       base::BindOnce(&SelectionRequestorTest::SendSelectionNotify,
                      base::Unretained(this), selection, target2, "Data2"));
-  PerformBlockingConvertSelection(requestor_.get(), selection, target1,
-                                  "Data1");
+  PerformBlockingConvertSelection(requestor_, selection, target1, "Data1");
 }
 
 }  // namespace ui

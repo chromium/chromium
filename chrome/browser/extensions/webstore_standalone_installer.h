@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,16 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/browser/extensions/webstore_installer.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -41,7 +44,8 @@ class WebstoreStandaloneInstaller
     : public base::RefCountedThreadSafe<WebstoreStandaloneInstaller>,
       public WebstoreDataFetcherDelegate,
       public WebstoreInstaller::Delegate,
-      public WebstoreInstallHelper::Delegate {
+      public WebstoreInstallHelper::Delegate,
+      public ProfileObserver {
  public:
   // A callback for when the install process completes, successfully or not. If
   // there was a failure, |success| will be false and |error| may contain a
@@ -53,6 +57,11 @@ class WebstoreStandaloneInstaller
   WebstoreStandaloneInstaller(const std::string& webstore_item_id,
                               Profile* profile,
                               Callback callback);
+
+  WebstoreStandaloneInstaller(const WebstoreStandaloneInstaller&) = delete;
+  WebstoreStandaloneInstaller& operator=(const WebstoreStandaloneInstaller&) =
+      delete;
+
   void BeginInstall();
 
  protected:
@@ -125,7 +134,8 @@ class WebstoreStandaloneInstaller
   virtual std::unique_ptr<WebstoreInstaller::Approval> CreateApproval() const;
 
   // Called once the install prompt has finished.
-  virtual void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  virtual void OnInstallPromptDone(
+      ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   // Accessors to be used by subclasses.
   bool show_user_count() const { return show_user_count_; }
@@ -189,14 +199,23 @@ class WebstoreStandaloneInstaller
       const std::string& error,
       WebstoreInstaller::FailureReason reason) override;
 
+  // ProfileObserver
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   void ShowInstallUI();
   void OnWebStoreDataFetcherDone();
+
+  // Called when install either completes or aborts to clean up internal
+  // state and release the added reference from BeginInstall.
+  void CleanUp();
 
   // Input configuration.
   std::string id_;
   Callback callback_;
-  Profile* profile_;
-  WebstoreInstaller::InstallSource install_source_;
+  raw_ptr<Profile> profile_;
+  base::ScopedObservation<Profile, ProfileObserver> observation_{this};
+  WebstoreInstaller::InstallSource install_source_{
+      WebstoreInstaller::INSTALL_SOURCE_INLINE};
 
   // Installation dialog and its underlying prompt.
   std::unique_ptr<ExtensionInstallPrompt> install_ui_;
@@ -208,10 +227,10 @@ class WebstoreStandaloneInstaller
   // Extracted from the webstore JSON data response.
   std::string localized_name_;
   std::string localized_description_;
-  bool show_user_count_;
+  bool show_user_count_{true};
   std::string localized_user_count_;
-  double average_rating_;
-  int rating_count_;
+  double average_rating_{0.0};
+  int rating_count_{0};
   std::unique_ptr<base::DictionaryValue> webstore_data_;
   std::unique_ptr<base::DictionaryValue> manifest_;
   SkBitmap icon_;
@@ -222,8 +241,6 @@ class WebstoreStandaloneInstaller
   // Created by ShowInstallUI() when a prompt is shown (if
   // the implementor returns a non-NULL in CreateInstallPrompt()).
   scoped_refptr<Extension> localized_extension_for_display_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebstoreStandaloneInstaller);
 };
 
 }  // namespace extensions

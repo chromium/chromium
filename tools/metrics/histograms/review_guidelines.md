@@ -21,7 +21,7 @@ During code review ensure the following -
 
 *   If generating multiple histograms programmatically or defining common set of
     histogram, guide them to use
-    [histogram-suffixes](https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/master/metrics/histograms/README.md#Histogram-Suffixes).
+    [histogram-suffixes](https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#Histogram-Suffixes).
 
 *   Verify that expires_after is reasonable. CL author should be able to justify
     it. See guidance at on

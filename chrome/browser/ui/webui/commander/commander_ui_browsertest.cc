@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,9 +107,9 @@ IN_PROC_BROWSER_TEST_F(CommanderUITest, Dismiss) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommanderUITest, HeightChanged) {
-  EXPECT_EQ(height_changed_invocations().size(), 0u);
+  size_t calls = height_changed_invocations().size();
   ExecuteJS("chrome.send('heightChanged', [42])");
-  ASSERT_EQ(height_changed_invocations().size(), 1u);
+  ASSERT_EQ(height_changed_invocations().size(), calls + 1);
   ASSERT_EQ(height_changed_invocations().back(), 42);
 }
 

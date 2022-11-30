@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ std::string VideoDecodeAccelerator::Config::AsHumanReadableString() const {
 }
 
 void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
-    Status status) {
+    DecoderStatus status) {
   NOTREACHED() << "By default deferred initialization is not supported.";
 }
 

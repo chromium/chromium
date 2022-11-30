@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,9 @@
 #define CHROME_SERVICES_SPEECH_CROS_SPEECH_RECOGNITION_RECOGNIZER_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/services/speech/cloud_speech_recognition_client.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,8 +29,7 @@ class CrosSpeechRecognitionRecognizerImpl
   CrosSpeechRecognitionRecognizerImpl(
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
-      base::WeakPtr<SpeechRecognitionServiceImpl>
-          speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
   ~CrosSpeechRecognitionRecognizerImpl() override;
@@ -41,26 +38,19 @@ class CrosSpeechRecognitionRecognizerImpl
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
-      base::WeakPtr<SpeechRecognitionServiceImpl>
-          speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
 
-  OnRecognitionEventCallback recognition_event_callback() const {
-    return recognition_event_callback_;
-  }
   // SpeechRecognitionRecognizerImpl:
   void SendAudioToSpeechRecognitionServiceInternal(
       media::mojom::AudioDataS16Ptr buffer) override;
 
+  void MarkDone() override;
+
  private:
   std::unique_ptr<soda::CrosSodaClient> cros_soda_client_;
-  // The callback that is eventually executed on a speech recognition event
-  // which passes the transcribed audio back to the caller via the speech
-  // recognition event client remote.
-  OnRecognitionEventCallback recognition_event_callback_;
 
-  const bool enable_soda_;
   const base::FilePath binary_path_, languagepack_path_;
 
   base::WeakPtrFactory<CrosSpeechRecognitionRecognizerImpl> weak_factory_{this};

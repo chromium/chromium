@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 
 #include <memory>
 #include <unordered_map>
-
-#include "base/macros.h"
 
 namespace content {
 class WebContents;
@@ -24,6 +22,10 @@ class CastDevToolsManagerDelegate;
 class RemoteDebuggingServer {
  public:
   explicit RemoteDebuggingServer(bool start_immediately);
+
+  RemoteDebuggingServer(const RemoteDebuggingServer&) = delete;
+  RemoteDebuggingServer& operator=(const RemoteDebuggingServer&) = delete;
+
   ~RemoteDebuggingServer();
 
   // Allows this WebContents to be debugged.
@@ -43,8 +45,6 @@ class RemoteDebuggingServer {
       observers_;
   uint16_t port_;
   bool is_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDebuggingServer);
 };
 
 }  // namespace shell

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,12 @@ void SetEventCountForDay(Event* event, uint32_t day, uint32_t count) {
   Event_Count* event_count = event->add_events();
   event_count->set_day(day);
   event_count->set_count(count);
+}
+
+void SetSnoozeCountForDay(Event* event, uint32_t day, uint32_t count) {
+  Event_Count* event_count = event->add_events();
+  event_count->set_day(day);
+  event_count->set_snooze_count(count);
 }
 
 void VerifyEventCount(const Event* event, uint32_t day, uint32_t count) {

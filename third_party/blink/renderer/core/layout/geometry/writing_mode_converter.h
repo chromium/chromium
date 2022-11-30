@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,12 @@ class CORE_EXPORT WritingModeConverter {
   WritingModeConverter(WritingDirectionMode writing_direction,
                        const PhysicalSize& outer_size)
       : writing_direction_(writing_direction), outer_size_(outer_size) {}
+
+  WritingModeConverter(WritingDirectionMode writing_direction,
+                       const LogicalSize& outer_size)
+      : writing_direction_(writing_direction),
+        outer_size_(
+            ToPhysicalSize(outer_size, writing_direction.GetWritingMode())) {}
 
   // Construct without |outer_size|. Caller should call |SetOuterSize| before
   // conversions.

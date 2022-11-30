@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,20 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <unistd.h>
+
 #include <queue>
 
 #include "base/bind.h"
 #include "base/bits.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/base/video_frame.h"
 
+#ifndef KERNEL_VERSION
 #define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + (c))
+#endif
 
 namespace media {
 
@@ -27,6 +31,8 @@ static const int kErrorReturnValue = -1;
 static const uint32_t kMaxBufferCount = 5;
 static const int kDefaultWidth = 640;
 static const int kDefaultHeight = 480;
+static const unsigned int kMaxWidth = 3840;
+static const unsigned int kMaxHeight = 2160;
 
 // 20 fps.
 static const int kDefaultFrameInternvalNumerator = 50;
@@ -34,7 +40,7 @@ static const int kDefaultFrameInternvalDenominator = 1000;
 
 __u32 RoundUpToMultipleOfPageSize(__u32 size) {
   CHECK(base::bits::IsPowerOfTwo(getpagesize()));
-  return base::bits::Align(size, getpagesize());
+  return base::bits::AlignUp(size, base::checked_cast<__u32>(getpagesize()));
 }
 
 struct FakeV4L2Buffer {
@@ -76,16 +82,15 @@ class FakeV4L2Impl::OpenedDevice {
     timeperframe_.denominator = kDefaultFrameInternvalDenominator;
   }
 
+  ~OpenedDevice() { DCHECK(!frame_production_thread_.IsRunning()); }
+
   const std::string& device_id() const { return config_.descriptor.device_id; }
 
   int open_flags() const { return open_flags_; }
 
   FakeV4L2Buffer* LookupBufferFromOffset(off_t offset) {
     auto buffer_iter =
-        std::find_if(device_buffers_.begin(), device_buffers_.end(),
-                     [offset](const FakeV4L2Buffer& buffer) {
-                       return buffer.offset == offset;
-                     });
+        base::ranges::find(device_buffers_, offset, &FakeV4L2Buffer::offset);
     if (buffer_iter == device_buffers_.end())
       return nullptr;
     return &(*buffer_iter);
@@ -99,7 +104,7 @@ class FakeV4L2Impl::OpenedDevice {
       }
     }
     return wait_for_outgoing_queue_event_.TimedWait(
-        base::TimeDelta::FromMilliseconds(timeout_in_milliseconds));
+        base::Milliseconds(timeout_in_milliseconds));
   }
 
   int enum_fmt(v4l2_fmtdesc* fmtdesc) {
@@ -160,8 +165,11 @@ class FakeV4L2Impl::OpenedDevice {
   }
 
   int s_fmt(v4l2_format* format) {
-    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
+    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
+        format->fmt.pix.width > kMaxWidth ||
+        format->fmt.pix.height > kMaxHeight) {
       return EINVAL;
+    }
     v4l2_pix_format& pix_format = format->fmt.pix;
     // We only support YUV420 output for now. Tell this to the client by
     // overwriting whatever format it requested.
@@ -338,7 +346,7 @@ class FakeV4L2Impl::OpenedDevice {
       // Sleep for a bit.
       // We ignore the requested frame rate here, and just sleep for a fixed
       // duration.
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+      base::PlatformThread::Sleep(base::Milliseconds(100));
     }
   }
 
@@ -380,10 +388,16 @@ FakeV4L2Impl::~FakeV4L2Impl() = default;
 
 void FakeV4L2Impl::AddDevice(const std::string& device_name,
                              const FakeV4L2DeviceConfig& config) {
+  base::AutoLock lock(lock_);
   device_configs_.emplace(device_name, config);
 }
 
 int FakeV4L2Impl::open(const char* device_name, int flags) {
+  if (!device_name)
+    return kInvalidId;
+
+  base::AutoLock lock(lock_);
+
   std::string device_name_as_string(device_name);
   auto device_configs_iter = device_configs_.find(device_name_as_string);
   if (device_configs_iter == device_configs_.end())
@@ -403,6 +417,7 @@ int FakeV4L2Impl::open(const char* device_name, int flags) {
 }
 
 int FakeV4L2Impl::close(int fd) {
+  base::AutoLock lock(lock_);
   auto device_iter = opened_devices_.find(fd);
   if (device_iter == opened_devices_.end())
     return kErrorReturnValue;
@@ -412,12 +427,13 @@ int FakeV4L2Impl::close(int fd) {
 }
 
 int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
+  base::AutoLock lock(lock_);
   auto device_iter = opened_devices_.find(fd);
   if (device_iter == opened_devices_.end())
     return EBADF;
   auto* opened_device = device_iter->second.get();
 
-  switch (request) {
+  switch (static_cast<uint32_t>(request)) {
     case VIDIOC_ENUM_FMT:
       return opened_device->enum_fmt(reinterpret_cast<v4l2_fmtdesc*>(argp));
     case VIDIOC_QUERYCAP:
@@ -518,6 +534,7 @@ void* FakeV4L2Impl::mmap(void* /*start*/,
                          int flags,
                          int fd,
                          off_t offset) {
+  base::AutoLock lock(lock_);
   if (flags & MAP_FIXED) {
     errno = EINVAL;
     return MAP_FAILED;
@@ -543,10 +560,12 @@ void* FakeV4L2Impl::mmap(void* /*start*/,
 }
 
 int FakeV4L2Impl::munmap(void* start, size_t length) {
+  base::AutoLock lock(lock_);
   return kSuccessReturnValue;
 }
 
 int FakeV4L2Impl::poll(struct pollfd* ufds, unsigned int nfds, int timeout) {
+  base::AutoLock lock(lock_);
   if (nfds != 1) {
     // We only support polling of a single device.
     errno = EINVAL;

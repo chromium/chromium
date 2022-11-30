@@ -49,15 +49,13 @@ rootWebArea
 ++++++menuItemRadio expanded
 ++++++meter
 ++++++navigation
-++++++none
 ++++++note
 ++++++listBoxOption
 ++++++paragraph
-++++++presentational
 ++++++progressIndicator
 ++++++radioButton
 ++++++radioGroup
-++++++region
+++++++region name='Name required for region'
 ++++++scrollBar
 ++++++search
 ++++++searchBox
@@ -67,8 +65,8 @@ rootWebArea
 ++++++spinButton
 ++++++status
 ++++++strong
-++++++genericContainer
-++++++genericContainer
+++++++subscript
+++++++superscript
 ++++++switch expanded
 ++++++tab expanded
 ++++++table

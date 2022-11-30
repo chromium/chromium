@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,6 @@ import static org.chromium.chrome.browser.password_manager.PasswordManagerDialog
 import static org.chromium.chrome.browser.password_manager.PasswordManagerDialogProperties.TITLE;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -21,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.password_manager.PasswordManagerDialogContents.BoldRange;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -37,11 +32,10 @@ public class PasswordManagerDialogCoordinator {
     private PropertyModel mModel;
 
     public PasswordManagerDialogCoordinator(ModalDialogManager modalDialogManager,
-            View androidContentView, BrowserControlsStateProvider browserControlsStateProvider,
-            int containerHeightResource) {
+            View androidContentView, BrowserControlsStateProvider browserControlsStateProvider) {
         mMediator = new PasswordManagerDialogMediator(
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS), modalDialogManager,
-                androidContentView, browserControlsStateProvider, containerHeightResource);
+                androidContentView, browserControlsStateProvider);
     }
 
     public void initialize(Context context, PasswordManagerDialogContents contents) {
@@ -66,21 +60,10 @@ public class PasswordManagerDialogCoordinator {
     private PropertyModel buildModel(PasswordManagerDialogContents contents) {
         return PasswordManagerDialogProperties.defaultModelBuilder()
                 .with(TITLE, contents.getTitle())
-                .with(DETAILS,
-                        addBoldSpanToDetails(contents.getDetails(), contents.getBoldRanges()))
+                .with(DETAILS, contents.getDetails())
                 .with(ILLUSTRATION, contents.getIllustrationId())
                 .with(HELP_BUTTON_CALLBACK, contents.getHelpButtonCallback())
                 .build();
-    }
-
-    private SpannableString addBoldSpanToDetails(String details, BoldRange[] boldRanges) {
-        SpannableString spannableDetails = new SpannableString(details);
-        for (BoldRange boldRange : boldRanges) {
-            StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
-            spannableDetails.setSpan(
-                    boldSpan, boldRange.start, boldRange.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        }
-        return spannableDetails;
     }
 
     @VisibleForTesting

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,24 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace updater {
 
 TEST(PersistedDataTest, Simple) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(pref.get());
 
   EXPECT_FALSE(metadata->GetProductVersion("someappid").IsValid());
@@ -43,6 +50,13 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_TRUE(base::Contains(app_ids, "someappid"));
   EXPECT_TRUE(base::Contains(app_ids, "appid1"));
   EXPECT_FALSE(base::Contains(app_ids, "appid2-nopv"));  // No valid pv.
+
+  const base::Time time1 = base::Time::FromJsTime(10000);
+  metadata->SetLastChecked(time1);
+  EXPECT_EQ(metadata->GetLastChecked(), time1);
+  const base::Time time2 = base::Time::FromJsTime(20000);
+  metadata->SetLastStarted(time2);
+  EXPECT_EQ(metadata->GetLastStarted(), time2);
 }
 
 TEST(PersistedDataTest, RegistrationRequest) {
@@ -53,7 +67,7 @@ TEST(PersistedDataTest, RegistrationRequest) {
   RegistrationRequest data;
   data.app_id = "someappid";
   data.brand_code = "somebrand";
-  data.tag = "arandom-tag=likethis";
+  data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
@@ -64,7 +78,7 @@ TEST(PersistedDataTest, RegistrationRequest) {
                metadata->GetProductVersion("someappid").GetString().c_str());
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath("someappid").value());
-  EXPECT_STREQ("arandom-tag=likethis", metadata->GetTag("someappid").c_str());
+  EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
 }
 
@@ -92,7 +106,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   RegistrationRequest data;
   data.app_id = "someappid";
   data.brand_code = "somebrand";
-  data.tag = "arandom-tag=likethis";
+  data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
@@ -101,7 +115,7 @@ TEST(PersistedDataTest, RemoveAppId) {
 
   data.app_id = "someappid2";
   data.brand_code = "somebrand";
-  data.tag = "arandom-tag=likethis";
+  data.ap = "arandom-ap=likethis";
   data.version = base::Version("2.0");
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
@@ -115,5 +129,38 @@ TEST(PersistedDataTest, RemoveAppId) {
   metadata->RemoveApp("someappid2");
   EXPECT_TRUE(metadata->GetAppIds().empty());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST(PersistedDataTest, LastOSVersion) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(pref.get());
+
+  EXPECT_EQ(metadata->GetLastOSVersion(), absl::nullopt);
+
+  // This will persist the current OS version into the persisted data.
+  metadata->SetLastOSVersion();
+  EXPECT_NE(metadata->GetLastOSVersion(), absl::nullopt);
+
+  // Compare the persisted data OS version to the version from `::GetVersionEx`.
+  const OSVERSIONINFOEX metadata_os = metadata->GetLastOSVersion().value();
+
+  OSVERSIONINFOEX os = {};
+  os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  EXPECT_TRUE(::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&os)));
+
+  EXPECT_EQ(metadata_os.dwOSVersionInfoSize, os.dwOSVersionInfoSize);
+  EXPECT_EQ(metadata_os.dwMajorVersion, os.dwMajorVersion);
+  EXPECT_EQ(metadata_os.dwMinorVersion, os.dwMinorVersion);
+  EXPECT_EQ(metadata_os.dwBuildNumber, os.dwBuildNumber);
+  EXPECT_EQ(metadata_os.dwPlatformId, os.dwPlatformId);
+  EXPECT_STREQ(metadata_os.szCSDVersion, os.szCSDVersion);
+  EXPECT_EQ(metadata_os.wServicePackMajor, os.wServicePackMajor);
+  EXPECT_EQ(metadata_os.wServicePackMinor, os.wServicePackMinor);
+  EXPECT_EQ(metadata_os.wSuiteMask, os.wSuiteMask);
+  EXPECT_EQ(metadata_os.wProductType, os.wProductType);
+}
+#endif
 
 }  // namespace updater

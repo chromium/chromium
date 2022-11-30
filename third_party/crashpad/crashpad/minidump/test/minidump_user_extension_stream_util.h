@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,13 +38,16 @@ class BufferExtensionStreamDataSource final
                                   const void* data,
                                   size_t data_size);
 
+  BufferExtensionStreamDataSource(const BufferExtensionStreamDataSource&) =
+      delete;
+  BufferExtensionStreamDataSource& operator=(
+      const BufferExtensionStreamDataSource&) = delete;
+
   size_t StreamDataSize() override;
   bool ReadStreamData(Delegate* delegate) override;
 
  private:
   std::vector<uint8_t> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferExtensionStreamDataSource);
 };
 
 }  // namespace test

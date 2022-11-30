@@ -12,8 +12,6 @@ promise_test(async (t) => {
     let gamepads = navigator.getGamepads();
     assert_equals(gamepads.length, 4, 'gamepads.length');
     assert_equals(gamepads[0], null, 'gamepads[0]');
-    assert_class_string(gamepads.item, 'Function', 'gamepads.item');
-    assert_equals(gamepads.item(0), null, 'gamepads.item(0)');
 
     let connectPromise = ongamepadconnected(t);
     gamepadController.connect(0);

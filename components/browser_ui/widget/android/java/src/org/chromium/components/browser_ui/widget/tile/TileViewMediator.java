@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.components.browser_ui.widget.tile;
@@ -65,6 +65,20 @@ class TileViewMediator {
      */
     void setShowLargeIcon(boolean showLargeIcon) {
         mModel.set(TileViewProperties.SHOW_LARGE_ICON, showLargeIcon);
+    }
+
+    /**
+     * Set the rounding radius of the embedded icon.
+     * The supplied radius value is clipped at half the smaller of the (width, height) dimensions,
+     * so that supplying an exceptionally large value will always guarantee the view to be round.
+     *
+     * Radius is only applied when displaying small icons. Large icons are implicitly rounded to
+     * fill in the view.
+     *
+     * @param roundingRadiusPx Rounding radius (in pixels), or 0 to disable rounding.
+     */
+    public void setSmallIconRoundingRadiusPx(int roundingRadiusPx) {
+        mModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS, roundingRadiusPx);
     }
 
     /**

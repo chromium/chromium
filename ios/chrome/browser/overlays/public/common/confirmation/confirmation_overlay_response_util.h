@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 
 // Utility function for creating a ResponseConverter that returns a
-// ConfirmationOverlayResponse.  |confirm_button_index| is the button index of
+// ConfirmationOverlayResponse.  `confirm_button_index` is the button index of
 // an AlertRequest's button configs that corresponds with a confirm action.
 alert_overlays::ResponseConverter GetConfirmationResponseConverter(
     size_t confirm_button_index);

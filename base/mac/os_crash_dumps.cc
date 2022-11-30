@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 #include <unistd.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace {
 
@@ -42,7 +40,7 @@ void DisableOSCrashDumps() {
   };
 
   // For all these signals, just wire things up so we exit immediately.
-  for (size_t i = 0; i < base::size(signals_to_intercept); ++i) {
+  for (size_t i = 0; i < std::size(signals_to_intercept); ++i) {
     struct sigaction act = {};
     act.sa_handler = ExitSignalHandler;
 
@@ -57,5 +55,4 @@ void DisableOSCrashDumps() {
   }
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

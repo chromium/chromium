@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,17 @@
 class AssistantServiceMetricsProvider : public metrics::MetricsProvider {
  public:
   AssistantServiceMetricsProvider();
+
+  AssistantServiceMetricsProvider(const AssistantServiceMetricsProvider&) =
+      delete;
+  AssistantServiceMetricsProvider& operator=(
+      const AssistantServiceMetricsProvider&) = delete;
+
   ~AssistantServiceMetricsProvider() override;
 
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto_unused) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantServiceMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_ASSISTANT_SERVICE_METRICS_PROVIDER_H_

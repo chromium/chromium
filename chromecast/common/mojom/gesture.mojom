@@ -1,0 +1,69 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Renderer-side system gesture handler.
+//
+// Security: This interface is hosted by the renderer.
+interface GestureHandler {
+  // Invoked when the back gesture is triggered.
+  OnBackGesture() => (bool was_handled);
+
+  // Invoked while the back gesture is in progress.
+  OnBackGestureProgress(gfx.mojom.Point touch_location);
+
+  // Invoked while a top-drag is in progress.
+  OnTopDragGestureProgress(gfx.mojom.Point touch_location);
+
+  // Invoked when a top-drag gesture completes (finger lifted).
+  OnTopDragGestureDone();
+
+  // Invoked while a right-drag is in progress.
+  OnRightDragGestureProgress(gfx.mojom.Point touch_location);
+
+  // Invoked when a right-drag gesture completes (finger lifted).
+  OnRightDragGestureDone();
+
+  // Invoked when the back gesture has been cancelled (for example by the
+  // finger lifting before the gesture can complete.
+  OnBackGestureCancel();
+
+  // Invoked when the tap gesture is triggered.
+  OnTapGesture();
+
+  // Invoked when the tap down gesture is triggered.
+  OnTapDownGesture();
+};
+
+// Subscription interface for a handler to receive gesture events. Subscribing
+// indicates that the renderer is equipped to handle events, and expects to
+// receive them.
+//
+// Security: This interface is hosted by the Cast Browser. It allows a renderer
+// to handle special screen gestures before the system. None of these methods
+// expose sensitive capabilities. This is only enabled for apps with media
+// browse UIs.
+interface GestureSource {
+  // Subscribe to events from this source. If there is already a registered
+  // handler, it will be replaced.
+  Subscribe(pending_remote<GestureHandler> handler);
+
+  // Specify if the "back" gesture can be handled by the subscriber. If
+  // |can_go_back| is false, then the GestureHandler will not receive back
+  // gesture events.
+  SetCanGoBack(bool can_go_back);
+
+  // Specify if the "top drag" gesture can be handled by the subscriber. If
+  // |can_top_drag| is false, then the GestureHandler will not receive top
+  // drag gesture events.
+  SetCanTopDrag(bool can_top_drag);
+
+  // Specify if the "right drag" gesture can be handled by the subscriber. If
+  // |can_right_drag| is false, then the GestureHandler will not receive right
+  // drag gesture events.
+  SetCanRightDrag(bool can_top_drag);
+};

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "url/gurl.h"
 
 namespace on_load_script_injector {
 
@@ -112,14 +113,12 @@ template <typename ScriptId>
 bool OnLoadScriptInjectorHost<ScriptId>::IsUrlMatchedByOriginList(
     const GURL& url,
     const std::vector<url::Origin>& allowed_origins) {
-  url::Origin url_origin = url::Origin::Create(url);
-
   for (const url::Origin& allowed_origin : allowed_origins) {
     if (allowed_origin == kMatchAllOrigins)
       return true;
 
     DCHECK(!allowed_origin.opaque());
-    if (url_origin.IsSameOriginWith(allowed_origin))
+    if (allowed_origin.IsSameOriginWith(url))
       return true;
   }
 

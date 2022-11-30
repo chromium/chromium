@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 // well as feature.h, simple_feature.h, and feature_provider.h.
 //
 // Note that specifying "web_page", "blessed_web_page", or "all" as a context
-// type will require manually updating chrome/renderer/resources/dispatcher.cc.
+// type will require manually updating javascript bindings code in the
+// renderer.
 
 {
   "accessibilityFeatures": [{
@@ -61,6 +62,14 @@
     "dependencies": ["manifest:action"],
     "contexts": ["blessed_extension"]
   },
+  "action.openPopup": {
+    // TODO(https://crbug.com/1245093): Upgrade to stable channel.
+    "channel": "dev"
+  },
+  "action.isEnabled": {
+    // TODO(https://crbug.com/1189295): Upgrade to stable channel.
+    "channel": "dev"
+  },
   "activityLogPrivate": [{
     "dependencies": ["permission:activityLogPrivate"],
     "contexts": ["blessed_extension"]
@@ -89,6 +98,8 @@
       "web_page",
       "blessed_web_page"
     ],
+    "disallow_for_service_workers": true,
+    "max_manifest_version": 2,
     // Any webpage can use the app API.
     "matches": ["<all_urls>"]
   },
@@ -118,7 +129,9 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://bookmarks/*"
+      "chrome://bookmarks/*",
+      "chrome://bookmarks-side-panel.top-chrome/*",
+      "chrome://read-later.top-chrome/*"
     ]
   }],
   "bookmarks": [{
@@ -130,6 +143,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*",
       "chrome://welcome/*"
     ]
@@ -183,10 +197,6 @@
     "dependencies": ["permission:browsingData"],
     "contexts": ["blessed_extension"]
   },
-  "cast.channel": {
-    "dependencies": ["permission:cast"],
-    "contexts": ["blessed_extension"]
-  },
   "certificateProvider": {
     "dependencies": ["permission:certificateProvider"],
     "contexts": ["blessed_extension"]
@@ -229,6 +239,7 @@
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
+      "chrome://parent-access/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
@@ -249,11 +260,6 @@
     "dependencies": ["permission:contextMenus"],
     "contexts": ["blessed_extension"]
   },
-  "contextMenusInternal": {
-    "internal": true,
-    "channel": "stable",
-    "contexts": ["blessed_extension"]
-  },
   "cookies": {
     "dependencies": ["permission:cookies"],
     "contexts": ["blessed_extension"]
@@ -269,6 +275,7 @@
       "webui"
     ],
     "matches": [
+      "chrome://camera-app/*",
       "chrome://media-app/*"
     ]
   },
@@ -276,6 +283,7 @@
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome-untrusted://camera-app/*",
       "chrome-untrusted://help-app/*",
       "chrome-untrusted://media-app/*"
     ]
@@ -284,20 +292,17 @@
     "dependencies": ["permission:cryptotokenPrivate"],
     "contexts": ["blessed_extension"]
   },
-  "dashboardPrivate": [{
-    "channel": "stable",
-    "contexts": ["blessed_web_page", "web_page"],
-    "matches": ["https://chrome.google.com/webstore/*"]
-  }, {
+  "dashboardPrivate": {
     "channel": "stable",
     "contexts": ["blessed_extension"],
     "allowlist": [
       "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
     ]
-  }],
+  },
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "developer_mode_only": true
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
@@ -388,14 +393,12 @@
   },
   "enterprise.platformKeys": {
     "dependencies": ["permission:enterprise.platformKeys"],
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "enterprise.platformKeysInternal": {
     "dependencies": ["permission:enterprise.platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "enterprise.platformKeysPrivate": {
     "dependencies": ["permission:enterprise.platformKeysPrivate"],
@@ -404,6 +407,15 @@
   "enterprise.reportingPrivate": {
     "dependencies": ["permission:enterprise.reportingPrivate"],
     "contexts": ["blessed_extension"]
+  },
+  "enterprise.reportingPrivate.getFileSystemInfo": {
+    "platforms": ["win", "mac", "linux"]
+  },
+  "enterprise.reportingPrivate.getAvInfo": {
+    "platforms": ["win"]
+  },
+  "enterprise.reportingPrivate.getHotfixes": {
+    "platforms": ["win"]
   },
   "experimental.devtools.audits": {
     "nocompile": true,
@@ -534,20 +546,13 @@
     "dependencies": ["permission:gcm"],
     "contexts": ["blessed_extension"]
   },
+  "sharedStoragePrivate": {
+    "dependencies": ["permission:sharedStoragePrivate"],
+    "contexts": ["blessed_extension"]
+  },
   "history": {
     "dependencies": ["permission:history"],
     "contexts": ["blessed_extension"]
-  },
-  "i18n": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app",
-                        "login_screen_extension"],
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script",
-                 "lock_screen_extension"],
-    "disallow_for_service_workers": true
-  },
-  "i18n.getAcceptLanguages": {
-    "disallow_for_service_workers": false
   },
   "identity": {
     "dependencies": ["permission:identity"],
@@ -600,10 +605,6 @@
       "chrome://settings/*"
     ]
   }],
-  "launcherSearchProvider": {
-    "dependencies": ["permission:launcherSearchProvider"],
-    "contexts": ["blessed_extension"]
-  },
   "login": {
     "dependencies": ["permission:login"],
     "contexts": ["blessed_extension"],
@@ -646,11 +647,6 @@
     "channel": "stable",
     "matches": ["<all_urls>"]
   },
-  "networking.castPrivate": {
-    "channel": "stable",
-    "contexts": ["blessed_extension"],
-    "dependencies": ["permission:networking.castPrivate"]
-  },
   "notifications": {
     "dependencies": ["permission:notifications"],
     "contexts": ["blessed_extension"]
@@ -661,8 +657,7 @@
   },
   "pageAction": {
     "dependencies": ["manifest:page_action"],
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "pageCapture": {
     "dependencies": ["permission:pageCapture"],
@@ -675,29 +670,32 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://settings/*"
+      "chrome://settings/*",
+      "chrome://password-manager/*"
     ]
   }],
   "permissions": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app",
+      "platform_app",
+      "chromeos_system_extension"
+    ],
     "contexts": ["blessed_extension"]
   },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "platformKeysInternal": [{
     "dependencies": ["permission:platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },{
     "dependencies": ["permission:enterprise.platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   }],
   "printing": {
     "dependencies": ["permission:printing"],
@@ -732,7 +730,7 @@
       "chrome://settings/*",
       "chrome://oobe/*"
     ],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "resourcesPrivate": [{
     "dependencies": ["permission:resourcesPrivate"],
@@ -756,6 +754,11 @@
     "dependencies": ["permission:scripting"],
     "contexts": ["blessed_extension"]
   },
+  "scripting.globalParams": {
+    "channel": "trunk",
+    "dependencies": ["permission:scripting"],
+    "contexts": ["content_script"]
+  },
   "search": {
     "dependencies": ["permission:search"],
     "contexts": ["blessed_extension"]
@@ -772,15 +775,16 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://os-settings/*",
-      "chrome://settings/*"
+      "chrome://settings/*",
+      "chrome://password-manager/*"
     ]
   }],
-  "autofillAssistantPrivate": {
-    "dependencies": ["permission:autofillAssistantPrivate"],
+  "sidePanel": {
+    "dependencies": ["permission:sidePanel"],
     "contexts": ["blessed_extension"]
   },
-  "signedInDevices": {
-    "dependencies": ["permission:signedInDevices"],
+  "speechRecognitionPrivate": {
+    "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["blessed_extension"]
   },
   "systemIndicator": {
@@ -810,8 +814,9 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*",
-      "chrome://tab-strip/*"
+      "chrome://tab-strip.top-chrome/*"
     ]
   }, {
     "channel": "stable",
@@ -910,12 +915,18 @@
     "dependencies": ["permission:virtualKeyboardPrivate"],
     "contexts": ["blessed_extension"]
   },
-  "wallpaper": {
+  "wallpaper": [{
     "dependencies": ["permission:wallpaper"],
     "contexts": ["blessed_extension"]
-  },
-  "wallpaperPrivate": {
-    "dependencies": ["permission:wallpaperPrivate"],
+  }, {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      "chrome://file-manager/*"
+    ]
+  }],
+  "webAuthenticationProxy": {
+    "dependencies": ["permission:webAuthenticationProxy"],
     "contexts": ["blessed_extension"]
   },
   "webNavigation": {
@@ -945,13 +956,18 @@
       "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/775961
     ]
   },
-  "webstorePrivate": {
+  "webstorePrivate": [{
     "dependencies": ["permission:webstorePrivate"],
     // NOTE: even though this is only used by the webstore hosted app, which
     // normally would mean blessed_web_page, component hosted apps are actually
     // given the blessed_extension denomination. Confusing.
     "contexts": ["blessed_extension"]
-  },
+  }, {
+    "channel": "dev",
+    "contexts": ["web_page"],
+    "matches": ["https://webstore.google.com/*"],
+    "feature_flag": "NewWebstoreDomain"
+  }],
   "webviewTag": {
     "internal": true,
     "channel": "stable",
@@ -966,7 +982,8 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
-      "chrome://tab-strip/*"
+      "chrome://tab-strip.top-chrome/*",
+      "chrome://file-manager/*"
     ]
   }, {
     "channel": "stable",
@@ -976,5 +993,9 @@
       "chrome-untrusted://terminal/*"
     ],
     "platforms": ["chromeos"]
-  }]
+  }],
+  "wmDesksPrivate": {
+    "dependencies": ["permission:wmDesksPrivate"],
+    "contexts": ["blessed_extension"]
+  }
 }

@@ -1,0 +1,165 @@
+<style include="cr-shared-style settings-shared action-link iron-flex">
+  .name-with-error-list {
+    padding: 14px 0;
+  }
+
+  .name-with-error-list div {
+    /* TODO(dbeam): does this need to differ from --settings-error-color? */
+    color: var(--google-red-500);
+    margin-top: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .name-with-error-list div {
+      color: var(--settings-error-color);
+    }
+  }
+
+  iron-icon[icon='cr:error'] {
+    --iron-icon-fill-color: var(--settings-error-color);
+    height: var(--cr-icon-size);
+    margin-inline-end: 8px;
+    width: var(--cr-icon-size);
+  }
+
+  .name-with-error-list[disabled] {
+    pointer-events: none;
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: var(--settings-controlled-by-spacing);
+  }
+
+  .spell-check-radio-group {
+    padding-block-end: var(--cr-section-vertical-padding);
+  }
+
+  .spell-check-radio-button {
+    --cr-radio-button-label-spacing:
+      calc(var(--cr-section-indent-width) - var(--cr-radio-button-size));
+  }
+
+  .spell-check-radio-button.enhanced {
+    align-items: start;
+    /* Align with just the first line of text */
+    --cr-radio-button-disc-margin-block-start:
+      calc((1.5em - var(--cr-radio-button-size)) / 2);
+  }
+
+  .enhanced-spellcheck-description {
+    padding-inline-end: 150px;
+  }
+
+  .spell-check-languages .list-item:last-of-type {
+    border-bottom: var(--cr-separator-line);
+  }
+</style>
+<settings-animated-pages id="pages" section="spellCheck"
+    focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
+        label="$i18n{offerToEnableSpellCheck}"
+        sub-label="[[getSpellCheckSubLabel_(spellCheckLanguages_)]]"
+        pref="{{prefs.browser.enable_spellchecking}}"
+        disabled="[[!spellCheckLanguages_.length]]"
+        on-settings-boolean-control-change="onSpellCheckToggleChange_">
+    </settings-toggle-button>
+<if expr="_google_chrome or not is_macosx">
+    <iron-collapse id="spellCheckCollapse"
+        opened="[[prefs.browser.enable_spellchecking.value]]">
+<if expr="_google_chrome">
+      <div class="cr-row continuation spell-check-radio-group">
+        <settings-radio-group class="flex"
+            pref="{{prefs.spellcheck.use_spelling_service}}"
+            on-change="onSelectedSpellingServiceChange_">
+          <controlled-radio-button class="spell-check-radio-button"
+              id="spellingServiceDisable"
+              label="$i18n{spellCheckBasicLabel}" name="false"
+              pref="[[prefs.spellcheck.use_spelling_service]]">
+          </controlled-radio-button>
+          <controlled-radio-button class="spell-check-radio-button enhanced"
+              id="spellingServiceEnable"
+              label="$i18n{spellCheckEnhancedLabel}" name="true"
+              pref="[[prefs.spellcheck.use_spelling_service]]">
+            <div class="secondary enhanced-spellcheck-description">
+              $i18n{spellCheckEnhancedDescription}
+            </div>
+          </controlled-radio-button>
+        </settings-radio-group>
+      </div>
+</if> <!-- _google_chrome -->
+<if expr="not is_macosx">
+      <div id="spellCheckLanguagesList"
+          hidden="[[hideSpellCheckLanguages_]]">
+        <div class="cr-row continuation">
+          $i18n{spellCheckLanguagesListTitle}
+        </div>
+        <div class="list-frame vertical-list spell-check-languages">
+          <template is="dom-repeat" items="[[spellCheckLanguages_]]">
+            <div class="list-item">
+              <div class="start name-with-error-list"
+                  on-click="onSpellCheckNameClick_" actionable
+                  disabled$="[[isSpellCheckNameClickDisabled_(
+                      item, item.*)]]">
+                [[item.language.displayName]]
+                <div hidden="[[!errorsGreaterThan_(
+                    item.downloadDictionaryFailureCount, 0)]]">
+                  <iron-icon icon="cr:error"></iron-icon>
+                  $i18n{languagesDictionaryDownloadError}
+                </div>
+                <div hidden="[[!errorsGreaterThan_(
+                    item.downloadDictionaryFailureCount, 1)]]">
+                  $i18n{languagesDictionaryDownloadErrorHelp}
+                </div>
+              </div>
+              <cr-button on-click="onRetryDictionaryDownloadClick_"
+                  hidden="[[!errorsGreaterThan_(
+                      item.downloadDictionaryFailureCount, 0)]]">
+                $i18n{retry}
+              </cr-button>
+              <template is="dom-if" if="[[!item.isManaged]]">
+                <cr-toggle on-change="onSpellCheckLanguageChange_"
+                    disabled="[[!item.language.supportsSpellcheck]]"
+                    checked="[[item.spellCheckEnabled]]"
+                    aria-label$="[[item.language.displayName]]"
+                    hidden="[[errorsGreaterThan_(
+                        item.downloadDictionaryFailureCount, 0)]]">
+                </cr-toggle>
+              </template>
+              <template is="dom-if" if="[[item.isManaged]]">
+                <cr-policy-pref-indicator
+                    pref="[[getIndicatorPrefForManagedSpellcheckLanguage_(
+                        item.spellCheckEnabled)]]"
+                    hidden="[[errorsGreaterThan_(
+                        item.downloadDictionaryFailureCount, 0)]]">
+                </cr-policy-pref-indicator>
+                <cr-toggle disabled="true"
+                    checked="[[item.spellCheckEnabled]]"
+                    aria-label$="[[item.language.displayName]]"
+                    hidden="[[errorsGreaterThan_(
+                        item.downloadDictionaryFailureCount, 0)]]">
+                </cr-toggle>
+              </template>
+            </div>
+          </template>
+        </div>
+      </div>
+      <cr-link-row on-click="onEditDictionaryTap_"
+          id="spellCheckSubpageTrigger" label="$i18n{manageSpellCheck}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+</if> <!-- not is_macosx -->
+    </iron-collapse>
+</if> <!-- _google_chrome or not is_macosx -->
+  </div>
+<if expr="not is_macosx">
+  <template is="dom-if" route-path="/editDictionary">
+    <settings-subpage
+        associated-control="[[$$('#spellCheckSubpageTrigger')]]"
+        page-title="$i18n{editDictionaryPageTitle}"
+        no-search$="[[!prefs.browser.enable_spellchecking.value]]">
+      <settings-edit-dictionary-page></settings-edit-dictionary-page>
+    </settings-subpage>
+  </template>
+</if> <!-- not is_macosx -->
+</settings-animated-pages>

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ class NET_EXPORT_PRIVATE HttpTransaction {
                                   CompletionOnceCallback callback)>;
 
   // Stops any pending IO and destroys the transaction object.
-  virtual ~HttpTransaction() {}
+  virtual ~HttpTransaction() = default;
 
   // Starts the HTTP transaction (i.e., sends the HTTP request).
   //
@@ -205,7 +205,7 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   // Resumes the transaction after being deferred.
   virtual int ResumeNetworkStart() = 0;
 
-  virtual void GetConnectionAttempts(ConnectionAttempts* out) const = 0;
+  virtual ConnectionAttempts GetConnectionAttempts() const = 0;
 
   // Configures the transaction to close the network connection, if any, on
   // destruction. Intended for cases where keeping the socket alive may leak

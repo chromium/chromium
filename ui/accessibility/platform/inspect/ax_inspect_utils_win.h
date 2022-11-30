@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,11 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/win/scoped_variant.h"
+#include "third_party/iaccessible2/ia2_api_all.h"
+#include "third_party/isimpledom/ISimpleDOMNode.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/gfx/win/hwnd_util.h"
 
@@ -48,6 +51,19 @@ AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid);
 // Returns HWND of window matching a given tree selector.
 AX_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
 
+// Returns IA2 Interfaces
+template <typename ServiceType>
+HRESULT IA2QueryInterface(IAccessible* accessible,
+                          ServiceType** out_accessible) {
+  // IA2 Spec dictates that IServiceProvider should be used instead of
+  // QueryInterface when retrieving IAccessible2.
+  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
+  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
+  if (FAILED(hr))
+    return hr;
+  return service_provider->QueryService(__uuidof(ServiceType), out_accessible);
+}
+
 // Represent MSAA child, either as IAccessible object or as VARIANT.
 class AX_EXPORT MSAAChild final {
  public:
@@ -79,9 +95,14 @@ class AX_EXPORT MSAAChildren final {
   const MSAAChild& ChildAt(LONG index) const { return children_[index]; }
   IAccessible* Parent() const { return parent_.Get(); }
 
-  class AX_EXPORT Iterator final
-      : public std::iterator<std::input_iterator_tag, MSAAChild> {
+  class AX_EXPORT Iterator final {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = MSAAChild;
+    using difference_type = std::ptrdiff_t;
+    using pointer = MSAAChild*;
+    using reference = MSAAChild&;
+
     Iterator(MSAAChildren*);
     Iterator(MSAAChildren*, LONG);
     Iterator(const Iterator&);
@@ -104,7 +125,7 @@ class AX_EXPORT MSAAChildren final {
 
    private:
     LONG index_{0};
-    MSAAChildren* children_{nullptr};
+    raw_ptr<MSAAChildren> children_{nullptr};
   };
 
   Iterator begin() { return {this}; }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
@@ -37,6 +36,12 @@ struct CSPInfo : public Extension::ManifestData {
   // shouldn't be returned for those cases.
   static const std::string& GetExtensionPagesCSP(const Extension* extension);
 
+  // Returns the minimum CSP (if any) to append for the `extension`'s resource
+  // at the given `relative_path`.
+  static const std::string* GetMinimumCSPToAppend(
+      const Extension& extension,
+      const std::string& relative_path);
+
   // Returns the Content Security Policy to be used for extension isolated
   // worlds or null if there is no defined CSP.
   static const std::string* GetIsolatedWorldCSP(const Extension& extension);
@@ -57,6 +62,10 @@ struct CSPInfo : public Extension::ManifestData {
 class CSPHandler : public ManifestHandler {
  public:
   CSPHandler();
+
+  CSPHandler(const CSPHandler&) = delete;
+  CSPHandler& operator=(const CSPHandler&) = delete;
+
   ~CSPHandler() override;
 
   // ManifestHandler override:
@@ -71,7 +80,6 @@ class CSPHandler : public ManifestHandler {
   bool ParseExtensionPagesCSP(Extension* extension,
                               std::u16string* error,
                               base::StringPiece manifest_key,
-                              bool secure_only,
                               const base::Value* content_security_policy);
 
   // Parses the content security policy specified in the manifest for sandboxed
@@ -84,7 +92,6 @@ class CSPHandler : public ManifestHandler {
   // Helper to set the extension pages content security policy manifest data.
   bool SetExtensionPagesCSP(Extension* extension,
                             base::StringPiece manifest_key,
-                            bool secure_only,
                             std::string content_security_policy);
 
   // Helper to set the sandbox content security policy manifest data.
@@ -93,8 +100,6 @@ class CSPHandler : public ManifestHandler {
   // ManifestHandler overrides:
   bool AlwaysParseForType(Manifest::Type type) const override;
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPHandler);
 };
 
 }  // namespace extensions

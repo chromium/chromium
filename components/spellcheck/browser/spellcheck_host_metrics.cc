@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ SpellCheckHostMetrics::SpellCheckHostMetrics()
       start_time_(base::TimeTicks::Now()) {
   const uint64_t kHistogramTimerDurationInMinutes = 30;
   recording_timer_.Start(FROM_HERE,
-      base::TimeDelta::FromMinutes(kHistogramTimerDurationInMinutes),
-      this, &SpellCheckHostMetrics::OnHistogramTimerExpired);
+                         base::Minutes(kHistogramTimerDurationInMinutes), this,
+                         &SpellCheckHostMetrics::OnHistogramTimerExpired);
   RecordWordCounts();
 }
 
@@ -78,7 +78,8 @@ void SpellCheckHostMetrics::OnHistogramTimerExpired() {
     // a 30 minute interval. If the time was 0 we will end up dividing by zero.
     CHECK_NE(0, since_start.InSeconds());
     size_t checked_words_per_hour = spellchecked_word_count_ *
-        base::TimeDelta::FromHours(1).InSeconds() / since_start.InSeconds();
+                                    base::Hours(1).InSeconds() /
+                                    since_start.InSeconds();
     base::UmaHistogramCounts1M(
         "SpellCheck.CheckedWordsPerHour",
         base::saturated_cast<int>(checked_words_per_hour));
@@ -147,7 +148,7 @@ void SpellCheckHostMetrics::RecordSpellingServiceStats(bool enabled) {
   base::UmaHistogramBoolean("SpellCheck.SpellingService.Enabled", enabled);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void SpellCheckHostMetrics::RecordAcceptLanguageStats(
     const LocalesSupportInfo& locales_info) {
   base::UmaHistogramExactLinear(
@@ -186,4 +187,4 @@ void SpellCheckHostMetrics::RecordSpellcheckLanguageStats(
       base::saturated_cast<int>(locales_info.locales_supported_by_native_only),
       20);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

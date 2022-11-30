@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,23 +7,24 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -38,6 +39,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -121,9 +123,9 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    owned_cache_.reset(new ResourceCache(temp_dir_.GetPath(),
-                                         base::ThreadTaskRunnerHandle::Get(),
-                                         /* max_cache_size */ base::nullopt));
+    owned_cache_ = std::make_unique<ResourceCache>(
+        temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+        /* max_cache_size */ absl::nullopt);
     cache_ = owned_cache_.get();
   }
 
@@ -139,10 +141,9 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
     client_ = new MockCloudPolicyClient(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &loader_factory_));
-    service_.reset(new ComponentCloudPolicyService(
-        dm_protocol::kChromeExtensionPolicyType, POLICY_SOURCE_CLOUD,
-        &delegate_, &registry_, &core_, client_, std::move(owned_cache_),
-        base::ThreadTaskRunnerHandle::Get()));
+    service_ = std::make_unique<ComponentCloudPolicyService>(
+        dm_protocol::kChromeExtensionPolicyType, &delegate_, &registry_, &core_,
+        client_, std::move(owned_cache_), base::ThreadTaskRunnerHandle::Get());
 
     client_->SetDMToken(ComponentCloudPolicyBuilder::kFakeToken);
     EXPECT_EQ(1u, client_->types_to_fetch_.size());
@@ -159,12 +160,12 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   }
 
   void LoadStore() {
-    em::PolicyData* data = new em::PolicyData();
-    data->set_username(PolicyBuilder::kFakeUsername);
-    data->set_request_token(PolicyBuilder::kFakeToken);
-    data->set_device_id(PolicyBuilder::kFakeDeviceId);
-    data->set_public_key_version(PolicyBuilder::kFakePublicKeyVersion);
-    store_.policy_.reset(data);
+    auto policy_data = std::make_unique<em::PolicyData>();
+    policy_data->set_username(PolicyBuilder::kFakeUsername);
+    policy_data->set_request_token(PolicyBuilder::kFakeToken);
+    policy_data->set_device_id(PolicyBuilder::kFakeDeviceId);
+    policy_data->set_public_key_version(PolicyBuilder::kFakePublicKeyVersion);
+    store_.set_policy_data_for_testing(std::move(policy_data));
     store_.policy_signature_public_key_ = public_key_;
     store_.NotifyStoreLoaded();
     RunUntilIdle();
@@ -227,8 +228,8 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   // |cache_| is owned by the |service_| and is invalid once the |service_|
   // is destroyed.
   std::unique_ptr<ResourceCache> owned_cache_;
-  ResourceCache* cache_;
-  MockCloudPolicyClient* client_;
+  raw_ptr<ResourceCache> cache_;
+  raw_ptr<MockCloudPolicyClient> client_;
   MockCloudPolicyStore store_;
   CloudPolicyCore core_;
   SchemaRegistry registry_;
@@ -305,7 +306,7 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeWithCachedPolicy) {
 
   // Policy for extension 1 is now being served.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 
   // Register extension 2. Its policy gets loaded without any additional
@@ -317,7 +318,7 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeWithCachedPolicy) {
   Mock::VerifyAndClearExpectations(&delegate_);
 
   // Policies for both extensions are being served now.
-  expected_bundle.Get(kTestExtensionNS2).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS2) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 
@@ -358,7 +359,7 @@ TEST_F(ComponentCloudPolicyServiceTest, FetchPolicy) {
 
   // The policy is now being served.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 
@@ -399,7 +400,7 @@ TEST_F(ComponentCloudPolicyServiceTest, FetchPolicyBeforeStoreLoaded) {
 
   // The policy is now being served.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 
@@ -426,7 +427,7 @@ TEST_F(ComponentCloudPolicyServiceTest,
   // Only policy for extension 1 is served. Policy for extension 2, which was in
   // the cache initially, is now dropped.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 
@@ -445,8 +446,8 @@ TEST_F(ComponentCloudPolicyServiceTest, LoadCacheAndDeleteExtensions) {
   Mock::VerifyAndClearExpectations(&delegate_);
 
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
-  expected_bundle.Get(kTestExtensionNS2).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
+  expected_bundle.Get(kTestExtensionNS2) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 
   // Now purge one of the extensions. This generates a notification after an
@@ -512,7 +513,7 @@ TEST_F(ComponentCloudPolicyServiceTest, SignInAfterStartup) {
 
   // The policy is now being served.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 
@@ -528,7 +529,7 @@ TEST_F(ComponentCloudPolicyServiceTest, SignOut) {
   Mock::VerifyAndClearExpectations(&delegate_);
   // Policy for extension 1 is now being served.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
   // The cache still contains policies for both extensions.
   std::map<std::string, std::string> contents;
@@ -539,7 +540,7 @@ TEST_F(ComponentCloudPolicyServiceTest, SignOut) {
   // from the cache. It does not trigger a refresh.
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
   core_.Disconnect();
-  store_.policy_.reset();
+  store_.set_policy_data_for_testing(std::make_unique<em::PolicyData>());
   Mock::VerifyAndClearExpectations(&store_);
   store_.NotifyStoreLoaded();
   RunUntilIdle();
@@ -609,8 +610,8 @@ TEST_F(ComponentCloudPolicyServiceTest, PurgeWhenServerRemovesPolicy) {
   EXPECT_TRUE(base::Contains(contents, kTestExtension2));
 
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
-  expected_bundle.Get(kTestExtensionNS2).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
+  expected_bundle.Get(kTestExtensionNS2) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 
   // Receive an updated fetch response from the server. There is no response for
@@ -632,7 +633,7 @@ TEST_F(ComponentCloudPolicyServiceTest, PurgeWhenServerRemovesPolicy) {
 
   // And the service isn't publishing policy for the second extension anymore.
   expected_bundle.Clear();
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 
@@ -662,7 +663,9 @@ TEST_F(ComponentCloudPolicyServiceTest, KeyRotation) {
 
   // Update the signing key in the store.
   store_.policy_signature_public_key_ = builder_.GetPublicSigningKeyAsString();
-  store_.policy_->set_public_key_version(kNewPublicKeyVersion);
+  auto policy_data = std::make_unique<em::PolicyData>(*store_.policy());
+  policy_data->set_public_key_version(kNewPublicKeyVersion);
+  store_.set_policy_data_for_testing(std::move(policy_data));
   store_.NotifyStoreLoaded();
   RunUntilIdle();
 
@@ -677,7 +680,7 @@ TEST_F(ComponentCloudPolicyServiceTest, KeyRotation) {
 
   // The policy is now being served.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_info.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -18,6 +15,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
@@ -25,6 +23,9 @@ class ThumbnailScheduler;
 class ThumbnailTabHelper
     : public content::WebContentsUserData<ThumbnailTabHelper> {
  public:
+  ThumbnailTabHelper(const ThumbnailTabHelper&) = delete;
+  ThumbnailTabHelper& operator=(const ThumbnailTabHelper&) = delete;
+
   ~ThumbnailTabHelper() override;
 
   scoped_refptr<ThumbnailImage> thumbnail() const { return thumbnail_; }
@@ -35,7 +36,6 @@ class ThumbnailTabHelper
 
   // Metrics enums and helper functions:
   enum class CaptureType;
-  static void RecordCaptureType(CaptureType type);
 
   explicit ThumbnailTabHelper(content::WebContents* contents);
 
@@ -56,7 +56,7 @@ class ThumbnailTabHelper
                                           uint64_t frame_id);
   void StoreThumbnail(CaptureType type,
                       const SkBitmap& bitmap,
-                      base::Optional<uint64_t> frame_id);
+                      absl::optional<uint64_t> frame_id);
 
   // Clears the data associated to the currently set thumbnail. For when the
   // thumbnail is no longer valid.
@@ -96,8 +96,6 @@ class ThumbnailTabHelper
 
   base::WeakPtrFactory<ThumbnailTabHelper>
       weak_factory_for_thumbnail_on_tab_hidden_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_TAB_HELPER_H_

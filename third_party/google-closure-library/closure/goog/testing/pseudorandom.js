@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview PseudoRandom provides a mechanism for generating deterministic
@@ -37,6 +29,7 @@ goog.require('goog.Disposable');
  * @final
  */
 goog.testing.PseudoRandom = function(opt_seed, opt_install) {
+  'use strict';
   goog.Disposable.call(this);
 
   if (opt_seed === undefined) {
@@ -124,6 +117,7 @@ goog.testing.PseudoRandom.prototype.mathRandom_;
  * Installs this PseudoRandom as the system number generator.
  */
 goog.testing.PseudoRandom.prototype.install = function() {
+  'use strict';
   if (!this.installed_) {
     this.mathRandom_ = Math.random;
     Math.random = goog.bind(this.random, this);
@@ -134,6 +128,7 @@ goog.testing.PseudoRandom.prototype.install = function() {
 
 /** @override */
 goog.testing.PseudoRandom.prototype.disposeInternal = function() {
+  'use strict';
   goog.testing.PseudoRandom.superClass_.disposeInternal.call(this);
   this.uninstall();
 };
@@ -143,6 +138,7 @@ goog.testing.PseudoRandom.prototype.disposeInternal = function() {
  * Uninstalls the PseudoRandom.
  */
 goog.testing.PseudoRandom.prototype.uninstall = function() {
+  'use strict';
   if (this.installed_) {
     Math.random = this.mathRandom_;
     this.installed_ = false;
@@ -156,6 +152,7 @@ goog.testing.PseudoRandom.prototype.uninstall = function() {
  * @param {number=} opt_seed The seed to use.
  */
 goog.testing.PseudoRandom.prototype.seed = function(opt_seed) {
+  'use strict';
   this.seed_ = (opt_seed || 0) % (goog.testing.PseudoRandom.M - 1);
   if (this.seed_ <= 0) {
     this.seed_ += goog.testing.PseudoRandom.M - 1;
@@ -167,6 +164,7 @@ goog.testing.PseudoRandom.prototype.seed = function(opt_seed) {
  * @return {number} The next number in the sequence.
  */
 goog.testing.PseudoRandom.prototype.random = function() {
+  'use strict';
   var hi = Math.floor(this.seed_ / goog.testing.PseudoRandom.Q);
   var lo = this.seed_ % goog.testing.PseudoRandom.Q;
   var test =

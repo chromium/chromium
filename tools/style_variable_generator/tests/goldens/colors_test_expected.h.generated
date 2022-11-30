@@ -1,0 +1,44 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from:
+//   tests/colors_test.json5
+//   tests/colors_test_palette.json5
+
+#ifndef TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
+#define TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
+
+#include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace colors_test_expected {
+
+COMPONENT_EXPORT(colors_test_expected) bool DarkModeEnabled();
+COMPONENT_EXPORT(colors_test_expected) bool DebugColorsEnabled();
+COMPONENT_EXPORT(colors_test_expected) void SetDarkModeEnabled(bool enabled);
+COMPONENT_EXPORT(colors_test_expected) void SetDebugColorsEnabled(bool enabled);
+
+enum class ColorName {
+  kGoogleGrey900,
+  kTextColorPrimary,
+  kToggleColor,
+  kBgColorElevation1,
+};
+
+enum class OpacityName {
+  kDisabledOpacity,
+  kReferenceOpacity,
+};
+
+COMPONENT_EXPORT(colors_test_expected) SkAlpha GetOpacity(
+    OpacityName opacity_name,
+    bool is_dark_mode = DarkModeEnabled());
+
+COMPONENT_EXPORT(colors_test_expected) SkColor ResolveColor(
+    ColorName color_name,
+    bool is_dark_mode = DarkModeEnabled(),
+    bool use_debug_colors = DebugColorsEnabled());
+
+}  // namespace colors_test_expected
+#endif  // TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_

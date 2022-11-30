@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -40,6 +39,10 @@ class MEDIA_EXPORT EsAdapterVideo {
 
   EsAdapterVideo(NewVideoConfigCB new_video_config_cb,
                  EmitBufferCB emit_buffer_cb);
+
+  EsAdapterVideo(const EsAdapterVideo&) = delete;
+  EsAdapterVideo& operator=(const EsAdapterVideo&) = delete;
+
   ~EsAdapterVideo();
 
   // Force the emission of the pending video buffers.
@@ -95,8 +98,6 @@ class MEDIA_EXPORT EsAdapterVideo {
 
   // Number of frames to replace with the first valid key frame.
   int discarded_frame_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsAdapterVideo);
 };
 
 }  // namespace mp2t

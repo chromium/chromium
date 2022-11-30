@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.permissions.test.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -74,6 +75,7 @@ public class NfcSystemLevelPromptTest {
         MockitoAnnotations.initMocks(this);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
 
         doAnswer(invocation -> {
@@ -95,7 +97,7 @@ public class NfcSystemLevelPromptTest {
             return null;
         })
                 .when(mWindowAndroidIntentCallback)
-                .onIntentCompleted(any(WindowAndroid.class), anyInt(), any(Intent.class));
+                .onIntentCompleted(anyInt(), any(Intent.class));
 
         mNfcSystemLevelPrompt = new NfcSystemLevelPrompt();
         mNfcSystemLevelPrompt.show(mWindowAndroid, mModalDialogManager, new Runnable() {
@@ -137,8 +139,7 @@ public class NfcSystemLevelPromptTest {
         Assert.assertEquals(0, mDialogCallback.getCallCount());
         Assert.assertEquals(1, mIntentCallback.getCallCount());
 
-        mWindowAndroidIntentCallback.onIntentCompleted(
-                mWindowAndroid, 0 /* resultCode */, new Intent());
+        mWindowAndroidIntentCallback.onIntentCompleted(0 /* resultCode */, new Intent());
         Assert.assertEquals(1, mDialogCallback.getCallCount());
         Assert.assertEquals(1, mIntentCallback.getCallCount());
     }

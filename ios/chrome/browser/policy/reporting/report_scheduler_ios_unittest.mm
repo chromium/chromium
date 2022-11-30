@@ -1,27 +1,30 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
+#import "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
+#import "base/time/time.h"
+#import "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-#include "base/callback_helpers.h"
-#include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/callback_helpers.h"
+#import "base/test/gmock_callback_support.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/browser/reporting/report_request.h"
+#import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -36,15 +39,15 @@ namespace {
 
 constexpr char kDMToken[] = "dm_token";
 constexpr char kClientId[] = "client_id";
-constexpr base::TimeDelta kDefaultUploadInterval =
-    base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kUploadFrequency = base::Hours(12);
+constexpr base::TimeDelta kNewUploadFrequency = base::Hours(10);
 
 }  // namespace
 
 ACTION_P(ScheduleGeneratorCallback, request_number) {
-  ReportGenerator::ReportRequests requests;
+  ReportRequestQueue requests;
   for (int i = 0; i < request_number; i++)
-    requests.push(std::make_unique<ReportGenerator::ReportRequest>());
+    requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
@@ -61,7 +64,7 @@ class MockReportGenerator : public ReportGenerator {
   }
   MOCK_METHOD2(OnGenerate,
                void(ReportType report_type, ReportCallback& callback));
-  MOCK_METHOD0(GenerateBasic, ReportRequests());
+  MOCK_METHOD0(GenerateBasic, ReportRequestQueue());
 };
 
 class MockReportUploader : public ReportUploader {
@@ -71,7 +74,8 @@ class MockReportUploader : public ReportUploader {
   MockReportUploader& operator=(const MockReportUploader&) = delete;
   ~MockReportUploader() override = default;
 
-  MOCK_METHOD2(SetRequestAndUpload, void(ReportRequests, ReportCallback));
+  MOCK_METHOD3(SetRequestAndUpload,
+               void(ReportType, ReportRequestQueue, ReportCallback));
 };
 
 class ReportSchedulerIOSTest : public PlatformTest {
@@ -103,8 +107,13 @@ class ReportSchedulerIOSTest : public PlatformTest {
   }
 
   void CreateScheduler() {
-    scheduler_ = std::make_unique<ReportScheduler>(
-        client_, std::move(generator_ptr_), &report_delegate_factory_);
+    ReportScheduler::CreateParams params;
+    params.client = client_;
+    params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
+    params.report_generator = std::move(generator_ptr_);
+    params.real_time_report_generator =
+        std::make_unique<RealTimeReportGenerator>(&report_delegate_factory_),
+    scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
   }
 
@@ -112,6 +121,10 @@ class ReportSchedulerIOSTest : public PlatformTest {
     previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
     local_state_.Get()->SetTime(kLastUploadTimestamp,
                                 previous_set_last_upload_timestamp_);
+  }
+
+  void SetReportFrequency(base::TimeDelta frequency) {
+    local_state_.Get()->SetTimeDelta(kCloudReportingUploadFrequency, frequency);
   }
 
   void ToggleCloudReport(bool enabled) {
@@ -132,10 +145,10 @@ class ReportSchedulerIOSTest : public PlatformTest {
     }
   }
 
-  ReportGenerator::ReportRequests CreateRequests(int number) {
-    ReportGenerator::ReportRequests requests;
+  ReportRequestQueue CreateRequests(int number) {
+    ReportRequestQueue requests;
     for (int i = 0; i < number; i++)
-      requests.push(std::make_unique<ReportGenerator::ReportRequest>());
+      requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
     return requests;
   }
 
@@ -190,8 +203,8 @@ TEST_F(ReportSchedulerIOSTest, UploadReportSucceeded) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
@@ -211,8 +224,8 @@ TEST_F(ReportSchedulerIOSTest, UploadReportTransientError) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kTransientError));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kTransientError));
 
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
@@ -232,8 +245,8 @@ TEST_F(ReportSchedulerIOSTest, UploadReportPersistentError) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kPersistentError));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kPersistentError));
 
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
@@ -258,7 +271,7 @@ TEST_F(ReportSchedulerIOSTest, NoReportGenerate) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(0)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _)).Times(0);
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
 
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
@@ -280,23 +293,23 @@ TEST_F(ReportSchedulerIOSTest, NoReportGenerate) {
 }
 
 TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
-  const base::TimeDelta gap = base::TimeDelta::FromHours(10);
+  const base::TimeDelta gap = base::Hours(10);
   SetLastUploadInHour(gap);
+  SetReportFrequency(kUploadFrequency);
 
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
-  base::TimeDelta next_report_delay = kDefaultUploadInterval - gap;
-  task_environment_.FastForwardBy(next_report_delay -
-                                  base::TimeDelta::FromSeconds(1));
+  base::TimeDelta next_report_delay = kUploadFrequency - gap;
+  task_environment_.FastForwardBy(next_report_delay - base::Seconds(1));
   ExpectLastUploadTimestampUpdated(false);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   ExpectLastUploadTimestampUpdated(true);
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
@@ -307,8 +320,8 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
@@ -318,6 +331,56 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
   ExpectLastUploadTimestampUpdated(true);
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
+}
+
+TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
+  const base::TimeDelta gap = base::Hours(5);
+  SetLastUploadInHour(gap);
+  SetReportFrequency(kUploadFrequency);
+
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateScheduler();
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  SetReportFrequency(kNewUploadFrequency);
+
+  // The report should be re-scheduled, moving the time forward with the new
+  // interval.
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  base::TimeDelta next_report_delay = kNewUploadFrequency - gap;
+  task_environment_.FastForwardBy(next_report_delay - base::Seconds(1));
+  ExpectLastUploadTimestampUpdated(false);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectLastUploadTimestampUpdated(true);
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(generator_);
+}
+
+TEST_F(ReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
+  Init(false, kDMToken, kClientId);
+  CreateScheduler();
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  SetReportFrequency(kUploadFrequency);
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Toggle reporting on and off.
+  EXPECT_CALL_SetupRegistration();
+  ToggleCloudReport(true);
+  ToggleCloudReport(false);
+
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  SetReportFrequency(kNewUploadFrequency);
+
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
 TEST_F(ReportSchedulerIOSTest,
@@ -344,8 +407,8 @@ TEST_F(ReportSchedulerIOSTest, ReportingIsDisabledWhileNewReportIsPosted) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());

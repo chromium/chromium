@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "media/base/data_source.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -70,7 +70,7 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
   size_t index;
   {
     base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
-    index = base::WaitableEvent::WaitMany(events, base::size(events));
+    index = base::WaitableEvent::WaitMany(events, std::size(events));
   }
 
   if (events[index] == &aborted_)
@@ -109,7 +109,7 @@ bool BlockingUrlProtocol::SetPosition(int64_t position) {
 
 bool BlockingUrlProtocol::GetSize(int64_t* size_out) {
   base::AutoLock lock(data_source_lock_);
-  return data_source_ ? data_source_->GetSize(size_out) : 0;
+  return data_source_ ? data_source_->GetSize(size_out) : false;
 }
 
 bool BlockingUrlProtocol::IsStreaming() {

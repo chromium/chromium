@@ -6,9 +6,12 @@
 <translation id="1717486229951421299">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu opinn í hálfri hæð.</translation>
 <translation id="207576718733492531">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu er lokaður.</translation>
 <translation id="2610239185026711824">Leggja til aðgangsorð</translation>
+<translation id="2652129567809778422">Velja aðgangsorð</translation>
 <translation id="2803478378562657435">Sýnir vistuð aðgangsorð og valkosti fyrir aðgangsorð</translation>
 <translation id="2903493209154104877">Heimilisföng</translation>
 <translation id="3399357656427473483">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu.</translation>
+<translation id="3688051737190211318">Ef þú treystir <ph name="ORIGIN" /> geturðu notað vistað aðgangsorð til að skrá þig inn</translation>
+<translation id="4631649115723685955">Fjárvildarkerfi tengt</translation>
 <translation id="4660011489602794167">Sýna lyklaborð</translation>
 <translation id="4694050069269396220">Ef þú treystir <ph name="ORIGIN" /> geturðu notað vistað aðgangsorð fyrir annað vefsvæði.</translation>
 <translation id="5016175294846053194">Tillögur um sjálfvirka útfyllingu eru fyrir ofan lyklaborðið</translation>
@@ -24,4 +27,5 @@
 <translation id="8037472847879765671">Sýna greiðslumáta</translation>
 <translation id="8507520749471379845">Tiltæk aðgangsorð</translation>
 <translation id="8705308553596171387">Ekkert aðgangsorð</translation>
+<translation id="8849262850971482943">Notaðu sýndarkortið þitt til að auka öryggi</translation>
 </translationbundle>

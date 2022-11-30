@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,15 +26,6 @@ class TextureImage : public gl::GLImage {
                  GetDataFormat(), GetDataType(), nullptr);
     return true;
   }
-  bool BindTexImageWithInternalformat(unsigned target,
-                                      unsigned internal_format) override {
-    glTexImage2D(target,
-                 0,  // mip level
-                 GetInternalFormat(), size_.width(), size_.height(),
-                 0,  // border
-                 GetDataFormat(), GetDataType(), nullptr);
-    return true;
-  }
   void ReleaseTexImage(unsigned target) override {}
   bool CopyTexImage(unsigned target) override {
     NOTREACHED();
@@ -43,15 +34,6 @@ class TextureImage : public gl::GLImage {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override {
-    return false;
-  }
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override {
     return false;
   }
   void SetColorSpace(const gfx::ColorSpace& color_space) override {}
@@ -69,6 +51,8 @@ scoped_refptr<gl::GLImage> TextureImageFactory::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
+    gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
   return nullptr;

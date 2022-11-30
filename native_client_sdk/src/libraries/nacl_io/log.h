@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 The Chromium Authors. All rights reserved.
+/* Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -55,4 +55,4 @@ void nacl_io_log(const char* format, ...) PRINTF_LIKE(1, 2);
 
 EXTERN_C_END
 
-#endif  /* LIBRARIES_NACL_IO_LOG_H_ */
+#endif  // LIBRARIES_NACL_IO_LOG_H_

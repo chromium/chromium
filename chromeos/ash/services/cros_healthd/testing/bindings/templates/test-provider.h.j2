@@ -1,0 +1,78 @@
+{%- import "method-macro.cc.j2" as method_macro %}
+
+{%- set class_name = "%sTestProvider"|format(interface.mojom_name) %}
+
+class {{class_name}}
+  : public ::ash::cros_healthd::connectivity::DataGeneratorInterface<
+      ::mojo::PendingRemote<{{interface.mojom_name}}>> {
+ public:
+  {{class_name}}(const {{class_name}}&) = delete;
+  {{class_name}}& operator=(const {{class_name}}&) = delete;
+  virtual ~{{class_name}}() = default;
+
+  static std::unique_ptr<{{class_name}}> Create(
+    ::ash::cros_healthd::connectivity::Context* context);
+
+ public:
+  void Bind(::mojo::PendingReceiver<{{interface.mojom_name}}> receiver);
+
+  // DataGeneratorInterface overrides.
+  ::mojo::PendingRemote<{{interface.mojom_name}}> Generate() override;
+  bool HasNext() override { return has_next_; }
+
+ protected:
+  explicit {{
+    class_name}}(::ash::cros_healthd::connectivity::Context* context);
+
+ private:
+  // Proxy object for mojo recevier.
+  class Service : public {{interface.mojom_name}} {
+   public:
+    Service({{class_name}}* test_provider) : test_provider_(test_provider) {}
+    Service(const Service&) = delete;
+    Service& operator=(const Service&) = delete;
+    ~Service() = default;
+   private:
+{%- for method in interface.methods %}
+    void {{method.mojom_name}}({{method_macro.declare_request_params(
+        "", method)}}) override {
+      test_provider_->{{method.mojom_name}}_Step1({{method_macro.forward_params(
+      "", method)}});
+    }
+{%- endfor %}
+   private:
+    {{class_name}}* test_provider_;
+  };
+
+  void RemoveReceiver(::mojo::ReceiverId receiver_id);
+
+{#- Methods are splitted into multiple stages to be used as callback. #}
+{%- for method in interface.methods %}
+{%-   if method.response_parameters != None %}
+  using {{method.mojom_name}}Callback = Service::{{method.mojom_name}}Callback;
+{%-   endif -%}
+  void {{method.mojom_name}}_Step1({{method_macro.declare_request_params(
+    "", method)}});
+  void {{method.mojom_name}}_Step2(base::OnceClosure callback);
+{%- endfor %}
+
+ private:
+  ::ash::cros_healthd::connectivity::Context* context_;
+
+  bool has_next_ = true;
+
+  Service service_{this};
+
+  ::mojo::ReceiverSet<{{interface.mojom_name}}> receiver_set_;
+
+{%- for method in interface.methods %}
+  {{method_macro.declare_data_checker(
+      method.mojom_name ~ "__", method.parameters)}}
+
+  {{method_macro.declare_data_generator(
+      method.mojom_name ~ "__", method.response_parameters)}}
+{%- endfor %}
+
+  // Must be the last member of the class.
+  base::WeakPtrFactory<{{class_name}}> weak_factory_{this};
+};

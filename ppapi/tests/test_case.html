@@ -279,11 +279,6 @@ onload = function() {
     obj.setAttribute("src", "ppapi_nacl_tests_pnacl.nmf");
     obj.setAttribute("type", "application/x-nacl");
     obj.setAttribute("mode", mode);
-  } else if (mode == "nacl_pnacl_nonsfi") {
-    obj = document.createElement("EMBED");
-    obj.setAttribute("src", "ppapi_nacl_tests_pnacl_nonsfi.nmf");
-    obj.setAttribute("type", "application/x-nacl");
-    obj.setAttribute("mode", mode);
   } else if (mode == "mojo") {
     obj = document.createElement("EMBED");
     obj.setAttribute("src",

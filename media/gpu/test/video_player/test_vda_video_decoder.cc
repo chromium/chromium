@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
@@ -22,13 +21,13 @@
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video.h"
-#include "media/gpu/test/video_player/frame_renderer.h"
+#include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "media/gpu/chromeos/chromeos_video_decoder_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/vd_video_decode_accelerator.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 namespace media {
@@ -40,26 +39,20 @@ constexpr size_t kTimestampCacheSize = 128;
 }  // namespace
 
 TestVDAVideoDecoder::TestVDAVideoDecoder(
-    AllocationMode allocation_mode,
     bool use_vd_vda,
+    OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
     const gfx::ColorSpace& target_color_space,
-    FrameRenderer* const frame_renderer,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
-    : output_mode_(allocation_mode == AllocationMode::kAllocate
-                       ? VideoDecodeAccelerator::Config::OutputMode::ALLOCATE
-                       : VideoDecodeAccelerator::Config::OutputMode::IMPORT),
-      use_vd_vda_(use_vd_vda),
+    FrameRendererDummy* const frame_renderer,
+    bool linear_output)
+    : use_vd_vda_(use_vd_vda),
+      on_provide_picture_buffers_cb_(std::move(on_provide_picture_buffers_cb)),
       target_color_space_(target_color_space),
       frame_renderer_(frame_renderer),
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
+      linear_output_(linear_output),
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       decode_start_timestamps_(kTimestampCacheSize) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
-
-  // TODO(crbug.com/933632) Remove support for allocate mode, and always use
-  // import mode. Support for allocate mode is temporary maintained for older
-  // platforms that don't support import mode.
 
   vda_wrapper_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
@@ -98,29 +91,18 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Create decoder factory.
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> decoder_factory;
-  bool hasGLContext = frame_renderer_->GetGLContext() != nullptr;
   GpuVideoDecodeGLClient gl_client;
-  if (hasGLContext) {
-    gl_client.get_context = base::BindRepeating(
-        &FrameRenderer::GetGLContext, base::Unretained(frame_renderer_));
-    gl_client.make_context_current = base::BindRepeating(
-        &FrameRenderer::AcquireGLContext, base::Unretained(frame_renderer_));
-    gl_client.bind_image = base::BindRepeating(
-        [](uint32_t, uint32_t, const scoped_refptr<gl::GLImage>&, bool) {
-          return true;
-        });
-  }
   decoder_factory = GpuVideoDecodeAcceleratorFactory::Create(gl_client);
 
   if (!decoder_factory) {
     ASSERT_TRUE(decoder_) << "Failed to create VideoDecodeAccelerator factory";
-    std::move(init_cb).Run(StatusCode::kCodeOnlyForTesting);
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   // Create Decoder.
   VideoDecodeAccelerator::Config vda_config(config.profile());
-  vda_config.output_mode = output_mode_;
+  vda_config.output_mode = VideoDecodeAccelerator::Config::OutputMode::IMPORT;
   vda_config.encryption_scheme = config.encryption_scheme();
   vda_config.is_deferred_initialization_allowed = false;
   vda_config.initial_expected_coded_size = config.coded_size();
@@ -135,7 +117,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOGF(2) << "Use VdVideoDecodeAccelerator";
     vda_config.is_deferred_initialization_allowed = true;
     decoder_ = media::VdVideoDecodeAccelerator::Create(
-        base::BindRepeating(&media::ChromeosVideoDecoderFactory::Create), this,
+        base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
         vda_config, base::SequencedTaskRunnerHandle::Get());
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {
@@ -146,17 +128,17 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   if (!decoder_) {
     ASSERT_TRUE(decoder_) << "Failed to create VideoDecodeAccelerator factory";
-    std::move(init_cb).Run(StatusCode::kCodeOnlyForTesting);
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!vda_config.is_deferred_initialization_allowed)
-    std::move(init_cb).Run(OkStatus());
+    std::move(init_cb).Run(DecoderStatus::Codes::kOk);
   else
     init_cb_ = std::move(init_cb);
 }
 
-void TestVDAVideoDecoder::NotifyInitializationComplete(Status status) {
+void TestVDAVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
   DCHECK(init_cb_);
 
@@ -228,75 +210,47 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
             << " picture buffers with size " << dimensions.width() << "x"
             << dimensions.height();
 
-  // If using allocate mode the format requested here might be
-  // PIXEL_FORMAT_UNKNOWN.
-  if (format == PIXEL_FORMAT_UNKNOWN)
-    format = PIXEL_FORMAT_ARGB;
+  const bool should_continue = on_provide_picture_buffers_cb_.Run();
+  if (!should_continue) {
+    DVLOGF(3) << "Abort the resolution change process.";
+    return;
+  }
 
+  // Create a set of DMABuf-backed video frames.
   std::vector<PictureBuffer> picture_buffers;
+  for (uint32_t i = 0; i < requested_num_of_buffers; ++i) {
+    picture_buffers.emplace_back(GetNextPictureBufferId(), dimensions);
+  }
 
-  switch (output_mode_) {
-    case VideoDecodeAccelerator::Config::OutputMode::IMPORT:
-      // If using import mode, create a set of DMABuf-backed video frames.
-      for (uint32_t i = 0; i < requested_num_of_buffers; ++i) {
-        picture_buffers.emplace_back(GetNextPictureBufferId(), dimensions);
-      }
-      decoder_->AssignPictureBuffers(picture_buffers);
+  decoder_->AssignPictureBuffers(picture_buffers);
 
-      // Create a video frame for each of the picture buffers and provide memory
-      // handles to the video frame's data to the decoder.
-      for (const PictureBuffer& picture_buffer : picture_buffers) {
-        scoped_refptr<VideoFrame> video_frame;
+  // Create a video frame for each of the picture buffers and provide memory
+  // handles to the video frame's data to the decoder.
+  for (const PictureBuffer& picture_buffer : picture_buffers) {
+    scoped_refptr<VideoFrame> video_frame;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-        video_frame = CreatePlatformVideoFrame(
-            gpu_memory_buffer_factory_, format, dimensions, visible_rect,
-            visible_rect.size(), base::TimeDelta(),
-            gfx::BufferUsage::SCANOUT_VDA_WRITE);
+    video_frame = CreateGpuMemoryBufferVideoFrame(
+        format, dimensions, visible_rect, visible_rect.size(),
+        base::TimeDelta(),
+        linear_output_ ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+                       : gfx::BufferUsage::SCANOUT_VDA_WRITE);
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-        ASSERT_TRUE(video_frame) << "Failed to create video frame";
-        video_frames_.emplace(picture_buffer.id(), video_frame);
-        gfx::GpuMemoryBufferHandle handle;
+    ASSERT_TRUE(video_frame) << "Failed to create video frame";
+    video_frames_.emplace(picture_buffer.id(), video_frame);
+    gfx::GpuMemoryBufferHandle handle;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-        handle = CreateGpuMemoryBufferHandle(video_frame.get());
-        DCHECK(!handle.is_null());
+    handle = CreateGpuMemoryBufferHandle(video_frame.get());
+    DCHECK(!handle.is_null());
 #else
-        NOTREACHED();
+    NOTREACHED();
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-        ASSERT_TRUE(!handle.is_null()) << "Failed to create GPU memory handle";
-        decoder_->ImportBufferForPicture(picture_buffer.id(), format,
-                                         std::move(handle));
-      }
-      break;
-    case VideoDecodeAccelerator::Config::OutputMode::ALLOCATE: {
-      // If using allocate mode, request a set of texture-backed video frames
-      // from the renderer.
-      const gfx::Size texture_dimensions =
-          texture_target == GL_TEXTURE_EXTERNAL_OES
-              ? GetRectSizeFromOrigin(visible_rect)
-              : dimensions;
-      for (uint32_t i = 0; i < requested_num_of_buffers; ++i) {
-        uint32_t texture_id;
-        auto video_frame = frame_renderer_->CreateVideoFrame(
-            format, texture_dimensions, texture_target, &texture_id);
-        ASSERT_TRUE(video_frame) << "Failed to create video frame";
-        int32_t picture_buffer_id = GetNextPictureBufferId();
-        PictureBuffer::TextureIds texture_ids(1, texture_id);
-        picture_buffers.emplace_back(picture_buffer_id, texture_dimensions,
-                                     texture_ids, texture_ids, texture_target,
-                                     format);
-        video_frames_.emplace(picture_buffer_id, std::move(video_frame));
-      }
-      // The decoder requires an active GL context to allocate memory.
-      decoder_->AssignPictureBuffers(picture_buffers);
-      break;
-    }
-    default:
-      LOG(ERROR) << "Unsupported output mode "
-                 << static_cast<size_t>(output_mode_);
+    ASSERT_TRUE(!handle.is_null()) << "Failed to create GPU memory handle";
+    decoder_->ImportBufferForPicture(picture_buffer.id(), format,
+                                     std::move(handle));
   }
 }
 
@@ -323,7 +277,7 @@ void TestVDAVideoDecoder::PictureReady(const Picture& picture) {
   ASSERT_NE(timestamp_it, decode_start_timestamps_.end());
   video_frame->set_timestamp(timestamp_it->second);
 
-  scoped_refptr<VideoFrame> wrapped_video_frame = nullptr;
+  scoped_refptr<VideoFrame> wrapped_video_frame;
 
   // Wrap the video frame in another frame that calls ReusePictureBufferTask()
   // upon destruction. When the renderer and video frame processors are done
@@ -375,7 +329,7 @@ void TestVDAVideoDecoder::PictureReady(const Picture& picture) {
 
 // static
 void TestVDAVideoDecoder::ReusePictureBufferThunk(
-    base::Optional<base::WeakPtr<TestVDAVideoDecoder>> vda_video_decoder,
+    absl::optional<base::WeakPtr<TestVDAVideoDecoder>> vda_video_decoder,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     int32_t picture_buffer_id) {
   DCHECK(vda_video_decoder);
@@ -405,7 +359,7 @@ void TestVDAVideoDecoder::NotifyEndOfBitstreamBuffer(
       << "Couldn't find decode callback for picture buffer with id "
       << bitstream_buffer_id;
 
-  std::move(it->second).Run(DecodeStatus::OK);
+  std::move(it->second).Run(DecoderStatus::Codes::kOk);
   decode_cbs_.erase(it);
 }
 
@@ -413,7 +367,7 @@ void TestVDAVideoDecoder::NotifyFlushDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
   DCHECK(flush_cb_);
 
-  std::move(flush_cb_).Run(DecodeStatus::OK);
+  std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void TestVDAVideoDecoder::NotifyResetDone() {

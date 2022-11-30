@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,11 @@ const char kAppShimBootstrapNameFragment[] = "apps";
 const char kRunningChromeVersionSymlinkName[] = "RunningChromeVersion";
 
 const char kLaunchedByChromeProcessId[] = "launched-by-chrome-process-id";
+const char kLaunchedByChromeBundlePath[] = "launched-by-chrome-bundle-path";
+const char kLaunchedByChromeFrameworkBundlePath[] =
+    "launched-by-chrome-framework-bundle-path";
+const char kLaunchedByChromeFrameworkDylibPath[] =
+    "launched-by-chrome-framework-dylib-path";
 const char kLaunchedForTest[] = "launched-for-test";
 const char kLaunchedAfterRebuild[] = "launched-after-rebuild";
 
@@ -25,6 +30,9 @@ NSString* const kCFBundleTypeIconFileKey = @"CFBundleTypeIconFile";
 NSString* const kCFBundleTypeNameKey = @"CFBundleTypeName";
 NSString* const kCFBundleTypeMIMETypesKey = @"CFBundleTypeMIMETypes";
 NSString* const kCFBundleTypeRoleKey = @"CFBundleTypeRole";
+NSString* const kCFBundleURLNameKey = @"CFBundleURLName";
+NSString* const kCFBundleURLSchemesKey = @"CFBundleURLSchemes";
+NSString* const kCFBundleURLTypesKey = @"CFBundleURLTypes";
 NSString* const kBundleTypeRoleViewer = @"Viewer";
 
 NSString* const kCFBundleDisplayNameKey = @"CFBundleDisplayName";

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,14 @@
 
 #include <errno.h>
 #include <sync/sync.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -77,7 +78,7 @@ bool HardwareDisplayPlaneManagerLegacy::Commit(CommitRequest commit_request,
 bool HardwareDisplayPlaneManagerLegacy::Commit(
     HardwareDisplayPlaneList* plane_list,
     scoped_refptr<PageFlipRequest> page_flip_request,
-    std::unique_ptr<gfx::GpuFence>* out_fence) {
+    gfx::GpuFenceHandle* release_fence) {
   bool test_only = !page_flip_request;
   if (test_only) {
     for (HardwareDisplayPlane* plane : plane_list->plane_list) {
@@ -123,11 +124,9 @@ bool HardwareDisplayPlaneManagerLegacy::Commit(
 bool HardwareDisplayPlaneManagerLegacy::DisableOverlayPlanes(
     HardwareDisplayPlaneList* plane_list) {
   // We're never going to ship legacy pageflip with overlays enabled.
-  DCHECK(std::find_if(plane_list->old_plane_list.begin(),
-                      plane_list->old_plane_list.end(),
-                      [](HardwareDisplayPlane* plane) {
-                        return plane->type() == DRM_PLANE_TYPE_OVERLAY;
-                      }) == plane_list->old_plane_list.end());
+  DCHECK(!base::Contains(plane_list->old_plane_list,
+                         static_cast<uint32_t>(DRM_PLANE_TYPE_OVERLAY),
+                         &HardwareDisplayPlane::type));
   return true;
 }
 
@@ -206,9 +205,9 @@ bool HardwareDisplayPlaneManagerLegacy::SetPlaneData(
 bool HardwareDisplayPlaneManagerLegacy::IsCompatible(
     HardwareDisplayPlane* plane,
     const DrmOverlayPlane& overlay,
-    uint32_t crtc_index) const {
-  if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
-      !plane->CanUseForCrtc(crtc_index))
+    uint32_t crtc_id) const {
+  if (plane->in_use() || plane->type() == DRM_PLANE_TYPE_CURSOR ||
+      !plane->CanUseForCrtcId(crtc_id))
     return false;
 
   // When using legacy kms we always scanout only one plane (the primary),

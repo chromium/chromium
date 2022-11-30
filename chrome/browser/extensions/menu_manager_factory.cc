@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -34,9 +33,9 @@ MenuManagerFactory::BuildServiceInstanceForTesting(
 }
 
 MenuManagerFactory::MenuManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-        "MenuManager",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "MenuManager",
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
@@ -46,11 +45,6 @@ KeyedService* MenuManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new MenuManager(profile, ExtensionSystem::Get(profile)->state_store());
-}
-
-content::BrowserContext* MenuManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 }
 
 bool MenuManagerFactory::ServiceIsCreatedWithBrowserContext() const {

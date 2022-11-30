@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -420,4 +420,4 @@ class GL_EXPORT GLXApi {
 #define glXWaitVideoSyncSGI ::gl::g_current_glx_context->glXWaitVideoSyncSGIFn
 #define glXWaitX ::gl::g_current_glx_context->glXWaitXFn
 
-#endif  //  UI_GL_GL_BINDINGS_AUTOGEN_GLX_H_
+#endif  // UI_GL_GL_BINDINGS_AUTOGEN_GLX_H_

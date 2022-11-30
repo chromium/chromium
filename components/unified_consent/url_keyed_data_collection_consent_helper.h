@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,11 @@ class UrlKeyedDataCollectionConsentHelper {
   static std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
   NewPersonalizedDataCollectionConsentHelper(syncer::SyncService* sync_service);
 
+  UrlKeyedDataCollectionConsentHelper(
+      const UrlKeyedDataCollectionConsentHelper&) = delete;
+  UrlKeyedDataCollectionConsentHelper& operator=(
+      const UrlKeyedDataCollectionConsentHelper&) = delete;
+
   virtual ~UrlKeyedDataCollectionConsentHelper();
 
   // Returns true if the user has consented for URL keyed anonymized data
@@ -66,8 +71,6 @@ class UrlKeyedDataCollectionConsentHelper {
 
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlKeyedDataCollectionConsentHelper);
 };
 
 }  // namespace unified_consent

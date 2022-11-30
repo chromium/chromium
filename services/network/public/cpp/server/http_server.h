@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +22,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -59,6 +60,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   // callbacks yet.
   HttpServer(mojo::PendingRemote<mojom::TCPServerSocket> server_socket,
              HttpServer::Delegate* delegate);
+
+  HttpServer(const HttpServer&) = delete;
+  HttpServer& operator=(const HttpServer&) = delete;
+
   ~HttpServer();
 
   void AcceptWebSocket(int connection_id,
@@ -106,7 +111,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   void DoAcceptLoop();
   void OnAcceptCompleted(
       int rv,
-      const base::Optional<net::IPEndPoint>& remote_addr,
+      const absl::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
@@ -138,14 +143,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   bool HasClosedConnection(HttpConnection* connection);
 
   const mojo::Remote<mojom::TCPServerSocket> server_socket_;
-  HttpServer::Delegate* const delegate_;
+  const raw_ptr<HttpServer::Delegate> delegate_;
 
   int last_id_;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;
 
   base::WeakPtrFactory<HttpServer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServer);
 };
 
 }  // namespace server

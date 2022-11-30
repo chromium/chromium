@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module smbfs.mojom;
+
+// This file is shared between Chrome and Chrome OS.
+// In Chrome, this file is located at:
+// //chromeos/ash/components/smbfs/mojom/file_path.mojom
+// In Chrome OS, this file is located at:
+// //platform2/smbfs/mojom/file_path.mojom
+
+// Stores the absolute path to a file or directory within the share. The path
+// cannot contain any parent (..) references and must not end in a trailing
+// slash.
+struct FilePath {
+   // The absolute pathname to the file.
+   string path;
+};

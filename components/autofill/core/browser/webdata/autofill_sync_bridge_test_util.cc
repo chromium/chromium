@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
+
+#include "components/sync/protocol/autofill_specifics.pb.h"
 
 namespace autofill {
 

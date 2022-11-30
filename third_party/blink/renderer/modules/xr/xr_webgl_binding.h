@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
-#include "third_party/blink/renderer/modules/xr/xr_webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -15,7 +14,7 @@ namespace blink {
 class ExceptionState;
 class WebGLRenderingContextBase;
 class WebGLTexture;
-class XRFrame;
+class XRCamera;
 class XRLightProbe;
 class XRSession;
 class XRView;
@@ -28,14 +27,16 @@ class XRWebGLBinding final : public ScriptWrappable {
   XRWebGLBinding(XRSession*, WebGLRenderingContextBase*, bool webgl2);
   ~XRWebGLBinding() override = default;
 
-  static XRWebGLBinding* Create(XRSession*,
-                                const XRWebGLRenderingContext&,
-                                ExceptionState&);
+  static XRWebGLBinding* Create(XRSession* session,
+                                const V8XRWebGLRenderingContext* context,
+                                ExceptionState& exception_state);
 
   XRSession* session() const { return session_; }
 
   WebGLTexture* getReflectionCubeMap(XRLightProbe*, ExceptionState&);
-  WebGLTexture* getCameraImage(XRFrame*, XRView*);
+
+  WebGLTexture* getCameraImage(XRCamera* camera,
+                               ExceptionState& exception_state);
 
   XRWebGLDepthInformation* getDepthInformation(XRView* view,
                                                ExceptionState& exception_state);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/api/cma_backend.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -69,6 +68,9 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
                  const OutputStreamParams& params,
                  MediaPipelineBackendManager* backend_manager);
 
+  CmaBackendShim(const CmaBackendShim&) = delete;
+  CmaBackendShim& operator=(const CmaBackendShim&) = delete;
+
   // Removes this audio output. Public methods must not be called after Remove()
   // is called.
   void Remove();
@@ -112,8 +114,6 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
 
   std::unique_ptr<CmaBackend> cma_backend_;
   CmaBackend::AudioDecoder* audio_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(CmaBackendShim);
 };
 
 }  // namespace mixer_service

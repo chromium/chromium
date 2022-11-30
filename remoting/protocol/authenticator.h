@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@ namespace jingle_xmpp {
 class XmlElement;
 }  // namespace jingle_xmpp
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class Authenticator;
 class ChannelAuthenticator;
@@ -63,12 +62,12 @@ class Authenticator {
     PROCESSING_MESSAGE,
   };
 
-  enum RejectionReason {
+  enum class RejectionReason {
     // The account credentials were not valid (i.e. incorrect PIN).
     INVALID_CREDENTIALS,
 
     // The client JID was not valid (i.e. violated a policy or was malformed).
-    INVALID_ACCOUNT,
+    INVALID_ACCOUNT_ID,
 
     // Generic error used when something goes wrong establishing a session.
     PROTOCOL_ERROR,
@@ -78,6 +77,14 @@ class Authenticator {
 
     // Multiple, valid connection requests were received for the same session.
     TOO_MANY_CONNECTIONS,
+
+    // The client is not authorized to connect to this device due to a policy
+    // defined by the third party auth service. No denial reason was given.
+    AUTHZ_POLICY_CHECK_FAILED,
+
+    // The client is not authorized to connect to this device based on their
+    // current location due to a policy defined by the third party auth service.
+    LOCATION_AUTHZ_POLICY_CHECK_FAILED,
   };
 
   // Callback used for layered Authenticator implementations, particularly
@@ -153,7 +160,6 @@ class AuthenticatorFactory {
       const std::string& remote_jid) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_AUTHENTICATOR_H_

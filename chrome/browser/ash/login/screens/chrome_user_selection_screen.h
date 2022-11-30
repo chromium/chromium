@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,24 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
-#include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 class ChromeUserSelectionScreen
     : public UserSelectionScreen,
       public policy::DeviceLocalAccountPolicyService::Observer {
  public:
   explicit ChromeUserSelectionScreen(DisplayedScreen display_type);
+
+  ChromeUserSelectionScreen(const ChromeUserSelectionScreen&) = delete;
+  ChromeUserSelectionScreen& operator=(const ChromeUserSelectionScreen&) =
+      delete;
+
   ~ChromeUserSelectionScreen() override;
 
   // UserSelectionScreen:
@@ -71,10 +74,14 @@ class ChromeUserSelectionScreen
   DisplayNamesMap public_session_display_names_;
 
   base::WeakPtrFactory<ChromeUserSelectionScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUserSelectionScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ChromeUserSelectionScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_CHROME_USER_SELECTION_SCREEN_H_

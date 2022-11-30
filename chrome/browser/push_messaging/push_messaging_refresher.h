@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "content/public/browser/push_messaging_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
 // This class enables push subscription refreshes as defined in the docs:
@@ -24,6 +24,10 @@
 class PushMessagingRefresher {
  public:
   PushMessagingRefresher();
+
+  PushMessagingRefresher(const PushMessagingRefresher&) = delete;
+  PushMessagingRefresher& operator=(const PushMessagingRefresher&) = delete;
+
   ~PushMessagingRefresher();
 
   // Return number of objects that are currently being refreshed
@@ -49,7 +53,7 @@ class PushMessagingRefresher {
 
   // If a subscription was refreshed, we accept the old subscription for
   // a moment after refresh
-  base::Optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
+  absl::optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
       const std::string& app_id);
 
   base::WeakPtr<PushMessagingRefresher> GetWeakPtr();
@@ -90,7 +94,6 @@ class PushMessagingRefresher {
   RefreshMap refresh_map_;
 
   base::WeakPtrFactory<PushMessagingRefresher> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingRefresher);
 };
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_REFRESHER_H_

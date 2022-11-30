@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -20,6 +19,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -44,7 +44,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo2;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -107,7 +107,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verify(mTracker, times(1))
@@ -127,7 +127,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verify(mTracker, times(1))
@@ -145,7 +145,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         DefaultBrowserInfo2.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition = */ true));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
@@ -169,7 +169,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         DefaultBrowserInfo2.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition = */ false));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
@@ -192,7 +192,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     public void testReengagementNotificationNotSentDueToUnavailablePreconditions() {
         DefaultBrowserInfo2.setDefaultInfoForTests(null);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
@@ -221,7 +221,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @SmallTest
     public void testEngagementNotTracked() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verify(mTracker, never()).notifyEvent(EventConstants.STARTED_FROM_MAIN_INTENT);
@@ -251,7 +251,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         DefaultBrowserInfo2.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition = */ true));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         verifyHasNoNotifications();
@@ -283,7 +283,10 @@ public class ReengagementNotificationControllerIntegrationTest {
                 tabAddedCallback.notifyCalled();
             }
         };
-        mTabbedActivityTestRule.getActivity().getTabModelSelector().addObserver(selectorObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabbedActivityTestRule.getActivity().getTabModelSelector().addObserver(
+                    selectorObserver);
+        });
 
         Intent intent =
                 new Intent(InstrumentationRegistry.getTargetContext(), ReengagementActivity.class);
@@ -312,7 +315,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         Assert.assertFalse(hasNotifications());
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static boolean findNotification(@StringRes int title, @StringRes int description) {
         Context context = InstrumentationRegistry.getTargetContext();
         StatusBarNotification[] notifications =
@@ -336,7 +339,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         return false;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static boolean hasNotifications() {
         Context context = InstrumentationRegistry.getTargetContext();
         StatusBarNotification[] notifications =
@@ -353,7 +356,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         return false;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static void closeReengagementNotifications() {
         if (!hasNotifications()) return;
 
@@ -377,7 +380,6 @@ public class ReengagementNotificationControllerIntegrationTest {
         // TODO(crbug.com/1111584): Remove these overrides when FeatureList#isInitialized() works
         // as expected with test values.
         features.put(ChromeFeatureList.SEARCH_ENGINE_PROMO_EXISTING_DEVICE, false);
-        features.put(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO, false);
         features.put(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
         FeatureList.setTestFeatures(features);
     }

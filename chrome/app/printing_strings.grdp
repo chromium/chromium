@@ -32,9 +32,6 @@
     <message name="IDS_PRINT_PREVIEW_INVALID_PRINTER_SETTINGS" desc="Message to display when selected printer is not reachable or its settings are invalid. Identical to IDS_PRINT_INVALID_PRINTER_SETTINGS, but includes a line break.">
       The selected printer is not available or not installed correctly. <ph name="BR">&lt;br&gt;</ph> Check your printer or try selecting another printer.
     </message>
-    <message name="IDS_PRINT_PREVIEW_UNSUPPORTED_CLOUD_PRINTER" desc="Message to display when an unsupported cloud printer is selected.">
-      The selected Google Cloud Print device is no longer supported. <ph name="BR">&lt;br&gt;</ph> Try setting up the printer in your computer's system settings.
-    </message>
     <message name="IDS_PRINT_PREVIEW_PRINT_BUTTON" desc="Print button.">
       Print
     </message>
@@ -49,6 +46,12 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_OPTION_ALL_PAGES" desc="Option to print all pages.">
       All
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_ODD_PAGES" desc="Option to print odd numbered pages only.">
+      Odd pages only
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_EVEN_PAGES" desc="Option to print even numbered pages only.">
+      Even pages only
     </message>
     <message name="IDS_PRINT_PREVIEW_OPTION_CUSTOM_PAGES" desc="Option to print custom pages.">
       Custom
@@ -110,10 +113,6 @@
     <message name="IDS_PRINT_PREVIEW_PRINT_TO_PDF"
              desc="Option shown on printer drop-down list for saving previewed document as a PDF.">
       Save as PDF
-    </message>
-    <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
-             desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
-      Save to Google Drive
     </message>
     <message name="IDS_PRINT_PREVIEW_SHEET_SUMMARY_LABEL" desc="Print summary, explaining to the user how many pages will be printed.">
     {COUNT, plural,
@@ -203,20 +202,11 @@
     <message name="IDS_PRINT_PREVIEW_DESTINATION_SEARCH_TITLE" desc="Title of the destination search UI component.">
       Select a destination
     </message>
-    <message name="IDS_PRINT_PREVIEW_ACCOUNT_SELECT_TITLE" desc="Title of the user's account selection control, to choose the account destinations are being shown for.">
-      Showing destinations for
-    </message>
-    <message name="IDS_PRINT_PREVIEW_ADD_ACCOUNT_TITLE" desc="Title of the selection control item to let user to sign into another account.">
-      Add account...
-    </message>
     <message name="IDS_PRINT_PREVIEW_SEARCH_BOX_PLACEHOLDER" desc="Text to put in a search box when user has not entered a search query.">
       Search destinations
     </message>
     <message name="IDS_PRINT_PREVIEW_NO_DESTINATIONS_MESSAGE" desc="Message to show when no destinations were found.">
       No destinations found
-    </message>
-    <message name="IDS_PRINT_PREVIEW_RECENT_DESTINATIONS_TITLE" desc="Title of the section in the Print Preview dialog that lists recently used printers that the user can print to. 'Destinations' is used because the list may include 'Saving as PDF' or other options that are not physical printers.">
-      Recent Destinations
     </message>
     <message name="IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE" desc="Title of the section in the Print Preview dialog that lists all printers that the user can print to. 'Destinations' is used because the list may include 'Saving as PDF' or other options that are not physical printers.">
       Print Destinations
@@ -229,24 +219,6 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL" desc="Aria label for the dropdown option to view more print destinations in a dialog. Expansion of SEE_MORE above to add context for screen readers." meaning="Label text">
       See more destinations
-    </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE_FOR_YEAR" desc="Shown when printer has been offline for more than a year.">
-      Offline for more than a year
-    </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE_FOR_MONTH" desc="Shown when printer has been offline for more than a month.">
-      Offline for more than a month
-    </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE_FOR_WEEK" desc="Shown when printer has been offline for more than a week.">
-      Offline for more than a week
-    </message>
-    <message name="IDS_PRINT_PREVIEW_OFFLINE" desc="Shown when printer is currently offline.">
-      Currently offline
-    </message>
-    <message name="IDS_PRINT_PREVIEW_NO_LONGER_SUPPORTED_FRAGMENT" desc="Shown in destination settings when printer is no longer supported.">
-      No longer supported
-    </message>
-    <message name="IDS_PRINT_PREVIEW_NO_LONGER_SUPPORTED" desc="Shown in destinations dialog when printer is no longer supported.">
-      No longer supported.
     </message>
     <message name="IDS_PRINT_PREVIEW_EXTENSION_DESTINATION_ICON_TOOLTIP" desc="Tooltip for the icon shown in print destination list next to print destination provided by an extension.">
       Documents you send to print via <ph name="APP_NAME">$1<ex>A Chrome app</ex></ph> can be read by <ph name="APP_NAME">$1<ex>A Chrome app</ex></ph>.
@@ -272,21 +244,6 @@
     <message name="IDS_PRINT_PREVIEW_NEW_SHOW_ADVANCED_OPTIONS" desc="The text for the button to open the printer's advanced settings dialog in the new UI.">
       Advanced settings
     </message>
-    <message name="IDS_PRINT_PREVIEW_ACCEPT_INVITE" desc="Text for the button to accept the printer-sharing invitation.">
-      Accept
-    </message>
-    <message name="IDS_PRINT_PREVIEW_ACCEPT_GROUP_INVITE" desc="Text for the button to accept the printer-sharing invitation for the group of users.">
-      Accept for group
-    </message>
-    <message name="IDS_PRINT_PREVIEW_REJECT_INVITE" desc="Text for the button to reject the printer-sharing invitation.">
-      Reject
-    </message>
-    <message name="IDS_PRINT_PREVIEW_GROUP_INVITE_TEXT" desc="Message to show when the user has pending printer-sharing invitation for the group of users they are a manager of.">
-      &lt;strong&gt;<ph name="SENDER">$1</ph>&lt;/strong&gt; wants to share a printer &lt;strong&gt;<ph name="PRINTER_NAME">$2</ph>&lt;/strong&gt; with a group you own: &lt;strong&gt;<ph name="GROUP_NAME">$3</ph>&lt;/strong&gt;. If you accept, all group members will be able to print to the printer.
-    </message>
-    <message name="IDS_PRINT_PREVIEW_INVITE_TEXT" desc="Message to show when the user has pending printer-sharing invitation.">
-      &lt;strong&gt;<ph name="SENDER">$1</ph>&lt;/strong&gt; wants to share a printer &lt;strong&gt;<ph name="PRINTER_NAME">$2</ph>&lt;/strong&gt; with you.
-    </message>
     <message name="IDS_PRINT_PREVIEW_BUTTON_SELECT" desc="Label for a button in a dialog asking a user to confirm selection of a printer in print preview UI. The printer gets selected if the user clicks the button.">
       Select
     </message>
@@ -305,7 +262,11 @@
     <message name="IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT" desc="Text shown when hovering over the enterprise managed icon in the header">
       These settings are enforced by your administrator
     </message>
-    <if expr="chromeos">
+    <if expr="is_chromeos">
+      <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
+               desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
+        Save to Google Drive
+      </message>
       <message name="IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER" desc="Text to put in a print server search box when user has not entered a search query.">
         Print servers
       </message>
@@ -318,10 +279,10 @@
       <message name="IDS_PRINT_PREVIEW_PIN_PLACEHOLDER" desc="Text to put in a pin textfield when user has not entered any pin value.">
         Enter 4 digit pin (0000-9999)
       </message>
-      <message name="IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT" desc="Message shown to user while their printer is being setup in Chrome OS.">
+      <message name="IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT" desc="Message shown to user while their printer is being setup in ChromeOS.">
         Setting up
       </message>
-      <message name="IDS_PRINT_CONFIGURING_FAILED_TEXT" desc="Message shown to user when their printer is failed to set up in Chrome OS.">
+      <message name="IDS_PRINT_CONFIGURING_FAILED_TEXT" desc="Message shown to user when their printer is failed to set up in ChromeOS.">
         Error setting up printer
       </message>
       <message name="IDS_PRINT_PREVIEW_EULA_URL" desc="Message shown to user when their printer has a EULA associated with its PPD. This message is hyperlinked to the EULA.">
@@ -375,7 +336,7 @@
         other {Exceeds limit of {COUNT} sheets of paper}}
       </message>
     </if>
-    <if expr="not chromeos">
+    <if expr="not is_chromeos">
       <message name="IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION" desc="Option allowing the user to access advanced printer settings using the native print system dialog instead of printing through the print preview mechanism. Shortcut key is not translated">
         Print using system dialog... <ph name="SHORTCUT_KEY">$1<ex>(Shift+Ctrl+P)</ex></ph>
       </message>
@@ -400,20 +361,4 @@
   <message name="IDS_PRINT_SPOOL_FAILED_ERROR_TEXT" desc="Text in a messagebox when printing fails because of printer issues.">
     Something went wrong when trying to print.  Please check your printer and try again.
   </message>
-
-  <!-- Cloud Print proxy strings -->
-  <if expr="not is_android">
-    <message name="IDS_CLOUD_PRINT_REGISTER_PRINTER_FAILED" desc="Status message to be sent to the server when we failed to retrieve information about a printer to register.">
-      An error occurred while retrieving printer capabilities for printer <ph name="PRINTER_NAME">$1<ex>HP Laserjet 7900</ex></ph>. This printer could not be registered with <ph name="CLOUD_PRINT_NAME">$2<ex>Google Cloud Print</ex></ph>.
-    </message>
-    <message name="IDS_CLOUD_PRINT_ZOMBIE_PRINTER" desc="Status message to be sent to the server when we get a notification for a printer that we can't find locally.">
-      Received a notification for an unknown printer.
-    </message>
-    <message name="IDS_CLOUD_PRINT_ENUM_FAILED" desc="Status message to be sent to the Cloud Print server when enumerating printers failed.">
-      There was a problem listing printers. Some of your printers may not have registered successfully with <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph>.
-    </message>
-    <message name="IDS_SERVICE_CRASH_RECOVERY_CONTENT" desc="Text content telling the user the service process has crashed.">
-      The <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph> connector process has crashed. Restart?
-    </message>
-  </if>
 </grit-part>

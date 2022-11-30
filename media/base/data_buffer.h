@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -31,6 +30,9 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
 
   // Assumes valid data of size |buffer_size|.
   DataBuffer(std::unique_ptr<uint8_t[]> buffer, int buffer_size);
+
+  DataBuffer(const DataBuffer&) = delete;
+  DataBuffer& operator=(const DataBuffer&) = delete;
 
   // Create a DataBuffer whose |data_| is copied from |data|.
   //
@@ -108,8 +110,6 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   std::unique_ptr<uint8_t[]> data_;
   int buffer_size_;
   int data_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataBuffer);
 };
 
 }  // namespace media

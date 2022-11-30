@@ -24,14 +24,14 @@ function runTest() {
     startTime = PerfTestRunner.now();
 
     document.body.innerHTML = '';
-    appendManyElements(document.body, 7);  // Create tree 7 levels deep.
+    appendManyElements(document.body, 6);  // Create tree 6 levels deep.
 
-    setTimeout(changeLeafText, 10);
+    setTimeout(changeLeafText, 250);
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's
     // covered by traceEventsToMeasure to have a chance to run.
-    setTimeout(runTest, 1500);
+    setTimeout(runTest, 2500);
   }
 }
 
@@ -64,7 +64,7 @@ function changeLeafText(text) {
 
 
 PerfTestRunner.startMeasureValuesAsync({
-    description: 'Test accessibility performance when changing text inside ignored inlines.',
+    description: 'Test accessibility performance when changing text inside ignored blocks, with delay between each change.',
     unit: 'ms',
     done: function () {
       isDone = true;
@@ -75,6 +75,8 @@ PerfTestRunner.startMeasureValuesAsync({
     iterationCount: 6,
     tracingCategories: 'accessibility',
     traceEventsToMeasure: [
+      // Measuring 'AXObjectCacheImpl::ChildrenChanged(LayoutObject)'
+      // can lead to this test timing out.
       'ProcessDeferredAccessibilityEvents',
       'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
     ]

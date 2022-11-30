@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -35,14 +35,17 @@ class MEDIA_EXPORT AudioDeviceListenerWin : public IMMNotificationClient {
   // thus the callee must be thread safe.  |listener_cb| is a permanent callback
   // and must outlive AudioDeviceListenerWin.
   explicit AudioDeviceListenerWin(base::RepeatingClosure listener_cb);
+
+  AudioDeviceListenerWin(const AudioDeviceListenerWin&) = delete;
+  AudioDeviceListenerWin& operator=(const AudioDeviceListenerWin&) = delete;
+
   virtual ~AudioDeviceListenerWin();
 
  private:
   friend class AudioDeviceListenerWinTest;
 
   // Minimum allowed time between device change notifications.
-  static constexpr base::TimeDelta kDeviceChangeLimit =
-      base::TimeDelta::FromMilliseconds(250);
+  static constexpr base::TimeDelta kDeviceChangeLimit = base::Milliseconds(250);
 
   // IMMNotificationClient implementation.
   IFACEMETHODIMP_(ULONG) AddRef() override;
@@ -68,9 +71,7 @@ class MEDIA_EXPORT AudioDeviceListenerWin : public IMMNotificationClient {
   // AudioDeviceListenerWin must be constructed and destructed on one thread.
   THREAD_CHECKER(thread_checker_);
 
-  const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerWin);
+  raw_ptr<const base::TickClock> tick_clock_;
 };
 
 }  // namespace media

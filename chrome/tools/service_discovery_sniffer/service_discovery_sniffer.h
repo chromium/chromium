@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 
 namespace local_discovery {
@@ -20,6 +19,10 @@ class ServicePrinter {
  public:
   ServicePrinter(ServiceDiscoveryClient* client,
                  const std::string& service_name);
+
+  ServicePrinter(const ServicePrinter&) = delete;
+  ServicePrinter& operator=(const ServicePrinter&) = delete;
+
   ~ServicePrinter();
 
   void Added();
@@ -32,8 +35,6 @@ class ServicePrinter {
 
   bool changed_;
   std::unique_ptr<ServiceResolver> service_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServicePrinter);
 };
 
 // Monitors a service type and prints information regarding all services on it
@@ -42,6 +43,10 @@ class ServiceTypePrinter {
  public:
   ServiceTypePrinter(ServiceDiscoveryClient* client,
                      const std::string& service_type);
+
+  ServiceTypePrinter(const ServiceTypePrinter&) = delete;
+  ServiceTypePrinter& operator=(const ServiceTypePrinter&) = delete;
+
   virtual ~ServiceTypePrinter();
 
   void Start();
@@ -52,8 +57,6 @@ class ServiceTypePrinter {
   std::map<std::string, std::unique_ptr<ServicePrinter>> services_;
   std::unique_ptr<ServiceWatcher> watcher_;
   ServiceDiscoveryClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTypePrinter);
 };
 
 }  // namespace local_discovery

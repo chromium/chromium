@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 
 #include <type_traits>
 #include <utility>
-
-#include "base/macros.h"
 
 namespace base {
 namespace win {
@@ -30,6 +28,9 @@ class Reference
   explicit Reference(const AbiT& value) : value_(value) {}
   explicit Reference(AbiT&& value) : value_(std::move(value)) {}
 
+  Reference(const Reference&) = delete;
+  Reference& operator=(const Reference&) = delete;
+
   // ABI::Windows::Foundation::IReference:
   IFACEMETHODIMP get_Value(AbiT* value) override {
     *value = value_;
@@ -39,8 +40,6 @@ class Reference
  private:
   ~Reference() override = default;
   AbiT value_;
-
-  DISALLOW_COPY_AND_ASSIGN(Reference);
 };
 
 }  // namespace win

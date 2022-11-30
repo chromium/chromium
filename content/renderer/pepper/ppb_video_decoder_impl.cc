@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "content/renderer/pepper/host_globals.h"
@@ -130,7 +131,8 @@ bool PPB_VideoDecoder_Impl::Init(PP_Resource graphics_context,
   // This is not synchronous, but subsequent IPC messages will be buffered, so
   // it is okay to immediately send IPC messages.
   if (command_buffer->channel()) {
-    decoder_.reset(new media::GpuVideoDecodeAcceleratorHost(command_buffer));
+    decoder_ = base::WrapUnique<media::VideoDecodeAccelerator>(
+        new media::GpuVideoDecodeAcceleratorHost(command_buffer));
     media::VideoDecodeAccelerator::Config config(PPToMediaProfile(profile));
     config.supported_output_formats.assign(
         {media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ARGB});
@@ -266,8 +268,6 @@ void PPB_VideoDecoder_Impl::PictureReady(const media::Picture& picture) {
   DCHECK(RenderThreadImpl::current());
   if (!GetPPP())
     return;
-
-  media::ReportPepperVideoDecoderOutputPictureCountHW(coded_size_.height());
 
   PP_Picture_Dev output;
   output.picture_buffer_id = picture.picture_buffer_id();

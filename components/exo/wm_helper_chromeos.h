@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "ash/display/window_tree_host_manager.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/exo/vsync_timing_manager.h"
 #include "components/exo/wm_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -49,9 +50,15 @@ namespace exo {
 
 // A ChromeOS-specific helper class for accessing WindowManager related
 // features.
-class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
+class WMHelperChromeOS : public WMHelper,
+                         public chromeos::PowerManagerClient::Observer,
+                         public VSyncTimingManager::Delegate {
  public:
   WMHelperChromeOS();
+
+  WMHelperChromeOS(const WMHelperChromeOS&) = delete;
+  WMHelperChromeOS& operator=(const WMHelperChromeOS&) = delete;
+
   ~WMHelperChromeOS() override;
   static WMHelperChromeOS* GetInstance();
   void AddTabletModeObserver(ash::TabletModeObserver* observer);
@@ -72,6 +79,8 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
       aura::client::FocusChangeObserver* observer) override;
   void AddDragDropObserver(DragDropObserver* observer) override;
   void RemoveDragDropObserver(DragDropObserver* observer) override;
+  void AddPowerObserver(WMHelper::PowerObserver* observer) override;
+  void RemovePowerObserver(WMHelper::PowerObserver* observer) override;
   void SetDragDropDelegate(aura::Window*) override;
   void ResetDragDropDelegate(aura::Window*) override;
   VSyncTimingManager& GetVSyncTimingManager() override;
@@ -89,6 +98,7 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   aura::Window* GetFocusedWindow() const override;
   aura::Window* GetRootWindowForNewWindows() const override;
   aura::client::CursorClient* GetCursorClient() override;
+  aura::client::DragDropClient* GetDragDropClient() override;
   void AddPreTargetHandler(ui::EventHandler* handler) override;
   void PrependPreTargetHandler(ui::EventHandler* handler) override;
   void RemovePreTargetHandler(ui::EventHandler* handler) override;
@@ -99,9 +109,6 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   double GetDeviceScaleFactorForWindow(aura::Window* window) const override;
   void SetDefaultScaleCancellation(bool default_scale_cancellation) override;
 
-  void SetImeBlocked(aura::Window* window, bool ime_blocked) override;
-  bool IsImeBlocked(aura::Window* window) const override;
-
   LifetimeManager* GetLifetimeManager() override;
   aura::client::CaptureClient* GetCaptureClient() override;
 
@@ -110,9 +117,15 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) override;
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
+
+  // Overridden from chromeos::PowerManagerClient::Observer:
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
 
   // Overridden from VSyncTimingManager::Delegate:
   void AddVSyncParameterObserver(
@@ -120,13 +133,22 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
       override;
 
  private:
+  void PerformDrop(
+      std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
+      std::unique_ptr<ui::OSExchangeData> data,
+      ui::mojom::DragOperation& output_drag_op);
+
   base::ObserverList<DragDropObserver>::Unchecked drag_drop_observers_;
+  base::ObserverList<PowerObserver> power_observers_;
   LifetimeManager lifetime_manager_;
   VSyncTimingManager vsync_timing_manager_;
   bool default_scale_cancellation_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(WMHelperChromeOS);
+  base::WeakPtrFactory<WMHelperChromeOS> weak_ptr_factory_{this};
 };
+
+// Returnsn the default device scale factor used for
+// ClientControlledShellSurface (ARC).
+float GetDefaultDeviceScaleFactor();
 
 }  // namespace exo
 

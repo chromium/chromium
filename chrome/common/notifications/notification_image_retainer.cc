@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/common/chrome_paths.h"
@@ -29,7 +28,7 @@ constexpr base::FilePath::CharType kImageRoot[] =
 // the delay is t * (n + 1), where t is the default on-screen display time for
 // an Action Center notification (6 seconds) and n is the number of
 // notifications that can be shown on-screen at once (1).
-constexpr base::TimeDelta kDeletionDelay = base::TimeDelta::FromSeconds(12);
+constexpr base::TimeDelta kDeletionDelay = base::Seconds(12);
 
 // Returns the temporary directory within the user data directory. The regular
 // temporary directory is not used to minimize the risk of files getting deleted

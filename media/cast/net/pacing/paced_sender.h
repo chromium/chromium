@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -109,6 +109,9 @@ class PacedSender final : public PacedPacketSender {
       PacketTransport* external_transport,
       const scoped_refptr<base::SingleThreadTaskRunner>& transport_task_runner);
 
+  PacedSender(const PacedSender&) = delete;
+  PacedSender& operator=(const PacedSender&) = delete;
+
   ~PacedSender() final;
 
   // These must be called before non-RTCP packets are sent.
@@ -198,9 +201,9 @@ class PacedSender final : public PacedPacketSender {
   bool IsHighPriority(const PacketKey& packet_key) const;
 
   // These are externally-owned objects injected via the constructor.
-  const base::TickClock* const clock_;
-  std::vector<PacketEvent>* const recent_packet_events_;
-  PacketTransport* const transport_;
+  const raw_ptr<const base::TickClock> clock_;
+  const raw_ptr<std::vector<PacketEvent>> recent_packet_events_;
+  const raw_ptr<PacketTransport> transport_;
 
   scoped_refptr<base::SingleThreadTaskRunner> transport_task_runner_;
 
@@ -241,8 +244,6 @@ class PacedSender final : public PacedPacketSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<PacedSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PacedSender);
 };
 
 }  // namespace cast

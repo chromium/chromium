@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/url_utils.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -16,12 +15,6 @@ bool IsInSubDomain(const GURL& url, const std::string& domain) {
   return base::EndsWith(base::StringPiece(url.host()),
                         base::StringPiece("." + domain),
                         base::CompareCase::INSENSITIVE_ASCII);
-}
-
-std::string GetRegistryControlledDomain(const GURL& signon_realm) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
-      signon_realm,
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 }  // namespace
@@ -39,11 +32,11 @@ bool IsInDomainOrSubDomain(const GURL& url, const GURL& domain) {
 
 bool IsInDomainOrSubDomain(const GURL& url,
                            const std::vector<std::string>& allowed_domains) {
-  return std::find_if(allowed_domains.begin(), allowed_domains.end(),
-                      [url](const std::string& allowed_domain) {
-                        return url.host() == allowed_domain ||
-                               IsInSubDomain(url, allowed_domain);
-                      }) != allowed_domains.end();
+  return base::ranges::any_of(allowed_domains,
+                              [url](const std::string& allowed_domain) {
+                                return url.host() == allowed_domain ||
+                                       IsInSubDomain(url, allowed_domain);
+                              });
 }
 
 bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2) {
@@ -51,18 +44,26 @@ bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2) {
     return false;
   }
 
-  if (url1.GetOrigin() == url2.GetOrigin()) {
+  if (url1.DeprecatedGetOriginAsURL() == url2.DeprecatedGetOriginAsURL()) {
     return true;
   }
 
-  auto domain1 = GetRegistryControlledDomain(url1);
-  auto domain2 = GetRegistryControlledDomain(url2);
-
+  auto domain1 = GetOrganizationIdentifyingDomain(url1);
+  auto domain2 = GetOrganizationIdentifyingDomain(url2);
   if (domain1.empty() || domain2.empty()) {
     return false;
   }
 
-  return url1.scheme() == url2.scheme() && domain1 == domain2;
+  return domain1 == domain2;
+}
+
+std::string GetOrganizationIdentifyingDomain(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+bool IsAllowedSchemaTransition(const GURL& from, const GURL& to) {
+  return from.scheme() == to.scheme() || to.scheme() == url::kHttpsScheme;
 }
 
 }  // namespace url_utils

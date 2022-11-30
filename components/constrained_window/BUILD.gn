@@ -1,7 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//ui/base/ui_features.gni")
 
@@ -16,6 +17,7 @@ static_library("constrained_window") {
   ]
 
   deps = [
+    "//components/guest_view/browser",
     "//components/web_modal",
     "//content/public/browser",
     "//ui/display",
@@ -32,6 +34,10 @@ static_library("constrained_window") {
       "//ui/compositor",
       "//ui/wm",
     ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
-#include "components/search_engines/omnibox_focus_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -37,7 +38,8 @@ class AutocompleteInput {
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
                     bool should_use_https_as_default_scheme = false,
-                    int https_port_for_testing = 0);
+                    int https_port_for_testing = 0,
+                    bool use_fake_https_for_https_upgrade_testing = false);
   // This constructor adds |cursor_position|, related to |text|.
   // |cursor_position| represents the location of the cursor within the
   // query |text|. It may be set to std::u16string::npos if the input
@@ -48,7 +50,8 @@ class AutocompleteInput {
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
                     bool should_use_https_as_default_scheme = false,
-                    int https_port_for_testing = 0);
+                    int https_port_for_testing = 0,
+                    bool use_fake_https_for_https_upgrade_testing = false);
 
   // This constructor adds |desired_tld|, related to |text|. |desired_tld|
   // is the user's desired TLD, if one is not already present in the text to
@@ -62,7 +65,8 @@ class AutocompleteInput {
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
                     bool should_use_https_as_default_scheme = false,
-                    int https_port_for_testing = 0);
+                    int https_port_for_testing = 0,
+                    bool use_fake_https_for_https_upgrade_testing = false);
 
   AutocompleteInput(const AutocompleteInput& other);
   ~AutocompleteInput();
@@ -94,6 +98,17 @@ class AutocompleteInput {
       const AutocompleteSchemeClassifier& scheme_classifier,
       url::Component* scheme,
       url::Component* host);
+
+  // Returns true if the given text and url combination should be upgraded to
+  // use https:// as the default scheme. If so, fills |upgraded_url| with the
+  // upgraded https:// URL. |https_port_for_testing| can be set to a non-zero
+  // value in tests to load test cases over net::EmbeddedTestServer.
+  static bool ShouldUpgradeToHttps(
+      const std::u16string& text,
+      const GURL& url,
+      int https_port_for_testing,
+      bool use_fake_https_for_https_upgrade_testing,
+      GURL* upgraded_url);
 
   // Code that wants to format URLs with a format flag including
   // net::kFormatUrlOmitTrailingSlashOnBareHostname risk changing the meaning if
@@ -165,7 +180,7 @@ class AutocompleteInput {
   // URL.
   const std::u16string& scheme() const { return scheme_; }
 
-  // The input as an URL to navigate to, if possible.
+  // The input as a URL to navigate to, if possible.
   const GURL& canonicalized_url() const { return canonicalized_url_; }
 
   // The user's desired TLD.
@@ -220,23 +235,26 @@ class AutocompleteInput {
     keyword_mode_entry_method_ = entry_method;
   }
 
-  // Returns whether providers should be allowed to make asynchronous requests
-  // when processing this input.
-  bool want_asynchronous_matches() const { return want_asynchronous_matches_; }
-  // If |want_asynchronous_matches| is false, the controller asks the
+  // Returns whether providers should avoid obtaining matches asynchronously
+  // when processing the input.
+  bool omit_asynchronous_matches() const { return omit_asynchronous_matches_; }
+  // If |omit_asynchronous_matches| is true, the controller asks the
   // providers to only return matches which are synchronously available,
   // which should mean that all providers will be done immediately.
-  void set_want_asynchronous_matches(bool want_asynchronous_matches) {
-    want_asynchronous_matches_ = want_asynchronous_matches;
+  void set_omit_asynchronous_matches(bool omit_asynchronous_matches) {
+    omit_asynchronous_matches_ = omit_asynchronous_matches;
   }
 
   // Returns the type of UI interaction that started this autocomplete query.
-  OmniboxFocusType focus_type() const { return focus_type_; }
+  metrics::OmniboxFocusType focus_type() const { return focus_type_; }
   // |focus_type| should specify the UI interaction that started autocomplete.
-  // Generally, this should be left alone as DEFAULT. Most providers only
-  // provide results for DEFAULT focus type. Providers (like ZeroSuggest) that
-  // only want to display matches on-focus or on-clobber will look at this flag.
-  void set_focus_type(OmniboxFocusType focus_type) { focus_type_ = focus_type; }
+  // Generally, this should be left alone as INTERACTION_DEFAULT. Most providers
+  // only provide results for the INTERACTION_DEFAULT focus type. Providers like
+  // ZeroSuggestProvider that only want to display matches on-focus or
+  // on-clobber will look at this flag.
+  void set_focus_type(metrics::OmniboxFocusType focus_type) {
+    focus_type_ = focus_type;
+  }
 
   // Returns the terms in |text_| that start with http:// or https:// plus
   // at least one more character, stored without the scheme.  Used in
@@ -248,8 +266,8 @@ class AutocompleteInput {
   }
 
   // Returns the ID of the query tile selected by the user, if any.
-  // If no tile was selected, returns base::nullopt.
-  const base::Optional<std::string>& query_tile_id() const {
+  // If no tile was selected, returns absl::nullopt.
+  const absl::optional<std::string>& query_tile_id() const {
     return query_tile_id_;
   }
 
@@ -267,9 +285,16 @@ class AutocompleteInput {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
+  void set_added_default_scheme_to_typed_url(
+      bool added_default_scheme_to_typed_url) {
+    added_default_scheme_to_typed_url_ = added_default_scheme_to_typed_url;
+  }
+
   bool added_default_scheme_to_typed_url() const {
     return added_default_scheme_to_typed_url_;
   }
+
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class AutocompleteProviderTest;
@@ -296,10 +321,11 @@ class AutocompleteInput {
   bool prefer_keyword_;
   bool allow_exact_keyword_match_;
   metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method_;
-  bool want_asynchronous_matches_;
-  OmniboxFocusType focus_type_ = OmniboxFocusType::DEFAULT;
+  bool omit_asynchronous_matches_;
+  metrics::OmniboxFocusType focus_type_ =
+      metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
-  base::Optional<std::string> query_tile_id_;
+  absl::optional<std::string> query_tile_id_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;
@@ -310,6 +336,10 @@ class AutocompleteInput {
   // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
   // redirects.
   int https_port_for_testing_;
+  // If true, indicates that the tests are using a faux-HTTPS server which is
+  // actually an HTTP server that pretends to serve HTTPS responses. Should only
+  // be true on iOS.
+  bool use_fake_https_for_https_upgrade_testing_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_

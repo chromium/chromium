@@ -1,14 +1,36 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateDirectory.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateDirectory.java",
+    "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateFileManager.java",
+  ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/android/crypto:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateFileManagerUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit",
   ]
 }

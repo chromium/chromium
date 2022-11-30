@@ -1,0 +1,200 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tab_strip.mojom;
+
+import "url/mojom/url.mojom";
+import "chrome/browser/ui/webui/tabs/tabs.mojom";
+
+// Must be kept in sync with TabNetworkState from
+// chrome/browser/ui/tabs/tab_network_state.h
+enum TabNetworkState {
+  kNone,
+  kWaiting,
+  kLoading,
+  kError
+};
+
+// Information of an open tab.
+struct Tab {
+  // Whether the tab is active.
+  bool active;
+
+  // The alert states of the tab.
+  array<tabs.mojom.TabAlertState> alert_states;
+
+  // Whether the tab is blocked.
+  bool blocked;
+
+  // Whether the tab is crashed.
+  bool crashed;
+
+  // The URL of the favicon in data scheme for a tab.
+  url.mojom.Url? favicon_url;
+
+  // The URL of the favicon in data scheme for an active tab. Allows custom
+  // favicon theming for certain chrome:// URLs.
+  url.mojom.Url? active_favicon_url;
+
+  // The group identifier of the tab.
+  string? group_id;
+
+  // The unique identifier of the tab.
+  int32 id;
+
+  // The index of the tab.
+  int32 index;
+
+  // Whether the tab is using the default favicon.
+  bool is_default_favicon;
+
+  // The network state of the tab.
+  TabNetworkState network_state;
+
+  // Whether the tab is pinned.
+  bool pinned;
+
+  // Whether the loading throbber is hidden.
+  bool should_hide_throbber;
+
+  // Whether to show icon
+  bool show_icon;
+
+  // The title of the tab.
+  string title;
+
+  // The url of the tab.
+  url.mojom.Url url;
+};
+
+// Visual data of a tab group.
+struct TabGroupVisualData {
+  // The background color of the tab group.
+  string color;
+
+  // The text color of the tab group.
+  string text_color;
+
+  // The title of the tab group.
+  string title;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Get visual data for all the tab groups.
+  GetGroupVisualData() => (map<string, TabGroupVisualData> data);
+
+  // Get all the tabs info from the current browser window.
+  GetTabs() => (array<Tab> tabs);
+
+  // Close a tab, either swiping up or click on the close button.
+  CloseTab(int32 tab_id, bool tab_was_swiped);
+
+  // Add a tab into a group.
+  GroupTab(int32 tab_id, string group_id);
+
+  // Move the group to a specific index.
+  MoveGroup(string group_id, int32 to_index);
+
+  // Move the tab to a specific index.
+  MoveTab(int32 tab_id, int32 to_index);
+
+  // Set whether the tab will receive thumbnail update.
+  SetThumbnailTracked(int32 tab_id, bool thumbnail_tracked);
+
+  // Ungroup a tab.
+  UngroupTab(int32 tab_id);
+
+  // Get layout of the tab strip.
+  GetLayout() => (map<string, string> layout);
+
+  // Show tab group edit dialog.
+  ShowEditDialogForGroup(string group_id, int32 location_x, int32 location_y,
+                         int32 width, int32 height);
+
+  // Show tab context menu.
+  ShowTabContextMenu(int32 tab_id, int32 location_x, int32 location_y);
+
+  // Show background context menu.
+  ShowBackgroundContextMenu(int32 location_x, int32 location_y);
+
+  // Close the tab strip.
+  CloseContainer();
+
+  // Report time spent between click on a tab and the tab is activated.
+  ReportTabActivationDuration(uint32 duration_ms);
+
+  // Report time spent on calling getTabs() and data come back.
+  ReportTabDataReceivedDuration(uint32 tab_count, uint32 duration_ms);
+
+  // Report time spent between getTabs() and tabs are created.
+  ReportTabCreationDuration(uint32 tab_count, uint32 duration_ms);
+
+  // Switch to a specific tab.
+  ActivateTab(int32 tab_id);
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Called when the tab strip layout is changed.
+  LayoutChanged(map<string, string> layout);
+
+  // Called when the tab strip received keyboard focus.
+  ReceivedKeyboardFocus();
+
+  // Called when context menu is closed.
+  ContextMenuClosed();
+
+  // Called when a long press touch gesture is detected.
+  LongPress();
+
+  // Called when a tab group visual is changed.
+  TabGroupVisualsChanged(string group_id, TabGroupVisualData tab_group);
+
+  // Called when a tab group is moved.
+  TabGroupMoved(string group_id, int32 index);
+
+  // Called when a tab group is closed.
+  TabGroupClosed(string group_id);
+
+  // Called when a tab group state is changed.
+  TabGroupStateChanged(int32 tab_id, int32 index, string? group_id);
+
+  // Called when a tab close is cancelled.
+  TabCloseCancelled(int32 tab_id);
+
+  // Called when a tab is created.
+  TabCreated(Tab tab);
+
+  // Called when a tab is removed.
+  TabRemoved(int32 tab_id);
+
+  // Called when a tab is moved.
+  TabMoved(int32 tab_id, int32 to_index, bool in_pinned);
+
+  // Called when a tab is replaced.
+  TabReplaced(int32 tab_id, int32 new_tab_id);
+
+  // Called when a tab is active.
+  TabActiveChanged(int32 tab_id);
+
+  // Called when a tab is updated.
+  TabUpdated(Tab tab);
+
+  // Called when tab thumbnail is updated.
+  TabThumbnailUpdated(int32 tab_id, string data_uri);
+
+  // Called when a context menu is requested to show.
+  ShowContextMenu();
+
+  // Called when the browser theme changed.
+  ThemeChanged();
+};

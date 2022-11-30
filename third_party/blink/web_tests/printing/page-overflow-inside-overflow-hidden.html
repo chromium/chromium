@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script>
+  testRunner.setPrinting();
+  internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<div style="overflow:hidden; width:100px; height:100px; background:green;">
+  <div style="height:5000px;">
+    <div style="height:100px;"></div>
+    <div style="position:relative;">
+      <div style="position:absolute; width:100px; height:100px; background:red;">FAIL</div>
+    </div>
+  </div>
+</div>
+<p>There should be a green square above, and no red.</p>

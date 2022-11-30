@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_VR_ELEMENTS_URL_TEXT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_URL_TEXT_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/omnibox_formatting.h"
 #include "chrome/browser/vr/elements/text.h"
 #include "chrome/browser/vr/ui_unsupported_mode.h"
@@ -22,6 +19,10 @@ namespace vr {
 class VR_UI_EXPORT UrlText : public Text {
  public:
   explicit UrlText(float font_height_dmm);
+
+  UrlText(const UrlText&) = delete;
+  UrlText& operator=(const UrlText&) = delete;
+
   ~UrlText() override;
 
   void SetUrl(const GURL& url);
@@ -42,8 +43,6 @@ class VR_UI_EXPORT UrlText : public Text {
   SkColor deemphasized_color_ = SK_ColorBLACK;
   ElisionParameters elision_parameters_;
   float font_height_dmm_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlText);
 };
 
 }  // namespace vr

@@ -18,6 +18,18 @@
       #usageHeader {
         padding: 0 var(--cr-section-padding);
       }
+
+      #usageDetails {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+      }
+
+      #fpsPolicyContainer {
+        display: flex;
+        padding: 8px;
+      }
     </style>
     <!-- Confirm reset settings dialog. -->
     <cr-dialog id="confirmResetSettings" close-text="$i18n{close}"
@@ -43,35 +55,16 @@
         $i18n{siteSettingsSiteClearStorageDialogTitle}
       </div>
       <div slot="body">
-        [[i18n('siteSettingsSiteClearStorageConfirmation', pageTitle)]]
-      </div>
-      <div slot="button-container">
-        <cr-button class="cancel-button" on-click="onCloseDialog_">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button class="action-button" on-click="onClearStorage_">
-          $i18n{siteSettingsSiteClearStorage}
-        </cr-button>
-      </div>
-    </cr-dialog>
-
-    <!-- New version of confirm clear data dialog to show if storage
-         pressure UI flag is enabled. -->
-    <cr-dialog id="confirmClearStorageNew" close-text="$i18n{close}"
-        on-close="onClearStorageDialogClosed_">
-      <style include="clear-storage-dialog-shared"></style>
-      <div slot="title">
-        $i18n{siteSettingsSiteClearStorageDialogTitle}
-      </div>
-      <div slot="body">
         [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle)]]
         <div class="detail-list">
           <div class="detail">
-            <iron-icon icon="all-sites:logout"></iron-icon>
+            <iron-icon icon="all-sites:logout" aria-hidden="true"
+              role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageSignOut}
           </div>
           <div class="detail">
-            <iron-icon icon="all-sites:offline"></iron-icon>
+            <iron-icon icon="all-sites:offline" aria-hidden="true"
+              role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageOfflineData}
           </div>
         </div>
@@ -97,12 +90,34 @@
         </div>
         <div class="list-item" id="storage"
             hidden$="[[!hasUsage_(storedData_, numCookies_)]]">
-          <div class="start" id="storageText">
-            <div hidden$="[[!storedData_]]">[[storedData_]]</div>
-            <div hidden$="[[!hasDataAndCookies_(storedData_, numCookies_)]]">
-              &nbsp;&middot;&nbsp;
+          <div id="usageDetails">
+            <div>
+              <div id="storageText">
+                <div id="storedData" hidden$="[[!storedData_]]">
+                  [[storedData_]]
+                </div>
+                <div hidden$="[[!hasDataAndCookies_(
+                    storedData_,numCookies_)]]">
+                  &nbsp;&middot;&nbsp;
+                </div>
+                <div id="numCookies" hidden$="[[!numCookies_]]">
+                  [[numCookies_]]
+                </div>
+              </div>
+              <div id="fpsMembership" class="secondary"
+                  hidden$="[[!fpsMembership_]]">
+                [[fpsMembership_]]
+              </div>
             </div>
-            <div hidden$="[[!numCookies_]]">[[numCookies_]]</div>
+            <template is="dom-if" if="[[fpsEnterprisePref_]]">
+              <div id="fpsPolicyContainer">
+                <cr-policy-pref-indicator
+                  id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                  icon-aria-label="[[label]]" focus-row-control
+                  focus-type="policy">
+                </cr-policy-pref-indicator>
+              </div>
+            </template>
           </div>
           <cr-button id="clearStorage" role="button" aria-disabled="false"
               on-click="onConfirmClearStorage_"
@@ -122,118 +137,120 @@
       </cr-button>
     </div>
     <div class="list-frame">
-      <site-details-permission category="[[ContentSettingsTypes.GEOLOCATION]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
           icon="settings:location-on" label="$i18n{siteSettingsLocation}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.CAMERA]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.CAMERA]]"
           icon="cr:videocam" label="$i18n{siteSettingsCamera}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.MIC]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.MIC]]"
           icon="cr:mic" label="$i18n{siteSettingsMic}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.SENSORS]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.SENSORS]]"
           icon="settings:sensors" label="$i18n{siteSettingsSensors}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.NOTIFICATIONS]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.NOTIFICATIONS]]"
           icon="settings:notifications"
           label="$i18n{siteSettingsNotifications}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.JAVASCRIPT]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
           icon="settings:code" label="$i18n{siteSettingsJavascript}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.IMAGES]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.IMAGES]]"
           icon="settings:photo" label="$i18n{siteSettingsImages}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.POPUPS]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.POPUPS]]"
           icon="cr:open-in-new" label="$i18n{siteSettingsPopups}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.ADS]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.ADS]]"
           icon="settings:ads" label="$i18n{siteSettingsAds}">
       </site-details-permission>
       <site-details-permission
-          category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
+          category="[[contentSettingsTypesEnum_.BACKGROUND_SYNC]]"
           icon="cr:sync" label="$i18n{siteSettingsBackgroundSync}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.SOUND]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.SOUND]]"
           icon="settings:volume-up" label="$i18n{siteSettingsSound}"
           use-automatic-label="[[blockAutoplayEnabled]]">
       </site-details-permission>
       <site-details-permission
-          category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
+          category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
           icon="cr:file-download" label="$i18n{siteSettingsAutomaticDownloads}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.MIDI_DEVICES]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
           icon="settings:midi" label="$i18n{siteSettingsMidiDevices}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.USB_DEVICES]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
           icon="settings:usb" label="$i18n{siteSettingsUsbDevices}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.SERIAL_PORTS]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
           icon="settings:serial-port" label="$i18n{siteSettingsSerialPorts}">
       </site-details-permission>
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <site-details-permission
-            category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
+            category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
             icon="settings:bluetooth"
             label="$i18n{siteSettingsBluetoothDevices}">
         </site-details-permission>
       </template>
       <site-details-permission
-          category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
+          category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
           icon="settings:save-original"
           label="$i18n{siteSettingsFileSystemWrite}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.HID_DEVICES]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
           icon="settings:hid-device" label="$i18n{siteSettingsHidDevices}">
       </site-details-permission>
-<if expr="chromeos">
+<if expr="is_chromeos or is_win">
       <site-details-permission
-          category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+          category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
           icon="settings:protected-content"
           label="$i18n{siteSettingsProtectedContentIdentifiers}">
       </site-details-permission>
 </if>
-      <site-details-permission category="[[ContentSettingsTypes.CLIPBOARD]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
           icon="settings:clipboard" label="$i18n{siteSettingsClipboard}">
       </site-details-permission>
       <site-details-permission
-          category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
+          category="[[contentSettingsTypesEnum_.PAYMENT_HANDLER]]"
           icon="settings:payment-handler"
           label="$i18n{siteSettingsPaymentHandler}">
       </site-details-permission>
       <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
         <site-details-permission
-            category="[[ContentSettingsTypes.BLUETOOTH_SCANNING]]"
+            category="[[contentSettingsTypesEnum_.BLUETOOTH_SCANNING]]"
             icon="settings:bluetooth-scanning"
             label="$i18n{siteSettingsBluetoothScanning}">
         </site-details-permission>
       </template>
       <site-details-permission
-          category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
+          category="[[contentSettingsTypesEnum_.MIXEDSCRIPT]]"
           icon="settings:insecure-content"
           label="$i18n{siteSettingsInsecureContent}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.AR]]"
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
+          icon="settings:federated-identity-api"
+          label="$i18n{siteSettingsFederatedIdentityApi}">
+      </site-details-permission>
+      <site-details-permission category="[[contentSettingsTypesEnum_.AR]]"
           icon="settings:vr-headset" label="$i18n{siteSettingsAr}">
       </site-details-permission>
-      <site-details-permission category="[[ContentSettingsTypes.VR]]"
+      <site-details-permission category="[[contentSettingsTypesEnum_.VR]]"
           icon="settings:vr-headset" label="$i18n{siteSettingsVr}">
       </site-details-permission>
       <site-details-permission
-          category="[[ContentSettingsTypes.IDLE_DETECTION]]"
+          category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
           icon="settings:devices"
           label="$i18n{siteSettingsIdleDetection}">
       </site-details-permission>
-      <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
-        <site-details-permission
-            category="[[ContentSettingsTypes.WINDOW_PLACEMENT]]"
-            icon="settings:window-placement"
-            label="$i18n{siteSettingsWindowPlacement}">
-        </site-details-permission>
-      </template>
-      <template is="dom-if" if="[[enableFontAccessContentSetting_]]">
-        <site-details-permission category="[[ContentSettingsTypes.FONT_ACCESS]]"
-            icon="settings:font-access" label="$i18n{fonts}">
-        </site-details-permission>
-      </template>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.WINDOW_MANAGEMENT]]"
+          icon="settings:window-management"
+          label="$i18n{siteSettingsWindowManagement}">
+      </site-details-permission>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
+          icon="settings:local-fonts" label="$i18n{fonts}">
+      </site-details-permission>
     </div>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,12 @@ namespace ash {
 namespace {
 
 bool ParentHasWindowWithId(const aura::Window* window, int id) {
-  return window->parent()->id() == id;
+  return window->parent()->GetId() == id;
 }
 
 bool ContainersHaveWindowWithId(const aura::Window::Windows windows, int id) {
   for (const aura::Window* window : windows) {
-    if (window->id() == id)
+    if (window->GetId() == id)
       return true;
   }
   return false;
@@ -88,7 +88,7 @@ TEST_F(SessionStateAnimatiorImplContainersTest, ContainersHaveIdTest) {
 // containers. See http://crbug.com/712422 for details.
 TEST_F(SessionStateAnimatiorImplContainersTest,
        AnimationCallbackOnMultiDisplay) {
-  UpdateDisplay("200x200,400x400");
+  UpdateDisplay("300x200,500x400");
 
   int callback_count = 0;
   SessionStateAnimatorImpl animator;

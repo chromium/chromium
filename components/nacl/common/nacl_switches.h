@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,19 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 extern const char kDisablePnaclCrashThrottling[];
 extern const char kEnableNaClDebug[];
-extern const char kEnableNaClNonSfiMode[];
 extern const char kForcePNaClSubzero[];
 extern const char kNaClBrokerProcess[];
-extern const char kNaClDangerousNoSandboxNonSfi[];
 extern const char kNaClDebugMask[];
 extern const char kNaClGdbScript[];
 extern const char kNaClGdb[];
-extern const char kNaClLoaderNonSfiProcess[];
 extern const char kNaClLoaderProcess[];
+
+extern const char kVerboseLoggingInNacl[];
+extern const char kVerboseLoggingInNaclChoiceDisabled[];
+extern const char kVerboseLoggingInNaclChoiceLow[];
+extern const char kVerboseLoggingInNaclChoiceMedium[];
+extern const char kVerboseLoggingInNaclChoiceHigh[];
+extern const char kVerboseLoggingInNaclChoiceHighest[];
 
 }  // namespace switches
 

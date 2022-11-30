@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -115,7 +115,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
   testing::AssertionResult TestScriptResult(const Extension* extension,
                                             const GURL& url,
                                             const char* code) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     bool result = false;
     if (!content::ExecuteScriptAndExtractBool(web_contents(), code, &result))
       return testing::AssertionFailure() << "Could not execute test script.";

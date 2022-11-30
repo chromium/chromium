@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/widget/input/prediction/filter_factory.h"
 #include "ui/base/prediction/input_predictor.h"
 #include "ui/base/prediction/prediction_metrics_handler.h"
+
+namespace cc {
+class ScrollUpdateEventMetrics;
+}
 
 namespace blink {
 
@@ -27,6 +31,8 @@ class PLATFORM_EXPORT ScrollPredictor {
   // Select the predictor type from field trial params and initialize the
   // predictor.
   explicit ScrollPredictor();
+  ScrollPredictor(const ScrollPredictor&) = delete;
+  ScrollPredictor& operator=(const ScrollPredictor&) = delete;
   ~ScrollPredictor();
 
   // Reset the predictors on each GSB.
@@ -55,7 +61,8 @@ class PLATFORM_EXPORT ScrollPredictor {
   void ResampleEvent(base::TimeTicks frame_time,
                      base::TimeDelta frame_interval,
                      WebInputEvent* event,
-                     ui::LatencyInfo* latency_info);
+                     ui::LatencyInfo* latency_info,
+                     cc::ScrollUpdateEventMetrics* metrics);
 
   // Reports metrics scores UMA histogram based on the metrics defined
   // in |PredictionMetricsHandler|
@@ -81,8 +88,6 @@ class PLATFORM_EXPORT ScrollPredictor {
 
   // Handler used for evaluating the prediction
   ui::PredictionMetricsHandler metrics_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollPredictor);
 };
 
 }  // namespace blink

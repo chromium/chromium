@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
@@ -26,9 +27,9 @@ class CC_EXPORT LatencyUkmReporter {
   LatencyUkmReporter& operator=(const LatencyUkmReporter&) = delete;
 
   void ReportCompositorLatencyUkm(
-      CompositorFrameReporter::FrameReportType report_type,
+      const CompositorFrameReporter::FrameReportTypes& report_types,
       const std::vector<CompositorFrameReporter::StageData>& stage_history,
-      const CompositorFrameReporter::ActiveTrackers& active_trackers,
+      const ActiveTrackers& active_trackers,
       const CompositorFrameReporter::ProcessedBlinkBreakdown&
           processed_blink_breakdown,
       const CompositorFrameReporter::ProcessedVizBreakdown&
@@ -52,7 +53,7 @@ class CC_EXPORT LatencyUkmReporter {
   // pointer is initialized, there should be no trackers yet. Moreover, the
   // LayerTreeHostImpl::ukm_manager_ lives as long as the LayerTreeHostImpl, so
   // this pointer should never be null as long as LayerTreeHostImpl is alive.
-  UkmManager* ukm_manager_ = nullptr;
+  raw_ptr<UkmManager> ukm_manager_ = nullptr;
 
   std::unique_ptr<SamplingController> compositor_latency_sampling_controller_;
   std::unique_ptr<SamplingController> event_latency_sampling_controller_;

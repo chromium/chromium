@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -128,73 +128,23 @@ TEST_F(WebDocumentTest, InsertAndRemoveStyleSheet) {
             style_after_removing.VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-namespace {
-
-// This is the public key which the test below will use to enable origin
-// trial features. Trial tokens for use in tests can be created with the
-// tool in /tools/origin_trials/generate_token.py, using the private key
-// contained in /tools/origin_trials/eftest.key.
-static const uint8_t kOriginTrialPublicKey[] = {
-    0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
-    0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
-    0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
-};
-
-}  // anonymous namespace
-
-// Origin Trial Policy which vends the test public key so that the token
-// can be validated.
-class TestOriginTrialPolicy : public blink::OriginTrialPolicy {
- public:
-  TestOriginTrialPolicy() {
-    public_keys_.push_back(base::StringPiece(
-        reinterpret_cast<const char*>(kOriginTrialPublicKey),
-        base::size(kOriginTrialPublicKey)));
-  }
-  bool IsOriginTrialsSupported() const override { return true; }
-  std::vector<base::StringPiece> GetPublicKeys() const override {
-    return public_keys_;
-  }
-  bool IsOriginSecure(const GURL& url) const override { return true; }
-
- private:
-  std::vector<base::StringPiece> public_keys_;
-};
-
 TEST_F(WebDocumentTest, OriginTrialDisabled) {
-  // Set an origin trial policy.
-  TestOriginTrialPolicy policy;
-  blink::TrialTokenValidator::SetOriginTrialPolicyGetter(WTF::BindRepeating(
-      [](TestOriginTrialPolicy* policy_ptr) -> blink::OriginTrialPolicy* {
-        return policy_ptr;
-      },
-      base::Unretained(&policy)));
+  blink::ScopedTestOriginTrialPolicy policy;
 
   // Load a document with no origin trial token.
   LoadURL(std::string(kDefaultOrigin) + kNoOriginTrialDummyFilePath);
   WebDocument web_doc = TopWebDocument();
   EXPECT_FALSE(WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
-  // Reset the origin trial policy.
-  TrialTokenValidator::ResetOriginTrialPolicyGetter();
 }
 
 TEST_F(WebDocumentTest, OriginTrialEnabled) {
-  // Set an origin trial policy.
-  TestOriginTrialPolicy policy;
-  blink::TrialTokenValidator::SetOriginTrialPolicyGetter(WTF::BindRepeating(
-      [](TestOriginTrialPolicy* policy_ptr) -> blink::OriginTrialPolicy* {
-        return policy_ptr;
-      },
-      base::Unretained(&policy)));
-
+  blink::ScopedTestOriginTrialPolicy policy;
   // Load a document with a valid origin trial token for the test trial.
   LoadURL(std::string(kDefaultOrigin) + kOriginTrialDummyFilePath);
   WebDocument web_doc = TopWebDocument();
   EXPECT_TRUE(WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
   // Ensure that other trials are not also enabled
   EXPECT_FALSE(WebOriginTrials::isTrialEnabled(&web_doc, "NotATrial"));
-  // Reset the origin trial policy.
-  TrialTokenValidator::ResetOriginTrialPolicyGetter();
 }
 
 namespace {
@@ -316,7 +266,8 @@ bool SiteForCookiesEqual(const char* path,
                          const net::SiteForCookies& site_for_cookies) {
   KURL ref_url = ToOriginA(path);
   ref_url.SetPort(80);  // url::Origin takes exception with :0.
-  return net::SiteForCookies::FromUrl(ref_url).IsEquivalent(site_for_cookies);
+  return net::SiteForCookies::FromUrl(GURL(ref_url))
+      .IsEquivalent(site_for_cookies);
 }
 
 TEST_F(WebDocumentFirstPartyTest, Empty) {
@@ -332,7 +283,12 @@ TEST_F(WebDocumentFirstPartyTest, EmptySandbox) {
   WebLocalFrameImpl* frame = web_view_helper_.GetWebView()->MainFrameImpl();
   auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
       /*html=*/"", KURL("https://a.com"));
-  params->sandbox_flags = network::mojom::blink::WebSandboxFlags::kAll;
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<blink::WebPolicyContainer>(
+      blink::WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+  params->policy_container->policies.sandbox_flags =
+      network::mojom::blink::WebSandboxFlags::kAll;
   frame->CommitNavigation(std::move(params), nullptr /* extra_data */);
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(frame);
 
@@ -511,6 +467,12 @@ TEST_F(WebDocumentFirstPartyTest,
        NestedOriginAInOriginBWithFirstPartyOverride) {
   Load(g_nested_origin_a_in_origin_b);
 
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
+  // This is needed because the preload scanner creates a thread when loading a
+  // page.
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel("http");
 
   ASSERT_TRUE(SiteForCookiesEqual(g_nested_origin_a_in_origin_b,

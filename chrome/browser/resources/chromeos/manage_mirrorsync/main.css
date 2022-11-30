@@ -1,0 +1,20 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+html {
+  font-family: 'Roboto';
+}
+
+body > h1 {
+  color: var(--cros-text-color-primary);
+  font-size: 16px;
+  font-weight: normal;
+}
+
+body > p {
+  color: var(--cros-text-color-secondary);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "components/favicon/core/favicon_backend_delegate.h"
@@ -33,7 +33,7 @@ using favicon_base::IconType;
 using favicon_base::IconTypeSet;
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
-using RedirectCache = base::MRUCache<GURL, std::vector<GURL>>;
+using RedirectCache = base::LRUCache<GURL, std::vector<GURL>>;
 
 const int kTinyEdgeSize = 10;
 const int kSmallEdgeSize = 16;
@@ -378,7 +378,7 @@ TEST_F(FaviconBackendTest, SetFaviconsSameFaviconURLForTwoPages) {
   GURL icon_url("http://www.google.com/favicon.ico");
   GURL icon_url_new("http://www.google.com/favicon2.ico");
   GURL page_url1("http://www.google.com");
-  GURL page_url2("http://www.google.ca");
+  GURL page_url2("http://www.google.com/page");
   std::vector<SkBitmap> bitmaps;
   bitmaps.push_back(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
   bitmaps.push_back(CreateBitmap(SK_ColorRED, kLargeEdgeSize));
@@ -930,8 +930,7 @@ TEST_F(FaviconBackendTest, MergeIdenticalFaviconDoesNotChangeLastUpdatedTime) {
                                                 &favicon_bitmaps));
 
   // Change the last updated time of the just added favicon bitmap.
-  const base::Time kLastUpdateTime =
-      base::Time::Now() - base::TimeDelta::FromDays(314);
+  const base::Time kLastUpdateTime = base::Time::Now() - base::Days(314);
   backend_->db()->SetFaviconBitmapLastUpdateTime(favicon_bitmaps[0].bitmap_id,
                                                  kLastUpdateTime);
 
@@ -1269,6 +1268,33 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlExpired) {
 
   EXPECT_EQ(1u, bitmap_results_out.size());
   EXPECT_TRUE(bitmap_results_out[0].expired);
+}
+
+// Test that a favicon isn't loaded cross-origin.
+TEST_F(FaviconBackendTest, FaviconCacheWillNotLoadCrossOrigin) {
+  GURL icon_url("http://www.google.com/favicon.ico");
+  GURL page_url1("http://www.google.com");
+  GURL page_url2("http://www.google.ca");
+  std::vector<SkBitmap> bitmaps;
+  bitmaps.push_back(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
+  bitmaps.push_back(CreateBitmap(SK_ColorRED, kLargeEdgeSize));
+
+  // Store `icon_url` for `page_url1`, but just attempt load for `page_url2`.
+  SetFavicons({page_url1}, IconType::kFavicon, icon_url, bitmaps);
+  backend_->UpdateFaviconMappingsAndFetch(
+      {page_url2}, icon_url, IconType::kFavicon, GetEdgeSizesSmallAndLarge());
+
+  // Check that the same FaviconID is mapped just to `page_url1`.
+  std::vector<IconMapping> icon_mappings;
+  EXPECT_TRUE(
+      backend_->db()->GetIconMappingsForPageURL(page_url1, &icon_mappings));
+  EXPECT_EQ(1u, icon_mappings.size());
+  favicon_base::FaviconID favicon_id = icon_mappings[0].icon_id;
+  EXPECT_NE(0, favicon_id);
+
+  icon_mappings.clear();
+  EXPECT_FALSE(
+      backend_->db()->GetIconMappingsForPageURL(page_url2, &icon_mappings));
 }
 
 }  // namespace favicon

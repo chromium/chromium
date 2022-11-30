@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 class Profile;
@@ -30,6 +29,11 @@ class ArcUiAvailabilityReporter {
   };
 
   ArcUiAvailabilityReporter(Profile* profile, Mode mode);
+
+  ArcUiAvailabilityReporter(const ArcUiAvailabilityReporter&) = delete;
+  ArcUiAvailabilityReporter& operator=(const ArcUiAvailabilityReporter&) =
+      delete;
+
   ~ArcUiAvailabilityReporter();
 
   static std::string GetHistogramNameForMode(Mode mode);
@@ -43,8 +47,6 @@ class ArcUiAvailabilityReporter {
   const base::TimeTicks start_ticks_;
 
   std::vector<std::unique_ptr<ConnectionNotifierBase>> connection_notifiers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUiAvailabilityReporter);
 };
 
 }  // namespace arc

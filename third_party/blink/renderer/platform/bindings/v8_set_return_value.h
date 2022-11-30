@@ -1,14 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_SET_RETURN_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_SET_RETURN_VALUE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -39,18 +40,15 @@ struct V8ReturnValue {
   enum NonNullable { kNonNullable };
   enum Nullable { kNullable };
 
-  // FrozenArray or not (the integrity level = frozen or not)
-  enum Frozen { kFrozen };
-
   // Main world or not
   enum MainWorld { kMainWorld };
+
+  // The return value can be a cross origin window.
+  enum MaybeCrossOriginWindow { kMaybeCrossOriginWindow };
 
   // Returns the exposed object of the given type.
   enum InterfaceObject { kInterfaceObject };
   enum NamespaceObject { kNamespaceObject };
-  enum IDLObject { kIDLObject };
-
-  enum MaybeCrossOriginWindow { kMaybeCrossOriginWindow };
 
   // Selects the appropriate creation context.
   static v8::Local<v8::Object> CreationContext(
@@ -68,7 +66,7 @@ struct V8ReturnValue {
                          ScriptWrappable* wrappable,
                          v8::Local<v8::Context> creation_context) {
     v8::Local<v8::Value> wrapper;
-    if (!wrappable->WrapV2(ScriptState::From(creation_context))
+    if (!wrappable->Wrap(ScriptState::From(creation_context))
              .ToLocal(&wrapper)) {
       return;
     }
@@ -82,29 +80,14 @@ void V8SetReturnValue(const CallbackInfo& info, const v8::Local<S> value) {
   info.GetReturnValue().Set(value);
 }
 
-template <typename CallbackInfo, typename S>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const v8::Local<S> value,
-                      V8ReturnValue::Frozen) {
-  if (value->IsObject()) {
-    bool result =
-        value.template As<v8::Object>()
-            ->SetIntegrityLevel(info.GetIsolate()->GetCurrentContext(),
-                                v8::IntegrityLevel::kFrozen)
-            .ToChecked();
-    CHECK(result);
-  }
-  info.GetReturnValue().Set(value);
-}
-
 // Property descriptor
 PLATFORM_EXPORT v8::Local<v8::Object> CreatePropertyDescriptorObject(
     v8::Isolate* isolate,
     const v8::PropertyDescriptor& desc);
 
-PLATFORM_EXPORT inline void V8SetReturnValue(
-    const v8::PropertyCallbackInfo<v8::Value>& info,
-    const v8::PropertyDescriptor& value) {
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const v8::PropertyDescriptor& value) {
   info.GetReturnValue().Set(
       CreatePropertyDescriptorObject(info.GetIsolate(), value));
 }
@@ -302,7 +285,8 @@ void V8SetReturnValue(const CallbackInfo& info,
                                                wrappable))
     return;
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>
@@ -315,7 +299,8 @@ void V8SetReturnValue(const CallbackInfo& info,
                                                wrappable))
     return;
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>
@@ -331,7 +316,8 @@ void V8SetReturnValue(const CallbackInfo& info,
     return;
   }
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>
@@ -345,7 +331,8 @@ void V8SetReturnValue(const CallbackInfo& info,
     return;
   }
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>
@@ -424,14 +411,27 @@ void V8SetReturnValue(const CallbackInfo& info,
   V8ReturnValue::SetWrapper(info, wrappable, creation_context);
 }
 
-// DictionaryBase
-template <typename CallbackInfo>
+// EnumerationBase
+template <typename CallbackInfo, typename... ExtraArgs>
 void V8SetReturnValue(const CallbackInfo& info,
-                      const bindings::DictionaryBase* dictionary) {
-  DCHECK(dictionary);
-  v8::Local<v8::Value> v8_value = dictionary->CreateV8Object(
-      info.GetIsolate(), V8ReturnValue::CreationContext(info));
-  V8SetReturnValue(info, v8_value);
+                      const bindings::EnumerationBase& value,
+                      v8::Isolate* isolate,
+                      ExtraArgs... extra_args) {
+  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
+      info.GetReturnValue(), value.AsString().Impl());
+}
+
+// Nullable types
+template <typename CallbackInfo, typename T, typename... ExtraArgs>
+void V8SetReturnValue(const CallbackInfo& info,
+                      absl::optional<T> value,
+                      ExtraArgs... extra_args) {
+  if (value.has_value()) {
+    V8SetReturnValue(info, value.value(),
+                     std::forward<ExtraArgs>(extra_args)...);
+  } else {
+    info.GetReturnValue().SetNull();
+  }
 }
 
 // Exposed objects
@@ -457,19 +457,6 @@ inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
                              V8ReturnValue::NamespaceObject) {
   info.GetReturnValue().Set(GetExposedNamespaceObject(
       info.GetIsolate(), info.Holder(), wrapper_type_info));
-}
-
-// Nullable types
-template <typename CallbackInfo, typename T, typename... ExtraArgs>
-void V8SetReturnValue(const CallbackInfo& info,
-                      base::Optional<T> value,
-                      ExtraArgs... extra_args) {
-  if (value.has_value()) {
-    V8SetReturnValue(info, value.value(),
-                     std::forward<ExtraArgs>(extra_args)...);
-  } else {
-    info.GetReturnValue().SetNull();
-  }
 }
 
 }  // namespace bindings

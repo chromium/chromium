@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.bookmarks.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: bookmarks */
+/**
+ * @fileoverview Externs generated from namespace: bookmarks
+ * @externs
+ */
 
 /** @const */
 chrome.bookmarks = {};
@@ -67,7 +70,7 @@ chrome.bookmarks.MAX_SUSTAINED_WRITE_OPERATIONS_PER_MINUTE;
  * Retrieves the specified BookmarkTreeNode(s).
  * @param {(string|!Array<string>)} idOrIdList A single string-valued id, or an
  *     array of string-valued ids
- * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>):void} callback
+ * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>): void} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-get
  */
 chrome.bookmarks.get = function(idOrIdList, callback) {};
@@ -75,7 +78,7 @@ chrome.bookmarks.get = function(idOrIdList, callback) {};
 /**
  * Retrieves the children of the specified BookmarkTreeNode id.
  * @param {string} id
- * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>):void} callback
+ * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>): void} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-getChildren
  */
 chrome.bookmarks.getChildren = function(id, callback) {};
@@ -83,14 +86,14 @@ chrome.bookmarks.getChildren = function(id, callback) {};
 /**
  * Retrieves the recently added bookmarks.
  * @param {number} numberOfItems The maximum number of items to return.
- * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>):void} callback
+ * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>): void} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-getRecent
  */
 chrome.bookmarks.getRecent = function(numberOfItems, callback) {};
 
 /**
  * Retrieves the entire Bookmarks hierarchy.
- * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>):void} callback
+ * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>): void} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-getTree
  */
 chrome.bookmarks.getTree = function(callback) {};
@@ -98,7 +101,7 @@ chrome.bookmarks.getTree = function(callback) {};
 /**
  * Retrieves part of the Bookmarks hierarchy, starting at the specified node.
  * @param {string} id The ID of the root of the subtree to retrieve.
- * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>):void} callback
+ * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>): void} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-getSubTree
  */
 chrome.bookmarks.getSubTree = function(id, callback) {};
@@ -115,7 +118,7 @@ chrome.bookmarks.getSubTree = function(id, callback) {};
  *     properties <code>query</code>, <code>url</code>, and <code>title</code>
  *     may be specified and bookmarks matching all specified properties will be
  *     produced.
- * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>):void} callback
+ * @param {function(!Array<!chrome.bookmarks.BookmarkTreeNode>): void} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-search
  */
 chrome.bookmarks.search = function(query, callback) {};
@@ -124,7 +127,7 @@ chrome.bookmarks.search = function(query, callback) {};
  * Creates a bookmark or folder under the specified parentId.  If url is NULL or
  * missing, it will be a folder.
  * @param {!chrome.bookmarks.CreateDetails} bookmark
- * @param {function(!chrome.bookmarks.BookmarkTreeNode):void=} callback
+ * @param {function(!chrome.bookmarks.BookmarkTreeNode): void=} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-create
  */
 chrome.bookmarks.create = function(bookmark, callback) {};
@@ -136,7 +139,7 @@ chrome.bookmarks.create = function(bookmark, callback) {};
  *   parentId: (string|undefined),
  *   index: (number|undefined)
  * }} destination
- * @param {function(!chrome.bookmarks.BookmarkTreeNode):void=} callback
+ * @param {function(!chrome.bookmarks.BookmarkTreeNode): void=} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-move
  */
 chrome.bookmarks.move = function(id, destination, callback) {};
@@ -150,7 +153,7 @@ chrome.bookmarks.move = function(id, destination, callback) {};
  *   title: (string|undefined),
  *   url: (string|undefined)
  * }} changes
- * @param {function(!chrome.bookmarks.BookmarkTreeNode):void=} callback
+ * @param {function(!chrome.bookmarks.BookmarkTreeNode): void=} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-update
  */
 chrome.bookmarks.update = function(id, changes, callback) {};
@@ -158,7 +161,7 @@ chrome.bookmarks.update = function(id, changes, callback) {};
 /**
  * Removes a bookmark or an empty bookmark folder.
  * @param {string} id
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-remove
  */
 chrome.bookmarks.remove = function(id, callback) {};
@@ -166,21 +169,21 @@ chrome.bookmarks.remove = function(id, callback) {};
 /**
  * Recursively removes a bookmark folder.
  * @param {string} id
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-removeTree
  */
 chrome.bookmarks.removeTree = function(id, callback) {};
 
 /**
- * Imports bookmarks from a chrome html bookmark file
- * @param {function():void=} callback
+ * Imports bookmarks from a Chrome html bookmark file
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-import
  */
 chrome.bookmarks.import = function(callback) {};
 
 /**
- * Exports bookmarks to a chrome html bookmark file
- * @param {function():void=} callback
+ * Exports bookmarks to a Chrome html bookmark file
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/bookmarks#method-export
  */
 chrome.bookmarks.export = function(callback) {};

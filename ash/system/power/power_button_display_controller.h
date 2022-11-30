@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -37,6 +36,11 @@ class ASH_EXPORT PowerButtonDisplayController
   PowerButtonDisplayController(
       BacklightsForcedOffSetter* backlights_forced_off_setter,
       const base::TickClock* tick_clock);
+
+  PowerButtonDisplayController(const PowerButtonDisplayController&) = delete;
+  PowerButtonDisplayController& operator=(const PowerButtonDisplayController&) =
+      delete;
+
   ~PowerButtonDisplayController() override;
 
   bool IsScreenOn() const;
@@ -52,7 +56,8 @@ class ASH_EXPORT PowerButtonDisplayController
 
   // Overridden from ScreenBacklightObserver:
   void OnBacklightsForcedOffChanged(bool forced_off) override;
-  void OnScreenStateChanged(ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ScreenBacklightState screen_backlight_state) override;
 
   // Overridden from chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
@@ -89,8 +94,6 @@ class ASH_EXPORT PowerButtonDisplayController
   std::unique_ptr<ScopedBacklightsForcedOff> backlights_forced_off_;
 
   base::WeakPtrFactory<PowerButtonDisplayController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonDisplayController);
 };
 
 }  // namespace ash

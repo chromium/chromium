@@ -10,7 +10,7 @@ window.jsTestIsAsync = true;
 
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 var w;
 function processMessage(event) {

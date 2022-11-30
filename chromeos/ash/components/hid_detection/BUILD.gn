@@ -1,0 +1,75 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("hid_detection") {
+  sources = [
+    "bluetooth_hid_detector.cc",
+    "bluetooth_hid_detector.h",
+    "bluetooth_hid_detector_impl.cc",
+    "bluetooth_hid_detector_impl.h",
+    "hid_detection_manager.cc",
+    "hid_detection_manager.h",
+    "hid_detection_manager_impl.cc",
+    "hid_detection_manager_impl.h",
+    "hid_detection_utils.cc",
+    "hid_detection_utils.h",
+  ]
+
+  deps = [
+    "//ash/constants:constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//components/device_event_log",
+    "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//services/device/public/mojom:device_service",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_bluetooth_hid_detector.cc",
+    "fake_bluetooth_hid_detector.h",
+    "fake_hid_detection_manager.cc",
+    "fake_hid_detection_manager.h",
+  ]
+
+  deps = [
+    ":hid_detection",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "bluetooth_hid_detector_impl_unittest.cc",
+    "hid_detection_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":hid_detection",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/bluetooth_config",
+    "//chromeos/ash/services/bluetooth_config:test_support",
+    "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/cpp/hid:hid",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

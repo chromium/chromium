@@ -1,31 +1,67 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://scanning/loading_page.js';
 
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {isVisible} from '../../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {MockController} from '../../mock_controller.js';
+import {isVisible} from '../../test_util.js';
+
+import {FakeMediaQueryList} from './scanning_app_test_utils.js';
 
 export function loadingPageTest() {
+  const scanningSrcBase = 'chrome://scanning/';
+
   /** @type {?LoadingPageElement} */
   let loadingPage = null;
+
+  /** @type {{createFunctionMock: Function, reset: Function}} */
+  let mockController;
+
+  /** @type {?FakeMediaQueryList} */
+  let fakePrefersColorSchemeDarkMediaQuery = null;
+
+  /**
+   * @param {boolean} enabled
+   * @return {!Promise}
+   */
+  function setFakePrefersColorSchemeDark(enabled) {
+    assertTrue(!!loadingPage);
+    fakePrefersColorSchemeDarkMediaQuery.matches = enabled;
+
+    return flushTasks();
+  }
+
 
   setup(() => {
     loadingPage = /** @type {!LoadingPageElement} */ (
         document.createElement('loading-page'));
     assertTrue(!!loadingPage);
     loadingPage.appState = AppState.GETTING_SCANNERS;
+
+    // Setup mock for matchMedia.
+    mockController = new MockController();
+    const mockMatchMedia =
+        mockController.createFunctionMock(window, 'matchMedia');
+    fakePrefersColorSchemeDarkMediaQuery =
+        new FakeMediaQueryList('(prefers-color-scheme: dark)');
+    mockMatchMedia.returnValue = fakePrefersColorSchemeDarkMediaQuery;
+
     document.body.appendChild(loadingPage);
   });
 
   teardown(() => {
+    mockController.reset();
     loadingPage.remove();
     loadingPage = null;
   });
 
+  // Verify the loading page, then the no scanners page is shown when no
+  // scanners are available.
   test('noScanners', () => {
     assertTrue(
         isVisible(/** @type {!HTMLElement} */ (loadingPage.$$('#loadingDiv'))));
@@ -39,6 +75,8 @@ export function loadingPageTest() {
         /** @type {!HTMLElement} */ (loadingPage.$$('#noScannersDiv'))));
   });
 
+  // Verify clicking the retry button on the no scanners page fires the
+  // 'retry-click' event.
   test('retryClick', () => {
     loadingPage.appState = AppState.NO_SCANNERS;
 
@@ -51,6 +89,8 @@ export function loadingPageTest() {
     assertTrue(retryEventFired);
   });
 
+  // Verify clicking the learn more button on the no scanners page fires the
+  // 'learn-more-click' event.
   test('learnMoreClick', () => {
     loadingPage.appState = AppState.NO_SCANNERS;
 
@@ -61,5 +101,39 @@ export function loadingPageTest() {
 
     loadingPage.$$('#learnMoreButton').click();
     assertTrue(learnMoreEventFired);
+  });
+
+  // Verify correct 'no scanners' svg displayed when page is in dark mode.
+  test('noScannersSvgSetByColorScheme', async () => {
+    const lightModeSvg = `${scanningSrcBase}svg/no_scanners.svg`;
+    const darkModeSvg = `${scanningSrcBase}svg/no_scanners_dark.svg`;
+    const getNoScannersSvg = () => (/** @type {!HTMLImageElement} */ (
+        loadingPage.$$('#noScannersDiv img')));
+
+    // Setup UI to display no scanners div.
+    loadingPage.appState = AppState.NO_SCANNERS;
+    await setFakePrefersColorSchemeDark(false);
+    assertEquals(getNoScannersSvg().src, lightModeSvg);
+
+    // Mock media query state for dark mode.
+    await setFakePrefersColorSchemeDark(true);
+    assertEquals(getNoScannersSvg().src, darkModeSvg);
+  });
+
+  // Verify correct 'loading scanners' svg displayed when page is in dark mode.
+  test('scanLoadingSvgSetByColorScheme', async () => {
+    const lightModeSvg = `${scanningSrcBase}svg/scanners_loading.svg`;
+    const darkModeSvg = `${scanningSrcBase}svg/scanners_loading_dark.svg`;
+    const getLoadingSvg = () =>
+        (/** @type {!HTMLImageElement} */ (loadingPage.$$('#loadingDiv img')));
+
+    // Setup UI to display no scanners div.
+    loadingPage.appState = AppState.NO_SCANNERS;
+    await setFakePrefersColorSchemeDark(false);
+    assertEquals(getLoadingSvg().src, lightModeSvg);
+
+    // Mock media query state for dark mode.
+    await setFakePrefersColorSchemeDark(true);
+    assertEquals(getLoadingSvg().src, darkModeSvg);
   });
 }

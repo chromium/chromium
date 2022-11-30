@@ -1,13 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_TEST_UTIL_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_TEST_UTIL_H_
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "ui/gfx/image/image_skia.h"
@@ -30,6 +28,10 @@ bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second);
 class ImageLoader : public ImageDecoder::ImageRequest {
  public:
   explicit ImageLoader(const base::FilePath& path);
+
+  ImageLoader(const ImageLoader&) = delete;
+  ImageLoader& operator=(const ImageLoader&) = delete;
+
   ~ImageLoader() override;
 
   gfx::ImageSkia Load();
@@ -43,8 +45,6 @@ class ImageLoader : public ImageDecoder::ImageRequest {
   base::RunLoop run_loop_;
 
   gfx::ImageSkia decoded_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageLoader);
 };
 
 }  // namespace test

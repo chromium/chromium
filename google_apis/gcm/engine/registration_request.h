@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gcm/base/gcm_export.h"
@@ -40,7 +40,7 @@ class GCMStatsRecorder;
 class GCM_EXPORT RegistrationRequest {
  public:
   // This enum is also used in an UMA histogram (GCMRegistrationRequestStatus
-  // enum defined in tools/metrics/histograms/histogram.xml). Hence the entries
+  // enum defined in tools/metrics/histograms/enums.xml). Hence the entries
   // here shouldn't be deleted or re-ordered and new ones should be added to
   // the end.
   enum Status {
@@ -61,7 +61,7 @@ class GCM_EXPORT RegistrationRequest {
     // NOTE: always keep this entry at the end. Add new status types only
     // immediately above this line. Make sure to update the corresponding
     // histogram enum accordingly.
-    STATUS_COUNT
+    kMaxValue = TOO_MANY_REGISTRATIONS
   };
 
   // Callback completing the registration request.
@@ -107,7 +107,8 @@ class GCM_EXPORT RegistrationRequest {
     virtual void BuildRequestBody(std::string* body) = 0;
 
     // Reports the status of a request.
-    virtual void ReportStatusToUMA(Status status) = 0;
+    virtual void ReportStatusToUMA(Status status,
+                                   const std::string& subtype) = 0;
 
     // Reports the net error code from a request.
     virtual void ReportNetErrorCodeToUMA(int net_error_code) = 0;
@@ -124,6 +125,10 @@ class GCM_EXPORT RegistrationRequest {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       const std::string& source_to_record);
+
+  RegistrationRequest(const RegistrationRequest&) = delete;
+  RegistrationRequest& operator=(const RegistrationRequest&) = delete;
+
   ~RegistrationRequest();
 
   void Start();
@@ -158,12 +163,10 @@ class GCM_EXPORT RegistrationRequest {
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   // Recorder that records GCM activities for debugging purpose. Not owned.
-  GCMStatsRecorder* recorder_;
+  raw_ptr<GCMStatsRecorder> recorder_;
   std::string source_to_record_;
 
   base::WeakPtrFactory<RegistrationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RegistrationRequest);
 };
 
 }  // namespace gcm

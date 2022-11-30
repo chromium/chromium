@@ -28,9 +28,9 @@ PASS new TransitionEvent('eventType', { elapsedTime: 0 }).elapsedTime is 0
 PASS new TransitionEvent('eventType', { elapsedTime: 123.45 }).elapsedTime is 123.45
 PASS new TransitionEvent('eventType', { elapsedTime: -123.45 }).elapsedTime is -123.45
 PASS new TransitionEvent('eventType', { elapsedTime: 18446744073709551615 }).elapsedTime is 18446744073709551615
-PASS new TransitionEvent('eventType', { elapsedTime: NaN }) threw exception TypeError: Failed to construct 'TransitionEvent': The provided double value is non-finite..
-PASS new TransitionEvent('eventType', { elapsedTime: Infinity }) threw exception TypeError: Failed to construct 'TransitionEvent': The provided double value is non-finite..
-PASS new TransitionEvent('eventType', { elapsedTime: -Infinity }) threw exception TypeError: Failed to construct 'TransitionEvent': The provided double value is non-finite..
+PASS new TransitionEvent('eventType', { elapsedTime: NaN }) threw exception TypeError: Failed to construct 'TransitionEvent': Failed to read the 'elapsedTime' property from 'TransitionEventInit': The provided double value is non-finite..
+PASS new TransitionEvent('eventType', { elapsedTime: Infinity }) threw exception TypeError: Failed to construct 'TransitionEvent': Failed to read the 'elapsedTime' property from 'TransitionEventInit': The provided double value is non-finite..
+PASS new TransitionEvent('eventType', { elapsedTime: -Infinity }) threw exception TypeError: Failed to construct 'TransitionEvent': Failed to read the 'elapsedTime' property from 'TransitionEventInit': The provided double value is non-finite..
 PASS new TransitionEvent('eventType', { pseudoElement: '::before' }).pseudoElement is "::before"
 PASS new TransitionEvent('eventType', { pseudoElement: '' }).pseudoElement is ""
 PASS new TransitionEvent('eventType', { elapsedTime: undefined }).elapsedTime is 0
@@ -38,11 +38,11 @@ PASS new TransitionEvent('eventType', { elapsedTime: null }).elapsedTime is 0
 PASS new TransitionEvent('eventType', { elapsedTime: false }).elapsedTime is 0
 PASS new TransitionEvent('eventType', { elapsedTime: true }).elapsedTime is 1
 PASS new TransitionEvent('eventType', { elapsedTime: '' }).elapsedTime is 0
-PASS new TransitionEvent('eventType', { elapsedTime: 'doremi' }) threw exception TypeError: Failed to construct 'TransitionEvent': The provided double value is non-finite..
+PASS new TransitionEvent('eventType', { elapsedTime: 'doremi' }) threw exception TypeError: Failed to construct 'TransitionEvent': Failed to read the 'elapsedTime' property from 'TransitionEventInit': The provided double value is non-finite..
 PASS new TransitionEvent('eventType', { elapsedTime: [] }).elapsedTime is 0
 PASS new TransitionEvent('eventType', { elapsedTime: [123.45] }).elapsedTime is 123.45
-PASS new TransitionEvent('eventType', { elapsedTime: [123.45, 678.90] }) threw exception TypeError: Failed to construct 'TransitionEvent': The provided double value is non-finite..
-PASS new TransitionEvent('eventType', { elapsedTime: {doremi: 123.45} }) threw exception TypeError: Failed to construct 'TransitionEvent': The provided double value is non-finite..
+PASS new TransitionEvent('eventType', { elapsedTime: [123.45, 678.90] }) threw exception TypeError: Failed to construct 'TransitionEvent': Failed to read the 'elapsedTime' property from 'TransitionEventInit': The provided double value is non-finite..
+PASS new TransitionEvent('eventType', { elapsedTime: {doremi: 123.45} }) threw exception TypeError: Failed to construct 'TransitionEvent': Failed to read the 'elapsedTime' property from 'TransitionEventInit': The provided double value is non-finite..
 PASS new TransitionEvent('eventType', { elapsedTime: {valueOf: function () { return 123.45 } } }).elapsedTime is 123.45
 PASS new TransitionEvent('eventType', { bubbles: true, cancelable: true, propertyName: 'doremi', elapsedTime: 123.45, pseudoElement: '::after' }).bubbles is true
 PASS new TransitionEvent('eventType', { bubbles: true, cancelable: true, propertyName: 'doremi', elapsedTime: 123.45, pseudoElement: '::after' }).cancelable is true

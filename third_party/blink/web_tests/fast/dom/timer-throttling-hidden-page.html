@@ -5,58 +5,55 @@
     <script>
         description('<a href="https://bugs.webkit.org/show_bug.cgi?id=98474">Bug 98474</a>: Throttle DOM timers on hidden pages.');
 
-        var jsTestIsAsync = true;
-        var previousTime = 0;
-        var timerCount = 0;
-        var firstTimerWhileNotVisible = true;
-        var isPageVisible = true;
-        var timeoutInterval = 100;
-        // Some of our testing hardware runs very slowly, so we need a generous
-        // tolerance value.
-        var tolerance = 200;
-        var timerAlignmentInterval = 1000;
+        jsTestIsAsync = true;
+        let testStartTime = 0;
+        let timerCount = 0;
+        let requestedInterval = 100;
+        let timerAlignmentInterval = 1000;
 
-        function testTimer()
-        {
-            var time = Date.now();
-            if (!isPageVisible) {
-                if (firstTimerWhileNotVisible) {
-                    firstTimerIntervalWhilePageNotVisible = time - previousTime;
-                    // Even if (tolerance > timeoutInterval), we should never
-                    // get a negative elapsed time, so clamp minValue to zero.
-                    var minValue = Math.max(0, timeoutInterval - tolerance);
-                    shouldBeGreaterThanOrEqual("firstTimerIntervalWhilePageNotVisible", minValue.toString());
-                    var maxValue = timeoutInterval + timerAlignmentInterval + tolerance;
-                    shouldBeTrue("firstTimerIntervalWhilePageNotVisible <= " + maxValue);
-                    firstTimerWhileNotVisible = false;
-                } else {
-                    timerIntervalWhilePageNotVisible = time - previousTime;
-                    shouldBeCloseTo("timerIntervalWhilePageNotVisible", timerAlignmentInterval, tolerance);
-                }
-            } else {
-                timerIntervalWhilePageVisible = time - previousTime;
-                shouldBeCloseTo("timerIntervalWhilePageVisible", timeoutInterval, tolerance);
-            }
+        function testTimer() {
+            ++timerCount;
+            let promise;
 
-            timerCount++;
-            previousTime = time;
-
-            var promise;
+            // Timer 1 runs when the page is visible.
+            // Timer 2, 3, 4 run when the page is hidden.
+            // Timer 5 runs when the page is visible. It finishes the test.
             if (timerCount == 1) {
                 promise = setMainWindowHidden(true);
-                isPageVisible = false;
-            } else if (timerCount == 3) {
+            } else if (timerCount == 4) {
                 promise = setMainWindowHidden(false);
-                isPageVisible = true;
-            } else if (timerCount < 5) {
-                promise = Promise.resolve();
-            } else {
+            } else if (timerCount == 5) {
+                // Timer 1 and 5 add at least `requestedInterval` of delay.
+                //     No throttling, may run as soon as the timeout expires.
+                // Timer 2 adds at least `requestedInterval` of delay.
+                //     Runs on the first 1-second aligned tick after the
+                //     timeout's expiration. Depending on when the timer is
+                //     scheduled, this may have no effect.
+                // Timer 3 and 4 add at least `timerAlignmentInterval` of delay.
+                //     Runs on the first 1-second aligned tick after the
+                //     timeout's expiration (which means that it can't be the
+                //     same tick as the previous timer invocation).
+                //
+                // Arbitrary delays introduced by the test environment prevent
+                // setting an upper bound on total execution time. Also, since
+                // each individual timer could be delayed to run exactly
+                // `requestedInterval` before the next 1-second aligned tick,
+                // it is not possible to expect that an individual timer runs at
+                // least `timerAlignmentInterval` after the previous timer under
+                // throttling.
+                totalTime = Date.now() - testStartTime;
+                shouldBeGreaterThanOrEqual("totalTime", "3 * requestedInterval + 2 * timerAlignmentInterval");
+                // The test should run in less than a day. Without this check, the
+                // test could pass simply because `testStartTime` was not initialized.
+                shouldBeGreaterThanOrEqual("1000 * 60 * 60 * 24", "totalTime");
                 finishJSTest();
                 return;
+            } else {
+                promise = Promise.resolve();
             }
+
             promise.then(() => {
-                previousTime = Date.now();
-                setTimeout(testTimer, timeoutInterval);
+                setTimeout(testTimer, requestedInterval);
             });
         }
 
@@ -67,21 +64,22 @@
                 return;
             }
 
-            var timeoutIntervalSpans = document.getElementsByClassName('timeoutInterval');
-            for (var i = 0; i < timeoutIntervalSpans.length; i++)
-                timeoutIntervalSpans[i].innerText = timeoutInterval;
+            var requestedIntervalSpans = document.getElementsByClassName('requestedInterval');
+            for (var i = 0; i < requestedIntervalSpans.length; i++)
+                requestedIntervalSpans[i].innerText = requestedInterval;
 
             document.getElementById('alignmentInterval').innerText = timerAlignmentInterval / 1000;
 
             testRunner.dumpAsText();
-            previousTime = Date.now();
-            setTimeout(testTimer, timeoutInterval);
+            testStartTime = Date.now();
+            previousTime = testStartTime;
+            setTimeout(testTimer, requestedInterval);
         }
     </script>
 </head>
 <body onload="runTest()">
     <p>
-    This test measures the time taken to fire a <span class="timeoutInterval"></span>ms DOM Timer when the page visibility is set to "visible", "hidden", and then back to "visible".  Due to page timer throttling, the timer should fire close to <span id="alignmentInterval"></span>s when page is hidden.  And it should fire close to <span class="timeoutInterval"></span>ms, when the page is visible.
+    This test measures the time taken to fire a <span class="requestedInterval"></span>ms DOM Timer when the page visibility is set to "visible", "hidden", and then back to "visible".  Due to page timer throttling, the timer should fire close to <span id="alignmentInterval"></span>s when page is hidden.  And it should fire close to <span class="requestedInterval"></span>ms, when the page is visible.
     </p>
 </body>
 </html>

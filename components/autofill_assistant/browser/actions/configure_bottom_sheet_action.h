@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_CONFIGURE_BOTTOM_SHEET_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_CONFIGURE_BOTTOM_SHEET_ACTION_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
@@ -17,6 +16,11 @@ class ConfigureBottomSheetAction : public Action {
  public:
   explicit ConfigureBottomSheetAction(ActionDelegate* delegate,
                                       const ActionProto& proto);
+
+  ConfigureBottomSheetAction(const ConfigureBottomSheetAction&) = delete;
+  ConfigureBottomSheetAction& operator=(const ConfigureBottomSheetAction&) =
+      delete;
+
   ~ConfigureBottomSheetAction() override;
 
  private:
@@ -29,7 +33,6 @@ class ConfigureBottomSheetAction : public Action {
   ProcessActionCallback callback_;
   base::OneShotTimer timer_;
   base::WeakPtrFactory<ConfigureBottomSheetAction> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ConfigureBottomSheetAction);
 };
 
 }  // namespace autofill_assistant

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,27 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_request.h"
+#include "components/permissions/permission_prompt.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+
+namespace blink {
+enum class PermissionType;
+}
 
 namespace content {
-enum class PermissionType;
+class RenderFrameHost;
+class RenderProcessHost;
+struct PermissionResult;
 }  // namespace content
 
+class GURL;
+
 namespace permissions {
+class PermissionRequest;
+struct PermissionResult;
 
 // This enum backs a UMA histogram, so it must be treated as append-only.
 enum class PermissionAction {
@@ -35,6 +45,10 @@ enum class PermissionAction {
 // A utility class for permissions.
 class PermissionUtil {
  public:
+  PermissionUtil() = delete;
+  PermissionUtil(const PermissionUtil&) = delete;
+  PermissionUtil& operator=(const PermissionUtil&) = delete;
+
   // Returns the permission string for the given permission.
   static std::string GetPermissionString(ContentSettingsType);
 
@@ -48,15 +62,89 @@ class PermissionUtil {
   // to remove the usage in PermissionUmaUtil, which uses PermissionType as a
   // histogram value to count permission request metrics.
   static bool GetPermissionType(ContentSettingsType type,
-                                content::PermissionType* out);
+                                blink::PermissionType* out);
 
   // Checks whether the given ContentSettingsType is a permission. Use this
   // to determine whether a specific ContentSettingsType is supported by the
   // PermissionManager.
   static bool IsPermission(ContentSettingsType type);
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionUtil);
+  // Check whether the given permission request has low priority, based on the
+  // acceptance rates data (notifications and geolocations have the lowest
+  // acceptance data)
+  static bool IsLowPriorityPermissionRequest(const PermissionRequest* request);
+
+  // Checks whether the given ContentSettingsType is a guard content setting,
+  // meaning it does not support allow setting and toggles between "ask" and
+  // "block" instead. This is primarily used for chooser-based permissions.
+  static bool IsGuardContentSetting(ContentSettingsType type);
+
+  // Checks whether the given ContentSettingsType supports one time grants.
+  static bool CanPermissionBeAllowedOnce(ContentSettingsType type);
+
+  // Returns the authoritative `embedding origin`, as a GURL, to be used for
+  // permission decisions in `render_frame_host`.
+  // TODO(crbug.com/1327384): Remove this method when possible.
+  static GURL GetLastCommittedOriginAsURL(
+      content::RenderFrameHost* render_frame_host);
+
+  // Helper method to convert `PermissionType` to `ContentSettingType`.
+  // If `PermissionType` is not supported or found, returns
+  // ContentSettingsType::DEFAULT.
+  static ContentSettingsType PermissionTypeToContentSettingTypeSafe(
+      blink::PermissionType permission);
+
+  // Helper method to convert `PermissionType` to `ContentSettingType`.
+  static ContentSettingsType PermissionTypeToContentSettingType(
+      blink::PermissionType permission);
+
+  // Helper method to convert `ContentSettingType` to `PermissionType`.
+  static blink::PermissionType ContentSettingTypeToPermissionType(
+      ContentSettingsType permission);
+
+  // Helper method to convert PermissionStatus to ContentSetting.
+  static ContentSetting PermissionStatusToContentSetting(
+      blink::mojom::PermissionStatus status);
+
+  // Helper methods to convert ContentSetting to PermissionStatus and vice
+  // versa.
+  static blink::mojom::PermissionStatus ContentSettingToPermissionStatus(
+      ContentSetting setting);
+
+  static content::PermissionResult ToContentPermissionResult(
+      PermissionResult result);
+
+  static PermissionResult ToPermissionResult(content::PermissionResult result);
+
+  // If an iframed document/worker inherits a different StoragePartition from
+  // its embedder than it would use if it were a main frame, we should block
+  // undelegated permissions. Because permissions are scoped to BrowserContext
+  // instead of StoragePartition, without this check the aforementioned iframe
+  // would be given undelegated permissions if the user had granted its origin
+  // access when it was loaded as a main frame.
+  static bool IsPermissionBlockedInPartition(
+      ContentSettingsType permission,
+      const GURL& requesting_origin,
+      content::RenderProcessHost* render_process_host);
+
+  // Converts from |url|'s actual origin to the "canonical origin" that should
+  // be used for the purpose of requesting/storing permissions. For example, the
+  // origin of the local NTP gets mapped to the Google base URL instead. With
+  // Permission Delegation it will transform the requesting origin into
+  // the embedding origin because all permission checks happen on the top level
+  // origin.
+  //
+  // All the public methods below, such as RequestPermission or
+  // GetPermissionStatus, take the actual origin and do the canonicalization
+  // internally. You only need to call this directly if you do something else
+  // with the origin, such as display it in the UI.
+  static GURL GetCanonicalOrigin(ContentSettingsType permission,
+                                 const GURL& requesting_origin,
+                                 const GURL& embedding_origin);
+
+  // Returns `true` if at least one of the `delegate->Requests()` was requested
+  // with a user gesture.
+  static bool HasUserGesture(PermissionPrompt::Delegate* delegate);
 };
 
 }  // namespace permissions

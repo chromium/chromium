@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,10 +77,12 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::IGNORED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
+                decision);
           });
 
-  CWVCreditCardSaver* credit_card_saver =
+  [[maybe_unused]] CWVCreditCardSaver* credit_card_saver =
       [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
                                          saveOptions:options
                                    legalMessageLines:{}
@@ -104,7 +106,9 @@ TEST_F(CWVCreditCardSaverTest, Decline) {
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::DECLINED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
+                decision);
           });
 
   CWVCreditCardSaver* credit_card_saver =
@@ -129,7 +133,12 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::ACCEPTED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
+                decision);
+            EXPECT_EQ(u"John Doe", user_provided_card_details.cardholder_name);
+            EXPECT_EQ(u"08", user_provided_card_details.expiration_date_month);
+            EXPECT_EQ(u"2021", user_provided_card_details.expiration_date_year);
           });
 
   CWVCreditCardSaver* credit_card_saver =
@@ -144,11 +153,14 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
                                         risk_data_used = YES;
                                       })];
   __block BOOL completion_called = NO;
-  [credit_card_saver acceptWithRiskData:@"dummy-risk-data"
-                      completionHandler:^(BOOL cardSaved) {
-                        EXPECT_TRUE(cardSaved);
-                        completion_called = YES;
-                      }];
+  [credit_card_saver acceptWithCardHolderFullName:@"John Doe"
+                                  expirationMonth:@"08"
+                                   expirationYear:@"2021"
+                                         riskData:@"dummy-risk-data"
+                                completionHandler:^(BOOL cardSaved) {
+                                  EXPECT_TRUE(cardSaved);
+                                  completion_called = YES;
+                                }];
   [credit_card_saver handleCreditCardUploadCompleted:YES];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {

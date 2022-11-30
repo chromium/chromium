@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -36,6 +36,10 @@ class DownloadFeedbackService {
   DownloadFeedbackService(
       DownloadProtectionService* download_protection_service,
       base::TaskRunner* file_task_runner);
+
+  DownloadFeedbackService(const DownloadFeedbackService&) = delete;
+  DownloadFeedbackService& operator=(const DownloadFeedbackService&) = delete;
+
   ~DownloadFeedbackService();
 
   // Stores the request and response ping data from the download check, if the
@@ -84,7 +88,7 @@ class DownloadFeedbackService {
   void FeedbackComplete();
 
   // Safe because the DownloadProtectionService owns this.
-  DownloadProtectionService* download_protection_service_;
+  raw_ptr<DownloadProtectionService> download_protection_service_;
   scoped_refptr<base::TaskRunner> file_task_runner_;
 
   // Currently active & pending uploads. The first item is active, remaining
@@ -92,8 +96,6 @@ class DownloadFeedbackService {
   base::queue<std::unique_ptr<DownloadFeedback>> active_feedback_;
 
   base::WeakPtrFactory<DownloadFeedbackService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFeedbackService);
 };
 }  // namespace safe_browsing
 

@@ -1,7 +1,0 @@
-drwxr-xr-x    3 0        0            4096 Sep 18  2008 .
-drwxr-xr-x    3 0        0            4096 Sep 18  2008 ..
-lrwxrwxrwx    1 0        509             1 Nov 08  2007 ftp -> .
-lrwxrwxrwx    1 0        0               3 Oct 12  2007 mirror -> pub
-lrwxrwxrwx    1 0        0              26 Sep 18  2008 pub -> vol/1/.CLUSTER/var_ftp/pub
-lrwxrwxrwx    1 0        0              27 Oct 16  2007 site -> vol/1/.CLUSTER/var_ftp/site
-drwxr-xr-x    7 0        0            4096 Jul 02  2008 vol

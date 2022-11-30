@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -234,7 +234,7 @@ fi
 eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 
-REPOCONFIG="http://dl.google.com/linux/${PACKAGE#google-}/rpm/stable"
+REPOCONFIG="https://dl.google.com/linux/${PACKAGE#google-}/rpm/stable"
 verify_channel
 export USR_BIN_SYMLINK_NAME="${PACKAGE}-${CHANNEL}"
 

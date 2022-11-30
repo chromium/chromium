@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package persisted_state_db;
+
+// Used for storing PersistedState Content.
+message PersistedStateContentProto {
+  // Original key for data.
+  optional string key = 1;
+
+  // Content data.
+  optional bytes content_data = 2;
+}

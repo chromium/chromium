@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/gfx/animation/tween.h"
@@ -32,6 +31,10 @@ class ASH_EXPORT PinKeyboardAnimation : public ui::LayerAnimationElement {
                        int height,
                        base::TimeDelta duration,
                        gfx::Tween::Type tween_type);
+
+  PinKeyboardAnimation(const PinKeyboardAnimation&) = delete;
+  PinKeyboardAnimation& operator=(const PinKeyboardAnimation&) = delete;
+
   ~PinKeyboardAnimation() override;
 
   // ui::LayerAnimationElement:
@@ -48,8 +51,6 @@ class ASH_EXPORT PinKeyboardAnimation : public ui::LayerAnimationElement {
   gfx::Tween::Type tween_type_;
   float start_opacity_ = 0;
   float end_opacity_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(PinKeyboardAnimation);
 };
 
 }  // namespace ash

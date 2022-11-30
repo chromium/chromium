@@ -1,0 +1,39 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+// Interface that allows the Libassistant mojom service to change device
+// settings on ChromeOS.
+interface DeviceSettingsDelegate {
+  // Gets the current screen brightness level (0-1.0).
+  // Returns null in the event of an error.
+  GetScreenBrightnessLevel() => (GetBrightnessResult? result);
+
+  // Enables or disables Bluetooth.
+  SetBluetoothEnabled(bool enabled);
+
+  // Enables or disables do not disturb mode.
+  SetDoNotDisturbEnabled(bool enabled);
+
+  // Enables or disables Night Light.
+  SetNightLightEnabled(bool enabled);
+
+  // Sets the screen brightness level (0-1.0).  If |gradual| is true, the
+  // transition will be animated.
+  SetScreenBrightnessLevel(double level, bool gradual);
+
+  // Enables or disables Switch Access.
+  SetSwitchAccessEnabled(bool enabled);
+
+  // Enables or disables WiFi.
+  SetWifiEnabled(bool enabled);
+
+};
+
+// Return value of GetScreenBrightnessLevel().
+// Must be a struct so we can return a null object when an error happens.
+struct GetBrightnessResult {
+  double level;
+};

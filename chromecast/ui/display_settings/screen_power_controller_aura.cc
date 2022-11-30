@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,16 +14,13 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kScreenOnOffDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kScreenOnOffDuration = base::Milliseconds(200);
 // These delays are needed to ensure there are no visible artifacts due to the
 // backlight turning on prior to the LCD fully initializing or vice-versa.
 // TODO(b/161140301): Make this configurable for different products
 // TODO(b/161268188): Remove these if the delays can be handled by the kernel
-constexpr base::TimeDelta kDisplayPowerOnDelay =
-    base::TimeDelta::FromMilliseconds(35);
-constexpr base::TimeDelta kDisplayPowerOffDelay =
-    base::TimeDelta::FromMilliseconds(85);
+constexpr base::TimeDelta kDisplayPowerOnDelay = base::Milliseconds(35);
+constexpr base::TimeDelta kDisplayPowerOffDelay = base::Milliseconds(85);
 
 }  // namespace
 

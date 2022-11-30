@@ -1,0 +1,8 @@
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer htmlTag='body'
+++++++genericContainer ignored invisible htmlTag='template'
+++++++genericContainer ignored invisible htmlTag='div'
+++++++++genericContainer ignored invisible htmlTag='my-element'
+++++++++++genericContainer ignored invisible htmlTag='div'
+++++++button htmlTag='button' name='Done'

@@ -1,4 +1,4 @@
-// Copyright 2016 The Crashpad Authors. All rights reserved.
+// Copyright 2016 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,19 +55,17 @@ void CaptureMemoryDelegateWin::AddNewMemorySnapshot(
     return;
   if (range.size() == 0)
     return;
-  if (budget_remaining_ && *budget_remaining_ == 0)
+  if (!budget_remaining_ || *budget_remaining_ == 0)
     return;
   snapshots_->push_back(std::make_unique<internal::MemorySnapshotGeneric>());
   internal::MemorySnapshotGeneric* snapshot = snapshots_->back().get();
   snapshot->Initialize(process_reader_->Memory(), range.base(), range.size());
-  if (budget_remaining_) {
-    if (!base::IsValueInRangeForNumericType<int64_t>(range.size())) {
-      *budget_remaining_ = 0;
-    } else {
-      int64_t temp = *budget_remaining_;
-      temp -= range.size();
-      *budget_remaining_ = base::saturated_cast<uint32_t>(temp);
-    }
+  if (!base::IsValueInRangeForNumericType<int64_t>(range.size())) {
+    *budget_remaining_ = 0;
+  } else {
+    int64_t temp = *budget_remaining_;
+    temp -= range.size();
+    *budget_remaining_ = base::saturated_cast<uint32_t>(temp);
   }
 }
 

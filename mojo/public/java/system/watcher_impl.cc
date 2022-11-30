@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,11 +26,14 @@ class WatcherImpl {
                  SimpleWatcher::ArmingPolicy::AUTOMATIC,
                  base::SequencedTaskRunnerHandle::Get()) {}
 
+  WatcherImpl(const WatcherImpl&) = delete;
+  WatcherImpl& operator=(const WatcherImpl&) = delete;
+
   ~WatcherImpl() = default;
 
   jint Start(JNIEnv* env,
              const JavaParamRef<jobject>& jcaller,
-             jint mojo_handle,
+             jlong mojo_handle,
              jint signals) {
     java_watcher_.Reset(env, jcaller);
 
@@ -67,8 +70,6 @@ class WatcherImpl {
 
   SimpleWatcher watcher_;
   base::android::ScopedJavaGlobalRef<jobject> java_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherImpl);
 };
 
 }  // namespace
@@ -82,7 +83,7 @@ static jlong JNI_WatcherImpl_CreateWatcher(
 static jint JNI_WatcherImpl_Start(JNIEnv* env,
                                   const JavaParamRef<jobject>& jcaller,
                                   jlong watcher_ptr,
-                                  jint mojo_handle,
+                                  jlong mojo_handle,
                                   jint signals) {
   auto* watcher = reinterpret_cast<WatcherImpl*>(watcher_ptr);
   return watcher->Start(env, jcaller, mojo_handle, signals);

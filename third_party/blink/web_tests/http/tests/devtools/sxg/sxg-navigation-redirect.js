@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 (async function() {
   TestRunner.addResult('Tests the signed exchange information are available when the navigation succeeded after redirect.\n');
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
-  SDK.NetworkLog.instance().reset();
+  NetworkTestRunner.networkLog().reset();
   const url =
       'http://localhost:8000/resources/redirect.php?url=' +
       encodeURIComponent(

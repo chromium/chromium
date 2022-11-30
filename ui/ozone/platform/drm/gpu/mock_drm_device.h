@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -58,6 +57,9 @@ class MockDrmDevice : public DrmDevice {
 
   explicit MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
 
+  MockDrmDevice(const MockDrmDevice&) = delete;
+  MockDrmDevice& operator=(const MockDrmDevice&) = delete;
+
   static ScopedDrmPropertyBlobPtr AllocateInFormatsBlob(
       uint32_t id,
       const std::vector<uint32_t>& supported_formats,
@@ -75,6 +77,7 @@ class MockDrmDevice : public DrmDevice {
   int get_overlay_clear_call_count() const { return overlay_clear_call_count_; }
   int get_test_modeset_count() const { return test_modeset_count_; }
   int get_commit_modeset_count() const { return commit_modeset_count_; }
+  int get_seamless_modeset_count() const { return seamless_modeset_count_; }
   int get_commit_count() const { return commit_count_; }
   int get_set_object_property_count() const {
     return set_object_property_count_;
@@ -92,10 +95,17 @@ class MockDrmDevice : public DrmDevice {
     legacy_gamma_ramp_expectation_ = state;
   }
   void set_commit_expectation(bool state) { commit_expectation_ = state; }
+  void set_overlay_modeset_expecation(bool state) {
+    modeset_with_overlays_expectation_ = state;
+  }
 
   uint32_t current_framebuffer() const { return current_framebuffer_; }
 
   const std::vector<sk_sp<SkSurface>> buffers() const { return buffers_; }
+
+  int last_planes_committed_count() const {
+    return last_planes_committed_count_;
+  }
 
   uint32_t get_cursor_handle_for_crtc(uint32_t crtc) const {
     const auto it = crtc_cursor_map_.find(crtc);
@@ -186,6 +196,8 @@ class MockDrmDevice : public DrmDevice {
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& lut) override;
   bool SetCapability(uint64_t capability, uint64_t value) override;
+  absl::optional<std::string> GetDriverName() const override;
+  void SetDriverName(absl::optional<std::string> name);
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  private:
@@ -221,9 +233,11 @@ class MockDrmDevice : public DrmDevice {
   int allocate_buffer_count_;
   int test_modeset_count_ = 0;
   int commit_modeset_count_ = 0;
+  int seamless_modeset_count_ = 0;
   int commit_count_ = 0;
   int set_object_property_count_ = 0;
   int set_gamma_ramp_count_ = 0;
+  int last_planes_committed_count_ = 0;
 
   bool set_crtc_expectation_;
   bool add_framebuffer_expectation_;
@@ -231,8 +245,12 @@ class MockDrmDevice : public DrmDevice {
   bool create_dumb_buffer_expectation_;
   bool legacy_gamma_ramp_expectation_ = false;
   bool commit_expectation_ = true;
+  bool modeset_with_overlays_expectation_ = true;
 
   uint32_t current_framebuffer_;
+  uint32_t plane_crtc_id_prop_id_ = 0;
+
+  absl::optional<std::string> driver_name_ = "mock";
 
   std::vector<sk_sp<SkSurface>> buffers_;
 
@@ -258,8 +276,6 @@ class MockDrmDevice : public DrmDevice {
 
   uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
   base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDrmDevice);
 };
 
 }  // namespace ui

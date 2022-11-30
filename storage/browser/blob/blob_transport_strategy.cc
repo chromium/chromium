@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
@@ -321,7 +322,7 @@ class FileTransportStrategy : public BlobTransportStrategy {
  private:
   void OnReply(BlobDataBuilder::FutureFile future_file,
                scoped_refptr<ShareableFileReference> file_reference,
-               base::Optional<base::Time> time_file_modified) {
+               absl::optional<base::Time> time_file_modified) {
     if (!time_file_modified) {
       // Writing to the file failed in the renderer.
       std::move(result_callback_).Run(BlobStatus::ERR_FILE_WRITE_FAILED);
@@ -346,7 +347,7 @@ class FileTransportStrategy : public BlobTransportStrategy {
 
   struct Request {
     // The BytesProvider to request this particular bit of data from.
-    blink::mojom::BytesProvider* provider;
+    raw_ptr<blink::mojom::BytesProvider> provider;
     // Offset into the BytesProvider of the data to request.
     uint64_t source_offset;
     // Size of the bytes to request.

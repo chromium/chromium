@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/device_signals/core",
+]
+specific_include_rules = {
+  "enterprise_reporting_private_(api|browser|unit)test.*": [
+    "+components/device_signals/test",
+  ],
+}

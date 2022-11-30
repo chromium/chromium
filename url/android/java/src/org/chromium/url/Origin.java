@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ public class Origin {
 
     /** @return The port of the origin. Returns 0 for an opaque origin. */
     public int getPort() {
-        return !isOpaque() ? mInternal.port : 0;
+        return !isOpaque() ? Short.toUnsignedInt(mInternal.port) : 0;
     }
 
     /** @return Whether the origin is opaque. */

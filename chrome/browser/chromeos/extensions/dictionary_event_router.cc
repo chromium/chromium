@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -53,8 +54,7 @@ void ExtensionDictionaryEventRouter::DispatchLoadedEventIfLoaded() {
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_DICTIONARY_LOADED,
-      OnDictionaryLoaded::kEventName, std::make_unique<base::ListValue>(),
-      context_);
+      OnDictionaryLoaded::kEventName, base::Value::List(), context_);
   router->BroadcastEvent(std::move(event));
 }
 
@@ -71,17 +71,19 @@ void ExtensionDictionaryEventRouter::OnCustomDictionaryChanged(
     return;
   }
 
-  std::unique_ptr<base::ListValue> added_words(new base::ListValue());
+  base::Value::List added_words;
+  added_words.reserve(dictionary_change.to_add().size());
   for (const std::string& word : dictionary_change.to_add())
-    added_words->AppendString(word);
+    added_words.Append(word);
 
-  std::unique_ptr<base::ListValue> removed_words(new base::ListValue());
+  base::Value::List removed_words;
+  removed_words.reserve(dictionary_change.to_remove().size());
   for (const std::string& word : dictionary_change.to_remove())
-    removed_words->AppendString(word);
+    removed_words.Append(word);
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(std::move(added_words));
-  args->Append(std::move(removed_words));
+  base::Value::List args;
+  args.Append(std::move(added_words));
+  args.Append(std::move(removed_words));
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(

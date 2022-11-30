@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,7 +111,7 @@ class SyncFileSystemRequestFileSystemFunction : public ExtensionFunction {
   // Returns the file system context for this extension.
   storage::FileSystemContext* GetFileSystemContext();
 
-  void DidOpenFileSystem(const GURL& root_url,
+  void DidOpenFileSystem(const storage::FileSystemURL& root_url,
                          const std::string& file_system_name,
                          base::File::Error error);
 };

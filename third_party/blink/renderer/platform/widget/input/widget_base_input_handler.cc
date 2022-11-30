@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/paint/element_id.h"
@@ -30,7 +31,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/keycodes.h>
 #endif
 
@@ -227,7 +228,7 @@ class WidgetBaseInputHandler::HandlingState {
     event_overscroll_ = std::move(params);
   }
 
-  base::Optional<WebTouchAction>& touch_action() { return touch_action_; }
+  absl::optional<WebTouchAction>& touch_action() { return touch_action_; }
 
   std::vector<WidgetBaseInputHandler::InjectScrollGestureParams>&
   injected_scroll_params() {
@@ -243,7 +244,7 @@ class WidgetBaseInputHandler::HandlingState {
   // supporting overscroll IPC notifications due to fling animation updates.
   std::unique_ptr<InputHandlerProxy::DidOverscrollParams> event_overscroll_;
 
-  base::Optional<WebTouchAction> touch_action_;
+  absl::optional<WebTouchAction> touch_action_;
 
   // Used to hold a sequence of parameters corresponding to scroll gesture
   // events that should be injected once the current input event is done
@@ -307,7 +308,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
       weak_ptr_factory_.GetWeakPtr();
   HandlingState handling_state(weak_self, IsTouchStartOrMove(input_event));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ImeEventGuard guard(widget_->GetWeakPtr());
 #endif
 
@@ -337,7 +338,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
   ui::LatencyInfo swap_latency_info(coalesced_event.latency_info());
   swap_latency_info.AddLatencyNumber(
       ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
-  cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
+  cc::LatencyInfoSwapPromiseMonitor latency_info_swap_promise_monitor(
       &swap_latency_info, widget_->LayerTreeHost()->GetSwapPromiseManager());
   std::unique_ptr<cc::EventMetrics> cloned_metrics;
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
@@ -384,8 +385,8 @@ void WidgetBaseInputHandler::HandleInputEvent(
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
   if (WebInputEvent::IsKeyboardEventType(input_event.GetType())) {
-#if defined(OS_ANDROID)
     // The DPAD_CENTER key on Android has a dual semantic: (1) in the general
     // case it should behave like a select key (i.e. causing a click if a button
     // is focused). However, if a text field is focused (2), its intended
@@ -409,14 +410,15 @@ void WidgetBaseInputHandler::HandleInputEvent(
       // DPAD_CENTER is also used as a "confirm" button).
       prevent_default = true;
     }
-#endif
   }
+#endif
 
   if (WebInputEvent::IsGestureEventType(input_event.GetType())) {
     const WebGestureEvent& gesture_event =
         static_cast<const WebGestureEvent&>(input_event);
-    prevent_default = prevent_default ||
-                      widget_->client()->WillHandleGestureEvent(gesture_event);
+    bool suppress = false;
+    widget_->client()->WillHandleGestureEvent(gesture_event, &suppress);
+    prevent_default = prevent_default || suppress;
   }
 
   WebInputEventResult processed = prevent_default
@@ -518,7 +520,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
 
 // TODO(rouslan): Fix ChromeOS and Windows 8 behavior of autofill popup with
 // virtual keyboard.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Virtual keyboard is not supported, so react to focus change immediately.
   if ((processed != WebInputEventResult::kNotHandled &&
        input_event.GetType() == WebInputEvent::Type::kMouseDown) ||
@@ -609,13 +611,14 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
 
   gfx::PointF position = PositionInWidgetFromInputEvent(input_event);
   for (const InjectScrollGestureParams& params : injected_scroll_params) {
-    // Set up a new LatencyInfo for the injected scroll - this is the original
-    // LatencyInfo for the input event that was being handled when the scroll
-    // was injected. This new LatencyInfo will have a modified type, and an
-    // additional scroll update component. Also set up a SwapPromiseMonitor that
-    // will cause the LatencyInfo to be sent up with the compositor frame, if
-    // the GSU causes a commit. This allows end to end latency to be logged for
-    // the injected scroll, annotated with the correct type.
+    // Set up a new `LatencyInfo` for the injected scroll - this is the original
+    // `LatencyInfo` for the input event that was being handled when the scroll
+    // was injected. This new `LatencyInfo` will have a modified type, and an
+    // additional scroll update component. Also set up a
+    // `LatencyInfoSwapPromiseMonitor` that will cause the `LatencyInfo` to be
+    // sent up with the compositor frame, if the GSU causes a commit. This
+    // allows end to end latency to be logged for the injected scroll, annotated
+    // with the correct type.
     ui::LatencyInfo scrollbar_latency_info(original_latency_info);
 
     // Currently only scrollbar is supported - if this DCHECK hits due to a
@@ -627,7 +630,12 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     scrollbar_latency_info.AddLatencyNumber(
         ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
 
-    base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
+    std::unique_ptr<WebGestureEvent> gesture_event =
+        WebGestureEvent::GenerateInjectedScrollGesture(
+            params.type, input_event.TimeStamp(), params.device, position,
+            params.scroll_delta, params.granularity);
+
+    std::unique_ptr<cc::EventMetrics> metrics;
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {
       if (input_event.GetType() != WebInputEvent::Type::kGestureScrollUpdate) {
         scrollbar_latency_info.AddLatencyNumberWithTimestamp(
@@ -648,15 +656,23 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
                 ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
                 nullptr));
       }
-      scroll_update_type = last_injected_gesture_was_begin_
-                               ? cc::EventMetrics::ScrollUpdateType::kStarted
-                               : cc::EventMetrics::ScrollUpdateType::kContinued;
+      metrics = cc::ScrollUpdateEventMetrics::CreateFromExisting(
+          gesture_event->GetTypeAsUiEventType(),
+          ui::ScrollInputType::kScrollbar, /*is_inertial=*/false,
+          last_injected_gesture_was_begin_
+              ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted
+              : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          params.scroll_delta.y(),
+          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+          original_metrics);
+    } else {
+      metrics = cc::ScrollEventMetrics::CreateFromExisting(
+          gesture_event->GetTypeAsUiEventType(),
+          ui::ScrollInputType::kScrollbar, /*is_inertial=*/false,
+          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+          original_metrics);
     }
 
-    std::unique_ptr<WebGestureEvent> gesture_event =
-        WebGestureEvent::GenerateInjectedScrollGesture(
-            params.type, input_event.TimeStamp(), params.device, position,
-            params.scroll_delta, params.granularity);
     if (params.type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
           params.scrollable_area_element_id.GetStableId();
@@ -666,15 +682,9 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     }
 
     {
-      cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
+      cc::LatencyInfoSwapPromiseMonitor latency_info_swap_promise_monitor(
           &scrollbar_latency_info,
           widget_->LayerTreeHost()->GetSwapPromiseManager());
-      std::unique_ptr<cc::EventMetrics> metrics =
-          cc::EventMetrics::CreateFromExisting(
-              gesture_event->GetTypeAsUiEventType(), scroll_update_type,
-              gesture_event->GetScrollInputType(),
-              cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
-              original_metrics);
       cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
       if (metrics) {
         metrics->SetDispatchStageTimestamp(

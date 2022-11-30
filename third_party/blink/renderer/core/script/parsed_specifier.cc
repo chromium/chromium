@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ ParsedSpecifier ParsedSpecifier::Create(const String& specifier,
     // <spec
     // href="https://wicg.github.io/import-maps/#normalize-a-specifier-key"
     // step="1">If specifierKey is the empty string, then:</spec>
-    if (specifier.IsEmpty())
+    if (specifier.empty())
       return ParsedSpecifier();
 
     // <spec label="import-specifier" step="3">If url is failure, then return

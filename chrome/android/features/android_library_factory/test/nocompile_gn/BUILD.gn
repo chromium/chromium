@@ -1,0 +1,30 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/android/test/missing_symbol_test.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+missing_symbol_generated_importer_test(
+    "android_library_factory_missing_symbol_test_java") {
+  importer_package = "org.chromium.chrome.test"
+  imported_package = "org.chromium.chrome.browser.android_library_factory"
+  imported_class_name = "B"
+  deps = [
+    ":b_factory_java",
+    ":b_java",
+  ]
+}
+
+android_library_factory("b_factory_java") {
+  sources = [
+    "../java/src/org/chromium/chrome/browser/android_library_factory/B.java",
+  ]
+}
+
+android_library("b_java") {
+  sources = [
+    "../java/src/org/chromium/chrome/browser/android_library_factory/B.java",
+  ]
+}

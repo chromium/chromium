@@ -1,8 +1,7 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/jinja2/jinja2.gni")
 
@@ -25,7 +24,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/module-shared-message-ids.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-shared.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-shared.h.tmpl",
-    "$mojom_generator_root/generators/cpp_templates/module-test-utils.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-test-utils.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.h.tmpl",
@@ -64,9 +62,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/java_templates/struct.java.tmpl",
     "$mojom_generator_root/generators/java_templates/union.java.tmpl",
     "$mojom_generator_root/generators/js_templates/enum_definition.tmpl",
-    "$mojom_generator_root/generators/js_templates/externs/interface_definition.tmpl",
-    "$mojom_generator_root/generators/js_templates/externs/module.externs.tmpl",
-    "$mojom_generator_root/generators/js_templates/externs/struct_definition.tmpl",
     "$mojom_generator_root/generators/js_templates/fuzzing.tmpl",
     "$mojom_generator_root/generators/js_templates/interface_definition.tmpl",
     "$mojom_generator_root/generators/js_templates/lite/enum_definition.tmpl",
@@ -111,4 +106,17 @@ action("precompile_templates") {
     "--use_bundled_pylibs",
     "precompile",
   ]
+}
+
+group("tests") {
+  data = [
+    mojom_generator_script,
+    "checks/mojom_attributes_check_unittest.py",
+    "checks/mojom_restrictions_checks_unittest.py",
+    "mojom_bindings_generator_unittest.py",
+    "//tools/diagnosis/crbug_1001171.py",
+    "//third_party/markupsafe/",
+  ]
+  data += mojom_generator_sources
+  data += jinja2_sources
 }

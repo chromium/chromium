@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "url/mojom/origin.mojom";
 
 struct PluginMimeType {
   string mime_type;
@@ -27,14 +26,8 @@ struct PluginInfo {
 interface PluginRegistry {
   // Retrieves the list of plugins available to the renderer.
   //
-  // If |refresh| is true, then cached information should not be used to
-  // satisfy this call. |main_frame_origin| is used by the browser process to
-  // filter plugins from the plugin list based on content settings.
-  //
-  // |main_frame_origin| is used to handle exceptions for plugin content
-  // settings.
-  //
-  // TODO(crbug.com/850278): We shouldn't rely on the renderer to tell us the main frame origin.
+  // If `refresh` is true, then cached information should not be used to
+  // satisfy this call.
   [Sync]
-  GetPlugins(bool refresh, url.mojom.Origin main_frame_origin) => (array<PluginInfo> plugins);
+  GetPlugins(bool refresh) => (array<PluginInfo> plugins);
 };

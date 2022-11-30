@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+
+#include <tuple>
 
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
@@ -60,7 +62,7 @@ int CountThreads() {
 namespace sandbox {
 
 bool IsAndroid() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;
@@ -75,28 +77,16 @@ bool IsArchitectureArm() {
 #endif
 }
 
-static const int kExpectedValue = 42;
+static const int kExpectedValue = 1;
 static const int kIgnoreThisTest = 43;
 static const int kExitWithAssertionFailure = 1;
-#if !defined(OS_NACL_NONSFI)
 static const int kExitForTimeout = 2;
-#endif
 
-#if defined(SANDBOX_USES_BASE_TEST_SUITE)
-// This is due to StackDumpSignalHandler() performing _exit(1).
-// TODO(jln): get rid of the collision with kExitWithAssertionFailure.
-const int kExitAfterSIGSEGV = 1;
-#endif
-
-// PNaCl toolchain's signal ABIs are incompatible with Linux's.
-// So, for simplicity, just drop the "timeout" feature from unittest framework
-// with relying on the buildbot's timeout feature.
-#if !defined(OS_NACL_NONSFI)
 static void SigAlrmHandler(int) {
   const char failure_message[] = "Timeout reached!\n";
   // Make sure that we never block here.
   if (!fcntl(2, F_SETFL, O_NONBLOCK)) {
-    ignore_result(write(2, failure_message, sizeof(failure_message) - 1));
+    std::ignore = write(2, failure_message, sizeof(failure_message) - 1);
   }
   _exit(kExitForTimeout);
 }
@@ -123,7 +113,6 @@ static void SetProcessTimeout(int time_in_seconds) {
   SANDBOX_ASSERT(alarm(time_in_seconds) == 0);  // There should be no previous
                                                 // alarm.
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 // Runs a test in a sub-process. This is necessary for most of the code
 // in the BPF sandbox, as it potentially makes global state changes and as
@@ -169,16 +158,14 @@ void UnitTests::RunTestInProcess(SandboxTestRunner* test_runner,
     SANDBOX_ASSERT(!close(fds[0]));
     SANDBOX_ASSERT(!close(fds[1]));
 
-#if !defined(OS_NACL_NONSFI)
     SetProcessTimeout(GetSubProcessTimeoutTimeInSeconds());
-#endif
 
     // Disable core files. They are not very useful for our individual test
     // cases.
     struct rlimit no_core = {0};
     setrlimit(RLIMIT_CORE, &no_core);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android Oreo and higher, the system applies a seccomp filter to all
     // processes. It has its own SIGSYS handler that is un-hooked here in the
     // test child process, so that the Chromium handler can be used. This
@@ -288,7 +275,7 @@ void UnitTests::DeathMessage(int status,
 
 // In official builds CHECK messages are dropped, look for SIGABRT or SIGTRAP.
 // See https://crbug.com/437312 and https://crbug.com/612507.
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && !defined(OS_ANDROID)
+#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && !BUILDFLAG(IS_ANDROID)
   if (subprocess_exited_without_matching_message) {
     static const char kSigTrapMessage[] = "Received signal 5";
     static const char kSigAbortMessage[] = "Received signal 6";
@@ -306,14 +293,14 @@ void UnitTests::DeathSEGVMessage(int status,
   std::string details(TestFailedMessage(msg));
   const char* expected_msg = static_cast<const char*>(aux);
 
-#if !defined(SANDBOX_USES_BASE_TEST_SUITE)
+#if BUILDFLAG(IS_CHROMEOS)
+  // This hack is required for ChromeOS since its signal handler does not
+  // return indicating the handled signal, but with a simple _exit(1) only.
+  const bool subprocess_got_sigsegv =
+      WIFEXITED(status) && (WEXITSTATUS(status) == 1);
+#else
   const bool subprocess_got_sigsegv =
       WIFSIGNALED(status) && (SIGSEGV == WTERMSIG(status));
-#else
-  // This hack is required when a signal handler is installed
-  // for SEGV that will _exit(1).
-  const bool subprocess_got_sigsegv =
-      WIFEXITED(status) && (kExitAfterSIGSEGV == WEXITSTATUS(status));
 #endif
 
   ASSERT_TRUE(subprocess_got_sigsegv) << "Exit status: " << status

@@ -1,17 +1,29 @@
 include_rules = [
  "+chrome/browser/ui/views",
+ "+components/fullscreen_control",
+ "+components/live_caption",
  "+components/services/app_service/public",
- "+third_party/libaddressinput",
+ "+components/url_formatter",
+ "+components/user_education/views",
  "+services/tracing/public",
+ "+third_party/libaddressinput",
+ "+third_party/omnibox_proto",
 ]
 
 specific_include_rules = {
+  "authenticator_qr_sheet_view\.*": [
+    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
+    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+  ],
   "chrome_views_delegate_chromeos\.cc": [
-    "+ash/public/cpp/ash_features.h",
     "+ash/shell.h",
   ],
   "qrcode_generator\.*": [
-    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
+    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
+    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+  ],
+  "save_card_bubble_views_browsertest\.cc": [
+    "+ash/services/multidevice_setup/public/cpp/prefs.h",
   ],
   "screen_capture_notification_ui_views\.cc": [
     "+ash/shell.h",
@@ -22,6 +34,11 @@ specific_include_rules = {
   ],
   ".*test.*": [
    "!ash",
+   "+ash/accelerators/accelerator_table.h",
+   "+ash/components/arc/mojom",
+   "+ash/components/arc/intent_helper",
+   "+ash/components/arc/session",
+   "+ash/components/arc/test",
    "+ash/constants",
    "+ash/public",
   ],

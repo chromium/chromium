@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -29,11 +28,15 @@ namespace ui {
 class X11CanvasSurface : public SurfaceOzoneCanvas {
  public:
   explicit X11CanvasSurface(gfx::AcceleratedWidget widget);
+
+  X11CanvasSurface(const X11CanvasSurface&) = delete;
+  X11CanvasSurface& operator=(const X11CanvasSurface&) = delete;
+
   ~X11CanvasSurface() override;
 
   // SurfaceOzoneCanvas overrides:
   SkCanvas* GetCanvas() override;
-  void ResizeCanvas(const gfx::Size& viewport_size) override;
+  void ResizeCanvas(const gfx::Size& viewport_size, float scale) override;
   void PresentCanvas(const gfx::Rect& damage) override;
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
   bool SupportsAsyncBufferSwap() const override;
@@ -46,8 +49,6 @@ class X11CanvasSurface : public SurfaceOzoneCanvas {
 
   // Helper X11 bitmap presenter that presents the contents.
   X11SoftwareBitmapPresenter x11_software_bitmap_presenter_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11CanvasSurface);
 };
 
 }  // namespace ui

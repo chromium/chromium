@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 
@@ -51,7 +51,7 @@ class AX_BASE_EXPORT AXTreeID {
   std::string ToString() const;
 
   ax::mojom::AXTreeIDType type() const { return type_; }
-  const base::Optional<base::UnguessableToken>& token() const { return token_; }
+  const absl::optional<base::UnguessableToken>& token() const { return token_; }
 
   bool operator==(const AXTreeID& rhs) const;
   bool operator!=(const AXTreeID& rhs) const;
@@ -65,11 +65,11 @@ class AX_BASE_EXPORT AXTreeID {
   explicit AXTreeID(const std::string& string);
 
   friend struct mojo::UnionTraits<ax::mojom::AXTreeIDDataView, ui::AXTreeID>;
-  friend class base::NoDestructor<AXTreeID>;
+  friend AX_BASE_EXPORT const AXTreeID& AXTreeIDUnknown();
   friend void swap(AXTreeID& first, AXTreeID& second);
 
   ax::mojom::AXTreeIDType type_;
-  base::Optional<base::UnguessableToken> token_ = base::nullopt;
+  absl::optional<base::UnguessableToken> token_ = absl::nullopt;
 };
 
 // For use in std::unordered_map.
@@ -81,7 +81,7 @@ AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,
                                         const AXTreeID& value);
 
 // The value to use when an AXTreeID is unknown.
-AX_BASE_EXPORT extern const AXTreeID& AXTreeIDUnknown();
+AX_BASE_EXPORT const AXTreeID& AXTreeIDUnknown();
 
 }  // namespace ui
 

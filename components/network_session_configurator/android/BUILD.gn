@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+import("//build/config/android/rules.gni")
+
+java_cpp_strings("java_switches_srcjar") {
+  # External code should depend on ":network_session_configurator_java" instead.
+  visibility = [ ":*" ]
+  sources =
+      [ "//components/network_session_configurator/common/network_switches.cc" ]
+  template = "NetworkSessionSwitches.java.tmpl"
+}
+
+# If there's already an android_library target, you can add
+# java_switches_srcjar to that target's srcjar_deps. Otherwise, the best
+# practice is to create a new android_library just for this target.
+android_library("network_session_configurator_java") {
+  srcjar_deps = [ ":java_switches_srcjar" ]
+}

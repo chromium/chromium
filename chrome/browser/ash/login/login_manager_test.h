@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 class UserContext;
 
@@ -24,6 +23,10 @@ class UserContext;
 class LoginManagerTest : public MixinBasedInProcessBrowserTest {
  public:
   LoginManagerTest();
+
+  LoginManagerTest(const LoginManagerTest&) = delete;
+  LoginManagerTest& operator=(const LoginManagerTest&) = delete;
+
   ~LoginManagerTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -65,14 +68,13 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
   bool should_launch_browser_ = false;
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
-  DISALLOW_COPY_AND_ASSIGN(LoginManagerTest);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove once the migration is finished.
-namespace ash {
-using ::chromeos::LoginManagerTest;
+namespace chromeos {
+using ::ash::LoginManagerTest;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_MANAGER_TEST_H_

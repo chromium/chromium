@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
@@ -36,35 +37,24 @@ class ContextTestBase : public testing::Test {
     attributes.bind_generates_resource = false;
 
     auto context = std::make_unique<gpu::GLInProcessContext>();
-    auto result = context->Initialize(
-        gpu_thread_holder_.GetTaskExecutor(),
-        /*surface=*/nullptr, /*offscreen=*/true,
-        /*window=*/gpu::kNullSurfaceHandle, attributes,
-        gpu::SharedMemoryLimits(), gpu_memory_buffer_manager_.get(),
-        /*image_factory=*/nullptr, /*gpu_task_runner_helper=*/nullptr,
-        /*display_compositor_memory_and_task_contoller_on_gpu=*/nullptr,
-        base::ThreadTaskRunnerHandle::Get());
+    auto result = context->Initialize(gpu_thread_holder_.GetTaskExecutor(),
+                                      attributes, gpu::SharedMemoryLimits(),
+                                      /*image_factory=*/nullptr);
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     return context;
   }
 
   void SetUp() override {
-    gpu_memory_buffer_manager_ =
-        std::make_unique<viz::TestGpuMemoryBufferManager>();
     context_ = CreateGLInProcessContext();
     gl_ = context_->GetImplementation();
     context_support_ = context_->GetImplementation();
   }
 
-  void TearDown() override {
-    context_.reset();
-    gpu_memory_buffer_manager_.reset();
-  }
+  void TearDown() override { context_.reset(); }
 
  protected:
-  gpu::gles2::GLES2Interface* gl_;
-  gpu::ContextSupport* context_support_;
-  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  raw_ptr<gpu::ContextSupport> context_support_;
 
  private:
   gpu::InProcessGpuThreadHolder gpu_thread_holder_;
@@ -76,36 +66,3 @@ class ContextTestBase : public testing::Test {
 // Include the actual tests.
 #define CONTEXT_TEST_F TEST_F
 #include "gpu/ipc/client/gpu_context_tests.h"
-
-using GLInProcessCommandBufferTest = ContextTestBase;
-
-TEST_F(GLInProcessCommandBufferTest, CreateImage) {
-  constexpr gfx::BufferFormat kBufferFormat = gfx::BufferFormat::RGBA_8888;
-  constexpr gfx::BufferUsage kBufferUsage = gfx::BufferUsage::SCANOUT;
-  constexpr gfx::Size kBufferSize(100, 100);
-
-  // Calling CreateImageCHROMIUM() should allocate an image id starting at 1.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer1 =
-      gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-          kBufferSize, kBufferFormat, kBufferUsage, gpu::kNullSurfaceHandle);
-  GLuint image_id1 = gl_->CreateImageCHROMIUM(
-      gpu_memory_buffer1->AsClientBuffer(), kBufferSize.width(),
-      kBufferSize.height(), GL_RGBA);
-
-  EXPECT_GT(image_id1, 0u);
-
-  // Create a second GLInProcessContext that is backed by a different
-  // InProcessCommandBuffer. Calling CreateImageCHROMIUM() should return a
-  // different id than the first call.
-  std::unique_ptr<gpu::GLInProcessContext> context2 =
-      CreateGLInProcessContext();
-  std::unique_ptr<gfx::GpuMemoryBuffer> buffer2 =
-      gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-          kBufferSize, kBufferFormat, kBufferUsage, gpu::kNullSurfaceHandle);
-  GLuint image_id2 = context2->GetImplementation()->CreateImageCHROMIUM(
-      buffer2->AsClientBuffer(), kBufferSize.width(), kBufferSize.height(),
-      GL_RGBA);
-
-  EXPECT_GT(image_id2, 0u);
-  EXPECT_NE(image_id1, image_id2);
-}

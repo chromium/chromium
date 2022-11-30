@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,8 +142,8 @@ public final class BrowsingDataBridge {
         assert mClearBrowsingDataListener == null;
         mClearBrowsingDataListener = listener;
         BrowsingDataBridgeJni.get().clearBrowsingData(BrowsingDataBridge.this,
-                getProfile().getPrimaryOTRProfile(), dataTypes, timePeriod, new String[0],
-                new int[0], new String[0], new int[0]);
+                getProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true), dataTypes, timePeriod,
+                new String[0], new int[0], new String[0], new int[0]);
     }
 
     /**

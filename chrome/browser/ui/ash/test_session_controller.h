@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,21 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Test implementation of ash's SessionController interface.
 class TestSessionController : public ash::SessionController {
  public:
   TestSessionController();
+
+  TestSessionController(const TestSessionController&) = delete;
+  TestSessionController& operator=(const TestSessionController&) = delete;
+
   ~TestSessionController() override;
 
-  const base::Optional<ash::SessionInfo>& last_session_info() const {
+  const absl::optional<ash::SessionInfo>& last_session_info() const {
     return last_session_info_;
   }
 
@@ -31,7 +35,7 @@ class TestSessionController : public ash::SessionController {
     return last_session_start_time_;
   }
 
-  const base::Optional<ash::UserSession>& last_user_session() const {
+  const absl::optional<ash::UserSession>& last_user_session() const {
     return last_user_session_;
   }
 
@@ -78,8 +82,8 @@ class TestSessionController : public ash::SessionController {
   bool IsScreenLocked() const override;
 
  private:
-  base::Optional<ash::SessionInfo> last_session_info_;
-  base::Optional<ash::UserSession> last_user_session_;
+  absl::optional<ash::SessionInfo> last_session_info_;
+  absl::optional<ash::UserSession> last_user_session_;
   base::TimeDelta last_session_length_limit_;
   base::Time last_session_start_time_;
   int update_user_session_count_ = 0;
@@ -87,8 +91,6 @@ class TestSessionController : public ash::SessionController {
   int set_user_session_order_count_ = 0;
   bool is_screen_locked_ = false;
   base::ObserverList<ash::SessionObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_SESSION_CONTROLLER_H_

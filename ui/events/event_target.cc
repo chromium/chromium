@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,10 @@ gfx::Point EventTarget::GetScreenLocation(const ui::LocatedEvent& event) const {
   return gfx::ToFlooredPoint(GetScreenLocationF(event));
 }
 
+void EventTarget::AddPreTargetHandler(EventHandler* handler) {
+  AddPreTargetHandler(handler, Priority::kDefault);
+}
+
 void EventTarget::AddPreTargetHandler(EventHandler* handler,
                                       Priority priority) {
   CHECK(handler);
@@ -40,18 +44,10 @@ void EventTarget::AddPreTargetHandler(EventHandler* handler,
     pre_target_list_.push_back(prioritized);
   else
     pre_target_list_.insert(pre_target_list_.begin(), prioritized);
-  handler->targets_installed_on_.push_back(this);
 }
 
 void EventTarget::RemovePreTargetHandler(EventHandler* handler) {
   CHECK(handler);
-  // Only erase a single one, which matches the removal code right after this.
-  auto installed_on_iter =
-      std::find(handler->targets_installed_on_.begin(),
-                handler->targets_installed_on_.end(), this);
-  if (installed_on_iter != handler->targets_installed_on_.end())
-    handler->targets_installed_on_.erase(installed_on_iter);
-
   EventHandlerPriorityList::iterator it, end;
   for (it = pre_target_list_.begin(), end = pre_target_list_.end(); it != end;
        ++it) {

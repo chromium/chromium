@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 // Reports metrics for the user interface style on iOS 13+.
-API_AVAILABLE(ios(13.0))
 @interface UserInterfaceStyleRecorder : NSObject
 
 - (instancetype)initWithUserInterfaceStyle:(UIUserInterfaceStyle)style

@@ -5,10 +5,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAMES_H_
 
 #include <stddef.h>
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace WTF {
 class AtomicString;
@@ -27,6 +28,10 @@ enum class CSSPropertyID {
 
 const CSSPropertyID kCSSPropertyAliasList[] = {
 {{property_aliases}}
+};
+
+const CSSPropertyID kCSSComputableProperties[] = {
+{{computable_properties}}
 };
 
 // The lowest CSSPropertyID excluding kInvalid and kVariable.
@@ -64,7 +69,7 @@ static_assert(CSSPropertyID::kColor == kFirstHighPriorityCSSProperty,
 static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty,
               "CSSPropertyID::kZoom is the last high-priority property");
 static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
-               static_cast<int>(kFirstHighPriorityCSSProperty)) == 25,
+               static_cast<int>(kFirstHighPriorityCSSProperty)) == 29,
               "There should a low number of high-priority properties");
 
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {
@@ -95,13 +100,18 @@ inline CSSPropertyID ConvertToCSSPropertyID(int value)
     return static_cast<CSSPropertyID>(value);
 }
 
-inline CSSPropertyID ResolveCSSPropertyID(CSSPropertyID id)
-{
-    return ConvertToCSSPropertyID(static_cast<int>(id) & ~{{alias_mask}});
-}
+int CORE_EXPORT ResolveCSSPropertyAlias(int value);
 
 inline bool IsPropertyAlias(CSSPropertyID id) {
-  return static_cast<int>(id) & {{alias_mask}};
+  return static_cast<int>(id) >= {{alias_offset}};
+}
+
+inline CSSPropertyID ResolveCSSPropertyID(CSSPropertyID id)
+{
+  int int_id = static_cast<int>(id);
+  if (IsPropertyAlias(id))
+    int_id = ResolveCSSPropertyAlias(int_id);
+  return ConvertToCSSPropertyID(int_id);
 }
 
 CSSPropertyID CORE_EXPORT UnresolvedCSSPropertyID(const ExecutionContext*,
@@ -135,5 +145,23 @@ class CSSPropertyIDList {
 mojom::blink::CSSSampleId CORE_EXPORT GetCSSSampleId(CSSPropertyID id);
 
 }  // namespace blink
+
+// Even though these hash traits are not affected by code generation,
+// it's important to define them in the same file as CSSPropertyID to avoid
+// hard-to-diagnose problems from neglecting to include said traits.
+// See https://crbug.com/1246970.
+namespace WTF {
+template <>
+struct HashTraits<blink::CSSPropertyID>
+    : GenericHashTraits<blink::CSSPropertyID> {
+  static const bool kEmptyValueIsZero = true;
+  static void ConstructDeletedValue(blink::CSSPropertyID& slot, bool) {
+    slot = static_cast<blink::CSSPropertyID>(blink::kNumCSSPropertyIDs);
+  }
+  static bool IsDeletedValue(blink::CSSPropertyID value) {
+    return static_cast<int>(value) == blink::kNumCSSPropertyIDs;
+  }
+};
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAMES_H_

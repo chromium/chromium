@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace nacl {
 NaClStartParams::NaClStartParams()
     : nexe_file(IPC::InvalidPlatformFileForTransit()),
       irt_handle(IPC::InvalidPlatformFileForTransit()),
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       debug_stub_server_bound_socket(IPC::InvalidPlatformFileForTransit()),
 #endif
       validation_cache_enabled(false),
@@ -60,20 +60,16 @@ NaClLaunchParams::NaClLaunchParams(
     uint64_t nexe_token_hi,
     const std::vector<NaClResourcePrefetchRequest>&
         resource_prefetch_request_list,
-    int render_view_id,
     int render_frame_id,
     uint32_t permission_bits,
-    bool uses_nonsfi_mode,
     NaClAppProcessType process_type)
     : manifest_url(manifest_url),
       nexe_file(nexe_file),
       nexe_token_lo(nexe_token_lo),
       nexe_token_hi(nexe_token_hi),
       resource_prefetch_request_list(resource_prefetch_request_list),
-      render_view_id(render_view_id),
       render_frame_id(render_frame_id),
       permission_bits(permission_bits),
-      uses_nonsfi_mode(uses_nonsfi_mode),
       process_type(process_type) {}
 
 NaClLaunchParams::NaClLaunchParams(const NaClLaunchParams& other) = default;

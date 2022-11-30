@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "sql/database.h"
@@ -39,11 +38,11 @@ void CheckTableContent(sql::Database& db,
   for (const TableRow& row : expected_rows) {
     EXPECT_TRUE(table_check.Step());
     for (unsigned col = 0; col < row.size(); ++col) {
-      if (const int* value = absl::get_if<int>(&row[col])) {
-        EXPECT_EQ(*value, table_check.ColumnInt(col)) << col;
-      } else if (const std::string* value =
+      if (const int* int_value = absl::get_if<int>(&row[col])) {
+        EXPECT_EQ(*int_value, table_check.ColumnInt(col)) << col;
+      } else if (const std::string* string_value =
                      absl::get_if<std::string>(&row[col])) {
-        EXPECT_EQ(*value, table_check.ColumnString(col)) << col;
+        EXPECT_EQ(*string_value, table_check.ColumnString(col)) << col;
       } else {
         EXPECT_TRUE(false) << "Unknown type " << col;
       }
@@ -100,7 +99,8 @@ void SQLTableBuilderTest::SetupChildTable() {
 
   child_builder_.AddColumn("name", "TEXT");
   child_builder_.AddColumnToUniqueKey("parent_id", "INTEGER",
-                                      /*parent_table=*/kMyLoginTable);
+                                      /*parent_table=*/kMyLoginTable,
+                                      "foreign_key_index");
   EXPECT_EQ(0u, child_builder_.SealVersion());
   EXPECT_TRUE(child_builder_.CreateTable(db()));
 }

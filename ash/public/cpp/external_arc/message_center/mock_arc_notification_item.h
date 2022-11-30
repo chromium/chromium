@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,11 @@ namespace ash {
 
 class MockArcNotificationItem : public ArcNotificationItem {
  public:
-  MockArcNotificationItem(const std::string& notification_key);
+  explicit MockArcNotificationItem(const std::string& notification_key);
+
+  MockArcNotificationItem(const MockArcNotificationItem&) = delete;
+  MockArcNotificationItem& operator=(const MockArcNotificationItem&) = delete;
+
   ~MockArcNotificationItem() override;
 
   // Methods for testing.
@@ -65,8 +69,6 @@ class MockArcNotificationItem : public ArcNotificationItem {
   base::OnceClosure close_callback_;
 
   base::WeakPtrFactory<MockArcNotificationItem> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockArcNotificationItem);
 };
 
 }  // namespace ash

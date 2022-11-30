@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,15 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/parser/arena.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 namespace blink {
 
 class Color;
 class CSSParserObserver;
+class CSSParserSelector;
 class CSSSelectorList;
 class Element;
 class ExecutionContext;
@@ -27,6 +30,9 @@ class CSSValue;
 class CSSPrimitiveValue;
 enum class ParseSheetResult;
 enum class SecureContextMode;
+
+// See css_selector_parser.h.
+using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
 
 // This class serves as the public API for the css/parser subsystem
 class CORE_EXPORT CSSParser {
@@ -44,10 +50,12 @@ class CORE_EXPORT CSSParser {
       const String&,
       CSSDeferPropertyParsing defer_property_parsing =
           CSSDeferPropertyParsing::kNo,
-      bool allow_import_rules = true);
-  static CSSSelectorList ParseSelector(const CSSParserContext*,
-                                       StyleSheetContents*,
-                                       const String&);
+      bool allow_import_rules = true,
+      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
+  static CSSSelectorVector ParseSelector(const CSSParserContext*,
+                                         StyleSheetContents*,
+                                         const String&,
+                                         Arena&);
   static CSSSelectorList ParsePageSelector(const CSSParserContext&,
                                            StyleSheetContents*,
                                            const String&);

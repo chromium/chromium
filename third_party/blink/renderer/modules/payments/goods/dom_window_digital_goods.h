@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,10 +27,13 @@ class DOMWindowDigitalGoods final
   // IDL Interface:
   static ScriptPromise getDigitalGoodsService(ScriptState*,
                                               LocalDOMWindow&,
-                                              const String& payment_method);
+                                              const String& payment_method,
+                                              ExceptionState&);
 
   ScriptPromise GetDigitalGoodsService(ScriptState*,
-                                       const String& payment_method);
+                                       LocalDOMWindow&,
+                                       const String& payment_method,
+                                       ExceptionState&);
   void Trace(Visitor* visitor) const override;
 
  private:

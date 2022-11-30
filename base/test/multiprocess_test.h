@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
@@ -81,7 +80,7 @@ bool TerminateMultiProcessTestChild(const Process& process,
                                     int exit_code,
                                     bool wait);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Returns whether the child process exited cleanly from the main runloop.
 bool MultiProcessTestChildHasCleanExit(const Process& process);
 #endif
@@ -113,6 +112,9 @@ class MultiProcessTest : public PlatformTest {
  public:
   MultiProcessTest();
 
+  MultiProcessTest(const MultiProcessTest&) = delete;
+  MultiProcessTest& operator=(const MultiProcessTest&) = delete;
+
  protected:
   // Run a child process.
   // 'procname' is the name of a function which the child will
@@ -141,9 +143,6 @@ class MultiProcessTest : public PlatformTest {
   // TODO(viettrungluu): Remove this and add a virtual
   // |ModifyChildCommandLine()|; make the two divergent uses more sane.
   virtual CommandLine MakeCmdLine(const std::string& procname);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultiProcessTest);
 };
 
 }  // namespace base

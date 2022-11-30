@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,9 @@ class SettingsTest : public testing::Test {
  public:
   SettingsTest() = default;
 
+  SettingsTest(const SettingsTest&) = delete;
+  SettingsTest& operator=(const SettingsTest&) = delete;
+
   base::FilePath settings_path() {
     return temp_dir_.path().Append(FILE_PATH_LITERAL("settings"));
   }
@@ -55,8 +58,6 @@ class SettingsTest : public testing::Test {
  private:
   ScopedTempDir temp_dir_;
   Settings settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsTest);
 };
 
 TEST_F(SettingsTest, ClientID) {
@@ -153,7 +154,7 @@ TEST_F(SettingsTest, UnlinkFile) {
   EXPECT_TRUE(settings()->SetUploadsEnabled(true));
   EXPECT_TRUE(settings()->SetLastUploadAttemptTime(time(nullptr)));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(_wunlink(settings_path().value().c_str()), 0)
       << ErrnoMessage("_wunlink");
 #else

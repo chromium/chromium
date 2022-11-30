@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@ class TestMetricsLogUploader : public MetricsLogUploader {
  public:
   explicit TestMetricsLogUploader(
       const MetricsLogUploader::UploadCallback& on_upload_complete);
+
+  TestMetricsLogUploader(const TestMetricsLogUploader&) = delete;
+  TestMetricsLogUploader& operator=(const TestMetricsLogUploader&) = delete;
+
   ~TestMetricsLogUploader() override;
 
   // Mark the current upload complete with the given response code.
@@ -34,8 +38,6 @@ class TestMetricsLogUploader : public MetricsLogUploader {
   const MetricsLogUploader::UploadCallback on_upload_complete_;
   ReportingInfo last_reporting_info_;
   bool is_uploading_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsLogUploader);
 };
 
 }  // namespace metrics

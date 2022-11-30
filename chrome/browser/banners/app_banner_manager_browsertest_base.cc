@@ -1,10 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
@@ -19,8 +21,8 @@ void AppBannerManagerBrowserTestBase::SetUpOnMainThread() {
 
   InProcessBrowserTest::SetUpOnMainThread();
 
-  os_hooks_suppress_ =
-      web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+  web_app::test::WaitUntilReady(
+      web_app::WebAppProvider::GetForTest(browser()->profile()));
 }
 
 GURL AppBannerManagerBrowserTestBase::GetBannerURL() {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,12 @@ import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.autofill.mojom.FocusedFieldType.FILLABLE_NON_SEARCH_FIELD;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_INVISIBLE;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_NULL;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
@@ -76,12 +77,11 @@ public class ManualFillingTestHelper {
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String USERNAME_NODE_ID = "username_field";
     private static final String SUBMIT_NODE_ID = "input_submit_button";
+    private static final String NO_COMPLETION_FIELD_ID = "field_without_completion";
 
     private final ChromeTabbedActivityTestRule mActivityTestRule;
     private final AtomicReference<WebContents> mWebContentsRef = new AtomicReference<>();
     private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
-    private PropertyProvider<AccessorySheetData> mSheetSuggestionsProvider =
-            new PropertyProvider<>();
 
     private EmbeddedTestServer mEmbeddedTestServer;
 
@@ -91,6 +91,15 @@ public class ManualFillingTestHelper {
 
     public ManualFillingTestHelper(ChromeTabbedActivityTestRule activityTestRule) {
         mActivityTestRule = activityTestRule;
+    }
+
+    public EmbeddedTestServer getOrCreateTestServer() {
+        if (mEmbeddedTestServer == null) {
+            mEmbeddedTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                    InstrumentationRegistry.getInstrumentation().getContext(),
+                    ServerCertificate.CERT_OK);
+        }
+        return mEmbeddedTestServer;
     }
 
     public void loadTestPage(boolean isRtl) {
@@ -103,9 +112,7 @@ public class ManualFillingTestHelper {
 
     public void loadTestPage(String url, boolean isRtl, boolean waitForNode,
             ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate) {
-        mEmbeddedTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        getOrCreateTestServer();
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
         if (mActivityTestRule.getActivity() == null) {
             mActivityTestRule.startMainActivityWithURL(mEmbeddedTestServer.getURL(url));
@@ -114,7 +121,7 @@ public class ManualFillingTestHelper {
         }
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();
-        cacheCredentials(new String[0], new String[0], false); // This caches the empty state.
+        cacheCredentials("mpark@gmail.com", "S3cr3t"); // Providing suggestions ensures visibility.
         if (waitForNode) DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
     }
 
@@ -123,16 +130,12 @@ public class ManualFillingTestHelper {
             ChromeActivity activity = mActivityTestRule.getActivity();
             mWebContentsRef.set(activity.getActivityTab().getWebContents());
             getManualFillingCoordinator().getMediatorForTesting().setInsetObserverViewSupplier(
-                    ()
-                            -> getKeyboard().createInsetObserver(
-                                    activity.getInsetObserverView().getContext()));
+                    () -> getKeyboard().createInsetObserver(activity.getApplicationContext()));
             // The TestInputMethodManagerWrapper intercepts showSoftInput so that a keyboard is
             // never brought up.
             final ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContentsRef.get());
             mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
             imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
-            getManualFillingCoordinator().registerSheetDataProvider(
-                    AccessoryTabType.PASSWORDS, mSheetSuggestionsProvider);
         });
     }
 
@@ -192,6 +195,12 @@ public class ManualFillingTestHelper {
             });
         }
         getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
+    }
+
+    public void clickFieldWithoutCompletion() throws TimeoutException {
+        DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
+        DOMUtils.focusNode(mWebContentsRef.get(), NO_COMPLETION_FIELD_ID);
+        DOMUtils.clickNode(mWebContentsRef.get(), NO_COMPLETION_FIELD_ID);
     }
 
     public void clickNodeAndShowKeyboard(String node, long focusedFieldId) throws TimeoutException {
@@ -299,19 +308,19 @@ public class ManualFillingTestHelper {
     public PasswordAccessorySheetCoordinator getOrCreatePasswordAccessorySheet() {
         return (PasswordAccessorySheetCoordinator) getManualFillingCoordinator()
                 .getMediatorForTesting()
-                .getOrCreateSheet(AccessoryTabType.PASSWORDS);
+                .getOrCreateSheet(mWebContentsRef.get(), AccessoryTabType.PASSWORDS);
     }
 
     public AddressAccessorySheetCoordinator getOrCreateAddressAccessorySheet() {
         return (AddressAccessorySheetCoordinator) getManualFillingCoordinator()
                 .getMediatorForTesting()
-                .getOrCreateSheet(AccessoryTabType.ADDRESSES);
+                .getOrCreateSheet(mWebContentsRef.get(), AccessoryTabType.ADDRESSES);
     }
 
     public CreditCardAccessorySheetCoordinator getOrCreateCreditCardAccessorySheet() {
         return (CreditCardAccessorySheetCoordinator) getManualFillingCoordinator()
                 .getMediatorForTesting()
-                .getOrCreateSheet(AccessoryTabType.CREDIT_CARDS);
+                .getOrCreateSheet(mWebContentsRef.get(), AccessoryTabType.CREDIT_CARDS);
     }
 
     // ----------------------------------
@@ -408,6 +417,41 @@ public class ManualFillingTestHelper {
     }
 
     /**
+     * Use in a |onView().perform| action to select the tab at |tabIndex| for the found tab layout.
+     * @param tabIndex The index to be selected.
+     * @return The action executed by |perform|.
+     */
+    public static ViewAction selectTabWithDescription(@StringRes int descriptionResId) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(TabLayout.class));
+            }
+
+            @Override
+            public String getDescription() {
+                return "with tab with matching description.";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                String descriptionToMatch = view.getContext().getString(descriptionResId);
+                TabLayout tabLayout = (TabLayout) view;
+                for (int tabIndex = 0; tabIndex < tabLayout.getTabCount(); tabIndex++) {
+                    final TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
+                    if (descriptionToMatch.equals(tab.getContentDescription())) {
+                        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, tab::select);
+                        return;
+                    }
+                }
+                throw new PerformException.Builder()
+                        .withCause(new Throwable("No tab with description: " + descriptionToMatch))
+                        .build();
+            }
+        };
+    }
+
+    /**
      * Use in a |onView().perform| action to scroll to the end of a {@link RecyclerView}.
      * @return The action executed by |perform|.
      */
@@ -493,7 +537,8 @@ public class ManualFillingTestHelper {
     public void addGenerationButton() {
         PropertyProvider<KeyboardAccessoryData.Action[]> generationActionProvider =
                 new PropertyProvider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
-        getManualFillingCoordinator().registerActionProvider(generationActionProvider);
+        getManualFillingCoordinator().registerActionProvider(
+                mWebContentsRef.get(), generationActionProvider);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             generationActionProvider.notifyObservers(new KeyboardAccessoryData.Action[] {
                     new KeyboardAccessoryData.Action("Generate Password",
@@ -505,6 +550,14 @@ public class ManualFillingTestHelper {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ManualFillingComponentBridge.signalAutoGenerationStatus(
                     mActivityTestRule.getWebContents(), available);
+        });
+    }
+
+    public void registerSheetDataProvider(@AccessoryTabType int tabType) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyProvider<AccessorySheetData> sheetDataProvider = new PropertyProvider<>();
+            getManualFillingCoordinator().registerSheetDataProvider(
+                    mWebContentsRef.get(), tabType, sheetDataProvider);
         });
     }
 }

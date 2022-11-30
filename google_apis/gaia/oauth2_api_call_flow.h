@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -30,6 +29,9 @@ class HttpRequestHeaders;
 class OAuth2ApiCallFlow {
  public:
   OAuth2ApiCallFlow();
+
+  OAuth2ApiCallFlow(const OAuth2ApiCallFlow&) = delete;
+  OAuth2ApiCallFlow& operator=(const OAuth2ApiCallFlow&) = delete;
 
   virtual ~OAuth2ApiCallFlow();
 
@@ -99,8 +101,6 @@ class OAuth2ApiCallFlow {
 
   State state_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2ApiCallFlow);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_API_CALL_FLOW_H_

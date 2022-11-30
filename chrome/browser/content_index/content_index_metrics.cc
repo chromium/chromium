@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 namespace {
 
 void MaybeRecordUkmContentAdded(blink::mojom::ContentCategory category,
-                                base::Optional<ukm::SourceId> source_id) {
+                                absl::optional<ukm::SourceId> source_id) {
   if (!source_id)
     return;
 
@@ -24,7 +24,7 @@ void MaybeRecordUkmContentAdded(blink::mojom::ContentCategory category,
 }
 
 void MaybeRecordUkmContentDeletedByUser(
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   if (!source_id)
     return;
 
@@ -58,7 +58,7 @@ void ContentIndexMetrics::RecordContentOpened(
   base::UmaHistogramEnumeration("ContentIndex.ContentOpened", category);
 
   ukm::builders::ContentIndex_Opened(
-      web_contents->GetMainFrame()->GetPageUkmSourceId())
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
       .SetIsOffline(net::NetworkChangeNotifier::IsOffline())
       .Record(ukm::UkmRecorder::Get());
 }

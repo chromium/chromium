@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 #include "build/build_config.h"
 
-#if (defined(OS_MAC) || defined(OS_WIN) || defined(USE_X11) || \
-     defined(USE_OZONE)) &&                                      \
-    !defined(OS_NACL)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || defined(USE_OZONE)) && \
+    !BUILDFLAG(IS_NACL)
 #include "ui/gfx/native_widget_types.h"
 #define GPU_SURFACE_HANDLE_IS_ACCELERATED_WINDOW
 #endif
@@ -33,7 +32,7 @@ namespace gpu {
 #if defined(GPU_SURFACE_HANDLE_IS_ACCELERATED_WINDOW)
 using SurfaceHandle = gfx::AcceleratedWidget;
 constexpr SurfaceHandle kNullSurfaceHandle = gfx::kNullAcceleratedWidget;
-#elif defined(OS_ANDROID) || defined(OS_NACL) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_NACL) || BUILDFLAG(IS_FUCHSIA)
 using SurfaceHandle = int32_t;
 constexpr SurfaceHandle kNullSurfaceHandle = 0;
 #else

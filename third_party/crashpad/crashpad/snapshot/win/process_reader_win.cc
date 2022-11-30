@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,18 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "snapshot/win/cpu_context_win.h"
 #include "util/misc/capture_context.h"
 #include "util/misc/time.h"
+#include "util/win/get_function.h"
 #include "util/win/nt_internals.h"
 #include "util/win/ntstatus_logging.h"
 #include "util/win/process_structs.h"
 #include "util/win/scoped_handle.h"
+#include "util/win/scoped_local_alloc.h"
 
 namespace crashpad {
 
@@ -144,7 +148,7 @@ bool FillThreadContextAndSuspendCount(HANDLE thread_handle,
     DCHECK(suspension_state == ProcessSuspensionState::kRunning);
     thread->suspend_count = 0;
     DCHECK(!is_64_reading_32);
-    CaptureContext(&thread->context.native);
+    thread->context.InitializeFromCurrentThread();
   } else {
     DWORD previous_suspend_count = SuspendThread(thread_handle);
     if (previous_suspend_count == static_cast<DWORD>(-1)) {
@@ -163,26 +167,25 @@ bool FillThreadContextAndSuspendCount(HANDLE thread_handle,
           (suspension_state == ProcessSuspensionState::kSuspended ? 1 : 0);
     }
 
-    memset(&thread->context, 0, sizeof(thread->context));
 #if defined(ARCH_CPU_32_BITS)
-    const bool is_native = true;
-#elif defined(ARCH_CPU_64_BITS)
-    const bool is_native = !is_64_reading_32;
+    if (!thread->context.InitializeNative(thread_handle))
+      return false;
+#endif  // ARCH_CPU_32_BITS
+
+#if defined(ARCH_CPU_64_BITS)
     if (is_64_reading_32) {
-      thread->context.wow64.ContextFlags = CONTEXT_ALL;
-      if (!Wow64GetThreadContext(thread_handle, &thread->context.wow64)) {
-        PLOG(ERROR) << "Wow64GetThreadContext";
+      if (!thread->context.InitializeWow64(thread_handle))
         return false;
-      }
-    }
-#endif
-    if (is_native) {
-      thread->context.native.ContextFlags = CONTEXT_ALL;
-      if (!GetThreadContext(thread_handle, &thread->context.native)) {
-        PLOG(ERROR) << "GetThreadContext";
+#if defined(ARCH_CPU_X86_64)
+    } else if (IsXStateFeatureEnabled(XSTATE_MASK_CET_U)) {
+      if (!thread->context.InitializeXState(thread_handle, XSTATE_MASK_CET_U))
         return false;
-      }
+#endif  // ARCH_CPU_X86_64
+    } else {
+      if (!thread->context.InitializeNative(thread_handle))
+        return false;
     }
+#endif  // ARCH_CPU_64_BITS
 
     if (!ResumeThread(thread_handle)) {
       PLOG(ERROR) << "ResumeThread";
@@ -195,8 +198,85 @@ bool FillThreadContextAndSuspendCount(HANDLE thread_handle,
 
 }  // namespace
 
+ProcessReaderWin::ThreadContext::ThreadContext()
+    : offset_(0), initialized_(false), data_() {}
+
+void ProcessReaderWin::ThreadContext::InitializeFromCurrentThread() {
+  data_.resize(sizeof(CONTEXT));
+  initialized_ = true;
+  CaptureContext(context<CONTEXT>());
+}
+
+bool ProcessReaderWin::ThreadContext::InitializeNative(HANDLE thread_handle) {
+  data_.resize(sizeof(CONTEXT));
+  initialized_ = true;
+  context<CONTEXT>()->ContextFlags = CONTEXT_ALL;
+  if (!GetThreadContext(thread_handle, context<CONTEXT>())) {
+    PLOG(ERROR) << "GetThreadContext";
+    return false;
+  }
+  return true;
+}
+
+#if defined(ARCH_CPU_64_BITS)
+bool ProcessReaderWin::ThreadContext::InitializeWow64(HANDLE thread_handle) {
+  data_.resize(sizeof(WOW64_CONTEXT));
+  initialized_ = true;
+  context<WOW64_CONTEXT>()->ContextFlags = CONTEXT_ALL;
+  if (!Wow64GetThreadContext(thread_handle, context<WOW64_CONTEXT>())) {
+    PLOG(ERROR) << "Wow64GetThreadContext";
+    return false;
+  }
+  return true;
+}
+#endif
+
+#if defined(ARCH_CPU_X86_64)
+bool ProcessReaderWin::ThreadContext::InitializeXState(
+    HANDLE thread_handle,
+    ULONG64 XStateCompactionMask) {
+  // InitializeContext2 needs Windows 10 build 20348.
+  static const auto initialize_context_2 =
+      GET_FUNCTION(L"kernel32.dll", ::InitializeContext2);
+  if (!initialize_context_2)
+    return false;
+  // We want CET_U xstate to get the ssp, only possible when supported.
+  PCONTEXT ret_context = nullptr;
+  DWORD context_size = 0;
+  if (!initialize_context_2(nullptr,
+                            CONTEXT_ALL | CONTEXT_XSTATE,
+                            &ret_context,
+                            &context_size,
+                            XStateCompactionMask) &&
+      GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    PLOG(ERROR) << "InitializeContext2 - getting required size";
+    return false;
+  }
+  // NB: ret_context may not be data.begin().
+  data_.resize(context_size);
+  if (!initialize_context_2(data_.data(),
+                            CONTEXT_ALL | CONTEXT_XSTATE,
+                            &ret_context,
+                            &context_size,
+                            XStateCompactionMask)) {
+    PLOG(ERROR) << "InitializeContext2 - initializing";
+    return false;
+  }
+  offset_ = reinterpret_cast<unsigned char*>(ret_context) - data_.data();
+  initialized_ = true;
+
+  if (!GetThreadContext(thread_handle, ret_context)) {
+    PLOG(ERROR) << "GetThreadContext";
+    return false;
+  }
+
+  return true;
+}
+#endif  // defined(ARCH_CPU_X86_64)
+
 ProcessReaderWin::Thread::Thread()
     : context(),
+      name(),
       id(0),
       teb_address(0),
       teb_size(0),
@@ -204,8 +284,7 @@ ProcessReaderWin::Thread::Thread()
       stack_region_size(0),
       suspend_count(0),
       priority_class(0),
-      priority(0) {
-}
+      priority(0) {}
 
 ProcessReaderWin::ProcessReaderWin()
     : process_(INVALID_HANDLE_VALUE),
@@ -380,6 +459,21 @@ void ProcessReaderWin::ReadThreadData(bool is_64_reading_32) {
         thread.stack_region_size = 0;
       } else {
         thread.stack_region_size = base - limit;
+      }
+    }
+    // On Windows 10 build 1607 and later, read the thread name.
+    static const auto get_thread_description =
+        GET_FUNCTION(L"kernel32.dll", ::GetThreadDescription);
+    if (get_thread_description) {
+      wchar_t* thread_description;
+      HRESULT hr =
+          get_thread_description(thread_handle.get(), &thread_description);
+      if (SUCCEEDED(hr)) {
+        ScopedLocalAlloc thread_description_owner(thread_description);
+        thread.name = base::WideToUTF8(thread_description);
+      } else {
+        LOG(WARNING) << "GetThreadDescription: "
+                     << logging::SystemErrorCodeToString(hr);
       }
     }
     threads_.push_back(thread);

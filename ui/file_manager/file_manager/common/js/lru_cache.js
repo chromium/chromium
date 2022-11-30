@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,7 +84,7 @@ class LRUCacheList {
  * Cache management class implementing LRU algorithm.
  * @template T
  */
-/* #export */ class LRUCache {
+export class LRUCache {
   /**
    * @param {number} maxSize Maximum total size of items this cache can hold.
    *     When items are put without specifying their sizes, their sizes are

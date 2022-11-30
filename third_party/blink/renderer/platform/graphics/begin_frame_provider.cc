@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,19 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/graphics/begin_frame_provider_params.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 namespace blink {
@@ -77,16 +81,17 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
   if (compositor_frame_sink_.is_bound())
     return;
 
-  // Once we are using RAF, this thread is driving Display updates. Update
-  // priority accordingly.
-  base::PlatformThread::SetCurrentThreadPriority(base::ThreadPriority::DISPLAY);
+  // Once we are using RAF, this thread is driving user interactive display
+  // updates. Update priority accordingly.
+  base::PlatformThread::SetCurrentThreadType(
+      base::ThreadType::kDisplayCritical);
 
   mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       provider.BindNewPipeAndPassReceiver());
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      ThreadScheduler::Current()->CompositorTaskRunner();
+      begin_frame_client_->GetCompositorTaskRunner();
 
   provider->CreateSimpleCompositorFrameSink(
       parent_frame_sink_id_, frame_sink_id_,
@@ -94,7 +99,7 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
       cfs_receiver_.BindNewPipeAndPassRemote(task_runner),
       compositor_frame_sink_.BindNewPipeAndPassReceiver(task_runner));
 
-  compositor_frame_sink_.set_disconnect_with_reason_handler(WTF::Bind(
+  compositor_frame_sink_.set_disconnect_with_reason_handler(WTF::BindOnce(
       &BeginFrameProvider::OnMojoConnectionError, WrapWeakPersistent(this)));
 }
 

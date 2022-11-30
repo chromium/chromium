@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,6 +100,25 @@
             "description": "The <a href=\"https://www.w3.org/TR/css3-cascade/#cascading-origins\">origin</a> of the CSS to remove. Defaults to <code>\"author\"</code>."
           }
         }
+      },
+      {
+        "id": "FrameType",
+        "type": "string",
+        "enum": ["outermost_frame", "fenced_frame", "sub_frame"],
+        "description": "The type of frame."
+      },
+      {
+        "id": "DocumentLifecycle",
+        "type": "string",
+        "enum": ["prerender", "active", "cached", "pending_deletion"],
+        "description": "The document lifecycle of the frame."
+      },
+      {
+        "id": "ExecutionWorld",
+        "type": "string",
+        "nodoc": true,
+        "enum": ["ISOLATED", "MAIN"],
+        "description": "The JavaScript world for a script to execute within. Can either be an isolated world, unique to this extension, or the main world of the DOM which is shared with the page's JavaScript."
       }
     ]
   }

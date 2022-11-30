@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/auto_reset.h"
 #include "base/mac/scoped_mach_port.h"
@@ -211,7 +212,7 @@ void MachMultiprocess::MultiprocessChild() {
   ScopedForbidReturn forbid_return;
 
   // local_port is not valid in the forked child process.
-  ignore_result(info_->local_port.release());
+  std::ignore = info_->local_port.release();
 
   info_->local_port.reset(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
   ASSERT_NE(info_->local_port, kMachPortNull);

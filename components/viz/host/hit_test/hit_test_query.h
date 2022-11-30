@@ -1,14 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_QUERY_H_
 #define COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_QUERY_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/host/viz_host_export.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -36,6 +36,10 @@ enum class EventSource {
 class VIZ_HOST_EXPORT HitTestQuery {
  public:
   HitTestQuery();
+
+  HitTestQuery(const HitTestQuery&) = delete;
+  HitTestQuery& operator=(const HitTestQuery&) = delete;
+
   virtual ~HitTestQuery();
 
   // HitTestAggregator has sent the most recent |hit_test_data| for targeting/
@@ -150,11 +154,7 @@ class VIZ_HOST_EXPORT HitTestQuery {
                                        size_t region_index,
                                        gfx::Transform* transform) const;
 
-  void RecordSlowPathHitTestReasons(uint32_t) const;
-
   std::vector<AggregatedHitTestRegion> hit_test_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestQuery);
 };
 
 }  // namespace viz

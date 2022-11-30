@@ -1,7 +1,7 @@
 # Advanced Metadata Definitions and Usages
 
 The core documentation for Views Metadata and properties usage can be found
-[here](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.h?q=%22Properties%20-%22). For most instances, this is sufficient to add metadata to any
+[here](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.h?q=%22Properties%20-%22). For most instances, this is sufficient to add metadata to any
 given view descendant class.
 
 There are, however, some cases where extra care is needed to properly add
@@ -70,7 +70,7 @@ While this may seem strange that a property would be read-only, it’s a good
 debugging tool by allowing the ui-devtools to peer into the object instance for
 more insight about it’s internal state. In those cases, you may want to define
 such a property in the metadata. A read-only property only has a “getter” (see
-the [core documentation](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.h?q=%22Properties%20-%22) about how to define a “getter”). It is as simple
+the [core documentation](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.h?q=%22Properties%20-%22) about how to define a “getter”). It is as simple
 as using a different macro when defining the class’ metadata.
 
 
@@ -180,7 +180,7 @@ at run-time, getting or setting the value directly via the getter and setter is
 perfectly valid.
 
 The type converter for a non-serializable type may return something from the
-ToString() method, but it will typically return base::nullopt from the
+ToString() method, but it will typically return absl::nullopt from the
 FromString() method. For a non-serializable type, the ui-devtools front-end
 won’t call the setter since whatever “value” it has is presumed to be
 unconvertable to a valid value.

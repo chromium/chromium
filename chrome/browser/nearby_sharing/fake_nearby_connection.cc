@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,10 @@ void FakeNearbyConnection::Close() {
   if (disconnect_listener_)
     std::move(disconnect_listener_).Run();
 
-  if (callback_)
-    std::move(callback_).Run(base::nullopt);
+  if (callback_) {
+    has_read_callback_been_run_ = true;
+    std::move(callback_).Run(absl::nullopt);
+  }
 }
 
 void FakeNearbyConnection::SetDisconnectionListener(
@@ -62,5 +64,6 @@ void FakeNearbyConnection::MaybeRunCallback() {
     return;
   auto item = std::move(read_data_.front());
   read_data_.pop();
+  has_read_callback_been_run_ = true;
   std::move(callback_).Run(std::move(item));
 }

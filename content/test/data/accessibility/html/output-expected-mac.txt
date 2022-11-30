@@ -4,4 +4,4 @@ AXWebArea
 ++++AXStaticText AXValue=' + '
 ++++AXIncrementor
 ++++AXStaticText AXValue=' ='
-++++AXGroup
+++++AXGroup AXSubrole=AXApplicationStatus

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,8 @@ PowerButtonDisplayController::~PowerButtonDisplayController() {
 }
 
 bool PowerButtonDisplayController::IsScreenOn() const {
-  return backlights_forced_off_setter_->GetScreenState() == ScreenState::ON;
+  return backlights_forced_off_setter_->GetScreenBacklightState() ==
+         ScreenBacklightState::ON;
 }
 
 void PowerButtonDisplayController::SetBacklightsForcedOff(bool forced_off) {
@@ -82,8 +83,8 @@ void PowerButtonDisplayController::OnBacklightsForcedOffChanged(
   send_accessibility_alert_on_backlights_forced_off_change_ = false;
 }
 
-void PowerButtonDisplayController::OnScreenStateChanged(
-    ScreenState screen_state) {
+void PowerButtonDisplayController::OnScreenBacklightStateChanged(
+    ScreenBacklightState screen_backlight_state) {
   screen_state_last_changed_ = tick_clock_->NowTicks();
 }
 

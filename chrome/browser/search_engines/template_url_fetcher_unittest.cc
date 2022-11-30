@@ -1,8 +1,6 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "components/search_engines/template_url_fetcher.h"
 
 #include <stddef.h>
 
@@ -15,11 +13,11 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_fetcher.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -30,8 +28,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-using base::ASCIIToUTF16;
 
 constexpr int32_t kRequestID = 10;
 
@@ -53,6 +49,10 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
       const base::RepeatingClosure& request_completed_callback)
       : TemplateURLFetcher(template_url_service),
         callback_(request_completed_callback) {}
+
+  TestTemplateUrlFetcher(const TestTemplateUrlFetcher&) = delete;
+  TestTemplateUrlFetcher& operator=(const TestTemplateUrlFetcher&) = delete;
+
   ~TestTemplateUrlFetcher() override {}
 
  protected:
@@ -64,8 +64,6 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
  private:
   // Callback to be run when a request completes.
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTemplateUrlFetcher);
 };
 
 // Basic set-up for TemplateURLFetcher tests.
@@ -73,11 +71,14 @@ class TemplateURLFetcherTest : public testing::Test {
  public:
   TemplateURLFetcherTest();
 
+  TemplateURLFetcherTest(const TemplateURLFetcherTest&) = delete;
+  TemplateURLFetcherTest& operator=(const TemplateURLFetcherTest&) = delete;
+
   void SetUp() override {
-    template_url_fetcher_.reset(new TestTemplateUrlFetcher(
+    template_url_fetcher_ = std::make_unique<TestTemplateUrlFetcher>(
         test_util_.model(),
         base::BindRepeating(&TemplateURLFetcherTest::RequestCompletedCallback,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
   }
 
   // Called when a request completes.
@@ -119,9 +120,6 @@ class TemplateURLFetcherTest : public testing::Test {
   // Is the code in WaitForDownloadToFinish in a message loop waiting for a
   // callback to finish?
   bool waiting_for_download_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLFetcherTest);
 };
 
 TemplateURLFetcherTest::TemplateURLFetcherTest()
@@ -155,7 +153,7 @@ void TemplateURLFetcherTest::StartDownload(const std::u16string& keyword,
   TestingProfile* profile = test_util_.profile();
   template_url_fetcher_->ScheduleDownload(
       keyword, osdd_url, favicon_url, url::Origin::Create(GURL()),
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       0 /* render_frame_id */, kRequestID);
@@ -231,7 +229,7 @@ TEST_F(TemplateURLFetcherTest, DuplicatesThrownAway) {
        keyword},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     StartDownload(test_cases[i].keyword, test_cases[i].osdd_file_name, false);
     EXPECT_EQ(1, template_url_fetcher()->requests_count())
         << test_cases[i].description;
@@ -299,8 +297,7 @@ TEST_F(TemplateURLFetcherTest, UnicodeTest) {
   WaitForDownloadToFinish();
   const TemplateURL* t_url =
       test_util()->model()->GetTemplateURLForKeyword(keyword);
-  EXPECT_EQ(base::UTF8ToUTF16("\xd1\x82\xd0\xb5\xd1\x81\xd1\x82"),
-            t_url->short_name());
+  EXPECT_EQ(u"тест", t_url->short_name());
 }
 
 }  // namespace

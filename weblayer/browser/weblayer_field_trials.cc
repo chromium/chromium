@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 namespace weblayer {
 
-void WebLayerFieldTrials::SetupFieldTrials() {
+void WebLayerFieldTrials::SetUpFieldTrials() {
   // Persistent histograms must be enabled as soon as possible.
   base::FilePath metrics_dir;
   if (base::PathService::Get(DIR_USER_DATA, &metrics_dir)) {

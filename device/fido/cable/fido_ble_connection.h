@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,12 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -51,12 +50,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   using WriteCallback = base::OnceCallback<void(bool)>;
   using ReadCallback = base::RepeatingCallback<void(std::vector<uint8_t>)>;
   using ControlPointLengthCallback =
-      base::OnceCallback<void(base::Optional<uint16_t>)>;
+      base::OnceCallback<void(absl::optional<uint16_t>)>;
 
   FidoBleConnection(BluetoothAdapter* adapter,
                     std::string device_address,
                     BluetoothUUID service_uuid,
                     ReadCallback read_callback);
+
+  FidoBleConnection(const FidoBleConnection&) = delete;
+  FidoBleConnection& operator=(const FidoBleConnection&) = delete;
+
   ~FidoBleConnection() override;
 
   const std::string& address() const { return address_; }
@@ -89,9 +92,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   const BluetoothRemoteGattService* GetFidoService();
 
   void OnCreateGattConnection(
-      std::unique_ptr<BluetoothGattConnection> connection);
-  void OnCreateGattConnectionError(
-      BluetoothDevice::ConnectErrorCode error_code);
+      std::unique_ptr<BluetoothGattConnection> connection,
+      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
 
   void ConnectToFidoService();
   void OnReadServiceRevisions(std::vector<ServiceRevision> service_revisions);
@@ -105,11 +107,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   void OnStartNotifySessionError(
       BluetoothGattService::GattErrorCode error_code);
 
-  static void OnReadControlPointLength(ControlPointLengthCallback callback,
-                                       const std::vector<uint8_t>& value);
-  static void OnReadControlPointLengthError(
+  static void OnReadControlPointLength(
       ControlPointLengthCallback callback,
-      BluetoothGattService::GattErrorCode error_code);
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   std::unique_ptr<BluetoothGattConnection> connection_;
   std::unique_ptr<BluetoothGattNotifySession> notify_session_;
@@ -118,15 +119,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   bool waiting_for_gatt_discovery_ = false;
   const BluetoothUUID service_uuid_;
 
-  base::Optional<std::string> control_point_length_id_;
-  base::Optional<std::string> control_point_id_;
-  base::Optional<std::string> status_id_;
-  base::Optional<std::string> service_revision_id_;
-  base::Optional<std::string> service_revision_bitfield_id_;
+  absl::optional<std::string> control_point_length_id_;
+  absl::optional<std::string> control_point_id_;
+  absl::optional<std::string> status_id_;
+  absl::optional<std::string> service_revision_id_;
+  absl::optional<std::string> service_revision_bitfield_id_;
 
   base::WeakPtrFactory<FidoBleConnection> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoBleConnection);
 };
 
 }  // namespace device

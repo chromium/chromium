@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Use the <code>chrome.printingMetrics</code> API to fetch data about
 // printing usage.
-[platforms=("chromeos"),
+[platforms=("chromeos", "lacros"),
  implemented_in="chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"]
 namespace printingMetrics {
   // The source of the print job.
@@ -15,7 +15,7 @@ namespace printingMetrics {
     // The job was created from an Android App.
     ANDROID_APP,
 
-    // The job was created by extension via chrome API.
+    // The job was created by extension via Chrome API.
     EXTENSION
   };
 
@@ -142,7 +142,7 @@ namespace printingMetrics {
 
   interface Functions {
     // Returns the list of the finished print jobs.
-    static void getPrintJobs(GetPrintJobsCallback callback);
+    [supportsPromises] static void getPrintJobs(GetPrintJobsCallback callback);
   };
 
   interface Events {

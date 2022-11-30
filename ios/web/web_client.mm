@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/web/common/features.h"
-#include "ios/web/public/init/web_main_parts.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/init/web_main_parts.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,10 +45,6 @@ bool WebClient::IsAppSpecificURL(const GURL& url) const {
   return false;
 }
 
-void WebClient::AddSerializableData(
-    web::SerializableUserDataManager* user_data_manager,
-    web::WebState* web_state) {}
-
 std::u16string WebClient::GetPluginNotSupportedText() const {
   return std::u16string();
 }
@@ -62,7 +59,7 @@ std::u16string WebClient::GetLocalizedString(int message_id) const {
 
 base::StringPiece WebClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return base::StringPiece();
 }
 
@@ -85,17 +82,12 @@ NSString* WebClient::GetDocumentStartScriptForMainFrame(
   return @"";
 }
 
-bool WebClient::IsLegacyTLSAllowedForHost(WebState* web_state,
-                                          const std::string& hostname) {
-  return false;
-}
-
 void WebClient::PrepareErrorPage(WebState* web_state,
                                  const GURL& url,
                                  NSError* error,
                                  bool is_post,
                                  bool is_off_the_record,
-                                 const base::Optional<net::SSLInfo>& info,
+                                 const absl::optional<net::SSLInfo>& info,
                                  int64_t navigation_id,
                                  base::OnceCallback<void(NSString*)> callback) {
   DCHECK(error);
@@ -106,21 +98,30 @@ UIView* WebClient::GetWindowedContainer() {
   return nullptr;
 }
 
-bool WebClient::EnableLongPressAndForceTouchHandling() const {
-  return true;
-}
-
 bool WebClient::EnableLongPressUIContextMenu() const {
   return false;
 }
 
-bool WebClient::ForceMobileVersionByDefault(const GURL&) {
+bool WebClient::RestoreSessionFromCache(web::WebState* web_state) const {
   return false;
 }
 
-UserAgentType WebClient::GetDefaultUserAgent(id<UITraitEnvironment> web_view,
-                                             const GURL& url) {
+void WebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {}
+
+void WebClient::WillDisplayMediaCapturePermissionPrompt(
+    web::WebState* web_state) const {}
+
+UserAgentType WebClient::GetDefaultUserAgent(web::WebState* web_state,
+                                             const GURL& url) const {
   return UserAgentType::MOBILE;
+}
+
+void WebClient::LogDefaultUserAgent(web::WebState* web_state,
+                                    const GURL& url) const {}
+
+bool WebClient::IsPointingToSameDocument(const GURL& url1,
+                                         const GURL& url2) const {
+  return url1 == url2;
 }
 
 }  // namespace web

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
@@ -28,6 +27,10 @@ class SerializedHandle;
 class PPAPI_PROXY_EXPORT NaClMessageScanner {
  public:
   NaClMessageScanner();
+
+  NaClMessageScanner(const NaClMessageScanner&) = delete;
+  NaClMessageScanner& operator=(const NaClMessageScanner&) = delete;
+
   ~NaClMessageScanner();
 
   // Scans the message for items that require special handling. Copies any
@@ -58,6 +61,10 @@ class PPAPI_PROXY_EXPORT NaClMessageScanner {
   class PPAPI_PROXY_EXPORT FileSystem {
    public:
     FileSystem();
+
+    FileSystem(const FileSystem&) = delete;
+    FileSystem& operator=(const FileSystem&) = delete;
+
     ~FileSystem();
 
     int64_t reserved_quota() const { return reserved_quota_; }
@@ -71,14 +78,16 @@ class PPAPI_PROXY_EXPORT NaClMessageScanner {
     // Acquire the lock to modify this field, since it may be used on multiple
     // threads.
     int64_t reserved_quota_;
-
-    DISALLOW_COPY_AND_ASSIGN(FileSystem);
   };
 
   // FileIO information for quota auditing.
   class PPAPI_PROXY_EXPORT FileIO {
    public:
     FileIO(FileSystem* file_system, int64_t max_written_offset);
+
+    FileIO(const FileIO&) = delete;
+    FileIO& operator=(const FileIO&) = delete;
+
     ~FileIO();
 
     int64_t max_written_offset() { return max_written_offset_; }
@@ -98,8 +107,6 @@ class PPAPI_PROXY_EXPORT NaClMessageScanner {
     // when the file is opened and modified by a NaClDescQuotaInterface when the
     // plugin writes to greater maximum offsets.
     int64_t max_written_offset_;
-
-    DISALLOW_COPY_AND_ASSIGN(FileIO);
   };
 
   FileIO* GetFile(PP_Resource file_io);
@@ -117,8 +124,6 @@ class PPAPI_PROXY_EXPORT NaClMessageScanner {
   FileSystemMap file_systems_;
   typedef std::map<int32_t, FileIO*> FileIOMap;
   FileIOMap files_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClMessageScanner);
 };
 
 }  // namespace proxy

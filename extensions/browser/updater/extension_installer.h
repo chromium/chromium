@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/update_client/update_client.h"
 
 namespace extensions {
@@ -41,6 +40,9 @@ class ExtensionInstaller : public update_client::CrxInstaller {
                      bool install_immediately,
                      ExtensionInstallerCallback extension_installer_callback);
 
+  ExtensionInstaller(const ExtensionInstaller&) = delete;
+  ExtensionInstaller& operator=(const ExtensionInstaller&) = delete;
+
   // update_client::CrxInstaller::
   void OnUpdateError(int error) override;
 
@@ -67,8 +69,6 @@ class ExtensionInstaller : public update_client::CrxInstaller {
   base::FilePath extension_root_;
   bool install_immediately_;
   ExtensionInstallerCallback extension_installer_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstaller);
 };
 
 }  // namespace extensions

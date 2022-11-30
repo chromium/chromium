@@ -33,11 +33,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "v8/include/v8.h"
 
 namespace blink {
+
+class ScriptState;
 
 // V8CustomXPathNSResolver does not create a persistent handle to the
 // given resolver object. So the lifetime of V8CustomXPathNSResolver

@@ -1,13 +1,14 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
+import("//skia/features.gni")
+import("//ui/gl/features.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -32,8 +33,7 @@ process_json_outputs = [
   "$target_gen_dir/software_rendering_list_exceptions_autogen.h",
 ]
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("process_json") {
+action("process_json") {
   script = "process_json.py"
 
   inputs = [
@@ -57,7 +57,7 @@ python2_action("process_json") {
     args += [ "macosx" ]
   } else if (is_android) {
     args += [ "android" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     args += [ "chromeos" ]
   } else if (is_fuchsia) {
     args += [ "fuchsia" ]
@@ -185,6 +185,7 @@ source_set("config_sources") {
     "//gpu/ipc/common:gpu_preferences_interface",
     "//gpu/vulkan:buildflags",
     "//media:media_buildflags",
+    "//skia:buildflags",
     "//third_party/re2",
     "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers",
     "//ui/gfx",
@@ -192,6 +193,16 @@ source_set("config_sources") {
     "//ui/gl:buildflags",
     "//ui/gl/init",
   ]
+
+  if (use_dawn || skia_use_dawn) {
+    public_deps += [ "//third_party/dawn/include/dawn:headers" ]
+
+    deps += [
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
+  }
 
   # GpuPreferences is using its own mojo bindings which creates a
   # cycle between this target and gpu_preferences_interface.
@@ -228,14 +239,11 @@ source_set("config_sources") {
   if (is_linux || is_chromeos) {
     sources += [ "gpu_info_collector_linux.cc" ]
   }
-  if (is_linux || is_chromeos || is_mac) {
+  if (is_linux || is_chromeos || is_mac || is_fuchsia) {
     deps += [ "//third_party/angle:angle_gpu_info_util" ]
   }
-  if (use_x11) {
-    deps += [
-      "//ui/base:features",
-      "//ui/gfx/linux:gpu_memory_buffer_support_x11",
-    ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
 

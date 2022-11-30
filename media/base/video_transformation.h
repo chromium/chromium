@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@ namespace media {
 // where it can be rotated by 90 degree intervals.
 enum VideoRotation : int {
   VIDEO_ROTATION_0 = 0,
-  VIDEO_ROTATION_90,
-  VIDEO_ROTATION_180,
-  VIDEO_ROTATION_270,
+  VIDEO_ROTATION_90 = 90,
+  VIDEO_ROTATION_180 = 180,
+  VIDEO_ROTATION_270 = 270,
   VIDEO_ROTATION_MAX = VIDEO_ROTATION_270
 };
 
@@ -26,6 +26,8 @@ enum VideoRotation : int {
 // a rotation matrix from a demuxer, and we only support 90 degree rotation
 // increments.
 struct MEDIA_EXPORT VideoTransformation {
+  static VideoTransformation FromFFmpegDisplayMatrix(int32_t* matrix);
+
   constexpr VideoTransformation(VideoRotation rotation, bool mirrored)
       : rotation(rotation), mirrored(mirrored) {}
   constexpr VideoTransformation(VideoRotation r)

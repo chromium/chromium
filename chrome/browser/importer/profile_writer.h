@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
@@ -33,6 +32,9 @@ struct PasswordForm;
 class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
  public:
   explicit ProfileWriter(Profile* profile);
+
+  ProfileWriter(const ProfileWriter&) = delete;
+  ProfileWriter& operator=(const ProfileWriter&) = delete;
 
   // These functions return true if the corresponding model has been loaded.
   // If the models haven't been loaded, the importer waits to run until they've
@@ -92,9 +94,7 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   virtual ~ProfileWriter();
 
  private:
-  Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileWriter);
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_

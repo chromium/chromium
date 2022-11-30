@@ -1,10 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/audio/mac/audio_input_mac.h"
 
 #include <CoreServices/CoreServices.h>
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -25,13 +27,13 @@ namespace {
 // should ideally be set to about the same value as in
 // audio_low_latency_input_mac.cc, to make comparing them reasonable.
 const int kInputCallbackStartTimeoutInSeconds = 8;
-}
+}  // namespace
 
 PCMQueueInAudioInputStream::PCMQueueInAudioInputStream(
     AudioManagerMac* manager,
     const AudioParameters& params)
     : manager_(manager),
-      callback_(NULL),
+      callback_(nullptr),
       audio_queue_(NULL),
       buffer_size_bytes_(0),
       started_(false),
@@ -64,7 +66,7 @@ PCMQueueInAudioInputStream::~PCMQueueInAudioInputStream() {
   DCHECK(!audio_queue_);
 }
 
-bool PCMQueueInAudioInputStream::Open() {
+AudioInputStream::OpenOutcome PCMQueueInAudioInputStream::Open() {
   OSStatus err = AudioQueueNewInput(&format_,
                                     &HandleInputBufferStatic,
                                     this,
@@ -74,9 +76,10 @@ bool PCMQueueInAudioInputStream::Open() {
                                     &audio_queue_);
   if (err != noErr) {
     HandleError(err);
-    return false;
+    return AudioInputStream::OpenOutcome::kFailed;
   }
-  return SetupBuffers();
+  return SetupBuffers() ? AudioInputStream::OpenOutcome::kSuccess
+                        : AudioInputStream::OpenOutcome::kFailed;
 }
 
 void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {
@@ -92,10 +95,8 @@ void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {
     deferred_start_cb_.Reset(base::BindOnce(&PCMQueueInAudioInputStream::Start,
                                             base::Unretained(this), callback));
     manager_->GetTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        deferred_start_cb_.callback(),
-        base::TimeDelta::FromSeconds(
-            AudioManagerMac::kStartDelayInSecsForPowerEvents));
+        FROM_HERE, deferred_start_cb_.callback(),
+        base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents));
     return;
   }
 
@@ -111,10 +112,9 @@ void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {
   // callbacks starts indicating if input audio recording starts as intended.
   // CheckInputStartupSuccess() will check if |input_callback_is_active_| is
   // true when the timer expires.
-  input_callback_timer_.reset(new base::OneShotTimer());
+  input_callback_timer_ = std::make_unique<base::OneShotTimer>();
   input_callback_timer_->Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kInputCallbackStartTimeoutInSeconds), this,
+      FROM_HERE, base::Seconds(kInputCallbackStartTimeoutInSeconds), this,
       &PCMQueueInAudioInputStream::CheckInputStartupSuccess);
   DCHECK(input_callback_timer_->IsRunning());
 }
@@ -136,7 +136,7 @@ void PCMQueueInAudioInputStream::Stop() {
 
   SetInputCallbackIsActive(false);
   started_ = false;
-  callback_ = NULL;
+  callback_ = nullptr;
 }
 
 void PCMQueueInAudioInputStream::Close() {
@@ -264,7 +264,7 @@ void PCMQueueInAudioInputStream::HandleInputBuffer(
     // TODO(dalecurtis): Delete all this. It shouldn't be necessary now that we
     // have a ring buffer and FIFO on the actual shared memory.
     base::TimeDelta elapsed = base::TimeTicks::Now() - last_fill_;
-    const base::TimeDelta kMinDelay = base::TimeDelta::FromMilliseconds(5);
+    const base::TimeDelta kMinDelay = base::Milliseconds(5);
     if (elapsed < kMinDelay) {
       TRACE_EVENT0("audio",
                    "PCMQueueInAudioInputStream::HandleInputBuffer sleep");

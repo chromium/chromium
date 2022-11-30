@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
 
 #include "util/stdlib/strnlen.h"
 
-#if defined(OS_MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_7
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_7
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_7
 // Redeclare a method only available on Mac OS X 10.7 and later to suppress a

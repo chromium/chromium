@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,11 @@
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event_constants.h"
+
+@interface NSApplication (Private)
+// (Apparently) forces the application to activate itself.
+- (void)_handleActivatedEvent:(id)arg1;
+@end
 
 namespace {
 
@@ -50,7 +55,7 @@ class SendGlobalKeyEventsHelper {
   base::RunLoop run_loop_;
   // First key code pressed in the event sequence. This is also the last key
   // code to be released and so it will be waited for.
-  base::Optional<int> first_key_down_code_;
+  absl::optional<int> first_key_down_code_;
 };
 
 SendGlobalKeyEventsHelper* g_global_key_events_helper = nullptr;
@@ -145,7 +150,7 @@ void SendGlobalKeyEventsHelper::SendGlobalKeyEvent(int key_code,
   // Starting in 10.14, CGEventPost() pops up a modal that asks the user to
   // confirm whether the app should be allowed to use accessibility APIs, which
   // hangs tests on the bots. https://crbug.com/904403
-  DCHECK(base::mac::IsAtMostOS10_13());
+  DCHECK(base::mac::IsOS10_13());
 
   CGEventPost(event_tap_location_, key_event);
   if (key_down && !first_key_down_code_)
@@ -166,7 +171,11 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
   // Make sure an unbundled program can get the input focus.
   ProcessSerialNumber psn = { 0, kCurrentProcess };
   TransformProcessType(&psn,kProcessTransformToForegroundApplication);
-  [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+  // We used to call [NSApp activateIgnoringOtherApps:YES] but this
+  // would not reliably activate the app, causing the window to never
+  // become key. This bit of private API appears to be the secret
+  // incantation that gets us what we want. See crbug.com/1215570 .
+  [[NSApplication sharedApplication] _handleActivatedEvent:nil];
 
   base::scoped_nsobject<WindowedNSNotificationObserver> async_waiter;
   if (![window isKeyWindow]) {

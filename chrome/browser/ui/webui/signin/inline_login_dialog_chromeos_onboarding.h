@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 
 #include "base/callback.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget_observer.h"
@@ -55,6 +56,10 @@ class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
       gfx::NativeWindow window,
       base::OnceCallback<void(void)> dialog_closed_callback);
 
+ protected:
+  // ui::WebDialogDelegate overrides
+  ui::ModalType GetDialogModalType() const override;
+
  private:
   InlineLoginDialogChromeOSOnboarding(
       const gfx::Size& bounds,
@@ -79,5 +84,11 @@ class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::InlineLoginDialogChromeOSOnboarding;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_

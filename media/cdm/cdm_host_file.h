@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace cdm {
@@ -42,6 +41,9 @@ class MEDIA_EXPORT CdmHostFile {
       const base::FilePath& file_path,
       const base::FilePath& sig_file_path);
 
+  CdmHostFile(const CdmHostFile&) = delete;
+  CdmHostFile& operator=(const CdmHostFile&) = delete;
+
   // Takes the PlatformFile of the |file_| and |sig_file_| and put them in the
   // returned cdm::HostFile. The caller must make sure the PlatformFiles are
   // properly closed after use.
@@ -57,8 +59,6 @@ class MEDIA_EXPORT CdmHostFile {
 
   // The signature file associated with |file_|.
   base::File sig_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmHostFile);
 };
 
 }  // namespace media

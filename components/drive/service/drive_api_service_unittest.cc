@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/test/test_simple_task_runner.h"
-#include "google_apis/drive/dummy_auth_service.h"
-#include "google_apis/drive/request_sender.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/dummy_auth_service.h"
+#include "google_apis/common/request_sender.h"
+#include "google_apis/common/test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -61,7 +61,7 @@ TEST(DriveAPIServiceTest, BatchRequestConfiguratorWithAuthFailure) {
   static_cast<TestAuthService*>(sender.auth_service())->SendHttpError();
 
   {
-    google_apis::DriveApiErrorCode error = google_apis::HTTP_SUCCESS;
+    google_apis::ApiErrorCode error = google_apis::HTTP_SUCCESS;
     std::unique_ptr<google_apis::FileResource> file_resource;
     configurator.MultipartUploadNewFile(
         "text/plain", 10, "", "title",
@@ -69,10 +69,10 @@ TEST(DriveAPIServiceTest, BatchRequestConfiguratorWithAuthFailure) {
         google_apis::test_util::CreateCopyResultCallback(&error,
                                                          &file_resource),
         google_apis::ProgressCallback());
-    EXPECT_EQ(google_apis::DRIVE_OTHER_ERROR, error);
+    EXPECT_EQ(google_apis::OTHER_ERROR, error);
   }
   {
-    google_apis::DriveApiErrorCode error = google_apis::HTTP_SUCCESS;
+    google_apis::ApiErrorCode error = google_apis::HTTP_SUCCESS;
     std::unique_ptr<google_apis::FileResource> file_resource;
     configurator.MultipartUploadExistingFile(
         "text/plain", 10, "resource_id",
@@ -80,7 +80,7 @@ TEST(DriveAPIServiceTest, BatchRequestConfiguratorWithAuthFailure) {
         google_apis::test_util::CreateCopyResultCallback(&error,
                                                          &file_resource),
         google_apis::ProgressCallback());
-    EXPECT_EQ(google_apis::DRIVE_OTHER_ERROR, error);
+    EXPECT_EQ(google_apis::OTHER_ERROR, error);
   }
 }
 

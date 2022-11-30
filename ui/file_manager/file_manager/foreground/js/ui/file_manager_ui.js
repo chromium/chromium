@@ -1,57 +1,58 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {FileGrid} from './file_grid.m.js';
-// #import {FileTable} from './file_table.m.js';
-// #import {FilesToast} from '../../elements/files_toast.m.js';
-// #import {Banners} from './banners.m.js';
-// #import {DirectoryTree} from './directory_tree.m.js';
-// #import {FilesPasswordDialog} from '../../elements/files_password_dialog.m.js';
-// #import {LaunchParam} from '../launch_param.m.js';
-// #import {ProvidersModel} from '../providers_model.m.js';
-// #import {A11yAnnounce} from './a11y_announce.m.js';
-// #import {ActionModelUI} from './action_model_ui.m.js';
-// #import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.m.js';
-// #import {DialogFooter} from './dialog_footer.m.js';
-// #import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
-// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.m.js';
-// #import {FilesMenuItem} from './files_menu.m.js';
-// #import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
-// #import {FilesTooltip} from '../../elements/files_tooltip.m.js';
-// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {DialogType} from '../dialog_type.m.js';
-// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// #import {LocationLine} from './location_line.m.js';
-// #import {ListContainer} from './list_container.m.js';
-// #import {AllowedPaths} from '../../../common/js/volume_manager_types.m.js';
-// #import {ActionsSubmenu} from './actions_submenu.m.js';
-// #import {ProvidersMenu} from './providers_menu.m.js';
-// #import {ComboButton} from './combobutton.m.js';
-// #import {MultiMenu} from './multi_menu.m.js';
-// #import {ProgressCenterPanel} from './progress_center_panel.m.js';
-// #import {GearMenu} from './gear_menu.m.js';
-// #import {MultiMenuButton} from './multi_menu_button.m.js';
-// #import {EmptyFolder} from './empty_folder.m.js';
-// #import {SearchBox} from './search_box.m.js';
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {FilesConfirmDialog} from './files_confirm_dialog.m.js';
-// #import {FilesAlertDialog} from './files_alert_dialog.m.js';
-// #import {str, util, strf} from '../../../common/js/util.m.js';
-// #import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-// #import {DefaultTaskDialog} from './default_task_dialog.m.js';
-// clang-format on
+import {assertInstanceof} from 'chrome://resources/js/assert.js';
+import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+
+import {DialogType} from '../../../common/js/dialog_type.js';
+import {str, strf, util} from '../../../common/js/util.js';
+import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
+import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
+import {NudgeContainer} from '../../../containers/nudge_container.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
+import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
+import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
+import {FilesToast} from '../../elements/files_toast.js';
+import {FilesTooltip} from '../../elements/files_tooltip.js';
+import {BannerController} from '../banner_controller.js';
+import {LaunchParam} from '../launch_param.js';
+import {ProvidersModel} from '../providers_model.js';
+
+import {A11yAnnounce} from './a11y_announce.js';
+import {ActionModelUI} from './action_model_ui.js';
+import {ActionsSubmenu} from './actions_submenu.js';
+import {ComboButton} from './combobutton.js';
+import {contextMenuHandler} from './context_menu_handler.js';
+import {DefaultTaskDialog} from './default_task_dialog.js';
+import {DialogFooter} from './dialog_footer.js';
+import {BaseDialog} from './dialogs.js';
+import {DirectoryTree} from './directory_tree.js';
+import {FileGrid} from './file_grid.js';
+import {FileTable} from './file_table.js';
+import {FilesAlertDialog} from './files_alert_dialog.js';
+import {FilesConfirmDialog} from './files_confirm_dialog.js';
+import {FilesMenuItem} from './files_menu.js';
+import {GearMenu} from './gear_menu.js';
+import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.js';
+import {InstallLinuxPackageDialog} from './install_linux_package_dialog.js';
+import {ListContainer} from './list_container.js';
+import {Menu} from './menu.js';
+import {MenuItem} from './menu_item.js';
+import {MultiMenu} from './multi_menu.js';
+import {MultiMenuButton} from './multi_menu_button.js';
+import {ProgressCenterPanel} from './progress_center_panel.js';
+import {ProvidersMenu} from './providers_menu.js';
+import {SearchBox} from './search_box.js';
+import {Splitter} from './splitter.js';
+
 
 /**
  * The root of the file manager's view managing the DOM of the Files app.
  * @implements {ActionModelUI}
  * @implements {A11yAnnounce}
  */
-/* #export */ class FileManagerUI {
+export class FileManagerUI {
   /**
    * @param {!ProvidersModel} providersModel Model for providers.
    * @param {!HTMLElement} element Top level element of the Files app.
@@ -60,8 +61,8 @@
   constructor(providersModel, element, launchParam) {
     // Initialize the dialog label. This should be done before constructing
     // dialog instances.
-    cr.ui.dialogs.BaseDialog.OK_LABEL = str('OK_LABEL');
-    cr.ui.dialogs.BaseDialog.CANCEL_LABEL = str('CANCEL_LABEL');
+    BaseDialog.OK_LABEL = str('OK_LABEL');
+    BaseDialog.CANCEL_LABEL = str('CANCEL_LABEL');
 
     /**
      * Top level element of the Files app.
@@ -75,16 +76,6 @@
      * @private
      */
     this.dialogType_ = launchParam.type;
-
-    /**
-     * <hr> elements in cr.ui.Menu.
-     * This is a workaround for crbug.com/689255. This member variable is just
-     * for keeping explicit reference to decorated <hr>s to prevent GC from
-     * collecting <hr> wrappers, and not used anywhere.
-     * TODO(fukino): Remove this member variable once the root cause is fixed.
-     * @private {!Array<!Element>}
-     */
-    this.separators_ = [].slice.call(document.querySelectorAll('cr-menu > hr'));
 
     /**
      * Alert dialog.
@@ -110,6 +101,22 @@
     this.deleteConfirmDialog.focusCancelButton = true;
 
     /**
+     * Confirm dialog for emptying the trash.
+     * @type {!FilesConfirmDialog}
+     * @const
+     */
+    this.emptyTrashConfirmDialog = new FilesConfirmDialog(this.element);
+    this.emptyTrashConfirmDialog.setOkLabel(str('EMPTY_TRASH_DELETE_FOREVER'));
+
+    /**
+     * Restore dialog when trying to open files that are in the trash
+     * @type {!FilesConfirmDialog}
+     * @const
+     */
+    this.restoreConfirmDialog = new FilesConfirmDialog(this.element);
+    this.restoreConfirmDialog.setOkLabel(str('RESTORE_ACTION_LABEL'));
+
+    /**
      * Confirm dialog for file move operation.
      * @type {!FilesConfirmDialog}
      * @const
@@ -127,32 +134,32 @@
 
     /**
      * Default task picker.
-     * @type {!cr.filebrowser.DefaultTaskDialog}
+     * @type {!DefaultTaskDialog}
      * @const
      */
-    this.defaultTaskPicker = new cr.filebrowser.DefaultTaskDialog(this.element);
+    this.defaultTaskPicker = new DefaultTaskDialog(this.element);
 
     /**
      * Dialog for installing .deb files
-     * @type {!cr.filebrowser.InstallLinuxPackageDialog}
+     * @type {!InstallLinuxPackageDialog}
      * @const
      */
     this.installLinuxPackageDialog =
-        new cr.filebrowser.InstallLinuxPackageDialog(this.element);
+        new InstallLinuxPackageDialog(this.element);
 
     /**
      * Dialog for import Crostini Image Files (.tini)
-     * @type {!cr.filebrowser.ImportCrostiniImageDialog}
+     * @type {!ImportCrostiniImageDialog}
      * @const
      */
     this.importCrostiniImageDialog =
-        new cr.filebrowser.ImportCrostiniImageDialog(this.element);
+        new ImportCrostiniImageDialog(this.element);
 
     /**
      * Dialog for formatting
      * @const {!HTMLElement}
      */
-    this.formatDialog = queryRequiredElement('#format-dialog');
+    this.formatDialog = util.queryRequiredElement('#format-dialog');
 
     /**
      * Dialog for password prompt
@@ -161,35 +168,48 @@
     this.passwordDialog_ = null;
 
     /**
+     * Dialog for DLP (Data Leak Prevention) restriction details.
+     * @type {?XfDlpRestrictionDetailsDialog}
+     */
+    this.dlpRestrictionDetailsDialog_ = null;
+
+    /**
      * The container element of the dialog.
      * @type {!HTMLElement}
      */
     this.dialogContainer =
-        queryRequiredElement('.dialog-container', this.element);
+        util.queryRequiredElement('.dialog-container', this.element);
     this.dialogContainer.addEventListener('relayout', (event) => {
       this.layoutChanged_();
     });
 
     /**
      * Context menu for texts.
-     * @type {!cr.ui.Menu}
+     * @type {!Menu}
      * @const
      */
     this.textContextMenu =
-        util.queryDecoratedElement('#text-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#text-context-menu', Menu);
 
     /**
-     * Location line.
-     * @type {LocationLine}
+     * Breadcrumb controller.
+     * @private {?BreadcrumbContainer}
      */
-    this.locationLine = null;
+    this.breadcrumbContainer_ = null;
 
     /**
      * The toolbar which contains controls.
      * @type {!HTMLElement}
      * @const
      */
-    this.toolbar = queryRequiredElement('.dialog-header', this.element);
+    this.toolbar = util.queryRequiredElement('.dialog-header', this.element);
+
+    /**
+     * The tooltip element.
+     * @type {!FilesTooltip}
+     */
+    this.filesTooltip =
+        assertInstanceof(document.querySelector('files-tooltip'), FilesTooltip);
 
     /**
      * The actionbar which contains buttons to perform actions on selected
@@ -197,7 +217,7 @@
      * @type {!HTMLElement}
      * @const
      */
-    this.actionbar = queryRequiredElement('#action-bar', this.toolbar);
+    this.actionbar = util.queryRequiredElement('#action-bar', this.toolbar);
 
     /**
      * The navigation list.
@@ -205,7 +225,7 @@
      * @const
      */
     this.dialogNavigationList =
-        queryRequiredElement('.dialog-navigation-list', this.element);
+        util.queryRequiredElement('.dialog-navigation-list', this.element);
 
     /**
      * Search box.
@@ -213,32 +233,25 @@
      * @const
      */
     this.searchBox = new SearchBox(
-        queryRequiredElement('#search-box', this.element),
-        queryRequiredElement('#search-wrapper', this.element),
-        queryRequiredElement('#search-button', this.element));
-
-    /**
-     * Empty folder UI.
-     * @type {!EmptyFolder}
-     * @const
-     */
-    this.emptyFolder =
-        new EmptyFolder(queryRequiredElement('#empty-folder', this.element));
+        util.queryRequiredElement('#search-box', this.element),
+        util.queryRequiredElement('#search-wrapper', this.element),
+        util.queryRequiredElement('#search-button', this.element));
 
     /**
      * Toggle-view button.
      * @type {!Element}
      * @const
      */
-    this.toggleViewButton = queryRequiredElement('#view-button', this.element);
+    this.toggleViewButton =
+        util.queryRequiredElement('#view-button', this.element);
 
     /**
      * The button to sort the file list.
-     * @type {!cr.ui.MultiMenuButton}
+     * @type {!MultiMenuButton}
      * @const
      */
     this.sortButton =
-        util.queryDecoratedElement('#sort-button', cr.ui.MultiMenuButton);
+        util.queryDecoratedElement('#sort-button', MultiMenuButton);
 
     /**
      * Ripple effect of sort button.
@@ -247,15 +260,15 @@
      */
     this.sortButtonToggleRipple =
         /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.sortButton));
+            util.queryRequiredElement('files-toggle-ripple', this.sortButton));
 
     /**
      * The button to open gear menu.
-     * @type {!cr.ui.MultiMenuButton}
+     * @type {!MultiMenuButton}
      * @const
      */
     this.gearButton =
-        util.queryDecoratedElement('#gear-button', cr.ui.MultiMenuButton);
+        util.queryDecoratedElement('#gear-button', MultiMenuButton);
 
     /**
      * Ripple effect of gear button.
@@ -264,7 +277,7 @@
      */
     this.gearButtonToggleRipple =
         /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.gearButton));
+            util.queryRequiredElement('files-toggle-ripple', this.gearButton));
 
     /**
      * @type {!GearMenu}
@@ -274,11 +287,11 @@
 
     /**
      * The button to open context menu in the check-select mode.
-     * @type {!cr.ui.MultiMenuButton}
+     * @type {!MultiMenuButton}
      * @const
      */
-    this.selectionMenuButton = util.queryDecoratedElement(
-        '#selection-menu-button', cr.ui.MultiMenuButton);
+    this.selectionMenuButton =
+        util.queryDecoratedElement('#selection-menu-button', MultiMenuButton);
 
     /**
      * Directory tree.
@@ -299,7 +312,7 @@
      * @const
      */
     this.activityProgressPanel =
-        queryRequiredElement('#progress-panel', this.element);
+        util.queryRequiredElement('#progress-panel', this.element);
 
     /**
      * List container.
@@ -308,75 +321,44 @@
     this.listContainer;
 
     /**
-     * @type {!HTMLElement}
-     */
-    this.formatPanelError =
-        queryRequiredElement('#format-panel > .error', this.element);
-
-    /**
-     * @type {!cr.ui.MultiMenu}
+     * @type {!MultiMenu}
      * @const
      */
     this.fileContextMenu =
-        util.queryDecoratedElement('#file-context-menu', cr.ui.MultiMenu);
+        util.queryDecoratedElement('#file-context-menu', MultiMenu);
 
     /**
-     * @public {!HTMLMenuItemElement}
+     * @public {!FilesMenuItem}
      * @const
      */
     this.defaultTaskMenuItem =
-        /** @type {!HTMLMenuItemElement} */
-        (queryRequiredElement('#default-task-menu-item', this.fileContextMenu));
+        /** @type {!FilesMenuItem} */
+        (util.queryRequiredElement(
+            '#default-task-menu-item', this.fileContextMenu));
 
     /**
-     * @public @const {!cr.ui.MenuItem}
+     * @public @const {!MenuItem}
      */
-    this.tasksSeparator = /** @type {!cr.ui.MenuItem} */
-        (queryRequiredElement('#tasks-separator', this.fileContextMenu));
+    this.tasksSeparator = /** @type {!MenuItem} */
+        (util.queryRequiredElement('#tasks-separator', this.fileContextMenu));
 
     /**
      * The combo button to specify the task.
-     * @type {!cr.ui.ComboButton}
+     * @type {!ComboButton}
      * @const
      */
-    this.taskMenuButton =
-        util.queryDecoratedElement('#tasks', cr.ui.ComboButton);
+    this.taskMenuButton = util.queryDecoratedElement('#tasks', ComboButton);
     this.taskMenuButton.showMenu = function(shouldSetFocus) {
       // Prevent the empty menu from opening.
       if (!this.menu.length) {
         return;
       }
-      cr.ui.ComboButton.prototype.showMenu.call(this, shouldSetFocus);
+      ComboButton.prototype.showMenu.call(this, shouldSetFocus);
     };
 
     /**
-     * The menu button for share options
-     * @type {!cr.ui.MultiMenuButton}
-     * @const
-     */
-    this.shareMenuButton =
-        util.queryDecoratedElement('#share-menu-button', cr.ui.MultiMenuButton);
-    const shareMenuButtonToggleRipple =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.shareMenuButton));
-    this.shareMenuButton.addEventListener('menushow', () => {
-      shareMenuButtonToggleRipple.activated = true;
-    });
-    this.shareMenuButton.addEventListener('menuhide', () => {
-      shareMenuButtonToggleRipple.activated = false;
-    });
-
-    /**
-     * @type {!cr.ui.Menu}
-     * @const
-     */
-    this.shareSubMenu =
-        util.queryDecoratedElement('#share-sub-menu', cr.ui.Menu);
-    this.shareMenuButton.overflow = this.shareSubMenu;
-
-    /**
      * Banners in the file list.
-     * @type {Banners}
+     * @type {BannerController}
      */
     this.banners = null;
 
@@ -393,14 +375,20 @@
      * @const
      */
     this.providersMenu = new ProvidersMenu(
-        providersModel,
-        util.queryDecoratedElement('#providers-menu', cr.ui.Menu));
+        providersModel, util.queryDecoratedElement('#providers-menu', Menu));
 
     /**
      * @public {!ActionsSubmenu}
      * @const
      */
     this.actionsSubmenu = new ActionsSubmenu(this.fileContextMenu);
+
+    /**
+     * The container that maintains the lifetime of nudges.
+     * @public {!NudgeContainer}
+     * @const
+     */
+    this.nudgeContainer = new NudgeContainer();
 
     /**
      * @type {!FilesToast}
@@ -414,14 +402,21 @@
      * @const {!HTMLElement}
      */
     this.fileTypeFilterContainer =
-        queryRequiredElement('#file-type-filter-container', this.element);
+        util.queryRequiredElement('#file-type-filter-container', this.element);
+
+    /**
+     * Empty folder element inside the file list container.
+     * @type {!HTMLElement}
+     * @const
+     */
+    this.emptyFolder = util.queryRequiredElement('#empty-folder', this.element);
 
     /**
      * A hidden div that can be used to announce text to screen
      * reader/ChromeVox.
      * @private {!HTMLElement}
      */
-    this.a11yMessage_ = queryRequiredElement('#a11y-msg', this.element);
+    this.a11yMessage_ = util.queryRequiredElement('#a11y-msg', this.element);
 
     if (window.IN_TEST) {
       /**
@@ -443,12 +438,9 @@
     this.element.addEventListener('drop', e => {
       e.preventDefault();
     });
-    if (util.runningInBrowser()) {
-      this.element.addEventListener('contextmenu', e => {
-        e.preventDefault();
-        e.stopPropagation();
-      });
-    }
+    this.element.addEventListener('contextmenu', e => {
+      e.preventDefault();
+    });
 
     /**
      * True while FilesApp is in the process of a drag and drop. Set to true on
@@ -476,6 +468,24 @@
   }
 
   /**
+   * Gets the DlpRestrictionDetails dialog.
+   * @return {?XfDlpRestrictionDetailsDialog}
+   */
+  get dlpRestrictionDetailsDialog() {
+    if (!util.isDlpEnabled()) {
+      return null;
+    }
+    if (this.dlpRestrictionDetailsDialog_) {
+      return this.dlpRestrictionDetailsDialog_;
+    }
+    this.dlpRestrictionDetailsDialog_ =
+        /** @type {!XfDlpRestrictionDetailsDialog} */ (
+            document.createElement('xf-dlp-restriction-details-dialog'));
+    this.element.appendChild(this.dlpRestrictionDetailsDialog_);
+    return this.dlpRestrictionDetailsDialog_;
+  }
+
+  /**
    * Initializes here elements, which are expensive or hidden in the beginning.
    *
    * @param {!FileTable} table
@@ -485,23 +495,22 @@
   initAdditionalUI(table, grid, volumeManager) {
     // List container.
     this.listContainer = new ListContainer(
-        queryRequiredElement('#list-container', this.element), table, grid,
+        util.queryRequiredElement('#list-container', this.element), table, grid,
         this.dialogType_);
 
-    // Location line.
-    this.locationLine = new LocationLine(
-        queryRequiredElement('#location-breadcrumbs', this.element),
-        volumeManager, this.listContainer);
+    // Breadcrumb container.
+    this.breadcrumbContainer_ = new BreadcrumbContainer(
+        util.queryRequiredElement('#location-breadcrumbs', this.element));
 
     // Splitter.
     this.decorateSplitter_(
-        queryRequiredElement('#navigation-list-splitter', this.element));
+        util.queryRequiredElement('#navigation-list-splitter', this.element));
 
     // Init context menus.
-    cr.ui.contextMenuHandler.setContextMenu(grid, this.fileContextMenu);
-    cr.ui.contextMenuHandler.setContextMenu(table.list, this.fileContextMenu);
-    cr.ui.contextMenuHandler.setContextMenu(
-        queryRequiredElement('.drive-welcome.page'), this.fileContextMenu);
+    contextMenuHandler.setContextMenu(grid, this.fileContextMenu);
+    contextMenuHandler.setContextMenu(table.list, this.fileContextMenu);
+    contextMenuHandler.setContextMenu(
+        util.queryRequiredElement('.drive-welcome.page'), this.fileContextMenu);
 
     // Add window resize handler.
     document.defaultView.addEventListener('resize', this.relayout.bind(this));
@@ -514,7 +523,11 @@
     }
     pointerActive.forEach((eventType) => {
       document.addEventListener(eventType, (e) => {
-        rootElement.classList.toggle('pointer-active', /down$/.test(e.type));
+        if (/down$/.test(e.type) === false) {
+          rootElement.classList.toggle('pointer-active', false);
+        } else if (e.pointerType !== 'touch') {  // http://crbug.com/1311472
+          rootElement.classList.toggle('pointer-active', true);
+        }
       }, true);
     });
 
@@ -539,6 +552,12 @@
     document.addEventListener('dragend', () => {
       this.dragInProcess = false;
     });
+
+    // Observe the dialog header content box size: the breadcrumb and action
+    // bar buttons can become wide enough to extend past the available viewport,
+    // and this.layoutChanged_() is used to clamp their size to the viewport.
+    const resizeObserver = new ResizeObserver(() => this.layoutChanged_());
+    resizeObserver.observe(util.queryRequiredElement('div.dialog-header'));
   }
 
   /**
@@ -570,16 +589,16 @@
 
     // Set up the context menu for the volume/shortcut items in directory tree.
     this.directoryTree.contextMenuForRootItems =
-        util.queryDecoratedElement('#roots-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#roots-context-menu', Menu);
     this.directoryTree.contextMenuForSubitems =
-        util.queryDecoratedElement('#directory-tree-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#directory-tree-context-menu', Menu);
     this.directoryTree.disabledContextMenu =
-        util.queryDecoratedElement('#disabled-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#disabled-context-menu', Menu);
   }
 
   /**
    * TODO(mtomasz): Merge the method into initAdditionalUI if possible.
-   * @param {!Banners} banners
+   * @param {!BannerController} banners
    */
   initBanners(banners) {
     this.banners = banners;
@@ -590,16 +609,12 @@
    * Attaches files tooltip.
    */
   attachFilesTooltip() {
-    const filesTooltip =
-        assertInstanceof(document.querySelector('files-tooltip'), FilesTooltip);
-    filesTooltip.addTargets(document.querySelectorAll('[has-tooltip]'));
-
-    this.locationLine.filesTooltip = filesTooltip;
+    this.filesTooltip.addTargets(document.querySelectorAll('[has-tooltip]'));
   }
 
   /**
    * Initialize files menu items. This method must be called after all files
-   * menu items are decorated as cr.ui.MenuItem.
+   * menu items are decorated as MenuItem.
    */
   decorateFilesMenuItems() {
     const filesMenuItems =
@@ -607,8 +622,8 @@
 
     for (let i = 0; i < filesMenuItems.length; i++) {
       const filesMenuItem = filesMenuItems[i];
-      assertInstanceof(filesMenuItem, cr.ui.MenuItem);
-      cr.ui.decorate(filesMenuItem, cr.ui.FilesMenuItem);
+      assertInstanceof(filesMenuItem, MenuItem);
+      decorate(filesMenuItem, FilesMenuItem);
     }
   }
 
@@ -616,7 +631,6 @@
    * Relayouts the UI.
    */
   relayout() {
-    this.locationLine.truncate();
     // May not be available during initialization.
     if (this.listContainer.currentListType !==
         ListContainer.ListType.UNINITIALIZED) {
@@ -711,8 +725,8 @@
    */
   decorateSplitter_(splitterElement, opt_resizeNextElement) {
     const self = this;
-    const FileSplitter = cr.ui.Splitter;
-    const customSplitter = cr.ui.define('div');
+    const FileSplitter = Splitter;
+    const customSplitter = crUiDefine('div');
 
     customSplitter.prototype = {
       __proto__: FileSplitter.prototype,
@@ -730,7 +744,7 @@
       handleSplitterDragEnd: function(e) {
         FileSplitter.prototype.handleSplitterDragEnd.apply(this, arguments);
         this.ownerDocument.documentElement.classList.remove('col-resize');
-      }
+      },
     };
 
     /** @type Object */ (customSplitter).decorate(splitterElement);

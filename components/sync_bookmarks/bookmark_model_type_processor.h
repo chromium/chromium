@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/engine/model_type_processor.h"
@@ -38,6 +37,11 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // |bookmark_undo_service| must not be nullptr and must outlive this object.
   explicit BookmarkModelTypeProcessor(
       BookmarkUndoService* bookmark_undo_service);
+
+  BookmarkModelTypeProcessor(const BookmarkModelTypeProcessor&) = delete;
+  BookmarkModelTypeProcessor& operator=(const BookmarkModelTypeProcessor&) =
+      delete;
+
   ~BookmarkModelTypeProcessor() override;
 
   // ModelTypeProcessor implementation.
@@ -50,7 +54,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
       const syncer::CommitResponseDataList& committed_response_list,
       const syncer::FailedCommitResponseDataList& error_response_list) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        syncer::UpdateResponseDataList updates) override;
+                        syncer::UpdateResponseDataList updates,
+                        absl::optional<sync_pb::GarbageCollectionDirective>
+                            gc_directive) override;
 
   // ModelTypeControllerDelegate implementation.
   void OnSyncStarting(const syncer::DataTypeActivationRequest& request,
@@ -121,7 +127,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // since we iterate over child nodes already in the calling sites.
   void AppendNodeAndChildrenForDebugging(const bookmarks::BookmarkNode* node,
                                          int index,
-                                         base::ListValue* all_nodes) const;
+                                         base::Value::List* all_nodes) const;
 
   // Stores the start callback in between OnSyncStarting() and
   // ModelReadyToSync().
@@ -130,15 +136,15 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // The bookmark model we are processing local changes from and forwarding
   // remote changes to. It is set during ModelReadyToSync(), which is called
   // during startup, as part of the bookmark-loading process.
-  bookmarks::BookmarkModel* bookmark_model_ = nullptr;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
 
   // Used to when processing remote updates to apply favicon information. It's
   // not set at start up because it's only avialable after the bookmark model
   // has been loaded.
-  favicon::FaviconService* favicon_service_ = nullptr;
+  raw_ptr<favicon::FaviconService> favicon_service_ = nullptr;
 
   // Used to suspend bookmark undo when processing remote changes.
-  BookmarkUndoService* const bookmark_undo_service_;
+  const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
 
   // The callback used to schedule the persistence of bookmark model as well as
   // the metadata to a file during which latest metadata should also be pulled
@@ -176,8 +182,6 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // WeakPtrFactory for this processor which will be sent to sync thread.
   base::WeakPtrFactory<BookmarkModelTypeProcessor> weak_ptr_factory_for_worker_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelTypeProcessor);
 };
 
 }  // namespace sync_bookmarks

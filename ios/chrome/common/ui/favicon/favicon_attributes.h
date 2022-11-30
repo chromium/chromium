@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 // Attributes of a favicon. A favicon is represented either with an image or
 // with a fallback monogram of a given color and background color.
-@interface FaviconAttributes : NSObject
+@interface FaviconAttributes : NSObject <NSCoding>
 
 // Favicon image. Can be nil. If it is nil, monogram string and color are
 // guaranteed to be not nil.

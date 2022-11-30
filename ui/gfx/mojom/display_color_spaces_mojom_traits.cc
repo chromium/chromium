@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
+
+#include "skia/public/mojom/skcolorspace_primaries_mojom_traits.h"
 
 namespace mojo {
 
@@ -68,7 +70,14 @@ bool StructTraits<
   if (!input.ReadColorSpaces(&color_spaces))
     return false;
 
-  out->SetSDRWhiteLevel(input.sdr_white_level());
+  SkColorSpacePrimaries primaries = {0.f};
+  if (!input.ReadPrimaries(&primaries))
+    return false;
+  out->SetPrimaries(primaries);
+
+  out->SetSDRMaxLuminanceNits(input.sdr_max_luminance_nits());
+  out->SetHDRMaxLuminanceRelative(input.hdr_max_luminance_relative());
+
   return true;
 }
 

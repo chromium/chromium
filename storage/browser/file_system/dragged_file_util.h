@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/local_file_util.h"
 
 namespace storage {
@@ -21,6 +20,10 @@ class FileSystemOperationContext;
 class COMPONENT_EXPORT(STORAGE_BROWSER) DraggedFileUtil : public LocalFileUtil {
  public:
   DraggedFileUtil();
+
+  DraggedFileUtil(const DraggedFileUtil&) = delete;
+  DraggedFileUtil& operator=(const DraggedFileUtil&) = delete;
+
   ~DraggedFileUtil() override {}
 
   // FileSystemFileUtil overrides.
@@ -32,9 +35,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DraggedFileUtil : public LocalFileUtil {
       FileSystemOperationContext* context,
       const FileSystemURL& root_url,
       bool recursive) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DraggedFileUtil);
 };
 
 }  // namespace storage

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,14 +26,14 @@
 // The delegate to handle link to text button selection.
 @property(nonatomic, weak) id<LinkToTextDelegate> linkToTextDelegate;
 
-// Adds the given |contentView| as a subview and removes the previously added
-// |contentView| or |contentViewController|, if any. If |contentView| is nil
+// Adds the given `contentView` as a subview and removes the previously added
+// `contentView` or `contentViewController`, if any. If `contentView` is nil
 // then only old content view or view controller is removed.
 - (void)setContentView:(UIView*)contentView;
 
-// Adds the given |contentViewController| as a child view controller and removes
-// the previously added |contentViewController| if any.  Setting
-// |contentViewController| does not clear |contentView|.
+// Adds the given `contentViewController` as a child view controller and removes
+// the previously added `contentViewController` if any.  Setting
+// `contentViewController` does not clear `contentView`.
 - (void)setContentViewController:(UIViewController*)contentViewController;
 
 @end

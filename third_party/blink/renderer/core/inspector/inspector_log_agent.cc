@@ -1,70 +1,77 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/inspector_log_agent.h"
 
 #include "base/format_macros.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 using protocol::Response;
 
 namespace {
 
-String MessageSourceValue(mojom::ConsoleMessageSource source) {
-  DCHECK(source != mojom::ConsoleMessageSource::kConsoleApi);
+String MessageSourceValue(mojom::blink::ConsoleMessageSource source) {
+  DCHECK(source != mojom::blink::ConsoleMessageSource::kConsoleApi);
   switch (source) {
-    case mojom::ConsoleMessageSource::kXml:
+    case mojom::blink::ConsoleMessageSource::kXml:
       return protocol::Log::LogEntry::SourceEnum::Xml;
-    case mojom::ConsoleMessageSource::kJavaScript:
+    case mojom::blink::ConsoleMessageSource::kJavaScript:
       return protocol::Log::LogEntry::SourceEnum::Javascript;
-    case mojom::ConsoleMessageSource::kNetwork:
+    case mojom::blink::ConsoleMessageSource::kNetwork:
       return protocol::Log::LogEntry::SourceEnum::Network;
-    case mojom::ConsoleMessageSource::kStorage:
+    case mojom::blink::ConsoleMessageSource::kStorage:
       return protocol::Log::LogEntry::SourceEnum::Storage;
-    case mojom::ConsoleMessageSource::kAppCache:
-      return protocol::Log::LogEntry::SourceEnum::Appcache;
-    case mojom::ConsoleMessageSource::kRendering:
+    case mojom::blink::ConsoleMessageSource::kRendering:
       return protocol::Log::LogEntry::SourceEnum::Rendering;
-    case mojom::ConsoleMessageSource::kSecurity:
+    case mojom::blink::ConsoleMessageSource::kSecurity:
       return protocol::Log::LogEntry::SourceEnum::Security;
-    case mojom::ConsoleMessageSource::kOther:
+    case mojom::blink::ConsoleMessageSource::kOther:
       return protocol::Log::LogEntry::SourceEnum::Other;
-    case mojom::ConsoleMessageSource::kDeprecation:
+    case mojom::blink::ConsoleMessageSource::kDeprecation:
       return protocol::Log::LogEntry::SourceEnum::Deprecation;
-    case mojom::ConsoleMessageSource::kWorker:
+    case mojom::blink::ConsoleMessageSource::kWorker:
       return protocol::Log::LogEntry::SourceEnum::Worker;
-    case mojom::ConsoleMessageSource::kViolation:
+    case mojom::blink::ConsoleMessageSource::kViolation:
       return protocol::Log::LogEntry::SourceEnum::Violation;
-    case mojom::ConsoleMessageSource::kIntervention:
+    case mojom::blink::ConsoleMessageSource::kIntervention:
       return protocol::Log::LogEntry::SourceEnum::Intervention;
-    case mojom::ConsoleMessageSource::kRecommendation:
+    case mojom::blink::ConsoleMessageSource::kRecommendation:
       return protocol::Log::LogEntry::SourceEnum::Recommendation;
     default:
       return protocol::Log::LogEntry::SourceEnum::Other;
   }
 }
 
-String MessageLevelValue(mojom::ConsoleMessageLevel level) {
+String MessageLevelValue(mojom::blink::ConsoleMessageLevel level) {
   switch (level) {
-    case mojom::ConsoleMessageLevel::kVerbose:
+    case mojom::blink::ConsoleMessageLevel::kVerbose:
       return protocol::Log::LogEntry::LevelEnum::Verbose;
-    case mojom::ConsoleMessageLevel::kInfo:
+    case mojom::blink::ConsoleMessageLevel::kInfo:
       return protocol::Log::LogEntry::LevelEnum::Info;
-    case mojom::ConsoleMessageLevel::kWarning:
+    case mojom::blink::ConsoleMessageLevel::kWarning:
       return protocol::Log::LogEntry::LevelEnum::Warning;
-    case mojom::ConsoleMessageLevel::kError:
+    case mojom::blink::ConsoleMessageLevel::kError:
       return protocol::Log::LogEntry::LevelEnum::Error;
   }
   return protocol::Log::LogEntry::LevelEnum::Info;
+}
+
+String MessageCategoryValue(mojom::blink::ConsoleMessageCategory category) {
+  switch (category) {
+    case mojom::blink::ConsoleMessageCategory::Cors:
+      return protocol::Log::LogEntry::CategoryEnum::Cors;
+  }
+  return WTF::g_empty_string;
 }
 
 }  // namespace
@@ -116,7 +123,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
           .setText(message->Message())
           .setTimestamp(message->Timestamp())
           .build();
-  if (!message->Location()->Url().IsEmpty())
+  if (!message->Location()->Url().empty())
     entry->setUrl(message->Location()->Url());
   std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
       stack_trace = message->Location()->BuildInspectorObject();
@@ -124,21 +131,21 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
     entry->setStackTrace(std::move(stack_trace));
   if (message->Location()->LineNumber())
     entry->setLineNumber(message->Location()->LineNumber() - 1);
-  if (message->Source() == mojom::ConsoleMessageSource::kWorker &&
-      !message->WorkerId().IsEmpty())
+  if (message->Source() == mojom::blink::ConsoleMessageSource::kWorker &&
+      !message->WorkerId().empty())
     entry->setWorkerId(message->WorkerId());
-  if (message->Source() == mojom::ConsoleMessageSource::kNetwork &&
+  if (message->Source() == mojom::blink::ConsoleMessageSource::kNetwork &&
       !message->RequestIdentifier().IsNull()) {
     entry->setNetworkRequestId(message->RequestIdentifier());
   }
 
-  if (v8_session_ && message->Frame() && !message->Nodes().IsEmpty()) {
+  if (v8_session_ && message->Frame() && !message->Nodes().empty()) {
     ScriptForbiddenScope::AllowUserAgentScript allow_script;
     auto remote_objects = std::make_unique<
         protocol::Array<v8_inspector::protocol::Runtime::API::RemoteObject>>();
     for (DOMNodeId node_id : message->Nodes()) {
       std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>
-          remote_object = nullptr;
+          remote_object;
       Node* node = DOMNodeIds::NodeForId(node_id);
       if (node) {
         remote_object =
@@ -157,6 +164,10 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
       }
     }
     entry->setArgs(std::move(remote_objects));
+  }
+
+  if (auto category = message->Category()) {
+    entry->setCategory(MessageCategoryValue(*category));
   }
 
   GetFrontend()->entryAdded(std::move(entry));
@@ -237,8 +248,8 @@ Response InspectorLogAgent::startViolationsReport(
     PerformanceMonitor::Violation violation = ParseViolation(name);
     if (violation == PerformanceMonitor::kAfterLast)
       continue;
-    performance_monitor_->Subscribe(
-        violation, base::TimeDelta::FromMillisecondsD(threshold), this);
+    performance_monitor_->Subscribe(violation, base::Milliseconds(threshold),
+                                    this);
     violation_thresholds_.Set(name, threshold);
   }
   return Response::Success();
@@ -259,8 +270,8 @@ void InspectorLogAgent::ReportLongLayout(base::TimeDelta duration) {
       "Forced reflow while executing JavaScript took %" PRId64 "ms",
       duration.InMilliseconds());
   auto* message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kViolation,
-      mojom::ConsoleMessageLevel::kVerbose, message_text);
+      mojom::blink::ConsoleMessageSource::kViolation,
+      mojom::blink::ConsoleMessageLevel::kVerbose, message_text);
   ConsoleMessageAdded(message);
 }
 
@@ -269,8 +280,8 @@ void InspectorLogAgent::ReportGenericViolation(PerformanceMonitor::Violation,
                                                base::TimeDelta time,
                                                SourceLocation* location) {
   auto* message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kViolation,
-      mojom::ConsoleMessageLevel::kVerbose, text, location->Clone());
+      mojom::blink::ConsoleMessageSource::kViolation,
+      mojom::blink::ConsoleMessageLevel::kVerbose, text, location->Clone());
   ConsoleMessageAdded(message);
 }
 

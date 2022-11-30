@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 // Interaction with the consent-view (used for logging).
@@ -67,33 +67,51 @@ enum class QuickAnswerUiElementType {
   kImage = 2,
 };
 
+// Enumeration of Quick Answers exit points. These values are persisted to logs.
+// Entries should never be renumbered and numeric values should never be reused.
+// Append to this enum is allowed only if the possible exit point grows.
+enum class QuickAnswersExitPoint {
+  // The exit point is unspecified. Might be used by tests, obsolete code or as
+  // placeholders.
+  kUnspecified = 0,
+  KContextMenuDismiss = 1,
+  kContextMenuClick = 2,
+  kQuickAnswersClick = 3,
+  kSettingsButtonClick = 4,
+  kReportQueryButtonClick = 5,
+  kMaxValue = kReportQueryButtonClick,
+};
+
 struct QuickAnswerUiElement {
   explicit QuickAnswerUiElement(QuickAnswerUiElementType type) : type(type) {}
   QuickAnswerUiElement(const QuickAnswerUiElement&) = default;
   QuickAnswerUiElement& operator=(const QuickAnswerUiElement&) = default;
   QuickAnswerUiElement(QuickAnswerUiElement&&) = default;
+  virtual ~QuickAnswerUiElement() = default;
 
   QuickAnswerUiElementType type = QuickAnswerUiElementType::kUnknown;
 };
 
-// class to describe an answer text.
+// Class to describe an answer text.
 struct QuickAnswerText : public QuickAnswerUiElement {
-  QuickAnswerText(const std::string& text, SkColor color = gfx::kGoogleGrey900)
+  explicit QuickAnswerText(const std::string& text,
+                           ui::ColorId color_id = ui::kColorLabelForeground)
       : QuickAnswerUiElement(QuickAnswerUiElementType::kText),
         text(base::UTF8ToUTF16(text)),
-        color(color) {}
+        color_id(color_id) {}
 
   std::u16string text;
 
   // Attributes for text style.
-  SkColor color = SK_ColorBLACK;
+  ui::ColorId color_id;
 };
 
 struct QuickAnswerResultText : public QuickAnswerText {
  public:
-  QuickAnswerResultText(const std::string& text,
-                        SkColor color = gfx::kGoogleGrey700)
-      : QuickAnswerText(text, color) {}
+  QuickAnswerResultText(
+      const std::string& text,
+      ui::ColorId color_id = ui::kColorLabelForegroundSecondary)
+      : QuickAnswerText(text, color_id) {}
 };
 
 struct QuickAnswerImage : public QuickAnswerUiElement {
@@ -103,25 +121,43 @@ struct QuickAnswerImage : public QuickAnswerUiElement {
   gfx::Image image;
 };
 
+// Class to describe quick answers phonetics info.
+struct PhoneticsInfo {
+  PhoneticsInfo();
+  PhoneticsInfo(const PhoneticsInfo&);
+  ~PhoneticsInfo();
+
+  // Phonetics audio URL for playing pronunciation of dictionary results.
+  // For other type of results the URL will be empty.
+  GURL phonetics_audio = GURL();
+
+  // Whether or not to use tts audio if phonetics audio is not available.
+  bool tts_audio_enabled = false;
+
+  // Query text and locale which will be used for tts if enabled and
+  // there is no phonetics audio available.
+  std::string query_text = std::string();
+  std::string locale = std::string();
+};
+
 // Structure to describe a quick answer.
 struct QuickAnswer {
   QuickAnswer();
   ~QuickAnswer();
 
-  ResultType result_type;
+  ResultType result_type = ResultType::kNoResult;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> title;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> first_answer_row;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> second_answer_row;
   std::unique_ptr<QuickAnswerImage> image;
+
+  PhoneticsInfo phonetics_info;
 };
 
 // Information of the device that used by the user to send the request.
 struct DeviceProperties {
-  // Device language code.
-  std::string language;
-
-  // List (separated by comma) of user preferred languages.
-  std::string preferred_languages;
+  // Whether the request is send by an internal user.
+  bool is_internal = false;
 };
 
 struct IntentInfo {
@@ -129,8 +165,8 @@ struct IntentInfo {
   IntentInfo(const IntentInfo& other);
   IntentInfo(const std::string& intent_text,
              IntentType intent_type,
-             const std::string& source_language = std::string(),
-             const std::string& target_language = std::string());
+             const std::string& device_language = std::string(),
+             const std::string& source_language = std::string());
   ~IntentInfo();
 
   // The text extracted from the selected_text associated with the intent.
@@ -139,10 +175,12 @@ struct IntentInfo {
   // Predicted intent.
   IntentType intent_type = IntentType::kUnknown;
 
-  // Source and target language for translation query.
-  // These fields should only be used for translation intents.
+  // Device language code.
+  std::string device_language;
+
+  // Source language for definition or translation query, should only be used
+  // for definition or translation intents.
   std::string source_language;
-  std::string target_language;
 };
 
 // Extract information generated from |QuickAnswersRequest|.
@@ -187,6 +225,5 @@ struct QuickAnswersRequest {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_MODEL_H_

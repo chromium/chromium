@@ -102,7 +102,7 @@ The script requires 1 arguments
 A example command line:
 
 ```
-vpython chrome/test/data/android/manage_wpr_archives.py upload
+vpython3 chrome/test/data/android/manage_wpr_archives.py upload
 ```
 
 The script also support a --dry_run command line flag.
@@ -115,5 +115,3 @@ based on key/value match.
 
 This techniques makes the test to be hermatic. WPR tests running in reply mode is suitable
 for running on CI/CQ bots.
-
-

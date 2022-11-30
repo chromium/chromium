@@ -1,17 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
+#import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,7 +31,7 @@ const CGFloat kVerticalOffset = 6;
 @property(nonatomic, strong) NSLayoutConstraint* bottomConstraint;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> delegate;
-@property(nonatomic, weak) UIViewController* viewController;
+@property(nonatomic, weak) UIViewController<ContentProviding>* viewController;
 @property(nonatomic, strong) UIView* popupContainerView;
 // Separator for the bottom edge of the popup on iPad.
 @property(nonatomic, strong) UIView* bottomSeparator;
@@ -36,10 +40,11 @@ const CGFloat kVerticalOffset = 6;
 
 @implementation OmniboxPopupPresenter
 
-- (instancetype)initWithPopupPresenterDelegate:
-                    (id<OmniboxPopupPresenterDelegate>)delegate
-                           popupViewController:(UIViewController*)viewController
-                                     incognito:(BOOL)incognito {
+- (instancetype)
+    initWithPopupPresenterDelegate:(id<OmniboxPopupPresenterDelegate>)delegate
+               popupViewController:
+                   (UIViewController<ContentProviding>*)viewController
+                         incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
     _delegate = delegate;
@@ -50,56 +55,61 @@ const CGFloat kVerticalOffset = 6;
     ToolbarConfiguration* configuration = [[ToolbarConfiguration alloc]
         initWithStyle:incognito ? INCOGNITO : NORMAL];
 
-    UIView* containerView = [[UIView alloc] init];
+    UIView* containerView = [[OmniboxPopupContainerView alloc] init];
     [containerView addSubview:viewController.view];
     _popupContainerView = containerView;
-    if (@available(iOS 13, *)) {
-      UIUserInterfaceStyle userInterfaceStyle =
-          incognito ? UIUserInterfaceStyleDark
-                    : UIUserInterfaceStyleUnspecified;
-      // Both the container view and the popup view controller need
-      // overrideUserInterfaceStyle set because the overall popup background
-      // comes from the container, but overrideUserInterfaceStyle won't
-      // propagate from a view to any subviews in a different view controller.
-      _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
-      viewController.overrideUserInterfaceStyle = userInterfaceStyle;
+
+    UIUserInterfaceStyle userInterfaceStyle =
+        incognito ? UIUserInterfaceStyleDark : UIUserInterfaceStyleUnspecified;
+    // Both the container view and the popup view controller need
+    // overrideUserInterfaceStyle set because the overall popup background
+    // comes from the container, but overrideUserInterfaceStyle won't
+    // propagate from a view to any subviews in a different view controller.
+    _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
+    viewController.overrideUserInterfaceStyle = userInterfaceStyle;
+
+    if (!IsSwiftUIPopupEnabled()) {
+      _popupContainerView.backgroundColor = [configuration backgroundColor];
     }
-    _popupContainerView.backgroundColor = [configuration backgroundColor];
+
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(viewController.view, _popupContainerView);
 
-    // Add bottom separator. This will only be visible on iPad where
-    // the omnibox doesn't fill the whole screen.
-    _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
-    _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
-    _bottomSeparator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
+    if (!IsSwiftUIPopupEnabled()) {
+      // Add bottom separator. This will only be visible on iPad where
+      // the omnibox doesn't fill the whole screen.
+      _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
+      _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+      _bottomSeparator.backgroundColor =
+          [UIColor colorNamed:kToolbarShadowColor];
 
-    [_popupContainerView addSubview:self.bottomSeparator];
-    CGFloat separatorHeight =
-        ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
-    [NSLayoutConstraint activateConstraints:@[
-      [self.bottomSeparator.heightAnchor
-          constraintEqualToConstant:separatorHeight],
-      [self.bottomSeparator.leadingAnchor
-          constraintEqualToAnchor:_popupContainerView.leadingAnchor],
-      [self.bottomSeparator.trailingAnchor
-          constraintEqualToAnchor:_popupContainerView.trailingAnchor],
-      [self.bottomSeparator.topAnchor
-          constraintEqualToAnchor:_popupContainerView.bottomAnchor],
-    ]];
+      [_popupContainerView addSubview:self.bottomSeparator];
+      CGFloat separatorHeight =
+          ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+      [NSLayoutConstraint activateConstraints:@[
+        [self.bottomSeparator.heightAnchor
+            constraintEqualToConstant:separatorHeight],
+        [self.bottomSeparator.leadingAnchor
+            constraintEqualToAnchor:_popupContainerView.leadingAnchor],
+        [self.bottomSeparator.trailingAnchor
+            constraintEqualToAnchor:_popupContainerView.trailingAnchor],
+        [self.bottomSeparator.topAnchor
+            constraintEqualToAnchor:_popupContainerView.bottomAnchor],
+      ]];
+    }
   }
   return self;
 }
 
 - (void)updatePopup {
-  BOOL popupHeightIsZero =
-      self.viewController.view.intrinsicContentSize.height == 0;
+  BOOL popupHasContent = self.viewController.hasContent;
   BOOL popupIsOnscreen = self.popupContainerView.superview != nil;
-  if (popupHeightIsZero && popupIsOnscreen) {
+  if (!popupHasContent && popupIsOnscreen) {
     // If intrinsic size is 0 and popup is onscreen, we want to remove the
     // popup view.
-    if (!IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
+        IsSwiftUIPopupEnabled()) {
       self.bottomConstraint.active = NO;
       self.bottomSeparator.hidden = YES;
     }
@@ -110,7 +120,7 @@ const CGFloat kVerticalOffset = 6;
 
     self.open = NO;
     [self.delegate popupDidCloseForPresenter:self];
-  } else if (!popupHeightIsZero && !popupIsOnscreen) {
+  } else if (popupHasContent && !popupIsOnscreen) {
     // If intrinsic size is nonzero and popup is offscreen, we want to add it.
     UIViewController* parentVC =
         [self.delegate popupParentViewControllerForPresenter:self];
@@ -121,7 +131,8 @@ const CGFloat kVerticalOffset = 6;
 
     [self initialLayout];
 
-    if (!IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
+        IsSwiftUIPopupEnabled()) {
       self.bottomConstraint.active = YES;
       self.bottomSeparator.hidden = NO;
     }

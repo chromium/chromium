@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #include <utility>
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_item_options.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -28,13 +29,7 @@ Clipboard* Clipboard::clipboard(Navigator& navigator) {
 Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise Clipboard::read(ScriptState* script_state) {
-  return read(script_state, ClipboardItemOptions::Create());
-}
-
-ScriptPromise Clipboard::read(ScriptState* script_state,
-                              ClipboardItemOptions* options) {
-  return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
-                                         options);
+  return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state);
 }
 
 ScriptPromise Clipboard::readText(ScriptState* script_state) {
@@ -60,6 +55,16 @@ const AtomicString& Clipboard::InterfaceName() const {
 
 ExecutionContext* Clipboard::GetExecutionContext() const {
   return GetSupplementable()->DomWindow();
+}
+
+// static
+String Clipboard::ParseWebCustomFormat(const String& format) {
+  String web_custom_format;
+  if (format.StartsWith(ui::kWebClipboardFormatPrefix)) {
+    web_custom_format = format.Substring(
+        static_cast<unsigned>(std::strlen(ui::kWebClipboardFormatPrefix)));
+  }
+  return web_custom_format;
 }
 
 void Clipboard::Trace(Visitor* visitor) const {

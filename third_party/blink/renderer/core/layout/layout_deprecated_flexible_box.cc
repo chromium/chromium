@@ -27,6 +27,7 @@
 #include <algorithm>
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
@@ -451,7 +452,7 @@ void LayoutDeprecatedFlexibleBox::ApplyLineClamp(bool relayout_children) {
     last_visible_line->PlaceEllipsis(ellipsis_str, left_to_right,
                                      block_left_edge, block_right_edge,
                                      LayoutUnit(total_width), LayoutUnit(),
-                                     &box_truncation_starts_at, ForceEllipsis);
+                                     &box_truncation_starts_at, kForceEllipsis);
     dest_block.SetHasMarkupTruncation(true);
   }
 }

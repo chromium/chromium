@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_TEST_MOCK_CLIENT_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_TEST_MOCK_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,6 +15,10 @@ namespace test {
 class MockClient : public Client {
  public:
   MockClient();
+
+  MockClient(const MockClient&) = delete;
+  MockClient& operator=(const MockClient&) = delete;
+
   ~MockClient() override;
 
   // Client implementation.
@@ -34,9 +37,6 @@ class MockClient : public Client {
   MOCK_METHOD2(CanServiceRemoveDownloadedFile, bool(const std::string&, bool));
   void GetUploadData(const std::string& guid,
                      GetUploadDataCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClient);
 };
 
 }  // namespace test

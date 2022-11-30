@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/lazy_instance.h"
 #include "base/run_loop.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/features.h"
@@ -35,6 +34,12 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
   explicit PendingURLLoaderFactoryForIOThread(
       scoped_refptr<URLLoaderFactoryGetter> factory_getter)
       : factory_getter_(std::move(factory_getter)) {}
+
+  PendingURLLoaderFactoryForIOThread(
+      const PendingURLLoaderFactoryForIOThread&) = delete;
+  PendingURLLoaderFactoryForIOThread& operator=(
+      const PendingURLLoaderFactoryForIOThread&) = delete;
+
   ~PendingURLLoaderFactoryForIOThread() override = default;
 
   scoped_refptr<URLLoaderFactoryGetter>& url_loader_factory_getter() {
@@ -46,8 +51,6 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
   scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingURLLoaderFactoryForIOThread);
 };
 
 class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
@@ -68,6 +71,10 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
         is_corb_enabled_(false) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
   }
+
+  URLLoaderFactoryForIOThread(const URLLoaderFactoryForIOThread&) = delete;
+  URLLoaderFactoryForIOThread& operator=(const URLLoaderFactoryForIOThread&) =
+      delete;
 
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -108,8 +115,6 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
 
   scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
   bool is_corb_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForIOThread);
 };
 
 scoped_refptr<network::SharedURLLoaderFactory>

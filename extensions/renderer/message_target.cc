@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,17 @@ MessageTarget MessageTarget::ForTab(int tab_id, int frame_id) {
   MessageTarget target(TAB);
   target.tab_id = tab_id;
   target.frame_id = frame_id;
+  return target;
+}
+
+MessageTarget MessageTarget::ForTab(int tab_id,
+                                    int frame_id,
+                                    const std::string& document_id) {
+  MessageTarget target(TAB);
+  target.tab_id = tab_id;
+  target.frame_id = frame_id;
+  if (!document_id.empty())
+    target.document_id = document_id;
   return target;
 }
 

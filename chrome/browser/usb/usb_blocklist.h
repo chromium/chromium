@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace device {
@@ -36,6 +35,9 @@ class UsbBlocklist final {
     // value less than or equal to this will be considered a match.
     uint16_t max_version;
   };
+
+  UsbBlocklist(const UsbBlocklist&) = delete;
+  UsbBlocklist& operator=(const UsbBlocklist&) = delete;
 
   ~UsbBlocklist();
 
@@ -76,8 +78,6 @@ class UsbBlocklist final {
 
   // Set of blocklist entries.
   std::vector<Entry> dynamic_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbBlocklist);
 };
 
 #endif  // CHROME_BROWSER_USB_USB_BLOCKLIST_H_

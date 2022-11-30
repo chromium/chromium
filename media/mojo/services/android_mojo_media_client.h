@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,26 +7,26 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/mojo/services/mojo_media_client.h"
 
 namespace media {
 
-class AndroidMojoMediaClient : public MojoMediaClient {
+class AndroidMojoMediaClient final : public MojoMediaClient {
  public:
   AndroidMojoMediaClient();
-  ~AndroidMojoMediaClient() final;
+
+  AndroidMojoMediaClient(const AndroidMojoMediaClient&) = delete;
+  AndroidMojoMediaClient& operator=(const AndroidMojoMediaClient&) = delete;
+
+  ~AndroidMojoMediaClient() override;
 
   // MojoMediaClient implementation.
   std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) final;
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
   std::unique_ptr<CdmFactory> CreateCdmFactory(
-      mojom::FrameInterfaceFactory* frame_interfaces) final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidMojoMediaClient);
+      mojom::FrameInterfaceFactory* frame_interfaces) override;
 };
 
 }  // namespace media

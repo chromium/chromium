@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,17 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/media_message_center/media_notification_background_ash_impl.h"
 #include "components/media_message_center/media_notification_background_impl.h"
-#include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "components/media_message_center/notification_theme.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -26,7 +27,6 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -48,11 +48,11 @@ constexpr double kMediaImageMaxWidthPct = 0.3;
 constexpr double kMediaImageMaxWidthExpandedPct = 0.4;
 constexpr gfx::Size kMediaButtonSize = gfx::Size(36, 36);
 constexpr int kMediaButtonRowSeparator = 0;
-constexpr gfx::Insets kMediaTitleArtistInsets = gfx::Insets(8, 8, 0, 8);
-constexpr gfx::Insets kIconlessMediaNotificationHeaderInsets =
-    gfx::Insets(6, 14, 0, 6);
-constexpr gfx::Insets kIconMediaNotificationHeaderInsets =
-    gfx::Insets(6, 0, 0, 6);
+constexpr auto kMediaTitleArtistInsets = gfx::Insets::TLBR(8, 8, 0, 8);
+constexpr auto kIconlessMediaNotificationHeaderInsets =
+    gfx::Insets::TLBR(6, 14, 0, 6);
+constexpr auto kIconMediaNotificationHeaderInsets =
+    gfx::Insets::TLBR(6, 0, 0, 6);
 constexpr gfx::Size kMediaNotificationButtonRowSize =
     gfx::Size(124, kMediaButtonSize.height());
 constexpr gfx::Size kPipButtonSeparatorViewSize = gfx::Size(20, 24);
@@ -63,15 +63,16 @@ constexpr int kCrOSArtistLineHeight = 16;
 constexpr int kCrOSMediaButtonRowSeparator = 8;
 constexpr int kCrOSHeaderRowSeparator = 16;
 constexpr gfx::Size kCrOSMediaButtonSize = gfx::Size(32, 32);
-constexpr gfx::Insets kCrOSMediaTitleArtistInsets = gfx::Insets(0, 8, 12, 0);
+constexpr gfx::Insets kCrOSMediaTitleArtistInsets =
+    gfx::Insets::TLBR(0, 8, 12, 0);
 constexpr gfx::Size kCrOSMediaNotificationButtonRowSize =
     gfx::Size(124, kCrOSMediaButtonSize.height());
 constexpr gfx::Size kCrOSPipButtonSeparatorViewSize = gfx::Size(1, 20);
-constexpr gfx::Insets kCrOSHeaderRowInsets = gfx::Insets(16, 16, 0, 16);
-constexpr gfx::Insets kCrOSMainRowInsetsWithArtwork =
-    gfx::Insets(12, 8, 16, 111);
-constexpr gfx::Insets kCrOSMainRowInsetsWithoutArtwork =
-    gfx::Insets(12, 8, 16, 16);
+constexpr auto kCrOSHeaderRowInsets = gfx::Insets::TLBR(16, 16, 0, 16);
+constexpr auto kCrOSMainRowInsetsWithArtwork =
+    gfx::Insets::TLBR(12, 8, 16, 111);
+constexpr auto kCrOSMainRowInsetsWithoutArtwork =
+    gfx::Insets::TLBR(12, 8, 16, 16);
 
 void RecordMetadataHistogram(MediaNotificationViewImpl::Metadata metadata) {
   UMA_HISTOGRAM_ENUMERATION(MediaNotificationViewImpl::kMetadataHistogramName,
@@ -104,6 +105,8 @@ const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
+    case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
       NOTREACHED();
       break;
   }
@@ -133,7 +136,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
     const std::u16string& default_app_name,
     int notification_width,
     bool should_show_icon,
-    base::Optional<NotificationTheme> theme)
+    absl::optional<NotificationTheme> theme)
     : container_(container),
       item_(std::move(item)),
       default_app_name_(default_app_name),
@@ -305,6 +308,9 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
                      message_center::kNotificationCornerRadius);
   UpdateViewForExpandedState();
 
+  if (header_row_)
+    header_row_->SetExpandButtonEnabled(GetExpandable());
+
   if (item_)
     item_->SetView(this);
 }
@@ -344,7 +350,7 @@ void MediaNotificationViewImpl::SetForcedExpandedState(
   } else {
     if (!forced_expanded_state_.has_value())
       return;
-    forced_expanded_state_ = base::nullopt;
+    forced_expanded_state_ = absl::nullopt;
   }
 
   if (header_row_)
@@ -361,7 +367,7 @@ void MediaNotificationViewImpl::GetAccessibleNodeData(
           IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 
   if (!accessible_name_.empty())
-    node_data->SetName(accessible_name_);
+    node_data->SetNameChecked(accessible_name_);
 }
 
 void MediaNotificationViewImpl::UpdateWithMediaSessionInfo(
@@ -464,7 +470,8 @@ void MediaNotificationViewImpl::UpdateWithMediaArtwork(
 
   UMA_HISTOGRAM_BOOLEAN(kArtworkHistogramName, has_artwork_);
 
-  UpdateForegroundColor();
+  if (GetWidget())
+    UpdateForegroundColor();
 
   container_->OnMediaArtworkChanged(image);
 
@@ -477,7 +484,8 @@ void MediaNotificationViewImpl::UpdateWithMediaArtwork(
 void MediaNotificationViewImpl::UpdateWithFavicon(const gfx::ImageSkia& icon) {
   GetMediaNotificationBackground()->UpdateFavicon(icon);
 
-  UpdateForegroundColor();
+  if (GetWidget())
+    UpdateForegroundColor();
   SchedulePaint();
 }
 
@@ -487,13 +495,11 @@ void MediaNotificationViewImpl::UpdateWithVectorIcon(
     return;
 
   vector_header_icon_ = &vector_icon;
-  const SkColor foreground =
-      GetMediaNotificationBackground()->GetForegroundColor(*this);
-  header_row_->SetAppIcon(gfx::CreateVectorIcon(
-      *vector_header_icon_, message_center::kSmallImageSizeMD, foreground));
   header_row_->SetAppIconVisible(true);
   header_row_->SetProperty(views::kMarginsKey,
                            kIconMediaNotificationHeaderInsets);
+  if (GetWidget())
+    UpdateForegroundColor();
 }
 
 void MediaNotificationViewImpl::UpdateDeviceSelectorAvailability(
@@ -576,7 +582,7 @@ void MediaNotificationViewImpl::UpdateViewForExpandedState() {
     main_row_
         ->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical,
-            gfx::Insets(
+            gfx::Insets::TLBR(
                 kDefaultMarginSize, kDefaultMarginSize, kDefaultMarginSize,
                 has_artwork_
                     ? (notification_width_ * kMediaImageMaxWidthExpandedPct)
@@ -590,10 +596,10 @@ void MediaNotificationViewImpl::UpdateViewForExpandedState() {
     main_row_
         ->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets(0, kDefaultMarginSize, 14,
-                        has_artwork_
-                            ? (notification_width_ * kMediaImageMaxWidthPct)
-                            : kDefaultMarginSize),
+            gfx::Insets::TLBR(
+                0, kDefaultMarginSize, 14,
+                has_artwork_ ? (notification_width_ * kMediaImageMaxWidthPct)
+                             : kDefaultMarginSize),
             kDefaultMarginSize, true))
         ->SetFlexForView(title_artist_row_, 1);
   }
@@ -646,6 +652,7 @@ void MediaNotificationViewImpl::CreateHeaderRow(
   }
 
   header_row->SetAppName(default_app_name_);
+  header_row->SetFocusBehavior(FocusBehavior::NEVER);
 
   if (should_show_icon) {
     header_row->ClearAppIcon();
@@ -738,7 +745,7 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   artist_label_->SetEnabledColor(theme.secondary_text_color);
 
   if (header_row_) {
-    header_row_->SetAccentColor(theme.primary_text_color);
+    header_row_->SetColor(theme.primary_text_color);
     header_row_->SetBackgroundColor(background);
   } else {
     cros_header_label_->SetEnabledColor(theme.primary_text_color);
@@ -760,7 +767,8 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   views::SetImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPlay),
-      kMediaButtonIconSize, theme.enabled_icon_color);
+      kMediaButtonIconSize, theme.enabled_icon_color,
+      theme.disabled_icon_color);
   views::SetToggledImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPause),
@@ -770,7 +778,8 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   views::SetImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kEnterPictureInPicture),
-      kMediaButtonIconSize, theme.enabled_icon_color);
+      kMediaButtonIconSize, theme.enabled_icon_color,
+      theme.disabled_icon_color);
   views::SetToggledImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kExitPictureInPicture),
@@ -787,12 +796,14 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
 
     views::SetImageFromVectorIconWithColor(
         button, *GetVectorIconForMediaAction(GetActionFromButtonTag(*button)),
-        kMediaButtonIconSize, theme.enabled_icon_color);
+        kMediaButtonIconSize, theme.enabled_icon_color,
+        theme.disabled_icon_color);
 
     button->SchedulePaint();
   }
 
-  container_->OnColorsChanged(theme.enabled_icon_color, background);
+  container_->OnColorsChanged(theme.enabled_icon_color,
+                              theme.disabled_icon_color, background);
 }
 
 void MediaNotificationViewImpl::ButtonPressed(views::Button* button) {

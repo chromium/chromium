@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -57,6 +57,8 @@ FILES_TO_SYNC = [
     'crdtp/status_test.cc',
     'crdtp/test_platform.cc',
     'crdtp/test_platform.h',
+    'crdtp/test_string_traits.cc',
+    'crdtp/test_string_traits.h',
     'crdtp/transcode.cc',
     'inspector_protocol.gni',
     'inspector_protocol.gypi',
@@ -71,7 +73,7 @@ def RunCmd(cmd):
   (stdoutdata, stderrdata) = p.communicate()
   if p.returncode != 0:
     raise Exception('%s: exit status %d', str(cmd), p.returncode)
-  return stdoutdata
+  return stdoutdata.decode('utf-8')
 
 
 def CheckRepoIsClean(path):

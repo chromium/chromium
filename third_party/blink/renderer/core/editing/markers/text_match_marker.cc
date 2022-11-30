@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ namespace blink {
 TextMatchMarker::TextMatchMarker(unsigned start_offset,
                                  unsigned end_offset,
                                  MatchStatus status)
-    : TextMarkerBase(start_offset, end_offset), match_status_(status) {}
+    : DocumentMarker(start_offset, end_offset), match_status_(status) {}
 
 DocumentMarker::MarkerType TextMatchMarker::GetType() const {
   return DocumentMarker::kTextMatch;

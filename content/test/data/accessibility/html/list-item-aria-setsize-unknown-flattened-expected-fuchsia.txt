@@ -1,0 +1,44 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++LIST list_size=1
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++STATIC_TEXT label='Level 1, item 1 of set size unknown'
+++++++++++++UNKNOWN label='Level 1, item 1 of set size unknown'
+++++++LIST list_size=1
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++STATIC_TEXT label='++Level 2, item 1 of set size unknown'
+++++++++++++UNKNOWN label='++Level 2, item 1 of set size unknown'
+++++++LIST list_size=2
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++STATIC_TEXT label='++Level 2, item 2 of set size unknown'
+++++++++++++UNKNOWN label='++Level 2, item 2 of set size unknown'
+++++++LIST list_size=3
+++++++++LIST_ELEMENT list_element_index=3
+++++++++++STATIC_TEXT label='++Level 2, item 3 of set size unknown'
+++++++++++++UNKNOWN label='++Level 2, item 3 of set size unknown'
+++++++LIST list_size=1
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++STATIC_TEXT label='++++Level 3, item 1 of set size unknown'
+++++++++++++UNKNOWN label='++++Level 3, item 1 of set size unknown'
+++++++LIST list_size=2
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++STATIC_TEXT label='++++Level 3, item 2 of set size unknown'
+++++++++++++UNKNOWN label='++++Level 3, item 2 of set size unknown'
+++++++LIST list_size=2
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++STATIC_TEXT label='Level 1, item 2 of set size unknown'
+++++++++++++UNKNOWN label='Level 1, item 2 of set size unknown'
+++++++LIST list_size=3
+++++++++LIST_ELEMENT list_element_index=3
+++++++++++STATIC_TEXT label='Level 1, item 3 of set size unknown'
+++++++++++++UNKNOWN label='Level 1, item 3 of set size unknown'
+++++++LIST
+++++++++LIST list_size=4
+++++++++++LIST_ELEMENT list_element_index=4
+++++++++++++STATIC_TEXT label='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4'
+++++++++++++++UNKNOWN label='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4'
+++++++++LIST list_size=5
+++++++++++LIST_ELEMENT list_element_index=5
+++++++++++++STATIC_TEXT label='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5'
+++++++++++++++UNKNOWN label='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5'

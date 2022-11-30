@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ bool IsNTP(content::WebContents* web_contents) {
   // the page does.
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     entry = web_contents->GetController().GetVisibleEntry();
   if (!entry)
     return false;
@@ -62,7 +62,7 @@ bool BookmarkTabHelper::ShouldShowBookmarkBar() const {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+  if (profile->IsGuestSession())
     return false;
 #endif
 
@@ -91,6 +91,7 @@ bool BookmarkTabHelper::HasObserver(BookmarkTabHelperObserver* observer) const {
 
 BookmarkTabHelper::BookmarkTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<BookmarkTabHelper>(*web_contents),
       is_starred_(false),
       bookmark_model_(nullptr),
       bookmark_drag_(nullptr) {
@@ -122,7 +123,8 @@ void BookmarkTabHelper::BookmarkModelLoaded(BookmarkModel* model,
 
 void BookmarkTabHelper::BookmarkNodeAdded(BookmarkModel* model,
                                           const BookmarkNode* parent,
-                                          size_t index) {
+                                          size_t index,
+                                          bool added_by_user) {
   UpdateStarredStateForCurrentURL();
 }
 
@@ -148,7 +150,7 @@ void BookmarkTabHelper::BookmarkNodeChanged(BookmarkModel* model,
 
 void BookmarkTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument())
     return;
   UpdateStarredStateForCurrentURL();
@@ -156,9 +158,9 @@ void BookmarkTabHelper::DidStartNavigation(
 
 void BookmarkTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   UpdateStarredStateForCurrentURL();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkTabHelper);

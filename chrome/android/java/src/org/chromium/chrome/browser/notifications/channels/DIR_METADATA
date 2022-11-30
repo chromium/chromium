@@ -1,5 +1,0 @@
-monorail {
-  component: "UI>Notifications"
-}
-team_email: "platform-capabilities@chromium.org"
-os: ANDROID

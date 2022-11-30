@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,4 +37,11 @@ public interface BackActionDelegate {
      * Performs an action upon back gesture.
      */
     void onBackGesture();
+
+    /**
+     * Returns whether back gesture navigation is possible. When {@code true}, this can override
+     * the default navigability criteria based on navigation history. When {@code false}, the
+     * default criteria will be used instead.
+     */
+    boolean isNavigable();
 }

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,4 +7,12 @@ static_library("strings") {
     "strings.cc",
     "strings.h",
   ]
+}
+
+static_library("download_item_reroute_info") {
+  sources = [
+    "download_item_reroute_info.cc",
+    "download_item_reroute_info.h",
+  ]
+  deps = [ "proto:download_item_reroute_info_proto" ]
 }

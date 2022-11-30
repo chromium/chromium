@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 11: The specified value "ABC" does not conform to the required format.  The format is "yyyy-MM" where yyyy is year in four or more digits, and MM is 01-12.
+CONSOLE WARNING: The specified value "ABC" does not conform to the required format.  The format is "yyyy-MM" where yyyy is year in four or more digits, and MM is 01-12.
 Test if an input field matches to various pseudo classes
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

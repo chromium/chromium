@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -34,6 +34,7 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   ModuleMap(const ModuleMap&) = delete;
   ModuleMap& operator=(const ModuleMap&) = delete;
   explicit ModuleMap(Modulator*);
+  ~ModuleMap() override = default;
 
   void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "ModuleMap"; }
@@ -66,4 +67,4 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULE_MAP_H_

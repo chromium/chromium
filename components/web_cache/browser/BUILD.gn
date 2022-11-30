@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,11 +8,10 @@ static_library("browser") {
     "web_cache_manager.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//components/prefs",
+    "//components/web_cache/public:features",
     "//components/web_cache/public/mojom",
     "//content/public/browser",
     "//content/public/common",

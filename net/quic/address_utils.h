@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_ip_address.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_ip_address_family.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_socket_address.h"
+#include "net/third_party/quiche/src/quiche/common/quiche_ip_address.h"
+#include "net/third_party/quiche/src/quiche/common/quiche_ip_address_family.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_socket_address.h"
 
 namespace net {
 
@@ -34,18 +34,18 @@ inline IPAddress ToIPAddress(quic::QuicIpAddress address) {
   }
 
   switch (address.address_family()) {
-    case quic::IpAddressFamily::IP_V4: {
+    case quiche::IpAddressFamily::IP_V4: {
       in_addr raw_address = address.GetIPv4();
       return IPAddress(reinterpret_cast<const uint8_t*>(&raw_address),
                        sizeof(raw_address));
     }
-    case quic::IpAddressFamily::IP_V6: {
+    case quiche::IpAddressFamily::IP_V6: {
       in6_addr raw_address = address.GetIPv6();
       return IPAddress(reinterpret_cast<const uint8_t*>(&raw_address),
                        sizeof(raw_address));
     }
     default:
-      DCHECK_EQ(address.address_family(), quic::IpAddressFamily::IP_UNSPEC);
+      DCHECK_EQ(address.address_family(), quiche::IpAddressFamily::IP_UNSPEC);
       return IPAddress();
   }
 }
@@ -57,9 +57,9 @@ inline quic::QuicSocketAddress ToQuicSocketAddress(IPEndPoint address) {
 
   sockaddr_storage result;
   socklen_t size = sizeof(result);
-  bool success =
-      address.ToSockAddr(reinterpret_cast<sockaddr*>(&result), &size);
-  DCHECK(success);
+  if (!address.ToSockAddr(reinterpret_cast<sockaddr*>(&result), &size)) {
+    return quic::QuicSocketAddress();
+  }
   return quic::QuicSocketAddress(result);
 }
 

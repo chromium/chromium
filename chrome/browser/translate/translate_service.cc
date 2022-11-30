@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "extensions/common/constants.h"
 #endif
 
@@ -69,15 +69,8 @@ void TranslateService::Initialize() {
 }
 
 // static
-void TranslateService::Shutdown(bool cleanup_pending_fetcher) {
-  translate::TranslateDownloadManager* download_manager =
-      translate::TranslateDownloadManager::GetInstance();
-  if (cleanup_pending_fetcher) {
-    download_manager->Shutdown();
-  } else {
-    // This path is only used by browser tests.
-    download_manager->set_url_loader_factory(nullptr);
-  }
+void TranslateService::Shutdown() {
+  translate::TranslateDownloadManager::GetInstance()->Shutdown();
 }
 
 // static
@@ -114,7 +107,7 @@ void TranslateService::OnResourceRequestsAllowed() {
 
 // static
 bool TranslateService::IsTranslateBubbleEnabled() {
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   return true;
 #else
   // The bubble UX is not implemented on other platforms.
@@ -139,16 +132,15 @@ bool TranslateService::IsTranslatableURL(const GURL& url) {
   // - the devtools (which is considered UI)
   // - about:blank
   // - Chrome OS file manager extension
-  // - an FTP page (as FTP pages tend to have long lists of filenames that may
-  //   confuse the CLD)
+  // Note: Keep in sync with condition in TranslateAgent::PageCaptured.
   return !url.is_empty() && !url.SchemeIs(content::kChromeUIScheme) &&
          !url.SchemeIs(chrome::kChromeNativeScheme) &&
-         !url.SchemeIs(content::kChromeDevToolsScheme) && !url.IsAboutBlank() &&
+         !url.SchemeIs(content::kChromeDevToolsScheme) &&
 #if BUILDFLAG(IS_CHROMEOS_ASH)
          !(url.SchemeIs(extensions::kExtensionScheme) &&
            url.DomainIs(file_manager::kFileManagerAppId)) &&
 #endif
-         !url.SchemeIs(url::kFtpScheme);
+         !url.IsAboutBlank();
 }
 
 bool TranslateService::IsAvailable(PrefService* prefs) {

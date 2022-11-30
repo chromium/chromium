@@ -209,6 +209,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                         parentId : <number>
                                                                     }
                                                                 ]
+                                                                compatibilityMode : QuirksMode
                                                                 documentURL : <string>
                                                                 localName : 
                                                                 nodeId : <number>
@@ -283,6 +284,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                     parentId : <number>
                 }
             ]
+            compatibilityMode : QuirksMode
             documentURL : <string>
             localName : 
             nodeId : <number>

@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^infobar_overlay_request_config.mm": [
+    "+ios/chrome/browser/ui/badges/badge_type_util.h",
+  ],
+}
+

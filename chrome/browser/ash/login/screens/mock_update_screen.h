@@ -1,22 +1,23 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockUpdateScreen : public UpdateScreen {
  public:
-  MockUpdateScreen(UpdateView* view,
+  MockUpdateScreen(base::WeakPtr<UpdateView> view,
                    ErrorScreen* error_screen,
                    const ScreenExitCallback& exit_callback);
-  virtual ~MockUpdateScreen();
+  ~MockUpdateScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
@@ -27,15 +28,9 @@ class MockUpdateScreen : public UpdateScreen {
 class MockUpdateView : public UpdateView {
  public:
   MockUpdateView();
-  virtual ~MockUpdateView();
+  ~MockUpdateView() override;
 
-  void Bind(UpdateScreen* screen) override;
-  void Unbind() override;
-
-  MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, MockBind, (UpdateScreen * screen));
-  MOCK_METHOD(void, MockUnbind, ());
+  MOCK_METHOD(void, Show, (bool is_opt_out_enabled));
 
   MOCK_METHOD(void, SetUpdateState, (UpdateView::UIState value));
   MOCK_METHOD(void,
@@ -52,11 +47,15 @@ class MockUpdateView : public UpdateView {
   MOCK_METHOD(void, SetCancelUpdateShortcutEnabled, (bool value));
   MOCK_METHOD(void, ShowLowBatteryWarningMessage, (bool value));
   MOCK_METHOD(void, SetAutoTransition, (bool value));
-
- private:
-  UpdateScreen* screen_ = nullptr;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockUpdateScreen;
+using ::ash::MockUpdateView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_

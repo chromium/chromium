@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 
+#include "base/files/file_path.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 
 namespace blink {

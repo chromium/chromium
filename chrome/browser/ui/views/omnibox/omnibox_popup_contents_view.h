@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -23,7 +24,6 @@ class LocationBarView;
 class OmniboxEditModel;
 class OmniboxResultView;
 class OmniboxViewViews;
-class WebUIOmniboxPopupView;
 
 // A view representing the contents of the autocomplete popup.
 class OmniboxPopupContentsView : public views::View,
@@ -37,8 +37,6 @@ class OmniboxPopupContentsView : public views::View,
   OmniboxPopupContentsView(const OmniboxPopupContentsView&) = delete;
   OmniboxPopupContentsView& operator=(const OmniboxPopupContentsView&) = delete;
   ~OmniboxPopupContentsView() override;
-
-  OmniboxPopupModel* model() const { return model_.get(); }
 
   // Opens a match from the list specified by |index| with the type of tab or
   // window specified by |disposition|.
@@ -58,7 +56,12 @@ class OmniboxPopupContentsView : public views::View,
   virtual void SetSelectedIndex(size_t index);
 
   // Returns the selected line.
+  // Note: This and `SetSelectedIndex` above are used by property
+  // metadata and must follow the metadata conventions.
   virtual size_t GetSelectedIndex() const;
+
+  // Returns current popup selection (includes line index).
+  virtual OmniboxPopupSelection GetSelection() const;
 
   // Called by the active result view to inform model (due to mouse event).
   void UnselectButton();
@@ -76,8 +79,8 @@ class OmniboxPopupContentsView : public views::View,
   // OmniboxPopupView:
   bool IsOpen() const override;
   void InvalidateLine(size_t line) override;
-  void OnSelectionChanged(OmniboxPopupModel::Selection old_selection,
-                          OmniboxPopupModel::Selection new_selection) override;
+  void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                          OmniboxPopupSelection new_selection) override;
   void UpdatePopupAppearance() override;
   void ProvideButtonFocusHint(size_t line) override;
   void OnMatchIconUpdated(size_t match_index) override;
@@ -106,12 +109,12 @@ class OmniboxPopupContentsView : public views::View,
   // Returns true if the model has a match at the specified index.
   bool HasMatchAt(size_t index) const;
 
-  // Returns the match at the specified index within the popup model.
+  // Returns the match at the specified index within the model.
   const AutocompleteMatch& GetMatchAtIndex(size_t index) const;
 
   // Find the index of the match under the given |point|, specified in window
-  // coordinates. Returns OmniboxPopupModel::kNoMatch if there isn't a match at
-  // the specified point.
+  // coordinates. Returns OmniboxPopupSelection::kNoMatch if there isn't a match
+  // at the specified point.
   size_t GetIndexForPoint(const gfx::Point& point);
 
   // Update which result views are visible when the group visibility changes.
@@ -120,9 +123,6 @@ class OmniboxPopupContentsView : public views::View,
   // Gets the pref service for this view. May return nullptr in tests.
   PrefService* GetPrefService() const;
 
-  // Our model that contains our business logic.
-  std::unique_ptr<OmniboxPopupModel> model_;
-
   // The popup that contains this view.  We create this, but it deletes itself
   // when its window is destroyed.  This is a WeakPtr because it's possible for
   // the OS to destroy the window and thus delete this object before we're
@@ -130,17 +130,15 @@ class OmniboxPopupContentsView : public views::View,
   base::WeakPtr<AutocompletePopupWidget> popup_;
 
   // The edit view that invokes us.
-  OmniboxViewViews* omnibox_view_;
+  raw_ptr<OmniboxViewViews> omnibox_view_;
 
   // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
-  LocationBarView* location_bar_view_;
-
-  // The child WebView for the suggestions. This only exists if the
-  // omnibox::kWebUIOmniboxPopup flag is on.
-  WebUIOmniboxPopupView* webui_view_ = nullptr;
+  raw_ptr<LocationBarView> location_bar_view_;
 
   // A pref change registrar for toggling result view visibility.
   PrefChangeRegistrar pref_change_registrar_;
+
+  raw_ptr<OmniboxEditModel> edit_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_CONTENTS_VIEW_H_

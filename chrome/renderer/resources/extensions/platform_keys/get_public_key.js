@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var internalAPI = require('platformKeys.internalAPI');
+var internalAPI = getInternalApi('platformKeysInternal');
 
 var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
@@ -11,7 +11,7 @@ var normalizeAlgorithm =
 // Any unknown parameters will be ignored.
 function normalizeImportParams(importParams) {
   if (!importParams.name || typeof importParams.name !== 'string') {
-    throw new Error('Algorithm: name: Missing or not a String');
+    throw $Error.self('Algorithm: name: Missing or not a String');
   }
 
   var filteredParams = {
@@ -32,13 +32,13 @@ function normalizeImportParams(importParams) {
   }
 
   if (importParams.name === 'ECDSA' && importParams.namedCurve !== 'P-256') {
-    throw new Error('Only P-256 named curve is supported.');
+    throw $Error.self('Only P-256 named curve is supported.');
   }
 
   // Apply WebCrypto's algorithm normalization.
   var resultParams = normalizeAlgorithm(filteredParams, 'ImportKey');
   if (!resultParams) {
-    throw new Error('A required parameter was missing or out-of-range');
+    throw $Error.self('A required parameter was missing or out-of-range');
   }
   if (hashIsNone) {
     resultParams.hash = { name: 'none' };

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <xdg-shell-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -15,7 +16,11 @@ XDGSurfaceWrapperImpl::XDGSurfaceWrapperImpl(WaylandWindow* wayland_window,
                                              WaylandConnection* connection)
     : wayland_window_(wayland_window), connection_(connection) {}
 
-XDGSurfaceWrapperImpl::~XDGSurfaceWrapperImpl() = default;
+XDGSurfaceWrapperImpl::~XDGSurfaceWrapperImpl() {
+  is_configured_ = false;
+  connection_->wayland_window_manager()->NotifyWindowConfigured(
+      wayland_window_);
+}
 
 bool XDGSurfaceWrapperImpl::Initialize() {
   if (!connection_->shell()) {
@@ -23,8 +28,8 @@ bool XDGSurfaceWrapperImpl::Initialize() {
     return false;
   }
 
-  static const xdg_surface_listener xdg_surface_listener = {
-      &XDGSurfaceWrapperImpl::Configure,
+  static constexpr xdg_surface_listener xdg_surface_listener = {
+      &Configure,
   };
 
   xdg_surface_.reset(xdg_wm_base_get_xdg_surface(
@@ -35,15 +40,21 @@ bool XDGSurfaceWrapperImpl::Initialize() {
   }
 
   xdg_surface_add_listener(xdg_surface_.get(), &xdg_surface_listener, this);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   return true;
 }
 
 void XDGSurfaceWrapperImpl::AckConfigure(uint32_t serial) {
   DCHECK(xdg_surface_);
   xdg_surface_ack_configure(xdg_surface_.get(), serial);
+
+  is_configured_ = true;
   connection_->wayland_window_manager()->NotifyWindowConfigured(
       wayland_window_);
+}
+
+bool XDGSurfaceWrapperImpl::IsConfigured() {
+  return is_configured_;
 }
 
 void XDGSurfaceWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
@@ -59,7 +70,15 @@ void XDGSurfaceWrapperImpl::Configure(void* data,
   auto* surface = static_cast<XDGSurfaceWrapperImpl*>(data);
   DCHECK(surface);
 
-  surface->wayland_window_->HandleSurfaceConfigure(serial);
+  // Calls to HandleSurfaceConfigure() might end up hiding the enclosing
+  // toplevel window, and deleting this object.
+  auto weak_window = surface->wayland_window_->AsWeakPtr();
+  weak_window->HandleSurfaceConfigure(serial);
+
+  if (!weak_window)
+    return;
+
+  weak_window->OnSurfaceConfigureEvent();
 }
 
 xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_AMBIENT_AMBIENT_UI_MODEL_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -29,16 +28,16 @@ enum class AmbientUiMode {
 };
 
 // The default time before starting Ambient mode on lock screen.
-constexpr base::TimeDelta kLockScreenInactivityTimeout =
-    base::TimeDelta::FromSeconds(7);
+constexpr base::TimeDelta kLockScreenInactivityTimeout = base::Seconds(7);
 
 // The default time to lock screen in the background after Ambient mode begins.
-constexpr base::TimeDelta kLockScreenBackgroundTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kLockScreenBackgroundTimeout = base::Seconds(5);
 
 // The default interval to refresh photos.
-constexpr base::TimeDelta kPhotoRefreshInterval =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kPhotoRefreshInterval = base::Seconds(60);
+
+// The default animation playback speed. Not used in slideshow mode.
+constexpr float kAnimationPlaybackSpeed = 1.f;
 
 // A checked observer which receives notification of changes to the Ambient Mode
 // UI model.
@@ -88,6 +87,12 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
     return photo_refresh_interval_;
   }
 
+  void set_animation_playback_speed(float animation_playback_speed) {
+    animation_playback_speed_ = animation_playback_speed;
+  }
+
+  float animation_playback_speed() const { return animation_playback_speed_; }
+
  private:
   void NotifyAmbientUiVisibilityChanged();
 
@@ -107,6 +112,9 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
 
   // The interval to refresh photos.
   base::TimeDelta photo_refresh_interval_ = kPhotoRefreshInterval;
+
+  // Animation playback speed. Not used in slideshow mode.
+  float animation_playback_speed_ = kAnimationPlaybackSpeed;
 
   base::ObserverList<AmbientUiModelObserver> observers_;
 };

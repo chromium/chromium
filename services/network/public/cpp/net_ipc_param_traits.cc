@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,9 +41,6 @@ void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
                                                const param_type& p) {
   WriteParam(m, p.verified_cert);
   WriteParam(m, p.cert_status);
-  WriteParam(m, p.has_md2);
-  WriteParam(m, p.has_md4);
-  WriteParam(m, p.has_md5);
   WriteParam(m, p.has_sha1);
   WriteParam(m, p.has_sha1_leaf);
   WriteParam(m, p.public_key_hashes);
@@ -59,8 +56,7 @@ bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
                                               param_type* r) {
   return ReadParam(m, iter, &r->verified_cert) &&
          ReadParam(m, iter, &r->cert_status) &&
-         ReadParam(m, iter, &r->has_md2) && ReadParam(m, iter, &r->has_md4) &&
-         ReadParam(m, iter, &r->has_md5) && ReadParam(m, iter, &r->has_sha1) &&
+         ReadParam(m, iter, &r->has_sha1) &&
          ReadParam(m, iter, &r->has_sha1_leaf) &&
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->is_issued_by_known_root) &&
@@ -167,10 +163,10 @@ bool ParamTraits<net::HttpRequestHeaders>::Read(const base::Pickle* m,
                                                 base::PickleIterator* iter,
                                                 param_type* r) {
   // Sanity check.
-  int size;
+  size_t size;
   if (!iter->ReadLength(&size))
     return false;
-  for (int i = 0; i < size; ++i) {
+  for (size_t i = 0; i < size; ++i) {
     net::HttpRequestHeaders::HeaderKeyValuePair pair;
     if (!ReadParam(m, iter, &pair) ||
         !net::HttpUtil::IsValidHeaderName(pair.key) ||
@@ -224,14 +220,12 @@ void ParamTraits<net::ProxyServer>::Write(base::Pickle* m,
       scheme != net::ProxyServer::SCHEME_INVALID) {
     WriteParam(m, p.host_port_pair());
   }
-  WriteParam(m, p.is_trusted_proxy());
 }
 
 bool ParamTraits<net::ProxyServer>::Read(const base::Pickle* m,
                                          base::PickleIterator* iter,
                                          param_type* r) {
   net::ProxyServer::Scheme scheme;
-  bool is_trusted_proxy = false;
   if (!ReadParam(m, iter, &scheme))
     return false;
 
@@ -244,10 +238,7 @@ bool ParamTraits<net::ProxyServer>::Read(const base::Pickle* m,
     return false;
   }
 
-  if (!ReadParam(m, iter, &is_trusted_proxy))
-    return false;
-
-  *r = net::ProxyServer(scheme, host_port_pair, is_trusted_proxy);
+  *r = net::ProxyServer(scheme, host_port_pair);
   return true;
 }
 
@@ -329,6 +320,7 @@ void ParamTraits<net::SSLInfo>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.is_issued_by_known_root);
   WriteParam(m, p.pkp_bypassed);
   WriteParam(m, p.client_cert_sent);
+  WriteParam(m, p.encrypted_client_hello);
   WriteParam(m, p.handshake_type);
   WriteParam(m, p.public_key_hashes);
   WriteParam(m, p.pinning_failure_log);
@@ -355,6 +347,7 @@ bool ParamTraits<net::SSLInfo>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->is_issued_by_known_root) &&
          ReadParam(m, iter, &r->pkp_bypassed) &&
          ReadParam(m, iter, &r->client_cert_sent) &&
+         ReadParam(m, iter, &r->encrypted_client_hello) &&
          ReadParam(m, iter, &r->handshake_type) &&
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->pinning_failure_log) &&
@@ -438,8 +431,8 @@ void ParamTraits<net::LoadTimingInfo>::Write(base::Pickle* m,
   WriteParam(m, p.request_start);
   WriteParam(m, p.proxy_resolve_start);
   WriteParam(m, p.proxy_resolve_end);
-  WriteParam(m, p.connect_timing.dns_start);
-  WriteParam(m, p.connect_timing.dns_end);
+  WriteParam(m, p.connect_timing.domain_lookup_start);
+  WriteParam(m, p.connect_timing.domain_lookup_end);
   WriteParam(m, p.connect_timing.connect_start);
   WriteParam(m, p.connect_timing.connect_end);
   WriteParam(m, p.connect_timing.ssl_start);
@@ -470,8 +463,8 @@ bool ParamTraits<net::LoadTimingInfo>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->request_start) &&
          ReadParam(m, iter, &r->proxy_resolve_start) &&
          ReadParam(m, iter, &r->proxy_resolve_end) &&
-         ReadParam(m, iter, &r->connect_timing.dns_start) &&
-         ReadParam(m, iter, &r->connect_timing.dns_end) &&
+         ReadParam(m, iter, &r->connect_timing.domain_lookup_start) &&
+         ReadParam(m, iter, &r->connect_timing.domain_lookup_end) &&
          ReadParam(m, iter, &r->connect_timing.connect_start) &&
          ReadParam(m, iter, &r->connect_timing.connect_end) &&
          ReadParam(m, iter, &r->connect_timing.ssl_start) &&
@@ -500,9 +493,9 @@ void ParamTraits<net::LoadTimingInfo>::Log(const param_type& p,
   l->append(", ");
   LogParam(p.proxy_resolve_end, l);
   l->append(", ");
-  LogParam(p.connect_timing.dns_start, l);
+  LogParam(p.connect_timing.domain_lookup_start, l);
   l->append(", ");
-  LogParam(p.connect_timing.dns_end, l);
+  LogParam(p.connect_timing.domain_lookup_end, l);
   l->append(", ");
   LogParam(p.connect_timing.connect_start, l);
   l->append(", ");
@@ -562,7 +555,14 @@ void ParamTraits<url::Origin>::Write(base::Pickle* m, const url::Origin& p) {
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().scheme());
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().host());
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().port());
-  WriteParam(m, p.GetNonceForSerialization());
+  // Note: this is somewhat asymmetric with Read() to avoid extra copies during
+  // serialization. The actual serialized wire format matches how absl::optional
+  // values are normally serialized: see `ParamTraits<absl::optional<P>>`.
+  const base::UnguessableToken* nonce = p.GetNonceForSerialization();
+  WriteParam(m, nonce != nullptr);
+  if (nonce) {
+    WriteParam(m, *nonce);
+  }
 }
 
 bool ParamTraits<url::Origin>::Read(const base::Pickle* m,
@@ -571,13 +571,13 @@ bool ParamTraits<url::Origin>::Read(const base::Pickle* m,
   std::string scheme;
   std::string host;
   uint16_t port;
-  base::Optional<base::UnguessableToken> nonce_if_opaque;
+  absl::optional<base::UnguessableToken> nonce_if_opaque;
   if (!ReadParam(m, iter, &scheme) || !ReadParam(m, iter, &host) ||
       !ReadParam(m, iter, &port) || !ReadParam(m, iter, &nonce_if_opaque)) {
     return false;
   }
 
-  base::Optional<url::Origin> creation_result =
+  absl::optional<url::Origin> creation_result =
       nonce_if_opaque
           ? url::Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
                 scheme, host, port, url::Origin::Nonce(*nonce_if_opaque))

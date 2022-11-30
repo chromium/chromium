@@ -1,0 +1,104 @@
+<style include="cr-shared-style shared-style">
+  :host {
+    display: flex;
+    flex: 0 0 100%;
+  }
+
+  #cameraRollProperty {
+    flex-basis: 100%;
+    justify-content: center;
+  }
+
+  #cameraRollPropertiesColumn {
+    flex: 2;
+    flex-wrap: wrap;
+  }
+
+  #cameraRollToggle {
+    flex: 1 0 50%;
+  }
+
+  select {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+</style>
+
+<div class="column">
+  <cr-button on-click="setFakeCameraRollManager_" class="internals-button">
+    <span class="emphasize">Change Camera Roll Status</span>
+  </cr-button>
+  <div class="label">
+    <span class="emphasize">Note:</span> Click the button above to propagate
+    all Camera Roll values on the right hand side to the fake PhoneHub
+    manager. Values will update when changed outside of this page.
+  </div>
+</div>
+<div id="cameraRollPropertiesColumn" class="column">
+  <div class="cr-row">
+    <div id="cameraRollToggle" class="column">
+      <div class="cr-padded-text">
+        Camera Roll Enabled
+      </div>
+      <cr-toggle checked="{{isCameraRollEnabled_}}">
+      </cr-toggle>
+    </div>
+    <div id="cameraRollToggle" class="column">
+      <div class="cr-padded-text">
+        Onboarding Dismissed
+      </div>
+      <cr-toggle checked="{{isOnboardingDismissed_}}">
+      </cr-toggle>
+    </div>
+  </div>
+  <template is="dom-if" if="[[isCameraRollEnabled_]]" restamp>
+    <div class="cr-row">
+      <div id="cameraRollToggle" class="column">
+        <div class="cr-padded-text">
+          File Access Granted
+        </div>
+        <cr-toggle checked="{{isFileAccessGranted_}}">
+        </cr-toggle>
+      </div>
+      <div id="cameraRollToggle" class="column">
+        <div class="cr-padded-text">
+          Loading View Shown
+        </div>
+        <cr-toggle checked="{{isLoadingViewShown_}}">
+        </cr-toggle>
+      </div>
+    </div>
+    <div id="cameraRollProperty">
+      <div class="label">
+        Number of Thumbnails
+      </div>
+      <cr-input id="numberOfThumbnailsInput" type="number"
+          min="0" max="16" value="{{numberOfThumbnails_}}"
+          on-change="onNumberOfThumbnailsChanged_"
+          auto-validate error-message="Must be [0, 16]">
+      </cr-input>
+    </div>
+    <div id="cameraRollProperty">
+      <div class="label">
+        File Type
+      </div>
+      <select id="fileTypeList" class="md-select"
+          on-change="onFileTypeSelected_">
+        <template is="dom-repeat" items="[[fileTypeList_]]">
+          <option>[[getFileTypeName_(item)]]</option>
+        </template>
+      </select>
+    </div>
+    <div id="cameraRollProperty">
+      <div class="label">
+        Download Result
+      </div>
+      <select id="downloadResultList" class="md-select"
+          on-change="onDownloadResultSelected_">
+        <template is="dom-repeat" items="[[downloadResultList_]]">
+          <option>[[getDownloadResultName_(item)]]</option>
+        </template>
+      </select>
+    </div>
+  </template>
+</div>

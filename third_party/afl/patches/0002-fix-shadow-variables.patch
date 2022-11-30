@@ -1,0 +1,65 @@
+diff --git a/afl-fuzz.c b/afl-fuzz.c
+index f0d564a330373..a787f9a685a69 100644
+--- a/afl-fuzz.c
++++ b/afl-fuzz.c
+@@ -1409,12 +1409,12 @@ static void read_testcases(void) {
+   struct dirent **nl;
+   s32 nl_cnt;
+   u32 i;
+-  u8* fn;
++  u8* queue_fn;
+ 
+   /* Auto-detect non-in-place resumption attempts. */
+ 
+-  fn = alloc_printf("%s/queue", in_dir);
+-  if (!access(fn, F_OK)) in_dir = fn; else ck_free(fn);
++  queue_fn = alloc_printf("%s/queue", in_dir);
++  if (!access(queue_fn, F_OK)) in_dir = queue_fn; else ck_free(queue_fn);
+ 
+   ACTF("Scanning '%s'...", in_dir);
+ 
+@@ -3652,17 +3652,17 @@ static void maybe_delete_out_dir(void) {
+ 
+   if (f) {
+ 
+-    u64 start_time, last_update;
++    u64 cur_start_time, last_update;
+ 
+     if (fscanf(f, "start_time     : %llu\n"
+-                  "last_update    : %llu\n", &start_time, &last_update) != 2)
++                  "last_update    : %llu\n", &cur_start_time, &last_update) != 2)
+       FATAL("Malformed data in '%s'", fn);
+ 
+     fclose(f);
+ 
+     /* Let's see how much work is at stake. */
+ 
+-    if (!in_place_resume && last_update - start_time > OUTPUT_GRACE * 60) {
++    if (!in_place_resume && last_update - cur_start_time > OUTPUT_GRACE * 60) {
+ 
+       SAYF("\n" cLRD "[-] " cRST
+            "The job output directory already exists and contains the results of more\n"
+diff --git a/types.h b/types.h
+index d24d1fdd97e8c..e12ac3e894599 100644
+--- a/types.h
++++ b/types.h
+@@ -57,15 +58,13 @@ typedef int64_t  s64;
+ #endif /* !MIN */
+ 
+ #define SWAP16(_x) ({ \
+-    u16 _ret = (_x); \
+-    (u16)((_ret << 8) | (_ret >> 8)); \
++    (u16)(((u16)(_x) << 8) | ((u16)(_x) >> 8)); \
+   })
+ 
+ #define SWAP32(_x) ({ \
+-    u32 _ret = (_x); \
+-    (u32)((_ret << 24) | (_ret >> 24) | \
+-          ((_ret << 8) & 0x00FF0000) | \
+-          ((_ret >> 8) & 0x0000FF00)); \
++    (u32)(((u32)(_x) << 24) | ((u32)(_x) >> 24) | \
++          (((u32)(_x) << 8) & 0x00FF0000) | \
++          (((u32)(_x) >> 8) & 0x0000FF00)); \
+   })
+ 
+ #ifdef AFL_LLVM_PASS

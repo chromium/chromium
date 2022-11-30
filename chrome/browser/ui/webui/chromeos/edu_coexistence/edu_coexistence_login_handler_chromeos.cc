@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -18,11 +19,11 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
-#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -33,11 +34,12 @@
 #include "chrome/common/chrome_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -109,8 +111,8 @@ base::Time GetSigninTime() {
 // required.
 std::string GetDeviceIdForActiveUserProfile() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  const policy::UserCloudPolicyManagerChromeOS* policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  const policy::UserCloudPolicyManagerAsh* policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   if (!policy_manager)
     return std::string();
 
@@ -127,6 +129,12 @@ std::string GetDeviceIdForActiveUserProfile() {
 }
 
 }  // namespace
+
+void EduCoexistenceLoginHandler::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(ash::prefs::kEduCoexistenceId,
+                               std::string() /* default_value */);
+}
 
 EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
     const base::RepeatingClosure& close_dialog_closure)
@@ -145,7 +153,6 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
 
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope);
-  scopes.insert(GaiaConstants::kKidManagementOAuth2Scope);
   scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
   scopes.insert(GaiaConstants::kAuditRecordingOAuth2Scope);
   scopes.insert(GaiaConstants::kClearCutOAuth2Scope);
@@ -159,7 +166,7 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
               &EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched,
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kSignin);
+          signin::ConsentLevel::kSync);
 }
 
 EduCoexistenceLoginHandler::~EduCoexistenceLoginHandler() {
@@ -209,8 +216,8 @@ void EduCoexistenceLoginHandler::OnRefreshTokenUpdatedForAccount(
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
-  edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, edu_coexistence::UserConsentInfo(
+  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, ash::edu_coexistence::UserConsentInfo(
                    account_info.gaia, terms_of_service_version_number_));
 
   EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
@@ -248,10 +255,10 @@ void EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched(
 }
 
 void EduCoexistenceLoginHandler::InitializeEduArgs(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
-  initialize_edu_args_callback_ = args->GetList()[0].GetString();
+  initialize_edu_args_callback_ = args[0].GetString();
 
   if (in_error_state_) {
     FireWebUIListener(kOnErrorWebUIListener);
@@ -269,28 +276,28 @@ void EduCoexistenceLoginHandler::InitializeEduArgs(
 void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   DCHECK(oauth_access_token_.has_value());
   DCHECK(initialize_edu_args_callback_.has_value());
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  params.SetStringKey("h1", app_locale);
+  params.Set("hl", app_locale);
 
-  params.SetStringKey("url", GetEduCoexistenceURL());
+  params.Set("url", GetEduCoexistenceURL());
 
-  params.SetStringKey("clientId",
-                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetStringKey("sourceUi", GetSourceUI());
+  params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.Set("sourceUi", GetSourceUI());
 
-  params.SetStringKey("clientVersion", chrome::kChromeVersion);
-  params.SetStringKey("eduCoexistenceAccessToken", oauth_access_token_->token);
-  params.SetStringKey("eduCoexistenceId", GetOrCreateEduCoexistenceUserId());
-  params.SetStringKey("platformVersion",
-                      base::SysInfo::OperatingSystemVersion());
+  params.Set("clientVersion", chrome::kChromeVersion);
+  params.Set("eduCoexistenceAccessToken", oauth_access_token_->token);
+  params.Set("eduCoexistenceId", GetOrCreateEduCoexistenceUserId());
+  params.Set("platformVersion", base::SysInfo::OperatingSystemVersion());
   // Extended stable channel is not supported on Chrome OS Ash.
-  params.SetStringKey("releaseChannel", chrome::GetChannelName(
-                                            chrome::WithExtendedStable(false)));
-  params.SetStringKey("deviceId", GetDeviceIdForActiveUserProfile());
+  params.Set("releaseChannel",
+             chrome::GetChannelName(chrome::WithExtendedStable(false)));
+  params.Set("deviceId", GetDeviceIdForActiveUserProfile());
 
-  params.SetDoubleKey("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
+  params.Set("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
+  // TODO(crbug.com/1202135): Remove along with JS part.
+  params.Set("newOobeLayoutEnabled", true);
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example
@@ -300,37 +307,37 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
     const GURL& current_url = web_contents->GetURL();
     std::string default_email;
     if (net::GetValueForKeyInQuery(current_url, "email", &default_email)) {
-      params.SetStringKey("email", default_email);
+      params.Set("email", default_email);
 
       std::string read_only_email;
       if (net::GetValueForKeyInQuery(current_url, "readOnlyEmail",
                                      &read_only_email)) {
-        params.SetStringKey("readOnlyEmail", read_only_email);
+        params.Set("readOnlyEmail", read_only_email);
       }
     }
   }
 
   ResolveJavascriptCallback(base::Value(initialize_edu_args_callback_.value()),
-                            std::move(params));
-  initialize_edu_args_callback_ = base::nullopt;
+                            params);
+  initialize_edu_args_callback_ = absl::nullopt;
 }
 
-void EduCoexistenceLoginHandler::ConsentValid(const base::ListValue* args) {
+void EduCoexistenceLoginHandler::ConsentValid(const base::Value::List& args) {
   AllowJavascript();
   DCHECK(!in_error_state_);
   EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
       web_ui(), EduCoexistenceStateTracker::FlowResult::kConsentValid);
 }
 
-void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
-  if (!args || args->GetList().size() == 0)
+void EduCoexistenceLoginHandler::ConsentLogged(const base::Value::List& args) {
+  if (args.size() == 0)
     return;
 
   DCHECK(!in_error_state_);
 
-  account_added_callback_ = args->GetList()[0].GetString();
+  account_added_callback_ = args[0].GetString();
 
-  const base::Value::ConstListView& arguments = args->GetList()[1].GetList();
+  const base::Value::List& arguments = args[1].GetList();
 
   edu_account_email_ = arguments[0].GetString();
   terms_of_service_version_number_ = arguments[1].GetString();
@@ -340,13 +347,12 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
                                                      edu_account_email_);
 }
 
-void EduCoexistenceLoginHandler::OnError(const base::ListValue* args) {
+void EduCoexistenceLoginHandler::OnError(const base::Value::List& args) {
   AllowJavascript();
-  if (!args || args->GetList().size() == 0)
+  if (args.size() == 0)
     return;
   in_error_state_ = true;
-  const base::Value::ConstListView& arguments = args->GetList();
-  for (const base::Value& message : arguments) {
+  for (const base::Value& message : args) {
     DCHECK(message.is_string());
     LOG(ERROR) << message.GetString();
   }

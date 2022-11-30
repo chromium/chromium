@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,8 @@ source_set("ntp_tiles") {
   sources = [
     "ios_most_visited_sites_factory.cc",
     "ios_most_visited_sites_factory.h",
-    "ios_popular_sites_factory.cc",
     "ios_popular_sites_factory.h",
+    "ios_popular_sites_factory.mm",
     "most_visited_sites_observer_bridge.h",
     "most_visited_sites_observer_bridge.mm",
   ]
@@ -25,14 +25,13 @@ source_set("ntp_tiles") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/search_engines",
-    "//ios/chrome/browser/suggestions",
     "//ios/web",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
   ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -40,6 +39,8 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "ntp_tiles_egtest.mm" ]
   deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_COMMON_EXTENSIONS_CHROME_EXTENSIONS_API_PROVIDER_H_
 #define CHROME_COMMON_EXTENSIONS_CHROME_EXTENSIONS_API_PROVIDER_H_
 
-#include "base/macros.h"
 #include "extensions/common/extensions_api_provider.h"
 
 namespace extensions {
@@ -13,6 +12,11 @@ namespace extensions {
 class ChromeExtensionsAPIProvider : public ExtensionsAPIProvider {
  public:
   ChromeExtensionsAPIProvider();
+
+  ChromeExtensionsAPIProvider(const ChromeExtensionsAPIProvider&) = delete;
+  ChromeExtensionsAPIProvider& operator=(const ChromeExtensionsAPIProvider&) =
+      delete;
+
   ~ChromeExtensionsAPIProvider() override;
 
   // ExtensionsAPIProvider:
@@ -25,9 +29,6 @@ class ChromeExtensionsAPIProvider : public ExtensionsAPIProvider {
   base::StringPiece GetAPISchema(const std::string& name) override;
   void RegisterPermissions(PermissionsInfo* permissions_info) override;
   void RegisterManifestHandlers() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIProvider);
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,21 +31,20 @@ class MimeSniffingThrottle;
 // Reads the response body and determines its mime type. This url loader buffers
 // the response body until the mime type is decided. MimeSniffingURLLoader
 // is expected to be created just after receiving OnReceiveResponse(), so this
-// handles only OnStartLoadingResponseBody() and OnComplete() as a
-// network::mojom::URLLoaderClient.
+// handles only OnComplete() as a network::mojom::URLLoaderClient.
 //
 // This loader has five states:
 // kWaitForBody: The initial state until the body is received (=
-//               OnStartLoadingResponseBody() is called) or the response is
+//               OnReceiveResponse() is called) or the response is
 //               finished (= OnComplete() is called). When body is provided, the
 //               state is changed to kSniffing. Otherwise the state goes to
 //               kCompleted.
 // kSniffing: Receives the body from the source loader and estimate the mime
 //            type. The received body is kept in this loader until the mime type
 //            is decided. When the mime type is decided or all body has been
-//            received, this loader will dispatch queued messages like
-//            OnStartLoadingResponseBody() to the destination
-//            loader client, and then the state is changed to kSending.
+//            received, this loader will dispatch queued messages to the
+//            destination loader client, and then the state is changed to
+//            kSending.
 // kSending: Receives the body and sends it to the destination loader client.
 //           The state changes to kCompleted after all data is sent.
 // kCompleted: All data has been sent to the destination loader.
@@ -57,13 +56,16 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
     : public network::mojom::URLLoaderClient,
       public network::mojom::URLLoader {
  public:
+  MimeSniffingURLLoader(const MimeSniffingURLLoader&) = delete;
+  MimeSniffingURLLoader& operator=(const MimeSniffingURLLoader&) = delete;
   ~MimeSniffingURLLoader() override;
 
   // Start waiting for the body.
   void Start(
       mojo::PendingRemote<network::mojom::URLLoader> source_url_loader_remote,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>
-          source_url_client_receiver);
+          source_url_client_receiver,
+      mojo::ScopedDataPipeConsumerHandle body);
 
   // mojo::PendingRemote<network::mojom::URLLoader> controls the lifetime of the
   // loader.
@@ -87,17 +89,16 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   // the response):
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override;
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // network::mojom::URLLoader implementation (called from the destination of
@@ -106,7 +107,7 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -142,7 +143,7 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   State state_ = State::kWaitForBody;
 
   // Set if OnComplete() is called during sniffing.
-  base::Optional<network::URLLoaderCompletionStatus> complete_status_;
+  absl::optional<network::URLLoaderCompletionStatus> complete_status_;
 
   std::vector<char> buffered_body_;
   size_t bytes_remaining_in_buffer_;
@@ -151,8 +152,6 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   mojo::ScopedDataPipeProducerHandle body_producer_handle_;
   mojo::SimpleWatcher body_consumer_watcher_;
   mojo::SimpleWatcher body_producer_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(MimeSniffingURLLoader);
 };
 
 }  // namespace blink

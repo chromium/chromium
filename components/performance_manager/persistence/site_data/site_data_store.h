@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SiteDataProto;
@@ -21,13 +20,13 @@ namespace performance_manager {
 class SiteDataStore {
  public:
   // Callback to call once the initialization from the store has completed,
-  // |site_data_proto| should be equal to base::nullopt if the initialization
+  // |site_data_proto| should be equal to absl::nullopt if the initialization
   // has failed.
   using ReadSiteDataFromStoreCallback =
-      base::OnceCallback<void(base::Optional<SiteDataProto> site_data_proto)>;
+      base::OnceCallback<void(absl::optional<SiteDataProto> site_data_proto)>;
   using GetStoreSizeCallback =
-      base::OnceCallback<void(base::Optional<int64_t> num_rows,
-                              base::Optional<int64_t> on_disk_size_kb)>;
+      base::OnceCallback<void(absl::optional<int64_t> num_rows,
+                              absl::optional<int64_t> on_disk_size_kb)>;
 
   SiteDataStore() = default;
   virtual ~SiteDataStore() {}

@@ -1,0 +1,30 @@
+caption: Control the User-Agent Client Hints GREASE Update feature.
+default: true
+desc: |-
+  When enabled the User-Agent Client Hints GREASE Update feature aligns the User-Agent GREASE algorithm with the latest spec.
+        The updated spec may break some websites that restrict the characters that requests may contain. See the spec for more information: https://wicg.github.io/ua-client-hints/#grease
+        If this policy is enabled or not set, the browser will decide which User-Agent GREASE algorithm to use. If the policy is disabled the prior User-Agent GREASE algorithm is used.
+        This policy is a temporary measure and will be removed in a future release.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Allow the updated User-Agent GREASE algorithm to be run.
+  value: true
+- caption: Force the prior User-Agent GREASE algorithm to be used.
+  value: false
+owners:
+- miketaylr@google.com
+- mreichhoff@chromium.org
+- file://components/client_hints/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:98-
+- chrome.*:98-
+- android:98-
+tags: []
+type: main

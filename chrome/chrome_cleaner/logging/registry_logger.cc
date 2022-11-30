@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -238,7 +239,7 @@ bool RegistryLogger::RemoveLogFilePath(const base::FilePath& log_file) {
   }
 
   std::vector<std::wstring>::const_iterator iter =
-      std::find(log_files.begin(), log_files.end(), log_file.value());
+      base::ranges::find(log_files, log_file.value());
   if (iter == log_files.end()) {
     PLOG(WARNING) << "Requested log file '" << SanitizePath(log_file)
                   << "', not found in registered log files '"

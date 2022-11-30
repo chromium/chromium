@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -44,6 +42,10 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   // May be constructed on any thread.  All other routines (including
   // destruction) must occur on the same sequence.
   BaseFile(uint32_t download_id);
+
+  BaseFile(const BaseFile&) = delete;
+  BaseFile& operator=(const BaseFile&) = delete;
+
   ~BaseFile();
 
   // Returns DOWNLOAD_INTERRUPT_REASON_NONE on success, or a
@@ -170,7 +172,7 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       OnAnnotationDoneCallback on_annotation_done_callback);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Publishes the intermediate download to public download collection.
   DownloadInterruptReason PublishDownload();
 #endif
@@ -302,8 +304,6 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BaseFile> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BaseFile);
 };
 
 }  // namespace download

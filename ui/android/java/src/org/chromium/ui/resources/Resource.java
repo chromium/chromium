@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,9 @@ public interface Resource {
     boolean shouldRemoveResourceOnNullBitmap();
 
     /**
-     * @return The size of the bitmap.
+     * Returns the size the bitmap should be drawn to, but not necessarily the dimensions or number
+     * if pixels in the bitmap. When down sampling, this size will be larger than the bitmap, and
+     * the expectation is the bitmap will then be interpolated over this area.
      */
     Rect getBitmapSize();
 

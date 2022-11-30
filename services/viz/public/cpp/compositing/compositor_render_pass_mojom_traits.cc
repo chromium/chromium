@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,9 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       !data.ReadBackdropFilters(&(*out)->backdrop_filters) ||
       !data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds) ||
       !data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id) ||
+      !data.ReadSubtreeSize(&(*out)->subtree_size) ||
       !data.ReadCopyRequests(&(*out)->copy_requests) ||
+      !data.ReadSharedElementResourceId(&(*out)->shared_element_resource_id) ||
       !data.ReadId(&(*out)->id)) {
     return false;
   }
@@ -36,7 +38,14 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
     viz::SetDeserializationCrashKeyString("Invalid render pass ID");
     return false;
   }
+  if ((*out)->subtree_size.width() > (*out)->output_rect.size().width() ||
+      (*out)->subtree_size.height() > (*out)->output_rect.size().height()) {
+    return false;
+  }
+
   (*out)->has_transparent_background = data.has_transparent_background();
+  (*out)->has_per_quad_damage = data.has_per_quad_damage();
+
   (*out)->cache_render_pass = data.cache_render_pass();
   (*out)->has_damage_from_contributing_content =
       data.has_damage_from_contributing_content();

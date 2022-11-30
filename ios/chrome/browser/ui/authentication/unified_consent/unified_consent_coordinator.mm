@@ -1,11 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_coordinator.h"
 
-#include "base/check_op.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_mediator.h"
@@ -30,19 +35,30 @@
 // Identity chooser coordinator.
 @property(nonatomic, strong)
     IdentityChooserCoordinator* identityChooserCoordinator;
+// Authentication Service for the user's signed-in state.
+@property(nonatomic, assign) AuthenticationService* authenticationService;
 
 @end
 
 @implementation UnifiedConsentCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+                    postRestoreSigninPromo:(BOOL)postRestoreSigninPromo {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
-    _unifiedConsentViewController = [[UnifiedConsentViewController alloc] init];
+    _unifiedConsentViewController = [[UnifiedConsentViewController alloc]
+        initWithPostRestoreSigninPromo:postRestoreSigninPromo];
     _unifiedConsentViewController.delegate = self;
+
+    _authenticationService = AuthenticationServiceFactory::GetForBrowserState(
+        browser->GetBrowserState());
     _unifiedConsentMediator = [[UnifiedConsentMediator alloc]
-        initWithUnifiedConsentViewController:_unifiedConsentViewController];
+        initWithUnifiedConsentViewController:_unifiedConsentViewController
+                       authenticationService:_authenticationService
+                       accountManagerService:
+                           ChromeAccountManagerServiceFactory::
+                               GetForBrowserState(browser->GetBrowserState())];
     _unifiedConsentMediator.delegate = self;
   }
   return self;
@@ -50,6 +66,12 @@
 
 - (void)start {
   [self.unifiedConsentMediator start];
+}
+
+- (void)stop {
+  [self.identityChooserCoordinator stop];
+  [self.unifiedConsentMediator disconnect];
+  self.unifiedConsentMediator = nil;
 }
 
 - (void)scrollToBottom {
@@ -62,20 +84,16 @@
 
 #pragma mark - Properties
 
-- (ChromeIdentity*)selectedIdentity {
+- (id<SystemIdentity>)selectedIdentity {
   return self.unifiedConsentMediator.selectedIdentity;
 }
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   self.unifiedConsentMediator.selectedIdentity = selectedIdentity;
 }
 
 - (UIViewController*)viewController {
   return self.unifiedConsentViewController;
-}
-
-- (int)openSettingsStringId {
-  return self.unifiedConsentViewController.openSettingsStringId;
 }
 
 - (const std::vector<int>&)consentStringIds {
@@ -86,9 +104,19 @@
   return self.unifiedConsentViewController.isScrolledToBottom;
 }
 
+- (BOOL)hasManagedSyncDataType {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  PrefService* prefService = browserState->GetPrefs();
+  return HasManagedSyncDataType(prefService);
+}
+
+- (BOOL)hasAccountRestrictions {
+  return IsRestrictAccountsToPatternsEnabled();
+}
+
 #pragma mark - Private
 
-// Opens the identity chooser dialog with an animation from |point|.
+// Opens the identity chooser dialog with an animation from `point`.
 - (void)showIdentityChooserDialogWithPoint:(CGPoint)point {
   self.identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.unifiedConsentViewController
@@ -108,6 +136,14 @@
 }
 
 #pragma mark - UnifiedConsentViewControllerDelegate
+
+- (BOOL)unifiedConsentCoordinatorHasManagedSyncDataType {
+  return self.hasManagedSyncDataType;
+}
+
+- (BOOL)unifiedConsentCoordinatorHasAccountRestrictions {
+  return self.hasAccountRestrictions;
+}
 
 - (void)unifiedConsentViewControllerViewDidAppear:
     (UnifiedConsentViewController*)controller {
@@ -134,6 +170,11 @@
   [self.delegate unifiedConsentCoordinatorDidTapSettingsLink:self];
 }
 
+- (void)unifiedConsentViewControllerDidTapLearnMoreLink:
+    (UnifiedConsentViewController*)controller {
+  [self.delegate unifiedConsentCoordinatorDidTapLearnMoreLink:self];
+}
+
 - (void)unifiedConsentViewControllerDidTapIdentityButtonControl:
             (UnifiedConsentViewController*)controller
                                                         atPoint:(CGPoint)point {
@@ -155,6 +196,7 @@
 - (void)identityChooserCoordinatorDidClose:
     (IdentityChooserCoordinator*)coordinator {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
+  [self.identityChooserCoordinator stop];
   self.identityChooserCoordinator.delegate = nil;
   self.identityChooserCoordinator = nil;
 }
@@ -166,7 +208,7 @@
 }
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(ChromeIdentity*)identity {
+                 didSelectIdentity:(id<SystemIdentity>)identity {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
   self.selectedIdentity = identity;
 }

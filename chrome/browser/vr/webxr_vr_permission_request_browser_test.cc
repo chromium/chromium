@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
   auto utils = UiUtils::Create();
   utils->PerformActionAndWaitForVisibilityStatus(
       UserFriendlyElementName::kWebXrExternalPromptNotification,
-      true /* visible */, base::DoNothing::Once());
+      true /* visible */, base::DoNothing());
 }
 
 // TODO(https://crbug.com/920697): Add tests verifying the notification

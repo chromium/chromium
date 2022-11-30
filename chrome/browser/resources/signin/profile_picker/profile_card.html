@@ -36,21 +36,16 @@
     box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     display: flex;
     height: var(--domain-icon-size);
+    inset-inline-end: -6px;
     justify-content: center;
     position: absolute;
-    right: -6px;
     top: calc(var(--profile-card-avatar-icon-size) - var(--domain-icon-size)
       - var(--domain-icon-border-size));
     width: var(--domain-icon-size);
   }
 
-  :host-context([dir='rtl']) #iconContainer {
-    left: -6px;
-    right: initial;
-  }
-
   iron-icon {
-    --iron-icon-fill-color: var(--google-grey-refresh-700);
+    --iron-icon-fill-color: var(--google-grey-700);
   }
 
   #forceSigninContainer {
@@ -77,7 +72,7 @@
   }
 
   #hoverUnderline {
-    border-bottom: 2px solid var(--google-grey-refresh-300);
+    border-bottom: 2px solid var(--google-grey-300);
     border-radius: 0;
     height: 0;
     left: 0;
@@ -119,7 +114,7 @@
     }
 
     #hoverUnderline {
-      border-color: var(--google-grey-refresh-700);
+      border-color: var(--google-grey-700);
     }
   }
 </style>
@@ -157,9 +152,10 @@
   <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
 </div>
 <paper-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
-    position="bottom">
+    position="bottom" aria-hidden="true">
   [[profileState.gaiaName]]
 </paper-tooltip>
-<paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10">
+<paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10"
+    aria-hidden="true">
   [[profileState.localProfileName]]
 </paper-tooltip>

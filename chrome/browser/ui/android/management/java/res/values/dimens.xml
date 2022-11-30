@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Chrome Management dimensions -->
+    <dimen name="cm_padding">32dp</dimen>
+    <dimen name="cm_padding_wide">48dp</dimen>
+    <dimen name="cm_logo_width">40dp</dimen>
+    <dimen name="cm_logo_height">36dp</dimen>
+    <dimen name="cm_title_margin_top">30dp</dimen>
+    <dimen name="cm_description_margin_top">24dp</dimen>
+    <dimen name="cm_learn_more_margin_top">22dp</dimen>
+    <dimen name="cm_browser_margin_top">42dp</dimen>
+    <dimen name="cm_browser_item_margin_top">20dp</dimen>
+    <dimen name="cm_browser_item_drawable_padding">18dp</dimen>
+</resources>

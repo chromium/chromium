@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Underline thickness of a pair of lines should be identical</title>
+<body style="overflow:hidden">
+<div id="transformed-div" style="transform: scale(8); transform-origin: 0 0 0;">
+  <svg height="18" width="200">
+    <text font-size="8" y="10" style="
+        text-decoration: underline;
+    ">Underline text</text>
+  </svg>
+  <div></div>
+</div>
+
+<div id="transformed-div2" style="transform: scale(3); transform-origin: 0 0 0; margin-top:400px">
+  <svg height="18" width="200">
+    <text font-size="6" y="10" style="
+        text-decoration: underline;
+    ">Underline text</text>
+  </svg>
+  <div></div>
+</div>
+
+<script>
+let root = document.querySelector("#transformed-div");
+let iframe = document.createElement('iframe');
+root.querySelector('div').appendChild(iframe);
+iframe.height = 24;
+iframe.setAttribute("srcdoc",
+  `<html><body style="margin:0">${root.querySelector('svg').outerHTML}</body></html>`);
+
+root = document.querySelector("#transformed-div2");
+iframe = document.createElement('iframe');
+root.querySelector('div').appendChild(iframe);
+iframe.height = 100;
+iframe.setAttribute("srcdoc",
+  `<html><body style="margin:0">${root.querySelector('svg').outerHTML}</body></html>`);
+</script>
+</body>

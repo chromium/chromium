@@ -3,10 +3,10 @@
     <script src="resources/text-based-repaint.js"></script>
 </head>
 <body>
-    <canvas id="canvas" width="100" height="100"></canvas> 
+    <canvas id="canvas" width="100" height="100"></canvas>
     <script>
         var canvas = document.getElementById('canvas');
-        var ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d', {willReadFrequently: true});
 
         // prepare imagedata
         ctx.fillStyle = "rgb(255, 0, 0)"; ctx.fillRect(0, 0, 100, 100); // red background
@@ -14,7 +14,7 @@
         var imageDataGreen = ctx.getImageData(10, 10, 10, 10);
         var imageDataRedWithInsetGreen = ctx.getImageData(0, 0, 30, 30);
 
-        // clear canvas to dark green 
+        // clear canvas to dark green
         ctx.fillStyle = "rgb(0, 128, 0)";
         ctx.fillRect(0, 0, 100, 100);
 
@@ -24,7 +24,7 @@
         ctx.fillRect(40, 40, 10, 10);
         ctx.fillRect(80, 80, 10, 10);
         window.testIsAsync = true;
-        
+
         function repaintTest()
         {
             // patch up red squares with putImageData

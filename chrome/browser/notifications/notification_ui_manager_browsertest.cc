@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_interactive_uitest_support.h"
 #include "chrome/browser/notifications/notification_ui_manager_impl.h"
+#include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -59,8 +59,8 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
       log_ += "Close_";
       log_ += (by_user ? "by_user_" : "programmatically_");
     }
-    void Click(const base::Optional<int>& button_index,
-               const base::Optional<std::u16string>& reply) override {
+    void Click(const absl::optional<int>& button_index,
+               const absl::optional<std::u16string>& reply) override {
       if (button_index) {
         log_ += "ButtonClick_";
         log_ += base::NumberToString(*button_index) + "_";
@@ -84,7 +84,7 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
     }
 
     return Notification(message_center::NOTIFICATION_TYPE_SIMPLE, id, u"title",
-                        u"message", gfx::Image(), u"chrome-test://testing/",
+                        u"message", ui::ImageModel(), u"chrome-test://testing/",
                         GURL("chrome-test://testing/"),
                         message_center::NotifierId(),
                         message_center::RichNotificationData(), new_delegate);
@@ -101,8 +101,9 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
     message_center::RichNotificationData data;
 
     return Notification(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"title", u"message",
-        gfx::Image(), u"chrome-test://testing/", GURL("chrome-test://testing/"),
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, u"title", u"message",
+        ui::ImageModel(), u"chrome-test://testing/",
+        GURL("chrome-test://testing/"),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, new_delegate);
@@ -128,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, BasicNullProfile) {
   manager()->Add(CreateTestNotification("hey"), nullptr);
   EXPECT_EQ(1u, message_center()->NotificationCount());
   EXPECT_NE("", observer.last_displayed_id());
-  manager()->CancelById("hey", NotificationUIManager::GetProfileID(nullptr));
+  manager()->CancelById("hey", ProfileNotification::GetProfileID(nullptr));
   EXPECT_EQ(0u, message_center()->NotificationCount());
   message_center()->RemoveObserver(&observer);
 }
@@ -144,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, BasicAddCancel) {
   manager()->Add(CreateTestNotification("hey"), profile());
   EXPECT_EQ(1u, message_center()->NotificationCount());
   EXPECT_NE("", observer.last_displayed_id());
-  manager()->CancelById("hey", NotificationUIManager::GetProfileID(profile()));
+  manager()->CancelById("hey", ProfileNotification::GetProfileID(profile()));
   EXPECT_EQ(0u, message_center()->NotificationCount());
   message_center()->RemoveObserver(&observer);
 }
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, BasicAddCancel) {
 IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, BasicDelegate) {
   TestDelegate* delegate;
   manager()->Add(CreateTestNotification("hey", &delegate), profile());
-  manager()->CancelById("hey", NotificationUIManager::GetProfileID(profile()));
+  manager()->CancelById("hey", ProfileNotification::GetProfileID(profile()));
   // Verify that delegate accumulated correct log of events.
   EXPECT_EQ("Close_programmatically_", delegate->log());
   delegate->Release();
@@ -177,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest,
   TestDelegate* delegate2;
   manager()->Add(CreateRichTestNotification("n", &delegate2), profile());
 
-  manager()->CancelById("n", NotificationUIManager::GetProfileID(profile()));
+  manager()->CancelById("n", ProfileNotification::GetProfileID(profile()));
   EXPECT_EQ("Close_programmatically_", delegate2->log());
 
   delegate->Release();
@@ -203,12 +204,12 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, VerifyKeepAlives) {
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NOTIFICATION));
 
-  manager()->CancelById("a", NotificationUIManager::GetProfileID(profile()));
+  manager()->CancelById("a", ProfileNotification::GetProfileID(profile()));
   RunLoopUntilIdle();
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NOTIFICATION));
 
-  manager()->CancelById("b", NotificationUIManager::GetProfileID(profile()));
+  manager()->CancelById("b", ProfileNotification::GetProfileID(profile()));
   RunLoopUntilIdle();
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NOTIFICATION));

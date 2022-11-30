@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,14 +52,14 @@
   TestRunner.completeTest();
 
   function isOverviewShowing() {
-    if (!networkPanel._overviewPane)
+    if (!networkPanel.overviewPane)
       return false;
-    return networkPanel._overviewPane.isShowing();
+    return networkPanel.overviewPane.isShowing();
   }
 
   function isFilmstripShowing() {
-    if (!networkPanel._filmStripView)
+    if (!networkPanel.filmStripView)
       return false;
-    return networkPanel._filmStripView.isShowing();
+    return networkPanel.filmStripView.isShowing();
   }
 })();

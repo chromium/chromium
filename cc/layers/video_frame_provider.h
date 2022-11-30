@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,10 @@ class CC_EXPORT VideoFrameProvider {
   // Returns the interval at which the provider expects to have new frames for
   // the client.
   virtual base::TimeDelta GetPreferredRenderInterval() = 0;
+
+  // Inform the provider that the context is lost. The provider need to reset
+  // the current frame if it's invald.
+  virtual void OnContextLost() = 0;
 
  protected:
   virtual ~VideoFrameProvider() {}

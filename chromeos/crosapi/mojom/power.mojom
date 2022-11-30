@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "services/device/public/mojom/wake_lock.mojom";
+
+// An empty interface to enable Power.AddPowerSaveBlocker() to maintain a
+// connection to its caller, and free resources on disconnect.
+[Stable, Uuid="742bde40-5689-44bb-807e-6252ff54d635"]
+interface PowerWakeLock {
+};
+
+// Crosapi support for chrome.system.display extensions API.
+[Stable, Uuid="878f8be2-ad59-4cc6-84ef-abc5102da696"]
+interface Power {
+  // Creates a PowerSaveBlocker that lasts until |lock| disconnects.
+  AddPowerSaveBlocker@0(pending_remote<PowerWakeLock> lock,
+                        device.mojom.WakeLockType type,
+                        device.mojom.WakeLockReason reason,
+                        string description);
+};

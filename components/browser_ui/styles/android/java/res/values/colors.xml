@@ -1,37 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Text colors -->
     <color name="default_primary_color">#F2F2F2</color>
     <color name="input_underline_error_color">#D32F2F</color>
     <color name="explanation_text_color">#909090</color>
-    <color name="text_highlight_color">@color/highlight_color_on_dark_text</color>
 
     <!-- Toolbar colors -->
-    <color name="toolbar_background_primary">
-        @color/default_bg_color_elev_3
-    </color>
-    <color name="toolbar_background_primary_dark">
-        @color/default_bg_color_dark_elev_3
-    </color>
+    <!-- Same as ?attr/colorSurface. -->
+    <color name="toolbar_background_primary_dark">@color/default_bg_color_dark</color>
 
     <!-- Infobar colors -->
-    <color name="infobar_icon_drawable_color">@color/default_icon_color_blue</color>
+    <color name="infobar_icon_drawable_color">@color/default_icon_color_accent1_tint_list</color>
 
     <!-- Control colors for toggles, checkboxes, ratio buttons, list item highlight, and accent.
      Note that these should NOT be used for icon tint. -->
-    <color name="control_normal_color">@color/default_control_color_normal_light</color>
     <color name="control_highlight_color" tools:ignore="UnusedResources">
         @color/default_control_color_highlight_light
     </color>
+    <color name="switch_enabled_unchecked_color_baseline_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_500</color>
+    <color name="switch_enabled_unchecked_color_baseline_light">@color/baseline_neutral_100</color>
+    <color name="switch_track_disabled_color_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900</color>
+    <color name="switch_track_disabled_color_baseline_light">@color/baseline_neutral_100</color>
+    <color name="switch_thumb_disabled_color_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
+    <color name="switch_thumb_disabled_color_baseline_dark">@color/baseline_neutral_800</color>
 
     <!-- Favicons -->
     <color name="default_favicon_background_color">@color/default_control_color_normal_light</color>
 
     <!-- Navigation bar colors -->
-    <color name="bottom_system_nav_color">@color/toolbar_background_primary</color>
-    <color name="bottom_system_nav_divider_color">@color/hairline_stroke_color</color>
+    <macro name="bottom_system_nav_color" tools:ignore="UnusedResources">@macro/toolbar_background_primary</macro>
+    <macro name="bottom_system_nav_divider_color">@macro/divider_line_bg_color</macro>
+    <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
+
+    <!-- This is the color that will appear on the system recents UI. It is a neutral background
+         color that adapts to dark/light modes but not a dynamic color. -->
+    <color name="default_task_description_color">@color/default_bg_color_baseline</color>
+
+    <!-- Progress Bar colors -->
+    <macro name="progress_bar_foreground">@macro/default_control_color_active</macro>
+    <color name="progress_bar_secondary">@color/modern_grey_600</color>
+
+    <!-- Chip Colors -->
+    <macro name="default_chip_assistive_text_color_secondary" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
 </resources>

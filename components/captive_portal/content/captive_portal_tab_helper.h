@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/content/captive_portal_tab_reloader.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -56,6 +56,9 @@ class CaptivePortalTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<CaptivePortalTabHelper> {
  public:
+  CaptivePortalTabHelper(const CaptivePortalTabHelper&) = delete;
+  CaptivePortalTabHelper& operator=(const CaptivePortalTabHelper&) = delete;
+
   ~CaptivePortalTabHelper() override;
 
   // content::WebContentsObserver:
@@ -104,7 +107,7 @@ class CaptivePortalTabHelper
   // The current main frame navigation happening for the WebContents, or
   // nullptr if there is none. If there are two main frame navigations
   // happening at once, it's the one that started most recently.
-  content::NavigationHandle* navigation_handle_;
+  raw_ptr<content::NavigationHandle> navigation_handle_ = nullptr;
 
   // Neither of these will ever be NULL.
   std::unique_ptr<CaptivePortalTabReloader> tab_reloader_;
@@ -117,8 +120,6 @@ class CaptivePortalTabHelper
   base::CallbackListSubscription subscription_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalTabHelper);
 };
 
 }  // namespace captive_portal

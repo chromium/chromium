@@ -1,0 +1,111 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Definitions for the event API exposed by the cros_healthd daemon. This API is
+// normally consumed by the browser.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/mojom/public/cros_healthd_events.mojom.
+
+module ash.cros_healthd.mojom;
+
+// Implemented by clients who desire Bluetooth notifications.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
+interface CrosHealthdBluetoothObserver {
+  // Fired when a Bluetooth adapter is added.
+  OnAdapterAdded@0();
+  // Fired when a Bluetooth adapter is removed.
+  OnAdapterRemoved@1();
+  // Fired when a property of a Bluetooth adapter is changed.
+  OnAdapterPropertyChanged@2();
+  // Fired when a Bluetooth device is added.
+  OnDeviceAdded@3();
+  // Fired when a Bluetooth device is removed.
+  OnDeviceRemoved@4();
+  // Fired when a property of a Bluetooth device is changed.
+  OnDevicePropertyChanged@5();
+};
+
+// Implemented by clients who desire lid notifications.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+interface CrosHealthdLidObserver {
+  // Fired when the device's lid is closed.
+  OnLidClosed@0();
+  // Fired when the device's lid is opened.
+  OnLidOpened@1();
+};
+
+// Implemented by clients who desire power notifications.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+interface CrosHealthdPowerObserver {
+  // Fired when the device begins consuming from an external power source.
+  OnAcInserted@0();
+  // Fired when the device stops consuming from an external power source.
+  OnAcRemoved@1();
+  // Fired when the system receives a suspend request.
+  OnOsSuspend@2();
+  // Fired when the system completes a suspend request.
+  OnOsResume@3();
+};
+
+// Implemented by clients who desire audio notifications.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+interface CrosHealthdAudioObserver {
+  // Fired when the audio underrun happens.
+  OnUnderrun@0();
+  // Fired when the audio severe underrun happens.
+  OnSevereUnderrun@1();
+};
+
+// Implemented by clients who desire Thunderbolt notifications.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+interface CrosHealthdThunderboltObserver {
+  // Fired when the Thunderbolt plug in.
+  OnAdd@0();
+  // Fired when the Thunderbolt plug out.
+  OnRemove@1();
+  // Fired when the Thunderbolt device is authorized.
+  OnAuthorized@2();
+  // Fired when the Thunderbolt device is unauthorized.
+  OnUnAuthorized@3();
+};
+
+// USB event info.
+//
+// NextMinVersion: 1, NextIndex: 5
+[Stable]
+struct UsbEventInfo {
+  // Vendor name.
+  string vendor@0;
+  // Name, model name, product name.
+  string name@1;
+  // Vendor ID.
+  uint16 vid@2;
+  // Product ID.
+  uint16 pid@3;
+  // USB device categories.
+  // https://www.usb.org/defined-class-codes
+  array<string> categories@4;
+};
+
+// Implemented by clients who desire USB notifications.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+interface CrosHealthdUsbObserver {
+  // Fired when the USB plug in.
+  OnAdd@0(UsbEventInfo info);
+  // Fired when the USB plug out.
+  OnRemove@1(UsbEventInfo info);
+};

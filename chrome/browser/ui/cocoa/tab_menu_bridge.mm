@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -45,6 +46,14 @@ void UpdateItemForWebContents(NSMenuItem* item,
     item.title = base::SysUTF16ToNSString(tab_ui_helper->GetTitle());
   }
   item.image = tab_ui_helper->GetFavicon().AsNSImage();
+}
+
+void RemoveMenuItems(NSArray* menu_items) {
+  NSMenu* tab_menu = [[menu_items firstObject] menu];
+
+  for (NSMenuItem* item in menu_items) {
+    [tab_menu removeItem:item];
+  }
 }
 
 }  // namespace
@@ -86,35 +95,57 @@ TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
 TabMenuBridge::~TabMenuBridge() {
   if (model_)
     model_->RemoveObserver(this);
-  RemoveAllDynamicItems();
+  RemoveMenuItems(DynamicMenuItems());
 }
 
 void TabMenuBridge::BuildMenu() {
   DCHECK(model_);
-  RemoveAllDynamicItems();
   AddDynamicItemsFromModel();
 }
 
-void TabMenuBridge::RemoveAllDynamicItems() {
+NSMutableArray* TabMenuBridge::DynamicMenuItems() {
+  NSMenu* tabMenu = menu_item_.submenu;
+  NSMutableArray* array = [[[NSMutableArray alloc]
+      initWithCapacity:[tabMenu numberOfItems]] autorelease];
+
   for (NSMenuItem* item in menu_item_.submenu.itemArray) {
     if (item.target == menu_listener_.get())
-      [menu_item_.submenu removeItem:item];
+      [array addObject:item];
   }
+
+  return array;
 }
 
 void TabMenuBridge::AddDynamicItemsFromModel() {
-  dynamic_items_start_ = menu_item_.submenu.numberOfItems;
+  NSMutableArray* recyclable_items = DynamicMenuItems();
+  NSMenu* tabMenu = menu_item_.submenu;
+
+  dynamic_items_start_ = tabMenu.numberOfItems - recyclable_items.count;
   for (int i = 0; i < model_->count(); ++i) {
-    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc]
-        initWithTitle:@""
-               action:@selector(activateTab:)
-        keyEquivalent:@""]);
-    [item setTarget:menu_listener_.get()];
-    if (model_->active_index() == i)
+    base::scoped_nsobject<NSMenuItem> item;
+
+    if (recyclable_items.count) {
+      item.reset([[recyclable_items firstObject] retain]);
+      [recyclable_items removeObjectAtIndex:0];
+      [item setState:NSOffState];
+    } else {
+      item.reset([[NSMenuItem alloc] initWithTitle:@""
+                                            action:@selector(activateTab:)
+                                     keyEquivalent:@""]);
+      [item setTarget:menu_listener_.get()];
+    }
+
+    if (model_->active_index() == i) {
       [item setState:NSOnState];
+    }
     UpdateItemForWebContents(item, model_->GetWebContentsAt(i));
-    [menu_item_.submenu addItem:item.get()];
+
+    if ([item menu] == nil) {
+      [tabMenu addItem:item.get()];
+    }
   }
+
+  RemoveMenuItems(recyclable_items);
 }
 
 void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
@@ -123,8 +154,9 @@ void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
 
   DCHECK_EQ(item.target, menu_listener_.get());
   int index = [menu_item_.submenu indexOfItem:item] - dynamic_items_start_;
-  model_->ActivateTabAt(index, TabStripModel::UserGestureDetails(
-                                   TabStripModel::GestureType::kTabMenu));
+  model_->ActivateTabAt(index,
+                        TabStripUserGestureDetails(
+                            TabStripUserGestureDetails::GestureType::kTabMenu));
 }
 
 void TabMenuBridge::OnTabStripModelChanged(
@@ -144,9 +176,6 @@ void TabMenuBridge::OnTabStripModelChanged(
     return;
   }
 
-  // Rather than doing clever updating from |change|, just destroy the dynamic
-  // menu items and re-add them.
-  RemoveAllDynamicItems();
   AddDynamicItemsFromModel();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,10 @@
 
 #include <memory>
 
-namespace gfx {
-class Rect;
-}
-
 namespace ui {
 
 class ShellToplevelWrapper;
+struct ShellPopupParams;
 class ShellPopupWrapper;
 class WaylandConnection;
 class WaylandWindow;
@@ -36,7 +33,7 @@ class ShellObjectFactory {
   std::unique_ptr<ShellPopupWrapper> CreateShellPopupWrapper(
       WaylandConnection* connection,
       WaylandWindow* wayland_window,
-      const gfx::Rect& bounds);
+      const ShellPopupParams& params);
 };
 
 }  // namespace ui

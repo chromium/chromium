@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 
 namespace chromeos {
@@ -115,12 +114,6 @@ class DisplaySystemDelegateImpl
       display::ContentProtectionManager::ClientId client_id) override {
     content_protection_manager_->UnregisterClient(client_id);
   }
-  void AddObserver(display::DisplayObserver* observer) override {
-    display::Screen::GetScreen()->AddObserver(observer);
-  }
-  void RemoveObserver(display::DisplayObserver* observer) override {
-    display::Screen::GetScreen()->RemoveObserver(observer);
-  }
   const std::vector<display::DisplaySnapshot*>& cached_displays()
       const override {
     return display_configurator_->cached_displays();
@@ -158,8 +151,6 @@ void OutputProtectionImpl::Create(
                                   std::move(receiver), std::move(delegate)));
     return;
   }
-  if (!delegate)
-    delegate = std::make_unique<DisplaySystemDelegateImpl>();
   // This object should destruct when the mojo connection is lost.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<OutputProtectionImpl>(std::move(delegate)),
@@ -169,15 +160,14 @@ void OutputProtectionImpl::Create(
 OutputProtectionImpl::OutputProtectionImpl(
     std::unique_ptr<DisplaySystemDelegate> delegate)
     : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+  if (!delegate_)
+    delegate_ = std::make_unique<DisplaySystemDelegateImpl>();
 }
 
 OutputProtectionImpl::~OutputProtectionImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (client_id_) {
-    delegate_->RemoveObserver(this);
+  if (client_id_)
     delegate_->UnregisterClient(client_id_);
-  }
 }
 
 void OutputProtectionImpl::QueryStatus(QueryStatusCallback callback) {
@@ -247,7 +237,7 @@ void OutputProtectionImpl::Initialize() {
   // are on that thread (i.e. don't do it in the constructor).
   client_id_ = delegate_->RegisterClient();
   DCHECK(client_id_);
-  delegate_->AddObserver(this);
+  display_observer_.emplace(this);
   display_id_list_ = GetDisplayIdsFromSnapshots(delegate_->cached_displays());
 }
 

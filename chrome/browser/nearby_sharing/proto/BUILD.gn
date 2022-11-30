@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,5 +15,15 @@ proto_library("proto") {
     "field_mask.proto",
     "rpc_resources.proto",
     "timestamp.proto",
+  ]
+}
+
+proto_library("tachyon_proto") {
+  sources = [
+    "duration.proto",
+    "ice.proto",
+    "tachyon.proto",
+    "tachyon_common.proto",
+    "tachyon_enums.proto",
   ]
 }

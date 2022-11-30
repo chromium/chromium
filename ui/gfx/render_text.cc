@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,16 @@
 
 #include <limits.h>
 
-#include <algorithm>
 #include <climits>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -28,19 +27,24 @@
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/render_text_harfbuzz.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace gfx {
 
@@ -140,9 +144,15 @@ sk_sp<cc::PaintShader> CreateFadeShader(const FontList& font_list,
 
   const SkPoint points[2] = { PointToSkPoint(text_rect.origin()),
                               PointToSkPoint(text_rect.top_right()) };
+  // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+  // SkColor4f.
+  std::vector<SkColor4f> colors4f;
+  colors4f.reserve(colors.size());
+  for (auto& c : colors)
+    colors4f.push_back(SkColor4f::FromColor(c));
   return cc::PaintShader::MakeLinearGradient(
-      &points[0], &colors[0], &positions[0], static_cast<int>(colors.size()),
-      SkTileMode::kClamp);
+      &points[0], &colors4f[0], &positions[0],
+      static_cast<int>(colors4f.size()), SkTileMode::kClamp);
 }
 
 // Converts a FontRenderParams::Hinting value to the corresponding
@@ -187,12 +197,14 @@ typename BreakList<T>::const_iterator IncrementBreakListIteratorToPosition(
     const BreakList<T>& break_list,
     typename BreakList<T>::const_iterator iter,
     size_t position) {
-  for (; iter != break_list.breaks().end(); ++iter) {
+  DCHECK_LT(position, break_list.max());
+  for (;;) {
+    CHECK(iter != break_list.breaks().end());
     const Range range = break_list.GetRange(iter);
     if (position >= range.start() && position < range.end())
-      break;
+      return iter;
+    ++iter;
   }
-  return iter;
 }
 
 // Replaces the unicode control characters, control characters and PUA (Private
@@ -206,9 +218,18 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
   constexpr char16_t kSymbolsCodepoint = 0x2400;
 
   if (codepoint >= 0 && codepoint <= 0x1F) {
-    // Replace codepoints with their visual symbols, which are
-    // at the same offset from kSymbolsCodepoint.
-    return kSymbolsCodepoint + codepoint;
+    switch (codepoint) {
+      case 0x09:
+        // Replace character tabulation ('\t') with its visual arrow symbol.
+        return 0x21E5;
+      case 0x0A:
+        // Replace line feed ('\n') with space character.
+        return 0x20;
+      default:
+        // Replace codepoints with their visual symbols, which are
+        // at the same offset from kSymbolsCodepoint.
+        return kSymbolsCodepoint + codepoint;
+    }
   }
   if (codepoint == 0x7F) {
     // Replace the 'del' codepoint by its symbol (u2421).
@@ -226,11 +247,36 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
   if (codepoint > 0x7F) {
     // Private use codepoints are working with a pair of font
     // and codepoint, but they are not used in Chrome.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Support Apple defined PUA on Mac.
     // see: http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/CORPCHAR.TXT
     if (codepoint == 0xF8FF)
       return codepoint;
+#endif
+#if BUILDFLAG(IS_WIN)
+    // Support Microsoft defined PUA on Windows.
+    // see:
+    // https://docs.microsoft.com/en-us/windows/uwp/design/style/segoe-ui-symbol-font
+    if (base::win::GetVersion() >= base::win::Version::WIN10) {
+      switch (codepoint) {
+        case 0xF093:  // ButtonA
+        case 0xF094:  // ButtonB
+        case 0xF095:  // ButtonY
+        case 0xF096:  // ButtonX
+        case 0xF108:  // LeftStick
+        case 0xF109:  // RightStick
+        case 0xF10A:  // TriggerLeft
+        case 0xF10B:  // TriggerRight
+        case 0xF10C:  // BumperLeft
+        case 0xF10D:  // BumperRight
+        case 0xF10E:  // Dpad
+        case 0xEECA:  // ButtonView2
+        case 0xEDE3:  // ButtonMenu
+          return codepoint;
+        default:
+          break;
+      }
+    }
 #endif
     const int8_t codepoint_category = u_charType(codepoint);
     if (codepoint_category == U_PRIVATE_USE_CHAR ||
@@ -435,8 +481,6 @@ void ApplyRenderParams(const FontRenderParams& params,
 // static
 constexpr char16_t RenderText::kPasswordReplacementChar;
 constexpr bool RenderText::kDragToEndIfOutsideVerticalBounds;
-constexpr SkColor RenderText::kDefaultColor;
-constexpr SkColor RenderText::kDefaultSelectionBackgroundColor;
 constexpr int RenderText::kInvalidBaseline;
 constexpr SkScalar RenderText::kLineThicknessFactor;
 
@@ -490,7 +534,7 @@ void RenderText::SetText(const std::u16string& text) {
   if (directionality_mode_ == DIRECTIONALITY_FROM_TEXT)
     text_direction_ = base::i18n::UNKNOWN_DIRECTION;
 
-  obscured_reveal_index_ = -1;
+  obscured_reveal_index_ = absl::nullopt;
   OnTextAttributeChanged();
 }
 
@@ -498,7 +542,7 @@ void RenderText::AppendText(const std::u16string& text) {
   text_ += text;
   UpdateStyleLengths();
   cached_bounds_and_offset_valid_ = false;
-  obscured_reveal_index_ = -1;
+  obscured_reveal_index_ = absl::nullopt;
 
   // Invalidate the cached text direction if it depends on the text contents.
   if (directionality_mode_ == DIRECTIONALITY_FROM_TEXT)
@@ -536,20 +580,22 @@ void RenderText::SetFontList(const FontList& font_list) {
 }
 
 void RenderText::SetCursorEnabled(bool cursor_enabled) {
-  cursor_enabled_ = cursor_enabled;
-  cached_bounds_and_offset_valid_ = false;
+  if (cursor_enabled_ != cursor_enabled) {
+    cursor_enabled_ = cursor_enabled;
+    cached_bounds_and_offset_valid_ = false;
+  }
 }
 
 void RenderText::SetObscured(bool obscured) {
   if (obscured != obscured_) {
     obscured_ = obscured;
-    obscured_reveal_index_ = -1;
+    obscured_reveal_index_ = absl::nullopt;
     cached_bounds_and_offset_valid_ = false;
     OnTextAttributeChanged();
   }
 }
 
-void RenderText::SetObscuredRevealIndex(int index) {
+void RenderText::SetObscuredRevealIndex(absl::optional<size_t> index) {
   if (obscured_reveal_index_ != index) {
     obscured_reveal_index_ = index;
     cached_bounds_and_offset_valid_ = false;
@@ -573,8 +619,10 @@ void RenderText::SetMultiline(bool multiline) {
 }
 
 void RenderText::SetMaxLines(size_t max_lines) {
-  max_lines_ = max_lines;
-  OnDisplayTextAttributeChanged();
+  if (max_lines_ != max_lines) {
+    max_lines_ = max_lines;
+    OnDisplayTextAttributeChanged();
+  }
 }
 
 size_t RenderText::GetNumLines() {
@@ -616,7 +664,7 @@ void RenderText::SetElideBehavior(ElideBehavior elide_behavior) {
   }
 }
 
-void RenderText::SetWhitespaceElision(base::Optional<bool> whitespace_elision) {
+void RenderText::SetWhitespaceElision(absl::optional<bool> whitespace_elision) {
   if (whitespace_elision_ != whitespace_elision) {
     whitespace_elision_ = whitespace_elision;
     OnDisplayTextAttributeChanged();
@@ -742,7 +790,7 @@ void RenderText::MoveCursor(BreakType break_type,
 
 bool RenderText::SetSelection(const SelectionModel& model) {
   // Enforce valid selection model components.
-  uint32_t text_length = static_cast<uint32_t>(text().length());
+  size_t text_length = text().length();
   std::vector<Range> ranges = model.GetAllSelections();
   for (auto& range : ranges) {
     range = {std::min(range.start(), text_length),
@@ -768,7 +816,7 @@ bool RenderText::MoveCursorToPoint(const Point& point,
 }
 
 bool RenderText::SelectRange(const Range& range, bool primary) {
-  uint32_t text_length = static_cast<uint32_t>(text().length());
+  size_t text_length = text().length();
   Range sel(std::min(range.start(), text_length),
             std::min(range.end(), text_length));
   // Allow selection bounds at valid indices amid multi-character graphemes.
@@ -818,61 +866,61 @@ void RenderText::SetCompositionRange(const Range& composition_range) {
 }
 
 void RenderText::SetColor(SkColor value) {
-  colors_.SetValue(value);
-  OnLayoutTextAttributeChanged(false);
+  if (colors_.SetValue(value))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyColor(SkColor value, const Range& range) {
-  colors_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  if (colors_.ApplyValue(value, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::SetBaselineStyle(BaselineStyle value) {
-  baselines_.SetValue(value);
-  OnLayoutTextAttributeChanged(false);
+  if (baselines_.SetValue(value))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyBaselineStyle(BaselineStyle value, const Range& range) {
-  baselines_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  if (baselines_.ApplyValue(value, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyFontSizeOverride(int font_size_override,
                                        const Range& range) {
-  font_size_overrides_.ApplyValue(font_size_override, range);
-  OnLayoutTextAttributeChanged(false);
+  if (font_size_overrides_.ApplyValue(font_size_override, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::SetStyle(TextStyle style, bool value) {
-  styles_[style].SetValue(value);
-
-  cached_bounds_and_offset_valid_ = false;
-  // TODO(oshima|msw): Not all style change requires layout changes.
-  // Consider optimizing based on the type of change.
-  OnLayoutTextAttributeChanged(false);
+  if (styles_[style].SetValue(value)) {
+    cached_bounds_and_offset_valid_ = false;
+    // TODO(oshima|msw): Not all style change requires layout changes.
+    // Consider optimizing based on the type of change.
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyStyle(TextStyle style, bool value, const Range& range) {
-  styles_[style].ApplyValue(value, range);
-
-  cached_bounds_and_offset_valid_ = false;
-  // TODO(oshima|msw): Not all style change requires layout changes.
-  // Consider optimizing based on the type of change.
-  OnLayoutTextAttributeChanged(false);
+  if (styles_[style].ApplyValue(value, range)) {
+    cached_bounds_and_offset_valid_ = false;
+    // TODO(oshima|msw): Not all style change requires layout changes.
+    // Consider optimizing based on the type of change.
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::SetWeight(Font::Weight weight) {
-  weights_.SetValue(weight);
-
-  cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  if (weights_.SetValue(weight)) {
+    cached_bounds_and_offset_valid_ = false;
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
-  weights_.ApplyValue(weight, range);
-
-  cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  if (weights_.ApplyValue(weight, range)) {
+    cached_bounds_and_offset_valid_ = false;
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 bool RenderText::GetStyle(TextStyle style) const {
@@ -938,8 +986,13 @@ int RenderText::GetContentWidth() {
 
 int RenderText::GetBaseline() {
   if (baseline_ == kInvalidBaseline) {
-    baseline_ =
-        DetermineBaselineCenteringText(display_rect().height(), font_list());
+    const int centering_height =
+        (vertical_alignment_ == ALIGN_MIDDLE)
+            ? display_rect().height()
+            : std::max(font_list().GetHeight(), min_line_height());
+    baseline_ = DetermineBaselineCenteringText(centering_height, font_list());
+    if (vertical_alignment_ == ALIGN_BOTTOM)
+      baseline_ += display_rect().height() - centering_height;
   }
   DCHECK_NE(kInvalidBaseline, baseline_);
   return baseline_;
@@ -1004,7 +1057,7 @@ SelectionModel RenderText::FindCursorPosition(const Point& view_point,
   // Newline segment should be ignored in finding segment index with x
   // coordinate because it's not drawn.
   Vector2d newline_offset;
-  if (line.segments.size() > 1 && IsNewlineSegment(line.segments.front()))
+  if (line.segments.size() >= 1 && IsNewlineSegment(line.segments.front()))
     newline_offset.set_x(line.segments.front().width());
 
   float point_offset_relative_segment = 0;
@@ -1078,6 +1131,7 @@ Rect RenderText::GetCursorBounds(const SelectionModel& caret,
   EnsureLayout();
   size_t caret_pos = caret.caret_pos();
   DCHECK(IsValidLogicalIndex(caret_pos));
+
   // In overtype mode, ignore the affinity and always indicate that we will
   // overtype the next character.
   LogicalCursorDirection caret_affinity =
@@ -1103,6 +1157,7 @@ Rect RenderText::GetCursorBounds(const SelectionModel& caret,
     size_t caret_end = IndexOfAdjacentGrapheme(caret_pos, caret_affinity);
     if (caret_end < caret_pos)
       std::swap(caret_end, caret_pos);
+
     const RangeF xspan = GetCursorSpan(Range(caret_pos, caret_end));
     if (insert_mode) {
       x = (caret_affinity == CURSOR_BACKWARD) ? xspan.end() : xspan.start();
@@ -1115,8 +1170,8 @@ Rect RenderText::GetCursorBounds(const SelectionModel& caret,
     }
   }
   Size line_size = gfx::ToCeiledSize(GetLineSizeF(caret));
-  return Rect(ToViewPoint(PointF(x, 0), caret_affinity),
-              Size(width, line_size.height()));
+  size_t line = GetLineContainingCaret(caret);
+  return Rect(ToViewPoint(PointF(x, 0), line), Size(width, line_size.height()));
 }
 
 const Rect& RenderText::GetUpdatedCursorBounds() {
@@ -1200,7 +1255,11 @@ void RenderText::SetDisplayOffset(int horizontal_offset) {
 }
 
 void RenderText::SetDisplayOffset(Vector2d offset) {
-  const int extra_content = GetContentWidth() - display_rect_.width();
+  // Use ClampedNumeric for extra content, as it can otherwise overflow during
+  // later operations if GetContentWidth() returns INT_MAX and
+  // display_rect_.width() is 0.
+  const base::ClampedNumeric<int> extra_content =
+      base::ClampedNumeric<int>(GetContentWidth()) - display_rect_.width();
   const int cursor_width = cursor_enabled_ ? 1 : 0;
 
   int min_offset = 0;
@@ -1226,13 +1285,12 @@ void RenderText::SetDisplayOffset(Vector2d offset) {
     }
   }
 
-  const int horizontal_offset =
-      base::ClampToRange(offset.x(), min_offset, max_offset);
+  const int horizontal_offset = base::clamp(offset.x(), min_offset, max_offset);
 
   // y-offset is set only when the vertical alignment is ALIGN_TOP.
   // TODO(jongkown.lee): Support other vertical alignments.
   DCHECK(vertical_alignment_ == ALIGN_TOP || offset.y() == 0);
-  const int vertical_offset = base::ClampToRange(
+  const int vertical_offset = base::clamp(
       offset.y(),
       std::min(display_rect_.height() - GetStringSize().height(), 0), 0);
 
@@ -1376,9 +1434,8 @@ bool RenderText::IsHomogeneous() const {
     return false;
   }
 
-  return std::none_of(
-      styles().cbegin(), styles().cend(),
-      [](const auto& style) { return style.breaks().size() > 1; });
+  return base::ranges::none_of(
+      styles(), [](const auto& style) { return style.breaks().size() > 1; });
 }
 
 internal::ShapedText* RenderText::GetShapedText() {
@@ -1492,8 +1549,8 @@ void RenderText::EnsureLayoutTextUpdated() const {
   // Ensures the reveal index is at a codepoint boundary (e.g. not in a middle
   // of a surrogate pairs).
   size_t reveal_index = text_.size();
-  if (obscured_reveal_index_ != -1) {
-    reveal_index = base::checked_cast<size_t>(obscured_reveal_index_);
+  if (obscured_reveal_index_.has_value()) {
+    reveal_index = obscured_reveal_index_.value();
     // Move |reveal_index| to the beginning of the surrogate pair, if needed.
     if (reveal_index < text_.size())
       U16_SET_CP_START(text_.data(), 0, reveal_index);
@@ -1634,7 +1691,6 @@ void RenderText::UpdateDisplayText(float text_width) {
                                static_cast<float>(display_rect_.width()),
                                elide_behavior_));
   } else {
-    bool was_elided = text_elided_;
     text_elided_ = false;
     display_text_.clear();
 
@@ -1659,12 +1715,7 @@ void RenderText::UpdateDisplayText(float text_width) {
                            Elide(text_to_elide, 0,
                                  static_cast<float>(display_rect_.width()),
                                  ELIDE_TAIL));
-      // Have GetLineBreaks() re-calculate.
-      line_breaks_.SetMax(0);
     } else {
-      // If elision changed, re-calculate.
-      if (was_elided)
-        line_breaks_.SetMax(0);
       // Initial state above is fine.
       return;
     }
@@ -1674,40 +1725,8 @@ void RenderText::UpdateDisplayText(float text_width) {
     display_text_.clear();
 }
 
-const BreakList<size_t>& RenderText::GetLineBreaks() {
-  if (line_breaks_.max() != 0)
-    return line_breaks_;
-
-  const std::u16string& layout_text = GetDisplayText();
-  const size_t text_length = layout_text.length();
-  line_breaks_.SetValue(0);
-  line_breaks_.SetMax(text_length);
-  base::i18n::BreakIterator iter(layout_text,
-                                 base::i18n::BreakIterator::BREAK_LINE);
-  const bool success = iter.Init();
-  DCHECK(success);
-  if (success) {
-    do {
-      line_breaks_.ApplyValue(iter.pos(), Range(iter.pos(), text_length));
-    } while (iter.Advance());
-  }
-  return line_breaks_;
-}
-
-Point RenderText::ToViewPoint(const PointF& point,
-                              LogicalCursorDirection caret_affinity) {
-  const auto float_eq = [](float a, float b) {
-    return std::fabs(a - b) <= kFloatComparisonEpsilon;
-  };
-  const auto float_ge = [](float a, float b) {
-    return a > b || std::fabs(a - b) <= kFloatComparisonEpsilon;
-  };
-  const auto float_gt = [](float a, float b) {
-    return a - b > kFloatComparisonEpsilon;
-  };
-
-  const size_t num_lines = GetNumLines();
-  if (num_lines == 1) {
+Point RenderText::ToViewPoint(const PointF& point, size_t line) {
+  if (GetNumLines() == 1) {
     return Point(base::ClampCeil(Clamp(point.x())),
                  base::ClampRound(point.y())) +
            GetLineOffset(0);
@@ -1715,54 +1734,23 @@ Point RenderText::ToViewPoint(const PointF& point,
 
   const internal::ShapedText* shaped_text = GetShapedText();
   float x = point.x();
-  size_t line;
 
   if (GetDisplayTextDirection() == base::i18n::RIGHT_TO_LEFT) {
     // |xspan| returned from |GetCursorSpan| in |GetCursorBounds| starts to grow
     // from the last character in RTL. On the other hand, the last character is
     // positioned in the last line in RTL. So, traverse from the last line.
-    for (line = num_lines - 1;
-         line > 0 && float_ge(x, shaped_text->lines()[line].size.width());
-         --line) {
-      x -= shaped_text->lines()[line].size.width();
-    }
-
-    // Increment the |line| when |x| is at the newline character. The line is
-    // broken by word wrapping if the front edge of the line is not a newline
-    // character. In that case, the same caret position where the line is broken
-    // can be on both lines depending on the caret affinity.
-    if (line < num_lines - 1 &&
-        (IsNewlineSegment(shaped_text->lines()[line].segments.front()) ||
-         caret_affinity == CURSOR_FORWARD)) {
-      if (float_eq(x, 0))
-        x = shaped_text->lines()[++line].size.width();
-
-      // In RTL, the newline character is at the front of the line. Because the
-      // newline character is not drawn at the front of the line, |x| should be
-      // decreased by the width of the newline character. Check for a newline
-      // again because the line may have changed.
-      if (!shaped_text->lines()[line].segments.empty() &&
-          IsNewlineSegment(shaped_text->lines()[line].segments.front())) {
-        x -= shaped_text->lines()[line].segments.front().width();
-      }
+    for (size_t l = GetNumLines() - 1; l > line; --l) {
+      x -= shaped_text->lines()[l].size.width();
     }
   } else {
-    for (line = 0; line < num_lines &&
-                   float_gt(x, shaped_text->lines()[line].size.width());
-         ++line) {
-      x -= shaped_text->lines()[line].size.width();
-    }
-
-    if (line == num_lines) {
-      x = shaped_text->lines()[--line].size.width();
-    } else if (line < num_lines - 1 &&
-               float_eq(shaped_text->lines()[line].size.width(), x) &&
-               (IsNewlineSegment(shaped_text->lines()[line].segments.back()) ||
-                caret_affinity == CURSOR_FORWARD)) {
-      // If |x| is at the edge of the line end, move the cursor to the start of
-      // the next line.
-      ++line;
-      x = 0;
+    // TODO(crbug.com/1163587): This doesn't account for line breaks caused by
+    // wrapping, in which case the cursor may end up right after the trailing
+    // space on the top line instead of before the first character of the second
+    // line depending on which direction the cursor is moving. Both positions
+    // are "correct" but most text editors only allow one or the other for
+    // consistency.
+    for (size_t l = 0; l < line; ++l) {
+      x -= shaped_text->lines()[l].size.width();
     }
   }
 
@@ -1784,11 +1772,12 @@ Vector2d RenderText::GetAlignmentOffset(size_t line_number) {
   HorizontalAlignment horizontal_alignment = GetCurrentHorizontalAlignment();
   if (horizontal_alignment != ALIGN_LEFT) {
     const int width =
-        multiline_
-            ? std::ceil(GetShapedText()->lines()[line_number].size.width()) +
-                  (cursor_enabled_ ? 1 : 0)
-            : GetContentWidth();
+        multiline_ ? base::ClampCeil(
+                         GetShapedText()->lines()[line_number].size.width() +
+                         (cursor_enabled_ ? 1.0f : 0.0f))
+                   : GetContentWidth();
     offset.set_x(display_rect().width() - width);
+
     // Put any extra margin pixel on the left to match legacy behavior.
     if (horizontal_alignment == ALIGN_CENTER)
       offset.set_x((offset.x() + 1) / 2);
@@ -1827,13 +1816,15 @@ void RenderText::ApplyFadeEffects(internal::SkiaTextRenderer* renderer) {
   Rect right_part;
   if (horizontal_alignment != ALIGN_LEFT) {
     left_part = solid_part;
-    left_part.Inset(0, 0, solid_part.width() - gradient_width, 0);
-    solid_part.Inset(gradient_width, 0, 0, 0);
+    left_part.Inset(
+        gfx::Insets::TLBR(0, 0, 0, solid_part.width() - gradient_width));
+    solid_part.Inset(gfx::Insets::TLBR(0, gradient_width, 0, 0));
   }
   if (horizontal_alignment != ALIGN_RIGHT) {
     right_part = solid_part;
-    right_part.Inset(solid_part.width() - gradient_width, 0, 0, 0);
-    solid_part.Inset(0, 0, gradient_width, 0);
+    right_part.Inset(
+        gfx::Insets::TLBR(0, solid_part.width() - gradient_width, 0, 0));
+    solid_part.Inset(gfx::Insets::TLBR(0, 0, 0, gradient_width));
   }
 
   // CreateFadeShader() expects at least one part to not be empty.
@@ -1842,7 +1833,7 @@ void RenderText::ApplyFadeEffects(internal::SkiaTextRenderer* renderer) {
     return;
 
   Rect text_rect = display_rect();
-  text_rect.Inset(GetAlignmentOffset(0).x(), 0, 0, 0);
+  text_rect.Inset(gfx::Insets::TLBR(0, GetAlignmentOffset(0).x(), 0, 0));
 
   // TODO(msw): Use the actual text colors corresponding to each faded part.
   renderer->SetShader(
@@ -1933,7 +1924,8 @@ int RenderText::GetLineContainingYCoord(float text_y) {
 bool RenderText::RangeContainsCaret(const Range& range,
                                     size_t caret_pos,
                                     LogicalCursorDirection caret_affinity) {
-  // NB: exploits unsigned wraparound (WG14/N1124 section 6.2.5 paragraph 9).
+  if (caret_pos == 0 && caret_affinity == CURSOR_BACKWARD)
+    return false;
   size_t adjacent = (caret_affinity == CURSOR_BACKWARD) ?
       caret_pos - 1 : caret_pos + 1;
   return range.Contains(Range(caret_pos, adjacent));
@@ -1958,7 +1950,7 @@ int RenderText::DetermineBaselineCenteringText(const int display_height,
   const int space =
       display_height - ((internal_leading != 0) ? cap_height : font_height);
   const int baseline_shift = space / 2 - internal_leading;
-  return baseline + base::ClampToRange(baseline_shift, min_shift, max_shift);
+  return baseline + base::clamp(baseline_shift, min_shift, max_shift);
 }
 
 // static
@@ -2005,7 +1997,6 @@ void RenderText::OnTextAttributeChanged() {
   layout_text_.clear();
   display_text_.clear();
   text_elided_ = false;
-  line_breaks_.SetMax(0);
 
   layout_text_up_to_date_ = false;
 
@@ -2074,7 +2065,7 @@ std::u16string RenderText::Elide(const std::u16string& text,
       guess = lo + base::ClampRound<size_t>((available_width - lo_width) *
                                             (hi - lo) / (hi_width - lo_width));
     }
-    guess = base::ClampToRange(guess, lo, hi);
+    guess = base::clamp(guess, lo, hi);
     DCHECK_NE(last_guess, guess);
 
     // Restore colors. They will be truncated to size by SetText.

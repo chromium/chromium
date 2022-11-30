@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
@@ -50,6 +50,10 @@ class SettingsAppMonitor {
 
   // |delegate| must outlive the monitor.
   explicit SettingsAppMonitor(Delegate* delegate);
+
+  SettingsAppMonitor(const SettingsAppMonitor&) = delete;
+  SettingsAppMonitor& operator=(const SettingsAppMonitor&) = delete;
+
   ~SettingsAppMonitor();
 
  private:
@@ -65,7 +69,7 @@ class SettingsAppMonitor {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Allows the use of the UI Automation API.
   std::unique_ptr<AutomationController> automation_controller_;
@@ -73,8 +77,6 @@ class SettingsAppMonitor {
   // Weak pointers are passed to the AutomationControllerDelegate so that it can
   // safely call back the monitor from any thread.
   base::WeakPtrFactory<SettingsAppMonitor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsAppMonitor);
 };
 
 #endif  // CHROME_BROWSER_WIN_SETTINGS_APP_MONITOR_H_

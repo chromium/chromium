@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,11 @@ enum class AccessibilityAlert {
 
   // When workspace state just changed from WorkspaceWindowState::kFullscreen.
   // to others.
-  WORKSPACE_FULLSCREEN_STATE_EXITED
+  WORKSPACE_FULLSCREEN_STATE_EXITED,
+
+  // When the user enters saved desks mode.
+  SAVED_DESKS_MODE_ENTERED
+
 };
 
 enum class AccessibilityPanelState {
@@ -68,7 +72,10 @@ enum class DictationToggleSource {
   // Chromevox chrome extension.
   kChromevox,
 
-  kMaxValue = kChromevox
+  // Accessibility Common chrome extension.
+  kAccessibilityCommon,
+
+  kMaxValue = kAccessibilityCommon
 };
 
 enum class SelectToSpeakState {
@@ -193,6 +200,28 @@ enum class MagnifierMouseFollowingMode {
   kEdge = 2,
 
   kMaxValue = kEdge
+};
+
+// The icon shown in the Dictation bubble UI. This enum should be kept in sync
+// with chrome.accessibilityPrivate.DictationBubbleIconType.
+enum class DictationBubbleIconType {
+  kHidden,
+  kStandby,
+  kMacroSuccess,
+  kMacroFail,
+};
+
+// Hints that can show up in the Dictation bubble UI. This enum should be kept
+// in sync with chrome.accessibilityPrivate.DictationBubbleHintType.
+enum class DictationBubbleHintType {
+  kTrySaying,
+  kType,
+  kDelete,
+  kSelectAll,
+  kUndo,
+  kHelp,
+  kUnselect,
+  kCopy,
 };
 
 }  // namespace ash

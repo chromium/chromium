@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_ANDROID_OVERSCROLL_REFRESH_H_
 #define UI_ANDROID_OVERSCROLL_REFRESH_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -38,9 +38,12 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
  public:
   // The default distance in dp from a side of the device to start a navigation
   // from.
-  enum { kDefaultNavigationEdgeWidth = 24 };
+  static constexpr int kDefaultNavigationEdgeWidth = 24;
 
   OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
+
+  OverscrollRefresh(const OverscrollRefresh&) = delete;
+  OverscrollRefresh& operator=(const OverscrollRefresh&) = delete;
 
   virtual ~OverscrollRefresh();
 
@@ -66,7 +69,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // The effect will be disabled when the offset is non-zero or overflow is
   // hidden. Note: All dimensions are in device pixels.
   void OnFrameUpdated(const gfx::SizeF& viewport_size,
-                      const gfx::Vector2dF& content_scroll_offset,
+                      const gfx::PointF& content_scroll_offset,
                       bool root_overflow_y_hidden);
 
   // Reset the effect to its inactive state, immediately detaching and
@@ -106,9 +109,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   float scroll_begin_y_;
   const float edge_width_;  // in px
   gfx::Vector2dF cumulative_scroll_;
-  OverscrollRefreshHandler* const handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollRefresh);
+  const raw_ptr<OverscrollRefreshHandler> handler_;
 };
 
 }  // namespace ui

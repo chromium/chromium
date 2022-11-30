@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@ class NudgeHandler {
   NudgeHandler() = default;
   virtual ~NudgeHandler() = default;
 
+  // Schedules initial sync for |type| and returns.
   virtual void NudgeForInitialDownload(ModelType type) = 0;
+  // Schedules a commit for |type| and returns.
   virtual void NudgeForCommit(ModelType type) = 0;
 };
 

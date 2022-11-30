@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,28 +17,6 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Returns a promise that gets resolved after "window.requestAnimationFrame"
-// callbacks happened on a front window.
-var pendingRafPromise = null;
-function raf() {
-  chrome.test.assertTrue(pendingRafPromise === null);
-
-  var res;
-  pendingRafPromise = new Promise((resolve) => {
-    res = resolve;
-  });
-  pendingRafPromise.resolve = res;
-
-  chrome.windows.create({'url': 'raf.html'}, function() {});
-  return pendingRafPromise;
-}
-function onRaf(rafWin) {
-  chrome.test.assertTrue(pendingRafPromise !== null);
-  pendingRafPromise.resolve();
-  pendingRafPromise = null;
-  rafWin.close();
-}
-
 function promisify(f, ...args) {
   return new Promise((resolve, reject) => {
     f(...args, (result) => {
@@ -48,6 +26,60 @@ function promisify(f, ...args) {
         resolve(result);
       }
     });
+  });
+}
+
+function closeLauncher(closeCallback) {
+  var toggle = newAccelerator('search', false /* shift */);
+  toggle.pressed = true;
+  chrome.autotestPrivate.activateAccelerator(
+      toggle, chrome.test.callbackPass(function(success) {
+        chrome.test.assertFalse(success);
+        toggle.pressed = false;
+        chrome.autotestPrivate.activateAccelerator(
+            toggle, chrome.test.callbackPass(function(success) {
+              chrome.test.assertTrue(success);
+              chrome.autotestPrivate.waitForLauncherState(
+                  'Closed', chrome.test.callbackPass(closeCallback));
+            }));
+      }));
+}
+
+// Minimizes the browser window while testing tablet mode launcher, so the
+// launcher actually gets shown when entering tablet mode.
+function minimizeBrowserWindow(callback) {
+  chrome.autotestPrivate.getAppWindowList(function(list) {
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(1, list.length);
+    var browser = list[0];
+    chrome.test.assertEq('Browser', browser.windowType);
+    chrome.test.assertEq('Normal', browser.stateType);
+    chrome.autotestPrivate.setAppWindowState(
+        browser.id, {eventType: 'WMEventMinimize'}, true /* wait */,
+        function(state) {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq('Minimized', state);
+          callback();
+        });
+  });
+}
+
+// Unminimizes the browser window that was minimized for tests that were using
+// tablet mode launcher.
+function unminimizeBrowserWindow(callback) {
+  chrome.autotestPrivate.getAppWindowList(function(list) {
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(1, list.length);
+    var browser = list[0];
+    chrome.test.assertEq('Browser', browser.windowType);
+    chrome.test.assertEq('Minimized', browser.stateType);
+    chrome.autotestPrivate.setAppWindowState(
+        browser.id, {eventType: 'WMEventNormal'}, true /* wait */,
+        function(state) {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq('Normal', state);
+          chrome.autotestPrivate.activateAppWindow(browser.id, callback);
+        });
   });
 }
 
@@ -83,6 +115,7 @@ var defaultTests = [
           chrome.test.assertTrue(status.hasOwnProperty("email"));
           chrome.test.assertTrue(status.hasOwnProperty("displayEmail"));
           chrome.test.assertTrue(status.hasOwnProperty("userImage"));
+          chrome.test.assertTrue(status.hasOwnProperty("hasValidOauth2Token"));
         }));
   },
   function getExtensionsInfo() {
@@ -202,6 +235,17 @@ var defaultTests = [
       });
     });
   },
+
+  async function douleStopArc() {
+    try {
+      await promisify(chrome.autotestPrivate.stopArc);
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq("ARC is already stopped", error.message);
+      chrome.test.succeed();
+    }
+  },
+
   // This test verifies that Play Store window is not shown by default but
   // Chrome is shown.
   function isAppShown() {
@@ -272,6 +316,12 @@ var defaultTests = [
     chrome.autotestPrivate.importCrostini('backup', chrome.test.callbackFail(
         'Crostini is not available for the current user'));
   },
+  function couldAllowCrostini() {
+    chrome.autotestPrivate.couldAllowCrostini(chrome.test.callbackPass(
+        result => {
+          chrome.test.assertFalse(result);
+        }));
+  },
   function takeScreenshot() {
     chrome.autotestPrivate.takeScreenshot(
       function(base64Png) {
@@ -309,20 +359,20 @@ var defaultTests = [
   },
   // This test verifies the error message when trying to set Assistant-related
   // preferences without enabling Assistant service first.
-  function setWhitelistedPref() {
-    chrome.autotestPrivate.setWhitelistedPref(
+  function setAllowedPref() {
+    chrome.autotestPrivate.setAllowedPref(
         'settings.voice_interaction.hotword.enabled' /* pref_name */,
         true /* value */,
         chrome.test.callbackFail(
             'Unable to set the pref because Assistant has not been enabled.'));
-    chrome.autotestPrivate.setWhitelistedPref(
+    chrome.autotestPrivate.setAllowedPref(
         'settings.voice_interaction.context.enabled' /* pref_name */,
         true /* value */,
         chrome.test.callbackFail(
             'Unable to set the pref because Assistant has not been enabled.'));
     // Note that onboarding pref is a counter that can be set without
     // enabling Assistant at the same time.
-    chrome.autotestPrivate.setWhitelistedPref(
+    chrome.autotestPrivate.setAllowedPref(
         'ash.assistant.num_sessions_where_onboarding_shown' /* pref_name */,
         3 /* value */, chrome.test.callbackPass());
   },
@@ -379,114 +429,120 @@ var defaultTests = [
   // to the 'Closed' state before creating launcher works.
   function waitForLauncherStateNoChangeBeforeLauncherCreation() {
     chrome.autotestPrivate.waitForLauncherState(
-        'Closed',
-        function() {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
+        'Closed', chrome.test.callbackPass());
   },
-  // This test verifies that api to wait for launcher state transition
-  // works as expected
-  function waitForLauncherStatePeeking() {
-    var togglePeeking = newAccelerator('search', false /* shift */);
 
-    function closeLauncher() {
-      togglePeeking.pressed = true;
-      chrome.autotestPrivate.activateAccelerator(
-          togglePeeking,
-          function(success) {
-            chrome.test.assertFalse(success);
-            togglePeeking.pressed = false;
-            chrome.autotestPrivate.activateAccelerator(
-                togglePeeking,
-                function(success) {
-                  chrome.test.assertTrue(success);
-                  chrome.autotestPrivate.waitForLauncherState(
-                      'Closed',
-                      function() {
-                        chrome.test.assertNoLastError();
-                        chrome.test.succeed();
-                      });
-                });
-          });
-    }
-
-    chrome.autotestPrivate.activateAccelerator(
-        togglePeeking,
-        function(success) {
-          chrome.test.assertFalse(success);
-          togglePeeking.pressed = false;
-          chrome.autotestPrivate.activateAccelerator(
-              togglePeeking,
-              function(success) {
-                chrome.test.assertTrue(success);
-                chrome.autotestPrivate.waitForLauncherState(
-                    'Peeking',
-                    closeLauncher);
-              });
-        });
-  },
   // This test verifies that api to wait for launcher state transition
   // works as expected
   function waitForLauncherStateFullscreen() {
     var toggleFullscreen = newAccelerator('search', true /* shift */);
-    function closeLauncher() {
-      toggleFullscreen.pressed = true;
-      chrome.autotestPrivate.activateAccelerator(
-          toggleFullscreen,
-          function(success) {
-            chrome.test.assertFalse(success);
-            toggleFullscreen.pressed = false;
-            chrome.autotestPrivate.activateAccelerator(
-                toggleFullscreen,
-                function(success) {
-                  chrome.test.assertTrue(success);
-                  chrome.autotestPrivate.waitForLauncherState(
-                      'Closed',
-                      function() {
-                        chrome.test.assertNoLastError();
-                        chrome.test.succeed();
-                      });
-                });
-          });
-    }
-
     chrome.autotestPrivate.activateAccelerator(
-        toggleFullscreen,
-        function(success) {
+        toggleFullscreen, function(success) {
+          chrome.test.assertNoLastError();
           chrome.test.assertFalse(success);
           toggleFullscreen.pressed = false;
           chrome.autotestPrivate.activateAccelerator(
-              toggleFullscreen,
-              function(success) {
+              toggleFullscreen, function(success) {
+                chrome.test.assertNoLastError();
                 chrome.test.assertTrue(success);
                 chrome.autotestPrivate.waitForLauncherState(
-                    'FullscreenAllApps',
-                    closeLauncher);
+                    'FullscreenAllApps', function() {
+                      if (chrome.runtime.lastError) {
+                        var errorMessage = chrome.runtime.lastError.message;
+                        closeLauncher(chrome.test.callbackPass(function() {
+                          chrome.test.assertEq(
+                              'Not supported for bubble launcher',
+                              errorMessage);
+                        }));
+                        return;
+                      }
+                      closeLauncher(chrome.test.callbackPass());
+                    });
               });
         });
   },
+
   // This test verifies that api to wait for launcher state transition
   // to the same 'Closed' state when launcher is in closed state works.
   function waitForLauncherStateNoChangeAfterLauncherCreation() {
     chrome.autotestPrivate.waitForLauncherState(
-        'Closed',
-        function() {
-          chrome.test.assertNoLastError();
+        'Closed', chrome.test.callbackPass());
+  },
+
+  function waitForLauncherStateInTabletMode() {
+    promisify(minimizeBrowserWindow)
+        .then(function() {
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, true);
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'FullscreenAllApps');
+        })
+        .then(function() {
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, false);
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'Closed');
+        })
+        .then(function() {
+          return promisify(unminimizeBrowserWindow);
+        })
+        .then(function() {
           chrome.test.succeed();
+        })
+        .catch(function(err) {
+          chrome.test.fail(err);
         });
   },
-  function waitForLauncherStateInTabletMode() {
-    promisify(chrome.autotestPrivate.setTabletModeEnabled, true)
-      .then(promisify(chrome.autotestPrivate.waitForLauncherState,
-                      'FullscreenAllApps'))
-      .then(promisify(chrome.autotestPrivate.setTabletModeEnabled, false))
-      .then(function() {
-        chrome.test.succeed();
-      }).catch(function(err) {
-        chrome.test.fail(err);
-      });
+
+  function collectThoughputTrackerData() {
+    promisify(minimizeBrowserWindow)
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.startThroughputTrackerDataCollection);
+        })
+        .then(function() {
+          // Triggers a tracked animation, e.g. enabling tablet mode to show
+          // fullscreen launcher.
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, true);
+        })
+        .then(function(enabled) {
+          chrome.test.assertTrue(enabled);
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'FullscreenAllApps');
+        })
+        .then(function() {
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, false);
+        })
+        .then(function(enabled) {
+          chrome.test.assertFalse(enabled);
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'Closed');
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.getThroughputTrackerData);
+        })
+        .then(function(data) {
+          chrome.test.assertTrue(data.length > 0);
+          return promisify(unminimizeBrowserWindow);
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.stopThroughputTrackerDataCollection);
+        })
+        .then(function(data) {
+          // `unminimizeBrowserWindow` might produce 0 frames on build bots
+          // and end up not being captured in `data`.
+          chrome.test.assertTrue(data.length >= 0);
+          chrome.test.succeed();
+        })
+        .catch(function(err) {
+          chrome.test.fail(err);
+        });
   },
+
   // Check if tablet mode is enabled.
   function isTabletModeEnabled() {
     chrome.autotestPrivate.isTabletModeEnabled(
@@ -727,12 +783,15 @@ var defaultTests = [
         chrome.test.assertEq('Normal', window.frameMode);
         chrome.test.assertTrue(window.isFrameVisible);
         chrome.test.assertFalse(window.hasOwnProperty('overviewInfo'));
+        chrome.test.assertEq(null, window.fullRestoreWindowAppId);
+        chrome.test.assertEq('mgndgikekgjfcpckkfioiadnlibdjbkf', window.appId);
 
         var change = new Object();
         change.eventType = 'WMEventFullscreen';
         chrome.autotestPrivate.setAppWindowState(
             window.id,
             change,
+            true /* wait */,
             function(state) {
               chrome.test.assertEq(state, 'Fullscreen');
               chrome.autotestPrivate.getAppWindowList(async function(list) {
@@ -755,7 +814,8 @@ var defaultTests = [
                   var revert_change = new Object();
                   revert_change.eventType = 'WMEventNormal';
                   chrome.autotestPrivate.setAppWindowState(
-                      window.id, revert_change, function(state) {
+                      window.id, revert_change, true /* wait */,
+                      function(state) {
                         chrome.test.assertEq(state, 'Normal');
                         chrome.test.assertNoLastError();
                         chrome.test.succeed();
@@ -783,24 +843,35 @@ var defaultTests = [
         var change = new Object();
         change.eventType = 'WMEventFullscreen';
         chrome.autotestPrivate.setAppWindowState(
-            window.id, change, function(state) {
+            window.id, change, true /* wait */, function(state) {
               chrome.test.assertEq(state, 'Fullscreen');
 
-              chrome.autotestPrivate.setTabletModeEnabled(
-                  false, function(isEnabled) {
-                    chrome.test.assertFalse(isEnabled);
+              // Just send the rejectable request (normal state request in
+              // tablet mode) but without waiting for the state change.
+              const rejectable_change = {
+                eventType: 'WMEventNormal'
+              };
+              chrome.autotestPrivate.setAppWindowState(
+                  window.id, rejectable_change, false /* wait */,
+                  function(state) {
+                    chrome.autotestPrivate.setTabletModeEnabled(
+                        false, function(isEnabled) {
+                          chrome.test.assertFalse(isEnabled);
 
-                    // Revert window state back to normal and exit tablet mode
-                    // for the next test.
-                    var revert_change = new Object();
-                    revert_change.eventType = 'WMEventNormal';
-                    chrome.autotestPrivate.setAppWindowState(
-                        window.id, revert_change, function(state) {
-                          chrome.test.assertEq(state, 'Normal');
-                          chrome.test.assertNoLastError();
-                          chrome.test.succeed();
+                          // Revert window state back to normal and exit tablet
+                          // mode for the next test.
+                          const revert_change = {
+                            eventType: 'WMEventNormal'
+                          };
+                          chrome.autotestPrivate.setAppWindowState(
+                              window.id, revert_change, true /* wait */,
+                              function(state) {
+                                chrome.test.assertEq(state, 'Normal');
+                                chrome.test.assertNoLastError();
+                                chrome.test.succeed();
+                              });
                         });
-                  });
+                      });
             });
       });
     });
@@ -919,14 +990,24 @@ var defaultTests = [
     chrome.autotestPrivate.startSmoothnessTracking(async function() {
       chrome.test.assertNoLastError();
 
-      // Wait for a few frames.
-      await raf();
-
       chrome.autotestPrivate.stopSmoothnessTracking(function(data) {
         chrome.test.assertNoLastError();
         chrome.test.assertTrue(data.hasOwnProperty('framesExpected') ||
                                data.hasOwnProperty('framesProduced') ||
                                data.hasOwnProperty('jankCount'));
+        chrome.test.succeed();
+      });
+    });
+  },
+  function startSmoothnessTrackingExplicitThroughputInterval() {
+    chrome.autotestPrivate.startSmoothnessTracking(100, async function() {
+      chrome.test.assertNoLastError();
+
+      await sleep(200);
+
+      chrome.autotestPrivate.stopSmoothnessTracking(function(data) {
+        chrome.test.assertNoLastError();
+        chrome.test.assertTrue(data.hasOwnProperty('throughput'));
         chrome.test.succeed();
       });
     });
@@ -941,9 +1022,6 @@ var defaultTests = [
         chrome.autotestPrivate.startSmoothnessTracking(displayId,
                                                        async function() {
           chrome.test.assertNoLastError();
-
-          // Wait for a few frames.
-          await raf();
 
           chrome.autotestPrivate.stopSmoothnessTracking(badDisplay,
                                                         function(data) {
@@ -963,56 +1041,35 @@ var defaultTests = [
       });
     });
   },
-
-  function collectThoughputTrackerData() {
-    chrome.autotestPrivate.startThroughputTrackerDataCollection(function() {
+  function stopSmoothnessTrackingMultiple() {
+    chrome.autotestPrivate.startSmoothnessTracking(async function() {
       chrome.test.assertNoLastError();
 
-      var stopAndCollectData = function() {
-        chrome.autotestPrivate.stopThroughputTrackerDataCollection(
-            function(data){
-          chrome.test.assertNoLastError();
-          chrome.test.assertTrue(data.length > 0);
-          chrome.test.succeed();
-        });
-      };
+      // A few racing stopSmoothnessTracking calls.
+      const count = 3;
+      let promises = [];
+      for (let i = 0; i < count; ++i)
+        promises.push(promisify(chrome.autotestPrivate.stopSmoothnessTracking));
 
-      // Triggers a tracked animation, e.g. toggling the launcher.
-      var togglePeeking = newAccelerator('search', false /* shift */);
-      function closeLauncher() {
-        togglePeeking.pressed = true;
-        chrome.autotestPrivate.activateAccelerator(
-            togglePeeking,
-            function(success) {
-              chrome.test.assertFalse(success);
-              togglePeeking.pressed = false;
-              chrome.autotestPrivate.activateAccelerator(
-                  togglePeeking,
-                  function(success) {
-                    chrome.test.assertTrue(success);
-                    chrome.autotestPrivate.waitForLauncherState(
-                        'Closed',
-                        function() {
-                          chrome.test.assertNoLastError();
-                          stopAndCollectData();
-                        });
-                  });
-            });
+      // Only one should succeed and no crashes/DCHECKs.
+      let success = 0;
+      for (let i = 0; i < count; ++i) {
+        try {
+          await promises[i];
+          ++success;
+        } catch(error) {}
       }
-      chrome.autotestPrivate.activateAccelerator(
-          togglePeeking,
-          function(success) {
-            chrome.test.assertFalse(success);
-            togglePeeking.pressed = false;
-            chrome.autotestPrivate.activateAccelerator(
-                togglePeeking,
-                function(success) {
-                  chrome.test.assertTrue(success);
-                  chrome.autotestPrivate.waitForLauncherState(
-                      'Peeking',
-                      closeLauncher);
-                });
-          });
+      chrome.test.assertEq(success, 1);
+      chrome.test.succeed();
+    });
+  },
+
+  function getDisplaySmoothness() {
+    chrome.autotestPrivate.getDisplaySmoothness(function(smoothness) {
+      chrome.test.assertNoLastError();
+
+      chrome.test.assertTrue(smoothness >= 0);
+      chrome.test.succeed();
     });
   },
 
@@ -1035,6 +1092,23 @@ var defaultTests = [
       chrome.autotestPrivate.setClipboardTextData(textData, function() {
         chrome.autotestPrivate.getClipboardTextData(function(data) {
           chrome.test.assertEq(data, textData);
+          chrome.test.succeed();
+        });
+      });
+    });
+  },
+
+  function collectLoginEventRecorderData() {
+    chrome.autotestPrivate.startLoginEventRecorderDataCollection(function() {
+      chrome.test.assertNoLastError();
+
+      // Add new event to the login events log and check result.
+      chrome.autotestPrivate.addLoginEventForTesting(function() {
+        chrome.test.assertNoLastError();
+        chrome.autotestPrivate.getLoginEventRecorderLoginEvents(
+            function(data){
+          chrome.test.assertNoLastError();
+          chrome.test.assertTrue(data.length >= 0);
           chrome.test.succeed();
         });
       });
@@ -1151,6 +1225,41 @@ var arcEnabledTests = [
           chrome.test.succeed();
         });
   },
+
+  async function douleStartArc() {
+    try {
+      await promisify(
+          chrome.autotestPrivate.startArc);
+          chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq("ARC is already started", error.message);
+      chrome.test.succeed();
+    }
+  },
+
+  // This test verifies restating ARC.
+  function restartArc() {
+    chrome.autotestPrivate.stopArc(function() {
+          chrome.test.assertNoLastError();
+          chrome.autotestPrivate.startArc(
+              chrome.test.callbackPass(function() {
+          }));
+    });
+  }
+];
+
+var arcProcessTests = [
+  async function requestLowMemoryKillCounts() {
+    const counts = await promisify(chrome.autotestPrivate.getArcAppKills);
+    chrome.test.assertEq(counts.oom, 1);
+    chrome.test.assertEq(counts.lmkdForeground, 2);
+    chrome.test.assertEq(counts.lmkdPerceptible, 3);
+    chrome.test.assertEq(counts.lmkdCached, 4);
+    chrome.test.assertEq(counts.pressureForeground, 5);
+    chrome.test.assertEq(counts.pressurePerceptible, 6);
+    chrome.test.assertEq(counts.pressureCached, 7);
+    chrome.test.succeed();
+  }
 ];
 
 var policyTests = [
@@ -1288,28 +1397,13 @@ var splitviewLeftSnappedTests = [
   }
 ];
 
-var startStopTracingTests = [function startStopTracing() {
-  chrome.autotestPrivate.startTracing({}, function() {
-    chrome.test.assertNoLastError();
-    chrome.autotestPrivate.stopTracing(function(trace) {
-      chrome.test.assertNoLastError();
-      chrome.test.assertTrue(trace.length > 0);
-      try {
-        chrome.test.assertTrue(JSON.parse(trace) instanceof Object);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail('stopTracing callback returned invalid JSON');
-      }
-    });
-  });
-}];
-
 var scrollableShelfTests = [
   function fetchScrollableShelfInfoWithoutScroll() {
     chrome.autotestPrivate.getScrollableShelfInfoForState(
         {}, chrome.test.callbackPass(info => {
           chrome.test.assertEq(0, info.mainAxisOffset);
           chrome.test.assertEq(0, info.rightArrowBounds.width);
+          chrome.test.assertFalse(info.iconsUnderAnimation);
           chrome.test.assertFalse(info.hasOwnProperty('targetMainAxisOffset'));
         }));
   },
@@ -1319,6 +1413,7 @@ var scrollableShelfTests = [
         {'scrollDistance': 10}, chrome.test.callbackPass(info => {
           chrome.test.assertEq(0, info.mainAxisOffset);
           chrome.test.assertEq(0, info.rightArrowBounds.width);
+          chrome.test.assertFalse(info.iconsUnderAnimation);
           chrome.test.assertTrue(info.hasOwnProperty('targetMainAxisOffset'));
         }));
   },
@@ -1331,6 +1426,63 @@ var scrollableShelfTests = [
                 app.appId, chrome.test.callbackPass());
           });
         }));
+  },
+
+  async function unpinChromeBrowser() {
+    try {
+      await promisify(
+          chrome.autotestPrivate.setShelfIconPin,
+          [{appId: 'mgndgikekgjfcpckkfioiadnlibdjbkf', pinned: false}]);
+      chrome.test.fail();
+    } catch (error) {
+      // Unpinning an app which is unpinnable (such as the browser) should throw
+      // an error.
+      chrome.test.assertTrue(error.message.includes(
+          'Unable to update pin state: mgndgikekgjfcpckkfioiadnlibdjbkf'));
+      chrome.test.succeed();
+    }
+  },
+
+  async function pinInstalledApps() {
+    var installedApps =
+        await promisify(chrome.autotestPrivate.getAllInstalledApps);
+    var updateParams = [];
+    installedApps.forEach(app => {
+      obj = {appId: app.appId, pinned: true};
+      updateParams.push(obj);
+    });
+
+    var pinResults =
+        await promisify(chrome.autotestPrivate.setShelfIconPin, updateParams);
+    chrome.test.assertEq([], pinResults);
+    chrome.test.succeed();
+  },
+
+  async function pinThenUnpinFileApp() {
+    // Pin the File app.
+    var fileID = 'unique-file-id-123'
+    var pinResults = await promisify(
+        chrome.autotestPrivate.setShelfIconPin,
+        [{appId: fileID, pinned: true}]);
+
+    chrome.test.assertEq([fileID], pinResults);
+
+    // Unpin the File app.
+    var unpinResults = await promisify(
+        chrome.autotestPrivate.setShelfIconPin,
+        [{appId: fileID, pinned: false}]);
+
+    chrome.test.assertEq([fileID], unpinResults);
+
+    // Unpin the File app again.
+    unpinResults = await promisify(
+        chrome.autotestPrivate.setShelfIconPin,
+        [{appId: fileID, pinned: false}]);
+
+    // Because the File app has been unpinned, there is no update in pin state.
+    chrome.test.assertEq([], unpinResults);
+
+    chrome.test.succeed();
   }
 ];
 
@@ -1345,6 +1497,14 @@ var shelfTests = [function fetchShelfUIInfo() {
       }));
 }];
 
+var holdingSpaceTests = [
+  function resetHoldingSpace(options) {
+    // State after this call is checked in C++ test code.
+    chrome.autotestPrivate.resetHoldingSpace(options,
+      chrome.test.callbackPass());
+  },
+];
+
 // Tests that requires a concrete system web app installation.
 var systemWebAppsTests = [
   function getRegisteredSystemWebApps() {
@@ -1353,29 +1513,92 @@ var systemWebAppsTests = [
         chrome.test.assertEq(1, apps.length)
         chrome.test.assertEq('OSSettings', apps[0].internalName);
         chrome.test.assertEq('chrome://test-system-app/', apps[0].url);
+        chrome.test.assertEq('chrome://test-system-app/pwa.html',
+            apps[0].startUrl);
+        chrome.test.assertEq('Test System App', apps[0].name);
       })
     );
   },
+  function isSystemWebAppOpen() {
+    chrome.autotestPrivate.waitForSystemWebAppsInstall(
+        chrome.test.callbackPass(() => {
+          // Test system app should not be open by default.
+          chrome.autotestPrivate.isSystemWebAppOpen(
+              'maphiehpiinjgiaepbljmopkodkadcbh',
+              chrome.test.callbackPass(isOpen => {
+                chrome.test.assertFalse(isOpen);
+              }));
+
+          // Open test app and verify the state should be open.
+          chrome.autotestPrivate.launchSystemWebApp(
+              'OSSettings', 'chrome://test-system-app/',
+              chrome.test.callbackPass(() => {
+                chrome.autotestPrivate.isSystemWebAppOpen(
+                    'maphiehpiinjgiaepbljmopkodkadcbh',
+                    chrome.test.callbackPass(isOpen => {
+                      chrome.test.assertTrue(isOpen);
+                    }));
+              }));
+
+          // Check for invalid app.
+          chrome.autotestPrivate.isSystemWebAppOpen(
+              '',
+              chrome.test.callbackFail(
+                  'No system web app is found by given app id.'));
+        }));
+  },
 ]
 
-var test_suites = {
-  'default': defaultTests,
-  'arcEnabled': arcEnabledTests,
-  'enterprisePolicies': policyTests,
-  'arcPerformanceTracing': arcPerformanceTracingTests,
-  'overviewDefault': overviewTests,
-  'overviewDrag': overviewDragTests,
-  'splitviewLeftSnapped': splitviewLeftSnappedTests,
-  'startStopTracing': startStopTracingTests,
-  'scrollableShelf': scrollableShelfTests,
-  'shelf': shelfTests,
-  'systemWebApps': systemWebAppsTests,
-};
+    var lacrosEnabledTests = [
+      function checkLacrosInfoFields() {
+        chrome.autotestPrivate.getLacrosInfo(
+            chrome.test.callbackPass(function(lacrosInfo) {
+              chrome.test.assertEq(typeof lacrosInfo, 'object');
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('state'));
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('isKeepAlive'));
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('lacrosPath'));
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('mode'));
+            }));
+      },
+      function checkLacrosInfoFieldValue() {
+        chrome.autotestPrivate.getLacrosInfo(
+            chrome.test.callbackPass(function(lacrosInfo) {
+              chrome.test.assertEq('Stopped', lacrosInfo['state']);
+              chrome.test.assertTrue(!lacrosInfo['isKeepAlive']);
+              chrome.test.assertEq('/run/lacros', lacrosInfo['lacrosPath']);
+              chrome.test.assertEq('SideBySide', lacrosInfo['mode']);
+            }));
+      },
+    ]
+
+    var test_suites = {
+      'default': defaultTests,
+      'arcEnabled': arcEnabledTests,
+      'arcProcess': arcProcessTests,
+      'enterprisePolicies': policyTests,
+      'arcPerformanceTracing': arcPerformanceTracingTests,
+      'overviewDefault': overviewTests,
+      'overviewDrag': overviewDragTests,
+      'splitviewLeftSnapped': splitviewLeftSnappedTests,
+      'scrollableShelf': scrollableShelfTests,
+      'shelf': shelfTests,
+      'holdingSpace': holdingSpaceTests,
+      'systemWebApps': systemWebAppsTests,
+      'lacrosEnabled': lacrosEnabledTests,
+    };
 
 chrome.test.getConfig(function(config) {
-  var suite = test_suites[config.customArg];
-  if (config.customArg in test_suites) {
-    chrome.test.runTests(test_suites[config.customArg]);
+  var customArg = JSON.parse(config.customArg);
+  // In the customArg object, we expect the name of the test suite at the
+  // 'testSuite' key, and the arguments to be passed to the test functions as an
+  // array at the 'args' key.
+  var [suite_name, args] = [customArg['testSuite'], customArg['args']];
+
+  chrome.test.assertTrue(Array.isArray(args));
+
+  if (suite_name in test_suites) {
+    var suite = test_suites[suite_name].map(f => f.bind({}, ...args));
+    chrome.test.runTests(suite);
   } else {
     chrome.test.fail('Invalid test suite');
   }

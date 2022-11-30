@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
-#include "ui/native_theme/themed_vector_icon.h"
+#include "ui/base/themed_vector_icon.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
@@ -58,8 +58,6 @@ using MenuItemViewTestBasic2 = MenuItemViewTestBasic<2>;
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestBasic0, SelectItem0)
 VIEW_TEST(MenuItemViewTestBasic1, SelectItem1)
-
-// If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestBasic2, SelectItem2)
 
 // Test class for inserting a menu item while the menu is open.
@@ -87,9 +85,8 @@ class MenuItemViewTestInsert : public MenuTestBase {
 
     inserted_item_ = menu()->AddMenuItemAt(
         INSERT_INDEX, 1000, u"inserted item", std::u16string(),
-        std::u16string(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
-        ui::ThemedVectorIcon(), views::MenuItemView::Type::kNormal,
-        ui::NORMAL_SEPARATOR);
+        std::u16string(), ui::ImageModel(), ui::ImageModel(),
+        views::MenuItemView::Type::kNormal, ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);
     menu()->ChildrenChanged();
 
@@ -119,7 +116,7 @@ class MenuItemViewTestInsert : public MenuTestBase {
   }
 
  private:
-  views::MenuItemView* inserted_item_ = nullptr;
+  raw_ptr<views::MenuItemView> inserted_item_ = nullptr;
 };
 
 // MenuItemViewTestInsertXY inserts an item at index X and selects the
@@ -188,9 +185,8 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
   void Step2() {
     inserted_item_ = menu()->AddMenuItemAt(
         INSERT_INDEX, 1000, u"inserted item", std::u16string(),
-        std::u16string(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
-        ui::ThemedVectorIcon(), views::MenuItemView::Type::kNormal,
-        ui::NORMAL_SEPARATOR);
+        std::u16string(), ui::ImageModel(), ui::ImageModel(),
+        views::MenuItemView::Type::kNormal, ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);
     menu()->ChildrenChanged();
 
@@ -207,8 +203,8 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
   }
 
  private:
-  views::MenuItemView* submenu_ = nullptr;
-  views::MenuItemView* inserted_item_ = nullptr;
+  raw_ptr<views::MenuItemView> submenu_ = nullptr;
+  raw_ptr<views::MenuItemView> inserted_item_ = nullptr;
 };
 
 // MenuItemViewTestInsertWithSubmenuX posts a menu and its submenu,
@@ -220,7 +216,13 @@ using MenuItemViewTestInsertWithSubmenu1 = MenuItemViewTestInsertWithSubmenu<1>;
 VIEW_TEST(MenuItemViewTestInsertWithSubmenu0, InsertItemWithSubmenu0)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(MenuItemViewTestInsertWithSubmenu1, InsertItemWithSubmenu1)
+// Failing on Linux Ozone Tester (Wayland) (See crbug.com/1236048).
+#if defined(USE_OZONE)
+#define MAYBE_InsertItemWithSubmenu1 DISABLED_InsertItemWithSubmenu1
+#else
+#define MAYBE_InsertItemWithSubmenu1 InsertItemWithSubmenu1
+#endif
+VIEW_TEST(MenuItemViewTestInsertWithSubmenu1, MAYBE_InsertItemWithSubmenu1)
 
 // Test class for removing a menu item while the menu is open.
 template <int REMOVE_INDEX, int SELECT_INDEX>
@@ -350,7 +352,7 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
   }
 
  private:
-  views::MenuItemView* submenu_ = nullptr;
+  raw_ptr<views::MenuItemView> submenu_ = nullptr;
 };
 
 using MenuItemViewTestRemoveWithSubmenu0 = MenuItemViewTestRemoveWithSubmenu<0>;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/native_io_context.h"
@@ -24,6 +26,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -41,29 +46,6 @@ const int kEmptyFileSystemSize = 0;
 
 using FileSystemInfoList = std::list<FileSystemHelper::FileSystemInfo>;
 
-// We'll use these three distinct origins for testing, both as strings and as
-// Origins in appropriate contexts.
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-url::Origin Origin1() {
-  return url::Origin::Create(GURL("http://host1:1"));
-}
-url::Origin Origin2() {
-  return url::Origin::Create(GURL("http://host2:2"));
-}
-url::Origin Origin3() {
-  return url::Origin::Create(GURL("http://host3:3"));
-}
-
-// Extensions and Devtools should be ignored.
-url::Origin OriginExt() {
-  return url::Origin::Create(
-      GURL("chrome-extension://abcdefghijklmnopqrstuvwxyz"));
-}
-url::Origin OriginDevTools() {
-  return url::Origin::Create(GURL("devtools://abcdefghijklmnopqrstuvw"));
-}
-
 // The FileSystem APIs are all asynchronous; this testing class wraps up the
 // boilerplate code necessary to deal with waiting for responses. In a nutshell,
 // any async call whose response we want to test ought to create a base::RunLoop
@@ -73,17 +55,20 @@ class FileSystemHelperTest : public testing::Test {
  public:
   FileSystemHelperTest() {
     auto* file_system_context =
-        BrowserContext::GetDefaultStoragePartition(&browser_context_)
-            ->GetFileSystemContext();
+        browser_context_.GetDefaultStoragePartition()->GetFileSystemContext();
     auto* native_io_context =
-        BrowserContext::GetDefaultStoragePartition(&browser_context_)
-            ->GetNativeIOContext();
-    helper_ =
-        FileSystemHelper::Create(file_system_context, {}, native_io_context);
+        browser_context_.GetDefaultStoragePartition()->GetNativeIOContext();
+    helper_ = base::MakeRefCounted<FileSystemHelper>(
+        file_system_context, std::vector<storage::FileSystemType>(),
+        native_io_context);
     content::RunAllTasksUntilIdle();
-    canned_helper_ =
-        new CannedFileSystemHelper(file_system_context, {}, native_io_context);
+    canned_helper_ = base::MakeRefCounted<CannedFileSystemHelper>(
+        file_system_context, std::vector<storage::FileSystemType>(),
+        native_io_context);
   }
+
+  FileSystemHelperTest(const FileSystemHelperTest&) = delete;
+  FileSystemHelperTest& operator=(const FileSystemHelperTest&) = delete;
 
   // Blocks on the run_loop quits.
   void BlockUntilQuit(base::RunLoop* run_loop) {
@@ -94,7 +79,7 @@ class FileSystemHelperTest : public testing::Test {
   // Callback that should be executed in response to
   // storage::FileSystemContext::OpenFileSystem.
   void OpenFileSystemCallback(base::RunLoop* run_loop,
-                              const GURL& root,
+                              const storage::FileSystemURL& root,
                               const std::string& name,
                               base::File::Error error) {
     open_file_system_result_ = error;
@@ -105,10 +90,11 @@ class FileSystemHelperTest : public testing::Test {
                       storage::FileSystemType type,
                       storage::OpenFileSystemMode open_mode) {
     base::RunLoop run_loop;
-    BrowserContext::GetDefaultStoragePartition(&browser_context_)
+    browser_context_.GetDefaultStoragePartition()
         ->GetFileSystemContext()
         ->OpenFileSystem(
-            origin, type, open_mode,
+            blink::StorageKey(origin), /*bucket=*/absl::nullopt, type,
+            open_mode,
             base::BindOnce(&FileSystemHelperTest::OpenFileSystemCallback,
                            base::Unretained(this), &run_loop));
     BlockUntilQuit(&run_loop);
@@ -131,8 +117,9 @@ class FileSystemHelperTest : public testing::Test {
   void CallbackStartFetching(base::RunLoop* run_loop,
                              const std::list<FileSystemHelper::FileSystemInfo>&
                                  file_system_info_list) {
-    file_system_info_list_.reset(
-        new std::list<FileSystemHelper::FileSystemInfo>(file_system_info_list));
+    file_system_info_list_ =
+        std::make_unique<std::list<FileSystemHelper::FileSystemInfo>>(
+            file_system_info_list);
     run_loop->Quit();
   }
 
@@ -156,20 +143,23 @@ class FileSystemHelperTest : public testing::Test {
     BlockUntilQuit(&run_loop);
   }
 
-  // Sets up Origin1() with a temporary file system, Origin2() with a persistent
-  // file system, and Origin3() with both.
-  virtual void PopulateTestFileSystemData() {
-    CreateDirectoryForOriginAndType(Origin1(), kTemporary);
-    CreateDirectoryForOriginAndType(Origin2(), kPersistent);
-    CreateDirectoryForOriginAndType(Origin3(), kTemporary);
-    CreateDirectoryForOriginAndType(Origin3(), kPersistent);
+  // Sets up |origin1| with a temporary file system, |origin2| with a persistent
+  // file system, and |origin3| with both.
+  virtual void PopulateTestFileSystemData(const url::Origin& origin1,
+                                          const url::Origin& origin2,
+                                          const url::Origin& origin3) {
+    CreateDirectoryForOriginAndType(origin1, kTemporary);
+    EXPECT_FALSE(FileSystemContainsOriginAndType(origin1, kPersistent));
+    EXPECT_TRUE(FileSystemContainsOriginAndType(origin1, kTemporary));
 
-    EXPECT_FALSE(FileSystemContainsOriginAndType(Origin1(), kPersistent));
-    EXPECT_TRUE(FileSystemContainsOriginAndType(Origin1(), kTemporary));
-    EXPECT_TRUE(FileSystemContainsOriginAndType(Origin2(), kPersistent));
-    EXPECT_FALSE(FileSystemContainsOriginAndType(Origin2(), kTemporary));
-    EXPECT_TRUE(FileSystemContainsOriginAndType(Origin3(), kPersistent));
-    EXPECT_TRUE(FileSystemContainsOriginAndType(Origin3(), kTemporary));
+    CreateDirectoryForOriginAndType(origin2, kPersistent);
+    EXPECT_TRUE(FileSystemContainsOriginAndType(origin2, kPersistent));
+    EXPECT_FALSE(FileSystemContainsOriginAndType(origin2, kTemporary));
+
+    CreateDirectoryForOriginAndType(origin3, kTemporary);
+    CreateDirectoryForOriginAndType(origin3, kPersistent);
+    EXPECT_TRUE(FileSystemContainsOriginAndType(origin3, kPersistent));
+    EXPECT_TRUE(FileSystemContainsOriginAndType(origin3, kTemporary));
   }
 
   // Calls OpenFileSystem with OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT
@@ -195,37 +185,37 @@ class FileSystemHelperTest : public testing::Test {
 
   scoped_refptr<FileSystemHelper> helper_;
   scoped_refptr<CannedFileSystemHelper> canned_helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileSystemHelperTest);
 };
 
 // Verifies that the FileSystemHelper correctly finds the test file
 // system data, and that each file system returned contains the expected data.
 TEST_F(FileSystemHelperTest, FetchData) {
-  PopulateTestFileSystemData();
+  const url::Origin origin1 = url::Origin::Create(GURL("http://host1:1"));
+  const url::Origin origin2 = url::Origin::Create(GURL("http://host2:2"));
+  const url::Origin origin3 = url::Origin::Create(GURL("http://host3:3"));
+  PopulateTestFileSystemData(origin1, origin2, origin3);
 
   FetchFileSystems();
 
-  EXPECT_EQ(3UL, file_system_info_list_->size());
+  EXPECT_EQ(3u, file_system_info_list_->size());
 
   // Order is arbitrary, verify all three origins.
   bool test_hosts_found[3] = {false, false, false};
   for (const auto& info : *file_system_info_list_) {
-    if (info.origin == Origin1()) {
+    if (info.origin == origin1) {
       EXPECT_FALSE(test_hosts_found[0]);
       test_hosts_found[0] = true;
       EXPECT_FALSE(base::Contains(info.usage_map, kPersistent));
       EXPECT_TRUE(base::Contains(info.usage_map, kTemporary));
       EXPECT_EQ(kEmptyFileSystemSize,
                 info.usage_map.at(storage::kFileSystemTypeTemporary));
-    } else if (info.origin == Origin2()) {
+    } else if (info.origin == origin2) {
       EXPECT_FALSE(test_hosts_found[1]);
       test_hosts_found[1] = true;
       EXPECT_TRUE(base::Contains(info.usage_map, kPersistent));
       EXPECT_FALSE(base::Contains(info.usage_map, kTemporary));
       EXPECT_EQ(kEmptyFileSystemSize, info.usage_map.at(kPersistent));
-    } else if (info.origin == Origin3()) {
+    } else if (info.origin == origin3) {
       EXPECT_FALSE(test_hosts_found[2]);
       test_hosts_found[2] = true;
       EXPECT_TRUE(base::Contains(info.usage_map, kPersistent));
@@ -236,24 +226,27 @@ TEST_F(FileSystemHelperTest, FetchData) {
       ADD_FAILURE() << info.origin.Serialize() << " isn't an origin we added.";
     }
   }
-  for (size_t i = 0; i < base::size(test_hosts_found); i++) {
-    EXPECT_TRUE(test_hosts_found[i]);
+  for (const auto found : test_hosts_found) {
+    EXPECT_TRUE(found);
   }
 }
 
 // Verifies that the FileSystemHelper correctly deletes file
 // systems via DeleteFileSystemOrigin().
 TEST_F(FileSystemHelperTest, DeleteData) {
-  PopulateTestFileSystemData();
+  const url::Origin origin1 = url::Origin::Create(GURL("http://host1:1"));
+  const url::Origin origin2 = url::Origin::Create(GURL("http://host2:2"));
+  const url::Origin origin3 = url::Origin::Create(GURL("http://host3:3"));
+  PopulateTestFileSystemData(origin1, origin2, origin3);
 
-  helper_->DeleteFileSystemOrigin(Origin1());
-  helper_->DeleteFileSystemOrigin(Origin2());
+  helper_->DeleteFileSystemOrigin(origin1);
+  helper_->DeleteFileSystemOrigin(origin2);
 
   FetchFileSystems();
 
   EXPECT_EQ(1UL, file_system_info_list_->size());
-  FileSystemHelper::FileSystemInfo info = *(file_system_info_list_->begin());
-  EXPECT_EQ(Origin3(), info.origin);
+  FileSystemHelper::FileSystemInfo info = file_system_info_list_->front();
+  EXPECT_EQ(origin3, info.origin);
   EXPECT_TRUE(base::Contains(info.usage_map, kPersistent));
   EXPECT_TRUE(base::Contains(info.usage_map, kTemporary));
   EXPECT_EQ(kEmptyFileSystemSize, info.usage_map[kPersistent]);
@@ -264,7 +257,7 @@ TEST_F(FileSystemHelperTest, DeleteData) {
 // whether or not it currently contains file systems.
 TEST_F(FileSystemHelperTest, Empty) {
   ASSERT_TRUE(canned_helper_->empty());
-  canned_helper_->Add(Origin1());
+  canned_helper_->Add(url::Origin::Create(GURL("http://host1:1")));
   ASSERT_FALSE(canned_helper_->empty());
   canned_helper_->Reset();
   ASSERT_TRUE(canned_helper_->empty());
@@ -273,19 +266,21 @@ TEST_F(FileSystemHelperTest, Empty) {
 // Verifies that AddFileSystem correctly adds file systems. The canned helper
 // does not record usage size.
 TEST_F(FileSystemHelperTest, CannedAddFileSystem) {
-  canned_helper_->Add(Origin1());
-  canned_helper_->Add(Origin2());
+  const url::Origin origin1 = url::Origin::Create(GURL("http://host1:1"));
+  const url::Origin origin2 = url::Origin::Create(GURL("http://host2:2"));
+  canned_helper_->Add(origin1);
+  canned_helper_->Add(origin2);
 
   FetchCannedFileSystems();
 
   EXPECT_EQ(2U, file_system_info_list_->size());
   auto info = file_system_info_list_->begin();
-  EXPECT_EQ(Origin1(), info->origin);
+  EXPECT_EQ(origin1, info->origin);
   EXPECT_FALSE(base::Contains(info->usage_map, kPersistent));
   EXPECT_FALSE(base::Contains(info->usage_map, kTemporary));
 
-  info++;
-  EXPECT_EQ(Origin2(), info->origin);
+  ++info;
+  EXPECT_EQ(origin2, info->origin);
   EXPECT_FALSE(base::Contains(info->usage_map, kPersistent));
   EXPECT_FALSE(base::Contains(info->usage_map, kTemporary));
 }
@@ -294,9 +289,11 @@ TEST_F(FileSystemHelperTest, CannedAddFileSystem) {
 // extension and devtools schemes.
 TEST_F(FileSystemHelperTest, IgnoreExtensionsAndDevTools) {
   ASSERT_TRUE(canned_helper_->empty());
-  canned_helper_->Add(OriginExt());
+  canned_helper_->Add(url::Origin::Create(
+      GURL("chrome-extension://abcdefghijklmnopqrstuvwxyz")));
   ASSERT_TRUE(canned_helper_->empty());
-  canned_helper_->Add(OriginDevTools());
+  canned_helper_->Add(
+      url::Origin::Create(GURL("devtools://abcdefghijklmnopqrstuvw")));
   ASSERT_TRUE(canned_helper_->empty());
 }
 

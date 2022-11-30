@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
+#include "services/video_capture/public/cpp/video_frame_access_handler.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 
 namespace crosapi {
@@ -34,23 +34,36 @@ class VideoFrameHandlerAsh : public video_capture::mojom::VideoFrameHandler {
   VideoFrameHandlerAsh& operator=(const VideoFrameHandlerAsh&) = delete;
   ~VideoFrameHandlerAsh() override;
 
-  class AccessPermissionProxy : public crosapi::mojom::ScopedAccessPermission {
+  // Implements crosapi::mojom::ScopedAccessPermission, which means that when
+  // the mojo pipe associated with the scoped access permission is torn down,
+  // the ScopedFrameAccessHandlerNotifier destuctor is invoked. The destructor
+  // informs the |frame_access_handler_remote_| that the frame was released.
+  class ScopedFrameAccessHandlerNotifier
+      : public crosapi::mojom::ScopedAccessPermission {
    public:
-    AccessPermissionProxy(
-        mojo::PendingRemote<video_capture::mojom::ScopedAccessPermission>
-            remote);
-    AccessPermissionProxy(const AccessPermissionProxy&) = delete;
-    AccessPermissionProxy& operator=(const AccessPermissionProxy&) = delete;
-    ~AccessPermissionProxy() override;
+    ScopedFrameAccessHandlerNotifier(
+        scoped_refptr<video_capture::VideoFrameAccessHandlerRemote>
+            frame_access_handler_remote,
+        int32_t buffer_id);
+    ScopedFrameAccessHandlerNotifier(const ScopedFrameAccessHandlerNotifier&) =
+        delete;
+    ScopedFrameAccessHandlerNotifier& operator=(
+        const ScopedFrameAccessHandlerNotifier&) = delete;
+    ~ScopedFrameAccessHandlerNotifier() override;
 
    private:
-    mojo::Remote<video_capture::mojom::ScopedAccessPermission> remote_;
+    scoped_refptr<video_capture::VideoFrameAccessHandlerRemote>
+        frame_access_handler_remote_;
+    const int32_t buffer_id_;
   };
 
  private:
   // video_capture::mojom::VideoFrameHandler implementation.
   void OnNewBuffer(int buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
+  void OnFrameAccessHandlerReady(
+      mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+          pending_frame_access_handler) override;
   void OnFrameReadyInBuffer(
       video_capture::mojom::ReadyFrameInBufferPtr buffer,
       std::vector<video_capture::mojom::ReadyFrameInBufferPtr> scaled_buffers)
@@ -58,6 +71,8 @@ class VideoFrameHandlerAsh : public video_capture::mojom::VideoFrameHandler {
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;
@@ -66,6 +81,8 @@ class VideoFrameHandlerAsh : public video_capture::mojom::VideoFrameHandler {
   mojo::Receiver<video_capture::mojom::VideoFrameHandler> receiver_{this};
 
   mojo::Remote<crosapi::mojom::VideoFrameHandler> proxy_;
+  scoped_refptr<video_capture::VideoFrameAccessHandlerRemote>
+      frame_access_handler_remote_;
 };
 
 }  // namespace crosapi

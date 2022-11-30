@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_METRICS_IOS_CHROME_STABILITY_METRICS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_METRICS_IOS_CHROME_STABILITY_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
@@ -42,14 +41,17 @@ class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
   };
 
   explicit IOSChromeStabilityMetricsProvider(PrefService* local_state);
+
+  IOSChromeStabilityMetricsProvider(const IOSChromeStabilityMetricsProvider&) =
+      delete;
+  IOSChromeStabilityMetricsProvider& operator=(
+      const IOSChromeStabilityMetricsProvider&) = delete;
+
   ~IOSChromeStabilityMetricsProvider() override;
 
-  // metrics::MetricsDataProvider:
+  // metrics::MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
-  void ProvideStabilityMetrics(
-      metrics::SystemProfileProto* system_profile_proto) override;
-  void ClearSavedStabilityMetrics() override;
 
   // web::GlobalWebStateObserver:
   void WebStateDidStartLoading(web::WebState* web_state) override;
@@ -69,8 +71,6 @@ class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
 
   // True if recording is currently enabled.
   bool recording_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeStabilityMetricsProvider);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_CHROME_STABILITY_METRICS_PROVIDER_H_

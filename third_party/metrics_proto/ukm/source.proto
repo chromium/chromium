@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ option java_package = "org.chromium.components.metrics";
 package ukm;
 
 // Types of source ids defined by
-// https://cs.chromium.org/chromium/src/services/metrics/public/cpp/ukm_source_id.h?l=18
+// https://cs.chromium.org/chromium/src/services/metrics/public/cpp/ukm_source_id.h
 enum SourceType {
   DEFAULT = 0;
   NAVIGATION_ID = 1;
@@ -20,10 +20,23 @@ enum SourceType {
   PAYMENT_APP_ID = 5;
   DESKTOP_WEB_APP_ID = 6;
   WORKER_ID = 7;
+  NO_URL_ID = 8;
+  REDIRECT_ID = 9;
+  WEB_IDENTITY_ID = 10;
+}
+
+// Android Activity Type defined by
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/flags/android/chrome_session_state.h?q=ActivityType
+enum AndroidActivityType {
+  TABBED = 0;
+  CUSTOM_TAB = 1;
+  TRUSTED_WEB_ACTIVITY = 2;
+  WEB_APP = 3;
+  WEB_APK = 4;
 }
 
 // Source contains data related to a top-level navigation.
-// Next tag: 17
+// Next tag: 20
 message Source {
   // The URL scheme, such as HTTP, HTTPS, CHROME_EXTENSION, etc.
   enum UrlScheme {
@@ -93,13 +106,42 @@ message Source {
   // and same page history navigation.
   optional bool is_same_document_navigation = 13;
 
+  // This signifies if the reported source is a navigation to the same origin as
+  // the previous document.
+  // Its value is "unset" for error pages and same document navigations.
+  // It is "same origin" when the previous document is of the same origin as the
+  // one we're navigating to.
+  // Otherwise, it is "cross origin".
+  enum SameOriginStatus {
+    UNSET = 0;
+    SAME_ORIGIN = 1;
+    CROSS_ORIGIN = 2;
+  }
+
+  message NavigationMetadata {
+    // Whether this is the same origin as the previous document, cross-origin or
+    // unset.
+    optional SameOriginStatus same_origin_status = 1;
+
+    // Whether this navigation is initiated by the renderer.
+    // Renderer-initiated navigations include navigations that were triggered
+    // from Javascript, by users interacting with the content (e.g. clicking
+    // on <a> links or submitting forms, or by client-side redirects.
+    // On the other hand, we have browser-initiated navigations, e.g. ones
+    // triggered by the user interacting with the browser's UI.
+    optional bool is_renderer_initiated = 2;
+
+    // Whether the navigation committed an error page, as a result of a network
+    // error.
+    optional bool is_error_page = 3;
+  }
+
+  // Metadata about the navigation that is set when the URL is recorded.
+  optional NavigationMetadata navigation_metadata = 17;
+
   // The URL of the source, as recorded in history. If this URL has not been
   // discovered by Google's crawler, it should not be recorded.
   optional string url = 2;
-
-  // The origin of the URL (ex. "http://docs.google.com" if the URL is something
-  // like "http://docs.google.com/some_doc_hash"). This field is populated
-  // server-side and should never be filled in by clients.
   reserved 5;
   reserved "url_origin";
   reserved 9;
@@ -111,7 +153,13 @@ message Source {
   optional string initial_url = 6;
 
   // Flag indicating if the metric was collected while inside a "custom tab".
-  optional bool is_custom_tab = 7;
+  // Replaced by |android_activity_type| below.
+  optional bool deprecated_is_custom_tab = 7 [deprecated = true];
+
+  // For Android only. Denotes the Chrome activity type when the source was
+  // created. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/flags/android/chrome_session_state.h;l=20;drc=c14f6f4b9c44fe479a8d004576b42723b2a5feb6
+  optional AndroidActivityType android_activity_type = 18;
 
   // Relative time of navigation for this Source, as seen by the client, and is
   // set for sources of type ukm::SourceIdType::NAVIGATION_ID. Time of events
@@ -124,8 +172,4 @@ message Source {
   // Unique identifier (for a given client_id/session_id) for the tab this
   // source is associated with. Should only be set for navigation sources.
   optional int64 tab_id = 10;
-
-  // Time between navigation and the first contentful paint, in milliseconds.
-  // Deprecated. Use ukm::Entry instead.
-  optional int64 first_contentful_paint_msec = 4 [deprecated = true];
 }

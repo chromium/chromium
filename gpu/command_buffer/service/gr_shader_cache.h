@@ -1,16 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GR_SHADER_CACHE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GR_SHADER_CACHE_H_
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/hash/hash.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/synchronization/lock.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "gpu/gpu_gles2_export.h"
+#include "gpu/raster_export.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
 class GrDirectContext;
@@ -18,11 +22,11 @@ class GrDirectContext;
 namespace gpu {
 namespace raster {
 
-class GPU_GLES2_EXPORT GrShaderCache
+class RASTER_EXPORT GrShaderCache
     : public GrContextOptions::PersistentCache,
       public base::trace_event::MemoryDumpProvider {
  public:
-  class GPU_GLES2_EXPORT Client {
+  class RASTER_EXPORT Client {
    public:
     virtual ~Client() {}
 
@@ -30,7 +34,7 @@ class GPU_GLES2_EXPORT GrShaderCache
                              const std::string& shader) = 0;
   };
 
-  class GPU_GLES2_EXPORT ScopedCacheUse {
+  class RASTER_EXPORT ScopedCacheUse {
    public:
     ScopedCacheUse(GrShaderCache* cache, int32_t client_id);
     ~ScopedCacheUse();
@@ -40,6 +44,10 @@ class GPU_GLES2_EXPORT GrShaderCache
   };
 
   GrShaderCache(size_t max_cache_size_bytes, Client* client);
+
+  GrShaderCache(const GrShaderCache&) = delete;
+  GrShaderCache& operator=(const GrShaderCache&) = delete;
+
   ~GrShaderCache() override;
 
   // GrContextOptions::PersistentCache implementation.
@@ -55,8 +63,8 @@ class GPU_GLES2_EXPORT GrShaderCache
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  size_t num_cache_entries() const { return store_.size(); }
-  size_t curr_size_bytes_for_testing() const { return curr_size_bytes_; }
+  size_t num_cache_entries() const;
+  size_t curr_size_bytes_for_testing() const;
 
   void StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context);
 
@@ -100,7 +108,7 @@ class GPU_GLES2_EXPORT GrShaderCache
     size_t operator()(const CacheKey& key) const { return key.hash; }
   };
 
-  using Store = base::HashingMRUCache<CacheKey, CacheData, CacheKeyHash>;
+  using Store = base::HashingLRUCache<CacheKey, CacheData, CacheKeyHash>;
 
   void EnforceLimits(size_t size_needed);
 
@@ -112,19 +120,25 @@ class GPU_GLES2_EXPORT GrShaderCache
 
   bool IsVkPipelineCacheEntry(const CacheKey& key);
 
-  size_t cache_size_limit_;
-  size_t curr_size_bytes_ = 0u;
-  Store store_;
+  int32_t current_client_id() const;
 
-  Client* const client_;
-  base::flat_set<int32_t> client_ids_to_cache_on_disk_;
+  mutable base::Lock lock_;
+  size_t cache_size_limit_ GUARDED_BY(lock_) = 0u;
+  size_t curr_size_bytes_ GUARDED_BY(lock_) = 0u;
+  Store store_ GUARDED_BY(lock_);
+  Client* const client_ GUARDED_BY(lock_);
+  base::flat_set<int32_t> client_ids_to_cache_on_disk_ GUARDED_BY(lock_);
 
-  int32_t current_client_id_ = kInvalidClientId;
-
-  bool need_store_pipeline_cache_ = false;
+  // Multiple threads and hence multiple clients can be accessing the shader
+  // cache at the same time. Hence use per thread |current_client_id_|.
+  base::flat_map<base::PlatformThreadId, int32_t> current_client_id_
+      GUARDED_BY(lock_);
+  bool need_store_pipeline_cache_ GUARDED_BY(lock_) = false;
   const bool enable_vk_pipeline_cache_;
 
-  DISALLOW_COPY_AND_ASSIGN(GrShaderCache);
+  // Bound to the thread on which GrShaderCache is created. Some methods can
+  // only be called on this thread. GrShaderCache is created on gpu main thread.
+  THREAD_CHECKER(gpu_main_thread_checker_);
 };
 
 }  // namespace raster

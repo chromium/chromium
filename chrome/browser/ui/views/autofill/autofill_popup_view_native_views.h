@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,16 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_border.h"
 
 namespace views {
 class BoxLayout;
@@ -35,6 +38,12 @@ class AutofillPopupRowView : public views::View {
   AutofillPopupRowView& operator=(const AutofillPopupRowView&) = delete;
   ~AutofillPopupRowView() override = default;
   void SetSelected(bool selected);
+
+  // Show the in-product-help promo anchored to this bubble if applicable. The
+  // in-product-help promo is a bubble anchored to this item to show educational
+  // messages. The promo bubble should only be shown once in one session and has
+  // a limit for how many times it can be shown at most in a period of time.
+  void MaybeShowIphPromo();
 
   // views::View:
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
@@ -63,7 +72,7 @@ class AutofillPopupRowView : public views::View {
   virtual std::unique_ptr<views::Background> CreateBackground() = 0;
 
  private:
-  AutofillPopupViewNativeViews* popup_view_;
+  raw_ptr<AutofillPopupViewNativeViews> popup_view_;
   const int line_number_;
   bool selected_ = false;
 };
@@ -74,8 +83,9 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
                                      public AutofillPopupView {
  public:
   METADATA_HEADER(AutofillPopupViewNativeViews);
-  AutofillPopupViewNativeViews(AutofillPopupController* controller,
-                               views::Widget* parent_widget);
+  AutofillPopupViewNativeViews(
+      base::WeakPtr<AutofillPopupController> controller,
+      views::Widget* parent_widget);
   AutofillPopupViewNativeViews(const AutofillPopupViewNativeViews&) = delete;
   AutofillPopupViewNativeViews& operator=(const AutofillPopupViewNativeViews&) =
       delete;
@@ -92,21 +102,24 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   // AutofillPopupView:
   void Show() override;
   void Hide() override;
-  base::Optional<int32_t> GetAxUniqueId() override;
+  absl::optional<int32_t> GetAxUniqueId() override;
 
   // AutofillPopupBaseView:
   // TODO(crbug.com/831603): Remove these overrides and the corresponding
   // methods in AutofillPopupBaseView.
   void OnMouseMoved(const ui::MouseEvent& event) override {}
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
-  AutofillPopupController* controller() { return controller_; }
+  base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 
  private:
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
 
   // Creates child views based on the suggestions given by |controller_|.
+  // This method expects that all non-footer suggestions precede footer
+  // suggestions.
   void CreateChildViews();
 
   // Applies certain rounding rules to the given width, such as matching the
@@ -117,12 +130,12 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   bool DoUpdateBoundsAndRedrawPopup() override;
 
   // Controller for this view.
-  AutofillPopupController* controller_ = nullptr;
+  base::WeakPtr<AutofillPopupController> controller_ = nullptr;
   std::vector<AutofillPopupRowView*> rows_;
-  views::BoxLayout* layout_ = nullptr;
-  views::ScrollView* scroll_view_ = nullptr;
-  views::View* body_container_ = nullptr;
-  views::View* footer_container_ = nullptr;
+  raw_ptr<views::BoxLayout> layout_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  raw_ptr<views::View> body_container_ = nullptr;
+  raw_ptr<views::View> footer_container_ = nullptr;
 };
 
 }  // namespace autofill

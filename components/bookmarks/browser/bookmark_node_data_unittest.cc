@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -31,6 +30,9 @@ class BookmarkNodeDataTest : public testing::Test {
  public:
   BookmarkNodeDataTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  BookmarkNodeDataTest(const BookmarkNodeDataTest&) = delete;
+  BookmarkNodeDataTest& operator=(const BookmarkNodeDataTest&) = delete;
 
   void SetUp() override {
     model_ = TestBookmarkClient::CreateModel();
@@ -59,8 +61,6 @@ class BookmarkNodeDataTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<BookmarkModel> model_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkNodeDataTest);
 };
 
 namespace {
@@ -88,7 +88,13 @@ TEST_F(BookmarkNodeDataTest, BogusRead) {
 
 // Writes a URL to the clipboard and make sure BookmarkNodeData can correctly
 // read it.
-TEST_F(BookmarkNodeDataTest, JustURL) {
+// Test is flaky on Mac: crbug.com/1236362
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_JustURL DISABLED_JustURL
+#else
+#define MAYBE_JustURL JustURL
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_JustURL) {
   const GURL url("http://google.com");
   const std::u16string title(u"google.com");
 
@@ -107,7 +113,13 @@ TEST_F(BookmarkNodeDataTest, JustURL) {
   EXPECT_EQ(0u, drag_data.elements[0].children.size());
 }
 
-TEST_F(BookmarkNodeDataTest, URL) {
+// Test is flaky on Mac: crbug.com/1236362
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_URL DISABLED_URL
+#else
+#define MAYBE_URL URL
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
   // Write a single node representing a URL to the clipboard.
   const BookmarkNode* root = model()->bookmark_bar_node();
   GURL url(GURL("http://foo.com"));
@@ -154,7 +166,13 @@ TEST_F(BookmarkNodeDataTest, URL) {
 }
 
 // Tests writing a folder to the clipboard.
-TEST_F(BookmarkNodeDataTest, Folder) {
+// Test is flaky on Mac: crbug.com/1236362
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Folder DISABLED_Folder
+#else
+#define MAYBE_Folder Folder
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_Folder) {
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* g1 = model()->AddFolder(root, 0, u"g1");
   model()->AddFolder(g1, 0, u"g11");
@@ -195,7 +213,13 @@ TEST_F(BookmarkNodeDataTest, Folder) {
 }
 
 // Tests reading/writing a folder with children.
-TEST_F(BookmarkNodeDataTest, FolderWithChild) {
+// Test is flaky on Mac: crbug.com/1236362
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FolderWithChild DISABLED_FolderWithChild
+#else
+#define MAYBE_FolderWithChild FolderWithChild
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_FolderWithChild) {
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
 
@@ -232,7 +256,13 @@ TEST_F(BookmarkNodeDataTest, FolderWithChild) {
 }
 
 // Tests reading/writing of multiple nodes.
-TEST_F(BookmarkNodeDataTest, MultipleNodes) {
+// Test is flaky on Mac: crbug.com/1236362
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MultipleNodes DISABLED_MultipleNodes
+#else
+#define MAYBE_MultipleNodes MultipleNodes
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_MultipleNodes) {
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
 
@@ -296,7 +326,7 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardURL) {
   EXPECT_EQ(base::UTF8ToUTF16(url.spec()), clipboard_result);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_WriteToClipboardMultipleURLs DISABLED_WriteToClipboardMultipleURLs
 #else
 #define MAYBE_WriteToClipboardMultipleURLs WriteToClipboardMultipleURLs
@@ -319,7 +349,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
 
   // Now read the data back in.
   std::u16string combined_text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string new_line = u"\r\n";
 #else
   std::u16string new_line = u"\n";
@@ -333,7 +363,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
 }
 
 // Test is flaky on LaCrOS: crbug.com/1010185
-#if defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WriteToClipboardEmptyFolder DISABLED_WriteToClipboardEmptyFolder
 #else
 #define MAYBE_WriteToClipboardEmptyFolder WriteToClipboardEmptyFolder
@@ -355,7 +385,16 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   EXPECT_EQ(u"g1", clipboard_result);
 }
 
-TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderWithChildren) {
+// Test is flaky on LaCrOS: crbug.com/1010353
+// Test is flaky on Mac: crbug.com/1236362
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_WriteToClipboardFolderWithChildren \
+  DISABLED_WriteToClipboardFolderWithChildren
+#else
+#define MAYBE_WriteToClipboardFolderWithChildren \
+  WriteToClipboardFolderWithChildren
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
@@ -393,7 +432,7 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
 
   // Now read the data back in.
   std::u16string combined_text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string new_line = u"\r\n";
 #else
   std::u16string new_line = u"\n";
@@ -407,7 +446,13 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
 }
 
 // Tests reading/writing of meta info.
-TEST_F(BookmarkNodeDataTest, MetaInfo) {
+// Test is flaky on Mac: crbug.com/1236362
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MetaInfo DISABLED_MetaInfo
+#else
+#define MAYBE_MetaInfo MetaInfo
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_MetaInfo) {
   // Create a node containing meta info.
   const BookmarkNode* node = model()->AddURL(
       model()->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
@@ -432,12 +477,13 @@ TEST_F(BookmarkNodeDataTest, MetaInfo) {
   EXPECT_EQ("someothervalue", meta_info_map["someotherkey"]);
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 TEST_F(BookmarkNodeDataTest, ReadFromPickleTooManyNodes) {
   // Test case determined by a fuzzer. See https://crbug.com/956583.
-  const char pickled_data[] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0xff, 0x03, 0x03, 0x41};
-  base::Pickle pickle(pickled_data, sizeof(pickled_data));
+  const uint8_t pickled_data[] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                  0x00, 0x00, 0xff, 0x03, 0x03, 0x41};
+  base::Pickle pickle(reinterpret_cast<const char*>(pickled_data),
+                      sizeof(pickled_data));
   BookmarkNodeData bookmark_node_data;
   EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
 }

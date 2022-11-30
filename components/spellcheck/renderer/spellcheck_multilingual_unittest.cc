@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -53,8 +52,8 @@ class MultilingualSpellCheckTest : public testing::Test {
 
   void ReinitializeSpellCheck(const std::string& unsplit_languages) {
     spellcheck_ = new SpellCheck(&embedder_provider_);
-    provider_.reset(
-        new TestingSpellCheckProvider(spellcheck_, &embedder_provider_));
+    provider_ = std::make_unique<TestingSpellCheckProvider>(
+        spellcheck_, &embedder_provider_);
     InitializeSpellCheck(unsplit_languages);
   }
 
@@ -150,7 +149,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
   do {
     std::string reordered_languages = base::JoinString(permuted_languages, ",");
     ExpectSpellCheckWordResults(reordered_languages, kTestCases,
-                                base::size(kTestCases));
+                                std::size(kTestCases));
   } while (std::next_permutation(permuted_languages.begin(),
                                  permuted_languages.end()));
 }
@@ -181,8 +180,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWordEnglishSpanish) {
       {L"hola sand hola sand hola sand", 0, 0},
       {L"hola:legs", 0, 9},
       {L"legs:hola", 0, 9}};
-  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases,
-                              base::size(kTestCases));
+  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases, std::size(kTestCases));
 }
 
 // If there are no spellcheck languages, no text should be marked as misspelled.
@@ -237,7 +235,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
       {L"asdne", 0, 5, L"sadness,desasne"},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     blink::WebVector<blink::WebString> suggestions;
     size_t misspelling_start;
     size_t misspelling_length;

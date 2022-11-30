@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,33 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
-#include "content/public/browser/cookie_access_details.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/reload_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
-#include "ipc/ipc_listener.h"
+#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+
+class GURL;
 
 namespace blink {
 namespace mojom {
@@ -41,6 +45,10 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
+namespace ui::mojom {
+enum class VirtualKeyboardMode;
+}  // namespace ui::mojom
+
 namespace content {
 
 class NavigationEntry;
@@ -49,15 +57,36 @@ class RenderFrameHost;
 class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
+class Page;
 class WebContents;
 struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
+struct CookieAccessDetails;
 struct EntryChangedDetails;
 struct FocusedNodeDetails;
+struct GlobalRequestID;
 struct LoadCommittedDetails;
 struct MediaPlayerId;
 struct PrunedDetails;
 struct Referrer;
+
+// Note: before adding a new `WebContentsObserver` subclass, consider if simpler
+// helpers will suffice:
+//
+// - Classes that have a 1:1 relationship with one RenderFrameHost can often
+//   use `DocumentUserData` instead.
+// - Mojo interface implementations that have a 1 RenderFrameHost to many
+//   instances relationship can often use `DocumentService` instead.
+// - `base::WeakPtr<WebContents>` and `WeakDocumentPtr` can be used instead of
+//   manually clearing raw ptrs using observer methods like
+//   `WebContentsDestroyed` or `RenderFrameDeleted`. Similarly, don't create a
+//   `WebContentsObserver` just to be able to check for a null
+//   `WebContentsObserver::web_contents()`. Use a `base::WeakPtr<WebContents>`
+//   instead.
+//
+// These helpers can help avoid memory safety bugs, such as retaining a pointer
+// to a deleted RenderFrameHost, or other security issues, such as origin
+// confusion when a RenderFrameHost is reused after a cross-document navigation.
 
 // An observer API implemented by classes which are interested in various page
 // events from WebContents.  They also get a chance to filter IPC messages.
@@ -73,10 +102,13 @@ struct Referrer;
 // Usually, observers should only care about the current RenderViewHost as
 // returned by GetRenderViewHost().
 //
-// TODO(creis, jochen): Hide the fact that there are several RenderViewHosts
+// TODO(creis): Hide the fact that there are several RenderViewHosts
 // from the WebContentsObserver API. http://crbug.com/173325
-class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
+class CONTENT_EXPORT WebContentsObserver {
  public:
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
+
   // Frames and Views ----------------------------------------------------------
 
   // Called when a RenderFrame for |render_frame_host| is created in the
@@ -89,7 +121,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // listen for when RenderFrame objects are created.
   virtual void RenderFrameDeleted(RenderFrameHost* render_frame_host) {}
 
-  // This method is invoked whenever one of the current frames of a WebContents
+  // This method is invoked whenever one of the frames of a WebContents
   // swaps its RenderFrameHost with another one; for example because that frame
   // navigated and the new content is in a different process. The
   // RenderFrameHost that has been replaced is in |old_host|, which can be
@@ -97,19 +129,98 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // created and no old RenderFrameHost exists.
   //
   // This method, in combination with |FrameDeleted|, is appropriate for
-  // observers wishing to track the set of current RenderFrameHosts -- i.e.,
-  // those hosts that would be visited by calling WebContents::ForEachFrame().
+  // observers wishing to track the set of RenderFrameHosts that are current in
+  // their frame tree. Note that being current in a frame tree is separate from
+  // the lifecycle state of the RenderFrameHosts. Consider using
+  // |RenderFrameHostStateChanged|.
   virtual void RenderFrameHostChanged(RenderFrameHost* old_host,
                                       RenderFrameHost* new_host) {}
 
-  // This method is invoked when a subframe associated with a WebContents is
-  // deleted or the WebContents is destroyed and the top-level frame is deleted.
+  // This method is invoked whenever primary page of a WebContents
+  // (WebContents::GetPrimaryPage()) changes to `page`. This happens in one of
+  // the following cases:
+  // 1) when the current RenderFrameHost in the primary main frame changes after
+  //    a navigation.
+  // 2) when the current RenderFrameHost in the primary main frame is
+  //    reinitialized after a crash.
+  // 3) when a cross-document navigation commits in the current RenderFrameHost
+  //    of the primary main frame.
+
+  // The new primary page might either be a brand new one (if the committed
+  // navigation created a new document in the primary main frame) or an existing
+  // one (back-forward cache restore or prerendering activation).
+
+  // This notification is not dispatched for changes of pages in the non-primary
+  // frame trees (prerendering, fenced frames) and when the primary page is
+  // destroyed (e.g., when closing a tab).
+
+  // This method is useful for updating the tab-related UI which depends on the
+  // primary page's state (e.g. theme colour, such state should typically be
+  // available as a method on a Page or stored in PageUserData). Prefer
+  // listening to this method to listening to DidFinishNavigation and checking
+  // NavigationHandle::IsInPrimaryMainFrame && !NavigationHandle::IsSameDocument
+  // && NavigationHandle::HasCommitted (unless your code has to listen to
+  // DidFinishNavigation for some other reason, in which case listening only to
+  // DidFinishNavigation is recommended).
+  virtual void PrimaryPageChanged(Page& page) {}
+
+  // This method is invoked when a frame is destroyed. A subframe is destroyed
+  // when its parent detaches it or navigates to a different document. A main
+  // frame is destroyed when the whole WebContents is going away, or, with
+  // MPArch, when a non-primary frame tree (e.g., prerendered page) is
+  // destroyed.
   // Use |RenderFrameHostChanged| to listen for when a RenderFrameHost object is
   // made the current host for a frame.
-  virtual void FrameDeleted(RenderFrameHost* render_frame_host) {}
+  virtual void FrameDeleted(int frame_tree_node_id) {}
 
-  // This method is invoked when the RenderView of the current RenderViewHost
-  // is ready, e.g. because we recreated it after a crash.
+  // This method is invoked whenever one of the frames of a WebContents changes
+  // its |RenderFrameHost::GetLifecycleState()| i.e., when RenderFrameHost
+  // LifecycleState changes from |old_state| to |new_state|. The old
+  // LifecycleState that is being changed is |old_state| and the LifecycleState
+  // that it changes to is |new_state|. |old_state| and |new_state| are always
+  // different, i.e., a frame can't transition to the same state.
+  //
+  // This method allows code to react to RenderFrameHost LifecycleState changes.
+  // For example, to detect changes in the currently active document and perform
+  // different actions accordingly, like closing UI/resetting states,
+  // RenderFrameHostStateChanged is preferred instead of DidFinishNavigation.
+  // DidFinishNavigation does not guarantee that the old document will go away.
+  // Instead, it could enter the BackForwardCache and then become kActive later.
+  // Features that need to handle transitions like these should monitor
+  // LifecycleState changes instead.
+  //
+  // A particular document may change its LifecycleState and trigger
+  // RenderFrameHostStateChanged as part of being committed in a navigation,
+  // when another document replaces it by navigating in the same frame, in
+  // response to being detached from the DOM, or (with MPArch) as part of
+  // activating a prerendered page.
+  //
+  // When committing a cross-document, cross-RenderFrameHost navigation,
+  // navigation-related callbacks are dispatched in the following order:
+  // - RenderFrameHostStateChanged(new_frame, old_state, new_state)
+  // - RenderFrameHostChanged(old_frame, new_frame)
+  // - RenderFrameHostStateChanged(old_frame, old_state, new_state)
+  // - DidFinishNavigation(navigation_handle)
+  virtual void RenderFrameHostStateChanged(
+      RenderFrameHost* render_frame_host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) {}
+
+  // This method is invoked when something "replaces" the contents of the
+  // WebContents or otherwise changes the FrameSinkId of the contents that
+  // should be captured if capturing this WebContents, WITHOUT changing the
+  // RenderFrameHost.
+  virtual void CaptureTargetChanged() {}
+
+  // This method is invoked when the capture handle config changes. This can
+  // happen when:
+  // 1. The web-application calls |mediaDevices.setCaptureHandleConfig|.
+  // 2. The top-level frame is navigated cross-document.
+  virtual void OnCaptureHandleConfigUpdate(
+      const blink::mojom::CaptureHandleConfig& config) {}
+
+  // This method is invoked when the `blink::WebView` of the current
+  // RenderViewHost is ready, e.g. because we recreated it after a crash.
   virtual void RenderViewReady() {}
 
   // This method is invoked when a RenderViewHost of the WebContents is
@@ -118,17 +229,18 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // just swapped out.
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
 
-  // This method is invoked when the process for the current main
-  // RenderFrameHost exits (usually by crashing, though possibly by other
-  // means). The WebContents continues to use the RenderFrameHost, e.g. when the
-  // user reloads the current page. When the RenderFrameHost itself is deleted,
-  // the RenderFrameDeleted method will be invoked.
+  // This method is invoked when the process for the current RenderFrameHost
+  // of the primary main frame exits (usually by crashing, though possibly by
+  // other means). The WebContents continues to use the RenderFrameHost, e.g.
+  // when the user reloads the current page. When the RenderFrameHost itself is
+  // deleted, the RenderFrameDeleted method will be invoked.
   //
   // Note that this is triggered upstream through
   // RenderProcessHostObserver::RenderProcessExited(); for code that doesn't
   // otherwise need to be a WebContentsObserver, that API is probably a better
   // choice.
-  virtual void RenderProcessGone(base::TerminationStatus status) {}
+  virtual void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) {}
 
   // This method is invoked when a WebContents swaps its visible RenderViewHost
   // with another one, possibly changing processes. The RenderViewHost that has
@@ -146,27 +258,46 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   // Navigation ----------------------------------------------------------------
 
-  // Called when a navigation started in the WebContents. |navigation_handle|
-  // is unique to a specific navigation. The same |navigation_handle| will be
-  // provided on subsequent calls to DidRedirectNavigation, DidFinishNavigation,
-  // and ReadyToCommitNavigation when related to this navigation. Observers
-  // should clear any references to |navigation_handle| in DidFinishNavigation,
-  // just before it is destroyed.
+  // Called when a new navigation starts in the WebContents, WITHOUT
+  // guaranteeing that the navigation will either commit or lead to a new
+  // document. Consider whether listening to PrimaryPageChanged or
+  // DidFinishNavigation is a better fit, and see the IMPORTANT NOTES below.
   //
-  // Note that this is fired by navigations in any frame of the WebContents,
-  // not just the main frame.
+  // `navigation_handle` is unique to a specific navigation. The same
+  // `navigation_handle` will be provided on subsequent calls to
+  // DidRedirectNavigation, DidFinishNavigation, and ReadyToCommitNavigation
+  // when related to this navigation. Observers should clear any references to
+  // `navigation_handle` in DidFinishNavigation, just before it is destroyed.
   //
-  // Note that this is fired by same-document navigations, such as fragment
+  // IMPORTANT NOTES:
+  // - Starting a navigation doesn't affect which document is shown, or
+  // (in many cases) which URL is displayed in the omnibox. Most effects of the
+  // navigation only occur at DidFinishNavigation, if it commits. Feature code
+  // generally should not use DidStartNavigation to reset their state (e.g.
+  // close the UI), especially given that a renderer process can easily start a
+  // navigation which is guaranteed not to commit (e.g. by navigating to
+  // a URL returning a response with HTTP status code of 204 or a download).
+  // Consider listening to PrimaryPageChanged or DidFinishNavigation instead.
+  //
+  // - This notification is fired by navigations in any frame of the
+  // WebContents, not just the primary main frame.
+  //
+  // - This notification is fired by same-document navigations, such as fragment
   // navigations or pushState/replaceState, which will not result in a document
   // change. To filter these out, use NavigationHandle::IsSameDocument.
   //
-  // Note that more than one navigation can be ongoing in the same frame at the
+  // - There can be more than one navigation ongoing in the same frame at the
   // same time (including the main frame). Each will get its own
   // NavigationHandle.
   //
-  // Note that there is no guarantee that DidFinishNavigation will be called
+  // - There is no guarantee that DidFinishNavigation will be called
   // for any particular navigation before DidStartNavigation is called on the
   // next.
+  //
+  // TODO(creis, mcnee): Consider renaming this method to better indicate its
+  // semantics (e.g. DidStartNavigationAttempt).
+  //
+  // WARNING: Please read the above IMPORTANT NOTES for correct usage.
   virtual void DidStartNavigation(NavigationHandle* navigation_handle) {}
 
   // Called when a navigation encountered a server redirect.
@@ -206,11 +337,18 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // so do not keep a reference to it afterward.
   //
   // Note that using DidFinishNavigation to detect changes in the currently
-  // active document and reset per-document state is strongly discouraged.
-  // Please use RenderDocumentHostUserData to store such data instead.
-  // (In particular, the page might be stored in back-forward cache instead
-  // of being deleted. See the comment in RenderDocumentHostUserData for more
-  // details).
+  // active document / page and reset per-document state is strongly
+  // discouraged.
+  //
+  // Listening to PrimaryPageChanged should be preferred to listening to
+  // DidFinishNavigation and checking IsInPrimaryMainFrame, !IsSameDocument, and
+  // HasCommitted.
+  //
+  // The per-document / per-page data should be stored in
+  // DocumentUserData / PageUserData instead of resetting it in
+  // DidFinishNavigation. (In particular, the page might be stored in the
+  // back-forward cache instead of being deleted. See comments in PageUserData /
+  // DocumentUserData for more details).
   virtual void DidFinishNavigation(NavigationHandle* navigation_handle) {}
 
   // Called after the contents replaces the |predecessor_contents| in its
@@ -227,27 +365,59 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // loading for the first time (initiates outgoing requests), when incoming
   // data subsequently starts arriving, and when it finishes loading.
   virtual void DidStartLoading() {}
-  virtual void DidReceiveResponse() {}
   virtual void DidStopLoading() {}
 
   // The page has made some progress loading. |progress| is a value between 0.0
   // (nothing loaded) to 1.0 (page fully loaded).
   virtual void LoadProgressChanged(double progress) {}
 
-  // This method is invoked once the window.document object of the main frame
-  // was created. Since the WebContents could be hosting more than one main
-  // frame (e.g. prerendered page), the |render_frame_host| represents the frame
-  // where the event happened.
-  virtual void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  // This method is invoked once the window.document element of the primary main
+  // frame's current document (i.e., |render_frame_host|) is ready. This happens
+  // when the document's main HTML resource has finished parsing. Here
+  // document element refers to DOMDocument, which is different from browser
+  // implementation of blink::Document in DocumentUserData/DocumentService which
+  // are typically created when navigation commits.
+  //
+  // Note that PrimaryMainDocumentElementAvailable should be used when the
+  // observers which send IPCs to the renderer want to ensure that
+  // window.document is non-null. For for the comment cases like observing
+  // primary document/URL changes in the omnibox due to navigation
+  // WebContentsObserver::PrimaryPageChanged should be used and to observe fully
+  // loaded signal WebContentsObserver::DidFinishLoad can be used.
+  //
+  // This event is dispatched once in the document's lifetime, which means it's
+  // not dispatched after navigation that restores a Back/Forward Cache page.
+  // For prerendering, this signal is dispatched when the main document element
+  // is available and the document is shown to the user (i.e., after the
+  // activation).
+  virtual void PrimaryMainDocumentElementAvailable() {}
 
-  // This method is invoked once the onload handler of the main frame has
-  // completed. Since the WebContents could be hosting more than one main frame,
-  // the |render_frame_host| represents the frame where the event happened.
-  // Prefer using WebContents::IsDocumentOnLoadCompletedInMainFrame instead
-  // of saving this state in your component.
-  virtual void DocumentOnLoadCompletedInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  // This method is invoked once the onload handler of the primary main frame's
+  // current document (i.e., |render_frame_host|) has completed. This happens
+  // when the primary main document has finished running onload events after
+  // loading all content (images, scripts, etc). Prefer using
+  // WebContents::IsDocumentOnLoadCompletedInPrimaryMainFrame instead of saving
+  // this state in your component.
+  //
+  // For prerendering we dispatch DocumentOnLoadCompletedInPrimaryMainFrame on
+  // activation whereas for BackForwardCache restores we don't dispatch
+  // DocumentOnLoadCompletedInPrimaryMainFrame.
+  //
+  // DocumentOnLoadCompletedInPrimaryMainFrame is typically used by the
+  // embedders to perform actions on a loaded page, for example showing load
+  // completion bubbles, injecting scripts which take page snapshots. Note,
+  // however, that some web pages might still be loading (i.e. if they
+  // dynamically inject content).
+  virtual void DocumentOnLoadCompletedInPrimaryMainFrame() {}
+
+  // This method is invoked when we have received a response from the
+  // renderer in response to a dom automation controller action.
+  // For example, `window.domAutomationController.send(foo())` sends the
+  // result of foo() here.
+  // |json_string| is a string with the response which came from a specific
+  // |render_frame_host|.
+  virtual void DomOperationResponse(RenderFrameHost* render_frame_host,
+                                    const std::string& json_string) {}
 
   // This method is invoked when the document in the given frame finished
   // loading. At this point, scripts marked as defer were executed, and
@@ -274,6 +444,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   // This method is invoked when content was loaded from an in-memory cache.
   virtual void DidLoadResourceFromMemoryCache(
+      RenderFrameHost* render_frame_host,
       const GURL& url,
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) {}
@@ -303,6 +474,9 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // This corresponds to one NavigationController entry being created
   // (in the case of new navigations) or renavigated to (for back/forward
   // navigations).
+  //
+  // Note that this function is only dispatched for NavigationEntries of primary
+  // pages (e.g. not for prerendered pages or fenced frames).
   virtual void NavigationEntryCommitted(
       const LoadCommittedDetails& load_details) {}
 
@@ -369,19 +543,26 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Invoked every time the WebContents changes visibility.
   virtual void OnVisibilityChanged(Visibility visibility) {}
 
-  // Invoked when the main frame changes size.
-  virtual void MainFrameWasResized(bool width_changed) {}
+  // Invoked when the primary main frame changes size.
+  virtual void PrimaryMainFrameWasResized(bool width_changed) {}
 
   // Invoked when the given frame changes its window.name property.
   virtual void FrameNameChanged(RenderFrameHost* render_frame_host,
                                 const std::string& name) {}
 
-  // Called when the sticky user activation bit has been set on the frame.
-  // This will not be called for new RenderFrameHosts whose underlying
-  // FrameTreeNode was already activated. This should not be used to determine a
-  // RenderFrameHost's user activation state.
-  virtual void FrameReceivedFirstUserActivation(
-      RenderFrameHost* render_frame_host) {}
+  // Invoked when the color scheme of the primary main document of the
+  // WebContents is updated (either because the primary main document's color
+  // has been inferred or the primary main document has changed).
+  virtual void InferredColorSchemeUpdated(
+      absl::optional<blink::mojom::PreferredColorScheme> color_scheme) {}
+
+  // Called when a frame receives user activation. This may be called multiple
+  // times for the same frame. This should not be used to determine a
+  // RenderFrameHost's user activation state. Does not include frames activated
+  // by the same-origin visibility heuristic, see `UserActivationState` for
+  // details.
+  virtual void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) {
+  }
 
   // Invoked when the display state of the frame changes.
   virtual void FrameDisplayStateChanged(RenderFrameHost* render_frame_host,
@@ -391,20 +572,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void FrameSizeChanged(RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) {}
 
-  // Invoked when the state of `RenderFrameHost::IsInBackForwardCache()`
-  // changes.
-  // TODO(crbug.com/1113357): replace this with
-  // RenderFrameHostStateChanged when it's available.
-  virtual void FrameBackForwardCacheStateChanged(
-      RenderFrameHost* render_frame_host) {}
-
   // This method is invoked when the title of the WebContents is set. Note that
   // |entry| may be null if the web page whose title changed has not yet had a
   // NavigationEntry assigned to it.
   virtual void TitleWasSet(NavigationEntry* entry) {}
-
-  virtual void AppCacheAccessed(const GURL& manifest_url,
-                                bool blocked_by_policy) {}
 
   // These methods are invoked when a Pepper plugin instance is created/deleted
   // in the DOM.
@@ -413,6 +584,13 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   // This method is called when the viewport fit of a WebContents changes.
   virtual void ViewportFitChanged(blink::mojom::ViewportFit value) {}
+
+  // This method is called when the virtual keyboard mode of a WebContents
+  // changes. This can happen as a result of the
+  // `navigator.virtualKeyboard.overlaysContent` API or the virtual-keyboard key
+  // in the viewport meta tag.
+  virtual void VirtualKeyboardModeChanged(ui::mojom::VirtualKeyboardMode mode) {
+  }
 
   // Notification that a plugin has crashed.
   // |plugin_pid| is the process ID identifying the plugin process. Note that
@@ -469,7 +647,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // the renderer process. If the instance is created after the page is loaded,
   // it is recommended to call WebContents::GetFaviconURLs() to get the current
   // list as this callback will not be executed unless there is an update.
-  // |render_frame_host| is the main render frame host.
+  // `render_frame_host` is the main RenderFrameHost for the primary page.
   virtual void DidUpdateFaviconURL(
       RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) {}
@@ -482,6 +660,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   // Called when the audio state of an individual frame changes.
   virtual void OnFrameAudioStateChanged(RenderFrameHost* rfh, bool audible) {}
+
+  // Called when the connected to USB device state changes.
+  virtual void OnIsConnectedToUsbDeviceChanged(
+      bool is_connected_to_usb_device) {}
 
   // Called when the connected to Bluetooth device state changes.
   virtual void OnIsConnectedToBluetoothDeviceChanged(
@@ -540,6 +722,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Invoked when background color is changed.
   virtual void OnBackgroundColorChanged() {}
 
+  // Invoked when the ColorProvider instance associated with this WebContents
+  // has changed.
+  virtual void OnColorProviderChanged() {}
+
   // Called when a message is added to the console of the WebContents. This is
   // invoked before forwarding the message to the WebContents' delegate.
   // |source_id| is a URL. |untrusted_stack_trace| is not present for most
@@ -550,7 +736,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const base::Optional<std::u16string>& untrusted_stack_trace) {}
+      const absl::optional<std::u16string>& untrusted_stack_trace) {}
 
   // Invoked when media is playing or paused.  |id| is unique per player and per
   // RenderFrameHost.  There may be multiple players within a RenderFrameHost
@@ -588,8 +774,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void MediaEffectivelyFullscreenChanged(bool is_fullscreen) {}
   virtual void MediaPictureInPictureChanged(bool is_picture_in_picture) {}
   virtual void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted) {}
-  virtual void MediaBufferUnderflow(const MediaPlayerId& id) {}
-  virtual void MediaPlayerSeek(const MediaPlayerId& id) {}
   virtual void MediaDestroyed(const MediaPlayerId& id) {}
 
   // Invoked when the renderer process changes the page scale factor.
@@ -623,19 +807,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // or when the manifest URL changes (possibly to nothing). It is not invoked
   // when a document with no manifest loads. During document load, if the
   // document has both a manifest and a favicon, DidUpdateWebManifestURL() will
-  // be invoked before DidUpdateFaviconURL().
-  virtual void DidUpdateWebManifestURL(
-      RenderFrameHost* target_frame,
-      const base::Optional<GURL>& manifest_url) {}
-
-  // DEPRECATED. Please register interface binders with BrowserInterfaceBroker
-  // instead (see 'Interface-Brokers' section in //docs/mojo_and_services.md).
-  // Called to give the embedder an opportunity to bind an interface request
-  // from a frame. If the request can be bound, |interface_pipe| will be taken.
-  virtual void OnInterfaceRequestFromFrame(
-      RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) {}
+  // be invoked before DidUpdateFaviconURL(). `target_frame` is the main render
+  // frame host for the primary page.
+  virtual void DidUpdateWebManifestURL(RenderFrameHost* target_frame,
+                                       const GURL& manifest_url) {}
 
   // Called when "audible" playback starts or stops on a WebAudio AudioContext.
   using AudioContextId = std::pair<RenderFrameHost*, int>;
@@ -655,13 +830,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
                                        const GURL& scope,
                                        AllowServiceWorkerResult allowed) {}
-  // IPC::Listener implementation.
-  // DEPRECATED: Use (i.e. override) the other overload instead:
-  //     virtual bool OnMessageReceived(const IPC::Message& message,
-  //                                    RenderFrameHost* render_frame_host);
-  // TODO(https://crbug.com/758026): Delete this overload when possible.
-  bool OnMessageReceived(const IPC::Message& message) override;
-
   WebContents* web_contents() const;
 
  protected:
@@ -674,7 +842,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // observing.
   WebContentsObserver();
 
-  ~WebContentsObserver() override;
+  virtual ~WebContentsObserver();
 
   // Start observing a different WebContents; used with the default constructor.
   void Observe(WebContents* web_contents);
@@ -684,9 +852,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   void ResetWebContents();
 
-  WebContents* web_contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
+  raw_ptr<WebContents> web_contents_ = nullptr;
 };
 
 }  // namespace content

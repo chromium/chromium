@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<video width="200" height="200" controls src="whatever"></video>
+<style></style>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    document.body.offsetTop;
+    var sheet = document.styleSheets[0];
+    sheet.insertRule("::-webkit-media-controls { float: left; }");
+
+    /* Trigger re-layout of something on the inside of the video AND something
+       on the outside. */
+    document.body.offsetTop;
+    sheet.insertRule("::-webkit-media-controls-enclosure { width: 333px; }");
+    document.body.style.width = "333px";
+  }, "No crash");
+</script>

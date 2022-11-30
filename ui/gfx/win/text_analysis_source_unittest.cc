@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,11 +37,11 @@ class TextAnalysisSourceTest : public testing::Test {
                                number_substitution.Get(), kReadingDirection);
   }
 
+  TextAnalysisSourceTest(const TextAnalysisSourceTest&) = delete;
+  TextAnalysisSourceTest& operator=(const TextAnalysisSourceTest&) = delete;
+
  protected:
   mswr::ComPtr<IDWriteTextAnalysisSource> source_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextAnalysisSourceTest);
 };
 
 TEST_F(TextAnalysisSourceTest, TestGetLocaleName) {

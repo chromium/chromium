@@ -1,0 +1,17 @@
+<!--
+@SCRIPT:
+  table.accessibilityAttributeNames.has(AXRows)
+  column:= table.AXChildren[1]
+  column.accessibilityAttributeNames.has(AXRows)
+  tree.accessibilityAttributeNames.has(AXRows)
+  not_applicable.accessibilityAttributeNames.has(AXRows)
+-->
+<!DOCTYPE html>
+<div id="table" role="table">
+  <div role="row">
+    <span role="cell">column 1</span>
+  </div>
+</div>
+<div role="tree" id="tree">
+</div>
+<div id="not_applicable"></div>

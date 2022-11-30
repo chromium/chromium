@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,13 @@ constexpr char kTrustTokensSecTrustTokenHeader[] = "Sec-Trust-Token";
 
 // As a request header, provides the version of Trust Token being used in the
 // Sec-Trust-Token header.
+//
+// Alongside signed requests, provides the "major" Trust Tokens protocol
+// version, for instance "TrustTokenV3" for the protocol versions
+// "TrustTokenV3VOPRF" and "TrustTokenV3PMB"). This is a tentative addition to
+// make it easy to adapt to a breaking change in the signature payload's format
+// without having to feature-detect implicitly by trying detect structural
+// chracteristics of the old and new formats: see crbug.com/1209728.
 constexpr char kTrustTokensSecTrustTokenVersionHeader[] =
     "Sec-Trust-Token-Version";
 
@@ -54,6 +61,18 @@ constexpr char kTrustTokensRequestHeaderSignedHeaders[] = "Signed-Headers";
 // data alongside signed requests.
 constexpr char kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData[] =
     "Sec-Trust-Tokens-Additional-Signing-Data";
+
+// A response header, asks UA to discard all previously issued tokens when
+// value is "all", ignored otherwise.
+constexpr char kTrustTokensResponseHeaderSecTrustTokenClearData[] =
+    "Sec-Trust-Token-Clear-Data";
+
+// A response header, from a Trust Token redemption that includes an integer
+// representing the lifetime of the Trust Token response, in seconds since the
+// redemption. If the header is omitted, the expiry time of the relevant key
+// will be used instead.
+constexpr char kTrustTokensResponseHeaderSecTrustTokenLifetime[] =
+    "Sec-Trust-Token-Lifetime";
 
 // Returns a view of all of the Trust Tokens-internal request headers.
 // This vector contains all of the headers that clients must not provide on

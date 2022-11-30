@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,37 @@ namespace blink {
 
 namespace {
 
-FontFamily* CreateAndAppendFamily(FontFamily& parent, const char* name) {
+FontFamily* CreateAndAppendFamily(FontFamily& parent,
+                                  const char* family_name,
+                                  FontFamily::Type family_type) {
   scoped_refptr<SharedFontFamily> family = SharedFontFamily::Create();
-  family->SetFamily(name);
+  family->SetFamily(family_name, family_type);
   parent.AppendFamily(family);
   return family.get();
 }
 
 }  // namespace
+
+TEST(FontFamilyTest, CountNames) {
+  {
+    FontFamily family;
+    EXPECT_EQ(1u, family.CountNames());
+  }
+  {
+    FontFamily family;
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    EXPECT_EQ(2u, family.CountNames());
+  }
+  {
+    FontFamily family;
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    FontFamily* b_family =
+        CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(*b_family, "C", FontFamily::Type::kFamilyName);
+    EXPECT_EQ(3u, family.CountNames());
+  }
+}
 
 TEST(FontFamilyTest, ToString) {
   {
@@ -26,16 +49,17 @@ TEST(FontFamilyTest, ToString) {
   }
   {
     FontFamily family;
-    family.SetFamily("A");
-    CreateAndAppendFamily(family, "B");
-    EXPECT_EQ("A,B", family.ToString());
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    EXPECT_EQ("A, B", family.ToString());
   }
   {
     FontFamily family;
-    family.SetFamily("A");
-    FontFamily* b_family = CreateAndAppendFamily(family, "B");
-    CreateAndAppendFamily(*b_family, "C");
-    EXPECT_EQ("A,B,C", family.ToString());
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    FontFamily* b_family =
+        CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(*b_family, "C", FontFamily::Type::kFamilyName);
+    EXPECT_EQ("A, B, C", family.ToString());
   }
 }
 

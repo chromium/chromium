@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ class IdleSpellCheckControllerTest : public SpellCheckTestBase {
         IdleChecker().Deactivate();
         break;
       case State::kHotModeRequested:
-        IdleChecker().SetNeedsInvocation();
+        IdleChecker().RespondToChangedContents();
         break;
       case State::kColdModeTimerStarted:
         break;
@@ -58,7 +58,7 @@ TEST_F(IdleSpellCheckControllerTest, InitializationWithColdMode) {
 
 TEST_F(IdleSpellCheckControllerTest, RequestWhenInactive) {
   TransitTo(State::kInactive);
-  IdleChecker().SetNeedsInvocation();
+  IdleChecker().RespondToChangedContents();
   EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
 }
@@ -66,7 +66,7 @@ TEST_F(IdleSpellCheckControllerTest, RequestWhenInactive) {
 TEST_F(IdleSpellCheckControllerTest, RequestWhenHotModeRequested) {
   TransitTo(State::kHotModeRequested);
   int handle = IdleChecker().IdleCallbackHandle();
-  IdleChecker().SetNeedsInvocation();
+  IdleChecker().RespondToChangedContents();
   EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
   EXPECT_EQ(handle, IdleChecker().IdleCallbackHandle());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
@@ -74,7 +74,7 @@ TEST_F(IdleSpellCheckControllerTest, RequestWhenHotModeRequested) {
 
 TEST_F(IdleSpellCheckControllerTest, RequestWhenColdModeTimerStarted) {
   TransitTo(State::kColdModeTimerStarted);
-  IdleChecker().SetNeedsInvocation();
+  IdleChecker().RespondToChangedContents();
   EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
 }
@@ -82,7 +82,7 @@ TEST_F(IdleSpellCheckControllerTest, RequestWhenColdModeTimerStarted) {
 TEST_F(IdleSpellCheckControllerTest, RequestWhenColdModeRequested) {
   TransitTo(State::kColdModeRequested);
   int handle = IdleChecker().IdleCallbackHandle();
-  IdleChecker().SetNeedsInvocation();
+  IdleChecker().RespondToChangedContents();
   EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
   EXPECT_NE(handle, IdleChecker().IdleCallbackHandle());
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
@@ -149,8 +149,8 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
   auto* html_object_element =
       To<HTMLObjectElement>(GetDocument().QuerySelector("object"));
   html_object_element->RenderFallbackContent(
-      html_object_element->ContentFrame());
-  GetDocument().QuerySelector("div")->focus();
+      HTMLObjectElement::ErrorEventPolicy::kDispatch);
+  GetDocument().QuerySelector("div")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Advance to cold mode invocation

@@ -1,14 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_METRICS_PAGELOAD_FOREGROUND_DURATION_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_METRICS_PAGELOAD_FOREGROUND_DURATION_TAB_HELPER_H_
 
-#include <memory>
-#include <unordered_map>
-
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -51,7 +48,8 @@ class PageloadForegroundDurationTabHelper
   // WebState reference.
   web::WebState* web_state_ = nullptr;
   // Scoped observer that facilitates observing the WebState.
-  ScopedObserver<web::WebState, WebStateObserver> scoped_observer_;
+  base::ScopedObservation<web::WebState, WebStateObserver> scoped_observation_{
+      this};
   // Holds references to background NSNotification callback observer.
   id foreground_notification_observer_;
   // Holds references to foreground NSNotification callback observer.

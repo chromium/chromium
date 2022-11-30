@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -44,7 +43,7 @@ TEST(FallbackURLUtilTest, GetFallbackIconText) {
       {"http://xn--oogle-60a/", "X"},
       {"http://xn-oogle-60a/", "X"},
   };
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::u16string expected = base::ASCIIToUTF16(test_cases[i].expected);
     GURL url(test_cases[i].url_str);
     EXPECT_EQ(expected, GetFallbackIconText(url)) << " for test_cases[" << i

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/optional.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -31,6 +31,7 @@
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -53,6 +54,9 @@ class MediaImageGetterHelper {
                        base::Unretained(this)));
   }
 
+  MediaImageGetterHelper(const MediaImageGetterHelper&) = delete;
+  MediaImageGetterHelper& operator=(const MediaImageGetterHelper&) = delete;
+
   void Wait() {
     if (bitmap_.has_value())
       return;
@@ -69,9 +73,7 @@ class MediaImageGetterHelper {
   }
 
   base::RunLoop run_loop_;
-  base::Optional<SkBitmap> bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaImageGetterHelper);
+  absl::optional<SkBitmap> bitmap_;
 };
 
 // Integration tests for content::MediaSession that do not take into
@@ -83,6 +85,10 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
     embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &MediaSessionBrowserTestBase::OnServerRequest, base::Unretained(this)));
   }
+
+  MediaSessionBrowserTestBase(const MediaSessionBrowserTestBase&) = delete;
+  MediaSessionBrowserTestBase& operator=(const MediaSessionBrowserTestBase&) =
+      delete;
 
   void SetUp() override {
     ContentBrowserTest::SetUp();
@@ -96,15 +102,15 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   }
 
   void StartPlaybackAndWait(Shell* shell, const std::string& id) {
-    shell->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("document.querySelector('#" + id + "').play();"),
+    shell->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"document.querySelector('#" + base::ASCIIToUTF16(id) + u"').play();",
         base::NullCallback());
     WaitForStart(shell);
   }
 
   void StopPlaybackAndWait(Shell* shell, const std::string& id) {
-    shell->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("document.querySelector('#" + id + "').pause();"),
+    shell->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"document.querySelector('#" + base::ASCIIToUTF16(id) + u"').pause();",
         base::NullCallback());
     WaitForStop(shell);
   }
@@ -122,14 +128,9 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   }
 
   bool IsPlaying(Shell* shell, const std::string& id) {
-    bool result;
-    EXPECT_TRUE(
-        ExecuteScriptAndExtractBool(shell->web_contents(),
-                                    "window.domAutomationController.send("
-                                    "!document.querySelector('#" +
-                                        id + "').paused);",
-                                    &result));
-    return result;
+    return EvalJs(shell->web_contents(),
+                  "!document.querySelector('#" + id + "').paused;")
+        .ExtractBool();
   }
 
   bool WasURLVisited(const GURL& url) {
@@ -179,8 +180,6 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   // locked.
   base::Lock visited_urls_lock_;
   std::set<GURL> visited_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionBrowserTestBase);
 };
 
 class MediaSessionBrowserTest : public MediaSessionBrowserTestBase {
@@ -204,28 +203,6 @@ class MediaSessionBrowserTestWithoutInternalMediaSession
 
  private:
   base::test::ScopedFeatureList disabled_feature_list_;
-};
-
-// A MediaSessionBrowserTest with BackForwardCache enabled.
-class MediaSessionBrowserTestWithBackForwardCache
-    : public MediaSessionBrowserTestBase {
- public:
-  MediaSessionBrowserTestWithBackForwardCache() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
-         {media::kInternalMediaSession, {}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    MediaSessionBrowserTestBase::SetUpOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // anonymous namespace
@@ -289,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultiplePlayersPlayPause) {
 }
 
 // Flaky on Mac. See https://crbug.com/980663
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebContents_Muted DISABLED_WebContents_Muted
 #else
 #define MAYBE_WebContents_Muted WebContents_Muted
@@ -317,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_WebContents_Muted) {
                    ->is_controllable);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // On Android, System Audio Focus would break this test.
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
@@ -357,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
   EXPECT_TRUE(IsPlaying(other_shell, "long-video"));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, GetMediaImageBitmap) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -435,43 +412,17 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
   EXPECT_FALSE(WasURLVisited(image.src));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithBackForwardCache,
-                       DoNotCacheIfMediaSessionExists) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+// Regression test of crbug.com/1195769.
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, ChangeMediaElementDocument) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/session", "change_document.html")));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "moveAudioToSubframe();"));
 
-  // 1) Navigate to a page containing media.
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            GetTestUrl("media/session", "media-session.html")));
-
-  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-  // The page should not have been cached in the back forward cache.
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_EQ(true, EvalJs(shell(), "play();"));
+  MediaSession* const media_session =
+      MediaSession::Get(shell()->web_contents());
+  media_session->Suspend(MediaSession::SuspendType::kUI);
+  WaitForStop(shell());
 }
 
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithBackForwardCache,
-                       CachesPageWithoutMedia) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page not containing any media.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-
-  RenderFrameHostImpl* rfh_a = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-  // The page should be cached in the back forward cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-}
 }  // namespace content

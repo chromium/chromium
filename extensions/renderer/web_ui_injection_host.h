@@ -1,17 +1,20 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_RENDERER_WEB_UI_INJECTION_HOST_H_
 #define EXTENSIONS_RENDERER_WEB_UI_INJECTION_HOST_H_
 
-#include "base/macros.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/renderer/injection_host.h"
 
 class WebUIInjectionHost : public InjectionHost {
  public:
   WebUIInjectionHost(const extensions::mojom::HostID& host_id);
+
+  WebUIInjectionHost(const WebUIInjectionHost&) = delete;
+  WebUIInjectionHost& operator=(const WebUIInjectionHost&) = delete;
+
   ~WebUIInjectionHost() override;
 
  private:
@@ -27,8 +30,6 @@ class WebUIInjectionHost : public InjectionHost {
 
  private:
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIInjectionHost);
 };
 
 #endif  // EXTENSIONS_RENDERER_WEB_UI_INJECTION_HOST_H_

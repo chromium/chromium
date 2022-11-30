@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
 
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
 TEST(ShareTargetUtils, ExtractTitle) {
-  apps::mojom::Intent intent;
+  apps::Intent intent(apps_util::kIntentActionSend);
   intent.share_title = "Today's topic";
 
   {
@@ -31,7 +31,7 @@ TEST(ShareTargetUtils, ExtractTitle) {
 }
 
 TEST(ShareTargetUtils, ExtractText) {
-  apps::mojom::Intent intent;
+  apps::Intent intent(apps_util::kIntentActionSend);
   intent.share_text = "Here's a long message.";
 
   {
@@ -51,7 +51,7 @@ TEST(ShareTargetUtils, ExtractText) {
 }
 
 TEST(ShareTargetUtils, ExtractUrl) {
-  apps::mojom::Intent intent;
+  apps::Intent intent(apps_util::kIntentActionSend);
   // Shared URLs are serialized in share_text.
   intent.share_text = "https://example.com/~me/index.html#part";
 
@@ -72,8 +72,38 @@ TEST(ShareTargetUtils, ExtractUrl) {
   }
 }
 
+TEST(ShareTargetUtils, ExtractTextUrl) {
+  apps::ShareTarget share_target;
+  share_target.params.text = "body";
+  share_target.params.url = "link";
+
+  {
+    apps::Intent intent(apps_util::kIntentActionSend);
+    intent.share_text = "One line\nhttps://example.org/";
+    std::vector<SharedField> expected = {{"body", "One line"},
+                                         {"link", "https://example.org/"}};
+    EXPECT_EQ(ExtractSharedFields(share_target, intent), expected);
+  }
+
+  {
+    apps::Intent intent(apps_util::kIntentActionSend);
+    intent.share_text = "Two\nlines\nhttps://example.org/";
+    std::vector<SharedField> expected = {{"body", "Two\nlines"},
+                                         {"link", "https://example.org/"}};
+    EXPECT_EQ(ExtractSharedFields(share_target, intent), expected);
+  }
+
+  {
+    apps::Intent intent(apps_util::kIntentActionSend);
+    intent.share_text = "Many\nmany\nlines https://example.org/";
+    std::vector<SharedField> expected = {{"body", "Many\nmany\nlines"},
+                                         {"link", "https://example.org/"}};
+    EXPECT_EQ(ExtractSharedFields(share_target, intent), expected);
+  }
+}
+
 TEST(ShareTargetUtils, ExtractTitleTextUrl) {
-  apps::mojom::Intent intent;
+  apps::Intent intent(apps_util::kIntentActionSend);
   intent.share_title = "Browse";
   intent.share_text =
       "Visit the sites https://example.com/ and https://example.org/";
@@ -114,7 +144,7 @@ TEST(ShareTargetUtils, ExtractTitleTextUrl) {
 }
 
 TEST(ShareTargetUtils, SkipEmpty) {
-  apps::mojom::Intent intent;
+  apps::Intent intent(apps_util::kIntentActionSend);
   intent.share_title = "";
   intent.share_text = "";
 

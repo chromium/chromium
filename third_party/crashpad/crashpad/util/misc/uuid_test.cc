@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <string>
 
 #include "base/format_macros.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -85,24 +86,40 @@ TEST(UUID, UUID) {
   EXPECT_EQ(uuid_2, uuid);
   EXPECT_FALSE(uuid != uuid_2);
 
+  // Test operator< operator
+  UUID uuid_3{};
+  UUID uuid_4;
+  uuid_4.InitializeFromString("11111111-1111-1111-1111-111111111111");
+  UUID uuid_5;
+  uuid_5.InitializeFromString("22222222-2222-2222-2222-222222222222");
+
+  EXPECT_LT(uuid_3, uuid_4);
+  EXPECT_LT(uuid_3, uuid_5);
+  EXPECT_LT(uuid_4, uuid_5);
+
   // Make sure that operator== and operator!= check the entire UUID.
   ++uuid.data_1;
   EXPECT_NE(uuid, uuid_2);
+  EXPECT_LT(uuid_2, uuid);
   --uuid.data_1;
   ++uuid.data_2;
   EXPECT_NE(uuid, uuid_2);
+  EXPECT_LT(uuid_2, uuid);
   --uuid.data_2;
   ++uuid.data_3;
   EXPECT_NE(uuid, uuid_2);
+  EXPECT_LT(uuid_2, uuid);
   --uuid.data_3;
-  for (size_t index = 0; index < base::size(uuid.data_4); ++index) {
+  for (size_t index = 0; index < std::size(uuid.data_4); ++index) {
     ++uuid.data_4[index];
     EXPECT_NE(uuid, uuid_2);
+    EXPECT_LT(uuid_2, uuid);
     --uuid.data_4[index];
   }
-  for (size_t index = 0; index < base::size(uuid.data_5); ++index) {
+  for (size_t index = 0; index < std::size(uuid.data_5); ++index) {
     ++uuid.data_5[index];
     EXPECT_NE(uuid, uuid_2);
+    EXPECT_LT(uuid_2, uuid);
     --uuid.data_5[index];
   }
 
@@ -190,7 +207,7 @@ TEST(UUID, FromString) {
   uuid_zero.InitializeToZero();
   const std::string empty_uuid = uuid_zero.ToString();
 
-  for (size_t index = 0; index < base::size(kCases); ++index) {
+  for (size_t index = 0; index < std::size(kCases); ++index) {
     const TestCase& test_case = kCases[index];
     SCOPED_TRACE(base::StringPrintf(
         "index %" PRIuS ": %s", index, test_case.uuid_string));
@@ -215,7 +232,7 @@ TEST(UUID, FromString) {
   uuid.InitializeFromString("5762C15D-50b5-4171-a2e9-7429C9EC6CAB");
   EXPECT_EQ(uuid.ToString(), "5762c15d-50b5-4171-a2e9-7429c9ec6cab");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Test accepting a StringPiece16 via L"" literals on Windows.
   EXPECT_TRUE(
       uuid.InitializeFromString(L"F32E5BDC-2681-4C73-A4E6-444FFD44B444"));
@@ -224,10 +241,10 @@ TEST(UUID, FromString) {
   EXPECT_TRUE(
       uuid.InitializeFromString(L"5762C15D-50b5-4171-a2e9-5555C5EC5CAB"));
   EXPECT_EQ(uuid.ToString(), "5762c15d-50b5-4171-a2e9-5555c5ec5cab");
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST(UUID, FromSystem) {
   ::GUID system_uuid;
@@ -252,7 +269,7 @@ TEST(UUID, FromSystem) {
   EXPECT_EQ(uuid.ToWString(), reinterpret_cast<wchar_t*>(system_string));
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace test

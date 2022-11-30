@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <windows.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace win {
@@ -23,6 +23,10 @@ namespace win {
 class BASE_EXPORT IATPatchFunction {
  public:
   IATPatchFunction();
+
+  IATPatchFunction(const IATPatchFunction&) = delete;
+  IATPatchFunction& operator=(const IATPatchFunction&) = delete;
+
   ~IATPatchFunction();
 
   // Intercept a function in an import table of a specific
@@ -65,11 +69,9 @@ class BASE_EXPORT IATPatchFunction {
 
  private:
   HMODULE module_handle_ = nullptr;
-  void* intercept_function_ = nullptr;
+  raw_ptr<void> intercept_function_ = nullptr;
   void* original_function_ = nullptr;
   IMAGE_THUNK_DATA* iat_thunk_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(IATPatchFunction);
 };
 
 }  // namespace win

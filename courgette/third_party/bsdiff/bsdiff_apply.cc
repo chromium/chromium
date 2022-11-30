@@ -31,7 +31,7 @@
 // 2013-04-10 - Add wrapper method to apply a patch to files directly.
 //                --Joshua Pawlicki <waffles@chromium.org>
 
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -231,14 +231,14 @@ BSDiffStatus ApplyBinaryPatch(const base::FilePath& old_file_path,
                               const base::FilePath& new_file_path) {
   BSDiffStatus result = ApplyBinaryPatch(
       base::File(old_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                    base::File::FLAG_SHARE_DELETE),
+                                    base::File::FLAG_WIN_SHARE_DELETE),
       base::File(patch_file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_SHARE_DELETE),
+                                      base::File::FLAG_WIN_SHARE_DELETE),
       base::File(new_file_path, base::File::FLAG_CREATE_ALWAYS |
                                     base::File::FLAG_WRITE |
-                                    base::File::FLAG_EXCLUSIVE_WRITE |
-                                    base::File::FLAG_SHARE_DELETE));
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_WIN_SHARE_DELETE));
   if (result != OK)
     base::DeleteFile(new_file_path);
   return result;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
 
   const base::Version& version() const { return fake_version_; }
 
-  const base::DictionaryValue& manifest() const { return manifest_; }
+  const base::Value& manifest() const { return manifest_; }
 
   const base::FilePath& GetPath() const {
     return component_install_dir_.GetPath();
@@ -50,7 +50,7 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
   std::unique_ptr<PrefService> pref_service_;
 
  private:
-  base::DictionaryValue manifest_;
+  base::Value manifest_ = base::Value(base::Value::Type::DICTIONARY);
   base::ScopedTempDir component_install_dir_;
   std::vector<const char*> filenames_;
   base::FilePath fake_install_dir_;
@@ -79,7 +79,7 @@ TEST_F(AutofillStatesDataComponentInstallerPolicyTest,
        InstallDirSavedToPrefOnComponentReady) {
   AutofillStatesComponentInstallerPolicy policy(pref_service_.get());
   policy.ComponentReadyForTesting(version(), GetPath(),
-                                  std::make_unique<base::DictionaryValue>());
+                                  base::Value(base::Value::Type::DICTIONARY));
   ASSERT_EQ(GetPath(), pref_service_->GetFilePath(
                            autofill::prefs::kAutofillStatesDataDir));
 }

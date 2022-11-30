@@ -1,10 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/push_messaging/push_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_event_init.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -19,14 +22,13 @@ PushEvent::PushEvent(const AtomicString& type,
                      ExceptionState& exception_state)
     : ExtendableEvent(type, initializer) {
   if (initializer->hasData()) {
-    const ArrayBufferOrArrayBufferViewOrUSVString& message_data =
-        initializer->data();
-    if (message_data.IsArrayBuffer() || message_data.IsArrayBufferView()) {
-      DOMArrayBuffer* buffer =
-          message_data.IsArrayBufferView()
-              ? message_data.GetAsArrayBufferView()->buffer()
-              : message_data.GetAsArrayBuffer();
-      if (!base::CheckedNumeric<uint32_t>(buffer->ByteLength()).IsValid()) {
+    const auto* message_data = initializer->data();
+    if (message_data->IsArrayBuffer() || message_data->IsArrayBufferView()) {
+      DOMArrayPiece array_piece =
+          message_data->IsArrayBuffer()
+              ? DOMArrayPiece(message_data->GetAsArrayBuffer())
+              : DOMArrayPiece(message_data->GetAsArrayBufferView().Get());
+      if (!base::CheckedNumeric<uint32_t>(array_piece.ByteLength()).IsValid()) {
         exception_state.ThrowRangeError(
             "The provided ArrayBuffer exceeds the maximum supported size "
             "(4294967295)");

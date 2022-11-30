@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
   BoxDecorationData box_decoration_data(paint_info, layout_fieldset_);
   // TODO(crbug.com/786475): Fieldset should not scroll.
-  DCHECK(!box_decoration_data.IsPaintingScrollingBackground());
+  DCHECK(!box_decoration_data.IsPaintingBackgroundInContentsSpace());
   if (box_decoration_data.ShouldPaint() &&
       !DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_fieldset_, paint_info.phase)) {
@@ -83,7 +83,7 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
       PhysicalRect legend_cutout_rect = fieldset_paint_info.legend_cutout_rect;
       legend_cutout_rect.Move(paint_offset);
-      graphics_context.ClipOut(PixelSnappedIntRect(legend_cutout_rect));
+      graphics_context.ClipOut(ToPixelSnappedRect(legend_cutout_rect));
 
       Node* node = nullptr;
       const LayoutObject* layout_object = &layout_fieldset_;
@@ -97,6 +97,8 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
   BoxPainter(layout_fieldset_)
       .RecordHitTestData(paint_info, paint_rect, layout_fieldset_);
+  BoxPainter(layout_fieldset_)
+      .RecordRegionCaptureData(paint_info, paint_rect, layout_fieldset_);
 }
 
 void FieldsetPainter::PaintMask(const PaintInfo& paint_info,

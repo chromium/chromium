@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "crypto/sha2.h"
-#include "net/cert/internal/crl.h"
+#include "net/cert/pki/crl.h"
 #include "net/der/input.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -22,7 +22,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       reinterpret_cast<const uint8_t*>(data_hash.data() + 2), serial_len);
 
   net::GetCRLStatusForCert(cert_serial, crl_version,
-                           base::make_optional(input_der));
+                           absl::make_optional(input_der));
 
   return 0;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/update_client/configurator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -31,6 +31,9 @@ class ConfiguratorImpl {
  public:
   ConfiguratorImpl(const update_client::CommandLineConfigPolicy& config_policy,
                    bool require_encryption);
+
+  ConfiguratorImpl(const ConfiguratorImpl&) = delete;
+  ConfiguratorImpl& operator=(const ConfiguratorImpl&) = delete;
 
   ~ConfiguratorImpl();
 
@@ -92,6 +95,10 @@ class ConfiguratorImpl {
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const;
 
+  absl::optional<bool> IsMachineExternallyManaged() const;
+
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const;
+
  private:
   base::flat_map<std::string, std::string> extra_info_;
   const bool background_downloads_enabled_;
@@ -101,8 +108,6 @@ class ConfiguratorImpl {
   const bool require_encryption_;
   const GURL url_source_override_;
   const double initial_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfiguratorImpl);
 };
 
 }  // namespace component_updater

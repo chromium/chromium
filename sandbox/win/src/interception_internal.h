@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2010 The Chromium Authors. All rights reserved.
+// Copyright 2006-2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 // for the sandboxed process. For more details see:
 // http://dev.chromium.org/developers/design-documents/sandbox .
 
-#ifndef SANDBOX_SRC_INTERCEPTION_INTERNAL_H_
-#define SANDBOX_SRC_INTERCEPTION_INTERNAL_H_
+#ifndef SANDBOX_WIN_SRC_INTERCEPTION_INTERNAL_H_
+#define SANDBOX_WIN_SRC_INTERCEPTION_INTERNAL_H_
 
 #include <stddef.h>
 
@@ -74,4 +74,4 @@ struct DllInterceptionData {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_INTERCEPTION_INTERNAL_H_
+#endif  // SANDBOX_WIN_SRC_INTERCEPTION_INTERNAL_H_

@@ -1,0 +1,93 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.page_info.proto";
+option java_outer_classname = "AboutThisSiteMetadataProto";
+
+package page_info.proto;
+
+// Represents a duration like “3 days” or “2 years”. It should always use the
+// lowest possible granularity. E.g. use “1 month” as soon as an event happened
+// at least 30 days ago. When precision is MORE_THAN, the event happened at
+// least the specified time ago, e.g. “more than 2 years ago”.
+message SiteFirstSeen {
+  optional int32 count = 1;
+  optional DurationUnit unit = 2;
+  optional DurationPrecision precision = 3;
+}
+
+enum DurationUnit {
+  UNIT_UNSPECIFIED = 0;
+  UNIT_DAYS = 1;
+  UNIT_WEEKS = 2;
+  UNIT_MONTHS = 3;
+  UNIT_YEARS = 4;
+}
+
+enum DurationPrecision {
+  PRECISION_UNSPECIFIED = 0;
+  PRECISION_ABOUT = 1;
+  PRECISION_LESS_THAN = 2;
+  PRECISION_MORE_THAN = 3;
+}
+
+message SiteDescription {
+  // The name of the site, e.g. "The New York Times".
+  // May not be present.
+  optional string name = 1;
+
+  // The subtitle for the site.
+  // May not be present.
+  // If title is missing, subtitle will not be present either, but even for
+  // cases where there is a title there may not be a subtitle.
+  optional string subtitle = 5;
+
+  // The description of the site, e.g. "The New York Times is an American daily
+  // newspaper based in New York City..."
+  optional string description = 2;
+
+  // Information about the source of the description. Note that if your product
+  // uses the name or description, you must provide a link to the source as an
+  // attribution.
+  optional Hyperlink source = 3;
+
+  // Language of the description. Examples: "en", "en-US", "es-419", "zh-Hans"
+  optional string lang = 4;
+}
+
+// A hyperlink.
+message Hyperlink {
+  optional string label = 1;
+  optional string url = 2;
+}
+
+// Link to learn more about the input url.
+message MoreAbout {
+  // The absolute url for the link.
+  optional string url = 1;
+}
+
+// Info that is shown in PageInfo.
+message SiteInfo {
+  // First-seen date information related to this host/domain.
+  // When Google first indexed this site.
+  optional SiteFirstSeen first_seen = 1;
+
+  // Description for this site.
+  optional SiteDescription description = 2;
+
+  // A link to a page with more information about the page, if available.
+  optional MoreAbout more_about = 3;
+}
+
+// Optimization metadata associated with SiteInfo.
+//
+// This is only populated for the ABOUT_THIS_SITE optimization type.
+message AboutThisSiteMetadata {
+  // A SiteInfo hint that will be shown in PageInfo.
+  optional SiteInfo site_info = 1;
+}

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,9 @@ namespace remoting {
 class FakeGlRendererDelegate : public GlRendererDelegate {
  public:
   FakeGlRendererDelegate() {}
+
+  FakeGlRendererDelegate(const FakeGlRendererDelegate&) = delete;
+  FakeGlRendererDelegate& operator=(const FakeGlRendererDelegate&) = delete;
 
   bool CanRenderFrame() override {
     can_render_frame_call_count_++;
@@ -70,13 +73,14 @@ class FakeGlRendererDelegate : public GlRendererDelegate {
 
   base::RepeatingClosure on_frame_rendered_callback_;
   base::WeakPtrFactory<FakeGlRendererDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGlRendererDelegate);
 };
 
 class FakeDrawable : public Drawable {
  public:
   FakeDrawable() {}
+
+  FakeDrawable(const FakeDrawable&) = delete;
+  FakeDrawable& operator=(const FakeDrawable&) = delete;
 
   void SetId(int id) { id_ = id; }
   int GetId() { return id_; }
@@ -104,8 +108,6 @@ class FakeDrawable : public Drawable {
   int z_index_ = -1;
 
   base::WeakPtrFactory<FakeDrawable> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDrawable);
 };
 
 class GlRendererTest : public testing::Test {
@@ -134,7 +136,7 @@ class GlRendererTest : public testing::Test {
 };
 
 void GlRendererTest::SetUp() {
-  renderer_.reset(new GlRenderer());
+  renderer_ = std::make_unique<GlRenderer>();
   renderer_->SetDelegate(delegate_.GetWeakPtr());
 }
 

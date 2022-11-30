@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,7 +73,7 @@ bool operator==(const MockPersistentReportingStore::Command& lhs,
         UPDATE_REPORTING_ENDPOINT_DETAILS:
     case MockPersistentReportingStore::Command::Type::DELETE_REPORTING_ENDPOINT:
       equal &= (lhs.url == rhs.url);
-      FALLTHROUGH;
+      [[fallthrough]];
     // For endpoint group operations, check the group key only.
     case MockPersistentReportingStore::Command::Type::
         ADD_REPORTING_ENDPOINT_GROUP:
@@ -102,64 +102,65 @@ std::ostream& operator<<(std::ostream& out,
       return out << "FLUSH()";
     case MockPersistentReportingStore::Command::Type::ADD_REPORTING_ENDPOINT:
       return out << "ADD_REPORTING_ENDPOINT("
-                 << "NIK="
-                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
+                 << "NAK="
+                 << cmd.group_key.network_anonymization_key.ToDebugString()
+                 << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ", "
                  << "endpoint=" << cmd.url << ")";
     case MockPersistentReportingStore::Command::Type::
         UPDATE_REPORTING_ENDPOINT_DETAILS:
       return out << "UPDATE_REPORTING_ENDPOINT_DETAILS("
-                 << "NIK="
-                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
+                 << "NAK="
+                 << cmd.group_key.network_anonymization_key.ToDebugString()
+                 << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ", "
                  << "endpoint=" << cmd.url << ")";
     case MockPersistentReportingStore::Command::Type::DELETE_REPORTING_ENDPOINT:
       return out << "DELETE_REPORTING_ENDPOINT("
-                 << "NIK="
-                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
+                 << "NAK="
+                 << cmd.group_key.network_anonymization_key.ToDebugString()
+                 << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ", "
                  << "endpoint=" << cmd.url << ")";
     case MockPersistentReportingStore::Command::Type::
         ADD_REPORTING_ENDPOINT_GROUP:
       return out << "ADD_REPORTING_ENDPOINT_GROUP("
-                 << "NIK="
-                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
+                 << "NAK="
+                 << cmd.group_key.network_anonymization_key.ToDebugString()
+                 << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
     case MockPersistentReportingStore::Command::Type::
         UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME:
       return out << "UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME("
-                 << "NIK="
-                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
+                 << "NAK="
+                 << cmd.group_key.network_anonymization_key.ToDebugString()
+                 << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
     case MockPersistentReportingStore::Command::Type::
         UPDATE_REPORTING_ENDPOINT_GROUP_DETAILS:
       return out << "UPDATE_REPORTING_ENDPOINT_GROUP_DETAILS("
-                 << "NIK="
-                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
+                 << "NAK="
+                 << cmd.group_key.network_anonymization_key.ToDebugString()
+                 << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
     case MockPersistentReportingStore::Command::Type::
         DELETE_REPORTING_ENDPOINT_GROUP:
       return out << "DELETE_REPORTING_ENDPOINT_GROUP("
-                 << "NIK="
-                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
+                 << "NAK="
+                 << cmd.group_key.network_anonymization_key.ToDebugString()
+                 << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
   }
 }
 
-MockPersistentReportingStore::MockPersistentReportingStore()
-    : load_started_(false),
-      endpoint_count_(0),
-      endpoint_group_count_(0),
-      queued_endpoint_count_delta_(0),
-      queued_endpoint_group_count_delta_(0) {}
-
+MockPersistentReportingStore::MockPersistentReportingStore() = default;
 MockPersistentReportingStore::~MockPersistentReportingStore() = default;
 
 void MockPersistentReportingStore::LoadReportingClients(

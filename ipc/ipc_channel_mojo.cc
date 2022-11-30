@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,8 +28,10 @@
 #include "ipc/trace_ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace IPC {
@@ -49,6 +50,9 @@ class MojoChannelFactory : public ChannelFactory {
         ipc_task_runner_(ipc_task_runner),
         proxy_task_runner_(proxy_task_runner),
         quota_checker_(mojo::internal::MessageQuotaChecker::MaybeCreate()) {}
+
+  MojoChannelFactory(const MojoChannelFactory&) = delete;
+  MojoChannelFactory& operator=(const MojoChannelFactory&) = delete;
 
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
     return ChannelMojo::Create(std::move(handle_), mode_, listener,
@@ -71,20 +75,52 @@ class MojoChannelFactory : public ChannelFactory {
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
   scoped_refptr<mojo::internal::MessageQuotaChecker> quota_checker_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(MojoChannelFactory);
+class ThreadSafeChannelProxy : public mojo::ThreadSafeProxy {
+ public:
+  using Forwarder = base::RepeatingCallback<void(mojo::Message)>;
+
+  ThreadSafeChannelProxy(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      Forwarder forwarder,
+      mojo::AssociatedGroupController& group_controller)
+      : task_runner_(std::move(task_runner)),
+        forwarder_(std::move(forwarder)),
+        group_controller_(group_controller) {}
+
+  // mojo::ThreadSafeProxy:
+  void SendMessage(mojo::Message& message) override {
+    message.SerializeHandles(&group_controller_);
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(forwarder_, std::move(message)));
+  }
+
+  void SendMessageWithResponder(
+      mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiver> responder) override {
+    // We don't bother supporting this because it's not used in practice.
+    NOTREACHED();
+  }
+
+ private:
+  ~ThreadSafeChannelProxy() override = default;
+
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const Forwarder forwarder_;
+  mojo::AssociatedGroupController& group_controller_;
 };
 
 base::ProcessId GetSelfPID() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (int global_pid = Channel::GetGlobalPid())
     return global_pid;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(OS_NACL)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_NACL)
   return -1;
 #else
   return base::GetCurrentProcId();
-#endif  // defined(OS_NACL)
+#endif  // BUILDFLAG(IS_NACL)
 }
 
 }  // namespace
@@ -137,22 +173,12 @@ ChannelMojo::ChannelMojo(
                                      proxy_task_runner, quota_checker);
 }
 
-void ChannelMojo::ForwardMessageFromThreadSafePtr(mojo::Message message) {
+void ChannelMojo::ForwardMessage(mojo::Message message) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!message_reader_ || !message_reader_->sender().is_bound())
     return;
   message_reader_->sender().internal_state()->ForwardMessage(
       std::move(message));
-}
-
-void ChannelMojo::ForwardMessageWithResponderFromThreadSafePtr(
-    mojo::Message message,
-    std::unique_ptr<mojo::MessageReceiver> responder) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!message_reader_ || !message_reader_->sender().is_bound())
-    return;
-  message_reader_->sender().internal_state()->ForwardMessageWithResponder(
-      std::move(message), std::move(responder));
 }
 
 ChannelMojo::~ChannelMojo() {
@@ -161,19 +187,30 @@ ChannelMojo::~ChannelMojo() {
 }
 
 bool ChannelMojo::Connect() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
   WillConnect();
 
-  mojo::AssociatedRemote<mojom::Channel> sender;
+  mojo::PendingAssociatedRemote<mojom::Channel> sender;
   mojo::PendingAssociatedReceiver<mojom::Channel> receiver;
   bootstrap_->Connect(&sender, &receiver);
 
   DCHECK(!message_reader_);
-  sender->SetPeerPid(GetSelfPID());
-  message_reader_.reset(new internal::MessagePipeReader(
-      pipe_, std::move(sender), std::move(receiver), this));
+  message_reader_ = std::make_unique<internal::MessagePipeReader>(
+      pipe_, std::move(sender), std::move(receiver), task_runner_, this);
+
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    FinishConnectOnIOThread();
+  } else {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ChannelMojo::FinishConnectOnIOThread, weak_ptr_));
+  }
   return true;
+}
+
+void ChannelMojo::FinishConnectOnIOThread() {
+  DCHECK(message_reader_);
+  message_reader_->FinishInitializationOnIOThread(GetSelfPID());
+  bootstrap_->StartReceiving();
 }
 
 void ChannelMojo::Pause() {
@@ -212,20 +249,22 @@ void ChannelMojo::OnPipeError() {
 }
 
 void ChannelMojo::OnAssociatedInterfaceRequest(
-    const std::string& name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
+    mojo::GenericPendingAssociatedReceiver receiver) {
   GenericAssociatedInterfaceFactory factory;
   {
     base::AutoLock locker(associated_interface_lock_);
-    auto iter = associated_interfaces_.find(name);
+    auto iter = associated_interfaces_.find(*receiver.interface_name());
     if (iter != associated_interfaces_.end())
       factory = iter->second;
   }
 
-  if (!factory.is_null())
-    factory.Run(std::move(handle));
-  else
-    listener_->OnAssociatedInterfaceRequest(name, std::move(handle));
+  if (!factory.is_null()) {
+    factory.Run(receiver.PassHandle());
+  } else {
+    const std::string interface_name = *receiver.interface_name();
+    listener_->OnAssociatedInterfaceRequest(interface_name,
+                                            receiver.PassHandle());
+  }
 }
 
 bool ChannelMojo::Send(Message* message) {
@@ -257,13 +296,10 @@ ChannelMojo::GetAssociatedInterfaceSupport() { return this; }
 std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
 ChannelMojo::CreateThreadSafeChannel() {
   return std::make_unique<mojo::ThreadSafeForwarder<mojom::Channel>>(
-      task_runner_,
-      base::BindRepeating(&ChannelMojo::ForwardMessageFromThreadSafePtr,
-                          weak_ptr_),
-      base::BindRepeating(
-          &ChannelMojo::ForwardMessageWithResponderFromThreadSafePtr,
-          weak_ptr_),
-      base::DoNothing(), *bootstrap_->GetAssociatedGroup());
+      base::MakeRefCounted<ThreadSafeChannelProxy>(
+          task_runner_,
+          base::BindRepeating(&ChannelMojo::ForwardMessage, weak_ptr_),
+          *bootstrap_->GetAssociatedGroup()->GetController()));
 }
 
 void ChannelMojo::OnPeerPidReceived(int32_t peer_pid) {
@@ -286,7 +322,7 @@ void ChannelMojo::OnBrokenDataReceived() {
 // static
 MojoResult ChannelMojo::ReadFromMessageAttachmentSet(
     Message* message,
-    base::Optional<std::vector<mojo::native::SerializedHandlePtr>>* handles) {
+    absl::optional<std::vector<mojo::native::SerializedHandlePtr>>* handles) {
   DCHECK(!*handles);
 
   MojoResult result = MOJO_RESULT_OK;
@@ -315,7 +351,7 @@ MojoResult ChannelMojo::ReadFromMessageAttachmentSet(
 
 // static
 MojoResult ChannelMojo::WriteToMessageAttachmentSet(
-    base::Optional<std::vector<mojo::native::SerializedHandlePtr>> handles,
+    absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles,
     Message* message) {
   if (!handles)
     return MOJO_RESULT_OK;
@@ -349,16 +385,20 @@ void ChannelMojo::AddGenericAssociatedInterface(
   DCHECK(result.second);
 }
 
-void ChannelMojo::GetGenericRemoteAssociatedInterface(
-    const std::string& name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
+void ChannelMojo::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
   if (message_reader_) {
-    message_reader_->GetRemoteInterface(name, std::move(handle));
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      message_reader_->thread_safe_sender().GetAssociatedInterface(
+          std::move(receiver));
+      return;
+    }
+    message_reader_->GetRemoteInterface(std::move(receiver));
   } else {
     // Attach the associated interface to a disconnected pipe, so that the
     // associated interface pointer can be used to make calls (which are
     // dropped).
-    mojo::AssociateWithDisconnectedPipe(std::move(handle));
+    mojo::AssociateWithDisconnectedPipe(receiver.PassHandle());
   }
 }
 

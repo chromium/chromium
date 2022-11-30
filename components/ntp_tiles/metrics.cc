@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,27 +20,20 @@ namespace {
 
 const int kLastTitleSource = static_cast<int>(TileTitleSource::LAST);
 
-// Identifiers for the various tile sources.
+// Identifiers for the various tile sources. Should sync with
+// NewTabPageProviders in histogram_suffixes_list.xml.
 const char kHistogramClientName[] = "client";
-const char kHistogramServerName[] = "server";
 const char kHistogramPopularName[] = "popular_fetched";
 const char kHistogramBakedInName[] = "popular_baked_in";
 const char kHistogramAllowlistName[] = "allowlist";
 const char kHistogramHomepageName[] = "homepage";
 const char kHistogramCustomLinksName[] = "custom_links";
 const char kHistogramExploreName[] = "explore";
-const char kHistogramRepeatableQueryName[] = "repeatable_query";
 
 // Suffixes for the various icon types.
 const char kTileTypeSuffixIconColor[] = "IconsColor";
 const char kTileTypeSuffixIconGray[] = "IconsGray";
 const char kTileTypeSuffixIconReal[] = "IconsReal";
-
-void LogUmaHistogramAge(const std::string& name, const base::TimeDelta& value) {
-  // Log the value in number of seconds.
-  base::UmaHistogramCustomCounts(name, value.InSeconds(), 5,
-                                 base::TimeDelta::FromDays(14).InSeconds(), 20);
-}
 
 std::string GetSourceHistogramName(TileSource source) {
   switch (source) {
@@ -52,16 +45,12 @@ std::string GetSourceHistogramName(TileSource source) {
       return kHistogramPopularName;
     case TileSource::ALLOWLIST:
       return kHistogramAllowlistName;
-    case TileSource::SUGGESTIONS_SERVICE:
-      return kHistogramServerName;
     case TileSource::HOMEPAGE:
       return kHistogramHomepageName;
     case TileSource::CUSTOM_LINKS:
       return kHistogramCustomLinksName;
     case TileSource::EXPLORE:
       return kHistogramExploreName;
-    case TileSource::REPEATABLE_QUERIES_SERVICE:
-      return kHistogramRepeatableQueryName;
   }
   NOTREACHED();
   return std::string();
@@ -97,16 +86,6 @@ void RecordTileImpression(const NTPTileImpression& impression) {
       base::StringPrintf("NewTabPage.SuggestionsImpression.%s",
                          source_name.c_str()),
       impression.index, kMaxNumTiles);
-
-  if (!impression.data_generation_time.is_null()) {
-    const base::TimeDelta age =
-        base::Time::Now() - impression.data_generation_time;
-    LogUmaHistogramAge("NewTabPage.SuggestionsImpressionAge", age);
-    LogUmaHistogramAge(
-        base::StringPrintf("NewTabPage.SuggestionsImpressionAge.%s",
-                           source_name.c_str()),
-        age);
-  }
 
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.TileTitle",
                             static_cast<int>(impression.title_source),
@@ -159,15 +138,6 @@ void RecordTileClick(const NTPTileImpression& impression) {
       base::StringPrintf("NewTabPage.MostVisited.%s", source_name.c_str()),
       impression.index, kMaxNumTiles);
 
-  if (!impression.data_generation_time.is_null()) {
-    const base::TimeDelta age =
-        base::Time::Now() - impression.data_generation_time;
-    LogUmaHistogramAge("NewTabPage.MostVisitedAge", age);
-    LogUmaHistogramAge(
-        base::StringPrintf("NewTabPage.MostVisitedAge.%s", source_name.c_str()),
-        age);
-  }
-
   const char* tile_type_suffix = GetTileTypeSuffix(impression.visual_type);
   if (tile_type_suffix) {
     base::UmaHistogramExactLinear(
@@ -206,6 +176,12 @@ void RecordTileClick(const NTPTileImpression& impression) {
                            GetSourceHistogramName(impression.source).c_str()),
         impression.visual_type, LAST_RECORDED_TILE_TYPE + 1);
   }
+}
+
+void RecordsMigratedDefaultAppDeleted(
+    const DeletedTileType& most_visited_app_type) {
+  base::UmaHistogramEnumeration("NewTabPage.MostVisitedMigratedDefaultAppType",
+                                most_visited_app_type);
 }
 
 }  // namespace metrics

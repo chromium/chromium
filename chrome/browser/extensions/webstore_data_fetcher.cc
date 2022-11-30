@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -121,12 +121,12 @@ void WebstoreDataFetcher::OnResponseStarted(
 
 void WebstoreDataFetcher::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    delegate_->OnWebstoreResponseParseFailure(id_, *result.error);
+  if (!result.has_value()) {
+    delegate_->OnWebstoreResponseParseFailure(id_, result.error());
     return;
   }
 
-  if (!result.value->is_dict()) {
+  if (!result->is_dict()) {
     delegate_->OnWebstoreResponseParseFailure(id_,
                                               kInvalidWebstoreResponseError);
     return;
@@ -134,7 +134,7 @@ void WebstoreDataFetcher::OnJsonParsed(
 
   delegate_->OnWebstoreResponseParseSuccess(
       id_, base::DictionaryValue::From(
-               base::Value::ToUniquePtrValue(std::move(*result.value))));
+               base::Value::ToUniquePtrValue(std::move(*result))));
 }
 
 void WebstoreDataFetcher::OnSimpleLoaderComplete(

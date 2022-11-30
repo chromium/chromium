@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
 
-#include "base/test/scoped_feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_target_iterator.h"
@@ -20,9 +19,6 @@
 class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
  public:
   MoveToAccountStoreBubbleViewTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-
     password_manager::PasswordForm pending_password;
     pending_password.url = GURL("www.example.com");
     ON_CALL(*model_delegate_mock(), GetPendingPassword)
@@ -35,16 +31,15 @@ class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
   void TearDown() override;
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-  MoveToAccountStoreBubbleView* view_;
+  raw_ptr<MoveToAccountStoreBubbleView> view_;
 };
 
 void MoveToAccountStoreBubbleViewTest::CreateViewAndShow() {
   // The move bubble is shown only to signed in users. Make sure there is one.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo info =
-      signin::MakePrimaryAccountAvailable(identity_manager, "test@email.com");
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@email.com", signin::ConsentLevel::kSync);
 
   CreateAnchorViewAndShow();
 

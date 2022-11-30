@@ -1,0 +1,13 @@
+AXWebArea
+++AXGroup
+++++AXTextField AXDetailsElements=[:4]
+++AXGroup
+++++AXStaticText AXValue='Details'
+++AXGroup
+++++AXStaticText AXValue='This '
+++++AXGroup AXDetailsElements=[:11, :13]
+++++++AXStaticText AXValue='text'
+++++AXStaticText AXValue=' has details'
+++AXGroup AXSubrole=AXApplicationGroup
+++++AXStaticText AXValue='Text details'
+++AXImage AXDescription='Image details'

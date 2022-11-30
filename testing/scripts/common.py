@@ -1,23 +1,28 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import argparse
+import codecs
 import contextlib
-import io
 import json
 import os
 import logging
+import platform
 import subprocess
 import sys
 import tempfile
-import time
 import traceback
 
-# Add src/testing/ into sys.path for importing xvfb.
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import xvfb
+logging.basicConfig(level=logging.INFO)
+
+# Add src/testing/ into sys.path for importing xvfb and test_env.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import test_env
+if sys.platform.startswith('linux'):
+  import xvfb
 
 # Unfortunately we need to copy these variables from ../test_env.py.
 # Importing it and using its get_sandbox_env breaks test runs on Linux
@@ -30,6 +35,18 @@ SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 SRC_DIR = os.path.abspath(
     os.path.join(SCRIPT_DIR, os.path.pardir, os.path.pardir))
 
+# Use result_sink.py in //build/util/lib/results/ for uploading the
+# results of non-isolated script tests.
+BUILD_UTIL_DIR = os.path.join(SRC_DIR, 'build', 'util')
+sys.path.insert(0, BUILD_UTIL_DIR)
+try:
+  from lib.results import result_sink
+  from lib.results import result_types
+except ImportError:
+  # Some build-time scripts import this file and run into issues with
+  # result_sink's dependency on requests since we can't depend on vpython
+  # during build-time. So silently swallow the error in that case.
+  result_sink = None
 
 # run_web_tests.py returns the number of failures as the return
 # code, but caps the return code at 101 to avoid overflow or colliding
@@ -39,6 +56,71 @@ MAX_FAILURES_EXIT_STATUS = 101
 
 # Exit code to indicate infrastructure issue.
 INFRA_FAILURE_EXIT_CODE = 87
+
+
+# ACL might be explicitly set or inherited.
+CORRECT_ACL_VARIANTS = [
+    'APPLICATION PACKAGE AUTHORITY' \
+    '\\ALL RESTRICTED APPLICATION PACKAGES:(OI)(CI)(RX)', \
+    'APPLICATION PACKAGE AUTHORITY' \
+    '\\ALL RESTRICTED APPLICATION PACKAGES:(I)(OI)(CI)(RX)'
+]
+
+# pylint: disable=useless-object-inheritance
+
+
+def set_lpac_acls(acl_dir, is_test_script=False):
+  """Sets LPAC ACLs on a directory. Windows 10 only."""
+  if platform.release() != '10':
+    return
+  try:
+    existing_acls = subprocess.check_output(['icacls', acl_dir],
+                                            stderr=subprocess.STDOUT,
+                                            universal_newlines=True)
+  except subprocess.CalledProcessError as e:
+    logging.error('Failed to retrieve existing ACLs for directory %s', acl_dir)
+    logging.error('Command output: %s', e.output)
+    sys.exit(e.returncode)
+  acls_correct = False
+  for acl in CORRECT_ACL_VARIANTS:
+    if acl in existing_acls:
+      acls_correct = True
+  if not acls_correct:
+    try:
+      existing_acls = subprocess.check_output(
+          ['icacls', acl_dir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)'],
+          stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+      logging.error(
+          'Failed to retrieve existing ACLs for directory %s', acl_dir)
+      logging.error('Command output: %s', e.output)
+      sys.exit(e.returncode)
+  if not is_test_script:
+    return
+  # Bots running on luci use hardlinks that do not have correct ACLs so these
+  # must be manually overridden here.
+  with temporary_file() as tempfile_path:
+    subprocess.check_output(
+        ['icacls', acl_dir, '/save', tempfile_path, '/t', '/q', '/c'],
+        stderr=subprocess.STDOUT)
+    # ACL files look like this, e.g. for c:\a\b\c\d\Release_x64
+    #
+    # Release_x64
+    # D:AI(A;OICI;0x1200a9;;;S-1-15-2-2)(A;OICIID;FA;;;BA)
+    # Release_x64\icudtl_extra.dat
+    # D:AI(A;ID;0x1200a9;;;S-1-15-2-2)(A;ID;FA;;;BA)(A;ID;0x1301bf;;;BU)
+    with codecs.open(tempfile_path, encoding='utf_16_le') as aclfile:
+      for filename in aclfile:
+        acl = next(aclfile).strip()
+        full_filename = os.path.abspath(
+            os.path.join(acl_dir, os.pardir, filename.strip()))
+        if 'S-1-15-2-2' in acl:
+          continue
+        if os.path.isdir(full_filename):
+          continue
+        subprocess.check_output(
+            ['icacls', full_filename, '/grant', '*S-1-15-2-2:(RX)'],
+            stderr=subprocess.STDOUT)
 
 
 def run_script(argv, funcs):
@@ -74,9 +156,9 @@ def run_script(argv, funcs):
 
 
 def run_command(argv, env=None, cwd=None):
-  print('Running %r in %r (env: %r)' % (argv, cwd, env))
+  print('Running %r in %r (env: %r)' % (argv, cwd, env), file=sys.stderr)
   rc = test_env.run_command(argv, env=env, cwd=cwd)
-  print('Command %r returned exit code %d' % (argv, rc))
+  print('Command %r returned exit code %d' % (argv, rc), file=sys.stderr)
   return rc
 
 
@@ -90,11 +172,45 @@ def temporary_file():
     os.remove(path)
 
 
+def record_local_script_results(name, output_fd, failures, valid):
+  """Records to a local json file and to RDB the results of the script test.
+
+  For legacy reasons, local script tests (ie: script tests that run
+  locally and that don't conform to the isolated-test API) are expected to
+  record their results using a specific format. This method encapsulates
+  that format and also uploads those results to Result DB.
+
+  Args:
+    name: Name of the script test.
+    output_fd: A .write()-supporting file descriptor to write results to.
+    failures: List of strings representing test failures.
+    valid: Whether the results are valid.
+  """
+  local_script_results = {
+      'valid': valid,
+      'failures': failures
+  }
+  json.dump(local_script_results, output_fd)
+
+  if not result_sink:
+    return
+  result_sink_client = result_sink.TryInitClient()
+  if not result_sink_client:
+    return
+  status = result_types.PASS
+  if not valid:
+    status = result_types.UNKNOWN
+  elif failures:
+    status = result_types.FAIL
+  test_log = '\n'.join(failures)
+  result_sink_client.Post(name, status, None, test_log, None)
+
+
 def parse_common_test_results(json_results, test_separator='/'):
   def convert_trie_to_flat_paths(trie, prefix=None):
     # Also see blinkpy.web_tests.layout_package.json_results_generator
     result = {}
-    for name, data in trie.iteritems():
+    for name, data in trie.items():
       if prefix:
         name = prefix + test_separator + name
       if len(data) and not 'actual' in data and not 'expected' in data:
@@ -118,7 +234,7 @@ def parse_common_test_results(json_results, test_separator='/'):
   passing_statuses = ('PASS', 'SLOW', 'NEEDSREBASELINE')
 
   for test, result in convert_trie_to_flat_paths(
-      json_results['tests']).iteritems():
+      json_results['tests']).items():
     key = 'unexpected_' if result.get('is_unexpected') else ''
     data = result['actual']
     actual_results = data.split()
@@ -177,7 +293,7 @@ def get_gtest_summary_passes(output):
   mapping = {}
 
   for cur_iteration_data in output.get('per_iteration_data', []):
-    for test_fullname, results in cur_iteration_data.iteritems():
+    for test_fullname, results in cur_iteration_data.items():
       # Results is a list with one entry per test try. Last one is the final
       # result.
       last_result = results[-1]
@@ -229,7 +345,10 @@ class BaseIsolatedScriptArgsAdapter(object):
         '--isolated-script-test-also-run-disabled-tests',
         default=False, action='store_true', required=False)
 
-    self._parser.add_argument('--xvfb', help='start xvfb', action='store_true')
+    self._parser.add_argument(
+        '--xvfb',
+        help='start xvfb. Ignored on unsupported platforms',
+        action='store_true')
 
     # This argument is ignored for now.
     self._parser.add_argument(
@@ -276,15 +395,19 @@ class BaseIsolatedScriptArgsAdapter(object):
   def generate_test_also_run_disabled_tests_args(self):
     raise RuntimeError('this method is not yet implemented')
 
-  def generate_sharding_args(self, total_shard, shard_index):
-    del total_shard, shard_index  # unused
+  def generate_sharding_args(self, total_shards, shard_index):
+    del total_shards, shard_index  # unused
     raise RuntimeError('this method is not yet implemented')
 
-  def generate_isolated_script_cmd(self):
-    isolated_script_cmd = [sys.executable] + self.rest_args
+  def select_python_executable(self):
+    return sys.executable
 
-    isolated_script_cmd += self.generate_test_output_args(
-        self.options.isolated_script_test_output)
+  def generate_isolated_script_cmd(self):
+    isolated_script_cmd = [ self.select_python_executable() ] + self.rest_args
+
+    if self.options.isolated_script_test_output:
+      isolated_script_cmd += self.generate_test_output_args(
+          self.options.isolated_script_test_output)
 
     # Augment test filter args if needed
     if self.options.isolated_script_test_filter:
@@ -330,7 +453,7 @@ class BaseIsolatedScriptArgsAdapter(object):
   def do_post_test_run_tasks(self):
     pass
 
-  def run_test(self):
+  def run_test(self, cwd=None):
     self.parse_args()
     cmd = self.generate_isolated_script_cmd()
 
@@ -347,11 +470,13 @@ class BaseIsolatedScriptArgsAdapter(object):
       env['CHROME_HEADLESS'] = '1'
       print('Running command: %s\nwith env: %r' % (
           ' '.join(cmd), env))
-      if self.options.xvfb:
-        exit_code = xvfb.run_executable(cmd, env)
+      sys.stdout.flush()
+      if self.options.xvfb and sys.platform.startswith('linux'):
+        exit_code = xvfb.run_executable(cmd, env, cwd=cwd)
       else:
-        exit_code = test_env.run_command(cmd, env=env)
+        exit_code = test_env.run_command(cmd, env=env, cwd=cwd, log=False)
       print('Command returned exit code %d' % exit_code)
+      sys.stdout.flush()
       self.do_post_test_run_tasks()
       return exit_code
     except Exception:

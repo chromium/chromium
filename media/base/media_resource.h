@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,10 @@
 
 #include <vector>
 
-#include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
 #include "media/base/media_url_params.h"
-#include "url/gurl.h"
 
 namespace media {
 
@@ -31,6 +28,10 @@ class MEDIA_EXPORT MediaResource {
   };
 
   MediaResource();
+
+  MediaResource(const MediaResource&) = delete;
+  MediaResource& operator=(const MediaResource&) = delete;
+
   virtual ~MediaResource();
 
   virtual MediaResource::Type GetType() const;
@@ -46,7 +47,7 @@ class MEDIA_EXPORT MediaResource {
   //   some previously existing streams inaccessible/unavailable.
   virtual std::vector<DemuxerStream*> GetAllStreams() = 0;
 
-  // A helper function that return the first stream of the given |type| if one
+  // A helper function that return the first stream of the given `type` if one
   // exists or a null pointer if there is no streams of that type.
   DemuxerStream* GetFirstStream(DemuxerStream::Type type);
 
@@ -63,9 +64,6 @@ class MEDIA_EXPORT MediaResource {
   // This method could be refactored if WMPI was aware of the concrete type of
   // Demuxer* it is dealing with.
   virtual void ForwardDurationChangeToDemuxerHost(base::TimeDelta duration);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaResource);
 };
 
 }  // namespace media

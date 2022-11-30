@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/login/ui/login_palette.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -25,7 +26,7 @@ class ToggleImageButton;
 
 namespace ash {
 class ArrowButtonView;
-enum class EasyUnlockIconId;
+enum class EasyUnlockIconState;
 
 // Contains a textfield and a submit button. When the display password button
 // is visible, the textfield contains a button in the form of an eye icon that
@@ -54,7 +55,8 @@ enum class EasyUnlockIconId;
 //  ------------------
 class ASH_EXPORT LoginPasswordView : public views::View,
                                      public views::TextfieldController,
-                                     public ImeControllerImpl::Observer {
+                                     public ImeControllerImpl::Observer,
+                                     public ui::ImplicitAnimationObserver {
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
@@ -86,6 +88,10 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   // Must call |Init| after construction.
   explicit LoginPasswordView(const LoginPalette& palette);
+
+  LoginPasswordView(const LoginPasswordView&) = delete;
+  LoginPasswordView& operator=(const LoginPasswordView&) = delete;
+
   ~LoginPasswordView() override;
 
   // |on_submit| is called when the user hits enter or has pressed the submit
@@ -97,11 +103,11 @@ class ASH_EXPORT LoginPasswordView : public views::View,
             const OnEasyUnlockIconHovered& on_easy_unlock_icon_hovered,
             views::Button::PressedCallback on_easy_unlock_icon_tapped);
 
-  // Is the password field enabled when there is no text?
+  // Whether or not the password field is enabled when there is no text.
   void SetEnabledOnEmptyPassword(bool enabled);
 
   // Change the active icon for easy unlock.
-  void SetEasyUnlockIcon(EasyUnlockIconId id,
+  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
                          const std::u16string& accessibility_label);
 
   // Set the textfield name used for accessibility.
@@ -117,9 +123,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Clear the text and put the password into hide mode.
   void Reset();
 
-  // Clear all currently entered text.
-  void Clear();
-
   // Inserts the given numeric value to the textfield at the current cursor
   // position (most likely the end).
   void InsertNumber(int value);
@@ -133,6 +136,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   // Makes the textfield read-only and enables/disables submitting.
   void SetReadOnly(bool read_only);
+  bool IsReadOnly() const;
 
   // views::View:
   const char* GetClassName() const override;
@@ -144,7 +148,9 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   void InvertPasswordDisplayingState();
 
   // Hides the password. When |chromevox_exception| is true, the password is not
-  // hidden if ChromeVox is enabled.
+  // hidden if ChromeVox is enabled. There should be a ChromeVox exception iff
+  // it is triggered by a timer: a user action or a reset call should always
+  // hide password.
   void HidePassword(bool chromevox_exception);
 
   // views::TextfieldController:
@@ -156,6 +162,9 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override;
 
   void HandleLeftIconsVisibilities(bool handling_capslock);
 
@@ -178,13 +187,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Increases/decreases the contrast of the capslock icon.
   void SetCapsLockHighlighted(bool highlight);
 
-  // Highlight or remove highlight from password row.
-  void SetPasswordRowHighlighted(bool highlight);
-
-  // Remove highlight from caps lock and password row, when textfield looses
-  // focus.
-  void RemoveHighlightFromCapsLockAndRow();
-
   // Needs to be true in order for SubmitPassword to be ran. Returns true if the
   // textfield is not empty or if |enabled_on_empty_password| is true.
   bool IsPasswordSubmittable();
@@ -201,12 +203,12 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   // Clears the password field after a time without action if the display
   // password button is visible.
-  std::unique_ptr<base::RetainingOneShotTimer> clear_password_timer_;
+  base::RetainingOneShotTimer clear_password_timer_;
 
   // Hides the password after a short delay if the password is shown, except if
   // ChromeVox is enabled (otherwise, the user would not have time to navigate
   // through the password and make the characters read out loud one by one).
-  std::unique_ptr<base::RetainingOneShotTimer> hide_password_timer_;
+  base::RetainingOneShotTimer hide_password_timer_;
 
   LoginPalette palette_;
 
@@ -222,8 +224,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   bool should_show_easy_unlock_ = false;
 
   bool is_capslock_higlight_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPasswordView);
 };
 
 }  // namespace ash

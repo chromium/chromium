@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #import <objc/runtime.h>
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #import "content/browser/renderer_host/render_widget_host_view_mac.h"
 
@@ -125,7 +124,7 @@ const char* const kEditCommands[] = {
 // The route the message takes is:
 // RenderWidgetHostViewMac -> RenderViewHost ->
 // | IPC | ->
-// RenderView -> currently focused WebFrame.
+// `blink::WebView` -> currently focused WebFrame.
 // The WebFrame is in the Chrome glue layer and forwards the message to WebCore.
 void EditCommandImp(id self, SEL _cmd, id sender) {
   // Make sure |self| is the right type.
@@ -180,7 +179,7 @@ NSString* RenderWidgetHostViewMacEditCommandHelper::CommandNameForSelector(
 
 RenderWidgetHostViewMacEditCommandHelper::
     RenderWidgetHostViewMacEditCommandHelper() {
-  for (size_t i = 0; i < base::size(kEditCommands); ++i) {
+  for (size_t i = 0; i < std::size(kEditCommands); ++i) {
     edit_command_set_.insert(kEditCommands[i]);
   }
 }
@@ -213,7 +212,7 @@ bool RenderWidgetHostViewMacEditCommandHelper::IsMenuItemEnabled(
 // static
 void RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
     Class klass) {
-  for (size_t i = 0; i < base::size(kEditCommands); ++i) {
+  for (size_t i = 0; i < std::size(kEditCommands); ++i) {
     // Append trailing ':' to command name to get selector name.
     NSString* sel_str = [NSString stringWithFormat:@"%s:", kEditCommands[i]];
 
@@ -230,7 +229,7 @@ void RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
 // static
 NSArray*
 RenderWidgetHostViewMacEditCommandHelper::GetEditSelectorNamesForTesting() {
-  size_t num_edit_commands = base::size(kEditCommands);
+  size_t num_edit_commands = std::size(kEditCommands);
   NSMutableArray* ret = [NSMutableArray arrayWithCapacity:num_edit_commands];
 
   for (size_t i = 0; i < num_edit_commands; ++i) {

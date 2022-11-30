@@ -1,0 +1,364 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package nearby.fastpair;
+
+import "context_fence.proto";
+import "enums.proto";
+import "message_set.proto";
+
+// Information about Fast Pair. This will either contain an account key and
+// discovery item bytes or an opt in status.
+message FastPairInfo {
+  // Footprints stores data contained in the message set, see
+  // https://g3doc.corp.google.com/personalization/footprints/g3doc/client-docs/index.md#data-format-and-storage
+  extend proto2.bridge.MessageSet {
+    optional FastPairInfo message_set_extension = 190536965;
+  }
+
+  oneof info {
+    OptInStatus opt_in_status = 1;
+    FastPairDevice device = 2;
+  }
+}
+
+// A device that has been Fast Paired with.
+message FastPairDevice {
+  // The account key which was written to the device after pairing completed.
+  optional bytes account_key = 1;
+
+  // The stored discovery item which represents the notification that should be
+  // associated with the device. Note, this is stored as a raw byte array
+  // instead of StoredDiscoveryItem because icing only supports proto lite and
+  // StoredDiscoveryItem is handed around as a nano proto in implementation,
+  // which are not compatible with each other.
+  optional bytes discovery_item_bytes = 3;
+
+  // SHA256 of "account key + headset's public address", this is used to
+  // identify the paired headset. Because of adding account key to generate the
+  // hash value, it makes the information anonymous, even for the same headset,
+  // different accounts have different values.
+  optional bytes sha256_account_key_public_address = 4;
+
+  // Deprecated fields.
+  reserved 2;
+}
+
+// Additional images for True Wireless Fast Pair devices.
+message TrueWirelessHeadsetImages {
+  // Image URL for the left bud.
+  optional string left_bud_url = 1;
+
+  // Image URL for the right bud.
+  optional string right_bud_url = 2;
+
+  // Image URL for the case.
+  optional string case_url = 3;
+}
+
+message CompanionAppDetails {
+  // Companion app slice provider's authority.
+  optional string authority = 1;
+
+  // Companion app certificate value.
+  optional string certificate_hash = 2;
+
+  // Deprecated fields.
+  reserved 3;
+}
+
+// Relevance indicates how relevant the item is to the user.
+message Relevance {
+  // REQUIRED
+  // Whether the item is good, ok, poor, etc. Corresponds to levels found in
+  // the Discoverer Notification Policy Worksheet:
+  // https://docs.google.com/a/google.com/spreadsheets/d/1atc1-RNLb7fAGvGdWXlh86Qy2IY9T_dj2v4gFUhdPF0/edit?usp=sharing
+  optional Evaluation evaluation = 1;
+
+  // To get this relevance, the item can be at most this far away.
+  // Note: Supported in v11+.
+  // TODO(jfarfel): Replace with Targeting.
+  optional double max_distance = 2;
+
+  // To get this relevance, the item must pass this targeting rule (if set).
+  // Note: Supported in v11+. Prior to v11, clients expected targeting to be
+  // set via field 12 on the NearbyItem.
+  // See go/discoverer-notification-targeting
+  // TODO(jfarfel): Replace with Targeting.
+  optional personalization.context.ContextFence targeting_fence = 3;
+}
+
+message StoredRelevance {
+  optional Relevance relevance = 1;
+
+  // The last time that this relevance passed targeting. A relevance with no
+  // targeting always passes. Null if it failed, or we haven't checked yet.
+  optional int64 targeting_true_millis = 2;
+}
+
+// Additional information relevant only for Fast Pair devices.
+message FastPairInformation {
+  // When true, Fast Pair will only create a bond with the device and not
+  // attempt to connect any profiles (for example, A2DP or HFP).
+  // TODO(b/128545971): Transition this to a feature.
+  optional bool data_only_connection = 1;
+
+  // The type of the manufacturer (first party, third party, etc).
+  optional ManufacturerType manufacturer_type = 2;
+
+  // Additional images that are attached specifically for true wireless Fast
+  // Pair devices.
+  optional TrueWirelessHeadsetImages true_wireless_images = 3;
+
+  // When true, this device can support assistant function.
+  // TODO(b/128545971): Transition this to a feature.
+  optional bool assistant_supported = 4;
+
+  // Features supported by the Fast Pair device.
+  repeated FastPairFeature features = 5;
+
+  // Optional, the name of the company producing this Fast Pair device.
+  optional string company_name = 6;
+
+  // Optional, the type of device.
+  optional DeviceType device_type = 7;
+}
+
+message FastPairStrings {
+  // Required for initial pairing, used when there is a Google account on the
+  // device
+  optional string tap_to_pair_with_account = 1;
+
+  // Required for initial pairing, used when there is no Google account on the
+  // device
+  optional string tap_to_pair_without_account = 2;
+
+  // Description for initial pairing
+  optional string initial_pairing_description = 3;
+
+  // Description after successfully paired the device with companion app
+  // installed
+  optional string pairing_finished_companion_app_installed = 4;
+
+  // Description after successfully paired the device with companion app not
+  // installed
+  optional string pairing_finished_companion_app_not_installed = 5;
+
+  // Description when phone found the device that associates with user's account
+  // before remind user to pair with new device.
+  optional string subsequent_pairing_description = 6;
+
+  // Description when fast pair finds the user paired with device manually
+  // reminds user to opt the device into cloud.
+  optional string retroactive_pairing_description = 7;
+
+  // Description when user click setup device while device is still pairing
+  optional string wait_app_launch_description = 8;
+
+  // Description when user fail to pair with device
+  optional string pairing_fail_description = 9;
+
+  // Title to ask the user to confirm the pin code.
+  optional string confirm_pin_title = 10;
+
+  // Description to ask the user to confirm the pin code.
+  optional string confirm_pin_description = 11;
+
+  // The title of the UI to ask the user to confirm to sync contacts.
+  optional string sync_contacts_title = 12;
+
+  // The description of the UI to ask the user to confirm to sync contacts.
+  optional string sync_contacts_description = 13;
+
+  // The title of the UI to ask the user to confirm to sync SMS.
+  optional string sync_sms_title = 14;
+
+  // The description of the UI to ask the user to confirm to sync SMS.
+  optional string sync_sms_description = 15;
+
+  // The description for half sheet to ask user to setup google assistant.
+  optional string assistant_half_sheet_description = 16;
+
+  // The description for notification to ask user to setup google assistant.
+  optional string assistant_notification_description = 17;
+}
+
+// Data for a DiscoveryItem created from server response and client scan result.
+// Only caching original data from scan result, server response, timestamps
+// and user actions. Do not save generated data in this object.
+message StoredDiscoveryItem {
+  enum State {
+    // Default unknown state.
+    STATE_UNKNOWN = 0;
+
+    // The item is normal.
+    STATE_ENABLED = 1;
+
+    // The item has been muted by user.
+    STATE_MUTED = 2;
+
+    // The item has been disabled by us (likely temporarily).
+    STATE_DISABLED_BY_SYSTEM = 3;
+  }
+
+  // The status of the item.
+  enum DebugMessageCategory {
+    // Default unknown state.
+    STATUS_UNKNOWN = 0;
+
+    // The item is valid and visible in notification.
+    STATUS_VALID_NOTIFICATION = 1;
+
+    // The item made it to list but not to notification.
+    STATUS_VALID_LIST_VIEW = 2;
+
+    // The item is filtered out on client. Never made it to list view.
+    STATUS_DISABLED_BY_CLIENT = 3;
+
+    // The item is filtered out by server. Never made it to client.
+    STATUS_DISABLED_BY_SERVER = 4;
+  }
+
+  enum ExperienceType {
+    EXPERIENCE_UNKNOWN = 0;
+    EXPERIENCE_GOOD = 1;
+    EXPERIENCE_BAD = 2;
+  }
+
+  // REQUIRED
+  // Offline item: unique ID generated on client.
+  // Online item: unique ID generated on server.
+  optional string id = 1;
+
+  // REQUIRED
+  optional NearbyType type = 2;
+
+  // REQUIRED
+  // The most recent all upper case mac associated with this item.
+  // (Mac-to-DiscoveryItem is a many-to-many relationship)
+  optional string mac_address = 4;
+
+  // REQUIRED
+  optional string action_url = 5;
+
+  // The bluetooth device name from advertisment
+  optional string device_name = 6;
+
+  // REQUIRED
+  // Item's title
+  optional string title = 7;
+
+  // Item's description.
+  optional string description = 8;
+
+  // The URL for display
+  optional string display_url = 9;
+
+  // REQUIRED
+  // Client timestamp when the beacon was last observed in BLE scan.
+  optional int64 last_observation_timestamp_millis = 10;
+
+  // REQUIRED
+  // Client timestamp when the beacon was first observed in BLE scan.
+  optional int64 first_observation_timestamp_millis = 11;
+
+  // REQUIRED
+  // Item's current state. e.g. if the item is blocked.
+  optional State state = 17;
+
+  // The resolved url type for the action_url.
+  optional ResolvedUrlType action_url_type = 19;
+
+  // The timestamp when the user is redirected to Play Store after clicking on
+  // the item.
+  optional int64 pending_app_install_timestamp_millis = 20;
+
+  // Beacon's RSSI value
+  optional int32 rssi = 22;
+
+  // Beacon's tx power
+  optional int32 tx_power = 23;
+
+  // Human readable name of the app designated to open the uri
+  // Used in the second line of the notification, "Open in {} app"
+  optional string app_name = 25;
+
+  // ID used for associating several DiscoveryItems.  These items may be
+  // visually displayed together.
+  optional string group_id = 26;
+
+  // The timestamp when the attachment was created on PBS server. In case there
+  // are duplicate
+  // items with the same scanId/groupID, only show the one with the latest
+  // timestamp.
+  optional int64 attachment_creation_sec = 28;
+
+  // Whether the attachment is created in debug namespace
+  optional DiscoveryAttachmentType attachment_type = 29;
+
+  // Package name of the App that owns this item.
+  optional string package_name = 30;
+
+  // The average star rating of the app.
+  optional float star_rating = 31;
+
+  // The "feature" graphic image url used for large sized list view entries.
+  optional string feature_graphic_url = 32;
+
+  // TriggerId identifies the trigger/beacon that is attached with a message.
+  // It's generated from server for online messages to synchronize formatting
+  // across client versions.
+  // Example:
+  // * BLE_UID: 3||deadbeef
+  // * BLE_URL: http://trigger.id
+  // See go/discovery-store-message-and-trigger-id for more details.
+  optional string trigger_id = 34;
+
+  // Bytes of item icon in PNG format displayed in Discovery item list.
+  optional bytes icon_png = 36;
+
+  // Message written to bugreport for 3P developers.(No sensitive info)
+  // null if the item is valid
+  optional string debug_message = 37;
+
+  // Weather the item is filtered out on server.
+  optional DebugMessageCategory debug_category = 38;
+
+  // How relevant the message is to the user. May be used by the client to
+  // determine how to display the NearbyItem. >1 relevance makes sense only if
+  // each has targeting (e.g., a maximum distance threshold). In that case, the
+  // item's relevance is the maximum one where the targeting is satisfied.
+  repeated StoredRelevance stored_relevances = 40;
+
+  // Client timestamp when the trigger (e.g. beacon) was last lost (e.g. when
+  // Messages told us the beacon's no longer nearby).
+  optional int64 lost_millis = 41;
+
+  // The kind of expereince the user last had with this (e.g. if they dismissed
+  // the notification, that's bad; but if they tapped it, that's good).
+  optional ExperienceType last_user_experience = 42;
+
+  // The most recent BLE advertisement related to this item.
+  optional bytes ble_record_bytes = 43;
+
+  // An ID generated on the server to uniquely identify content.
+  optional string entity_id = 44;
+
+  // See equivalent field in NearbyItem.
+  optional bytes authentication_public_key_secp256r1 = 45;
+
+  // See equivalent field in NearbyItem.
+  optional FastPairInformation fast_pair_information = 46;
+
+  // Companion app detail.
+  optional CompanionAppDetails companion_detail = 47;
+
+  // Fast pair strings
+  optional FastPairStrings fast_pair_strings = 48;
+
+  // Deprecated fields.
+  reserved 3, 12, 13, 14, 15, 16, 18, 21, 24, 27, 33, 35, 39;
+}

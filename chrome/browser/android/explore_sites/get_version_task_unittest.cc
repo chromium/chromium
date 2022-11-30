@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,12 @@ using InitializationStatus = ExploreSitesStore::InitializationStatus;
 class ExploreSitesGetVersionTaskTest : public TaskTestBase {
  public:
   ExploreSitesGetVersionTaskTest() = default;
+
+  ExploreSitesGetVersionTaskTest(const ExploreSitesGetVersionTaskTest&) =
+      delete;
+  ExploreSitesGetVersionTaskTest& operator=(
+      const ExploreSitesGetVersionTaskTest&) = delete;
+
   ~ExploreSitesGetVersionTaskTest() override = default;
 
   void SetUp() override {
@@ -64,8 +70,6 @@ class ExploreSitesGetVersionTaskTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesGetVersionTaskTest);
 };
 
 TEST_F(ExploreSitesGetVersionTaskTest, StoreFailure) {

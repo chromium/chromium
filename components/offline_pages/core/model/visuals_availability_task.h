@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_VISUALS_AVAILABILITY_TASK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/task/task.h"
@@ -23,6 +23,10 @@ class VisualsAvailabilityTask : public Task {
   VisualsAvailabilityTask(OfflinePageMetadataStore* store,
                           int64_t offline_id,
                           VisualsAvailableCallback exists_callback);
+
+  VisualsAvailabilityTask(const VisualsAvailabilityTask&) = delete;
+  VisualsAvailabilityTask& operator=(const VisualsAvailabilityTask&) = delete;
+
   ~VisualsAvailabilityTask() override;
 
  private:
@@ -31,11 +35,10 @@ class VisualsAvailabilityTask : public Task {
 
   void OnVisualsAvailable(VisualsAvailability availability);
 
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   int64_t offline_id_;
   VisualsAvailableCallback exists_callback_;
   base::WeakPtrFactory<VisualsAvailabilityTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(VisualsAvailabilityTask);
 };
 
 }  // namespace offline_pages

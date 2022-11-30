@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,10 @@ FloodFillInkDropRippleTestApi::FloodFillInkDropRippleTestApi(
 
 FloodFillInkDropRippleTestApi::~FloodFillInkDropRippleTestApi() = default;
 
-void FloodFillInkDropRippleTestApi::TransformPoint(float radius,
-                                                   gfx::Point3F* point) {
-  ink_drop_ripple()->CalculateTransform(radius).TransformPoint(point);
+gfx::Point3F FloodFillInkDropRippleTestApi::MapPoint(
+    float radius,
+    const gfx::Point3F& point) {
+  return ink_drop_ripple()->CalculateTransform(radius).MapPoint(point);
 }
 
 gfx::Point FloodFillInkDropRippleTestApi::GetDrawnCenterPoint() const {

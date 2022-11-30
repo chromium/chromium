@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
 
@@ -28,6 +26,10 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // layout managers that size to preferred size.
   explicit ProgressBar(int preferred_height = 5,
                        bool allow_round_corner = true);
+
+  ProgressBar(const ProgressBar&) = delete;
+  ProgressBar& operator=(const ProgressBar&) = delete;
+
   ~ProgressBar() override;
 
   // View:
@@ -41,6 +43,9 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // Sets the current value. Values outside of the display range of 0.0-1.0 will
   // be displayed with an infinite loading animation.
   void SetValue(double value);
+
+  // Sets whether the progress bar is paused.
+  void SetPaused(bool is_paused);
 
   // The color of the progress portion.
   SkColor GetForegroundColor() const;
@@ -59,6 +64,7 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   void AnimationEnded(const gfx::Animation* animation) override;
 
   bool IsIndeterminate();
+  bool GetPaused() const { return is_paused_; }
   void OnPaintIndeterminate(gfx::Canvas* canvas);
 
   // Fire an accessibility event if visible and the progress has changed.
@@ -67,19 +73,20 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // Current progress to display, should be in the range 0.0 to 1.0.
   double current_value_ = 0.0;
 
+  // Is the progress bar paused.
+  bool is_paused_ = false;
+
   // In DP, the preferred height of this progress bar.
   const int preferred_height_;
 
   const bool allow_round_corner_;
 
-  base::Optional<SkColor> foreground_color_;
-  base::Optional<SkColor> background_color_;
+  absl::optional<SkColor> foreground_color_;
+  absl::optional<SkColor> background_color_;
 
   std::unique_ptr<gfx::LinearAnimation> indeterminate_bar_animation_;
 
   int last_announced_percentage_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressBar);
 };
 
 }  // namespace views

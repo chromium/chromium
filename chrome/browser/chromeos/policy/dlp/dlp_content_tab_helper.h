@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_TAB_HELPER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_TAB_HELPER_H_
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "content/public/browser/visibility.h"
@@ -31,11 +32,24 @@ class DlpContentTabHelper
     : public content::WebContentsUserData<DlpContentTabHelper>,
       public content::WebContentsObserver {
  public:
+  // Creates DlpContentTabHelper and attaches it the |web_contents| if the user
+  // is managed and it's not an incognito profile.
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+
+  // Allows to create DlpContentTabHelper even if the user is not managed and
+  // without the need to initialize DlpRulesManager in tests.
+  using ScopedIgnoreDlpRulesManager = base::AutoReset<bool>;
+  static ScopedIgnoreDlpRulesManager IgnoreDlpRulesManagerForTesting();
+
   ~DlpContentTabHelper() override;
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState old_state,
+      content::RenderFrameHost::LifecycleState new_state) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;

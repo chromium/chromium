@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,7 +116,7 @@ class PEImage {
 
   // Returns the header for a given section.
   // returns NULL if there is no such section.
-  PIMAGE_SECTION_HEADER GetSectionHeader(UINT section) const;
+  PIMAGE_SECTION_HEADER GetSectionHeader(WORD section) const;
 
   // Returns the size of a given directory entry or 0 if |directory| is out of
   // bounds.

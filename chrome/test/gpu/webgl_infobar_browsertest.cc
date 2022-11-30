@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/infobars/infobar_observer.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -20,16 +19,16 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/gpu_data_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gl/gl_implementation.h"
 
@@ -42,7 +41,7 @@ void SimulateGPUCrash(Browser* browser) {
   // either of the NavigateToURL entry points to support these two
   // constraints, so we use Navigate directly.
   NavigateParams params(
-      browser, GURL(content::kChromeUIGpuCrashURL),
+      browser, GURL(blink::kChromeUIGpuCrashURL),
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
@@ -68,22 +67,21 @@ IN_PROC_BROWSER_TEST_F(WebGLInfoBarTest, DISABLED_ContextLossRaisesInfoBar) {
     return;
 
   // Load page and wait for it to load.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
-  ui_test_utils::NavigateToURL(
-      browser(),
-      content::GetFileUrlWithQuery(
-          gpu_test_dir_.AppendASCII("webgl.html"), "query=kill"));
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), content::GetFileUrlWithQuery(
+                     gpu_test_dir_.AppendASCII("webgl.html"), "query=kill")));
   observer.Wait();
 
-  InfoBarService* infobar_service = InfoBarService::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  InfoBarObserver infobar_observer(infobar_service,
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  InfoBarObserver infobar_observer(infobar_manager,
                                    InfoBarObserver::Type::kInfoBarAdded);
   SimulateGPUCrash(browser());
   infobar_observer.Wait();
-  EXPECT_EQ(1u, infobar_service->infobar_count());
+  EXPECT_EQ(1u, infobar_manager->infobar_count());
 }
 
 // There isn't any point in adding a test which calls Accept() on the

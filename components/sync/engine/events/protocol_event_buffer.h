@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 
 namespace syncer {
 
@@ -19,12 +18,17 @@ class ProtocolEvent;
 
 // A container for ProtocolEvents.
 //
-// Stores at most kBufferSize events, then starts dropping the oldest events.
+// Stores some maximum number of events (kDefaultBufferSize, unless overridden
+// by command-line param), then starts dropping the oldest events.
 class ProtocolEventBuffer {
  public:
-  static const size_t kBufferSize;
+  static const size_t kDefaultBufferSize;
 
   ProtocolEventBuffer();
+
+  ProtocolEventBuffer(const ProtocolEventBuffer&) = delete;
+  ProtocolEventBuffer& operator=(const ProtocolEventBuffer&) = delete;
+
   ~ProtocolEventBuffer();
 
   // Records an event.  May cause the oldest event to be dropped.
@@ -34,9 +38,8 @@ class ProtocolEventBuffer {
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents() const;
 
  private:
+  const size_t buffer_size_;
   base::circular_deque<std::unique_ptr<ProtocolEvent>> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolEventBuffer);
 };
 
 }  // namespace syncer

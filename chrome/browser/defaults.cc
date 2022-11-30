@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,12 @@
 
 namespace browser_defaults {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 const bool kBrowserAliveWithNoWindows = true;
+const bool kShowExitMenuItem = false;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+// Note: Lacros can get kicked out of memory when the last window closes.
+const bool kBrowserAliveWithNoWindows = false;
 const bool kShowExitMenuItem = false;
 #else
 const bool kBrowserAliveWithNoWindows = false;
@@ -22,11 +26,15 @@ const bool kShowExitMenuItem = true;
 const bool kShowUpgradeMenuItem = false;
 const bool kShowImportOnBookmarkBar = false;
 const bool kAlwaysOpenIncognitoWindow = true;
-const bool kAlwaysCreateTabbedBrowserOnSessionRestore = false;
 #else
 const bool kShowUpgradeMenuItem = true;
 const bool kShowImportOnBookmarkBar = true;
 const bool kAlwaysOpenIncognitoWindow = false;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+const bool kAlwaysCreateTabbedBrowserOnSessionRestore = false;
+#else
 const bool kAlwaysCreateTabbedBrowserOnSessionRestore = true;
 #endif
 
@@ -44,15 +52,13 @@ const bool kSyncAutoStarts = true;
 const bool kSyncAutoStarts = false;
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 const bool kScrollEventChangesTab = true;
 #else
 const bool kScrollEventChangesTab = false;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const bool kPasswordEchoEnabled = false;
 #endif
 

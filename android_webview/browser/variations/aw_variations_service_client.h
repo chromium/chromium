@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/variations/service/variations_service_client.h"
 
@@ -22,17 +21,20 @@ namespace android_webview {
 class AwVariationsServiceClient : public variations::VariationsServiceClient {
  public:
   AwVariationsServiceClient();
+
+  AwVariationsServiceClient(const AwVariationsServiceClient&) = delete;
+  AwVariationsServiceClient& operator=(const AwVariationsServiceClient&) =
+      delete;
+
   ~AwVariationsServiceClient() override;
 
  private:
-  VersionCallback GetVersionForSimulationCallback() override;
+  base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AwVariationsServiceClient);
 };
 
 }  // namespace android_webview

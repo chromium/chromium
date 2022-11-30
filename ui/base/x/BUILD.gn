@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,14 +6,20 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
 component("x") {
   output_name = "ui_base_x"
 
   sources = [
+    "selection_requestor.cc",
+    "selection_requestor.h",
     "selection_utils.cc",
     "selection_utils.h",
+    "visual_picker_glx.cc",
+    "visual_picker_glx.h",
+    "x11_clipboard_helper.cc",
+    "x11_clipboard_helper.h",
     "x11_cursor.cc",
     "x11_cursor.h",
     "x11_cursor_factory.cc",
@@ -26,26 +32,22 @@ component("x") {
     "x11_display_manager.h",
     "x11_display_util.cc",
     "x11_display_util.h",
+    "x11_global_shortcut_listener.cc",
+    "x11_global_shortcut_listener.h",
     "x11_idle_query.cc",
     "x11_idle_query.h",
-    "x11_menu_list.cc",
-    "x11_menu_list.h",
-    "x11_menu_registrar.cc",
-    "x11_menu_registrar.h",
+    "x11_keyboard_hook.cc",
+    "x11_keyboard_hook.h",
     "x11_move_loop.h",
     "x11_move_loop_delegate.h",
     "x11_pointer_grab.cc",
     "x11_pointer_grab.h",
-    "x11_screensaver_window_finder.cc",
-    "x11_screensaver_window_finder.h",
+    "x11_screensaver.cc",
+    "x11_screensaver.h",
     "x11_shm_image_pool.cc",
     "x11_shm_image_pool.h",
     "x11_software_bitmap_presenter.cc",
     "x11_software_bitmap_presenter.h",
-    "x11_topmost_window_finder.cc",
-    "x11_topmost_window_finder.h",
-    "x11_ui_thread.cc",
-    "x11_ui_thread.h",
     "x11_user_input_monitor.cc",
     "x11_user_input_monitor.h",
     "x11_util.cc",
@@ -60,7 +62,10 @@ component("x") {
 
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
-  public_deps = []
+  public_deps = [
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_shared",
+  ]
   deps = [
     "//base",
     "//base:i18n",
@@ -71,21 +76,25 @@ component("x") {
     "//ui/base:features",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/clipboard:file_info",
-    "//ui/base/cursor:cursor_base",
-    "//ui/base/cursor:theme_manager",
-    "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/util",
+    "//ui/display/util:gpu_info_util",
     "//ui/events",
+    "//ui/events:dom_keycode_converter",
     "//ui/events/devices/x11",
     "//ui/events/keycodes:x11",
     "//ui/events/platform/x11",
     "//ui/events/x:x",
     "//ui/gfx",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
     "//ui/platform_window/common",
+    "//ui/strings:ui_strings_grit",
   ]
 
+  if (is_linux) {
+    public_deps += [ "//ui/linux:linux_ui" ]
+  }
   if (is_linux || is_chromeos) {
     sources += [
       "selection_owner.cc",
@@ -97,7 +106,12 @@ component("x") {
       "x11_os_exchange_data_provider.cc",
       "x11_os_exchange_data_provider.h",
     ]
-    public_deps += [ "//ui/base/dragdrop:types" ]
+    public_deps += [ "//ui/base/dragdrop/mojom:mojom_shared" ]
+    deps += [
+      "//ui/base",
+      "//ui/base/dragdrop:types",
+      "//ui/base/dragdrop/mojom",
+    ]
   }
 }
 
@@ -140,14 +154,19 @@ source_set("test_support") {
 source_set("unittests") {
   testonly = true
   sources = [
+    "selection_requestor_unittest.cc",
     "x11_cursor_factory_unittest.cc",
     "x11_cursor_loader_unittest.cc",
   ]
   deps = [
     ":x",
     "//base",
+    "//base/test:test_support",
     "//skia",
     "//testing/gtest",
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/gfx/geometry",
+    "//ui/gfx/x",
   ]
 }

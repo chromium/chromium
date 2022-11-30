@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,37 +13,14 @@
 #include "chrome/android/chrome_jni_headers/InstalledWebappGeolocationBridge_jni.h"
 #include "chrome/browser/installable/installed_webapp_geolocation_context.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
-
-namespace {
-
-const char kLocationUpdateHistogramName[] =
-    "TrustedWebActivity.LocationUpdateErrorCode";
-
-// Do not modify or reuse existing entries; they are used in a UMA histogram.
-// Please edit TrustedWebActivityLocationErrorCode in the enums.xml if a value
-// is added.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browserservices
-enum class LocationUpdateError {
-  // There was no error.
-  kNone = 0,
-  // Geoposition could not be determined, i.e. error from the TWA client app.
-  kLocationError = 1,
-  // Invalid position.
-  kInvalidPosition = 2,
-  // Trusted web activity service not found or does not handle the request.
-  kNoTwa = 3,
-  // NOTE: Add entries only immediately above this line.
-  kMaxValue = kNoTwa
-};
-
-}  // namespace
+#include "url/android/gurl_android.h"
 
 InstalledWebappGeolocationBridge::InstalledWebappGeolocationBridge(
     mojo::PendingReceiver<Geolocation> receiver,
-    const GURL& origin,
+    const GURL& url,
     InstalledWebappGeolocationContext* context)
     : context_(context),
-      origin_(origin),
+      url_(url),
       high_accuracy_(false),
       has_position_to_report_(false),
       receiver_(this, std::move(receiver)) {
@@ -60,10 +37,9 @@ InstalledWebappGeolocationBridge::~InstalledWebappGeolocationBridge() {
 void InstalledWebappGeolocationBridge::StartListeningForUpdates() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (java_ref_.is_null()) {
-    base::android::ScopedJavaLocalRef<jstring> j_origin =
-        base::android::ConvertUTF8ToJavaString(env, origin_.GetOrigin().spec());
     java_ref_.Reset(Java_InstalledWebappGeolocationBridge_create(
-        env, reinterpret_cast<intptr_t>(this), j_origin));
+        env, reinterpret_cast<intptr_t>(this),
+        url::GURLAndroid::FromNativeGURL(env, url_)));
   }
   Java_InstalledWebappGeolocationBridge_start(env, java_ref_, high_accuracy_);
 }
@@ -172,11 +148,6 @@ void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
   if (!device::ValidateGeoposition(position)) {
     position.error_code =
         device::mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
-    base::UmaHistogramEnumeration(kLocationUpdateHistogramName,
-                                  LocationUpdateError::kInvalidPosition);
-  } else {
-    base::UmaHistogramEnumeration(kLocationUpdateHistogramName,
-                                  LocationUpdateError::kNone);
   }
 
   OnLocationUpdate(position);
@@ -184,9 +155,6 @@ void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
 
 void InstalledWebappGeolocationBridge::OnNewErrorAvailable(JNIEnv* env,
                                                            jstring message) {
-  base::UmaHistogramEnumeration(kLocationUpdateHistogramName,
-                                LocationUpdateError::kLocationError);
-
   device::mojom::Geoposition position_error;
   position_error.error_code =
       device::mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;

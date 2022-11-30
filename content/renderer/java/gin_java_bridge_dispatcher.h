@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_errors.h"
@@ -38,6 +37,10 @@ class GinJavaBridgeDispatcher
   using ObjectID = ObjectMap::KeyType;
 
   explicit GinJavaBridgeDispatcher(RenderFrame* render_frame);
+
+  GinJavaBridgeDispatcher(const GinJavaBridgeDispatcher&) = delete;
+  GinJavaBridgeDispatcher& operator=(const GinJavaBridgeDispatcher&) = delete;
+
   ~GinJavaBridgeDispatcher() override;
 
   // RenderFrameObserver override:
@@ -49,7 +52,7 @@ class GinJavaBridgeDispatcher
   std::unique_ptr<base::Value> InvokeJavaMethod(
       ObjectID object_id,
       const std::string& method_name,
-      const base::ListValue& arguments,
+      const base::Value::List& arguments,
       GinJavaBridgeError* error);
   GinJavaBridgeObject* GetObject(ObjectID object_id);
   void OnGinJavaBridgeObjectDeleted(GinJavaBridgeObject* object);
@@ -66,8 +69,6 @@ class GinJavaBridgeDispatcher
   NamedObjectMap named_objects_;
   ObjectMap objects_;
   bool inside_did_clear_window_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeDispatcher);
 };
 
 }  // namespace content

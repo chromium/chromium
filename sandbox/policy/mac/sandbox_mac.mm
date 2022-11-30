@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,41 +12,28 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ppapi/buildflags/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mac/audio.sb.h"
 #include "sandbox/policy/mac/cdm.sb.h"
 #include "sandbox/policy/mac/common.sb.h"
 #include "sandbox/policy/mac/gpu.sb.h"
+#include "sandbox/policy/mac/mirroring.sb.h"
 #include "sandbox/policy/mac/nacl_loader.sb.h"
 #include "sandbox/policy/mac/network.sb.h"
 #include "sandbox/policy/mac/ppapi.sb.h"
 #include "sandbox/policy/mac/print_backend.sb.h"
 #include "sandbox/policy/mac/print_compositor.sb.h"
 #include "sandbox/policy/mac/renderer.sb.h"
+#include "sandbox/policy/mac/screen_ai.sb.h"
 #include "sandbox/policy/mac/speech_recognition.sb.h"
 #include "sandbox/policy/mac/utility.sb.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace sandbox {
 namespace policy {
 
-const char* SandboxMac::kSandboxBrowserPID = "BROWSER_PID";
-const char* SandboxMac::kSandboxBundlePath = "BUNDLE_PATH";
-const char* SandboxMac::kSandboxChromeBundleId = "BUNDLE_ID";
-const char* SandboxMac::kSandboxSodaComponentPath = "SODA_COMPONENT_PATH";
-const char* SandboxMac::kSandboxSodaLanguagePackPath =
-    "SODA_LANGUAGE_PACK_PATH";
-const char* SandboxMac::kSandboxComponentPath = "COMPONENT_PATH";
-const char* SandboxMac::kSandboxDisableDenialLogging =
-    "DISABLE_SANDBOX_DENIAL_LOGGING";
-const char* SandboxMac::kSandboxEnableLogging = "ENABLE_LOGGING";
-const char* SandboxMac::kSandboxHomedirAsLiteral = "USER_HOMEDIR_AS_LITERAL";
-const char* SandboxMac::kSandboxLoggingPathAsLiteral = "LOG_FILE_PATH";
-const char* SandboxMac::kSandboxOSVersion = "OS_VERSION";
-const char* SandboxMac::kSandboxBundleVersionPath = "BUNDLE_VERSION_PATH";
-const char* SandboxMac::kSandboxDisableMetalShaderCache =
-    "DISABLE_METAL_SHADER_CACHE";
-
-// static
-base::FilePath SandboxMac::GetCanonicalPath(const base::FilePath& path) {
+base::FilePath GetCanonicalPath(const base::FilePath& path) {
   base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
   if (!fd.is_valid()) {
     DPLOG(ERROR) << "GetCanonicalSandboxPath() failed for: " << path.value();
@@ -62,46 +49,57 @@ base::FilePath SandboxMac::GetCanonicalPath(const base::FilePath& path) {
   return base::FilePath(canonical_path);
 }
 
-// static
-std::string SandboxMac::GetSandboxProfile(SandboxType sandbox_type) {
+std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
   std::string profile = std::string(kSeatbeltPolicyString_common);
 
   switch (sandbox_type) {
-    case SandboxType::kAudio:
+    case sandbox::mojom::Sandbox::kAudio:
       profile += kSeatbeltPolicyString_audio;
       break;
-    case SandboxType::kCdm:
+    case sandbox::mojom::Sandbox::kCdm:
       profile += kSeatbeltPolicyString_cdm;
       break;
-    case SandboxType::kGpu:
+    case sandbox::mojom::Sandbox::kGpu:
       profile += kSeatbeltPolicyString_gpu;
       break;
-    case SandboxType::kNaClLoader:
+    case sandbox::mojom::Sandbox::kMirroring:
+      profile += kSeatbeltPolicyString_mirroring;
+      break;
+    case sandbox::mojom::Sandbox::kNaClLoader:
       profile += kSeatbeltPolicyString_nacl_loader;
       break;
-    case SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       profile += kSeatbeltPolicyString_network;
       break;
-    case SandboxType::kPpapi:
+#if BUILDFLAG(ENABLE_PPAPI)
+    case sandbox::mojom::Sandbox::kPpapi:
       profile += kSeatbeltPolicyString_ppapi;
       break;
-    case SandboxType::kPrintBackend:
+#endif
+#if BUILDFLAG(ENABLE_PRINTING)
+    case sandbox::mojom::Sandbox::kPrintBackend:
       profile += kSeatbeltPolicyString_print_backend;
       break;
-    case SandboxType::kPrintCompositor:
+#endif
+    case sandbox::mojom::Sandbox::kPrintCompositor:
       profile += kSeatbeltPolicyString_print_compositor;
       break;
-    case SandboxType::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kScreenAI:
+      profile += kSeatbeltPolicyString_screen_ai;
+      break;
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
       profile += kSeatbeltPolicyString_speech_recognition;
       break;
-    case SandboxType::kUtility:
+    // kService and kUtility are the same on OS_MAC, so fallthrough.
+    case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kServiceWithJit:
+    case sandbox::mojom::Sandbox::kUtility:
       profile += kSeatbeltPolicyString_utility;
       break;
-    case SandboxType::kRenderer:
+    case sandbox::mojom::Sandbox::kRenderer:
       profile += kSeatbeltPolicyString_renderer;
       break;
-    case SandboxType::kNoSandbox:
-    case SandboxType::kVideoCapture:
+    case sandbox::mojom::Sandbox::kNoSandbox:
       CHECK(false);
       break;
   }

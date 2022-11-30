@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,8 @@ embedder.setUp_ = function(config) {
       '/extensions/platform_apps/web_view/shim/guest_from_opener.html';
   embedder.noReferrerGuestURL = embedder.baseGuestURL +
       '/extensions/platform_apps/web_view/shim/guest_noreferrer.html';
+  embedder.windowOpenMessageURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/window_open_message.html';
   embedder.detectUserAgentURL = embedder.baseGuestURL + '/detect-user-agent';
   embedder.redirectGuestURL = embedder.baseGuestURL + '/server-redirect';
   embedder.redirectGuestURLDest = embedder.baseGuestURL +
@@ -1671,24 +1673,6 @@ function testRemoveSrcAttribute() {
   document.body.appendChild(webview);
 }
 
-function testPluginLoadInternalResource() {
-  var first = document.createElement('webview');
-  first.addEventListener('loadabort', function(e) {
-    var second = document.createElement('webview');
-    second.addEventListener('permissionrequest', function(e) {
-      e.preventDefault();
-      embedder.test.assertEq('loadplugin', e.permission);
-      embedder.test.succeed();
-    });
-    e.preventDefault();
-    second.partition = 'foobar';
-    second.setAttribute('src', 'test.pdf');
-    document.body.appendChild(second);
-  });
-  first.setAttribute('src', 'test.pdf');
-  document.body.appendChild(first);
-}
-
 function testPluginLoadPermission() {
   var pluginIdentifier = 'unknown platform';
   if (navigator.platform.match(/linux/i))
@@ -1796,6 +1780,32 @@ function testNewWindowNoReferrerLink() {
   });
   webview.setAttribute('src', embedder.noReferrerGuestURL);
   document.body.appendChild(webview);
+}
+
+// Test that a webview guest can attach to a webview element with an existing
+// guest.
+function testNewWindowAttachToExisting() {
+  let openerWebview = document.createElement('webview');
+  openerWebview.src = embedder.windowOpenGuestURL;
+  let otherWebview = document.createElement('webview');
+  otherWebview.src = embedder.emptyGuestURL;
+
+  openerWebview.addEventListener('newwindow', function(e) {
+    e.preventDefault();
+
+    otherWebview.addEventListener('loadstop', () => {
+      embedder.test.succeed();
+    }, { once: true });
+
+    // Attach the new window to the existing webview.
+    e.window.attach(otherWebview);
+  }, { once: true });
+
+  otherWebview.addEventListener('loadstop', () => {
+    document.body.appendChild(openerWebview);
+  }, { once: true });
+
+  document.body.appendChild(otherWebview);
 }
 
 // This test verifies that the load event fires when the a new page is
@@ -3329,10 +3339,11 @@ function testWebViewAndEmbedderInNewWindow() {
         // We could use e.targetUrl here I suppose, but it's about:blank so
         // it doesn't seem to trigger a loadstop.
         newwebview.setAttribute('src', embedder.emptyGuestURL);
-        newwebview.addEventListener('loadstop', function (evt2) {
+        newwebview.addEventListener('loadstop', function(evt2) {
           // After this test exits, we'll still need to compare embedders in the
           // C++ part of this test.
-          embedder.test.succeed();
+          if (newwebview.src == embedder.emptyGuestURL)
+            embedder.test.succeed();
         });
         // Be sure to do the attach before appending to document.
         e.window.attach(newwebview);
@@ -3341,6 +3352,33 @@ function testWebViewAndEmbedderInNewWindow() {
     });
   });
   webview.setAttribute('src', embedder.windowOpenGuestURL);
+  document.body.appendChild(webview);
+}
+
+function testNewWindowNoDeadlock() {
+  let webview = document.createElement('webview');
+  let newwindowEvent = null;
+  webview.addEventListener('loadstop', () => {
+    // First, we send a message to the guest, which will perform a window.open.
+    webview.contentWindow.postMessage('', '*');
+  });
+  webview.addEventListener('newwindow', (e) => {
+    // Once the guest calls window.open, we receive the request here.
+    // However, we postpone the attachment until we get a message back from the
+    // guest. The implementation cannot delay responding to the sync window.open
+    // IPC until attachment, because the message handler below performs the
+    // attachment, and that does not run until the guest's window.open call
+    // returns and it sends a message back to this embedder.
+    e.preventDefault();
+    newwindowEvent = e;
+  });
+  window.addEventListener('message', (e) => {
+    let newwebview = document.createElement('webview');
+    newwindowEvent.window.attach(newwebview);
+    document.body.appendChild(newwebview);
+    embedder.test.succeed();
+  });
+  webview.src = embedder.windowOpenMessageURL;
   document.body.appendChild(webview);
 }
 
@@ -3391,6 +3429,68 @@ function testWebRequestBlockedNavigation() {
   document.body.appendChild(webview);
 }
 
+function testBlankWebview() {
+  var webview = new WebView();
+  webview.src = "about:blank";
+  document.body.appendChild(webview);
+  webview.addEventListener('loadstop', function() {
+    // This lets the browser know that it can start sending down input events
+    // for the remainder of the test.
+    embedder.test.succeed();
+  });
+}
+
+function testAddFencedFrame() {
+  let fencedFrameHostURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/fenced_frame_host.html';
+
+  let webview = new WebView();
+  webview.src = fencedFrameHostURL;
+  webview.addEventListener('loadstop', () => {
+    embedder.test.succeed();
+  });
+  document.body.appendChild(webview);
+}
+
+function testActivatePortal() {
+  let portalHostURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/portal_host.html';
+  let webview = new WebView();
+  webview.src = portalHostURL;
+  webview.addEventListener('loadstop', () => {
+    webview.contentWindow.postMessage('activate', '*');
+  });
+  window.addEventListener('message', (e) => {
+    // TODO(crbug.com/942534): Support portals in guest views.
+    // Once we do, update this test to check for correct behaviour. For now,
+    // we're basically just checking that attempting this doesn't cause a crash.
+    embedder.test.assertTrue(e.data.includes('Not implemented'));
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
+// Inserting a webview element into a detached iframe's document shouldn't
+// crash.
+function testInsertIntoDetachedIframe() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  let iframe = document.createElement('iframe');
+
+  iframe.addEventListener('load', () => {
+    let doc = iframe.contentDocument;
+    iframe.remove();
+    doc.body.appendChild(webview);
+
+    setTimeout(() => {
+      embedder.test.succeed();
+    });
+  });
+
+  document.body.appendChild(iframe);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3399,6 +3499,7 @@ embedder.test.testList = {
   'testAutosizeRemoveAttributes': testAutosizeRemoveAttributes,
   'testAutosizeWithPartialAttributes': testAutosizeWithPartialAttributes,
   'testAPIMethodExistence': testAPIMethodExistence,
+  'testBlankWebview': testBlankWebview,
   'testCustomElementCallbacksInaccessible':
       testCustomElementCallbacksInaccessible,
   'testChromeExtensionURL': testChromeExtensionURL,
@@ -3451,12 +3552,12 @@ embedder.test.testList = {
   'testNestedSubframes': testNestedSubframes,
   'testReassignSrcAttribute': testReassignSrcAttribute,
   'testRemoveSrcAttribute': testRemoveSrcAttribute,
-  'testPluginLoadInternalResource': testPluginLoadInternalResource,
   'testPluginLoadPermission': testPluginLoadPermission,
   'testNewWindow': testNewWindow,
   'testNewWindowTwoListeners': testNewWindowTwoListeners,
   'testNewWindowNoPreventDefault': testNewWindowNoPreventDefault,
   'testNewWindowNoReferrerLink': testNewWindowNoReferrerLink,
+  'testNewWindowAttachToExisting': testNewWindowAttachToExisting,
   'testContentLoadEvent': testContentLoadEvent,
   'testContentLoadEventWithDisplayNone': testContentLoadEventWithDisplayNone,
   'testDeclarativeWebRequestAPI': testDeclarativeWebRequestAPI,
@@ -3518,8 +3619,12 @@ embedder.test.testList = {
        testRendererNavigationRedirectWhileUnattached,
   'testBlobURL': testBlobURL,
   'testWebViewAndEmbedderInNewWindow': testWebViewAndEmbedderInNewWindow,
+  'testNewWindowNoDeadlock': testNewWindowNoDeadlock,
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
-  'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation
+  'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
+  'testAddFencedFrame': testAddFencedFrame,
+  'testActivatePortal': testActivatePortal,
+  'testInsertIntoDetachedIframe': testInsertIntoDetachedIframe,
 };
 
 onload = function() {

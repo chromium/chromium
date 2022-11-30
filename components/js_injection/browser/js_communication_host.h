@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;
@@ -33,6 +35,10 @@ class WebMessageHostFactory;
 class JsCommunicationHost : public content::WebContentsObserver {
  public:
   explicit JsCommunicationHost(content::WebContents* web_contents);
+
+  JsCommunicationHost(const JsCommunicationHost&) = delete;
+  JsCommunicationHost& operator=(const JsCommunicationHost&) = delete;
+
   ~JsCommunicationHost() override;
 
   // Captures the result of adding script. There are two possibilities when
@@ -44,8 +50,8 @@ class JsCommunicationHost : public content::WebContentsObserver {
     AddScriptResult& operator=(const AddScriptResult&);
     ~AddScriptResult();
 
-    base::Optional<std::string> error_message;
-    base::Optional<int> script_id;
+    absl::optional<std::string> error_message;
+    absl::optional<int> script_id;
   };
 
   // Native side AddDocumentStartJavaScript, returns an error message if the
@@ -72,7 +78,7 @@ class JsCommunicationHost : public content::WebContentsObserver {
   struct RegisteredFactory {
     std::u16string js_name;
     OriginMatcher allowed_origin_rules;
-    WebMessageHostFactory* factory = nullptr;
+    raw_ptr<WebMessageHostFactory> factory = nullptr;
   };
 
   // Returns the registered factories.
@@ -81,8 +87,10 @@ class JsCommunicationHost : public content::WebContentsObserver {
   // content::WebContentsObserver implementations
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void FrameBackForwardCacheStateChanged(
-      content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState old_state,
+      content::RenderFrameHost::LifecycleState new_state) override;
 
  private:
   void NotifyFrameForWebMessageListener(
@@ -99,11 +107,9 @@ class JsCommunicationHost : public content::WebContentsObserver {
   int32_t next_script_id_ = 0;
   std::vector<DocumentStartJavaScript> scripts_;
   std::vector<std::unique_ptr<JsObject>> js_objects_;
-  std::map<content::RenderFrameHost*,
+  std::map<content::GlobalRenderFrameHostId,
            std::vector<std::unique_ptr<JsToBrowserMessaging>>>
       js_to_browser_messagings_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsCommunicationHost);
 };
 
 }  // namespace js_injection

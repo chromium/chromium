@@ -1,0 +1,43 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Sample System Web App is ash-chrome only")
+assert(!is_official_build,
+       "Sample System Web App is only built for unofficial builds")
+
+static_library("sample_system_web_app_ui") {
+  sources = [
+    "sample_page_handler.cc",
+    "sample_page_handler.h",
+    "sample_system_web_app_ui.cc",
+    "sample_system_web_app_ui.h",
+    "sample_system_web_app_untrusted_ui.cc",
+    "sample_system_web_app_untrusted_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/webui/resources:sample_system_web_app_resources",
+    "//ash/webui/resources:sample_system_web_app_untrusted_resources",
+    "//ash/webui/sample_system_web_app_ui/mojom:trusted",
+    "//ash/webui/sample_system_web_app_ui/mojom:untrusted",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "test/sample_system_web_app_ui_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}

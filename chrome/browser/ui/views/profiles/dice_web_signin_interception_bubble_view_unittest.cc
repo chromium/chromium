@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,8 +62,8 @@ TEST_P(DiceWebSigninInterceptionBubbleViewSyncParamTest, HistogramTests) {
 
   base::HistogramTester histogram_tester;
 
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
-      type, enterprise_account_, personal_account_};
+  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      type, enterprise_account_, personal_account_);
 
   DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
       bubble_parameters, profile(), result);
@@ -108,7 +108,7 @@ TEST_P(DiceWebSigninInterceptionBubbleViewSyncParamTest, HistogramTests) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     BubbleParameterCombinations,
     DiceWebSigninInterceptionBubbleViewSyncParamTest,
     testing::Combine(testing::ValuesIn({
@@ -125,9 +125,9 @@ INSTANTIATE_TEST_CASE_P(
 
 TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SyncHistograms) {
   SigninInterceptionResult result = SigninInterceptionResult::kAccepted;
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
+  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       SigninInterceptionType::kEnterprise, enterprise_account_,
-      personal_account_};
+      personal_account_);
 
   // Not Syncing.
   {
@@ -141,7 +141,8 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SyncHistograms) {
   }
 
   // Syncing.
-  identity_test_env()->SetPrimaryAccount(personal_account_.email);
+  identity_test_env()->SetPrimaryAccount(personal_account_.email,
+                                         signin::ConsentLevel::kSync);
   {
     base::HistogramTester histogram_tester;
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
@@ -159,9 +160,9 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
   // New account is Enterprise.
   {
     base::HistogramTester histogram_tester;
-    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
+    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
         SigninInterceptionType::kEnterprise, enterprise_account_,
-        personal_account_};
+        personal_account_);
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
         bubble_parameters, profile(), result);
     histogram_tester.ExpectTotalCount(
@@ -171,12 +172,13 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
   }
 
   // Primary account is Enterprise.
-  identity_test_env()->SetPrimaryAccount(personal_account_.email);
+  identity_test_env()->SetPrimaryAccount(personal_account_.email,
+                                         signin::ConsentLevel::kSync);
   {
     base::HistogramTester histogram_tester;
-    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {
+    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
         SigninInterceptionType::kEnterprise, personal_account_,
-        enterprise_account_};
+        enterprise_account_);
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
         bubble_parameters, profile(), result);
     histogram_tester.ExpectTotalCount(

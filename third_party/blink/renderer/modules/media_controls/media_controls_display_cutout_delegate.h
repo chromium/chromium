@@ -1,13 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_DISPLAY_CUTOUT_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_DISPLAY_CUTOUT_DELEGATE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -64,7 +65,7 @@ class MODULES_EXPORT MediaControlsDisplayCutoutDelegate final
   // Pair storing the previous result. |first| is the distance between the two
   // points stored as a double. |second| is the Direction.
   using ResultPair = std::pair<double, Direction>;
-  base::Optional<ResultPair> previous_;
+  absl::optional<ResultPair> previous_;
 
   Member<HTMLVideoElement> video_element_;
 };

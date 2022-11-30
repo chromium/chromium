@@ -16,7 +16,7 @@ client code.
 
 [OCMock 3](https://ocmock.org/reference/) is an engine for creating mock objects
 for testing in Objective-C. A copy of version 3.1.5 is available in
-[third_party/ocmock.](https://source.chromium.org/chromium/chromium/src/+/master:third_party/ocmock/)
+[third_party/ocmock.](https://source.chromium.org/chromium/chromium/src/+/main:third_party/ocmock/)
 Note that this is several versions behind the current public release of OCMock,
 so some features described on OCMock's site are not present.
 

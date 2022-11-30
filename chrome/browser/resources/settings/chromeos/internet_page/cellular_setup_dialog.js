@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,47 +6,86 @@
  * @fileoverview 'os-settings-cellular-setup-dialog' embeds the <cellular-setup>
  * that is shared with OOBE in a dialog with OS Settings stylizations.
  */
-Polymer({
-  is: 'os-settings-cellular-setup-dialog',
+import 'chrome://resources/ash/common/cellular_setup/cellular_setup.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../../settings_shared.css.js';
 
-  properties: {
+import {CellularSetupDelegate} from 'chrome://resources/ash/common/cellular_setup/cellular_setup_delegate.js';
+import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /**
-     * Name of cellular dialog page to be selected.
-     * @type {!cellularSetup.CellularSetupPageName}
-     */
-    pageName: String,
+import {CellularSetupSettingsDelegate} from './cellular_setup_settings_delegate.js';
 
-    /**
-     * @private {!cellular_setup.CellularSetupDelegate}
-     */
-    delegate_: Object,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OsSettingsCellularSetupDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-    /*** @private */
-    dialogTitle_: {
-      type: String,
-      notify: true,
-    },
-  },
+/** @polymer */
+class OsSettingsCellularSetupDialogElement extends
+    OsSettingsCellularSetupDialogElementBase {
+  static get is() {
+    return 'os-settings-cellular-setup-dialog';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Name of cellular dialog page to be selected.
+       * @type {!CellularSetupPageName}
+       */
+      pageName: String,
+
+      /**
+       * @private {!CellularSetupDelegate}
+       */
+      delegate_: Object,
+
+      /*** @private */
+      dialogTitle_: {
+        type: String,
+      },
+
+      /*** @private */
+      dialogHeader_: {
+        type: String,
+      },
+    };
+  }
 
   /** @override */
-  created() {
-    this.delegate_ = new settings.CellularSetupSettingsDelegate();
-  },
+  constructor() {
+    super();
 
-  listeners: {
-    'exit-cellular-setup': 'onExitCellularSetup_',
-  },
+    this.delegate_ = new CellularSetupSettingsDelegate();
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('exit-cellular-setup', this.onExitCellularSetup_);
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private*/
   onExitCellularSetup_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @param {string} title
@@ -55,5 +94,21 @@ Polymer({
    */
   shouldShowDialogTitle_(title) {
     return !!this.dialogTitle_;
-  },
-});
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDialogHeader_() {
+    if (this.dialogHeader_) {
+      return this.dialogHeader_;
+    }
+
+    return this.i18n('cellularSetupDialogTitle');
+  }
+}
+
+customElements.define(
+    OsSettingsCellularSetupDialogElement.is,
+    OsSettingsCellularSetupDialogElement);

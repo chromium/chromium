@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/display/cursor_window_controller.h"
+#include "ash/display/display_util.h"
 #include "ash/display/root_window_transformers.h"
 #include "ash/display/screen_position_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -15,6 +16,7 @@
 #include "ash/host/root_window_transformer.h"
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -25,9 +27,10 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_transform.h"
-#include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
@@ -43,6 +46,10 @@ class MirroringScreenPositionClient
  public:
   explicit MirroringScreenPositionClient(MirrorWindowController* controller)
       : controller_(controller) {}
+
+  MirroringScreenPositionClient(const MirroringScreenPositionClient&) = delete;
+  MirroringScreenPositionClient& operator=(
+      const MirroringScreenPositionClient&) = delete;
 
   // aura::client::ScreenPositionClient:
   void ConvertPointToScreen(const aura::Window* window,
@@ -92,8 +99,6 @@ class MirroringScreenPositionClient
 
  private:
   MirrorWindowController* controller_;  // not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(MirroringScreenPositionClient);
 };
 
 // A trivial CaptureClient that does nothing. That is, calls to set/release
@@ -101,6 +106,10 @@ class MirroringScreenPositionClient
 class NoneCaptureClient : public aura::client::CaptureClient {
  public:
   NoneCaptureClient() = default;
+
+  NoneCaptureClient(const NoneCaptureClient&) = delete;
+  NoneCaptureClient& operator=(const NoneCaptureClient&) = delete;
+
   ~NoneCaptureClient() override = default;
 
  private:
@@ -111,8 +120,6 @@ class NoneCaptureClient : public aura::client::CaptureClient {
   aura::Window* GetGlobalCaptureWindow() override { return nullptr; }
   void AddObserver(aura::client::CaptureClientObserver* observer) override {}
   void RemoveObserver(aura::client::CaptureClientObserver* observer) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(NoneCaptureClient);
 };
 
 display::DisplayManager::MultiDisplayMode GetCurrentMultiDisplayMode() {
@@ -171,15 +178,14 @@ void MirrorWindowController::UpdateWindow(
   for (const display::ManagedDisplayInfo& display_info : display_info_list) {
     std::unique_ptr<RootWindowTransformer> transformer;
     if (display_manager->IsInSoftwareMirrorMode()) {
-      transformer.reset(CreateRootWindowTransformerForMirroredDisplay(
-          display_manager->GetDisplayInfo(reflecting_source_id_),
-          display_info));
+      transformer = CreateRootWindowTransformerForMirroredDisplay(
+          display_manager->GetDisplayInfo(reflecting_source_id_), display_info);
     } else {
       DCHECK(display_manager->IsInUnifiedMode());
       display::Display display =
           display_manager->GetMirroringDisplayById(display_info.id());
-      transformer.reset(CreateRootWindowTransformerForUnifiedDesktop(
-          display::Screen::GetScreen()->GetPrimaryDisplay().bounds(), display));
+      transformer = CreateRootWindowTransformerForUnifiedDesktop(
+          display::Screen::GetScreen()->GetPrimaryDisplay().bounds(), display);
     }
 
     if (mirroring_host_info_map_.find(display_info.id()) ==
@@ -187,7 +193,7 @@ void MirrorWindowController::UpdateWindow(
       AshWindowTreeHostInitParams init_params;
       init_params.initial_bounds = display_info.bounds_in_native();
       init_params.display_id = display_info.id();
-      init_params.mirroring_delegate = this;
+      init_params.delegate = this;
       init_params.mirroring_unified = display_manager->IsInUnifiedMode();
       init_params.device_scale_factor = display_info.device_scale_factor();
       MirroringHostInfo* host_info = new MirroringHostInfo;
@@ -229,6 +235,12 @@ void MirrorWindowController::UpdateWindow(
       mirror_window->Init(ui::LAYER_SOLID_COLOR);
       host->window()->AddChild(mirror_window);
       host_info->ash_host->SetRootWindowTransformer(std::move(transformer));
+
+      const display::Display::Rotation effective_rotation =
+          display_info.GetLogicalActiveRotation();
+      host->SetDisplayTransformHint(
+          display::DisplayRotationToOverlayTransform(effective_rotation));
+
       // The accelerated widget is created synchronously.
       DCHECK_NE(gfx::kNullAcceleratedWidget, host->GetAcceleratedWidget());
     } else {
@@ -238,6 +250,12 @@ void MirrorWindowController::UpdateWindow(
       GetRootWindowSettings(host->window())->display_id = display_info.id();
       ash_host->SetRootWindowTransformer(std::move(transformer));
       host->SetBoundsInPixels(display_info.bounds_in_native());
+
+      // TODO(oshima): Consolidate the code above.
+      const display::Display::Rotation effective_rotation =
+          display_info.GetLogicalActiveRotation();
+      host->SetDisplayTransformHint(
+          display::DisplayRotationToOverlayTransform(effective_rotation));
     }
 
     // |mirror_size| is the size of the compositor of the mirror source in
@@ -251,16 +269,9 @@ void MirrorWindowController::UpdateWindow(
 
     auto* mirroring_host_info = mirroring_host_info_map_[display_info.id()];
 
-    // The rotation of the source display (internal display) should be undone in
-    // the destination display (external display) if mirror mode is enabled in
-    // tablet mode. This allows the destination display to show in an
-    // orientation independent of the source display.
-    // See https://crbug.com/824417
-    const bool should_undo_rotation = Shell::Get()
-                                          ->display_manager()
-                                          ->layout_store()
-                                          ->forced_mirror_mode_for_tablet();
-    if (!should_undo_rotation) {
+    const bool should_undo_rotation = ShouldUndoRotationForMirror();
+
+    if (!should_undo_rotation && !display_manager->IsInUnifiedMode()) {
       // Use the rotation from source display without panel orientation
       // applied instead of the display transform hint in |source_compositor|
       // so that panel orientation is not applied to the mirror host.
@@ -281,10 +292,8 @@ void MirrorWindowController::UpdateWindow(
   if (mirroring_host_info_map_.size() > display_info_list.size()) {
     for (MirroringHostInfoMap::iterator iter = mirroring_host_info_map_.begin();
          iter != mirroring_host_info_map_.end();) {
-      if (std::find_if(display_info_list.begin(), display_info_list.end(),
-                       [iter](const display::ManagedDisplayInfo& info) {
-                         return info.id() == iter->first;
-                       }) == display_info_list.end()) {
+      if (!base::Contains(display_info_list, iter->first,
+                          &display::ManagedDisplayInfo::id)) {
         CloseAndDeleteHost(iter->second, true);
         iter = mirroring_host_info_map_.erase(iter);
       } else {
@@ -357,7 +366,7 @@ display::Display MirrorWindowController::GetDisplayForRootWindow(
     if (pair.second->ash_host->AsWindowTreeHost()->window() == root) {
       // Sanity check to catch an error early.
       const int64_t id = pair.first;
-      const display::Display* display = GetMirroringDisplayById(id);
+      const display::Display* display = GetDisplayById(id);
       DCHECK(display);
       if (display)
         return *display;
@@ -380,7 +389,7 @@ aura::Window::Windows MirrorWindowController::GetAllRootWindows() const {
   return root_windows;
 }
 
-const display::Display* MirrorWindowController::GetMirroringDisplayById(
+const display::Display* MirrorWindowController::GetDisplayById(
     int64_t display_id) const {
   const display::Displays& list =
       Shell::Get()->display_manager()->software_mirroring_display_list();

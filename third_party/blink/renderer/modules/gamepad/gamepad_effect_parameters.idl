@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,4 +10,7 @@ dictionary GamepadEffectParameters {
     double startDelay = 0.0;
     double strongMagnitude = 0.0;
     double weakMagnitude = 0.0;
+    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/GamepadHapticsActuatorTriggerRumble/explainer.md
+    [RuntimeEnabled=WGIGamepadTriggerRumble] double leftTrigger = 0.0;
+    [RuntimeEnabled=WGIGamepadTriggerRumble] double rightTrigger = 0.0;
 };

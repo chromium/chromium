@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,19 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/marketing_backend_connector.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -40,22 +38,24 @@
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/c/system/trap.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
+const test::UIPath kChromebookGameTitle = {"marketing-opt-in",
+                                           "marketingOptInGameDeviceTitle"};
+const test::UIPath kChromebookGameSubtitle = {
+    "marketing-opt-in", "marketingOptInGameDeviceSubtitle"};
 const test::UIPath kChromebookEmailToggle = {"marketing-opt-in",
                                              "chromebookUpdatesOption"};
 const test::UIPath kChromebookEmailToggleDiv = {"marketing-opt-in",
-                                                "marketing-opt-in-toggle"};
+                                                "toggleRow"};
 const test::UIPath kChromebookEmailLegalFooterDiv = {"marketing-opt-in",
                                                      "legalFooter"};
-const test::UIPath kChromebookEmailAnimation = {"marketing-opt-in",
-                                                "animation"};
 const test::UIPath kMarketingA11yButton = {
     "marketing-opt-in", "marketing-opt-in-accessibility-button"};
 const test::UIPath kMarketingFinalA11yPage = {"marketing-opt-in",
@@ -99,7 +99,6 @@ const RegionToCodeMap kDoubleOptInCountries[]{
 // Unknown country.
 const RegionToCodeMap kUnknownCountry[]{
     {"Unknown", "unknown", "", false, true}};
-}  // namespace
 
 // Base class for simple tests on the marketing opt-in screen.
 class MarketingOptInScreenTest : public OobeBaseTest,
@@ -130,7 +129,7 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   void OptIn();
   void OptOut();
 
-  void ExpectGeolocationMetric(bool resolved, int length);
+  void ExpectGeolocationMetric(bool resolved);
   void WaitForScreenExit();
 
   // US as default location for non-parameterized tests.
@@ -142,7 +141,7 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   // Logs in as a normal user. Overridden by subclasses.
   virtual void PerformLogin();
 
-  base::Optional<MarketingOptInScreen::Result> screen_result_;
+  absl::optional<MarketingOptInScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  protected:
@@ -156,7 +155,7 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   base::RepeatingClosure screen_exit_callback_;
   MarketingOptInScreen::ScreenExitCallback original_callback_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
@@ -192,7 +191,7 @@ MarketingOptInScreenTest::MarketingOptInScreenTest() {
 }
 
 void MarketingOptInScreenTest::SetUpOnMainThread() {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ShellTestApi().SetTabletModeEnabledForTest(true);
 
   original_callback_ = GetScreen()->get_exit_callback_for_testing();
   GetScreen()->set_exit_callback_for_testing(base::BindRepeating(
@@ -200,6 +199,9 @@ void MarketingOptInScreenTest::SetUpOnMainThread() {
   GetScreen()->set_ingore_pref_sync_for_testing(true);
 
   OobeBaseTest::SetUpOnMainThread();
+  auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();
+  wizard_context->is_branded_build = true;
+  wizard_context->defer_oobe_flow_finished_for_tests = true;
 }
 
 MarketingOptInScreen* MarketingOptInScreenTest::GetScreen() {
@@ -211,7 +213,7 @@ void MarketingOptInScreenTest::ShowMarketingOptInScreen() {
   PerformLogin();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      ash::prefs::kGestureEducationNotificationShown, true);
+      prefs::kGestureEducationNotificationShown, true);
   LoginDisplayHost::default_host()->StartWizard(
       MarketingOptInScreenView::kScreenId);
 }
@@ -242,8 +244,6 @@ void MarketingOptInScreenTest::ExpectLegalFooterVisibility(bool visibility) {
   ExpectOptInOptionAvailable();
   if (visibility) {
     test::OobeJS().ExpectVisiblePath(kChromebookEmailLegalFooterDiv);
-    // Only the old animation is invisible when the legal footer is shown.
-    test::OobeJS().ExpectHiddenPath(kChromebookEmailAnimation);
   } else {
     test::OobeJS().ExpectHiddenPath(kChromebookEmailLegalFooterDiv);
   }
@@ -281,8 +281,7 @@ void MarketingOptInScreenTest::OptOut() {
   test::OobeJS().ExpectHasNoAttribute("checked", kChromebookEmailToggle);
 }
 
-void MarketingOptInScreenTest::ExpectGeolocationMetric(bool resolved,
-                                                       int length) {
+void MarketingOptInScreenTest::ExpectGeolocationMetric(bool resolved) {
   histogram_tester_.ExpectUniqueSample(
       "OOBE.MarketingOptInScreen.GeolocationResolve",
       resolved
@@ -290,10 +289,6 @@ void MarketingOptInScreenTest::ExpectGeolocationMetric(bool resolved,
                 kCountrySuccessfullyDetermined
           : MarketingOptInScreen::GeolocationEvent::kCouldNotDetermineCountry,
       1);
-  if (resolved) {
-    histogram_tester_.ExpectUniqueSample(
-        "OOBE.MarketingOptInScreen.GeolocationResolveLength", length, 1);
-  }
 }
 
 void MarketingOptInScreenTest::WaitForScreenExit() {
@@ -457,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTest, EnableShelfNavigationButtons) {
 
   // Verify the accessibility pref for shelf navigation buttons is set.
   EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
 }
 
 // Tests that the user can exit the screen from the accessibility page.
@@ -511,7 +506,13 @@ class MarketingTestCountryCodes : public MarketingOptInScreenTestWithRequest,
 
 // Tests that the given timezone resolves to the correct location and
 // generates a request for the server with the correct region code.
-IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, CountryCodes) {
+// TODO(crbug.com/1369443): Fix flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CountryCodes DISABLED_CountryCodes
+#else
+#define MAYBE_CountryCodes CountryCodes
+#endif
+IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, MAYBE_CountryCodes) {
   const RegionToCodeMap param = GetParam();
   ShowMarketingOptInScreen();
   OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
@@ -539,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, CountryCodes) {
                                        1);
 
   // Expect successful geolocation resolve.
-  ExpectGeolocationMetric(true, std::string(param.country_code).size());
+  ExpectGeolocationMetric(/*resolved=*/true);
 }
 
 // Test all the countries lists.
@@ -579,10 +580,7 @@ IN_PROC_BROWSER_TEST_P(MarketingDisabledExtraCountries, OptInNotVisible) {
   ExpectNoOptInOption();
   TapOnGetStartedAndWaitForScreenExit();
 
-  if (param.is_unknown_country)
-    ExpectGeolocationMetric(false, 0);
-  else
-    ExpectGeolocationMetric(true, std::string(param.country_code).size());
+  ExpectGeolocationMetric(/*resolved=*/!param.is_unknown_country);
 }
 
 // Tests that countries from the extended list
@@ -605,29 +603,6 @@ INSTANTIATE_TEST_SUITE_P(MarketingOptInUnknownCountries,
                          testing::ValuesIn(kUnknownCountry),
                          RegionAsParameterInterface::ParamInfoToString);
 
-class MarketingOptInScreenTestDisabled : public MarketingOptInScreenTest {
- public:
-  MarketingOptInScreenTestDisabled() {
-    feature_list_.Reset();
-    // Disable kOobeMarketingScreen to disable marketing screen.
-    feature_list_.InitWithFeatures({}, {::features::kOobeMarketingScreen});
-  }
-
-  ~MarketingOptInScreenTestDisabled() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestDisabled, FeatureDisabled) {
-  ShowMarketingOptInScreen();
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(),
-            MarketingOptInScreen::Result::NOT_APPLICABLE);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Marketing-opt-in.Next", 0);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Marketing-opt-in",
-                                     0);
-}
-
 class MarketingOptInScreenTestChildUser : public MarketingOptInScreenTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -639,7 +614,7 @@ class MarketingOptInScreenTestChildUser : public MarketingOptInScreenTest {
   void PerformLogin() override { login_manager_mixin_.LoginAsNewChildUser(); }
 
  private:
-  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
@@ -657,4 +632,62 @@ IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestChildUser, DisabledForChild) {
                                      0);
 }
 
-}  // namespace chromeos
+class MarketingOptInScreenTestNotBrandedChrome
+    : public MarketingOptInScreenTest {
+ protected:
+  void SetUpOnMainThread() override {
+    MarketingOptInScreenTest::SetUpOnMainThread();
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestNotBrandedChrome,
+                       SkippedNotBrandedBuild) {
+  ShowMarketingOptInScreen();
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(),
+            MarketingOptInScreen::Result::NOT_APPLICABLE);
+}
+
+class MarketingOptInScreenTestGameDevice : public MarketingOptInScreenTest {
+ public:
+  MarketingOptInScreenTestGameDevice() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(
+        {
+            ::features::kOobeMarketingDoubleOptInCountriesSupported,
+            ::features::kOobeMarketingAdditionalCountriesSupported,
+            chromeos::features::kCloudGamingDevice,
+        },
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestGameDevice,
+                       ScreenElementsVisible) {
+  PerformLogin();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+  // Expect the screen to not have been shown before.
+  EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+      prefs::kOobeMarketingOptInScreenFinished));
+  LoginDisplayHost::default_host()->StartWizard(
+      MarketingOptInScreenView::kScreenId);
+
+  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
+  // check the Screen is Visible
+  test::OobeJS().ExpectVisiblePath(
+      {"marketing-opt-in", "marketingOptInOverviewDialog"});
+  // check the correct game mode title is visible
+  test::OobeJS().ExpectVisiblePath(kChromebookGameTitle);
+  // check the correct game mode description is visible
+  test::OobeJS().ExpectVisiblePath(kChromebookGameSubtitle);
+  TapOnGetStartedAndWaitForScreenExit();
+
+  // Expect the screen to be marked as shown.
+  EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+      prefs::kOobeMarketingOptInScreenFinished));
+}
+
+}  // namespace
+}  // namespace ash

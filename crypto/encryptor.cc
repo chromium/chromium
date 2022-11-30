@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,24 +64,20 @@ bool Encryptor::Init(const SymmetricKey* key,
 }
 
 bool Encryptor::Encrypt(base::StringPiece plaintext, std::string* ciphertext) {
-  CHECK(!plaintext.empty() || mode_ == CBC);
   return CryptString(/*do_encrypt=*/true, plaintext, ciphertext);
 }
 
 bool Encryptor::Encrypt(base::span<const uint8_t> plaintext,
                         std::vector<uint8_t>* ciphertext) {
-  CHECK(!plaintext.empty() || mode_ == CBC);
   return CryptBytes(/*do_encrypt=*/true, plaintext, ciphertext);
 }
 
 bool Encryptor::Decrypt(base::StringPiece ciphertext, std::string* plaintext) {
-  CHECK(!ciphertext.empty());
   return CryptString(/*do_encrypt=*/false, ciphertext, plaintext);
 }
 
 bool Encryptor::Decrypt(base::span<const uint8_t> ciphertext,
                         std::vector<uint8_t>* plaintext) {
-  CHECK(!ciphertext.empty());
   return CryptBytes(/*do_encrypt=*/false, ciphertext, plaintext);
 }
 
@@ -102,18 +98,13 @@ bool Encryptor::SetCounter(base::span<const uint8_t> counter) {
 bool Encryptor::CryptString(bool do_encrypt,
                             base::StringPiece input,
                             std::string* output) {
-  size_t out_size = MaxOutput(do_encrypt, input.size());
-  CHECK_GT(out_size + 1, out_size);  // Overflow
-  std::string result;
-  uint8_t* out_ptr =
-      reinterpret_cast<uint8_t*>(base::WriteInto(&result, out_size + 1));
-
-  base::Optional<size_t> len =
+  std::string result(MaxOutput(do_encrypt, input.size()), '\0');
+  absl::optional<size_t> len =
       (mode_ == CTR)
           ? CryptCTR(do_encrypt, base::as_bytes(base::make_span(input)),
-                     base::make_span(out_ptr, out_size))
+                     base::as_writable_bytes(base::make_span(result)))
           : Crypt(do_encrypt, base::as_bytes(base::make_span(input)),
-                  base::make_span(out_ptr, out_size));
+                  base::as_writable_bytes(base::make_span(result)));
   if (!len)
     return false;
 
@@ -126,7 +117,7 @@ bool Encryptor::CryptBytes(bool do_encrypt,
                            base::span<const uint8_t> input,
                            std::vector<uint8_t>* output) {
   std::vector<uint8_t> result(MaxOutput(do_encrypt, input.size()));
-  base::Optional<size_t> len = (mode_ == CTR)
+  absl::optional<size_t> len = (mode_ == CTR)
                                    ? CryptCTR(do_encrypt, input, result)
                                    : Crypt(do_encrypt, input, result);
   if (!len)
@@ -143,7 +134,7 @@ size_t Encryptor::MaxOutput(bool do_encrypt, size_t length) {
   return result;
 }
 
-base::Optional<size_t> Encryptor::Crypt(bool do_encrypt,
+absl::optional<size_t> Encryptor::Crypt(bool do_encrypt,
                                         base::span<const uint8_t> input,
                                         base::span<uint8_t> output) {
   DCHECK(key_);  // Must call Init() before En/De-crypt.
@@ -160,7 +151,7 @@ base::Optional<size_t> Encryptor::Crypt(bool do_encrypt,
   if (!EVP_CipherInit_ex(ctx.get(), cipher, nullptr,
                          reinterpret_cast<const uint8_t*>(key.data()),
                          iv_.data(), do_encrypt)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Encrypting needs a block size of space to allow for any padding.
@@ -168,31 +159,31 @@ base::Optional<size_t> Encryptor::Crypt(bool do_encrypt,
   int out_len;
   if (!EVP_CipherUpdate(ctx.get(), output.data(), &out_len, input.data(),
                         input.size()))
-    return base::nullopt;
+    return absl::nullopt;
 
   // Write out the final block plus padding (if any) to the end of the data
   // just written.
   int tail_len;
   if (!EVP_CipherFinal_ex(ctx.get(), output.data() + out_len, &tail_len))
-    return base::nullopt;
+    return absl::nullopt;
 
   out_len += tail_len;
   DCHECK_LE(out_len, static_cast<int>(output.size()));
   return out_len;
 }
 
-base::Optional<size_t> Encryptor::CryptCTR(bool do_encrypt,
+absl::optional<size_t> Encryptor::CryptCTR(bool do_encrypt,
                                            base::span<const uint8_t> input,
                                            base::span<uint8_t> output) {
   if (iv_.size() != AES_BLOCK_SIZE) {
     LOG(ERROR) << "Counter value not set in CTR mode.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   AES_KEY aes_key;
   if (AES_set_encrypt_key(reinterpret_cast<const uint8_t*>(key_->key().data()),
                           key_->key().size() * 8, &aes_key) != 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   uint8_t ecount_buf[AES_BLOCK_SIZE] = { 0 };

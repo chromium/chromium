@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class InstallerStringTest : public testing::Test {
 
 // Tests the strcat/strcpy/length support of the StackString class.
 TEST_F(InstallerStringTest, StackStringOverflow) {
-  static const wchar_t kTestString[] = L"1234567890";
+  static constexpr wchar_t kTestString[] = L"1234567890";
 
   StackString<MAX_PATH> str;
   EXPECT_EQ(size_t{MAX_PATH}, str.capacity());

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,9 +52,9 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
   }
 
   void GenerateSwipe(int start_y, int end_y) {
-    GetEventGenerator()->GestureScrollSequence(
-        gfx::Point(400, start_y), gfx::Point(400, end_y),
-        base::TimeDelta::FromMilliseconds(100), 3);
+    GetEventGenerator()->GestureScrollSequence(gfx::Point(400, start_y),
+                                               gfx::Point(400, end_y),
+                                               base::Milliseconds(100), 3);
   }
 
   aura::Window* foreground_window() { return foreground_window_.get(); }

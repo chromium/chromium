@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -26,9 +26,11 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/notify_watcher_mac.h"
+#include "net/dns/public/resolv_reader.h"
 #include "net/dns/serial_worker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "net/dns/dns_config_watcher_mac.h"
 #endif
 
@@ -41,7 +43,7 @@ namespace {
 const base::FilePath::CharType kFilePathHosts[] =
     FILE_PATH_LITERAL("/etc/hosts");
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // There is no public API to watch the DNS configuration on iOS.
 class DnsConfigWatcher {
  public:
@@ -52,11 +54,11 @@ class DnsConfigWatcher {
   }
 };
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 
 // DnsConfigWatcher for OS_MAC is in dns_config_watcher_mac.{hh,cc}.
 
-#else  // !defined(OS_IOS) && !defined(OS_MAC)
+#else  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_MAC)
 
 #ifndef _PATH_RESCONF  // Normally defined in <resolv.h>
 #define _PATH_RESCONF "/etc/resolv.conf"
@@ -85,42 +87,30 @@ class DnsConfigWatcher {
   base::FilePathWatcher watcher_;
   CallbackType callback_;
 };
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
-base::Optional<DnsConfig> ReadDnsConfig() {
+absl::optional<DnsConfig> ReadDnsConfig() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  base::Optional<DnsConfig> dns_config;
-// TODO(fuchsia): Use res_ninit() when it's implemented on Fuchsia.
-#if defined(OS_OPENBSD) || defined(OS_FUCHSIA)
-  // Note: res_ninit in glibc always returns 0 and sets RES_INIT.
-  // res_init behaves the same way.
-  memset(&_res, 0, sizeof(_res));
-  if (res_init() == 0)
-    dns_config = ConvertResStateToDnsConfig(_res);
-#else  // all other OS_POSIX
-  struct __res_state res;
-  memset(&res, 0, sizeof(res));
-  if (res_ninit(&res) == 0)
-    dns_config = ConvertResStateToDnsConfig(res);
-    // Prefer res_ndestroy where available.
-#if defined(OS_APPLE) || defined(OS_FREEBSD)
-  res_ndestroy(&res);
-#else
-  res_nclose(&res);
-#endif  // defined(OS_APPLE) || defined(OS_FREEBSD)
-#endif  // defined(OS_OPENBSD)
+  absl::optional<DnsConfig> dns_config;
+  {
+    std::unique_ptr<ScopedResState> scoped_res_state =
+        ResolvReader().GetResState();
+    if (scoped_res_state) {
+      dns_config = ConvertResStateToDnsConfig(scoped_res_state->state());
+    }
+  }
 
   if (!dns_config.has_value())
     return dns_config;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!DnsConfigWatcher::CheckDnsConfig(
           dns_config->unhandled_options /* out_unhandled_options */)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   // Override |fallback_period| value to match default setting on Windows.
   dns_config->fallback_period = kDnsDefaultFallbackPeriod;
   return dns_config;
@@ -132,6 +122,10 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
  public:
   explicit Watcher(DnsConfigServicePosix& service)
       : DnsConfigService::Watcher(service) {}
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
   ~Watcher() override = default;
 
   bool Watch() override {
@@ -144,7 +138,7 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
       success = false;
     }
 // Hosts file should never change on iOS, so don't watch it there.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     if (!hosts_watcher_.Watch(
             base::FilePath(kFilePathHosts),
             base::FilePathWatcher::Type::kNonRecursive,
@@ -153,28 +147,25 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
       LOG(ERROR) << "DNS hosts watch failed to start.";
       success = false;
     }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
     return success;
   }
 
  private:
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   void OnHostsFilePathWatcherChange(const base::FilePath& path, bool error) {
     OnHostsChanged(!error);
   }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   DnsConfigWatcher config_watcher_;
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   base::FilePathWatcher hosts_watcher_;
-#endif  // !defined(OS_IOS)
-
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
+#endif  // !BUILDFLAG(IS_IOS)
 };
 
 // A SerialWorker that uses libresolv to initialize res_state and converts
-// it to DnsConfig (except on Android, where it reads system properties
-// net.dns1 and net.dns2; see #if around ReadDnsConfig above.)
+// it to DnsConfig.
 class DnsConfigServicePosix::ConfigReader : public SerialWorker {
  public:
   explicit ConfigReader(DnsConfigServicePosix& service) : service_(&service) {
@@ -183,28 +174,42 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
-  void DoWork() override { dns_config_ = ReadDnsConfig(); }
+  ~ConfigReader() override = default;
 
-  void OnWorkFinished() override {
+  ConfigReader(const ConfigReader&) = delete;
+  ConfigReader& operator=(const ConfigReader&) = delete;
+
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>();
+  }
+
+  bool OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+                          serial_worker_work_item) override {
+    DCHECK(serial_worker_work_item);
     DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
+
+    WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+    if (work_item->dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(work_item->dns_config_).value());
+      return true;
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
+      return false;
     }
   }
 
  private:
-  ~ConfigReader() override = default;
+  class WorkItem : public SerialWorker::WorkItem {
+   public:
+    void DoWork() override { dns_config_ = ReadDnsConfig(); }
 
-  // Raw pointer to owning DnsConfigService. This must never be accessed inside
-  // DoWork(), since service may be destroyed while SerialWorker is running
-  // on worker thread.
-  DnsConfigServicePosix* const service_;
-  // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  base::Optional<DnsConfig> dns_config_;
+   private:
+    friend class ConfigReader;
+    absl::optional<DnsConfig> dns_config_;
+  };
 
-  DISALLOW_COPY_AND_ASSIGN(ConfigReader);
+  // Raw pointer to owning DnsConfigService.
+  const raw_ptr<DnsConfigServicePosix> service_;
 };
 
 DnsConfigServicePosix::DnsConfigServicePosix()
@@ -226,6 +231,8 @@ void DnsConfigServicePosix::RefreshConfig() {
 }
 
 void DnsConfigServicePosix::ReadConfigNow() {
+  if (!config_reader_)
+    CreateReader();
   config_reader_->WorkNow();
 }
 
@@ -239,77 +246,29 @@ bool DnsConfigServicePosix::StartWatching() {
 void DnsConfigServicePosix::CreateReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!config_reader_);
-  config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
+  config_reader_ = std::make_unique<ConfigReader>(*this);
 }
 
-base::Optional<DnsConfig> ConvertResStateToDnsConfig(
+absl::optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
   DnsConfig dns_config;
   dns_config.unhandled_options = false;
 
   if (!(res.options & RES_INIT))
-    return base::nullopt;
+    return absl::nullopt;
 
-#if defined(OS_APPLE) || defined(OS_FREEBSD)
-  union res_sockaddr_union addresses[MAXNS];
-  int nscount = res_getservers(const_cast<res_state>(&res), addresses, MAXNS);
-  DCHECK_GE(nscount, 0);
-  DCHECK_LE(nscount, MAXNS);
-  for (int i = 0; i < nscount; ++i) {
-    IPEndPoint ipe;
-    if (!ipe.FromSockAddr(
-            reinterpret_cast<const struct sockaddr*>(&addresses[i]),
-            sizeof addresses[i])) {
-      return base::nullopt;
-    }
-    dns_config.nameservers.push_back(ipe);
-  }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-  static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
-                    std::extent<decltype(res._u._ext.nsaddrs)>() >= MAXNS,
-                "incompatible libresolv res_state");
-  DCHECK_LE(res.nscount, MAXNS);
-  // Initially, glibc stores IPv6 in |_ext.nsaddrs| and IPv4 in |nsaddr_list|.
-  // In res_send.c:res_nsend, it merges |nsaddr_list| into |nsaddrs|,
-  // but we have to combine the two arrays ourselves.
-  for (int i = 0; i < res.nscount; ++i) {
-    IPEndPoint ipe;
-    const struct sockaddr* addr = nullptr;
-    size_t addr_len = 0;
-    if (res.nsaddr_list[i].sin_family) {  // The indicator used by res_nsend.
-      addr = reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]);
-      addr_len = sizeof res.nsaddr_list[i];
-    } else if (res._u._ext.nsaddrs[i]) {
-      addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
-      addr_len = sizeof *res._u._ext.nsaddrs[i];
-    } else {
-      return base::nullopt;
-    }
-    if (!ipe.FromSockAddr(addr, addr_len))
-      return base::nullopt;
-    dns_config.nameservers.push_back(ipe);
-  }
-#else   // !(defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) ||
-        // defined(OS_FREEBSD))
-  DCHECK_LE(res.nscount, MAXNS);
-  for (int i = 0; i < res.nscount; ++i) {
-    IPEndPoint ipe;
-    if (!ipe.FromSockAddr(
-            reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]),
-            sizeof res.nsaddr_list[i])) {
-      return base::nullopt;
-    }
-    dns_config.nameservers.push_back(ipe);
-  }
-#endif  // defined(OS_APPLE) || defined(OS_FREEBSD)
+  absl::optional<std::vector<IPEndPoint>> nameservers = GetNameservers(res);
+  if (!nameservers)
+    return absl::nullopt;
 
+  dns_config.nameservers = std::move(*nameservers);
   dns_config.search.clear();
   for (int i = 0; (i < MAXDNSRCH) && res.dnsrch[i]; ++i) {
     dns_config.search.emplace_back(res.dnsrch[i]);
   }
 
   dns_config.ndots = res.ndots;
-  dns_config.fallback_period = base::TimeDelta::FromSeconds(res.retrans);
+  dns_config.fallback_period = base::Seconds(res.retrans);
   dns_config.attempts = res.retry;
 #if defined(RES_ROTATE)
   dns_config.rotate = res.options & RES_ROTATE;
@@ -335,13 +294,13 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
   }
 
   if (dns_config.nameservers.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // If any name server is 0.0.0.0, assume the configuration is invalid.
   // TODO(szym): Measure how often this happens. http://crbug.com/125599
   for (const IPEndPoint& nameserver : dns_config.nameservers) {
     if (nameserver.address().IsZero())
-      return base::nullopt;
+      return absl::nullopt;
   }
   return dns_config;
 }
@@ -353,12 +312,11 @@ std::unique_ptr<DnsConfigService> DnsConfigService::CreateSystemService() {
   // DnsConfigService on iOS doesn't watch the config so its result can become
   // inaccurate at any time.  Disable it to prevent promulgation of inaccurate
   // DnsConfigs.
-#ifdef OS_IOS
+#if BUILDFLAG(IS_IOS)
   return nullptr;
-#else   // defined(OS_IOS)
-  return std::unique_ptr<DnsConfigService>(
-      new internal::DnsConfigServicePosix());
-#endif  // defined(OS_IOS)
+#else   // BUILDFLAG(IS_IOS)
+  return std::make_unique<internal::DnsConfigServicePosix>();
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace net

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,8 @@ bool SyncToBookmark(const ReadingListEntry& entry, BookmarkNode* bookmark) {
   }
 
   bookmark->set_url(entry.URL());
-  bookmark->set_date_added(base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(entry.CreationTime())));
+  bookmark->set_date_added(base::Time::UnixEpoch() +
+                           base::Microseconds(entry.CreationTime()));
   bookmark->SetTitle(title);
   bookmark->SetMetaInfo(kReadStatusKey,
                         entry.IsRead() ? kReadStatusRead : kReadStatusUnread);
@@ -260,7 +260,7 @@ BookmarkNode* ReadingListManagerImpl::FindBookmarkByURL(const GURL& url) const {
 void ReadingListManagerImpl::RemoveBookmark(const GURL& url) {
   const BookmarkNode* node = FindBookmarkByURL(url);
   if (node)
-    root_->Remove(root_->GetIndexOf(node));
+    root_->Remove(root_->GetIndexOf(node).value());
 }
 
 const BookmarkNode* ReadingListManagerImpl::AddOrUpdateBookmark(

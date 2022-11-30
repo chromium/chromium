@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,24 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
-TrayContainer::TrayContainer(Shelf* shelf) : shelf_(shelf) {
+TrayContainer::TrayContainer(Shelf* shelf,
+                             TrayBackgroundView* tray_background_view)
+    : shelf_(shelf), tray_background_view_(tray_background_view) {
   DCHECK(shelf_);
 
   SetPaintToLayer();
@@ -39,8 +46,9 @@ void TrayContainer::CalculateTargetBounds() {
 
   gfx::Insets insets(
       is_horizontal
-          ? gfx::Insets(0, new_layout_inputs.status_area_hit_region_padding)
-          : gfx::Insets(new_layout_inputs.status_area_hit_region_padding, 0));
+          ? gfx::Insets::VH(0, new_layout_inputs.status_area_hit_region_padding)
+          : gfx::Insets::VH(new_layout_inputs.status_area_hit_region_padding,
+                            0));
   border_ = views::CreateEmptyBorder(insets);
 
   int horizontal_margin = new_layout_inputs.main_axis_margin;
@@ -49,8 +57,8 @@ void TrayContainer::CalculateTargetBounds() {
     std::swap(horizontal_margin, vertical_margin);
 
   layout_manager_ = std::make_unique<views::BoxLayout>(
-      orientation, gfx::Insets(vertical_margin, horizontal_margin),
-      kUnifiedTraySpacingBetweenIcons);
+      orientation, gfx::Insets::VH(vertical_margin, horizontal_margin),
+      new_layout_inputs.spacing_between_children);
   layout_manager_->set_minimum_cross_axis_size(kTrayItemSize);
 }
 
@@ -73,6 +81,43 @@ void TrayContainer::SetMargin(int main_axis_margin, int cross_axis_margin) {
   main_axis_margin_ = main_axis_margin;
   cross_axis_margin_ = cross_axis_margin;
   UpdateLayout();
+}
+
+void TrayContainer::SetSpacingBetweenChildren(int space_dip) {
+  spacing_between_children_ = space_dip;
+  UpdateLayout();
+}
+
+void TrayContainer::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+
+  // We only add highlight border to the system tray when it is in tablet mode
+  // and not in app mode.
+  if (!features::IsDarkLightModeEnabled() || !Shell::Get()->IsInTabletMode() ||
+      ShelfConfig::Get()->is_in_app()) {
+    return;
+  }
+
+  // We add highlight border here since TrayBackgroundView's layer is solid
+  // color, which hides the border. However, the painting bounds should be the
+  // layer clip rect defined in the background view, so we calculate that bound
+  // relative to local bounds and do a custom highlight border paint here.
+  const gfx::Rect background_bounds =
+      tray_background_view_->GetBackgroundBounds();
+  const auto bounds_origin =
+      (tray_background_view_->GetBoundsInScreen().origin() +
+       background_bounds.OffsetFromOrigin()) -
+      GetBoundsInScreen().origin();
+
+  const gfx::RoundedCornersF rounded_corners =
+      tray_background_view_->GetRoundedCorners();
+
+  views::HighlightBorder::PaintBorderToCanvas(
+      canvas, *this,
+      gfx::Rect(gfx::PointAtOffsetFromOrigin(bounds_origin),
+                background_bounds.size()),
+      rounded_corners, views::HighlightBorder::Type::kHighlightBorder2,
+      /*use_light_colors=*/false);
 }
 
 void TrayContainer::ChildPreferredSizeChanged(views::View* child) {
@@ -113,7 +158,15 @@ const char* TrayContainer::GetClassName() const {
 TrayContainer::LayoutInputs TrayContainer::GetLayoutInputs() const {
   return {shelf_->IsHorizontalAlignment(),
           ShelfConfig::Get()->status_area_hit_region_padding(),
-          GetAnchorBoundsInScreen(), main_axis_margin_, cross_axis_margin_};
+          GetAnchorBoundsInScreen(),
+          main_axis_margin_,
+          cross_axis_margin_,
+          spacing_between_children_};
+}
+
+void TrayContainer::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SchedulePaint();
 }
 
 }  // namespace ash

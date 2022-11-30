@@ -1,0 +1,22 @@
+Verifies that we can successfully retrieve origin trial in frame tree.
+[
+    [0] : {
+        status : ValidTokenNotProvided
+        tokensWithStatus : [
+            [0] : {
+                parsedToken : {
+                    expiryTime : 1761176198
+                    isThirdParty : false
+                    matchSubDomains : false
+                    origin : http://127.0.0.1:8000
+                    trialName : Frobulate
+                    usageRestriction : None
+                }
+                rawTokenText : Azyb0NvqGpCAlOx91FP6wa6pn5iu6+UTVuKv+H3QHoFQeKuMqqgJdwbpON0LpCSSpk6VZcR3/DULpkLjrQbViQUAAABReyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6IDE3NjExNzYxOTh9
+                status : WrongOrigin
+            }
+        ]
+        trialName : Frobulate
+    }
+]
+

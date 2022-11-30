@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -59,12 +58,8 @@ void OnProfileLoadedFromManager(ProfileToken token_proto,
   if (profile && !token_proto.otr_profile_id().empty()) {
     Profile::OTRProfileID otrProfileId =
         Profile::OTRProfileID::Deserialize(token_proto.otr_profile_id());
-    // Avoid GetOffTheRecordProfile creating new OTR profile.
-    if (profile->HasOffTheRecordProfile(otrProfileId)) {
-      profile = profile->GetOffTheRecordProfile(otrProfileId);
-    } else {
-      profile = nullptr;
-    }
+    profile = profile->GetOffTheRecordProfile(otrProfileId,
+                                              /*create_if_needed=*/false);
   }
 
   std::move(callback).Run(profile);

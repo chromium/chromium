@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 #include <windows.h>
+
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -43,7 +45,7 @@ TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file) {
       log_size > kMaxInstallerLogFileSize) {
     // Cause the old log file to be deleted when we are done with it.
     uint32_t file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-                          base::File::FLAG_SHARE_DELETE |
+                          base::File::FLAG_WIN_SHARE_DELETE |
                           base::File::FLAG_DELETE_ON_CLOSE;
     base::File old_log_file(log_file, file_flags);
 
@@ -125,7 +127,7 @@ base::FilePath GetLogFilePath(const installer::InitialPreferences& prefs) {
 
   // Fallback to current directory if getting the temp directory fails.
   base::FilePath tmp_path;
-  ignore_result(base::PathService::Get(base::DIR_TEMP, &tmp_path));
+  std::ignore = base::PathService::Get(base::DIR_TEMP, &tmp_path);
   return tmp_path.Append(kLogFilename);
 }
 

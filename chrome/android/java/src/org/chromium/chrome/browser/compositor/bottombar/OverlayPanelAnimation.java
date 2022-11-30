@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,9 +56,11 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     /**
      * @param context The current Android {@link Context}.
      * @param updateHost The {@link LayoutUpdateHost} used to request updates in the Layout.
+     * @param toolbarHeightDp The height of the toolbar in dp.
      */
-    public OverlayPanelAnimation(Context context, LayoutUpdateHost updateHost) {
-        super(context);
+    public OverlayPanelAnimation(
+            Context context, LayoutUpdateHost updateHost, float toolbarHeightDp) {
+        super(context, toolbarHeightDp);
         mUpdateHost = updateHost;
     }
 
@@ -380,17 +382,13 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
 
     /**
      * Called when layout-specific actions are needed after the animation finishes.
+     * This method should only be called when the animation ends normally and not when it is
+     * canceled.
      */
     protected void onHeightAnimationFinished() {
-        // If animating to a particular PanelState, and after completing
-        // resizing the Panel to its desired state, then the Panel's state
-        // should be updated. This method also is called when an animation
-        // is cancelled (which can happen by a subsequent gesture while
-        // an animation is happening). That's why the actual height should
-        // be checked.
-        if (mAnimatingState != null && mAnimatingState != PanelState.UNDEFINED
-                && MathUtils.areFloatsEqual(
-                        getHeight(), getPanelHeightFromState(mAnimatingState))) {
+        // If animating to a particular PanelState, and after completing resizing the Panel to its
+        // desired state, then the Panel's state should be updated.
+        if (mAnimatingState != null && mAnimatingState != PanelState.UNDEFINED) {
             setPanelState(mAnimatingState, mAnimatingStateReason);
         }
 

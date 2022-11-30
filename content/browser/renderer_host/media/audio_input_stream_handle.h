@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_AUDIO_INPUT_STREAM_HANDLE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
@@ -36,6 +35,9 @@ class CONTENT_EXPORT AudioInputStreamHandle {
           create_delegate_callback,
       DeleterCallback deleter_callback);
 
+  AudioInputStreamHandle(const AudioInputStreamHandle&) = delete;
+  AudioInputStreamHandle& operator=(const AudioInputStreamHandle&) = delete;
+
   ~AudioInputStreamHandle();
 
   const base::UnguessableToken& id() const { return stream_id_; }
@@ -55,8 +57,6 @@ class CONTENT_EXPORT AudioInputStreamHandle {
   mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
       pending_stream_client_;
   media::MojoAudioInputStream stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputStreamHandle);
 };
 
 }  // namespace content

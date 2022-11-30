@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -33,6 +32,10 @@ class MemoryMappedRuleset;
 class RulesetDealer {
  public:
   RulesetDealer();
+
+  RulesetDealer(const RulesetDealer&) = delete;
+  RulesetDealer& operator=(const RulesetDealer&) = delete;
+
   virtual ~RulesetDealer();
 
   // Sets the |ruleset_file| to memory map and distribute from now on.
@@ -55,21 +58,15 @@ class RulesetDealer {
   base::File DuplicateRulesetFile();
 
  protected:
-  bool CalledOnValidSequence() const {
-    return sequence_checker_.CalledOnValidSequence();
-  }
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   friend class SubresourceFilterRulesetDealerTest;
 
   base::File ruleset_file_;
   base::WeakPtr<MemoryMappedRuleset> weak_cached_ruleset_;
-
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetDealer);
 };
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_RULESET_DEALER_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_

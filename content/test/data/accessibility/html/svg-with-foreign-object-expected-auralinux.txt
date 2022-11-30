@@ -1,0 +1,5 @@
+[document web] tag:#document
+++[section] tag:body
+++++[document frame] tag:svg
+++++++[paragraph] tag:p
+++++++++[static] name='Hello world'

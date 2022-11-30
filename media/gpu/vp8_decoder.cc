@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,17 @@
 
 namespace media {
 
-namespace {
-constexpr size_t kVP8NumFramesActive = 4;
-}
-
 VP8Decoder::VP8Accelerator::VP8Accelerator() {}
 
 VP8Decoder::VP8Accelerator::~VP8Accelerator() {}
 
-VP8Decoder::VP8Decoder(std::unique_ptr<VP8Accelerator> accelerator)
+VP8Decoder::VP8Decoder(std::unique_ptr<VP8Accelerator> accelerator,
+                       const VideoColorSpace& container_color_space)
     : state_(kNeedStreamMetadata),
       curr_frame_start_(nullptr),
       frame_size_(0),
-      accelerator_(std::move(accelerator)) {
+      accelerator_(std::move(accelerator)),
+      container_color_space_(container_color_space) {
   DCHECK(accelerator_);
 }
 
@@ -140,6 +138,10 @@ bool VP8Decoder::DecodeAndOutputCurrentFrame(scoped_refptr<VP8Picture> pic) {
 
   pic->set_visible_rect(gfx::Rect(pic_size_));
   pic->set_bitstream_id(stream_id_);
+  if (container_color_space_.IsSpecified())
+    pic->set_colorspace(container_color_space_);
+  else
+    pic->set_colorspace(VideoColorSpace::REC601());
 
   if (curr_frame_hdr_->IsKeyframe()) {
     horizontal_scale_ = curr_frame_hdr_->horizontal_scale;
@@ -184,14 +186,20 @@ uint8_t VP8Decoder::GetBitDepth() const {
   return 8u;
 }
 
+VideoChromaSampling VP8Decoder::GetChromaSampling() const {
+  // VP8 decoder currently does not rely on chroma sampling format for
+  // creating/reconfiguring decoder, so return an unknown format.
+  return VideoChromaSampling::kUnknown;
+}
+
 size_t VP8Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
-  return kVP8NumFramesActive + kPicsInPipeline;
+  return kNumVp8ReferenceBuffers + kPicsInPipeline;
 }
 
 size_t VP8Decoder::GetNumReferenceFrames() const {
   // Maximum number of reference frames.
-  return kVP8NumFramesActive;
+  return kNumVp8ReferenceBuffers;
 }
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -21,6 +20,7 @@
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
@@ -85,6 +85,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   void Connect(const dbus::ObjectPath& object_path,
                base::OnceClosure callback,
                ErrorCallback error_callback) override;
+  void ConnectClassic(const dbus::ObjectPath& object_path,
+                      base::OnceClosure callback,
+                      ErrorCallback error_callback) override;
   void ConnectLE(const dbus::ObjectPath& object_path,
                  base::OnceClosure callback,
                  ErrorCallback error_callback) override;
@@ -143,9 +146,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   void CreateDeviceWithProperties(const dbus::ObjectPath& adapter_path,
                                   const IncomingDeviceProperties& props);
 
-  // Creates and returns a list of std::unique_ptr<base::DictionaryValue>
-  // objects, which contain all the data from the constants for devices with
-  // predefined behavior.
+  // Creates and returns a list of dictionary objects as a Value, which contain
+  // all the data from the constants for devices with predefined behavior.
   base::Value GetBluetoothDevicesAsDictionaries() const;
 
   SimulatedPairingOptions* GetPairingOptions(
@@ -177,7 +179,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   // Create a test Bluetooth device with the given properties.
   void CreateTestDevice(
       const dbus::ObjectPath& adapter_path,
-      const base::Optional<std::string> name,
+      const absl::optional<std::string> name,
       const std::string alias,
       const std::string device_address,
       const std::vector<std::string>& service_uuids,

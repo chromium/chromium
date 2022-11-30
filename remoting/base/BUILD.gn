@@ -1,8 +1,9 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//remoting/build/config/remoting_logging.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protobuf_http_client_messages_proto") {
@@ -27,6 +28,8 @@ source_set("base") {
     "compound_buffer.h",
     "constants.cc",
     "constants.h",
+    "cpu_utils.cc",
+    "cpu_utils.h",
     "directory_service_client.cc",
     "directory_service_client.h",
     "leaky_bucket.cc",
@@ -99,6 +102,7 @@ source_set("base") {
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -107,6 +111,11 @@ source_set("base") {
 
   if (is_win) {
     sources += [ "scoped_sc_handle_win.h" ]
+  } else if (is_linux || is_chromeos) {
+    sources += [
+      "file_path_util_linux.cc",
+      "file_path_util_linux.h",
+    ]
   }
 }
 
@@ -130,7 +139,10 @@ source_set("authorization") {
     "//remoting/build/config:version",
   ]
 
-  deps = [ "//services/network/public/cpp" ]
+  deps = [
+    ":logging",
+    "//services/network/public/cpp",
+  ]
 
   public_deps = [
     "//base",
@@ -161,6 +173,66 @@ source_set("breakpad") {
   }
 }
 
+source_set("logging") {
+  public = [ "logging.h" ]
+
+  sources = [
+    "logging.cc",
+    "logging_internal.h",
+  ]
+
+  if (is_linux || is_chromeos) {
+    sources += [ "logging_linux.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "logging_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "logging_win.cc" ]
+  }
+
+  if (remoting_webrtc_verbose_logging) {
+    defines = [ "WEBRTC_VERBOSE_LOGGING" ]
+  }
+
+  deps = [ "//base" ]
+}
+
+source_set("settings") {
+  sources = [
+    "host_settings.cc",
+    "host_settings.h",
+    "user_settings.cc",
+    "user_settings.h",
+  ]
+  deps = [
+    ":logging",
+    "//base",
+    "//remoting/base",
+  ]
+
+  if (is_win) {
+    sources += [
+      "host_settings_win.cc",
+      "host_settings_win.h",
+      "user_settings_win.cc",
+      "user_settings_win.h",
+    ]
+  } else if (is_mac || is_linux) {
+    sources += [
+      "file_host_settings.cc",
+      "file_host_settings.h",
+    ]
+    if (is_linux) {
+      sources += [ "file_host_settings_linux.cc" ]
+    } else if (is_mac) {
+      sources += [ "file_host_settings_mac.cc" ]
+    }
+  }
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -175,6 +247,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":logging",
     ":protobuf_http_client_messages_proto",
     "//base/test:test_support",
     "//remoting/proto",
@@ -201,12 +274,26 @@ source_set("run_all_unittests") {
   testonly = true
 
   sources = [ "run_all_unittests.cc" ]
+  if (is_chromeos_ash) {
+    sources += [
+      "chromeos_remoting_test_suite.cc",
+      "chromeos_remoting_test_suite.h",
+    ]
+  }
   deps = [
     "//base",
     "//base/test:test_support",
     "//mojo/core/embedder",
     "//testing/gtest",
   ]
+  if (is_chromeos_ash) {
+    deps += [
+      "//ui/aura:test_support",
+      "//ui/gl:test_support",
+    ]
+    data = [ "$root_out_dir/locales/en-US.pak" ]
+    data_deps = [ "//ui/resources:ui_test_pak_data" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -235,6 +322,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":logging",
     ":protobuf_http_client_messages_proto",
     ":run_all_unittests",
     ":test_proto",

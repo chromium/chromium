@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/language/core/browser/pref_names.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace language {
@@ -29,16 +30,14 @@ const char kPreferredLanguagesSyncable[] =
     "settings.language.preferred_languages_syncable";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// The JSON representation of the user's language profile. Used as an input to
-// the user language model (i.e. for determining which languages a user
-// understands).
-const char kUserLanguageProfile[] = "language_profile";
-
 // Important: Refer to header file for how to use this.
 const char kApplicationLocale[] = "intl.app_locale";
 
-// Originally translate blocked languages from TranslatePrefs.
-const char kFluentLanguages[] = "translate_blocked_languages";
+#if BUILDFLAG(IS_ANDROID)
+const char kAppLanguagePromptShown[] = "language.app_language_prompt_shown";
+
+const char kULPLanguages[] = "language.ulp_languages";
+#endif
 
 }  // namespace prefs
 }  // namespace language

@@ -1,0 +1,28 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="d1" tabindex='0' aria-label="Div1">Div1</div>
+  <div id="d2" tabindex='0' aria-label="Div2" aria-live="polite">Div2</div>
+  <script>
+    var go_passes = [
+      // Set aria-relevant from default 'additions text'->'all' on a non-live region;
+      // should not fire an event.
+      () => document.getElementById('d1').setAttribute('aria-relevant', 'all'),
+
+      // Set aria-relevant from default 'additions text'->'additions text';
+      // should not fire an event.
+      () => document.getElementById('d2').setAttribute('aria-relevant', 'additions text'),
+    ];
+
+    let current_pass = 0;
+    function go() {
+      go_passes[current_pass++].call();
+      return current_pass < go_passes.length;
+    }
+  </script>
+</body>
+</html>

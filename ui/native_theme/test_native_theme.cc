@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,13 @@ gfx::Size TestNativeTheme::GetPartSize(Part part,
 }
 
 void TestNativeTheme::Paint(cc::PaintCanvas* canvas,
+                            const ui::ColorProvider* color_provider,
                             Part part,
                             State state,
                             const gfx::Rect& rect,
                             const ExtraParams& extra,
                             ColorScheme color_scheme,
-                            const base::Optional<SkColor>& accent_color) const {
+                            const absl::optional<SkColor>& accent_color) const {
 }
 
 bool TestNativeTheme::SupportsNinePatch(Part part) const {
@@ -61,12 +62,6 @@ void TestNativeTheme::AddColorSchemeNativeThemeObserver(
       std::make_unique<ui::NativeTheme::ColorSchemeNativeThemeObserver>(
           theme_to_update);
   AddObserver(color_scheme_observer_.get());
-}
-
-SkColor TestNativeTheme::GetSystemColorDeprecated(ColorId color_id,
-                                                  ColorScheme color_scheme,
-                                                  bool apply_processing) const {
-  return SK_ColorRED;
 }
 
 }  // namespace ui

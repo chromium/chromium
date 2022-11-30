@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("image_loader") {
+  output_name = "ash_image_loader"
+  defines = [ "IS_ASH_DBUS_IMAGE_LOADER_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+  sources = [
+    "fake_image_loader_client.cc",
+    "fake_image_loader_client.h",
+    "image_loader_client.cc",
+    "image_loader_client.h",
+  ]
+}

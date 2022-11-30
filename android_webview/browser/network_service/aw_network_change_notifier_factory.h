@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,11 @@ class AwNetworkChangeNotifierFactory :
   // Must be called on the JNI thread.
   AwNetworkChangeNotifierFactory();
 
+  AwNetworkChangeNotifierFactory(const AwNetworkChangeNotifierFactory&) =
+      delete;
+  AwNetworkChangeNotifierFactory& operator=(
+      const AwNetworkChangeNotifierFactory&) = delete;
+
   // Must be called on the JNI thread.
   ~AwNetworkChangeNotifierFactory() override;
 
@@ -33,8 +38,6 @@ class AwNetworkChangeNotifierFactory :
  private:
   // Delegate passed to the instances created by this class.
   net::NetworkChangeNotifierDelegateAndroid delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwNetworkChangeNotifierFactory);
 };
 
 }  // namespace android_webview

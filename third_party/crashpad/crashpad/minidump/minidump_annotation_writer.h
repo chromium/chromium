@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,10 @@ namespace crashpad {
 class MinidumpAnnotationWriter final : public internal::MinidumpWritable {
  public:
   MinidumpAnnotationWriter();
+
+  MinidumpAnnotationWriter(const MinidumpAnnotationWriter&) = delete;
+  MinidumpAnnotationWriter& operator=(const MinidumpAnnotationWriter&) = delete;
+
   ~MinidumpAnnotationWriter();
 
   //! \brief Initializes the annotation writer with data from an
@@ -62,8 +66,6 @@ class MinidumpAnnotationWriter final : public internal::MinidumpWritable {
   MinidumpAnnotation annotation_;
   internal::MinidumpUTF8StringWriter name_;
   MinidumpByteArrayWriter value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpAnnotationWriter);
 };
 
 //! \brief The writer for a MinidumpAnnotationList object in a minidump file,
@@ -71,6 +73,11 @@ class MinidumpAnnotationWriter final : public internal::MinidumpWritable {
 class MinidumpAnnotationListWriter final : public internal::MinidumpWritable {
  public:
   MinidumpAnnotationListWriter();
+
+  MinidumpAnnotationListWriter(const MinidumpAnnotationListWriter&) = delete;
+  MinidumpAnnotationListWriter& operator=(const MinidumpAnnotationListWriter&) =
+      delete;
+
   ~MinidumpAnnotationListWriter();
 
   //! \brief Initializes the annotation list writer with a list of
@@ -100,8 +107,6 @@ class MinidumpAnnotationListWriter final : public internal::MinidumpWritable {
  private:
   std::unique_ptr<MinidumpAnnotationList> minidump_list_;
   std::vector<std::unique_ptr<MinidumpAnnotationWriter>> objects_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpAnnotationListWriter);
 };
 
 }  // namespace crashpad

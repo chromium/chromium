@@ -1,17 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -50,7 +48,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
 
   const int vibration_pattern[] = {500, 100, 30};
   notification_data.vibration_pattern.assign(
-      vibration_pattern, vibration_pattern + base::size(vibration_pattern));
+      vibration_pattern, vibration_pattern + std::size(vibration_pattern));
 
   notification_data.timestamp = base::Time::FromJsTime(1513966159000.);
   notification_data.renotify = true;
@@ -59,7 +57,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.show_trigger_timestamp = base::Time::Now();
 
   const char data[] = "mock binary notification data";
-  notification_data.data.assign(data, data + base::size(data));
+  notification_data.data.assign(data, data + std::size(data));
 
   notification_data.actions.resize(2);
   notification_data.actions[0] = blink::mojom::NotificationAction::New();
@@ -68,7 +66,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.actions[0]->action = "buttonAction";
   notification_data.actions[0]->title = u"Button Title!";
   notification_data.actions[0]->icon = GURL("https://example.com/aButton.png");
-  notification_data.actions[0]->placeholder = base::nullopt;
+  notification_data.actions[0]->placeholder = absl::nullopt;
 
   notification_data.actions[1] = blink::mojom::NotificationAction::New();
   notification_data.actions[1]->type =

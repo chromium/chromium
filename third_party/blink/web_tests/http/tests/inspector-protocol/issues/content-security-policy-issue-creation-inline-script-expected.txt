@@ -1,0 +1,21 @@
+Verifies that CSP issue is created from a page with inline script usage.
+
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                contentSecurityPolicyViolationType : kInlineViolation
+                isReportOnly : false
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : 5
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-inline-script.php
+                }
+                violatedDirective : script-src-elem
+                violatingNodeId : 1
+            }
+        }
+    }
+}
+

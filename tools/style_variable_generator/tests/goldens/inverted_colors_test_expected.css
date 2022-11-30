@@ -1,0 +1,80 @@
+/* Copyright 2020 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is generated from:
+ *  tests/colors_test_palette.json5
+ *  tests/inverted_colors_test.json5
+ */
+:root {
+  color-scheme: light dark;
+}
+
+html:not(body) {
+  --google-grey-900-rgb: 32, 33, 36;
+  --google-grey-900: rgb(var(--google-grey-900-rgb));
+
+  --cros-bg-color-light-rgb: 255, 255, 255;
+  --cros-bg-color-light: rgb(var(--cros-bg-color-light-rgb));
+
+  --cros-bg-color-dark-rgb: var(--google-grey-900-rgb);
+  --cros-bg-color-dark: rgba(var(--cros-bg-color-dark-rgb), 0.7);
+
+  --cros-bg-color-inverted-rgb: var(--cros-bg-color-dark-rgb);
+  --cros-bg-color-inverted: var(--cros-bg-color-dark);
+
+  --cros-bg-color-rgb: var(--cros-bg-color-light-rgb);
+  --cros-bg-color: var(--cros-bg-color-light);
+
+  --cros-toggle-color-light-rgb: var(--google-grey-900-rgb);
+  --cros-toggle-color-light: rgba(var(--cros-toggle-color-light-rgb), 0.1);
+
+  --cros-toggle-color-dark-rgb: 0, 0, 0;
+  --cros-toggle-color-dark: rgba(var(--cros-toggle-color-dark-rgb), var(--cros-reference-opacity));
+
+  --cros-toggle-color-debug-rgb: 255, 255, 255;
+  --cros-toggle-color-debug: rgb(var(--cros-toggle-color-debug-rgb));
+
+  --cros-toggle-color-rgb: var(--cros-toggle-color-light-rgb);
+  --cros-toggle-color: var(--cros-toggle-color-light);
+
+  --cros-toast-color-rgb: var(--cros-bg-color-inverted-rgb);
+  --cros-toast-color: var(--cros-bg-color-inverted);
+
+  --cros-composite-color-light-rgb: var(--cros-toggle-color-dark-rgb);
+  --cros-composite-color-light: rgba(var(--cros-composite-color-light-rgb), 0.3);
+
+  --cros-composite-color-dark-rgb: var(--cros-bg-color-inverted-rgb);
+  --cros-composite-color-dark: rgba(var(--cros-composite-color-dark-rgb), var(--cros-disabled-opacity));
+
+  --cros-composite-color-inverted-rgb: var(--cros-composite-color-dark-rgb);
+  --cros-composite-color-inverted: var(--cros-composite-color-dark);
+
+  --cros-composite-color-rgb: var(--cros-composite-color-light-rgb);
+  --cros-composite-color: var(--cros-composite-color-light);
+
+  --cros-disabled-opacity: 0.38;
+
+  --cros-reference-opacity: var(--cros-disabled-opacity);
+}
+
+@media (prefers-color-scheme: dark) {
+html:not(body) {
+  --cros-bg-color-inverted-rgb: var(--cros-bg-color-light-rgb);
+  --cros-bg-color-inverted: var(--cros-bg-color-light);
+
+  --cros-bg-color-rgb: var(--cros-bg-color-dark-rgb);
+  --cros-bg-color: var(--cros-bg-color-dark);
+
+  --cros-toggle-color-rgb: var(--cros-toggle-color-dark-rgb);
+  --cros-toggle-color: var(--cros-toggle-color-dark);
+
+  --cros-composite-color-inverted-rgb: var(--cros-composite-color-light-rgb);
+  --cros-composite-color-inverted: var(--cros-composite-color-light);
+
+  --cros-composite-color-rgb: var(--cros-composite-color-dark-rgb);
+  --cros-composite-color: var(--cros-composite-color-dark);
+
+  --cros-reference-opacity: 1;
+}
+}

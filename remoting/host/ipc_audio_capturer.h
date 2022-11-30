@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/audio_capturer.h"
@@ -21,6 +20,10 @@ class IpcAudioCapturer : public AudioCapturer {
  public:
   explicit IpcAudioCapturer(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcAudioCapturer(const IpcAudioCapturer&) = delete;
+  IpcAudioCapturer& operator=(const IpcAudioCapturer&) = delete;
+
   ~IpcAudioCapturer() override;
 
   // AudioCapturer interface.
@@ -38,8 +41,6 @@ class IpcAudioCapturer : public AudioCapturer {
 
   // Used to cancel tasks pending on the capturer when it is stopped.
   base::WeakPtrFactory<IpcAudioCapturer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IpcAudioCapturer);
 };
 
 }  // namespace remoting

@@ -42,35 +42,8 @@ AXListBoxOption::AXListBoxOption(LayoutObject* layout_object,
 
 AXListBoxOption::~AXListBoxOption() = default;
 
-ax::mojom::Role AXListBoxOption::DetermineAccessibilityRole() {
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-
-  // http://www.w3.org/TR/wai-aria/complete#presentation
-  // ARIA spec says that the presentation role causes a given element to be
-  // treated as having no role or to be removed from the accessibility tree, but
-  // does not cause the content contained within the element to be removed from
-  // the accessibility tree.
-  if (IsParentPresentationalRole())
-    return ax::mojom::Role::kStaticText;
-
-  return ax::mojom::Role::kListBoxOption;
-}
-
-bool AXListBoxOption::IsParentPresentationalRole() const {
-  LayoutObject* parent_layout_object = GetLayoutObject()->Parent();
-  if (!parent_layout_object)
-    return false;
-
-  AXObject* parent = AXObjectCache().GetOrCreate(parent_layout_object);
-  if (!parent)
-    return false;
-
-  if (IsListBox(parent_layout_object) &&
-      parent->HasInheritedPresentationalRole())
-    return true;
-
-  return false;
+ax::mojom::blink::Role AXListBoxOption::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kListBoxOption;
 }
 
 AccessibilitySelectedState AXListBoxOption::IsSelected() const {
@@ -101,12 +74,13 @@ bool AXListBoxOption::ComputeAccessibilityIsIgnored(
   return false;
 }
 
-String AXListBoxOption::TextAlternative(bool recursive,
-                                        bool in_aria_labelled_by_traversal,
-                                        AXObjectSet& visited,
-                                        ax::mojom::NameFrom& name_from,
-                                        AXRelatedObjectVector* related_objects,
-                                        NameSources* name_sources) const {
+String AXListBoxOption::TextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited,
+    ax::mojom::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources) const {
   // If nameSources is non-null, relatedObjects is used in filling it in, so it
   // must be non-null as well.
   if (name_sources)
@@ -117,7 +91,7 @@ String AXListBoxOption::TextAlternative(bool recursive,
 
   bool found_text_alternative = false;
   String text_alternative = AriaTextAlternative(
-      recursive, in_aria_labelled_by_traversal, visited, name_from,
+      recursive, aria_label_or_description_root, visited, name_from,
       related_objects, name_sources, &found_text_alternative);
   if (found_text_alternative && !name_sources)
     return text_alternative;

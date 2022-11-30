@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ const int kMaxNumberOfFieldsToShareALabel = 3;
 // The maximum length of a label that can be shared among fields.
 const int kMaxLengthOfShareableLabel = 40;
 
-base::Optional<std::vector<std::u16string>> GetParseableLabels(
+absl::optional<std::vector<std::u16string>> GetParseableLabels(
     const LabelPieces& labels) {
   // Make a copy of the labels.
   LabelPieces shared_labels = labels;
@@ -29,7 +29,7 @@ base::Optional<std::vector<std::u16string>> GetParseableLabels(
   // the subsequent fields.
   size_t label_index = 0;
   while (label_index < labels.size()) {
-    const auto& label = labels.at(label_index);
+    const base::StringPiece16& label = labels[label_index];
     // If the label is empty or has a size that exceeds
     // |kMaxLengthOfShareableLabel| it can not be shared with subsequent fields.
     if (label.empty() || label.size() > kMaxLengthOfShareableLabel) {
@@ -37,16 +37,16 @@ base::Optional<std::vector<std::u16string>> GetParseableLabels(
       continue;
     }
 
-    // Otherwise search if the subsequent fields are empty.
+    // Otherwise search if the subsequent fields are empty or share the same
+    // label. Checking for the same label is needed, because label inference
+    // often derives the same label for consecutive fields.
     size_t scan_index = label_index + 1;
-    while (scan_index < labels.size()) {
-      if (!labels.at(scan_index).empty()) {
-        break;
-      }
+    while (scan_index < labels.size() &&
+           (labels[scan_index].empty() || labels[scan_index] == label)) {
       ++scan_index;
     }
-    // After the loop, the |scan_index| points to the first subsequent field
-    // that does not have an empty label or is the first out-of-bound index.
+    // After the loop, the `scan_index` points to the first subsequent field
+    // which the label cannot be shared with or to the first out-of-bound index.
 
     // Calculate the number of fields that may share a label.
     size_t fields_to_share_label = scan_index - label_index;
@@ -87,12 +87,12 @@ base::Optional<std::vector<std::u16string>> GetParseableLabels(
     shared_labels_found = true;
     // Otherwise assign the label components to the fields.
     for (size_t i = 0; i < label_components.size(); ++i) {
-      shared_labels[shared_label_starting_index + i] = label_components.at(i);
+      shared_labels[shared_label_starting_index + i] = label_components[i];
     }
   }
 
   if (!shared_labels_found) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Otherwise convert the shared label string pieces into strings for memory
@@ -101,7 +101,7 @@ base::Optional<std::vector<std::u16string>> GetParseableLabels(
   result.reserve(shared_labels.size());
   base::ranges::transform(shared_labels, std::back_inserter(result),
                           [](auto& s) { return std::u16string(s); });
-  return base::make_optional(std::move(result));
+  return absl::make_optional(std::move(result));
 }
 
 }  // namespace autofill

@@ -1,0 +1,54 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.settings.mojom;
+
+// This file contains the definition of the mojo service that can be used in
+// C++ browser tests to manipulate the settings UI. Browser tests that want to
+// use this test api should instantiate OSSettingsBrowserTestMixin.
+
+// The interface to control the lock screen page.
+interface LockScreenSettings {
+  // Checks whether the lock screen is unlocked or not.
+  AssertAuthenticated(bool is_authenticated) => ();
+
+  // Unlocks the lock screen page. The page should be locked before calling
+  // this. Crashes if authentication fails.
+  Authenticate(string password) => ();
+
+  // Tries to unlock the lock screen page, but expects authentication to fail.
+  // Crashes if authentication succeeds.
+  AuthenticateIncorrectly(string password) => ();
+
+  // Checks whether a control for recovery is visible or not.
+  AssertRecoveryControlVisibility(bool is_visible) => ();
+
+  // Checks whether recovery is configured or not according to the recovery
+  // control.
+  AssertRecoveryConfigured(bool is_configured) => ();
+
+  // Toggles whether recovery is configured or not . Crashes if the control
+  // does not eventually show that recovery configuration has changed as
+  // expected.
+  ToggleRecoveryConfiguration() => ();
+};
+
+// An interface that allows clients to manipulate the os settings ui. Served by
+// Javascript injected into the os settings page. Consumed by C++ running in
+// the browser process during tests.
+interface OSSettingsDriver {
+  // Navigate to lock screen settings. The settings page must be in its initial
+  // state before calling this. The return value can be used to manipulate lock
+  // screen settings.
+  GoToLockScreenSettings() =>
+      (pending_remote<LockScreenSettings> lock_screen_settings);
+};
+
+// The interface served from within the browser process in tests. Consumed by
+// the os settings webui.
+interface OSSettingsBrowserProcess {
+  // The Javascript code injected into the os-settings page calls this to pass
+  // a driver remote to the browser process. Can only be called once.
+  RegisterOSSettingsDriver(pending_remote<OSSettingsDriver> driver) => ();
+};

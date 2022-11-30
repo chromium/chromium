@@ -1,4 +1,4 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,6 @@
 #include <string.h>
 
 #include <unordered_set>
-
-#include "base/macros.h"
 
 namespace courgette {
 
@@ -46,6 +44,9 @@ class DifferenceEstimator::Base {
  public:
   explicit Base(const Region& region) : region_(region) { }
 
+  Base(const Base&) = delete;
+  Base& operator=(const Base&) = delete;
+
   void Init() {
     if (region_.length() < kTupleSize)
       return;
@@ -64,19 +65,19 @@ class DifferenceEstimator::Base {
   std::unordered_set<size_t> hashes_;
 
   friend class DifferenceEstimator;
-  DISALLOW_COPY_AND_ASSIGN(Base);
 };
 
 class DifferenceEstimator::Subject {
  public:
   explicit Subject(const Region& region) : region_(region) {}
 
+  Subject(const Subject&) = delete;
+  Subject& operator=(const Subject&) = delete;
+
   const Region& region() const { return region_; }
 
  private:
   Region region_;
-
-  DISALLOW_COPY_AND_ASSIGN(Subject);
 };
 
 DifferenceEstimator::DifferenceEstimator() = default;

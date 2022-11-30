@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,21 @@
 
 #include "base/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/features.h"
 
@@ -26,49 +31,23 @@
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #endif
 
-namespace {
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
-// By default, JavaScript and images are enabled, and blockable mixed content is
-// blocked in guest content
-void GetGuestViewDefaultContentSettingRules(
-    bool incognito,
-    RendererContentSettingRules* rules) {
-  rules->image_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
-      std::string(), incognito));
-
-  rules->script_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
-      std::string(), incognito));
-  rules->mixed_content_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK)),
-      std::string(), incognito));
-}
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}  // namespace
-
 RendererUpdater::RendererUpdater(Profile* profile)
-    : profile_(profile), identity_manager_observer_(this) {
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
-  identity_manager_observer_.Add(identity_manager_);
+    : profile_(profile),
+      is_off_the_record_(profile_->IsOffTheRecord()),
+      original_profile_(profile->GetOriginalProfile()) {
+  identity_manager_observation_.Observe(
+      IdentityManagerFactory::GetForProfile(original_profile_));
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   oauth2_login_manager_ =
-      chromeos::OAuth2LoginManagerFactory::GetForProfile(profile_);
+      ash::OAuth2LoginManagerFactory::GetForProfile(original_profile_);
   oauth2_login_manager_->AddObserver(this);
   merge_session_running_ =
-      merge_session_throttling_utils::ShouldDelayRequestForProfile(profile_);
+      ash::merge_session_throttling_utils::ShouldDelayRequestForProfile(
+          original_profile_);
 #endif
 
-  PrefService* pref_service = profile->GetPrefs();
+  PrefService* pref_service = profile_->GetPrefs();
   force_google_safesearch_.Init(prefs::kForceGoogleSafeSearch, pref_service);
   force_youtube_restrict_.Init(prefs::kForceYouTubeRestrict, pref_service);
   allowed_domains_for_apps_.Init(prefs::kAllowedDomainsForApps, pref_service);
@@ -89,28 +68,25 @@ RendererUpdater::RendererUpdater(Profile* profile)
 }
 
 RendererUpdater::~RendererUpdater() {
-  DCHECK(!identity_manager_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!oauth2_login_manager_);
 #endif
 }
 
 void RendererUpdater::Shutdown() {
+  pref_change_registrar_.RemoveAll();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   oauth2_login_manager_->RemoveObserver(this);
   oauth2_login_manager_ = nullptr;
 #endif
-  identity_manager_observer_.RemoveAll();
-  identity_manager_ = nullptr;
+  identity_manager_observation_.Reset();
 }
 
 void RendererUpdater::InitializeRenderer(
     content::RenderProcessHost* render_process_host) {
+  DCHECK_EQ(profile_, Profile::FromBrowserContext(
+                          render_process_host->GetBrowserContext()));
   auto renderer_configuration = GetRendererConfiguration(render_process_host);
-
-  Profile* profile =
-      Profile::FromBrowserContext(render_process_host->GetBrowserContext());
-  bool is_incognito_process = profile->IsOffTheRecord();
 
   mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
       chromeos_listener_receiver;
@@ -121,42 +97,40 @@ void RendererUpdater::InitializeRenderer(
     chromeos_listeners_.push_back(std::move(chromeos_listener));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  renderer_configuration->SetInitialConfiguration(
-      is_incognito_process, std::move(chromeos_listener_receiver));
-
-  UpdateRenderer(&renderer_configuration);
-
-  RendererContentSettingRules rules;
-  if (render_process_host->IsForGuestsOnly()) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    GetGuestViewDefaultContentSettingRules(is_incognito_process, &rules);
-#else
-    NOTREACHED();
-#endif
-  } else {
-    content_settings::GetRendererContentSettingRules(
-        HostContentSettingsMapFactory::GetForProfile(profile), &rules);
+  mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+      content_settings_manager;
+  if (base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    content_settings::ContentSettingsManagerImpl::Create(
+        render_process_host,
+        content_settings_manager.InitWithNewPipeAndPassReceiver(),
+        std::make_unique<chrome::ContentSettingsManagerDelegate>());
   }
-  renderer_configuration->SetContentSettingRules(rules);
+  renderer_configuration->SetInitialConfiguration(
+      is_off_the_record_, std::move(chromeos_listener_receiver),
+      std::move(content_settings_manager));
+
+  renderer_configuration->SetConfiguration(CreateRendererDynamicParams());
 }
 
-std::vector<mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>>
+RendererUpdater::RendererConfigurations
 RendererUpdater::GetRendererConfigurations() {
-  std::vector<mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>> rv;
+  RendererConfigurations rc;
   for (content::RenderProcessHost::iterator it(
            content::RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
+    content::RenderProcessHost* render_process_host = it.GetCurrentValue();
     Profile* renderer_profile =
-        static_cast<Profile*>(it.GetCurrentValue()->GetBrowserContext());
-    if (renderer_profile == profile_ ||
-        renderer_profile->GetOriginalProfile() == profile_) {
+        Profile::FromBrowserContext(render_process_host->GetBrowserContext());
+    if (renderer_profile == profile_) {
       auto renderer_configuration =
-          GetRendererConfiguration(it.GetCurrentValue());
+          GetRendererConfiguration(render_process_host);
       if (renderer_configuration)
-        rv.push_back(std::move(renderer_configuration));
+        rc.push_back(std::make_pair(render_process_host,
+                                    std::move(renderer_configuration)));
     }
   }
-  return rv;
+  return rc;
 }
 
 mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>
@@ -175,9 +149,10 @@ RendererUpdater::GetRendererConfiguration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void RendererUpdater::OnSessionRestoreStateChanged(
     Profile* user_profile,
-    chromeos::OAuth2LoginManager::SessionRestoreState state) {
+    ash::OAuth2LoginManager::SessionRestoreState state) {
   merge_session_running_ =
-      merge_session_throttling_utils::ShouldDelayRequestForProfile(profile_);
+      ash::merge_session_throttling_utils::ShouldDelayRequestForProfile(
+          original_profile_);
   if (merge_session_running_)
     return;
 
@@ -197,17 +172,21 @@ void RendererUpdater::OnPrimaryAccountChanged(
 }
 
 void RendererUpdater::UpdateAllRenderers() {
+  chrome::mojom::DynamicParamsPtr dynamic_params =
+      CreateRendererDynamicParams();
   auto renderer_configurations = GetRendererConfigurations();
-  for (auto& renderer_configuration : renderer_configurations)
-    UpdateRenderer(&renderer_configuration);
+  for (auto& renderer_configuration : renderer_configurations) {
+    content::RenderProcessHost* render_process_host =
+        renderer_configuration.first;
+    if (!render_process_host->IsInitializedAndNotDead())
+      continue;
+    renderer_configuration.second->SetConfiguration(dynamic_params.Clone());
+  }
 }
 
-void RendererUpdater::UpdateRenderer(
-    mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>*
-        renderer_configuration) {
-  (*renderer_configuration)
-      ->SetConfiguration(chrome::mojom::DynamicParams::New(
-          force_google_safesearch_.GetValue(),
-          force_youtube_restrict_.GetValue(),
-          allowed_domains_for_apps_.GetValue()));
+chrome::mojom::DynamicParamsPtr RendererUpdater::CreateRendererDynamicParams()
+    const {
+  return chrome::mojom::DynamicParams::New(
+      force_google_safesearch_.GetValue(), force_youtube_restrict_.GetValue(),
+      allowed_domains_for_apps_.GetValue());
 }

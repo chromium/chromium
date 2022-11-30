@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,26 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -34,23 +36,24 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-using testing::_;
-using testing::InSequence;
-using testing::PrintToString;
-using testing::AnyNumber;
-using testing::SaveArg;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::InSequence;
+using ::testing::PrintToString;
+using ::testing::SaveArg;
+using ::testing::StrictMock;
+using ::testing::Unused;
 
 namespace blink {
 
-typedef testing::StrictMock<testing::MockFunction<void(int)>> Checkpoint;
+typedef StrictMock<testing::MockFunction<void(int)>> Checkpoint;
 
 class MockWebSocketChannelClient
     : public GarbageCollected<MockWebSocketChannelClient>,
       public WebSocketChannelClient {
  public:
   static MockWebSocketChannelClient* Create() {
-    return MakeGarbageCollected<
-        testing::StrictMock<MockWebSocketChannelClient>>();
+    return MakeGarbageCollected<StrictMock<MockWebSocketChannelClient>>();
   }
 
   MockWebSocketChannelClient() = default;
@@ -92,7 +95,37 @@ class MockWebSocketHandshakeThrottle : public WebSocketHandshakeThrottle {
   MOCK_METHOD0(Destructor, void());
 };
 
-class WebSocketChannelImplTest : public PageTestBase {
+// The base class sets up the page.
+class WebSocketChannelImplTestBase : public PageTestBase {
+ public:
+  void SetUp() override {
+    local_frame_client_ = MakeGarbageCollected<EmptyLocalFrameClient>();
+    local_frame_client_->GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::WebSocketConnector::Name_,
+        base::BindRepeating(
+            &WebSocketChannelImplTestBase::BindWebSocketConnector,
+            GetWeakPtr()));
+
+    PageTestBase::SetupPageWithClients(nullptr /* page_clients */,
+                                       local_frame_client_.Get());
+    const KURL page_url("http://example.com/");
+    NavigateTo(page_url);
+  }
+
+  void TearDown() override {
+    local_frame_client_->GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::WebSocketConnector::Name_, {});
+  }
+
+  // These need to be implemented in the subclass.
+  virtual base::WeakPtr<WebSocketChannelImplTestBase> GetWeakPtr() = 0;
+  virtual void BindWebSocketConnector(mojo::ScopedMessagePipeHandle handle) = 0;
+
+ private:
+  Persistent<EmptyLocalFrameClient> local_frame_client_;
+};
+
+class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
  public:
   using WebSocketMessageType = network::mojom::WebSocketMessageType;
   class TestWebSocket final : public network::mojom::blink::WebSocket {
@@ -181,7 +214,9 @@ class WebSocketChannelImplTest : public PageTestBase {
         const net::SiteForCookies& site_for_cookies,
         const String& user_agent,
         mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
-            handshake_client) override {
+            handshake_client,
+        const absl::optional<base::UnguessableToken>& throttling_profile_id)
+        override {
       connect_args_.push_back(ConnectArgs(url, requested_protocols,
                                           site_for_cookies, user_agent,
                                           std::move(handshake_client)));
@@ -215,7 +250,11 @@ class WebSocketChannelImplTest : public PageTestBase {
 
   ~WebSocketChannelImplTest() override { Channel()->Disconnect(); }
 
-  void BindWebSocketConnector(mojo::ScopedMessagePipeHandle handle) {
+  base::WeakPtr<WebSocketChannelImplTestBase> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void BindWebSocketConnector(mojo::ScopedMessagePipeHandle handle) override {
     connector_.Bind(mojo::PendingReceiver<mojom::blink::WebSocketConnector>(
         std::move(handle)));
   }
@@ -256,24 +295,10 @@ class WebSocketChannelImplTest : public PageTestBase {
   }
 
   void SetUp() override {
-    local_frame_client_ = MakeGarbageCollected<EmptyLocalFrameClient>();
-    local_frame_client_->GetBrowserInterfaceBroker().SetBinderForTesting(
-        mojom::blink::WebSocketConnector::Name_,
-        base::BindRepeating(&WebSocketChannelImplTest::BindWebSocketConnector,
-                            weak_ptr_factory_.GetWeakPtr()));
-
-    PageTestBase::SetupPageWithClients(nullptr /* page_clients */,
-                                       local_frame_client_.Get());
-    const KURL page_url("http://example.com/");
-    NavigateTo(page_url);
+    WebSocketChannelImplTestBase::SetUp();
     channel_ = WebSocketChannelImpl::CreateForTesting(
-        GetFrame().DomWindow(), channel_client_.Get(),
-        SourceLocation::Capture(), std::move(handshake_throttle_));
-  }
-
-  void TearDown() override {
-    local_frame_client_->GetBrowserInterfaceBroker().SetBinderForTesting(
-        mojom::blink::WebSocketConnector::Name_, {});
+        GetFrame().DomWindow(), channel_client_.Get(), CaptureSourceLocation(),
+        std::move(handshake_throttle_));
   }
 
   MockWebSocketChannelClient* ChannelClient() { return channel_client_.Get(); }
@@ -286,7 +311,8 @@ class WebSocketChannelImplTest : public PageTestBase {
 
   static Vector<uint8_t> AsVector(const char* data, size_t size) {
     Vector<uint8_t> v;
-    v.Append(reinterpret_cast<const uint8_t*>(data), size);
+    v.Append(reinterpret_cast<const uint8_t*>(data),
+             static_cast<wtf_size_t>(size));
     return v;
   }
   static Vector<uint8_t> AsVector(const char* data) {
@@ -358,7 +384,6 @@ class WebSocketChannelImplTest : public PageTestBase {
   }
 
   WebSocketConnector connector_;
-  Persistent<EmptyLocalFrameClient> local_frame_client_;
   Persistent<MockWebSocketChannelClient> channel_client_;
   std::unique_ptr<MockWebSocketHandshakeThrottle> handshake_throttle_;
   MockWebSocketHandshakeThrottle* const raw_handshake_throttle_;
@@ -372,10 +397,13 @@ class CallTrackingClosure {
  public:
   CallTrackingClosure() = default;
 
+  CallTrackingClosure(const CallTrackingClosure&) = delete;
+  CallTrackingClosure& operator=(const CallTrackingClosure&) = delete;
+
   base::OnceClosure Closure() {
     // This use of base::Unretained is safe because nothing can call the
     // callback once the test has finished.
-    return WTF::Bind(&CallTrackingClosure::Called, base::Unretained(this));
+    return WTF::BindOnce(&CallTrackingClosure::Called, base::Unretained(this));
   }
 
   bool WasCalled() const { return was_called_; }
@@ -384,8 +412,6 @@ class CallTrackingClosure {
   void Called() { was_called_ = true; }
 
   bool was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CallTrackingClosure);
 };
 
 std::ostream& operator<<(
@@ -408,7 +434,7 @@ TEST_F(WebSocketChannelImplTest, ConnectSuccess) {
                   .IsEquivalent(GetDocument().SiteForCookies()));
 
   ASSERT_TRUE(Channel()->Connect(KURL("ws://localhost/"), "x"));
-  EXPECT_TRUE(connector_.GetConnectArgs().IsEmpty());
+  EXPECT_TRUE(connector_.GetConnectArgs().empty());
 
   test::RunPendingTasks();
   auto connect_args = connector_.TakeConnectArgs();
@@ -458,7 +484,7 @@ TEST_F(WebSocketChannelImplTest, MojoConnectionErrorDuringHandshake) {
   }
 
   ASSERT_TRUE(Channel()->Connect(KURL("ws://localhost/"), "x"));
-  EXPECT_TRUE(connector_.GetConnectArgs().IsEmpty());
+  EXPECT_TRUE(connector_.GetConnectArgs().empty());
 
   test::RunPendingTasks();
   auto connect_args = connector_.TakeConnectArgs();
@@ -651,7 +677,7 @@ TEST_F(WebSocketChannelImplTest, SendTextSync) {
 
   test::RunPendingTasks();
   CallTrackingClosure closure;
-  EXPECT_EQ(WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY,
+  EXPECT_EQ(WebSocketChannel::SendResult::kSentSynchronously,
             Channel()->Send("hello", closure.Closure()));
   EXPECT_FALSE(closure.WasCalled());
 }
@@ -676,7 +702,7 @@ TEST_F(WebSocketChannelImplTest, SendTextAsyncDueToQueueing) {
 
   Channel()->Send(long_message, base::OnceClosure());
   CallTrackingClosure closure;
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(long_message, closure.Closure()));
 
   ReadDataFromDataPipe(readable, kMessageSize);
@@ -702,7 +728,7 @@ TEST_F(WebSocketChannelImplTest, SendTextAsyncDueToMessageSize) {
   std::string long_message(kMessageSize, 'a');
 
   CallTrackingClosure closure;
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(long_message, closure.Closure()));
 
   ReadDataFromDataPipe(readable, 4 * 1024);
@@ -725,7 +751,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferSync) {
 
   CallTrackingClosure closure;
   const auto* b = DOMArrayBuffer::Create("hello", 5);
-  EXPECT_EQ(WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY,
+  EXPECT_EQ(WebSocketChannel::SendResult::kSentSynchronously,
             Channel()->Send(*b, 0, 5, closure.Closure()));
 
   test::RunPendingTasks();
@@ -750,7 +776,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferAsyncDueToQueueing) {
   CallTrackingClosure closure;
   const auto* b = DOMArrayBuffer::Create(long_message.data(), kMessageSize);
   Channel()->Send(*b, 0, kMessageSize, base::OnceClosure());
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(*b, 0, kMessageSize, closure.Closure()));
 
   ReadDataFromDataPipe(readable, kMessageSize);
@@ -777,7 +803,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferAsyncDueToMessageSize) {
 
   CallTrackingClosure closure;
   const auto* b = DOMArrayBuffer::Create(long_message.data(), kMessageSize);
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(*b, 0, kMessageSize, closure.Closure()));
 
   ReadDataFromDataPipe(readable, 1024);
@@ -1276,9 +1302,9 @@ TEST_F(WebSocketChannelImplTest, FailFromClient) {
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  Channel()->Fail("fail message from WebSocket",
-                  mojom::ConsoleMessageLevel::kError,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+  Channel()->Fail(
+      "fail message from WebSocket", mojom::ConsoleMessageLevel::kError,
+      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
 }
 
 class WebSocketChannelImplHandshakeThrottleTest
@@ -1286,8 +1312,7 @@ class WebSocketChannelImplHandshakeThrottleTest
  public:
   WebSocketChannelImplHandshakeThrottleTest()
       : WebSocketChannelImplTest(
-            std::make_unique<
-                testing::StrictMock<MockWebSocketHandshakeThrottle>>()) {}
+            std::make_unique<StrictMock<MockWebSocketHandshakeThrottle>>()) {}
 
   static KURL url() { return KURL("ws://localhost/"); }
 };
@@ -1326,7 +1351,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, ThrottleSucceedsFirst) {
   checkpoint.Call(1);
   test::RunPendingTasks();
 
-  Channel()->OnCompletion(base::nullopt);
+  Channel()->OnCompletion(absl::nullopt);
   checkpoint.Call(2);
 
   auto websocket =
@@ -1355,7 +1380,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, HandshakeSucceedsFirst) {
   ASSERT_TRUE(websocket);
 
   checkpoint.Call(2);
-  Channel()->OnCompletion(base::nullopt);
+  Channel()->OnCompletion(absl::nullopt);
 }
 
 // This happens if JS code calls close() during the handshake.
@@ -1371,9 +1396,9 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, FailDuringThrottle) {
   }
 
   Channel()->Connect(url(), "");
-  Channel()->Fail("close during handshake",
-                  mojom::ConsoleMessageLevel::kWarning,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+  Channel()->Fail(
+      "close during handshake", mojom::ConsoleMessageLevel::kWarning,
+      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
 }
 
@@ -1397,9 +1422,9 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest,
   auto websocket = Connect(4 * 1024, &writable, &readable, &client);
   ASSERT_TRUE(websocket);
 
-  Channel()->Fail("close during handshake",
-                  mojom::ConsoleMessageLevel::kWarning,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+  Channel()->Fail(
+      "close during handshake", mojom::ConsoleMessageLevel::kWarning,
+      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
   checkpoint.Call(1);
 }
 
@@ -1542,6 +1567,138 @@ TEST_F(WebSocketChannelImplTest, RemoteConnectionCloseDuringSend) {
 
   // The test passes if this doesn't crash.
   test::RunPendingTasks();
+}
+
+class MockWebSocketConnector : public mojom::blink::WebSocketConnector {
+ public:
+  MOCK_METHOD(
+      void,
+      Connect,
+      (const KURL&,
+       const Vector<String>&,
+       const net::SiteForCookies&,
+       const String&,
+       mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>,
+       const absl::optional<base::UnguessableToken>&));
+};
+
+// This can't use WebSocketChannelImplTest because it requires multiple
+// WebSocketChannels to be connected.
+class WebSocketChannelImplMultipleTest : public WebSocketChannelImplTestBase {
+ public:
+  base::WeakPtr<WebSocketChannelImplTestBase> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void BindWebSocketConnector(mojo::ScopedMessagePipeHandle handle) override {
+    connector_receiver_set_.Add(
+        &connector_, mojo::PendingReceiver<mojom::blink::WebSocketConnector>(
+                         std::move(handle)));
+  }
+
+ protected:
+  mojo::ReceiverSet<mojom::blink::WebSocketConnector> connector_receiver_set_;
+  StrictMock<MockWebSocketConnector> connector_;
+
+  base::WeakPtrFactory<WebSocketChannelImplMultipleTest> weak_ptr_factory_{
+      this};
+};
+
+TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
+  Checkpoint checkpoint;
+
+  // We need to keep the handshake clients alive otherwise they will cause
+  // connection failures.
+  mojo::RemoteSet<network::mojom::blink::WebSocketHandshakeClient>
+      handshake_clients;
+  auto handshake_client_add_action =
+      [&handshake_clients](
+          Unused, Unused, Unused, Unused,
+          mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
+              handshake_client,
+          Unused) { handshake_clients.Add(std::move(handshake_client)); };
+
+  auto failure_handshake_throttle =
+      std::make_unique<StrictMock<MockWebSocketHandshakeThrottle>>();
+  auto* failure_channel_client = MockWebSocketChannelClient::Create();
+
+  auto successful_handshake_throttle =
+      std::make_unique<StrictMock<MockWebSocketHandshakeThrottle>>();
+  auto* successful_channel_client = MockWebSocketChannelClient::Create();
+
+  auto url = KURL("ws://localhost/");
+
+  {
+    InSequence s;
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
+        .Times(WebSocketChannelImpl::kMaxWebSocketsPerRenderProcess)
+        .WillRepeatedly(handshake_client_add_action);
+
+    EXPECT_CALL(checkpoint, Call(1));
+
+    EXPECT_CALL(*failure_channel_client, DidError());
+    EXPECT_CALL(
+        *failure_channel_client,
+        DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete,
+                 WebSocketChannel::kCloseEventCodeAbnormalClosure, String()));
+    EXPECT_CALL(*failure_handshake_throttle, Destructor());
+
+    EXPECT_CALL(checkpoint, Call(2));
+
+    EXPECT_CALL(*successful_handshake_throttle, ThrottleHandshake(_, _));
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
+        .WillOnce(handshake_client_add_action);
+    EXPECT_CALL(*successful_handshake_throttle, Destructor());
+  }
+
+  WebSocketChannelImpl*
+      channels[WebSocketChannelImpl::kMaxWebSocketsPerRenderProcess] = {};
+  for (WebSocketChannelImpl*& channel : channels) {
+    auto handshake_throttle =
+        std::make_unique<StrictMock<MockWebSocketHandshakeThrottle>>();
+    EXPECT_CALL(*handshake_throttle, ThrottleHandshake(_, _));
+    EXPECT_CALL(*handshake_throttle, Destructor());
+
+    // This is kept alive by WebSocketChannelImpl so we don't need to retain
+    // our own reference.
+    auto* channel_client = MockWebSocketChannelClient::Create();
+
+    channel = WebSocketChannelImpl::CreateForTesting(
+        GetFrame().DomWindow(), channel_client, CaptureSourceLocation(),
+        std::move(handshake_throttle));
+    channel->Connect(url, "");
+  }
+
+  // Connect() is called via mojo and so asynchronously.
+  test::RunPendingTasks();
+
+  auto* failing_channel = WebSocketChannelImpl::CreateForTesting(
+      GetFrame().DomWindow(), failure_channel_client, CaptureSourceLocation(),
+      std::move(failure_handshake_throttle));
+  failing_channel->Connect(url, "");
+
+  checkpoint.Call(1);
+
+  // Give DidClose() a chance to be called.
+  test::RunPendingTasks();
+
+  // Abort all the pending connections to permit more to be created.
+  for (auto* channel : channels) {
+    channel->Disconnect();
+  }
+
+  checkpoint.Call(2);
+
+  auto* successful_channel = WebSocketChannelImpl::CreateForTesting(
+      GetFrame().DomWindow(), successful_channel_client,
+      CaptureSourceLocation(), std::move(successful_handshake_throttle));
+  successful_channel->Connect(url, "");
+
+  // Let the connect be passed through mojo.
+  test::RunPendingTasks();
+
+  // Destroy the channel to stop it interfering with other tests.
+  successful_channel->Disconnect();
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 #include <Security/Security.h>
 #include <stddef.h>
 
+#include <tuple>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -53,7 +55,7 @@ void LoginDatabaseIOSTest::ClearKeychain() {
   const void* queryKeys[] = {kSecClass};
   const void* queryValues[] = {kSecClassGenericPassword};
   ScopedCFTypeRef<CFDictionaryRef> query(CFDictionaryCreate(
-      NULL, queryKeys, queryValues, base::size(queryKeys),
+      NULL, queryKeys, queryValues, std::size(queryKeys),
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
   OSStatus status = SecItemDelete(query);
   // iOS7 returns an error of |errSecItemNotFound| if you try to clear an empty
@@ -91,7 +93,7 @@ TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
       std::u16string(),
   };
 
-  for (unsigned int i = 0; i < base::size(test_passwords); i++) {
+  for (unsigned int i = 0; i < std::size(test_passwords); i++) {
     std::string encrypted;
     EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
               login_db_->EncryptedString(test_passwords[i], &encrypted));
@@ -142,7 +144,7 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  ignore_result(login_db_->AddLogin(form));
+  std::ignore = login_db_->AddLogin(form);
 
   form.password_value = u"secret";
 
@@ -151,7 +153,7 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   ASSERT_EQ(1u, changes.size());
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(login_db_->GetLogins(PasswordStore::FormDigest(form), &forms));
+  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), true, &forms));
 
   ASSERT_EQ(1U, forms.size());
   EXPECT_STREQ("secret", UTF16ToUTF8(forms[0]->password_value).c_str());
@@ -160,17 +162,17 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
 
 TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
   PasswordForm form;
-  form.signon_realm = "www.example.com";
-  form.action = GURL("www.example.com/action");
+  form.signon_realm = "http://www.example.com";
+  form.url = GURL("http://www.example.com/action");
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  ignore_result(login_db_->AddLogin(form));
+  ASSERT_THAT(login_db_->AddLogin(form), testing::SizeIs(1));
 
-  ignore_result(login_db_->RemoveLogin(form, /*changes=*/nullptr));
+  std::ignore = login_db_->RemoveLogin(form, /*changes=*/nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(login_db_->GetLogins(PasswordStore::FormDigest(form), &forms));
+  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), true, &forms));
 
   ASSERT_EQ(0U, forms.size());
   ASSERT_EQ(0U, GetKeychainSize());
@@ -196,18 +198,18 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   forms[2].date_created = base::Time::FromDoubleT(300);
   forms[2].password_value = u"pass2";
 
-  for (size_t i = 0; i < base::size(forms); i++) {
-    ignore_result(login_db_->AddLogin(forms[i]));
+  for (size_t i = 0; i < std::size(forms); i++) {
+    std::ignore = login_db_->AddLogin(forms[i]);
   }
 
   login_db_->RemoveLoginsCreatedBetween(base::Time::FromDoubleT(150),
                                         base::Time::FromDoubleT(250),
                                         /*changes=*/nullptr);
 
-  PasswordStore::FormDigest form = {PasswordForm::Scheme::kHtml,
-                                    "http://www.example.com", GURL()};
+  PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
+                             "http://www.example.com", GURL()};
   std::vector<std::unique_ptr<PasswordForm>> logins;
-  EXPECT_TRUE(login_db_->GetLogins(form, &logins));
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &logins));
 
   ASSERT_EQ(2U, logins.size());
   ASSERT_EQ(2U, GetKeychainSize());

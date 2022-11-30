@@ -31,13 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_KEYFRAME_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_KEYFRAME_EFFECT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -46,10 +46,10 @@ class ExceptionState;
 class KeyframeEffectModelBase;
 class PaintArtifactCompositor;
 class SampledEffect;
-class UnrestrictedDoubleOrKeyframeEffectOptions;
+class V8UnionKeyframeEffectOptionsOrUnrestrictedDouble;
 
 // Represents the effect of an Animation on an Element's properties.
-// https://drafts.csswg.org/web-animations/#keyframe-effect
+// https://w3.org/TR/web-animations-1/#keyframe-effects
 class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -58,11 +58,11 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   // Web Animations API Bindings constructors.
   static KeyframeEffect* Create(
-      ScriptState*,
-      Element*,
-      const ScriptValue&,
-      const UnrestrictedDoubleOrKeyframeEffectOptions&,
-      ExceptionState&);
+      ScriptState* script_state,
+      Element* element,
+      const ScriptValue& keyframes,
+      const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
+      ExceptionState& exception_state);
   static KeyframeEffect* Create(ScriptState*,
                                 Element*,
                                 const ScriptValue&,
@@ -98,7 +98,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   Element* EffectTarget() const { return effect_target_; }
   void SetKeyframes(StringKeyframeVector keyframes);
 
-  bool Affects(const PropertyHandle&) const;
+  bool Affects(const PropertyHandle&) const override;
   bool HasRevert() const;
   const KeyframeEffectModelBase* Model() const { return model_.Get(); }
   KeyframeEffectModelBase* Model() { return model_.Get(); }
@@ -116,7 +116,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
       PropertyHandleSet* unsupported_properties = nullptr) const;
   // Must only be called once.
   void StartAnimationOnCompositor(int group,
-                                  base::Optional<double> start_time,
+                                  absl::optional<double> start_time,
                                   base::TimeDelta time_offset,
                                   double animation_playback_rate,
                                   CompositorAnimation* = nullptr);
@@ -135,7 +135,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   void Trace(Visitor*) const override;
 
-  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
+  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const gfx::SizeF& box_size);
   bool IsIdentityOrTranslation() const;
 
   ActiveInterpolationsMap InterpolationsForCommitStyles();
@@ -160,12 +160,14 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   void DetachTarget(Animation*);
   void RefreshTarget();
   void CountAnimatedProperties() const;
+  AnimationTimeDelta IntrinsicIterationDuration() const override;
   AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<double> inherited_time,
+      absl::optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
+  absl::optional<AnimationTimeDelta> TimelineDuration() const override;
   bool HasIncompatibleStyle() const;
-  bool HasMultipleTransformProperties() const;
+  bool AffectsImportantProperty() const;
   void RestartRunningAnimationOnCompositor();
 
   Member<Element> effect_target_;
@@ -180,7 +182,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   bool ignore_css_keyframes_;
 
-  base::Optional<FloatSize> effect_target_size_;
+  absl::optional<gfx::SizeF> effect_target_size_;
 };
 
 template <>

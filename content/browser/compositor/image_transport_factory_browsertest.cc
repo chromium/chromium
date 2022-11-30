@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -27,8 +28,10 @@ class MockContextLostObserver : public viz::ContextLostObserver {
   MOCK_METHOD0(OnContextLost, void());
 };
 
-// Flaky on ChromeOS: crbug.com/394083
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/394083, crbug.com/1305007, crbug.com/1302879): Flaky on
+// ChromeOS, Linux, and Windows.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
 #define MAYBE_TestLostContext DISABLED_TestLostContext
 #else
 #define MAYBE_TestLostContext TestLostContext
@@ -63,6 +66,12 @@ IN_PROC_BROWSER_TEST_F(ImageTransportFactoryBrowserTest,
   run_loop.Run();
 
   context_provider->RemoveObserver(&observer);
+
+  // Close the channel to the GPU process. This is needed because the GPU
+  // channel is down by the time that the network service is flushed, but
+  // flushing the network service tries to bring it back up again and there are
+  // pending requests causing a DCHECK to hit.
+  BrowserGpuChannelHostFactory::instance()->CloseChannel();
 }
 
 }  // anonymous namespace

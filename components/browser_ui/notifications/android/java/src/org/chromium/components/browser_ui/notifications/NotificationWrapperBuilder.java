@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,8 @@ public interface NotificationWrapperBuilder {
     /**
      * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
      */
-    NotificationWrapperBuilder addAction(Notification.Action action, int flags, int actionType);
+    NotificationWrapperBuilder addAction(
+            Notification.Action action, int flags, int actionType, int requestCode);
 
     @Deprecated
     NotificationWrapperBuilder addAction(NotificationCompat.Action action);
@@ -76,7 +77,7 @@ public interface NotificationWrapperBuilder {
      * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
      */
     NotificationWrapperBuilder addAction(
-            NotificationCompat.Action action, int flags, int actionType);
+            NotificationCompat.Action action, int flags, int actionType, int requestCode);
 
     @Deprecated
     NotificationWrapperBuilder setDeleteIntent(PendingIntent intent);
@@ -120,6 +121,11 @@ public interface NotificationWrapperBuilder {
     NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions);
 
     NotificationWrapperBuilder setCategory(String category);
+
+    /**
+     * Sets the lifetime of a notification. Does nothing prior to Oreo.
+     */
+    NotificationWrapperBuilder setTimeoutAfter(long ms);
 
     NotificationWrapper buildWithBigContentView(RemoteViews bigView);
 

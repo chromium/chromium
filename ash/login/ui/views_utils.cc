@@ -1,19 +1,23 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/login/ui/views_utils.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/style/ash_color_provider.h"
+#include "base/ranges/algorithm.h"
+#include "ui/color/color_id.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
 
@@ -27,6 +31,10 @@ class ContainerView : public NonAccessibleView,
   ContainerView() {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
+
+  ContainerView(const ContainerView&) = delete;
+  ContainerView& operator=(const ContainerView&) = delete;
+
   ~ContainerView() override = default;
 
   // views::ViewTargeterDelegate:
@@ -39,11 +47,8 @@ class ContainerView : public NonAccessibleView,
       return child->GetVisible() &&
              child->HitTestRect(gfx::ToEnclosingRect(child_rect));
     };
-    return std::any_of(children.cbegin(), children.cend(), hits_child);
+    return base::ranges::any_of(children, hits_child);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContainerView);
 };
 
 }  // namespace
@@ -52,7 +57,10 @@ namespace login_views_utils {
 
 std::unique_ptr<views::View> WrapViewForPreferredSize(
     std::unique_ptr<views::View> view) {
-  auto proxy = std::make_unique<NonAccessibleView>();
+  // Using ContainerView here ensures that click events will be passed to the
+  // wrapped view even if a transform is applied that moves the view outside the
+  // wrapper.
+  auto proxy = std::make_unique<ContainerView>();
   auto layout_manager = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
   layout_manager->set_cross_axis_alignment(
@@ -98,27 +106,51 @@ bool HasFocusInAnyChildView(views::View* view) {
   return search == view;
 }
 
-views::Label* CreateBubbleLabel(const std::u16string& message,
-                                views::View* view_defining_max_width,
-                                SkColor color,
-                                const gfx::FontList& font_list,
-                                int line_height) {
-  views::Label* label =
-      new views::Label(message, views::style::CONTEXT_DIALOG_BODY_TEXT);
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColor(color);
-  label->SetSubpixelRenderingEnabled(false);
-  label->SetFontList(font_list);
-  label->SetLineHeight(line_height);
+std::unique_ptr<views::Label> CreateUnthemedBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width,
+    const gfx::FontList& font_list,
+    int line_height) {
+  auto builder = views::Builder<views::Label>()
+                     .SetText(message)
+                     .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                     .SetAutoColorReadabilityEnabled(false)
+                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                     .SetSubpixelRenderingEnabled(false)
+                     .SetFontList(font_list)
+                     .SetLineHeight(line_height);
   if (view_defining_max_width != nullptr) {
-    label->SetMultiLine(true);
-    label->SetAllowCharacterBreak(true);
-    // Make sure to set a maximum label width, otherwise text wrapping will
-    // significantly increase width and layout may not work correctly if
-    // the input string is very long.
-    label->SetMaximumWidth(view_defining_max_width->GetPreferredSize().width());
+    builder.SetMultiLine(true)
+        .SetAllowCharacterBreak(true)
+        // Make sure to set a maximum label width, otherwise text wrapping will
+        // significantly increase width and layout may not work correctly if
+        // the input string is very long.
+        .SetMaximumWidth(view_defining_max_width->GetPreferredSize().width());
   }
+  return std::move(builder).Build();
+}
+
+std::unique_ptr<views::Label> CreateBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width,
+    SkColor color,
+    const gfx::FontList& font_list,
+    int line_height) {
+  auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
+                                         font_list, line_height);
+  label->SetEnabledColor(color);
+  return label;
+}
+
+std::unique_ptr<views::Label> CreateThemedBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width,
+    ui::ColorId enabled_color_type,
+    const gfx::FontList& font_list,
+    int line_height) {
+  auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
+                                         font_list, line_height);
+  label->SetEnabledColorId(enabled_color_type);
   return label;
 }
 
@@ -176,10 +208,9 @@ gfx::Point CalculateBubblePositionAfterBeforeStrategy(gfx::Rect anchor,
 
 void ConfigureRectFocusRingCircleInkDrop(views::View* view,
                                          views::FocusRing* focus_ring,
-                                         base::Optional<int> radius) {
+                                         absl::optional<int> radius) {
   DCHECK(view);
   DCHECK(focus_ring);
-  focus_ring->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
   focus_ring->SetPathGenerator(
       std::make_unique<views::RectHighlightPathGenerator>());
 

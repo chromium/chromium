@@ -1,39 +1,39 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
+import {assert} from 'chrome://resources/js/assert.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
 
-// clang-format off
-// #import {A11yAnnounce} from './a11y_announce.m.js';
-// #import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.m.js';
-// #import {EntryLocation} from '../../../externs/entry_location.m.js';
-// #import {MetadataModel} from '../metadata/metadata_model.m.js';
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {TableList} from './table/table_list.m.js';
-// #import {FileTapHandler} from './file_tap_handler.m.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {FileType} from '../../../common/js/file_type.m.js';
-// #import {util, str, strf} from '../../../common/js/util.m.js';
-// #import {ListSelectionController} from 'chrome://resources/js/cr/ui/list_selection_controller.m.js';
-// #import {isMac} from 'chrome://resources/js/cr.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {FileType} from '../../../common/js/file_type.js';
+import {str, strf, util} from '../../../common/js/util.js';
+import {EntryLocation} from '../../../externs/entry_location.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {FileListModel} from '../file_list_model.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
+
+import {A11yAnnounce} from './a11y_announce.js';
+import {DragSelector} from './drag_selector.js';
+import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
+import {FileTapHandler} from './file_tap_handler.js';
+import {List} from './list.js';
+import {ListItem} from './list_item.js';
+import {ListSelectionController} from './list_selection_controller.js';
+import {ListSelectionModel} from './list_selection_model.js';
+import {TableList} from './table/table_list.js';
 
 /**
  * Namespace for utility functions.
  */
 const filelist = {};
 
+// Group Heading height, align with CSS #list-container .group-heading.
+const GROUP_HEADING_HEIGHT = 57;
+
 /**
  * File table list.
  */
-/* #export */ class FileTableList extends cr.ui.table.TableList {
+export class FileTableList extends TableList {
   constructor() {
     // To silence closure compiler.
     super();
@@ -43,6 +43,14 @@ const filelist = {};
     this.onMergeItems_ = null;
 
     throw new Error('Designed to decorate elements');
+  }
+
+  /**
+   * Returns the height of group heading.
+   * @return {number} The height of group heading.
+   */
+  getGroupHeadingHeight_() {
+    return GROUP_HEADING_HEIGHT;
   }
 
   /**
@@ -58,6 +66,13 @@ const filelist = {};
   mergeItems(beginIndex, endIndex) {
     super.mergeItems(beginIndex, endIndex);
 
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot =
+        fileListModel ? fileListModel.getGroupBySnapshot() : [];
+    const startIndexToGroupLabel = new Map(groupBySnapshot.map(group => {
+      return [group.startIndex, group];
+    }));
+
     // Make sure that list item's selected attribute is updated just after the
     // mergeItems operation is done. This prevents checkmarks on selected items
     // from being animated unintentionally by redraw.
@@ -69,6 +84,16 @@ const filelist = {};
       const isSelected = this.selectionModel.getIndexSelected(i);
       if (item.selected !== isSelected) {
         item.selected = isSelected;
+      }
+      // Check if index i is the start of a new group.
+      if (startIndexToGroupLabel.has(i)) {
+        // For first item in each group, we add a title div before the element.
+        const title = document.createElement('div');
+        title.setAttribute('role', 'heading');
+        title.innerText = startIndexToGroupLabel.get(i).label;
+        title.classList.add(
+            'group-heading', `group-by-${fileListModel.groupByField}`);
+        this.insertBefore(title, item);
       }
     }
 
@@ -94,11 +119,175 @@ const filelist = {};
   getItemLabel(index) {
     return this.table.getItemLabel(index);
   }
+
+  /**
+   * Given a index, return how many group headings are there before this index.
+   * Note: not include index itself.
+   * @param {number} index
+   * @return {number}
+   * @private
+   */
+  getGroupHeadingCountBeforeIndex_(index) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    let count = 0;
+    for (const group of groupBySnapshot) {
+      // index - 1 because we don't want to include index itself.
+      if (group.startIndex <= index - 1) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Given a index, return how many group headings are there after this index.
+   * Note: not include index itself.
+   * @param {number} index
+   * @return {number}
+   * @private
+   */
+  getGroupHeadingCountAfterIndex_(index) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    if (groupBySnapshot.length > 0) {
+      const countBeforeIndex = this.getGroupHeadingCountBeforeIndex_(index + 1);
+      return groupBySnapshot.length - countBeforeIndex;
+    }
+    return 0;
+  }
+
+  /**
+   * Given a offset (e.g. scrollTop), return how many items can be included
+   * within this height. Override here because previously we just need to use
+   * the total height (offset) to divide the item height, now we also need to
+   * consider the potential group headings included in these items.
+   * @override
+   */
+  getIndexForListOffset_(offset) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    const itemHeight = this.getDefaultItemHeight_();
+
+    // Without heading the original logic suffices.
+    if (groupBySnapshot.length === 0 || !itemHeight) {
+      return super.getIndexForListOffset_(offset);
+    }
+
+    // Loop through all the groups, calculate the accumulated height for all
+    // items (item height + group heading height), until the total height
+    // reaches "offset", then we know how many items can be included in this
+    // offset.
+    let currentHeight = 0;
+    for (const group of groupBySnapshot) {
+      const groupHeight = this.getGroupHeadingHeight_() +
+          (group.endIndex - group.startIndex + 1) * itemHeight;
+
+      if (currentHeight + groupHeight > offset) {
+        // Current offset falls into the current group. Calculates how many
+        // items in the offset within the group.
+        const remainingOffsetInGroup =
+            Math.max(0, offset - this.getGroupHeadingHeight_() - currentHeight);
+        return group.startIndex +
+            Math.floor(remainingOffsetInGroup / itemHeight);
+      }
+      currentHeight += groupHeight;
+    }
+    return fileListModel.length - 1;
+  }
+
+  /**
+   * Given an index, return the height (top) of all items before this index.
+   * Override here because previously we just need to use the index to multiply
+   * the item height, now we also need to add up the potential group heading
+   * heights included in these items.
+   *
+   * Note: for group start item, technically its height should be "all heights
+   * above it + current group heading height", but here we don't add the
+   * current group heading height (logic in getGroupHeadingCountBeforeIndex_),
+   * that's because it will break the "beforeFillerHeight" logic in the redraw
+   * of list.js.
+   * @override
+   */
+  getItemTop(index) {
+    const itemHeight = this.getDefaultItemHeight_();
+    const countOfGroupHeadings = this.getGroupHeadingCountBeforeIndex_(index);
+    return index * itemHeight +
+        countOfGroupHeadings * this.getGroupHeadingHeight_();
+  }
+
+  /**
+   * Given an index, return the height of all items after this index.
+   * Override here because previously we just need to use the remaining index
+   * to multiply the item height, now we also need to add up the potential
+   * group heading heights included in these items.
+   * @override
+   */
+  getAfterFillerHeight(lastIndex) {
+    if (lastIndex === 0) {
+      // A special case handled in the parent class, delegate it back to parent.
+      return super.getAfterFillerHeight(lastIndex);
+    }
+    const itemHeight = this.getDefaultItemHeight_();
+    const countOfGroupHeadings =
+        this.getGroupHeadingCountAfterIndex_(lastIndex);
+    return (this.dataModel.length - lastIndex) * itemHeight +
+        countOfGroupHeadings * this.getGroupHeadingHeight_();
+  }
+
+  /**
+   * Returns whether the drag event is inside a file entry in the list (and not
+   * the background padding area).
+   * @param {MouseEvent} event Drag start event.
+   * @return {boolean} True if the mouse is over an element in the list, False
+   *     if it is in the background.
+   */
+  hasDragHitElement(event) {
+    const pos = DragSelector.getScrolledPosition(this, event);
+    return this.getHitElements(pos.x, pos.y).length !== 0;
+  }
+
+  /**
+   * Obtains the index list of elements that are hit by the point or the
+   * rectangle.
+   *
+   * @param {number} x X coordinate value.
+   * @param {number} y Y coordinate value.
+   * @param {number=} opt_width Width of the coordinate.
+   * @param {number=} opt_height Height of the coordinate.
+   * @return {Array<number>} Index list of hit elements.
+   */
+  getHitElements(x, y, opt_width, opt_height) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot =
+        fileListModel ? fileListModel.getGroupBySnapshot() : [];
+    const startIndexToGroupLabel = new Map(groupBySnapshot.map(group => {
+      return [group.startIndex, group];
+    }));
+
+    const currentSelection = [];
+    const startHeight = y;
+    const endHeight = y + (opt_height || 0);
+    for (let i = 0; i < this.selectionModel.length; i++) {
+      const itemMetrics = this.getHeightsForIndex(i);
+      // For group start item, we need to explicitly add group height because
+      // its top doesn't take that into consideration. (check notes in
+      // getItemTop())
+      const itemTop = itemMetrics.top +
+          (startIndexToGroupLabel.has(i) ? this.getGroupHeadingHeight_() : 0);
+      if (itemTop < endHeight && itemTop + itemMetrics.height >= startHeight) {
+        currentSelection.push(i);
+      }
+    }
+    return currentSelection;
+  }
 }
 
 /**
  * Decorates TableList as FileTableList.
- * @param {!cr.ui.table.TableList} self A tabel list element.
+ * @param {!TableList} self A table list element.
  */
 FileTableList.decorate = self => {
   self.__proto__ = FileTableList.prototype;
@@ -110,9 +299,9 @@ FileTableList.decorate = self => {
 /**
  * Selection controller for the file table list.
  */
-class FileListSelectionController extends cr.ui.ListSelectionController {
+class FileListSelectionController extends ListSelectionController {
   /**
-   * @param {!cr.ui.ListSelectionModel} selectionModel The selection model to
+   * @param {!ListSelectionModel} selectionModel The selection model to
    *     interact with.
    * @param {!FileTableList} tableList
    */
@@ -155,7 +344,7 @@ class FileListSelectionController extends cr.ui.ListSelectionController {
 
 /**
  * Common item decoration for table's and grid's items.
- * @param {cr.ui.ListItem} li List item.
+ * @param {ListItem} li List item.
  * @param {Entry|FilesAppEntry} entry The entry.
  * @param {!MetadataModel} metadataModel Cache to
  *     retrieve metadada.
@@ -166,8 +355,13 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
   // updated when the metadata is ready via updateListItemsMetadata. For files
   // not on an external backend, externalProps is not available.
   const externalProps = metadataModel.getCache([entry], [
-    'hosted', 'availableOffline', 'customIconUrl', 'shared', 'isMachineRoot',
-    'isExternalMedia', 'pinned'
+    'hosted',
+    'availableOffline',
+    'customIconUrl',
+    'shared',
+    'isMachineRoot',
+    'isExternalMedia',
+    'pinned',
   ])[0];
   filelist.updateListItemExternalProps(
       li, externalProps, util.isTeamDriveRoot(entry));
@@ -178,7 +372,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
 
   Object.defineProperty(li, 'selected', {
     /**
-     * @this {cr.ui.ListItem}
+     * @this {ListItem}
      * @return {boolean} True if the list item is selected.
      */
     get: function() {
@@ -186,7 +380,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
     },
 
     /**
-     * @this {cr.ui.ListItem}
+     * @this {ListItem}
      */
     set: function(v) {
       if (v) {
@@ -194,7 +388,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
       } else {
         this.removeAttribute('selected');
       }
-    }
+    },
   });
 };
 
@@ -209,9 +403,9 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
 filelist.renderFileTypeIcon = (doc, entry, locationInfo, opt_mimeType) => {
   const icon = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
   icon.className = 'detail-icon';
+  const rootType = locationInfo && locationInfo.rootType || undefined;
   icon.setAttribute(
-      'file-type-icon',
-      FileType.getIcon(entry, opt_mimeType, locationInfo.rootType));
+      'file-type-icon', FileType.getIcon(entry, opt_mimeType, rootType));
   return icon;
 };
 
@@ -248,7 +442,7 @@ filelist.renderPinned = (doc) => {
 
 /**
  * Updates grid item or table row for the externalProps.
- * @param {cr.ui.ListItem} li List item.
+ * @param {ListItem} li List item.
  * @param {Object} externalProps Metadata.
  */
 filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
@@ -278,6 +472,13 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
     iconDiv.classList.toggle(
         'external-media-root', !!externalProps.isExternalMedia);
   }
+
+  if (util.isInlineSyncStatusEnabled()) {
+    li.toggleAttribute(
+        'data-sync-status', externalProps.syncStatus !== 'not_found');
+    li.setAttribute('data-sync-status', externalProps.syncStatus);
+    // TODO(msalomao): set sync status aria-label.
+  }
 };
 
 /**
@@ -289,7 +490,7 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
  * @param {!FileTapHandler.TapEvent} eventType
  * @return True if conducted any action. False when if did nothing special for
  *     tap.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handleTap = function(e, index, eventType) {
@@ -337,12 +538,13 @@ filelist.handleTap = function(e, index, eventType) {
   // Single finger tap.
   const isTap = eventType === FileTapHandler.TapEvent.TAP ||
       eventType === FileTapHandler.TapEvent.LONG_TAP;
-  // Revert to click handling for single tap on checkbox or tap during rename.
-  // Single tap on the checkbox in the list view mode should toggle select.
-  // Single tap on input for rename should focus on input.
-  const isCheckbox = e.target.classList.contains('detail-checkmark');
+  // Revert to click handling for single tap on the checkmark or rename input.
+  // Single tap on the item checkmark should toggle select the item.
+  // Single tap on rename input should focus on input.
+  const isCheckmark = e.target.classList.contains('detail-checkmark') ||
+      e.target.classList.contains('detail-icon');
   const isRename = e.target.localName === 'input';
-  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckbox || isRename)) {
+  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckmark || isRename)) {
     return false;
   }
 
@@ -395,7 +597,7 @@ filelist.handleTap = function(e, index, eventType) {
  * Handles mouseup/mousedown events on file list to change the selection state.
  *
  * Basically the content of this function is identical to
- * cr.ui.ListSelectionController's handlePointerDownUp(), but following
+ * ListSelectionController's handlePointerDownUp(), but following
  * handlings are inserted to control the check-select mode.
  *
  * 1) When checkmark area is clicked, toggle item selection and enable the
@@ -406,7 +608,7 @@ filelist.handleTap = function(e, index, eventType) {
  * @param {!Event} e The browser mouse event.
  * @param {number} index The index that was under the mouse pointer, -1 if
  *     none.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handlePointerDownUp = function(e, index) {
@@ -510,14 +712,14 @@ filelist.handlePointerDownUp = function(e, index) {
  * Handles key events on file list to change the selection state.
  *
  * Basically the content of this function is identical to
- * cr.ui.ListSelectionController's handleKeyDown(), but following handlings is
+ * ListSelectionController's handleKeyDown(), but following handlings is
  * inserted to control the check-select mode.
  *
  * 1) When pressing direction key results in a single selection, the
  *    check-select mode should be terminated.
  *
  * @param {Event} e The keydown event.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handleKeyDown = function(e) {
@@ -555,7 +757,7 @@ filelist.handleKeyDown = function(e) {
   // keyboard layout.
   const pressedKeyA = e.keyCode === 65 || e.key === 'a';
   if (sm.multiple && pressedKeyA &&
-      (cr.isMac && e.metaKey || !cr.isMac && e.ctrlKey)) {
+      (isMac && e.metaKey || !isMac && e.ctrlKey)) {
     this.filesView.a11y.speakA11yMessage(str('SELECTION_ALL_ENTRIES'));
     sm.setCheckSelectMode(true);
     sm.selectAll();
@@ -691,7 +893,7 @@ filelist.handleKeyDown = function(e) {
  */
 filelist.focusParentList = event => {
   let element = event.target;
-  while (element && !(element instanceof cr.ui.List)) {
+  while (element && !(element instanceof List)) {
     element = element.parentElement;
   }
   if (element) {
@@ -699,5 +901,4 @@ filelist.focusParentList = event => {
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {filelist};
+export {filelist};

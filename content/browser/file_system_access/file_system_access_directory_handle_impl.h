@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DIRECTORY_HANDLE_IMPL_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/common/content_export.h"
@@ -31,6 +31,10 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
                                       const BindingContext& context,
                                       const storage::FileSystemURL& url,
                                       const SharedHandleState& handle_state);
+  FileSystemAccessDirectoryHandleImpl(
+      const FileSystemAccessDirectoryHandleImpl&) = delete;
+  FileSystemAccessDirectoryHandleImpl& operator=(
+      const FileSystemAccessDirectoryHandleImpl&) = delete;
   ~FileSystemAccessDirectoryHandleImpl() override;
 
   // blink::mojom::FileSystemAccessDirectoryHandle:
@@ -47,6 +51,13 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void GetEntries(mojo::PendingRemote<
                   blink::mojom::FileSystemAccessDirectoryEntriesListener>
                       pending_listener) override;
+  void Move(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                destination_directory,
+            const std::string& new_entry_name,
+            MoveCallback callback) override;
+  void Rename(const std::string& new_entry_name,
+              RenameCallback callback) override;
+  void Remove(bool recurse, RemoveCallback callback) override;
   void RemoveEntry(const std::string& basename,
                    bool recurse,
                    RemoveEntryCallback callback) override;
@@ -56,6 +67,14 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void Transfer(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
+  void GetUniqueId(GetUniqueIdCallback callback) override;
+
+  // Calculates a FileSystemURL for a (direct) child of this directory with the
+  // given basename.  Returns an error when `basename` includes invalid input
+  // like "/".
+  [[nodiscard]] blink::mojom::FileSystemAccessErrorPtr GetChildURL(
+      const std::string& basename,
+      storage::FileSystemURL* result);
 
   // The File System Access API should not give access to files that might
   // trigger special handling from the operating system. This method is used to
@@ -87,19 +106,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       std::vector<filesystem::mojom::DirectoryEntry> file_list,
       bool has_more_entries);
 
-  void RemoveEntryImpl(const storage::FileSystemURL& url,
-                       bool recurse,
-                       RemoveEntryCallback callback);
-
   void ResolveImpl(ResolveCallback callback,
                    FileSystemAccessTransferTokenImpl* possible_child);
-
-  // Calculates a FileSystemURL for a (direct) child of this directory with the
-  // given basename.  Returns an error when |basename| includes invalid input
-  // like "/".
-  blink::mojom::FileSystemAccessErrorPtr GetChildURL(
-      const std::string& basename,
-      storage::FileSystemURL* result) WARN_UNUSED_RESULT;
 
   // Helper to create a blink::mojom::FileSystemAccessEntry struct.
   blink::mojom::FileSystemAccessEntryPtr CreateEntry(
@@ -109,8 +117,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
-  base::WeakPtrFactory<FileSystemAccessDirectoryHandleImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessDirectoryHandleImpl);
+  base::WeakPtrFactory<FileSystemAccessDirectoryHandleImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content

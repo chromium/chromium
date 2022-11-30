@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "components/crash/core/common/crash_key_base_support.h"
 #include "components/crash/core/common/crash_key_internal.h"
 
-#if defined(OS_APPLE) || defined(OS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
 #error "This file should not be used when Crashpad is available, nor on iOS."
 #endif
 
@@ -62,7 +62,7 @@ void CrashKeyStringImpl::Set(base::StringPiece value) {
 
   // If there is only one slot for the value, then handle it directly.
   if (index_array_count_ == 1) {
-    std::string value_string = value.as_string();
+    std::string value_string(value);
     if (is_set()) {
       storage->SetValueAtIndex(index_array_[0], value_string.c_str());
     } else {

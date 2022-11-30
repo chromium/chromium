@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/chromoting_event_log_writer.h"
 #include "remoting/base/url_request.h"
@@ -30,6 +32,10 @@ class ClientTelemetryLogger {
   ClientTelemetryLogger(ChromotingEventLogWriter* log_writer,
                         ChromotingEvent::Mode mode,
                         ChromotingEvent::SessionEntryPoint entry_point);
+
+  ClientTelemetryLogger(const ClientTelemetryLogger&) = delete;
+  ClientTelemetryLogger& operator=(const ClientTelemetryLogger&) = delete;
+
   ~ClientTelemetryLogger();
 
   void SetAuthMethod(ChromotingEvent::AuthMethod auth_method);
@@ -115,11 +121,9 @@ class ClientTelemetryLogger {
   std::unique_ptr<protocol::TransportRoute> transport_route_;
 
   // The log writer that actually sends log to the server.
-  ChromotingEventLogWriter* log_writer_;
+  raw_ptr<ChromotingEventLogWriter> log_writer_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientTelemetryLogger);
 };
 
 }  // namespace remoting

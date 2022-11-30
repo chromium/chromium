@@ -1,0 +1,61 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Composite message type for messages sent over the url-forwarder-control data
+// channel.
+// Next ID: 5
+message UrlForwarderControl {
+  // Message sent by the client requesting the host for the current
+  // configuration state. The host will respond with a QueryConfigStateResponse.
+  // Next ID: 1
+  message QueryConfigStateRequest {}
+
+  // Message sent by the host reporting the current configuration state.
+  // Next ID: 2
+  message QueryConfigStateResponse {
+    // Indicates whether the URL forwarder has been properly set up.
+    optional bool is_url_forwarder_set_up = 1;
+  }
+
+  // Message sent by the client requesting the host to set up the URL forwarder.
+  // The host will respond with one or more SetUpUrlForwarderResponse(s).
+  // Next ID: 1
+  message SetUpUrlForwarderRequest {}
+
+  // Message sent by the host reporting the current state of the URL forwarder
+  // setup process.
+  // Next ID: 2
+  message SetUpUrlForwarderResponse {
+    // Next ID: 4
+    enum State {
+      UNSPECIFIED_STATE = 0;
+
+      // The setup process has been completed successfully.
+      COMPLETE = 1;
+
+      // The setup process has failed.
+      FAILED = 2;
+
+      // The setup process requires user intervention. The host will send
+      // another SetUpUrlForwarderResponse once the setup process becomes
+      // completed or failed.
+      USER_INTERVENTION_REQUIRED = 3;
+    }
+
+    optional State state = 1;
+  }
+
+  oneof message {
+    QueryConfigStateRequest query_config_state_request = 1;
+    QueryConfigStateResponse query_config_state_response = 2;
+    SetUpUrlForwarderRequest set_up_url_forwarder_request = 3;
+    SetUpUrlForwarderResponse set_up_url_forwarder_response = 4;
+  }
+}

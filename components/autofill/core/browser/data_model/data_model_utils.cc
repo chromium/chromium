@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,12 @@
 
 #include "base/i18n/string_search.h"
 #include "base/i18n/unicodestring.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_regex_constants.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
 
@@ -144,12 +142,11 @@ bool SetExpirationYear(int value, int* expiration_year) {
 }
 
 std::u16string FindPossiblePhoneCountryCode(const std::u16string& text) {
-  std::u16string candidate;
   if (text.find(u"00") != std::u16string::npos ||
       text.find('+') != std::u16string::npos) {
-    if (MatchesPattern(text, base::ASCIIToUTF16(kAugmentedPhoneCountryCodeRe),
-                       &candidate, 1))
-      return candidate;
+    std::vector<std::u16string> captures;
+    if (MatchesRegex<kAugmentedPhoneCountryCodeRe>(text, &captures))
+      return captures[1];
   }
 
   return std::u16string();

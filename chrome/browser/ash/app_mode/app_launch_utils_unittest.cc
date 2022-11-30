@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ class AppLaunchUtilsTest : public testing::Test {
     PrefServiceFactory pref_service_factory;
     pref_store_ = new JsonPrefStore(input_file_);
     pref_service_factory.set_user_prefs(pref_store_);
-    return pref_service_factory.Create(registry_, /*delegate=*/nullptr);
+    return pref_service_factory.Create(registry_);
   }
 
  public:

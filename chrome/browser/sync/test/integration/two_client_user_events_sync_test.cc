@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
@@ -20,7 +20,6 @@ namespace {
 
 using bookmarks_helper::BookmarksMatchChecker;
 using bookmarks_helper::CountBookmarksWithUrlsMatching;
-using sync_pb::UserEventSpecifics;
 
 const int kEncryptingClientId = 0;
 const int kDecryptingClientId = 1;
@@ -36,11 +35,6 @@ class TwoClientUserEventsSyncTest : public SyncTest {
   bool ExpectNoUserEvent(int index) {
     return UserEventEqualityChecker(GetSyncService(index), GetFakeServer(),
                                     /*expected_specifics=*/{})
-        .Wait();
-  }
-
-  bool WaitForPassphraseRequiredState(int index, bool desired_state) {
-    return PassphraseRequiredStateChecker(GetSyncService(index), desired_state)
         .Wait();
   }
 
@@ -73,12 +67,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientUserEventsSyncTest,
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   event_service->RecordUserEvent(user_events_helper::CreateTestEvent(
-      base::Time() + base::TimeDelta::FromMicroseconds(1)));
+      base::Time() + base::Microseconds(1)));
 
   // Set up sync on the second client.
-  ASSERT_TRUE(GetClient(kDecryptingClientId)
-                  ->SetupSyncNoWaitForCompletion(
-                      GetRegisteredSelectableTypes(kDecryptingClientId)));
+  ASSERT_TRUE(GetClient(kDecryptingClientId)->SetupSyncNoWaitForCompletion());
   // The second client asks the user to provide a password for decryption.
   ASSERT_TRUE(
       PassphraseRequiredChecker(GetSyncService(kDecryptingClientId)).Wait());

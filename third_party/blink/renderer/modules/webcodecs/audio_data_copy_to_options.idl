@@ -1,0 +1,12 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary AudioDataCopyToOptions {
+  required [EnforceRange] unsigned long planeIndex;
+  [EnforceRange] unsigned long frameCount;
+  [EnforceRange] unsigned long frameOffset = 0;
+  AudioSampleFormat format;
+};

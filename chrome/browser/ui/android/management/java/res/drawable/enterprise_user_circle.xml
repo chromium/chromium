@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"
+    android:viewportWidth="20"
+    android:viewportHeight="20"
+    android:width="20dp"
+    android:height="20dp"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:pathData="M19 10C19 12.219 18.1954 14.2514 16.8623 15.8211L17.1557 15.4357C18.3002 13.9321 19 12.0517 19 10ZM19 10C19 5.03228 14.9677 1 10 1M19 10C19 5.03772 14.9623 1 10 1M10 1C5.03228 1 1 5.03228 1 10M10 1C5.03772 1 1 5.03772 1 10M1 10C1 12.219 1.80456 14.2514 3.13767 15.8211L2.8443 15.4357C1.69981 13.9321 1 12.0517 1 10ZM15.5874 15.4649L16.3423 16.3834C14.7149 18.0004 12.4734 19 10 19C7.5266 19 5.28509 18.0004 3.65771 16.3834L4.41257 15.4649C4.93562 14.8285 5.92528 14.3181 7.0935 13.9711C8.2347 13.6321 9.37138 13.5 10 13.5C10.6286 13.5 11.7653 13.6321 12.9065 13.9711C14.0747 14.3181 15.0644 14.8285 15.5874 15.4649ZM7.5 7.5C7.5 6.11228 8.61228 5 10 5C11.3877 5 12.5 6.11228 12.5 7.5C12.5 8.88772 11.3877 10 10 10C8.61228 10 7.5 8.88772 7.5 7.5Z"
+        android:strokeColor="?attr/colorControlNormal"
+        android:strokeWidth="2" />
+</vector>

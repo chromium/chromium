@@ -1,16 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_SCHEDULER_IMPL_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_SCHEDULER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/internal/background_service/scheduler/scheduler.h"
 
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/entry.h"
 
 namespace download {
@@ -33,6 +33,10 @@ class SchedulerImpl : public Scheduler {
   SchedulerImpl(TaskScheduler* task_scheduler,
                 Configuration* config,
                 const std::vector<DownloadClient>& clients);
+
+  SchedulerImpl(const SchedulerImpl&) = delete;
+  SchedulerImpl& operator=(const SchedulerImpl&) = delete;
+
   ~SchedulerImpl() override;
 
   // Scheduler implementation.
@@ -50,10 +54,10 @@ class SchedulerImpl : public Scheduler {
       const DeviceStatus& device_status);
 
   // Used to create platform dependent background tasks.
-  TaskScheduler* task_scheduler_;
+  raw_ptr<TaskScheduler> task_scheduler_;
 
   // Download service configuration.
-  Configuration* config_;
+  raw_ptr<Configuration> config_;
 
   // List of all download client id, used in round robin load balancing.
   // Downloads will be delivered to clients with incremental order based on
@@ -63,8 +67,6 @@ class SchedulerImpl : public Scheduler {
   // The index of the current client.
   // See |download_clients_|.
   size_t current_client_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerImpl);
 };
 
 }  // namespace download

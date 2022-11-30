@@ -50,15 +50,17 @@ void MatchedProperties::Trace(Visitor* visitor) const {
 
 void MatchResult::AddMatchedProperties(
     const CSSPropertyValueSet* properties,
-    unsigned link_match_type,
-    ValidPropertyFilter valid_property_filter) {
+    const AddMatchedPropertiesOptions& options) {
   matched_properties_.Grow(matched_properties_.size() + 1);
   MatchedProperties& new_properties = matched_properties_.back();
   new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);
-  new_properties.types_.link_match_type = link_match_type;
+  new_properties.types_.link_match_type = options.GetLinkMatchType();
   new_properties.types_.valid_property_filter =
       static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-          valid_property_filter);
+          options.GetValidPropertyFilter());
+  new_properties.types_.layer_order =
+      ClampTo<uint16_t>(options.GetLayerOrder());
+  new_properties.types_.is_inline_style = options.IsInlineStyle();
   new_properties.types_.origin = current_origin_;
   new_properties.types_.tree_order = current_tree_order_;
 }
@@ -70,6 +72,11 @@ void MatchResult::FinishAddingUARules() {
 
 void MatchResult::FinishAddingUserRules() {
   DCHECK_EQ(current_origin_, CascadeOrigin::kUser);
+  current_origin_ = CascadeOrigin::kAuthorPresentationalHint;
+}
+
+void MatchResult::FinishAddingPresentationalHints() {
+  DCHECK_EQ(current_origin_, CascadeOrigin::kAuthorPresentationalHint);
   current_origin_ = CascadeOrigin::kAuthor;
 }
 
@@ -80,19 +87,10 @@ void MatchResult::FinishAddingAuthorRulesForTreeScope(
   current_tree_order_ = base::ClampAdd(current_tree_order_, 1);
 }
 
-MatchedExpansionsRange MatchResult::Expansions(const Document& document,
-                                               CascadeFilter filter) const {
-  return MatchedExpansionsRange(
-      MatchedExpansionsIterator(matched_properties_.begin(), document, filter,
-                                0),
-      MatchedExpansionsIterator(matched_properties_.end(), document, filter,
-                                matched_properties_.size()));
-}
-
 void MatchResult::Reset() {
   matched_properties_.clear();
   is_cacheable_ = true;
-  depends_on_container_queries_ = false;
+  depends_on_size_container_queries_ = false;
   current_origin_ = CascadeOrigin::kUserAgent;
   current_tree_order_ = 0;
   tree_scopes_.clear();

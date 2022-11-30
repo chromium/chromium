@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,6 +12,10 @@ if (is_android) {
 
 source_set("power_save_blocker") {
   visibility = [
+    # Exo Wayland idle inhibit protocol needs to directly use the Ash
+    # PowerSaveBlocker.
+    "//components/exo/wayland",
+
     # //remoting runs in a separate process which is outside of the context of
     # the ServiceManager-based world. Instead of embedding a Service Manager
     # environment and Device Service in it, we allow the power save blocker to
@@ -36,32 +40,22 @@ source_set("power_save_blocker") {
     deps += [ ":jni_headers" ]
     public_deps += [ "//ui/android" ]
   } else if (is_chromeos_ash) {
-    sources += [ "power_save_blocker_chromeos.cc" ]
+    sources += [ "power_save_blocker_ash.cc" ]
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
     ]
   } else if ((is_linux || is_chromeos) && use_dbus) {
-    sources += [ "power_save_blocker_linux.cc" ]
+    if (is_chromeos_lacros) {
+      sources += [ "power_save_blocker_lacros.cc" ]
+    } else {
+      sources += [ "power_save_blocker_linux.cc" ]
+    }
     deps += [
       "//dbus",
+      "//ui/display",
       "//ui/gfx",
     ]
-    if (use_x11 || use_ozone) {
-      deps += [ "//ui/base:features" ]
-    }
-    if (use_x11) {
-      deps += [
-        "//ui/base/x:x",
-        "//ui/gfx/x",
-      ]
-    }
-    if (use_ozone) {
-      deps += [
-        "//ui/base:features",
-        "//ui/display:display",
-      ]
-    }
   } else if (is_mac) {
     sources += [ "power_save_blocker_mac.cc" ]
     frameworks = [
@@ -93,6 +87,6 @@ if (is_android) {
       "//services/device:*",
     ]
     sources = java_sources_needing_jni
-    deps = [ "//base:base_java" ]
+    deps = [ "//base:jni_java" ]
   }
 }

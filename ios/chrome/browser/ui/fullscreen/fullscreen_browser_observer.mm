@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,13 @@
 FullscreenBrowserObserver::FullscreenBrowserObserver(
     FullscreenWebStateListObserver* web_state_list_observer,
     Browser* browser)
-    : web_state_list_observer_(web_state_list_observer),
-      scoped_observer_(this) {
+    : web_state_list_observer_(web_state_list_observer) {
   DCHECK(web_state_list_observer_);
-  // TODO(crbug.com/790886): DCHECK |browser| once FullscreenController is fully
+  // TODO(crbug.com/790886): DCHECK `browser` once FullscreenController is fully
   // scoped to a Browser.
   if (browser) {
     web_state_list_observer_->SetWebStateList(browser->GetWebStateList());
-    scoped_observer_.Add(browser);
+    scoped_observation_.Observe(browser);
   }
 }
 
@@ -29,5 +28,6 @@ FullscreenBrowserObserver::~FullscreenBrowserObserver() = default;
 void FullscreenBrowserObserver::FullscreenBrowserObserver::BrowserDestroyed(
     Browser* browser) {
   web_state_list_observer_->SetWebStateList(nullptr);
-  scoped_observer_.Remove(browser);
+  DCHECK(scoped_observation_.IsObservingSource(browser));
+  scoped_observation_.Reset();
 }

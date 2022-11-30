@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -233,6 +233,7 @@ namespace networkingPrivate {
     DOMString? AnonymousIdentity;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     DOMString? Identity;
@@ -254,6 +255,7 @@ namespace networkingPrivate {
     ManagedDOMString? AnonymousIdentity;
     ManagedCertificatePattern? ClientCertPattern;
     ManagedDOMString? ClientCertPKCS11Id;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedDOMString? Identity;
@@ -316,6 +318,7 @@ namespace networkingPrivate {
     DOMString AuthenticationType;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     EAPProperties? EAP;
@@ -332,6 +335,7 @@ namespace networkingPrivate {
     ManagedDOMString AuthenticationType;
     ManagedCertificatePattern? ClientCertPattern;
     ManagedDOMString? ClientCertPKCS11Id;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedEAPProperties? EAP;
@@ -419,6 +423,7 @@ namespace networkingPrivate {
     DOMString? Cipher;
     DOMString? ClientCertPKCS11Id;
     CertificatePattern? ClientCertPattern;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     DOMString? CompLZO;
@@ -460,6 +465,7 @@ namespace networkingPrivate {
     ManagedDOMString? Cipher;
     ManagedDOMString? ClientCertPKCS11Id;
     ManagedCertificatePattern? ClientCertPattern;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedDOMString? CompLZO;
@@ -578,6 +584,8 @@ namespace networkingPrivate {
 
   dictionary CellularStateProperties {
     ActivationStateType? ActivationState;
+    DOMString? EID;
+    DOMString? ICCID;
     DOMString? NetworkTechnology;
     DOMString? RoamingState;
     boolean? Scanning;
@@ -786,42 +794,6 @@ namespace networkingPrivate {
 
     // Whether or not any managed networks are available/visible.
     boolean? ManagedNetworkAvailable;
-  };
-
-  dictionary VerificationProperties {
-    // A string containing a PEM-encoded (including the 'BEGIN CERTIFICATE'
-    // header and 'END CERTIFICATE' footer) X.509 certificate for use in
-    // verifying the signed data.
-    DOMString certificate;
-
-    // An array of PEM-encoded X.509 intermediate certificate authority
-    // certificates. Each PEM-encoded certificate is expected to have the
-    // 'BEGIN CERTIFICATE' header and 'END CERTIFICATE' footer.
-    DOMString[]? intermediateCertificates;
-
-    // A string containing a base64-encoded RSAPublicKey ASN.1 structure,
-    // representing the public key to be used by
-    // $(ref:verifyAndEncryptCredentials) and $(ref:verifyAndEncryptData)
-    // methods.
-    DOMString publicKey;
-
-    // A string containing a base64-encoded random binary data for use in
-    // verifying the signed data.
-    DOMString nonce;
-
-    // A string containing the identifying data string signed by the device.
-    DOMString signedData;
-
-    // A string containing the serial number of the device.
-    DOMString deviceSerial;
-
-    // A string containing the SSID of the device. Should be empty for new
-    // configurations.
-    DOMString deviceSsid;
-
-    // A string containing the BSSID of the device. Should be empty for new
-    // configurations.
-    DOMString deviceBssid;
   };
 
   dictionary NetworkFilter {
@@ -1048,51 +1020,6 @@ namespace networkingPrivate {
         DOMString networkGuid,
         optional DOMString carrier,
         optional VoidCallback callback);
-
-    // Verifies that the device is a trusted device.
-    // |properties|: Properties of the destination to use in verifying that it
-    //     is a trusted device.
-    // |callback|: A callback function that indicates whether or not the device
-    //     is a trusted device.
-    [nodoc, deprecated = "Use networking.castPrivate API."]
-    static void verifyDestination(VerificationProperties properties,
-                                  BooleanCallback callback);
-
-    // Verifies that the device is a trusted device and encrypts supplied
-    // data with device public key.
-    // |properties|: Properties of the destination to use in verifying that it
-    //     is a trusted device.
-    // |data|: A string containing the base64-encoded data to encrypt.
-    // |callback|: A callback function that receives base64-encoded encrypted
-    //     data to send to a trusted device.
-    [nodoc, deprecated = "Use networking.castPrivate API."]
-    static void verifyAndEncryptData(VerificationProperties properties,
-                                     DOMString data,
-                                     StringCallback callback);
-
-    // Deprecated. Enables TDLS for WiFi traffic with a specified peer if
-    // available. |ip_or_mac_address|: The IP or MAC address of the peer with
-    // which to
-    //     enable a TDLS connection.
-    // |enabled| If true, enable TDLS, otherwise disable TDLS.
-    // |callback|: A callback function that receives a string with an error or
-    //     the current TDLS status. 'Failed' indicates that the request failed
-    //     (e.g. MAC address lookup failed). 'Timeout' indicates that the lookup
-    //     timed out. Otherwise a valid status is returned (see
-    //     $(ref:getWifiTDLSStatus)).
-    [nodoc, deprecated]
-    static void setWifiTDLSEnabledState(DOMString ip_or_mac_address,
-                                        boolean enabled,
-                                        optional StringCallback callback);
-
-    // Deprecated. Returns the current TDLS status for the specified peer.
-    // |ip_or_mac_address|: The IP or MAC address of the peer.
-    // |callback|: A callback function that receives a string with the current
-    //     TDLS status which can be 'Connected', 'Disabled', 'Disconnected',
-    //     'Nonexistent', or 'Unknown'.
-    [nodoc, deprecated]
-    static void getWifiTDLSStatus(DOMString ip_or_mac_address,
-                                  StringCallback callback);
 
     // Returns captive portal status for the network matching 'networkGuid'.
     // |networkGuid|: The GUID of the network to get captive portal status for.

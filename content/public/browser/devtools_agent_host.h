@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,11 +39,13 @@ class DevToolsSocketFactory;
 class RenderFrameHost;
 class WebContents;
 class RenderProcessHost;
+class ServiceWorkerContext;
 
 // Describes interface for managing devtools agents from browser process.
 class CONTENT_EXPORT DevToolsAgentHost
     : public base::RefCounted<DevToolsAgentHost> {
  public:
+  static const char kTypeTab[];
   static const char kTypePage[];
   static const char kTypeFrame[];
   static const char kTypeDedicatedWorker[];
@@ -52,6 +54,7 @@ class CONTENT_EXPORT DevToolsAgentHost
   static const char kTypeBrowser[];
   static const char kTypeGuest[];
   static const char kTypeOther[];
+  static const char kTypeAuctionWorklet[];
 
   // Latest DevTools protocol version supported.
   static std::string GetProtocolVersion();
@@ -67,10 +70,22 @@ class CONTENT_EXPORT DevToolsAgentHost
   static scoped_refptr<DevToolsAgentHost> GetOrCreateFor(
       WebContents* web_contents);
 
+  // Similar to the above, but returns a DevToolsAgentHost representing 'tab'
+  // target. Unlike the one for RenderFrame, this will remain the same through
+  // all possible transitions of underlying frame trees.
+  static scoped_refptr<DevToolsAgentHost> GetOrCreateForTab(
+      WebContents* web_contents);
+
   // Returns true iff an instance of DevToolsAgentHost for the |web_contents|
   // exists. This is equivalent to if a DevToolsAgentHost has ever been
   // created for the |web_contents|.
   static bool HasFor(WebContents* web_contents);
+
+  // Return an instance of DevToolsAgentHost associated with the specified
+  // service worker version, if such instance exists.
+  static scoped_refptr<DevToolsAgentHost> GetForServiceWorker(
+      ServiceWorkerContext* context,
+      int64_t version_id);
 
   // Creates DevToolsAgentHost that communicates to the target by means of
   // provided |delegate|. |delegate| ownership is passed to the created agent

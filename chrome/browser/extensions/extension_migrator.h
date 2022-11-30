@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/external_loader.h"
 
 class Profile;
@@ -25,6 +25,9 @@ class ExtensionMigrator : public ExternalLoader {
                     const std::string& old_id,
                     const std::string& new_id);
 
+  ExtensionMigrator(const ExtensionMigrator&) = delete;
+  ExtensionMigrator& operator=(const ExtensionMigrator&) = delete;
+
  protected:
   ~ExtensionMigrator() override;
 
@@ -34,11 +37,9 @@ class ExtensionMigrator : public ExternalLoader {
  private:
   bool IsAppPresent(const std::string& app_id);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   const std::string old_id_;
   const std::string new_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMigrator);
 };
 
 }  // namespace extensions

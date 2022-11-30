@@ -1,18 +1,21 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync_file_system/local/local_file_sync_context.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
 #include "chrome/browser/sync_file_system/local/local_origin_change_observer.h"
@@ -27,7 +30,10 @@
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using storage::FileSystemContext;
@@ -87,7 +93,7 @@ void LocalFileSyncContext::MaybeInitializeFileSystemContext(
   // for writable way (even when MaybeInitializeFileSystemContext is called
   // from read-only OpenFileSystem), so open the filesystem with
   // CREATE_IF_NONEXISTENT here.
-  storage::FileSystemBackend::OpenFileSystemCallback open_filesystem_callback =
+  storage::FileSystemBackend::ResolveURLCallback open_filesystem_callback =
       base::BindOnce(
           &LocalFileSyncContext::InitializeFileSystemContextOnIOThread, this,
           source_url, base::RetainedRef(file_system_context));
@@ -95,7 +101,8 @@ void LocalFileSyncContext::MaybeInitializeFileSystemContext(
       FROM_HERE,
       base::BindOnce(&storage::SandboxFileSystemBackendDelegate::OpenFileSystem,
                      base::Unretained(file_system_context->sandbox_delegate()),
-                     url::Origin::Create(source_url),
+                     blink::StorageKey(url::Origin::Create(source_url)),
+                     /*bucket_locator=*/absl::nullopt,
                      storage::kFileSystemTypeSyncable,
                      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
                      std::move(open_filesystem_callback), GURL()));
@@ -386,7 +393,7 @@ void LocalFileSyncContext::DidRemoveExistingEntryForRemoteAddOrUpdate(
             local_path, url_for_sync, std::move(operation_callback));
       } else {
         FileSystemURL dir_url = file_system_context->CreateCrackedFileSystemURL(
-            url_for_sync.origin(), url_for_sync.mount_type(),
+            url_for_sync.storage_key(), url_for_sync.mount_type(),
             storage::VirtualPath::DirName(url_for_sync.virtual_path()));
         file_system_context->operation_runner()->CreateDirectory(
             dir_url, false /* exclusive */, true /* recursive */,
@@ -664,11 +671,10 @@ void LocalFileSyncContext::InitializeFileSystemContextOnIOThread(
   if (!operation_runner_) {
     DCHECK(!sync_status_);
     DCHECK(!timer_on_io_);
-    sync_status_.reset(new LocalFileSyncStatus);
-    timer_on_io_.reset(new base::OneShotTimer);
-    operation_runner_.reset(new SyncableFileOperationRunner(
-            kMaxConcurrentSyncableOperation,
-            sync_status_.get()));
+    sync_status_ = std::make_unique<LocalFileSyncStatus>();
+    timer_on_io_ = std::make_unique<base::OneShotTimer>();
+    operation_runner_ = std::make_unique<SyncableFileOperationRunner>(
+        kMaxConcurrentSyncableOperation, sync_status_.get());
     sync_status_->AddObserver(this);
   }
   backend->set_sync_context(this);
@@ -683,10 +689,9 @@ SyncStatusCode LocalFileSyncContext::InitializeChangeTrackerOnFileThread(
   DCHECK(file_system_context);
   DCHECK(tracker_ptr);
   DCHECK(origins_with_changes);
-  tracker_ptr->reset(new LocalFileChangeTracker(
-          file_system_context->partition_path(),
-          env_override_,
-          file_system_context->default_file_task_runner()));
+  *tracker_ptr = std::make_unique<LocalFileChangeTracker>(
+      file_system_context->partition_path(), env_override_,
+      file_system_context->default_file_task_runner());
   const SyncStatusCode status = (*tracker_ptr)->Initialize(file_system_context);
   if (status != SYNC_STATUS_OK)
     return status;
@@ -1042,8 +1047,8 @@ void LocalFileSyncContext::DidGetFileMetadata(
 
 base::TimeDelta LocalFileSyncContext::NotifyChangesDuration() {
   if (mock_notify_changes_duration_in_sec_ >= 0)
-    return base::TimeDelta::FromSeconds(mock_notify_changes_duration_in_sec_);
-  return base::TimeDelta::FromSeconds(kNotifyChangesDurationInSec);
+    return base::Seconds(mock_notify_changes_duration_in_sec_);
+  return base::Seconds(kNotifyChangesDurationInSec);
 }
 
 void LocalFileSyncContext::DidCreateDirectoryForCopyIn(

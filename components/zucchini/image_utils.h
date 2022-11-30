@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include <string>
 
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/typed_value.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -94,7 +93,7 @@ class ReferenceReader {
 
   // Returns the next available Reference, or nullopt_t if exhausted.
   // Extracted References must be ordered by their location in the image.
-  virtual base::Optional<Reference> GetNext() = 0;
+  virtual absl::optional<Reference> GetNext() = 0;
 };
 
 // Interface for writing References through member function
@@ -107,6 +106,56 @@ class ReferenceWriter {
   // Writes |reference| in the underlying image file. This operation always
   // succeeds.
   virtual void PutNext(Reference reference) = 0;
+};
+
+// References encoding may be quite complex in some architectures (e.g., ARM),
+// requiring bit-level manipulation. In general, bits in a reference body fall
+// under 2 categories:
+// * Operation bits: Instruction op code, conditionals, or structural data.
+// * Payload bits: Actual target data of the reference. These may be absolute,
+//   or be displacements relative to instruction pointer / program counter.
+// During patch application,
+//   Old reference bytes = {old operation, old payload},
+// is transformed to
+//   New reference bytes = {new operation, new payload}.
+// New image bytes are written by three sources:
+//   (1) Direct copy from old image to new image for matched blocks.
+//   (2) Bytewise diff correction.
+//   (3) Dedicated reference target correction.
+//
+// For references whose operation and payload bits are stored in easily
+// separable bytes (e.g., rel32 reference in X86), (2) can exclude payload bits.
+// So during patch application, (1) naively copies everything, (2) fixes
+// operation bytes only, and (3) fixes payload bytes only.
+//
+// For architectures with references whose operation and payload bits may mix
+// within shared bytes (e.g., ARM rel32), a dilemma arises:
+// * (2) cannot ignores shared bytes, since otherwise new operation bits would
+//   not properly transfer.
+// * Having (2) always overwrite these bytes would reduce the benefits of
+//   reference correction, since references are likely to change.
+//
+// Our solution applies a hybrid approach: For each matching old / new reference
+// pair, define:
+//   Mixed reference bytes = {new operation, old payload},
+//
+// During patch generation, we compute bytewise correction from old reference
+// bytes to the mixed reference bytes. So during patch application, (2) only
+// corrects operation bit changes (and skips if they don't change), and (3)
+// overwrites old payload bits to new payload bits.
+
+// Interface for mixed reference byte generation. This base class
+// serves as a stub. Architectures whose references store operation bits and
+// payload bits can share common bytes (e.g., ARM rel32) should override this.
+class ReferenceMixer {
+ public:
+  virtual ~ReferenceMixer() = default;
+
+  // Computes mixed reference bytes by combining (a) "payload bits" from an
+  // "old" reference at |old_offset| with (b) "operation bits" from a "new"
+  // reference at |new_offset|. Returns the result as ConstBufferView, which is
+  // valid only until the next call to Mix().
+  virtual ConstBufferView Mix(offset_t old_offset, offset_t new_offset) = 0;
 };
 
 // An Equivalence is a block of length |length| that approximately match in
@@ -150,7 +199,7 @@ enum ExecutableType : uint32_t {
   kExeTypeWin32X64 = ExeTypeToUint32("Px64"),
   kExeTypeElfX86 = ExeTypeToUint32("Ex86"),
   kExeTypeElfX64 = ExeTypeToUint32("Ex64"),
-  kExeTypeElfArm32 = ExeTypeToUint32("EA32"),
+  kExeTypeElfAArch32 = ExeTypeToUint32("EA32"),
   kExeTypeElfAArch64 = ExeTypeToUint32("EA64"),
   kExeTypeDex = ExeTypeToUint32("DEX "),
   kExeTypeZtf = ExeTypeToUint32("ZTF "),
@@ -163,7 +212,7 @@ constexpr ExecutableType CastToExecutableType(uint32_t possible_exe_type) {
     case kExeTypeWin32X64:    // Falls through.
     case kExeTypeElfX86:      // Falls through.
     case kExeTypeElfX64:      // Falls through.
-    case kExeTypeElfArm32:    // Falls through.
+    case kExeTypeElfAArch32:  // Falls through.
     case kExeTypeElfAArch64:  // Falls through.
     case kExeTypeDex:         // Falls through.
     case kExeTypeZtf:         // Falls through.
@@ -176,8 +225,8 @@ constexpr ExecutableType CastToExecutableType(uint32_t possible_exe_type) {
 
 inline std::string CastExecutableTypeToString(ExecutableType exe_type) {
   uint32_t v = static_cast<uint32_t>(exe_type);
-  char result[] = {v & 0xFF, (v >> 8) & 0xFF, (v >> 16) & 0xFF,
-                   (v >> 24) & 0xFF, 0};
+  char result[] = {static_cast<char>(v), static_cast<char>(v >> 8),
+                   static_cast<char>(v >> 16), static_cast<char>(v >> 24), 0};
   return result;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "google_apis/gcm/base/gcm_export.h"
 
@@ -64,6 +63,9 @@ class GCM_EXPORT MCSMessage {
     Core(uint8_t tag,
          std::unique_ptr<const google::protobuf::MessageLite> protobuf);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     const google::protobuf::MessageLite& Get() const;
 
    private:
@@ -72,8 +74,6 @@ class GCM_EXPORT MCSMessage {
 
     // The immutable protobuf.
     std::unique_ptr<const google::protobuf::MessageLite> protobuf_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // These are cached separately to avoid having to recompute them.

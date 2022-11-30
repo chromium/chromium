@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
+#include "base/android/build_info.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
@@ -100,9 +100,18 @@ sk_sp<GrVkSecondaryCBDrawContext> CreateDrawContext(
       .fFormat = params->format,
       .fDrawBounds = &draw_bounds,
   };
-  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  return GrVkSecondaryCBDrawContext::Make(gr_context, info, drawable_info,
-                                          &props);
+  SkSurfaceProps props{0, kUnknown_SkPixelGeometry};
+  sk_sp<GrVkSecondaryCBDrawContext> context =
+      GrVkSecondaryCBDrawContext::Make(gr_context, info, drawable_info, &props);
+  LOG_IF(FATAL, !context)
+      << "Failed GrVkSecondaryCBDrawContext::Make"
+      << " fSecondaryCommandBuffer:" << params->secondary_command_buffer
+      << " fColorAttachmentIndex:" << params->color_attachment_index
+      << " fCompatibleRenderPass:" << params->compatible_render_pass
+      << " fFormat:" << params->format << " width:" << params->width
+      << " height:" << params->height
+      << " is_srgb:" << (color_space == SkColorSpace::MakeSRGB());
+  return context;
 }
 
 OverlaysParams::Mode GetOverlaysMode(AwDrawFnOverlaysMode mode) {
@@ -130,10 +139,10 @@ HardwareRendererDrawParams CreateHRDrawParams(T* params,
   if (color_space)
     hr_params.color_space = gfx::ColorSpace(*color_space);
 
-  static_assert(base::size(decltype(params->transform){}) ==
-                    base::size(hr_params.transform),
+  static_assert(std::size(decltype(params->transform){}) ==
+                    std::size(hr_params.transform),
                 "transform size mismatch");
-  for (size_t i = 0; i < base::size(hr_params.transform); ++i) {
+  for (size_t i = 0; i < std::size(hr_params.transform); ++i) {
     hr_params.transform[i] = params->transform[i];
   }
 
@@ -244,7 +253,7 @@ void AwDrawFnImpl::OnContextDestroyed() {
     RenderThreadManager::InsideHardwareReleaseReset release_reset(
         &render_thread_manager_);
     render_thread_manager_.DestroyHardwareRendererOnRT(
-        false /* save_restore */);
+        false /* save_restore */, false /* abandon_context */);
   }
 
   interop_.reset();
@@ -279,6 +288,17 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
   if (!vulkan_context_provider_)
     return;
 
+  // Android HWUI has a bug that asks functor to draw into a 8-bit mask for
+  // functionality that is not related to and not needed by webview.
+  // GrVkSecondaryCBDrawContext currently does not expect or support R8 format
+  // so just skip these draw calls before Android side is fixed.
+  if (params->format == VK_FORMAT_R8_UNORM &&
+      base::android::BuildInfo::GetInstance()->sdk_int() ==
+          base::android::SDK_VERSION_S) {
+    skip_next_post_draw_vk_ = true;
+    return;
+  }
+
   auto color_space = CreateColorSpace(params);
   if (!color_space) {
     // If we weren't passed a valid colorspace, default to sRGB.
@@ -305,6 +325,11 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
 void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
   if (!vulkan_context_provider_)
     return;
+
+  if (skip_next_post_draw_vk_) {
+    skip_next_post_draw_vk_ = false;
+    return;
+  }
 
   if (is_interop_mode_) {
     DCHECK(interop_);

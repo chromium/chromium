@@ -1,31 +1,35 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_password_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/login_types.h"
-#include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
@@ -33,9 +37,11 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -55,8 +61,7 @@ namespace {
 // tooltip.
 const int kDelayBeforeShowingTooltipMs = 500;
 
-// External padding on the password row and submit button, used for the focus
-// ring.
+// External padding on the submit button, used for the focus ring.
 constexpr const int kBorderForFocusRingDp = 3;
 
 // Spacing between the icons (easy unlock, caps lock, display password) and the
@@ -66,7 +71,7 @@ constexpr const int kInternalHorizontalPaddingPasswordRowDp = 6;
 
 // Spacing between the password row and the submit button.
 constexpr int kSpacingBetweenPasswordRowAndSubmitButtonDp =
-    8 - 2 * kBorderForFocusRingDp;
+    8 - kBorderForFocusRingDp;
 
 // Size (width/height) of the submit button.
 constexpr int kSubmitButtonContentSizeDp = 32;
@@ -82,7 +87,7 @@ constexpr int kLeftPaddingPasswordView =
 
 // Width of the password row, placed at the center of the password view
 // (which also contains the submit button).
-constexpr int kPasswordRowWidthDp = 204 + 2 * kBorderForFocusRingDp;
+constexpr int kPasswordRowWidthDp = 204 + kBorderForFocusRingDp;
 
 // Total width of the password view (left margin + password row + spacing +
 // submit button).
@@ -127,24 +132,19 @@ constexpr const int kPasswordTextfieldMarginDp = 2;
 
 constexpr const int kPasswordRowCornerRadiusDp = 4;
 
-constexpr const int kPasswordRowFocusRingRadiusDp = 6;
-
 // Delay after which the password gets cleared if nothing has been typed. It is
-// only effective if the display password button is shown, as there is no
+// only running if the display password button is shown, as there is no
 // potential security threat otherwise.
-constexpr base::TimeDelta kClearPasswordAfterDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kClearPasswordAfterDelay = base::Seconds(30);
 
 // Delay after which the password gets back to hidden state, for security.
-constexpr base::TimeDelta kHidePasswordAfterDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
 
 constexpr const char kLoginPasswordViewName[] = "LoginPasswordView";
 
 struct FrameParams {
   FrameParams(int duration_in_ms, float opacity_param)
-      : duration(base::TimeDelta::FromMilliseconds(duration_in_ms)),
-        opacity(opacity_param) {}
+      : duration(base::Milliseconds(duration_in_ms)), opacity(opacity_param) {}
 
   base::TimeDelta duration;
   float opacity;
@@ -203,24 +203,16 @@ class AnimationWillRepeatObserver : public ui::LayerAnimationObserver {
 // and indicators (easy unlock, display password, caps lock enabled).
 class LoginPasswordView::LoginPasswordRow : public views::View {
  public:
-  LoginPasswordRow() : focus_ring_(views::FocusRing::Install(this)) {
-    focus_ring_->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
-    views::InstallRoundRectHighlightPathGenerator(
-        this, gfx::Insets(), kPasswordRowFocusRingRadiusDp);
-
-    focus_ring_->SetHasFocusPredicate([](View* view) {
-      return static_cast<LoginPasswordRow*>(view)->is_highlighted_;
-    });
-
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderForFocusRingDp)));
+  explicit LoginPasswordRow(const LoginPalette& palette) {
+    UpdatePalette(palette);
   }
+
   ~LoginPasswordRow() override = default;
   LoginPasswordRow(const LoginPasswordRow&) = delete;
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
 
-  void SetHighlight(bool enabled) {
-    is_highlighted_ = enabled;
-    focus_ring_->SchedulePaint();
+  void UpdatePalette(const LoginPalette& palette) {
+    color_ = palette.password_row_background_color;
   }
 
   // views::View:
@@ -229,15 +221,13 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    flags.setColor(color_);
     canvas->DrawRoundRect(GetContentsBounds(), kPasswordRowCornerRadiusDp,
                           flags);
   }
 
  private:
-  bool is_highlighted_ = false;
-  views::FocusRing* focus_ring_;
+  SkColor color_;
 };
 
 // A textfield that selects all text on focus and allows to switch between
@@ -246,8 +236,7 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
  public:
   LoginTextfield(const LoginPalette& palette,
                  base::RepeatingClosure on_focus_closure,
-                 base::RepeatingClosure on_blur_closure,
-                 base::RepeatingClosure on_tab_focus_closure)
+                 base::RepeatingClosure on_blur_closure)
       : on_focus_closure_(std::move(on_focus_closure)),
         on_blur_closure_(std::move(on_blur_closure)) {
     SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
@@ -256,6 +245,11 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     SetObscuredGlyphSpacing(kPasswordGlyphSpacing);
     SetBorder(nullptr);
     UpdatePalette(palette);
+
+    // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+    // able to submit accessibility checks, but this focusable View needs to
+    // add a name so that the screen reader knows what to announce.
+    SetProperty(views::kSkipAccessibilityPaintChecks, true);
   }
   LoginTextfield(const LoginTextfield&) = delete;
   LoginTextfield& operator=(const LoginTextfield&) = delete;
@@ -276,9 +270,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
-    if (on_tab_focus_closure_)
-      on_tab_focus_closure_.Run();
-
     if (!GetText().empty())
       SelectAll(/*reversed=*/false);
   }
@@ -287,17 +278,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     SetFontList(GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD
                     ? font_list_hidden_
                     : font_list_visible_);
-  }
-
-  // Switches between normal input and password input when the user hits the
-  // display password button.
-  void InvertTextInputType() {
-    if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)
-      SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-    else
-      SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
-
-    UpdateFontListAndCursor();
   }
 
   // This is useful when the display password button is not shown. In such a
@@ -309,8 +289,7 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   void UpdatePalette(const LoginPalette& palette) {
     SetTextColor(palette.password_text_color);
     SetBackgroundColor(palette.password_background_color);
-    set_placeholder_text_color(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    set_placeholder_text_color(palette.password_placeholder_text_color);
   }
 
  private:
@@ -341,6 +320,10 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   EasyUnlockIcon() : views::ImageButton(PressedCallback()) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
+
+  EasyUnlockIcon(const EasyUnlockIcon&) = delete;
+  EasyUnlockIcon& operator=(const EasyUnlockIcon&) = delete;
+
   ~EasyUnlockIcon() override = default;
 
   void Init(const OnEasyUnlockIconHovered& on_hovered,
@@ -356,10 +339,10 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
                   base::Unretained(this)));
   }
 
-  void SetEasyUnlockIcon(EasyUnlockIconId icon_id,
+  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
                          const std::u16string& accessibility_label) {
-    icon_id_ = icon_id;
-    UpdateImage(icon_id);
+    icon_state_ = icon_state;
+    UpdateImage(icon_state);
     SetAccessibleName(accessibility_label);
   }
 
@@ -368,7 +351,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    UpdateImage(icon_id_);
+    UpdateImage(icon_state_);
   }
 
   // views::Button:
@@ -382,10 +365,9 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
       if (immediately_hover_for_test_) {
         on_hovered_.Run();
       } else {
-        invoke_hover_.Start(
-            FROM_HERE,
-            base::TimeDelta::FromMilliseconds(kDelayBeforeShowingTooltipMs),
-            on_hovered_);
+        invoke_hover_.Start(FROM_HERE,
+                            base::Milliseconds(kDelayBeforeShowingTooltipMs),
+                            on_hovered_);
       }
     }
   }
@@ -396,8 +378,8 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
                        : ButtonState::STATE_NORMAL);
   }
 
-  void UpdateImage(EasyUnlockIconId icon_id) {
-    // If the icon state changes from EasyUnlockIconId::SPINNER to something
+  void UpdateImage(EasyUnlockIconState icon_state) {
+    // If the icon state changes from EasyUnlockIconState::SPINNER to something
     // else, we need to abort the current opacity animation and set back the
     // opacity to 100%. This can be done by destroying the layer that we do not
     // use anymore.
@@ -409,38 +391,38 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
     SkColor color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorPrimary);
 
-    switch (icon_id) {
-      case EasyUnlockIconId::NONE:
+    switch (icon_state) {
+      case EasyUnlockIconState::NONE:
         // The easy unlock icon will be set to invisible. Do nothing.
         break;
-      case EasyUnlockIconId::HARDLOCKED:
+      case EasyUnlockIconState::HARDLOCKED:
         color = color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorProminent);
         break;
-      case EasyUnlockIconId::LOCKED:
+      case EasyUnlockIconState::LOCKED:
         // This is the default case in terms of icon and color.
         break;
-      case EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED:
-        color = AshColorProvider::GetDisabledColor(
-            color_provider->GetContentLayerColor(
+      case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
+        color =
+            ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary));
         break;
-      case EasyUnlockIconId::LOCKED_WITH_PROXIMITY_HINT:
+      case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
         color = color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorWarning);
         break;
-      case EasyUnlockIconId::UNLOCKED:
+      case EasyUnlockIconState::UNLOCKED:
         icon = &kLockScreenEasyUnlockOpenIcon;
         color = color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPositive);
         break;
-      case EasyUnlockIconId::SPINNER: {
+      case EasyUnlockIconState::SPINNER: {
         SetPaintToLayer();
         layer()->SetFillsBoundsOpaquely(false);
         std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
             std::make_unique<ui::LayerAnimationSequence>();
         opacity_sequence->set_is_repeating(true);
-        for (size_t i = 0; i < base::size(kSpinnerFramesParams); ++i) {
+        for (size_t i = 0; i < std::size(kSpinnerFramesParams); ++i) {
           opacity_sequence->AddElement(
               ui::LayerAnimationElement::CreateOpacityElement(
                   kSpinnerFramesParams[i].opacity,
@@ -471,9 +453,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   // run immediately.
   bool immediately_hover_for_test_ = false;
 
-  EasyUnlockIconId icon_id_ = EasyUnlockIconId::LOCKED;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockIcon);
+  EasyUnlockIconState icon_state_ = EasyUnlockIconState::LOCKED;
 };
 
 class LoginPasswordView::DisplayPasswordButton
@@ -489,7 +469,7 @@ class LoginPasswordView::DisplayPasswordButton
         IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
-    focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
     SetEnabled(false);
   }
@@ -498,28 +478,19 @@ class LoginPasswordView::DisplayPasswordButton
   DisplayPasswordButton& operator=(const DisplayPasswordButton&) = delete;
   ~DisplayPasswordButton() override = default;
 
-  // This should be done automatically per ToggleImageButton.
-  void InvertToggled() {
-    toggled_ = !toggled_;
-    SetToggled(toggled_);
-  }
-
   void UpdateIcons(const LoginPalette& palette) {
     auto color = palette.button_enabled_color;
-    const gfx::ImageSkia invisible_icon = gfx::CreateVectorIcon(
-        kLockScreenPasswordInvisibleIcon, kIconSizeDp, color);
-    const gfx::ImageSkia visible_icon = gfx::CreateVectorIcon(
-        kLockScreenPasswordVisibleIcon, kIconSizeDp, color);
-    const gfx::ImageSkia visible_icon_disabled =
-        gfx::CreateVectorIcon(kLockScreenPasswordVisibleIcon, kIconSizeDp,
-                              AshColorProvider::GetDisabledColor(color));
-    SetImage(views::Button::STATE_NORMAL, visible_icon);
-    SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
-    SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
+    const ui::ImageModel invisible_icon = ui::ImageModel::FromVectorIcon(
+        kLockScreenPasswordInvisibleIcon, color, kIconSizeDp);
+    const ui::ImageModel visible_icon = ui::ImageModel::FromVectorIcon(
+        kLockScreenPasswordVisibleIcon, color, kIconSizeDp);
+    const ui::ImageModel visible_icon_disabled = ui::ImageModel::FromVectorIcon(
+        kLockScreenPasswordVisibleIcon, ColorUtil::GetDisabledColor(color),
+        kIconSizeDp);
+    SetImageModel(views::Button::STATE_NORMAL, visible_icon);
+    SetImageModel(views::Button::STATE_DISABLED, visible_icon_disabled);
+    SetToggledImageModel(views::Button::STATE_NORMAL, invisible_icon);
   }
-
- private:
-  bool toggled_ = false;
 };
 
 // A container view that either shows the easy unlock icon or the caps lock
@@ -553,7 +524,7 @@ class LoginPasswordView::AlternateIconsView : public views::View {
     // the layer animator or the observer is destroyed.
     opacity_sequence->AddObserver(observer_.get());
     opacity_sequence->set_is_repeating(true);
-    for (size_t i = 0; i < base::size(kAlternateFramesParams); ++i) {
+    for (size_t i = 0; i < std::size(kAlternateFramesParams); ++i) {
       opacity_sequence->AddElement(
           ui::LayerAnimationElement::CreateOpacityElement(
               kAlternateFramesParams[i].opacity,
@@ -610,8 +581,15 @@ void LoginPasswordView::TestApi::set_immediately_hover_easy_unlock_icon() {
 }
 
 LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
-    : clear_password_timer_(std::make_unique<base::RetainingOneShotTimer>()),
-      hide_password_timer_(std::make_unique<base::RetainingOneShotTimer>()),
+    : clear_password_timer_(FROM_HERE,
+                            kClearPasswordAfterDelay,
+                            base::BindRepeating(&LoginPasswordView::Reset,
+                                                base::Unretained(this))),
+      hide_password_timer_(FROM_HERE,
+                           kHidePasswordAfterDelay,
+                           base::BindRepeating(&LoginPasswordView::HidePassword,
+                                               base::Unretained(this),
+                                               /*chromevox_exception=*/true)),
       palette_(palette) {
   Shell::Get()->ime_controller()->AddObserver(this);
 
@@ -619,20 +597,37 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
   // right.
   auto* root_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kLeftPaddingPasswordView, 0, 0),
+      gfx::Insets::TLBR(0, kLeftPaddingPasswordView, 0, 0),
       kSpacingBetweenPasswordRowAndSubmitButtonDp));
   root_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
 
-  password_row_ = AddChildView(std::make_unique<LoginPasswordRow>());
+  auto* password_row_container =
+      AddChildView(std::make_unique<NonAccessibleView>());
+  // The password row should have the same visible height than the submit
+  // button. Since the login password view has the same height than the submit
+  // button – border included – we need to remove its border.
+  auto* password_row_container_layout =
+      password_row_container->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical,
+              gfx::Insets::VH(kBorderForFocusRingDp, 0)));
+  password_row_container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+
+  password_row_ = password_row_container->AddChildView(
+      std::make_unique<LoginPasswordRow>(palette));
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kInternalHorizontalPaddingPasswordRowDp),
+      gfx::Insets::VH(0, kInternalHorizontalPaddingPasswordRowDp),
       kHorizontalSpacingBetweenIconsAndTextfieldDp);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   auto* layout_ptr = password_row_->SetLayoutManager(std::move(layout));
+
+  // Make the password row fill the view.
+  password_row_container_layout->SetFlexForView(password_row_, 1);
 
   left_icon_ =
       password_row_->AddChildView(std::make_unique<AlternateIconsView>());
@@ -651,7 +646,7 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       password_row_->AddChildView(std::make_unique<NonAccessibleView>());
   textfield_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kPasswordTextfieldMarginDp)));
+      gfx::Insets::VH(0, kPasswordTextfieldMarginDp)));
 
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.
@@ -661,11 +656,8 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
           // Highlight on focus. Remove highlight on blur.
           base::BindRepeating(&LoginPasswordView::SetCapsLockHighlighted,
                               base::Unretained(this), /*highlight=*/true),
-          base::BindRepeating(
-              &LoginPasswordView::RemoveHighlightFromCapsLockAndRow,
-              base::Unretained(this)),
-          base::BindRepeating(&LoginPasswordView::SetPasswordRowHighlighted,
-                              base::Unretained(this), /*highlight=*/true)));
+          base::BindRepeating(&LoginPasswordView::SetCapsLockHighlighted,
+                              base::Unretained(this), /*highlight=*/false)));
   textfield_->set_controller(this);
 
   layout_ptr->SetFlexForView(textfield_container, 1);
@@ -682,6 +674,8 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       base::BindRepeating(&LoginPasswordView::SubmitPassword,
                           base::Unretained(this)),
       kSubmitButtonContentSizeDp));
+  submit_button_->SetBackgroundColor(palette.submit_button_background_color);
+  submit_button_->SetIconColor(palette.submit_button_icon_color);
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetAccessibleName(
@@ -724,13 +718,18 @@ void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
 }
 
 void LoginPasswordView::SetEasyUnlockIcon(
-    EasyUnlockIconId id,
+    EasyUnlockIconState icon_state,
     const std::u16string& accessibility_label) {
-  // Update icon.
-  easy_unlock_icon_->SetEasyUnlockIcon(id, accessibility_label);
+  // Do not update EasyUnlockIconState if the Smart Lock revamp is enabled since
+  // it will be removed post launch.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
 
-  // Update icon visiblity.
-  bool has_icon = id != EasyUnlockIconId::NONE;
+  // Update icon.
+  easy_unlock_icon_->SetEasyUnlockIcon(icon_state, accessibility_label);
+
+  // Update icon visibility.
+  bool has_icon = icon_state != EasyUnlockIconState::NONE;
   // We do not want to schedule a new animation when the user switches from an
   // account to another.
   if (should_show_easy_unlock_ == has_icon)
@@ -751,25 +750,13 @@ void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
 void LoginPasswordView::SetDisplayPasswordButtonVisible(bool visible) {
   display_password_button_->SetVisible(visible);
   // Only start the timer if the display password button is enabled.
-  if (visible) {
-    clear_password_timer_->Start(
-        FROM_HERE, kClearPasswordAfterDelay,
-        base::BindRepeating(&LoginPasswordView::Clear, base::Unretained(this)));
-  }
+  if (visible)
+    clear_password_timer_.Reset();
 }
 
 void LoginPasswordView::Reset() {
-  Clear();
-
-  // A user could hit the display button, then quickly switch account and
-  // type; we want the password to be hidden in such a case.
-  HidePassword(false /*chromevox_exception*/);
-}
-
-void LoginPasswordView::Clear() {
+  HidePassword(/*chromevox_exception=*/false);
   textfield_->SetText(std::u16string());
-  // For security reasons, we also want to clear the edit history if the Clear
-  // function is invoked by the clear password timer.
   textfield_->ClearEditHistory();
   // |ContentsChanged| won't be called by |Textfield| if the text is changed
   // by |Textfield::SetText()|.
@@ -810,6 +797,10 @@ void LoginPasswordView::SetReadOnly(bool read_only) {
   UpdateUiState();
 }
 
+bool LoginPasswordView::IsReadOnly() const {
+  return textfield_->GetReadOnly();
+}
+
 const char* LoginPasswordView::GetClassName() const {
   return kLoginPasswordViewName;
 }
@@ -835,13 +826,14 @@ bool LoginPasswordView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void LoginPasswordView::InvertPasswordDisplayingState() {
-  display_password_button_->InvertToggled();
-  textfield_->InvertTextInputType();
-  hide_password_timer_->Start(
-      FROM_HERE, kHidePasswordAfterDelay,
-      base::BindRepeating(&LoginPasswordView::HidePassword,
-                          base::Unretained(this),
-                          true /*chromevox_exception*/));
+  if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
+    display_password_button_->SetToggled(true);
+    textfield_->UpdateFontListAndCursor();
+    hide_password_timer_.Reset();
+  } else {
+    HidePassword(/*chromevox_exception=*/false);
+  }
 }
 
 void LoginPasswordView::HidePassword(bool chromevox_exception) {
@@ -849,8 +841,9 @@ void LoginPasswordView::HidePassword(bool chromevox_exception) {
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return;
   }
-  if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)
-    InvertPasswordDisplayingState();
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  display_password_button_->SetToggled(false);
+  textfield_->UpdateFontListAndCursor();
 }
 
 void LoginPasswordView::ContentsChanged(views::Textfield* sender,
@@ -862,11 +855,11 @@ void LoginPasswordView::ContentsChanged(views::Textfield* sender,
 
   // If the password is currently revealed.
   if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)
-    hide_password_timer_->Reset();
+    hide_password_timer_.Reset();
 
   // The display password button could be hidden by user policy.
   if (display_password_button_->GetVisible())
-    clear_password_timer_->Reset();
+    clear_password_timer_.Reset();
 }
 
 // Implements swapping active user with arrow keys
@@ -910,6 +903,12 @@ void LoginPasswordView::UpdateUiState() {
 void LoginPasswordView::OnCapsLockChanged(bool enabled) {
   should_show_capslock_ = enabled;
   HandleLeftIconsVisibilities(true /*handling_capslock*/);
+}
+
+void LoginPasswordView::OnImplicitAnimationsCompleted() {
+  Reset();
+  SetVisible(false);
+  StopObservingImplicitAnimations();
 }
 
 bool LoginPasswordView::IsPasswordSubmittable() {
@@ -962,26 +961,24 @@ void LoginPasswordView::SubmitPassword() {
 void LoginPasswordView::UpdatePalette(const LoginPalette& palette) {
   palette_ = palette;
   SetCapsLockHighlighted(is_capslock_higlight_);
+  password_row_->UpdatePalette(palette);
   textfield_->UpdatePalette(palette);
   display_password_button_->UpdateIcons(palette);
+
+  // Submit button does not have palette support, explicitly update colors.
+  submit_button_->SetBackgroundColor(palette.submit_button_background_color);
+  submit_button_->SetIconColor(palette.submit_button_icon_color);
+  // Setting color does not apply them immediately, trigger theme changed event.
+  submit_button_->OnThemeChanged();
 }
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
   is_capslock_higlight_ = highlight;
   SkColor color = palette_.button_enabled_color;
   if (!highlight)
-    color = AshColorProvider::GetDisabledColor(color);
+    color = ColorUtil::GetDisabledColor(color);
   capslock_icon_->SetImage(
       gfx::CreateVectorIcon(kLockScreenCapsLockIcon, kIconSizeDp, color));
-}
-
-void LoginPasswordView::SetPasswordRowHighlighted(bool highlight) {
-  password_row_->SetHighlight(highlight);
-}
-
-void LoginPasswordView::RemoveHighlightFromCapsLockAndRow() {
-  SetCapsLockHighlighted(false);
-  SetPasswordRowHighlighted(false);
 }
 
 }  // namespace ash

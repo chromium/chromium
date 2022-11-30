@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>HTML>Parser"
-}
+mixins: "//third_party/blink/renderer/core/html/parser/COMMON_METADATA"
 
-team_email: "loading-dev@chromium.org"

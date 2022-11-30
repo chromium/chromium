@@ -1,18 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_PEPPER_V8OBJECT_VAR_H_
 #define CONTENT_RENDERER_PEPPER_V8OBJECT_VAR_H_
 
-#include <string>
-
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace content {
 class PepperPluginInstanceImpl;
@@ -32,6 +29,9 @@ namespace ppapi {
 class CONTENT_EXPORT V8ObjectVar : public Var {
  public:
   V8ObjectVar(PP_Instance instance, v8::Local<v8::Object> v8_object);
+
+  V8ObjectVar(const V8ObjectVar&) = delete;
+  V8ObjectVar& operator=(const V8ObjectVar&) = delete;
 
   // Var overrides.
   V8ObjectVar* AsV8ObjectVar() override;
@@ -58,8 +58,6 @@ class CONTENT_EXPORT V8ObjectVar : public Var {
   content::PepperPluginInstanceImpl* instance_;
 
   v8::Persistent<v8::Object> v8_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8ObjectVar);
 };
 
 }  // ppapi

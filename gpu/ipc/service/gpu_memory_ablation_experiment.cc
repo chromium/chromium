@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,14 @@
 
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "components/viz/common/features.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -32,15 +30,17 @@ namespace gpu {
 
 // Main feature flag to control the entire experiment, encompassing bot CPU and
 // GPU ablations.
-const base::Feature kGPUMemoryAblationFeature{
-    "GPUMemoryAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kGPUMemoryAblationFeature,
+             "GPUMemoryAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Field Trial Parameter that defines the size of memory allocations.
 const char kGPUMemoryAblationFeatureSizeParam[] = "Size";
 
 // Image allocation parameters.
-constexpr viz::ResourceFormat kFormat = viz::ResourceFormat::RGBA_8888;
-constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_DISPLAY;
+constexpr viz::SharedImageFormat kFormat =
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_DISPLAY_READ;
 
 bool GpuMemoryAblationExperiment::ExperimentSupported() {
   if (!base::FeatureList::IsEnabled(kGPUMemoryAblationFeature))
@@ -113,23 +113,17 @@ uint64_t GpuMemoryAblationExperiment::GetPeakMemory(
   auto it = sequences_.find(sequence_num);
   if (it == sequences_.end())
     return 0u;
-
-  return it->second.peak_memory_;
+  return it->second;
 }
 
 void GpuMemoryAblationExperiment::StartSequence(uint32_t sequence_num) {
-  sequences_.emplace(sequence_num, SequenceTracker());
+  sequences_.emplace(sequence_num, 0u);
 }
 
 void GpuMemoryAblationExperiment::StopSequence(uint32_t sequence_num) {
   auto it = sequences_.find(sequence_num);
   if (it == sequences_.end())
     return;
-
-  TRACE_EVENT_INSTANT2("gpu.memory", "Memory.GPU.PeakMemoryUsage.AblationTimes",
-                       TRACE_EVENT_SCOPE_THREAD, "alloc",
-                       it->second.allocs_.InMilliseconds(), "dealloc",
-                       it->second.deallocs_.InMilliseconds());
 
   sequences_.erase(it);
 }
@@ -141,7 +135,6 @@ void GpuMemoryAblationExperiment::AllocateGpuMemory() {
       ScopedMakeContextCurrent();
   if (!scoped_current)
     return;
-  base::Time start = base::Time::Now();
 
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -163,19 +156,14 @@ void GpuMemoryAblationExperiment::AllocateGpuMemory() {
     return;
 
   auto* canvas = write_access->surface()->getCanvas();
-  canvas->clear(SK_ColorWHITE);
+  canvas->clear(SkColors::kWhite);
 
   mailboxes_.push_back(mailbox);
-
-  base::TimeDelta delta = base::Time::Now() - start;
-  for (auto& it : sequences_)
-    it.second.allocs_ += delta;
 }
 
 void GpuMemoryAblationExperiment::DeleteGpuMemory() {
   if (mailboxes_.empty())
     return;
-  base::Time start = base::Time::Now();
 
   auto mailbox = mailboxes_.front();
   // We can't successfully destroy the image if we cannot get the context,
@@ -190,10 +178,6 @@ void GpuMemoryAblationExperiment::DeleteGpuMemory() {
     factory_->DestroySharedImage(mailbox);
 
   mailboxes_.erase(mailboxes_.begin());
-
-  base::TimeDelta delta = base::Time::Now() - start;
-  for (auto& it : sequences_)
-    it.second.deallocs_ += delta;
 }
 
 bool GpuMemoryAblationExperiment::InitGpu(GpuChannelManager* channel_manager) {
@@ -223,10 +207,9 @@ bool GpuMemoryAblationExperiment::InitGpu(GpuChannelManager* channel_manager) {
       channel_manager->gpu_preferences(),
       channel_manager->gpu_driver_bug_workarounds(),
       channel_manager->gpu_feature_info(), context_state_.get(),
-      channel_manager->mailbox_manager(),
       channel_manager->shared_image_manager(),
       gmb_factory ? gmb_factory->AsImageFactory() : nullptr, this,
-      features::IsUsingSkiaRenderer());
+      /*is_for_display_compositor=*/false);
 
   rep_factory_ = std::make_unique<SharedImageRepresentationFactory>(
       channel_manager->shared_image_manager(), this);
@@ -248,8 +231,8 @@ void GpuMemoryAblationExperiment::TrackMemoryAllocatedChange(int64_t delta) {
   DCHECK(delta >= 0 || gpu_allocation_size_ >= static_cast<uint64_t>(-delta));
   gpu_allocation_size_ += delta;
   for (auto& it : sequences_) {
-    if (gpu_allocation_size_ > it.second.peak_memory_)
-      it.second.peak_memory_ = gpu_allocation_size_;
+    if (gpu_allocation_size_ > it.second)
+      it.second = gpu_allocation_size_;
   }
 }
 

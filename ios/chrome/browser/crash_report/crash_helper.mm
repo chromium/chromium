@@ -1,37 +1,44 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 
 #import <UIKit/UIKit.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <sys/sysctl.h>
+#import <stddef.h>
+#import <stdint.h>
+#import <sys/stat.h>
+#import <sys/sysctl.h>
 
-#include "base/auto_reset.h"
-#include "base/bind.h"
-#include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "components/crash/core/app/crashpad.h"
-#include "components/crash/core/common/crash_key.h"
-#include "components/crash/core/common/reporter_running_ios.h"
-#include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/crash_report/chrome_crash_reporter_client.h"
+#import "base/auto_reset.h"
+#import "base/bind.h"
+#import "base/debug/crash_logging.h"
+#import "base/feature_list.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/ios/ios_util.h"
+#import "base/location.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "base/time/time.h"
+#import "components/crash/core/app/crashpad.h"
+#import "components/crash/core/common/crash_key.h"
+#import "components/crash/core/common/reporter_running_ios.h"
+#import "components/previous_session_info/previous_session_info.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
-#include "ios/chrome/browser/crash_report/features.h"
+#import "ios/chrome/browser/crash_report/crash_upload_list.h"
+#import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
-#include "ios/chrome/common/channel_info.h"
+#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -40,85 +47,123 @@
 
 namespace crash_helper {
 
+// Kill switch guarding a workaround for too many calls to SetUploadConsent
+// see crbug.com/1361334 for details.
+BASE_FEATURE(kLimitSetUploadConsentCalls,
+             "LimitSetUploadConsentCalls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
-
-// Key in NSUserDefaults for a Boolean value that stores whether to upload
-// crash reports.
-NSString* const kCrashReportsUploadingEnabledKey =
-    @"CrashReportsUploadingEnabled";
-
-// Key in NSUserDefaults for a Boolean value that stores the last feature
-// value of kCrashpadIOS.
-NSString* const kCrashpadStartOnNextRun = @"CrashpadStartOnNextRun";
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
 
-void DeleteAllReportsInDirectory(base::FilePath directory) {
+// Delete breakpad reports after 60 days.
+void DeleteOldReportsInDirectory(base::FilePath directory) {
   base::FileEnumerator enumerator(directory, false,
                                   base::FileEnumerator::FILES);
   base::FilePath cur_file;
   while (!(cur_file = enumerator.Next()).value().empty()) {
-    if (cur_file.BaseName().value() != kReporterLogFilename)
-      base::DeleteFile(cur_file);
+    if (cur_file.BaseName().value() != kReporterLogFilename) {
+      time_t now = time(nullptr);
+      struct stat st;
+      if (lstat(cur_file.value().c_str(), &st) != 0) {
+        continue;
+      }
+
+      // 60 days.
+      constexpr time_t max_breakpad_report_age_sec = 60 * 60 * 24 * 60;
+      if (st.st_mtime <= now - max_breakpad_report_age_sec) {
+        base::DeleteFile(cur_file);
+      }
+    }
   }
+}
+
+// Kill switch guarding a workaround for stability shutdown metric, see
+// crbug.com/1365765
+BASE_FEATURE(kCorrectMobileSessionShutdownType,
+             "CorrectMobileSessionShutdownType",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This mirrors the logic in MobileSessionShutdownMetricsProvider to avoid a
+// dependency loop.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum MobileSessionShutdownType {
+  SHUTDOWN_IN_BACKGROUND = 0,
+  SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING,
+  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING,
+  SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING,
+  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING,
+  FIRST_LAUNCH_AFTER_UPGRADE,
+  SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN,
+  MOBILE_SESSION_SHUTDOWN_TYPE_COUNT,
+};
+
+// This mirrors the logic in MobileSessionShutdownMetricsProvider, which
+// currently calls crash_helper::HasReportToUpload() before Crashpad calls
+// ProcessIntermediateDumps. Experiment with instead calling this later during
+// startup, but after Crashpad can process intermediate dumps.
+MobileSessionShutdownType GetLastShutdownType() {
+  if ([[PreviousSessionInfo sharedInstance] isFirstSessionAfterUpgrade]) {
+    return FIRST_LAUNCH_AFTER_UPGRADE;
+  }
+
+  // If the last app lifetime did not end with a crash, then log it as a normal
+  // shutdown while in the background.
+  if (GetApplicationContext()->WasLastShutdownClean()) {
+    return SHUTDOWN_IN_BACKGROUND;
+  }
+
+  if (crash_helper::HasReportToUpload()) {
+    // The cause of the crash is known.
+    if ([[PreviousSessionInfo sharedInstance]
+            didSeeMemoryWarningShortlyBeforeTerminating]) {
+      return SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING;
+    }
+    return SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING;
+  }
+
+  // The cause of the crash is not known. Check the common causes in order of
+  // severity and likeliness to have caused the crash.
+  if ([MainThreadFreezeDetector sharedInstance].lastSessionEndedFrozen) {
+    return SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN;
+  }
+  if ([[PreviousSessionInfo sharedInstance]
+          didSeeMemoryWarningShortlyBeforeTerminating]) {
+    return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING;
+  }
+  // There is no known cause.
+  return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING;
 }
 
 // Tells crashpad to start processing previously created intermediate dumps and
 // begin uploading when possible.
 void ProcessIntermediateDumps() {
   crash_reporter::ProcessIntermediateDumps();
-  crash_reporter::StartProcesingPendingReports();
-}
-
-// Callback for logging::SetLogMessageHandler
-bool FatalMessageHandler(int severity,
-                         const char* file,
-                         int line,
-                         size_t message_start,
-                         const std::string& str) {
-  // Do not handle non-FATAL.
-  if (severity != logging::LOG_FATAL)
-    return false;
-
-  // In case of OOM condition, this code could be reentered when
-  // constructing and storing the key.  Using a static is not
-  // thread-safe, but if multiple threads are in the process of a
-  // fatal crash at the same time, this should work.
-  static bool guarded = false;
-  if (guarded)
-    return false;
-
-  base::AutoReset<bool> guard(&guarded, true);
-
-  // Only log last path component.  This matches logging.cc.
-  if (file) {
-    const char* slash = strrchr(file, '/');
-    if (slash)
-      file = slash + 1;
-  }
-
-  NSString* fatal_value = [NSString
-      stringWithFormat:@"%s:%d: %s", file, line, str.c_str() + message_start];
-  static crash_reporter::CrashKeyString<2550> key("LOG_FATAL");
-  key.Set(base::SysNSStringToUTF8(fatal_value));
-
-  // Rather than including the code to force the crash here, allow the
-  // caller to do it.
-  return false;
+  [[MainThreadFreezeDetector sharedInstance] processIntermediateDumps];
+  crash_reporter::StartProcessingPendingReports();
+  // Wait until after processing intermediate dumps to record last shutdown
+  // type.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    bool correct_mobile_session_shutdown_type =
+        base::FeatureList::IsEnabled(kCorrectMobileSessionShutdownType);
+    if (!correct_mobile_session_shutdown_type)
+      return;
+    // This histogram is similar to MobileSessionShutdownType, but will not
+    // appear in the initial stability log. Because of this, the stability flag
+    // on this histogram doesn't matter. It will be reported like any other
+    // metric.
+    UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.MobileSessionShutdownType2",
+                                        GetLastShutdownType(),
+                                        MOBILE_SESSION_SHUTDOWN_TYPE_COUNT);
+  });
 }
 
 // Called after Breakpad finishes uploading each report.
 void UploadResultHandler(NSString* report_id, NSError* error) {
   base::UmaHistogramSparse("CrashReport.BreakpadIOSUploadOutcome", error.code);
-}
-
-// Check and cache the NSUserDefault value synced from the associated
-// kCrashpadIOS feature.
-bool CanCrashpadStart() {
-  static bool can_crashpad_start = [[NSUserDefaults standardUserDefaults]
-      boolForKey:kCrashpadStartOnNextRun];
-  return can_crashpad_start;
 }
 
 // Returns the uptime, the difference between now and start time.
@@ -129,7 +174,7 @@ int64_t GetUptimeMilliseconds() {
   kinfo_proc kern_proc_info;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
   size_t len = sizeof(kern_proc_info);
-  if (sysctl(mib, base::size(mib), &kern_proc_info, &len, nullptr, 0) != 0)
+  if (sysctl(mib, std::size(mib), &kern_proc_info, &len, nullptr, 0) != 0)
     return 0;
   time_t process_uptime_seconds =
       tv.tv_sec - kern_proc_info.kp_proc.p_starttime.tv_sec;
@@ -140,9 +185,9 @@ int64_t GetUptimeMilliseconds() {
 }  // namespace
 
 void SyncCrashpadEnabledOnNextRun() {
-  [[NSUserDefaults standardUserDefaults]
+  [app_group::GetGroupUserDefaults()
       setBool:base::FeatureList::IsEnabled(kCrashpadIOS) ? YES : NO
-       forKey:kCrashpadStartOnNextRun];
+       forKey:base::SysUTF8ToNSString(common::kCrashpadStartOnNextRun)];
 }
 
 void Start() {
@@ -150,22 +195,25 @@ void Start() {
   DCHECK(!crash_reporter::IsCrashpadRunning());
 
   // Notifying the PathService on the location of the crashes so that crashes
-  // can be displayed to the user on the about:crashes page.
-  NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
-      NSCachesDirectory, NSUserDomainMask, YES);
-  NSString* cachePath = [cachesDirectories objectAtIndex:0];
-  NSString* dumpDirectory =
-      [cachePath stringByAppendingPathComponent:@kDefaultLibrarySubdirectory];
-  base::PathService::Override(
-      ios::DIR_CRASH_DUMPS,
-      base::FilePath(base::SysNSStringToUTF8(dumpDirectory)));
-
-  logging::SetLogMessageHandler(&FatalMessageHandler);
-  if (CanCrashpadStart()) {
-    ChromeCrashReporterClient::Create();
-    crash_reporter::InitializeCrashpad(true, "");
-    crash_reporter::SetCrashpadRunning(true);
+  // can be displayed to the user on the about:crashes page.  Use the app group
+  // so crashes can be shared by plugins.
+  if (common::CanUseCrashpad()) {
+    base::PathService::Override(ios::DIR_CRASH_DUMPS,
+                                common::CrashpadDumpLocation());
+    bool initialized = common::StartCrashpad();
+    if (initialized) {
+      crash_reporter::SetCrashpadRunning(true);
+    }
+    UMA_HISTOGRAM_BOOLEAN("Stability.IOS.Crashpad.Initialized", initialized);
   } else {
+    NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
+        NSCachesDirectory, NSUserDomainMask, YES);
+    NSString* cachePath = [cachesDirectories objectAtIndex:0];
+    NSString* dumpDirectory =
+        [cachePath stringByAppendingPathComponent:@kDefaultLibrarySubdirectory];
+    base::PathService::Override(
+        ios::DIR_CRASH_DUMPS,
+        base::FilePath(base::SysNSStringToUTF8(dumpDirectory)));
     [[BreakpadController sharedInstance] start:YES];
     crash_reporter::SetBreakpadRunning(true);
 
@@ -177,16 +225,46 @@ void Start() {
       key.Set(channel_name);
     }
   }
-  [[MainThreadFreezeDetector sharedInstance] start];
+
+  crash_reporter::InitializeCrashKeys();
+
+  // Don't start MTFD when prewarmed, the check thread will just get confused.
+  if (!base::ios::IsApplicationPreWarmed()) {
+    [[MainThreadFreezeDetector sharedInstance] start];
+  }
 }
 
 void SetEnabled(bool enabled) {
-  // It is necessary to always call |MainThreadFreezeDetector setEnabled| as
+  // Caches the uploading flag in NSUserDefaults, so that we can access the
+  // value immediately on startup, such as in safe mode or extensions.
+  crash_helper::common::SetUserEnabledUploading(enabled);
+
+  // It is necessary to always call `MainThreadFreezeDetector setEnabled` as
   // the function will update its preference based on finch.
   [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
 
-  // Crashpad is always running, don't shut it off.
-  if (crash_reporter::IsCrashpadRunning()) {
+  // Crashpad is always running, don't shut it off. Using CanUseCrashpad()
+  // here, because if Crashpad fails to init, do not unintentionally enable
+  // breakpad.
+  if (common::CanUseCrashpad()) {
+    // Don't sync upload consent when the app is backgrounded. Crashpad
+    // flocks the settings file, and because Chrome puts this in a shared
+    // container, slow reads and writes can lead to watchdog kills.
+    static bool limit_set_upload_consent_calls =
+        base::FeatureList::IsEnabled(kLimitSetUploadConsentCalls);
+    // TODO(crbug.com/1361334): Safety for cherry-pick. Remove feature check
+    // and keep active check after speculative fix is confirmed to be safe.
+    if (!limit_set_upload_consent_calls ||
+        UIApplication.sharedApplication.applicationState ==
+            UIApplicationStateActive) {
+      // Posts SetUploadConsent on blocking pool thread because it needs access
+      // to IO and cannot work from UI thread.
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(^{
+            crash_reporter::SetUploadConsent(enabled);
+          }));
+    }
     return;
   }
 
@@ -200,68 +278,38 @@ void SetEnabled(bool enabled) {
   }
 }
 
-// Breakpad only.
-void SetBreakpadUploadingEnabled(bool enabled) {
-  if (!crash_reporter::IsBreakpadRunning())
-    return;
-  if (enabled) {
+void UploadCrashReports() {
+  if (crash_reporter::IsCrashpadRunning()) {
+    static dispatch_once_t once_token;
+    dispatch_once(&once_token, ^{
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&ProcessIntermediateDumps));
+      return;
+    });
+  }
+
+  if (crash_reporter::IsBreakpadRunning()) {
     static dispatch_once_t once_token;
     dispatch_once(&once_token, ^{
       [[BreakpadController sharedInstance]
           setUploadCallback:UploadResultHandler];
+
+      // Clean old breakpad files here. Breakpad-only as Crashpad has it's own
+      // database cleaner.
+      base::FilePath crash_directory;
+      base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_directory);
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&DeleteOldReportsInDirectory, crash_directory));
     });
-  }
-  [[BreakpadController sharedInstance] setUploadingEnabled:enabled];
-}
-
-// Caches the uploading flag in NSUserDefaults, so that we can access the value
-// in safe mode.
-void SetUserEnabledUploading(bool uploading_enabled) {
-  [[NSUserDefaults standardUserDefaults]
-      setBool:uploading_enabled ? YES : NO
-       forKey:kCrashReportsUploadingEnabledKey];
-}
-
-void SetUploadingEnabled(bool enabled) {
-  if (enabled && [UIApplication sharedApplication].applicationState ==
-                     UIApplicationStateInactive) {
-    return;
-  }
-
-  if (crash_reporter::IsCrashpadRunning()) {
-    crash_reporter::SetUploadConsent(enabled);
-    return;
-  }
-
-  if ([MainThreadFreezeDetector sharedInstance].canUploadBreakpadCrashReports) {
-    SetBreakpadUploadingEnabled(enabled);
-  } else {
-    [[MainThreadFreezeDetector sharedInstance]
-        prepareCrashReportsForUpload:^() {
-          SetBreakpadUploadingEnabled(enabled);
-        }];
+    [[BreakpadController sharedInstance] setUploadingEnabled:YES];
   }
 }
 
-bool UserEnabledUploading() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kCrashReportsUploadingEnabledKey];
-}
-
-void CleanupCrashReports(BOOL after_upgrade) {
-  if (crash_reporter::IsCrashpadRunning()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&ProcessIntermediateDumps));
-    return;
-  }
-
-  if (after_upgrade) {
-    base::FilePath crash_directory;
-    base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_directory);
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&DeleteAllReportsInDirectory, crash_directory));
+void PauseBreakpadUploads() {
+  if (crash_reporter::IsBreakpadRunning()) {
+    [[BreakpadController sharedInstance] setUploadingEnabled:NO];
   }
 }
 
@@ -297,16 +345,35 @@ int GetPendingCrashReportCount() {
   return outerCrashReportCount;
 }
 
-void GetCrashReportCount(void (^callback)(int)) {
-  if (crash_reporter::IsCrashpadRunning()) {
-    callback(GetPendingCrashReportCount());
-  }
-
-  [[BreakpadController sharedInstance] getCrashReportCount:callback];
-}
-
 bool HasReportToUpload() {
-  return GetPendingCrashReportCount() > 0;
+  int pending_reports = GetPendingCrashReportCount();
+
+  // This can get called before crash_reporter::StartProcessingPendingReports()
+  // is called, which means we need to look for non-zero length files in
+  // common::CrashpadDumpLocation()/ dir. See crbug.com/1365765 for details,
+  // but this should be removed once MobileSessionShutdownType2 is validated.
+  bool correct_mobile_session_shutdown_type =
+      base::FeatureList::IsEnabled(kCorrectMobileSessionShutdownType);
+  if (correct_mobile_session_shutdown_type &&
+      crash_reporter::IsCrashpadRunning()) {
+    const base::FilePath path =
+        common::CrashpadDumpLocation().Append("pending-serialized-ios-dump");
+    NSString* path_ns = base::SysUTF8ToNSString(path.value());
+    NSArray<NSString*>* pending_files =
+        [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path_ns
+                                                            error:nil];
+    for (NSString* pending_filename : pending_files) {
+      NSString* pending_file =
+          [path_ns stringByAppendingPathComponent:pending_filename];
+      NSDictionary* fileAttributes =
+          [[NSFileManager defaultManager] attributesOfItemAtPath:pending_file
+                                                           error:nil];
+      if ([[fileAttributes objectForKey:NSFileSize] longLongValue] > 0) {
+        pending_reports++;
+      }
+    }
+  }
+  return pending_reports > 0;
 }
 
 // Records the current process uptime in the kUptimeAtRestoreInMs. This
@@ -354,7 +421,7 @@ void WillStartCrashRestoration() {
 
 void StartUploadingReportsInRecoveryMode() {
   if (crash_reporter::IsCrashpadRunning()) {
-    crash_reporter::StartProcesingPendingReports();
+    crash_reporter::StartProcessingPendingReports();
     return;
   }
 
@@ -370,16 +437,18 @@ void StartUploadingReportsInRecoveryMode() {
 }
 
 void RestoreDefaultConfiguration() {
-  if (crash_reporter::IsCrashpadRunning()) {
+  if (!crash_reporter::IsBreakpadRunning()) {
     return;
   }
 
-  if (!crash_reporter::IsBreakpadRunning())
-    return;
   [[BreakpadController sharedInstance] stop];
   [[BreakpadController sharedInstance] resetConfiguration];
   [[BreakpadController sharedInstance] start:NO];
   [[BreakpadController sharedInstance] setUploadingEnabled:NO];
+}
+
+void ClearReportsBetween(base::Time delete_begin, base::Time delete_end) {
+  ios::CreateCrashUploadList()->Clear(delete_begin, delete_end);
 }
 
 }  // namespace crash_helper

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,15 @@ public class ChildProcessLauncher {
         public void onConnectionEstablished(ChildProcessConnection connection) {}
 
         /**
+         * Called as part of establishing the connection. Saves the bundle for transferring to other
+         * processes that did not inherit from the App Zygote.
+         * @param connection the new connection
+         * @param relroBundle the bundle potentially containing useful information for relocation
+         * sharing across processes.
+         */
+        public void onReceivedZygoteInfo(ChildProcessConnection connection, Bundle relroBundle) {}
+
+        /**
          * Called when a connection has been disconnected. Only invoked if onConnectionEstablished
          * was called, meaning the connection was already established.
          * @param connection the connection that got disconnected.
@@ -90,8 +99,9 @@ public class ChildProcessLauncher {
     // The IBinder interfaces provided to the created service.
     private final List<IBinder> mClientInterfaces;
 
-    // The actual service connection. Set once we have connected to the service.
-    private ChildProcessConnection mConnection;
+    // The actual service connection. Set once we have connected to the service. Volatile as it is
+    // accessed from threads other than the Launcher thread.
+    private volatile ChildProcessConnection mConnection;
 
     /**
      * Constructor.
@@ -212,6 +222,14 @@ public class ChildProcessLauncher {
     }
 
     private void setupConnection() {
+        ChildProcessConnection.ZygoteInfoCallback zygoteInfoCallback =
+                new ChildProcessConnection.ZygoteInfoCallback() {
+                    @Override
+                    public void onReceivedZygoteInfo(
+                            ChildProcessConnection connection, Bundle relroBundle) {
+                        mDelegate.onReceivedZygoteInfo(connection, relroBundle);
+                    }
+                };
         ChildProcessConnection.ConnectionCallback connectionCallback =
                 new ChildProcessConnection.ConnectionCallback() {
                     @Override
@@ -221,7 +239,8 @@ public class ChildProcessLauncher {
                 };
         Bundle connectionBundle = createConnectionBundle();
         mDelegate.onBeforeConnectionSetup(connectionBundle);
-        mConnection.setupConnection(connectionBundle, getClientInterfaces(), connectionCallback);
+        mConnection.setupConnection(
+                connectionBundle, getClientInterfaces(), connectionCallback, zygoteInfoCallback);
     }
 
     private void onServiceConnected(ChildProcessConnection connection) {

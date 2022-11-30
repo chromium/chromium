@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/image_fetcher/android",
+  "+components/autofill_assistant/android",
+  "+components/autofill_assistant/guided_browsing/android"
+]

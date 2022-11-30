@@ -1,21 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
-#define REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#ifndef REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#define REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_
 
-#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/win/registry.h"
 #include "remoting/protocol/pairing_registry.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace remoting {
 
@@ -44,6 +38,11 @@ class PairingRegistryDelegateWin
     : public protocol::PairingRegistry::Delegate {
  public:
   PairingRegistryDelegateWin();
+
+  PairingRegistryDelegateWin(const PairingRegistryDelegateWin&) = delete;
+  PairingRegistryDelegateWin& operator=(const PairingRegistryDelegateWin&) =
+      delete;
+
   ~PairingRegistryDelegateWin() override;
 
   // Passes the root keys to be used to access the pairing registry store.
@@ -52,7 +51,7 @@ class PairingRegistryDelegateWin
   bool SetRootKeys(HKEY privileged, HKEY unprivileged);
 
   // PairingRegistry::Delegate interface
-  std::unique_ptr<base::ListValue> LoadAll() override;
+  base::Value::List LoadAll() override;
   bool DeleteAll() override;
   protocol::PairingRegistry::Pairing Load(
       const std::string& client_id) override;
@@ -62,10 +61,8 @@ class PairingRegistryDelegateWin
  private:
   base::win::RegKey privileged_;
   base::win::RegKey unprivileged_;
-
-  DISALLOW_COPY_AND_ASSIGN(PairingRegistryDelegateWin);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#endif  // REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_

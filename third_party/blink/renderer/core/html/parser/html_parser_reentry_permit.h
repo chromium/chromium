@@ -1,13 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_REENTRY_PERMIT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_REENTRY_PERMIT_H_
 
-#include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -36,9 +34,11 @@ namespace blink {
 // flag. However recursively parsing end script tags, or running
 // custom element constructors, does set the parser pause flag.
 class HTMLParserReentryPermit final
-    : public RefCounted<HTMLParserReentryPermit> {
+    : public GarbageCollected<HTMLParserReentryPermit> {
  public:
-  static scoped_refptr<HTMLParserReentryPermit> Create();
+  HTMLParserReentryPermit();
+  HTMLParserReentryPermit(const HTMLParserReentryPermit&) = delete;
+  HTMLParserReentryPermit& operator=(const HTMLParserReentryPermit&) = delete;
   ~HTMLParserReentryPermit() = default;
 
   unsigned ScriptNestingLevel() const { return script_nesting_level_; }
@@ -57,6 +57,11 @@ class HTMLParserReentryPermit final
       permit_->script_nesting_level_++;
     }
 
+    ScriptNestingLevelIncrementer(const ScriptNestingLevelIncrementer&) =
+        delete;
+    ScriptNestingLevelIncrementer& operator=(
+        const ScriptNestingLevelIncrementer&) = delete;
+
     ScriptNestingLevelIncrementer(ScriptNestingLevelIncrementer&&) = default;
 
     ~ScriptNestingLevelIncrementer() {
@@ -67,24 +72,20 @@ class HTMLParserReentryPermit final
 
    private:
     HTMLParserReentryPermit* permit_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScriptNestingLevelIncrementer);
   };
 
   ScriptNestingLevelIncrementer IncrementScriptNestingLevel() {
     return ScriptNestingLevelIncrementer(this);
   }
 
- private:
-  HTMLParserReentryPermit();
+  void Trace(Visitor*) const {}
 
+ private:
   // https://html.spec.whatwg.org/C/#script-nesting-level
-  unsigned script_nesting_level_;
+  unsigned script_nesting_level_ = 0;
 
   // https://html.spec.whatwg.org/C/#parser-pause-flag
-  bool parser_pause_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLParserReentryPermit);
+  bool parser_pause_flag_ = false;
 };
 
 }  // namespace blink

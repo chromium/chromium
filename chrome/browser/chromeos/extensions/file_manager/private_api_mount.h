@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -7,12 +7,14 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MOUNT_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MOUNT_H_
 
+#include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "components/drive/file_errors.h"
+#include "third_party/ced/src/util/encodings/encodings.h"
+#include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"
 
 namespace extensions {
 
@@ -25,14 +27,45 @@ class FileManagerPrivateAddMountFunction : public LoggedExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.addMount",
                              FILEMANAGERPRIVATE_ADDMOUNT)
 
- protected:
-  ~FileManagerPrivateAddMountFunction() override = default;
+ private:
+  ~FileManagerPrivateAddMountFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
+  // Called when the encoding of a ZIP archive has been determined.
+  void OnEncodingDetected(Encoding encoding);
+
+  // Finishes mounting after encoding is detected.
+  void FinishMounting();
+
+  // Path of the device or archive to mount.
+  base::FilePath path_;
+
+  // Lowercase extension of the path to mount.
+  std::string extension_;
+
+  // Mount options.
+  std::vector<std::string> options_;
+};
+
+// Implements chrome.fileManagerPrivate.cancelMounting method.
+// Cancels mounting archive files.
+class FileManagerPrivateCancelMountingFunction
+    : public LoggedExtensionFunction {
+ public:
+  FileManagerPrivateCancelMountingFunction();
+
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.cancelMounting",
+                             FILEMANAGERPRIVATE_CANCELMOUNTING)
+
  private:
-  const ChromeExtensionFunctionDetails chrome_details_;
+  ~FileManagerPrivateCancelMountingFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+  void OnCancelled(ash::MountError error);
 };
 
 // Implements chrome.fileManagerPrivate.removeMount method.
@@ -47,6 +80,10 @@ class FileManagerPrivateRemoveMountFunction : public LoggedExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+  void OnDiskUnmounted(ash::MountError error);
+
+  void OnSshFsUnmounted(bool ok);
 };
 
 // Implements chrome.fileManagerPrivate.getVolumeMetadataList method.

@@ -1,0 +1,8 @@
+Check the console message printed on a WebTransport handshake failure.
+Log Enabled
+Instantiate WebTransport.
+Log.onEntryAdded
+source: network
+level: error
+text: Failed to establish a connection to https://localhost/: [net error].
+

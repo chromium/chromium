@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -58,8 +58,7 @@ AlarmManager::AlarmManager(
   DCHECK(clock_);
   DCHECK(task_runner_);
   clock_tick_timer_.SetTaskRunner(task_runner_);
-  base::TimeDelta polling_frequency =
-      base::TimeDelta::FromSeconds(kClockPollInterval);
+  base::TimeDelta polling_frequency = base::Seconds(kClockPollInterval);
   clock_tick_timer_.Start(FROM_HERE, polling_frequency,
                           base::BindRepeating(&AlarmManager::CheckAlarm,
                                               weak_factory_.GetWeakPtr()));

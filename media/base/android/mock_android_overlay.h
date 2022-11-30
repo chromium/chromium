@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ class MockAndroidOverlay : public testing::NiceMock<AndroidOverlay>,
                            public DestructionObservable {
  public:
   MockAndroidOverlay();
+
+  MockAndroidOverlay(const MockAndroidOverlay&) = delete;
+  MockAndroidOverlay& operator=(const MockAndroidOverlay&) = delete;
+
   ~MockAndroidOverlay() override;
 
   MOCK_METHOD1(ScheduleLayout, void(const gfx::Rect&));
@@ -63,8 +67,6 @@ class MockAndroidOverlay : public testing::NiceMock<AndroidOverlay>,
   std::unique_ptr<AndroidOverlayConfig> config_;
 
   base::WeakPtrFactory<MockAndroidOverlay> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockAndroidOverlay);
 };
 
 }  // namespace media

@@ -35,6 +35,8 @@ A sentence fragment is a potential next sentence determined using
 deterministic heuristics based on punctuation, capitalization, and similar
 text attributes.
 
+NOTE: This op is deprecated. Use `StateBasedSentenceBreaker` instead.
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -110,9 +112,10 @@ and `terminal_punc_token`.
 *   3 = Has close parenthesis (e.g. "Mushrooms (they're fungi).")
 *   4 = Has sentential close parenthesis (e.g. "(Mushrooms are fungi!)")
 
-`terminal_punc_token` is a RaggedTensor containing the index of terminal
-punctuation token immediately following the last word in the fragment -- or
-index of the last word itself, if it's an acronym (since acronyms include the
-terminal punctuation). index of the terminal punctuation token. </td> </tr>
+    `terminal_punc_token` is a RaggedTensor containing the index of terminal
+    punctuation token immediately following the last word in the fragment -- or
+    index of the last word itself, if it's an acronym (since acronyms include
+    the terminal punctuation). index of the terminal punctuation token. </td>
+    </tr>
 
 </table>

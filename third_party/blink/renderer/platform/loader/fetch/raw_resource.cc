@@ -51,15 +51,6 @@ RawResource* RawResource::FetchSynchronously(FetchParameters& params,
       params, RawResourceFactory(ResourceType::kRaw), client));
 }
 
-RawResource* RawResource::FetchImport(FetchParameters& params,
-                                      ResourceFetcher* fetcher,
-                                      RawResourceClient* client) {
-  params.SetRequestContext(mojom::blink::RequestContextType::IMPORT);
-  params.SetRequestDestination(network::mojom::RequestDestination::kEmpty);
-  return ToRawResource(fetcher->RequestResource(
-      params, RawResourceFactory(ResourceType::kImportResource), client));
-}
-
 RawResource* RawResource::Fetch(FetchParameters& params,
                                 ResourceFetcher* fetcher,
                                 RawResourceClient* client) {
@@ -241,20 +232,11 @@ void RawResource::Trace(Visitor* visitor) const {
 }
 
 void RawResource::ResponseReceived(const ResourceResponse& response) {
-  if (response.WasFallbackRequiredByServiceWorker()) {
-    // The ServiceWorker asked us to re-fetch the request. This resource must
-    // not be reused.
-    // Note: This logic is needed here because ThreadableLoader handles
-    // CORS independently from ResourceLoader. Fix it.
-    if (IsMainThread())
-      GetMemoryCache()->Remove(this);
-  }
-
   Resource::ResponseReceived(response);
 
   ResourceClientWalker<RawResourceClient> w(Clients());
   while (RawResourceClient* c = w.Next()) {
-    c->ResponseReceived(this, this->GetResponse());
+    c->ResponseReceived(this, GetResponse());
   }
 }
 
@@ -331,52 +313,10 @@ void RawResource::MatchPreload(const FetchParameters& params) {
       !params.GetResourceRequest().UseStreamOnResponse();
 }
 
-static bool ShouldIgnoreHeaderForCacheReuse(AtomicString header_name) {
-  // FIXME: This list of headers that don't affect cache policy almost certainly
-  // isn't complete.
-  DEFINE_STATIC_LOCAL(
-      HashSet<AtomicString>, headers,
-      ({"Cache-Control", "If-Modified-Since", "If-None-Match", "Origin",
-        "Pragma", "Purpose", "Referer", "User-Agent"}));
-  return headers.Contains(header_name);
-}
-
-Resource::MatchStatus RawResource::CanReuse(
-    const FetchParameters& new_fetch_parameters) const {
-  const ResourceRequest& new_request =
-      new_fetch_parameters.GetResourceRequest();
-  // Ensure most headers match the existing headers before continuing. Note that
-  // the list of ignored headers includes some headers explicitly related to
-  // caching. A more detailed check of caching policy will be performed later,
-  // this is simply a list of headers that we might permit to be different and
-  // still reuse the existing Resource.
-  const HTTPHeaderMap& new_headers = new_request.HttpHeaderFields();
-  const HTTPHeaderMap& old_headers = GetResourceRequest().HttpHeaderFields();
-
-  for (const auto& header : new_headers) {
-    AtomicString header_name = header.key;
-    if (!ShouldIgnoreHeaderForCacheReuse(header_name) &&
-        header.value != old_headers.Get(header_name)) {
-      return MatchStatus::kRequestHeadersDoNotMatch;
-    }
-  }
-
-  for (const auto& header : old_headers) {
-    AtomicString header_name = header.key;
-    if (!ShouldIgnoreHeaderForCacheReuse(header_name) &&
-        header.value != new_headers.Get(header_name)) {
-      return MatchStatus::kRequestHeadersDoNotMatch;
-    }
-  }
-
-  return Resource::CanReuse(new_fetch_parameters);
-}
-
 void RawResourceClient::DidDownloadToBlob(Resource*,
                                           scoped_refptr<BlobDataHandle>) {}
 
-RawResourceClientStateChecker::RawResourceClientStateChecker()
-    : state_(kNotAddedAsClient) {}
+RawResourceClientStateChecker::RawResourceClientStateChecker() = default;
 
 NOINLINE void RawResourceClientStateChecker::WillAddClient() {
   SECURITY_CHECK(state_ == kNotAddedAsClient);
@@ -385,7 +325,8 @@ NOINLINE void RawResourceClientStateChecker::WillAddClient() {
 
 NOINLINE void RawResourceClientStateChecker::WillRemoveClient() {
   SECURITY_CHECK(state_ != kNotAddedAsClient);
-  state_ = kNotAddedAsClient;
+  SECURITY_CHECK(state_ != kDetached);
+  state_ = kDetached;
 }
 
 NOINLINE void RawResourceClientStateChecker::RedirectReceived() {
@@ -407,8 +348,9 @@ NOINLINE void RawResourceClientStateChecker::ResponseReceived() {
 }
 
 NOINLINE void RawResourceClientStateChecker::SetSerializedCachedMetadata() {
-  SECURITY_CHECK(state_ == kResponseReceived ||
-                 state_ == kDataReceivedAsBytesConsumer);
+  SECURITY_CHECK(state_ == kStarted || state_ == kResponseReceived ||
+                 state_ == kDataReceivedAsBytesConsumer ||
+                 state_ == kDataReceived);
 }
 
 NOINLINE void RawResourceClientStateChecker::ResponseBodyReceived() {
@@ -437,7 +379,9 @@ NOINLINE void RawResourceClientStateChecker::DidDownloadToBlob() {
 NOINLINE void RawResourceClientStateChecker::NotifyFinished(
     Resource* resource) {
   SECURITY_CHECK(state_ != kNotAddedAsClient);
+  SECURITY_CHECK(state_ != kDetached);
   SECURITY_CHECK(state_ != kNotifyFinished);
+
   SECURITY_CHECK(resource->ErrorOccurred() ||
                  (state_ == kResponseReceived || state_ == kDataReceived ||
                   state_ == kDataDownloaded ||

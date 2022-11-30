@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "ppapi/c/dev/ppb_audio_input_dev.h"
 #include "ppapi/c/dev/ppb_audio_output_dev.h"
@@ -75,12 +76,9 @@
 #include "ppapi/c/private/ppb_ext_crx_file_system_private.h"
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
-#include "ppapi/c/private/ppb_find_private.h"
-#include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
-#include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppb_tcp_server_socket_private.h"
 #include "ppapi/c/private/ppb_tcp_socket_private.h"
 #include "ppapi/c/private/ppb_testing_private.h"
@@ -106,14 +104,12 @@
 #include "ppapi/proxy/ppb_video_decoder_proxy.h"
 #include "ppapi/proxy/ppb_x509_certificate_private_proxy.h"
 #include "ppapi/proxy/ppp_class_proxy.h"
-#include "ppapi/proxy/ppp_find_proxy.h"
 #include "ppapi/proxy/ppp_graphics_3d_proxy.h"
 #include "ppapi/proxy/ppp_input_event_proxy.h"
 #include "ppapi/proxy/ppp_instance_private_proxy.h"
 #include "ppapi/proxy/ppp_instance_proxy.h"
 #include "ppapi/proxy/ppp_messaging_proxy.h"
 #include "ppapi/proxy/ppp_mouse_lock_proxy.h"
-#include "ppapi/proxy/ppp_pdf_proxy.h"
 #include "ppapi/proxy/ppp_printing_proxy.h"
 #include "ppapi/proxy/ppp_text_input_proxy.h"
 #include "ppapi/proxy/ppp_video_decoder_proxy.h"
@@ -177,20 +173,12 @@ InterfaceList::InterfaceList() {
     Permission current_required_permission = PERMISSION_DEV;
     #include "ppapi/thunk/interfaces_ppb_public_dev.h"
   }
+#if !BUILDFLAG(IS_NACL)
   {
     Permission current_required_permission = PERMISSION_PRIVATE;
     #include "ppapi/thunk/interfaces_ppb_private.h"
   }
-#if !defined(OS_NACL)
-  {
-    Permission current_required_permission = PERMISSION_FLASH;
-    #include "ppapi/thunk/interfaces_ppb_private_flash.h"
-  }
-  {
-    Permission current_required_permission = PERMISSION_PDF;
-    #include "ppapi/thunk/interfaces_ppb_private_pdf.h"
-  }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
   {
     Permission current_required_permission = PERMISSION_DEV_CHANNEL;
     #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"
@@ -248,7 +236,7 @@ InterfaceList::InterfaceList() {
   AddPPB(PPB_VAR_INTERFACE_1_0,
          PPB_Var_Shared::GetVarInterface1_0(), PERMISSION_NONE);
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // PPB (browser) interfaces.
   // Do not add more stuff here, they should be added to interface_list*.h
   // TODO(brettw) remove these.
@@ -271,7 +259,7 @@ InterfaceList::InterfaceList() {
   AddProxy(API_ID_PPP_INPUT_EVENT, &ProxyFactory<PPP_InputEvent_Proxy>);
   AddPPP(PPP_INPUT_EVENT_INTERFACE, PPP_InputEvent_Proxy::GetProxyInterface());
   AddProxy(API_ID_PPP_INSTANCE, &ProxyFactory<PPP_Instance_Proxy>);
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   AddPPP(PPP_INSTANCE_INTERFACE_1_1,
          PPP_Instance_Proxy::GetInstanceInterface());
   AddProxy(API_ID_PPP_INSTANCE_PRIVATE,
@@ -286,11 +274,7 @@ InterfaceList::InterfaceList() {
   AddPPP(PPP_PRINTING_DEV_INTERFACE, PPP_Printing_Proxy::GetProxyInterface());
   AddProxy(API_ID_PPP_TEXT_INPUT, &ProxyFactory<PPP_TextInput_Proxy>);
   AddPPP(PPP_TEXTINPUT_DEV_INTERFACE, PPP_TextInput_Proxy::GetProxyInterface());
-#if !defined(OS_NACL)
-  AddProxy(API_ID_PPP_PDF, &ProxyFactory<PPP_Pdf_Proxy>);
-  AddPPP(PPP_PDF_INTERFACE, PPP_Pdf_Proxy::GetProxyInterface());
-  AddProxy(API_ID_PPP_FIND_PRIVATE, &ProxyFactory<PPP_Find_Proxy>);
-  AddPPP(PPP_FIND_PRIVATE_INTERFACE, PPP_Find_Proxy::GetProxyInterface());
+#if !BUILDFLAG(IS_NACL)
   AddProxy(API_ID_PPP_VIDEO_DECODER_DEV, &ProxyFactory<PPP_VideoDecoder_Proxy>);
   AddPPP(PPP_VIDEODECODER_DEV_INTERFACE,
          PPP_VideoDecoder_Proxy::GetProxyInterface());
@@ -331,8 +315,7 @@ const void* InterfaceList::GetInterfaceForPPB(const std::string& name) {
   if (g_process_global_permissions.Get().HasPermission(
           found->second->required_permission())) {
     // Only log interface use once per plugin.
-    found->second->LogWithUmaOnce(
-        PluginGlobals::Get()->GetBrowserSender(), name);
+    found->second->LogWithUmaOnce(name);
     return found->second->iface();
   }
   return nullptr;
@@ -345,8 +328,7 @@ const void* InterfaceList::GetInterfaceForPPP(const std::string& name) const {
   return found->second->iface();
 }
 
-void InterfaceList::InterfaceInfo::LogWithUmaOnce(
-    IPC::Sender* sender, const std::string& name) {
+void InterfaceList::InterfaceInfo::LogWithUmaOnce(const std::string& name) {
   {
     base::AutoLock acquire(sent_to_uma_lock_);
     if (sent_to_uma_)
@@ -354,8 +336,7 @@ void InterfaceList::InterfaceInfo::LogWithUmaOnce(
     sent_to_uma_ = true;
   }
   int hash = InterfaceList::HashInterfaceName(name);
-  PluginGlobals::Get()->GetBrowserSender()->Send(
-      new PpapiHostMsg_LogInterfaceUsage(hash));
+  base::UmaHistogramSparse("Pepper.InterfaceUsed", hash);
 }
 
 void InterfaceList::AddProxy(ApiID id,

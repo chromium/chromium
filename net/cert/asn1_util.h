@@ -1,18 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_CERT_ASN1_UTIL_H_
 #define NET_CERT_ASN1_UTIL_H_
 
-#include <vector>
-
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace asn1 {
+namespace net::asn1 {
 
 // ExtractSubjectFromDERCert parses the DER encoded certificate in |cert| and
 // extracts the bytes of the X.501 Subject. On successful return, |subject_out|
@@ -33,13 +29,6 @@ NET_EXPORT_PRIVATE bool ExtractSPKIFromDERCert(base::StringPiece cert,
 NET_EXPORT_PRIVATE bool ExtractSubjectPublicKeyFromSPKI(
     base::StringPiece spki,
     base::StringPiece* spk_out);
-
-// HasTLSFeatureExtension parses the DER encoded certificate in |cert|
-// and extracts the TLS feature extension
-// (https://tools.ietf.org/html/rfc7633) if present. Returns true if the
-// TLS feature extension was present, and false if the extension was not
-// present or if there was a parsing failure.
-NET_EXPORT_PRIVATE bool HasTLSFeatureExtension(base::StringPiece cert);
 
 // HasCanSignHttpExchangesDraftExtension parses the DER encoded certificate
 // in |cert| and extracts the canSignHttpExchangesDraft extension
@@ -79,8 +68,6 @@ NET_EXPORT bool ExtractExtensionFromDERCert(base::StringPiece cert,
                                             bool* out_extension_critical,
                                             base::StringPiece* out_contents);
 
-} // namespace asn1
-
-} // namespace net
+}  // namespace net::asn1
 
 #endif // NET_CERT_ASN1_UTIL_H_

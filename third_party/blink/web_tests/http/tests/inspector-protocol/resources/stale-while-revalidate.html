@@ -1,0 +1,11 @@
+<body>
+<script>
+function loadScript() {
+  const script = document.createElement("script");
+  script.src = "stale-script.php";
+  document.body.appendChild(script);
+}
+loadScript();
+setTimeout(loadScript, 10);
+</script>
+</body>

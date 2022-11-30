@@ -1,18 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/arc_ui_availability_reporter.h"
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
 
 namespace arc {
 
 class ArcUiAvailabilityReporter::ConnectionNotifierBase {
  public:
+  ConnectionNotifierBase(const ConnectionNotifierBase&) = delete;
+  ConnectionNotifierBase& operator=(const ConnectionNotifierBase&) = delete;
+
   virtual ~ConnectionNotifierBase() = default;
 
   // Returns true if connection is ready.
@@ -26,8 +29,6 @@ class ArcUiAvailabilityReporter::ConnectionNotifierBase {
 
  private:
   ArcUiAvailabilityReporter* const owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionNotifierBase);
 };
 
 namespace {
@@ -50,6 +51,9 @@ class ConnectionNotifier
     holder_->AddObserver(this);
   }
 
+  ConnectionNotifier(const ConnectionNotifier&) = delete;
+  ConnectionNotifier& operator=(const ConnectionNotifier&) = delete;
+
   ~ConnectionNotifier() override { holder_->RemoveObserver(this); }
 
   // ArcUiAvailabilityReporter::ConnectionNotifierBase:
@@ -60,8 +64,6 @@ class ConnectionNotifier
 
  private:
   ConnectionHolder<InstanceType, HostType>* const holder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionNotifier);
 };
 
 }  // namespace

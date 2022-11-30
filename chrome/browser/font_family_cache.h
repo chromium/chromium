@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -30,6 +30,10 @@ FORWARD_DECLARE_TEST(FontFamilyCacheTest, Caching);
 class FontFamilyCache : public base::SupportsUserData::Data {
  public:
   explicit FontFamilyCache(Profile* profile);
+
+  FontFamilyCache(const FontFamilyCache&) = delete;
+  FontFamilyCache& operator=(const FontFamilyCache&) = delete;
+
   ~FontFamilyCache() override;
 
   // Gets or creates the relevant FontFamilyCache, and then fills |map|.
@@ -79,7 +83,7 @@ class FontFamilyCache : public base::SupportsUserData::Data {
   // Weak reference.
   // Note: The lifetime of this object is tied to the lifetime of the
   // PrefService, so there is no worry about an invalid pointer.
-  const PrefService* prefs_;
+  raw_ptr<const PrefService> prefs_;
 
   // Reacts to profile font changes. |font_change_registrar_| will be
   // automatically unregistered when the FontPrefChangeNotifier is destroyed as
@@ -87,8 +91,6 @@ class FontFamilyCache : public base::SupportsUserData::Data {
   // |this| is destroyed after the Profile destructor completes as part of
   // Profile's super class destructor ~base::SupportsUserData.
   FontPrefChangeNotifier::Registrar font_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontFamilyCache);
 };
 
 #endif  // CHROME_BROWSER_FONT_FAMILY_CACHE_H_

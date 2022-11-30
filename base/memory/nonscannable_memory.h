@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,15 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/base_export.h"
+#include "base/no_destructor.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#endif
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#if BUILDFLAG(STARSCAN)
+#include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
+#endif  // BUILDFLAG(STARSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // This file contains allocation/deallocation functions for memory that doesn't
 // need to be scanned by PCScan. Such memory should only contain "data" objects,
@@ -24,54 +29,78 @@
 namespace base {
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-template <typename>
-class NoDestructor;
-
 namespace internal {
 
 // Represents allocator that contains memory for data-like objects (that don't
 // contain pointers) and therefore doesn't require scanning.
-class BASE_EXPORT NonScannableAllocator final {
+template <bool Quarantinable>
+class BASE_EXPORT NonScannableAllocatorImpl final {
  public:
-  static NonScannableAllocator& Instance();
+  static NonScannableAllocatorImpl& Instance();
 
-  NonScannableAllocator(const NonScannableAllocator&) = delete;
-  NonScannableAllocator& operator=(const NonScannableAllocator&) = delete;
+  NonScannableAllocatorImpl(const NonScannableAllocatorImpl&) = delete;
+  NonScannableAllocatorImpl& operator=(const NonScannableAllocatorImpl&) =
+      delete;
 
   void* Alloc(size_t size);
   static void Free(void*);
 
   // Returns PartitionRoot corresponding to the allocator, or nullptr if the
   // allocator is not enabled.
-  ThreadSafePartitionRoot* root() {
+  partition_alloc::ThreadSafePartitionRoot* root() {
+#if BUILDFLAG(STARSCAN)
     if (!allocator_.get())
       return nullptr;
     return allocator_->root();
+#else
+    return nullptr;
+#endif  // BUILDFLAG(STARSCAN)
   }
 
-  void EnablePCScan();
+  void NotifyPCScanEnabled();
 
  private:
   template <typename>
   friend class base::NoDestructor;
 
-  NonScannableAllocator();
-  ~NonScannableAllocator();
+  NonScannableAllocatorImpl();
+  ~NonScannableAllocatorImpl();
 
-  std::unique_ptr<base::PartitionAllocator> allocator_;
+#if BUILDFLAG(STARSCAN)
+  std::unique_ptr<partition_alloc::PartitionAllocator,
+                  partition_alloc::internal::PCScanMetadataDeleter>
+      allocator_;
   std::atomic_bool pcscan_enabled_{false};
+#endif  // BUILDFLAG(STARSCAN)
 };
+
+extern template class NonScannableAllocatorImpl<true>;
+extern template class NonScannableAllocatorImpl<false>;
+
+using NonScannableAllocator = NonScannableAllocatorImpl<true>;
+using NonQuarantinableAllocator = NonScannableAllocatorImpl<false>;
 
 }  // namespace internal
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-// Allocate/free non-scannable memory.
+// Allocate/free non-scannable, but still quarantinable memory.
 BASE_EXPORT void* AllocNonScannable(size_t size);
 BASE_EXPORT void FreeNonScannable(void* ptr);
+
+// Allocate/free non-scannable and non-quarantinable memory. These functions
+// behave as normal, *Scan-unaware allocation functions. This can be useful for
+// allocations that are guaranteed to be safe by the user, i.e. allocations that
+// cannot be referenced from outside and cannot contain dangling references
+// themselves.
+BASE_EXPORT void* AllocNonQuarantinable(size_t size);
+BASE_EXPORT void FreeNonQuarantinable(void* ptr);
 
 // Deleters to be used with std::unique_ptr.
 struct NonScannableDeleter {
   void operator()(void* ptr) const { FreeNonScannable(ptr); }
+};
+struct NonQuarantinableDeleter {
+  void operator()(void* ptr) const { FreeNonQuarantinable(ptr); }
 };
 
 }  // namespace base

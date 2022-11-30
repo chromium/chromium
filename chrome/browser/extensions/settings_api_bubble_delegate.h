@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 
@@ -19,6 +19,11 @@ class SettingsApiBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
   SettingsApiBubbleDelegate(Profile* profile, SettingsApiOverrideType type);
+
+  SettingsApiBubbleDelegate(const SettingsApiBubbleDelegate&) = delete;
+  SettingsApiBubbleDelegate& operator=(const SettingsApiBubbleDelegate&) =
+      delete;
+
   ~SettingsApiBubbleDelegate() override;
 
   // The preference used to indicate if the user has acknowledged the extension
@@ -48,10 +53,7 @@ class SettingsApiBubbleDelegate
   void OnAction() override;
   void ClearProfileSetForTesting() override;
   bool ShouldShowExtensionList() const override;
-  bool ShouldHighlightExtensions() const override;
   bool ShouldLimitToEnabledExtensions() const override;
-  void LogExtensionCount(size_t count) override;
-  void LogAction(ExtensionMessageBubbleController::BubbleAction) override;
   bool SupportsPolicyIndicator() override;
 
  private:
@@ -66,9 +68,7 @@ class SettingsApiBubbleDelegate
   // The ID of the extension we are showing the bubble for.
   std::string extension_id_;
 
-  Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsApiBubbleDelegate);
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

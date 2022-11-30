@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,9 @@
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -24,7 +21,7 @@ class PrefService;
 class Profile;
 
 // Whether to enable announcement notification system.
-extern const base::Feature kAnnouncementNotification;
+BASE_DECLARE_FEATURE(kAnnouncementNotification);
 
 // The Finch parameter name for a boolean value that whether to show
 // notification on first run.
@@ -72,6 +69,10 @@ class AnnouncementNotificationService : public KeyedService {
   class Delegate {
    public:
     Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() = default;
 
     // Show notification.
@@ -79,9 +80,6 @@ class AnnouncementNotificationService : public KeyedService {
 
     // Is Chrome first time to run.
     virtual bool IsFirstRun() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -96,14 +94,17 @@ class AnnouncementNotificationService : public KeyedService {
   static bool CanOpenAnnouncement(Profile* profile);
 
   AnnouncementNotificationService();
+
+  AnnouncementNotificationService(const AnnouncementNotificationService&) =
+      delete;
+  AnnouncementNotificationService& operator=(
+      const AnnouncementNotificationService&) = delete;
+
   ~AnnouncementNotificationService() override;
 
   // Show notification if needed based on a version number in Finch parameters
   // and the version cached in PrefService.
   virtual void MaybeShowNotification() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationService);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_SERVICE_H_

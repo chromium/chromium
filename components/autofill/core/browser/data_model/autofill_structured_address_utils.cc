@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -26,18 +27,20 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/common/autofill_features.h"
 
-namespace autofill {
-namespace structured_address {
+namespace autofill::structured_address {
 
 SortedTokenComparisonResult::SortedTokenComparisonResult(
     SortedTokenComparisonStatus status,
     std::vector<AddressToken> additional_tokens)
     : status(status), additional_tokens(additional_tokens) {}
 
-SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
-
 SortedTokenComparisonResult::SortedTokenComparisonResult(
-    const SortedTokenComparisonResult& other) = default;
+    SortedTokenComparisonResult&& other) = default;
+
+SortedTokenComparisonResult& SortedTokenComparisonResult::operator=(
+    SortedTokenComparisonResult&& other) = default;
+
+SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
 
 bool SortedTokenComparisonResult::IsSingleTokenSubset() const {
   return status == SUBSET && additional_tokens.size() == 1;
@@ -59,21 +62,9 @@ bool SortedTokenComparisonResult::TokensMatch() const {
   return status == MATCH;
 }
 
-bool StructuredNamesEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-}
-
-bool StructuredAddressesEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-}
-
 bool HonorificPrefixEnabled() {
   return base::FeatureList::IsEnabled(
-             features::kAutofillEnableSupportForHonorificPrefixes) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableSupportForMoreStructureInNames);
+      features::kAutofillEnableSupportForHonorificPrefixes);
 }
 
 Re2RegExCache::Re2RegExCache() = default;
@@ -180,23 +171,17 @@ bool HasHispanicLatinxNameCharaceristics(const std::string& name) {
   return false;
 }
 
-bool ParseValueByRegularExpression(
-    const std::string& value,
-    const std::string& pattern,
-    std::map<std::string, std::string>* result_map) {
-  DCHECK(result_map);
-
+absl::optional<base::flat_map<std::string, std::string>>
+ParseValueByRegularExpression(const std::string& value,
+                              const std::string& pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
-
-  return ParseValueByRegularExpression(value, regex, result_map);
+  return ParseValueByRegularExpression(value, regex);
 }
 
-bool ParseValueByRegularExpression(
-    const std::string& value,
-    const RE2* regex,
-    std::map<std::string, std::string>* result_map) {
+absl::optional<base::flat_map<std::string, std::string>>
+ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
   if (!regex || !regex->ok())
-    return false;
+    return absl::nullopt;
 
   // Get the number of capturing groups in the expression.
   // Note, the capturing group for the full match is not counted.
@@ -217,16 +202,16 @@ bool ParseValueByRegularExpression(
   // One capturing group is not counted since it holds the full match.
   if (!RE2::FullMatchN(value, *regex, match_results_ptr.data(),
                        number_of_capturing_groups - 1))
-    return false;
+    return absl::nullopt;
 
   // If successful, write the values into the results map.
   // Note, the capturing group for the full match creates an off-by-one scenario
   // in the indexing.
-  for (auto named_group : regex->NamedCapturingGroups())
-    (*result_map)[named_group.first] =
-        std::move(results.at(named_group.second - 1));
-
-  return true;
+  return base::MakeFlatMap<std::string, std::string>(
+      regex->NamedCapturingGroups(), {}, [&results](const auto& group) mutable {
+        const auto& [name, index] = group;
+        return std::make_pair(name, std::move(results[index - 1]));
+      });
 }
 
 bool IsPartialMatch(const std::string& value, RegEx regex) {
@@ -450,5 +435,4 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   return tokens;
 }
 
-}  // namespace structured_address
-}  // namespace autofill
+}  // namespace autofill::structured_address

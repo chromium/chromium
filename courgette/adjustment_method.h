@@ -1,11 +1,9 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COURGETTE_ADJUSTMENT_METHOD_H_
 #define COURGETTE_ADJUSTMENT_METHOD_H_
-
-#include "base/macros.h"
 
 namespace courgette {
 
@@ -29,6 +27,9 @@ class AdjustmentMethod {
   // Returns the new shingle tiling adjustment method.
   static AdjustmentMethod* MakeShingleAdjustmentMethod();
 
+  AdjustmentMethod(const AdjustmentMethod&) = delete;
+  AdjustmentMethod& operator=(const AdjustmentMethod&) = delete;
+
   // AdjustmentMethod interface:
 
   // Adjusts |program| to increase similarity to |model|.  |program| can be
@@ -43,8 +44,6 @@ class AdjustmentMethod {
  protected:
   AdjustmentMethod() {}
   virtual ~AdjustmentMethod() {}
-
-  DISALLOW_COPY_AND_ASSIGN(AdjustmentMethod);
 };
 
 }  // namespace courgette

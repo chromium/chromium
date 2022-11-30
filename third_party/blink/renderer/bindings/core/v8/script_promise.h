@@ -34,7 +34,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -43,7 +44,7 @@ namespace blink {
 
 class DOMException;
 class ExceptionState;
-class NewScriptFunction;
+class ScriptFunction;
 
 // ScriptPromise is the class for representing Promise values in C++ world.
 // ScriptPromise holds a Promise.
@@ -70,8 +71,8 @@ class CORE_EXPORT ScriptPromise final {
 
   ScriptPromise Then(v8::Local<v8::Function> on_fulfilled,
                      v8::Local<v8::Function> on_rejected = {});
-  ScriptPromise Then(NewScriptFunction* on_fulfilled,
-                     NewScriptFunction* on_rejected = nullptr);
+  ScriptPromise Then(ScriptFunction* on_fulfilled,
+                     ScriptFunction* on_rejected = nullptr);
 
   bool IsObject() const { return promise_.IsObject(); }
 

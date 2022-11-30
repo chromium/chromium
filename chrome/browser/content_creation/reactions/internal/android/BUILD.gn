@@ -1,0 +1,87 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorFactory.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsMediator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsMetrics.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsProgressDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionGifDrawable.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/ReactionLayout.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneEditorDelegate.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarControlsDelegate.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarReactionsDelegate.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/content_creation/reactions/android:public_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/share/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/content_creation/reactions/android:java",
+    "//components/content_creation/reactions/android:reaction_types_java",
+    "//components/image_fetcher:java",
+    "//content/public/android:content_main_dex_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/gif_player:gif_player_java",
+    "//third_party/glide/gif_encoder:gif_encoder_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+
+  resources_package =
+      "org.chromium.chrome.browser.content_creation.reactions.internal"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    "//chrome/browser",
+    "//chrome/browser/content_creation/reactions/internal:*",
+  ]
+
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionServiceFactory.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/border.xml",
+    "java/res/drawable/border_inset.xml",
+    "java/res/drawable/lr_copy.xml",
+    "java/res/drawable/lr_delete.xml",
+    "java/res/drawable/lr_resize.xml",
+    "java/res/drawable/resize_icon.xml",
+    "java/res/layout/reaction_layout.xml",
+    "java/res/layout/reactions_dialog.xml",
+    "java/res/layout/reactions_loading_view.xml",
+    "java/res/layout/scene.xml",
+    "java/res/layout/toolbar.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+  ]
+}

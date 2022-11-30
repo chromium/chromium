@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/encryptedmedia/html_media_element_encrypted_media.h"
 
-#include "base/macros.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -21,7 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/content_decryption_module_result.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -35,6 +34,10 @@ class SetMediaKeysHandler : public ScriptPromiseResolver {
   static ScriptPromise Create(ScriptState*, HTMLMediaElement&, MediaKeys*);
 
   SetMediaKeysHandler(ScriptState*, HTMLMediaElement&, MediaKeys*);
+
+  SetMediaKeysHandler(const SetMediaKeysHandler&) = delete;
+  SetMediaKeysHandler& operator=(const SetMediaKeysHandler&) = delete;
+
   ~SetMediaKeysHandler() override;
 
   void Trace(Visitor*) const override;
@@ -56,8 +59,6 @@ class SetMediaKeysHandler : public ScriptPromiseResolver {
   Member<MediaKeys> new_media_keys_;
   bool made_reservation_;
   HeapTaskRunnerTimer<SetMediaKeysHandler> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetMediaKeysHandler);
 };
 
 typedef base::OnceCallback<void()> SuccessCallback;
@@ -111,7 +112,7 @@ class SetContentDecryptionModuleResult final
     StringBuilder result;
     result.Append(message);
     if (system_code != 0) {
-      if (result.IsEmpty())
+      if (result.empty())
         result.Append("Rejected with system code");
       result.Append(" (");
       result.AppendNumber(system_code);
@@ -198,10 +199,10 @@ void SetMediaKeysHandler::ClearExistingMediaKeys() {
       //       attribute to decrypt media data and remove the association
       //       with the media element.
       // (All 3 steps handled as needed in Chromium.)
-      SuccessCallback success_callback = WTF::Bind(
+      SuccessCallback success_callback = WTF::BindOnce(
           &SetMediaKeysHandler::SetNewMediaKeys, WrapPersistent(this));
-      FailureCallback failure_callback =
-          WTF::Bind(&SetMediaKeysHandler::ClearFailed, WrapPersistent(this));
+      FailureCallback failure_callback = WTF::BindOnce(
+          &SetMediaKeysHandler::ClearFailed, WrapPersistent(this));
       ContentDecryptionModuleResult* result =
           MakeGarbageCollected<SetContentDecryptionModuleResult>(
               std::move(success_callback), std::move(failure_callback));
@@ -230,9 +231,9 @@ void SetMediaKeysHandler::SetNewMediaKeys() {
     //       (Handled in Chromium).
     if (element_->GetWebMediaPlayer()) {
       SuccessCallback success_callback =
-          WTF::Bind(&SetMediaKeysHandler::Finish, WrapPersistent(this));
+          WTF::BindOnce(&SetMediaKeysHandler::Finish, WrapPersistent(this));
       FailureCallback failure_callback =
-          WTF::Bind(&SetMediaKeysHandler::SetFailed, WrapPersistent(this));
+          WTF::BindOnce(&SetMediaKeysHandler::SetFailed, WrapPersistent(this));
       ContentDecryptionModuleResult* result =
           MakeGarbageCollected<SetContentDecryptionModuleResult>(
               std::move(success_callback), std::move(failure_callback));

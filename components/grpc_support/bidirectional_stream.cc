@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -270,10 +270,10 @@ void BidirectionalStream::StartOnNetworkThread(
   request_info->extra_headers.SetHeaderIfMissing(
       net::HttpRequestHeaders::kUserAgent,
       request_context->http_user_agent_settings()->GetUserAgent());
-  bidi_stream_.reset(new net::BidirectionalStream(
+  bidi_stream_ = std::make_unique<net::BidirectionalStream>(
       std::move(request_info),
       request_context->http_transaction_factory()->GetSession(),
-      !delay_headers_until_flush_, this));
+      !delay_headers_until_flush_, this);
   DCHECK(read_state_ == NOT_STARTED && write_state_ == NOT_STARTED);
   read_state_ = write_state_ = STARTED;
 }

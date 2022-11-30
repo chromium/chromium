@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace device {
@@ -34,6 +33,10 @@ namespace win {
 class BASE_EXPORT ComInitCheckHook {
  public:
   ComInitCheckHook();
+
+  ComInitCheckHook(const ComInitCheckHook&) = delete;
+  ComInitCheckHook& operator=(const ComInitCheckHook&) = delete;
+
   ~ComInitCheckHook();
 
  private:
@@ -44,8 +47,6 @@ class BASE_EXPORT ComInitCheckHook {
   friend class device::XrDeviceService;
 
   static void DisableCOMChecksForProcess();
-
-  DISALLOW_COPY_AND_ASSIGN(ComInitCheckHook);
 };
 
 }  // namespace win

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
-#include "content/browser/site_instance_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
@@ -24,29 +24,31 @@ bool RenderViewHostFactory::is_real_render_view_host_ = false;
 // static
 RenderViewHost* RenderViewHostFactory::Create(
     FrameTree* frame_tree,
-    SiteInstance* instance,
+    SiteInstanceGroup* group,
+    const StoragePartitionConfig& storage_partition_config,
     RenderViewHostDelegate* delegate,
     RenderWidgetHostDelegate* widget_delegate,
     int32_t main_frame_routing_id,
-    bool swapped_out,
-    bool renderer_initiated_creation) {
-  int32_t routing_id = instance->GetProcess()->GetNextRoutingID();
-  int32_t widget_routing_id = instance->GetProcess()->GetNextRoutingID();
+    bool renderer_initiated_creation,
+    scoped_refptr<BrowsingContextState> main_browsing_context_state) {
+  int32_t routing_id = group->process()->GetNextRoutingID();
+  int32_t widget_routing_id = group->process()->GetNextRoutingID();
+
   if (factory_) {
     return factory_->CreateRenderViewHost(
-        frame_tree, instance, delegate, widget_delegate, routing_id,
-        main_frame_routing_id, widget_routing_id, swapped_out);
+        frame_tree, group, storage_partition_config, delegate, widget_delegate,
+        routing_id, main_frame_routing_id, widget_routing_id,
+        std::move(main_browsing_context_state));
   }
 
   RenderViewHostImpl* view_host = new RenderViewHostImpl(
-      frame_tree, instance,
+      frame_tree, group, storage_partition_config,
       RenderWidgetHostFactory::Create(
-          frame_tree, widget_delegate,
-          static_cast<SiteInstanceImpl*>(instance)->GetAgentSchedulingGroup(),
-          widget_routing_id,
+          frame_tree, widget_delegate, group->GetSafeRef(), widget_routing_id,
           /*hidden=*/true, renderer_initiated_creation),
-      delegate, routing_id, main_frame_routing_id, swapped_out,
-      true /* has_initialized_audio_host */);
+      delegate, routing_id, main_frame_routing_id,
+      true /* has_initialized_audio_host */,
+      std::move(main_browsing_context_state));
   return view_host;
 }
 

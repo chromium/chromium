@@ -1,7 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -21,13 +22,13 @@ using TabGroupsApiTest = ExtensionApiTest;
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1148195): Fix flakiness of this text on Linux.
   return;
 #endif
 
-  ASSERT_TRUE(RunExtensionTest({.name = "tab_groups"},
-                               {.ignore_manifest_warnings = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("tab_groups", {}, {.ignore_manifest_warnings = true}))
       << message_;
 }
 

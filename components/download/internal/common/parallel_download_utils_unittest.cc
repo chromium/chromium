@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/common/download_features.h"
@@ -47,7 +48,7 @@ class ParallelDownloadUtilsRecoverErrorTest
 
  protected:
   // Stream for sending data into the SourceStream.
-  StrictMock<MockInputStream>* input_stream_;
+  raw_ptr<StrictMock<MockInputStream>> input_stream_;
 };
 
 TEST_F(ParallelDownloadUtilsTest, FindSlicesToDownload) {
@@ -136,8 +137,6 @@ TEST_F(ParallelDownloadUtilsTest, AddOrMergeReceivedSliceIntoSortedArray) {
 TEST_P(ParallelDownloadUtilsRecoverErrorTest,
        RecoverErrorForHalfOpenErrorStream) {
   // Create a stream that will work on byte range "100-".
-  const int kErrorStreamOffset = 100;
-
   auto error_stream = CreateSourceStream(kErrorStreamOffset);
   error_stream->set_finished(true);
 
@@ -342,9 +341,8 @@ TEST_F(ParallelDownloadUtilsTest, FinchConfigEnabled) {
   EXPECT_TRUE(IsParallelDownloadEnabled());
   EXPECT_EQ(GetMinSliceSizeConfig(), 1234);
   EXPECT_EQ(GetParallelRequestCountConfig(), 6);
-  EXPECT_EQ(GetParallelRequestDelayConfig(), base::TimeDelta::FromSeconds(2));
-  EXPECT_EQ(GetParallelRequestRemainingTimeConfig(),
-            base::TimeDelta::FromSeconds(3));
+  EXPECT_EQ(GetParallelRequestDelayConfig(), base::Seconds(2));
+  EXPECT_EQ(GetParallelRequestRemainingTimeConfig(), base::Seconds(3));
 }
 
 // Test to verify the disable experiment group will actually disable the

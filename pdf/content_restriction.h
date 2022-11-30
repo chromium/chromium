@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,8 @@
 namespace chrome_pdf {
 
 // Used for disabling browser commands because of restrictions on how the data
-// is to be used (i.e. can't copy/print).
-// TODO(crbug.com/702993): Must be kept in sync with `ContentRestriction` in
-// chrome/common/content_restriction.h. While there's a transitive static
-// assertion that the enums match, a direct static assertion should be added
-// when `PP_ContentRestriction` is removed.
+// is to be used (i.e. can't copy/print). Must be kept in sync with
+// `ContentRestriction` in chrome/common/content_restriction.h.
 enum ContentRestriction {
   kContentRestrictionCopy = 1 << 0,
   kContentRestrictionCut = 1 << 1,

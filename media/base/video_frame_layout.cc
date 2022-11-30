@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,11 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUV444P12:
       return 3;
     case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I422A:
+    case PIXEL_FORMAT_I444A:
+    case PIXEL_FORMAT_YUV420AP10:
+    case PIXEL_FORMAT_YUV422AP10:
+    case PIXEL_FORMAT_YUV444AP10:
       return 4;
     case PIXEL_FORMAT_UNKNOWN:
       // Note: PIXEL_FORMAT_UNKNOWN is used for end-of-stream frame.
@@ -87,7 +92,7 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
 }
 
 // static
-base::Optional<VideoFrameLayout> VideoFrameLayout::Create(
+absl::optional<VideoFrameLayout> VideoFrameLayout::Create(
     VideoPixelFormat format,
     const gfx::Size& coded_size) {
   return CreateWithStrides(format, coded_size,
@@ -95,7 +100,7 @@ base::Optional<VideoFrameLayout> VideoFrameLayout::Create(
 }
 
 // static
-base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
+absl::optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<int32_t> strides,
@@ -106,32 +111,32 @@ base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
 }
 
 // static
-base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
+absl::optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<ColorPlaneLayout> planes,
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           false /*is_multi_planar */, buffer_addr_align,
                           modifier);
 }
 
-base::Optional<VideoFrameLayout> VideoFrameLayout::CreateMultiPlanar(
+absl::optional<VideoFrameLayout> VideoFrameLayout::CreateMultiPlanar(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<ColorPlaneLayout> planes,
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           true /*is_multi_planar */, buffer_addr_align,

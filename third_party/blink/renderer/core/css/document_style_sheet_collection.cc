@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/css/document_style_sheet_collection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/document_style_sheet_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -49,23 +50,12 @@ DocumentStyleSheetCollection::DocumentStyleSheetCollection(
 void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     StyleEngine& engine,
     DocumentStyleSheetCollector& collector) {
+  StyleEngine::RuleSetScope rule_set_scope;
+
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
 
     DCHECK(!candidate.IsXSL());
-    if (candidate.IsImport()) {
-      Document* document = candidate.ImportedDocument();
-      if (!document)
-        continue;
-      if (collector.HasVisited(document))
-        continue;
-      collector.WillVisit(document);
-
-      document->GetStyleEngine().UpdateActiveStyleSheetsInImport(engine,
-                                                                 collector);
-      continue;
-    }
-
     if (candidate.IsEnabledAndLoading())
       continue;
 
@@ -75,17 +65,18 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
 
     collector.AppendSheetForList(sheet);
     if (!candidate.CanBeActivated(
-            GetDocument().GetStyleEngine().PreferredStylesheetSetName()))
+            GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {
       continue;
+    }
 
     CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
-    collector.AppendActiveStyleSheet(
-        std::make_pair(css_sheet, engine.RuleSetForSheet(*css_sheet)));
+    collector.AppendActiveStyleSheet(std::make_pair(
+        css_sheet, rule_set_scope.RuleSetForSheet(engine, css_sheet)));
   }
   if (!GetTreeScope().HasAdoptedStyleSheets())
     return;
 
-  for (CSSStyleSheet* sheet : GetTreeScope().AdoptedStyleSheets()) {
+  for (CSSStyleSheet* sheet : *GetTreeScope().AdoptedStyleSheets()) {
     if (!sheet ||
         !sheet->CanBeActivated(
             GetDocument().GetStyleEngine().PreferredStylesheetSetName()))

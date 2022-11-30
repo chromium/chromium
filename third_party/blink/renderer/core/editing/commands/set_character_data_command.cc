@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ void SetCharacterDataCommand::DoApply(EditingState*) {
   // TODO(editing-dev): The use of updateStyleAndLayoutTree()
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayoutTree();
-  if (!HasEditableStyle(*node_))
+  if (!IsEditable(*node_))
     return;
 
   DummyExceptionStateForTesting exception_state;
@@ -58,7 +58,7 @@ void SetCharacterDataCommand::DoUnapply() {
   // TODO(editing-dev): The use of updateStyleAndLayoutTree()
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayoutTree();
-  if (!HasEditableStyle(*node_))
+  if (!IsEditable(*node_))
     return;
 
   node_->replaceData(offset_, new_text_.length(), previous_text_for_undo_,

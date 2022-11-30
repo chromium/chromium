@@ -1,11 +1,9 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_DEBUG_BORDER_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_DEBUG_BORDER_DRAW_QUAD_H_
-
-#include <memory>
 
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
@@ -20,17 +18,17 @@ class VIZ_COMMON_EXPORT DebugBorderDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              SkColor color,
-              int width);
+              SkColor4f c,
+              int w);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              SkColor color,
-              int width);
+              SkColor4f c,
+              int w);
 
-  SkColor color = SK_ColorTRANSPARENT;
+  SkColor4f color = SkColors::kTransparent;
   int width = 0;
 
   static const DebugBorderDrawQuad* MaterialCast(const DrawQuad*);

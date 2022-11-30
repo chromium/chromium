@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ TEST_F(SimpleEventSubscriberTest, GetAndResetEvents) {
   playout_event->media_type = AUDIO_EVENT;
   playout_event->rtp_timestamp = RtpTimeTicks().Expand(UINT32_C(100));
   playout_event->frame_id = FrameId::first();
-  playout_event->delay_delta = base::TimeDelta::FromMilliseconds(100);
+  playout_event->delay_delta = base::Milliseconds(100);
   cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
   std::unique_ptr<FrameEvent> decode_event(new FrameEvent());
@@ -83,7 +83,7 @@ TEST_F(SimpleEventSubscriberTest, GetAndResetEvents) {
   receive_event->size = 100u;
   cast_environment_->logger()->DispatchPacketEvent(std::move(receive_event));
 
-  receive_event.reset(new PacketEvent());
+  receive_event = std::make_unique<PacketEvent>();
   receive_event->timestamp = testing_clock_.NowTicks();
   receive_event->type = PACKET_RECEIVED;
   receive_event->media_type = VIDEO_EVENT;

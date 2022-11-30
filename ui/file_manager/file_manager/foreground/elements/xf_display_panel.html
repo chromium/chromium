@@ -1,0 +1,96 @@
+<style>
+  :host {
+    max-width: 504px;
+    outline: none;
+  }
+  #container {
+    align-items: stretch;
+    background-color: var(--cros-bg-color-elevation-2);
+    border-radius: 4px;
+    box-shadow: var(--cros-elevation-2-shadow);
+    display: flex;
+    flex-direction: column;
+    max-width: min-content;
+    z-index: 100;
+  }
+  #separator {
+    background-color: var(--cros-separator-color);
+    height: 1px;
+  }
+  /* Limit to 3 visible progress panels before scroll. */
+  #panels {
+    max-height: calc(192px + 28px);
+    overflow-y: auto;
+  }
+  xf-panel-item:not(:only-child) {
+    --progress-height: 64px;
+  }
+  xf-panel-item:not(:only-child):first-child {
+    --progress-padding-top: 14px;
+  }
+  xf-panel-item:not(:only-child):last-child {
+    --progress-padding-bottom: 14px;
+  }
+  xf-panel-item:only-child {
+    --progress-height: 68px;
+  }
+  @keyframes setcollapse {
+    0% {
+      max-height: 0;
+      max-width: 0;
+      opacity: 0;
+    }
+    75% {
+      max-height: calc(192px + 28px);
+      opacity: 0;
+      width: 504px;
+    }
+    100% {
+      max-height: calc(192px + 28px);
+      opacity: 1;
+      width: 504px;
+    }
+  }
+
+  @keyframes setexpand {
+    0% {
+      max-height: calc(192px + 28px);
+      max-width: 504px;
+      opacity: 1;
+    }
+    25% {
+      max-height: calc(192px + 28px);
+      max-width: 504px;
+      opacity: 0;
+    }
+    100% {
+      max-height: 0;
+      max-width: 0;
+      opacity: 0;
+    }
+  }
+  .expanded {
+    animation: setcollapse 200ms forwards;
+    width: 504px;
+  }
+  .collapsed {
+    animation: setexpand 200ms forwards;
+  }
+  .expanding {
+    overflow: hidden;
+  }
+  .expandfinished {
+    max-height: calc(192px + 28px);
+    opacity: 1;
+    overflow-y: auto;
+    width: 504px;
+  }
+  xf-panel-item:not(:only-child) {
+    --multi-progress-height: 92px;
+  }
+</style>
+<div id="container">
+  <div id="summary"></div>
+  <div id="separator" hidden></div>
+  <div id="panels"></div>
+</div>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo.State;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -40,21 +39,18 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     private Tutorial mTutorial;
     private final Callback<Tutorial> mTryNowCallback;
     private final Runnable mCloseCallback;
-    private final LanguageInfoProvider mLanguageInfoProvider;
     private final PlaybackStateObserver mPlaybackStateObserver;
     private long mVideoStartTime;
 
     /** Constructor. */
     public VideoPlayerMediator(Context context, PropertyModel model,
             VideoTutorialService videoTutorialService, LanguagePickerCoordinator languagePicker,
-            LanguageInfoProvider languageInfoProvider, WebContents webContents,
-            PlaybackStateObserver playbackStateObserver, Callback<Tutorial> tryNowCallback,
-            Runnable closeCallback) {
+            WebContents webContents, PlaybackStateObserver playbackStateObserver,
+            Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
         mContext = context;
         mModel = model;
         mVideoTutorialService = videoTutorialService;
         mLanguagePicker = languagePicker;
-        mLanguageInfoProvider = languageInfoProvider;
         mWebContents = webContents;
         mTryNowCallback = tryNowCallback;
         mCloseCallback = closeCallback;
@@ -62,18 +58,13 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
 
         mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, false);
         mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, false);
-        mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, false);
+        hideMediaControls();
         mModel.set(VideoPlayerProperties.CALLBACK_WATCH_NEXT, this::onWatchNextClicked);
         mModel.set(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE, this::changeLanguage);
         mModel.set(VideoPlayerProperties.CALLBACK_TRY_NOW, this::tryNow);
         mModel.set(VideoPlayerProperties.CALLBACK_SHARE, this::share);
         mModel.set(VideoPlayerProperties.CALLBACK_CLOSE, this::close);
-
-        boolean enableShare = sEnableShareForTesting == null
-                ? ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_ENABLE_SHARE_BUTTON, false)
-                : sEnableShareForTesting;
-        mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare);
+        mModel.set(VideoPlayerProperties.CALLBACK_PLAY_BUTTON, () -> startVideo(mTutorial));
     }
 
     /** Called when the player is getting destroyed. */
@@ -127,29 +118,33 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         }
 
         mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, false);
-        mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, false);
+        hideMediaControls();
     }
 
     @Override
     public void onPause() {
         VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.PAUSED);
-        mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, true);
         mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, false);
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, false);
         mModel.set(VideoPlayerProperties.SHOW_TRY_NOW,
                 VideoTutorialUtils.shouldShowTryNow(mTutorial.featureType));
         mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.PAUSED);
+        mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare());
+        mModel.set(VideoPlayerProperties.SHOW_CLOSE, true);
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, false);
     }
 
     @Override
     public void onEnded() {
         VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.COMPLETED);
-        mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, true);
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, areMultipleLanguagesAvailable());
         maybeShowWatchNextVideoButton();
         mModel.set(VideoPlayerProperties.SHOW_TRY_NOW,
                 VideoTutorialUtils.shouldShowTryNow(mTutorial.featureType));
         mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.ENDED);
+        mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare());
+        mModel.set(VideoPlayerProperties.SHOW_CLOSE, true);
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, true);
     }
 
     @Override
@@ -198,7 +193,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         loadUrlParams.setHasUserGesture(true);
         mWebContents.getNavigationController().loadUrl(loadUrlParams);
         mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, false);
-        mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, false);
+        hideMediaControls();
     }
 
     private void maybeShowWatchNextVideoButton() {
@@ -213,6 +208,22 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         }
         VideoTutorialMetrics.recordUserAction(mTutorial.featureType, UserAction.WATCH_NEXT_VIDEO);
         VideoTutorialUtils.getNextTutorial(mVideoTutorialService, mTutorial, this::startVideo);
+    }
+
+    private void hideMediaControls() {
+        mModel.set(VideoPlayerProperties.SHOW_TRY_NOW, false);
+        mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, false);
+        mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, false);
+        mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare());
+        mModel.set(VideoPlayerProperties.SHOW_CLOSE, true);
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, false);
+    }
+
+    private boolean enableShare() {
+        return sEnableShareForTesting == null
+                ? ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_ENABLE_SHARE_BUTTON, true)
+                : sEnableShareForTesting;
     }
 
     private boolean areMultipleLanguagesAvailable() {

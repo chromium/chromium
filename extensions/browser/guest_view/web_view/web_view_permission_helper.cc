@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/user_metrics.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view_event.h"
@@ -21,6 +21,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using base::UserMetricsAction;
 using content::BrowserPluginGuestDelegate;
@@ -149,8 +150,7 @@ void RecordUserInitiatedUMA(
 } // namespace
 
 WebViewPermissionHelper::WebViewPermissionHelper(WebViewGuest* web_view_guest)
-    : content::WebContentsObserver(web_view_guest->web_contents()),
-      next_permission_request_id_(guest_view::kInstanceIDNone),
+    : next_permission_request_id_(guest_view::kInstanceIDNone),
       web_view_guest_(web_view_guest),
       default_media_access_permission_(false) {
   web_view_permission_helper_delegate_.reset(
@@ -161,38 +161,27 @@ WebViewPermissionHelper::~WebViewPermissionHelper() {
 }
 
 // static
-WebViewPermissionHelper* WebViewPermissionHelper::FromFrameID(
-    int render_process_id,
-    int render_frame_id) {
-  WebViewGuest* web_view_guest =
-      WebViewGuest::FromFrameID(render_process_id, render_frame_id);
+WebViewPermissionHelper* WebViewPermissionHelper::FromRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  WebViewGuest* web_view_guest = WebViewGuest::FromRenderFrameHost(rfh);
   return web_view_guest ? web_view_guest->web_view_permission_helper()
                         : nullptr;
 }
 
 // static
-WebViewPermissionHelper* WebViewPermissionHelper::FromWebContents(
-    content::WebContents* web_contents) {
-  WebViewGuest* web_view_guest = WebViewGuest::FromWebContents(web_contents);
+WebViewPermissionHelper* WebViewPermissionHelper::FromRenderFrameHostId(
+    const content::GlobalRenderFrameHostId& rfh_id) {
+  WebViewGuest* web_view_guest = WebViewGuest::FromRenderFrameHostId(rfh_id);
   return web_view_guest ? web_view_guest->web_view_permission_helper()
                         : nullptr;
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-bool WebViewPermissionHelper::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  return web_view_permission_helper_delegate_->OnMessageReceived(
-      message, render_frame_host);
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void WebViewPermissionHelper::RequestMediaAccessPermission(
     content::WebContents* source,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
   base::DictionaryValue request_info;
-  request_info.SetString(guest_view::kUrl, request.security_origin.spec());
+  request_info.SetStringKey(guest_view::kUrl, request.security_origin.spec());
   RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_MEDIA, request_info,
       base::BindOnce(&WebViewPermissionHelper::OnMediaPermissionResponse,
@@ -223,7 +212,7 @@ void WebViewPermissionHelper::OnMediaPermissionResponse(
     const std::string& user_input) {
   if (!allow) {
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         std::unique_ptr<content::MediaStreamUI>());
     return;
@@ -231,7 +220,7 @@ void WebViewPermissionHelper::OnMediaPermissionResponse(
   if (!web_view_guest()->attached() ||
       !web_view_guest()->embedder_web_contents()->GetDelegate()) {
     std::move(callback).Run(
-        blink::MediaStreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE,
         std::unique_ptr<content::MediaStreamUI>());
     return;
@@ -261,18 +250,11 @@ void WebViewPermissionHelper::RequestPointerLockPermission(
 }
 
 void WebViewPermissionHelper::RequestGeolocationPermission(
-    int bridge_id,
     const GURL& requesting_frame,
     bool user_gesture,
     base::OnceCallback<void(bool)> callback) {
   web_view_permission_helper_delegate_->RequestGeolocationPermission(
-      bridge_id, requesting_frame, user_gesture, std::move(callback));
-}
-
-void WebViewPermissionHelper::CancelGeolocationPermissionRequest(
-    int bridge_id) {
-  web_view_permission_helper_delegate_->CancelGeolocationPermissionRequest(
-      bridge_id);
+      requesting_frame, user_gesture, std::move(callback));
 }
 
 void WebViewPermissionHelper::RequestFileSystemPermission(
@@ -306,7 +288,7 @@ int WebViewPermissionHelper::RequestPermission(
       std::move(callback), permission_type, allowed_by_default);
   std::unique_ptr<base::DictionaryValue> args(new base::DictionaryValue());
   args->SetKey(webview::kRequestInfo, request_info.Clone());
-  args->SetInteger(webview::kRequestId, request_id);
+  args->SetIntKey(webview::kRequestId, request_id);
   switch (permission_type) {
     case WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW: {
       web_view_guest_->DispatchEventToView(std::make_unique<GuestViewEvent>(
@@ -319,8 +301,8 @@ int WebViewPermissionHelper::RequestPermission(
       break;
     }
     default: {
-      args->SetString(webview::kPermission,
-                      PermissionTypeToString(permission_type));
+      args->SetStringKey(webview::kPermission,
+                         PermissionTypeToString(permission_type));
       web_view_guest_->DispatchEventToView(std::make_unique<GuestViewEvent>(
           webview::kEventPermissionRequest, std::move(args)));
       break;

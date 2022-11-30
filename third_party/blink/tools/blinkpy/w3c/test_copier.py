@@ -236,6 +236,6 @@ class TestCopier(object):
         if not self.import_in_place:
             self.filesystem.copyfile(source_path, dest_path)
             # Fix perms: https://github.com/web-platform-tests/wpt/issues/23997
-            if self.filesystem.read_binary_file(source_path)[:2] == '#!' or \
+            if self.filesystem.read_binary_file(source_path)[:2] == b'#!' or \
                     self.filesystem.splitext(source_path)[1].lower() == '.bat':
                 self.filesystem.make_executable(dest_path)

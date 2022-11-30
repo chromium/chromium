@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/dom_distiller/content/browser/test_distillability_observer.h"
+
+#include "components/dom_distiller/content/browser/distillability_driver.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 
 namespace dom_distiller {
@@ -49,6 +51,13 @@ bool TestDistillabilityObserver::WasResultFound(
       return true;
   }
   return false;
+}
+
+bool TestDistillabilityObserver::IsDistillabilityDriverTimerRunning() {
+  DistillabilityDriver::CreateForWebContents(web_contents_);
+  DistillabilityDriver* driver =
+      DistillabilityDriver::FromWebContents(web_contents_);
+  return driver->GetTimer().HasStarted();
 }
 
 }  // namespace dom_distiller

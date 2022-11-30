@@ -33,19 +33,27 @@
 
 namespace blink {
 
-constexpr float kDefaultFontSize = 16.0;
+// static
+const FontSelectionValue& LayoutThemeFontProvider::SystemFontStyle(
+    CSSValueID system_font_id) {
+  return NormalSlopeValue();
+}
 
 // static
-void LayoutThemeFontProvider::SystemFont(CSSValueID system_font_id,
-                                         FontSelectionValue& font_slope,
-                                         FontSelectionValue& font_weight,
-                                         float& font_size,
-                                         AtomicString& font_family) {
-  font_weight = NormalWeightValue();
-  font_slope = NormalSlopeValue();
-  font_size = kDefaultFontSize;
-  font_family = DefaultGUIFont();
+const FontSelectionValue& LayoutThemeFontProvider::SystemFontWeight(
+    CSSValueID system_font_id) {
+  return NormalWeightValue();
+}
 
+// static
+const AtomicString& LayoutThemeFontProvider::SystemFontFamily(
+    CSSValueID system_font_id) {
+  return DefaultGUIFont();
+}
+
+// static
+float LayoutThemeFontProvider::SystemFontSize(CSSValueID system_font_id,
+                                              const Document* document) {
   switch (system_font_id) {
     case CSSValueID::kWebkitMiniControl:
     case CSSValueID::kWebkitSmallControl:
@@ -55,10 +63,10 @@ void LayoutThemeFontProvider::SystemFont(CSSValueID system_font_id,
       // Windows.
       static const float kPointsPerInch = 72.0f;
       static const float kPixelsPerInch = 96.0f;
-      font_size -= (2.0f / kPointsPerInch) * kPixelsPerInch;
-      break;
+      return DefaultFontSize(document) -
+             (2.0f / kPointsPerInch) * kPixelsPerInch;
     default:
-      break;
+      return DefaultFontSize(document);
   }
 }
 

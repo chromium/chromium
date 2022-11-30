@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,15 @@
 class ImageDecoderImpl : public image_fetcher::ImageDecoder {
  public:
   ImageDecoderImpl();
+
+  ImageDecoderImpl(const ImageDecoderImpl&) = delete;
+  ImageDecoderImpl& operator=(const ImageDecoderImpl&) = delete;
+
   ~ImageDecoderImpl() override;
 
   void DecodeImage(const std::string& image_data,
                    const gfx::Size& desired_image_frame_size,
+                   data_decoder::DataDecoder* data_decoder,
                    image_fetcher::ImageDecodedCallback callback) override;
 
  private:
@@ -29,8 +34,6 @@ class ImageDecoderImpl : public image_fetcher::ImageDecoder {
 
   // All active image decoding requests.
   std::vector<std::unique_ptr<DecodeImageRequest>> decode_image_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoderImpl);
 };
 
 #endif  // CHROME_BROWSER_IMAGE_FETCHER_IMAGE_DECODER_IMPL_H_

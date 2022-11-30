@@ -1,9 +1,8 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/util/branding.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//ui/webui/webui_features.gni")
@@ -13,37 +12,41 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   # Keep sorted alphabetically.
   sources = [
-    "${branding_path_component}/product.icon",
     "account_box.icon",
     "account_child.icon",
     "account_child_circle.icon",
+    "account_circle.icon",
     "add.icon",
     "apps.icon",
-    "autofill/gpay_offer.icon",
+    "autofill/local_offer_flipped.icon",
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
     "back_arrow_touch.icon",
+    "backspace.icon",
+    "battery_saver.icon",
     "blocked_redirect.icon",
     "bookmarkbar_touch_overflow.icon",
     "browser_tools.icon",
     "browser_tools_error.icon",
     "browser_tools_touch.icon",
     "browser_tools_update.icon",
-    "caret_down.icon",
-    "caret_up.icon",
-    "cast_for_education.icon",
     "chevron_right.icon",
     "chrome_labs.icon",
     "chrome_labs_touch.icon",
     "click_to_call_illustration.icon",
     "click_to_call_illustration_dark.icon",
-    "close_all.icon",
+    "close_group.icon",
     "computer_with_circle_background.icon",
     "copy.icon",
     "crashed_tab.icon",
     "credit_card.icon",
     "default_touch_favicon.icon",
     "default_touch_favicon_mask.icon",
+    "download_in_progress.icon",
+    "download_in_progress_touch.icon",
+    "download_toolbar_button.icon",
+    "download_toolbar_button_touch.icon",
+    "drag_handle.icon",
     "eol.icon",
     "extension_crashed.icon",
     "eye.icon",
@@ -58,27 +61,40 @@ aggregate_vector_icons("chrome_vector_icons") {
     "hardware_computer.icon",
     "hardware_computer_small.icon",
     "hardware_smartphone.icon",
+    "high_efficiency.icon",
     "horizontal_menu.icon",
     "incognito.icon",
     "incognito_menu_art.icon",
     "incognito_profile.icon",
+    "ink_highlighter.icon",
     "input.icon",
+    "journeys.icon",
     "key.icon",
     "keyboard_arrow_down.icon",
     "keyboard_arrow_right.icon",
     "keyboard_arrow_up.icon",
     "laptop.icon",
+    "laptop_and_smartphone.icon",
+    "leading_scroll.icon",
+    "letter_spacing.icon",
+    "line_spacing.icon",
+    "media_controls_arrow_drop_down.icon",
+    "media_controls_arrow_drop_up.icon",
     "media_toolbar_button.icon",
     "media_toolbar_button_touch.icon",
     "mixed_content.icon",
+    "mono_color_product.icon",
+    "move_group_to_new_window.icon",
     "my_location.icon",
     "navigate_home.icon",
     "navigate_home_touch.icon",
     "navigate_stop.icon",
     "navigate_stop_touch.icon",
+    "new_tab_in_group.icon",
     "nfc.icon",
     "overflow_chevron.icon",
     "paintbrush.icon",
+    "palette.icon",
     "person_filled_padded_large.icon",
     "person_filled_padded_small.icon",
     "photo_camera.icon",
@@ -94,15 +110,21 @@ aggregate_vector_icons("chrome_vector_icons") {
     "remove_box.icon",
     "resize_handle.icon",
     "sad_tab.icon",
-    "scrolling_tabstrip_leading.icon",
-    "scrolling_tabstrip_trailing.icon",
+    "safety_check.icon",
+    "save_group.icon",
+    "save_page.icon",
     "security.icon",
-    "send_tab_to_self.icon",
+    "sharing_hub_screenshot.icon",
+    "side_panel.icon",
+    "side_panel_left.icon",
+    "side_panel_left_touch.icon",
+    "side_panel_touch.icon",
     "sign_out.icon",
     "signin_button_drop_down_arrow.icon",
     "smartphone.icon",
     "speaker.icon",
     "speaker_group.icon",
+    "submit_feedback.icon",
     "supervisor_account.icon",
     "supervisor_account_circle.icon",
     "sync_circle.icon",
@@ -126,14 +148,32 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_search.icon",
     "tab_usb_connected.icon",
     "tablet.icon",
+    "text_decrease.icon",
+    "text_increase.icon",
+    "trailing_scroll.icon",
     "translate.icon",
     "trash_can.icon",
     "tv.icon",
+    "ungroup.icon",
     "usb_cable.icon",
     "user_account_avatar.icon",
     "user_menu_guest.icon",
     "user_menu_right_arrow.icon",
     "web.icon",
+    "webauthn/passkey_aoa.icon",
+    "webauthn/passkey_aoa_dark.icon",
+    "webauthn/passkey_error.icon",
+    "webauthn/passkey_error_bluetooth.icon",
+    "webauthn/passkey_error_bluetooth_dark.icon",
+    "webauthn/passkey_error_dark.icon",
+    "webauthn/passkey_fingerprint.icon",
+    "webauthn/passkey_fingerprint_dark.icon",
+    "webauthn/passkey_header.icon",
+    "webauthn/passkey_header_dark.icon",
+    "webauthn/passkey_phone.icon",
+    "webauthn/passkey_phone_dark.icon",
+    "webauthn/passkey_usb.icon",
+    "webauthn/passkey_usb_dark.icon",
     "webauthn/webauthn_aoa.icon",
     "webauthn/webauthn_error.icon",
     "webauthn/webauthn_error_bluetooth.icon",
@@ -182,20 +222,30 @@ aggregate_vector_icons("chrome_vector_icons") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "crostini_mascot.icon",
+      "notification_download.icon",
+      "terminal_ssh.icon",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "autocorrect_undo.icon",
       "full_restore_notification.icon",
+      "mouse_left_click_edit.icon",
+      "mouse_left_click_view.icon",
+      "mouse_right_click_edit.icon",
+      "mouse_right_click_view.icon",
       "notification_battery.icon",
       "notification_captive_portal.icon",
       "notification_cellular_alert.icon",
-      "notification_download.icon",
       "notification_end_of_support.icon",
       "notification_family_link.icon",
       "notification_google.icon",
       "notification_image.icon",
       "notification_installed.icon",
-      "notification_linux.icon",
       "notification_messages.icon",
       "notification_mobile_data.icon",
       "notification_mobile_data_off.icon",
@@ -208,8 +258,11 @@ aggregate_vector_icons("chrome_vector_icons") {
       "notification_wifi.icon",
       "notification_wifi_off.icon",
       "person_add.icon",
+      "sharesheet_link.icon",
+      "sharesheet_share_with_others.icon",
+      "sharesheet_text.icon",
       "shutdown_guest_os.icon",
-      "warning_badge_circle.icon",
+      "tip.icon",
     ]
   }
 
@@ -224,17 +277,6 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (enable_webui_tab_strip) {
     sources += [ "new_tab_toolbar_button.icon" ]
-  }
-
-  if (is_chrome_branded) {
-    sources += [
-      "google_chrome/google_g_logo.icon",
-      "google_chrome/google_pay_logo.icon",
-    ]
-  }
-
-  if (is_chrome_branded && is_chromeos_ash) {
-    sources += [ "google_chrome/assistant.icon" ]
   }
 }
 

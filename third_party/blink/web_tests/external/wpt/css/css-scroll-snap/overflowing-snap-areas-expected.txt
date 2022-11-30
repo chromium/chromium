@@ -10,5 +10,7 @@ PASS Snap to current scroll position which is a valid snap position, as the snap
 PASS Snap to current scroll position which is a valid snap position, as the snap area covers snapport on y and there is no subsequent snap positions.
 FAIL Don't snap back even if scrollTo tries to scroll to positions which are outside of the scroll range and if a snap target element covers the snaport assert_equals: expected 3715 but got 2200
 PASS Snap to current scroll position on x as the area is covering x axis.However, we snap to the specified snap position on y as the area is not covering y axis.
+PASS snap to current scroll position on y as the area is covering y axis, even though that area is not the only scroll area at the same position.
+PASS snap to current scroll position on x as the area is covering x axis, even though that area is not the only scroll area at the same position.
 Harness: the test ran to completion.
 

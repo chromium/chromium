@@ -14,6 +14,7 @@ window.onload = () => {
     if(navigator.userAgent.includes("Mac OS X"))
       return;
 
+    await waitForCompositorCommit();
     resetScrollOffset(document.scrollingElement);
 
     // Testing the vertical scrollbar thumb with touch.
@@ -27,7 +28,10 @@ window.onload = () => {
       end_y: y + 100
     }
 
+    const scrollPromise = waitForScrollEvent(document);
     await touchDragTo(drag);
+    await scrollPromise;
+    await waitForCompositorCommit();
 
     // The compositor thread ingests touch moves and we do not account for the
     // slop region in ScrollbarController. The browser process conversely

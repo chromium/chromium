@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<meta name=variant content="?method=a">
+<meta name=variant content="?method=a&eligible">
+<meta name=variant content="?method=fetch&eligible=event-source">
+<meta name=variant content="?method=img">
+<meta name=variant content="?method=img&eligible">
+<meta name=variant content="?method=open">
+<meta name=variant content="?method=open&eligible">
+<meta name=variant content="?method=script">
+<meta name=variant content="?method=script&eligible">
+<meta name=variant content="?method=xhr&eligible=event-source">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<body>
+<script>
+attribution_reporting_promise_test(async t => {
+  const expectedSourceType = await registerAttributionSrc(t, {
+    source: {
+      destination: `https://{{host}}`,
+    },
+    method: 'variant',
+  });
+
+  await registerAttributionSrc(t, {trigger: {
+    event_trigger_data: [{}],
+  }});
+
+  const payload = await pollEventLevelReports();
+  assert_equals(payload.reports.length, 1);
+
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.source_event_id, '0');
+  assert_equals(report.source_type, expectedSourceType);
+}, 'Source registration succeeds.');
+</script>

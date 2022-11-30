@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+    #container {
+        width: 100px; border: solid;
+    }
+    .child {
+        display: inline-block;
+        position: relative;
+        width: 50px;
+        height: 50px;
+    }
+    #child1 {
+        background: green;
+        overflow: hidden;
+    }
+    #child2 {
+        overflow: auto;
+    }
+    .target {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: red;
+        top: 0;
+    }
+    canvas {
+        width: 80%;
+        background: green;
+    }
+</style>
+
+<div id="container">
+  <div id="child1" class="child">
+      <div id="target2" class="target"></div>
+  </div>
+  <div id="child2" class="child">
+      <canvas width=10 height=10></canvas> <!-- Baseline of the canvas will move when a scrollbar is added. -->
+      <div id="target1" class="target"></div>
+  </div>
+</div>
+<script>
+    test(() => {
+        document.body.offsetTop;
+        document.getElementById('target1').style.top = '100px';
+        document.getElementById('target2').style.top = '100px';
+    }, "This test should not crash in debug.");
+</script>

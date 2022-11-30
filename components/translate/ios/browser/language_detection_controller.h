@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 #import "ios/web/public/web_state.h"
@@ -17,10 +16,6 @@
 
 class GURL;
 class PrefService;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace net {
 class HttpResponseHeaders;
@@ -30,7 +25,12 @@ namespace web {
 class NavigationContext;
 }
 
+FORWARD_DECLARE_TEST(ChromeIOSTranslateClientTest,
+                     TFLiteLanguageDetectionDurationRecorded);
+
 namespace translate {
+
+class LanguageDetectionModel;
 
 // Maximum length of the extracted text returned by |-extractTextContent|.
 // Matches desktop implementation.
@@ -39,22 +39,32 @@ extern const size_t kMaxIndexChars;
 class LanguageDetectionController : public web::WebStateObserver {
  public:
   LanguageDetectionController(web::WebState* web_state,
+                              LanguageDetectionModel* language_detection_model,
                               PrefService* prefs);
+
+  LanguageDetectionController(const LanguageDetectionController&) = delete;
+  LanguageDetectionController& operator=(const LanguageDetectionController&) =
+      delete;
+
   ~LanguageDetectionController() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(::ChromeIOSTranslateClientTest,
+                           TFLiteLanguageDetectionDurationRecorded);
+
   // Starts the page language detection and initiates the translation process.
   void StartLanguageDetection();
 
   // Handles the "languageDetection.textCaptured" javascript command.
   // |interacting| is true if the user is currently interacting with the page.
-  void OnTextCaptured(const base::DictionaryValue& value,
+  void OnTextCaptured(const base::Value& value,
                       const GURL& url,
                       bool user_is_interacting,
                       web::WebFrame* sender_frame);
 
   // Completion handler used to retrieve the buffered text.
-  void OnTextRetrieved(const std::string& http_content_language,
+  void OnTextRetrieved(const bool has_notranslate,
+                       const std::string& http_content_language,
                        const std::string& html_lang,
                        const GURL& url,
                        const base::Value* text_content);
@@ -70,6 +80,15 @@ class LanguageDetectionController : public web::WebStateObserver {
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // Selects and calls the correct DeterminePageLanguage based on the flags.
+  std::string DeterminePageLanguage(const std::string& code,
+                                    const std::string& html_lang,
+                                    const std::u16string& contents,
+                                    std::string* model_detected_language,
+                                    bool* is_model_reliable,
+                                    float& model_reliability_score,
+                                    std::string* detection_model_version);
+
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;
@@ -77,11 +96,11 @@ class LanguageDetectionController : public web::WebStateObserver {
   // Subscription for JS message.
   base::CallbackListSubscription subscription_;
 
+  LanguageDetectionModel* language_detection_model_ = nullptr;
+
   BooleanPrefMember translate_enabled_;
   std::string content_language_header_;
   base::WeakPtrFactory<LanguageDetectionController> weak_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageDetectionController);
 };
 
 }  // namespace translate

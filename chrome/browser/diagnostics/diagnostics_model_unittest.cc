@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,16 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace diagnostics {
 
 // Basic harness to acquire and release the Diagnostic model object.
 class DiagnosticsModelTest : public testing::Test {
+ public:
+  DiagnosticsModelTest(const DiagnosticsModelTest&) = delete;
+  DiagnosticsModelTest& operator=(const DiagnosticsModelTest&) = delete;
+
  protected:
   DiagnosticsModelTest() : cmdline_(base::CommandLine::NO_PROGRAM) {}
 
@@ -22,15 +25,13 @@ class DiagnosticsModelTest : public testing::Test {
 
   void SetUp() override {
     model_.reset(MakeDiagnosticsModel(cmdline_));
-    ASSERT_TRUE(model_.get() != NULL);
+    ASSERT_TRUE(model_.get() != nullptr);
   }
 
   void TearDown() override { model_.reset(); }
 
   std::unique_ptr<DiagnosticsModel> model_;
   base::CommandLine cmdline_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelTest);
 };
 
 // The test observer is used to know if the callbacks are being called.
@@ -43,8 +44,11 @@ class UTObserver: public DiagnosticsModel::Observer {
         num_recovered_(0) {
   }
 
+  UTObserver(const UTObserver&) = delete;
+  UTObserver& operator=(const UTObserver&) = delete;
+
   void OnTestFinished(int index, DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     ++num_tested_;
     EXPECT_NE(DiagnosticsModel::TEST_FAIL_STOP,
               model->GetTest(index).GetResult())
@@ -52,12 +56,12 @@ class UTObserver: public DiagnosticsModel::Observer {
   }
 
   void OnAllTestsDone(DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     tests_done_ = true;
   }
 
   void OnRecoveryFinished(int index, DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     ++num_recovered_;
     EXPECT_NE(DiagnosticsModel::RECOVERY_FAIL_STOP,
               model->GetTest(index).GetResult())
@@ -65,7 +69,7 @@ class UTObserver: public DiagnosticsModel::Observer {
   }
 
   void OnAllRecoveryDone(DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     recovery_done_ = true;
   }
 
@@ -80,8 +84,6 @@ class UTObserver: public DiagnosticsModel::Observer {
   bool recovery_done_;
   int num_tested_;
   int num_recovered_;
-
-  DISALLOW_COPY_AND_ASSIGN(UTObserver);
 };
 
 // Test that the initial state is correct.

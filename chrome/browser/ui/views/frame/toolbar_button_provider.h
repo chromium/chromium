@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 
 class AppMenuButton;
 class AvatarToolbarButton;
-class BrowserActionsContainer;
+class DownloadToolbarButtonView;
 class ExtensionsToolbarContainer;
+class IntentChipButton;
 class PageActionIconView;
+class SidePanelToolbarButton;
 class ReloadButton;
 class ToolbarButton;
 
@@ -29,10 +31,6 @@ class View;
 // buttons in a BrowserView.
 class ToolbarButtonProvider {
  public:
-  // Gets the browser actions container.
-  // TODO(pbos): Transition callers off of this function.
-  virtual BrowserActionsContainer* GetBrowserActionsContainer() = 0;
-
   // Gets the ExtensionsToolbarContainer.
   virtual ExtensionsToolbarContainer* GetExtensionsToolbarContainer() = 0;
 
@@ -66,6 +64,9 @@ class ToolbarButtonProvider {
   // See comment in browser_window.h for more info.
   virtual void ZoomChangedForActiveTab(bool can_show_bubble) = 0;
 
+  // Returns the side panel button.
+  virtual SidePanelToolbarButton* GetSidePanelButton() = 0;
+
   // Returns the avatar button.
   virtual AvatarToolbarButton* GetAvatarToolbarButton() = 0;
 
@@ -74,6 +75,12 @@ class ToolbarButtonProvider {
 
   // Returns the reload button.
   virtual ReloadButton* GetReloadButton() = 0;
+
+  // Returns the intent chip button, if present.
+  virtual IntentChipButton* GetIntentChipButton() = 0;
+
+  // Returns the download button.
+  virtual DownloadToolbarButtonView* GetDownloadButton() = 0;
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,19 +21,18 @@
 #include "base/logging.h"
 #include "base/process/process_info.h"
 #include "base/process/process_iterator.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/simple_thread.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_localalloc.h"
+#include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/constants/quarantine_constants.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/scoped_service_handle.h"
 #include "chrome/chrome_cleaner/os/system_util.h"
-#include "sandbox/win/src/acl.h"
-#include "sandbox/win/src/sid.h"
 
 namespace chrome_cleaner {
 
@@ -434,8 +433,8 @@ bool InitializeCOMSecurity() {
                                       SECURITY_DESCRIPTOR_REVISION))
     return false;
 
-  DCHECK_EQ(kSidCount, base::size(sids));
-  DCHECK_EQ(kSidCount, base::size(sid_types));
+  DCHECK_EQ(kSidCount, std::size(sids));
+  DCHECK_EQ(kSidCount, std::size(sid_types));
   for (size_t i = 0; i < kSidCount; ++i) {
     DWORD sid_bytes = sizeof(sids[i]);
     if (!::CreateWellKnownSid(sid_types[i], nullptr, sids[i], &sid_bytes))
@@ -446,8 +445,8 @@ bool InitializeCOMSecurity() {
   // the access permissions for your application. COM_RIGHTS_EXECUTE and
   // COM_RIGHTS_EXECUTE_LOCAL are the minimum access rights required.
   EXPLICIT_ACCESS explicit_access[kSidCount] = {};
-  DCHECK_EQ(kSidCount, base::size(sids));
-  DCHECK_EQ(kSidCount, base::size(explicit_access));
+  DCHECK_EQ(kSidCount, std::size(sids));
+  DCHECK_EQ(kSidCount, std::size(explicit_access));
   for (size_t i = 0; i < kSidCount; ++i) {
     explicit_access[i].grfAccessPermissions =
         COM_RIGHTS_EXECUTE | COM_RIGHTS_EXECUTE_LOCAL;
@@ -463,7 +462,7 @@ bool InitializeCOMSecurity() {
   // Create an access control list (ACL) using this ACE list, if this succeeds
   // make sure to ::LocalFree(acl).
   ACL* acl = nullptr;
-  DWORD acl_result = ::SetEntriesInAcl(base::size(explicit_access),
+  DWORD acl_result = ::SetEntriesInAcl(std::size(explicit_access),
                                        explicit_access, nullptr, &acl);
   if (acl_result != ERROR_SUCCESS || acl == nullptr)
     return false;
@@ -515,27 +514,37 @@ bool InitializeQuarantineFolder(base::FilePath* output_quarantine_path) {
     return false;
   }
 
-  sandbox::Sid admin_sid(WinBuiltinAdministratorsSid);
-  if (!admin_sid.IsValid()) {
+  const absl::optional<base::win::Sid> admin_sid = base::win::Sid::FromKnownSid(
+      base::win::WellKnownSid::kBuiltinAdministrators);
+  if (!admin_sid) {
     LOG(ERROR) << "Failed to get administrator sid.";
     return false;
   }
-  PACL dacl;
-  if (!sandbox::AddSidToDacl(admin_sid, /*old_dacl=*/nullptr, SET_ACCESS,
-                             GENERIC_ALL, &dacl)) {
-    LOG(ERROR) << "Failed to create ACLs.";
+
+  EXPLICIT_ACCESS explicit_access[1] = {};
+  explicit_access[0].grfAccessPermissions = GENERIC_ALL;
+  explicit_access[0].grfAccessMode = SET_ACCESS;
+  explicit_access[0].grfInheritance = NO_INHERITANCE;
+  ::BuildTrusteeWithSidW(&explicit_access[0].Trustee, admin_sid->GetPSID());
+
+  PACL dacl_ptr = nullptr;
+  if (::SetEntriesInAcl(std::size(explicit_access), explicit_access,
+                        /*OldAcl=*/nullptr, &dacl_ptr) != ERROR_SUCCESS) {
+    LOG(ERROR) << "Failed to create DACL for quarantine folder.";
     return false;
   }
 
+  base::win::ScopedLocalAllocTyped<ACL> dacl =
+      base::win::TakeLocalAlloc(dacl_ptr);
   DWORD result_code = ERROR_SUCCESS;
   // |PROTECTED_DACL_SECURITY_INFORMATION| will remove inherited ACLs.
   result_code = ::SetNamedSecurityInfo(
       const_cast<wchar_t*>(quarantine_path.value().c_str()), SE_FILE_OBJECT,
       OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION |
           PROTECTED_DACL_SECURITY_INFORMATION,
-      admin_sid.GetPSID(), /*psidGroup=*/nullptr, dacl, /*pSacl=*/nullptr);
+      admin_sid->GetPSID(), /*psidGroup=*/nullptr, dacl.get(),
+      /*pSacl=*/nullptr);
 
-  ::LocalFree(dacl);
   if (result_code != ERROR_SUCCESS) {
     LOG(ERROR) << "Failed to set ACLs to quarantine folder.";
     return false;

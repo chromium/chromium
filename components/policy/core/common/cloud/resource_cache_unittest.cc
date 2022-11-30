@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -57,7 +57,7 @@ class ResourceCacheTest : public testing::Test {
 
 TEST_F(ResourceCacheTest, StoreAndLoad) {
   ResourceCache cache(temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
-                      /* max_cache_size */ base::nullopt);
+                      /* max_cache_size */ absl::nullopt);
 
   // No data initially.
   std::string data;
@@ -146,7 +146,7 @@ TEST_F(ResourceCacheTest, StoreAndLoad) {
 
 TEST_F(ResourceCacheTest, FilterSubkeys) {
   ResourceCache cache(temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
-                      /* max_cache_size */ base::nullopt);
+                      /* max_cache_size */ absl::nullopt);
 
   // Store some data.
   EXPECT_FALSE(cache.Store(kKey1, kSubA, kData0).empty());
@@ -219,7 +219,7 @@ TEST_F(ResourceCacheTest, StoreWithEnabledCacheLimit) {
   EXPECT_FALSE(cache.Store(kKey1, kSubB, kData1).empty());
 }
 
-#if defined(OS_POSIX)  // Because of symbolic links.
+#if BUILDFLAG(IS_POSIX)  // Because of symbolic links.
 
 TEST_F(ResourceCacheTest, StoreInDirectoryWithCycleSymlinks) {
   base::FilePath inner_dir = temp_dir_.GetPath().AppendASCII("inner");
@@ -250,6 +250,6 @@ TEST_F(ResourceCacheTest, StoreInDirectoryWithSymlinkToRoot) {
   EXPECT_FALSE(cache.Store(kKey1, kSubA, kData10Kb).empty());
 }
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace policy

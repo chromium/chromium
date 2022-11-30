@@ -1,0 +1,298 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of others histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Scheduler.CancelableTaskTracker.TaskDuration2" units="ms"
+    expires_after="2021-04-04">
+<!-- Name completed by histogram_suffixes name="CancelableTaskTrackerDurationTypes" -->
+
+  <owner>wez@chromium.org</owner>
+  <owner>scheduler-dev@chromium.org</owner>
+  <summary>
+    Time taken for a task posted to a CancelableTaskTracker to run. Durations
+    are not recorded for tasks skipped due to having been canceled.
+  </summary>
+</histogram>
+
+<histogram name="Scheduler.CancelableTaskTracker.TaskStatus"
+    enum="CancelableTaskStatus" expires_after="2021-04-04">
+  <owner>wez@chromium.org</owner>
+  <owner>scheduler-dev@chromium.org</owner>
+  <summary>
+    Records whether a task posted to CancelableTaskTracker was canceled before
+    it got the chance to run, and whether it was same-sequence or off-sequence.
+    Recorded for every task posted via CancelableTaskTracker, immediately before
+    it would be run.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Scheduler.DOMScheduler.QueueingDurationPerPriority" units="ms"
+    expires_after="2022-12-01">
+<!-- Name completed by histogram_suffixes name="Scheduler.DOMScheduler.Priority" -->
+
+  <owner>kdillon@chromium.org</owner>
+  <owner>shaseley@chromium.org</owner>
+  <summary>
+    Queueing time of a task posted via the postTask API. Reported when the task
+    is starts and bycked by priority. Tasks who have had their priority changed
+    are skipped.
+  </summary>
+</histogram>
+
+<histogram name="Scheduler.DOMScheduler.TaskSignalPriorityWasChanged"
+    enum="PriorityChangeStatus" expires_after="2022-12-01">
+  <owner>kdillon@chromium.org</owner>
+  <owner>shaseley@chromium.org</owner>
+  <summary>
+    Records whether or not a task posted via scheduler.postTask had it's
+    priority changed. Records when the task is started.
+  </summary>
+</histogram>
+
+<histogram name="Scheduler.Experimental.CPUTimePerThread"
+    enum="SchedulerThreadType" expires_after="M81">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total wall time of all tasks in scheduler-managed threads split per thread.
+
+    The bucket value is the sum of thread durations of all tasks in this thread
+    across all browsing instances. This metric is reported each time we execute
+    a task which has cpu time measurement.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Scheduler.Experimental.Renderer.CPUTimePerThread"
+    enum="RendererSchedulerThreadType" expires_after="M85">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total cpu time of scheduler-managed threads in the renderer process.
+
+    It is supposed that Scheduler.Experimental.Renderer.CPUTimePerThread.Tracked
+    and Scheduler.Experimental.Renderer.CPUTimePerThread.Untracked histograms
+    should be analysed together.
+
+    The bucket value is the sum of thread durations of all tasks in this thread
+    across all browsing instances. This metric is reported each time we execute
+    a task. Due to thread time being expensive to measure, only 0.01% of threads
+    report this metric.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread" units="s"
+    expires_after="M81">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Sum of durations of all scheduler-managed tasks in the renderer process.
+
+    Due to implementation constraints a difference between .Positive and
+    .Negative subhistograms should be analysed. See
+    blink::scheduler::TotalDurationMetricReporter for details.
+
+    These metrics are updated each time a new task is executed.
+  </summary>
+</histogram>
+
+<histogram name="Scheduler.Experimental.Renderer.UkmRecordingStatus"
+    enum="SchedulerUkmRecordingStatus" expires_after="M81">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    The results of the attempts to sample scheduling tasks into the UKM. Used to
+    ensure that we're not silently dropping tasks, which can lead to biases in
+    our analyses.
+
+    Recorded each time a scheduling task UKM is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Scheduler.Experimental.WallTimePerThread"
+    enum="SchedulerThreadType" expires_after="M77">
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Total wall time of all tasks in scheduler-managed threads split per thread.
+
+    The bucket value is the sum of thread durations of all tasks in this thread
+    across all browsing instances. This metric is reported each time we execute
+    a task which has wall time measurement.
+  </summary>
+</histogram>
+
+<histogram name="Scheduler.TaskQueueImpl.DelayedIncomingQueueSize"
+    units="tasks" expires_after="2023-02-12">
+  <owner>yafroze@google.com</owner>
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The size of the |delayed_incoming_queue|.
+
+    This is emitted pseudorandomly when a delayed task is enqueued on the
+    SequenceManager's main thread.
+
+    Note: This metric merges from all named threads.
+  </summary>
+</histogram>
+
+<histogram name="Scheduler.TaskQueueImpl.PostDelayedTaskDelay" units="ms"
+    expires_after="2023-02-12">
+  <owner>yafroze@google.com</owner>
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The delay time for the delayed tasks posted to the sequence manager.
+
+    This is emitted pseudorandomly when a delayed task is enqueued on the
+    SequenceManager's main thread.
+
+    Note: This metric merges from all named threads.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.BeginImplFrameLatency2" units="microseconds"
+    expires_after="M85">
+  <owner>stanisc@chromium.org</owner>
+  <summary>
+    The time from v-sync to when the main side actually starts the
+    BeginImplFrame.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
+    enum="MessagePumpPhases" expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Records the number of milliseconds spent in each phase of pumping tasks on
+    {NamedThread}. Each enum value can be analyzed for its total time or as a
+    percentage relative to other phases.
+  </summary>
+  <token key="NamedThread">
+    <variant name="BrowserIO"/>
+    <variant name="BrowserUI"/>
+  </token>
+</histogram>
+
+<histogram name="Scheduling.Renderer.DeadlineMode"
+    enum="RendererSchedulerDeadlineMode" expires_after="2023-02-26">
+  <owner>weiliangc@chromium.org</owner>
+  <owner>chrome-gpu-metrics@chromium.org</owner>
+  <summary>
+    The type of deadline mode the Renderer's cc::Scheduler is in when the
+    scheduler enters the BeginImplFrame deadline. This emits immediately as the
+    scheduler enters the deadline.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.Renderer.DrawInterval2" units="microseconds"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>vmiura@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The time delta between the draw times of back-to-back BeginImplFrames,
+    regardless of whether or not they result in a swap.
+
+    The interval is only recorded when every BeginImplFrame wants to draw.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_HIGH_RESOLUTION_TIMES for
+    the solution.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.Renderer.DrawIntervalWithCustomPropertyAnimations2"
+    units="microseconds" expires_after="2022-07-03">
+  <owner>xidachen@chromium.org</owner>
+  <owner>animations-dev@chromium.org</owner>
+  <summary>
+    The time delta between the draw times of back-to-back BeginImplFrames,
+    regardless of whether or not they result in a swap, when there is at least
+    one custom property animation.
+
+    The interval is only recorded when every BeginImplFrame wants to draw.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.Renderer.FrameProduction.TimeOverused"
+    units="microseconds" expires_after="2023-02-19">
+  <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-metrics@chromium.org</owner>
+  <summary>
+    Measures the difference in time allotted to the Renderer, by the Scheduler,
+    for frame production, from the time elapsed when the compositor frame is
+    submitted. This value would show the time used after the anticipated
+    deadline.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES so only users with
+    high resolution clocks will report this metric.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.Renderer.FrameProduction.TimeUnused"
+    units="microseconds" expires_after="2023-02-19">
+  <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-metrics@chromium.org</owner>
+  <summary>
+    Measures the difference in time allotted to the Renderer, by the Scheduler,
+    for frame production, from the time elapsed when the compositor frame is
+    submitted. This value would show the time remaining after submit before the
+    anticipated deadline.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES so only users with
+    high resolution clocks will report this metric.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
+    expires_after="M85">
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Number of tasks executed by a SchedulerWorker before it detached. Recorded
+    when a SchedulerWorker detaches.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

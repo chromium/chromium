@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
     NOT_DESTROYED();
     return IsLayoutNGObjectForListMarkerImage();
   }
-  LayoutSize DefaultSize() const;
+  gfx::SizeF DefaultSize() const;
 
  private:
   bool IsOfType(LayoutObjectType) const override;

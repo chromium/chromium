@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 // the application's window in order to stay visible all the times.
 //
 // The debugger owns some timers that must be invalidated before it can be
-// deallocated so the owner must call |invalidateTimers| before a MemoryDebugger
+// deallocated so the owner must call `invalidateTimers` before a MemoryDebugger
 // instance can be deallocated.
 @interface MemoryDebugger : UIView<UITextFieldDelegate>
 // Must be called before the object can be deallocated!

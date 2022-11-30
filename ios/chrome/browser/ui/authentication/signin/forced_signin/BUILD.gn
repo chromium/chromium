@@ -1,0 +1,64 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("forced_signin") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "forced_signin_coordinator.h",
+    "forced_signin_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/first_run/legacy_signin",
+    "//ios/chrome/browser/ui/first_run/signin",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_type",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "forced_signin_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:common_constants",
+    "//components/signin/ios/browser:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/views:views_constants",
+    "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/first_run:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/public/provider/chrome/browser/signin:constants",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

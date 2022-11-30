@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- Site settings top level entry -->
-  <message name="IDS_PREFS_SITE_SETTINGS" desc="Title of the Website Settings screen. [CHAR-LIMIT=32]">
+  <message name="IDS_PREFS_SITE_SETTINGS" desc="Title of the Website Settings screen. [CHAR_LIMIT=32]">
     Site settings
   </message>
 
   <!-- Site settings categories -->
-  <message name="IDS_ALL_SITES" desc='Title of the "All sites" settings screen that allows the user to see permissions for all websites. [CHAR-LIMIT=32]'>
+  <message name="IDS_ALL_SITES" desc='Title of the "All sites" settings screen that allows the user to see permissions for all websites. [CHAR_LIMIT=32]'>
     All sites
   </message>
-  <message name="IDS_ADS_PERMISSION_TITLE" desc="Title for the ads permission [CHAR-LIMIT=32]">
+  <message name="IDS_ADS_PERMISSION_TITLE" desc="Title for the ads permission [CHAR_LIMIT=32]">
     Ads
   </message>
-  <message name="IDS_AR_PERMISSION_TITLE" desc="Title of the permission to use Augmented Reality [CHAR-LIMIT=32]">
+  <message name="IDS_AR_PERMISSION_TITLE" desc="Title of the permission to use Augmented Reality [CHAR_LIMIT=32]">
     Augmented reality
   </message>
   <message name="IDS_AUTOMATIC_DOWNLOADS_PERMISSION_TITLE" desc="Title of the permission that allows websites to download multiple files automatically.">
     Automatic downloads
   </message>
-  <message name="IDS_BACKGROUND_SYNC_PERMISSION_TITLE" desc="Title of the permission that allows websites to queue an operation for the next time the device is online[CHAR-LIMIT=32]">
+  <message name="IDS_BACKGROUND_SYNC_PERMISSION_TITLE" desc="Title of the permission that allows websites to queue an operation for the next time the device is online[CHAR_LIMIT=32]">
     Background sync
   </message>
   <message name="IDS_WEBSITE_SETTINGS_BLUETOOTH_SCANNING" desc="Title for Bluetooth scanning settings, which control whether websites can do Bluetooth scanning.">
@@ -27,47 +27,56 @@
   <message name="IDS_WEBSITE_SETTINGS_USE_CAMERA" desc="The category filter 'Camera' for site settings.">
     Camera
   </message>
-  <message name="IDS_CLIPBOARD_PERMISSION_TITLE" desc="Title of the permission to read from clipboard [CHAR-LIMIT=32]">
+  <message name="IDS_CLIPBOARD_PERMISSION_TITLE" desc="Title of the permission to read from clipboard [CHAR_LIMIT=32]">
     Clipboard
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR-LIMIT=32]">
+  <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR_LIMIT=32]">
     Your device use
   </message>
-  <message name="IDS_JAVASCRIPT_PERMISSION_TITLE" desc="Title of the permission to run javascript [CHAR-LIMIT=32]">
+  <message name="IDS_JAVASCRIPT_PERMISSION_TITLE" desc="Title of the permission to run javascript [CHAR_LIMIT=32]">
     JavaScript
   </message>
   <message name="IDS_WEBSITE_SETTINGS_DEVICE_LOCATION" desc="Title for Location settings, which control which websites can access your location." meaning="Geolocation">
     Location
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
+    Third-party sign-in
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_USE_MIC" desc="The category filter 'Mic' for site settings.">
     Microphone
   </message>
-  <message name="IDS_MIDI_SYSEX_PERMISSION_TITLE" desc="Title of the permission that allows a website to get full control of MIDI devices [CHAR-LIMIT=32]">
+  <message name="IDS_MIDI_SYSEX_PERMISSION_TITLE" desc="Title of the permission that allows a website to get full control of MIDI devices [CHAR_LIMIT=32]">
     Allow full control of MIDI devices
   </message>
-  <message name="IDS_MOTION_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's motion sensors (accelerometer, gyroscope, magnetometer) [CHAR-LIMIT=32]">
+  <message name="IDS_MOTION_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's motion sensors (accelerometer, gyroscope, magnetometer) [CHAR_LIMIT=32]">
     Motion sensors
   </message>
-  <message name="IDS_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's sensors [CHAR-LIMIT=32]">
+  <message name="IDS_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's sensors [CHAR_LIMIT=32]">
     Motion or light sensors
   </message>
-  <message name="IDS_NFC_PERMISSION_TITLE" desc="Title of the permission to use NFC [CHAR-LIMIT=32]">
+  <message name="IDS_NFC_PERMISSION_TITLE" desc="Title of the permission to use NFC [CHAR_LIMIT=32]">
     NFC devices
   </message>
-  <message name="IDS_PUSH_NOTIFICATIONS_PERMISSION_TITLE" desc="Title for the permission for showing push notifications [CHAR-LIMIT=32]">
+  <message name="IDS_PUSH_NOTIFICATIONS_PERMISSION_TITLE" desc="Title for the permission for showing push notifications [CHAR_LIMIT=32]">
     Notifications
   </message>
-  <message name="IDS_POPUP_PERMISSION_TITLE" desc="Title of the permission to display pop-up windows and redirects [CHAR-LIMIT=32]">
+  <message name="IDS_POPUP_PERMISSION_TITLE" desc="Title of the permission to display pop-up windows and redirects [CHAR_LIMIT=32]">
     Pop-ups and redirects
   </message>
-  <message name="IDS_PROTECTED_CONTENT" desc="Title for link to protected content settings [CHAR-LIMIT=32]">
+  <message name="IDS_PROTECTED_CONTENT" desc="Title for link to protected content settings [CHAR_LIMIT=32]">
     Protected content
   </message>
-  <message name="IDS_SOUND_PERMISSION_TITLE" desc="Title of the permission to play sound [CHAR-LIMIT=32]">
+  <message name="IDS_SOUND_PERMISSION_TITLE" desc="Title of the permission to play sound [CHAR_LIMIT=32]">
     Sound
   </message>
-  <message name="IDS_VR_PERMISSION_TITLE" desc="Title of the permission to use Virtual Reality [CHAR-LIMIT=32]">
+  <message name="IDS_VR_PERMISSION_TITLE" desc="Title of the permission to use Virtual Reality [CHAR_LIMIT=32]">
     Virtual reality
+  </message>
+  <message name="IDS_AUTO_DARK_WEB_CONTENT_TITLE" desc="Title of the permission auto darken web content [CHAR_LIMIT=32]">
+    Dark theme for sites
+  </message>
+  <message name="IDS_DESKTOP_SITE_TITLE" desc="Title of the permission to request the desktop view of a site by default [CHAR_LIMIT=32]">
+    Desktop site
   </message>
 
   <!-- Site settings global toggles -->
@@ -98,6 +107,18 @@
   <message name="IDS_ENABLE_NOTIFICATIONS_VIBRATE_SUMMARY" desc="Summary for the preference to enable vibration for notifications">
     Notifications may vibrate the device
   </message>
+    <message name="IDS_ENABLE_DESKTOP_SITE_PERIPHERAL_TITLE" translateable="false" desc="Title for the preference to enable peripheral setting for request desktop site">
+    Accessories
+  </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_PERIPHERAL_SUMMARY" translateable="false" desc="Summary for the preference to enable peripheral setting for request desktop site">
+    Always request desktop site if a keyboard, trackpad, or mouse is attached
+  </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_TITLE" translateable="false" desc="Title for the preference to enable display setting for request desktop site">
+    Displays
+  </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_SUMMARY" translateable="false" desc="Summary for the preference to enable display setting for request desktop site">
+    Always request desktop site if a monitor is connected
+  </message>
 
   <!-- Site settings: general category strings -->
 
@@ -113,6 +134,12 @@
   <message name="IDS_WEBSITE_SETTINGS_BLOCKED_GROUP_HEADING_SOUND" desc="The heading for a list of websites that have been muted.">
     Muted
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_ALLOWED_GROUP_HEADING_REQUEST_DESKTOP_SITE" desc="The heading for a list of websites that will be requested the desktop view of sites.">
+    Always request desktop site
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_BLOCKED_GROUP_HEADING_REQUEST_DESKTOP_SITE" desc="The heading for a list of websites that will be requested the mobile view of sites.">
+    Always request mobile site
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_MANAGED_GROUP_HEADING" desc="The heading for a list of websites that are managed by an external app.">
     Managed by app
   </message>
@@ -125,7 +152,21 @@
   <message name="IDS_WEBSITE_SETTINGS_EMBEDDED_ON" desc="String used to indicate the embedder origin of a site">
     Embedded on <ph name="WEBSITE_URL">%1$s<ex>google.com</ex></ph>
   </message>
-
+  <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the clear browsing data dialog.">
+    Clear browsing data…
+  </message>
+  <message name="IDS_SUMMARY_WITH_ONE_BULLET" desc="Used to generate a summary that consists of two parts, separated by a bullet.">
+    <ph name="FIRST_PART">%1$s<ex>http</ex></ph> • <ph name="SECOND_PART">%2$s<ex>10 MB</ex></ph>
+  </message>
+  <message name="IDS_DOMAIN_SETTINGS_TITLE" desc="Title of the domain-level Site Settings page.">
+    Settings for <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_DOMAIN_SETTINGS_SITES_IN_GROUP" desc="Title for the section that lists sites in the group for a given domain.">
+    Sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_COOKIES_COUNT" desc="Used to display how many cookies are associated with a given site/domain.">
+    {COOKIES, plural, =1 {# cookie} other {# cookies}}
+  </message>
   <!-- Site settings: Possible permission values for a single site -->
 
   <message name="IDS_WEBSITE_SETTINGS_SITE_CATEGORY" desc="The headline above the website name on the website details page.">
@@ -133,6 +174,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_USAGE_CATEGORY" desc="The headline above the usage stats (how much storage the site is using) on the website details page.">
     Usage
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_RELATED_SITES" desc="The headline above the related sites (First Party Sets) on the website details page.">
+    Related sites
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_CATEGORY" desc="The headline above all the permissions on the website details page.">
     Permissions
@@ -143,23 +187,20 @@
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOW" desc="Summary text explaining that Chrome will allow a website to access some permission, e.g. JavaScript: allow.">
     Allow
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOW_DSE" desc="Summary text explaining that Chrome will allow the default search engine to access this permission, both when performed from the address bar and from search result pages. e.g. Location access: Allow for current search engine">
-    Allow for current search engine
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOWED_DSE" desc="Status message explaining that the default search engine is allowed to access this permission. Displayed in Site Settings page. e.g. Location: Allowed for current search engine">
     Allowed for current search engine
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK" desc="Summary text explaining that Chrome will block a website from accessing some permission, e.g. JavaScript: block.">
     Block
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK_DSE" desc="Summary text explaining that Chrome will block the default search engine from accessing this permission, both when performed from the address bar and from search result pages. e.g. Location access: Block for current search engine">
-    Block for current search engine
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCKED_DSE" desc="Status message explaining that the default search engine is blocked from accessing this permission. Displayed in Site Settings page. e.g. Location: Blocked for current search engine">
     Blocked for current search engine
   </message>
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_EXCEPTION_LABEL" desc="The label for site exceptions that affect third party cookies.">
    Including third-party cookies on this site
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_DOMAIN_EXCEPTION_LABEL" desc="The label for site exceptions that apply to the entire domain.">
+    All sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
   </message>
 
   <!-- Site settings Add Exception dialog -->
@@ -188,7 +229,7 @@
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_TITLE" desc="Title of the confirmation dialog when the user ask to clear all data for an origin">
     Clear site data?
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_OK_BUTTON" desc="Button confirming site data cleanup [CHAR-LIMIT=20]">
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_OK_BUTTON" desc="Button confirming site data cleanup [CHAR_LIMIT=20]">
     Clear
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_SINGLE" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a single origin">
@@ -212,7 +253,7 @@
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_ALL_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of all sites being cleared.">
     You'll be signed out of all sites.
   </message>
-  <message name="IDS_STORAGE_CLEAR_SITE_STORAGE_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR-LIMIT=24]">
+  <message name="IDS_STORAGE_CLEAR_SITE_STORAGE_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR_LIMIT=24]">
     Clear site data?
   </message>
   <message name="IDS_STORAGE_CLEAR_DIALOG_CLEAR_STORAGE_OPTION" desc="Text of the button that will clear website storage.">
@@ -223,6 +264,9 @@
   </message>
   <message name="IDS_WEBSITE_RESET" desc="The label for the button allowing users to clear all data and reset the permissions for a website.">
     Clear &amp; reset
+  </message>
+  <message name="IDS_WEBSITE_RESET_FULL" desc="The label for the button allowing users to clear all data and reset the permissions for a website.">
+    Clear data &amp; reset permissions
   </message>
   <message name="IDS_WEBSITE_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about clearing all data and reset the permissions for a site.">
     Are you sure you want to clear all local data, including cookies, and reset all permissions for this website?
@@ -237,9 +281,6 @@
 
   <message name="IDS_INTRUSIVE_ADS_INFORMATION" desc="The extra information at the top of the Site Details page when the site tends to show intrusive ads">
     This site shows intrusive or misleading ads
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ADS_BLOCK" desc="The Blocked string for the ads permission on Site Details">
-     Block if site shows intrusive or misleading ads (recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED" desc="A setting that, if turned on, will block intrusive or misleading ads on sites that have a history of showing such ads.">
     Block ads on sites that show intrusive or misleading ads
@@ -316,7 +357,7 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOW_TITLE" desc="Text used to explain the allow cookies option in settings">
     Allow cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_INCOGNITO_TITLE" desc="Text used to explain the block third-party cookies in incognito option in settings">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_INCOGNITO_TITLE" desc="Text used to explain the block third-party cookies in Incognito option in settings">
     Block third-party cookies in Incognito
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_TITLE" desc="Text used to explain the block third-party cookies option in settings">
@@ -329,10 +370,13 @@
     Sites will work normally
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_ADDITION" desc="Additional text used to explain the block third-party cookies option in settings">
-    Features on some sites may break
+    Features on some sites may not work
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_FPS_ADDITION" desc="Additional text used to explain the block third-party cookies option in settings when First Party Sets are enables.">
+    Related sites can see your activity in the group
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_ADDITION" desc="Additional text used to explain the block cookies option in settings">
-    Features on many sites may break
+    Features on many sites may not work
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOWED" desc="Summary text explaining that sites are allowed to use cookies and that it is the recommended setting.">
     Allow sites to save and read cookie data (recommended)
@@ -344,7 +388,81 @@
    Block cookies for a specific site.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_COOKIE_INFO" desc="Text describing cookie and third-party cookie settings.">
-    Cookies are files created by websites you visit. Sites use them to remember your preferences. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the webpage you visit.
+    A site you visit can embed content from other sites, for example images, ads, and text. Any of these sites can save cookies and other data to personalize your experience.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
+    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_TWO" desc="Description for the second bullet of cookie settings subpage.">
+    While in Incognito, sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_INCOGNITO_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage in Incognito option in settings">
+    Block third-party cookies in Incognito:
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
+    Block third-party cookies:
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_TITLE" desc="First Party Sets toggle title in the cookie site settings subpage.">
+    Allow related sites to see your activity in the group
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_DESCRIPTION" desc="First Party Sets toggle description in the cookie site settings subpage.">
+     A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
+  </message>
+  <message name="IDS_ALLSITES_FPS_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites settings page.">
+    {COUNT, plural,
+      =1 {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
+      other {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
+  </message>
+  <message name="IDS_ALLSITES_FPS_LIST_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites list settings page.">
+    {COUNT, plural,
+      =1 {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
+      other {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> sites}}
+  </message>
+  <message name="IDS_COOKIE_INFO_FPS_TITLE" desc="First Party Sets title in the cookies info page.">
+      Related sites
+   </message>
+  <message name="IDS_COOKIE_INFO_FPS_SUMMARY" desc="First Party Sets summary in the cookies info page.">
+    This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER">%1$s<ex>google.com</ex></ph>
+  </message>
+
+  <!-- Desktop Site -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED" desc="Summary text explaining that desktop view of sites will be requested by default.">
+    Request desktop view
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED" desc="Summary text explaining that mobile view of sites will be requested by default and that it is the recommended setting.">
+    Request mobile view (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED_LIST" desc="Summary text explaining that desktop view of sites will be requested by default. To be shown in the list of permission categories.">
+    On
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED_LIST" desc="Summary text explaining that mobile view of sites will be requested by default. To be shown in the list of permission categories.">
+    Off
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_DOMAIN_DESKTOP_SITE_EXCEPTION_CHECKBOX_PRIMARY" desc="Primary text of a checkbox in the dialog to add a website to a list.">
+   Include all sites under this domain
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_DOMAIN_DESKTOP_SITE_EXCEPTION_CHECKBOX_DESCRIPTION" desc="Description text of a checkbox in the dialog to add a website to a list.">
+   Recommended for best experience
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_DESKTOP_SITE_ALLOW" desc="Summary text explaining that Chrome will request desktop view for a website.">
+    Desktop site
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_DESKTOP_SITE_BLOCK" desc="Summary text explaining that Chrome will request mobile view for a website.">
+    Mobile site
+  </message>
+
+  <!-- Federated Identity -->
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_FEDERATED_IDENTITY_ALLOW" desc="The description for the allow third-party sign-in for website dialog.">
+    Allow third-party sign-in for a specific site.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_FEDERATED_IDENTITY_BLOCK" desc="The description for the block third-party sign-in for website dialog.">
+    Block third-party sign-in for a specific site.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_ALLOWED" desc="The description for the option to allow sites to use the browser Third-Party Sign In API.">
+    Sites can show sign-in prompts from identity services.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_BLOCKED" desc="The description for the option to block sites from using the browser Third-Party Sign In API.">
+    Block sign-in prompts from identity services.
   </message>
 
   <!-- Idle Detection -->
@@ -412,10 +530,10 @@
   <!-- NFC -->
 
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NFC_ASK" desc="Summary text explaining that sites need to ask for permission before using NFC and that it is the recommended setting.">
-    Ask before allowing sites to send and receive info when you tap NFC devices (recommended)
+    Ask before allowing sites to see and change information on NFC devices (recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NFC_BLOCKED" desc="Summary text explaining that sites are blocked from using NFC.">
-    Block sites from sending and receiving info when you tap NFC devices
+    Block sites from seeing and changing information on NFC devices
   </message>
   <message name="IDS_ANDROID_NFC_OFF_GLOBALLY" desc="The message to show when NFC has been turned off globally in Android. Contains a link to the settings menu to enable NFC.">
     NFC is off for this device. Turn it on in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
@@ -489,7 +607,7 @@
 
   <!-- Storage -->
 
-  <message name="IDS_WEBSITE_SETTINGS_STORAGE" desc="Title for Storage settings which show how much data websites are storing on the user's device. [CHAR-LIMIT=32]">
+  <message name="IDS_WEBSITE_SETTINGS_STORAGE" desc="Title for Storage settings which show how much data websites are storing on the user's device. [CHAR_LIMIT=32]">
     Data stored
   </message>
   <message name="IDS_NO_SAVED_WEBSITE_SETTINGS" desc="Text to display when there are no saved website settings.">
@@ -498,7 +616,7 @@
   <message name="IDS_ORIGIN_SETTINGS_STORAGE_USAGE_BRIEF" desc="Explanation of how much local storage a website is using">
     <ph name="STORAGE_AMOUNT">%1$s<ex>2 MB</ex></ph> stored data
   </message>
-  <message name="IDS_STORAGE_CLEAR_BUTTON_TITLE" desc="Title of a button in the storage UI used to clear all storage data. [CHAR-LIMIT=24]">
+  <message name="IDS_STORAGE_CLEAR_BUTTON_TITLE" desc="Title of a button in the storage UI used to clear all storage data. [CHAR_LIMIT=24]">
     Clear all data
   </message>
 
@@ -528,4 +646,16 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_VR_BLOCKED" desc="Summary text explaining that sites are blocked from using VR.">
     Block sites from using your virtual reality device and data
   </message>
+
+  <!-- Auto-darken web content -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_ALLOWED" desc="Summary text explaining that sites are alllowed to be darkend with Chrome branded darkening algorithm.">
+    Apply dark theme to sites when Chrome uses dark theme, when possible
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_BLOCKED" desc="Summary text explaining that sites are blocked to be darkend with Chrome branded darkening algorithm.">
+    Don’t apply dark theme to sites
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_AUTO_DARK_BLOCK" desc="The description for the block auto darken for a specific website dialog.">
+    Don’t apply dark theme for a specific site
+  </message>
+
 </grit-part>

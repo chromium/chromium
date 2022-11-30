@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,7 @@ class ToughWebglPage(rendering_story.RenderingStory):
     if extra_browser_args is None:
       extra_browser_args = []
     extra_browser_args.append("--enable-webgl-draft-extensions")
+    extra_browser_args.append("--disable-features=V8TurboFastApiCalls")
     super(ToughWebglPage, self).__init__(
         page_set=page_set,
         shared_page_state_class=shared_page_state_class,
@@ -173,6 +174,7 @@ class MicrogameFPS(UnityPage):
 
 class LostCrypt(UnityPage):
   BASE_NAME = 'lost_crypt'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   # pylint: disable=line-too-long
   URL = 'http://clb.confined.space/emunittest/LostCrypt_20191220_131436_wasm_release/index.html?playback'
 
@@ -185,11 +187,14 @@ def MakeFastCallVariant(cls):
                extra_browser_args=None):
     if extra_browser_args is None:
       extra_browser_args = []
-    extra_browser_args.append('--enable-unsafe-fast-js-calls')
     super(cls, self).__init__(page_set=page_set,
                               shared_page_state_class=shared_page_state_class,
                               name_suffix=name_suffix,
                               extra_browser_args=extra_browser_args)
+    # This has to be after after superclass init in order to override the args
+    # added by ToughWebglPage.__init__
+    extra_browser_args.remove("--disable-features=V8TurboFastApiCalls")
+    extra_browser_args.append("--enable-features=V8TurboFastApiCalls")
 
   return type(
       cls.__name__ + 'FastCall', (cls,), {

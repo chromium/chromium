@@ -1,0 +1,80 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+copy("copy_audio") {
+  sources = [
+    "audio.ts",
+    "audio_broker.ts",
+    "audio_player.ts",
+    "device_page.ts",
+    "device_table.ts",
+    "feedback_page.ts",
+    "input_page.ts",
+    "output_page.ts",
+    "page.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/ui/webui/ash/audio:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/audio/audio.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":copy_audio",
+    ":copy_mojo",
+  ]
+  root_dir = "$target_gen_dir"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "audio_broker.ts",
+    "audio.ts",
+    "audio_player.ts",
+    "audio.mojom-webui.js",
+    "device_table.ts",
+    "device_page.ts",
+    "feedback_page.ts",
+    "input_page.ts",
+    "output_page.ts",
+    "page.ts",
+  ]
+}
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+generate_grd("build_grd") {
+  deps = [ ":build_ts" ]
+  input_files = [
+    "audio.html",
+    "audio.css",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+
+  grd_prefix = "audio"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/audio_resources.h",
+    "grit/audio_resources_map.cc",
+    "grit/audio_resources_map.h",
+    "audio_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

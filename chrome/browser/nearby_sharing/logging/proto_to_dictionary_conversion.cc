@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,6 +78,7 @@ base::Value PublicCertificateToReadableDictionary(
   dict.SetStringKey(
       "metadata_encryption_key_tag",
       TruncateString(Encode(certificate.metadata_encryption_key_tag())));
+  dict.SetBoolKey("for_self_share", certificate.for_self_share());
   return dict;
 }
 
@@ -191,6 +192,7 @@ base::Value UpdateDeviceResponseToReadableDictionary(
   dict.SetKey("device", DeviceToReadableDictionary(response.device()));
   dict.SetStringKey("person_name", response.person_name());
   dict.SetStringKey("image_url", response.image_url());
+  dict.SetStringKey("image_token", response.image_token());
   return dict;
 }
 

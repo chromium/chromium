@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,9 @@
 #include "components/payments/core/currency_formatter.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -23,12 +26,34 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 
 namespace payments {
 
 namespace {
+
+class LineItemRow : public views::View {
+ public:
+  METADATA_HEADER(LineItemRow);
+
+  // views::View:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    // The vertical spacing for these rows is slightly different than the
+    // spacing spacing for clickable rows, so don't use
+    // kPaymentRequestRowVerticalInsets.
+    constexpr int kRowVerticalInset = 4;
+    const auto row_insets = gfx::Insets::TLBR(
+        kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets,
+        kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets);
+    SetBorder(payments::CreatePaymentRequestRowBorder(
+        GetColorProvider()->GetColor(ui::kColorSeparator), row_insets));
+  }
+};
+
+BEGIN_METADATA(LineItemRow, views::View)
+END_METADATA
 
 // Creates a view for a line item to be displayed in the Order Summary Sheet.
 // |label| is the text in the left-aligned label and |amount| is the text of the
@@ -42,34 +67,27 @@ std::unique_ptr<views::View> CreateLineItemView(const std::u16string& label,
                                                 bool emphasize,
                                                 DialogViewID currency_label_id,
                                                 DialogViewID amount_label_id) {
-  std::unique_ptr<views::View> row = std::make_unique<views::View>();
+  std::unique_ptr<views::View> row = std::make_unique<LineItemRow>();
+  views::TableLayout* const layout =
+      row->SetLayoutManager(std::make_unique<views::TableLayout>());
 
-  // The vertical spacing for these rows is slightly different than the spacing
-  // spacing for clickable rows, so don't use kPaymentRequestRowVerticalInsets.
-  constexpr int kRowVerticalInset = 4;
-  const gfx::Insets row_insets(
-      kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets,
-      kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets);
-  row->SetBorder(payments::CreatePaymentRequestRowBorder(
-      row->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_SeparatorColor),
-      row_insets));
-
-  views::GridLayout* layout =
-      row->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  views::ColumnSet* columns = layout->AddColumnSet(0);
   // The first column has resize_percent = 1 so that it stretches all the way
   // across the row up to the amount label. This way the first label elides as
   // required.
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kFixed, kAmountSectionWidth,
-                     kAmountSectionWidth);
+  layout->AddColumn(views::LayoutAlignment::kStart,
+                    views::LayoutAlignment::kCenter, 1.0,
+                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  layout->AddColumn(views::LayoutAlignment::kCenter,
+                    views::LayoutAlignment::kCenter,
+                    views::TableLayout::kFixedSize,
+                    views::TableLayout::ColumnSize::kUsePreferred,
+                    kAmountSectionWidth, kAmountSectionWidth);
+  layout->AddColumn(views::LayoutAlignment::kEnd,
+                    views::LayoutAlignment::kCenter,
+                    views::TableLayout::kFixedSize,
+                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
+  layout->AddRows(1, views::TableLayout::kFixedSize);
   std::unique_ptr<views::Label> label_text;
   std::unique_ptr<views::Label> currency_text;
   std::unique_ptr<views::Label> amount_text;
@@ -93,25 +111,11 @@ std::unique_ptr<views::View> CreateLineItemView(const std::u16string& label,
   amount_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   amount_text->SetAllowCharacterBreak(true);
 
-  std::unique_ptr<views::View> amount_wrapper = std::make_unique<views::View>();
-  views::GridLayout* wrapper_layout =
-      amount_wrapper->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* wrapper_columns = wrapper_layout->AddColumnSet(0);
-  wrapper_columns->AddColumn(
-      views::GridLayout::LEADING, views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  wrapper_columns->AddColumn(
-      views::GridLayout::TRAILING, views::GridLayout::CENTER, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  wrapper_layout->StartRow(views::GridLayout::kFixedSize, 0);
   currency_text->SetID(static_cast<int>(currency_label_id));
-  wrapper_layout->AddView(std::move(currency_text));
-  wrapper_layout->AddView(std::move(amount_text));
 
-  layout->AddView(std::move(label_text));
-  layout->AddView(std::move(amount_wrapper));
+  row->AddChildView(std::move(label_text));
+  row->AddChildView(std::move(currency_text));
+  row->AddChildView(std::move(amount_text));
 
   return row;
 }

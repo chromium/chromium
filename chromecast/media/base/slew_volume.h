@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #define CHROMECAST_MEDIA_BASE_SLEW_VOLUME_H_
 
 #include <stdint.h>
-
-#include "base/macros.h"
 
 namespace chromecast {
 namespace media {
@@ -21,6 +19,10 @@ class SlewVolume {
   // Use raised negative cosine function when |use_cosine_slew| is true and
   // linear otherwise.
   SlewVolume(int max_slew_time_ms, bool use_cosine_slew);
+
+  SlewVolume(const SlewVolume&) = delete;
+  SlewVolume& operator=(const SlewVolume&) = delete;
+
   ~SlewVolume() = default;
 
   void SetSampleRate(int sample_rate);
@@ -85,7 +87,6 @@ class SlewVolume {
   double slew_offset_;
   double slew_cos_;
   double slew_sin_;
-  DISALLOW_COPY_AND_ASSIGN(SlewVolume);
 };
 
 }  // namespace media

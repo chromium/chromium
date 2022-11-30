@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,12 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_wallpaper_instance.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -20,11 +23,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_wallpaper_instance.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -64,6 +63,10 @@ class ArcWallpaperServiceTest : public testing::Test {
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)) {}
+
+  ArcWallpaperServiceTest(const ArcWallpaperServiceTest&) = delete;
+  ArcWallpaperServiceTest& operator=(const ArcWallpaperServiceTest&) = delete;
+
   ~ArcWallpaperServiceTest() override = default;
 
   void SetUp() override {
@@ -114,7 +117,7 @@ class ArcWallpaperServiceTest : public testing::Test {
 
  protected:
   arc::ArcWallpaperService* service_ = nullptr;
-  std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_ = nullptr;
+  std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
@@ -126,8 +129,6 @@ class ArcWallpaperServiceTest : public testing::Test {
   // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWallpaperServiceTest);
 };
 
 }  // namespace
@@ -145,6 +146,7 @@ TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);
   ASSERT_EQ(1u, wallpaper_instance_->changed_ids().size());
   EXPECT_EQ(10, wallpaper_instance_->changed_ids()[0]);
+  ASSERT_EQ(1, test_wallpaper_controller_.get_third_party_wallpaper_count());
 
   service_->GetWallpaper(
       base::BindOnce([](std::vector<uint8_t>* out,
@@ -166,4 +168,13 @@ TEST_F(ArcWallpaperServiceTest, SetWallpaperFailure) {
   ASSERT_EQ(2u, wallpaper_instance_->changed_ids().size());
   EXPECT_EQ(10, wallpaper_instance_->changed_ids()[0]);
   EXPECT_EQ(-1, wallpaper_instance_->changed_ids()[1]);
+  ASSERT_EQ(0, test_wallpaper_controller_.get_third_party_wallpaper_count());
+}
+
+// For crbug.com/1325863
+TEST_F(ArcWallpaperServiceTest, GetEmptyWallpaper) {
+  test_wallpaper_controller_.ShowWallpaperImage(gfx::ImageSkia{});
+
+  service_->GetWallpaper(base::DoNothing());
+  content::RunAllTasksUntilIdle();
 }

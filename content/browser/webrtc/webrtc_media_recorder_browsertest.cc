@@ -1,9 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
@@ -37,22 +36,11 @@ static const EncodingParameters kProprietaryEncodingParameters[] = {
 
 namespace content {
 
-// All tests in this fixture experience flaky DCHECK failures on macOS; see
-// https://crbug.com/810321.
-#if defined(OS_MAC) && DCHECK_IS_ON()
-#define MAYBE_WebRtcMediaRecorderTest DISABLED_WebRtcMediaRecorderTest
-#else
-#define MAYBE_WebRtcMediaRecorderTest WebRtcMediaRecorderTest
-#endif
-
 // This class tests the recording of a media stream.
-class MAYBE_WebRtcMediaRecorderTest
+class WebRtcMediaRecorderTest
     : public WebRtcContentBrowserTestBase,
       public testing::WithParamInterface<struct EncodingParameters> {
  public:
-  MAYBE_WebRtcMediaRecorderTest() {}
-  ~MAYBE_WebRtcMediaRecorderTest() override {}
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
 
@@ -69,20 +57,23 @@ class MAYBE_WebRtcMediaRecorderTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableAcceleratedVideoDecode);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_WebRtcMediaRecorderTest);
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, Start) {
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Start) {
   MakeTypicalCall("testStartAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, StartAndStop) {
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, StartAndDataAvailable) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222675
+#define MAYBE_StartAndDataAvailable DISABLED_StartAndDataAvailable
+#else
+#define MAYBE_StartAndDataAvailable StartAndDataAvailable
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartAndDataAvailable) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testStartAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
@@ -91,123 +82,136 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, StartAndDataAvailable) {
 
 // TODO(crbug.com/805341): It seems to be flaky on Android. More details in
 // the bug.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_StartWithTimeSlice DISABLED_StartWithTimeSlice
 #else
 #define MAYBE_StartWithTimeSlice StartWithTimeSlice
 #endif
-IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest,
-                       MAYBE_StartWithTimeSlice) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartWithTimeSlice) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testStartWithTimeSlice(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, Resume) {
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Resume) {
   MakeTypicalCall("testResumeAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
-                       NoResumeWhenRecorderInactive) {
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
   MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, ResumeAndDataAvailable) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222675
+#define MAYBE_ResumeAndDataAvailable DISABLED_ResumeAndDataAvailable
+#else
+#define MAYBE_ResumeAndDataAvailable ResumeAndDataAvailable
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_ResumeAndDataAvailable) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testResumeAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, Pause) {
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Pause) {
   MakeTypicalCall("testPauseAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
 // TODO(crbug.com/571389): Flaky on TSAN bots.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PauseStop DISABLED_PauseStop
 #else
 #define MAYBE_PauseStop PauseStop
 #endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, MAYBE_PauseStop) {
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, MAYBE_PauseStop) {
   MakeTypicalCall("testPauseStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        PausePreventsDataavailableFromBeingFired) {
   MakeTypicalCall("testPausePreventsDataavailableFromBeingFired();",
                   kMediaRecorderHtmlFile);
 }
 
 // TODO (crbug.com/736268): Flaky on Linux TSan bots.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_IllegalPauseThrowsDOMError DISABLED_IllegalPauseThrowsDOMError
 #else
 #define MAYBE_IllegalPauseThrowsDOMError IllegalPauseThrowsDOMError
 #endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        MAYBE_IllegalPauseThrowsDOMError) {
   MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
-                       TwoChannelAudioRecording) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222675
+#define MAYBE_TwoChannelAudioRecording DISABLED_TwoChannelAudioRecording
+#else
+#define MAYBE_TwoChannelAudioRecording TwoChannelAudioRecording
+#endif
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+                       MAYBE_TwoChannelAudioRecording) {
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, RecordWithTransparency) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testRecordWithTransparency(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
-                       IllegalStopThrowsDOMError) {
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, IllegalStopThrowsDOMError) {
   MakeTypicalCall("testIllegalStopThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        IllegalStartWhileRecordingThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInRecordingStateThrowsDOMError();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        IllegalStartWhilePausedThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInPausedStateThrowsDOMError();",
                   kMediaRecorderHtmlFile);
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_IllegalRequestDataThrowsDOMError \
   DISABLED_IllegalRequestDataThrowsDOMError
 #else
 #define MAYBE_IllegalRequestDataThrowsDOMError IllegalRequestDataThrowsDOMError
 #endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        MAYBE_IllegalRequestDataThrowsDOMError) {
   MakeTypicalCall("testIllegalRequestDataThrowsDOMError();",
                   kMediaRecorderHtmlFile);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // These tests are flakily timing out on emulators (https://crbug.com/716691)
 // and/or under Android ASAN (https://crbug.com/693565);
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    defined(THREAD_SANITIZER)
 // Flaky on Linux TSan, https://crbug.com/694373.
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif defined(OS_WIN) && !defined(NDEBUG)
+#elif BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // Fails on Win7 debug, https://crbug.com/703844.
+#define MAYBE_PeerConnection DISABLED_PeerConnection
+#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// Fails on Mac/Arm, https://crbug.com/1222675
 #define MAYBE_PeerConnection DISABLED_PeerConnection
 #else
 #define MAYBE_PeerConnection PeerConnection
 #endif
 
-IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testRecordRemotePeerConnection(\"%s\");",
                                      GetParam().mime_type.c_str()),
@@ -215,10 +219,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   DISABLED_AddingTrackToMediaStreamFiresErrorEvent
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 // Flaky on Android (crbug.com/1174634).
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   DISABLED_AddingTrackToMediaStreamFiresErrorEvent
@@ -226,26 +230,26 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   AddingTrackToMediaStreamFiresErrorEvent
 #endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        MAYBE_AddingTrackToMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testAddingTrackToMediaStreamFiresErrorEvent();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        RemovingTrackFromMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testRemovingTrackFromMediaStreamFiresErrorEvent();",
                   kMediaRecorderHtmlFile);
 }
 
 INSTANTIATE_TEST_SUITE_P(OpenCodec,
-                         MAYBE_WebRtcMediaRecorderTest,
+                         WebRtcMediaRecorderTest,
                          testing::ValuesIn(kEncodingParameters));
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 INSTANTIATE_TEST_SUITE_P(ProprietaryCodec,
-                         MAYBE_WebRtcMediaRecorderTest,
+                         WebRtcMediaRecorderTest,
                          testing::ValuesIn(kProprietaryEncodingParameters));
 
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

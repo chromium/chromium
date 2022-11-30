@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,22 +10,19 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_id_provider_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/policy/auto_enrollment_client.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class CommandLine;
-}
+namespace ash {
 
-namespace cryptohome {
-class BaseReply;
-}  // namespace cryptohome
-
-namespace chromeos {
+class SystemClockSyncObservation;
 
 // Drives the forced re-enrollment check (for historical reasons called
 // auto-enrollment check), running an AutoEnrollmentClient if appropriate to
@@ -34,51 +31,6 @@ class AutoEnrollmentController {
  public:
   using ProgressCallbackList =
       base::RepeatingCallbackList<void(policy::AutoEnrollmentState)>;
-
-  // Parameter values for the kEnterpriseEnableForcedReEnrollment flag.
-  static const char kForcedReEnrollmentAlways[];
-  static const char kForcedReEnrollmentNever[];
-  static const char kForcedReEnrollmentOfficialBuild[];
-
-  // Parameter values for the kEnterpriseEnableInitialEnrollment flag.
-  static const char kInitialEnrollmentAlways[];
-  static const char kInitialEnrollmentNever[];
-  static const char kInitialEnrollmentOfficialBuild[];
-
-  // Parameter values for the kEnterpriseEnablePsm flag.
-  static const char kEnablePsmAlways[];
-  static const char kEnablePsmNever[];
-
-  // Requirement for forced re-enrollment check.
-  enum class FRERequirement {
-    // The device was setup (has kActivateDateKey) but doesn't have the
-    // kCheckEnrollmentKey entry in VPD, or the VPD is corrupted.
-    kRequired,
-    // The device doesn't have kActivateDateKey, nor kCheckEnrollmentKey entry
-    // while the serial number has been successfully read from VPD.
-    kNotRequired,
-    // FRE check explicitly required by the flag in VPD.
-    kExplicitlyRequired,
-    // FRE check to be skipped, explicitly stated by the flag in VPD.
-    kExplicitlyNotRequired
-  };
-
-  // Requirement for initial state determination.
-  enum class InitialStateDeterminationRequirement {
-    // Initial state determination is not required.
-    kNotRequired,
-    // Initial state determination is required.
-    kRequired
-  };
-
-  // Type of auto enrollment or state determination check.
-  enum class AutoEnrollmentCheckType {
-    kNone,
-    // Forced Re-Enrollment check.
-    kForcedReEnrollment,
-    // Initial state determination.
-    kInitialStateDetermination
-  };
 
   // State of the system clock.
   enum class SystemClockSyncState {
@@ -93,40 +45,15 @@ class AutoEnrollmentController {
     kSynchronized
   };
 
-  // Returns true if forced re-enrollment is enabled based on command-line flags
-  // and official build status.
-  static bool IsFREEnabled();
-
-  // Returns true if initial enrollment is enabled based on command-line
-  // flags and official build status.
-  static bool IsInitialEnrollmentEnabled();
-
-  // Returns true if any either FRE or initial enrollment are enabled.
-  static bool IsEnabled();
-
-  // Returns true if the use of PSM (private set membership) is enabled based on
-  // command-line flags.
-  static bool IsPsmEnabled();
-
-  // Returns whether the FRE auto-enrollment check is required. When
-  // kCheckEnrollmentKey VPD entry is present, it is explicitly stating whether
-  // the forced re-enrollment is required or not. Otherwise, for backward
-  // compatibility with devices upgrading from an older version of Chrome OS,
-  // the kActivateDateKey VPD entry is queried. If it's missing, FRE is not
-  // required. This enables factories to start full guest sessions for testing,
-  // see http://crbug.com/397354 for more context. The requirement for the
-  // machine serial number to be present is a sanity-check to ensure that the
-  // VPD has actually been read successfully. If VPD read failed, the FRE check
-  // is required.
-  static FRERequirement GetFRERequirement();
-
-  // Returns the type of auto-enrollment check performed by this client. This
-  // will be `AutoEnrollmentCheckType::kNone` before `Start()` has been called.
-  AutoEnrollmentCheckType auto_enrollment_check_type() const {
-    return auto_enrollment_check_type_;
-  }
+  // Returns true if it is determined to use the fake PSM (private set
+  // membership) RLWE client based on command-line flags.
+  static bool ShouldUseFakePsmRlweClient();
 
   AutoEnrollmentController();
+
+  AutoEnrollmentController(const AutoEnrollmentController&) = delete;
+  AutoEnrollmentController& operator=(const AutoEnrollmentController&) = delete;
+
   ~AutoEnrollmentController();
 
   // Starts the auto-enrollment check.  Safe to call multiple times: aborts in
@@ -142,6 +69,13 @@ class AutoEnrollmentController {
 
   policy::AutoEnrollmentState state() const { return state_; }
 
+  // Returns the auto-enrollment check type performed by this client.
+  // The returned value will be `CheckType::kNone` before calling `Start()`.
+  policy::AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type()
+      const {
+    return auto_enrollment_check_type_;
+  }
+
   // Sets the factory that will be used to create the `AutoEnrollmentClient`.
   // Ownership is not transferred when calling this - the caller must ensure
   // that the `Factory` pointed to by `auto_enrollment_client_factory` remains
@@ -151,35 +85,11 @@ class AutoEnrollmentController {
       policy::AutoEnrollmentClient::Factory* auto_enrollment_client_factory);
 
  private:
-  class SystemClockSyncWaiter;
-
   // Determines the FRE and Initial Enrollment requirement and starts initial
   // enrollment if necessary. If Initial Enrollment would be skipped and the
   // system clock has not been synchronized yet, triggers waiting for system
   // clock sync and will be called again when the system clock state is known.
   void StartWithSystemClockSyncState();
-
-  // Returns whether the initial state determination is required.
-  // May set `system_clock_sync_wait_requested_` to true if initial state
-  // determination is skipped due to the embargo period and the system clock
-  // has not been synchronized yet.
-  InitialStateDeterminationRequirement
-  GetInitialStateDeterminationRequirement();
-
-  // Determines the type of auto-enrollment check that should be done. Sets
-  // `auto_enrollment_check_type_` and `fre_requirement_`.
-  // May set `system_clock_sync_wait_requested_` to true if Initial Enrollment
-  // is skipped due to the embargo period and the system clock has not been
-  // synchronized yet.
-  void DetermineAutoEnrollmentCheckType();
-
-  // Returns true if the FRE check should be done according to command-line
-  // switches and device state.
-  static bool ShouldDoFRECheck(base::CommandLine* command_line,
-                               FRERequirement fre_requirement);
-  // Returns true if the Initial Enrollment check should be done according to
-  // command-line switches and device state.
-  bool ShouldDoInitialEnrollmentCheck();
 
   // Callback for the ownership status check.
   void OnOwnershipStatusCheckDone(
@@ -190,7 +100,7 @@ class AutoEnrollmentController {
 
   // Called when the system clock has been synchronized or a timeout has been
   // reached while waiting for the system clock sync.
-  void OnSystemClockSyncResult(SystemClockSyncState system_clock_sync_state);
+  void OnSystemClockSyncResult(bool system_clock_synchronized);
 
   // Starts the auto-enrollment client for initial enrollment.
   void StartClientForInitialEnrollment();
@@ -222,7 +132,8 @@ class AutoEnrollmentController {
   // the FWMP is used only for newer devices.
   // This also starts the VPD clearing process.
   void OnFirmwareManagementParametersRemoved(
-      base::Optional<cryptohome::BaseReply> reply);
+      absl::optional<user_data_auth::RemoveFirmwareManagementParametersReply>
+          reply);
 
   // Makes a D-Bus call to session_manager to set block_devmode=0 and
   // check_enrollment=0 in RW_VPD. Stops the `safeguard_timer_` and notifies the
@@ -249,6 +160,15 @@ class AutoEnrollmentController {
   policy::AutoEnrollmentClient::Factory*
       testing_auto_enrollment_client_factory_ = nullptr;
 
+  // Constructs the PSM RLWE client. It will either create a fake or real
+  // implementation of the client.
+  // It is only used for PSM during creating the client for initial enrollment.
+  std::unique_ptr<policy::psm::RlweClient::Factory> psm_rlwe_client_factory_;
+
+  // Constructs the PSM RLWE device ID.
+  // For more information, see go/psm-rlwe-id-provider.
+  policy::psm::RlweIdProviderImpl psm_rlwe_id_provider_;
+
   policy::AutoEnrollmentState state_ = policy::AUTO_ENROLLMENT_STATE_IDLE;
   ProgressCallbackList progress_callbacks_;
 
@@ -264,28 +184,19 @@ class AutoEnrollmentController {
   // http://crbug.com/433634 for background.
   base::OneShotTimer safeguard_timer_;
 
-  // Whether the forced re-enrollment check has to be applied.
-  FRERequirement fre_requirement_ = FRERequirement::kRequired;
-
   // Which type of auto-enrollment check is being performed by this
   // `AutoEnrollmentClient`.
-  AutoEnrollmentCheckType auto_enrollment_check_type_ =
-      AutoEnrollmentCheckType::kNone;
+  policy::AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type_ =
+      policy::AutoEnrollmentTypeChecker::CheckType::kNone;
 
   // Utility for waiting until the system clock has been synchronized.
-  std::unique_ptr<SystemClockSyncWaiter> system_clock_sync_waiter_;
+  std::unique_ptr<SystemClockSyncObservation> system_clock_sync_observation_;
 
   // Current system clock sync state. This is only modified in
   // `OnSystemClockSyncResult` after `system_clock_sync_wait_requested_` has
   // been set to true.
   SystemClockSyncState system_clock_sync_state_ =
       SystemClockSyncState::kCanWaitForSync;
-
-  // If this is set to true, `StartWithSystemClockSyncState` should be re-run
-  // when the system clock sync state is known.
-  // This is only triggered once in the lifetime of `AutoEnrollmentController`,
-  // it's never set back to `false`.
-  bool system_clock_sync_wait_requested_ = false;
 
   // Keeps track of number of tries to request state keys.
   int request_state_keys_tries_ = 0;
@@ -294,10 +205,20 @@ class AutoEnrollmentController {
   base::WeakPtrFactory<AutoEnrollmentController> client_start_weak_factory_{
       this};
   base::WeakPtrFactory<AutoEnrollmentController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::AutoEnrollmentController;
+}
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AutoEnrollmentController;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_

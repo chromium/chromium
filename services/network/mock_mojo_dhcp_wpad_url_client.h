@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
@@ -17,6 +16,11 @@ namespace network {
 class MockMojoDhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
  public:
   MockMojoDhcpWpadUrlClient(const std::string& pac_url);
+
+  MockMojoDhcpWpadUrlClient(const MockMojoDhcpWpadUrlClient&) = delete;
+  MockMojoDhcpWpadUrlClient& operator=(const MockMojoDhcpWpadUrlClient&) =
+      delete;
+
   ~MockMojoDhcpWpadUrlClient() override;
 
   // Calls |callback| with |pac_url_|.
@@ -30,7 +34,6 @@ class MockMojoDhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
 
  private:
   std::string pac_url_;
-  DISALLOW_COPY_AND_ASSIGN(MockMojoDhcpWpadUrlClient);
 };
 
 }  // namespace network

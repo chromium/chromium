@@ -29,7 +29,7 @@ directory of the UI code you wish to test.
 
     * You’ll have to include:
     ```
-    #import "ios/chrome/test/earl_grey/chrome_test_case.h
+    #import "ios/chrome/test/earl_grey/chrome_test_case.h"
     ```
     * You’ll most likely find util functions in these files helpful.
     ```
@@ -79,20 +79,26 @@ also need to include your new `eg_app_support+eg2` target in
  CL adding App Interface]).
 
 Note that if you create an App interface, you can’t build the app interface
-class in your eg2_tests target, but you need to include and refer to it. If you
-see a “Undefined symbols for architecture… MyTestAppInterface”, add
+class in your eg2_tests target, but you need to include and refer to it. To
+satisfy the linker, you'll need to create a `my_test_app_interface_stub.mm`
+file with the following content in it and build it as a dependency of your
+tests that use the app interface.
+
+```objc
+#import "ios_internal/chrome/test/earl_grey2/my_test_app_interface.h"
+
+#import <TestLib/EarlGreyImpl/EarlGrey.h>
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(MyTestAppInterface)
+
 ```
-#if defined(CHROME_EARL_GREY_2)
-// TODO(crbug.com/1015113) The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(HandoffManagerAppInterface);
-#pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
-```
-to the top of your foo_egtest.mm file. 
+
+If you don't you'll get linker errors that read like “Undefined symbols for
+architecture… MyTestAppInterface”
 
 #### Creating test targets and adding the target to test suites
 
@@ -116,7 +122,7 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 ```
 2. Include your test target in the `deps` array of a suitable suite in
@@ -197,7 +203,7 @@ The invocation args are logged. You can find the latest arg format at the
 beginning of stdout from an infra test shard if the above doesn't work.
 
 
-[config the bots]: https://chromium.googlesource.com/chromium/src/testing/+/refs/heads/master/buildbot/README.md#buildbot-testing-configuration-files
+[config the bots]: https://chromium.googlesource.com/chromium/src/testing/+/refs/heads/main/buildbot/README.md#buildbot-testing-configuration-files
 [Defining Test Cases and Test Methods]: https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods?language=objc
 [EarlGrey]: https://github.com/google/EarlGrey/tree/earlgrey2
 [EarlGrey APIs]: https://github.com/google/EarlGrey/blob/master/docs/api.md
@@ -206,5 +212,5 @@ beginning of stdout from an infra test shard if the above doesn't work.
 [Example CL adding App Interface]: https://chromium-review.googlesource.com/c/chromium/src/+/1919147
 [instructions]: ./build_instructions.md
 [Running Tests and Viewing Results]: https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html
-[this AppLaunchManager API]: https://source.chromium.org/chromium/chromium/src/+/master:ios/testing/earl_grey/app_launch_manager.h;drc=d0889865de20c5b3bc59d58674eb2dcc02dd2269;l=47
+[this AppLaunchManager API]: https://source.chromium.org/chromium/chromium/src/+/main:ios/testing/earl_grey/app_launch_manager.h;drc=d0889865de20c5b3bc59d58674eb2dcc02dd2269;l=47
 [XCUITest]: https://developer.apple.com/documentation/xctest

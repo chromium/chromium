@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_popup_menu_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -89,6 +90,7 @@ class MediaControlPopupMenuElement::EventListener final
         case VKEY_RETURN:
         case VKEY_SPACE:
           To<Element>(event->target()->ToNode())->DispatchSimulatedClick(event);
+          popup_menu_->FocusPopupAnchorIfOverflowClosed();
           break;
         default:
           handled = false;
@@ -113,6 +115,7 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   MediaControlDivElement::SetIsWanted(wanted);
 
   if (wanted) {
+    GetDocument().AddToTopLayer(this);
     SetPosition();
 
     SelectFirstItem();
@@ -123,6 +126,7 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   } else {
     if (event_listener_)
       event_listener_->StopListening();
+    GetDocument().RemoveFromTopLayer(this);
   }
 }
 
@@ -133,14 +137,15 @@ void MediaControlPopupMenuElement::OnItemSelected() {
 void MediaControlPopupMenuElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kPointermove &&
       event.target() != this) {
-    To<Element>(event.target()->ToNode())->focus();
+    To<Element>(event.target()->ToNode())->Focus();
     last_focused_element_ = To<Element>(event.target()->ToNode());
   } else if (event.type() == event_type_names::kFocusout) {
     GetDocument()
         .GetTaskRunner(TaskType::kMediaElementEvent)
-        ->PostTask(FROM_HERE,
-                   WTF::Bind(&MediaControlPopupMenuElement::HideIfNotFocused,
-                             WrapWeakPersistent(this)));
+        ->PostTask(
+            FROM_HERE,
+            WTF::BindOnce(&MediaControlPopupMenuElement::HideIfNotFocused,
+                          WrapWeakPersistent(this)));
   } else if (event.type() == event_type_names::kClick &&
              event.target() != this) {
     // Since event.target() != this, we know that one of our children was
@@ -149,11 +154,15 @@ void MediaControlPopupMenuElement::DefaultEventHandler(Event& event) {
 
     event.stopPropagation();
     event.SetDefaultHandled();
-  } else if (event.type() == event_type_names::kFocus) {
-    // When popup menu gain focus from scrolling, switch focus
-    // back to the last focused item in the menu
-    DCHECK(last_focused_element_);
-    last_focused_element_->focus();
+  } else if (event.type() == event_type_names::kFocus &&
+             event.target() == this) {
+    // When the popup menu gains focus from scrolling, switch focus
+    // back to the last focused item in the menu.
+    if (last_focused_element_) {
+      FocusOptions* focus_options = FocusOptions::Create();
+      focus_options->setPreventScroll(true);
+      last_focused_element_->Focus(focus_options);
+    }
   }
 
   MediaControlDivElement::DefaultEventHandler(event);
@@ -238,7 +247,7 @@ bool MediaControlPopupMenuElement::FocusListItemIfDisplayed(Node* node) {
 
   if (!element->InlineStyle() ||
       !element->InlineStyle()->HasProperty(CSSPropertyID::kDisplay)) {
-    element->focus();
+    element->Focus();
     last_focused_element_ = element;
     return true;
   }
@@ -279,7 +288,15 @@ void MediaControlPopupMenuElement::SelectPreviousitem() {
 
 void MediaControlPopupMenuElement::CloseFromKeyboard() {
   SetIsWanted(false);
-  PopupAnchor()->focus();
+  PopupAnchor()->Focus();
+}
+
+void MediaControlPopupMenuElement::FocusPopupAnchorIfOverflowClosed() {
+  if (!GetMediaControls().OverflowMenuIsWanted() &&
+      !GetMediaControls().PlaybackSpeedListIsWanted() &&
+      !GetMediaControls().TextTrackListIsWanted()) {
+    PopupAnchor()->Focus();
+  }
 }
 
 }  // namespace blink

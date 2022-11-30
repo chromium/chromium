@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 /**
  * An object encapsulating info for a website.
@@ -20,7 +21,7 @@ public class ExploreSitesSite {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.ReadableObjectPropertyKey<String> TITLE_KEY =
             new PropertyModel.ReadableObjectPropertyKey<>();
-    public static final PropertyModel.ReadableObjectPropertyKey<String> URL_KEY =
+    public static final PropertyModel.ReadableObjectPropertyKey<GURL> URL_KEY =
             new PropertyModel.ReadableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<Bitmap> ICON_KEY =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -29,7 +30,7 @@ public class ExploreSitesSite {
 
     private PropertyModel mModel;
 
-    public ExploreSitesSite(int id, String title, String url, boolean isBlocked) {
+    public ExploreSitesSite(int id, String title, GURL url, boolean isBlocked) {
         mModel = new PropertyModel
                          .Builder(ID_KEY, TILE_INDEX_KEY, TITLE_KEY, URL_KEY, ICON_KEY, BLOCKED_KEY)
                          .with(ID_KEY, id)
@@ -45,8 +46,8 @@ public class ExploreSitesSite {
     }
 
     @CalledByNative
-    private static void createSiteInCategory(int siteId, String title, String url,
-            boolean isBlocked, ExploreSitesCategory category) {
+    private static void createSiteInCategory(
+            int siteId, String title, GURL url, boolean isBlocked, ExploreSitesCategory category) {
         ExploreSitesSite site = new ExploreSitesSite(siteId, title, url, isBlocked);
         category.addSite(site);
     }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ WebstoreInstallWithPrompt::WebstoreInstallWithPrompt(
       show_post_install_ui_(true),
       dummy_web_contents_(
           WebContents::Create(WebContents::CreateParams(profile))),
-      parent_window_(NULL) {
+      parent_window_(nullptr) {
   set_install_source(WebstoreInstaller::INSTALL_SOURCE_OTHER);
 }
 

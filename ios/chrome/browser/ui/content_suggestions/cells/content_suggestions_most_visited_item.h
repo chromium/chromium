@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,15 @@
 
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
+
+#import <UIKit/UIKit.h>
 
 @protocol ContentSuggestionsGestureCommands;
 @class FaviconAttributes;
 class GURL;
 
 // Item containing a Most Visited suggestion.
-@interface ContentSuggestionsMostVisitedItem
-    : CollectionViewItem<SuggestedContent>
+@interface ContentSuggestionsMostVisitedItem : NSObject
 
 // Text for the title and the accessibility label of the cell.
 @property(nonatomic, copy, nonnull) NSString* title;
@@ -34,6 +33,8 @@ class GURL;
     commandHandler;
 // Whether the incognito action should be available.
 @property(nonatomic, assign) BOOL incognitoAvailable;
+// Index position of this item.
+@property(nonatomic, assign) int index;
 
 @end
 

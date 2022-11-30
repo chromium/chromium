@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/grpc/src/include/grpcpp/impl/codegen/status.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.grpc.pb.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 
 namespace chromecast {
@@ -27,7 +26,7 @@ namespace media {
 // interface using the public gRPC library's asynchronous APIs.
 class AudioChannelBrokerImpl
     : public CastRuntimeAudioChannelBroker,
-      public cast::media::CastRuntimeAudioChannel::CallbackService {
+      public cast::media::CastAudioChannelService::CallbackService {
  public:
   // |task_runner| and |handler| must remain valid for the lifetime of this
   // object.
@@ -55,7 +54,7 @@ class AudioChannelBrokerImpl
   void UpdateTimestampAsync(TimestampInfo timestamp_info) override;
 
  private:
-  using GrpcStub = cast::media::CastRuntimeAudioChannel::StubInterface;
+  using GrpcStub = cast::media::CastAudioChannelService::StubInterface;
 
   // Helper to abstract away the complexity of using gRPC Calls with the new
   // gRPC async APIs.
@@ -178,34 +177,45 @@ class AudioChannelBrokerImpl
             std::unique_ptr<Response>,
             CastRuntimeAudioChannelBroker::StatusCode)) {
       auto bound_async_call = base::BindOnce(
-          async_call, base::Unretained(instance->stub_->async()));
+          async_call,
+          base::Unretained(instance->stub_factory_.GetStub()->async()));
       auto bound_callback =
           base::BindOnce(callback, instance->weak_factory_.GetWeakPtr());
       return Request(std::move(bound_async_call), std::move(bound_callback));
     }
   };
 
+  // Helper to initialize the service stub at runtime instead of instance
+  // creation time.
+  class LazyStubFactory {
+   public:
+    using Stub = cast::media::CastAudioChannelService::StubInterface;
+
+    LazyStubFactory();
+    ~LazyStubFactory();
+
+    Stub* GetStub();
+
+   private:
+    std::unique_ptr<Stub> stub_;
+  };
+
   // Some aliases to make the code more readable.
   using InitializeCall =
-      GrpcCall<cast::media::InitializeRequest, google::protobuf::Empty>;
+      GrpcCall<cast::media::InitializeRequest, cast::media::InitializeResponse>;
   using StateChangeCall = GrpcCall<cast::media::StateChangeRequest,
                                    cast::media::StateChangeResponse>;
   using SetVolumeCall =
-      GrpcCall<cast::media::SetVolumeRequest, google::protobuf::Empty>;
-  using SetPlaybackCall =
-      GrpcCall<cast::media::SetPlaybackRateRequest, google::protobuf::Empty>;
-  using GetMediaTimeCall =
-      GrpcCall<google::protobuf::Empty, cast::media::GetMediaTimeResponse>;
+      GrpcCall<cast::media::SetVolumeRequest, cast::media::SetVolumeResponse>;
+  using SetPlaybackCall = GrpcCall<cast::media::SetPlaybackRateRequest,
+                                   cast::media::SetPlaybackRateResponse>;
+  using GetMediaTimeCall = GrpcCall<cast::media::GetMediaTimeRequest,
+                                    cast::media::GetMediaTimeResponse>;
   using PushBufferCall =
       GrpcCall<cast::media::PushBufferRequest, cast::media::PushBufferResponse>;
 
   // Helper to create the call types used more than once.
   StateChangeCall::Request CreateStateChangeCallRequest();
-
-  AudioChannelBrokerImpl(
-      std::unique_ptr<cast::media::CastRuntimeAudioChannel::StubInterface> stub,
-      TaskRunner* task_runner,
-      Handler* handler);
 
   // Calls PushBuffer if data to push is available. Else, schedule this task to
   // run again in the future.
@@ -229,7 +239,7 @@ class AudioChannelBrokerImpl
   void OnPushBuffer(std::unique_ptr<PushBufferCall::Response> call_details,
                     CastRuntimeAudioChannelBroker::StatusCode status_code);
 
-  std::unique_ptr<GrpcStub> const stub_;
+  LazyStubFactory stub_factory_;
 
   Handler* const handler_;
   TaskRunner* const task_runner_;

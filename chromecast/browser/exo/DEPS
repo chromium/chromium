@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/exo",
-  "+services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h",
-]

@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/event_handler_common.h"
@@ -90,8 +90,21 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVox(
 
 void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
     std::unique_ptr<ui::Event> event) {
-  AutomationManagerAura::GetInstance()->HandleEvent(
-      ax::mojom::Event::kMouseMoved);
+  ax::mojom::Event event_type;
+
+  switch (event->type()) {
+    case ui::ET_MOUSE_MOVED:
+      event_type = ax::mojom::Event::kMouseMoved;
+      break;
+    case ui::ET_MOUSE_DRAGGED:
+      event_type = ax::mojom::Event::kMouseDragged;
+      break;
+    default:
+      NOTREACHED();
+      return;
+  }
+
+  AutomationManagerAura::GetInstance()->HandleEvent(event_type);
 }
 
 void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(
@@ -99,8 +112,8 @@ void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  auto event_args = std::make_unique<base::ListValue>();
-  event_args->AppendString(ToString(command));
+  base::Value::List event_args;
+  event_args.Append(ToString(command));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,
@@ -116,13 +129,12 @@ void AccessibilityEventRewriterDelegateImpl::SendPointScanPoint(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  auto event_args = std::make_unique<base::ListValue>();
-  auto point_dict = std::make_unique<base::DictionaryValue>();
+  base::Value point_dict(base::Value::Type::DICTIONARY);
+  point_dict.SetDoubleKey("x", point.x());
+  point_dict.SetDoubleKey("y", point.y());
 
-  point_dict->SetDouble("x", point.x());
-  point_dict->SetDouble("y", point.y());
-
-  event_args->Append(std::move(point_dict));
+  base::Value::List event_args;
+  event_args.Append(std::move(point_dict));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET,
@@ -138,8 +150,8 @@ void AccessibilityEventRewriterDelegateImpl::SendMagnifierCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  auto event_args = std::make_unique<base::ListValue>();
-  event_args->AppendString(ToString(command));
+  base::Value::List event_args;
+  event_args.Append(ToString(command));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,
@@ -159,7 +171,7 @@ void AccessibilityEventRewriterDelegateImpl::OnUnhandledSpokenFeedbackEvent(
 bool AccessibilityEventRewriterDelegateImpl::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  OnUnhandledSpokenFeedbackEvent(ui::Event::Clone(*event.os_event));
+  OnUnhandledSpokenFeedbackEvent(event.os_event->Clone());
   return true;
 }
 

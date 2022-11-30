@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_PERF_PROCESS_TYPE_COLLECTOR_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "third_party/metrics_proto/execution_context.pb.h"
@@ -21,8 +20,11 @@ class ProcessTypeCollector {
   // that disallows blocking, should post a task with MayBlock() task trait to
   // execute these methods or make sure to call these methods asynchronously.
   // Collects process types by running ps command and returns a map of Chrome
-  // PIDs to their process types.
-  static std::map<uint32_t, Process> ChromeProcessTypes();
+  // PIDs to their process types. It also populates a list of Lacros PID's and
+  // the Lacros binary path, if any.
+  static std::map<uint32_t, Process> ChromeProcessTypes(
+      std::vector<uint32_t>& lacros_pids,
+      std::string& lacros_path);
 
   // Collects thread types by running ps command and returns a map of Chrome
   // TIDs to their thread types.
@@ -32,9 +34,12 @@ class ProcessTypeCollector {
   ProcessTypeCollector() = delete;
   ~ProcessTypeCollector() = delete;
   // Parses the output of `ps -ewwo pid,cmd` command and returns a map of Chrome
-  // PIDs to their process types.
+  // PIDs to their process types. It also populates a list of Lacros PID's and
+  // the Lacros binary path, if any.
   static std::map<uint32_t, Process> ParseProcessTypes(
-      re2::StringPiece contents);
+      re2::StringPiece contents,
+      std::vector<uint32_t>& lacros_pids,
+      std::string& lacros_path);
 
   // Parses the output of `ps -ewLo pid,lwp,comm` command and returns a map of
   // Chrome TIDs to their thread types.

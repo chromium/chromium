@@ -7,6 +7,8 @@
     <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <script src="/cookies/resources/cookie-test.js"></script>
   </head>
   <body>
@@ -34,7 +36,7 @@
         {
           cookie: 'test="4zz ;',
           expected: 'test="4zz',
-          name: "Ingore whitespace at the end of value",
+          name: "Ignore whitespace at the end of value",
         },
         {
           cookie: 'test="5zzz "   "ppp"  ;',
@@ -67,19 +69,16 @@
           name: "Set nameless cookie followed by '=' to its value",
         },
         {
-          // 7 + 4089 = 4096
-          cookie: `test=11${"a".repeat(4089)}`,
-          expected: `test=11${"a".repeat(4089)}`,
-          name: "Set cookie with large value ( = 4kb)",
+          // 4 + 2 + 4090 = 4096
+          cookie: `test=11${"a".repeat(4090)}`,
+          expected: `test=11${"a".repeat(4090)}`,
+          name: "Set cookie with large name + value ( = 4kb)",
         },
         {
-          // 7 + 4091 = 4098
-          // Note: Chrome includes = in its length, Firefox does not
-          // For now, make this 4098 until the spec clarifies:
-          // https://github.com/httpwg/http-extensions/issues/1340
+          // 4 + 2 + 4091 = 4097
           cookie: `test=12${"a".repeat(4091)}`,
           expected: "",
-          name: "Ignore cookie with large value ( > 4kb)",
+          name: "Ignore cookie with large name + value ( > 4kb)",
         },
         {
           cookie: `test=13\nZYX`,
@@ -135,6 +134,31 @@
           cookie: "test=%32%33",
           expected: "test=%32%33",
           name: "URL-encoded cookie value is not decoded",
+        },
+        {
+          cookie: "test24==",
+          expected: "test24==",
+          name: "Set cookie with value set to =",
+        },
+        {
+          cookie: 'test=25=25',
+          expected: 'test=25=25',
+          name: "Set cookie with one = inside an unquoted value",
+        },
+        {
+          cookie: 'test=26=26=26',
+          expected: 'test=26=26=26',
+          name: "Set cookie with two = inside an unquoted value",
+        },
+        {
+          cookie: 'test=27 test',
+          expected: 'test=27 test',
+          name: "Set cookie with a space character in the value",
+        },
+        {
+          cookie: ' test test28 ;',
+          expected: 'test test28',
+          name: "Set a nameless cookie with a space character in the value",
         },
       ];
 

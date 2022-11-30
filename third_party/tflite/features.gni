@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+declare_args() {
+  # This enables building TFLite with XNNPACK. Currently only available for
+  # Linux or Windows on x64.
+  build_tflite_with_xnnpack = (is_win || is_linux) && current_cpu == "x64"
+
+  # Turns on TFLITE_WITH_RUY, using ruy as the gemm backend instead of gemmlowp.
+  build_tflite_with_ruy = true
+}

@@ -1,19 +1,21 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/util/process_version.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/zip.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 # This target builds the updater executable, its installer, and unittests.
 group("win") {
   deps = [
+    ":signing",
     ":updater",
-    "//chrome/updater/win/installer:installer",
-    "//chrome/updater/win/signing",
+    ":updater_zip",
+    "//chrome/updater/win/installer",
   ]
 }
 
@@ -24,24 +26,75 @@ config("wrl_strict") {
   defines = [ "__WRL_CLASSIC_COM_STRICT__" ]
 }
 
-executable("updater") {
+source_set("updater_executable") {
   sources = [
     "main.cc",
     "updater.rc",
   ]
 
-  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
-  configs += [ "//build/config/win:windowed" ]
+  # `updater.rc` does not process `#if BUILDFLAG(GOOGLE_CHROME_BRANDING)`
+  # correctly sometimes, especially seen with the `win10_chromium_x64_rel_ng`
+  # build bot. Explicitly defining `CHROME_BRANDED_TLB` is being done here as a
+  # workaround.
+  if (is_chrome_branded) {
+    defines = [ "CHROME_BRANDED_TLB=1" ]
+  } else {
+    defines = [ "CHROME_BRANDED_TLB=0" ]
+  }
 
   deps = [
-    ":app_install_controller",
-    ":version_resources",
-    "//build/win:default_exe_manifest",
-    "//chrome/updater:lib",
-    "//chrome/updater/win/ui:ui_resources",
+    "//build:branding_buildflags",
+    "//chrome/updater:base",
+    "//chrome/updater/app/server/win:updater_legacy_idl_idl",
+    "//chrome/updater/win/ui/resources",
   ]
 
+  public_configs = [ "//build/config/win:windowed" ]
+  public_deps = [ "//build/win:default_exe_manifest" ]
+
   data_deps = [ ":uninstall.cmd" ]
+}
+
+executable("updater") {
+  deps = [
+    ":updater_executable",
+    ":version_resources",
+    "//chrome/updater:constants_prod",
+  ]
+}
+
+executable("updater_test") {
+  deps = [
+    ":updater_executable",
+    ":version_resources_test",
+    "//chrome/updater:constants_test",
+  ]
+}
+
+copy("signing") {
+  sources = [
+    "$root_out_dir/certificate_tag.exe",
+    "//chrome/tools/build/win/resedit.py",
+    "//third_party/lzma_sdk/bin/win64/7zr.exe",
+    "signing/sign.py",
+  ]
+
+  deps = [ "//chrome/updater/tools:certificate_tag" ]
+
+  outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
+}
+
+artifact_zip("updater_zip") {
+  output = "$root_build_dir/updater.zip"
+  inputs = [
+             "$root_build_dir/UpdaterSetup.exe",
+             "$root_build_dir/UpdaterSetup_test.exe",
+           ] + get_target_outputs(":signing")
+  deps = [
+    ":signing",
+    "//chrome/updater/win/installer",
+    "//chrome/updater/win/installer:installer_test",
+  ]
 }
 
 process_version("uninstall.cmd") {
@@ -57,126 +110,28 @@ process_version("uninstall.cmd") {
 }
 
 process_version_rc_template("version_resources") {
+  _product_fullname = "$updater_product_full_name " + "($current_cpu)"
+  if (is_debug) {
+    _product_fullname += " (debug)"
+  }
   sources = [ "updater.ver" ]
   output = "$target_gen_dir/updater_exe.rc"
-}
-
-source_set("constants") {
-  sources = [
-    "constants.cc",
-    "constants.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:branding_header",
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$_product_fullname\"",
   ]
 }
 
-source_set("lib") {
-  # This build target and "//chrome/updater:lib" act as a unit. Depending
-  # targets must use "//chrome/updater:lib" as a dependency.
-  visibility = [ "//chrome/updater:lib" ]
-
-  sources = [
-    "action_handler.cc",
-    "group_policy_manager.cc",
-    "group_policy_manager.h",
-    "installer.cc",
-    "installer.h",
-    "net/net_util.cc",
-    "net/net_util.h",
-    "net/network.h",
-    "net/network_fetcher.cc",
-    "net/network_fetcher.h",
-    "net/network_winhttp.cc",
-    "net/network_winhttp.h",
-    "net/proxy_configuration.cc",
-    "net/proxy_configuration.h",
-    "net/proxy_info.cc",
-    "net/proxy_info.h",
-    "net/scoped_hinternet.h",
-    "net/scoped_winttp_proxy_info.h",
-    "scoped_handle.h",
-    "scoped_impersonation.cc",
-    "scoped_impersonation.h",
-    "setup/setup.cc",
-    "setup/setup.h",
-    "setup/setup_util.cc",
-    "setup/setup_util.h",
-    "setup/uninstall.cc",
-    "setup/uninstall.h",
-    "task_scheduler.cc",
-    "task_scheduler.h",
-    "update_service_internal_proxy.cc",
-    "update_service_internal_proxy.h",
-    "update_service_proxy.cc",
-    "update_service_proxy.h",
-    "user_info.cc",
-    "user_info.h",
-    "util.cc",
-    "util.h",
-  ]
-
-  configs -= [ "//build/config/win:winver" ]
-  configs += [ "//chrome/updater/app/server/win:winver" ]
-
-  defines = [ "SECURITY_WIN32" ]
-
-  libs = [
-    "secur32.lib",
-    "taskschd.lib",
-    "winhttp.lib",
-  ]
-
-  deps = [
-    ":constants",
-    "//base",
-    "//chrome/installer/util:with_no_strings",
-    "//chrome/updater:base",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:version_header",
-    "//chrome/updater/app/server/win:updater_idl_idl",
-    "//chrome/updater/app/server/win:updater_internal_idl_idl",
-    "//chrome/updater/app/server/win:updater_legacy_idl_idl",
-    "//components/update_client",
-    "//url:url",
-  ]
-}
-
-source_set("install_progress_observer") {
-  sources = [
-    "install_progress_observer.cc",
-    "install_progress_observer.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
-# This build target is defined to minimize the impact of -Wno-missing-braces
-# compiler switch. In the future it might be possible to isolate the
-# dependency of ATL in the UI so ATL headers are not visible in the
-# compilation units outside the UI itself.
-# TODO(sorin): https://crbug.com/1014311
-source_set("app_install_controller") {
-  visibility = [
-    "//chrome/updater/test/test_app:app_sources",
-    "//chrome/updater/win/*",
-  ]
-
-  cflags_cc = [ "-Wno-missing-braces" ]
-
-  sources = [ "app_install_controller.cc" ]
-
-  allow_circular_includes_from = [ "//chrome/updater:lib" ]
-  deps = [
-    ":install_progress_observer",
-    "//base",
-    "//base:i18n",
-    "//chrome/updater:base",
-    "//chrome/updater:lib",
-    "//chrome/updater:version_header",
-    "//chrome/updater/win/ui",
+process_version_rc_template("version_resources_test") {
+  _product_fullname = "$updater_product_full_name (test) " + "($current_cpu)"
+  if (is_debug) {
+    _product_fullname += " (debug)"
+  }
+  sources = [ "updater_test.ver" ]
+  output = "$target_gen_dir/updater_test_exe.rc"
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$_product_fullname\"",
   ]
 }
 
@@ -189,7 +144,7 @@ source_set("tag_extractor") {
   ]
 
   friend = [
-    ":updater_tests",
+    "//chrome/updater:updater_test_sources",
     ":updater_fuzzer",
   ]
 
@@ -197,67 +152,6 @@ source_set("tag_extractor") {
   # PeImageReader directly, but right now that isn't possible due to the
   # visibility of the lib, so we depend on the entire base temporarily.
   deps = [ "//base" ]
-}
-
-source_set("updater_tests") {
-  testonly = true
-
-  sources = [
-    "group_policy_manager_unittest.cc",
-    "installer_unittest.cc",
-    "net/network_unittest.cc",
-    "net/proxy_configuration_unittest.cc",
-    "net/proxy_info_unittest.cc",
-    "tag_extractor_unittest.cc",
-    "util_unittest.cc",
-  ]
-
-  deps = [
-    ":app_install_controller",
-    ":constants",
-    ":tag_extractor",
-    "//base/test:test_support",
-    "//chrome/updater:lib",
-    "//testing/gtest",
-    "//url:url",
-  ]
-
-  data_deps = [
-    ":updater_unittests",
-    "//chrome/updater/win/installer:installer_unittest",
-  ]
-
-  data = [
-    "../test/data/signed.exe",
-    "../test/data/signed.exe.gz",
-    "../test/data/tagged_encode_utf8.exe",
-    "../test/data/tagged_magic_utf16.exe",
-  ]
-}
-
-# Specific tests which must run in their own process due to COM, security, or
-# test isolation requirements.
-test("updater_unittests") {
-  testonly = true
-
-  sources = [
-    "//chrome/updater/win/test/test_main.cc",
-    "setup/setup_util_unittest.cc",
-    "task_scheduler_unittest.cc",
-  ]
-
-  deps = [
-    ":app_install_controller",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:lib",
-    "//chrome/updater/win/test:test_executables",
-    "//chrome/updater/win/test:test_strings",
-    "//testing/gtest",
-  ]
-
-  data = [ "//chrome/updater/test/data/updater.runtime_deps" ]
 }
 
 fuzzer_test("updater_fuzzer") {

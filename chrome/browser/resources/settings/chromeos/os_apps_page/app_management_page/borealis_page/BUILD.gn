@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+import("../../../os_settings.gni")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = os_settings_closure_flags
+  deps = [ ":borealis_detail_view" ]
+}
+
+js_library("borealis_detail_view") {
+  deps = [
+    "../:pin_to_shelf_item",
+    "../:store_client",
+    "../:util",
+    "../../..:os_route",
+    "../../../..:router",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "borealis_detail_view.js" ]
+}

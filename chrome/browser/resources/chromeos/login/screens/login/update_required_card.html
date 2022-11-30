@@ -1,17 +1,27 @@
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/html/parse_html_subset.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 
-<link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/login_screen_behavior.html">
-<link rel="import" href="/components/multi_step_behavior.html">
+<link rel="import" href="./checking_downloading_update.html">
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
 
 <!--
   Update required card that informs user that current chromeos version does not
@@ -21,7 +31,7 @@
 -->
 <dom-module id="update-required-card-element">
   <template>
-    <style include="oobe-dialog-host">
+    <style include="oobe-dialog-host-styles">
       :host .content {
         padding: 24px 24px 16px;
       }
@@ -51,13 +61,13 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'updateRequiredTitle')]]
       </h1>
-      <div slot="subtitle">
-        [[i18nDynamic(locale,'updateRequiredMessage', enterpriseDomain,
+      <div id="update-subtitle" slot="subtitle">
+        [[i18nDynamic(locale,'updateRequiredMessage', enterpriseManager,
             deviceName)]]
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-             src="../../images/1x/updating_1x.svg">
+             src="/images/updating.svg" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onUpdateClicked_"
@@ -86,7 +96,7 @@
       </div>
     </oobe-adaptive-dialog>
 
-    <checking-downloading-update id="checking-downloading-update"
+    <checking-downloading-update id="downloadingUpdate"
         aria-label$="[[i18nDynamic(locale, 'updateScreenAccessibleTitle')]]"
         for-step="update-process, update-completed-need-reboot"
         checking-for-update="[[updateProgressUnavailable]]"
@@ -108,11 +118,11 @@
       </h1>
       <div slot="subtitle" class="update-subtitle">
         [[i18nDynamic(locale,'updateOverMeteredNetworkMessage',
-            enterpriseDomain)]]
+            enterpriseManager)]]
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            src="../../images/1x/updating_1x.svg">
+            src="/images/updating.svg" aria-hidden="true">
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button inverse on-click="onCellularPermissionAccepted_"
@@ -131,11 +141,11 @@
       </h1>
       <div slot="subtitle" class="update-subtitle"
           id="no-network-message">
-        [[i18nDynamic(locale,'noNetworkMessage', enterpriseDomain)]]
+        [[i18nDynamic(locale,'noNetworkMessage', enterpriseManager)]]
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            src="../../images/1x/updating_1x.svg">
+            src="/images/updating.svg" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onSelectNetworkClicked_"
@@ -171,7 +181,7 @@
           <!-- Use lock image indicating that end-of-life has been reached and
              the device is disabled for further use  -->
           <img class="update-illustration oobe-illustration"
-              src="../../images/1x/device-disabled.svg">
+              src="/images/device-disabled.svg" aria-hidden="true">
         </div>
       </div>
     </oobe-adaptive-dialog>
@@ -193,4 +203,5 @@
     </oobe-modal-dialog>
 
   </template>
+  <script src="update_required_card.js"></script>
 </dom-module>

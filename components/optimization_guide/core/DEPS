@@ -1,0 +1,18 @@
+include_rules = [
+  "+components/crx_file",
+  "+components/download/public/background_service",
+  "+components/services/unzip",
+  "+components/ukm/test_ukm_recorder.h",
+  "+crypto",
+  "+mojo/public/cpp",
+  "+services/metrics/public/cpp",
+  "+third_party/zlib/google",
+  "+ui/base/l10n",
+]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+third_party/zlib/google/zip.h",
+    "+ui/base",
+  ]
+}

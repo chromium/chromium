@@ -1,33 +1,45 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
 
 if (is_chrome_branded) {
-  updater_company_full_name = "Google LLC"
-  updater_company_short_name = "Google"
-  updater_product_full_name = "GoogleUpdater"
   browser_name = "Chrome"
   browser_product_name = "Google Chrome"
+  crash_product_name = "Update4"
+  crash_upload_url = "https://clients2.google.com/cr/report"
+  help_center_url = "http://support.google.com/installer/"
+  keystone_app_name = "GoogleSoftwareUpdate"
+  mac_browser_bundle_identifier = "com.google.Chrome"
+  mac_updater_bundle_identifier = "com.google.GoogleUpdater"
+  privileged_helper_bundle_name = "GoogleUpdaterHelper"
+  privileged_helper_name = "com.google.GoogleUpdater.helper"
+  updater_company_full_name = "Google LLC"
+  updater_company_short_name = "Google"
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
-  mac_updater_bundle_identifier = "com.google.GoogleUpdater"
-  mac_browser_bundle_identifier = "com.google.Chrome"
+  updater_product_full_name = "GoogleUpdater"
+  mac_team_identifier = "EQHXZ8M8AV"
 } else {
-  updater_company_full_name = "Chromium Authors"
-  updater_company_short_name = "Chromium"
-  updater_product_full_name = "ChromiumUpdater"
   browser_name = "Chromium"
   browser_product_name = "Chromium"
+  crash_product_name = "ChromiumUpdater"
+  crash_upload_url = "https://clients2.google.com/cr/staging_report"
+  help_center_url = "http://support.google.com/installer/"
+  keystone_app_name = "ChromiumSoftwareUpdate"
+  mac_browser_bundle_identifier = "org.chromium.Chromium"
+  mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
+  privileged_helper_bundle_name = "ChromiumUpdaterHelper"
+  privileged_helper_name = "org.chromium.ChromiumUpdater.helper"
+  updater_company_full_name = "Chromium Authors"
+  updater_company_short_name = "Chromium"
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
-  mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
-  mac_browser_bundle_identifier = "org.chromium.Chromium"
+  updater_product_full_name = "ChromiumUpdater"
+  mac_team_identifier = "PLACEHOLDER"
 }
 
 # Chrome and Chromium share the same endpoints for now.
 update_check_url = "https://update.googleapis.com/service/update2/json"
-crash_upload_url = "https://clients2.google.com/cr/report"
-crash_staging_upload_url = "https://clients2.google.com/cr/staging_report"
 device_management_server_url = "https://m.google.com/devicemanagement/data/api"

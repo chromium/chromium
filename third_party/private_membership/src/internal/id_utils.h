@@ -15,13 +15,17 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ID_UTILS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ID_UTILS_H_
 
+#include <string>
+
+#include "third_party/private_membership/base/private_membership_export.h"
 #include "absl/strings/string_view.h"
 
 namespace private_membership {
 
 // Pad the input string with '0' until reaching len. If input string is larger
 // than len, then return the string truncated to len characters.
-std::string PadOrTruncate(absl::string_view in, int len);
+PRIVATE_MEMBERSHIP_EXPORT std::string PadOrTruncate(absl::string_view in,
+                                                    int len);
 
 }  // namespace private_membership
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,23 @@
 
 #include <memory>
 
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/wm/core/shadow_types.h"
+
+namespace {
+class PresentationTimeRecorder;
+}
 
 namespace ash {
 
 class SplitViewDragIndicators;
-class PresentationTimeRecorder;
 
 // This class includes the common logic when dragging a window around, either
 // it's a browser window, or an app window. It does almost everything needs to
@@ -47,6 +51,11 @@ class TabletModeWindowDragDelegate {
   };
 
   TabletModeWindowDragDelegate();
+
+  TabletModeWindowDragDelegate(const TabletModeWindowDragDelegate&) = delete;
+  TabletModeWindowDragDelegate& operator=(const TabletModeWindowDragDelegate&) =
+      delete;
+
   virtual ~TabletModeWindowDragDelegate();
 
   // Called when a window starts being dragged.
@@ -149,17 +158,14 @@ class TabletModeWindowDragDelegate {
   // Drag need to last later than the deadline here to be considered as 'moved'.
   base::Time drag_start_deadline_;
 
-  base::Optional<aura::WindowOcclusionTracker::ScopedExclude>
+  absl::optional<aura::WindowOcclusionTracker::ScopedExclude>
       occlusion_excluder_;
 
   // Records the presentation time for app/browser/tab window dragging
   // in tablet mode.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   base::WeakPtrFactory<TabletModeWindowDragDelegate> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeWindowDragDelegate);
 };
 
 }  // namespace ash

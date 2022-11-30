@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_
 
-#include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/security.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -18,6 +17,10 @@ class SecurityHandler : public protocol::Security::Backend,
  public:
   SecurityHandler(content::WebContents* web_contents,
                   protocol::UberDispatcher* dispatcher);
+
+  SecurityHandler(const SecurityHandler&) = delete;
+  SecurityHandler& operator=(const SecurityHandler&) = delete;
+
   ~SecurityHandler() override;
 
   // Security::Backend:
@@ -30,8 +33,6 @@ class SecurityHandler : public protocol::Security::Backend,
 
   bool enabled_ = false;
   std::unique_ptr<protocol::Security::Frontend> frontend_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityHandler);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -25,7 +25,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-#include "media/remoting/rpc_broker.h"  // nogncheck
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"  // nogncheck
+#include "third_party/openscreen/src/util/weak_ptr.h"  // nogncheck
 #endif
 
 namespace base {
@@ -44,6 +45,10 @@ class RendererController final : public mojom::RemotingSource,
   RendererController(
       mojo::PendingReceiver<mojom::RemotingSource> source_receiver,
       mojo::PendingRemote<mojom::Remoter> remoter);
+
+  RendererController(const RendererController&) = delete;
+  RendererController& operator=(const RendererController&) = delete;
+
   ~RendererController() override;
 
   // mojom::RemotingSource implementations.
@@ -60,6 +65,7 @@ class RendererController final : public mojom::RemotingSource,
   void OnRemotePlaybackDisabled(bool disabled) override;
   void OnPlaying() override;
   void OnPaused() override;
+  void OnFrozen() override;
   void OnDataSourceInitialized(const GURL& url_after_redirects) override;
   void OnHlsManifestDetected() override;
   void SetClient(MediaObserverClient* client) override;
@@ -90,7 +96,7 @@ class RendererController final : public mojom::RemotingSource,
                      DataPipeStartCallback done_callback);
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-  base::WeakPtr<RpcBroker> GetRpcBroker();
+  openscreen::WeakPtr<openscreen::cast::RpcMessenger> GetRpcMessenger();
 #endif
 
   // Called by CourierRenderer when it encountered a fatal error. This will
@@ -164,18 +170,18 @@ class RendererController final : public mojom::RemotingSource,
   bool HasFeatureCapability(mojom::RemotingSinkFeature capability) const;
   bool SinkSupportsRemoting() const;
 
-  // Callback from RpcBroker when sending message to remote sink.
-  void SendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message);
+  // Callback from RpcMessenger when sending message to remote sink.
+  void SendMessageToSink(std::vector<uint8_t> message);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsAudioRemotePlaybackSupported() const;
   bool IsVideoRemotePlaybackSupported() const;
   bool IsRemotePlaybackSupported() const;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
   // Handles dispatching of incoming and outgoing RPC messages.
-  RpcBroker rpc_broker_;
+  openscreen::cast::RpcMessenger rpc_messenger_;
 #endif
 
   const mojo::Receiver<mojom::RemotingSource> receiver_;
@@ -233,7 +239,7 @@ class RendererController final : public mojom::RemotingSource,
   SessionMetricsRecorder metrics_recorder_;
 
   // Not owned by this class. Can only be set once by calling SetClient().
-  MediaObserverClient* client_ = nullptr;
+  raw_ptr<MediaObserverClient> client_ = nullptr;
 
   // When this is running, it indicates that remoting will be started later
   // when the timer gets fired. The start will be canceled if there is any
@@ -242,11 +248,9 @@ class RendererController final : public mojom::RemotingSource,
   // remote the content while this timer is running.
   base::OneShotTimer delayed_start_stability_timer_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   base::WeakPtrFactory<RendererController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererController);
 };
 
 }  // namespace remoting

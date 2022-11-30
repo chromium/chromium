@@ -15,7 +15,7 @@
 <translation id="4518701284698680367">Потрібно вказати поштовий індекс, наприклад, <ph name="EXAMPLE" />. Не знаєте свій поштовий індекс? Знайдіть його <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="5089810972385038852">Штат/провінція</translation>
 <translation id="5095208057601539847">Провінція</translation>
-<translation id="5327248766486351172">Назва</translation>
+<translation id="5327248766486351172">Ім’я</translation>
 <translation id="5937097533660449554">Область</translation>
 <translation id="6132429659673988671">Передмістя</translation>
 <translation id="6207937957461833379">Країна або регіон</translation>
@@ -26,7 +26,7 @@
 <translation id="6403469950615936250">Формат поштового індексу не розпізнано. Приклад дійсного поштового індексу: <ph name="EXAMPLE" />. Не знаєте свій поштовий індекс? Знайдіть його <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="6735419622867539268"><ph name="FIELD_VALUE" /> не розпізнано як відоме значення для цього поля.</translation>
 <translation id="6768780634682399515">Поштовий індекс</translation>
-<translation id="6777217372746654521">Схоже, цей рядок адреси містить номер абонентської скриньки. Укажіть назву вулиці чи номер будинку.</translation>
+<translation id="6777217372746654521">Схоже, у цьому рядку адреси вказано абонементну скриньку. Укажіть вулицю й номер будинку.</translation>
 <translation id="6839929833149231406">Область</translation>
 <translation id="684852933191805996">Район</translation>
 <translation id="6970216967273061347">Округ</translation>

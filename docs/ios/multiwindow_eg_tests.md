@@ -8,7 +8,7 @@ limited set of helper functions.
 ## Window Number
 
 Windows are numbered, through their `accessibilityIdentifier`, in the order they
-are created. The first window will be `@”0”`, the second window will be `@”1”`,
+are created. The first window will be `@"0"`, the second window will be `@"1"`,
 etc. In most helper functions, the integer is used to identify windows.
 
 Windows are not automatically renumbered so it is possible to end up with two
@@ -17,7 +17,7 @@ windows with the same number. You can use
 unlikely case it is needed.  Depending on the needs of the test, you can decide
 on how to proceed, for example wanting to keep the left window as 0 and the
 right window as 1.  See
-[`[BrowserViewControllerTestCase testMultiWindowURLLoading]`](https://source.chromium.org/chromium/chromium/src/+/master:ios/chrome/browser/ui/browser_view/browser_view_controller_egtest.mm;l=209)
+[`[BrowserViewControllerTestCase testMultiWindowURLLoading]`](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/ui/browser_view/browser_view_controller_egtest.mm;l=209)
 as an example of this.
 
 ## Helpers
@@ -28,7 +28,7 @@ single window counterpart versions but with an extra `inWindowWithNumber`
 parameter.
 
 The helpers all live in
-[ios/chrome/test/earl_grey/chrome_earl_grey.h](https://source.chromium.org/chromium/chromium/src/+/master:ios/chrome/test/earl_grey/chrome_earl_grey.h)
+[ios/chrome/test/earl_grey/chrome_earl_grey.h](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/earl_grey/chrome_earl_grey.h)
 
 ### Window Management
 
@@ -182,7 +182,7 @@ Thanks to the root matcher, a limited number of matchers, require the window
 number to be specified. `WindowWithNumber` is useful as a root matcher and
 `MatchInWindowWithNumber` if you want to match without using a root matcher:
 
-[ios/chrome/test/earl_grey/chrome_matchers.h](https://source.chromium.org/chromium/chromium/src/+/master:ios/chrome/test/earl_grey/chrome_matchers.h)
+[ios/chrome/test/earl_grey/chrome_matchers.h](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/earl_grey/chrome_matchers.h)
 
 ```
 // Matcher for a window with a given number.
@@ -208,6 +208,41 @@ there’s a special matcher for Multiwindow:
 id<GREYMatcher> SettingsMenuBackButton(int window_number);
 ```
 
+## Chrome Matchers
+Some chrome matchers have a version where the window number needs to be
+specified. On those, the root matcher will be set and left set on return to
+allow less verbosity at call site.
+
+```
+// Makes the toolbar visible by swiping downward, if necessary. Then taps on
+// the Tools menu button. At least one tab needs to be open and visible when
+// calling this method.
+// Sets and Leaves the root matcher to the given window with |windowNumber|.
+- (void)openToolsMenuInWindowWithNumber:(int)windowNumber;
+
+// Opens the settings menu by opening the tools menu, and then tapping the
+// Settings button. There will be a GREYAssert if the tools menu is open when
+// calling this method.
+// Sets and Leaves the root matcher to the given window with |windowNumber|.
+- (void)openSettingsMenuInWindowWithNumber:(int)windowNumber;
+```
+
+For example, the following code:
+
+```
+  [EarlGrey setRootMatcherForSubsequentInteractions:
+                chrome_test_util::WindowWithNumber(windowNumber)];
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryDestinationButton()];
+```
+
+Can be reduced to:
+
+```
+  [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryDestinationButton()];
+```
+
 ## Actions
 
 There are actions that cannot be done using `EarlGrey` (yet?).  One of those is
@@ -215,7 +250,7 @@ Drag and drop. But XCUI is good at that, so there are two new
 client-side-triggered actions that can be used, that work across multiple
 windows:
 
-[ios/chrome/test/earl_grey/chrome_xcui_actions.h](https://source.chromium.org/chromium/chromium/src/+/master:ios/chrome/test/earl_grey/chrome_xcui_actions.h)
+[ios/chrome/test/earl_grey/chrome_xcui_actions.h](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/earl_grey/chrome_xcui_actions.h)
 
 ```
 // Action (XCUI, hence local) to long press a cell item with

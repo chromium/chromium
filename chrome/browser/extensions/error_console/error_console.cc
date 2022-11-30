@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/common/pref_names.h"
@@ -19,11 +19,11 @@
 #include "components/version_info/version_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/logging_constants.h"
 
 namespace extensions {
 
@@ -193,9 +193,10 @@ void ErrorConsole::Enable() {
   // also create an ExtensionPrefs object.
   prefs_ = ExtensionPrefs::Get(profile_);
 
-  profile_observations_.AddObservation(profile_);
+  profile_observations_.AddObservation(profile_.get());
   if (profile_->HasPrimaryOTRProfile())
-    profile_observations_.AddObservation(profile_->GetPrimaryOTRProfile());
+    profile_observations_.AddObservation(
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   const ExtensionSet& extensions =
       ExtensionRegistry::Get(profile_)->enabled_extensions();

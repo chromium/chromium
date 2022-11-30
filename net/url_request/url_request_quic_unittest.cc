@@ -1,48 +1,54 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_delegate.h"
-#include "net/base/network_isolation_key.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
-#include "net/quic/crypto/proof_source_chromium.h"
+#include "net/quic/crypto_test_utils_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/third_party/quiche/src/quic/core/quic_dispatcher.h"
-#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
-#include "net/third_party/quiche/src/quic/tools/quic_memory_cache_backend.h"
-#include "net/third_party/quiche/src/quic/tools/quic_simple_dispatcher.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_dispatcher.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_memory_cache_backend.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_dispatcher.h"
 #include "net/tools/quic/quic_simple_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -96,82 +102,81 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
       const X509Certificate* served_certificate_chain,
       const SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const NetworkIsolationKey& network_isolation_key) override {
+      const NetworkAnonymizationKey& network_anonymization_key) override {
     num_failures_++;
     report_uri_ = report_uri;
-    network_isolation_key_ = network_isolation_key;
+    network_anonymization_key_ = network_anonymization_key;
   }
 
   int num_failures() const { return num_failures_; }
   const GURL& report_uri() const { return report_uri_; }
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  private:
   int num_failures_ = 0;
 
   GURL report_uri_;
-  NetworkIsolationKey network_isolation_key_;
+  NetworkAnonymizationKey network_anonymization_key_;
 };
 
 class URLRequestQuicTest
     : public TestWithTaskEnvironment,
       public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
  protected:
-  URLRequestQuicTest() : context_(new TestURLRequestContext(true)) {
+  URLRequestQuicTest()
+      : context_builder_(CreateTestURLRequestContextBuilder()) {
     QuicEnableVersion(version());
     StartQuicServer(version());
 
-    std::unique_ptr<HttpNetworkSession::Params> params(
-        new HttpNetworkSession::Params);
+    HttpNetworkSessionParams params;
     CertVerifyResult verify_result;
     verify_result.verified_cert = ImportCertFromFile(
         GetTestCertsDirectory(), "quic-chain.pem");
-    cert_verifier_.AddResultForCertAndHost(verify_result.verified_cert.get(),
+    auto cert_verifier = std::make_unique<MockCertVerifier>();
+    cert_verifier->AddResultForCertAndHost(verify_result.verified_cert.get(),
                                            kTestServerHost, verify_result, OK);
     // To simplify the test, and avoid the race with the HTTP request, we force
     // QUIC for these requests.
-    context_->set_quic_context(&quic_context_);
-    quic_context_.params()->supported_versions = {version()};
-    quic_context_.params()->origins_to_force_quic_on.insert(
+    auto quic_context = std::make_unique<QuicContext>();
+    quic_context->params()->supported_versions = {version()};
+    quic_context->params()->origins_to_force_quic_on.insert(
         HostPortPair(kTestServerHost, 443));
-    params->enable_quic = true;
-    params->enable_server_push_cancellation = true;
-    context_->set_host_resolver(host_resolver_.get());
-    context_->set_http_network_session_params(std::move(params));
-    context_->set_cert_verifier(&cert_verifier_);
-    context_->set_net_log(&net_log_);
-    transport_security_state_.SetExpectCTReporter(&expect_ct_reporter_);
-    context_->set_transport_security_state(&transport_security_state_);
+    context_builder_->set_quic_context(std::move(quic_context));
+    params.enable_quic = true;
+    params.enable_server_push_cancellation = true;
+    context_builder_->set_host_resolver(std::move(host_resolver_));
+    context_builder_->set_http_network_session_params(params);
+    context_builder_->SetCertVerifier(std::move(cert_verifier));
+    context_builder_->set_net_log(NetLog::Get());
+
+    scoped_feature_list_.InitAndEnableFeature(kDynamicExpectCTFeature);
   }
 
   void TearDown() override {
     if (server_) {
       server_->Shutdown();
-      // If possible, deliver the conncetion close packet to the client before
-      // destruct the TestURLRequestContext.
       base::RunLoop().RunUntilIdle();
     }
   }
 
-  // Sets a NetworkDelegate to use for |context_|. Must be done before Init().
-  void SetNetworkDelegate(NetworkDelegate* network_delegate) {
-    context_->set_network_delegate(network_delegate);
+  URLRequestContextBuilder* context_builder() { return context_builder_.get(); }
+
+  std::unique_ptr<URLRequestContext> BuildContext() {
+    auto context = context_builder_->Build();
+
+    context->transport_security_state()->SetExpectCTReporter(
+        &expect_ct_reporter_);
+    return context;
   }
 
-  // Can be used to modify |context_|. Only safe to modify before Init() is
-  // called.
-  TestURLRequestContext* context() { return context_.get(); }
-
-  // Initializes the TestURLRequestContext |context_|.
-  void Init() { context_->Init(); }
-
-  std::unique_ptr<URLRequest> CreateRequest(const GURL& url,
-                                            RequestPriority priority,
-                                            URLRequest::Delegate* delegate) {
-    return context_->CreateRequest(url, priority, delegate,
-                                   TRAFFIC_ANNOTATION_FOR_TESTS);
+  static std::unique_ptr<URLRequest> CreateRequest(
+      URLRequestContext* context,
+      const GURL& url,
+      URLRequest::Delegate* delegate) {
+    return context->CreateRequest(url, DEFAULT_PRIORITY, delegate,
+                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   unsigned int GetRstErrorCountReceivedByServer(
@@ -183,7 +188,6 @@ class URLRequestQuicTest
   static const NetLogSource FindPushUrlSource(
       const std::vector<NetLogEntry>& entries,
       const std::string& push_url) {
-    std::string entry_push_url;
     for (const auto& entry : entries) {
       if (entry.phase == NetLogEventPhase::BEGIN &&
           entry.source.type ==
@@ -213,10 +217,6 @@ class URLRequestQuicTest
 
   MockExpectCTReporter* expect_ct_reporter() { return &expect_ct_reporter_; }
 
-  TransportSecurityState* transport_security_state() {
-    return &transport_security_state_;
-  }
-
  protected:
   // Returns a fully-qualified URL for |path| on the test server.
   std::string UrlFromPath(base::StringPiece path) {
@@ -224,7 +224,13 @@ class URLRequestQuicTest
            std::string(path);
   }
 
-  RecordingTestNetLog net_log_;
+  void SetDelay(absl::string_view host,
+                absl::string_view path,
+                base::TimeDelta delay) {
+    memory_cache_backend_.SetResponseDelay(
+        host, path,
+        quic::QuicTime::Delta::FromMilliseconds(delay.InMilliseconds()));
+  }
 
  private:
   void StartQuicServer(quic::ParsedQuicVersion version) {
@@ -246,24 +252,17 @@ class URLRequestQuicTest
         {push_info1, push_info2});
     quic::QuicConfig config;
     // Set up server certs.
-    std::unique_ptr<net::ProofSourceChromium> proof_source(
-        new net::ProofSourceChromium());
-    base::FilePath directory = GetTestCertsDirectory();
-    CHECK(proof_source->Initialize(
-        directory.Append(FILE_PATH_LITERAL("quic-chain.pem")),
-        directory.Append(FILE_PATH_LITERAL("quic-leaf-cert.key")),
-        base::FilePath()));
-    server_.reset(new QuicSimpleServer(
-        quic::test::crypto_test_utils::ProofSourceForTesting(), config,
-        quic::QuicCryptoServerConfig::ConfigOptions(), {version},
-        &memory_cache_backend_));
+    server_ = std::make_unique<QuicSimpleServer>(
+        net::test::ProofSourceForTestingChromium(), config,
+        quic::QuicCryptoServerConfig::ConfigOptions(),
+        quic::ParsedQuicVersionVector{version}, &memory_cache_backend_);
     int rv =
         server_->Listen(net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0));
     EXPECT_GE(rv, 0) << "Quic server fails to start";
 
-    std::unique_ptr<MockHostResolver> resolver(new MockHostResolver());
+    auto resolver = std::make_unique<MockHostResolver>();
     resolver->rules()->AddRule("test.example.com", "127.0.0.1");
-    host_resolver_.reset(new MappedHostResolver(std::move(resolver)));
+    host_resolver_ = std::make_unique<MappedHostResolver>(std::move(resolver));
     // Use a mapped host resolver so that request for test.example.com
     // reach the server running on localhost.
     std::string map_rule =
@@ -282,23 +281,25 @@ class URLRequestQuicTest
   }
 
   MockExpectCTReporter expect_ct_reporter_;
-  TransportSecurityState transport_security_state_;
 
   std::unique_ptr<MappedHostResolver> host_resolver_;
   std::unique_ptr<QuicSimpleServer> server_;
-  std::unique_ptr<TestURLRequestContext> context_;
-  QuicContext quic_context_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
-  MockCertVerifier cert_verifier_;
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  std::unique_ptr<URLRequestContextBuilder> context_builder_;
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A URLRequest::Delegate that checks LoadTimingInfo when response headers are
 // received.
 class CheckLoadTimingDelegate : public TestDelegate {
  public:
-  CheckLoadTimingDelegate(bool session_reused)
+  explicit CheckLoadTimingDelegate(bool session_reused)
       : session_reused_(session_reused) {}
+
+  CheckLoadTimingDelegate(const CheckLoadTimingDelegate&) = delete;
+  CheckLoadTimingDelegate& operator=(const CheckLoadTimingDelegate&) = delete;
+
   void OnResponseStarted(URLRequest* request, int error) override {
     TestDelegate::OnResponseStarted(request, error);
     LoadTimingInfo load_timing_info;
@@ -326,14 +327,12 @@ class CheckLoadTimingDelegate : public TestDelegate {
     EXPECT_EQ(load_timing_info.connect_timing.connect_end,
               load_timing_info.connect_timing.ssl_end);
     EXPECT_EQ(session_reused,
-              load_timing_info.connect_timing.dns_start.is_null());
+              load_timing_info.connect_timing.domain_lookup_start.is_null());
     EXPECT_EQ(session_reused,
-              load_timing_info.connect_timing.dns_end.is_null());
+              load_timing_info.connect_timing.domain_lookup_end.is_null());
   }
 
   bool session_reused_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckLoadTimingDelegate);
 };
 
 // A TestNetworkDelegate that invokes |all_requests_completed_callback| when
@@ -347,6 +346,11 @@ class WaitForCompletionNetworkDelegate : public net::TestNetworkDelegate {
             std::move(all_requests_completed_callback)),
         num_expected_requests_(num_expected_requests) {}
 
+  WaitForCompletionNetworkDelegate(const WaitForCompletionNetworkDelegate&) =
+      delete;
+  WaitForCompletionNetworkDelegate& operator=(
+      const WaitForCompletionNetworkDelegate&) = delete;
+
   void OnCompleted(URLRequest* request, bool started, int net_error) override {
     net::TestNetworkDelegate::OnCompleted(request, started, net_error);
     num_expected_requests_--;
@@ -357,7 +361,6 @@ class WaitForCompletionNetworkDelegate : public net::TestNetworkDelegate {
  private:
   base::OnceClosure all_requests_completed_callback_;
   size_t num_expected_requests_;
-  DISALLOW_COPY_AND_ASSIGN(WaitForCompletionNetworkDelegate);
 };
 
 }  // namespace
@@ -373,10 +376,10 @@ INSTANTIATE_TEST_SUITE_P(Version,
                          ::testing::PrintToStringParamName());
 
 TEST_P(URLRequestQuicTest, TestGetRequest) {
-  Init();
+  auto context = BuildContext();
   CheckLoadTimingDelegate delegate(false);
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -387,274 +390,31 @@ TEST_P(URLRequestQuicTest, TestGetRequest) {
   EXPECT_TRUE(request->ssl_info().is_valid());
 }
 
-TEST_P(URLRequestQuicTest, CancelPushIfCached_SomeCached) {
-  if (VersionUsesHttp3(version().transport_version)) {
-    Init();
-    return;
-  }
-
-  // Skip test if "split cache" is enabled while "partition connections" is
-  // disabled, as it breaks push.
-  if (base::FeatureList::IsEnabled(
-          net::features::kSplitCacheByNetworkIsolationKey) &&
-      !base::FeatureList::IsEnabled(
-          net::features::kPartitionConnectionsByNetworkIsolationKey)) {
-    return;
-  }
-
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("http://www.example.com"));
-  const IsolationInfo kTestIsolationInfo =
-      IsolationInfo::CreateForInternalRequest(kOrigin1);
-
-  Init();
-
-  // Send a request to the pushed url: /kitten-1.jpg to pull the resource into
-  // cache.
-  CheckLoadTimingDelegate delegate_0(false);
-  std::unique_ptr<URLRequest> request_0 = CreateRequest(
-      GURL(UrlFromPath(kKittenPath)), DEFAULT_PRIORITY, &delegate_0);
-
-  request_0->set_isolation_info(kTestIsolationInfo);
-  request_0->Start();
-  ASSERT_TRUE(request_0->is_pending());
-
-  // Spin the message loop until the client receives the response for the first
-  // request.
-  delegate_0.RunUntilComplete();
-  EXPECT_EQ(OK, delegate_0.request_status());
-
-  // Send a request to /index2.html which pushes /kitten-1.jpg and /favicon.ico.
-  // Should cancel push for /kitten-1.jpg.
-  CheckLoadTimingDelegate delegate(true);
-  std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kIndexPath)), DEFAULT_PRIORITY, &delegate);
-
-  request->set_isolation_info(kTestIsolationInfo);
-  request->Start();
-  ASSERT_TRUE(request->is_pending());
-
-  // Spin the message loop until the client receives the response for the second
-  // request.
-  delegate.RunUntilComplete();
-  EXPECT_EQ(OK, delegate.request_status());
-  // Wait until all QUIC events are process, some of which happen
-  // asynchronously.
-  base::RunLoop().RunUntilIdle();
-
-  // Extract net logs on client side to verify push lookup transactions.
-  auto entries = net_log_.GetEntriesWithType(
-      NetLogEventType::SERVER_PUSH_LOOKUP_TRANSACTION);
-
-  ASSERT_EQ(4u, entries.size());
-
-  std::string value;
-  std::string push_url_1 = UrlFromPath(kKittenPath);
-  std::string push_url_2 = UrlFromPath(kFaviconPath);
-
-  const NetLogSource source_1 = FindPushUrlSource(entries, push_url_1);
-  EXPECT_TRUE(source_1.IsValid());
-
-  // No net error code for this lookup transaction, the push is found.
-  const NetLogEntry* end_entry_1 = FindEndBySource(entries, source_1);
-  EXPECT_FALSE(end_entry_1->HasParams());
-  EXPECT_FALSE(GetOptionalNetErrorCodeFromParams(*end_entry_1));
-
-  const NetLogSource source_2 = FindPushUrlSource(entries, push_url_2);
-  EXPECT_TRUE(source_2.IsValid());
-  EXPECT_NE(source_1.id, source_2.id);
-
-  // Net error code -400 is found for this lookup transaction, the push is not
-  // found in the cache.
-  const NetLogEntry* end_entry_2 = FindEndBySource(entries, source_2);
-  EXPECT_TRUE(end_entry_2->HasParams());
-  EXPECT_EQ(-400, GetNetErrorCodeFromParams(*end_entry_2));
-
-#if !defined(OS_FUCHSIA) && !defined(OS_IOS) && !defined(OS_APPLE)
-  // TODO(crbug.com/813631): Make this work on Fuchsia.
-  // TODO(crbug.com/1032568): Make this work on iOS.
-  // TODO(crbug.com/1128459): Turn this on for ARM mac.
-
-  // Wait until the server has processed all errors which is
-  // happening asynchronously
-  base::RunLoop().RunUntilIdle();
-  // Verify the reset error count received on the server side.
-  EXPECT_LE(1u, GetRstErrorCountReceivedByServer(quic::QUIC_STREAM_CANCELLED));
-#endif
-}
-
-TEST_P(URLRequestQuicTest, CancelPushIfCached_AllCached) {
-  if (VersionUsesHttp3(version().transport_version)) {
-    Init();
-    return;
-  }
-
-  // Skip test if "split cache" is enabled while "partition connections" is
-  // disabled, as it breaks push.
-  if (base::FeatureList::IsEnabled(
-          net::features::kSplitCacheByNetworkIsolationKey) &&
-      !base::FeatureList::IsEnabled(
-          net::features::kPartitionConnectionsByNetworkIsolationKey)) {
-    return;
-  }
-
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("http://www.example.com"));
-  const IsolationInfo kTestIsolationInfo =
-      IsolationInfo::CreateForInternalRequest(kOrigin1);
-
-  Init();
-
-  // Send a request to the pushed url: /kitten-1.jpg to pull the resource into
-  // cache.
-  CheckLoadTimingDelegate delegate_0(false);
-  std::unique_ptr<URLRequest> request_0 = CreateRequest(
-      GURL(UrlFromPath(kKittenPath)), DEFAULT_PRIORITY, &delegate_0);
-
-  request_0->set_isolation_info(kTestIsolationInfo);
-  request_0->Start();
-  ASSERT_TRUE(request_0->is_pending());
-
-  // Spin the message loop until the client receives the response for the first
-  // request.
-  delegate_0.RunUntilComplete();
-  EXPECT_EQ(OK, delegate_0.request_status());
-
-  // Send a request to the pushed url: /favicon.ico to pull the resource into
-  // cache.
-  CheckLoadTimingDelegate delegate_1(true);
-  std::unique_ptr<URLRequest> request_1 = CreateRequest(
-      GURL(UrlFromPath(kFaviconPath)), DEFAULT_PRIORITY, &delegate_1);
-
-  request_1->set_isolation_info(kTestIsolationInfo);
-  request_1->Start();
-  ASSERT_TRUE(request_1->is_pending());
-
-  // Spin the message loop until the client receives the response for the second
-  // request.
-  delegate_1.RunUntilComplete();
-  EXPECT_EQ(OK, delegate_1.request_status());
-
-  // Send a request to /index2.html which pushes /kitten-1.jpg and /favicon.ico.
-  // Should cancel push for both pushed resources, since they're already cached.
-  CheckLoadTimingDelegate delegate(true);
-  std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kIndexPath)), DEFAULT_PRIORITY, &delegate);
-
-  request->set_isolation_info(kTestIsolationInfo);
-  request->Start();
-  ASSERT_TRUE(request->is_pending());
-
-  // Spin the message loop until the client receives the response for the third
-  // request.
-  delegate.RunUntilComplete();
-  EXPECT_EQ(OK, delegate.request_status());
-  // Wait until all QUIC events are process, some of which happen
-  // asynchronously.
-  base::RunLoop().RunUntilIdle();
-
-  // Extract net logs on client side to verify push lookup transactions.
-  auto entries = net_log_.GetEntriesWithType(
-      NetLogEventType::SERVER_PUSH_LOOKUP_TRANSACTION);
-
-  ASSERT_EQ(4u, entries.size());
-
-  std::string value;
-  std::string push_url_1 = UrlFromPath(kKittenPath);
-  std::string push_url_2 = UrlFromPath(kFaviconPath);
-
-  const NetLogSource source_1 = FindPushUrlSource(entries, push_url_1);
-  EXPECT_TRUE(source_1.IsValid());
-
-  // No net error code for this lookup transaction, the push is found.
-  const NetLogEntry* end_entry_1 = FindEndBySource(entries, source_1);
-  EXPECT_FALSE(end_entry_1->HasParams());
-  EXPECT_FALSE(GetOptionalNetErrorCodeFromParams(*end_entry_1));
-
-  const NetLogSource source_2 = FindPushUrlSource(entries, push_url_2);
-  EXPECT_TRUE(source_1.IsValid());
-  EXPECT_NE(source_1.id, source_2.id);
-
-  // No net error code for this lookup transaction, the push is found.
-  const NetLogEntry* end_entry_2 = FindEndBySource(entries, source_2);
-  EXPECT_FALSE(end_entry_2->HasParams());
-  EXPECT_FALSE(GetOptionalNetErrorCodeFromParams(*end_entry_2));
-
-#if !defined(OS_FUCHSIA) && !defined(OS_APPLE)
-  // TODO(crbug.com/813631): Make this work on Fuchsia.
-  // TODO(crbug.com/1032568): Make this work on iOS.
-  // TODO(crbug.com/1087378): Flaky on Mac.
-  // Verify the reset error count received on the server side.
-  EXPECT_LE(2u, GetRstErrorCountReceivedByServer(quic::QUIC_STREAM_CANCELLED));
-#endif
-}
-
-TEST_P(URLRequestQuicTest, DoNotCancelPushIfNotFoundInCache) {
-  if (VersionUsesHttp3(version().transport_version)) {
-    Init();
-    return;
-  }
-
-  Init();
-
-  // Send a request to /index2.hmtl which pushes /kitten-1.jpg and /favicon.ico
-  // and shouldn't cancel any since neither is in cache.
-  CheckLoadTimingDelegate delegate(false);
-  std::string url = UrlFromPath(kIndexPath);
-  std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(url), DEFAULT_PRIORITY, &delegate);
-
-  request->Start();
-  ASSERT_TRUE(request->is_pending());
-
-  // Spin the message loop until the client receives response.
-  delegate.RunUntilComplete();
-  EXPECT_EQ(OK, delegate.request_status());
-
-  // Extract net logs on client side to verify push lookup transactions.
-  auto entries = net_log_.GetEntriesWithType(
-      NetLogEventType::SERVER_PUSH_LOOKUP_TRANSACTION);
-
-  ASSERT_EQ(4u, entries.size());
-
-  std::string value;
-  std::string push_url_1 = UrlFromPath(kKittenPath);
-  std::string push_url_2 = UrlFromPath(kFaviconPath);
-
-  const NetLogSource source_1 = FindPushUrlSource(entries, push_url_1);
-  EXPECT_TRUE(source_1.IsValid());
-  const NetLogEntry* end_entry_1 = FindEndBySource(entries, source_1);
-  EXPECT_TRUE(end_entry_1->HasParams());
-  EXPECT_EQ(-400, GetNetErrorCodeFromParams(*end_entry_1));
-
-  const NetLogSource source_2 = FindPushUrlSource(entries, push_url_2);
-  EXPECT_TRUE(source_2.IsValid());
-  EXPECT_NE(source_1.id, source_2.id);
-  const NetLogEntry* end_entry_2 = FindEndBySource(entries, source_2);
-  EXPECT_TRUE(end_entry_2->HasParams());
-  EXPECT_EQ(-400, GetNetErrorCodeFromParams(*end_entry_2));
-
-  // Verify the reset error count received on the server side.
-  EXPECT_EQ(0u, GetRstErrorCountReceivedByServer(quic::QUIC_STREAM_CANCELLED));
-}
-
 // Tests that if two requests use the same QUIC session, the second request
 // should not have |LoadTimingInfo::connect_timing|.
 TEST_P(URLRequestQuicTest, TestTwoRequests) {
   base::RunLoop run_loop;
-  WaitForCompletionNetworkDelegate network_delegate(
-      run_loop.QuitClosure(), /*num_expected_requests=*/2);
-  SetNetworkDelegate(&network_delegate);
-  Init();
+  context_builder()->set_network_delegate(
+      std::make_unique<WaitForCompletionNetworkDelegate>(
+          run_loop.QuitClosure(), /*num_expected_requests=*/2));
+  auto context = BuildContext();
+
+  GURL url = GURL(UrlFromPath(kHelloPath));
+  auto isolation_info =
+      IsolationInfo::CreateForInternalRequest(url::Origin::Create(url));
+
   CheckLoadTimingDelegate delegate(false);
   delegate.set_on_complete(base::DoNothing());
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), url, &delegate);
+  request->set_isolation_info(isolation_info);
 
   CheckLoadTimingDelegate delegate2(true);
   delegate2.set_on_complete(base::DoNothing());
-  std::unique_ptr<URLRequest> request2 = CreateRequest(
-      GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate2);
+  std::unique_ptr<URLRequest> request2 =
+      CreateRequest(context.get(), url, &delegate2);
+  request2->set_isolation_info(isolation_info);
+
   request->Start();
   request2->Start();
   ASSERT_TRUE(request->is_pending());
@@ -668,15 +428,14 @@ TEST_P(URLRequestQuicTest, TestTwoRequests) {
 }
 
 TEST_P(URLRequestQuicTest, RequestHeadersCallback) {
-  Init();
+  auto context = BuildContext();
   HttpRawRequestHeaders raw_headers;
   TestDelegate delegate;
-  TestURLRequestContext context;
   HttpRequestHeaders extra_headers;
   extra_headers.SetHeader("X-Foo", "bar");
 
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
 
   request->SetExtraRequestHeaders(extra_headers);
   request->SetRequestHeadersCallback(
@@ -704,6 +463,25 @@ TEST_P(URLRequestQuicTest, RequestHeadersCallback) {
   EXPECT_EQ(OK, delegate.request_status());
 }
 
+TEST_P(URLRequestQuicTest, DelayedResponseStart) {
+  auto context = BuildContext();
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
+
+  constexpr auto delay = base::Milliseconds(300);
+
+  this->SetDelay(kTestServerHost, kHelloPath, delay);
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  delegate.RunUntilComplete();
+  LoadTimingInfo timing_info;
+  request->GetLoadTimingInfo(&timing_info);
+  EXPECT_EQ(OK, delegate.request_status());
+  EXPECT_GE((timing_info.receive_headers_start - timing_info.request_start),
+            delay);
+}
+
 // Tests that if there's an Expect-CT failure at the QUIC layer, a report is
 // generated.
 TEST_P(URLRequestQuicTest, ExpectCT) {
@@ -717,20 +495,20 @@ TEST_P(URLRequestQuicTest, ExpectCT) {
       // disabled_features
       {});
 
-  MockCTPolicyEnforcerNonCompliant ct_enforcer;
-  context()->set_ct_policy_enforcer(&ct_enforcer);
-  Init();
+  context_builder()->set_ct_policy_enforcer(
+      std::make_unique<MockCTPolicyEnforcerNonCompliant>());
+  auto context = BuildContext();
 
   GURL report_uri("https://report.test/");
   IsolationInfo isolation_info = IsolationInfo::CreateTransient();
-  transport_security_state()->AddExpectCT(
-      kTestServerHost, base::Time::Now() + base::TimeDelta::FromDays(1),
-      true /* enforce */, report_uri, isolation_info.network_isolation_key());
+  context->transport_security_state()->AddExpectCT(
+      kTestServerHost, base::Time::Now() + base::Days(1), true /* enforce */,
+      report_uri, isolation_info.network_anonymization_key());
 
   base::RunLoop run_loop;
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
   request->set_isolation_info(isolation_info);
   request->Start();
   delegate.RunUntilComplete();
@@ -738,8 +516,8 @@ TEST_P(URLRequestQuicTest, ExpectCT) {
   EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR, delegate.request_status());
   ASSERT_EQ(1, expect_ct_reporter()->num_failures());
   EXPECT_EQ(report_uri, expect_ct_reporter()->report_uri());
-  EXPECT_EQ(isolation_info.network_isolation_key(),
-            expect_ct_reporter()->network_isolation_key());
+  EXPECT_EQ(isolation_info.network_anonymization_key(),
+            expect_ct_reporter()->network_anonymization_key());
 }
 
 }  // namespace net

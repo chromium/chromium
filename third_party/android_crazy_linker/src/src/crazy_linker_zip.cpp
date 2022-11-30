@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -240,7 +240,7 @@ int32_t FindStartOffsetOfFileInZipFile(const char* zip_file,
 
   // Map the file into memory.
   void* mem = fd.Map(NULL, file_size, PROT_READ, MAP_PRIVATE, 0);
-  if (mem == MAP_FAILED) {
+  if (mem == MAP_FAILED || mem == NULL) {
     LOG_ERRNO("mmap failed trying to mmap zip file %s", zip_file);
     return CRAZY_OFFSET_FAILED;
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
 
 class PrefService;
 
@@ -23,43 +26,68 @@ class SyncService;
 
 namespace password_manager {
 
-class PasswordManagerClient;
+class PasswordReuseManager;
 
 // Instantiate this object to report metrics about the contents of the password
-// store. Create a static base::NoDestructor<StoreMetricsReporter> to ensure
-// that metrics are reported only once per process. This is thread-safe, because
-// C++11 guarantees that: "If control enters the declaration concurrently while
-// the variable is being initialized, the concurrent execution shall wait for
-// completion of the initialization." So the reporter is only initialised (and
-// hence reports) once.
-class StoreMetricsReporter {
+// store.
+class StoreMetricsReporter : public PasswordStoreConsumer {
  public:
   // Reports various metrics based on whether password manager is enabled. Uses
-  // |client| to obtain the password store and password syncing state. Uses
-  // |sync_service| and |identity_manager| to obtain the sync username to report
-  // about its presence among saved credentials. Uses the |prefs| to obtain
-  // information whether the password manager and the leak detection feature is
-  // enabled.
-  StoreMetricsReporter(PasswordManagerClient* client,
+  // |sync_service| password syncing state. Uses |sync_service| and
+  // |identity_manager| to obtain the sync username to report about its presence
+  // among saved credentials. Uses the |prefs| to obtain information whether the
+  // password manager and the leak detection feature is enabled. |done_call| is
+  // run after all metrics reporting is done from the store.
+  StoreMetricsReporter(PasswordStoreInterface* profile_store,
+                       PasswordStoreInterface* account_store,
                        const syncer::SyncService* sync_service,
                        const signin::IdentityManager* identity_manager,
-                       PrefService* prefs);
-
-  ~StoreMetricsReporter();
+                       PrefService* prefs,
+                       PasswordReuseManager* password_reuse_manager,
+                       bool is_under_advanced_protection,
+                       base::OnceClosure done_call);
+  StoreMetricsReporter(const StoreMetricsReporter&) = delete;
+  StoreMetricsReporter& operator=(const StoreMetricsReporter&) = delete;
+  StoreMetricsReporter(StoreMetricsReporter&&) = delete;
+  StoreMetricsReporter& operator=(StoreMetricsReporter&&) = delete;
+  ~StoreMetricsReporter() override;
 
  private:
-  class MultiStoreMetricsReporter;
+  // PasswordStoreConsumer:
+  void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsFrom(
+      PasswordStoreInterface* store,
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  void ReportMultiStoreMetrics(scoped_refptr<PasswordStore> profile_store,
-                               scoped_refptr<PasswordStore> account_store,
-                               bool is_opted_in);
-  void MultiStoreMetricsDone();
+  void ReportStoreMetrics(bool is_account_store,
+                          std::vector<std::unique_ptr<PasswordForm>> results);
 
-  std::unique_ptr<MultiStoreMetricsReporter> multi_store_reporter_;
+  // Since metrics reporting is run in a delayed task, we grab refptrs to the
+  // stores, to ensure they're still alive when the delayed task runs.
+  scoped_refptr<PasswordStoreInterface> profile_store_;
+  scoped_refptr<PasswordStoreInterface> account_store_;
 
+  bool is_under_advanced_protection_;
+
+  std::string sync_username_;
+
+  bool custom_passphrase_sync_enabled_;
+
+  BulkCheckDone bulk_check_done_;
+
+  bool is_opted_in_;
+
+  // Maps from (signon_realm, username) to password.
+  std::unique_ptr<
+      std::map<std::pair<std::string, std::u16string>, std::u16string>>
+      profile_store_results_;
+  std::unique_ptr<
+      std::map<std::pair<std::string, std::u16string>, std::u16string>>
+      account_store_results_;
+
+  base::OnceClosure done_callback_;
   base::WeakPtrFactory<StoreMetricsReporter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StoreMetricsReporter);
 };
 
 }  // namespace password_manager

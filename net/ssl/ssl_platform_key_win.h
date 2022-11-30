@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/win/wincrypt_shim.h"
+#include "crypto/scoped_capi_types.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -26,10 +27,10 @@ scoped_refptr<SSLPrivateKey> FetchClientCertPrivateKey(
     PCCERT_CONTEXT cert_context);
 
 // Returns an SSLPrivateKey backed by |prov| and |key_spec|, which must
-// correspond to |certificate|'s public key. Takes ownership of |prov|.
+// correspond to |certificate|'s public key.
 NET_EXPORT_PRIVATE scoped_refptr<SSLPrivateKey> WrapCAPIPrivateKey(
     const X509Certificate* certificate,
-    HCRYPTPROV prov,
+    crypto::ScopedHCRYPTPROV prov,
     DWORD key_spec);
 
 // Returns an SSLPrivateKey backed by |key|, which must correspond to

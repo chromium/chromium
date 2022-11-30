@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@ namespace ash {
 class ASH_EXPORT ShelfContainerView : public views::View {
  public:
   explicit ShelfContainerView(ShelfView* shelf_view);
+
+  ShelfContainerView(const ShelfContainerView&) = delete;
+  ShelfContainerView& operator=(const ShelfContainerView&) = delete;
+
   ~ShelfContainerView() override;
 
   void Initialize();
@@ -36,9 +40,6 @@ class ASH_EXPORT ShelfContainerView : public views::View {
  protected:
   // Owned by views hierarchy.
   ShelfView* shelf_view_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfContainerView);
 };
 
 }  // namespace ash

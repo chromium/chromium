@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,21 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
-#include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_util.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -23,8 +28,11 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -39,7 +47,10 @@ constexpr int kDistanceFromArrowToTouchPoint = 64;
 
 constexpr int kArrowSize = 20;
 constexpr int kBackgroundRadius = 20;
+
 // The background shadow for the circle.
+// TODO(michelefan@): Clean up the shadows after the
+// `chromeos::features::IsDarkLightModeEnabled()` is enabled by default.
 constexpr int kBackNudgeShadowOffsetY1 = 1;
 constexpr int kBackNudgeShadowBlurRadius1 = 2;
 constexpr SkColor kBackNudgeShadowColor1 = SkColorSetA(SK_ColorBLACK, 0x4D);
@@ -70,10 +81,8 @@ constexpr float kDistanceForMaxRadius = 116.f;
 // |kMaxRippleRadius|.
 constexpr float kDragDistanceForMaxRadius = 260.f;
 
-constexpr base::TimeDelta kAbortAnimationTimeout =
-    base::TimeDelta::FromMilliseconds(300);
-constexpr base::TimeDelta kCompleteAnimationTimeout =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAbortAnimationTimeout = base::Milliseconds(300);
+constexpr base::TimeDelta kCompleteAnimationTimeout = base::Milliseconds(200);
 
 // Y-axis drag distance to achieve full y drag progress.
 constexpr float kDistanceForFullYProgress = 80.f;
@@ -121,7 +130,7 @@ class AffordanceView : public views::View {
     ripple_flags.setAntiAlias(true);
     ripple_flags.setStyle(cc::PaintFlags::kFill_Style);
     ScopedLightModeAsDefault scoped_light_mode_as_default;
-    ripple_flags.setColor(AshColorProvider::GetSecondToneColor(
+    ripple_flags.setColor(ColorUtil::GetSecondToneColor(
         AshColorProvider::Get()->GetControlsLayerColor(
             AshColorProvider::ControlsLayerType::
                 kControlBackgroundColorActive)));
@@ -148,18 +157,27 @@ class AffordanceView : public views::View {
     const bool is_activated =
         x_offset_ >= kDistanceForFullRadius ||
         state_ == BackGestureAffordance::State::COMPLETING;
+
+    if (chromeos::features::IsDarkLightModeEnabled())
+      // Draw highlight border circles.
+      DrawCircleHighlightBorder(canvas, center_point, kBackgroundRadius);
+
     // Draw the arrow background circle.
     cc::PaintFlags bg_flags;
     bg_flags.setAntiAlias(true);
     bg_flags.setStyle(cc::PaintFlags::kFill_Style);
-    gfx::ShadowValues shadows;
-    shadows.push_back(
-        gfx::ShadowValue(gfx::Vector2d(0, kBackNudgeShadowOffsetY1),
-                         kBackNudgeShadowBlurRadius1, kBackNudgeShadowColor1));
-    shadows.push_back(
-        gfx::ShadowValue(gfx::Vector2d(0, kBackNudgeShadowOffsetY2),
-                         kBackNudgeShadowBlurRadius2, kBackNudgeShadowColor2));
-    bg_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
+
+    if (!chromeos::features::IsDarkLightModeEnabled()) {
+      gfx::ShadowValues shadows;
+      shadows.push_back(gfx::ShadowValue(
+          gfx::Vector2d(0, kBackNudgeShadowOffsetY1),
+          kBackNudgeShadowBlurRadius1, kBackNudgeShadowColor1));
+      shadows.push_back(gfx::ShadowValue(
+          gfx::Vector2d(0, kBackNudgeShadowOffsetY2),
+          kBackNudgeShadowBlurRadius2, kBackNudgeShadowColor2));
+      bg_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
+    }
+
     bg_flags.setColor(is_activated
                           ? DeprecatedGetControlsLayerColor(
                                 AshColorProvider::ControlsLayerType::
@@ -224,8 +242,9 @@ bool AboveBottomOfSplitViewDivider(const gfx::Point& location, int origin_y) {
 
   const gfx::Rect bounds_of_bottom_snapped_window =
       split_view_controller->GetSnappedWindowBoundsInScreen(
-          IsCurrentScreenOrientationPrimary() ? SplitViewController::RIGHT
-                                              : SplitViewController::LEFT,
+          IsCurrentScreenOrientationPrimary()
+              ? SplitViewController::SnapPosition::kSecondary
+              : SplitViewController::SnapPosition::kPrimary,
           /*window_for_minimum_size=*/nullptr);
   return bounds_of_bottom_snapped_window.Contains(location) &&
          origin_y < GetSplitViewDividerBoundsInScreen(location).bottom();
@@ -304,7 +323,7 @@ void BackGestureAffordance::Update(int x_drag_amount,
                    kBackgroundRadius;
 
   float y_progress = y_drag_amount / kDistanceForFullYProgress;
-  y_drag_progress_ = std::min(1.0f, std::max(-1.0f, y_progress));
+  y_drag_progress_ = base::clamp(y_progress, -1.0f, 1.0f);
 
   during_reverse_dragging_ = during_reverse_dragging;
 
@@ -346,7 +365,7 @@ void BackGestureAffordance::CreateAffordanceWidget(const gfx::Point& location) {
   params.accept_events = true;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "BackGestureAffordance";
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.parent = window_util::GetRootWindowAt(location)->GetChildById(
       kShellWindowId_OverlayContainer);
 

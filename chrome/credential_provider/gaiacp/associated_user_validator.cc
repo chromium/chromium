@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,10 +32,10 @@ namespace credential_provider {
 
 const base::TimeDelta
     AssociatedUserValidator::kDefaultTokenHandleValidationTimeout =
-        base::TimeDelta::FromMilliseconds(3000);
+        base::Milliseconds(3000);
 
 const base::TimeDelta AssociatedUserValidator::kTokenHandleValidityLifetime =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 const char AssociatedUserValidator::kTokenInfoUrl[] =
     "https://www.googleapis.com/oauth2/v2/tokeninfo";
@@ -79,14 +79,14 @@ unsigned __stdcall CheckReauthStatus(void* param) {
     }
 
     base::StringPiece response_string(response.data(), response.size());
-    base::Optional<base::Value> properties(base::JSONReader::Read(
+    absl::optional<base::Value> properties(base::JSONReader::Read(
         response_string, base::JSON_ALLOW_TRAILING_COMMAS));
     if (!properties || !properties->is_dict()) {
       LOGFN(ERROR) << "base::JSONReader::Read failed forcing reauth";
       return 0;
     }
 
-    base::Optional<int> expires_in = properties->FindIntKey("expires_in");
+    absl::optional<int> expires_in = properties->FindIntKey("expires_in");
     if (properties->FindKey("error") || !expires_in || expires_in.value() < 0) {
       LOGFN(VERBOSE) << "Needs reauth sid=" << reauth_info->sid;
       return 0;
@@ -134,7 +134,7 @@ HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
   wchar_t domain[kWindowsDomainBufferLength];
 
   HRESULT hr = manager->FindUserBySID(
-      sid.c_str(), username, base::size(username), domain, base::size(domain));
+      sid.c_str(), username, std::size(username), domain, std::size(domain));
 
   if (FAILED(hr)) {
     LOGFN(ERROR) << "FindUserBySID sid=" << sid << " hr=" << putHR(hr);
@@ -219,7 +219,7 @@ AssociatedUserValidator::~AssociatedUserValidator() = default;
 bool AssociatedUserValidator::IsOnlineLoginStale(
     const std::wstring& sid) const {
   wchar_t last_token_valid_millis[512];
-  ULONG last_token_valid_size = base::size(last_token_valid_millis);
+  ULONG last_token_valid_size = std::size(last_token_valid_millis);
   HRESULT hr = GetUserProperty(sid, base::UTF8ToWide(kKeyLastTokenValid),
                                last_token_valid_millis, &last_token_valid_size);
 
@@ -227,9 +227,9 @@ bool AssociatedUserValidator::IsOnlineLoginStale(
     LOGFN(VERBOSE) << "GetUserProperty for " << kKeyLastTokenValid
                    << " failed. hr=" << putHR(hr);
     // DEPRECATED FLOW. Keeping it for backward compatibility.
-    HRESULT hr = GetUserProperty(
-        sid, base::UTF8ToWide(kKeyLastSuccessfulOnlineLoginMillis),
-        last_token_valid_millis, &last_token_valid_size);
+    hr = GetUserProperty(sid,
+                         base::UTF8ToWide(kKeyLastSuccessfulOnlineLoginMillis),
+                         last_token_valid_millis, &last_token_valid_size);
 
     if (FAILED(hr)) {
       LOGFN(VERBOSE) << "GetUserProperty for "
@@ -301,7 +301,7 @@ HRESULT AssociatedUserValidator::UpdateAssociatedSids(
       users_to_delete.insert(sid_to_association.first);
       continue;
     }
-    HRESULT hr = manager->FindUserBySID(sid.c_str(), nullptr, 0, nullptr, 0);
+    hr = manager->FindUserBySID(sid.c_str(), nullptr, 0, nullptr, 0);
     if (hr == HRESULT_FROM_WIN32(ERROR_NONE_MAPPED)) {
       users_to_delete.insert(sid_to_association.first);
       continue;
@@ -370,7 +370,7 @@ bool AssociatedUserValidator::DenySigninForUsersWithInvalidTokenHandles(
     if (GetAuthEnforceReason(sid) != EnforceAuthReason::NOT_ENFORCED &&
         !manager->IsUserDomainJoined(sid)) {
       LOGFN(VERBOSE) << "Revoking access for sid=" << sid;
-      HRESULT hr = ModifyUserAccess(policy, sid, false);
+      hr = ModifyUserAccess(policy, sid, false);
       if (FAILED(hr)) {
         LOGFN(ERROR) << "ModifyUserAccess sid=" << sid << " hr=" << putHR(hr);
       } else {
@@ -535,6 +535,8 @@ bool AssociatedUserValidator::IsAuthEnforcedForUser(const std::wstring& sid) {
 
 AssociatedUserValidator::EnforceAuthReason
 AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
+  LOGFN(VERBOSE);
+
   // Is user not associated, then we shouldn't have any auth enforcement.
   if (!IsUserAssociated(sid))
     return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;

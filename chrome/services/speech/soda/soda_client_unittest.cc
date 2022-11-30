@@ -1,9 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/services/speech/soda/soda_client.h"
 
-#include <unistd.h>
+#include <algorithm>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -11,24 +11,20 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
+#include "chrome/services/speech/soda/soda_test_paths.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 namespace soda {
-
-constexpr base::FilePath::CharType kSodaResourcesDir[] =
-    FILE_PATH_LITERAL("third_party/soda/resources");
-
-constexpr base::FilePath::CharType kSodaTestBinaryRelativePath[] =
-    FILE_PATH_LITERAL("libsoda_for_testing.so");
-
-constexpr base::FilePath::CharType kSodaTestonfigRelativePath[] =
-    FILE_PATH_LITERAL("en_us");
-
-constexpr base::FilePath::CharType kSodaTestAudioRelativePath[] =
-    FILE_PATH_LITERAL("hey_google.wav");
 
 class SodaClientUnitTest : public testing::Test {
  public:
@@ -70,13 +66,17 @@ void OnSodaResponse(const char* serialized_proto,
 }
 
 void SodaClientUnitTest::AddRecognitionResult(std::string result) {
+  // The language pack used by the MacOS builder is newer and has punctuation
+  // enabled whereas the one used by the Linux builder does not.
+  result.erase(std::remove(result.begin(), result.end(), ','), result.end());
   recognition_results_.push_back(std::move(result));
 }
 
 void SodaClientUnitTest::SetUp() {
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir_));
-  auto libsoda_path = test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-                          .Append(base::FilePath(kSodaTestBinaryRelativePath));
+  auto libsoda_path =
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(base::FilePath(soda::kSodaTestBinaryRelativePath));
   ASSERT_TRUE(base::PathExists(libsoda_path));
   soda_client_ = std::make_unique<soda::SodaClient>(libsoda_path);
   ASSERT_TRUE(soda_client_.get());
@@ -84,8 +84,9 @@ void SodaClientUnitTest::SetUp() {
 }
 
 TEST_F(SodaClientUnitTest, CreateSodaClient) {
-  auto audio_file = test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-                        .Append(base::FilePath(kSodaTestAudioRelativePath));
+  auto audio_file =
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(base::FilePath(soda::kSodaTestAudioRelativePath));
   ASSERT_TRUE(base::PathExists(audio_file));
 
   std::string buffer;
@@ -96,14 +97,15 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
   ASSERT_EQ(handler->num_channels(), 1);
 
   auto config_file_path =
-      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-          .Append(base::FilePath(kSodaTestonfigRelativePath));
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(base::FilePath(soda::kSodaLanguagePackRelativePath));
   ASSERT_TRUE(base::PathExists(config_file_path));
 
   speech::soda::chrome::ExtendedSodaConfigMsg config_msg;
   config_msg.set_channel_count(handler->num_channels());
   config_msg.set_sample_rate(handler->sample_rate());
-  config_msg.set_language_pack_directory(config_file_path.value().c_str());
+  config_msg.set_language_pack_directory(
+      config_file_path.AsUTF8Unsafe().c_str());
   config_msg.set_simulate_realtime_testonly(false);
   config_msg.set_enable_lang_id(false);
   config_msg.set_recognition_mode(
@@ -150,7 +152,11 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
 
       // Sleep for 20ms to simulate real-time audio. SODA requires audio
       // streaming in order to return events.
+#if BUILDFLAG(IS_WIN)
+      ::Sleep(20);
+#else
       usleep(20000);
+#endif
     }
   }
 

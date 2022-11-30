@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,18 @@ NSString* const kBadgeButtonIncognitoAccessibilityIdentifier =
 NSString* const kBadgeButtonOverflowAccessibilityIdentifier =
     @"badgeButtonOverflowAXID";
 
+NSString* const kBadgeButtonReadingListAccessibilityIdentifier =
+    @"badgeButtonReadingListAXID";
+
+NSString* const kBadgeButtonReadingListAcceptedAccessibilityIdentifier =
+    @"badgeButtonReadingListAcceptedAXID";
+
+NSString* const kBadgeButtonSaveAddressProfileAccessibilityIdentifier =
+    @"badgeButtonSaveAddressProfileAXID";
+
+NSString* const kBadgeButtonSaveAddressProfileAcceptedAccessibilityIdentifier =
+    @"badgeButtonSaveAddressProfileAcceptedAXID";
+
 NSString* const kBadgeButtonSaveCardAccessibilityIdentifier =
     @"badgeButtonSaveCardAXID";
 
@@ -38,8 +50,42 @@ NSString* const kBadgeButtonTranslateAccessibilityIdentifier =
 NSString* const kBadgeButtonTranslateAcceptedAccessibilityIdentifier =
     @"badgeButtonTranslateAcceptedAXID";
 
+NSString* const kBadgeButtonPermissionsCameraAccessibilityIdentifier =
+    @"badgeButtonPermissionsCameraAXID";
+
+NSString* const kBadgeButtonPermissionsCameraAcceptedAccessibilityIdentifier =
+    @"badgeButtonPermissionsCameraAcceptedAXID";
+
+NSString* const kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier =
+    @"badgeButtonPermissionsMicrophoneAXID";
+
+NSString* const
+    kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier =
+        @"badgeButtonPermissionsMicrophoneAcceptedAXID";
+
 NSString* const kBadgePopupMenuTableViewAccessibilityIdentifier =
     @"badgePopupMenuOverflowAXID";
 
 NSString* const kBadgeUnreadIndicatorAccessibilityIdentifier =
     @"badgeUnreadIndicatorAXID";
+
+NSString* const kBadgeButtonSavePasswordActionIdentifier =
+    @"badgeButtonSavePasswordActionIdentifier";
+
+NSString* const kBadgeButtonUpdatePasswordActionIdentifier =
+    @"badgeButtonUpdatePasswordActionIdentifier";
+
+NSString* const kBadgeButtonReadingListActionIdentifier =
+    @"badgeButtonReadingListActionIdentifier";
+
+NSString* const kBadgeButtonSaveAddressProfileActionIdentifier =
+    @"badgeButtonSaveAddressProfileActionIdentifier";
+
+NSString* const kBadgeButtonSaveCardActionIdentifier =
+    @"badgeButtonSaveCardActionIdentifier";
+
+NSString* const kBadgeButtonTranslateActionIdentifier =
+    @"badgeButtonTranslateActionIdentifier";
+
+NSString* const kBadgeButtonPermissionsActionIdentifier =
+    @"badgeButtonPermissionsActionIdentifier";

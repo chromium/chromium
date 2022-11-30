@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/power_scheduler/power_mode.h"
@@ -31,7 +30,6 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/software_output_device.h"
-#include "components/viz/service/display/texture_deleter.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -40,8 +38,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -56,6 +54,8 @@ const size_t kNumResourcesLimit = 10 * 1000 * 1000;
 class SoftwareDevice : public viz::SoftwareOutputDevice {
  public:
   SoftwareDevice(SkCanvas** canvas) : canvas_(canvas) {}
+  SoftwareDevice(const SoftwareDevice&) = delete;
+  SoftwareDevice& operator=(const SoftwareDevice&) = delete;
 
   void Resize(const gfx::Size& pixel_size, float device_scale_factor) override {
     // Intentional no-op: canvas size is controlled by the embedder.
@@ -68,8 +68,6 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
 
  private:
   SkCanvas** canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareDevice);
 };
 
 // This is used with resourceless software draws.
@@ -77,25 +75,25 @@ class SoftwareCompositorFrameSinkClient
     : public viz::mojom::CompositorFrameSinkClient {
  public:
   SoftwareCompositorFrameSinkClient() = default;
+  SoftwareCompositorFrameSinkClient(const SoftwareCompositorFrameSinkClient&) =
+      delete;
+  SoftwareCompositorFrameSinkClient& operator=(
+      const SoftwareCompositorFrameSinkClient&) = delete;
   ~SoftwareCompositorFrameSinkClient() override = default;
 
   void DidReceiveCompositorFrameAck(
-      const std::vector<viz::ReturnedResource>& resources) override {
+      std::vector<viz::ReturnedResource> resources) override {
     DCHECK(resources.empty());
   }
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details) override {
   }
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override {
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
     DCHECK(resources.empty());
   }
   void OnBeginFramePausedChanged(bool paused) override {}
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SoftwareCompositorFrameSinkClient);
 };
 
 }  // namespace
@@ -110,19 +108,9 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   void BindToClient(viz::OutputSurfaceClient* client) override {}
   void EnsureBackbuffer() override {}
   void DiscardBackbuffer() override {}
-  void BindFramebuffer() override {}
   void SwapBuffers(viz::OutputSurfaceFrame frame) override {}
-  void Reshape(const gfx::Size& size,
-               float scale_factor,
-               const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil) override {}
-  uint32_t GetFramebufferCopyTextureFormat() override { return 0; }
+  void Reshape(const ReshapeParams& params) override {}
   bool IsDisplayedAsOverlayPlane() const override { return false; }
-  unsigned GetOverlayTextureId() const override { return 0; }
-  bool HasExternalStencilTest() const override { return false; }
-  void ApplyExternalStencil() override {}
-  unsigned UpdateGpuFence() override { return 0; }
   void SetUpdateVSyncParametersCallback(
       viz::UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
@@ -140,7 +128,8 @@ base::TimeDelta SynchronousLayerTreeFrameSink::StubDisplayClient::
 
 SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     scoped_refptr<viz::ContextProvider> context_provider,
-    scoped_refptr<viz::RasterContextProvider> worker_context_provider,
+    scoped_refptr<cc::RasterContextProviderWrapper>
+        worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     uint32_t layer_tree_frame_sink_id,
@@ -151,7 +140,7 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSinkClient>
         client_receiver)
     : cc::LayerTreeFrameSink(std::move(context_provider),
-                             std::move(worker_context_provider),
+                             std::move(worker_context_provider_wrapper),
                              std::move(compositor_task_runner),
                              gpu_memory_buffer_manager),
       layer_tree_frame_sink_id_(layer_tree_frame_sink_id),
@@ -165,9 +154,7 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
       use_zero_copy_sw_draw_(
           Platform::Current()
               ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()),
-      animation_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation")) {
+      power_mode_voter_("PowerModeVoter.Animation") {
   DCHECK(registry_);
   DETACH_FROM_THREAD(thread_checker_);
   memory_policy_.priority_cutoff_when_visible =
@@ -195,7 +182,8 @@ bool SynchronousLayerTreeFrameSink::BindToClient(
   // The SharedBitmapManager is null since software compositing is not supported
   // or used on Android.
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-      /*shared_bitmap_manager=*/nullptr);
+      viz::FrameSinkManagerImpl::InitParams(
+          /*shared_bitmap_manager=*/nullptr));
 
   if (synthetic_begin_frame_source_) {
     client_->SetBeginFrameSource(synthetic_begin_frame_source_.get());
@@ -283,12 +271,11 @@ void SynchronousLayerTreeFrameSink::SetLocalSurfaceId(
 
 void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     viz::CompositorFrame frame,
-    bool hit_test_data_changed,
-    bool show_hit_test_borders) {
+    bool hit_test_data_changed) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(sync_client_);
 
-  base::Optional<viz::CompositorFrame> submit_frame;
+  absl::optional<viz::CompositorFrame> submit_frame;
   gfx::Size child_size = in_software_draw_
                              ? sw_viewport_for_current_draw_.size()
                              : frame.size_in_pixels();
@@ -300,6 +287,13 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     child_size_ = child_size;
     device_scale_factor_ = frame.metadata.device_scale_factor;
   }
+
+  power_mode_voter_.OnFrameProduced(frame.render_pass_list.back()->damage_rect,
+                                    frame.device_scale_factor());
+
+  // Reset the timestamp to null so that the next BeginFrame marks the time when
+  // it is called.
+  nop_animation_timeout_start_ = base::TimeTicks();
 
   if (in_software_draw_) {
     // The frame we send to the client is actually just the metadata. Preserve
@@ -362,28 +356,39 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
         embed_render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
     shared_quad_state->SetAll(
         child_transform, gfx::Rect(child_size), gfx::Rect(child_size),
-        gfx::MaskFilterInfo(), gfx::Rect() /* clip_rect */,
-        false /* is_clipped */, are_contents_opaque /* are_contents_opaque */,
-        1.f /* opacity */, SkBlendMode::kSrcOver, 0 /* sorting_context_id */);
+        gfx::MaskFilterInfo(), absl::nullopt /* clip_rect */,
+        are_contents_opaque /* are_contents_opaque */, 1.f /* opacity */,
+        SkBlendMode::kSrcOver, 0 /* sorting_context_id */);
     surface_quad->SetNew(
         shared_quad_state, gfx::Rect(child_size), gfx::Rect(child_size),
         viz::SurfaceRange(
-            base::nullopt,
+            absl::nullopt,
             viz::SurfaceId(kChildFrameSinkId, child_local_surface_id_)),
-        SK_ColorWHITE, false /* stretch_content_to_fill_bounds */);
+        SkColors::kWhite, false /* stretch_content_to_fill_bounds */);
 
     child_support_->SubmitCompositorFrame(child_local_surface_id_,
                                           std::move(frame));
     root_support_->SubmitCompositorFrame(root_local_surface_id_,
                                          std::move(embed_frame));
-    display_->DrawAndSwap(base::TimeTicks::Now());
+    base::TimeTicks now = base::TimeTicks::Now();
+    display_->DrawAndSwap({now, now});
 
     // We don't track metrics for frames submitted to |display_| but it still
     // expects that every frame will receive a swap ack and presentation
     // feedback so we send null signals here.
-    display_->DidReceiveSwapBuffersAck(gfx::SwapTimings());
+    now = base::TimeTicks::Now();
+    display_->DidReceiveSwapBuffersAck({now, now},
+                                       /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         gfx::PresentationFeedback::Failure());
+
+    viz::FrameTimingDetails details;
+    details.received_compositor_frame_timestamp = now;
+    details.draw_start_timestamp = now;
+    details.swap_timings = {now, now, now, now};
+    details.presentation_feedback = {now, base::TimeDelta(), 0};
+    client_->DidPresentCompositorFrame(submit_frame->metadata.frame_token,
+                                       details);
   } else {
     if (viz_frame_submission_enabled_) {
       frame.metadata.begin_frame_ack =
@@ -398,6 +403,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
       submit_frame = std::move(frame);
     }
   }
+
   // NOTE: submit_frame will be empty if viz_frame_submission_enabled_ enabled,
   // but it won't be used upstream
   // Because OnDraw can synchronously override the viewport without going
@@ -412,10 +418,10 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
 }
 
 void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
-    const viz::BeginFrameAck& ack) {
+    const viz::BeginFrameAck& ack,
+    cc::FrameSkippedReason reason) {
   // We do not call CompositorFrameSink::DidNotProduceFrame here because
-  // submission of frame depends on DemandDraw calls. DidNotProduceFrame will be
-  // called there or during OnBeginFrame as fallback.
+  // submission of frame depends on DemandDraw calls.
 }
 
 void SynchronousLayerTreeFrameSink::DidAllocateSharedBitmap(
@@ -473,8 +479,8 @@ void SynchronousLayerTreeFrameSink::DemandDrawSw(SkCanvas* canvas) {
   SkIRect canvas_clip = canvas->getDeviceClipBounds();
   gfx::Rect viewport = gfx::SkIRectToRect(canvas_clip);
 
-  gfx::Transform transform(gfx::Transform::kSkipInitialization);
-  transform.matrix() = canvas->getTotalMatrix();  // Converts 3x3 matrix to 4x4.
+  // Converts 3x3 matrix to 4x4.
+  gfx::Transform transform = gfx::SkMatrixToTransform(canvas->getTotalMatrix());
 
   // We will resize the Display to ensure it covers the entire |viewport|, so
   // save it for later.
@@ -502,7 +508,7 @@ void SynchronousLayerTreeFrameSink::InvokeComposite(
   // must also be zero, since the rect needs to be in the coordinates of the
   // layer compositor.
   gfx::Transform adjusted_transform = transform;
-  adjusted_transform.matrix().postTranslate(-viewport.x(), -viewport.y(), 0);
+  adjusted_transform.PostTranslate(-viewport.OffsetFromOrigin());
   // Don't propagate the viewport origin, as it will affect the clip rect.
   client_->OnDraw(adjusted_transform, gfx::Rect(viewport.size()),
                   in_software_draw_, false /*skip_draw*/);
@@ -517,13 +523,23 @@ void SynchronousLayerTreeFrameSink::InvokeComposite(
 
 void SynchronousLayerTreeFrameSink::ReclaimResources(
     uint32_t layer_tree_frame_sink_id,
-    const Vector<viz::ReturnedResource>& resources) {
+    Vector<viz::ReturnedResource> resources) {
   // Ignore message if it's a stale one coming from a different output surface
   // (e.g. after a lost context).
   if (layer_tree_frame_sink_id != layer_tree_frame_sink_id_)
     return;
-  client_->ReclaimResources(
-      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
+  client_->ReclaimResources(std::vector<viz::ReturnedResource>(
+      std::make_move_iterator(resources.begin()),
+      std::make_move_iterator(resources.end())));
+}
+
+void SynchronousLayerTreeFrameSink::
+    OnCompositorFrameTransitionDirectiveProcessed(
+        uint32_t layer_tree_frame_sink_id,
+        uint32_t sequence_id) {
+  if (layer_tree_frame_sink_id != layer_tree_frame_sink_id_)
+    return;
+  client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
 }
 
 void SynchronousLayerTreeFrameSink::SetMemoryPolicy(size_t bytes_limit) {
@@ -555,11 +571,12 @@ void SynchronousLayerTreeFrameSink::DidActivatePendingTree() {
 }
 
 void SynchronousLayerTreeFrameSink::DidReceiveCompositorFrameAck(
-    const Vector<viz::ReturnedResource>& resources) {
+    Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(viz_frame_submission_enabled_);
-  client_->ReclaimResources(
-      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
+  client_->ReclaimResources(std::vector<viz::ReturnedResource>(
+      std::make_move_iterator(resources.begin()),
+      std::make_move_iterator(resources.end())));
   // client_->DidReceiveCompositorFrameAck() is called just after frame
   // submission so cc won't be throttled on actual draw which can happen late
   // (or not happen at all) for WebView.
@@ -582,11 +599,12 @@ void SynchronousLayerTreeFrameSink::OnBeginFrame(
 }
 
 void SynchronousLayerTreeFrameSink::ReclaimResources(
-    const Vector<viz::ReturnedResource>& resources) {
+    Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(viz_frame_submission_enabled_);
-  client_->ReclaimResources(
-      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
+  client_->ReclaimResources(std::vector<viz::ReturnedResource>(
+      std::make_move_iterator(resources.begin()),
+      std::make_move_iterator(resources.end())));
 }
 
 void SynchronousLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {
@@ -599,13 +617,11 @@ void SynchronousLayerTreeFrameSink::OnNeedsBeginFrames(
     if (needs_begin_frames) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
                                         this);
-      animation_power_mode_voter_->VoteFor(
-          power_scheduler::PowerMode::kAnimation);
+      nop_animation_timeout_start_ = base::TimeTicks::Now();
     } else {
       TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
-      animation_power_mode_voter_->ResetVoteAfterTimeout(
-          power_scheduler::PowerModeVoter::kAnimationTimeout);
     }
+    power_mode_voter_.OnNeedsBeginFramesChanged(needs_begin_frames);
   }
   needs_begin_frames_ = needs_begin_frames;
   if (sync_client_) {
@@ -625,8 +641,25 @@ void SynchronousLayerTreeFrameSink::DidPresentCompositorFrame(
 
 void SynchronousLayerTreeFrameSink::BeginFrame(
     const viz::BeginFrameArgs& args) {
-  if (external_begin_frame_source_)
-    external_begin_frame_source_->OnBeginFrame(args);
+  if (!external_begin_frame_source_)
+    return;
+
+  if (!nop_animation_timeout_start_.is_null()) {
+    if ((base::TimeTicks::Now() - nop_animation_timeout_start_) >
+        power_scheduler::PowerModeVoter::kAnimationTimeout) {
+      // BeginFrame was not followed by SubmitCompositorFrame within the
+      // expected time, so the frame was likely skipped.
+      power_mode_voter_.OnFrameTimeout();
+
+      // Update the timestamp to start a new measurement.
+      nop_animation_timeout_start_ = base::TimeTicks::Now();
+    }
+  } else {
+    // Mark the time when BeginFrame was called after a previous
+    // SubmitCompositorFrame.
+    nop_animation_timeout_start_ = base::TimeTicks::Now();
+  }
+  external_begin_frame_source_->OnBeginFrame(args);
 }
 
 void SynchronousLayerTreeFrameSink::SetBeginFrameSourcePaused(bool paused) {

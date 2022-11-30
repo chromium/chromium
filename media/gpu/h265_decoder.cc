@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
 #include "media/gpu/h265_decoder.h"
@@ -31,23 +32,46 @@ bool ParseBitDepth(const H265SPS& sps, uint8_t& bit_depth) {
 }
 
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
-  // Spec A.3.
   switch (profile) {
+    // Spec A.3.2
     case HEVCPROFILE_MAIN:
       return bit_depth == 8u;
+    // Spec A.3.3
     case HEVCPROFILE_MAIN10:
       return bit_depth == 8u || bit_depth == 10u;
+    // Spec A.3.4
     case HEVCPROFILE_MAIN_STILL_PICTURE:
       return bit_depth == 8u;
+    // Spec A.3.5
+    case HEVCPROFILE_REXT:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u ||
+             bit_depth == 14u || bit_depth == 16u;
+    // Spec A.3.6
+    case HEVCPROFILE_HIGH_THROUGHPUT:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u ||
+             bit_depth == 16u;
+    // Spec G.11.1.1
+    case HEVCPROFILE_MULTIVIEW_MAIN:
+      return bit_depth == 8u;
+    // Spec H.11.1.1
+    case HEVCPROFILE_SCALABLE_MAIN:
+      return bit_depth == 8u || bit_depth == 10u;
+    // Spec I.11.1.1
+    case HEVCPROFILE_3D_MAIN:
+      return bit_depth == 8u;
+    // Spec A.3.7
+    case HEVCPROFILE_SCREEN_EXTENDED:
+      return bit_depth == 8u || bit_depth == 10u;
+    // Spec H.11.1.2
+    case HEVCPROFILE_SCALABLE_REXT:
+      return bit_depth == 8u || bit_depth == 12u || bit_depth == 16u;
+    // Spec A.3.8
+    case HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u;
     default:
-      NOTREACHED();
+      DVLOG(1) << "Invalid profile specified for H265";
       return false;
   }
-}
-
-bool IsYUV420Sequence(const H265SPS& sps) {
-  // Spec 6.2
-  return sps.chroma_format_idc == 1;
 }
 }  // namespace
 
@@ -130,6 +154,9 @@ void H265Decoder::Reset() {
   ref_pic_list_.clear();
   ref_pic_list0_.clear();
   ref_pic_list1_.clear();
+  ref_pic_set_lt_curr_.clear();
+  ref_pic_set_st_curr_after_.clear();
+  ref_pic_set_st_curr_before_.clear();
 
   dpb_.Clear();
   parser_.Reset();
@@ -234,7 +261,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           }
 
           state_ = kTryPreprocessCurrentSlice;
-          if (curr_slice_hdr_->slice_pic_parameter_set_id != curr_pps_id_) {
+          if (curr_slice_hdr_->irap_pic) {
             bool need_new_buffers = false;
             if (!ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
                             &need_new_buffers)) {
@@ -298,10 +325,27 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         if (par_res != H265Parser::kOk)
           SET_ERROR_AND_RETURN();
 
+        // For ARC CTS tests they expect us to request the buffers after only
+        // processing the SPS/PPS, we can't wait until we get the first IDR. To
+        // resolve the problem that was created by originally doing that, only
+        // do it if we don't have an active PPS set yet so it won't disturb an
+        // active stream.
+        if (curr_pps_id_ == -1) {
+          bool need_new_buffers = false;
+          if (!ProcessPPS(pps_id, &need_new_buffers)) {
+            SET_ERROR_AND_RETURN();
+          }
+
+          if (need_new_buffers) {
+            curr_nalu_.reset();
+            return kConfigChange;
+          }
+        }
+
         break;
       case H265NALU::EOS_NUT:
         first_picture_ = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case H265NALU::EOB_NUT:  // fallthrough
       case H265NALU::AUD_NUT:
       case H265NALU::RSV_NVCL41:
@@ -344,6 +388,10 @@ uint8_t H265Decoder::GetBitDepth() const {
   return bit_depth_;
 }
 
+VideoChromaSampling H265Decoder::GetChromaSampling() const {
+  return chroma_sampling_;
+}
+
 size_t H265Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return GetNumReferenceFrames() + kPicsInPipeline;
@@ -374,7 +422,14 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
     DVLOG(2) << "New visible rect: " << new_visible_rect.ToString();
     visible_rect_ = new_visible_rect;
   }
-  if (!IsYUV420Sequence(*sps)) {
+
+  VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
+  if (new_chroma_sampling != chroma_sampling_) {
+    base::UmaHistogramEnumeration("Media.PlatformVideoDecoding.ChromaSampling",
+                                  new_chroma_sampling);
+  }
+
+  if (!accelerator_->IsChromaSamplingSupported(new_chroma_sampling)) {
     DVLOG(1) << "Only YUV 4:2:0 is supported";
     return false;
   }
@@ -393,18 +448,23 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
              << ", profile=" << GetProfileName(new_profile);
     return false;
   }
+
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
-      profile_ != new_profile || bit_depth_ != new_bit_depth) {
+      profile_ != new_profile || bit_depth_ != new_bit_depth ||
+      chroma_sampling_ != new_chroma_sampling) {
     if (!Flush())
       return false;
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
              << ", level(x30): " << sps->profile_tier_level.general_level_idc
              << ", DPB size: " << sps->max_dpb_size
              << ", Picture size: " << new_pic_size.ToString()
-             << ", bit_depth: " << base::strict_cast<int>(new_bit_depth);
+             << ", bit_depth: " << base::strict_cast<int>(new_bit_depth)
+             << ", chroma_sampling_format: "
+             << VideoChromaSamplingToString(new_chroma_sampling);
     profile_ = new_profile;
     bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
+    chroma_sampling_ = new_chroma_sampling;
     dpb_.set_max_num_pics(sps->max_dpb_size);
     if (need_new_buffers)
       *need_new_buffers = true;
@@ -440,10 +500,11 @@ H265Decoder::H265Accelerator::Status H265Decoder::ProcessCurrentSlice() {
 
   const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
   DCHECK(pps);
-  return accelerator_->SubmitSlice(sps, pps, slice_hdr, ref_pic_list0_,
-                                   ref_pic_list1_, curr_pic_.get(),
-                                   slice_hdr->nalu_data, slice_hdr->nalu_size,
-                                   parser_.GetCurrentSubsamples());
+  return accelerator_->SubmitSlice(
+      sps, pps, slice_hdr, ref_pic_list0_, ref_pic_list1_, ref_pic_set_lt_curr_,
+      ref_pic_set_st_curr_after_, ref_pic_set_st_curr_before_, curr_pic_.get(),
+      slice_hdr->nalu_data, slice_hdr->nalu_size,
+      parser_.GetCurrentSubsamples());
 }
 
 void H265Decoder::CalcPicOutputFlags(const H265SliceHeader* slice_hdr) {
@@ -603,10 +664,13 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
 bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
                                    const H265PPS* pps,
                                    const H265SliceHeader* slice_hdr) {
-  scoped_refptr<H265Picture> ref_pic_set_lt_curr[kMaxDpbSize];
+  ref_pic_set_lt_curr_.clear();
+  ref_pic_set_lt_curr_.resize(kMaxDpbSize);
+  ref_pic_set_st_curr_after_.clear();
+  ref_pic_set_st_curr_after_.resize(kMaxDpbSize);
+  ref_pic_set_st_curr_before_.clear();
+  ref_pic_set_st_curr_before_.resize(kMaxDpbSize);
   scoped_refptr<H265Picture> ref_pic_set_lt_foll[kMaxDpbSize];
-  scoped_refptr<H265Picture> ref_pic_set_st_curr_after[kMaxDpbSize];
-  scoped_refptr<H265Picture> ref_pic_set_st_curr_before[kMaxDpbSize];
   scoped_refptr<H265Picture> ref_pic_set_st_foll[kMaxDpbSize];
 
   // Mark everything in the DPB as unused for reference now. When we determine
@@ -620,14 +684,14 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
   int total_ref_pics = 0;
   for (int i = 0; i < num_poc_lt_curr_; ++i) {
     if (!curr_delta_poc_msb_present_flag_[i])
-      ref_pic_set_lt_curr[i] = dpb_.GetPicByPocMaskedAndMark(
+      ref_pic_set_lt_curr_[i] = dpb_.GetPicByPocMaskedAndMark(
           poc_lt_curr_[i], sps->max_pic_order_cnt_lsb - 1,
           H265Picture::kLongTermCurr);
     else
-      ref_pic_set_lt_curr[i] =
+      ref_pic_set_lt_curr_[i] =
           dpb_.GetPicByPocAndMark(poc_lt_curr_[i], H265Picture::kLongTermCurr);
 
-    if (ref_pic_set_lt_curr[i])
+    if (ref_pic_set_lt_curr_[i])
       total_ref_pics++;
   }
   for (int i = 0; i < num_poc_lt_foll_; ++i) {
@@ -645,16 +709,16 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
 
   // Equation 8-7.
   for (int i = 0; i < num_poc_st_curr_before_; ++i) {
-    ref_pic_set_st_curr_before[i] = dpb_.GetPicByPocAndMark(
+    ref_pic_set_st_curr_before_[i] = dpb_.GetPicByPocAndMark(
         poc_st_curr_before_[i], H265Picture::kShortTermCurrBefore);
 
-    if (ref_pic_set_st_curr_before[i])
+    if (ref_pic_set_st_curr_before_[i])
       total_ref_pics++;
   }
   for (int i = 0; i < num_poc_st_curr_after_; ++i) {
-    ref_pic_set_st_curr_after[i] = dpb_.GetPicByPocAndMark(
+    ref_pic_set_st_curr_after_[i] = dpb_.GetPicByPocAndMark(
         poc_st_curr_after_[i], H265Picture::kShortTermCurrAfter);
-    if (ref_pic_set_st_curr_after[i])
+    if (ref_pic_set_st_curr_after_[i])
       total_ref_pics++;
   }
   for (int i = 0; i < num_poc_st_foll_; ++i) {
@@ -694,16 +758,16 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
       for (int i = 0;
            i < num_poc_st_curr_before_ && r_idx < num_rps_curr_temp_list0;
            ++i, ++r_idx) {
-        ref_pic_list_temp0[r_idx] = ref_pic_set_st_curr_before[i];
+        ref_pic_list_temp0[r_idx] = ref_pic_set_st_curr_before_[i];
       }
       for (int i = 0;
            i < num_poc_st_curr_after_ && r_idx < num_rps_curr_temp_list0;
            ++i, ++r_idx) {
-        ref_pic_list_temp0[r_idx] = ref_pic_set_st_curr_after[i];
+        ref_pic_list_temp0[r_idx] = ref_pic_set_st_curr_after_[i];
       }
       for (int i = 0; i < num_poc_lt_curr_ && r_idx < num_rps_curr_temp_list0;
            ++i, ++r_idx) {
-        ref_pic_list_temp0[r_idx] = ref_pic_set_lt_curr[i];
+        ref_pic_list_temp0[r_idx] = ref_pic_set_lt_curr_[i];
       }
     }
 
@@ -729,16 +793,16 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
         for (int i = 0;
              i < num_poc_st_curr_after_ && r_idx < num_rps_curr_temp_list1;
              ++i, r_idx++) {
-          ref_pic_list_temp1[r_idx] = ref_pic_set_st_curr_after[i];
+          ref_pic_list_temp1[r_idx] = ref_pic_set_st_curr_after_[i];
         }
         for (int i = 0;
              i < num_poc_st_curr_before_ && r_idx < num_rps_curr_temp_list1;
              ++i, r_idx++) {
-          ref_pic_list_temp1[r_idx] = ref_pic_set_st_curr_before[i];
+          ref_pic_list_temp1[r_idx] = ref_pic_set_st_curr_before_[i];
         }
         for (int i = 0; i < num_poc_lt_curr_ && r_idx < num_rps_curr_temp_list1;
              ++i, r_idx++) {
-          ref_pic_list_temp1[r_idx] = ref_pic_set_lt_curr[i];
+          ref_pic_list_temp1[r_idx] = ref_pic_set_lt_curr_[i];
         }
       }
 
@@ -898,6 +962,9 @@ void H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic) {
   ref_pic_list_.clear();
   ref_pic_list0_.clear();
   ref_pic_list1_.clear();
+  ref_pic_set_lt_curr_.clear();
+  ref_pic_set_st_curr_after_.clear();
+  ref_pic_set_st_curr_before_.clear();
 
   last_slice_hdr_.reset();
 }

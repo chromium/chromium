@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,37 +7,70 @@
 
 #include <iosfwd>
 
+#include "content/common/child_process_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 
 // The contents of a PolicyContainerHost.
 struct CONTENT_EXPORT PolicyContainerPolicies {
   PolicyContainerPolicies();
-  PolicyContainerPolicies(network::mojom::ReferrerPolicy referrer_policy,
-                          network::mojom::IPAddressSpace ip_address_space,
-                          bool is_web_secure_context,
-                          std::vector<network::mojom::ContentSecurityPolicyPtr>
-                              content_security_policies);
+
+  PolicyContainerPolicies(
+      network::mojom::ReferrerPolicy referrer_policy,
+      network::mojom::IPAddressSpace ip_address_space,
+      bool is_web_secure_context,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>
+          content_security_policies,
+      const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      bool is_anonymous,
+      bool can_navigate_top_without_user_gesture);
+
+  explicit PolicyContainerPolicies(
+      const blink::mojom::PolicyContainerPolicies& policies);
+
+  // Used when loading workers from network schemes.
+  // WARNING: This does not populate referrer policy.
+  PolicyContainerPolicies(const GURL& url,
+                          network::mojom::URLResponseHead* response_head,
+                          ContentBrowserClient* client);
+
+  // Instances of this type are move-only.
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
-  PolicyContainerPolicies operator=(const PolicyContainerPolicies&) = delete;
+  PolicyContainerPolicies& operator=(const PolicyContainerPolicies&) = delete;
+  PolicyContainerPolicies(PolicyContainerPolicies&&);
+  PolicyContainerPolicies& operator=(PolicyContainerPolicies&&);
+
   ~PolicyContainerPolicies();
 
-  // Creates a clone of this PolicyContainerPolicies. Always returns a non-null
-  // pointer.
-  std::unique_ptr<PolicyContainerPolicies> Clone() const;
+  // Returns an identical copy of this instance.
+  PolicyContainerPolicies Clone() const;
+
+  // Returns the result of `Clone()` stored on the heap.
+  std::unique_ptr<PolicyContainerPolicies> ClonePtr() const;
 
   // Helper function to append items to `content_security_policies`.
   void AddContentSecurityPolicies(
       std::vector<network::mojom::ContentSecurityPolicyPtr> policies);
+
+  blink::mojom::PolicyContainerPoliciesPtr ToMojoPolicyContainerPolicies()
+      const;
 
   // The referrer policy for the associated document. If not overwritten via a
   // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
@@ -54,7 +87,7 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
 
   // Whether the document is a secure context.
   //
-  // See: https://html.spec.whatwg.org/#secure-contexts.
+  // See: https://html.spec.whatwg.org/C/#secure-contexts.
   //
   // See also:
   //  - |network::IsUrlPotentiallyTrustworthy()|
@@ -64,6 +97,35 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // The content security policies of the associated document.
   std::vector<network::mojom::ContentSecurityPolicyPtr>
       content_security_policies;
+
+  // The cross-origin-opener-policy (COOP) of the document
+  // See:
+  // https://html.spec.whatwg.org/multipage/origin.html#cross-origin-opener-policies
+  network::CrossOriginOpenerPolicy cross_origin_opener_policy;
+
+  // The cross-origin-embedder-policy (COEP) of the document
+  // See:
+  // https://html.spec.whatwg.org/multipage/origin.html#coep
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+
+  // Tracks the sandbox flags which are in effect on this document. This
+  // includes any flags which have been set by a Content-Security-Policy header,
+  // in addition to those which are set by the embedding frame.
+  network::mojom::WebSandboxFlags sandbox_flags =
+      network::mojom::WebSandboxFlags::kNone;
+
+  // https://wicg.github.io/anonymous-iframe/#spec-window-attribute
+  // True for window framed inside an anonymous iframe, directly or indirectly
+  // by one of its ancestors
+  bool is_anonymous = false;
+
+  // Tracks if a document is allowed to navigate the top-level frame without
+  // sticky user activation. A document loses this ability when it is
+  // cross-origin with the top-level frame. An exception is made if the parent
+  // embeds the child with sandbox="allow-top-navigation", as opposed to not
+  // using sandboxing. A document that is same-origin to the top-level frame
+  // will always have this value set to true.
+  bool can_navigate_top_without_user_gesture = true;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -107,10 +169,8 @@ class CONTENT_EXPORT PolicyContainerHost
   // mojo receiver.
   PolicyContainerHost();
 
-  // Constructs a PolicyContainerHost containing the given |policies|, which
-  // must not be null.
-  explicit PolicyContainerHost(
-      std::unique_ptr<PolicyContainerPolicies> policies);
+  // Constructs a PolicyContainerHost containing the given |policies|.
+  explicit PolicyContainerHost(PolicyContainerPolicies policies);
 
   // PolicyContainerHost instances are neither copyable nor movable.
   PolicyContainerHost(const PolicyContainerHost&) = delete;
@@ -125,21 +185,57 @@ class CONTENT_EXPORT PolicyContainerHost
   // becomes owned by a RenderFrameHost. After this function is called, it
   // becomes possible to retrieve this PolicyContainerHost via
   // PolicyContainerHost::FromFrameToken. This function can be called only once.
-  void AssociateWithFrameToken(const blink::LocalFrameToken& token);
+  void AssociateWithFrameToken(
+      const blink::LocalFrameToken& token,
+      int process_id = ChildProcessHost::kInvalidUniqueID);
 
-  const PolicyContainerPolicies& policies() const { return *policies_; }
+  const PolicyContainerPolicies& policies() const { return policies_; }
 
   network::mojom::ReferrerPolicy referrer_policy() const {
-    return policies_->referrer_policy;
+    return policies_.referrer_policy;
   }
 
   network::mojom::IPAddressSpace ip_address_space() const {
-    return policies_->ip_address_space;
+    return policies_.ip_address_space;
+  }
+
+  network::CrossOriginOpenerPolicy cross_origin_opener_policy() const {
+    return policies_.cross_origin_opener_policy;
+  }
+
+  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
+      const {
+    return policies_.cross_origin_embedder_policy;
+  }
+
+  network::mojom::WebSandboxFlags sandbox_flags() const {
+    return policies_.sandbox_flags;
   }
 
   void AddContentSecurityPolicies(
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies) final;
+
+  void set_cross_origin_opener_policy(
+      const network::CrossOriginOpenerPolicy& policy) {
+    policies_.cross_origin_opener_policy = policy;
+  }
+
+  void set_cross_origin_embedder_policy(
+      const network::CrossOriginEmbedderPolicy& policy) {
+    policies_.cross_origin_embedder_policy = policy;
+  }
+
+  // Merges the provided sandbox flags with the existing flags.
+  void set_sandbox_flags(network::mojom::WebSandboxFlags sandbox_flags) {
+    policies_.sandbox_flags = sandbox_flags;
+  }
+
+  void SetIsAnonymous() { policies_.is_anonymous = true; }
+
+  void SetCanNavigateTopWithoutUserGesture(bool value) {
+    policies_.can_navigate_top_without_user_gesture = value;
+  }
 
   // Return a PolicyContainer containing copies of the policies and a pending
   // mojo remote that can be used to update policies in this object. If called a
@@ -172,8 +268,8 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) final;
 
-  // The policies of this PolicyContainerHost. This is never null.
-  std::unique_ptr<PolicyContainerPolicies> policies_;
+  // The policies of this PolicyContainerHost.
+  PolicyContainerPolicies policies_;
 
   mojo::AssociatedReceiver<blink::mojom::PolicyContainerHost>
       policy_container_host_receiver_{this};
@@ -181,9 +277,10 @@ class CONTENT_EXPORT PolicyContainerHost
   mojo::UniqueReceiverSet<blink::mojom::PolicyContainerHostKeepAliveHandle>
       keep_alive_handles_receiver_set_;
 
-  base::Optional<blink::LocalFrameToken> frame_token_ = base::nullopt;
+  absl::optional<blink::LocalFrameToken> frame_token_ = absl::nullopt;
+  int process_id_ = ChildProcessHost::kInvalidUniqueID;
 };
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_

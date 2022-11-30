@@ -1,0 +1,177 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file provides the ability for our C++ toolchain to successfully
+# link binaries containing arbitrary Rust code.
+#
+# By "arbitrary Rust code" I mean .rlib archives full of Rust code, which
+# is actually a static archive.
+#
+# Those static libraries don't link as-is into a final executable because
+# they're designed for downstream processing by further invocations of rustc
+# which link into a final binary. That final invocation of rustc knows how
+# to do two things:
+# * Find the Rust standard library.
+# * Remap some generic allocator symbols to the specific allocator symbols
+#   in use.
+# This file does both those things. Any C++ target containing Rust .rlibs
+# should simply depend on :std within this file and it will be taken care of.
+# In practice, this will in future be taken care of by a standard template
+# used for each Rust source set, so that a typical user of Rust need not
+# think about it.
+#
+# This is obviously a bit fragile - rustc might do other magic in future.
+# But, linking with a final C++ toolchain is something often needed, and
+# https://github.com/rust-lang/rust/issues/64191 aims to make this
+# officially possible.
+
+import("//build/config/compiler/compiler.gni")
+import("//build/config/rust.gni")
+
+if (toolchain_has_rust) {
+  # List of Rust stdlib rlibs which are present in the official
+  # Rust toolchain we are using from the Android team. This is usually
+  # a version or two behind nightly.
+  # See //docs/security/rust-toolchain.md#building-on-non_linux-platforms
+  # for how to maintain this list.
+  stdlib_files = [
+    "std",  # List first because it makes depfiles more debuggable (see below)
+    "addr2line",
+    "adler",
+    "alloc",
+    "cfg_if",
+    "compiler_builtins",
+    "core",
+    "getopts",
+    "gimli",
+    "hashbrown",
+    "libc",
+    "memchr",
+    "miniz_oxide",
+    "object",
+    "panic_abort",
+    "panic_unwind",
+    "proc_macro",
+    "rustc_demangle",
+    "std_detect",
+    "test",
+    "unicode_width",
+    "unwind",
+  ]
+
+  # Different Rust toolchains may add or remove files relative to the above
+  # list. That can be specified in gn args for anyone using (for instance)
+  # nightly or some other experimental toolchain, prior to it becoming official.
+  stdlib_files -= removed_rust_stdlib_libs
+  stdlib_files += added_rust_stdlib_libs
+
+  if (!use_unverified_rust_toolchain) {
+    # rlib files which are distributed alongside Rust's prebuilt stdlib, but we
+    # don't need to pass to the C++ linker because they're used for specialized
+    # purposes.
+    skip_stdlib_files = [
+      "profiler_builtins",
+      "rustc_std_workspace_alloc",
+      "rustc_std_workspace_core",
+      "rustc_std_workspace_std",
+    ]
+  }
+
+  action("find_stdlib") {
+    # Specifics of what we're doing here.
+    #
+    # We are using prebuilt Rust rlibs supplied along with the toolchain.
+    # The Rust standard library consists of rlibs with roughly all the names
+    # above.
+    #
+    # However, their filenames are not predictable, and therefore we can't
+    # have ninja rules which depend upon them. (gn offers a facility to
+    # build rules dynamically, but it's frowned upon because a script needs
+    # to run each time).
+    #
+    # Instead therefore we copy these unpredictable .rlib paths to apredictable
+    # location. That's what this script does. Furthermore, it generates a
+    # .d file in order to teach Ninja that it only needs to do this copying
+    # once, unless the source .rlibs change.
+    #
+    # The script accepts the list of known libraries and will raise an
+    # exception if the list on disk differs. (Either 'Found stdlib rlib
+    # that wasn't expected' or 'We failed to find all expected stdlib
+    # rlibs').
+    #
+    # The script does one final job, which is to check that the rustc
+    # version matches that in the gn arg 'rustc_version'. This is
+    # technically orthogonal to the stdlib-finding job that we do here,
+    # but it's something we want to be sure of running during any
+    # typical Rust build, and this target happens to be depended upon
+    # almost everywhere, so it's a good fit.
+    script = "find_std_rlibs.py"
+    depfile = "$target_out_dir/stdlib.d"
+    out_libdir = rebase_path(target_out_dir, root_build_dir)
+    out_depfile = rebase_path(depfile, root_build_dir)
+    args = [
+      "--rust-bin-dir",
+      rebase_path("${rust_sysroot}/bin", root_build_dir),
+      "--output",
+      out_libdir,
+      "--depfile",
+      out_depfile,
+
+      # Due to limitations in Ninja's handling of .d files, we have to pick
+      # *the first* of our outputs. To make diagnostics more obviously
+      # related to the Rust standard library, we ensure libstd.rlib is first.
+      "--depfile-target",
+      stdlib_files[0],
+
+      "--expected-rustc-version",
+      rustc_version,
+    ]
+    if (!use_unverified_rust_toolchain) {
+      args += [
+        "--stdlibs",
+        string_join(",", stdlib_files),
+        "--skip",
+        string_join(",", skip_stdlib_files),
+      ]
+    }
+    if (rust_abi_target != "") {
+      args += [
+        "--target",
+        rust_abi_target,
+      ]
+    }
+
+    outputs = []
+    foreach(lib, stdlib_files) {
+      outputs += [ "$target_out_dir/lib$lib.rlib" ]
+    }
+  }
+
+  config("rust_stdlib_config") {
+    ldflags = []
+    out_libdir = rebase_path(target_out_dir, root_build_dir)
+    foreach(lib, stdlib_files) {
+      this_file = "$out_libdir/lib$lib.rlib"
+      ldflags += [ this_file ]
+    }
+  }
+
+  source_set("remap_alloc") {
+    sources = [
+      "immediate_crash.h",
+      "remap_alloc.cc",
+    ]
+  }
+
+  group("std") {
+    assert(
+        enable_rust,
+        "Some C++ target is including Rust code even though enable_rust=false")
+    all_dependent_configs = [ ":rust_stdlib_config" ]
+    deps = [
+      ":find_stdlib",
+      ":remap_alloc",
+    ]
+  }
+}

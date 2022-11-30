@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,9 @@ namespace shared_highlighting {
 // content make it unlikely that a generated URL will actually work when
 // shared.
 bool ShouldOfferLinkToText(const GURL& url);
+
+// Returns true if given url supports link generation in a child iframe.
+bool SupportsLinkGenerationInIframe(GURL main_frame_url);
 
 }  // namespace shared_highlighting
 

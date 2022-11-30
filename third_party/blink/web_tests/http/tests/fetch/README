@@ -101,11 +101,3 @@ Y: to be included.
 -: not to be included.
 .: included indirectly via HTML or fetch-test-helpers.js.
 Y*: thorough tests only.
-
-# PRESUBMIT.py
-
-FIXME: currently PRESUBMIT.py is somehow outdated and thus disabled.
-
-PRESUBMIT.py checks the existence of the files.
-For each file in /fetch/script-tests, the
-corresponding html files must exist at the paths listed above.

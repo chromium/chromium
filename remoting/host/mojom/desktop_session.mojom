@@ -1,0 +1,578 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "remoting/host/mojom/keyboard_layout.mojom";
+import "remoting/host/mojom/webrtc_types.mojom";
+import "remoting/host/mojom/wrapped_primitives.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Contains captured audio data.
+// This struct mirrors the remoting::protocol::AudioPacket protobuf as well as
+// the enums and values.
+struct AudioPacket {
+  // The timestamp at which the data was captured.
+  int32 timestamp;
+
+  // The audio packet data.
+  array<mojo_base.mojom.ByteString> data;
+
+  enum Encoding {
+    kInvalid = -1,
+    kRaw = 0,
+    kOpus = 1,
+  };
+  Encoding encoding = Encoding.kInvalid;
+
+  enum SamplingRate {
+    kInvalid = -1,
+    kRate_44100 = 44100,
+    kRate_48000 = 48000,
+  };
+  SamplingRate sampling_rate = SamplingRate.kInvalid;
+
+  enum BytesPerSample {
+    kInvalid = -1,
+    kBytesPerSample_2 = 2,
+  };
+  BytesPerSample bytes_per_sample = BytesPerSample.kInvalid;
+
+  enum Channels {
+    kInvalid = -1,
+    kMono = 1,
+    kStereo = 2,
+    kSurround = 3,
+    kChannel_4_0 = 4,
+    kChannel_4_1 = 5,
+    kChannel_5_1 = 6,
+    kChannel_6_1 = 7,
+    kChannel_7_1 = 8,
+  };
+  Channels channels = Channels.kInvalid;
+};
+
+// Contains clipboard event data.
+// This struct mirrors the remoting::protocol::ClipboardEvents protobuf struct.
+struct ClipboardEvent {
+  // The MIME type of |data|.
+  string mime_type;
+
+  // The clipboard data. The original protobuf type is string but we use a
+  // ByteString because that is the preferred mojom type.
+  mojo_base.mojom.ByteString data;
+};
+
+// Contains the data needed to inject a keyboard key event.
+// This struct mirrors the remoting::protocol::KeyEvent protobuf struct.
+struct KeyEvent {
+  // True for key press events, and false for key release.
+  bool pressed;
+
+  // The USB key code.
+  // The upper 16-bits are the USB Page (0x07 for key events).
+  // The lower 16-bits are the USB Usage ID (which identifies the actual key).
+  uint32 usb_keycode;
+
+  // Legacy keyboard lock states. Prefer the discrete entries below.
+  // Flags defined in remoting::protocol::KeyEvent::LockStates.
+  uint32 lock_states;
+
+  // Keyboard lock states. The field should be specified only if the state can
+  // be reliably determined by the client. E.g., OS X does not have num lock, so
+  // only caps_lock should be provided by a client running on OS X.
+  Bool? caps_lock_state;
+  Bool? num_lock_state;
+};
+
+// This enum mirrors the remoting::protocol::MouseEvent::MouseButton enum.
+enum MouseButton {
+  kUndefined = 0,
+  kLeft = 1,
+  kMiddle = 2,
+  kRight = 3,
+  kBack = 4,
+  kForward = 5,
+};
+
+// Contains the data needed to inject a mouse event.
+// This struct mirrors the remoting::protocol::MouseEvent protobuf struct.
+struct MouseEvent {
+  // Mouse absolute position information. When using WebRTC-based protocol the
+  // coordinates are in DIPs. Otherwise they are in host's physical pixels. In
+  // both coordinates systems, the top-left monitor on the system always starts
+  // from (0, 0).
+  Int32? x;
+  Int32? y;
+
+  // Mouse button event.
+  MouseButton button;
+  // |button_down| is not set when |button| is kUndefined.
+  Bool? button_down;
+
+  // Mouse wheel information.
+  // These values encode the number of pixels and 'ticks' of movement that
+  // would result from the wheel event on the client system.
+  Float? wheel_delta_x;
+  Float? wheel_delta_y;
+  Float? wheel_ticks_x;
+  Float? wheel_ticks_y;
+
+  // Mouse movement information. Provided only when mouse lock is engaged.
+  Int32? delta_x;
+  Int32? delta_y;
+};
+
+// Text input event for input method different from physical keyboards,
+// including software keyboard, gesture typing, voice input, etc.
+// This struct mirrors the remoting::protocol::TextEvent protobuf struct.
+struct TextEvent {
+  // Unicode sequence for the event in UTF-8.
+  string text;
+};
+
+// Describes the attributes for a single touch point, used in TouchEvent to
+// describe a touch gesture.
+// This struct mirrors the remoting::protocol::TouchEventPoint protobuf struct.
+struct TouchEventPoint {
+  // The ID for the touch point.
+  uint32 id;
+
+  // The absolute position of the touch point. These values on-the-wire are host
+  // physical pixel coordinates: the top-left monitor on the system always
+  // starts from (0, 0).
+  gfx.mojom.PointF position;
+
+  // The size of the touch point, used to aid hit-testing.
+  // Scaled to match the size on host.
+  gfx.mojom.PointF radius;
+
+  // Angle in degrees from the y-axis of the touch point.
+  float angle;
+
+  // The pressure of the touch point.
+  // The value should be in [0.0, 1.0].
+  float pressure;
+};
+
+// This enum mirrors the remoting::protocol::TouchEvent::TouchEventType enum.
+enum TouchEventType {
+  kUndefined = 0,
+  kStart = 1,
+  kMove = 2,
+  kEnd = 3,
+  kCancel = 4,
+};
+
+// Describes a touch gesture event (start, stop, move) along with the set of
+// touch points to include in the gesture.
+struct TouchEvent {
+  // The event type.
+  TouchEventType event_type;
+
+  // Only the changed touch points are added to this field.
+  array<TouchEventPoint> touch_points;
+};
+
+// The state of the URL forwarder setup.
+enum UrlForwarderState {
+  kUnknown = 0,
+
+  // The URL forwarder has been set up properly.
+  kSetUp = 1,
+
+  // The URL forwarder has not been set up.
+  kNotSetUp = 2,
+
+  // We have attempted to set up the URL forwarder but it failed.
+  kFailed = 3,
+
+  // The URL forwarder is being set up but it requires user intervention.
+  kSetupPendingUserIntervention = 4,
+};
+
+// Allows the desktop process to request that the daemon process perform an
+// action on its behalf. Though both processes are high-privilege, the daemon
+// process brokers the IPC channel between the desktop and network processes and
+// owns the lifetime of the network process. It also has the ability to execute
+// actions from session 0 (whereas the desktop process runs in a user session)
+// on Windows.
+// The remote for this interface is owned in the high-privilege desktop
+// integration process and the receiver is bound in the high-privilege daemon
+// process.
+interface DesktopSessionRequestHandler {
+  // Ask the daemon process to forward the |desktop_pipe| handle to the network
+  // process in order to establish an IPC connection between the desktop and
+  // network processes.
+  ConnectDesktopChannel(handle<message_pipe> desktop_pipe);
+
+  // Ask the daemon process to inject the secure attention sequence for the
+  // remoted session.
+  InjectSecureAttentionSequence();
+
+  // Ask the daemon process to crash the network process. The desktop process
+  // will request this when it receives invalid IPC requests or messages from
+  // the network process.
+  CrashNetworkProcess();
+};
+
+// Allows the network process to ask the daemon process to create, update, or
+// destroy the current desktop session.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege daemon process.
+interface DesktopSessionManager {
+  // Creates a chromoting desktop environment for the session identified by
+  // |terminal_id|. This is done by injecting a desktop agent process and
+  // establishing IPC channels between the daemon, desktop, and network
+  // processes.
+  CreateDesktopSession(int32 terminal_id, ScreenResolution screen_resolution,
+                       bool is_virtual_terminal);
+
+  // Closes the desktop session identified by |terminal_id|. This involves
+  // terminating the desktop agent process and removing any references to the
+  // session being closed in the daemon and network processes. Not changes are
+  // made at an OS level, meaning the user can reconnect to the same session
+  // without a loss of state.
+  CloseDesktopSession(int32 terminal_id);
+
+  // Sends the updated screen resolution to the desktop agent running in the
+  // |terminal_id| session.
+  SetScreenResolution(int32 terminal_id, ScreenResolution screen_resolution);
+};
+
+// A set of options used to customize the desktop session behavior.
+struct DesktopEnvironmentOptions {
+  // True if the curtain mode should be enabled.
+  bool enable_curtaining;
+
+  // True if a user-interactive windows should be displayed on the desktop.
+  bool enable_user_interface;
+
+  // True if a notification should be shown when a remote user is connected.
+  bool enable_notifications;
+
+  // True if the session should be terminated when local input is detected.
+  bool terminate_upon_input;
+
+  // True if this host has file transfer enabled.
+  bool enable_file_transfer;
+
+  // True if this host has the remote open URL feature enabled.
+  bool enable_remote_open_url;
+
+  // True if this host has the remote WebAuthn feature enabled.
+  bool enable_remote_webauthn;
+
+  // If set, this value is used to constrain the amount of data that can be
+  // transferred using ClipboardEvents. A value of 0 will effectively disable
+  // clipboard sharing.
+  UInt32? clipboard_size;
+
+  // The DesktopCaptureOptions to initialize DesktopCapturer.
+  DesktopCaptureOptions desktop_capture_options;
+};
+
+// Describes a screen's dimensions and DPI.
+struct ScreenResolution {
+  // Dimensions of the screen in pixels.
+  DesktopSize dimensions;
+
+  // The vertical and horizontal DPI of the screen.
+  DesktopVector dpi;
+};
+
+// Starts the agent in the desktop session and returns an interface to allow the
+// caller to inject input events and control A/V capture.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface DesktopSessionAgent {
+  // Passes the client session data to the desktop session agent and starts it.
+  // Note: This must only be called once per desktop process instance.
+  Start(string authenticated_jid, ScreenResolution resolution,
+        DesktopEnvironmentOptions options) =>
+      (pending_associated_remote<DesktopSessionControl>
+             desktop_session_control);
+};
+
+// Enables writing to a file, this is used when the client website uploads a
+// a file to the host machine. The remote is provided in the return value of a
+// successful mojom::DesktopSessionControl::BeginFileWrite() call.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface FileWriter {
+  // Writes |data| to the file opened in the BeginFileWrite call. Returns
+  // |error| if the data could not be written.
+  WriteChunk(array<uint8> data) => (FileTransferError? error);
+
+  // Closes the file opened in the BeginFileWrite call and moves it from the
+  // temporary location to the desktop of the logged-in user. Returns |error| if
+  // a problem occurs during this process.
+  CloseFile() => (FileTransferError? error);
+};
+
+// Returned by FileReader::ReadChunk(). |data| is populated if the read request
+// succeeded, otherwise |error| will indicate why the request failed.
+union ReadChunkResult {
+  array<uint8> data;
+  FileTransferError error;
+};
+
+// Allows reading from a file, this is used when the client website downloads
+// a file from the host machine. The remote is provided after a successful call
+// to mojom::DesktopSessionControl::BeginFileRead().
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface FileReader {
+  // Reads |bytes_to_read| from the file opened in the BeginFileRead call.
+  // |result| contains the file data if successful, otherwise an error.
+  ReadChunk(uint64 bytes_to_read) => (ReadChunkResult result);
+};
+
+// Used by the remoting::FileChooser class which prompts the user to select a
+// file to download to the client machine using a file picker dialog.
+// |filepath| is populated if the user selected a file from the dialog,
+// otherwise |error| indicates why the operation failed.
+// This message is serialized in a child process which is running in the current
+// user context, sent over STDIO as a stream of bytes, then deserialized in the
+// parent process which is the high-privilege desktop integration process.
+[EnableIf=is_win]
+union FileChooserResult {
+  mojo_base.mojom.FilePath filepath;
+  FileTransferError error;
+};
+
+// Error information for file transfer operations.
+// This enum mirrors the remoting::protocol::FileTransfer_Error message.
+struct FileTransferError {
+  // The set of errors which may occur while transferring files.
+  // This enum mirrors the remoting::protocol::FileTransfer_Error_Type enum.
+  enum Type {
+    kUnknown = 0,
+    kCanceled = 1,
+    kUnexpectedError = 2,
+    kProtocolError = 3,
+    kPermissionDenied = 4,
+    kOutOfDiskSpace = 5,
+    kIoError = 6,
+    kNotLoggedIn = 7,
+  };
+  Type type;
+  Int32? api_error_code;
+  string function;
+  string source_file;
+  uint32 line_number;
+};
+
+// Returned when the user has selected a file to begin transferring. This struct
+// contains the metadata for the file and the remote used to read from the file.
+struct BeginFileReadSuccess {
+  pending_associated_remote<FileReader> file_reader;
+  mojo_base.mojom.FilePath filename;
+  uint64 size;
+};
+
+// |success| is populated if BeginFileRead() succeeded, otherwise |error|.
+union BeginFileReadResult {
+  BeginFileReadSuccess success;
+  FileTransferError error;
+};
+
+// Returned when a new file has been written and the client can begin
+// transferring data. This struct contains the remote used to write to the file.
+struct BeginFileWriteSuccess {
+  pending_associated_remote<FileWriter> file_writer;
+};
+
+// |success| is populated if BeginFileRead() succeeded, otherwise |error|.
+union BeginFileWriteResult {
+  BeginFileWriteSuccess success;
+  FileTransferError error;
+};
+
+// Allows the network process to inject input events and control A/V capture in
+// the desktop session.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface DesktopSessionControl {
+  // Requests that a new frame be captured.
+  CaptureFrame();
+
+  // Selects a display source in a multi-monitor system.
+  SelectSource(int32 desktop_display_id);
+
+  // Changes the screen resolution in the desktop session.
+  SetScreenResolution(ScreenResolution new_resolution);
+
+  // Locks the current desktop session.
+  LockWorkstation();
+
+  // Asks the desktop session to inject the send attention sequence (SAS).
+  InjectSendAttentionSequence();
+
+  // Used to inject clipboard events received from the client.
+  InjectClipboardEvent(ClipboardEvent event);
+
+  // Used to inject keyboard events received from the client.
+  InjectKeyEvent(KeyEvent event);
+
+  // Used to inject mouse events received from the client.
+  InjectMouseEvent(MouseEvent event);
+
+  // Used to inject text events received from the client.
+  InjectTextEvent(TextEvent event);
+
+  // Used to inject touch events received from the client.
+  InjectTouchEvent(TouchEvent event);
+
+  // Used to set up the URL forwarder as the default browser.  State changes
+  // will be reported via the
+  // DesktopSessionEventHandler::OnUrlForwarderStateChange() method.
+  SetUpUrlForwarder();
+
+  // Used to notify the WebAuthn proxy browser extension of a remote state
+  // change, so the extension can determine whether it should attach to or
+  // detach to the WebAuthn proxy API.
+  SignalWebAuthnExtension();
+
+  // Opens a file chooser dialog so the user can choose a file to transfer to
+  // the client machine. This action is requested when the remote user chooses
+  // to download a file.
+  BeginFileRead() => (BeginFileReadResult result);
+
+  // Opens a new file for writing when the remote user chooses to upload a file.
+  BeginFileWrite(mojo_base.mojom.FilePath file_path)
+      => (BeginFileWriteResult result);
+};
+
+// |frame| is set and contains valid frame data when a frame is captured
+// successfully, otherwise |error| will contain the reason the capture failed.
+union CaptureResult {
+  DesktopFrame desktop_frame;
+  DesktopCaptureResult capture_error;
+};
+
+// This struct mirrors the remoting::protocol::VideoTrackLayout message.
+struct VideoTrackLayout {
+  // Unique display identifier, see ScreenId notes in desktop_capture_types.h.
+  int64 screen_id;
+
+  // Name of the video stream, from the WebRTC MediaStream.id property.
+  string media_stream_id;
+
+  // Position of the top left corner of the rectangle covered by the video
+  // track in DIPs (device independent pixels).
+  gfx.mojom.Point position;
+
+  // Size of the area covered by the video track in DIPs.
+  DesktopSize size;
+
+  // DPI of the screen being captured.
+  DesktopVector dpi;
+};
+
+// This struct mirrors the remoting::protocol::VideoLayout message.
+struct VideoLayout {
+  // Layout info for each video track.
+  array<VideoTrackLayout> tracks;
+
+  // True if this display configuration supports capturing the entire desktop.
+  bool supports_full_desktop_capture;
+};
+
+// Allows the desktop process to forward events and data to the network process
+// which may process it (e.g. encode a video frame) or forward it to the client
+// (in the case of updated clipboard contents).
+// The remote for this interface is owned in the high-privilege desktop
+// integration process and the receiver is bound in the low-privilege network
+// process.
+interface DesktopSessionEventHandler {
+  // Used to forward clipboard events from the host to the client.
+  OnClipboardEvent(ClipboardEvent event);
+
+  // OnUrlForwarderStateChange is immediately called once the desktop agent
+  // starts to provide the initial state, then it will be called to report state
+  // changes caused by calling DesktopSessionControl::SetUpUrlForwarder().
+  OnUrlForwarderStateChange(UrlForwarderState state);
+
+  // Forwards an audio packet captured from the desktop session to the client.
+  OnAudioPacket(AudioPacket audio_packet);
+
+  // Notifies the network process that a new shared memory region has been
+  // created to use for passing video frames between processes. |id| refers to
+  // the new shared memory region and is included in each capture result to
+  // indicate which region the frame data resides in.
+  // TODO(joedow): Look into refactoring our shared memory and capture impl
+  // to use a message pipe per shared memory region.
+  OnSharedMemoryRegionCreated(
+      int32 id, mojo_base.mojom.ReadOnlySharedMemoryRegion region, uint32 size);
+
+  // Notifies the network process that a shared memory region has been released
+  // and should no longer be used.
+  OnSharedMemoryRegionReleased(int32 id);
+
+  // Notifies the network process that new frame data is available in the shared
+  // memory region along with the details on how to access it (e.g. stride,
+  // size, etc.), otherwise provides the error reason the capture failed.
+  OnCaptureResult(CaptureResult result);
+
+  // Notifies the network process that the host display layout has changed.
+  OnDesktopDisplayChanged(VideoLayout layout);
+
+  // Notifies the network process that the mouse cursor has changed.
+  OnMouseCursorChanged(MouseCursor mouse_cursor);
+
+  // Notifies the network process that the keyboard layout has changed.
+  OnKeyboardLayoutChanged(KeyboardLayout keyboard_layout);
+};
+
+// This enum mirrors the remoting::protocol::ErrorCode enum.
+enum ProtocolErrorCode {
+  kOk = 0,
+  kPeerIsOffline = 1,
+  kSessionRejected = 2,
+  kIncompatibleProtocol = 3,
+  kAuthenticationFailed = 4,
+  kInvalidAccount = 5,
+  kChannelConnectionError = 6,
+  kSignalingError = 7,
+  kSignalingTimeout = 8,
+  kHostOverload = 9,
+  kMaxSessionLength = 10,
+  kHostConfigurationError = 11,
+  kUnknownError = 12,
+  kElevationError = 13,
+  kHostCertificateError = 14,
+  kHostRegistrationError = 15,
+  kExistingAdminSession = 16,
+  kAuthzPolicyCheckFailed = 17,
+  kDisallowedByPolicy = 18,
+  kLocationAuthzPolicyCheckFailed = 19,
+};
+
+// Provides the desktop integration process with a mechanism for controlling the
+// client session owned by the network process.
+// The remote for this interface is owned in the high-privilege desktop
+// integration process and the receiver is bound in the low-privilege network
+// process.
+interface DesktopSessionStateHandler {
+  // Disconnects the remote client from the host machine, |error_code| is
+  // passed to the remote client as the reason for the disconnection. An example
+  // usage is when the 'disconnect' button is clicked on the local disconnect
+  // window. The desktop process should expect to be terminated shortly after
+  // calling this method.
+  DisconnectSession(ProtocolErrorCode error_code);
+};
+
+// Allows the worker process launcher to send messages to a child process.
+// The remote for this interface is owned in the high-privilege daemon process
+// which uses the WorkerProcessLauncher class to spawn the low-privilege network
+// process or high-privilege desktop integration process. The receiver is bound
+// in the child process.
+interface WorkerProcessControl {
+  // Instructs the receiving process to crash itself.
+  CrashProcess(string function_name, string file_name, int32 line_number);
+};

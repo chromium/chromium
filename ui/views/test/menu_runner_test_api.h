@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 
@@ -20,6 +20,10 @@ namespace test {
 class MenuRunnerTestAPI {
  public:
   explicit MenuRunnerTestAPI(MenuRunner* menu_runner);
+
+  MenuRunnerTestAPI(const MenuRunnerTestAPI&) = delete;
+  MenuRunnerTestAPI& operator=(const MenuRunnerTestAPI&) = delete;
+
   ~MenuRunnerTestAPI();
 
   // Sets the menu runner handler.
@@ -27,9 +31,7 @@ class MenuRunnerTestAPI {
       std::unique_ptr<MenuRunnerHandler> menu_runner_handler);
 
  private:
-  MenuRunner* menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerTestAPI);
+  raw_ptr<MenuRunner> menu_runner_;
 };
 
 }  // namespace test

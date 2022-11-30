@@ -1,0 +1,16 @@
+{
+  "name": "Manifest with tabbed display override",
+  "icons": [
+    {
+      "src": "launcher-icon-4x.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "display": "standalone",
+  "display_override": [ "tabbed" ],
+  "tab_strip": {
+    "new_tab_button": "auto"
+  }
+}

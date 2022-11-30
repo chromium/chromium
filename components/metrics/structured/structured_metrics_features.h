@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,27 @@
 namespace metrics {
 namespace structured {
 
-extern const base::Feature kBluetoothSessionizedMetrics;
+// This can be used to disable structured metrics as a whole.
+BASE_DECLARE_FEATURE(kStructuredMetrics);
+
+// Controls whether CrOSEvents logging is enabled or not.
+BASE_DECLARE_FEATURE(kCrOSEvents);
+
+BASE_DECLARE_FEATURE(kBluetoothSessionizedMetrics);
+
+// Delays appending structured metrics events until HWID has been loaded.
+BASE_DECLARE_FEATURE(kDelayUploadUntilHwid);
+
+// TODO(crbug.com/1148168): This is a temporary switch to revert structured
+// metrics upload to its old behaviour. Old behaviour:
+// - all metrics are uploaded in the main UMA upload
+//
+// New behaviour:
+// - Projects with id type 'uma' are uploaded in the main UMA uploaded
+// - Projects with id type 'project-id' or 'none' are uploaded independently.
+//
+// Once we are comfortable with this change, this parameter can be removed.
+bool IsIndependentMetricsUploadEnabled();
 
 }  // namespace structured
 }  // namespace metrics

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "components/zucchini/image_utils.h"
+#include "components/zucchini/version_info.h"
 
 namespace zucchini {
 
@@ -24,9 +25,11 @@ namespace zucchini {
 // Header for a Zucchini patch, found at the beginning of an ensemble patch.
 struct PatchHeader {
   // Magic signature at the beginning of a Zucchini patch file.
-  enum : uint32_t { kMagic = 'Z' | ('u' << 8) | ('c' << 16) };
+  enum : uint32_t { kMagic = 'Z' | ('u' << 8) | ('c' << 16) | ('c' << 24) };
 
   uint32_t magic = 0;
+  uint16_t major_version = kInvalidVersion;
+  uint16_t minor_version = kInvalidVersion;
   uint32_t old_size = 0;
   uint32_t old_crc = 0;
   uint32_t new_size = 0;
@@ -34,7 +37,7 @@ struct PatchHeader {
 };
 
 // Sanity check.
-static_assert(sizeof(PatchHeader) == 20, "PatchHeader must be 20 bytes");
+static_assert(sizeof(PatchHeader) == 24, "PatchHeader must be 24 bytes");
 
 // Header for a patch element, found at the beginning of every patch element.
 struct PatchElementHeader {
@@ -43,11 +46,12 @@ struct PatchElementHeader {
   uint32_t new_offset;
   uint32_t new_length;
   uint32_t exe_type;  // ExecutableType.
+  uint16_t version = kInvalidVersion;
 };
 
 // Sanity check.
-static_assert(sizeof(PatchElementHeader) == 20,
-              "PatchElementHeader must be 20 bytes");
+static_assert(sizeof(PatchElementHeader) == 22,
+              "PatchElementHeader must be 22 bytes");
 
 #pragma pack(pop)
 

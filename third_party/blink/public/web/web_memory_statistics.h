@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 namespace blink {
 
-struct WebMemoryStatistics {
+struct BLINK_EXPORT WebMemoryStatistics {
   size_t partition_alloc_total_allocated_bytes;
   size_t blink_gc_total_allocated_bytes;
 
@@ -17,9 +17,9 @@ struct WebMemoryStatistics {
       : partition_alloc_total_allocated_bytes(0),
         blink_gc_total_allocated_bytes(0) {}
 
-  BLINK_EXPORT static WebMemoryStatistics Get();
+  static WebMemoryStatistics Get();
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MEMORY_STATISTICS_H_

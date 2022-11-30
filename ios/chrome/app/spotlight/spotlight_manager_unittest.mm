@@ -1,35 +1,33 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
 #import <CommonCrypto/CommonCrypto.h>
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <Foundation/Foundation.h>
 
-#include "base/location.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/task_environment.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/favicon/core/large_icon_service_impl.h"
-#include "components/favicon/core/test/mock_favicon_service.h"
-#include "components/favicon_base/fallback_icon_style.h"
-#include "components/favicon_base/favicon_types.h"
+#import "base/location.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/task_environment.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "components/bookmarks/test/test_bookmark_client.h"
+#import "components/favicon/core/large_icon_service_impl.h"
+#import "components/favicon/core/test/mock_favicon_service.h"
+#import "components/favicon_base/fallback_icon_style.h"
+#import "components/favicon_base/favicon_types.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/spotlight/spotlight_provider.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "net/base/mac/url_conversions.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -176,61 +174,5 @@ TEST_F(SpotlightManagerTest, testDefaultKeywordsExist) {
   CSSearchableItem* item = [items objectAtIndex:0];
   NSSet* spotlightManagerKeywords =
       [NSSet setWithArray:[[item attributeSet] keywords]];
-  EXPECT_TRUE([spotlightManagerKeywords count] > 0);
-  // Check static/hardcoded keywords exist
-  NSSet* hardCodedKeywordsSet =
-      [NSSet setWithArray:ios::GetChromeBrowserProvider()
-                              ->GetSpotlightProvider()
-                              ->GetAdditionalKeywords()];
-  EXPECT_TRUE([hardCodedKeywordsSet isSubsetOfSet:spotlightManagerKeywords]);
+  EXPECT_GT([spotlightManagerKeywords count], 10u);
 }
-
-// The iOS MD5 APIs were marked as deprecated in iOS 13 and cannot be called if
-// the min_deployment_target is 13.0 or higher.
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-
-namespace {
-
-// Returns the original implementation of |hashForURL:| which used
-// OS-provided MD5 functions.
-int64_t OriginalHash(const GURL& url, NSString* title) {
-  NSString* key = [NSString
-      stringWithFormat:@"%@ %@", base::SysUTF8ToNSString(url.spec()), title];
-  unsigned char hash[CC_MD5_DIGEST_LENGTH];
-  const std::string clipboard = base::SysNSStringToUTF8(key);
-  const char* c_string = clipboard.c_str();
-  CC_MD5(c_string, strlen(c_string), hash);
-  uint64_t md5 = *(reinterpret_cast<uint64_t*>(hash));
-  return md5;
-}
-
-}  // namespace
-
-// The implementation of |getHashForlURL:| was rewritten to use base/hash/md5.h
-// instead of OS-provided MD5 functions. Test that the two implementations hash
-// to the same values, since the result is used as a Spotlight ID.
-TEST_F(SpotlightManagerTest, TestMD5HashesMatch) {
-  {
-    GURL url("https://www.google.com");
-    NSString* title = @"Google";
-
-    NSString* original_hash =
-        [NSString stringWithFormat:@"%016llx", OriginalHash(url, title)];
-    NSString* spotlight_id =
-        [bookmarksSpotlightManager_ spotlightIDForURL:url title:title];
-    EXPECT_TRUE([spotlight_id containsString:original_hash]);
-  }
-  {
-    GURL url("http://www.example.com/path/to/resource");
-    NSString* title = @"Example - Title";
-
-    NSString* original_hash =
-        [NSString stringWithFormat:@"%016llx", OriginalHash(url, title)];
-    NSString* spotlight_id =
-        [bookmarksSpotlightManager_ spotlightIDForURL:url title:title];
-    EXPECT_TRUE([spotlight_id containsString:original_hash]);
-  }
-}
-
-#endif  // !defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MIN_REQUIRED <
-        // __IPHONE_13_0

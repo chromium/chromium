@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -29,6 +28,11 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   PaymentSheetViewController(base::WeakPtr<PaymentRequestSpec> spec,
                              base::WeakPtr<PaymentRequestState> state,
                              base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentSheetViewController(const PaymentSheetViewController&) = delete;
+  PaymentSheetViewController& operator=(const PaymentSheetViewController&) =
+      delete;
+
   ~PaymentSheetViewController() override;
 
   // PaymentRequestSpec::Observer:
@@ -63,10 +67,7 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   std::unique_ptr<views::View> CreateDataSourceRow();
 
   void AddShippingButtonPressed();
-  void AddPaymentMethodButtonPressed();
   void AddContactInfoButtonPressed();
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentSheetViewController);
 };
 
 }  // namespace payments

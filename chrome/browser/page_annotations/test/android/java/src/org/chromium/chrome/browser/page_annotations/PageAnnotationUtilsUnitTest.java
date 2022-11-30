@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.page_annotations.PageAnnotation.PageAnnotationType;
 
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,9 +22,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PageAnnotationUtilsUnitTest {
-    private static final List<PageAnnotation> DUMMY_ANNOTATIONS_LIST = new LinkedList<>() {
-        { add(new BuyableProductPageAnnotation(100L, "USD")); }
-    };
+    private static final List<PageAnnotation> DUMMY_ANNOTATIONS_LIST = Arrays.asList(
+            new PageAnnotation[] {new BuyableProductPageAnnotation(100L, "USD", "200")});
 
     private static class DummyPageAnnotation extends PageAnnotation {
         DummyPageAnnotation() {
@@ -42,7 +41,7 @@ public class PageAnnotationUtilsUnitTest {
     @Test
     public void testCreateFromJsonBuyableProduct() throws JSONException {
         PageAnnotation annotation = PageAnnotationUtils.createPageAnnotationFromJson(
-                PageAnnotationsTestUtils.createFakeBuyableProductJson(true, "100", "USD"));
+                PageAnnotationsTestUtils.createFakeBuyableProductJson(true, "100", "USD", "200"));
         Assert.assertNotNull(annotation);
     }
 

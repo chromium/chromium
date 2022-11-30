@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/ui/simple_web_view_dialog.h"
 
-#include "base/macros.h"
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -32,22 +33,22 @@
 #include "content/public/common/content_constants.h"
 #include "ipc/ipc_message.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-using content::WebContents;
-using views::GridLayout;
-
+namespace ash {
 namespace {
 
-const int kLocationBarHeight = 35;
+using ::content::WebContents;
 
 // Margin between screen edge and SimpleWebViewDialog border.
 const int kExternalMargin = 60;
@@ -55,13 +56,12 @@ const int kExternalMargin = 60;
 // Margin between WebView and SimpleWebViewDialog border.
 const int kInnerMargin = 2;
 
-const SkColor kDialogColor = SK_ColorWHITE;
-
 class ToolbarRowView : public views::View {
  public:
   METADATA_HEADER(ToolbarRowView);
   ToolbarRowView() {
-    SetBackground(views::CreateSolidBackground(kDialogColor));
+    SetBackground(
+        views::CreateThemedSolidBackground(ui::kColorDialogBackground));
   }
 
   ToolbarRowView(const ToolbarRowView&) = delete;
@@ -72,35 +72,19 @@ class ToolbarRowView : public views::View {
             std::unique_ptr<views::View> forward,
             std::unique_ptr<views::View> reload,
             std::unique_ptr<views::View> location_bar) {
-    GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-
-    const int related_horizontal_spacing =
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+    layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    layout->set_between_child_spacing(
         ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
-    // Back button.
-    views::ColumnSet* column_set = layout->AddColumnSet(0);
-    column_set->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0,
-                          GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(0, related_horizontal_spacing);
-    // Forward button.
-    column_set->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0,
-                          GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(0, related_horizontal_spacing);
-    // Reload button.
-    column_set->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0,
-                          GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(0, related_horizontal_spacing);
-    // Location bar.
-    column_set->AddColumn(GridLayout::FILL, GridLayout::CENTER, 1,
-                          GridLayout::ColumnSize::kFixed, kLocationBarHeight,
-                          0);
-    column_set->AddPaddingColumn(0, related_horizontal_spacing);
+            views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
 
-    layout->StartRow(0, 0);
-    layout->AddView(std::move(back));
-    layout->AddView(std::move(forward));
-    layout->AddView(std::move(reload));
-    layout->AddView(std::move(location_bar));
+    AddChildView(std::move(back));
+    AddChildView(std::move(forward));
+    AddChildView(std::move(reload));
+    layout->SetFlexForView(AddChildView(std::move(location_bar)), 1);
   }
 };
 
@@ -108,8 +92,6 @@ BEGIN_METADATA(ToolbarRowView, views::View)
 END_METADATA
 
 }  // namespace
-
-namespace chromeos {
 
 // Stub implementation of ContentSettingBubbleModelDelegate.
 class StubBubbleModelDelegate : public ContentSettingBubbleModelDelegate {
@@ -133,7 +115,7 @@ class StubBubbleModelDelegate : public ContentSettingBubbleModelDelegate {
 SimpleWebViewDialog::SimpleWebViewDialog(Profile* profile)
     : profile_(profile),
       bubble_model_delegate_(new StubBubbleModelDelegate) {
-  command_updater_.reset(new CommandUpdaterImpl(this));
+  command_updater_ = std::make_unique<CommandUpdaterImpl>(this);
   command_updater_->UpdateCommandEnabled(IDC_BACK, true);
   command_updater_->UpdateCommandEnabled(IDC_FORWARD, true);
   command_updater_->UpdateCommandEnabled(IDC_STOP, true);
@@ -179,10 +161,10 @@ void SimpleWebViewDialog::Init() {
   // Create the security state model that the location bar model needs.
   if (web_view_->GetWebContents())
     SecurityStateTabHelper::CreateForWebContents(web_view_->GetWebContents());
-  location_bar_model_.reset(
-      new LocationBarModelImpl(this, content::kMaxURLDisplayChars));
+  location_bar_model_ = std::make_unique<LocationBarModelImpl>(
+      this, content::kMaxURLDisplayChars);
 
-  SetBackground(views::CreateSolidBackground(kDialogColor));
+  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
 
   // Back/Forward buttons.
   auto back = std::make_unique<views::ImageButton>(base::BindRepeating(
@@ -222,50 +204,27 @@ void SimpleWebViewDialog::Init() {
   reload->SetID(VIEW_ID_RELOAD_BUTTON);
   reload_ = reload.get();
 
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
+
   // Use separate view to setup custom background.
   auto toolbar_row = std::make_unique<ToolbarRowView>();
   toolbar_row->Init(std::move(back), std::move(forward), std::move(reload),
                     std::move(location_bar));
-  // Add the views as child views before the grid layout is installed. This
-  // ensures ownership is more clear.
-  ToolbarRowView* toolbar_row_ptr = AddChildView(std::move(toolbar_row));
-  // Transfer ownership of the `web_view_` from the `web_view_container_`
-  // created in StartLoad() to `this`.
-  AddChildView(std::move(web_view_container_));
+  AddChildView(std::move(toolbar_row));
 
-  // Layout.
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-
-  views::ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                        GridLayout::ColumnSize::kFixed, 0, 0);
-
-  column_set = layout->AddColumnSet(1);
-  column_set->AddPaddingColumn(0, kInnerMargin);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                        GridLayout::ColumnSize::kFixed, 0, 0);
-  column_set->AddPaddingColumn(0, kInnerMargin);
-
-  // Setup layout rows.
-  layout->StartRow(0, 0);
-  layout->AddExistingView(toolbar_row_ptr);
-
-  layout->AddPaddingRow(0, kInnerMargin);
-
-  layout->StartRow(1, 1);
-  layout->AddExistingView(web_view_);
-  layout->AddPaddingRow(0, kInnerMargin);
+  web_view_container_->SetProperty(views::kMarginsKey,
+                                   gfx::Insets(kInnerMargin));
+  layout->SetFlexForView(AddChildView(std::move(web_view_container_)), 1);
 
   LoadImages();
 
   location_bar_->Init();
   UpdateReload(web_view_->web_contents()->IsLoading(), true);
 
-  gfx::Rect bounds(CalculateScreenBounds(gfx::Size()));
-  bounds.Inset(kExternalMargin, kExternalMargin);
-  layout->set_minimum_size(bounds.size());
-
-  Layout();
+  gfx::Rect screen_bounds = CalculateScreenBounds(gfx::Size());
+  screen_bounds.Inset(kExternalMargin);
+  SetPreferredSize(screen_bounds.size());
 }
 
 content::WebContents* SimpleWebViewDialog::OpenURL(
@@ -285,9 +244,9 @@ void SimpleWebViewDialog::NavigationStateChanged(
 }
 
 void SimpleWebViewDialog::LoadingStateChanged(WebContents* source,
-                                              bool to_different_document) {
+                                              bool should_show_loading_ui) {
   bool is_loading = source->IsLoading();
-  UpdateReload(is_loading && to_different_document, false);
+  UpdateReload(is_loading && should_show_loading_ui, false);
   command_updater_->UpdateCommandEnabled(IDC_STOP, is_loading);
 }
 
@@ -420,4 +379,4 @@ void SimpleWebViewDialog::RemoveObserver(
 BEGIN_METADATA(SimpleWebViewDialog, views::View)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

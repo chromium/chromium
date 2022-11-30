@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="text_input_extension_unstable_v1">
+
+  <copyright>
+    Copyright 2021 The Chromium Authors
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="zcr_text_input_extension_v1" version="6">
+    <description summary="extends text_input to support richer operations">
+      Allows a text_input to sends more variation of operations to support
+      richer features, such as set_preedit_region.
+
+      Warning! The protocol described in this file is experimental and
+      backward incompatible changes may be made. Backward compatible changes
+      may be added together with the corresponding uinterface version bump.
+      Backward incompatible changes are done by bumping the version number in
+      the protocol and interface names and resetting the interface version.
+      Once the protocol is to be declared stable, the 'z' prefix and the
+      version number in the protocol and interface names are removed and the
+      interface version number is reset.
+    </description>
+
+    <enum name="error">
+      <entry name="extended_text_input_exists" value="0"
+             summary="the text_input already has an extended_text_input object associated"/>
+    </enum>
+
+    <request name="get_extended_text_input">
+      <description summary="get extended_text_input for a text_input">
+        Create extended_text_input object.
+        See zcr_extended_text_input interface for details.
+        If the given text_input object already has a extended_text_input object
+        associated, the extended_text_input_exists protocol error is raised.
+      </description>
+      <arg name="id" type="new_id" interface="zcr_extended_text_input_v1"/>
+      <arg name="text_input" type="object" interface="zwp_text_input_v1"/>
+    </request>
+
+  </interface>
+
+  <interface name="zcr_extended_text_input_v1" version="6">
+    <description summary="extension of text_input protocol">
+      The zcr_extended_text_input_v1 interface extends the text_input interface
+      to support more rich operations on text_input.
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy extended_text_input object"/>
+    </request>
+
+    <event name="set_preedit_region">
+      <description summary="set preedit from the surrounding text">
+        IME requests to update text_input client to set the preedit
+        from the surrounding text.
+
+        index is the starting point of the preedit, relative to the current
+        cursor position in utf-8 byte-offset.
+        length is the length of the preedit region in utf-8 byte length.
+
+        Following the convention we have in text_input::preedit_string,
+        text_input::preedit_styling sent just before this will be applied.
+      </description>
+      <arg name="index" type="int" />
+      <arg name="length" type="uint" />
+    </event>
+
+    <!-- Version 2 -->
+
+    <enum name="input_type" since="2">
+      <description summary="Chrome's TextInputType">
+        Wayland has its own input-type support, which is
+        zwp_text_input::content_purpose. However, it is not rich enough to
+        represent all Chrome's input types. This enum is introduced to keep
+        all entries so exo can understand it without any information loss.
+        See TextInputType's description for details about each entry.
+      </description>
+      <entry name="none" value="0" />
+      <entry name="text" value="1" />
+      <entry name="password" value="2" />
+      <entry name="search" value="3" />
+      <entry name="email" value="4" />
+      <entry name="number" value="5" />
+      <entry name="telephone" value="6" />
+      <entry name="url" value="7" />
+      <entry name="date" value="8" />
+      <entry name="date_time" value="9" />
+      <entry name="date_time_local" value="10" />
+      <entry name="month" value="11" />
+      <entry name="time" value="12" />
+      <entry name="week" value="13" />
+      <entry name="text_area" value="14" />
+      <entry name="content_editable" value="15" />
+      <entry name="date_time_field" value="16" />
+      <entry name="null" value="17" />
+    </enum>
+
+    <enum name="input_mode" since="2">
+      <description summary="Chrome's TextInputMode">
+        Similar to input_type defined above, this keeps Chrome's TextInputMode.
+        See TextInputMode's description for details for each entry.
+      </description>
+      <entry name="default" value="0" />
+      <entry name="none" value="1" />
+      <entry name="text" value="2" />
+      <entry name="tel" value="3" />
+      <entry name="url" value="4" />
+      <entry name="email" value="5" />
+      <entry name="numeric" value="6" />
+      <entry name="decimal" value="7" />
+      <entry name="search" value="8" />
+    </enum>
+
+    <enum name="input_flags" since="2">
+      <description summary="Chrome's TextInputFlags">
+        Similar to input_type defined above, this keeps Chrome's TextInputFlags,
+        because content_hint is not enough power to represent what Chrome wants.
+        See TextInputFlags' description for details for each entry.
+      </description>
+      <entry name="none" value="0" />
+      <entry name="autocomplete_on" value="1 &lt;&lt; 0" />
+      <entry name="autocomplete_off" value="1 &lt;&lt; 1" />
+      <entry name="autocorrect_on" value="1 &lt;&lt; 2" />
+      <entry name="autocorrect_off" value="1 &lt;&lt; 3" />
+      <entry name="spellcheck_on" value="1 &lt;&lt; 4" />
+      <entry name="spellcheck_off" value="1 &lt;&lt; 5" />
+      <entry name="autocapitalize_none" value="1 &lt;&lt; 6" />
+      <entry name="autocapitalize_characters" value="1 &lt;&lt; 7" />
+      <entry name="autocapitalize_words" value="1 &lt;&lt; 8" />
+      <entry name="autocapitalize_sentences" value="1 &lt;&lt; 9" />
+      <entry name="has_been_password" value="1 &lt;&lt; 10" />
+    </enum>
+
+    <enum name="learning_mode" since="2">
+      <description summary="Whether IME is allowed to learn" />
+      <entry name="disabled" value="0" />
+      <entry name="enabled" value="1" />
+    </enum>
+
+    <request name="set_input_type" since="2">
+      <description summary="Sets input type, mode and flags together">
+        In wayland, there's a concept that can be mapped to Chrome's
+        TextInputType, Mode and Flags. It can be set via
+        zwp_text_input::set_content_type. However, the variation is not rich
+        enough to represent Chrome's detailed behavior change. This API can be
+        used as a replacement of set_content_type.
+      </description>
+      <arg name="input_type" type="uint" enum="input_type" />
+      <arg name="input_mode" type="uint" enum="input_mode" />
+      <arg name="input_flags" type="uint" />
+      <arg name="learning_mode" type="uint" enum="learning_mode" />
+    </request>
+
+    <!-- Version 3 -->
+
+    <event name="clear_grammar_fragments" since="3">
+      <description summary="clear grammar fragments in a range">
+        IME requests to clear all the grammar markers within the given range
+        defined by start and end.
+
+        start and end are relative to the beginning of the input field in
+        utf-8 byte length.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+    </event>
+
+    <event name="add_grammar_fragment" since="3">
+      <description summary="add grammar fragment">
+        IME requests to add a new grammar fragment.
+
+        A grammar fragment describes a range of text (start, end) that has
+        grammar error and also gives the correct replacement text. It is
+        expected that the renderer will render markers (e.g. squigles or dashed
+        underlines) under the text to notify users that there is a grammar
+        error. It is also expected that the renderer will maintain and update
+        the position of fragment when users edit other parts of the text, e.g.
+        if users type something before the grammar fragment, the marker should
+        move accordingly.
+
+        start and end are relative to the beginning of the input field in
+        utf-8 byte length. suggestion is the correct replacement text, encoded
+        in utf-8 and suggested by ML model.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+      <arg name="suggestion" type="string" />
+    </event>
+
+    <request name="set_grammar_fragment_at_cursor" since="3">
+      <description summary="add grammar fragment">
+        Informs the IME of the grammar fragment containing the current cursor.
+        If not existing, both start and end are set to 0. This is called
+        whenever the cursor position or surrounding text have changed.
+
+        start and end are relative to the beginning of the input field in
+        utf-8 byte length. suggestion is the correct replacement text encoded
+        in utf-8 and suggested by ML model.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+      <arg name="suggestion" type="string" />
+    </request>
+
+    <!-- Version 4 -->
+
+    <event name="set_autocorrect_range" since="4">
+      <description summary="set autocorrect range">
+        IME requests to update text_input client to set the autocorrect range.
+        There is only one autocorrect range, so this replaces any existing
+        autocorrect ranges.
+
+        start and end are relative to the beginning of the input field in utf-8
+        byte length.
+
+        If start and end are the same, then the autocorrect range is cleared.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+    </event>
+
+    <request name="set_autocorrect_info" since="4">
+      <description summary="set autocorrect range">
+        Informs the IME the range and bounds of the current autocorrect change.
+        This is called whenever the range or bounds have changed.
+
+        start and end are relative to the beginning of the input field in utf-8
+        byte length.
+
+        x, y, width, and height are the bounds of the autocorrect text, relative
+        to the window.
+
+        This request only changes a pending state that will be effective on the
+        next 'set_surrounding_text' request.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+      <arg name="x" type="uint" />
+      <arg name="y" type="uint" />
+      <arg name="width" type="uint" />
+      <arg name="height" type="uint" />
+    </request>
+
+    <!-- Version 5 -->
+
+    <event name="set_virtual_keyboard_occluded_bounds" since="5">
+      <description summary="Sets the virtual keyboard's occluded bounds.">
+        This event tells the client about the part of the virtual keyboard's
+        bounds that occludes the text input's window, in screen DIP coordinates.
+        In order for the text input to make proper use of this information, it
+        needs to know its window's screen DIP bounds via another interface such
+        as the aura-shell.
+
+        The occluded bounds may be smaller than the keyboard's visual bounds.
+
+        When the virtual keyboard is hidden or floating, empty bounds are sent,
+        i.e. with zero width and height.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </event>
+
+    <!-- Version 6 -->
+
+    <request name="finalize_virtual_keyboard_changes" since="6">
+      <description summary="Finalizes the requested virtual keyboard changes.">
+        This request notifies the server that the client has finished making
+        requested changes to the virtual keyboard, and the server should update
+        the client with the latest virtual keyboard state. This avoids spurious
+        intermediate requests from causing the virtual keyboard to change state
+        unnecessarily.
+
+        Clients that connect to the server at this or higher versions must send
+        this request after it finishes sending the applicable requests. The
+        server is free to decide how it handles or honors this request.
+
+        As of version 6, the applicable requests are:
+          - zwp_text_input_v1.show_input_panel
+          - zwp_text_input_v1.hide_input_panel
+      </description>
+    </request>
+
+  </interface>
+</protocol>

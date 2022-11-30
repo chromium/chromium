@@ -1,0 +1,25 @@
+<link rel="stylesheet" href="../demo.css">
+<style>
+  :host([force-show-announcer_]) cr-a11y-announcer {
+    overflow: visible;
+    position: static;
+  }
+</style>
+
+<h1>cr-a11y-announcer</h1>
+
+<div class="demos">
+  <cr-checkbox checked="{{forceShowAnnouncer_}}">
+    Force show announcer
+  </cr-checkbox>
+
+  <cr-button on-click="onAnnounceTextClick_">
+    Announce text
+  </cr-button>
+
+  <cr-button on-click="onAnnounceMultipleTextsClick_">
+    Announce multiple texts
+  </cr-button>
+
+  <div id="announcerContainer"></div>
+</div>

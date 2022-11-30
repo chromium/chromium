@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,17 @@
 - (instancetype)initWithPrimaryAttributedString:
                     (NSAttributedString*)primaryAttributedString
                       secondaryAttributedString:
+                          (NSAttributedString*)secondaryAttributedString;
+
+// Init with the primary text, the secondary text with an attributed string,
+// and a `icon` at the left of the secondary text. The size of the icon will be
+// of equal height and width. There won't be an icon if `icon` is left empty.
+// The icon won't be shown if `secondaryAttributedString` is empty.
+- (instancetype)initWithPrimaryAttributedString:
+                    (NSAttributedString*)primaryAttributedString
+                      secondaryAttributedString:
                           (NSAttributedString*)secondaryAttributedString
+                                           icon:(UIImage*)icon
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

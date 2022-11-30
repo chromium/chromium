@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,9 @@
 
 EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
     const base::FilePath& state_directory_path) {
-  ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(true));
-  ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(true));
-
+  policy_provider_.SetDefaultReturns(
+      true /* is_initialization_complete_return */,
+      true /* is_first_policy_load_complete_return */);
   // Create a BrowserPolicyConnectorIOS, install the mock policy
   // provider, and hook up Local State.
   browser_policy_connector_ =
@@ -45,7 +43,7 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
       std::make_unique<BrowserStatePolicyConnector>();
   browser_state_policy_connector_->Init(
       browser_policy_connector_->GetSchemaRegistry(),
-      browser_policy_connector_.get());
+      browser_policy_connector_.get(), /*user_policy_provider=*/nullptr);
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry(
       new user_prefs::PrefRegistrySyncable);
   RegisterBrowserStatePrefs(pref_registry.get());

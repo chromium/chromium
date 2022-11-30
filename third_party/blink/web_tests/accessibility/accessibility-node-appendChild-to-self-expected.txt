@@ -1,0 +1,2 @@
+CONSOLE ERROR: Uncaught InvalidAccessError: Failed to execute 'appendChild' on 'AccessibleNode': An AccessibleNode cannot be a child of itself
+

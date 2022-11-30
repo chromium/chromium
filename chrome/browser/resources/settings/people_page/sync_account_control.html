@@ -57,7 +57,7 @@
 
       @media (prefers-color-scheme: dark) {
         #sync-icon-container {
-          background: var(--google-green-refresh-300);
+          background: var(--google-green-300);
           border-color: var(--google-grey-900);
         }
       }
@@ -72,7 +72,7 @@
 
       @media (prefers-color-scheme: dark) {
         #sync-icon-container.sync-paused {
-          background: var(--google-blue-refresh-300);
+          background: var(--google-blue-300);
         }
       }
 
@@ -82,7 +82,7 @@
 
       @media (prefers-color-scheme: dark) {
         #sync-icon-container.sync-disabled {
-          background: var(--google-grey-refresh-500);
+          background: var(--google-grey-500);
         }
       }
 
@@ -93,7 +93,7 @@
         width: 12px;
       }
 
-      #sign-in {
+      #signIn {
         min-width: 100px;
       }
 
@@ -127,7 +127,7 @@
         <div class="secondary">[[subLabel_]]</div>
       </div>
       <cr-button class="action-button cr-button-gap" on-click="onSigninTap_"
-          id="sign-in"
+          id="signIn"
           disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                   syncStatus.firstSetupInProgress,
                   prefs.signin.allowed_on_next_startup.value)]]"
@@ -166,12 +166,14 @@
           </div>
         </div>
 <!-- Chrome OS does not allow switching users for sync. -->
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
-            hidden="[[syncStatus.signedIn]]" on-click="onMenuButtonTap_"
-            id="dropdown-arrow" aria-label="$i18n{useAnotherAccount}">
+            hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedIn)]]"
+            on-click="onMenuButtonTap_" id="dropdown-arrow"
+            aria-label="$i18n{useAnotherAccount}">
         </cr-icon-button>
-        <div class="separator" hidden="[[syncStatus.signedIn]]"></div>
+        <div class="separator"
+            hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedIn)]]"></div>
 </if>
         <cr-button id="sync-button" class="action-button cr-button-gap"
             hidden="[[syncStatus.signedIn]]" on-click="onSyncButtonTap_"
@@ -205,8 +207,9 @@
         </div>
       </div>
 <!-- Chrome OS does not allow switching users for sync. -->
-<if expr="not chromeos">
-      <template is="dom-if" if="[[!syncStatus.signedIn]]" restamp>
+<if expr="not chromeos_ash">
+      <template is="dom-if"
+          if="[[shouldAllowAccountSwitch_(syncStatus.signedIn)]]" restamp>
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}">
           <template is="dom-repeat" items="[[storedAccounts_]]">

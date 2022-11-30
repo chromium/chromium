@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"
@@ -27,23 +26,25 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
                   OutputCB output_cb,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,
               bool key_frame,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
-                     StatusCB done_cb) override;
-  void Flush(StatusCB done_cb) override;
+                     EncoderStatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
  private:
-  Status DrainOutputs(const SFrameBSInfo& frame_info,
-                      base::TimeDelta timestamp);
+  EncoderStatus DrainOutputs(const SFrameBSInfo& frame_info,
+                             base::TimeDelta timestamp,
+                             gfx::ColorSpace color_space);
 
   class ISVCEncoderDeleter {
    public:
     ISVCEncoderDeleter();
     ISVCEncoderDeleter(const ISVCEncoderDeleter&);
+    ISVCEncoderDeleter& operator=(const ISVCEncoderDeleter&);
     void operator()(ISVCEncoder* coder);
     void MarkInitialized();
 
@@ -60,6 +61,7 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   OutputCB output_cb_;
   std::vector<uint8_t> conversion_buffer_;
   VideoFramePool frame_pool_;
+  gfx::ColorSpace last_frame_color_space_;
 
   // If |h264_converter_| is null, we output in annexb format. Otherwise, we
   // output in avc format.

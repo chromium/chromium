@@ -235,7 +235,7 @@ int ashmem_get_prot_region(int fd) {
   int result = PROT_READ;
   const size_t page_size = (size_t)sysconf(_SC_PAGESIZE);
   void* m = mmap(NULL, page_size, PROT_READ|PROT_WRITE,
-                 MAP_PRIVATE, fd, 0);
+                 MAP_SHARED, fd, 0);
   if (m != MAP_FAILED) {
     munmap(m, page_size);
     result = PROT_READ|PROT_WRITE;

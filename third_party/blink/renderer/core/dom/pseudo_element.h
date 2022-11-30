@@ -37,10 +37,23 @@ class ComputedStyle;
 
 class CORE_EXPORT PseudoElement : public Element {
  public:
-  static PseudoElement* Create(Element* parent, PseudoId);
+  // |document_transition_tag| is used to uniquely identify a pseudo element
+  // from a set of pseudo elements which share the same |pseudo_id|. The current
+  // usage of this ID is limited to pseudo elements generated for a
+  // DocumentTransition. See
+  // third_party/blink/renderer/core/document_transition/README.md
+  static PseudoElement* Create(
+      Element* parent,
+      PseudoId pseudo_id,
+      const AtomicString& document_transition_tag = g_null_atom);
 
-  PseudoElement(Element*, PseudoId);
+  PseudoElement(Element*,
+                PseudoId,
+                const AtomicString& document_transition_tag = g_null_atom);
 
+  const AtomicString& document_transition_tag() const {
+    return document_transition_tag_;
+  }
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
       const StyleRecalcContext&) override;
   void AttachLayoutTree(AttachContext&) override;
@@ -53,12 +66,19 @@ class CORE_EXPORT PseudoElement : public Element {
   scoped_refptr<ComputedStyle> LayoutStyleForDisplayContents(
       const ComputedStyle&);
 
-  static const AtomicString& PseudoElementNameForEvents(PseudoId);
+  static AtomicString PseudoElementNameForEvents(Element*);
   static bool IsWebExposed(PseudoId, const Node*);
 
   // Pseudo element are not allowed to be the inner node for hit testing. Find
   // the closest ancestor which is a real dom node.
   virtual Node* InnerNodeForHitTesting() const;
+
+  // Returns the DOM element that this pseudo element originates from. If the
+  // pseudo element is nested inside another pseudo element, this returns the
+  // DOM element which the pseudo element tree originates from.
+  // This is different from |parentElement()| which returns the element's direct
+  // ancestor.
+  Element* OriginatingElement() const;
 
   virtual void Dispose();
 
@@ -76,9 +96,10 @@ class CORE_EXPORT PseudoElement : public Element {
   };
 
   PseudoId pseudo_id_;
+  const AtomicString document_transition_tag_;
 };
 
-const QualifiedName& PseudoElementTagName(PseudoId);
+CORE_EXPORT const QualifiedName& PseudoElementTagName(PseudoId);
 
 bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
                                        const Element* originating_element);
@@ -90,4 +111,4 @@ struct DowncastTraits<PseudoElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_H_

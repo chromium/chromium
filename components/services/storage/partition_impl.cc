@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
@@ -48,7 +47,7 @@ void ShutDown(std::unique_ptr<T> object) {
 }  // namespace
 
 PartitionImpl::PartitionImpl(StorageServiceImpl* service,
-                             const base::Optional<base::FilePath>& path)
+                             const absl::optional<base::FilePath>& path)
     : service_(service), path_(path) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &PartitionImpl::OnDisconnect, base::Unretained(this)));
@@ -88,7 +87,7 @@ void PartitionImpl::BindSessionStorageControl(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       base::SequencedTaskRunnerHandle::Get(),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // On Android there is no support for session storage restoring, and since
       // the restoring code is responsible for database cleanup, we must
       // manually delete the old database here before we open a new one.
@@ -104,9 +103,6 @@ void PartitionImpl::BindLocalStorageControl(
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver) {
   local_storage_ = std::make_unique<LocalStorageImpl>(
       path_.value_or(base::FilePath()), base::SequencedTaskRunnerHandle::Get(),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::WithBaseSyncPrimitives(),
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       std::move(receiver));
 }
 

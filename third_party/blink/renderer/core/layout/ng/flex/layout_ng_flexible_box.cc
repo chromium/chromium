@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -20,24 +20,31 @@ LayoutNGFlexibleBox::LayoutNGFlexibleBox(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
 bool LayoutNGFlexibleBox::HasTopOverflow() const {
-  if (IsHorizontalWritingMode())
-    return StyleRef().ResolvedIsColumnReverseFlexDirection();
-  return StyleRef().IsLeftToRightDirection() ==
-         StyleRef().ResolvedIsRowReverseFlexDirection();
+  const auto& style = StyleRef();
+  bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
+  if (style.IsHorizontalWritingMode()) {
+    return style.ResolvedIsColumnReverseFlexDirection() ||
+           (style.ResolvedIsRowFlexDirection() && is_wrap_reverse);
+  }
+  return style.IsLeftToRightDirection() ==
+         (style.ResolvedIsRowReverseFlexDirection() ||
+          (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
 }
 
 bool LayoutNGFlexibleBox::HasLeftOverflow() const {
-  if (IsHorizontalWritingMode()) {
-    return StyleRef().IsLeftToRightDirection() ==
-           StyleRef().ResolvedIsRowReverseFlexDirection();
+  const auto& style = StyleRef();
+  bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
+  if (style.IsHorizontalWritingMode()) {
+    return style.IsLeftToRightDirection() ==
+           (style.ResolvedIsRowReverseFlexDirection() ||
+            (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
   }
-  return (StyleRef().GetWritingMode() == WritingMode::kVerticalLr) ==
-         StyleRef().ResolvedIsColumnReverseFlexDirection();
+  return (style.GetWritingMode() == WritingMode::kVerticalLr) ==
+         (style.ResolvedIsColumnReverseFlexDirection() ||
+          (style.ResolvedIsRowFlexDirection() && is_wrap_reverse));
 }
 
 void LayoutNGFlexibleBox::UpdateBlockLayout(bool relayout_children) {
-  LayoutAnalyzer::BlockScope analyzer(*this);
-
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
     return;
@@ -79,44 +86,16 @@ bool LayoutNGFlexibleBox::IsChildAllowed(LayoutObject* object,
   return LayoutNGMixin<LayoutBlock>::IsChildAllowed(object, style);
 }
 
-// This is devtools' entry point into layout. This function is intended to have
-// no side effects on the NGFragment tree or the LayoutObject tree.
-//
-// Execution time of this function is not critical, but the flex item layouts
-// will hit their caches, so it's probably fast anyway.
-DevtoolsFlexInfo LayoutNGFlexibleBox::LayoutForDevtools() {
-  DCHECK(!NeedsLayout());
-  DevtoolsReadonlyLayoutScope fragments_and_tree_are_now_readonly;
-  const NGLayoutResult* old_layout_result = GetCachedLayoutResult();
-#if DCHECK_IS_ON()
-  MinMaxSizes old_min_max_sizes = IntrinsicLogicalWidths();
-  String old_string = old_layout_result->PhysicalFragment().DumpFragmentTree(
-      NGPhysicalLineBoxFragment::DumpAll);
-#endif
+void LayoutNGFlexibleBox::SetNeedsLayoutForDevtools() {
+  SetNeedsLayout(layout_invalidation_reason::kDevtools);
+  SetNeedsDevtoolsInfo(true);
+}
 
-  DCHECK(old_layout_result);
-  const NGConstraintSpace& constraint_space =
-      old_layout_result->GetConstraintSpaceForCaching();
-
-  NGBlockNode node(this);
-  NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(constraint_space, node);
-  NGLayoutAlgorithmParams params(node, fragment_geometry, constraint_space);
-  DevtoolsFlexInfo flex_info;
-  NGFlexLayoutAlgorithm flex_algorithm(params, &flex_info);
-  auto new_result = flex_algorithm.Layout();
-
-#if DCHECK_IS_ON()
-  MinMaxSizes new_min_max_sizes = IntrinsicLogicalWidths();
-  DCHECK_EQ(old_min_max_sizes, new_min_max_sizes)
-      << "Legacy min_max_sizes changed!";
-
-  String new_string = new_result->PhysicalFragment().DumpFragmentTree(
-      NGPhysicalLineBoxFragment::DumpAll);
-  DCHECK_EQ(old_string, new_string) << "Fragment tree changed!";
-#endif
-
-  return flex_info;
+const DevtoolsFlexInfo* LayoutNGFlexibleBox::FlexLayoutData() const {
+  const wtf_size_t fragment_count = PhysicalFragmentCount();
+  DCHECK_GE(fragment_count, 1u);
+  // Currently, devtools data is on the first fragment of a fragmented flexbox.
+  return GetLayoutResult(0)->FlexLayoutData();
 }
 
 void LayoutNGFlexibleBox::RemoveChild(LayoutObject* child) {

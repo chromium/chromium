@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <vector>
+
 #include "chrome/browser/policy/policy_path_parser.h"
 
 #include "base/logging.h"
-#include "base/notreached.h"
 
 namespace policy {
 
@@ -38,7 +39,7 @@ base::FilePath::StringType ExpandPathVariables(
   size_t position = result.find(kUserNamePolicyVarName);
   if (position != std::string::npos) {
     struct passwd* user = getpwuid(geteuid());
-    if (user) {
+    if (user && user->pw_name) {
       result.replace(position, strlen(kUserNamePolicyVarName), user->pw_name);
     } else {
       LOG(ERROR) << "Username variable can not be resolved. ";
@@ -46,20 +47,18 @@ base::FilePath::StringType ExpandPathVariables(
   }
   position = result.find(kMachineNamePolicyVarName);
   if (position != std::string::npos) {
-    char machinename[255];
-    if (gethostname(machinename, 255) == 0) {
-      result.replace(position, strlen(kMachineNamePolicyVarName), machinename);
+    // Receive result into a zero-initialized vector with one extra byte, as
+    // POSIX doesn't guarantee a specific behavior about the terminating null
+    // character in case of truncation.
+    std::vector<char> machinename(256);
+    if (gethostname(machinename.data(), machinename.size() - 1) == 0) {
+      result.replace(position, strlen(kMachineNamePolicyVarName),
+                     machinename.data());
     } else {
       LOG(ERROR) << "Machine name variable can not be resolved.";
     }
   }
   return result;
-}
-
-void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
-  // This function is not implemented in Linux because we don't support the
-  // policy on this platform.
-  NOTREACHED();
 }
 
 }  // namespace path_parser

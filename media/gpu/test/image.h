@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,10 @@ namespace test {
 class Image {
  public:
   explicit Image(const base::FilePath& file_path);
+
+  Image(const Image&) = delete;
+  Image& operator=(const Image&) = delete;
+
   ~Image();
 
   // Load the image file and accompanying metadata from disk.
@@ -69,8 +73,6 @@ class Image {
   VideoRotation rotation_;
   // The image md5 checksum.
   std::string checksum_;
-
-  DISALLOW_COPY_AND_ASSIGN(Image);
 };
 
 }  // namespace test

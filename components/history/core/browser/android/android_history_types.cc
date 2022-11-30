@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "sql/statement.h"
 
 namespace history {
@@ -37,9 +36,9 @@ class BookmarkIDMapping
  public:
   BookmarkIDMapping() {
     static_assert(
-        base::size(kAndroidBookmarkColumn) <= HistoryAndBookmarkRow::COLUMN_END,
+        std::size(kAndroidBookmarkColumn) <= HistoryAndBookmarkRow::COLUMN_END,
         "kAndroidBookmarkColumn should not have more than COLUMN_END elements");
-    for (size_t i = 0; i < base::size(kAndroidBookmarkColumn); ++i) {
+    for (size_t i = 0; i < std::size(kAndroidBookmarkColumn); ++i) {
       (*this)[kAndroidBookmarkColumn[i]] =
           static_cast<HistoryAndBookmarkRow::ColumnID>(i);
     }
@@ -53,10 +52,10 @@ BookmarkIDMapping* g_bookmark_id_mapping = NULL;
 class SearchIDMapping : public std::map<std::string, SearchRow::ColumnID> {
  public:
   SearchIDMapping() {
-    static_assert(base::size(kAndroidSearchColumn) <= SearchRow::COLUMN_END,
+    static_assert(std::size(kAndroidSearchColumn) <= SearchRow::COLUMN_END,
                   "kAndroidSearchColumn should not have more than "
                   "COLUMN_END elements");
-    for (size_t i = 0; i < base::size(kAndroidSearchColumn); ++i) {
+    for (size_t i = 0; i < std::size(kAndroidSearchColumn); ++i) {
       (*this)[kAndroidSearchColumn[i]] = static_cast<SearchRow::ColumnID>(i);
     }
   }

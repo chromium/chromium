@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,13 +23,16 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
  public:
   static DummyHistogram* GetInstance();
 
+  DummyHistogram(const DummyHistogram&) = delete;
+  DummyHistogram& operator=(const DummyHistogram&) = delete;
+
   // HistogramBase:
   void CheckName(const StringPiece& name) const override {}
   uint64_t name_hash() const override;
   HistogramType GetHistogramType() const override;
   bool HasConstructionArguments(Sample expected_minimum,
                                 Sample expected_maximum,
-                                uint32_t expected_bucket_count) const override;
+                                size_t expected_bucket_count) const override;
   void Add(Sample value) override {}
   void AddCount(Sample value, int count) override {}
   void AddSamples(const HistogramSamples& samples) override {}
@@ -38,20 +41,18 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
   std::unique_ptr<HistogramSamples> SnapshotDelta() override;
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
   void WriteAscii(std::string* output) const override {}
-  base::DictionaryValue ToGraphDict() const override;
+  Value::Dict ToGraphDict() const override;
 
  protected:
   // HistogramBase:
   void SerializeInfoImpl(Pickle* pickle) const override {}
-  void GetParameters(DictionaryValue* params) const override {}
+  Value::Dict GetParameters() const override;
 
  private:
   friend class NoDestructor<DummyHistogram>;
 
   DummyHistogram() : HistogramBase("dummy_histogram") {}
   ~DummyHistogram() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(DummyHistogram);
 };
 
 }  // namespace base

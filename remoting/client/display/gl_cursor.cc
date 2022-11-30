@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/client/display/gl_cursor.h"
+
+#include <memory>
 
 #include "remoting/base/util.h"
 #include "remoting/client/display/gl_canvas.h"
@@ -75,7 +77,7 @@ void GlCursor::SetCanvas(base::WeakPtr<Canvas> canvas) {
     layer_.reset();
     return;
   }
-  layer_.reset(new GlRenderLayer(kGlCursorTextureId, canvas));
+  layer_ = std::make_unique<GlRenderLayer>(kGlCursorTextureId, canvas);
   if (current_cursor_data_) {
     SetCurrentCursorShape(true);
   }

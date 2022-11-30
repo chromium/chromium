@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,13 +26,14 @@ class MediaFormatBuilder {
     }
 
     public static MediaFormat createVideoEncoderFormat(String mime, int width, int height,
-            int bitRate, int frameRate, int iFrameInterval, int colorFormat,
+            int bitrateMode, int bitRate, int frameRate, int iFrameInterval, int colorFormat,
             boolean allowAdaptivePlayback) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, iFrameInterval);
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat);
+        format.setInteger(MediaFormat.KEY_BITRATE_MODE, bitrateMode);
         addInputSizeInfoToFormat(format, allowAdaptivePlayback);
         return format;
     }
@@ -112,6 +113,7 @@ class MediaFormatBuilder {
                 break;
             case MimeTypes.VIDEO_HEVC:
             case MimeTypes.VIDEO_VP9:
+            case MimeTypes.VIDEO_AV1:
                 maxPixels = maxWidth * maxHeight;
                 minCompressionRatio = 4;
                 break;

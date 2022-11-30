@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/browser/translate_prefs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -46,8 +50,13 @@ extern const char kTranslatePageLoadRankerDecision[];
 extern const char kTranslatePageLoadRankerTimerShouldOfferTranslation[];
 extern const char kTranslatePageLoadRankerVersion[];
 extern const char kTranslatePageLoadTriggerDecision[];
-extern const char kTranslatePageLoadTriggerDecisionAllTriggerDecisions[];
-extern const char kTranslatePageLoadTriggerDecisionTotalCount[];
+
+// Session frequency UMA histograms.
+extern const char kTranslateApplicationStartAlwaysTranslateLanguage[];
+extern const char kTranslateApplicationStartAlwaysTranslateLanguageCount[];
+extern const char kTranslateApplicationStartNeverTranslateLanguage[];
+extern const char kTranslateApplicationStartNeverTranslateLanguageCount[];
+extern const char kTranslateApplicationStartNeverTranslateSiteCount[];
 
 class NullTranslateMetricsLogger : public TranslateMetricsLogger {
  public:
@@ -67,7 +76,7 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogInitialState() override {}
   void LogTranslationStarted(TranslationType translation_type) override {}
   void LogTranslationFinished(bool was_successful,
-                              TranslateErrors::Type error_type) override {}
+                              TranslateErrors error_type) override {}
   void LogReversion() override {}
   void LogUIChange(bool is_ui_shown) override {}
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override {}
@@ -84,8 +93,10 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogDetectionReliabilityScore(
       const float& model_detection_reliability_score) override {}
   void LogUIInteraction(UIInteraction ui_interaction) override {}
-  TranslationType GetNextManualTranslationType() override;
+  TranslationType GetNextManualTranslationType(
+      bool is_context_menu_initiated_translation) override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override {}
+  void LogWasContentEmpty(bool was_content_empty) override {}
 };
 
 class TranslateManager;
@@ -106,6 +117,9 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   TranslateMetricsLoggerImpl& operator=(const TranslateMetricsLoggerImpl&) =
       delete;
 
+  static void LogApplicationStartMetrics(
+      std::unique_ptr<TranslatePrefs> translate_prefs);
+
   // Overrides the clock used to track the time of certain actions. Should only
   // be used for testing purposes.
   void SetInternalClockForTesting(base::TickClock* clock);
@@ -124,7 +138,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogInitialState() override;
   void LogTranslationStarted(TranslationType translation_type) override;
   void LogTranslationFinished(bool was_successful,
-                              TranslateErrors::Type error_type) override;
+                              TranslateErrors error_type) override;
   void LogReversion() override;
   void LogUIChange(bool is_ui_shown) override;
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override;
@@ -141,8 +155,10 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogDetectionReliabilityScore(
       const float& model_detection_reliability_score) override;
   void LogUIInteraction(UIInteraction ui_interaction) override;
-  TranslationType GetNextManualTranslationType() override;
+  TranslationType GetNextManualTranslationType(
+      bool is_context_menu_initiated_translation) override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override;
+  void LogWasContentEmpty(bool was_content_empty) override;
 
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
@@ -203,12 +219,11 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   RankerDecision ranker_decision_ = RankerDecision::kUninitialized;
   uint32_t ranker_version_ = 0;
   base::TimeTicks ranker_start_time_;
-  base::Optional<base::TimeDelta> ranker_duration_;
+  absl::optional<base::TimeDelta> ranker_duration_;
 
   // Stores the reason for the initial state of the page load. In the case there
   // are multiple reasons, only the first reported reason is stored.
   TriggerDecision trigger_decision_ = TriggerDecision::kUninitialized;
-  std::vector<TriggerDecision> all_trigger_decisions_;
   bool autofill_assistant_deferred_trigger_decision_ = false;
 
   // Tracks the different dimensions that determine the state of Translate.
@@ -242,7 +257,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
 
   // Tracks the amount of time the page is in the foreground and either
   // translated or not translated.
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
   base::TimeTicks time_of_last_state_change_;
   base::TimeDelta total_time_translated_;
   base::TimeDelta total_time_not_translated_;
@@ -271,7 +286,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   float model_detection_reliability_score_ = 0.0;
 
   // Tracks any translation errors that occur over the course of the page load.
-  TranslateErrors::Type first_translate_error_type_ = TranslateErrors::NONE;
+  TranslateErrors first_translate_error_type_ = TranslateErrors::NONE;
   int num_translate_errors_ = 0;
 
   // Tracks the user's high level interaction with the Translate UI over the
@@ -289,6 +304,10 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Tracks if this page load has an href translate target language on a link
   // from Google Search.
   bool has_href_translate_target_ = false;
+
+  // Tracks whether the page content used to detect the page language
+  // was empty or not.
+  bool was_content_empty_ = true;
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_AUDITING_SERVICE_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -38,7 +39,7 @@ class PermissionAuditingService
   typedef base::OnceCallback<void(std::vector<PermissionUsageSession>)>
       PermissionUsageHistoryCallback;
 
-  typedef base::OnceCallback<void(base::Optional<base::Time>)>
+  typedef base::OnceCallback<void(absl::optional<base::Time>)>
       LastPermissionUsageTimeCallback;
 
   explicit PermissionAuditingService(
@@ -103,7 +104,7 @@ class PermissionAuditingService
   // Lives on the |backend_task_runner_|, and must only be accessed on that
   // sequence. It is safe to assume the database is alive as long as |db_| is
   // non-null.
-  PermissionAuditingDatabase* db_ = nullptr;
+  raw_ptr<PermissionAuditingDatabase> db_ = nullptr;
 
   base::RepeatingTimer timer_;
 };

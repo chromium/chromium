@@ -27,15 +27,9 @@
 #include "third_party/blink/renderer/core/events/security_policy_violation_event.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_init.h"
+#include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 
 namespace blink {
-
-namespace {
-
-const char kEnforce[] = "enforce";
-const char kReport[] = "report";
-
-}  // namespace
 
 SecurityPolicyViolationEvent::SecurityPolicyViolationEvent(
     const AtomicString& type)
@@ -57,7 +51,8 @@ SecurityPolicyViolationEvent::SecurityPolicyViolationEvent(
     effective_directive_ = initializer->effectiveDirective();
   if (initializer->hasOriginalPolicy())
     original_policy_ = initializer->originalPolicy();
-  disposition_ = initializer->disposition() == kReport
+  disposition_ = initializer->disposition() ==
+                         securitypolicyviolation_disposition_names::kReport
                      ? network::mojom::ContentSecurityPolicyType::kReport
                      : network::mojom::ContentSecurityPolicyType::kEnforce;
   if (initializer->hasSourceFile())
@@ -73,12 +68,9 @@ SecurityPolicyViolationEvent::SecurityPolicyViolationEvent(
 }
 
 const String& SecurityPolicyViolationEvent::disposition() const {
-  DEFINE_STATIC_LOCAL(const String, enforce, (kEnforce));
-  DEFINE_STATIC_LOCAL(const String, report, (kReport));
-
   return disposition_ == network::mojom::ContentSecurityPolicyType::kReport
-             ? report
-             : enforce;
+             ? securitypolicyviolation_disposition_names::kReport
+             : securitypolicyviolation_disposition_names::kEnforce;
 }
 
 }  // namespace blink

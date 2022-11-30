@@ -1,0 +1,7 @@
+# Before adding any new dependencies, please check that they are already
+# included in *both* auction_worklet *and* shared_storage_worklet's DEPS or else
+# get approval from those OWNERS.
+include_rules = [
+  "+gin",
+  "+v8",
+]

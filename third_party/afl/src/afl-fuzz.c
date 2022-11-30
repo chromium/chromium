@@ -1409,12 +1409,12 @@ static void read_testcases(void) {
   struct dirent **nl;
   s32 nl_cnt;
   u32 i;
-  u8* fn;
+  u8* queue_fn;
 
   /* Auto-detect non-in-place resumption attempts. */
 
-  fn = alloc_printf("%s/queue", in_dir);
-  if (!access(fn, F_OK)) in_dir = fn; else ck_free(fn);
+  queue_fn = alloc_printf("%s/queue", in_dir);
+  if (!access(queue_fn, F_OK)) in_dir = queue_fn; else ck_free(queue_fn);
 
   ACTF("Scanning '%s'...", in_dir);
 
@@ -3652,17 +3652,17 @@ static void maybe_delete_out_dir(void) {
 
   if (f) {
 
-    u64 start_time, last_update;
+    u64 cur_start_time, last_update;
 
     if (fscanf(f, "start_time     : %llu\n"
-                  "last_update    : %llu\n", &start_time, &last_update) != 2)
+                  "last_update    : %llu\n", &cur_start_time, &last_update) != 2)
       FATAL("Malformed data in '%s'", fn);
 
     fclose(f);
 
     /* Let's see how much work is at stake. */
 
-    if (!in_place_resume && last_update - start_time > OUTPUT_GRACE * 60) {
+    if (!in_place_resume && last_update - cur_start_time > OUTPUT_GRACE * 60) {
 
       SAYF("\n" cLRD "[-] " cRST
            "The job output directory already exists and contains the results of more\n"

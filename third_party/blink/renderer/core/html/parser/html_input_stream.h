@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_INPUT_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_INPUT_STREAM_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -54,6 +53,8 @@ class HTMLInputStream {
 
  public:
   HTMLInputStream() : last_(&first_) {}
+  HTMLInputStream(const HTMLInputStream&) = delete;
+  HTMLInputStream& operator=(const HTMLInputStream&) = delete;
 
   void AppendToEnd(const SegmentedString& string) { last_->Append(string); }
 
@@ -78,6 +79,7 @@ class HTMLInputStream {
   void SplitInto(SegmentedString& next) {
     next = first_;
     first_ = SegmentedString();
+    first_.SetNextSegmentedString(&next);
     if (last_ == &first_) {
       // We used to only have one SegmentedString in the InputStream but now we
       // have two.  That means first_ is no longer also the last_ string,
@@ -88,6 +90,7 @@ class HTMLInputStream {
 
   void MergeFrom(SegmentedString& next) {
     first_.Append(next);
+    first_.SetNextSegmentedString(next.NextSegmentedString());
     if (last_ == &next) {
       // The string |next| used to be the last SegmentedString in
       // the InputStream.  Now that it's been merged into first_,
@@ -101,11 +104,18 @@ class HTMLInputStream {
     }
   }
 
+  unsigned length() const {
+    unsigned total_length = 0;
+    for (const auto* current = &first_; current;
+         current = current->NextSegmentedString()) {
+      total_length += current->length();
+    };
+    return total_length;
+  }
+
  private:
   SegmentedString first_;
   SegmentedString* last_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLInputStream);
 };
 
 class InsertionPointRecord {
@@ -122,6 +132,9 @@ class InsertionPointRecord {
     // HTML document.
     input_stream_->Current().SetCurrentPosition(line_, column_, 0);
   }
+
+  InsertionPointRecord(const InsertionPointRecord&) = delete;
+  InsertionPointRecord& operator=(const InsertionPointRecord&) = delete;
 
   ~InsertionPointRecord() {
     // Some inserted text may have remained in input stream. E.g. if script has
@@ -140,8 +153,6 @@ class InsertionPointRecord {
   SegmentedString next_;
   OrdinalNumber line_;
   OrdinalNumber column_;
-
-  DISALLOW_COPY_AND_ASSIGN(InsertionPointRecord);
 };
 
 }  // namespace blink

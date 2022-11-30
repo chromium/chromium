@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,21 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 class BuildState;
 
 // Observes the system UpdateEngineClient for updates that require a device
 // restart. Update information is pushed to the given BuildState as it happens.
-class InstalledVersionUpdater : public chromeos::UpdateEngineClient::Observer {
+class InstalledVersionUpdater : public ash::UpdateEngineClient::Observer {
  public:
   explicit InstalledVersionUpdater(BuildState* build_state);
   InstalledVersionUpdater(const InstalledVersionUpdater&) = delete;
   InstalledVersionUpdater& operator=(const InstalledVersionUpdater&) = delete;
   ~InstalledVersionUpdater() override;
 
-  // chromeos::UpdateEngineClient::Observer:
+  // ash::UpdateEngineClient::Observer:
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
  private:

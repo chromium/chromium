@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Renderer for {@link goog.ui.Button}s in App style. This
@@ -35,6 +27,7 @@ goog.require('goog.ui.style.app.ButtonRenderer');
  * @final
  */
 goog.ui.style.app.PrimaryActionButtonRenderer = function() {
+  'use strict';
   goog.ui.style.app.ButtonRenderer.call(this);
 };
 goog.inherits(
@@ -56,7 +49,7 @@ goog.ui.style.app.PrimaryActionButtonRenderer.CSS_CLASS =
  * Array of arrays of CSS classes that we want composite classes added and
  * removed for in IE6 and lower as a workaround for lack of multi-class CSS
  * selector support.
- * @type {Array<Array<string>>}
+ * @type {!Array<Array<string>>}
  */
 goog.ui.style.app.PrimaryActionButtonRenderer.IE6_CLASS_COMBINATIONS = [
   ['goog-button-base-disabled', 'goog-primaryactionbutton'],
@@ -68,6 +61,7 @@ goog.ui.style.app.PrimaryActionButtonRenderer.IE6_CLASS_COMBINATIONS = [
 /** @override */
 goog.ui.style.app.PrimaryActionButtonRenderer.prototype.getCssClass =
     function() {
+  'use strict';
   return goog.ui.style.app.PrimaryActionButtonRenderer.CSS_CLASS;
 };
 
@@ -75,6 +69,7 @@ goog.ui.style.app.PrimaryActionButtonRenderer.prototype.getCssClass =
 /** @override */
 goog.ui.style.app.PrimaryActionButtonRenderer.prototype
     .getIe6ClassCombinations = function() {
+  'use strict';
   return goog.ui.style.app.PrimaryActionButtonRenderer.IE6_CLASS_COMBINATIONS;
 };
 
@@ -83,6 +78,7 @@ goog.ui.style.app.PrimaryActionButtonRenderer.prototype
 // goog.ui.style.app.PrimaryActionButtonRenderer.
 goog.ui.registry.setDecoratorByClassName(
     goog.ui.style.app.PrimaryActionButtonRenderer.CSS_CLASS, function() {
+      'use strict';
       return new goog.ui.Button(
           null, goog.ui.style.app.PrimaryActionButtonRenderer.getInstance());
     });

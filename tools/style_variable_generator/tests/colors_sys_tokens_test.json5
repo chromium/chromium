@@ -1,0 +1,38 @@
+{
+  token_namespace: 'cros.sys',
+  options: {
+    ColorMappings: {
+      set_name: 'CrosSys'
+    },
+    proto: {
+      field_name: 'test_colors',
+      field_id: 2,
+    },
+  },
+  colors: {
+    /* Primary */
+    primary: {
+      light: '$cros.ref.primary50',
+      dark:  'rgba($black.rgb, 0.5)',
+    },
+    'on-primary': {
+      light: '$white',
+      dark:  '$cros.ref.primary50',
+    },
+    'primary-container': {
+      light: "rgba($cros.ref.primary50.rgb, 0.1)",
+      dark: "rgba($cros.ref.primary50.rgb, $cros.sys.disabled-opacity)",
+    },
+    'on-primary-container': {
+      light: "$white",
+      dark: "blend(rgba($white.rgb, 0.04), $cros.ref.primary50)",
+    },
+  },
+  opacities: {
+    'disabled-opacity': 0.38,
+    'reference-opacity': {
+        light: '$cros.sys.disabled-opacity',
+        dark: 1,
+    },
+  },
+}

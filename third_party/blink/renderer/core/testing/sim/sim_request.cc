@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,15 @@
 
 namespace blink {
 
-SimRequestBase::SimRequestBase(String url,
+SimRequestBase::SimRequestBase(KURL url,
                                String mime_type,
                                bool start_immediately,
                                Params params)
-    : url_(url),
+    : url_(std::move(url)),
       redirect_url_(params.redirect_url),
-      mime_type_(mime_type),
+      mime_type_(std::move(mime_type)),
       referrer_(params.referrer),
+      requestor_origin_(params.requestor_origin),
       start_immediately_(start_immediately),
       started_(false),
       client_(nullptr),
@@ -59,7 +60,7 @@ void SimRequestBase::UsedForNavigation(
 
 void SimRequestBase::StartInternal() {
   DCHECK(!started_);
-  DCHECK(redirect_url_.IsEmpty());  // client_ is nullptr on redirects
+  DCHECK(redirect_url_.empty());  // client_ is nullptr on redirects
   DCHECK(client_);
   started_ = true;
   client_->DidReceiveResponse(response_);
@@ -82,7 +83,7 @@ void SimRequestBase::WriteInternal(base::span<const char> data) {
   if (navigation_body_loader_)
     navigation_body_loader_->Write(data.data(), data.size());
   else
-    client_->DidReceiveData(data.data(), data.size());
+    client_->DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
 void SimRequestBase::Finish(bool body_loader_finished) {
@@ -112,7 +113,7 @@ void SimRequestBase::Complete(const String& data) {
     ServePending();
   if (!started_)
     StartInternal();
-  if (!data.IsEmpty())
+  if (!data.empty())
     Write(data);
   Finish();
 }
@@ -122,7 +123,7 @@ void SimRequestBase::Complete(const Vector<char>& data) {
     ServePending();
   if (!started_)
     StartInternal();
-  if (!data.IsEmpty())
+  if (!data.empty())
     Write(data);
   Finish();
 }
@@ -138,15 +139,29 @@ void SimRequestBase::ServePending() {
   SimNetwork::Current().ServePendingRequests();
 }
 
+SimRequest::SimRequest(KURL url, String mime_type, Params params)
+    : SimRequestBase(std::move(url),
+                     std::move(mime_type),
+                     /* start_immediately=*/true,
+                     params) {}
+
 SimRequest::SimRequest(String url, String mime_type, Params params)
-    : SimRequestBase(url, mime_type, true /* start_immediately */, params) {}
+    : SimRequest(KURL(url), std::move(mime_type), params) {}
 
 SimRequest::~SimRequest() = default;
+
+SimSubresourceRequest::SimSubresourceRequest(KURL url,
+                                             String mime_type,
+                                             Params params)
+    : SimRequestBase(std::move(url),
+                     std::move(mime_type),
+                     /* start_immediately=*/false,
+                     params) {}
 
 SimSubresourceRequest::SimSubresourceRequest(String url,
                                              String mime_type,
                                              Params params)
-    : SimRequestBase(url, mime_type, false /* start_immediately */, params) {}
+    : SimSubresourceRequest(KURL(url), std::move(mime_type), params) {}
 
 SimSubresourceRequest::~SimSubresourceRequest() = default;
 

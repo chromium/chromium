@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/captive_portal/content/captive_portal_service.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -11,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
-#include "components/captive_portal/core/captive_portal_metrics.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -20,7 +21,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -128,9 +129,8 @@ CaptivePortalService::CaptivePortalService(
   if (loader_factory_for_testing) {
     loader_factory = loader_factory_for_testing;
   } else {
-    shared_url_loader_factory_ =
-        content::BrowserContext::GetDefaultStoragePartition(browser_context)
-            ->GetURLLoaderFactoryForBrowserProcess();
+    shared_url_loader_factory_ = browser_context->GetDefaultStoragePartition()
+                                     ->GetURLLoaderFactoryForBrowserProcess();
     loader_factory = shared_url_loader_factory_.get();
   }
   captive_portal_detector_ =
@@ -153,8 +153,7 @@ CaptivePortalService::~CaptivePortalService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void CaptivePortalService::DetectCaptivePortal(
-    CaptivePortalProbeReason probe_reason) {
+void CaptivePortalService::DetectCaptivePortal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Detection should be disabled only in tests.
@@ -172,11 +171,10 @@ void CaptivePortalService::DetectCaptivePortal(
   check_captive_portal_timer_.Start(
       FROM_HERE, time_until_next_check,
       base::BindOnce(&CaptivePortalService::DetectCaptivePortalInternal,
-                     base::Unretained(this), probe_reason));
+                     base::Unretained(this)));
 }
 
-void CaptivePortalService::DetectCaptivePortalInternal(
-    CaptivePortalProbeReason probe_reason) {
+void CaptivePortalService::DetectCaptivePortalInternal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(state_ == STATE_TIMER_RUNNING || state_ == STATE_IDLE);
   DCHECK(!TimerRunning());
@@ -221,8 +219,6 @@ void CaptivePortalService::DetectCaptivePortalInternal(
           }
         })");
 
-  captive_portal::CaptivePortalMetrics::LogCaptivePortalProbeReason(
-      probe_reason);
   captive_portal_detector_->DetectCaptivePortal(
       test_url_,
       base::BindOnce(&CaptivePortalService::OnPortalDetectionCompleted,
@@ -297,8 +293,8 @@ void CaptivePortalService::ResetBackoffEntry(CaptivePortalResult result) {
         recheck_policy_.initial_backoff_no_portal_ms;
   }
 
-  backoff_entry_.reset(new net::BackoffEntry(&recheck_policy().backoff_policy,
-                                             tick_clock_for_testing_));
+  backoff_entry_ = std::make_unique<net::BackoffEntry>(
+      &recheck_policy().backoff_policy, tick_clock_for_testing_);
 }
 
 void CaptivePortalService::UpdateEnabledState() {
@@ -322,7 +318,7 @@ void CaptivePortalService::UpdateEnabledState() {
 
     // Since a captive portal request was queued or running, something may be
     // expecting to receive a captive portal result.
-    DetectCaptivePortal(CaptivePortalProbeReason::kUnspecified);
+    DetectCaptivePortal();
   }
 }
 

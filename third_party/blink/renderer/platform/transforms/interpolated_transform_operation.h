@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_INTERPOLATED_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_INTERPOLATED_TRANSFORM_OPERATION_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -50,12 +51,14 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
         new InterpolatedTransformOperation(from, to, starting_index, progress));
   }
 
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation&) const override;
+
  private:
   OperationType GetType() const override { return kInterpolated; }
 
-  bool operator==(const TransformOperation&) const override;
   void Apply(TransformationMatrix&,
-             const FloatSize& border_box_size) const override;
+             const gfx::SizeF& border_box_size) const override;
 
   scoped_refptr<TransformOperation> Accumulate(
       const TransformOperation&) override {

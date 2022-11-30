@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,38 +8,33 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/display_item_list.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 class DisplayItemList;
 class Layer;
 }  // namespace cc
 
-namespace gfx {
-class Vector2dF;
-}  // namespace gfx
-
 namespace blink {
 
 class PaintChunkSubset;
-class PropertyTreeManager;
 class PropertyTreeState;
 class RasterInvalidationTracking;
 
 struct RasterUnderInvalidationCheckingParams {
   RasterUnderInvalidationCheckingParams(RasterInvalidationTracking& tracking,
-                                        const IntRect& interest_rect,
+                                        const gfx::Rect& interest_rect,
                                         const String& debug_name)
       : tracking(tracking),
         interest_rect(interest_rect),
         debug_name(debug_name) {}
 
   RasterInvalidationTracking& tracking;
-  IntRect interest_rect;
+  gfx::Rect interest_rect;
   String debug_name;
 };
 
@@ -73,13 +68,16 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
       cc::DisplayItemList::UsageHint,
       RasterUnderInvalidationCheckingParams* = nullptr);
 
+  // Returns true if any selection was painted in the provided PaintChunkSubset.
+  static bool UpdateLayerSelection(cc::Layer& layer,
+                                   const PropertyTreeState& layer_state,
+                                   const PaintChunkSubset&,
+                                   cc::LayerSelection& layer_selection);
   static void UpdateLayerProperties(cc::Layer& layer,
                                     const PropertyTreeState& layer_state,
-                                    const PaintChunkSubset&,
-                                    cc::LayerSelection& layer_selection,
-                                    PropertyTreeManager* = nullptr);
+                                    const PaintChunkSubset&);
 };
 
 }  // namespace blink
 
-#endif  // PaintArtifactCompositor_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_CHUNKS_TO_CC_LAYER_H_

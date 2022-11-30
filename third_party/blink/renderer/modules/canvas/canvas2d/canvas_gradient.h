@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -43,20 +43,25 @@ class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
 
  public:
   // Linear Gradient
-  CanvasGradient(const FloatPoint& p0, const FloatPoint& p1);
+  CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1);
   // Radial Gradient
-  CanvasGradient(const FloatPoint& p0,
+  CanvasGradient(const gfx::PointF& p0,
                  float r0,
-                 const FloatPoint& p1,
+                 const gfx::PointF& p1,
                  float r1);
   // Conic Gradient
-  CanvasGradient(float startAngle, const FloatPoint& center);
+  CanvasGradient(float startAngle, const gfx::PointF& center);
 
   Gradient* GetGradient() const { return gradient_.get(); }
 
   void addColorStop(double value, const String& color, ExceptionState&);
 
   IdentifiableToken GetIdentifiableToken() const;
+
+  // Sets on internal IdentifiabilityStudyHelper.
+  void SetExecutionContext(ExecutionContext*);
+
+  void Trace(Visitor* visitor) const override;
 
  private:
   scoped_refptr<Gradient> gradient_;

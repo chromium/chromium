@@ -1,7 +1,23 @@
+# For changes to specific OS Settings sections in subfolders, prefer have
+# subfolder OWNERS review.
+
+# For changes to general OS Settings app, framework/infra changes, or anything
+# that does not have a more specific OWNERS, please select a "main" reviewer,
+# if none available, please select a "backup" reviewer.
+
+# Main reviewers
+wesokuhara@google.com
+xiaohuic@chromium.org
+
+# Backup reviewers
+cowmoo@chromium.org
 hsuregan@chromium.org
-jamescook@chromium.org
 jimmyxgong@chromium.org
+jonmann@chromium.org
 khorimoto@chromium.org
-michaelpg@chromium.org
-stevenjb@chromium.org
 zentaro@chromium.org
+
+# For APAC timezone build file related changes only.
+per-file BUILD.gn=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS
+per-file os_settings.gni=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS
+per-file os_settings.js=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS

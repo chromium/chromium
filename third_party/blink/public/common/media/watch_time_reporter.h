@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_codecs.h"
@@ -24,10 +24,6 @@
 #include "third_party/blink/public/common/media/watch_time_component.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
-
-namespace media {
-class WatchTimeReporterTest;
-}
 
 namespace blink {
 
@@ -92,6 +88,8 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
                     media::mojom::MediaMetricsProvider* provider,
                     scoped_refptr<base::SequencedTaskRunner> task_runner,
                     const base::TickClock* tick_clock = nullptr);
+  WatchTimeReporter(const WatchTimeReporter&) = delete;
+  WatchTimeReporter& operator=(const WatchTimeReporter&) = delete;
   ~WatchTimeReporter() override;
 
   // These methods are used to ensure that watch time is only reported for media
@@ -159,7 +157,7 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   void OnDurationChanged(base::TimeDelta duration);
 
  private:
-  friend class media::WatchTimeReporterTest;
+  friend class WatchTimeReporterTest;
 
   // Internal constructor for marking background status.
   WatchTimeReporter(media::mojom::PlaybackPropertiesPtr properties,
@@ -217,7 +215,7 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // The amount of time between each UpdateWatchTime(); this is the frequency by
   // which the watch times are updated. In the event of a process crash or kill
   // this is also the most amount of watch time that we might lose.
-  base::TimeDelta reporting_interval_ = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta reporting_interval_ = base::Seconds(5);
 
   base::RepeatingTimer reporting_timer_;
 
@@ -265,8 +263,6 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // Similar to the above, but for muted audio+video watch time. Configured as
   // an audio+video WatchTimeReporter with |is_muted_| set to true.
   std::unique_ptr<WatchTimeReporter> muted_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeReporter);
 };
 
 }  // namespace blink

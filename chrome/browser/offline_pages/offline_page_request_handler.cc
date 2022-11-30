@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,8 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -506,18 +505,18 @@ OfflinePageRequestHandler::GetNetworkState() const {
 }
 
 void OfflinePageRequestHandler::Start() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&OfflinePageRequestHandler::StartAsync,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void OfflinePageRequestHandler::StartAsync() {
   network_state_ = GetNetworkState();
   if (network_state_ == NetworkState::CONNECTED_NETWORK) {
     delegate_->FallbackToDefault();
     return;
   }
 
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&OfflinePageRequestHandler::StartAsync,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OfflinePageRequestHandler::StartAsync() {
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     GetPagesToServeURL(url_, offline_header_, network_state_,
                        delegate_->GetWebContentsGetter(),
@@ -603,11 +602,11 @@ void OfflinePageRequestHandler::OnTrustedOfflinePageFound() {
   if (IsProcessingFileUrlIntent()) {
     bool valid = net::FileURLToFilePath(offline_header_.intent_url, &file_path);
     DCHECK(valid);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   } else if (IsProcessingContentUrlIntent()) {
     file_path = base::FilePath(offline_header_.intent_url.spec());
     DCHECK(file_path.IsContentUri());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     file_path = GetCurrentOfflinePage().file_path;
   }
@@ -641,7 +640,7 @@ void OfflinePageRequestHandler::Redirect(const GURL& redirected_url) {
       "Non-Authoritative-Reason: offline redirects",
       // 302 is used to remove response bodies in order to
       // avoid leak when going online.
-      net::URLRequestRedirectJob::REDIRECT_302_FOUND,
+      net::RedirectUtil::ResponseCode::REDIRECT_302_FOUND,
       redirected_url.spec().c_str());
 
   fake_headers_for_redirect_ = base::MakeRefCounted<net::HttpResponseHeaders>(
@@ -677,8 +676,9 @@ OfflinePageRequestHandler::GetAccessEntryPoint() const {
   ui::PageTransition transition =
       static_cast<ui::PageTransition>(delegate_->GetPageTransition());
   if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK)) {
-    return PageTransitionGetQualifier(transition) ==
-                   static_cast<int>(ui::PAGE_TRANSITION_FROM_API)
+    return ui::PageTransitionTypeIncludingQualifiersIs(
+               PageTransitionGetQualifier(transition),
+               ui::PAGE_TRANSITION_FROM_API)
                ? AccessEntryPoint::CCT
                : AccessEntryPoint::LINK;
   } else if (ui::PageTransitionCoreTypeIs(transition,
@@ -723,14 +723,8 @@ void OfflinePageRequestHandler::OpenFile(
   if (!stream_)
     stream_ = std::make_unique<net::FileStream>(file_task_runner_);
 
-  int flags =
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC;
-#if defined(OS_ANDROID)
-  if (!file_path.IsContentUri())
-    flags |= base::File::FLAG_EXCLUSIVE_READ;
-#else
-  flags |= base::File::FLAG_EXCLUSIVE_READ;
-#endif  // defined(OS_ANDROID)
+  int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
+              base::File::FLAG_ASYNC | base::File::FLAG_WIN_EXCLUSIVE_READ;
   int result = stream_->Open(file_path, flags, callback);
   if (result != net::ERR_IO_PENDING)
     callback.Run(result);

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace chromeos {
 
@@ -17,6 +17,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
  public:
   explicit ImmersiveFullscreenControllerTestApi(
       ImmersiveFullscreenController* controller);
+
+  ImmersiveFullscreenControllerTestApi(
+      const ImmersiveFullscreenControllerTestApi&) = delete;
+  ImmersiveFullscreenControllerTestApi& operator=(
+      const ImmersiveFullscreenControllerTestApi&) = delete;
+
   ~ImmersiveFullscreenControllerTestApi();
 
   // Disables animations for any ImmersiveFullscreenControllers created while
@@ -24,10 +30,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
   class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) GlobalAnimationDisabler {
    public:
     GlobalAnimationDisabler();
-    ~GlobalAnimationDisabler();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(GlobalAnimationDisabler);
+    GlobalAnimationDisabler(const GlobalAnimationDisabler&) = delete;
+    GlobalAnimationDisabler& operator=(const GlobalAnimationDisabler&) = delete;
+
+    ~GlobalAnimationDisabler();
   };
 
   // Disables animations and moves the mouse so that it is not over the
@@ -37,9 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
   bool IsTopEdgeHoverTimerRunning() const;
 
  private:
-  ImmersiveFullscreenController* immersive_fullscreen_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveFullscreenControllerTestApi);
+  raw_ptr<ImmersiveFullscreenController> immersive_fullscreen_controller_;
 };
 
 }  // namespace chromeos

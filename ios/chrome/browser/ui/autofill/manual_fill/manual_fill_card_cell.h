@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@
 // and send the data to the delegate.
 @interface ManualFillCardCell : TableViewCell
 
-// Updates the cell with credit card and the |delegate| to be notified.
+// Updates the cell with credit card and the `delegate` to be notified.
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
             contentInjector:(id<ManualFillContentInjector>)contentInjector
          navigationDelegate:(id<CardListDelegate>)navigationDelegate;

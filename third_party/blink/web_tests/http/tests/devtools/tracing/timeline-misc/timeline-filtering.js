@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test filtering in Timeline Tree View panel.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -277,8 +277,8 @@
     }
   ];
 
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  const tabbedPane = UI.panels.timeline._flameChart._detailsView._tabbedPane;
+  var model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  const tabbedPane = UI.panels.timeline.flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.EventLog);
   const view = tabbedPane.visibleView;
 
@@ -291,7 +291,7 @@
   }
 
   async function dumpRecords() {
-    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(printEventMessage, view._currentTree);
+    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(printEventMessage, view.currentTree);
     TestRunner.addResult('');
   }
 
@@ -299,11 +299,11 @@
   await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'bar':`);
-  view._textFilterUI.setValue('bar', true);
+  view.textFilterUI.setValue('bar', true);
   await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'foo':`);
-  view._textFilterUI.setValue('foo', true);
+  view.textFilterUI.setValue('foo', true);
   await dumpRecords();
 
   TestRunner.completeTest();

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,17 @@
 #define ASH_KEYBOARD_VIRTUAL_KEYBOARD_CONTROLLER_H_
 
 #include <stdint.h>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/bluetooth_devices_observer.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/macros.h"
-#include "ui/base/ime/chromeos/ime_keyset.h"
+#include "ui/base/ime/ash/ime_keyset.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
+#include "ui/events/devices/touchscreen_device.h"
 
 namespace ash {
 
@@ -29,11 +31,16 @@ class ASH_EXPORT VirtualKeyboardController
       public SessionObserver {
  public:
   VirtualKeyboardController();
+
+  VirtualKeyboardController(const VirtualKeyboardController&) = delete;
+  VirtualKeyboardController& operator=(const VirtualKeyboardController&) =
+      delete;
+
   ~VirtualKeyboardController() override;
 
   // Force enable the keyboard and show it with the given keyset: none, emoji,
   // handwriting or voice. Works even in laptop mode.
-  void ForceShowKeyboardWithKeyset(chromeos::input_method::ImeKeyset keyset);
+  void ForceShowKeyboardWithKeyset(input_method::ImeKeyset keyset);
 
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
@@ -52,6 +59,18 @@ class ASH_EXPORT VirtualKeyboardController
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
+  const absl::optional<std::string>& GetInternalKeyboardName() const;
+
+  const std::vector<ui::InputDevice>& GetExternalKeyboards() const;
+
+  const std::vector<ui::TouchscreenDevice>& GetTouchscreens() const;
+
+  // Returns true if the device is in tablet mode, meaning the user does not
+  // have access to the internal keyboard.
+  bool IsInternalKeyboardIgnored() const;
+
+  bool IsExternalKeyboardIgnored() const;
+
  private:
   // Updates the list of active input devices.
   void UpdateDevices();
@@ -66,19 +85,20 @@ class ASH_EXPORT VirtualKeyboardController
   // bluetooth adapter or |device| changes.
   void OnBluetoothAdapterOrDeviceChanged(device::BluetoothDevice* device);
 
-  // True if an external keyboard is connected.
-  bool has_external_keyboard_;
   // True if an internal keyboard is connected.
-  bool has_internal_keyboard_;
-  // True if a touchscreen is connected.
-  bool has_touchscreen_;
+  absl::optional<std::string> internal_keyboard_name_;
+  // Contains any potential external keyboards (May contain imposter keyboards).
+  std::vector<ui::InputDevice> external_keyboards_;
+  // Contains all touch screens devices (both internal and external).
+  std::vector<ui::TouchscreenDevice> touchscreens_;
+
   // True if the presence of an external keyboard should be ignored.
   bool ignore_external_keyboard_;
+  // True if the presence of an internal keyboard should be ignored.
+  bool ignore_internal_keyboard_;
 
   // Observer to observe the bluetooth devices.
   std::unique_ptr<BluetoothDevicesObserver> bluetooth_devices_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardController);
 };
 
 }  // namespace ash

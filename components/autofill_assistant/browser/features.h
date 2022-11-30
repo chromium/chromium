@@ -1,28 +1,49 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FEATURES_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FEATURES_H_
 
-namespace base {
-struct Feature;
-}
+#include "base/feature_list.h"
 
 namespace autofill_assistant {
 namespace features {
 
 // All features in alphabetical order.
-extern const base::Feature kAutofillAssistant;
-extern const base::Feature kAutofillAssistantChromeEntry;
-extern const base::Feature kAutofillAssistantDialogOnboarding;
-extern const base::Feature kAutofillAssistantDirectActions;
-extern const base::Feature kAutofillAssistantDisableOnboardingFlow;
-extern const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB;
-extern const base::Feature kAutofillAssistantFeedbackChip;
-extern const base::Feature kAutofillAssistantLoadDFMForTriggerScripts;
-extern const base::Feature kAutofillAssistantProactiveHelp;
-extern const base::Feature kAutofillAssistantWithTabHelper;
+BASE_DECLARE_FEATURE(kAutofillAssistant);
+BASE_DECLARE_FEATURE(kAutofillAssistantAnnotateDom);
+BASE_DECLARE_FEATURE(kAutofillAssistantChromeEntry);
+BASE_DECLARE_FEATURE(kAutofillAssistantCudFilterProfiles);
+BASE_DECLARE_FEATURE(kAutofillAssistantDesktop);
+BASE_DECLARE_FEATURE(kAutofillAssistantDialogOnboarding);
+BASE_DECLARE_FEATURE(kAutofillAssistantDirectActions);
+BASE_DECLARE_FEATURE(kAutofillAssistantDisableProactiveHelpTiedToMSBB);
+BASE_DECLARE_FEATURE(kAutofillAssistantFeedbackChip);
+BASE_DECLARE_FEATURE(kAutofillAssistantFullJsFlowStackTraces);
+BASE_DECLARE_FEATURE(kAutofillAssistantFullJsSnippetStackTraces);
+BASE_DECLARE_FEATURE(kAutofillAssistantGetPaymentsClientToken);
+BASE_DECLARE_FEATURE(kAutofillAssistantGetTriggerScriptsByHashPrefix);
+BASE_DECLARE_FEATURE(kAutofillAssistantInCCTTriggering);
+BASE_DECLARE_FEATURE(kAutofillAssistantLoadDFMForTriggerScripts);
+BASE_DECLARE_FEATURE(kAutofillAssistantProactiveHelp);
+BASE_DECLARE_FEATURE(kAutofillAssistantRemoteAssistantUi);
+BASE_DECLARE_FEATURE(kAutofillAssistantSignGetActionsRequests);
+BASE_DECLARE_FEATURE(kAutofillAssistantSignGetNoRoundTripScriptsByHashRequests);
+BASE_DECLARE_FEATURE(kAutofillAssistantSendModelVersionInClientContext);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic1);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic2);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic3);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic4);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic5);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic6);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic7);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic8);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic9);
+BASE_DECLARE_FEATURE(kAutofillAssistantUseDidFinishNavigation);
+BASE_DECLARE_FEATURE(kAutofillAssistantVerifyGetActionsResponses);
+BASE_DECLARE_FEATURE(
+    kAutofillAssistantVerifyGetNoRoundTripScriptsByHashResponses);
 
 }  // namespace features
 }  // namespace autofill_assistant

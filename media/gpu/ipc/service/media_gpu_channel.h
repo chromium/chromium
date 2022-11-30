@@ -1,61 +1,42 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 #define MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "media/base/android_overlay_mojo_factory.h"
+#include "media/mojo/mojom/gpu_accelerated_video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
-
-namespace media {
-struct CreateVideoEncoderParams;
-}
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 
 namespace gpu {
+class CommandBufferStub;
 class GpuChannel;
 }
 
 namespace media {
 
-class MediaGpuChannelDispatchHelper;
-class MediaGpuChannelFilter;
-
-class MediaGpuChannel : public IPC::Listener, public IPC::Sender {
+class MediaGpuChannel {
  public:
   MediaGpuChannel(gpu::GpuChannel* channel,
-                  const base::UnguessableToken& channel_token,
                   const AndroidOverlayMojoFactoryCB& overlay_factory_cb);
-  ~MediaGpuChannel() override;
-
-  // IPC::Sender implementation:
-  bool Send(IPC::Message* msg) override;
+  MediaGpuChannel(const MediaGpuChannel&) = delete;
+  MediaGpuChannel& operator=(const MediaGpuChannel&) = delete;
+  ~MediaGpuChannel();
 
  private:
-  friend class MediaGpuChannelDispatchHelper;
+  void BindCommandBufferMediaReceiver(
+      gpu::CommandBufferStub* stub,
+      mojo::GenericPendingAssociatedReceiver receiver);
 
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& message) override;
-
-  // Message handlers.
-  void OnCreateVideoDecoder(int32_t command_buffer_route_id,
-                            const VideoDecodeAccelerator::Config& config,
-                            int32_t route_id,
-                            IPC::Message* reply_message);
-  void OnCreateVideoEncoder(int32_t command_buffer_route_id,
-                            const CreateVideoEncoderParams& params,
-                            IPC::Message* reply_message);
-
-  gpu::GpuChannel* const channel_;
-  scoped_refptr<MediaGpuChannelFilter> filter_;
+  const raw_ptr<gpu::GpuChannel> channel_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGpuChannel);
+  mojo::UniqueAssociatedReceiverSet<mojom::GpuAcceleratedVideoDecoderProvider>
+      accelerated_video_decoder_providers_;
 };
 
 }  // namespace media

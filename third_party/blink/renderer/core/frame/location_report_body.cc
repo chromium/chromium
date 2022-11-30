@@ -1,8 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 
 namespace blink {
@@ -10,10 +11,10 @@ namespace blink {
 // static
 LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
     const String& file,
-    base::Optional<uint32_t> line_number,
-    base::Optional<uint32_t> column_number) {
-  return file.IsEmpty() ? CreateReportLocation(SourceLocation::Capture())
-                        : ReportLocation{file, line_number, column_number};
+    absl::optional<uint32_t> line_number,
+    absl::optional<uint32_t> column_number) {
+  return file.empty() ? CreateReportLocation(CaptureSourceLocation())
+                      : ReportLocation{file, line_number, column_number};
 }
 
 // static
@@ -40,7 +41,7 @@ void LocationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
 }
 
 unsigned LocationReportBody::MatchId() const {
-  const base::Optional<uint32_t> line = lineNumber(), column = columnNumber();
+  const absl::optional<uint32_t> line = lineNumber(), column = columnNumber();
 
   unsigned hash = sourceFile().IsNull() ? 0 : sourceFile().Impl()->GetHash();
   hash = WTF::HashInts(hash,

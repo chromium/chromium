@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
@@ -49,29 +49,6 @@ int GetLazyImageLoadingViewportDistanceThresholdPx(const Document& document) {
       return settings->GetLazyImageLoadingDistanceThresholdPx3G();
     case WebEffectiveConnectionType::kType4G:
       return settings->GetLazyImageLoadingDistanceThresholdPx4G();
-  }
-  NOTREACHED();
-  return 0;
-}
-
-int GetFirstKFullyLoadCount(const Document& document) {
-  const Settings* settings = document.GetSettings();
-  if (!settings)
-    return 0;
-
-  switch (GetNetworkStateNotifier().EffectiveType()) {
-    case WebEffectiveConnectionType::kTypeOffline:
-      return 0;
-    case WebEffectiveConnectionType::kTypeUnknown:
-      return settings->GetLazyImageFirstKFullyLoadUnknown();
-    case WebEffectiveConnectionType::kTypeSlow2G:
-      return settings->GetLazyImageFirstKFullyLoadSlow2G();
-    case WebEffectiveConnectionType::kType2G:
-      return settings->GetLazyImageFirstKFullyLoad2G();
-    case WebEffectiveConnectionType::kType3G:
-      return settings->GetLazyImageFirstKFullyLoad3G();
-    case WebEffectiveConnectionType::kType4G:
-      return settings->GetLazyImageFirstKFullyLoad4G();
   }
   NOTREACHED();
   return 0;
@@ -108,7 +85,7 @@ void RecordVisibleLoadTimeForImage(
   base::TimeDelta visible_load_delay =
       visible_load_time_metrics.time_when_first_load_finished -
       visible_load_time_metrics.time_when_first_visible;
-  if (visible_load_delay < base::TimeDelta())
+  if (visible_load_delay.is_negative())
     visible_load_delay = base::TimeDelta();
 
   switch (GetNetworkStateNotifier().EffectiveType()) {
@@ -170,8 +147,7 @@ void RecordVisibleLoadTimeForImage(
 
 }  // namespace
 
-LazyLoadImageObserver::LazyLoadImageObserver(const Document& document)
-    : count_remaining_images_fully_loaded_(GetFirstKFullyLoadCount(document)) {}
+LazyLoadImageObserver::LazyLoadImageObserver(const Document& document) {}
 
 void LazyLoadImageObserver::StartMonitoringNearViewport(
     Document* root_document,
@@ -190,15 +166,6 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
   }
   lazy_load_intersection_observer_->observe(element);
 
-  if (deferral_message == DeferralMessage::kLoadEventsDeferred &&
-      !is_load_event_deferred_intervention_shown_) {
-    is_load_event_deferred_intervention_shown_ = true;
-    root_document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kIntervention,
-        mojom::ConsoleMessageLevel::kInfo,
-        "Images loaded lazily and replaced with placeholders. Load events are "
-        "deferred. See https://crbug.com/954323"));
-  }
   if (deferral_message == DeferralMessage::kMissingDimensionForLazy) {
     UseCounter::Count(root_document,
                       WebFeature::kLazyLoadImageMissingDimensionsForLazy);
@@ -206,12 +173,39 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
 }
 
 void LazyLoadImageObserver::StopMonitoring(Element* element) {
-  lazy_load_intersection_observer_->unobserve(element);
+  if (lazy_load_intersection_observer_) {
+    lazy_load_intersection_observer_->unobserve(element);
+  }
+}
+
+bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent() {
+  if (!lazy_load_intersection_observer_) {
+    return false;
+  }
+  bool resources_have_started_loading = false;
+  HeapVector<Member<Element>> to_be_unobserved;
+  for (const IntersectionObservation* observation :
+       lazy_load_intersection_observer_->Observations()) {
+    Element* element = observation->Target();
+    if (auto* image_element = DynamicTo<HTMLImageElement>(element)) {
+      const_cast<HTMLImageElement*>(image_element)
+          ->LoadDeferredImageBlockingLoad();
+      resources_have_started_loading = true;
+    }
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      style->LoadDeferredImages(element->GetDocument());
+      resources_have_started_loading = true;
+    }
+    to_be_unobserved.push_back(element);
+  }
+  for (Element* element : to_be_unobserved)
+    lazy_load_intersection_observer_->unobserve(element);
+  return resources_have_started_loading;
 }
 
 void LazyLoadImageObserver::LoadIfNearViewport(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
 
   for (auto entry : entries) {
     Element* element = entry->target();
@@ -287,7 +281,7 @@ void LazyLoadImageObserver::OnLoadFinished(HTMLImageElement* image_element) {
 
 void LazyLoadImageObserver::OnVisibilityChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
 
   for (auto entry : entries) {
     auto* image_element = DynamicTo<HTMLImageElement>(entry->target());
@@ -330,14 +324,6 @@ void LazyLoadImageObserver::OnVisibilityChanged(
 
     visibility_metrics_observer_->unobserve(image_element);
   }
-}
-
-bool LazyLoadImageObserver::IsFullyLoadableFirstKImageAndDecrementCount() {
-  if (count_remaining_images_fully_loaded_ > 0) {
-    count_remaining_images_fully_loaded_--;
-    return true;
-  }
-  return false;
 }
 
 void LazyLoadImageObserver::Trace(Visitor* visitor) const {

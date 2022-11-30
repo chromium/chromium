@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/active_media_session_controller.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
@@ -60,11 +60,11 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
   // Stop listening to any keys that are currently being watched, but aren't in
   // |actions|.
   for (const MediaSessionAction& action : actions_) {
-    base::Optional<ui::KeyboardCode> action_key_code =
+    absl::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
     if (!action_key_code.has_value())
       continue;
-    if (std::find(actions.begin(), actions.end(), action) == actions.end())
+    if (!base::Contains(actions, action))
       media_keys_listener_manager->StopWatchingMediaKey(*action_key_code, this);
   }
 
@@ -72,7 +72,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
   // to necessary media keys.
   actions_.clear();
   for (const MediaSessionAction& action : actions) {
-    base::Optional<ui::KeyboardCode> action_key_code =
+    absl::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
     if (action_key_code.has_value()) {
       // It's okay to call this even on keys we're already listening to, since
@@ -91,7 +91,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
 }
 
 void ActiveMediaSessionController::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   position_ = position;
 }
 
@@ -135,6 +135,10 @@ void ActiveMediaSessionController::OnPlayPause() {
 
 void ActiveMediaSessionController::OnStop() {
   MaybePerformAction(MediaSessionAction::kStop);
+}
+
+void ActiveMediaSessionController::OnSeek(const base::TimeDelta& time) {
+  media_controller_remote_->Seek(time);
 }
 
 void ActiveMediaSessionController::OnSeekTo(const base::TimeDelta& time) {
@@ -197,6 +201,8 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
+    case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
       NOTREACHED();
       return;
   }
@@ -224,7 +230,7 @@ MediaSessionAction ActiveMediaSessionController::KeyCodeToMediaSessionAction(
   }
 }
 
-base::Optional<ui::KeyboardCode>
+absl::optional<ui::KeyboardCode>
 ActiveMediaSessionController::MediaSessionActionToKeyCode(
     MediaSessionAction action) const {
   switch (action) {
@@ -248,7 +254,9 @@ ActiveMediaSessionController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
-      return base::nullopt;
+    case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
+      return absl::nullopt;
   }
 }
 

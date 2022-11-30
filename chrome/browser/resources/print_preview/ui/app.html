@@ -47,17 +47,16 @@
   </print-preview-preview-area>
 </div>
 <print-preview-sidebar id="sidebar"
-    cloud-print-error-message="[[cloudPrintErrorMessage_]]"
     destination-state="{{destinationState_}}"
     controls-managed="[[controlsManaged_]]" destination="{{destination_}}"
-    error="{{error_}}" is-pdf="[[documentSettings_.isPdf]]"
+    error="{{error_}}" is-pdf="[[!documentSettings_.isModifiable]]"
     page-count="[[documentSettings_.pageCount]]"
     settings="[[settings]]" state="[[state]]"
     max-sheets="[[maxSheets_]]" on-focus="onSidebarFocus_"
 <if expr="is_macosx">
     on-open-pdf-in-preview="onOpenPdfInPreview_"
 </if>
-<if expr="not chromeos">
+<if expr="not is_chromeos">
     on-print-with-system-dialog="onPrintWithSystemDialog_"
 </if>
     on-print-requested="onPrintRequested_"

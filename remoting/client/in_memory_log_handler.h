@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,15 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Class for capturing logs in memory before printing out.
 class InMemoryLogHandler {
  public:
+  InMemoryLogHandler() = delete;
+  InMemoryLogHandler(const InMemoryLogHandler&) = delete;
+  InMemoryLogHandler& operator=(const InMemoryLogHandler&) = delete;
+
   // Registers the log handler. This is not thread safe and should be called
   // exactly once in the main function.
   static void Register();
@@ -21,9 +23,6 @@ class InMemoryLogHandler {
   // Returns most recently captured logs (#lines <= kMaxNumberOfLogs) since the
   // app is launched. This must be called after Register() is called.
   static std::string GetInMemoryLogs();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InMemoryLogHandler);
 };
 
 }  // namespace remoting

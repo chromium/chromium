@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace gfx {
 static base::TimeDelta TotalTime(const MultiAnimation::Parts& parts) {
   return std::accumulate(parts.cbegin(), parts.cend(), base::TimeDelta(),
                          [](base::TimeDelta total, const auto& part) {
-                           return total + part.part_length;
+                           return total + part.length;
                          });
 }
 
@@ -24,41 +24,36 @@ constexpr base::TimeDelta MultiAnimation::kDefaultTimerInterval;
 
 MultiAnimation::MultiAnimation(const Parts& parts,
                                base::TimeDelta timer_interval)
-    : Animation(timer_interval),
-      parts_(parts),
-      cycle_time_(TotalTime(parts)),
-      current_value_(0),
-      current_part_index_(0),
-      continuous_(true) {
+    : Animation(timer_interval), parts_(parts), cycle_time_(TotalTime(parts)) {
   DCHECK(!parts_.empty());
-  for (const auto& part : parts)
-    DCHECK_GE(part.total_length - part.part_start, part.part_length);
 }
 
 MultiAnimation::~MultiAnimation() = default;
 
 double MultiAnimation::GetCurrentValue() const {
-  return current_value_;
+  const Part& current_part = parts_[current_part_index_];
+  return Tween::DoubleValueBetween(
+      Tween::CalculateValue(current_part.type, current_part_state_),
+      current_part.start_value, current_part.end_value);
 }
 
 void MultiAnimation::Step(base::TimeTicks time_now) {
-  double last_value = current_value_;
+  double last_value = GetCurrentValue();
   size_t last_index = current_part_index_;
 
   base::TimeDelta delta = time_now - start_time();
   bool should_stop = delta >= cycle_time_ && !continuous_;
   if (should_stop) {
     current_part_index_ = parts_.size() - 1;
-    current_value_ = Tween::CalculateValue(parts_[current_part_index_].type, 1);
+    current_part_state_ = 1.0;
   } else {
     delta %= cycle_time_;
     const Part& part = GetPart(&delta, &current_part_index_);
-    const double percent = (delta + part.part_start) / part.total_length;
-    DCHECK_LE(percent, 1);
-    current_value_ = Tween::CalculateValue(part.type, percent);
+    current_part_state_ = delta / part.length;
+    DCHECK_LE(current_part_state_, 1);
   }
 
-  if ((current_value_ != last_value || current_part_index_ != last_index) &&
+  if ((GetCurrentValue() != last_value || current_part_index_ != last_index) &&
       delegate()) {
     // Run AnimationProgressed() even if the animation will be stopped, so that
     // the animation runs its final frame.
@@ -70,7 +65,7 @@ void MultiAnimation::Step(base::TimeTicks time_now) {
 
 void MultiAnimation::SetStartTime(base::TimeTicks start_time) {
   Animation::SetStartTime(start_time);
-  current_value_ = 0;
+  current_part_state_ = 0.0;
   current_part_index_ = 0;
 }
 
@@ -79,12 +74,12 @@ const MultiAnimation::Part& MultiAnimation::GetPart(base::TimeDelta* time,
   DCHECK_LT(*time, cycle_time_);
 
   for (size_t i = 0; i < parts_.size(); ++i) {
-    if (*time < parts_[i].part_length) {
+    if (*time < parts_[i].length) {
       *part_index = i;
       return parts_[i];
     }
 
-    *time -= parts_[i].part_length;
+    *time -= parts_[i].length;
   }
   NOTREACHED();
   return parts_[0];

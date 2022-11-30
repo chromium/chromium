@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "remoting/protocol/third_party_authenticator_base.h"
+#include "remoting/protocol/token_validator.h"
 
-namespace remoting {
-namespace protocol {
-
-class TokenValidator;
+namespace remoting::protocol {
 
 // Implements the host side of the third party authentication mechanism.
 // The host authenticator sends the |token_url| and |scope| obtained from the
@@ -33,6 +30,11 @@ class ThirdPartyHostAuthenticator : public ThirdPartyAuthenticatorBase {
   ThirdPartyHostAuthenticator(
       const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
       std::unique_ptr<TokenValidator> token_validator);
+
+  ThirdPartyHostAuthenticator(const ThirdPartyHostAuthenticator&) = delete;
+  ThirdPartyHostAuthenticator& operator=(const ThirdPartyHostAuthenticator&) =
+      delete;
+
   ~ThirdPartyHostAuthenticator() override;
 
  protected:
@@ -42,17 +44,15 @@ class ThirdPartyHostAuthenticator : public ThirdPartyAuthenticatorBase {
   void AddTokenElements(jingle_xmpp::XmlElement* message) override;
 
  private:
-  void OnThirdPartyTokenValidated(const jingle_xmpp::XmlElement* message,
-                                  base::OnceClosure resume_callback,
-                                  const std::string& shared_secret);
+  void OnThirdPartyTokenValidated(
+      const jingle_xmpp::XmlElement* message,
+      base::OnceClosure resume_callback,
+      const TokenValidator::ValidationResult& validation_result);
 
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
   std::unique_ptr<TokenValidator> token_validator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyHostAuthenticator);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_THIRD_PARTY_HOST_AUTHENTICATOR_H_

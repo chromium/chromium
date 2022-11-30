@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,39 @@
 #define CHROME_BROWSER_ASH_LOGIN_PROFILE_AUTH_DATA_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/time/time.h"
+
+namespace base {
+class UnguessableToken;
+}
 
 namespace content {
 class StoragePartition;
 }
 
-namespace chromeos {
+namespace ash {
+
+// Delay for transferring the auth cache to the system profile.
+inline constexpr base::TimeDelta kAuthCacheTransferDelayMs =
+    base::Milliseconds(2000);
+
+// Timeout to delay first notification about offline state when authenticating
+// to a proxy.
+inline constexpr base::TimeDelta kProxyAuthTimeout = base::Seconds(5);
+
+// Transfers auth cache to system network context.
+void TransferHttpAuthCacheToSystemNetworkContext(
+    base::RepeatingClosure completion_callback,
+    const base::UnguessableToken& cache_key);
 
 // Helper class that transfers authentication-related data from a BrowserContext
 // used for authentication to the user's actual BrowserContext.
 class ProfileAuthData {
  public:
+  ProfileAuthData() = delete;
+  ProfileAuthData(const ProfileAuthData&) = delete;
+  ProfileAuthData& operator=(const ProfileAuthData&) = delete;
+
   // Transfers authentication-related data from `from_partition` to
   // `to_partition` and invokes `completion_callback` on the UI thread when the
   // operation has completed. The following data is transferred:
@@ -38,10 +59,15 @@ class ProfileAuthData {
                        bool transfer_saml_auth_cookies_on_subsequent_login,
                        base::OnceClosure completion_callback);
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProfileAuthData);
+  // Transfers proxy authentication state from `from_partition` to
+  // `to_partition` and and invokes `completion_callback` on the UI thread when
+  // the operation has completed.
+  static void TransferHttpAuthCacheProxyEntries(
+      base::RepeatingClosure completion_callback,
+      content::StoragePartition* from_partition,
+      content::StoragePartition* to_partition);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_PROFILE_AUTH_DATA_H_

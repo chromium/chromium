@@ -104,12 +104,22 @@ typedef enum {
     XPATH_BOOLEAN = 2,
     XPATH_NUMBER = 3,
     XPATH_STRING = 4,
+#ifdef LIBXML_XPTR_LOCS_ENABLED
     XPATH_POINT = 5,
     XPATH_RANGE = 6,
     XPATH_LOCATIONSET = 7,
+#endif
     XPATH_USERS = 8,
     XPATH_XSLT_TREE = 9  /* An XSLT value tree, non modifiable */
 } xmlXPathObjectType;
+
+#ifndef LIBXML_XPTR_LOCS_ENABLED
+/** DOC_DISABLE */
+#define XPATH_POINT 5
+#define XPATH_RANGE 6
+#define XPATH_LOCATIONSET 7
+/** DOC_ENABLE */
+#endif
 
 typedef struct _xmlXPathObject xmlXPathObject;
 typedef xmlXPathObject *xmlXPathObjectPtr;
@@ -549,6 +559,7 @@ XMLPUBFUN void XMLCALL
 		    xmlXPathFreeCompExpr	(xmlXPathCompExprPtr comp);
 #endif /* LIBXML_XPATH_ENABLED */
 #if defined(LIBXML_XPATH_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 		    xmlXPathInit		(void);
 XMLPUBFUN int XMLCALL

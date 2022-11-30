@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,11 +56,15 @@ D3D11VP9Accelerator::D3D11VP9Accelerator(
 D3D11VP9Accelerator::~D3D11VP9Accelerator() {}
 
 void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
+                                        D3D11Status error) {
+  RecordFailure(fail_type, error.message(), error.code());
+}
+
+void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
                                         const std::string& reason,
-                                        StatusCode code) {
+                                        D3D11Status::Codes code) {
   MEDIA_LOG(ERROR, media_log_)
       << "DX11VP9Failure(" << fail_type << ")=" << reason;
-  base::UmaHistogramSparse("Media.D3D11.VP9Status", static_cast<int>(code));
 }
 
 scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
@@ -75,20 +79,29 @@ bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
   if (is_encrypted) {
     RecordFailure("crypto_config",
                   "Cannot find the decrypt context for the frame.",
-                  StatusCode::kCryptoConfigFailed);
+                  D3D11Status::Codes::kCryptoConfigFailed);
     return false;
   }
 
   HRESULT hr;
   do {
-    hr = video_context_->DecoderBeginFrame(
-        video_decoder_.Get(), pic.picture_buffer()->output_view().Get(), 0,
-        nullptr);
+    ID3D11VideoDecoderOutputView* output_view = nullptr;
+    auto result = pic.picture_buffer()->AcquireOutputView();
+    if (result.has_value()) {
+      output_view = std::move(result).value();
+    } else {
+      D3D11Status error = std::move(result).error();
+      RecordFailure("AcquireOutputView", error.message(), error.code());
+      return false;
+    }
+
+    hr = video_context_->DecoderBeginFrame(video_decoder_.Get(), output_view, 0,
+                                           nullptr);
   } while (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING);
 
   if (FAILED(hr)) {
     RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr),
-                  StatusCode::kDecoderBeginFrameFailed);
+                  D3D11Status::Codes::kDecoderBeginFrameFailed);
     return false;
   }
 
@@ -153,7 +166,7 @@ void D3D11VP9Accelerator::CopyReferenceFrames(
   D3D11_TEXTURE2D_DESC texture_descriptor;
   pic.picture_buffer()->Texture()->GetDesc(&texture_descriptor);
 
-  for (size_t i = 0; i < base::size(pic_params->ref_frame_map); i++) {
+  for (size_t i = 0; i < std::size(pic_params->ref_frame_map); i++) {
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
       scoped_refptr<D3D11VP9Picture> our_ref_pic(
@@ -171,12 +184,12 @@ void D3D11VP9Accelerator::CopyReferenceFrames(
 
 void D3D11VP9Accelerator::CopyFrameRefs(DXVA_PicParams_VP9* pic_params,
                                         const D3D11VP9Picture& pic) {
-  for (size_t i = 0; i < base::size(pic_params->frame_refs); i++) {
+  for (size_t i = 0; i < std::size(pic_params->frame_refs); i++) {
     pic_params->frame_refs[i] =
         pic_params->ref_frame_map[pic.frame_hdr->ref_frame_idx[i]];
   }
 
-  for (size_t i = 0; i < base::size(pic_params->ref_frame_sign_bias); i++) {
+  for (size_t i = 0; i < std::size(pic_params->ref_frame_sign_bias); i++) {
     pic_params->ref_frame_sign_bias[i] = pic.frame_hdr->ref_frame_sign_bias[i];
   }
 }
@@ -191,17 +204,17 @@ void D3D11VP9Accelerator::CopyLoopFilterParams(
   SET_PARAM(mode_ref_delta_update, delta_update);
 #undef SET_PARAM
 
-  // base::size(...) doesn't work well in an array initializer.
-  DCHECK_EQ(4lu, base::size(pic_params->ref_deltas));
-  for (size_t i = 0; i < base::size(pic_params->ref_deltas); i++) {
+  // std::size(...) doesn't work well in an array initializer.
+  DCHECK_EQ(4lu, std::size(pic_params->ref_deltas));
+  for (size_t i = 0; i < std::size(pic_params->ref_deltas); i++) {
     // The update_ref_deltas[i] is _only_ for parsing! it allows omission of the
     // 6 bytes that would otherwise be needed for a new value to overwrite the
     // global one. It has nothing to do with setting the ref_deltas here.
     pic_params->ref_deltas[i] = loop_filter_params.ref_deltas[i];
   }
 
-  DCHECK_EQ(2lu, base::size(pic_params->mode_deltas));
-  for (size_t i = 0; i < base::size(pic_params->mode_deltas); i++) {
+  DCHECK_EQ(2lu, std::size(pic_params->mode_deltas));
+  for (size_t i = 0; i < std::size(pic_params->mode_deltas); i++) {
     pic_params->mode_deltas[i] = loop_filter_params.mode_deltas[i];
   }
 }
@@ -226,11 +239,11 @@ void D3D11VP9Accelerator::CopySegmentationParams(
   COPY_PARAM(temporal_update);
   SET_PARAM(abs_delta, abs_or_delta_update);
 
-  for (size_t i = 0; i < base::size(segmentation_params.tree_probs); i++) {
+  for (size_t i = 0; i < std::size(segmentation_params.tree_probs); i++) {
     COPY_PARAM(tree_probs[i]);
   }
 
-  for (size_t i = 0; i < base::size(segmentation_params.pred_probs); i++) {
+  for (size_t i = 0; i < std::size(segmentation_params.pred_probs); i++) {
     COPY_PARAM(pred_probs[i]);
   }
 
@@ -273,15 +286,15 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
   void* buffer;
 
   GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS,
-             StatusCode::kGetPicParamBufferFailed);
+             D3D11Status::Codes::kGetPicParamBufferFailed);
   memcpy(buffer, &pic_params, sizeof(pic_params));
   RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS,
-                 StatusCode::kReleasePicParamBufferFailed);
+                 D3D11Status::Codes::kReleasePicParamBufferFailed);
 
   size_t buffer_offset = 0;
   while (buffer_offset < pic.frame_hdr->frame_size) {
     GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM,
-               StatusCode::kGetBitstreamBufferFailed);
+               D3D11Status::Codes::kGetBitstreamBufferFailed);
     size_t copy_size = pic.frame_hdr->frame_size - buffer_offset;
     bool contains_end = true;
     if (copy_size > buffer_size) {
@@ -290,12 +303,12 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     }
     memcpy(buffer, pic.frame_hdr->data + buffer_offset, copy_size);
     RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM,
-                   StatusCode::kReleaseBitstreamBufferFailed);
+                   D3D11Status::Codes::kReleaseBitstreamBufferFailed);
 
     DXVA_Slice_VPx_Short slice_info;
 
     GET_BUFFER(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL,
-               StatusCode::kGetSliceControlBufferFailed);
+               D3D11Status::Codes::kGetSliceControlBufferFailed);
     slice_info.BSNALunitDataLocation = 0;
     slice_info.SliceBytesInBuffer = (UINT)copy_size;
 
@@ -312,7 +325,7 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
 
     memcpy(buffer, &slice_info, sizeof(slice_info));
     RELEASE_BUFFER(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL,
-                   StatusCode::kReleaseSliceControlBufferFailed);
+                   D3D11Status::Codes::kReleaseSliceControlBufferFailed);
 
     constexpr int buffers_count = 3;
     VideoContextWrapper::VideoBufferWrapper buffers[buffers_count] = {};
@@ -341,7 +354,7 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
     RETURN_ON_HR_FAILURE(SubmitDecoderBuffers,
                          video_context_->SubmitDecoderBuffers(
                              video_decoder_.Get(), buffers_count, buffers),
-                         StatusCode::kSubmitDecoderBuffersFailed);
+                         D3D11Status::Codes::kSubmitDecoderBuffersFailed);
     buffer_offset += copy_size;
   }
 
@@ -376,7 +389,7 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
   HRESULT hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (FAILED(hr)) {
     RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr),
-                  StatusCode::kDecoderEndFrameFailed);
+                  D3D11Status::Codes::kDecoderEndFrameFailed);
     return DecodeStatus::kFail;
   }
 
@@ -390,7 +403,7 @@ bool D3D11VP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> picture) {
   return client_->OutputResult(picture.get(), pic->picture_buffer());
 }
 
-bool D3D11VP9Accelerator::IsFrameContextRequired() const {
+bool D3D11VP9Accelerator::NeedsCompressedHeaderParsed() const {
   return false;
 }
 

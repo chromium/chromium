@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/test_inmemory_strike_database.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -23,8 +24,14 @@ namespace autofill {
 class TestPersonalDataManager : public PersonalDataManager {
  public:
   TestPersonalDataManager();
+
+  TestPersonalDataManager(const TestPersonalDataManager&) = delete;
+  TestPersonalDataManager& operator=(const TestPersonalDataManager&) = delete;
+
   ~TestPersonalDataManager() override;
 
+  using PersonalDataManager::GetProfileSaveStrikeDatabase;
+  using PersonalDataManager::GetProfileUpdateStrikeDatabase;
   using PersonalDataManager::SetPrefService;
 
   // PersonalDataManager overrides.  These functions are overridden as needed
@@ -52,6 +59,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void LoadProfiles() override;
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
+  void LoadIBANs() override;
   void LoadUpiIds() override;
   bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
@@ -64,6 +72,10 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabled() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
+  const AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase()
+      const override;
+  const AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase()
+      const override;
 
   // Unique to TestPersonalDataManager:
 
@@ -93,7 +105,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void AddCloudTokenData(const CreditCardCloudTokenData& cloud_token_data);
 
   // Adds offer data to |autofill_offer_data_|.
-  void AddCreditCardOfferData(const AutofillOfferData& offer_data);
+  void AddAutofillOfferData(const AutofillOfferData& offer_data);
 
   // Sets a local/server card's nickname based on the provided |guid|.
   void SetNicknameForCardWithGUID(const char* guid,
@@ -147,22 +159,28 @@ class TestPersonalDataManager : public PersonalDataManager {
     account_info_ = account_info;
   }
 
+  void ClearCreditCardArtImages() { credit_card_art_images_.clear(); }
+
  private:
   std::string timezone_country_code_;
   std::string default_country_code_;
   int num_times_save_imported_profile_called_ = 0;
   int num_times_save_imported_credit_card_called_ = 0;
   int num_times_save_upi_id_called_ = 0;
-  base::Optional<bool> autofill_profile_enabled_;
-  base::Optional<bool> autofill_credit_card_enabled_;
-  base::Optional<bool> autofill_wallet_import_enabled_;
+  absl::optional<bool> autofill_profile_enabled_;
+  absl::optional<bool> autofill_credit_card_enabled_;
+  absl::optional<bool> autofill_wallet_import_enabled_;
   bool sync_feature_enabled_ = false;
   AutofillSyncSigninState sync_and_signin_state_ =
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   bool sync_service_initialized_ = false;
   CoreAccountInfo account_info_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestPersonalDataManager);
+  TestInMemoryStrikeDatabase inmemory_strike_database_;
+  AutofillProfileSaveStrikeDatabase inmemory_profile_save_strike_database_{
+      &inmemory_strike_database_};
+  AutofillProfileUpdateStrikeDatabase inmemory_profile_update_strike_database_{
+      &inmemory_strike_database_};
 };
 
 }  // namespace autofill

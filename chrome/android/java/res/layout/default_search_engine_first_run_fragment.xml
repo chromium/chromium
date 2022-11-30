@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2017 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <!-- Layout used to present a set of default search engines to the user. -->
@@ -9,7 +10,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/signin_body_background"
+    android:background="@macro/signin_body_background"
     android:contentDescription="@string/search_engine_dialog_title"
     android:orientation="vertical" >
 
@@ -40,7 +41,7 @@
                     android:paddingStart="@dimen/signin_chooser_padding"
                     android:paddingEnd="@dimen/signin_chooser_padding"
                     android:paddingBottom="@dimen/signin_chooser_padding"
-                    android:background="@color/signin_head_background"
+                    android:background="@macro/signin_head_background"
                     android:importantForAccessibility="no"
                     android:textAppearance="@style/TextAppearance.Headline.Primary"
                     android:text="@string/search_engine_dialog_title" />
@@ -74,8 +75,6 @@
         android:layout_marginBottom="10dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="22dp"
-        android:paddingStart="@dimen/fre_button_padding"
-        android:paddingEnd="@dimen/fre_button_padding"
         android:text="@string/ok"
         style="@style/FilledButton.Flat" />
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 const char kSignInPromoQueryKeyShowAccountManagement[] =
     "showAccountManagement";
@@ -41,6 +42,17 @@ const char kSignInPromoQueryKeyShowAccountManagement[] =
 InlineLoginHandler::InlineLoginHandler() = default;
 
 InlineLoginHandler::~InlineLoginHandler() = default;
+
+InlineLoginHandler::CompleteLoginParams::CompleteLoginParams() = default;
+
+InlineLoginHandler::CompleteLoginParams::CompleteLoginParams(
+    const InlineLoginHandler::CompleteLoginParams&) = default;
+
+InlineLoginHandler::CompleteLoginParams&
+InlineLoginHandler::CompleteLoginParams::operator=(
+    const InlineLoginHandler::CompleteLoginParams&) = default;
+
+InlineLoginHandler::CompleteLoginParams::~CompleteLoginParams() = default;
 
 void InlineLoginHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -68,13 +80,14 @@ void InlineLoginHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
+void InlineLoginHandler::HandleInitializeMessage(
+    const base::Value::List& args) {
   AllowJavascript();
   content::WebContents* contents = web_ui()->GetWebContents();
   content::StoragePartition* partition =
       signin::GetSigninPartition(contents->GetBrowserContext());
   if (partition) {
-    const GURL& current_url = web_ui()->GetWebContents()->GetURL();
+    const GURL& current_url = web_ui()->GetWebContents()->GetLastCommittedURL();
 
     // If the kSignInPromoQueryKeyForceKeepData param is missing, or if it is
     // present and its value is zero, this means we don't want to keep the
@@ -86,8 +99,8 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
         value == "0") {
       partition->ClearData(
           content::StoragePartition::REMOVE_DATA_MASK_ALL,
-          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-          base::Time(), base::Time::Max(),
+          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+          blink::StorageKey(), base::Time(), base::Time::Max(),
           base::BindOnce(&InlineLoginHandler::ContinueHandleInitializeMessage,
                          weak_ptr_factory_.GetWeakPtr()));
     } else {
@@ -97,36 +110,34 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
 }
 
 void InlineLoginHandler::ContinueHandleInitializeMessage() {
-  base::DictionaryValue params;
+  base::Value::Dict params;
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  params.SetString("hl", app_locale);
+  params.Set("hl", app_locale);
   GaiaUrls* gaiaUrls = GaiaUrls::GetInstance();
-  params.SetString("gaiaUrl", gaiaUrls->gaia_url().spec());
-  params.SetInteger("authMode", InlineLoginHandler::kDesktopAuthMode);
+  params.Set("gaiaUrl", gaiaUrls->gaia_url().spec());
+  params.Set("authMode", InlineLoginHandler::kDesktopAuthMode);
 
-  const GURL& current_url = web_ui()->GetWebContents()->GetURL();
+  const GURL& current_url = web_ui()->GetWebContents()->GetLastCommittedURL();
   signin_metrics::AccessPoint access_point =
       signin::GetAccessPointForEmbeddedPromoURL(current_url);
   signin_metrics::Reason reason =
       signin::GetSigninReasonForEmbeddedPromoURL(current_url);
 
-  if (reason != signin_metrics::Reason::REASON_REAUTHENTICATION &&
-      reason != signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT) {
+  if (reason != signin_metrics::Reason::kReauthentication &&
+      reason != signin_metrics::Reason::kAddSecondaryAccount) {
     signin_metrics::LogSigninAccessPointStarted(
         access_point,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-    signin_metrics::RecordSigninUserActionForAccessPoint(
-        access_point,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+    signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
-    params.SetBoolean("isLoginPrimaryAccount", true);
+    params.Set("isLoginPrimaryAccount", true);
   }
 
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string default_email;
-  if (reason == signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT ||
-      reason == signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT) {
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
+      reason == signin_metrics::Reason::kForcedSigninPrimaryAccount) {
     default_email =
         profile->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
   } else {
@@ -134,24 +145,24 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
       default_email.clear();
   }
   if (!default_email.empty())
-    params.SetString("email", default_email);
+    params.Set("email", default_email);
 
   // The legacy full-tab Chrome sign-in page is no longer used as it was relying
   // on exchanging cookies for refresh tokens and that endpoint is no longer
   // supported.
-  params.SetString("constrained", "1");
+  params.Set("constrained", "1");
 
   // TODO(rogerta): this needs to be passed on to gaia somehow.
   std::string read_only_email;
   net::GetValueForKeyInQuery(current_url, "readOnlyEmail", &read_only_email);
-  params.SetBoolean("readOnlyEmail", !read_only_email.empty());
+  params.Set("readOnlyEmail", !read_only_email.empty());
 
   SetExtraInitParams(params);
   FireWebUIListener("load-auth-extension", params);
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // When the network service is enabled, the webRequest API doesn't expose
   // cookie headers. So manually fetch the cookies for the GAIA URL from the
   // CookieManager.
@@ -162,47 +173,42 @@ void InlineLoginHandler::HandleCompleteLoginMessage(
   partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(),
       net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(&InlineLoginHandler::HandleCompleteLoginMessageWithCookies,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::ListValue(args->GetList())));
+                     weak_ptr_factory_.GetWeakPtr(), args.Clone()));
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
-    const base::ListValue& args,
+    const base::Value::List& args,
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  const base::Value& dict = args.GetList()[0];
+  const base::Value& dict = args[0];
 
-  const std::string& email = dict.FindKey("email")->GetString();
-  const std::string& password = dict.FindKey("password")->GetString();
-  const std::string& gaia_id = dict.FindKey("gaiaId")->GetString();
+  CompleteLoginParams params;
+  params.email = dict.FindKey("email")->GetString();
+  params.password = dict.FindKey("password")->GetString();
+  params.gaia_id = dict.FindKey("gaiaId")->GetString();
 
-  std::string auth_code;
   for (const auto& cookie_with_access_result : cookies) {
     if (cookie_with_access_result.cookie.Name() == "oauth_code")
-      auth_code = cookie_with_access_result.cookie.Value();
+      params.auth_code = cookie_with_access_result.cookie.Value();
   }
 
-  bool skip_for_now = dict.FindBoolKey("skipForNow").value_or(false);
-  base::Optional<bool> trusted = dict.FindBoolKey("trusted");
-  bool trusted_value = trusted.value_or(false);
-  bool trusted_found = trusted.has_value();
+  params.skip_for_now = dict.FindBoolKey("skipForNow").value_or(false);
+  absl::optional<bool> trusted = dict.FindBoolKey("trusted");
+  params.trusted_value = trusted.value_or(false);
+  params.trusted_found = trusted.has_value();
 
-  bool choose_what_to_sync =
+  params.choose_what_to_sync =
       dict.FindBoolKey("chooseWhatToSync").value_or(false);
+  params.is_available_in_arc =
+      dict.FindBoolKey("isAvailableInArc").value_or(false);
 
-  base::Value edu_login_params;
-  if (args.GetList().size() > 1) {
-    edu_login_params = args.GetList()[1].Clone();
-  }
-
-  CompleteLogin(email, password, gaia_id, auth_code, skip_for_now,
-                trusted_value, trusted_found, choose_what_to_sync,
-                std::move(edu_login_params));
+  CompleteLogin(params);
 }
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   if (browser) {
@@ -210,11 +216,12 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
     return;
   }
 
-  std::string url_str;
-  CHECK(args->GetString(0, &url_str));
+  // Note: URL string is expected to be in the first argument,
+  // but it is not used.
+  CHECK(args[0].is_string());
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  GURL main_frame_url(web_ui()->GetWebContents()->GetURL());
+  GURL main_frame_url(web_ui()->GetWebContents()->GetLastCommittedURL());
 
   // Adds extra parameters to the signin URL so that Chrome will close the tab
   // and show the account management view of the avatar menu upon completion.
@@ -232,7 +239,7 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
   CloseDialogFromJavascript();
 }
 
-void InlineLoginHandler::HandleDialogClose(const base::ListValue* args) {
+void InlineLoginHandler::HandleDialogClose(const base::Value::List& args) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Does nothing if profile picker is not showing.
   ProfilePickerForceSigninDialog::HideDialog();

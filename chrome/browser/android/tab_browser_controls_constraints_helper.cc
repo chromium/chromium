@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,8 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
 
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
-  web_contents->GetMainFrame()->UpdateBrowserControlsState(
-      constraints_state, current_state, animate);
+  web_contents->UpdateBrowserControlsState(constraints_state, current_state,
+                                           animate);
 }
 
 static jlong JNI_TabBrowserControlsConstraintsHelper_Init(

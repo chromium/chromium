@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -27,7 +28,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_state/core/security_state.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -35,7 +36,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "components/sync/test/fake_server/fake_server_network_resources.h"
+#include "components/sync/test/fake_server_network_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -61,34 +62,23 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
  public:
   ChromePasswordProtectionServiceSyncBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
+  ChromePasswordProtectionServiceSyncBrowserTest(
+      const ChromePasswordProtectionServiceSyncBrowserTest&) = delete;
+  ChromePasswordProtectionServiceSyncBrowserTest& operator=(
+      const ChromePasswordProtectionServiceSyncBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    syncer::ProfileSyncService* sync_service =
-        ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
-            browser()->profile());
-
-    sync_service->OverrideNetworkForTest(
-        fake_server::CreateFakeServerHttpPostProviderFactory(
-            GetFakeServer()->AsWeakPtr()));
-
-    std::string username;
-    if (username.empty()) {
-      username = "user@example.com";
-    }
-
-    std::unique_ptr<ProfileSyncServiceHarness> harness =
-        ProfileSyncServiceHarness::Create(
-            browser()->profile(), username, "password",
-            ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN);
+    ASSERT_TRUE(SetupClients());
 
     // Sign the profile in.
-    ASSERT_TRUE(harness->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
-        IdentityManagerFactory::GetForProfile(browser()->profile())
+        IdentityManagerFactory::GetForProfile(GetProfile(0))
             ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
@@ -97,29 +87,27 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
     account_info.email = current_info.email;
     account_info.hosted_domain = "domain.com";
     signin::UpdateAccountInfoForAccount(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        account_info);
+        IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
-    ASSERT_TRUE(harness->SetupSync());
+    ASSERT_TRUE(GetClient(0)->SetupSync());
   }
 
   safe_browsing::ChromePasswordProtectionService* GetService(
       bool is_incognito) {
     return ChromePasswordProtectionService::GetPasswordProtectionService(
-        is_incognito ? browser()->profile()->GetPrimaryOTRProfile()
-                     : browser()->profile());
+        is_incognito ? GetProfile(0)->GetPrimaryOTRProfile(
+                           /*create_if_needed=*/true)
+                     : GetProfile(0));
   }
 
   void ConfigureEnterprisePasswordProtection(
       PasswordProtectionTrigger trigger_type) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    GetProfile(0)->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger, trigger_type);
-    browser()->profile()->GetPrefs()->SetString(
+    GetProfile(0)->GetPrefs()->SetString(
         prefs::kPasswordProtectionChangePasswordURL,
         embedded_test_server()->GetURL(kChangePasswordUrl).spec());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePasswordProtectionServiceSyncBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
@@ -127,12 +115,13 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
   ConfigureEnterprisePasswordProtection(
       PasswordProtectionTrigger::PASSWORD_REUSE);
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  chrome::NewTab(GetBrowser(0));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      GetBrowser(0), embedded_test_server()->GetURL(kLoginPageUrl)));
   base::HistogramTester histograms;
   // Shows interstitial on current web_contents.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
   safe_browsing::ReusedPasswordAccountType reused_password_account_type;
   reused_password_account_type.set_account_type(
       safe_browsing::ReusedPasswordAccountType::GSUITE);
@@ -141,16 +130,14 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
       reused_password_account_type);
   service->ShowInterstitial(web_contents, reused_password_account_type);
   content::WebContents* interstitial_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(interstitial_web_contents,
                                            /*number_of_navigations=*/1);
   observer.Wait();
   // chrome://reset-password page should be opened in a new foreground tab.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, GetBrowser(0)->tab_strip_model()->count());
   ASSERT_EQ(GURL(chrome::kChromeUIResetPasswordURL),
             interstitial_web_contents->GetVisibleURL());
-  EXPECT_THAT(histograms.GetAllSamples("PasswordProtection.InterstitialString"),
-              testing::ElementsAre(base::Bucket(3, 1)));
 
   // Clicks on "Reset Password" button.
   std::string script =
@@ -160,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
   content::TestNavigationObserver observer1(interstitial_web_contents,
                                             /*number_of_navigations=*/1);
   observer1.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(browser()
+  EXPECT_EQ(2, GetBrowser(0)->tab_strip_model()->count());
+  EXPECT_EQ(GetBrowser(0)
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL(),

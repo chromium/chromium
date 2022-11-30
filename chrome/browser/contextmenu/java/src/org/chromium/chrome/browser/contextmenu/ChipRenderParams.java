@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,9 @@ public class ChipRenderParams {
     // The type of chip to render. Defined to differentiate the chip being rendered to the user
     // based on asynchronous calls.
     public @ChipType int chipType;
+
+    // Indicates whether the chip remove icon should be hidden.
+    public boolean isRemoveIconHidden;
 
     /**
      * Defines the types of chips that can be rendered.

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="ColorOverlay.BrowserUi" parent="ColorOverlay.BrowserUi.DayNight">
+        <!-- Adaptive attributes -->
+        <item name="android:colorBackground">@color/baseline_neutral_900</item>
+        <item name="colorError">@color/baseline_error_200</item>
+        <item name="colorOnBackground">@color/baseline_neutral_100</item>
+        <item name="colorOnPrimary">@color/baseline_primary_800</item>
+        <item name="colorOnSurface">@color/baseline_neutral_100</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_800</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
+        <item name="colorPrimary">@color/baseline_primary_200</item>
+        <item name="colorSurface">@color/baseline_neutral_900</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
+
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
+        <item name="elevationOverlayEnabled">true</item>
+    </style>
+</resources>

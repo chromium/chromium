@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -26,6 +26,11 @@ class MockZwpLinuxDmabufV1;
 class TestZwpLinuxBufferParamsV1 : public ServerObject {
  public:
   explicit TestZwpLinuxBufferParamsV1(wl_resource* resource);
+
+  TestZwpLinuxBufferParamsV1(const TestZwpLinuxBufferParamsV1&) = delete;
+  TestZwpLinuxBufferParamsV1& operator=(const TestZwpLinuxBufferParamsV1&) =
+      delete;
+
   ~TestZwpLinuxBufferParamsV1() override;
 
   void Destroy(wl_client* client, wl_resource* resource);
@@ -66,13 +71,11 @@ class TestZwpLinuxBufferParamsV1 : public ServerObject {
   // Non-owned pointer to the linux dmabuf object, which created this params
   // resource and holds a pointer to it. On destruction, must notify it about
   // going out of scope.
-  MockZwpLinuxDmabufV1* linux_dmabuf_ = nullptr;
+  raw_ptr<MockZwpLinuxDmabufV1> linux_dmabuf_ = nullptr;
 
   // A buffer resource, which is created on Create or CreateImmed call. Can be
   // null if not created/failed to be created.
-  wl_resource* buffer_resource_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestZwpLinuxBufferParamsV1);
+  raw_ptr<wl_resource> buffer_resource_ = nullptr;
 };
 
 }  // namespace wl

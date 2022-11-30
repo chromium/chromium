@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
@@ -21,8 +20,9 @@
 namespace {
 
 bool MonitorHasAutohideTaskbarForEdge(UINT edge, HMONITOR monitor) {
-  APPBARDATA taskbar_data = {sizeof(APPBARDATA), NULL, 0, edge};
-  taskbar_data.hWnd = ::GetForegroundWindow();
+  APPBARDATA taskbar_data_for_getautohidebar = {sizeof(APPBARDATA), NULL, 0,
+                                                edge};
+  taskbar_data_for_getautohidebar.hWnd = ::GetForegroundWindow();
 
   // MSDN documents an ABM_GETAUTOHIDEBAREX, which supposedly takes a monitor
   // rect and returns autohide bars on that monitor.  This sounds like a good
@@ -38,7 +38,7 @@ bool MonitorHasAutohideTaskbarForEdge(UINT edge, HMONITOR monitor) {
   //    are looking for, we are done.
   // NOTE: This call spins a nested run loop.
   HWND taskbar = reinterpret_cast<HWND>(
-      SHAppBarMessage(ABM_GETAUTOHIDEBAR, &taskbar_data));
+      SHAppBarMessage(ABM_GETAUTOHIDEBAR, &taskbar_data_for_getautohidebar));
   if (!::IsWindow(taskbar)) {
     APPBARDATA taskbar_data = {sizeof(APPBARDATA), 0, 0, 0};
     unsigned int taskbar_state = SHAppBarMessage(ABM_GETSTATE, &taskbar_data);

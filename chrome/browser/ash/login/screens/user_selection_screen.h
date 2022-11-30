@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,32 +9,29 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
 #include "chrome/browser/ash/system/system_clock.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
 
-namespace chromeos {
-
-class EasyUnlockService;
+namespace ash {
+struct LoginUserInfo;
 class UserBoardView;
 
 enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };
@@ -47,6 +44,10 @@ class UserSelectionScreen
       public UserOnlineSigninNotifier::Observer {
  public:
   explicit UserSelectionScreen(DisplayedScreen display_type);
+
+  UserSelectionScreen(const UserSelectionScreen&) = delete;
+  UserSelectionScreen& operator=(const UserSelectionScreen&) = delete;
+
   ~UserSelectionScreen() override;
 
   void SetView(UserBoardView* view);
@@ -76,9 +77,13 @@ class UserSelectionScreen
                          bool is_warning) override;
   void ShowUserPodCustomIcon(
       const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconOptions& icon)
+      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info)
       override;
   void HideUserPodCustomIcon(const AccountId& account_id) override;
+  void SetSmartLockState(const AccountId& account_id,
+                         SmartLockState state) override;
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool success) override;
 
   void EnableInput() override;
   void SetAuthType(const AccountId& account_id,
@@ -106,10 +111,9 @@ class UserSelectionScreen
   static bool ShouldForceOnlineSignIn(const user_manager::User* user);
 
   // Builds a `UserAvatar` instance which contains the current image for `user`.
-  static ash::UserAvatar BuildAshUserAvatarForUser(
-      const user_manager::User& user);
+  static UserAvatar BuildAshUserAvatarForUser(const user_manager::User& user);
 
-  std::vector<ash::LoginUserInfo> UpdateAndReturnUserListForAsh();
+  std::vector<LoginUserInfo> UpdateAndReturnUserListForAsh();
   void SetUsersLoaded(bool loaded);
 
  protected:
@@ -158,13 +162,13 @@ class UserSelectionScreen
   user_manager::UserList users_to_send_;
 
   AccountId focused_pod_account_id_;
-  base::Optional<system::SystemClock::ScopedHourClockType>
+  absl::optional<system::SystemClock::ScopedHourClockType>
       focused_user_clock_type_;
 
   // Sometimes we might get focused pod while user session is still active. e.g.
   // while creating lock screen. So postpone any work until after the session
   // state changes.
-  base::Optional<AccountId> pending_focused_account_id_;
+  absl::optional<AccountId> pending_focused_account_id_;
 
   // Input Method Engine state used at the user selection screen.
   scoped_refptr<input_method::InputMethodManager::State> ime_state_;
@@ -183,10 +187,15 @@ class UserSelectionScreen
       scoped_observation_{this};
 
   base::WeakPtrFactory<UserSelectionScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserSelectionScreen);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DisplayedScreen;
+using ::ash::UserSelectionScreen;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_USER_SELECTION_SCREEN_H_

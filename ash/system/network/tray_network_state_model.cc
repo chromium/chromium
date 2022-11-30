@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,10 @@
 #include "ash/system/network/vpn_list.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -52,7 +53,7 @@ NetworkStatePropertiesPtr GetConnectingOrConnected(
 namespace ash {
 
 class TrayNetworkStateModel::Impl
-    : public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+    : public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   explicit Impl(TrayNetworkStateModel* model) : model_(model) {
     GetNetworkConfigService(
@@ -60,6 +61,10 @@ class TrayNetworkStateModel::Impl
     remote_cros_network_config_->AddObserver(
         cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
   }
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() override = default;
 
   void GetActiveNetworks() {
@@ -87,6 +92,12 @@ class TrayNetworkStateModel::Impl
                        base::Unretained(model_)));
   }
 
+  void GetGlobalPolicy() {
+    DCHECK(remote_cros_network_config_);
+    remote_cros_network_config_->GetGlobalPolicy(base::BindOnce(
+        &TrayNetworkStateModel::OnGetGlobalPolicy, base::Unretained(model_)));
+  }
+
   void SetNetworkTypeEnabledState(NetworkType type, bool enabled) {
     DCHECK(remote_cros_network_config_);
     remote_cros_network_config_->SetNetworkTypeEnabledState(type, enabled,
@@ -105,10 +116,6 @@ class TrayNetworkStateModel::Impl
     model_->SendActiveNetworkStateChanged();
   }
 
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr /* network */)
-      override {}
-
   void OnNetworkStateListChanged() override {
     model_->NotifyNetworkListChanged();
     GetVirtualNetworks();
@@ -118,15 +125,15 @@ class TrayNetworkStateModel::Impl
 
   void OnVpnProvidersChanged() override { model_->NotifyVpnProvidersChanged(); }
 
-  void OnNetworkCertificatesChanged() override {}
+  void OnPoliciesApplied(const std::string& userhash) override {
+    GetGlobalPolicy();
+  }
 
   TrayNetworkStateModel* model_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 TrayNetworkStateModel::TrayNetworkStateModel()
@@ -142,6 +149,7 @@ TrayNetworkStateModel::TrayNetworkStateModel()
   impl_->GetActiveNetworks();
   impl_->GetVirtualNetworks();
   impl_->GetDeviceStateList();
+  impl_->GetGlobalPolicy();
 }
 
 TrayNetworkStateModel::~TrayNetworkStateModel() {
@@ -174,6 +182,10 @@ void TrayNetworkStateModel::SetNetworkTypeEnabledState(NetworkType type,
   impl_->SetNetworkTypeEnabledState(type, enabled);
 }
 
+void TrayNetworkStateModel::FlushGlobalPolicyForTesting() {
+  impl_->GetGlobalPolicy();
+}
+
 bool TrayNetworkStateModel::IsBuiltinVpnProhibited() const {
   return TrayNetworkStateModel::GetDeviceState(
              chromeos::network_config::mojom::NetworkType::kVPN) ==
@@ -196,6 +208,7 @@ void TrayNetworkStateModel::OnGetDeviceStateList(
   }
 
   impl_->GetActiveNetworks();  // Will trigger an observer event.
+  SendDeviceStateListChanged();
 }
 
 void TrayNetworkStateModel::UpdateActiveNetworks(
@@ -257,12 +270,23 @@ void TrayNetworkStateModel::OnGetVirtualNetworks(
   has_vpn_ = !networks.empty();
 }
 
+void TrayNetworkStateModel::OnGetGlobalPolicy(
+    chromeos::network_config::mojom::GlobalPolicyPtr global_policy) {
+  global_policy_ = std::move(global_policy);
+  NotifyGlobalPolicyChanged();
+}
+
 void TrayNetworkStateModel::NotifyNetworkListChanged() {
   if (timer_.IsRunning())
     return;
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(update_frequency_),
+  timer_.Start(FROM_HERE, base::Milliseconds(update_frequency_),
                base::BindOnce(&TrayNetworkStateModel::SendNetworkListChanged,
                               base::Unretained(this)));
+}
+
+void TrayNetworkStateModel::NotifyGlobalPolicyChanged() {
+  for (auto& observer : observer_list_)
+    observer.GlobalPolicyChanged();
 }
 
 void TrayNetworkStateModel::NotifyVpnProvidersChanged() {
@@ -278,6 +302,11 @@ void TrayNetworkStateModel::SendActiveNetworkStateChanged() {
 void TrayNetworkStateModel::SendNetworkListChanged() {
   for (auto& observer : observer_list_)
     observer.NetworkListChanged();
+}
+
+void TrayNetworkStateModel::SendDeviceStateListChanged() {
+  for (auto& observer : observer_list_)
+    observer.DeviceStateListChanged();
 }
 
 }  // namespace ash

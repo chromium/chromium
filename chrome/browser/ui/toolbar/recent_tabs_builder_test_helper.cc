@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -136,8 +136,7 @@ SessionID RecentTabsBuilderTestHelper::GetWindowID(int session_index,
 
 void RecentTabsBuilderTestHelper::AddTab(int session_index, int window_index) {
   base::Time timestamp =
-      start_time_ +
-      base::TimeDelta::FromMinutes(base::RandGenerator(kMaxMinutesRange));
+      start_time_ + base::Minutes(base::RandGenerator(kMaxMinutesRange));
   AddTabWithInfo(session_index, window_index, timestamp, std::u16string());
 }
 
@@ -204,7 +203,8 @@ void RecentTabsBuilderTestHelper::ExportToSessionSync(
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
-  processor->OnUpdateReceived(model_type_state, std::move(updates));
+  processor->OnUpdateReceived(model_type_state, std::move(updates),
+                              /*gc_directive=*/absl::nullopt);
   // ClientTagBasedModelTypeProcessor uses ModelTypeProcessorProxy during
   // activation, which involves task posting for receiving updates.
   base::RunLoop().RunUntilIdle();
@@ -267,7 +267,7 @@ void RecentTabsBuilderTestHelper::AddWindowToHeaderSpecifics(
   SessionID window_id = GetWindowID(session_index, window_index);
   window->set_window_id(window_id.id());
   window->set_selected_tab_index(0);
-  window->set_browser_type(sync_pb::SessionWindow_BrowserType_TYPE_TABBED);
+  window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
   for (int i = 0; i < GetTabCount(session_index, window_index); ++i)
     window->add_tab(GetTabID(session_index, window_index, i).id());
 }

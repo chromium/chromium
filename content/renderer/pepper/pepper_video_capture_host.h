@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"
@@ -35,6 +33,9 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
   PepperVideoCaptureHost(RendererPpapiHostImpl* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperVideoCaptureHost(const PepperVideoCaptureHost&) = delete;
+  PepperVideoCaptureHost& operator=(const PepperVideoCaptureHost&) = delete;
 
   ~PepperVideoCaptureHost() override;
 
@@ -117,8 +118,6 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
   ppapi::host::ReplyMessageContext open_reply_context_;
 
   PepperDeviceEnumerationHostHelper enumeration_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVideoCaptureHost);
 };
 
 }  // namespace content

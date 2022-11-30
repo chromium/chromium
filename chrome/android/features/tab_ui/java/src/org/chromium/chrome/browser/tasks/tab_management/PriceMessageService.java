@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 
@@ -19,6 +21,9 @@ import java.lang.annotation.RetentionPolicy;
  * One of the concrete {@link MessageService} that only serves {@link MessageType#PRICE_MESSAGE}.
  */
 public class PriceMessageService extends MessageService {
+    private static final String WELCOME_MESSAGE_METRICS_IDENTIFIER = "PriceWelcomeMessageCard";
+    private static final String ALERTS_MESSAGE_METRICS_IDENTIFIER = "PriceAlertsMessageCard";
+
     // PRICE_WELCOME and PRICE_ALERTS are added to {@link TabListModel} at a different time and the
     // insertion positions are different as well. Right now PRICE_WELCOME is added via {@link
     // TabSwitcherCoordinator#appendNextMessage}, while PRICE_ALERTS is added via {@link
@@ -167,33 +172,46 @@ public class PriceMessageService extends MessageService {
         mNotificationManager = notificationManager;
     }
 
-    void preparePriceMessage(@PriceMessageType int type, @Nullable PriceTabData priceTabData) {
+    /**
+     * @return Whether the message is successfully prepared.
+     */
+    boolean preparePriceMessage(@PriceMessageType int type, @Nullable PriceTabData priceTabData) {
         assert (type == PriceMessageType.PRICE_WELCOME
                 && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled())
                 || (type == PriceMessageType.PRICE_ALERTS
                         && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+        if (type == PriceMessageType.PRICE_WELCOME) {
+            PriceTrackingUtilities.increasePriceWelcomeMessageCardShowCount();
+            if (PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount()
+                    > MAX_PRICE_MESSAGE_SHOW_COUNT * PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER) {
+                logMessageDisableMetrics(
+                        WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED);
+                PriceTrackingUtilities.disablePriceWelcomeMessageCard();
+                return false;
+            }
+            // When PriceWelcomeMessageCard is available, it takes priority over
+            // PriceAlertsMessageCard which will be removed first. This should be called only if
+            // PriceAlertsMessageCard is currently enabled.
+            if (PriceTrackingUtilities.isPriceAlertsMessageCardEnabled()) {
+                PriceTrackingUtilities.decreasePriceAlertsMessageCardShowCount();
+            }
+        } else if (type == PriceMessageType.PRICE_ALERTS) {
+            PriceTrackingUtilities.increasePriceAlertsMessageCardShowCount();
+            if (PriceTrackingUtilities.getPriceAlertsMessageCardShowCount()
+                    > MAX_PRICE_MESSAGE_SHOW_COUNT * PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER) {
+                logMessageDisableMetrics(
+                        ALERTS_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED);
+                PriceTrackingUtilities.disablePriceAlertsMessageCard();
+                return false;
+            }
+        }
         // To avoid the confusion of different-type stale messages, invalidateMessage every time
         // before preparing new messages.
         invalidateMessage();
         mPriceTabData = priceTabData;
         sendAvailabilityNotification(new PriceMessageData(
                 type, mPriceTabData, () -> review(type), (int messageType) -> dismiss(type)));
-        if (type == PriceMessageType.PRICE_WELCOME) {
-            // When PriceWelcomeMessageCard is available, it takes priority over
-            // PriceAlertsMessageCard.
-            PriceTrackingUtilities.decreasePriceAlertsMessageCardShowCount();
-            PriceTrackingUtilities.increasePriceWelcomeMessageCardShowCount();
-            if (PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount()
-                    >= MAX_PRICE_MESSAGE_SHOW_COUNT * PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER) {
-                PriceTrackingUtilities.disablePriceWelcomeMessageCard();
-            }
-        } else if (type == PriceMessageType.PRICE_ALERTS) {
-            PriceTrackingUtilities.increasePriceAlertsMessageCardShowCount();
-            if (PriceTrackingUtilities.getPriceAlertsMessageCardShowCount()
-                    >= MAX_PRICE_MESSAGE_SHOW_COUNT * PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER) {
-                PriceTrackingUtilities.disablePriceAlertsMessageCard();
-            }
-        }
+        return true;
     }
 
     int getBindingTabId() {
@@ -214,25 +232,37 @@ public class PriceMessageService extends MessageService {
                     mPriceWelcomeMessageProvider.getTabIndexFromTabId(mPriceTabData.bindingTabId);
             mPriceWelcomeMessageReviewActionProvider.scrollToTab(bindingTabIndex);
             mPriceWelcomeMessageProvider.showPriceDropTooltip(bindingTabIndex);
+            logMessageDisableMetrics(
+                    WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED);
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             mPriceTabData = null;
+            RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Reviewed");
         } else if (type == PriceMessageType.PRICE_ALERTS) {
             if (mNotificationManager.areAppNotificationsEnabled()) {
                 mNotificationManager.createNotificationChannel();
             } else {
                 mNotificationManager.launchNotificationSettings();
             }
+            logMessageDisableMetrics(
+                    ALERTS_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED);
             PriceTrackingUtilities.disablePriceAlertsMessageCard();
+            RecordUserAction.record("Commerce.PriceAlertsMessageCard.Reviewed");
         }
     }
 
     @VisibleForTesting
     public void dismiss(@PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_WELCOME) {
+            logMessageDisableMetrics(
+                    WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED);
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             mPriceTabData = null;
+            RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Dismissed");
         } else if (type == PriceMessageType.PRICE_ALERTS) {
+            logMessageDisableMetrics(
+                    ALERTS_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED);
             PriceTrackingUtilities.disablePriceAlertsMessageCard();
+            RecordUserAction.record("Commerce.PriceAlertsMessageCard.Dismissed");
         }
     }
 

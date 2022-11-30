@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -112,9 +112,6 @@ ALLOWLISTED_LICENSES = [
 
 PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     'base/third_party/icu': [  # http://crbug.com/98087
-        'UNKNOWN',
-    ],
-    'base/third_party/libevent': [  # http://crbug.com/98309
         'UNKNOWN',
     ],
     'buildtools/third_party/libc++/trunk/test': [
@@ -402,6 +399,9 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     'third_party/lcov/contrib/galaxy/genflat.pl': [
         'GPL (v2 or later)',
     ],
+    'third_party/libevent': [  # http://crbug.com/98309
+        'UNKNOWN',
+    ],
     'third_party/libjpeg_turbo': [  # http://crbug.com/98314
         'UNKNOWN',
     ],
@@ -484,34 +484,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
         'UNKNOWN',
     ],
 
-    # New BSD license. http://crbug.com/98455
-    'tools/swarming_client/third_party/google': [
-        'UNKNOWN',
-    ],
-
-    # https://github.com/google/google-api-python-client/issues/216
-    # Apache v2.0.
-    'tools/swarming_client/third_party/googleapiclient': [
-        'UNKNOWN',
-    ],
-
-    # http://crbug.com/334668
-    # https://github.com/jcgregorio/httplib2/issues/307
-    # MIT license.
-    'tools/swarming_client/third_party/httplib2': [
-        'UNKNOWN',
-    ],
-
-    # http://crbug.com/471372
-    # BSD
-    'tools/swarming_client/third_party/pyasn1': [
-        'UNKNOWN',
-    ],
-
-    # https://github.com/kennethreitz/requests/issues/1610
-    'tools/swarming_client/third_party/requests': [
-        'UNKNOWN',
-    ],
     'third_party/minizip': [
         'UNKNOWN',
     ],
@@ -524,16 +496,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
         'UNKNOWN',
     ],
     'third_party/pdfium/third_party/libtiff/uvcode.h': [
-        'UNKNOWN',
-    ],
-    'third_party/talloc': [
-        'GPL (v3 or later)',
-        'UNKNOWN',  # http://crbug.com/98588
-    ],
-    'third_party/tcmalloc': [
-        'UNKNOWN',  # http://crbug.com/98589
-    ],
-    'third_party/tlslite': [
         'UNKNOWN',
     ],
     # MIT license but some files contain no licensing info. e.g. autogen.sh.
@@ -673,6 +635,7 @@ def check_licenses(options, args):
   errors = []
 
   for line in stdout.splitlines():
+    line = line.decode('utf-8')
     filename, license = line.split(':', 1)
     filename = os.path.relpath(filename.strip(), options.base_directory)
 

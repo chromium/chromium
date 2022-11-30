@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "url/gurl.h"
 
@@ -43,6 +42,9 @@ class PrerenderHistograms {
   // Owned by a NoStatePrefetchManager object for the lifetime of the
   // NoStatePrefetchManager.
   PrerenderHistograms();
+
+  PrerenderHistograms(const PrerenderHistograms&) = delete;
+  PrerenderHistograms& operator=(const PrerenderHistograms&) = delete;
 
   // Return the string to use as a prefix for histograms depending on the origin
   // of the prerender.
@@ -79,8 +81,6 @@ class PrerenderHistograms {
 
  private:
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderHistograms);
 };
 
 }  // namespace prerender

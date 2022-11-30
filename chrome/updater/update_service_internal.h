@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "base/memory/ref_counted.h"
 
 namespace updater {
+
+enum class UpdaterScope;
 
 // The UpdateServiceInternal is a service abstraction to expose functionality
 // made available only to callers which are part of the same instance of
@@ -37,9 +39,6 @@ class UpdateServiceInternal
 
   virtual ~UpdateServiceInternal() = default;
 };
-
-// A factory method to create a UpdateServiceInternal class instance.
-scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal();
 
 }  // namespace updater
 

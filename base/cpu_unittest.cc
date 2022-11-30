@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,9 +63,22 @@ TEST(CPU, RunExtendedInstructions) {
     __asm__ __volatile__("vzeroupper\n" : : : "xmm0");
   }
 
+  if (cpu.has_fma3()) {
+    // Execute a FMA3 instruction.
+    __asm__ __volatile__("vfmadd132ps %%xmm0, %%xmm0, %%xmm0\n" : : : "xmm0");
+  }
+
   if (cpu.has_avx2()) {
     // Execute an AVX 2 instruction.
     __asm__ __volatile__("vpunpcklbw %%ymm0, %%ymm0, %%ymm0\n" : : : "xmm0");
+  }
+
+  if (cpu.has_pku()) {
+    // rdpkru
+    uint32_t pkru;
+    __asm__ __volatile__(".byte 0x0f,0x01,0xee\n"
+                         : "=a"(pkru)
+                         : "c"(0), "d"(0));
   }
 // Visual C 32 bit and ClangCL 32/64 bit test.
 #elif defined(COMPILER_MSVC) && (defined(ARCH_CPU_32_BITS) || \
@@ -106,6 +119,11 @@ TEST(CPU, RunExtendedInstructions) {
   if (cpu.has_avx()) {
     // Execute an AVX instruction.
     __asm vzeroupper;
+  }
+
+  if (cpu.has_fma3()) {
+    // Execute an AVX instruction.
+    __asm vfmadd132ps xmm0, xmm0, xmm0;
   }
 
   if (cpu.has_avx2()) {
@@ -153,47 +171,40 @@ TEST(CPU, BrandAndVendorContainsNoNUL) {
 // Tests that we compute the correct CPU family and model based on the vendor
 // and CPUID signature.
 TEST(CPU, X86FamilyAndModel) {
-  int family;
-  int model;
-  int ext_family;
-  int ext_model;
+  base::internal::X86ModelInfo info;
 
   // Check with an Intel Skylake signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406e3);
-  EXPECT_EQ(family, 6);
-  EXPECT_EQ(model, 78);
-  EXPECT_EQ(ext_family, 0);
-  EXPECT_EQ(ext_model, 4);
+  info = base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406e3);
+  EXPECT_EQ(info.family, 6);
+  EXPECT_EQ(info.model, 78);
+  EXPECT_EQ(info.ext_family, 0);
+  EXPECT_EQ(info.ext_model, 4);
 
   // Check with an Intel Airmont signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406c2);
-  EXPECT_EQ(family, 6);
-  EXPECT_EQ(model, 76);
-  EXPECT_EQ(ext_family, 0);
-  EXPECT_EQ(ext_model, 4);
+  info = base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406c2);
+  EXPECT_EQ(info.family, 6);
+  EXPECT_EQ(info.model, 76);
+  EXPECT_EQ(info.ext_family, 0);
+  EXPECT_EQ(info.ext_model, 4);
 
   // Check with an Intel Prescott signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x00000f31);
-  EXPECT_EQ(family, 15);
-  EXPECT_EQ(model, 3);
-  EXPECT_EQ(ext_family, 0);
-  EXPECT_EQ(ext_model, 0);
+  info = base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x00000f31);
+  EXPECT_EQ(info.family, 15);
+  EXPECT_EQ(info.model, 3);
+  EXPECT_EQ(info.ext_family, 0);
+  EXPECT_EQ(info.ext_model, 0);
 
   // Check with an AMD Excavator signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("AuthenticAMD", 0x00670f00);
-  EXPECT_EQ(family, 21);
-  EXPECT_EQ(model, 112);
-  EXPECT_EQ(ext_family, 6);
-  EXPECT_EQ(ext_model, 7);
+  info = base::internal::ComputeX86FamilyAndModel("AuthenticAMD", 0x00670f00);
+  EXPECT_EQ(info.family, 21);
+  EXPECT_EQ(info.model, 112);
+  EXPECT_EQ(info.ext_family, 6);
+  EXPECT_EQ(info.ext_model, 7);
 }
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
 #if defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
 TEST(CPU, ARMImplementerAndPartNumber) {
   base::CPU cpu;
 
@@ -205,5 +216,5 @@ TEST(CPU, ARMImplementerAndPartNumber) {
   EXPECT_GT(cpu.implementer(), 0u);
   EXPECT_GT(cpu.part_number(), 0u);
 }
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_LINUX) ||
-        // defined(OS_ANDROID) || defined(OS_CHROMEOS))
+#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))

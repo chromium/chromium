@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ class AesAlgorithm : public AlgorithmImplementation {
                      GenerateKeyResult* result) const override;
 
   Status ImportKey(blink::WebCryptoKeyFormat format,
-                   const CryptoData& key_data,
+                   base::span<const uint8_t> key_data,
                    const blink::WebCryptoAlgorithm& algorithm,
                    bool extractable,
                    blink::WebCryptoKeyUsageMask usages,
@@ -48,7 +48,7 @@ class AesAlgorithm : public AlgorithmImplementation {
                                 blink::WebCryptoKeyType type,
                                 bool extractable,
                                 blink::WebCryptoKeyUsageMask usages,
-                                const CryptoData& key_data,
+                                base::span<const uint8_t> key_data,
                                 blink::WebCryptoKey* key) const override;
 
   Status GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
@@ -56,13 +56,13 @@ class AesAlgorithm : public AlgorithmImplementation {
                       unsigned int* length_bits) const override;
 
  private:
-  Status ImportKeyRaw(const CryptoData& key_data,
+  Status ImportKeyRaw(base::span<const uint8_t> key_data,
                       const blink::WebCryptoAlgorithm& algorithm,
                       bool extractable,
                       blink::WebCryptoKeyUsageMask usages,
                       blink::WebCryptoKey* key) const;
 
-  Status ImportKeyJwk(const CryptoData& key_data,
+  Status ImportKeyJwk(base::span<const uint8_t> key_data,
                       const blink::WebCryptoAlgorithm& algorithm,
                       bool extractable,
                       blink::WebCryptoKeyUsageMask usages,

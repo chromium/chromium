@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 
@@ -51,6 +51,19 @@ void VideoFrameReceiverOnTaskRunner::OnFrameDropped(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoFrameReceiver::OnFrameDropped, receiver_, reason));
+}
+
+void VideoFrameReceiverOnTaskRunner::OnNewCropVersion(uint32_t crop_version) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&VideoFrameReceiver::OnNewCropVersion,
+                                        receiver_, crop_version));
+}
+
+void VideoFrameReceiverOnTaskRunner::OnFrameWithEmptyRegionCapture() {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoFrameReceiver::OnFrameWithEmptyRegionCapture,
+                     receiver_));
 }
 
 void VideoFrameReceiverOnTaskRunner::OnLog(const std::string& message) {

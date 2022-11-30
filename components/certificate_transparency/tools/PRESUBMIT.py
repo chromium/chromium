@@ -1,10 +1,11 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 
 """Chromium presubmit script for src/net/tools/ct_log_list."""
 
+USE_PYTHON3 = True
 
 def _RunMakeCTLogListTests(input_api, output_api):
   """Runs make_ct_known_logs_list unittests if related files were modified."""
@@ -18,12 +19,14 @@ def _RunMakeCTLogListTests(input_api, output_api):
   test_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                      'make_ct_known_logs_list_unittest.py')
   cmd_name = 'make_ct_known_logs_list_unittest'
-  cmd = [input_api.python_executable, test_path]
+  cmd = [test_path]
   test_cmd = input_api.Command(
     name=cmd_name,
     cmd=cmd,
     kwargs={},
-    message=output_api.PresubmitPromptWarning)
+    message=output_api.PresubmitPromptWarning,
+    python3=True
+    )
   return input_api.RunTests([test_cmd])
 
 

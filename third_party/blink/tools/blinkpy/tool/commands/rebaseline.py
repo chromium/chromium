@@ -32,10 +32,12 @@ import logging
 import optparse
 import re
 
+from collections import defaultdict
+
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.tool.commands.command import Command
+from blinkpy.tool.commands.command import Command, check_dir_option
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationRemover, TestExpectations
 from blinkpy.web_tests.port import base, factory
@@ -46,6 +48,10 @@ _log = logging.getLogger(__name__)
 # the leading dot.
 # TODO(robertma): Investigate changing the CLI.
 BASELINE_SUFFIX_LIST = tuple(ext[1:] for ext in base.Port.BASELINE_EXTENSIONS)
+# When large number of tests need to be optimized, limit the length of the commandline to 128 tests
+# to not run into issues with any commandline size limitations with popen. In windows CreateProcess()
+# arg length limit is 32768. With 250 chars in test path length, choosing a chunk size of 128.
+MAX_TESTS_IN_OPTIMIZE_CMDLINE = 128
 
 
 class AbstractRebaseliningCommand(Command):
@@ -65,8 +71,18 @@ class AbstractRebaseliningCommand(Command):
         ('Do not optimize (de-duplicate) the expectations after rebaselining '
          '(default is to de-dupe automatically). You can use "blink_tool.py '
          'optimize-baselines" to optimize separately.'))
+    dry_run_option = optparse.make_option(
+        '--dry-run',
+        action='store_true',
+        default=False,
+        help=('Dry run mode. List actions that would be performed '
+              'but do not actually write to disk.'))
     results_directory_option = optparse.make_option(
-        '--results-directory', help='Local results directory to use.')
+        '--results-directory',
+        action='callback',
+        callback=check_dir_option,
+        type='string',
+        help='Local results directory to use.')
     suffixes_option = optparse.make_option(
         '--suffixes',
         default=','.join(BASELINE_SUFFIX_LIST),
@@ -75,11 +91,11 @@ class AbstractRebaseliningCommand(Command):
     builder_option = optparse.make_option(
         '--builder',
         help=('Name of the builder to pull new baselines from, '
-              'e.g. "WebKit Mac10.12".'))
+              'e.g. "Mac11 Tests".'))
     port_name_option = optparse.make_option(
         '--port-name',
         help=('Fully-qualified name of the port that new baselines belong to, '
-              'e.g. "mac-mac10.12". If not given, this is determined based on '
+              'e.g. "mac-mac11". If not given, this is determined based on '
               '--builder.'))
     test_option = optparse.make_option('--test', help='Test to rebaseline.')
     build_number_option = optparse.make_option(
@@ -93,20 +109,41 @@ class AbstractRebaseliningCommand(Command):
               'should be used to retrieve results from.'))
     flag_specific_option = optparse.make_option(
         '--flag-specific',
+        # TODO(crbug/1291020): build the list from builders.json
+        choices=[
+            "disable-layout-ng", "disable-site-isolation-trials", "highdpi",
+            "skia-vulkan-swiftshader"
+        ],
         default=None,
         action='store',
         help=(
             'Name of a flag-specific configuration defined in '
             'FlagSpecificConfig. This option will rebaseline '
             'results for the given FlagSpecificConfig while ignoring results '
-            'from other builders. Highdpi is the only suported config '
-            'at this time.'))
+            'from other builders.'))
+    resultDB_option = optparse.make_option(
+        '--resultDB',
+        default=False,
+        action='store_true',
+        help=('Fetch results from resultDB(WIP). '
+              'Works with --test-name-file '
+              'and positional parameters'))
+
+    fetch_url_option = optparse.make_option(
+        '--fetch-url',
+        default=None,
+        action='store',
+        help=('Comma separated list of complete urls to fetch the baseline '
+              'artifact from. Developers do not need this option while '
+              'using rebaseline-cl. Default is empty. '
+              'When this is empty baselines will not be downloaded'))
 
     def __init__(self, options=None):
         super(AbstractRebaseliningCommand, self).__init__(options=options)
         self._baseline_suffix_list = BASELINE_SUFFIX_LIST
         self.expectation_line_changes = ChangeSet()
         self._tool = None
+        self._dry_run = False
 
     def baseline_directory(self, builder_name):
         port = self._tool.port_factory.get_from_builder_name(builder_name)
@@ -121,16 +158,7 @@ class AbstractRebaseliningCommand(Command):
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_ACTUAL, '.' + suffix)
 
-    def _file_name_for_expected_result(self, test_name, suffix, is_wpt=False):
-        if is_wpt:
-            # *-actual.txt produced by wptrunner are actually manifest files
-            # that can make the test pass if renamed to *.ini.
-            # WPT bots do not include "external/wpt" in test names.
-            file_name = self._host_port.get_file_path_for_wpt_test(
-                'external/wpt/' + test_name)
-            assert file_name, ('Cannot find %s in WPT' % test_name)
-            return file_name + '.ini'
-
+    def _file_name_for_expected_result(self, test_name, suffix):
         # output_filename takes extensions starting with '.'.
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.' + suffix)
@@ -196,7 +224,7 @@ class TestBaselineSet(object):
         # Set self._port to None to avoid accidentally calling port.tests when
         # we are not in prefix mode.
         self._port = self._host.port_factory.get() if prefix_mode else None
-        self._builder_names = set()
+        self._build_steps = set()
         self._prefix_mode = prefix_mode
         self._test_prefix_map = collections.defaultdict(list)
 
@@ -207,22 +235,22 @@ class TestBaselineSet(object):
         return bool(self._test_prefix_map)
 
     def _iter_combinations(self):
-        """Iterates through (test, build, port) combinations."""
-        for test_prefix, build_port_pairs in self._test_prefix_map.iteritems():
+        """Iterates through (test, build, step, port) combinations."""
+        for test_prefix, build_steps in self._test_prefix_map.items():
             if not self._prefix_mode:
-                for build, port_name in build_port_pairs:
-                    yield (test_prefix, build, port_name)
+                for build_step in build_steps:
+                    yield (test_prefix, ) + build_step
                 continue
 
             for test in self._port.tests([test_prefix]):
-                for build, port_name in build_port_pairs:
-                    yield (test, build, port_name)
+                for build_step in build_steps:
+                    yield (test, ) + build_step
 
     def __str__(self):
         if not self._test_prefix_map:
             return '<Empty TestBaselineSet>'
         return '<TestBaselineSet with:\n  %s>' % '\n  '.join(
-            '%s: %s, %s' % triple for triple in self._iter_combinations())
+            '%s: %s, %s, %s' % combo for combo in self._iter_combinations())
 
     def test_prefixes(self):
         """Returns a sorted list of test prefixes (or tests) added thus far."""
@@ -240,26 +268,30 @@ class TestBaselineSet(object):
 
     def build_port_pairs(self, test_prefix):
         # Return a copy in case the caller modifies the returned list.
-        return list(self._test_prefix_map[test_prefix])
+        return [(build, port)
+                for build, _, port in self._test_prefix_map[test_prefix]]
 
-    def add(self, test_prefix, build, port_name=None):
+    def add(self, test_prefix, build, step_name=None, port_name=None):
         """Adds an entry for baselines to download for some set of tests.
 
         Args:
             test_prefix: This can be a full test path; if the instance was
                 constructed in prefix mode (the default), this can also be a
                 directory of tests or a path with globs.
-            build: A Build object. This specifies where to fetch baselines from.
+            build: A Build object. Along with the step name, this specifies
+                where to fetch baselines from.
+            step_name: The name of the build step this test was run for.
             port_name: This specifies what platform the baseline is for.
         """
         port_name = port_name or self._host.builders.port_name_for_builder_name(
             build.builder_name)
-        self._builder_names.add(build.builder_name)
-        self._test_prefix_map[test_prefix].append((build, port_name))
+        self._build_steps.add((build.builder_name, step_name))
+        build_step = (build, step_name, port_name)
+        self._test_prefix_map[test_prefix].append(build_step)
 
-    def all_builders(self):
-        """Returns all builder names in in this collection."""
-        return self._builder_names
+    def all_build_steps(self):
+        """Returns all builder name, step name pairs in this collection."""
+        return self._build_steps
 
 
 class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
@@ -283,58 +315,127 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 release_builders.append(builder_name)
         return release_builders
 
-    def _builders_to_fetch_from(self, builders_to_check):
-        """Returns the subset of builders that will cover all of the baseline
-        search paths used in the input list.
+    def _filter_baseline_set_builders(self, test_baseline_set):
+        build_steps_to_fetch_from = self.build_steps_to_fetch_from(
+            test_baseline_set.all_build_steps())
+        for test_prefix, build, step_name, port_name in test_baseline_set:
+            if (build.builder_name, step_name) in build_steps_to_fetch_from:
+                yield (test_prefix, build, step_name, port_name)
+
+    def build_steps_to_fetch_from(self, build_steps_to_check):
+        """Returns the subset of builder-step pairs that will cover all of the
+        baseline search paths used in the input list.
 
         In particular, if the input list contains both Release and Debug
         versions of a configuration, we *only* return the Release version
         (since we don't save debug versions of baselines).
 
         Args:
-            builders_to_check: A collection of builder names.
+            build_steps_to_check: A collection of builder name, step name
+                tuples.
 
         Returns:
-            A set of builders that we may fetch from, which is a subset
-            of the input list.
+            A subset of the input list that we should fetch from.
         """
-        release_builders = set()
-        debug_builders = set()
-        for builder in builders_to_check:
+        release_build_steps = set()
+        debug_build_steps = set()
+        for builder, step in build_steps_to_check:
             port = self._tool.port_factory.get_from_builder_name(builder)
             if port.test_configuration().build_type == 'release':
-                release_builders.add(builder)
+                release_build_steps.add((builder, step))
             else:
-                debug_builders.add(builder)
+                debug_build_steps.add((builder, step))
 
-        builders_to_fallback_paths = {}
-        for builder in list(release_builders) + list(debug_builders):
-            port = self._tool.port_factory.get_from_builder_name(builder)
-            fallback_path = port.baseline_search_path()
-            if fallback_path not in builders_to_fallback_paths.values():
-                builders_to_fallback_paths[builder] = fallback_path
+        build_steps_to_fallback_paths = defaultdict(dict)
+        #TODO: we should make the selection of (builder, step) deterministic
+        for builder, step in list(release_build_steps) + list(
+                debug_build_steps):
+            if not self._tool.builders.is_wpt_builder(builder):
+                # Some result db related unit tests set step to None
+                is_legacy_step = step is None or 'blink_web_tests' in step
+                flag_spec_option = self._tool.builders.flag_specific_option(
+                    builder, step)
+                port = self._tool.port_factory.get_from_builder_name(builder)
+                port.set_option_default('flag_specific', flag_spec_option)
+                fallback_path = port.baseline_search_path()
+                if fallback_path not in list(
+                        build_steps_to_fallback_paths[is_legacy_step].values()):
+                    build_steps_to_fallback_paths[
+                        is_legacy_step][builder, step] = fallback_path
+        return (set(build_steps_to_fallback_paths[True])
+                | set(build_steps_to_fallback_paths[False]))
 
-        return set(builders_to_fallback_paths)
+    def baseline_fetch_url_resultdb(self, test_name, build):
+        # TODO(crbug.com/1213998): Optimize the loop through all artifact_list.
+        # Currently the runtime is O(# tests * # artifacts), but the rpc to get
+        # query all artifacts per build is cached instead rpc sent per test.
+        webtest_results_resultdb = self._tool.results_fetcher.fetch_results_from_resultdb_layout_tests(
+            build, True)
+        artifact_list = (self._tool.results_fetcher.
+                         query_artifact_for_build_test_results(build))
+        artifact_fetch_urls = []
+        if webtest_results_resultdb:
+            results_list = webtest_results_resultdb.test_results_resultdb()
+            done = False
+            for result in results_list:
+                if done:
+                    break
+                if test_name in result['testId']:
+                    for artifact in artifact_list:
+                        if 'actual' in artifact['artifactId'] and result[
+                                'name'] in artifact['name']:
+                            artifact_fetch_urls.append(artifact['fetchUrl'])
+                            done = True
+        return artifact_fetch_urls
+
+    def _rebaseline_args(self,
+                         test,
+                         suffixes,
+                         port_name=None,
+                         flag_specific=None,
+                         verbose=False):
+        args = []
+        if verbose:
+            args.append('--verbose')
+        args.extend([
+            '--test',
+            test,
+            # Sort suffixes so we can have a deterministic order for comparing
+            # commands in unit tests.
+            '--suffixes',
+            ','.join(sorted(suffixes)),
+        ])
+        if port_name:
+            args.extend(['--port-name', port_name])
+        if flag_specific:
+            args.extend(['--flag-specific', flag_specific])
+        return args
 
     def _rebaseline_commands(self, test_baseline_set, options):
         path_to_blink_tool = self._tool.path()
         cwd = self._tool.git().checkout_root
-        copy_baseline_commands = []
         rebaseline_commands = []
+        copy_baseline_commands = []
         lines_to_remove = {}
+        fetch_urls = []
 
-        builders_to_fetch_from = self._builders_to_fetch_from(
-            test_baseline_set.all_builders())
-        for test, build, port_name in test_baseline_set:
-            if build.builder_name not in builders_to_fetch_from:
-                continue
-
-            suffixes = self._suffixes_for_actual_failures(test, build)
+        # A test baseline set is a high-dimensional object, so we try to avoid
+        # iterating it.
+        baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
+        for test, build, step_name, port_name in baseline_subset:
+            if options.resultDB:
+                fetch_urls = self.baseline_fetch_url_resultdb(test, build)
+                suffixes = list(
+                    self._suffixes_for_actual_failures_resultdb(test, build))
+            else:
+                suffixes = list(
+                    self._suffixes_for_actual_failures(test, build, step_name))
             if not suffixes:
                 # Only try to remove the expectation if the test
                 #   1. ran and passed ([ Skip ], [ WontFix ] should be kept)
                 #   2. passed unexpectedly (flaky expectations should be kept)
-                if self._test_passed_unexpectedly(test, build, port_name):
+                if self._test_passed_unexpectedly(test, build, port_name,
+                                                  step_name):
                     _log.debug(
                         'Test %s passed unexpectedly in %s. '
                         'Will try to remove it from TestExpectations.', test,
@@ -344,55 +445,38 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     lines_to_remove[test].append(port_name)
                 continue
 
-            args = []
-            if options.verbose:
-                args.append('--verbose')
-            args.extend([
-                '--test',
-                test,
-                '--suffixes',
-                ','.join(suffixes),
-                '--port-name',
-                port_name,
-            ])
-            # TODO(crbug.com/1154085): Undo this special case when we have WPT
-            # bots on more ports.
-            # We may be rebaselining only a subset of all platforms, in which
-            # case we need to copy any existing baselines first to avoid clobbering
-            # results from platforms that were not run. See
-            # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_baseline_fallback.md#rebaseline
-            #
-            # However when running in modes that don't interact with the optimizer,
-            # we don't want to do this copying.
-            if (not self._tool.builders.is_wpt_builder(build.builder_name)
-                    and not self._tool.builders.is_flag_specific_builder(
-                        build.builder_name)):
-                copy_command = [
-                    self._tool.executable, path_to_blink_tool,
-                    'copy-existing-baselines-internal'
-                ] + args
-                copy_baseline_commands.append(tuple([copy_command, cwd]))
+            flag_spec_option = self._tool.builders.flag_specific_option(
+                build.builder_name, step_name)
 
+            args = self._rebaseline_args(test, suffixes, port_name,
+                                         flag_spec_option, options.verbose)
             args.extend(['--builder', build.builder_name])
             if build.build_number:
                 args.extend(['--build-number', str(build.build_number)])
             if options.results_directory:
                 args.extend(['--results-directory', options.results_directory])
-            if (options.flag_specific
-                    and self._tool.builders.is_flag_specific_builder(
-                        build.builder_name)):
-                args.extend(['--flag-specific', options.flag_specific])
-
-            step_name = self._tool.results_fetcher.get_layout_test_step_name(
-                build)
             if step_name:
                 args.extend(['--step-name', step_name])
+
+            if options.resultDB:
+                args.append('--resultDB')
+                args.extend(['--fetch-url', ','.join(fetch_urls)])
 
             rebaseline_command = [
                 self._tool.executable, path_to_blink_tool,
                 'rebaseline-test-internal'
             ] + args
-            rebaseline_commands.append(tuple([rebaseline_command, cwd]))
+            rebaseline_commands.append((rebaseline_command, cwd))
+
+            copy_command = [
+                self._tool.executable,
+                path_to_blink_tool,
+                'copy-existing-baselines-internal',
+            ]
+            copy_command.extend(
+                self._rebaseline_args(test, suffixes, port_name,
+                                      flag_spec_option, options.verbose))
+            copy_baseline_commands.append((copy_command, cwd))
 
         return copy_baseline_commands, rebaseline_commands, lines_to_remove
 
@@ -402,7 +486,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         change_set = ChangeSet()
         for _, stdout, _ in command_results:
             updated = False
-            for line in filter(None, stdout.splitlines()):
+            for line in stdout.splitlines():
+                if not line:
+                    continue
                 try:
                     parsed_line = json.loads(line)
                     change_set.update(ChangeSet.from_dict(parsed_line))
@@ -414,52 +500,59 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 _log.debug('Could not add file based off output "%s"', stdout)
         return change_set
 
-    def _optimize_baselines(self, test_baseline_set, verbose=False):
+    def _optimize_commands(self,
+                           test_baseline_set,
+                           verbose=False,
+                           resultDB=False):
         """Returns a list of commands to run in parallel to de-duplicate baselines."""
-        tests_to_suffixes = collections.defaultdict(set)
-        builders_to_fetch_from = self._builders_to_fetch_from(
-            test_baseline_set.all_builders())
-        for test, build, _ in test_baseline_set:
-            if build.builder_name not in builders_to_fetch_from:
+        test_set = set()
+        baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
+        for test, build, step_name, _ in baseline_subset:
+            # Use the suffixes information to determine whether to proceed with the optimize
+            # step. Suffixes are not passed to the optimizer.
+            if resultDB:
+                suffixes = self._suffixes_for_actual_failures_resultdb(
+                    test, build)
+            else:
+                suffixes = self._suffixes_for_actual_failures(
+                    test, build, step_name)
+            if suffixes == set():
                 continue
+            test_set.add(test)
 
-            # TODO(crbug.com/1154085): Undo this special case when we have WPT
-            # bots on more ports.
-            if self._tool.builders.is_wpt_builder(build.builder_name):
-                continue
-
-            # For flag_specific(highdpi) we skip both 'copy existing baselines'
-            # and  optimizer.
-            if self._tool.builders.is_flag_specific_builder(
-                    build.builder_name):
-                continue
-
-            tests_to_suffixes[test].update(
-                self._suffixes_for_actual_failures(test, build))
+        # Process the test_list so that each list caps at MAX_TESTS_IN_OPTIMIZE_CMDLINE tests
+        capped_test_list = []
+        test_list = list(test_set)
+        for i in range(0, len(test_set), MAX_TESTS_IN_OPTIMIZE_CMDLINE):
+            capped_test_list.append(test_list[i:i +
+                                              MAX_TESTS_IN_OPTIMIZE_CMDLINE])
 
         optimize_commands = []
-        for test, suffixes in tests_to_suffixes.iteritems():
-            # No need to optimize baselines for a test with no failures.
-            if not suffixes:
-                continue
-            # FIXME: We should propagate the platform options as well.
-            # Prevent multiple baseline optimizer to race updating the manifest.
-            # The manifest has already been updated when listing tests.
-            args = ['--no-manifest-update']
-            if verbose:
-                args.append('--verbose')
-            args.extend(['--suffixes', ','.join(suffixes), test])
-            path_to_blink_tool = self._tool.path()
-            cwd = self._tool.git().checkout_root
+        cwd = self._tool.git().checkout_root
+        path_to_blink_tool = self._tool.path()
+
+        # Build one optimize-baselines invocation command for each flag_spec.
+        # All the tests in the test list will be optimized iteratively.
+        for test_list in capped_test_list:
             command = [
-                self._tool.executable, path_to_blink_tool, 'optimize-baselines'
-            ] + args
-            optimize_commands.append(tuple([command, cwd]))
+                self._tool.executable,
+                path_to_blink_tool,
+                'optimize-baselines',
+                # FIXME: We should propagate the platform options as well.
+                # Prevent multiple baseline optimizer to race updating the manifest.
+                # The manifest has already been updated when listing tests.
+                '--no-manifest-update',
+            ]
+            if verbose:
+                command.append('--verbose')
+
+            command.extend(test_list)
+            optimize_commands.append((command, cwd))
 
         return optimize_commands
 
     def _update_expectations_files(self, lines_to_remove):
-        tests = lines_to_remove.keys()
+        tests = list(lines_to_remove.keys())
         to_remove = collections.defaultdict(set)
         all_versions = frozenset([
             config.version.lower() for config in self._tool.port_factory.get().
@@ -484,6 +577,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 if port.test_configuration().version.lower() in all_versions:
                     to_remove[test].add(
                         port.test_configuration().version.lower())
+
+        if self._dry_run:
+            for test, versions in to_remove.items():
+                _log.debug('Would have removed expectations for %s: %s', test,
+                           ', '.join(sorted(versions)))
+            return
+
         port = self._tool.port_factory.get()
         path = port.path_to_generic_test_expectations_file()
         test_expectations = TestExpectations(
@@ -491,23 +591,29 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             expectations_dict={
                 path: self._tool.filesystem.read_text_file(path)
             })
-        system_remover = SystemConfigurationRemover(test_expectations)
+        system_remover = SystemConfigurationRemover(self._tool.filesystem, test_expectations)
         for test, versions in to_remove.items():
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()
 
     def _run_in_parallel(self, commands):
         if not commands:
-            return {}
+            return []
+
+        if self._dry_run:
+            for command, _ in commands:
+                _log.debug('Would have run: "%s"',
+                           self._tool.executive.command_for_printing(command))
+            return [(0, '', '')] * len(commands)
 
         command_results = self._tool.executive.run_in_parallel(commands)
         for _, _, stderr in command_results:
             if stderr:
-                _log.error(stderr)
+                lines = stderr.decode("utf-8", "ignore").splitlines()
+                for line in lines:
+                    print(line)
 
-        change_set = self._extract_expectation_line_changes(command_results)
-
-        return change_set.lines_to_remove
+        return command_results
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -517,14 +623,14 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             test_baseline_set: A TestBaselineSet instance, which represents
                 a set of tests/platform combinations to rebaseline.
         """
-        if self._tool.git().has_working_directory_changes(
-                pathspec=self._web_tests_dir()):
+        if not self._dry_run and self._tool.git(
+        ).has_working_directory_changes(pathspec=self._web_tests_dir()):
             _log.error(
                 'There are uncommitted changes in the web tests directory; aborting.'
             )
             return
 
-        for test in sorted({t for t, _, _ in test_baseline_set}):
+        for test in test_baseline_set.all_tests():
             _log.info('Rebaselining %s', test)
 
         # extra_lines_to_remove are unexpected passes, while lines_to_remove are
@@ -532,10 +638,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         copy_baseline_commands, rebaseline_commands, extra_lines_to_remove = self._rebaseline_commands(
             test_baseline_set, options)
         lines_to_remove = {}
-
         self._run_in_parallel(copy_baseline_commands)
-        lines_to_remove = self._run_in_parallel(rebaseline_commands)
 
+        command_results = self._run_in_parallel(rebaseline_commands)
+        change_set = self._extract_expectation_line_changes(command_results)
+        lines_to_remove = change_set.lines_to_remove
         for test in extra_lines_to_remove:
             if test in lines_to_remove:
                 lines_to_remove[test] = (
@@ -547,10 +654,19 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             self._update_expectations_files(lines_to_remove)
 
         if options.optimize:
-            self._run_in_parallel(
-                self._optimize_baselines(test_baseline_set, options.verbose))
+            # No point in optimizing during a dry run where no files were
+            # downloaded.
+            if self._dry_run:
+                _log.info('Skipping optimization during dry run.')
+            else:
+                optimize_commands = self._optimize_commands(
+                    test_baseline_set, options.verbose, options.resultDB)
+                for (cmd, cwd) in optimize_commands:
+                    output = self._tool.executive.run_command(cmd, cwd)
+                    print(output)
 
-        self._tool.git().add_list(self.unstaged_baselines())
+        if not self._dry_run:
+            self._tool.git().add_list(self.unstaged_baselines())
 
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""
@@ -584,27 +700,36 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     def _web_tests_dir(self):
         return self._tool.port_factory.get().web_tests_dir()
 
-    def _suffixes_for_actual_failures(self, test, build):
+    def _suffixes_for_actual_failures_resultdb(self, test, build):
+        suffixes = set()
+        fetch_url_list = self.baseline_fetch_url_resultdb(test, build)
+        for artifact_fetch_url in fetch_url_list:
+            if 'actual_image' in artifact_fetch_url:
+                suffixes.add('png')
+            if 'actual_text' in artifact_fetch_url:
+                suffixes.add('txt')
+            if 'actual_audio' in artifact_fetch_url:
+                suffixes.add('wav')
+        return suffixes
+
+    def _suffixes_for_actual_failures(self, test, build, step_name=None):
         """Gets the baseline suffixes for actual mismatch failures in some results.
 
         Args:
             test: A full test path string.
             build: A Build object.
+            step_name: The name of the build step the test ran in.
 
         Returns:
             A set of file suffix strings.
         """
-        test_result = self._result_for_test(test, build)
+        test_result = self._result_for_test(test, build, step_name)
         if not test_result:
             return set()
-        # Regardless of the test type, we only need the text output (i.e. the
-        # INI manifest) on a WPT bot (a reftest produces both text and image
-        # output, but the image is only informative).
-        if self._tool.builders.is_wpt_builder(build.builder_name):
-            return {'txt'}
         return test_result.suffixes_for_test_result()
 
-    def _test_passed_unexpectedly(self, test, build, port_name):
+    def _test_passed_unexpectedly(self, test, build, port_name,
+                                  step_name=None):
         """Determines if a test passed unexpectedly in a build.
 
         The routine also takes into account the port that is being rebaselined.
@@ -616,6 +741,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             test: A full test path string.
             build: A Build object.
             port_name: The name of port currently being rebaselined.
+            step_name: The name of the build step the test ran in.
 
         Returns:
             A boolean.
@@ -623,16 +749,17 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         if self._tool.builders.port_name_for_builder_name(
                 build.builder_name) != port_name:
             return False
-        test_result = self._result_for_test(test, build)
+        test_result = self._result_for_test(test, build, step_name)
         if not test_result:
             return False
         return test_result.did_pass() and not test_result.did_run_as_expected()
 
     @memoized
-    def _result_for_test(self, test, build):
+    def _result_for_test(self, test, build, step_name=None):
         # We need full results to know if a test passed or was skipped.
         # TODO(robertma): Make memoized support kwargs, and use full=True here.
-        results = self._tool.results_fetcher.fetch_results(build, True)
+        results = self._tool.results_fetcher.fetch_results(
+            build, True, step_name)
         if not results:
             _log.debug('No results found for build %s', build)
             return None
@@ -652,6 +779,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
     def __init__(self):
         super(Rebaseline, self).__init__(options=[
             self.no_optimize_option,
+            self.dry_run_option,
             # FIXME: should we support the platform options in addition to (or instead of) --builders?
             self.results_directory_option,
             optparse.make_option(
@@ -671,6 +799,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
 
     def execute(self, options, args, tool):
         self._tool = tool
+        self._dry_run = options.dry_run
         if not args:
             _log.error('Must list tests to rebaseline.')
             return
@@ -685,8 +814,12 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         test_baseline_set = TestBaselineSet(tool)
 
         for builder in builders_to_check:
-            for test_prefix in args:
-                test_baseline_set.add(test_prefix, Build(builder))
+            build = Build(builder)
+            step_names = self._tool.results_fetcher.get_layout_test_step_names(
+                build)
+            for step_name in step_names:
+                for test_prefix in args:
+                    test_baseline_set.add(test_prefix, build, step_name)
 
         _log.debug('Rebaselining: %s', test_baseline_set)
 

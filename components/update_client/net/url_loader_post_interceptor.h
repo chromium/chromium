@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
@@ -60,6 +60,9 @@ class URLLoaderPostInterceptor {
                            network::TestURLLoaderFactory* url_loader_factory);
   URLLoaderPostInterceptor(std::vector<GURL> supported_urls,
                            net::test_server::EmbeddedTestServer*);
+
+  URLLoaderPostInterceptor(const URLLoaderPostInterceptor&) = delete;
+  URLLoaderPostInterceptor& operator=(const URLLoaderPostInterceptor&) = delete;
 
   ~URLLoaderPostInterceptor();
 
@@ -144,36 +147,37 @@ class URLLoaderPostInterceptor {
 
   base::queue<PendingExpectation> pending_expectations_;
 
-  network::TestURLLoaderFactory* url_loader_factory_ = nullptr;
-  net::test_server::EmbeddedTestServer* embedded_test_server_ = nullptr;
+  raw_ptr<network::TestURLLoaderFactory> url_loader_factory_ = nullptr;
+  raw_ptr<net::test_server::EmbeddedTestServer> embedded_test_server_ = nullptr;
 
   bool is_paused_ = false;
 
   std::vector<GURL> filtered_urls_;
 
   UrlJobRequestReadyCallback url_job_request_ready_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderPostInterceptor);
 };
 
 class PartialMatch : public URLLoaderPostInterceptor::RequestMatcher {
  public:
   explicit PartialMatch(const std::string& expected) : expected_(expected) {}
+
+  PartialMatch(const PartialMatch&) = delete;
+  PartialMatch& operator=(const PartialMatch&) = delete;
+
   bool Match(const std::string& actual) const override;
 
  private:
   const std::string expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartialMatch);
 };
 
 class AnyMatch : public URLLoaderPostInterceptor::RequestMatcher {
  public:
   AnyMatch() = default;
-  bool Match(const std::string& actual) const override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AnyMatch);
+  AnyMatch(const AnyMatch&) = delete;
+  AnyMatch& operator=(const AnyMatch&) = delete;
+
+  bool Match(const std::string& actual) const override;
 };
 
 }  // namespace update_client

@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_DRAGDROP_MAC_DND_UTIL_H_
-#define UI_BASE_DRAGDROP_MAC_DND_UTIL_H_
+#ifndef UI_BASE_DRAGDROP_COCOA_DND_UTIL_H_
+#define UI_BASE_DRAGDROP_COCOA_DND_UTIL_H_
 
 #import <Cocoa/Cocoa.h>
 
@@ -42,4 +42,4 @@ BOOL PopulateURLAndTitleFromPasteboard(GURL* url,
 
 }  // namespace ui
 
-#endif  // UI_BASE_DRAGDROP_MAC_DND_UTIL_H_
+#endif  // UI_BASE_DRAGDROP_COCOA_DND_UTIL_H_

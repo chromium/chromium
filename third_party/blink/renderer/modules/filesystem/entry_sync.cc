@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/filesystem/entry_sync.h"
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_entry.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_entry_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_path.h"
@@ -54,10 +55,11 @@ Metadata* EntrySync::getMetadata(ExceptionState& exception_state) {
   auto* sync_helper = MakeGarbageCollected<MetadataCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::Bind(&MetadataCallbacksSyncHelper::OnSuccess,
-                WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::Bind(&MetadataCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&MetadataCallbacksSyncHelper::OnSuccess,
+                    WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper =
+      WTF::BindOnce(&MetadataCallbacksSyncHelper::OnError,
+                    WrapPersistentIfNeeded(sync_helper));
 
   file_system_->GetMetadata(this, std::move(success_callback_wrapper),
                             std::move(error_callback_wrapper),
@@ -70,10 +72,10 @@ EntrySync* EntrySync::moveTo(DirectoryEntrySync* parent,
                              ExceptionState& exception_state) const {
   auto* helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
-  auto success_callback_wrapper = WTF::Bind(
+  auto success_callback_wrapper = WTF::BindOnce(
       &EntryCallbacksSyncHelper::OnSuccess, WrapPersistentIfNeeded(helper));
-  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(helper));
 
   file_system_->Move(this, parent, name, std::move(success_callback_wrapper),
                      std::move(error_callback_wrapper),
@@ -88,10 +90,10 @@ EntrySync* EntrySync::copyTo(DirectoryEntrySync* parent,
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::Bind(&EntryCallbacksSyncHelper::OnSuccess,
-                WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                    WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->Copy(this, parent, name, std::move(success_callback_wrapper),
                      std::move(error_callback_wrapper),
@@ -104,8 +106,8 @@ EntrySync* EntrySync::copyTo(DirectoryEntrySync* parent,
 void EntrySync::remove(ExceptionState& exception_state) const {
   auto* sync_helper = MakeGarbageCollected<VoidCallbacksSyncHelper>();
 
-  auto error_callback_wrapper = WTF::Bind(&VoidCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &VoidCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->Remove(this, VoidCallbacks::SuccessCallback(),
                        std::move(error_callback_wrapper),

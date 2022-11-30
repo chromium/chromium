@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/scoped_path_override.h"
-#include "extensions/common/constants.h"
+#include "components/app_constants/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -30,6 +29,10 @@ const base::FilePath::CharType kTestFile[] =
 class DefaultAppOrderTest : public testing::Test {
  public:
   DefaultAppOrderTest() {}
+
+  DefaultAppOrderTest(const DefaultAppOrderTest&) = delete;
+  DefaultAppOrderTest& operator=(const DefaultAppOrderTest&) = delete;
+
   ~DefaultAppOrderTest() override {}
 
   // testing::Test overrides:
@@ -49,8 +52,8 @@ class DefaultAppOrderTest : public testing::Test {
   }
 
   void SetExternalFile(const base::FilePath& path) {
-    path_override_.reset(new base::ScopedPathOverride(
-        chromeos::FILE_DEFAULT_APP_ORDER, path));
+    path_override_ = std::make_unique<base::ScopedPathOverride>(
+        FILE_DEFAULT_APP_ORDER, path);
   }
 
   void CreateExternalOrderFile(const std::string& content) {
@@ -65,8 +68,6 @@ class DefaultAppOrderTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> path_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultAppOrderTest);
 };
 
 // Tests that the built-in default order is returned when ExternalLoader is not
@@ -138,11 +139,11 @@ TEST_F(DefaultAppOrderTest, ImportDefault) {
 
   std::vector<std::string> apps;
   default_app_order::Get(&apps);
-  EXPECT_EQ(default_app_order::kDefaultAppOrderCount + 2, apps.size());
+  EXPECT_EQ(default_app_order::DefaultAppCount() + 2, apps.size());
   EXPECT_EQ(std::string("app1"), apps[0]);
-  EXPECT_EQ(extension_misc::kChromeAppId, apps[1]);
+  EXPECT_EQ(app_constants::kChromeAppId, apps[1]);
   EXPECT_EQ(std::string("app2"),
-            apps[default_app_order::kDefaultAppOrderCount + 1]);
+            apps[default_app_order::DefaultAppCount() + 1]);
 }
 
 }  // namespace chromeos

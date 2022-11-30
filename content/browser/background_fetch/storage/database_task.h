@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,22 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 class QuotaManagerProxy;
 }  // namespace storage
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -71,6 +72,9 @@ class DatabaseTask : public DatabaseTaskHost {
   using StorageVersionCallback =
       base::OnceCallback<void(proto::BackgroundFetchStorageVersion)>;
 
+  DatabaseTask(const DatabaseTask&) = delete;
+  DatabaseTask& operator=(const DatabaseTask&) = delete;
+
   ~DatabaseTask() override;
 
   virtual void Start() = 0;
@@ -102,7 +106,7 @@ class DatabaseTask : public DatabaseTaskHost {
   ServiceWorkerContextWrapper* service_worker_context();
   std::set<std::string>& ref_counted_unique_ids();
   ChromeBlobStorageContext* blob_storage_context();
-  storage::QuotaManagerProxy* quota_manager_proxy();
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy();
 
   // DatabaseTaskHost implementation.
   void OnTaskFinished(DatabaseTask* finished_subtask) override;
@@ -115,7 +119,7 @@ class DatabaseTask : public DatabaseTaskHost {
   bool HasStorageError();
 
   // Quota.
-  void IsQuotaAvailable(const url::Origin& origin,
+  void IsQuotaAvailable(const blink::StorageKey& storage_key,
                         int64_t size,
                         IsQuotaAvailableCallback callback);
 
@@ -132,7 +136,7 @@ class DatabaseTask : public DatabaseTaskHost {
       const BackgroundFetchRegistrationId& registration_id,
       int64_t trace_id,
       base::OnceCallback<void(blink::mojom::CacheStorageError)> callback);
-  void DeleteCache(const url::Origin& origin,
+  void DeleteCache(const blink::StorageKey& storage_key,
                    const std::string& unique_id,
                    int64_t trace_id,
                    blink::mojom::CacheStorage::DeleteCallback callback);
@@ -161,7 +165,7 @@ class DatabaseTask : public DatabaseTaskHost {
 
   base::WeakPtr<DatabaseTaskHost> GetWeakPtr() override;
 
-  DatabaseTaskHost* host_;
+  raw_ptr<DatabaseTaskHost> host_;
 
   // Map the raw pointer to its unique_ptr, to make lookups easier.
   std::map<DatabaseTask*, std::unique_ptr<DatabaseTask>> active_subtasks_;
@@ -174,8 +178,6 @@ class DatabaseTask : public DatabaseTaskHost {
       cache_storage_cache_remote_;
 
   base::WeakPtrFactory<DatabaseTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseTask);
 };
 
 }  // namespace background_fetch

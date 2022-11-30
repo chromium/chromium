@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,15 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
  */
 ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  setUp() {
-    super.setUp();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'ChromeVoxBackground', '/chromevox/background/classic_background.js');
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
+    await importModule(
+        'SmartStickyMode', '/chromevox/background/smart_sticky_mode.js');
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
     ChromeVoxState.removeObserver(this.ssm_);
@@ -19,12 +26,12 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
   }
 
   assertDidTurnOffForNode(node) {
-    this.ssm_.onCurrentRangeChanged(cursors.Range.fromNode(node));
+    this.ssm_.onCurrentRangeChanged(CursorRange.fromNode(node));
     assertTrue(this.ssm_.didTurnOffStickyMode_);
   }
 
   assertDidNotTurnOffForNode(node) {
-    this.ssm_.onCurrentRangeChanged(cursors.Range.fromNode(node));
+    this.ssm_.onCurrentRangeChanged(CursorRange.fromNode(node));
     assertFalse(this.ssm_.didTurnOffStickyMode_);
   }
 
@@ -40,161 +47,157 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F('ChromeVoxSmartStickyModeTest', 'PossibleRangeTypes', function() {
-  this.runWithLoadedTree(this.relationsDoc, function(root) {
-    const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
+AX_TEST_F(
+    'ChromeVoxSmartStickyModeTest', 'PossibleRangeTypes', async function() {
+      const root = await this.runWithLoadedTree(this.relationsDoc);
+      const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
 
-    // First, turn on sticky mode and try changing range to various parts of
-    // the document.
-    ChromeVoxBackground.setPref(
-        'sticky', true /* value */, true /* announce */);
-    this.assertDidTurnOffForNode(input);
-    this.assertDidTurnOffForNode(textarea);
-    this.assertDidNotTurnOffForNode(p);
-    this.assertDidTurnOffForNode(contenteditable);
-    this.assertDidTurnOffForNode(ul1);
-    this.assertDidNotTurnOffForNode(p);
-    this.assertDidTurnOffForNode(ul2);
-    this.assertDidTurnOffForNode(ul1.firstChild);
-    this.assertDidNotTurnOffForNode(ul1.parent);
-    this.assertDidNotTurnOffForNode(ul2.parent);
-    this.assertDidNotTurnOffForNode(p);
-    this.assertDidTurnOffForNode(ul2.firstChild);
-    this.assertDidNotTurnOffForNode(p);
-    this.assertDidNotTurnOffForNode(contenteditable.parent);
-    this.assertDidTurnOffForNode(contenteditable.find({role: 'heading'}));
-    this.assertDidTurnOffForNode(contenteditable.find({role: 'inlineTextBox'}));
-  });
-});
-
-TEST_F(
-    'ChromeVoxSmartStickyModeTest', 'UserPressesStickyModeCommand', function() {
-      this.runWithLoadedTree(this.relationsDoc, function(root) {
-        const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
-        ChromeVoxBackground.setPref(
-            'sticky', true /* value */, true /* announce */);
-
-        // Mix in calls to turn on / off sticky mode while moving the range
-        // around.
-        this.assertDidTurnOffForNode(input);
-        this.ssm_.onStickyModeCommand(cursors.Range.fromNode(input));
-        this.assertDidNotTurnOffForNode(input);
-        this.ssm_.onStickyModeCommand(cursors.Range.fromNode(input));
-        this.assertDidNotTurnOffForNode(input);
-        this.assertDidNotTurnOffForNode(input.firstChild);
-        this.assertDidNotTurnOffForNode(p);
-
-        // Make sure sticky mode is on again. This call doesn't impact our
-        // instance of SmartStickyMode.
-        ChromeVoxBackground.setPref(
-            'sticky', true /* value */, true /* announce */);
-
-        // Mix in more sticky mode user commands and move to related nodes.
-        this.assertDidTurnOffForNode(contenteditable);
-        this.assertDidTurnOffForNode(ul2);
-        this.ssm_.onStickyModeCommand(cursors.Range.fromNode(ul2));
-        this.assertDidNotTurnOffForNode(ul2);
-        this.assertDidNotTurnOffForNode(ul2.firstChild);
-        this.assertDidNotTurnOffForNode(contenteditable);
-        this.ssm_.onStickyModeCommand(cursors.Range.fromNode(input));
-        this.assertDidNotTurnOffForNode(ul2);
-        this.assertDidNotTurnOffForNode(ul2.firstChild);
-        this.assertDidNotTurnOffForNode(contenteditable);
-
-        // Finally, verify sticky mode isn't impacted on non-editables.
-        this.assertDidNotTurnOffForNode(p);
-        this.ssm_.onStickyModeCommand(cursors.Range.fromNode(p));
-        this.assertDidNotTurnOffForNode(p);
-        this.ssm_.onStickyModeCommand(cursors.Range.fromNode(p));
-        this.assertDidNotTurnOffForNode(p);
-      });
+      // First, turn on sticky mode and try changing range to various parts of
+      // the document.
+      ChromeVoxBackground.setPref(
+          'sticky', true /* value */, true /* announce */);
+      this.assertDidTurnOffForNode(input);
+      this.assertDidTurnOffForNode(textarea);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidTurnOffForNode(contenteditable);
+      this.assertDidTurnOffForNode(ul1);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidTurnOffForNode(ul2);
+      this.assertDidTurnOffForNode(ul1.firstChild);
+      this.assertDidNotTurnOffForNode(ul1.parent);
+      this.assertDidNotTurnOffForNode(ul2.parent);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidTurnOffForNode(ul2.firstChild);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidNotTurnOffForNode(contenteditable.parent);
+      this.assertDidTurnOffForNode(contenteditable.find({role: 'heading'}));
+      this.assertDidTurnOffForNode(
+          contenteditable.find({role: 'inlineTextBox'}));
     });
 
-TEST_F(
-    'ChromeVoxSmartStickyModeTest', 'SmartStickyModeJumpCommands', function() {
+AX_TEST_F(
+    'ChromeVoxSmartStickyModeTest', 'UserPressesStickyModeCommand',
+    async function() {
+      const root = await this.runWithLoadedTree(this.relationsDoc);
+      const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
+      ChromeVoxBackground.setPref(
+          'sticky', true /* value */, true /* announce */);
+
+      // Mix in calls to turn on / off sticky mode while moving the range
+      // around.
+      this.assertDidTurnOffForNode(input);
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
+      this.assertDidNotTurnOffForNode(input);
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
+      this.assertDidNotTurnOffForNode(input);
+      this.assertDidNotTurnOffForNode(input.firstChild);
+      this.assertDidNotTurnOffForNode(p);
+
+      // Make sure sticky mode is on again. This call doesn't impact our
+      // instance of SmartStickyMode.
+      ChromeVoxBackground.setPref(
+          'sticky', true /* value */, true /* announce */);
+
+      // Mix in more sticky mode user commands and move to related nodes.
+      this.assertDidTurnOffForNode(contenteditable);
+      this.assertDidTurnOffForNode(ul2);
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(ul2));
+      this.assertDidNotTurnOffForNode(ul2);
+      this.assertDidNotTurnOffForNode(ul2.firstChild);
+      this.assertDidNotTurnOffForNode(contenteditable);
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
+      this.assertDidNotTurnOffForNode(ul2);
+      this.assertDidNotTurnOffForNode(ul2.firstChild);
+      this.assertDidNotTurnOffForNode(contenteditable);
+
+      // Finally, verify sticky mode isn't impacted on non-editables.
+      this.assertDidNotTurnOffForNode(p);
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(p));
+      this.assertDidNotTurnOffForNode(p);
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(p));
+      this.assertDidNotTurnOffForNode(p);
+    });
+
+AX_TEST_F(
+    'ChromeVoxSmartStickyModeTest', 'SmartStickyModeJumpCommands',
+    async function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(
-          `
+      const root = await this.runWithLoadedTree(`
         <p>start</p>
         <input type="text"></input>
         <button>end</button>
-      `,
-          function(root) {
-            mockFeedback.call(doCmd('toggleStickyMode'))
-                .expectSpeech('Sticky mode enabled')
-                .call(doCmd('nextFormField'))
-                .expectSpeech('Edit text')
-                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
-                .call(doCmd('nextFormField'))
-                .expectSpeech('Button')
-                .call(doCmd('previousFormField'))
-                .expectSpeech('Edit text')
-                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
-                .call(doCmd('previousObject'))
-                .expectSpeech('start')
-                .call(doCmd('nextEditText'))
-                .expectSpeech('Edit text')
-                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
-                .call(doCmd('nextObject'))
-                .expectSpeech('Button')
-                .call(doCmd('previousEditText'))
-                .expectSpeech('Edit text')
-                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
-                .call(doCmd('nextObject'))
-                .expectSpeech('Button')
-                .call(doCmd('previousObject'))
-                .expectSpeech('Sticky mode disabled')
-                .expectSpeech('Edit text')
-                .call(() => assertFalse(ChromeVox.isStickyModeOn()))
-                .replay();
-          });
+      `);
+      mockFeedback.call(doCmd('toggleStickyMode'))
+          .expectSpeech('Sticky mode enabled')
+          .call(doCmd('nextFormField'))
+          .expectSpeech('Edit text')
+          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(doCmd('nextFormField'))
+          .expectSpeech('Button')
+          .call(doCmd('previousFormField'))
+          .expectSpeech('Edit text')
+          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(doCmd('previousObject'))
+          .expectSpeech('start')
+          .call(doCmd('nextEditText'))
+          .expectSpeech('Edit text')
+          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(doCmd('nextObject'))
+          .expectSpeech('Button')
+          .call(doCmd('previousEditText'))
+          .expectSpeech('Edit text')
+          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(doCmd('nextObject'))
+          .expectSpeech('Button')
+          .call(doCmd('previousObject'))
+          .expectSpeech('Sticky mode disabled')
+          .expectSpeech('Edit text')
+          .call(() => assertFalse(ChromeVox.isStickyModeOn()));
+      await mockFeedback.replay();
     });
 
-TEST_F('ChromeVoxSmartStickyModeTest', 'SmartStickyModeEarcons', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(
-      `
+AX_TEST_F(
+    'ChromeVoxSmartStickyModeTest', 'SmartStickyModeEarcons', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(`
     <p>start</p>
     <input type="text"></input>
     <button>end</button>
-  `,
-      function(root) {
-        mockFeedback.call(doCmd('toggleStickyMode'))
-            .expectSpeech('Sticky mode enabled')
-            .call(doCmd('nextObject'))
-            .expectEarcon(Earcon.SMART_STICKY_MODE_OFF)
-            .expectSpeech('Sticky mode disabled')
-            .expectSpeech('Edit text')
-            .call(() => assertFalse(ChromeVox.isStickyModeOn()))
-            .call(doCmd('nextObject'))
-            .expectEarcon(Earcon.SMART_STICKY_MODE_ON)
-            .expectSpeech('Sticky mode enabled')
-            .expectSpeech('Button')
-            .call(() => assertTrue(ChromeVox.isStickyModeOn()))
-            .replay();
-      });
-});
+  `);
+      mockFeedback.call(doCmd('toggleStickyMode'))
+          .expectSpeech('Sticky mode enabled')
+          .call(doCmd('nextObject'))
+          .expectEarcon(Earcon.SMART_STICKY_MODE_OFF)
+          .expectSpeech('Sticky mode disabled')
+          .expectSpeech('Edit text')
+          .call(() => assertFalse(ChromeVox.isStickyModeOn()))
+          .call(doCmd('nextObject'))
+          .expectEarcon(Earcon.SMART_STICKY_MODE_ON)
+          .expectSpeech('Sticky mode enabled')
+          .expectSpeech('Button')
+          .call(() => assertTrue(ChromeVox.isStickyModeOn()));
+      await mockFeedback.replay();
+    });
 
-TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', function() {
+AX_TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>start</p>
     <input type="text"></input>
     <button>end</button>
   `;
-  this.runWithLoadedTree(site, function(root) {
-    // Fake the read from here/continuous read state.
-    ChromeVoxState.isReadingContinuously = true;
-    mockFeedback.call(doCmd('toggleStickyMode'))
-        .expectSpeech('Sticky mode enabled')
-        .call(doCmd('nextObject'))
-        .expectNextSpeechUtteranceIsNot('Sticky mode disabled')
-        .expectSpeech('Edit text')
-        .call(() => assertTrue(ChromeVox.isStickyModeOn()))
-        .call(doCmd('nextObject'))
-        .expectNextSpeechUtteranceIsNot('Sticky mode enabled')
-        .expectSpeech('Button')
-        .call(() => assertTrue(ChromeVox.isStickyModeOn()))
-        .replay();
-  });
+  const root = await this.runWithLoadedTree(site);
+  // Fake the read from here/continuous read state.
+  ChromeVoxState.instance.isReadingContinuously = true;
+  mockFeedback.call(doCmd('toggleStickyMode'))
+      .expectSpeech('Sticky mode enabled')
+      .call(doCmd('nextObject'))
+      .expectNextSpeechUtteranceIsNot('Sticky mode disabled')
+      .expectSpeech('Edit text')
+      .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+      .call(doCmd('nextObject'))
+      .expectNextSpeechUtteranceIsNot('Sticky mode enabled')
+      .expectSpeech('Button')
+      .call(() => assertTrue(ChromeVox.isStickyModeOn()));
+  await mockFeedback.replay();
 });

@@ -50,7 +50,11 @@ int          p
 #endif
 
    OPUS_CLEAR(lpc, p);
+#ifdef FIXED_POINT
    if (ac[0] != 0)
+#else
+   if (ac[0] > 1e-10f)
+#endif
    {
       for (i = 0; i < p; i++) {
          /* Sum up this iteration's reflection coefficient */
@@ -73,10 +77,10 @@ int          p
          error = error - MULT32_32_Q31(MULT32_32_Q31(r,r),error);
          /* Bail out once we get 30 dB gain */
 #ifdef FIXED_POINT
-         if (error<SHR32(ac[0],10))
+         if (error<=SHR32(ac[0],10))
             break;
 #else
-         if (error<.001f*ac[0])
+         if (error<=.001f*ac[0])
             break;
 #endif
       }
@@ -155,17 +159,17 @@ void celt_fir_c(
       sum[2] = SHL32(EXTEND32(x[i+2]), SIG_SHIFT);
       sum[3] = SHL32(EXTEND32(x[i+3]), SIG_SHIFT);
       xcorr_kernel(rnum, x+i-ord, sum, ord, arch);
-      y[i  ] = ROUND16(sum[0], SIG_SHIFT);
-      y[i+1] = ROUND16(sum[1], SIG_SHIFT);
-      y[i+2] = ROUND16(sum[2], SIG_SHIFT);
-      y[i+3] = ROUND16(sum[3], SIG_SHIFT);
+      y[i  ] = SROUND16(sum[0], SIG_SHIFT);
+      y[i+1] = SROUND16(sum[1], SIG_SHIFT);
+      y[i+2] = SROUND16(sum[2], SIG_SHIFT);
+      y[i+3] = SROUND16(sum[3], SIG_SHIFT);
    }
    for (;i<N;i++)
    {
       opus_val32 sum = SHL32(EXTEND32(x[i]), SIG_SHIFT);
       for (j=0;j<ord;j++)
          sum = MAC16_16(sum,rnum[j],x[i+j-ord]);
-      y[i] = ROUND16(sum, SIG_SHIFT);
+      y[i] = SROUND16(sum, SIG_SHIFT);
    }
    RESTORE_STACK;
 }

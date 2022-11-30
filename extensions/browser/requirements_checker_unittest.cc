@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,9 +54,9 @@ class RequirementsCheckerTest : public ExtensionsTest {
   ~RequirementsCheckerTest() override {}
 
   void CreateExtension() {
-    manifest_dict_->SetString("name", "dummy name");
-    manifest_dict_->SetString("version", "1");
-    manifest_dict_->SetInteger("manifest_version", 2);
+    manifest_dict_->SetStringKey("name", "dummy name");
+    manifest_dict_->SetStringKey("version", "1");
+    manifest_dict_->SetIntKey("manifest_version", 2);
 
     std::string error;
     extension_ =
@@ -74,15 +74,15 @@ class RequirementsCheckerTest : public ExtensionsTest {
   }
 
   void RequireWindowShape() {
-    manifest_dict_->SetBoolean("requirements.window.shape", true);
+    manifest_dict_->SetBoolPath("requirements.window.shape", true);
   }
 
   void RequireFeature(const char feature[]) {
-    if (!manifest_dict_->HasKey(kFeaturesKey))
+    if (!manifest_dict_->FindKey(kFeaturesKey))
       manifest_dict_->Set(kFeaturesKey, std::make_unique<base::ListValue>());
     base::ListValue* features_list = nullptr;
     ASSERT_TRUE(manifest_dict_->GetList(kFeaturesKey, &features_list));
-    features_list->AppendString(feature);
+    features_list->Append(feature);
   }
 
   std::unique_ptr<RequirementsChecker> checker_;
@@ -148,7 +148,7 @@ TEST_F(RequirementsCheckerTest, RequirementsFailWebGL) {
   // waiting for the GPU check to succeed: crbug.com/706204.
   if (runner_.errors().size()) {
     EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
-                                      PreloadCheck::WEBGL_NOT_SUPPORTED));
+                                      PreloadCheck::Error::kWebglNotSupported));
     EXPECT_FALSE(checker_->GetErrorMessage().empty());
   }
 }

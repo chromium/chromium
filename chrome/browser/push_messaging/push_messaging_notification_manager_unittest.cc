@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/android_sms/fake_android_sms_app_manager.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include <memory>
+
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 #endif
 
 class PushMessagingNotificationManagerTest
@@ -58,25 +60,23 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
 TEST_F(PushMessagingNotificationManagerTest,
        SkipEnforceUserVisibleOnlyRequirementsForAndroidMessages) {
   GURL app_url("https://example.com/test/");
-  chromeos::android_sms::FakeAndroidSmsAppManager*
-      fake_android_sms_app_manager =
-          new chromeos::android_sms::FakeAndroidSmsAppManager();
+  auto fake_android_sms_app_manager =
+      std::make_unique<ash::android_sms::FakeAndroidSmsAppManager>();
   fake_android_sms_app_manager->SetInstalledAppUrl(app_url);
 
-  chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
-      fake_multidevice_setup_client =
-          new chromeos::multidevice_setup::FakeMultiDeviceSetupClient();
+  auto fake_multidevice_setup_client =
+      std::make_unique<ash::multidevice_setup::FakeMultiDeviceSetupClient>();
   fake_multidevice_setup_client->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kMessages,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+      ash::multidevice_setup::mojom::Feature::kMessages,
+      ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);
 
   PushMessagingNotificationManager manager(profile());
-  manager.SetTestMultiDeviceSetupClient(fake_multidevice_setup_client);
-  manager.SetTestAndroidSmsAppManager(fake_android_sms_app_manager);
+  manager.SetTestMultiDeviceSetupClient(fake_multidevice_setup_client.get());
+  manager.SetTestAndroidSmsAppManager(fake_android_sms_app_manager.get());
 
   bool was_called = false;
   manager.EnforceUserVisibleOnlyRequirements(
-      app_url.GetOrigin(), 0l,
+      app_url.DeprecatedGetOriginAsURL(), 0l,
       base::BindOnce(
           [](bool* was_called, bool did_show_generic_notification) {
             *was_called = true;

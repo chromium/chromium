@@ -27,14 +27,14 @@
 
 #include <memory>
 #include "base/location.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -82,17 +82,17 @@ class ImageFrameGeneratorTest : public testing::Test,
 
   void MemoryAllocatorSet() override { ++memory_allocator_set_count_; }
 
-  ImageFrame::Status GetStatus(size_t index) override {
+  ImageFrame::Status GetStatus(wtf_size_t index) override {
     ImageFrame::Status current_status = status_;
     status_ = next_frame_status_;
     return current_status;
   }
 
-  void ClearCacheExceptFrameRequested(size_t clear_except_frame) override {
+  void ClearCacheExceptFrameRequested(wtf_size_t clear_except_frame) override {
     requested_clear_except_frame_ = clear_except_frame;
   }
 
-  size_t FrameCount() override { return frame_count_; }
+  wtf_size_t FrameCount() override { return frame_count_; }
   int RepetitionCount() const override {
     return frame_count_ == 1 ? kAnimationNone : kAnimationLoopOnce;
   }
@@ -112,7 +112,7 @@ class ImageFrameGeneratorTest : public testing::Test,
   void SetNextFrameStatus(ImageFrame::Status status) {
     next_frame_status_ = status;
   }
-  void SetFrameCount(size_t count) {
+  void SetFrameCount(wtf_size_t count) {
     frame_count_ = count;
     if (count > 1) {
       generator_ = nullptr;
@@ -136,9 +136,48 @@ class ImageFrameGeneratorTest : public testing::Test,
   int memory_allocator_set_count_;
   ImageFrame::Status status_;
   ImageFrame::Status next_frame_status_;
-  size_t frame_count_;
-  size_t requested_clear_except_frame_;
+  wtf_size_t frame_count_;
+  wtf_size_t requested_clear_except_frame_;
 };
+
+// Test the UMA(ImageHasMultipleGeneratorClientIds) is recorded correctly.
+TEST_F(ImageFrameGeneratorTest, DecodeByMultipleClients) {
+  SetFrameStatus(ImageFrame::kFrameComplete);
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds", 0);
+
+  char buffer[100 * 100 * 4];
+  cc::PaintImage::GeneratorClientId client_id_0 =
+      cc::PaintImage::GetNextGeneratorClientId();
+  generator_->DecodeAndScale(segment_reader_.get(), true, 0, ImageInfo(),
+                             buffer, 100 * 4, ImageDecoder::kAlphaPremultiplied,
+                             client_id_0);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds",
+      0 /* kRequestByAtLeastOneClient */, 1);
+
+  generator_->DecodeAndScale(segment_reader_.get(), true, 0, ImageInfo(),
+                             buffer, 100 * 4, ImageDecoder::kAlphaPremultiplied,
+                             cc::PaintImage::kDefaultGeneratorClientId);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds",
+      0 /* kRequestByAtLeastOneClient */, 1);
+
+  cc::PaintImage::GeneratorClientId client_id_1 =
+      cc::PaintImage::GetNextGeneratorClientId();
+  generator_->DecodeAndScale(segment_reader_.get(), true, 0, ImageInfo(),
+                             buffer, 100 * 4, ImageDecoder::kAlphaPremultiplied,
+                             client_id_1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds", 2);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds",
+      0 /* kRequestByAtLeastOneClient */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds",
+      1 /* kRequestByMoreThanOneClient */, 1);
+}
 
 TEST_F(ImageFrameGeneratorTest, GetSupportedSizes) {
   ASSERT_TRUE(FullSize() == SkISize::Make(100, 100));
@@ -149,7 +188,7 @@ TEST_F(ImageFrameGeneratorTest, GetSupportedSizes) {
 
   struct Test {
     SkISize query_size;
-    size_t supported_size_index;
+    wtf_size_t supported_size_index;
   } tests[] = {{SkISize::Make(1, 1), 0},     {SkISize::Make(2, 2), 0},
                {SkISize::Make(25, 10), 1},   {SkISize::Make(1, 25), 1},
                {SkISize::Make(50, 51), 2},   {SkISize::Make(80, 80), 3},
@@ -244,14 +283,15 @@ static void DecodeThreadMain(ImageFrameGenerator* generator,
                             cc::PaintImage::kDefaultGeneratorClientId);
 }
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/948641)
 #define MAYBE_incompleteDecodeBecomesCompleteMultiThreaded \
   DISABLED_incompleteDecodeBecomesCompleteMultiThreaded
 #else
 #define MAYBE_incompleteDecodeBecomesCompleteMultiThreaded \
   incompleteDecodeBecomesCompleteMultiThreaded
-#endif  // defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 TEST_F(ImageFrameGeneratorTest,
        MAYBE_incompleteDecodeBecomesCompleteMultiThreaded) {
   SetFrameStatus(ImageFrame::kFramePartial);
@@ -266,9 +306,9 @@ TEST_F(ImageFrameGeneratorTest,
   // LocalFrame can now be decoded completely.
   SetFrameStatus(ImageFrame::kFrameComplete);
   AddNewData();
-  std::unique_ptr<Thread> thread = Platform::Current()->CreateThread(
-      ThreadCreationParams(ThreadType::kTestThread)
-          .SetThreadNameForTest("DecodeThread"));
+  std::unique_ptr<NonMainThread> thread =
+      NonMainThread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                      .SetThreadNameForTest("DecodeThread"));
   PostCrossThreadTask(
       *thread->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&DecodeThreadMain, WTF::RetainedRef(generator_),

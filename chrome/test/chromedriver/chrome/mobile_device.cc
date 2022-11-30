@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -18,54 +19,56 @@ MobileDevice::~MobileDevice() {}
 
 Status FindMobileDevice(std::string device_name,
                         std::unique_ptr<MobileDevice>* mobile_device) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kMobileDevices, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value)
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      kMobileDevices, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value())
     return Status(kUnknownError, "could not parse mobile device list because " +
-                                     parsed_json.error_message);
+                                     parsed_json.error().message);
 
-  base::DictionaryValue* mobile_devices;
-  if (!parsed_json.value->GetAsDictionary(&mobile_devices))
+  if (!parsed_json->is_dict())
     return Status(kUnknownError, "malformed device metrics dictionary");
+  base::Value::Dict& mobile_devices = parsed_json->GetDict();
 
-  base::DictionaryValue* device = NULL;
-  if (!mobile_devices->GetDictionary(device_name, &device))
+  const base::Value::Dict* device =
+      mobile_devices.FindDictByDottedPath(device_name);
+  if (!device)
     return Status(kUnknownError, "must be a valid device");
 
   std::unique_ptr<MobileDevice> tmp_mobile_device(new MobileDevice());
-  std::string device_metrics_string;
-  if (!device->GetString("userAgent", &tmp_mobile_device->user_agent)) {
+  const std::string* maybe_ua = device->FindString("userAgent");
+  if (!maybe_ua) {
     return Status(kUnknownError,
                   "malformed device user agent: should be a string");
   }
-  int width = 0;
-  int height = 0;
-  double device_scale_factor = 0.0;
-  bool touch = true;
-  bool mobile = true;
-  if (!device->GetInteger("width",  &width)) {
+  tmp_mobile_device->user_agent = *maybe_ua;
+
+  absl::optional<int> maybe_width = device->FindInt("width");
+  absl::optional<int> maybe_height = device->FindInt("height");
+  if (!maybe_width) {
     return Status(kUnknownError,
                   "malformed device width: should be an integer");
   }
-  if (!device->GetInteger("height", &height)) {
+  if (!maybe_height) {
     return Status(kUnknownError,
                   "malformed device height: should be an integer");
   }
-  if (!device->GetDouble("deviceScaleFactor", &device_scale_factor)) {
+
+  absl::optional<double> maybe_device_scale_factor =
+      device->FindDouble("deviceScaleFactor");
+  if (!maybe_device_scale_factor) {
     return Status(kUnknownError,
                   "malformed device scale factor: should be a double");
   }
-  if (!device->GetBoolean("touch", &touch)) {
-    return Status(kUnknownError,
-                  "malformed touch: should be a bool");
+  absl::optional<bool> touch = device->FindBool("touch");
+  if (!touch) {
+    return Status(kUnknownError, "malformed touch: should be a bool");
   }
-  if (!device->GetBoolean("mobile", &mobile)) {
-    return Status(kUnknownError,
-                  "malformed mobile: should be a bool");
+  absl::optional<bool> mobile = device->FindBool("mobile");
+  if (!mobile) {
+    return Status(kUnknownError, "malformed mobile: should be a bool");
   }
-  tmp_mobile_device->device_metrics.reset(
-      new DeviceMetrics(width, height, device_scale_factor, touch, mobile));
+  tmp_mobile_device->device_metrics = std::make_unique<DeviceMetrics>(
+      *maybe_width, *maybe_height, *maybe_device_scale_factor, *touch, *mobile);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);

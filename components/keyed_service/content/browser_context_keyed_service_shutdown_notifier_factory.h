@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_KEYED_SERVICE_SHUTDOWN_NOTIFIER_FACTORY_H_
 #define COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_KEYED_SERVICE_SHUTDOWN_NOTIFIER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -20,6 +19,11 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceShutdownNotifierFactory
  public:
   KeyedServiceShutdownNotifier* Get(content::BrowserContext* context);
 
+  BrowserContextKeyedServiceShutdownNotifierFactory(
+      const BrowserContextKeyedServiceShutdownNotifierFactory&) = delete;
+  BrowserContextKeyedServiceShutdownNotifierFactory& operator=(
+      const BrowserContextKeyedServiceShutdownNotifierFactory&) = delete;
+
  protected:
   explicit BrowserContextKeyedServiceShutdownNotifierFactory(const char* name);
   ~BrowserContextKeyedServiceShutdownNotifierFactory() override;
@@ -29,8 +33,6 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceShutdownNotifierFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserContextKeyedServiceShutdownNotifierFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_KEYED_SERVICE_SHUTDOWN_NOTIFIER_FACTORY_H_

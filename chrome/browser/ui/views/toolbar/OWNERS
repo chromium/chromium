@@ -1,8 +1,5 @@
 # Extension/Toolbar Actions
-per-file browser_action*=finnur@chromium.org
 per-file browser_action*=rdevlin.cronin@chromium.org
 per-file chrome_labs*=elainechien@chromium.org
-per-file extension_toolbar_menu_view.*=finnur@chromium.org
 per-file extension_toolbar_menu_view.*=rdevlin.cronin@chromium.org
-per-file *toolbar_action*=finnur@chromium.org
 per-file *toolbar_action*=rdevlin.cronin@chromium.org

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 
@@ -21,8 +20,7 @@
 
 // Notifies delegate about a change in a compromised credentials. Mirroring
 // IOSChromePasswordCheckManager::Observer::CompromisedCredentialsChanged.
-- (void)compromisedCredentialsDidChange:
-    (password_manager::InsecureCredentialsManager::CredentialsView)credentials;
+- (void)compromisedCredentialsDidChange;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -34,15 +32,13 @@ class PasswordCheckObserverBridge
   ~PasswordCheckObserverBridge() override;
 
   void PasswordCheckStatusChanged(PasswordCheckState state) override;
-  void CompromisedCredentialsChanged(
-      password_manager::InsecureCredentialsManager::CredentialsView credentials)
-      override;
+  void CompromisedCredentialsChanged() override;
 
  private:
   __weak id<PasswordCheckObserver> delegate_ = nil;
-  ScopedObserver<IOSChromePasswordCheckManager,
-                 IOSChromePasswordCheckManager::Observer>
-      password_check_manager_observer_{this};
+  base::ScopedObservation<IOSChromePasswordCheckManager,
+                          IOSChromePasswordCheckManager::Observer>
+      password_check_manager_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_CHECK_OBSERVER_BRIDGE_H_

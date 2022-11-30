@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -21,6 +22,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
@@ -64,6 +67,9 @@ class LogoutConfirmationController::LastWindowClosedObserver
       ObserveForLastWindowClosed(root);
   }
 
+  LastWindowClosedObserver(const LastWindowClosedObserver&) = delete;
+  LastWindowClosedObserver& operator=(const LastWindowClosedObserver&) = delete;
+
   ~LastWindowClosedObserver() override {
     // Stop observing all displays.
     for (aura::Window* root : Shell::GetAllRootWindows()) {
@@ -79,6 +85,12 @@ class LogoutConfirmationController::LastWindowClosedObserver
   void ObserveForLastWindowClosed(aura::Window* root) {
     for (int id : GetLastWindowClosedContainerIds())
       root->GetChildById(id)->AddObserver(this);
+  }
+
+  bool ShouldShowDialogIfLastWindowClosing() const {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    return prefs->GetBoolean(prefs::kSuggestLogoutAfterClosingLastWindow);
   }
 
   // Shows the logout confirmation dialog if the last window is closing in the
@@ -106,7 +118,7 @@ class LogoutConfirmationController::LastWindowClosedObserver
     // No more windows except currently removing. Show logout time.
     Shell::Get()->logout_confirmation_controller()->ConfirmLogout(
         base::TimeTicks::Now() +
-            base::TimeDelta::FromSeconds(kLogoutConfirmationDelayInSeconds),
+            base::Seconds(kLogoutConfirmationDelayInSeconds),
         Source::kCloseAllWindows);
   }
 
@@ -119,7 +131,8 @@ class LogoutConfirmationController::LastWindowClosedObserver
   void OnWindowHierarchyChanging(const HierarchyChangeParams& params) override {
     if (!params.new_parent && params.old_parent) {
       // A window is being removed (and not moved to another container).
-      ShowDialogIfLastWindowClosing(params.target);
+      if (ShouldShowDialogIfLastWindowClosing())
+        ShowDialogIfLastWindowClosing(params.target);
     }
   }
 
@@ -127,8 +140,6 @@ class LogoutConfirmationController::LastWindowClosedObserver
     // Stop observing the container window when it closes.
     window->RemoveObserver(this);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LastWindowClosedObserver);
 };
 
 LogoutConfirmationController::LogoutConfirmationController()
@@ -144,6 +155,13 @@ LogoutConfirmationController::~LogoutConfirmationController() {
 
   if (Shell::HasInstance())  // Null in testing::Test.
     Shell::Get()->session_controller()->RemoveObserver(this);
+}
+
+// static
+void LogoutConfirmationController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kSuggestLogoutAfterClosingLastWindow,
+                                true);
 }
 
 void LogoutConfirmationController::ConfirmLogout(base::TimeTicks logout_time,

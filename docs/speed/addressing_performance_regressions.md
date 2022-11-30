@@ -18,6 +18,8 @@ Each test has an owner, named in
 [this spreadsheet](https://docs.google.com/spreadsheets/d/1xaAo0_SU3iDfGdqDJZX_jRV0QtkufwHUKH3kQKF3YQs/edit#gid=0),
 who you can cc on a performance bug if you have questions.
 
+(Googlers only) For broad overview of various performance tools available for Chrome and where lab perf fits in, see [go/chrome-performance-how](http://go/chrome-performance-how).
+
 ## Understanding the bisect results
 
 ### The bug comment
@@ -96,6 +98,9 @@ requires the device to be rooted):
 src$ tools/perf/run_benchmark benchmark_name --story-filter story_name
 ```
 
+If the run crashes, it is often helpful to add the `-v` flag in order to better
+understand what is causing the crash.
+
 ### Can I get a trace?
 
 For most metrics, yes. Here are the steps:
@@ -123,13 +128,13 @@ to learn how to use traces to debug performance issues.
 
 ### Are there debugging tips specific to certain benchmarks?
 
-* [Memory](https://chromium.googlesource.com/chromium/src/+/master/docs/memory-infra/memory_benchmarks.md)
+* [Memory](https://chromium.googlesource.com/chromium/src/+/main/docs/memory-infra/memory_benchmarks.md)
 * [Android binary size](apk_size_regressions.md)
 * [Micro-benchmarks](microbenchmark_regressions.md)
 
 ### How do I profile?
 
-Here is the [documentation on CPU Profiling Chrome](https://chromium.googlesource.com/chromium/src/+/master/docs/profiling.md)
+Here is the [documentation on CPU Profiling Chrome](https://chromium.googlesource.com/chromium/src/+/main/docs/profiling.md)
 
 ## If you don't believe your CL could be the cause
 

@@ -1,0 +1,129 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    text {
+      dominant-baseline: hanging;
+      alignment-baseline: mathematical;
+      font-family: Arial;
+      font-size: 50px;
+    }
+
+    text > tspan {
+      dominant-baseline: alphabetic;
+      alignment-baseline: hanging;
+    }
+
+    text > tspan > tspan {
+      dominant-baseline: middle;
+      alignment-baseline: alphabetic;
+    }
+
+    text > tspan > tspan > tspan {
+      dominant-baseline: mathematical;
+      alignment-baseline: central;
+    }
+
+    text > tspan > tspan > tspan > tspan {
+      dominant-baseline: ideographic;
+      alignment-baseline: middle;
+    }
+
+    .font-size text > tspan {
+      font-size: 40px;
+    }
+
+    .font-size text > tspan > tspan {
+      font-size: 24px;
+    }
+
+    .font-size text > tspan > tspan > tspan {
+      font-size: 60px;
+    }
+
+    .font-size text > tspan > tspan > tspan > tspan {
+      font-size: 12px;
+    }
+
+    .font-family text > tspan {
+      font-family: sans-serif;
+    }
+
+    .font-family text > tspan > tspan {
+      font-family: monospace;
+    }
+
+    .font-family text > tspan > tspan > tspan {
+      font-family: cursive;
+    }
+
+    .font-family text > tspan > tspan > tspan > tspan {
+      font-family: fantasy;
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" width="700" height="400">
+
+    <g>
+      <line x1="0" x2="100%" y1="50" y2="50" stroke="red"/>
+      <text x="20" y="50">
+        Lorem
+        <tspan>ipsum
+          <tspan>dolor
+            <tspan>sit
+              <tspan>amet.</tspan>
+            </tspan>
+          </tspan>
+        </tspan>
+      </text>
+    </g>
+
+    <g transform="translate(0 100)" class="font-size">
+      <line x1="0" x2="100%" y1="50" y2="50" stroke="red"/>
+      <text x="20" y="50">
+        Lorem
+        <tspan>ipsum
+          <tspan>dolor
+            <tspan>sit
+              <tspan>amet.</tspan>
+            </tspan>
+          </tspan>
+        </tspan>
+      </text>
+    </g>
+
+    <g transform="translate(0 200)" class="font-family">
+      <line x1="0" x2="100%" y1="50" y2="50" stroke="red"/>
+      <text x="20" y="50">
+        Lorem
+        <tspan>ipsum
+          <tspan>dolor
+            <tspan>sit
+              <tspan>amet.</tspan>
+            </tspan>
+          </tspan>
+        </tspan>
+      </text>
+    </g>
+
+    <g transform="translate(0 300)" class="font-size font-family" >
+      <line x1="0" x2="100%" y1="50" y2="50" stroke="red"/>
+      <text x="20" y="50">
+        Lorem
+        <tspan>ipsum
+          <tspan>dolor
+            <tspan>sit
+              <tspan>amet.</tspan>
+            </tspan>
+          </tspan>
+        </tspan>
+      </text>
+    </g>
+
+  </svg>
+</body>
+</html>

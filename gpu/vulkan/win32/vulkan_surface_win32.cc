@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,7 +148,7 @@ class VulkanSurfaceWin32::WindowThread : public base::Thread,
     DCHECK(!g_thread);
     g_thread = this;
     base::Thread::Options options(base::MessagePumpType::UI, 0);
-    StartWithOptions(options);
+    StartWithOptions(std::move(options));
   }
 
   WindowThread(const WindowThread&) = delete;
@@ -217,10 +217,7 @@ VulkanSurfaceWin32::VulkanSurfaceWin32(
     VkSurfaceKHR vk_surface,
     scoped_refptr<WindowThread> thread,
     std::unique_ptr<gfx::WindowImpl> window)
-    : VulkanSurface(vk_instance,
-                    window->hwnd(),
-                    vk_surface,
-                    false /* use_protected_memory */),
+    : VulkanSurface(vk_instance, window->hwnd(), vk_surface),
       thread_(std::move(thread)),
       window_(std::move(window)) {}
 

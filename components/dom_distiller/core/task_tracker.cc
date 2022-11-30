@@ -1,16 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/dom_distiller/core/task_tracker.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/core/distilled_content_store.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
@@ -85,7 +87,7 @@ void TaskTracker::AddSaveCallback(SaveCallback callback) {
 
 std::unique_ptr<ViewerHandle> TaskTracker::AddViewer(
     ViewRequestDelegate* delegate) {
-  viewers_.push_back(delegate);
+  viewers_.AddObserver(delegate);
   if (content_ready_) {
     // Distillation for this task has already completed, and so the delegate can
     // be immediately told of the result.
@@ -115,7 +117,7 @@ bool TaskTracker::HasUrl(const GURL& url) const {
 }
 
 void TaskTracker::RemoveViewer(ViewRequestDelegate* delegate) {
-  base::Erase(viewers_, delegate);
+  viewers_.RemoveObserver(delegate);
   if (viewers_.empty()) {
     MaybeCancel();
   }
@@ -193,7 +195,7 @@ void TaskTracker::ContentSourceFinished() {
   if (content_ready_) {
     CancelPendingSources();
   } else if (!IsAnySourceRunning()) {
-    distilled_article_.reset(new DistilledArticleProto());
+    distilled_article_ = std::make_unique<DistilledArticleProto>();
     NotifyViewersAndCallbacks();
   }
 }
@@ -219,8 +221,8 @@ void TaskTracker::DistilledArticleReady(
 }
 
 void TaskTracker::NotifyViewersAndCallbacks() {
-  for (auto* viewer : viewers_) {
-    NotifyViewer(viewer);
+  for (auto& viewer : viewers_) {
+    NotifyViewer(&viewer);
   }
 
   // Already inside a callback run SaveCallbacks directly.
@@ -242,8 +244,8 @@ void TaskTracker::DoSaveCallbacks(bool success) {
 
 void TaskTracker::OnArticleDistillationUpdated(
     const ArticleDistillationUpdate& article_update) {
-  for (auto* viewer : viewers_) {
-    viewer->OnArticleUpdated(article_update);
+  for (auto& viewer : viewers_) {
+    viewer.OnArticleUpdated(article_update);
   }
 }
 

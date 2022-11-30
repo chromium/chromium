@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -76,7 +76,7 @@ def _LoadFieldTrialConfig(filename, platforms, invert):
 def _ConvertOverrideUIStrings(override_ui_strings):
   """Converts override_ui_strings to formatted dicts."""
   overrides = []
-  for ui_string, override in override_ui_strings.iteritems():
+  for ui_string, override in override_ui_strings.items():
     overrides.append({
         'name_hash': generate_ui_string_overrider.HashName(ui_string),
         'value': override

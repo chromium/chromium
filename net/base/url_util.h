@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,14 @@
 
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
 
 namespace url {
 struct CanonHostInfo;
+class SchemeHostPort;
 }
 
 namespace net {
@@ -39,9 +41,10 @@ NET_EXPORT GURL AppendQueryParameter(const GURL& url,
                                      const std::string& value);
 
 // Returns a new GURL by appending or replacing the given query parameter name
-// and the value. If |name| appears more than once, only the first name-value
+// and the value. If `name` appears more than once, only the first name-value
 // pair is replaced. Unsafe characters in the name and the value are escaped
 // like %XX%XX. The original query component is preserved if it's present.
+// Using `absl::nullopt` for `value` will remove the `name` parameter.
 //
 // Examples:
 //
@@ -51,11 +54,19 @@ NET_EXPORT GURL AppendQueryParameter(const GURL& url,
 // AppendOrReplaceQueryParameter(
 //     GURL("http://example.com?x=y&name=old"), "name", "new").spec()
 // => "http://example.com?x=y&name=new"
-NET_EXPORT GURL AppendOrReplaceQueryParameter(const GURL& url,
-                                              const std::string& name,
-                                              const std::string& value);
+// AppendOrReplaceQueryParameter(
+//     GURL("http://example.com?x=y&name=old"), "name", absl::nullopt).spec()
+// => "http://example.com?x=y&"
+NET_EXPORT GURL
+AppendOrReplaceQueryParameter(const GURL& url,
+                              const std::string& name,
+                              absl::optional<base::StringPiece> value);
 
 // Iterates over the key-value pairs in the query portion of |url|.
+// NOTE: QueryIterator stores reference to |url| and creates base::StringPiece
+// instances which refer to the data inside |url| query. Therefore |url| must
+// outlive QueryIterator and all base::StringPiece objects returned from GetKey
+// and GetValue methods.
 class NET_EXPORT QueryIterator {
  public:
   explicit QueryIterator(const GURL& url);
@@ -63,8 +74,8 @@ class NET_EXPORT QueryIterator {
   QueryIterator& operator=(const QueryIterator&) = delete;
   ~QueryIterator();
 
-  std::string GetKey() const;
-  std::string GetValue() const;
+  base::StringPiece GetKey() const;
+  base::StringPiece GetValue() const;
   const std::string& GetUnescapedValue();
 
   bool IsAtEnd() const;
@@ -106,6 +117,10 @@ NET_EXPORT std::string GetHostAndPort(const GURL& url);
 // Returns a host[:port] string for the given URL, where the port is omitted
 // if it is the default for the URL's scheme.
 NET_EXPORT std::string GetHostAndOptionalPort(const GURL& url);
+
+// Just like above, but takes a SchemeHostPort.
+NET_EXPORT std::string GetHostAndOptionalPort(
+    const url::SchemeHostPort& scheme_host_port);
 
 // Returns the hostname by trimming the ending dot, if one exists.
 NET_EXPORT std::string TrimEndingDot(base::StringPiece host);
@@ -201,10 +216,6 @@ NET_EXPORT_PRIVATE bool HasGoogleHost(const GURL& url);
 // Returns true if |host| is the hostname of a Google server. This should only
 // be used for histograms and shouldn't be used to affect behavior.
 NET_EXPORT_PRIVATE bool IsGoogleHost(base::StringPiece host);
-
-// This function tests |host| to see if its one used in the initial TLS 1.3
-// deployment. TLS connections to them form the basis of our comparisons.
-NET_EXPORT_PRIVATE bool IsTLS13ExperimentHost(base::StringPiece host);
 
 // This function tests |host| to see if it is of any local hostname form.
 // |host| is normalized before being tested.

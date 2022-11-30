@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_FAVICON_ANDROID_LARGE_ICON_BRIDGE_H_
 
 #include <jni.h>
-
-#include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -25,7 +23,7 @@ class LargeIconBridge {
   void Destroy(JNIEnv* env);
   jboolean GetLargeIconForURL(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_profile,
+      const base::android::JavaParamRef<jobject>& j_browser_context,
       const base::android::JavaParamRef<jobject>& j_page_url,
       jint min_source_size_px,
       const base::android::JavaParamRef<jobject>& j_callback);

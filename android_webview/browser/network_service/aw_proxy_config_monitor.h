@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,12 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+
+namespace network {
+namespace mojom {
+class ProxyConfigClient;
+}
+}  // namespace network
 
 namespace android_webview {
 

@@ -1,23 +1,30 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 
-#include "base/feature_list.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
-#import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
-#include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/common/omnibox_features.h"
+#import "base/feature_list.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/omnibox/browser/autocomplete_input.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
+#import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
@@ -29,9 +36,22 @@ namespace {
 const CGFloat kOmniboxIconSize = 16;
 }  // namespace
 
+@interface OmniboxPopupMediator () <PedalSectionExtractorDelegate>
+
+// Extracts pedals from AutocompleSuggestions.
+@property(nonatomic, strong) PedalSectionExtractor* pedalSectionExtractor;
+// List of suggestions without the pedal group. Used to debouce pedals.
+@property(nonatomic, strong)
+    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestions;
+// Index of the group containing AutocompleteSuggestion, first group to be
+// highlighted on down arrow key.
+@property(nonatomic, assign) NSInteger preselectedGroupIndex;
+
+@end
+
 @implementation OmniboxPopupMediator {
   // Fetcher for Answers in Suggest images.
-  std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper> _imageFetcher;
+  std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
 
   OmniboxPopupMediatorDelegate* _delegate;  // weak
 
@@ -44,7 +64,7 @@ const CGFloat kOmniboxIconSize = 16;
 @synthesize presenter = _presenter;
 
 - (instancetype)initWithFetcher:
-                    (std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper>)
+                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)
                         imageFetcher
                   faviconLoader:(FaviconLoader*)faviconLoader
                        delegate:(OmniboxPopupMediatorDelegate*)delegate {
@@ -55,51 +75,31 @@ const CGFloat kOmniboxIconSize = 16;
     _imageFetcher = std::move(imageFetcher);
     _faviconLoader = faviconLoader;
     _open = NO;
+    _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
+    _pedalSectionExtractor.delegate = self;
+    _preselectedGroupIndex = 0;
   }
   return self;
 }
 
-- (void)updateMatches:(const AutocompleteResult&)result
-        withAnimation:(BOOL)animation {
+- (void)updateMatches:(const AutocompleteResult&)result {
   _currentResult.Reset();
   _currentResult.CopyFrom(result);
+  self.nonPedalSuggestions = nil;
 
   self.hasResults = !_currentResult.empty();
-
-  [self.consumer updateMatches:[self wrappedMatches] withAnimation:animation];
-}
-
-- (NSArray<id<AutocompleteSuggestion>>*)wrappedMatches {
-  NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
-      [[NSMutableArray alloc] init];
-
-  size_t size = _currentResult.size();
-  for (size_t i = 0; i < size; i++) {
-    const AutocompleteMatch& match =
-        ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
-    AutocompleteMatchFormatter* formatter =
-        [AutocompleteMatchFormatter formatterWithMatch:match];
-    formatter.starred = _delegate->IsStarredMatch(match);
-    formatter.incognito = _incognito;
-    formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
-    [wrappedMatches addObject:formatter];
+  if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
+    [self.consumer newResultsAvailable];
+  } else {
+    // Avoid calling consumer visible size and set all suggestions as visible to
+    // get only one grouping.
+    [self requestResultsWithVisibleSuggestionCount:_currentResult.size()];
   }
-
-  return wrappedMatches;
 }
 
 - (void)updateWithResults:(const AutocompleteResult&)result {
-  if (!self.open && !result.empty()) {
-    // The popup is not currently open and there are results to display. Update
-    // and animate the cells
-    [self updateMatches:result withAnimation:YES];
-  } else {
-    // The popup is already displayed or there are no results to display. Update
-    // the cells without animating.
-    [self updateMatches:result withAnimation:NO];
-  }
+  [self updateMatches:result];
   self.open = !result.empty();
-
   [self.presenter updatePopup];
 }
 
@@ -112,49 +112,98 @@ const CGFloat kOmniboxIconSize = 16;
   [self.consumer setSemanticContentAttribute:semanticContentAttribute];
 }
 
+#pragma mark - AutocompleteResultDataSource
+
+- (void)requestResultsWithVisibleSuggestionCount:
+    (NSUInteger)visibleSuggestionCount {
+  NSUInteger visibleSuggestions =
+      MIN(visibleSuggestionCount, _currentResult.size());
+  if (visibleSuggestions > 0) {
+    // Groups visible suggestions by search vs url. Skip the first suggestion
+    // because it's the omnibox content.
+    [self groupCurrentSuggestionsFrom:1 to:visibleSuggestions];
+  }
+  // Groups hidden suggestions by search vs url.
+  [self groupCurrentSuggestionsFrom:visibleSuggestions
+                                 to:_currentResult.size()];
+
+  NSArray<id<AutocompleteSuggestionGroup>>* groups = [self wrappedMatches];
+
+  [self.consumer updateMatches:groups
+      preselectedMatchGroupIndex:self.preselectedGroupIndex];
+
+  [self loadModelImages];
+}
+
 #pragma mark - AutocompleteResultConsumerDelegate
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-                   didHighlightRow:(NSUInteger)row {
-  _delegate->OnMatchHighlighted(row);
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-                      didSelectRow:(NSUInteger)row {
-  // OpenMatch() may close the popup, which will clear the result set and, by
-  // extension, |match| and its contents.  So copy the relevant match out to
-  // make sure it stays alive until the call completes.
-  const AutocompleteMatch& match =
-      ((const AutocompleteResult&)_currentResult).match_at(row);
-
-  _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-        didTapTrailingButtonForRow:(NSUInteger)row {
-  const AutocompleteMatch& match =
-      ((const AutocompleteResult&)_currentResult).match_at(row);
-
-  if (match.has_tab_match) {
-    _delegate->OnMatchSelected(match, row,
-                               WindowOpenDisposition::SWITCH_TO_TAB);
-  } else {
-    if (AutocompleteMatch::IsSearchType(match.type)) {
-      base::RecordAction(
-          base::UserMetricsAction("MobileOmniboxRefineSuggestion.Search"));
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("MobileOmniboxRefineSuggestion.Url"));
+               didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
+                             inRow:(NSUInteger)row {
+  if ([suggestion isKindOfClass:[PedalSuggestionWrapper class]]) {
+    PedalSuggestionWrapper* pedalSuggestionWrapper =
+        (PedalSuggestionWrapper*)suggestion;
+    if (pedalSuggestionWrapper.innerPedal.action) {
+      pedalSuggestionWrapper.innerPedal.action();
     }
-    _delegate->OnMatchSelectedForAppending(match);
+  } else if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
+    AutocompleteMatchFormatter* autocompleteMatchFormatter =
+        (AutocompleteMatchFormatter*)suggestion;
+    const AutocompleteMatch& match =
+        autocompleteMatchFormatter.autocompleteMatch;
+
+    // Don't log pastes in incognito.
+    if (!self.incognito && match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+      [self.promoScheduler logUserPastedInOmnibox];
+    }
+
+    _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
+  } else {
+    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
+                 << " not handled for selection.";
   }
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-           didSelectRowForDeletion:(NSUInteger)row {
-  const AutocompleteMatch& match =
-      ((const AutocompleteResult&)_currentResult).match_at(row);
-  _delegate->OnMatchSelectedForDeletion(match);
+    didTapTrailingButtonOnSuggestion:(id<AutocompleteSuggestion>)suggestion
+                               inRow:(NSUInteger)row {
+  if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
+    AutocompleteMatchFormatter* autocompleteMatchFormatter =
+        (AutocompleteMatchFormatter*)suggestion;
+    const AutocompleteMatch& match =
+        autocompleteMatchFormatter.autocompleteMatch;
+    if (match.has_tab_match.value_or(false)) {
+      _delegate->OnMatchSelected(match, row,
+                                 WindowOpenDisposition::SWITCH_TO_TAB);
+    } else {
+      if (AutocompleteMatch::IsSearchType(match.type)) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileOmniboxRefineSuggestion.Search"));
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("MobileOmniboxRefineSuggestion.Url"));
+      }
+      _delegate->OnMatchSelectedForAppending(match);
+    }
+  } else {
+    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
+                 << " not handled for trailing button tap.";
+  }
+}
+
+- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+    didSelectSuggestionForDeletion:(id<AutocompleteSuggestion>)suggestion
+                             inRow:(NSUInteger)row {
+  if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
+    AutocompleteMatchFormatter* autocompleteMatchFormatter =
+        (AutocompleteMatchFormatter*)suggestion;
+    const AutocompleteMatch& match =
+        autocompleteMatchFormatter.autocompleteMatch;
+    _delegate->OnMatchSelectedForDeletion(match);
+  } else {
+    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
+                 << " not handled for deletion.";
+  }
 }
 
 - (void)autocompleteResultConsumerDidScroll:
@@ -162,20 +211,51 @@ const CGFloat kOmniboxIconSize = 16;
   _delegate->OnScroll();
 }
 
+- (void)loadModelImages {
+  for (PopupMatchSection* section in self.model.sections) {
+    for (PopupMatch* match in section.matches) {
+      PopupImage* popupImage = match.image;
+      switch (popupImage.icon.iconType) {
+        case OmniboxIconTypeSuggestionIcon:
+          break;
+        case OmniboxIconTypeImage: {
+          [self fetchImage:popupImage.icon.imageURL.gurl
+                completion:^(UIImage* image) {
+                  popupImage.iconUIImageFromURL = image;
+                }];
+          break;
+        }
+        case OmniboxIconTypeFavicon: {
+          [self fetchFavicon:popupImage.icon.imageURL.gurl
+                  completion:^(UIImage* image) {
+                    popupImage.iconUIImageFromURL = image;
+                  }];
+          break;
+        }
+      }
+    }
+  }
+}
+
 #pragma mark - ImageFetcher
 
 - (void)fetchImage:(GURL)imageURL completion:(void (^)(UIImage*))completion {
-  image_fetcher::ImageDataFetcherBlock callback =
-      ^(NSData* data, const image_fetcher::RequestMetadata& metadata) {
+  auto callback =
+      base::BindOnce(^(const std::string& image_data,
+                       const image_fetcher::RequestMetadata& metadata) {
+        NSData* data = [NSData dataWithBytes:image_data.data()
+                                      length:image_data.size()];
         if (data) {
-          UIImage* image =
-              [UIImage imageWithData:data scale:[UIScreen mainScreen].scale];
+          UIImage* image = [UIImage imageWithData:data
+                                            scale:[UIScreen mainScreen].scale];
           completion(image);
         } else {
           completion(nil);
         }
-      };
-  _imageFetcher->FetchImageDataWebpDecoded(imageURL, callback);
+      });
+
+  _imageFetcher->FetchImageData(imageURL, std::move(callback),
+                                NO_TRAFFIC_ANNOTATION_YET);
 }
 
 #pragma mark - FaviconRetriever
@@ -191,6 +271,142 @@ const CGFloat kOmniboxIconSize = 16;
         if (attributes.faviconImage && !attributes.usesDefaultImage)
           completion(attributes.faviconImage);
       });
+}
+
+#pragma mark - PedalSectionExtractorDelegate
+
+// Removes the pedal group from suggestions. Pedal are removed from suggestions
+// with a debouce timer in `PedalSectionExtractor`. When the timer ends the
+// pedal group is removed.
+- (void)invalidatePedals {
+  if (self.nonPedalSuggestions) {
+    [self.consumer updateMatches:self.nonPedalSuggestions
+        preselectedMatchGroupIndex:0];
+  }
+}
+
+#pragma mark - Private methods
+
+// Wraps `match` with AutocompleteMatchFormatter.
+- (id<AutocompleteSuggestion>)wrapMatch:(const AutocompleteMatch&)match {
+  AutocompleteMatchFormatter* formatter =
+      [AutocompleteMatchFormatter formatterWithMatch:match];
+  formatter.starred = _delegate->IsStarredMatch(match);
+  formatter.incognito = _incognito;
+  formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
+  formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
+                                                 incognito:_incognito];
+  return formatter;
+}
+
+// Extracts carousel items from AutocompleteMatch of type TILE_NAVSUGGEST.
+- (id<AutocompleteSuggestionGroup>)extractTiles:
+    (const AutocompleteMatch&)match {
+  DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
+  DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+
+  NSMutableArray<id<AutocompleteSuggestion>>* wrappedTiles =
+      [[NSMutableArray alloc] init];
+
+  for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
+    AutocompleteMatch tileMatch = AutocompleteMatch(match);
+    // TODO(crbug.com/1363546): replace with a new wrapper.
+    tileMatch.destination_url = tile.url;
+    tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
+    tileMatch.description = tile.title;
+    [wrappedTiles addObject:[self wrapMatch:tileMatch]];
+  }
+
+  id<AutocompleteSuggestionGroup> tileGroup = [AutocompleteSuggestionGroupImpl
+      groupWithTitle:nil
+         suggestions:wrappedTiles
+        displayStyle:SuggestionGroupDisplayStyleCarousel];
+
+  return tileGroup;
+}
+
+// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
+// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
+- (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
+  id<AutocompleteSuggestionGroup> tileGroup = nil;
+
+  NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<id<AutocompleteSuggestion>>* currentGroup =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<id<AutocompleteSuggestion>>* allSuggestions =
+      [[NSMutableArray alloc] init];
+
+  absl::optional<omnibox::GroupId> currentGroupId = absl::nullopt;
+
+  size_t size = _currentResult.size();
+  for (size_t i = 0; i < size; i++) {
+    const AutocompleteMatch& match =
+        ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
+    if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
+      DCHECK(!tileGroup) << "There should be only one TILE_NAVSUGGEST";
+      tileGroup = [self extractTiles:match];
+      continue;
+    }
+
+    if (match.suggestion_group_id != currentGroupId) {
+      if (currentGroup.count > 0) {
+        NSString* groupTitle =
+            currentGroupId.has_value()
+                ? base::SysUTF16ToNSString(
+                      _currentResult.GetHeaderForSuggestionGroup(
+                          currentGroupId.value()))
+                : nil;
+        id<AutocompleteSuggestionGroup> suggestionGroup =
+            [AutocompleteSuggestionGroupImpl groupWithTitle:groupTitle
+                                                suggestions:currentGroup];
+
+        [groups addObject:suggestionGroup];
+        currentGroup = [[NSMutableArray alloc] init];
+      }
+
+      currentGroupId = match.suggestion_group_id;
+    }
+
+    id<AutocompleteSuggestion> wrappedMatch = [self wrapMatch:match];
+    [currentGroup addObject:wrappedMatch];
+    [allSuggestions addObject:wrappedMatch];
+  }
+
+  NSString* groupTitle =
+      currentGroupId.has_value()
+          ? base::SysUTF16ToNSString(_currentResult.GetHeaderForSuggestionGroup(
+                currentGroupId.value()))
+          : nil;
+  id<AutocompleteSuggestionGroup> suggestionGroup =
+      [AutocompleteSuggestionGroupImpl groupWithTitle:groupTitle
+                                          suggestions:currentGroup];
+
+  [groups addObject:suggestionGroup];
+  if (tileGroup) {
+    [groups insertObject:tileGroup atIndex:0];
+  }
+
+  NSMutableArray<id<AutocompleteSuggestionGroup>>* nonPedalGroups =
+      [groups copy];
+  self.nonPedalSuggestions = nonPedalGroups;
+  id<AutocompleteSuggestionGroup> pedalGroup =
+      [self.pedalSectionExtractor extractPedals:allSuggestions];
+
+  if (pedalGroup) {
+    [groups insertObject:pedalGroup atIndex:0];
+  }
+
+  self.preselectedGroupIndex = [groups indexOfObject:suggestionGroup];
+  return groups;
+}
+
+- (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end {
+  DCHECK(begin <= _currentResult.size());
+  DCHECK(end <= _currentResult.size());
+  AutocompleteResult::GroupSuggestionsBySearchVsURL(
+      std::next(_currentResult.begin(), begin),
+      std::next(_currentResult.begin(), end));
 }
 
 @end

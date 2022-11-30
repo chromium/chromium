@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
+#include "chrome/browser/ash/policy/off_hours/off_hours_policy_applier.h"
 #include "chrome/browser/ash/settings/session_manager_operation.h"
-#include "chrome/browser/chromeos/policy/off_hours/device_off_hours_controller.h"
-#include "chrome/browser/chromeos/policy/off_hours/off_hours_policy_applier.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -40,7 +39,7 @@ void DeviceSettingsService::Observer::DeviceSettingsUpdated() {}
 
 void DeviceSettingsService::Observer::OnDeviceSettingsServiceShutdown() {}
 
-static DeviceSettingsService* g_device_settings_service = NULL;
+static DeviceSettingsService* g_device_settings_service = nullptr;
 
 // static
 void DeviceSettingsService::Initialize() {
@@ -57,7 +56,7 @@ bool DeviceSettingsService::IsInitialized() {
 void DeviceSettingsService::Shutdown() {
   DCHECK(g_device_settings_service);
   delete g_device_settings_service;
-  g_device_settings_service = NULL;
+  g_device_settings_service = nullptr;
 }
 
 // static
@@ -97,7 +96,7 @@ DeviceSettingsService::~DeviceSettingsService() {
 }
 
 void DeviceSettingsService::SetSessionManager(
-    chromeos::SessionManagerClient* session_manager_client,
+    SessionManagerClient* session_manager_client,
     scoped_refptr<OwnerKeyUtil> owner_key_util) {
   DCHECK(session_manager_client);
   DCHECK(owner_key_util.get());
@@ -117,7 +116,7 @@ void DeviceSettingsService::UnsetSessionManager() {
 
   if (session_manager_client_)
     session_manager_client_->RemoveObserver(this);
-  session_manager_client_ = NULL;
+  session_manager_client_ = nullptr;
   owner_key_util_.reset();
 }
 
@@ -132,6 +131,17 @@ void DeviceSettingsService::SetDeviceMode(policy::DeviceMode device_mode) {
   if (GetOwnershipStatus() != OWNERSHIP_UNKNOWN) {
     RunPendingOwnershipStatusCallbacks();
   }
+}
+
+void DeviceSettingsService::GetPolicyDataAsync(PolicyDataCallback callback) {
+  if (policy_data_) {
+    std::move(callback).Run(policy_data_.get());
+    return;
+  }
+
+  pending_policy_data_callbacks_.push_back(std::move(callback));
+  if (pending_operations_.empty())
+    EnqueueLoad(false);
 }
 
 scoped_refptr<PublicKey> DeviceSettingsService::GetPublicKey() {
@@ -173,9 +183,9 @@ void DeviceSettingsService::Store(
 }
 
 DeviceSettingsService::OwnershipStatus
-    DeviceSettingsService::GetOwnershipStatus() {
+DeviceSettingsService::GetOwnershipStatus() {
   if (public_key_.get())
-    return public_key_->is_loaded() ? OWNERSHIP_TAKEN : OWNERSHIP_NONE;
+    return public_key_->is_empty() ? OWNERSHIP_NONE : OWNERSHIP_TAKEN;
   if (device_mode_ == policy::DEVICE_MODE_ENTERPRISE_AD)
     return OWNERSHIP_TAKEN;
   return OWNERSHIP_UNKNOWN;
@@ -186,7 +196,9 @@ void DeviceSettingsService::GetOwnershipStatusAsync(
   if (GetOwnershipStatus() != OWNERSHIP_UNKNOWN) {
     // Report status immediately.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), GetOwnershipStatus()));
+        FROM_HERE,
+        base::BindOnce(&DeviceSettingsService::ValidateOwnershipStatusAndNotify,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     // If the key hasn't been loaded yet, enqueue the callback to be fired when
     // the next SessionManagerOperation completes. If no operation is pending,
@@ -195,6 +207,18 @@ void DeviceSettingsService::GetOwnershipStatusAsync(
     if (pending_operations_.empty())
       EnqueueLoad(false);
   }
+}
+
+void DeviceSettingsService::ValidateOwnershipStatusAndNotify(
+    OwnershipStatusCallback callback) {
+  if (GetOwnershipStatus() == OWNERSHIP_UNKNOWN) {
+    // OwnerKeySet() could be called upon user sign-in while event was in queue,
+    // which resets status to OWNERSHIP_UNKNOWN.
+    // We need to retry the logic in this case.
+    GetOwnershipStatusAsync(std::move(callback));
+    return;
+  }
+  std::move(callback).Run(GetOwnershipStatus());
 }
 
 bool DeviceSettingsService::HasPrivateOwnerKey() {
@@ -295,8 +319,8 @@ void DeviceSettingsService::EnsureReload(bool request_key_load) {
 void DeviceSettingsService::StartNextOperation() {
   if (!pending_operations_.empty() && session_manager_client_ &&
       owner_key_util_.get()) {
-    pending_operations_.front()->Start(
-        session_manager_client_, owner_key_util_, public_key_);
+    pending_operations_.front()->Start(session_manager_client_, owner_key_util_,
+                                       public_key_);
   }
 }
 
@@ -319,6 +343,7 @@ void DeviceSettingsService::HandleCompletedOperation(
     Status status) {
   store_status_ = status;
   if (status == STORE_SUCCESS) {
+    policy_fetch_response_ = std::move(operation->policy_fetch_response());
     policy_data_ = std::move(operation->policy_data());
     device_settings_ = std::move(operation->device_settings());
     // Update "OffHours" policy state and apply "OffHours" policy to current
@@ -346,6 +371,10 @@ void DeviceSettingsService::HandleCompletedOperation(
   NotifyDeviceSettingsUpdated();
   RunPendingOwnershipStatusCallbacks();
 
+  if ((status == STORE_SUCCESS) || (status == STORE_NO_POLICY)) {
+    RunPendingPolicyDataCallbacks();
+  }
+
   // The completion callback happens after the notification so clients can
   // filter self-triggered updates.
   if (!callback.is_null())
@@ -367,6 +396,14 @@ void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   callbacks.swap(pending_ownership_status_callbacks_);
   for (auto& callback : callbacks) {
     std::move(callback).Run(GetOwnershipStatus());
+  }
+}
+
+void DeviceSettingsService::RunPendingPolicyDataCallbacks() {
+  std::vector<PolicyDataCallback> callbacks;
+  callbacks.swap(pending_policy_data_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(policy_data_.get());
   }
 }
 

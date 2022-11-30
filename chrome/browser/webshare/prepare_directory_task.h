@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@ namespace webshare {
 // Deletes any old files remaining from past shares.
 class PrepareDirectoryTask {
  public:
-  static constexpr base::TimeDelta kSharedFileLifetime =
-      base::TimeDelta::FromMinutes(10);
+  static constexpr base::TimeDelta kSharedFileLifetime = base::Minutes(10);
 
+  PrepareDirectoryTask(base::FilePath directory, uint64_t required_space);
   PrepareDirectoryTask(base::FilePath directory,
                        uint64_t required_space,
                        blink::mojom::ShareService::ShareCallback callback);
@@ -34,6 +34,13 @@ class PrepareDirectoryTask {
   // Launches the task. |callback_| will be called on the original (UI) thread
   // when the task completes.
   void Start();
+
+  using PrepareDirectoryCallback =
+      base::OnceCallback<void(base::File::Error result)>;
+
+  // Launches the task. Supplied |callback| will be called on the UI thread
+  // when the PrepareDirectory task completes.
+  void StartWithCallback(PrepareDirectoryCallback callback);
 
  private:
   // Runs on a thread where blocking is permitted.

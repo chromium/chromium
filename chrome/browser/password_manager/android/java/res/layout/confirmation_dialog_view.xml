@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    style="@style/AlertDialogContent">
+
+  <TextView
+      android:id="@+id/confirmation_dialog_title"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_marginBottom="8dp"
+      android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+
+  <TextView
+      android:id="@+id/confirmation_dialog_message"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+</LinearLayout>

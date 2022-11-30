@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@ namespace media {
 
 namespace {
 
-constexpr base::TimeDelta kQueryInterval =
-    base::TimeDelta::FromMilliseconds(750);
+constexpr base::TimeDelta kQueryInterval = base::Milliseconds(750);
 
 }  // namespace
 
@@ -52,7 +51,7 @@ void SimpleWatchTimer::Tick() {
   last_current_time_ = current_time;
 
   // Accumulate watch time if the duration is reasonable.
-  if (duration > base::TimeDelta() && duration < kQueryInterval * 2) {
+  if (duration.is_positive() && duration < kQueryInterval * 2) {
     unreported_ms_ += duration.InMilliseconds();
   }
 

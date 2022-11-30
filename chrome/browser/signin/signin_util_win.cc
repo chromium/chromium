@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
@@ -42,9 +42,9 @@ namespace signin_util {
 
 namespace {
 
-std::unique_ptr<DiceTurnSyncOnHelper::Delegate>*
-GetDiceTurnSyncOnHelperDelegateForTestingStorage() {
-  static base::NoDestructor<std::unique_ptr<DiceTurnSyncOnHelper::Delegate>>
+std::unique_ptr<TurnSyncOnHelper::Delegate>*
+GetTurnSyncOnHelperDelegateForTestingStorage() {
+  static base::NoDestructor<std::unique_ptr<TurnSyncOnHelper::Delegate>>
       delegate;
   return delegate.get();
 }
@@ -72,27 +72,26 @@ std::string DecryptRefreshToken(const std::string& cipher_text) {
 // already available or is delayed until a browser can first be opened.
 void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
                                          Browser* browser,
-                                         Profile* profile,
-                                         Profile::CreateStatus status) {
-  // DiceTurnSyncOnHelper deletes itself once done.
-  if (GetDiceTurnSyncOnHelperDelegateForTestingStorage()->get()) {
-    new DiceTurnSyncOnHelper(
+                                         Profile* profile) {
+  // TurnSyncOnHelper deletes itself once done.
+  if (GetTurnSyncOnHelperDelegateForTestingStorage()->get()) {
+    new TurnSyncOnHelper(
         profile, signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, account_id,
-        DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-        std::move(*GetDiceTurnSyncOnHelperDelegateForTestingStorage()),
+        signin_metrics::Reason::kSigninPrimaryAccount, account_id,
+        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+        std::move(*GetTurnSyncOnHelperDelegateForTestingStorage()),
         base::DoNothing());
   } else {
     if (!browser)
       browser = chrome::FindLastActiveWithProfile(profile);
 
-    new DiceTurnSyncOnHelper(
+    new TurnSyncOnHelper(
         profile, browser,
         signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, account_id,
-        DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+        signin_metrics::Reason::kSigninPrimaryAccount, account_id,
+        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   }
 }
 
@@ -125,15 +124,14 @@ void ImportCredentialsFromProvider(Profile* profile,
   if (turn_on_sync) {
     Browser* browser = chrome::FindLastActiveWithProfile(profile);
     if (browser) {
-      FinishImportCredentialsFromProvider(account_id, browser, profile,
-                                          Profile::CREATE_STATUS_CREATED);
+      FinishImportCredentialsFromProvider(account_id, browser, profile);
     } else {
       // If no active browser exists yet, this profile is in the process of
       // being created.  Wait for the browser to be created before finishing the
       // sign in.  This object deletes itself when done.
       new profiles::BrowserAddedForProfileObserver(
-          profile, base::BindRepeating(&FinishImportCredentialsFromProvider,
-                                       account_id, nullptr));
+          profile, base::BindOnce(&FinishImportCredentialsFromProvider,
+                                  account_id, nullptr, profile));
     }
   }
 
@@ -141,30 +139,13 @@ void ImportCredentialsFromProvider(Profile* profile,
   profile->GetPrefs()->SetBoolean(prefs::kSignedInWithCredentialProvider, true);
 }
 
-// Extracts preferences to consider while signing in through credential
-// provider. The preferences are set by credential provider after a successful
-// login. They manipulate the behavior of Chrome when importing refresh_token
-// provided by credential provider. When |allow_import_only_on_first_run| is
-// set to true, importing refresh_token is only allowed during Chrome
-// first time run. If it is false, refresh_token is allowed to be imported in
-// subsequent runs. When |allow_import_when_primary_account_exists| is set to
-// false, importing refresh_token is only allowed when profile doesn't have a
-// primary account. If |allow_import_when_primary_account_exists| is set to
-// true, importing refresh_token is allowed even if the profile has primary
-// account for the user authenticated through credential provider.
-void ExtractCredentialImportPreferences(
-    std::wstring* cred_provider_gaia_id,
-    std::wstring* cred_provider_email,
-    bool* allow_import_only_on_first_run,
-    bool* allow_import_when_primary_account_exists) {
+// Extracts the |cred_provider_gaia_id| and |cred_provider_email| for the user
+// signed in throuhg credential provider.
+void ExtractCredentialProviderUser(std::wstring* cred_provider_gaia_id,
+                                   std::wstring* cred_provider_email) {
   DCHECK(cred_provider_gaia_id);
   DCHECK(cred_provider_email);
-  DCHECK(allow_import_only_on_first_run);
-  DCHECK(allow_import_when_primary_account_exists);
 
-  // Initialize to more restricted configuration.
-  *allow_import_only_on_first_run = true;
-  *allow_import_when_primary_account_exists = false;
   cred_provider_gaia_id->clear();
   cred_provider_email->clear();
 
@@ -189,23 +170,8 @@ void ExtractCredentialImportPreferences(
     return;
   }
 
-  // No need to return immediately if reading following registries fail. They
-  // will set to be stricter by default. cred_provider_gaia_id and
-  // cred_provider_email will be correctly set, though.
-  DWORD reg_import_only_on_first_run = 1;
-  key_account.ReadValueDW(credential_provider::kAllowImportOnlyOnFirstRun,
-                          &reg_import_only_on_first_run);
-
-  DWORD reg_import_when_primary_account_exists = 0;
-  key_account.ReadValueDW(
-      credential_provider::kAllowImportWhenPrimaryAccountExists,
-      &reg_import_when_primary_account_exists);
-
   *cred_provider_gaia_id = it.Name();
   *cred_provider_email = email;
-  *allow_import_only_on_first_run = (reg_import_only_on_first_run == 1);
-  *allow_import_when_primary_account_exists =
-      (reg_import_when_primary_account_exists == 1);
 }
 
 // Attempt to sign in with a credentials from a system installed credential
@@ -274,9 +240,9 @@ bool TrySigninWithCredentialProvider(Profile* profile,
 
 }  // namespace
 
-void SetDiceTurnSyncOnHelperDelegateForTesting(
-    std::unique_ptr<DiceTurnSyncOnHelper::Delegate> delegate) {
-  GetDiceTurnSyncOnHelperDelegateForTestingStorage()->swap(delegate);
+void SetTurnSyncOnHelperDelegateForTesting(
+    std::unique_ptr<TurnSyncOnHelper::Delegate> delegate) {
+  GetTurnSyncOnHelperDelegateForTestingStorage()->swap(delegate);  // IN-TEST
 }
 
 // Credential provider needs to stick to profile it previously used to import
@@ -306,14 +272,16 @@ bool IsGCPWUsedInOtherProfile(Profile* profile) {
 }
 
 void SigninWithCredentialProviderIfPossible(Profile* profile) {
-  bool import_only_on_first_run = true;
-  bool import_when_primary_account_exists = false;
+  // This flow is used for first time signin through credential provider. Any
+  // subsequent signin for the credential provider user needs to go through
+  // reauth flow.
+  if (profile->GetPrefs()->GetBoolean(prefs::kSignedInWithCredentialProvider))
+    return;
+
   std::wstring cred_provider_gaia_id;
   std::wstring cred_provider_email;
 
-  ExtractCredentialImportPreferences(
-      &cred_provider_gaia_id, &cred_provider_email, &import_only_on_first_run,
-      &import_when_primary_account_exists);
+  ExtractCredentialProviderUser(&cred_provider_gaia_id, &cred_provider_email);
   if (cred_provider_gaia_id.empty() || cred_provider_email.empty())
     return;
 
@@ -326,19 +294,12 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
     return;
   }
 
-  if (import_only_on_first_run && !first_run::IsChromeFirstRun())
-    return;
-
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   std::wstring gaia_id;
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     gaia_id = base::UTF8ToWide(
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .gaia);
-
-    if (!import_when_primary_account_exists) {
-      return;
-    }
   }
 
   TrySigninWithCredentialProvider(profile, gaia_id, gaia_id.empty());

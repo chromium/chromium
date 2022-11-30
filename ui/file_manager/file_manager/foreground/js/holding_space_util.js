@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,11 @@
  * @fileoverview Utility methods for the holding space feature.
  */
 
-// clang-format off
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
-// clang-format on
+import {metrics} from '../../common/js/metrics.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
 
-/* #export */ class HoldingSpaceUtil {
+export class HoldingSpaceUtil {
   /**
    * Returns the key in localStorage to store the time (in milliseconds) of the
    * first pin to holding space.
@@ -34,12 +31,6 @@
     return 'holdingSpaceTimeOfFirstWelcomeBannerShow';
   }
 
-  /** @return {boolean} */
-  static isFeatureEnabled() {
-    return loadTimeData.valueExists('HOLDING_SPACE_ENABLED') &&
-        loadTimeData.getBoolean('HOLDING_SPACE_ENABLED');
-  }
-
   /**
    * Returns the volume types for which the holding space feature is allowed.
    * @return {!Array<?VolumeManagerCommon.VolumeType>}
@@ -48,9 +39,9 @@
     return [
       VolumeManagerCommon.VolumeType.ANDROID_FILES,
       VolumeManagerCommon.VolumeType.CROSTINI,
+      VolumeManagerCommon.VolumeType.GUEST_OS,
       VolumeManagerCommon.VolumeType.DRIVE,
       VolumeManagerCommon.VolumeType.DOWNLOADS,
-      VolumeManagerCommon.VolumeType.MY_FILES,
     ];
   }
 
@@ -107,8 +98,10 @@
     // If the welcome banner was not shown prior to the first pin, record zero.
     const timeOfFirstWelcomeBannerShow =
         await HoldingSpaceUtil.getTimeOfFirstWelcomeBannerShow_() || now;
+    // We trim the max value to be 2^31 - 1, which is the maximum integer value
+    // that histograms can record.
     const timeFromFirstWelcomeBannerShowToFirstPin =
-        now - timeOfFirstWelcomeBannerShow;
+        Math.min(2 ** 31 - 1, now - timeOfFirstWelcomeBannerShow);
 
     // The histogram will use min values of 1 second and max of 1 day. Note
     // that it's permissible to record values smaller/larger than the min/max
@@ -118,7 +111,7 @@
     const oneDayInMillis = 24 * 60 * 60 * 1000;
     metrics.recordValue(
         /*name=*/ 'HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin',
-        /*type=*/ 'histogram-log',
+        chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
         /*min=*/ oneSecondInMillis,
         /*max=*/ oneDayInMillis,
         /*buckets=*/ 50,

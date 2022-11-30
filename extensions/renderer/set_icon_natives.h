@@ -1,13 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_RENDERER_SET_ICON_NATIVES_H_
 #define EXTENSIONS_RENDERER_SET_ICON_NATIVES_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;
@@ -16,6 +15,9 @@ class ScriptContext;
 class SetIconNatives : public ObjectBackedNativeHandler {
  public:
   explicit SetIconNatives(ScriptContext* context);
+
+  SetIconNatives(const SetIconNatives&) = delete;
+  SetIconNatives& operator=(const SetIconNatives&) = delete;
 
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
@@ -30,8 +32,6 @@ class SetIconNatives : public ObjectBackedNativeHandler {
 
   // Determines if the associated script context is for a ServiceWorker.
   void IsInServiceWorker(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(SetIconNatives);
 };
 
 }  // namespace extensions

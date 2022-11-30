@@ -1,23 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
 
-#include <set>
+#include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/mac/scoped_nsobject.h"
-#include "chrome/browser/notifications/alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
-@class NotificationCenterDelegate;
-@class NSDictionary;
-@class NSUserNotificationCenter;
-@class NSXPCConnection;
+class NotificationDispatcherMac;
 
 namespace message_center {
 class Notification;
@@ -27,9 +21,9 @@ class Notification;
 // send platform notifications to the MacOS notification center.
 class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
  public:
-  NotificationPlatformBridgeMac(NSUserNotificationCenter* notification_center,
-                                id<AlertDispatcher> alert_dispatcher);
-
+  NotificationPlatformBridgeMac(
+      std::unique_ptr<NotificationDispatcherMac> banner_dispatcher,
+      std::unique_ptr<NotificationDispatcherMac> alert_dispatcher);
   NotificationPlatformBridgeMac(const NotificationPlatformBridgeMac&) = delete;
   NotificationPlatformBridgeMac& operator=(
       const NotificationPlatformBridgeMac&) = delete;
@@ -51,15 +45,11 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   // Closes all notifications for the given |profile|.
   void CloseAllNotificationsForProfile(Profile* profile);
 
-  // Cocoa class that receives callbacks from the NSUserNotificationCenter.
-  base::scoped_nsobject<NotificationCenterDelegate> delegate_;
-
-  // The notification center to use for local banner notifications,
-  // this can be overriden in tests.
-  base::scoped_nsobject<NSUserNotificationCenter> notification_center_;
+  // The object in charge of dispatching banner notifications.
+  std::unique_ptr<NotificationDispatcherMac> banner_dispatcher_;
 
   // The object in charge of dispatching remote notifications.
-  base::scoped_nsprotocol<id<AlertDispatcher>> alert_dispatcher_;
+  std::unique_ptr<NotificationDispatcherMac> alert_dispatcher_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_

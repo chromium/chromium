@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,28 @@ namespace {
 const HitTestLocation* InverseTransformLocationIfNeeded(
     const HitTestLocation& location,
     const AffineTransform& transform,
-    base::Optional<HitTestLocation>& storage) {
+    absl::optional<HitTestLocation>& storage) {
   if (transform.IsIdentity())
     return &location;
   if (!transform.IsInvertible())
     return nullptr;
   const AffineTransform inverse = transform.Inverse();
-  FloatPoint transformed_point = inverse.MapPoint(location.TransformedPoint());
+  gfx::PointF transformed_point = inverse.MapPoint(location.TransformedPoint());
   if (UNLIKELY(location.IsRectBasedTest())) {
     storage.emplace(transformed_point,
                     inverse.MapQuad(location.TransformedRect()));
   } else {
-    storage.emplace(transformed_point);
+    gfx::RectF mapped_rect =
+        inverse.MapRect(gfx::RectF(location.BoundingBox()));
+    if (mapped_rect.width() < 1 || mapped_rect.height() < 1) {
+      // Specify |bounding_box| argument even if |location| is not rect-based.
+      // Without it, HitTestLocation would have 1x1 bounding box, and it would
+      // be mapped to NxN screen pixels if scaling factor is N.
+      storage.emplace(transformed_point,
+                      PhysicalRect::EnclosingRect(mapped_rect));
+    } else {
+      storage.emplace(transformed_point);
+    }
   }
   return &*storage;
 }

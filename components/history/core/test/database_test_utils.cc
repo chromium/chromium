@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 namespace history {
 
-WARN_UNUSED_RESULT bool GetTestDataHistoryDir(base::FilePath* dir) {
+[[nodiscard]] bool GetTestDataHistoryDir(base::FilePath* dir) {
   if (!base::PathService::Get(base::DIR_SOURCE_ROOT, dir))
     return false;
   *dir = dir->AppendASCII("components");
@@ -20,8 +20,8 @@ WARN_UNUSED_RESULT bool GetTestDataHistoryDir(base::FilePath* dir) {
   return true;
 }
 
-WARN_UNUSED_RESULT bool CreateDatabaseFromSQL(const base::FilePath& db_path,
-                                              const char* ascii_path) {
+[[nodiscard]] bool CreateDatabaseFromSQL(const base::FilePath& db_path,
+                                         const char* ascii_path) {
   base::FilePath dir;
   if (!GetTestDataHistoryDir(&dir))
     return false;

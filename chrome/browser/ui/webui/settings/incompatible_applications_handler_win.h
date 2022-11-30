@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,10 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/win/conflicts/installed_applications.h"
 
 class RegistryKeyWatcher;
-
-namespace base {
-class ListValue;
-}
 
 namespace settings {
 
@@ -24,6 +19,12 @@ namespace settings {
 class IncompatibleApplicationsHandler : public SettingsPageUIHandler {
  public:
   IncompatibleApplicationsHandler();
+
+  IncompatibleApplicationsHandler(const IncompatibleApplicationsHandler&) =
+      delete;
+  IncompatibleApplicationsHandler& operator=(
+      const IncompatibleApplicationsHandler&) = delete;
+
   ~IncompatibleApplicationsHandler() override;
 
   // SettingsPageUIHandler:
@@ -33,15 +34,16 @@ class IncompatibleApplicationsHandler : public SettingsPageUIHandler {
 
  private:
   // Sends the list of incompatible applications to the caller via a promise.
-  void HandleRequestIncompatibleApplicationsList(const base::ListValue* args);
+  void HandleRequestIncompatibleApplicationsList(const base::Value::List& args);
 
   // Initiates the uninstallation of the application passed using |args|.
-  void HandleStartApplicationUninstallation(const base::ListValue* args);
+  void HandleStartApplicationUninstallation(const base::Value::List& args);
 
-  void HandleGetSubtitlePluralString(const base::ListValue* args);
-  void HandleGetSubtitleNoAdminRightsPluralString(const base::ListValue* args);
-  void HandleGetListTitlePluralString(const base::ListValue* args);
-  void GetPluralString(int id, const base::ListValue* args);
+  void HandleGetSubtitlePluralString(const base::Value::List& args);
+  void HandleGetSubtitleNoAdminRightsPluralString(
+      const base::Value::List& args);
+  void HandleGetListTitlePluralString(const base::Value::List& args);
+  void GetPluralString(int id, const base::Value::List& args);
 
   // Callback for the registry key watchers.
   void OnApplicationRemoved(
@@ -51,8 +53,6 @@ class IncompatibleApplicationsHandler : public SettingsPageUIHandler {
   std::map<InstalledApplications::ApplicationInfo,
            std::unique_ptr<RegistryKeyWatcher>>
       registry_key_watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsHandler);
 };
 
 }  // namespace settings

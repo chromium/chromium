@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -78,8 +78,9 @@ def _IsEmailOrPlaceholder(is_first_owner, owner_tag_text, histogram_name,
 
   if should_check_owner_email and not _IsValidPrimaryOwnerEmail(owner_tag_text):
     raise Error(
-        'The histogram {} must have a valid primary owner, i.e. a '
-        'Googler with an @google.com or @chromium.org email address.'.format(
+        'The histogram {} must have a valid primary owner, i.e. a Googler '
+        'with an @google.com or @chromium.org email address. Please '
+        'manually update the histogram with a valid primary owner.'.format(
             histogram_name))
 
   return is_email or is_placeholder
@@ -252,44 +253,16 @@ def _ExtractComponentViaDirmd(path):
     dirmd_exe = 'dirmd.bat'
   dirmd_path = os.path.join(*(DIR_ABOVE_TOOLS +
                               ['third_party', 'depot_tools', dirmd_exe]))
-  dirmd = subprocess.Popen([dirmd_path, 'compute', '--root', root_path, path],
-                           stdout=subprocess.PIPE)
+  dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
+  dirmd = subprocess.Popen(
+      dirmd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if dirmd.wait() != 0:
-    raise Error('dirmd failed.')
+    raise Error('dirmd failed: ' + dirmd.stderr.read())
   json_out = json.load(dirmd.stdout)
+  # On Windows, dirmd output still uses Unix path separators.
+  if sys.platform == 'win32':
+    subpath = subpath.replace('\\', '/')
   return _ComponentFromDirmd(json_out, subpath)
-
-
-# TODO(crbug/1102997): remove once metadata migration is complete
-def _ExtractComponentFromOWNERS(path):
-  """Returns the string component associated with the file at the given path.
-
-  Examples are 'Blink>Storage>FileAPI' and 'UI'.
-
-  Returns an empty string if no component can be extracted from the OWNERS file
-  located at path or OWNERS files in higher level directories.
-
-  Args:
-    path: The path to an OWNERS file, e.g. 'src/storage/OWNERS'.
-  """
-  with open(path, 'r') as owners_file:
-    for line in [line.lstrip()
-                 for line in owners_file.read().splitlines() if line]:
-      if line.startswith('# COMPONENT: '):
-        # A typical line is '# COMPONENT: UI>Browser>Bubbles''. The colon is
-        # always followed by exactly one space. And the symbol >, if present,
-        # is never preceded or followed by any spaces.
-        words = line.split(': ')
-        if len(words) == 2:
-          return words[1].rstrip()
-        raise Error('The component info in {} is poorly formatted.'
-                    .format(path))
-
-    higher_level_owners_file_path = _GetHigherLevelOwnersFilePath(path)
-    if higher_level_owners_file_path:
-      return _ExtractComponentFromOWNERS(higher_level_owners_file_path)
-
-  return ''
 
 
 def _MakeOwners(document, path, emails_with_dom_elements):
@@ -357,7 +330,7 @@ def _UpdateHistogramOwners(histogram, owner_to_replace, owners_to_add):
       histogram.insertBefore(owner_to_add, node_after_owners_file)
 
 
-def _AddHistogramComponent(histogram, component):
+def AddHistogramComponent(histogram, component):
   """Makes a DOM Element for the component and adds it to the given histogram.
 
   Args:
@@ -430,8 +403,6 @@ def ExpandHistogramsOWNERS(histograms):
       _UpdateHistogramOwners(histogram, owner, owners_to_add)
 
       component = _ExtractComponentViaDirmd(os.path.dirname(path))
-      if not component:
-        component = _ExtractComponentFromOWNERS(path)
       if component and component not in components_with_dom_elements:
         components_with_dom_elements.add(component)
-        _AddHistogramComponent(histogram, component)
+        AddHistogramComponent(histogram, component)

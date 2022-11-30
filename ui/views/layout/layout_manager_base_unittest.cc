@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include <algorithm>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -49,13 +51,13 @@ class TestLayoutManagerBase : public LayoutManagerBase {
       return *forced_layout_;
 
     ProposedLayout layout;
-    layout.host_size.set_width(
-        base::ClampToRange<SizeBound>(size_bounds.width(), kMinimumSize.width(),
-                                      kPreferredSize.width())
-            .value());
-    layout.host_size.set_height(base::ClampToRange<SizeBound>(
-                                    size_bounds.height(), kMinimumSize.height(),
-                                    kPreferredSize.height())
+    layout.host_size.set_width(base::clamp<SizeBound>(size_bounds.width(),
+                                                      kMinimumSize.width(),
+                                                      kPreferredSize.width())
+                                   .value());
+    layout.host_size.set_height(base::clamp<SizeBound>(size_bounds.height(),
+                                                       kMinimumSize.height(),
+                                                       kPreferredSize.height())
                                     .value());
     return layout;
   }
@@ -69,7 +71,7 @@ class TestLayoutManagerBase : public LayoutManagerBase {
 
  private:
   // If specified, will always return this layout.
-  base::Optional<ProposedLayout> forced_layout_;
+  absl::optional<ProposedLayout> forced_layout_;
 
   size_t layout_count_ = 0;
 };
@@ -346,7 +348,7 @@ class LayoutManagerBaseManagerTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_view_;
-  MockLayoutManagerBase* layout_manager_;
+  raw_ptr<MockLayoutManagerBase> layout_manager_;
 };
 
 }  // namespace
@@ -531,7 +533,7 @@ TEST_F(LayoutManagerBaseManagerTest, ViewVisibilitySet) {
   // Turn the second child view back on and verify it's present in the layout
   // again.
   child(1)->SetVisible(true);
-  host_view()->Layout();
+  test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(child(0)->GetVisible());
   EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
@@ -555,7 +557,7 @@ TEST_F(LayoutManagerBaseManagerTest, ViewAdded) {
 
   // Add a new view and verify it is being laid out.
   View* new_view = AddChildView(kSquarishSize);
-  host_view()->Layout();
+  test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(new_view->GetVisible());
   EXPECT_EQ(new_view->GetPreferredSize(), new_view->size());
@@ -578,7 +580,7 @@ TEST_F(LayoutManagerBaseManagerTest, ViewAdded_NotVisible) {
   View* new_view = new StaticSizedView(kSquarishSize);
   new_view->SetVisible(false);
   host_view()->AddChildView(new_view);
-  host_view()->Layout();
+  test::RunScheduledLayout(host_view());
 
   EXPECT_FALSE(new_view->GetVisible());
 }
@@ -600,7 +602,7 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
 
   host_view()->RemoveChildView(child_view);
   child_view->SetSize(kLargeSize);
-  host_view()->Layout();
+  test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(child(0)->GetVisible());
   EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
@@ -661,7 +663,7 @@ class LayoutManagerBaseAvailableSizeTest : public testing::Test {
 
  private:
   std::unique_ptr<View> view_;
-  TestLayoutManagerBase* layout_;
+  raw_ptr<TestLayoutManagerBase> layout_;
 };
 
 TEST_F(LayoutManagerBaseAvailableSizeTest, ReturnsCorrectValues) {
@@ -792,7 +794,7 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
   grandchild_layout->OverrideProposedLayout(
       {{}, {{great_grandchild, false, {}, {0, 0}}}});
 
-  view()->Layout();
+  test::RunScheduledLayout(view());
 
   const size_t num_grandchild_layouts = grandchild_layout->layout_count();
   const size_t num_great_grandchild_layouts =
@@ -801,7 +803,7 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
   // Set the same rootlayout again as a control. This should not have an effect
   // on the layout of the grand- and great-grandchild views.
   layout()->OverrideProposedLayout(root_layout);
-  view()->Layout();
+  test::RunScheduledLayout(view());
 
   EXPECT_EQ(num_grandchild_layouts, grandchild_layout->layout_count());
   EXPECT_EQ(num_great_grandchild_layouts,
@@ -814,7 +816,7 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
   root_layout.child_layouts[0].bounds = gfx::Rect(0, 0, 5, 5);
   root_layout.child_layouts[0].available_size = SizeBounds(10, 10);
   layout()->OverrideProposedLayout(root_layout);
-  view()->Layout();
+  test::RunScheduledLayout(view());
 
   EXPECT_EQ(num_grandchild_layouts + 1, grandchild_layout->layout_count());
   EXPECT_EQ(num_great_grandchild_layouts + 1,

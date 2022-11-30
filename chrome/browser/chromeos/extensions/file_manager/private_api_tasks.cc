@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,49 +12,42 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_id_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_switches.h"
 #include "extensions/browser/api/file_handlers/directory_util.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
-#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-
-using content::BrowserThread;
-using storage::FileSystemURL;
 
 namespace extensions {
 namespace {
 
 // Error messages.
-const char kInvalidTask[] = "Invalid task: ";
-const char kInvalidFileUrl[] = "Invalid file URL";
+constexpr char kInvalidTaskType[] = "Invalid task type: ";
+constexpr char kInvalidFileUrl[] = "Invalid file URL";
+constexpr char kInvalidAssignmentPolicyConflict[] =
+    "Invalid assignment (conflicts with policy): ";
 
 // Make a set of unique filename suffixes out of the list of file URLs.
 std::set<std::string> GetUniqueSuffixes(
-    const std::vector<std::string>& url_list,
+    const std::vector<std::string>& file_urls,
     const storage::FileSystemContext* context) {
   std::set<std::string> suffixes;
-  for (size_t i = 0; i < url_list.size(); ++i) {
-    const FileSystemURL url = context->CrackURL(GURL(url_list[i]));
+  for (const auto& file_url : file_urls) {
+    const storage::FileSystemURL url =
+        context->CrackURLInFirstPartyContext(GURL{file_url});
     if (!url.is_valid() || url.path().empty())
-      return std::set<std::string>();
+      return {};
     // We'll skip empty suffixes.
     if (!url.path().Extension().empty())
       suffixes.insert(url.path().Extension());
@@ -66,8 +59,7 @@ std::set<std::string> GetUniqueSuffixes(
 std::set<std::string> GetUniqueMimeTypes(
     const std::vector<std::string>& mime_type_list) {
   std::set<std::string> mime_types;
-  for (size_t i = 0; i < mime_type_list.size(); ++i) {
-    const std::string mime_type = mime_type_list[i];
+  for (const auto& mime_type : mime_type_list) {
     // We'll skip empty MIME types and existing MIME types.
     if (!mime_type.empty())
       mime_types.insert(mime_type);
@@ -75,88 +67,69 @@ std::set<std::string> GetUniqueMimeTypes(
   return mime_types;
 }
 
-// Intercepts usage of executeTask(..) that wants to invoke the new MediaApp and
-// switches it back to Gallery if MediaApp is not available.
-// TODO(crbug/1030935): Remove this when the gallery app is properly removed or
-// the camera app has a new API (not fileManagerPrivate) to invoke its
-// "Camera Roll" viewer.
-void MaybeAdjustTaskForGalleryAppRemoval(
-    file_manager::file_tasks::TaskDescriptor* task,
-    const std::vector<FileSystemURL>& urls,
-    Profile* profile) {
-  if (task->app_id != web_app::kMediaAppId)
-    return;
+namespace api_fmp = extensions::api::file_manager_private;
+namespace api_fmp_internal = extensions::api::file_manager_private_internal;
 
-  auto* provider = web_app::WebAppProvider::Get(profile);
-  DCHECK(provider);
-  base::Optional<web_app::AppId> optional_app_id =
-      provider->system_web_app_manager().GetAppIdForSystemApp(
-          web_app::SystemAppType::MEDIA);
-
-  // If the MediaApp is installed, then there's nothing to do.
-  if (optional_app_id) {
-    // Sanity check the app id when installed. The app id at runtime is
-    // determined by the origin and the "start_url" manifest property.
-    DCHECK_EQ(*optional_app_id, web_app::kMediaAppId);
-    return;
+absl::optional<api_fmp::PolicyDefaultHandlerStatus>
+RemapPolicyDefaultHandlerStatus(
+    const absl::optional<file_manager::file_tasks::PolicyDefaultHandlerStatus>&
+        status) {
+  if (!status) {
+    return {};
   }
 
-  // In tests, the SystemWebAppManager constructor early-exits without
-  // configuring any apps to install. So even if the MediaApp is enabled, it
-  // might not be installed.
-  DCHECK(
-      !base::FeatureList::IsEnabled(chromeos::features::kMediaApp) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
-      << "When enabled, MediaApp should only be missing in tests.";
-
-  DCHECK_EQ(task->task_type, file_manager::file_tasks::TASK_TYPE_WEB_APP);
-  task->task_type = file_manager::file_tasks::TASK_TYPE_FILE_HANDLER;
-  task->app_id = file_manager::kGalleryAppId;
+  switch (*status) {
+    case file_manager::file_tasks::PolicyDefaultHandlerStatus::
+        kDefaultHandlerAssignedByPolicy:
+      return api_fmp::PolicyDefaultHandlerStatus::
+          POLICY_DEFAULT_HANDLER_STATUS_DEFAULT_HANDLER_ASSIGNED_BY_POLICY;
+    case file_manager::file_tasks::PolicyDefaultHandlerStatus::
+        kIncorrectAssignment:
+      return api_fmp::POLICY_DEFAULT_HANDLER_STATUS_INCORRECT_ASSIGNMENT;
+  }
 }
 
 }  // namespace
 
 FileManagerPrivateInternalExecuteTaskFunction::
-    FileManagerPrivateInternalExecuteTaskFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateInternalExecuteTaskFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalExecuteTaskFunction::Run() {
-  using extensions::api::file_manager_private_internal::ExecuteTask::Params;
-  using extensions::api::file_manager_private_internal::ExecuteTask::Results::
-      Create;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  using api_fmp_internal::ExecuteTask::Params;
+  using api_fmp_internal::ExecuteTask::Results::Create;
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  file_manager::file_tasks::TaskDescriptor task;
-  if (!file_manager::file_tasks::ParseTaskID(params->task_id, &task)) {
-    return RespondNow(Error(kInvalidTask + params->task_id));
+  file_manager::file_tasks::TaskType task_type =
+      file_manager::file_tasks::StringToTaskType(params->descriptor.task_type);
+  if (task_type == file_manager::file_tasks::TASK_TYPE_UNKNOWN) {
+    return RespondNow(Error(kInvalidTaskType + params->descriptor.task_type));
   }
+  file_manager::file_tasks::TaskDescriptor task(
+      params->descriptor.app_id, task_type, params->descriptor.action_id);
 
   if (params->urls.empty()) {
-    return RespondNow(ArgumentList(
-        Create(extensions::api::file_manager_private::TASK_RESULT_EMPTY)));
+    return RespondNow(ArgumentList(Create(api_fmp::TASK_RESULT_EMPTY)));
   }
 
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details_.GetProfile(), render_frame_host());
+          profile, render_frame_host());
 
-  std::vector<FileSystemURL> urls;
-  for (size_t i = 0; i < params->urls.size(); i++) {
-    const FileSystemURL url =
-        file_system_context->CrackURL(GURL(params->urls[i]));
+  std::vector<storage::FileSystemURL> urls;
+  for (const auto& url_param : params->urls) {
+    const storage::FileSystemURL url =
+        file_system_context->CrackURLInFirstPartyContext(GURL{url_param});
     if (!chromeos::FileSystemBackend::CanHandleURL(url)) {
       return RespondNow(Error(kInvalidFileUrl));
     }
     urls.push_back(url);
   }
 
-  MaybeAdjustTaskForGalleryAppRemoval(&task, urls,
-                                      chrome_details_.GetProfile());
-
   const bool result = file_manager::file_tasks::ExecuteFileTask(
-      chrome_details_.GetProfile(), source_url(), task, urls,
+      profile, task, urls,
       base::BindOnce(
           &FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted,
           this));
@@ -167,11 +140,10 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
 }
 
 void FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted(
-    extensions::api::file_manager_private::TaskResult result,
+    api_fmp::TaskResult result,
     std::string failure_reason) {
-  auto result_list = extensions::api::file_manager_private_internal::
-      ExecuteTask::Results::Create(result);
-  if (result == extensions::api::file_manager_private::TASK_RESULT_FAILED) {
+  auto result_list = api_fmp_internal::ExecuteTask::Results::Create(result);
+  if (result == api_fmp::TASK_RESULT_FAILED) {
     Respond(Error("Task result failed: " + failure_reason));
   } else {
     Respond(ArgumentList(std::move(result_list)));
@@ -179,30 +151,31 @@ void FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted(
 }
 
 FileManagerPrivateInternalGetFileTasksFunction::
-    FileManagerPrivateInternalGetFileTasksFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateInternalGetFileTasksFunction() = default;
 
 FileManagerPrivateInternalGetFileTasksFunction::
     ~FileManagerPrivateInternalGetFileTasksFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetFileTasksFunction::Run() {
-  using extensions::api::file_manager_private_internal::GetFileTasks::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  using api_fmp_internal::GetFileTasks::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty())
     return RespondNow(Error("No URLs provided"));
 
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details_.GetProfile(), render_frame_host());
+          profile, render_frame_host());
 
   // Collect all the URLs, convert them to GURLs, and crack all the urls into
   // file paths.
-  for (size_t i = 0; i < params->urls.size(); ++i) {
-    const GURL url(params->urls[i]);
-    storage::FileSystemURL file_system_url(file_system_context->CrackURL(url));
+  for (const auto& url_param : params->urls) {
+    const GURL url{url_param};
+    storage::FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(url));
     if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
       continue;
     urls_.push_back(url);
@@ -210,8 +183,7 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
   }
 
   mime_type_collector_ =
-      std::make_unique<app_file_handler_util::MimeTypeCollector>(
-          chrome_details_.GetProfile());
+      std::make_unique<app_file_handler_util::MimeTypeCollector>(profile);
   mime_type_collector_->CollectForLocalPaths(
       local_paths_,
       base::BindOnce(
@@ -225,7 +197,7 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnMimeTypesCollected(
     std::unique_ptr<std::vector<std::string>> mime_types) {
   is_directory_collector_ =
       std::make_unique<app_file_handler_util::IsDirectoryCollector>(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   is_directory_collector_->CollectForEntriesPaths(
       local_paths_,
       base::BindOnce(&FileManagerPrivateInternalGetFileTasksFunction::
@@ -245,39 +217,47 @@ void FileManagerPrivateInternalGetFileTasksFunction::
   }
 
   file_manager::file_tasks::FindAllTypesOfTasks(
-      chrome_details_.GetProfile(), entries, urls_,
+      Profile::FromBrowserContext(browser_context()), entries, urls_,
       base::BindOnce(
           &FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed,
           this));
 }
 
 void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
-    std::unique_ptr<std::vector<file_manager::file_tasks::FullTaskDescriptor>>
-        tasks) {
+    std::unique_ptr<file_manager::file_tasks::ResultingTasks> resulting_tasks) {
   // Convert the tasks into JSON compatible objects.
-  using api::file_manager_private::FileTask;
-  std::vector<FileTask> results;
-  for (const file_manager::file_tasks::FullTaskDescriptor& task : *tasks) {
-    FileTask converted;
-    converted.task_id =
-        file_manager::file_tasks::TaskDescriptorToId(task.task_descriptor());
-    if (!task.icon_url().is_empty())
-      converted.icon_url = task.icon_url().spec();
-    converted.title = task.task_title();
-    converted.verb = task.task_verb();
-    converted.is_default = task.is_default();
-    converted.is_generic_file_handler = task.is_generic_file_handler();
+  std::vector<api_fmp::FileTask> results;
+  for (const auto& task : resulting_tasks->tasks) {
+    api_fmp::FileTask converted;
+    converted.descriptor.app_id = task.task_descriptor.app_id;
+    converted.descriptor.task_type =
+        TaskTypeToString(task.task_descriptor.task_type);
+    converted.descriptor.action_id = task.task_descriptor.action_id;
+    if (!task.icon_url.is_empty())
+      converted.icon_url = task.icon_url.spec();
+    converted.title = task.task_title;
+    converted.verb = task.task_verb;
+    converted.is_default = task.is_default;
+    converted.is_generic_file_handler = task.is_generic_file_handler;
     results.push_back(std::move(converted));
   }
 
-  Respond(ArgumentList(extensions::api::file_manager_private_internal::
-                           GetFileTasks::Results::Create(results)));
+  api_fmp::ResultingTasks api_resulting_tasks;
+
+  api_resulting_tasks.tasks = std::move(results);
+  if (auto status = RemapPolicyDefaultHandlerStatus(
+          resulting_tasks->policy_default_handler_status)) {
+    api_resulting_tasks.policy_default_handler_status = *status;
+  }
+
+  Respond(ArgumentList(api_fmp_internal::GetFileTasks::Results::Create(
+      std::move(api_resulting_tasks))));
 }
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
-  using extensions::api::file_manager_private_internal::SetDefaultTask::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  using api_fmp_internal::SetDefaultTask::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -297,12 +277,28 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   // TODO(gspencer): Fix file manager so that it never tries to set default in
   // cases where extensionless local files are part of the selection.
   if (suffixes.empty() && mime_types.empty()) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 
-  file_manager::file_tasks::UpdateDefaultTask(
-      profile->GetPrefs(), params->task_id, suffixes, mime_types);
-  return RespondNow(NoArguments());
+  // Check that there are no conflicts with policy-assigned defaults.
+  for (const auto& suffix : suffixes) {
+    if (file_manager::file_tasks::GetPolicyDefaultHandlerForFileExtension(
+            profile, suffix)) {
+      return RespondNow(Error(kInvalidAssignmentPolicyConflict + suffix));
+    }
+  }
+
+  file_manager::file_tasks::TaskType task_type =
+      file_manager::file_tasks::StringToTaskType(params->descriptor.task_type);
+  if (task_type == file_manager::file_tasks::TASK_TYPE_UNKNOWN) {
+    return RespondNow(Error(kInvalidTaskType + params->descriptor.task_type));
+  }
+  file_manager::file_tasks::TaskDescriptor descriptor(
+      params->descriptor.app_id, task_type, params->descriptor.action_id);
+
+  file_manager::file_tasks::UpdateDefaultTask(profile, descriptor, suffixes,
+                                              mime_types);
+  return RespondNow(WithArguments());
 }
 
 }  // namespace extensions

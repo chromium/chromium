@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,7 +7,7 @@ NATIVE_LIBRARIES_TEMPLATE = """\
 //     build/android/gyp/write_native_libraries_java.py
 // Please do not change its content.
 
-package org.chromium.base.library_loader;
+package org.chromium.build;
 
 public class NativeLibraries {{
     public static final int CPU_FAMILY_UNKNOWN = 0;

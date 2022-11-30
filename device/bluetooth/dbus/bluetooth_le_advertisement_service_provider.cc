@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/platform_thread.h"
 #include "dbus/exported_object.h"
@@ -34,11 +34,11 @@ class BluetoothAdvertisementServiceProviderImpl
       const dbus::ObjectPath& object_path,
       Delegate* delegate,
       AdvertisementType type,
-      std::unique_ptr<UUIDList> service_uuids,
-      std::unique_ptr<ManufacturerData> manufacturer_data,
-      std::unique_ptr<UUIDList> solicit_uuids,
-      std::unique_ptr<ServiceData> service_data,
-      std::unique_ptr<ScanResponseData> scan_response_data)
+      absl::optional<UUIDList> service_uuids,
+      absl::optional<ManufacturerData> manufacturer_data,
+      absl::optional<UUIDList> solicit_uuids,
+      absl::optional<ServiceData> service_data,
+      absl::optional<ScanResponseData> scan_response_data)
       : origin_thread_id_(base::PlatformThread::CurrentId()),
         bus_(bus),
         delegate_(delegate),
@@ -80,6 +80,11 @@ class BluetoothAdvertisementServiceProviderImpl
         base::BindOnce(&BluetoothAdvertisementServiceProviderImpl::OnExported,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  BluetoothAdvertisementServiceProviderImpl(
+      const BluetoothAdvertisementServiceProviderImpl&) = delete;
+  BluetoothAdvertisementServiceProviderImpl& operator=(
+      const BluetoothAdvertisementServiceProviderImpl&) = delete;
 
   ~BluetoothAdvertisementServiceProviderImpl() override {
     DVLOG(1) << "Cleaning up Bluetooth Advertisement: " << object_path_.value();
@@ -419,20 +424,20 @@ class BluetoothAdvertisementServiceProviderImpl
 
   // D-Bus bus object is exported on, not owned by this object and must
   // outlive it.
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // All incoming method calls are passed on to the Delegate and a callback
   // passed to generate the reply. |delegate_| is generally the object that
   // owns this one, and must outlive it.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Advertisement data that needs to be provided to BlueZ when requested.
   AdvertisementType type_;
-  std::unique_ptr<UUIDList> service_uuids_;
-  std::unique_ptr<ManufacturerData> manufacturer_data_;
-  std::unique_ptr<UUIDList> solicit_uuids_;
-  std::unique_ptr<ServiceData> service_data_;
-  std::unique_ptr<ScanResponseData> scan_response_data_;
+  absl::optional<UUIDList> service_uuids_;
+  absl::optional<ManufacturerData> manufacturer_data_;
+  absl::optional<UUIDList> solicit_uuids_;
+  absl::optional<ServiceData> service_data_;
+  absl::optional<ScanResponseData> scan_response_data_;
 
   // D-Bus object we are exporting, owned by this object.
   scoped_refptr<dbus::ExportedObject> exported_object_;
@@ -443,8 +448,6 @@ class BluetoothAdvertisementServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdvertisementServiceProviderImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementServiceProviderImpl);
 };
 
 BluetoothLEAdvertisementServiceProvider::
@@ -460,11 +463,11 @@ BluetoothLEAdvertisementServiceProvider::Create(
     const dbus::ObjectPath& object_path,
     Delegate* delegate,
     AdvertisementType type,
-    std::unique_ptr<UUIDList> service_uuids,
-    std::unique_ptr<ManufacturerData> manufacturer_data,
-    std::unique_ptr<UUIDList> solicit_uuids,
-    std::unique_ptr<ServiceData> service_data,
-    std::unique_ptr<ScanResponseData> scan_response_data) {
+    absl::optional<UUIDList> service_uuids,
+    absl::optional<ManufacturerData> manufacturer_data,
+    absl::optional<UUIDList> solicit_uuids,
+    absl::optional<ServiceData> service_data,
+    absl::optional<ScanResponseData> scan_response_data) {
   if (!bluez::BluezDBusManager::Get()->IsUsingFakes()) {
     return std::make_unique<BluetoothAdvertisementServiceProviderImpl>(
         bus, object_path, delegate, type, std::move(service_uuids),

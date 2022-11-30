@@ -67,7 +67,7 @@ LayoutBox* OrderIterator::Next() {
 }
 
 void OrderIterator::Reset() {
-  current_child_ = nullptr;
+  current_child_.Clear();
   order_values_iterator_ = order_values_.begin();
   is_reset_ = true;
 }

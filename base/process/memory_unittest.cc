@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <tuple>
 #include <vector>
 
 #include "base/allocator/allocator_check.h"
@@ -17,30 +18,31 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
-#include "base/process/process_metrics.h"
-#include "base/strings/stringprintf.h"
+#include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <errno.h>
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <malloc/malloc.h>
-#include "base/allocator/allocator_interception_mac.h"
-#include "base/allocator/allocator_shim.h"
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/process/memory_unittest_mac.h"
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
 #include "base/test/malloc_wrapper.h"
 #endif
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 #if defined(COMPILER_MSVC)
 // ssize_t needed for OutOfMemoryTest.
@@ -55,9 +57,9 @@ typedef long ssize_t;
 typedef BOOL (WINAPI* HeapQueryFn)  \
     (HANDLE, HEAP_INFORMATION_CLASS, PVOID, SIZE_T, PSIZE_T);
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // For the following Mac tests:
 // Note that base::EnableTerminationOnHeapCorruption() is called as part of
@@ -71,7 +73,7 @@ static void callFree(void *ptr) {
 
 TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  base::allocator::InitializeAllocatorShim();
+  allocator_shim::InitializeAllocatorShim();
 #endif
   // Assert that freeing an unallocated pointer will crash the process.
   char buf[9];
@@ -90,33 +92,34 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  base::allocator::UninterceptMallocZonesForTesting();
+  allocator_shim::UninterceptMallocZonesForTesting();
 #endif
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST(MemoryTest, AllocatorShimWorking) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  base::allocator::InitializeAllocatorShim();
+  allocator_shim::InitializeAllocatorShim();
 #endif
-  base::allocator::InterceptAllocationsMac();
+  allocator_shim::InterceptAllocationsMac();
 #endif
   ASSERT_TRUE(base::allocator::IsAllocatorInitialized());
 
-#if defined(OS_MAC)
-  base::allocator::UninterceptMallocZonesForTesting();
+#if BUILDFLAG(IS_MAC)
+  allocator_shim::UninterceptMallocZonesForTesting();
 #endif
 }
 
 // OpenBSD does not support these tests. Don't test these on ASan/TSan/MSan
 // configurations: only test the real allocator.
-#if !defined(OS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) && \
+#if !BUILDFLAG(IS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace {
-#if defined(OS_WIN)
+
+#if BUILDFLAG(IS_WIN)
 
 // Windows raises an exception in order to make the exit code unique to OOM.
 #define ASSERT_OOM_DEATH(statement) \
@@ -127,7 +130,7 @@ namespace {
 
 #define ASSERT_OOM_DEATH(statement) ASSERT_DEATH(statement, "")
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -154,8 +157,8 @@ class OutOfMemoryTest : public testing::Test {
 class OutOfMemoryDeathTest : public OutOfMemoryTest {
  public:
   void SetUpInDeathAssert() {
-#if defined(OS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
-    base::allocator::InitializeAllocatorShim();
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+    allocator_shim::InitializeAllocatorShim();
 #endif
 
     // Must call EnableTerminationOnOutOfMemory() because that is called from
@@ -166,16 +169,27 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
     base::EnableTerminationOnOutOfMemory();
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void TearDown() override {
-    base::allocator::UninterceptMallocZonesForTesting();
+    allocator_shim::UninterceptMallocZonesForTesting();
   }
 #endif
+
+  // These tests don't work properly on old x86 Android; crbug.com/1181112
+  bool ShouldSkipTest() {
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+    return base::android::BuildInfo::GetInstance()->sdk_int() <
+           base::android::SDK_VERSION_NOUGAT;
+#else
+    return false;
+#endif
+  }
 };
 
-// Failing on x86 android, crbug.com/1181112
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
 TEST_F(OutOfMemoryDeathTest, New) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = operator new(test_size_);
@@ -183,6 +197,9 @@ TEST_F(OutOfMemoryDeathTest, New) {
 }
 
 TEST_F(OutOfMemoryDeathTest, NewArray) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = new char[test_size_];
@@ -190,6 +207,9 @@ TEST_F(OutOfMemoryDeathTest, NewArray) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Malloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = malloc(test_size_);
@@ -197,6 +217,9 @@ TEST_F(OutOfMemoryDeathTest, Malloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Realloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = realloc(nullptr, test_size_);
@@ -204,6 +227,9 @@ TEST_F(OutOfMemoryDeathTest, Realloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Calloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = calloc(1024, test_size_ / 1024L);
@@ -211,16 +237,21 @@ TEST_F(OutOfMemoryDeathTest, Calloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, AlignedAlloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = base::AlignedAlloc(test_size_, 8);
   });
 }
-#endif
 
 // POSIX does not define an aligned realloc function.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(OutOfMemoryDeathTest, AlignedRealloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = _aligned_realloc(nullptr, test_size_, 8);
@@ -249,12 +280,15 @@ TEST_F(OutOfMemoryDeathTest, NewHandlerGeneratesUnhandledException) {
       },
       testing::ExitedWithCode(kUnhandledExceptionExitCode), "");
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-// OS X and Android have no 2Gb allocation limit.
+// OS X has no 2Gb allocation limit.
 // See https://crbug.com/169327.
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_MAC)
 TEST_F(OutOfMemoryDeathTest, SecurityNew) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = operator new(insecure_test_size_);
@@ -262,6 +296,9 @@ TEST_F(OutOfMemoryDeathTest, SecurityNew) {
 }
 
 TEST_F(OutOfMemoryDeathTest, SecurityNewArray) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = new char[insecure_test_size_];
@@ -269,6 +306,9 @@ TEST_F(OutOfMemoryDeathTest, SecurityNewArray) {
 }
 
 TEST_F(OutOfMemoryDeathTest, SecurityMalloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = malloc(insecure_test_size_);
@@ -276,6 +316,9 @@ TEST_F(OutOfMemoryDeathTest, SecurityMalloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, SecurityRealloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = realloc(nullptr, insecure_test_size_);
@@ -283,6 +326,9 @@ TEST_F(OutOfMemoryDeathTest, SecurityRealloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, SecurityCalloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = calloc(1024, insecure_test_size_ / 1024L);
@@ -290,6 +336,9 @@ TEST_F(OutOfMemoryDeathTest, SecurityCalloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, SecurityAlignedAlloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = base::AlignedAlloc(insecure_test_size_, 8);
@@ -297,17 +346,20 @@ TEST_F(OutOfMemoryDeathTest, SecurityAlignedAlloc) {
 }
 
 // POSIX does not define an aligned realloc function.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(OutOfMemoryDeathTest, SecurityAlignedRealloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     value_ = _aligned_realloc(nullptr, insecure_test_size_, 8);
   });
 }
-#endif  // defined(OS_WIN)
-#endif  // !defined(OS_MAC) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_MAC)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(OutOfMemoryDeathTest, Valloc) {
   ASSERT_OOM_DEATH({
@@ -353,10 +405,10 @@ TEST_F(OutOfMemoryDeathTest, ViaSharedLibraries) {
     value_ = MallocWrapper(test_size_);
   });
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Android doesn't implement posix_memalign().
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 TEST_F(OutOfMemoryDeathTest, Posix_memalign) {
   // Grab the return value of posix_memalign to silence a compiler warning
   // about unused return values. We don't actually care about the return
@@ -366,9 +418,9 @@ TEST_F(OutOfMemoryDeathTest, Posix_memalign) {
     EXPECT_EQ(ENOMEM, posix_memalign(&value_, 8, test_size_));
   });
 }
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // Purgeable zone tests
 
@@ -419,15 +471,6 @@ TEST_F(OutOfMemoryDeathTest, PosixMemalignPurgeable) {
 // it's likely that they'll fail because they would require a preposterous
 // amount of (virtual) memory.
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorSystemDefault) {
-  ASSERT_OOM_DEATH({
-    SetUpInDeathAssert();
-    while ((value_ =
-                base::AllocateViaCFAllocatorSystemDefault(signed_test_size_))) {
-    }
-  });
-}
-
 TEST_F(OutOfMemoryDeathTest, CFAllocatorMalloc) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
@@ -436,7 +479,36 @@ TEST_F(OutOfMemoryDeathTest, CFAllocatorMalloc) {
   });
 }
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorMallocZone) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// PartitionAlloc-Everywhere does not intercept other malloc zones than the
+// default (the top) malloc zone.  Plus,
+// CFAllocatorAllocate(kCFAllocatorSystemDefault, size, 0) does not call the
+// default (the top) malloc zone on macOS 10.xx (does call it on macOS 11 and
+// later though).
+#define MAYBE_CFAllocatorSystemDefault DISABLED_CFAllocatorSystemDefault
+#else
+#define MAYBE_CFAllocatorSystemDefault CFAllocatorSystemDefault
+#endif
+TEST_F(OutOfMemoryDeathTest, MAYBE_CFAllocatorSystemDefault) {
+  ASSERT_OOM_DEATH({
+    SetUpInDeathAssert();
+    while ((value_ =
+                base::AllocateViaCFAllocatorSystemDefault(signed_test_size_))) {
+    }
+  });
+}
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// PartitionAlloc-Everywhere does not intercept other malloc zones than the
+// default (the top) malloc zone.  Plus,
+// CFAllocatorAllocate(kCFAllocatorMallocZone, size, 0) does not call the
+// default (the top) malloc zone on macOS 10.xx (does call it on macOS 11 and
+// later though).
+#define MAYBE_CFAllocatorMallocZone DISABLED_CFAllocatorMallocZone
+#else
+#define MAYBE_CFAllocatorMallocZone CFAllocatorMallocZone
+#endif
+TEST_F(OutOfMemoryDeathTest, MAYBE_CFAllocatorMallocZone) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     while (
@@ -445,7 +517,7 @@ TEST_F(OutOfMemoryDeathTest, CFAllocatorMallocZone) {
   });
 }
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 class OutOfMemoryHandledTest : public OutOfMemoryTest {
  public:
@@ -463,13 +535,13 @@ class OutOfMemoryHandledTest : public OutOfMemoryTest {
   }
 
   void TearDown() override {
-#if defined(OS_MAC)
-    base::allocator::UninterceptMallocZonesForTesting();
+#if BUILDFLAG(IS_MAC)
+    allocator_shim::UninterceptMallocZonesForTesting();
 #endif
   }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -501,24 +573,24 @@ TEST_F(OutOfMemoryTest, TerminateBecauseOutOfMemoryReportsAllocSize) {
                                          kAttemptedAllocationSize)) {
   }
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(ARCH_CPU_32_BITS) && \
-    (defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
 void TestAllocationsReleaseReservation(void* (*alloc_fn)(size_t),
                                        void (*free_fn)(void*)) {
-  base::ReleaseReservation();
+  partition_alloc::ReleaseReservation();
   base::EnableTerminationOnOutOfMemory();
 
   constexpr size_t kMiB = 1 << 20;
   constexpr size_t kReservationSize = 512 * kMiB;  // MiB.
 
   size_t reservation_size = kReservationSize;
-  while (!base::ReserveAddressSpace(reservation_size)) {
+  while (!partition_alloc::ReserveAddressSpace(reservation_size)) {
     reservation_size -= 16 * kMiB;
   }
-  ASSERT_TRUE(base::HasReservationForTesting());
+  ASSERT_TRUE(partition_alloc::HasReservationForTesting());
   ASSERT_GT(reservation_size, 0u);
 
   // Allocate a large area at a time to bump into address space exhaustion
@@ -542,7 +614,7 @@ void TestAllocationsReleaseReservation(void* (*alloc_fn)(size_t),
     // was dropped instead of crashing.
     //
     // Meaning that the test is either successful, or crashes.
-    if (!base::HasReservationForTesting())
+    if (!partition_alloc::HasReservationForTesting())
       break;
   }
 
@@ -562,23 +634,22 @@ TEST_F(OutOfMemoryHandledTest, NewReleasesReservation) {
       [](size_t size) { return static_cast<void*>(new char[size]); },
       [](void* ptr) { delete[] static_cast<char*>(ptr); });
 }
-#endif  // defined(ARCH_CPU_32_BITS) && (defined(OS_WIN) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS))
+#endif  // defined(ARCH_CPU_32_BITS) && (BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
-// See the comment in |UncheckedMalloc()|, it behaves as malloc() in these
-// cases.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
+// Android's allocator does not allow overcommits, so very large
+// UncheckedMallocs will yield OOM errors.
 // TODO(crbug.com/1112840): Fails on some Android bots.
 #define MAYBE_UncheckedMallocDies DISABLED_UncheckedMallocDies
 #define MAYBE_UncheckedCallocDies DISABLED_UncheckedCallocDies
-
 TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedMallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    bool ok = base::UncheckedMalloc(test_size_, &data);
-    EXPECT_TRUE(!data || ok);
+    std::ignore = base::UncheckedMalloc(test_size_, &data);
+    // Death expected here.
   });
 }
 
@@ -586,8 +657,8 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedCallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    bool ok = base::UncheckedCalloc(1, test_size_, &data);
-    EXPECT_TRUE(!data || ok);
+    std::ignore = base::UncheckedCalloc(1, test_size_, &data);
+    // Death expected here.
   });
 }
 
@@ -596,7 +667,7 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedCallocDies) {
 TEST_F(OutOfMemoryHandledTest, UncheckedMalloc) {
   EXPECT_TRUE(base::UncheckedMalloc(kSafeMallocSize, &value_));
   EXPECT_TRUE(value_ != nullptr);
-  free(value_);
+  base::UncheckedFree(value_);
 
   EXPECT_FALSE(base::UncheckedMalloc(test_size_, &value_));
   EXPECT_TRUE(value_ == nullptr);
@@ -608,7 +679,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   const char* bytes = static_cast<const char*>(value_);
   for (size_t i = 0; i < kSafeMallocSize; ++i)
     EXPECT_EQ(0, bytes[i]);
-  free(value_);
+  base::UncheckedFree(value_);
 
   EXPECT_TRUE(
       base::UncheckedCalloc(kSafeCallocItems, kSafeCallocSize, &value_));
@@ -616,13 +687,12 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   bytes = static_cast<const char*>(value_);
   for (size_t i = 0; i < (kSafeCallocItems * kSafeCallocSize); ++i)
     EXPECT_EQ(0, bytes[i]);
-  free(value_);
+  base::UncheckedFree(value_);
 
   EXPECT_FALSE(base::UncheckedCalloc(1, test_size_, &value_));
   EXPECT_TRUE(value_ == nullptr);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || defined(OS_ANDROID)
-
-#endif  // !defined(OS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) &&
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

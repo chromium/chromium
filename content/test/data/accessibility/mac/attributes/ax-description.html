@@ -1,0 +1,11 @@
+<!--
+@SCRIPT:
+  // AXDescription is a generic attribute.
+  input.accessibilityAttributeNames.has(AXDescription)
+  // AXDescription is mapped to accessibilityLabel
+  input.accessibilityAttributeValue(AXDescription)
+  empty.accessibilityAttributeValue(AXDescription)
+-->
+<!DOCTYPE html>
+<input id="input" aria-label="This is input">
+<input id="empty">

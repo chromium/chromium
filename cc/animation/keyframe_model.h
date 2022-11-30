@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/paint/element_id.h"
@@ -43,7 +43,10 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
         int target_property_type,
         PaintWorkletInput::NativePropertyType native_property_type);
     TargetPropertyId(const TargetPropertyId&);
+    TargetPropertyId(TargetPropertyId&&);
     ~TargetPropertyId();
+
+    TargetPropertyId& operator=(TargetPropertyId&& other);
 
     int target_property_type() const { return target_property_type_; }
     const std::string& custom_property_name() const {
@@ -153,6 +156,11 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
   // If specified, overrides the ElementId to apply this KeyframeModel's effect
   // value on.
   ElementId element_id_;
+
+#if DCHECK_IS_ON()
+  // This id is unique, modulo overflow. Permits quick instance equality checks.
+  int debug_id_ = 0;
+#endif
 
   bool needs_synchronized_start_time_;
   bool received_finished_event_;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
+#include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_ui/ui_handler.h"
-#include "chrome/browser/chromeos/policy/signin_profile_extensions_policy_test_base.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
@@ -34,6 +34,9 @@ namespace login_screen_extension_ui {
 class LoginScreenUiApitest : public LoginScreenApitestBase {
  public:
   LoginScreenUiApitest() : LoginScreenApitestBase(version_info::Channel::DEV) {}
+
+  LoginScreenUiApitest(const LoginScreenUiApitest&) = delete;
+  LoginScreenUiApitest& operator=(const LoginScreenUiApitest&) = delete;
 
   ~LoginScreenUiApitest() override = default;
 
@@ -62,9 +65,6 @@ class LoginScreenUiApitest : public LoginScreenApitestBase {
         ->GetDialogWidgetForTesting()
         ->movement_disabled();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenUiApitest);
 };
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest, ExtensionCanOpenWindow) {

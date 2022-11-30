@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,7 +116,7 @@ public abstract class SuggestionsPopupWindow
         // pre-Lollipop) since the popup will not properly dismiss on pre-Marshmallow unless it
         // has a background set.
         mPopupWindow.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                mContext.getResources(), R.drawable.floating_popup_background_light));
+                mContext.getResources(), R.drawable.floating_popup_background));
         mPopupWindow.setElevation(mContext.getResources().getDimensionPixelSize(
                 R.dimen.text_suggestion_popup_elevation));
 

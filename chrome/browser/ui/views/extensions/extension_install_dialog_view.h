@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -15,24 +15,22 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
 
 class Profile;
 
-namespace content {
-class PageNavigator;
-}
-
 // Modal dialog that shows when the user attempts to install an extension. Also
 // shown if the extension is already installed but needs additional permissions.
 // Not a normal "bubble" despite being a subclass of BubbleDialogDelegateView.
-class ExtensionInstallDialogView
-    : public views::BubbleDialogDelegateView,
-      public extensions::ExtensionRegistryObserver {
+class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
+                                   public extensions::ExtensionRegistryObserver,
+                                   public views::TextfieldController {
  public:
   METADATA_HEADER(ExtensionInstallDialogView);
 
@@ -40,8 +38,7 @@ class ExtensionInstallDialogView
   static const int kRatingsViewId = 1;
 
   ExtensionInstallDialogView(
-      Profile* profile,
-      content::PageNavigator* navigator,
+      std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
       ExtensionInstallPrompt::DoneCallback done_callback,
       std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt);
   ExtensionInstallDialogView(const ExtensionInstallDialogView&) = delete;
@@ -64,7 +61,15 @@ class ExtensionInstallDialogView
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   std::u16string GetAccessibleWindowTitle() const override;
 
+  ExtensionInstallPromptShowParams* GetShowParamsForTesting();
+  void ClickLinkForTesting();
+  bool IsJustificationFieldVisibleForTesting();
+  void SetJustificationTextForTesting(const std::u16string& new_text);
+
  private:
+  // Forward-declaration.
+  class ExtensionJustificationView;
+
   void CloseDialog();
 
   // extensions::ExtensionRegistryObserver:
@@ -81,14 +86,23 @@ class ExtensionInstallDialogView
   // info.
   void CreateContents();
 
+  // views::TextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
+
   // Enables the install button and updates the dialog buttons.
   void EnableInstallButton();
 
   // Updates the histogram that holds installation accepted/aborted data.
   void UpdateInstallResultHistogram(bool accepted) const;
 
-  Profile* profile_;
-  content::PageNavigator* navigator_;
+  // Updates the histogram that holds cloud extension request accepted/aborted
+  // decision made by user on the specific prompt dialog.
+  void UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(
+      bool accepted) const;
+
+  raw_ptr<Profile> profile_;
+  std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
   std::u16string title_;
@@ -98,11 +112,11 @@ class ExtensionInstallDialogView
 
   // The scroll view containing all the details for the dialog (including all
   // collapsible/expandable sections).
-  views::ScrollView* scroll_view_;
+  raw_ptr<views::ScrollView> scroll_view_;
 
   // Used to record time between dialog creation and acceptance, cancellation,
   // or dismissal.
-  base::Optional<base::ElapsedTimer> install_result_timer_;
+  absl::optional<base::ElapsedTimer> install_result_timer_;
 
   // Used to delay the activation of the install button.
   base::OneShotTimer enable_install_timer_;
@@ -110,8 +124,18 @@ class ExtensionInstallDialogView
   // Used to determine whether the install button should be enabled.
   bool install_button_enabled_;
 
+  // Along with install_button_enabled_, used to determine whether the extension
+  // request button should be enabled. Its value is initialized to |true| so
+  // that it has no effect unless the justification field is present and the
+  // entered text length is larger than the defined limit.
+  bool request_button_enabled_ = true;
+
   // Checkbox used to indicate if permissions should be withheld on install.
-  views::Checkbox* withhold_permissions_checkbox_;
+  raw_ptr<views::Checkbox> withhold_permissions_checkbox_;
+
+  // The justification text field view where users enter their justification for
+  // requesting an extension.
+  raw_ptr<ExtensionJustificationView> justification_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_

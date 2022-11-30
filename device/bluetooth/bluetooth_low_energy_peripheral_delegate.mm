@@ -1,9 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/bluetooth_low_energy_peripheral_delegate.h"
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_low_energy_discovery_manager_mac.h"
 
@@ -60,17 +63,18 @@ class BluetoothLowEnergyPeripheralBridge {
   CBPeripheral* GetPeripheral() { return device_mac_->GetPeripheral(); }
 
  private:
-  BluetoothLowEnergyDeviceMac* device_mac_;
+  raw_ptr<BluetoothLowEnergyDeviceMac> device_mac_;
 };
 
 }  // namespace device
 
 @implementation BluetoothLowEnergyPeripheralDelegate
 
-- (id)initWithBluetoothLowEnergyDeviceMac:
+- (instancetype)initWithBluetoothLowEnergyDeviceMac:
     (device::BluetoothLowEnergyDeviceMac*)device_mac {
   if ((self = [super init])) {
-    _bridge.reset(new device::BluetoothLowEnergyPeripheralBridge(device_mac));
+    _bridge = std::make_unique<device::BluetoothLowEnergyPeripheralBridge>(
+        device_mac);
   }
   return self;
 }

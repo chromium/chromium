@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,25 +9,21 @@
 
 #include "base/debug/elf_reader.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-// arm64 has execute-only memory (XOM) protecting code pages from being read.
-// PosixModule reads executable pages in order to extract module info. This may
-// result in a crash if the module is mapped as XOM so the code is disabled on
-// that arch. See https://crbug.com/957801.
-#if defined(OS_ANDROID) && !defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_ANDROID)
 extern "C" {
 // &__executable_start is the start address of the current module.
 extern const char __executable_start;
 // &__etext is the end addesss of the code segment in the current module.
 extern const char _etext;
 }
-#endif  // defined(OS_ANDROID) && !defined(ARCH_CPU_ARM64)
+#endif
 
 namespace base {
 
 namespace {
 
-#if !defined(ARCH_CPU_ARM64)
 // Returns the unique build ID for a module loaded at |module_addr|. Returns the
 // empty string if the function fails to get the build ID.
 //
@@ -70,18 +66,18 @@ size_t GetLastExecutableOffset(const void* module_addr) {
 }
 
 FilePath GetDebugBasenameForModule(const void* base_address, const char* file) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Preferentially identify the library using its soname on Android. Libraries
   // mapped directly from apks have the apk filename in |dl_info.dli_fname|, and
   // this doesn't distinguish the particular library.
-  Optional<StringPiece> library_name = debug::ReadElfLibraryName(base_address);
+  absl::optional<StringPiece> library_name =
+      debug::ReadElfLibraryName(base_address);
   if (library_name)
     return FilePath(*library_name);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return FilePath(file).BaseName();
 }
-#endif  // !defined(ARCH_CPU_ARM64)
 
 class PosixModule : public ModuleCache::Module {
  public:
@@ -121,18 +117,13 @@ PosixModule::PosixModule(uintptr_t base_address,
 // static
 std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
-#if defined(ARCH_CPU_ARM64)
-  // arm64 has execute-only memory (XOM) protecting code pages from being read.
-  // PosixModule reads executable pages in order to extract module info. This
-  // may result in a crash if the module is mapped as XOM
-  // (https://crbug.com/957801).
-  return nullptr;
-#else
   Dl_info info;
   if (!dladdr(reinterpret_cast<const void*>(address), &info)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // dladdr doesn't know about the Chrome module in Android targets using the
     // crazy linker. Explicitly check against the module's extents in that case.
+    // This is checked after dladdr because if dladdr CAN find the Chrome
+    // module, it will return a better fallback basename in `info.dli_fname`.
     if (address >= reinterpret_cast<uintptr_t>(&__executable_start) &&
         address < reinterpret_cast<uintptr_t>(&_etext)) {
       const void* const base_address =
@@ -154,7 +145,6 @@ std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
       GetUniqueBuildId(info.dli_fbase),
       GetDebugBasenameForModule(info.dli_fbase, info.dli_fname),
       GetLastExecutableOffset(info.dli_fbase));
-#endif
 }
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
   // In kiosk and exclusive app mode we always want to be fullscreen and do not
   // want to show exit instructions for browser mode fullscreen.
   bool app_mode = false;
-#if !defined(OS_MAC)  // App mode (kiosk) is not available on Mac yet.
+#if !BUILDFLAG(IS_MAC)  // App mode (kiosk) is not available on Mac yet.
   app_mode = chrome::IsRunningInAppMode();
 #endif
 
@@ -77,9 +77,9 @@ void ExclusiveAccessManager::UpdateExclusiveAccessExitBubbleContent(
     bool force_update) {
   GURL url = GetExclusiveAccessBubbleURL();
   ExclusiveAccessBubbleType bubble_type = GetExclusiveAccessExitBubbleType();
-
   exclusive_access_context_->UpdateExclusiveAccessExitBubbleContent(
-      url, bubble_type, std::move(bubble_first_hide_callback), force_update);
+      url, bubble_type, std::move(bubble_first_hide_callback),
+      /*notify_download=*/false, force_update);
 }
 
 GURL ExclusiveAccessManager::GetExclusiveAccessBubbleURL() const {

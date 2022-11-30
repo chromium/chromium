@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_SYSTEM_DEVICE_DISABLING_MANAGER_DEFAULT_DELEGATE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_DEVICE_DISABLING_MANAGER_DEFAULT_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
 namespace ash {
@@ -16,12 +15,15 @@ class DeviceDisablingManagerDefaultDelegate
  public:
   DeviceDisablingManagerDefaultDelegate();
 
+  DeviceDisablingManagerDefaultDelegate(
+      const DeviceDisablingManagerDefaultDelegate&) = delete;
+  DeviceDisablingManagerDefaultDelegate& operator=(
+      const DeviceDisablingManagerDefaultDelegate&) = delete;
+
  private:
   // DeviceDisablingManager::Delegate:
   void RestartToLoginScreen() override;
   void ShowDeviceDisabledScreen() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManagerDefaultDelegate);
 };
 
 }  // namespace system

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
 
@@ -62,12 +63,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
     }
 
     @Override
+    public void handleBackPress() {}
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return new ObservableSupplierImpl<>();
+    }
+
+    @Override
     public boolean enterVrIfNecessary() {
         return false;
     }
 
     @Override
-    public void maybeRegisterVrEntryHook(final ChromeActivity activity) {}
+    public void maybeRegisterVrEntryHook(final Activity activity) {}
 
     @Override
     public void maybeUnregisterVrEntryHook() {}
@@ -102,10 +111,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
     }
 
     @Override
-    public void onActivityShown(ChromeActivity activity) {}
+    public void onActivityShown(Activity activity) {}
 
     @Override
-    public void onActivityHidden(ChromeActivity activity) {}
+    public void onActivityHidden(Activity activity) {}
 
     @Override
     public boolean onDensityChanged(int oldDpi, int newDpi) {
@@ -116,10 +125,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
     public void rawTopContentOffsetChanged(float topContentOffset) {}
 
     @Override
-    public void onNewIntentWithNative(ChromeActivity activity, Intent intent) {}
+    public void onNewIntentWithNative(Activity activity, Intent intent) {}
 
     @Override
-    public void maybeHandleVrIntentPreNative(ChromeActivity activity, Intent intent) {
+    public void maybeHandleVrIntentPreNative(Activity activity, Intent intent) {
         if (!VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(activity, intent)) return;
         if (bootsToVr() && relaunchOnMainDisplayIfNecessary(activity, intent)) return;
 
@@ -149,7 +158,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     public void setVrModeEnabled(Activity activity, boolean enabled) {}
 
     @Override
-    public void doPreInflationStartup(ChromeActivity activity, Bundle savedInstanceState) {
+    public void doPreInflationStartup(Activity activity, Bundle savedInstanceState) {
         if (!VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(
                     activity, activity.getIntent())) {
             return;
@@ -187,7 +196,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
     private void onVrModuleInstallFinished(boolean success) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!(activity instanceof ChromeActivity)) return;
 
         if (!success) {
             onVrModuleInstallFailure(activity);

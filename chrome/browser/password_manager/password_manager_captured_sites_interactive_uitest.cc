@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,23 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_switches.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
@@ -29,8 +33,7 @@ using captured_sites_test_utils::GetParamAsString;
 
 namespace {
 
-constexpr base::TimeDelta kWaitForSaveFallbackInterval =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kWaitForSaveFallbackInterval = base::Seconds(5);
 
 // Return path to the Password Manager captured sites test root directory. The
 // directory contains subdirectories for different password manager test
@@ -51,6 +54,11 @@ base::FilePath GetReplayFilesRootDirectory() {
   return src_dir;
 }
 
+std::unique_ptr<KeyedService> BuildTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
 }  // namespace
 
 namespace password_manager {
@@ -68,15 +76,18 @@ class CapturedSitesPasswordManagerBrowserTest
           TestRecipeReplayChromeFeatureActionExecutor,
       public ::testing::WithParamInterface<CapturedSiteParams> {
  public:
+  CapturedSitesPasswordManagerBrowserTest(
+      const CapturedSitesPasswordManagerBrowserTest&) = delete;
+  CapturedSitesPasswordManagerBrowserTest& operator=(
+      const CapturedSitesPasswordManagerBrowserTest&) = delete;
+
   // TestRecipeReplayChromeFeatureActionExecutor:
   bool AddCredential(const std::string& origin,
                      const std::string& username,
                      const std::string& password) override {
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            PasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                            ServiceAccessType::EXPLICIT_ACCESS);
     password_manager::PasswordForm signin_form;
     signin_form.url = GURL(origin);
     signin_form.signon_realm = origin;
@@ -122,6 +133,12 @@ class CapturedSitesPasswordManagerBrowserTest
     return false;
   }
 
+  bool IsChromeShowingPasswordGenerationPrompt() override {
+    return observer_.popup_showing() &&
+           observer_.state() ==
+               PasswordGenerationPopupController::kOfferGeneration;
+  }
+
   bool HasChromeShownSavePasswordPrompt() override {
     BubbleObserver bubble_observer(WebContents());
     return bubble_observer.IsSavePromptShownAutomatically();
@@ -130,14 +147,15 @@ class CapturedSitesPasswordManagerBrowserTest
   bool HasChromeStoredCredential(const std::string& origin,
                                  const std::string& username,
                                  const std::string& password) override {
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            PasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                            ServiceAccessType::EXPLICIT_ACCESS);
+    FakePasswordStoreBackend* fake_backend =
+        static_cast<FakePasswordStoreBackend*>(
+            password_store->GetBackendForTesting());
 
-    auto found = password_store->stored_passwords().find(origin);
-    if (password_store->stored_passwords().end() == found) {
+    auto found = fake_backend->stored_passwords().find(origin);
+    if (fake_backend->stored_passwords().end() == found) {
       return false;
     }
 
@@ -164,11 +182,17 @@ class CapturedSitesPasswordManagerBrowserTest
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
                 base::BindRepeating([](content::BrowserContext* context) {
+                  // Set up a TestSyncService which will happily return
+                  // "everything is active" so that password generation is
+                  // considered enabled.
+                  SyncServiceFactory::GetInstance()->SetTestingFactory(
+                      context, base::BindRepeating(&BuildTestSyncService));
+
                   PasswordStoreFactory::GetInstance()->SetTestingFactory(
-                      context, base::BindRepeating(
-                                   &password_manager::BuildPasswordStore<
-                                       content::BrowserContext,
-                                       password_manager::TestPasswordStore>));
+                      context,
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreWithFakeBackend<
+                              content::BrowserContext>));
                 }));
   }
 
@@ -183,12 +207,20 @@ class CapturedSitesPasswordManagerBrowserTest
             GetParam().capture_file_path,
             ServerCacheReplayer::kOptionFailOnInvalidJsonRecord |
                 ServerCacheReplayer::kOptionSplitRequestsByForm)));
+
+    ChromePasswordManagerClient* client =
+        ChromePasswordManagerClient::FromWebContents(WebContents());
+    client->SetTestObserver(&observer_);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kUsernameFirstFlow}, {});
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{autofill::features::kAutofillShowTypePredictions,
+                               {}}},
+        {});
+    command_line->AppendSwitch(autofill::switches::kShowAutofillSignatures);
+    captured_sites_test_utils::TestRecipeReplayer::SetUpHostResolverRules(
+        command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
         command_line);
   }
@@ -217,6 +249,7 @@ class CapturedSitesPasswordManagerBrowserTest
   }
 
  private:
+  TestGenerationPopupObserver observer_;
   std::unique_ptr<captured_sites_test_utils::TestRecipeReplayer>
       recipe_replayer_;
   base::test::ScopedFeatureList feature_list_;
@@ -224,8 +257,6 @@ class CapturedSitesPasswordManagerBrowserTest
   std::unique_ptr<ServerUrlLoader> server_url_loader_;
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturedSitesPasswordManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(CapturedSitesPasswordManagerBrowserTest, Recipe) {
@@ -242,6 +273,11 @@ IN_PROC_BROWSER_TEST_P(CapturedSitesPasswordManagerBrowserTest, Recipe) {
     ADD_FAILURE() << "Full execution was unable to complete.";
 }
 
+// This test is called with a dynamic list and may be empty during the Autofill
+// run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
+// crbug/1192206
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    CapturedSitesPasswordManagerBrowserTest);
 INSTANTIATE_TEST_SUITE_P(
     All,
     CapturedSitesPasswordManagerBrowserTest,

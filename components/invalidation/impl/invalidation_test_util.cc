@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ void InvalidationEqMatcher::DescribeNegationTo(::std::ostream* os) const {
 
 void PrintTo(const AckHandle& ack_handle, ::std::ostream* os) {
   std::string printable_ack_handle;
-  base::JSONWriter::Write(*ack_handle.ToValue(), &printable_ack_handle);
+  base::JSONWriter::Write(ack_handle.ToValue(), &printable_ack_handle);
   *os << "{ ack_handle: " << printable_ack_handle << " }";
 }
 

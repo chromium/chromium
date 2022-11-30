@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
-#include "base/scoped_observation.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -30,8 +30,6 @@ class Widget;
 
 namespace ash {
 
-class WindowCycleView;
-
 // Tracks a set of Windows that can be stepped through. This class is used by
 // the WindowCycleController.
 class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
@@ -44,8 +42,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
 
-  // Horizontal padding between the alt-tab bandshield and the window previews.
-  static constexpr int kInsideBorderHorizontalPaddingDp = 64;
+  const WindowCycleView* cycle_view() const { return cycle_view_; }
 
   // Returns the |target_window_| from |cycle_view_|.
   aura::Window* GetTargetWindow();
@@ -54,13 +51,14 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |windows| is empty, cancels cycling.
   void ReplaceWindows(const WindowList& windows);
 
-  // Cycles to the next or previous window based on |direction|. This moves the
-  // focus ring to the next/previous window and also scrolls the list.
-  void Step(WindowCycleController::WindowCyclingDirection direction);
-
-  // Scrolls windows in given |direction|. Does not move the focus ring.
-  void ScrollInDirection(
-      WindowCycleController::WindowCyclingDirection direction);
+  // Cycles to the next or previous window based on |direction| or to the
+  // default position if |starting_alt_tab_or_switching_mode| is true.
+  // This moves the focus ring and also scrolls the list.
+  // If |starting_alt_tab_or_switching_mode| is true and |direction| is
+  // forward, the highlight moves to the first non-active window in MRU list:
+  // the second window by default or the first window if it is not active.
+  void Step(WindowCycleController::WindowCyclingDirection direction,
+            bool starting_alt_tab_or_switching_mode);
 
   // Should be called when a user drags their finger on the touch screen.
   // Translates the mirror container by |delta_x|.
@@ -89,6 +87,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // if |event| not in cycle view or if |cycle_view_| does not exist.
   aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
+  // Returns whether or not the event is located in tab slider container.
+  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event);
+
   // Returns true if the window list overlay should be shown.
   bool ShouldShowUi();
 
@@ -99,18 +100,13 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
     user_did_accept_ = user_did_accept;
   }
 
-  bool HasWindowTargeter() { return !!window_targeter_; }
+  static void SetDisableInitialDelayForTesting(bool disabled);
 
  private:
-  friend class WindowCycleControllerTest;
-  friend class MultiUserWindowCycleControllerTest;
-  friend class InteractiveWindowCycleListGestureHandlerTest;
   friend class ModeSelectionWindowCycleControllerTest;
-
-  static void DisableInitialDelayForTesting();
-
-  const WindowList& windows() const { return windows_; }
-  const views::Widget* widget() const { return cycle_ui_widget_; }
+  friend class MultiUserWindowCycleControllerTest;
+  friend class WindowCycleListTestApi;
+  friend class WindowCycleControllerTest;
 
   // aura::WindowObserver:
   // There is a chance a window is destroyed, for example by JS code. We need to
@@ -147,24 +143,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |windows_|.
   int GetIndexOfWindow(aura::Window* window) const;
 
-  // Returns the views for the window cycle list.
-  const views::View::Views& GetWindowCycleItemViewsForTesting() const;
-
-  // Returns the views for the window cycle tab slider buttons.
-  const views::View::Views& GetWindowCycleTabSliderButtonsForTesting() const;
-
-  // Returns no recent items label.
-  const views::Label* GetWindowCycleNoRecentItemsLabelForTesting() const;
-
-  // Returns the window cycle list's target window.
-  const aura::Window* GetTargetWindowForTesting() const;
-
-  // Returns whether the cycle view is animating.
-  bool IsCycleViewAnimatingForTesting() const;
-
-  WindowCycleView* cycle_view_for_testing() const { return cycle_view_; }
-
-  int current_index_for_testing() const { return current_index_; }
+  // Returns the number of windows in the window cycle list for all desks.
+  int GetNumberOfWindowsAllDesks() const;
 
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the
@@ -191,8 +171,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   views::Widget* cycle_ui_widget_ = nullptr;
 
   // The window list will dismiss if the display metrics change.
-  base::ScopedObservation<display::Screen, display::DisplayObserver>
-      screen_observer_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   // A timer to delay showing the UI. Quick Alt+Tab should not flash a UI.
   base::OneShotTimer show_ui_timer_;

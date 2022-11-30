@@ -1,11 +1,11 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // This file contains Chromium-specific GL extensions declarations.
 
-#ifndef GPU_GL_GLEXTCHROMIUM_H_
-#define GPU_GL_GLEXTCHROMIUM_H_
+#ifndef UI_GL_GL_GLEXTCHROMIUM_H_
+#define UI_GL_GL_GLEXTCHROMIUM_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,4 +23,4 @@ extern "C" {
 }
 #endif
 
-#endif  // GPU_GL_GLEXTCHROMIUM_H_
+#endif  // UI_GL_GL_GLEXTCHROMIUM_H_

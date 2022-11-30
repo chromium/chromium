@@ -1,0 +1,6 @@
+{
+  "name": "Extension CSP modification",
+  "version": "1.0",
+  "manifest_version": 2,
+  "background": {"service_worker": "service_worker.js"}
+}

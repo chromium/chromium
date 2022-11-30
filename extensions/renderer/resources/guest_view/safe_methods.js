@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,6 @@ function saveAccessors(original, safe, properties) {
 }
 
 var SafeMethods = {
-  $CSSStyleDeclaration: {},
   $CustomElementRegistry: {},
   $Document: {},
   $Element: {},
@@ -51,10 +50,6 @@ var SafeMethods = {
   $getComputedStyle: window.getComputedStyle,
   $parseInt: window.parseInt,
 };
-
-saveMethods(CSSStyleDeclaration, SafeMethods.$CSSStyleDeclaration, [
-  'setProperty',
-]);
 
 saveMethods(CustomElementRegistry, SafeMethods.$CustomElementRegistry, [
   'define',

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,15 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/memory/free_deleter.h"
+#include "base/process/memory.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -21,9 +25,9 @@ namespace media {
 struct FrameBufferPool::FrameBuffer {
   // Not using std::vector<uint8_t> as resize() calls take a really long time
   // for large buffers.
-  std::unique_ptr<uint8_t[]> data;
+  std::unique_ptr<uint8_t, base::FreeDeleter> data;
   size_t data_size = 0u;
-  std::unique_ptr<uint8_t[]> alpha_data;
+  std::unique_ptr<uint8_t, base::FreeDeleter> alpha_data;
   size_t alpha_data_size = 0u;
   bool held_by_library = false;
   // Needs to be a counter since a frame buffer might be used multiple times.
@@ -55,9 +59,8 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
   }
 
   // Check if a free frame buffer exists.
-  auto it = std::find_if(
-      frame_buffers_.begin(), frame_buffers_.end(),
-      [](const std::unique_ptr<FrameBuffer>& fb) { return !IsUsed(fb.get()); });
+  auto it = base::ranges::find_if_not(frame_buffers_, &IsUsed,
+                                      &std::unique_ptr<FrameBuffer>::get);
 
   // If not, create one.
   if (it == frame_buffers_.end())
@@ -71,7 +74,16 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
     // Free the existing |data| first so that the memory can be reused,
     // if possible. Note that the new array is purposely not initialized.
     frame_buffer->data.reset();
-    frame_buffer->data.reset(new uint8_t[min_size]);
+
+    uint8_t* data = nullptr;
+    if (force_allocation_error_ ||
+        !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
+        !data) {
+      frame_buffers_.erase(it);
+      return nullptr;
+    }
+
+    frame_buffer->data.reset(data);
     frame_buffer->data_size = min_size;
   }
 
@@ -102,7 +114,13 @@ uint8_t* FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(size_t min_size,
     // Free the existing |alpha_data| first so that the memory can be reused,
     // if possible. Note that the new array is purposely not initialized.
     frame_buffer->alpha_data.reset();
-    frame_buffer->alpha_data.reset(new uint8_t[min_size]);
+    uint8_t* data = nullptr;
+    if (force_allocation_error_ ||
+        !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
+        !data) {
+      return nullptr;
+    }
+    frame_buffer->alpha_data.reset(data);
     frame_buffer->alpha_data_size = min_size;
   }
   return frame_buffer->alpha_data.get();
@@ -124,9 +142,13 @@ bool FrameBufferPool::OnMemoryDump(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::trace_event::MemoryAllocatorDump* memory_dump =
-      pmd->CreateAllocatorDump("media/frame_buffers/memory_pool");
+      pmd->CreateAllocatorDump(
+          base::StringPrintf("media/frame_buffers/memory_pool/0x%" PRIXPTR,
+                             reinterpret_cast<uintptr_t>(this)));
   base::trace_event::MemoryAllocatorDump* used_memory_dump =
-      pmd->CreateAllocatorDump("media/frame_buffers/memory_pool/used");
+      pmd->CreateAllocatorDump(
+          base::StringPrintf("media/frame_buffers/memory_pool/used/0x%" PRIXPTR,
+                             reinterpret_cast<uintptr_t>(this)));
 
   pmd->AddSuballocation(memory_dump->guid(),
                         base::trace_event::MemoryDumpManager::GetInstance()
@@ -205,8 +227,7 @@ void FrameBufferPool::OnVideoFrameDestroyed(
 
   base::EraseIf(frame_buffers_, [now](const std::unique_ptr<FrameBuffer>& buf) {
     return !IsUsed(buf.get()) &&
-           now - buf->last_use_time >
-               base::TimeDelta::FromSeconds(kStaleFrameLimitSecs);
+           now - buf->last_use_time > base::Seconds(kStaleFrameLimitSecs);
   });
 }
 

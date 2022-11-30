@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -138,7 +138,7 @@ void EngineClient::InitializeReadOnlyCallbacks() {
 }
 
 bool EngineClient::InitializeCleaningCallbacks() {
-  std::unique_ptr<ZipArchiver> archiver = nullptr;
+  std::unique_ptr<ZipArchiver> archiver;
   if (archiver_for_testing_) {
     archiver = std::move(archiver_for_testing_);
   } else {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/task_environment.h"
+#import "base/test/task_environment.h"
 #import "ios/web/common/uikit_ui_util.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,8 +24,7 @@ namespace {
 
 // Makes sure that the DataStore is created, otherwise cookies can't be set in
 // some cases.
-bool FetchCookieStore() WARN_UNUSED_RESULT;
-bool FetchCookieStore() {
+[[nodiscard]] bool FetchCookieStore() {
   __block bool fetch_done = false;
 
   NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
@@ -40,9 +39,8 @@ bool FetchCookieStore() {
 }
 
 // Adds cookies to the default data store. Returns whether it succeed to add
-// cookies. Declare the function to have the "WARN_UNUSED_RESULT".
-bool AddCookie() WARN_UNUSED_RESULT;
-bool AddCookie() {
+// cookies.
+[[nodiscard]] bool AddCookie() {
   NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
     NSHTTPCookiePath : @"path",
     NSHTTPCookieName : @"cookieName",
@@ -62,9 +60,8 @@ bool AddCookie() {
 }
 
 // Checks that the cookies data store has cookies or not, depending on
-// |should_have_cookies|. Declare the function to have the "WARN_UNUSED_RESULT".
-bool HasCookies(bool should_have_cookies) WARN_UNUSED_RESULT;
-bool HasCookies(bool should_have_cookies) {
+// `should_have_cookies`.
+[[nodiscard]] bool HasCookies(bool should_have_cookies) {
   __block bool has_cookies = false;
   __block bool completion_called = false;
 
@@ -81,22 +78,19 @@ bool HasCookies(bool should_have_cookies) {
   return completed && (has_cookies == should_have_cookies);
 }
 
-// Removes the |types| from the data remover associated with |browser_state|.
+// Removes the `types` from the data remover associated with `browser_state`.
 // Returns whether the completion block of the clear browsing data has been
-// called. Declare the function to have the "WARN_UNUSED_RESULT".
-bool RemoveCookies(web::BrowserState* browser_state,
-                   web::ClearBrowsingDataMask types) WARN_UNUSED_RESULT;
-bool RemoveCookies(web::BrowserState* browser_state,
-                   web::ClearBrowsingDataMask types) {
+// called.
+[[nodiscard]] bool RemoveCookies(web::BrowserState* browser_state,
+                                 web::ClearBrowsingDataMask types) {
   web::BrowsingDataRemover* remover =
       web::BrowsingDataRemover::FromBrowserState(browser_state);
   __block bool closure_called = false;
   base::OnceClosure closure = base::BindOnce(^{
     closure_called = true;
   });
-  remover->ClearBrowsingData(
-      types, base::Time::Now() - base::TimeDelta::FromMinutes(1),
-      std::move(closure));
+  remover->ClearBrowsingData(types, base::Time::Now() - base::Minutes(1),
+                             std::move(closure));
 
   return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
     return closure_called;

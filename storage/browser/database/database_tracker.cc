@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,29 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -28,8 +41,10 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/sqlite/sqlite3.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -71,32 +86,84 @@ int64_t OriginInfo::GetDatabaseSize(const std::u16string& database_name) const {
 OriginInfo::OriginInfo(const std::string& origin_identifier, int64_t total_size)
     : origin_identifier_(origin_identifier), total_size_(total_size) {}
 
-DatabaseTracker::DatabaseTracker(const base::FilePath& profile_path,
-                                 bool is_incognito,
-                                 SpecialStoragePolicy* special_storage_policy,
-                                 QuotaManagerProxy* quota_manager_proxy)
+scoped_refptr<DatabaseTracker> DatabaseTracker::Create(
+    const base::FilePath& profile_path,
+    bool is_incognito,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy) {
+  auto database_tracker = base::MakeRefCounted<DatabaseTracker>(
+      profile_path, is_incognito, std::move(special_storage_policy),
+      std::move(quota_manager_proxy), base::PassKey<DatabaseTracker>());
+  database_tracker->RegisterQuotaClient();
+  return database_tracker;
+}
+
+DatabaseTracker::DatabaseTracker(
+    const base::FilePath& profile_path,
+    bool is_incognito,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+    base::PassKey<DatabaseTracker>)
     : is_incognito_(is_incognito),
       profile_path_(profile_path),
       db_dir_(is_incognito_
                   ? profile_path_.Append(kIncognitoDatabaseDirectoryName)
                   : profile_path_.Append(kDatabaseDirectoryName)),
-      db_(new sql::Database()),
-      special_storage_policy_(special_storage_policy),
-      quota_manager_proxy_(quota_manager_proxy),
+      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{
+          .exclusive_locking = true,
+          .page_size = 4096,
+          .cache_size = 500,
+      })),
+      special_storage_policy_(std::move(special_storage_policy)),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  if (quota_manager_proxy) {
-    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-    quota_manager_proxy->RegisterLegacyClient(
-        base::MakeRefCounted<DatabaseQuotaClient>(this),
-        QuotaClientType::kDatabase, {blink::mojom::StorageType::kTemporary});
-  }
-}
+           // SKIP_ON_SHUTDOWN cannot be used because Shutdown() needs to run
+           // before the destructor, and Shutdown() is ran by PostTask()ing to
+           // this sequence. See https://crbug.com/1220191.
+           //
+           // We may be able to switch to SKIP_ON_SHUTDOWN if we get
+           // DatabaseTracker to be used entirely on the database sequence, so
+           // the destructor can absorb the logic that is currently in
+           // Shutdown().
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      quota_client_(std::make_unique<DatabaseQuotaClient>(*this)),
+      quota_client_wrapper_(
+          std::make_unique<QuotaClientCallbackWrapper>(quota_client_.get())),
+      quota_client_receiver_(quota_client_wrapper_.get()) {}
 
 DatabaseTracker::~DatabaseTracker() {
+  // base::RefCountedThreadSafe inserts the appropriate barriers to ensure
+  // member access in the destructor does not introduce data races.
   DCHECK(dbs_to_be_deleted_.empty());
   DCHECK(deletion_callbacks_.empty());
+
+  DCHECK(!quota_client_);
+  DCHECK(!quota_client_wrapper_);
+  DCHECK(!quota_client_receiver_.is_bound());
+}
+
+void DatabaseTracker::RegisterQuotaClient() {
+  if (!quota_manager_proxy_)
+    return;
+
+  // QuotaManagerProxy::RegisterClient() must be called synchronously during
+  // DatabaseTracker creation until crbug.com/1182630 is fixed.
+  mojo::PendingRemote<storage::mojom::QuotaClient> quota_client_remote;
+  mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
+      quota_client_remote.InitWithNewPipeAndPassReceiver();
+  quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
+                                       storage::QuotaClientType::kDatabase,
+                                       {blink::mojom::StorageType::kTemporary});
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<DatabaseTracker> self,
+             mojo::PendingReceiver<storage::mojom::QuotaClient> receiver) {
+            self->quota_client_receiver_.Bind(std::move(receiver));
+          },
+          base::RetainedRef(this), std::move(quota_client_receiver)));
 }
 
 void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
@@ -111,7 +178,7 @@ void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
 
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyStorageAccessed(
-        GetOriginFromIdentifier(origin_identifier),
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   InsertOrUpdateDatabaseDetails(origin_identifier, database_name,
@@ -147,7 +214,7 @@ void DatabaseTracker::DatabaseClosed(const std::string& origin_identifier,
   // closed because we don't call it for read while open.
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyStorageAccessed(
-        GetOriginFromIdentifier(origin_identifier),
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   UpdateOpenDatabaseSizeAndNotify(origin_identifier, database_name);
@@ -356,9 +423,10 @@ bool DatabaseTracker::DeleteClosedDatabase(
 
   if (quota_manager_proxy_.get() && db_file_size)
     quota_manager_proxy_->NotifyStorageModified(
-        QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_identifier),
-        blink::mojom::StorageType::kTemporary, -db_file_size,
-        base::Time::Now());
+        QuotaClientType::kDatabase,
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
+        blink::mojom::StorageType::kTemporary, -db_file_size, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
 
   // Clean up the main database and invalidate the cached record.
   databases_table_->DeleteDatabaseDetails(origin_identifier, database_name);
@@ -434,9 +502,10 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
 
   if (quota_manager_proxy_.get() && deleted_size) {
     quota_manager_proxy_->NotifyStorageModified(
-        QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_identifier),
-        blink::mojom::StorageType::kTemporary, -deleted_size,
-        base::Time::Now());
+        QuotaClientType::kDatabase,
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
+        blink::mojom::StorageType::kTemporary, -deleted_size, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
   }
 
   return true;
@@ -490,8 +559,8 @@ bool DatabaseTracker::LazyInit() {
         return false;
     }
 
-    databases_table_.reset(new DatabasesTable(db_.get()));
-    meta_table_.reset(new sql::MetaTable());
+    databases_table_ = std::make_unique<DatabasesTable>(db_.get());
+    meta_table_ = std::make_unique<sql::MetaTable>();
 
     is_initialized_ = base::CreateDirectory(db_dir_) &&
                       (db_->is_open() ||
@@ -632,9 +701,11 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
       info->SetDatabaseSize(name, new_size);
     if (quota_manager_proxy_.get())
       quota_manager_proxy_->NotifyStorageModified(
-          QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_id),
+          QuotaClientType::kDatabase,
+          blink::StorageKey(GetOriginFromIdentifier(origin_id)),
           blink::mojom::StorageType::kTemporary, new_size - old_size,
-          base::Time::Now());
+          base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+          base::DoNothing());
     for (auto& observer : observers_)
       observer.OnDatabaseSizeChanged(origin_id, name, new_size);
   }
@@ -658,8 +729,7 @@ void DatabaseTracker::ScheduleDatabasesForDeletion(
   DCHECK(!databases.empty());
 
   if (!callback.is_null())
-    deletion_callbacks_.push_back(
-        std::make_pair(std::move(callback), databases));
+    deletion_callbacks_.emplace_back(std::move(callback), databases);
   for (const auto& origin_dbs : databases) {
     for (const std::u16string& db : origin_dbs.second)
       ScheduleDatabaseForDeletion(origin_dbs.first, db);
@@ -809,6 +879,7 @@ const base::File* DatabaseTracker::SaveIncognitoFile(
   auto rv =
       incognito_file_handles_.insert(std::make_pair(vfs_file_name, to_insert));
   DCHECK(rv.second);
+  base::RecordAction(base::UserMetricsAction("IncognitoWebSQL_Created"));
   return rv.first->second;
 }
 
@@ -824,6 +895,7 @@ void DatabaseTracker::CloseIncognitoFileHandle(
     delete it->second;
     incognito_file_handles_.erase(it);
   }
+  base::RecordAction(base::UserMetricsAction("IncognitoWebSQL_Released"));
 }
 
 bool DatabaseTracker::HasSavedIncognitoFileHandle(
@@ -876,7 +948,7 @@ void DatabaseTracker::ClearSessionOnlyOrigins() {
     for (const auto& database : databases) {
       base::File file(
           GetFullDBFilePath(origin, database),
-          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_SHARE_DELETE |
+          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WIN_SHARE_DELETE |
               base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_READ);
     }
     DeleteOrigin(origin, true);
@@ -891,6 +963,13 @@ void DatabaseTracker::Shutdown() {
     return;
   }
   shutting_down_ = true;
+
+  // The mojo receiver must be reset before the instance it calls into is
+  // destroyed.
+  quota_client_receiver_.reset();
+  quota_client_wrapper_.reset();
+  quota_client_.reset();
+
   if (is_incognito_)
     DeleteIncognitoDBDirectory();
   else if (!force_keep_session_state_)

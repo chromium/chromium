@@ -1,0 +1,159 @@
+<style include="cros-button-style">
+  cr-dialog {
+    --cr-dialog-width: 300px;
+    --cr-dialog-body-padding-horizontal: 24px;
+    --cr-focus-outline-color: var(--cros-focus-ring-color);
+  }
+
+  div[slot='body'] {
+    height: 252px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  @keyframes flash {
+    0% { opacity: 0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 0; }
+  }
+
+  #captureOverlay {
+    animation-delay: 100ms;
+    animation-duration: 100ms;
+    animation-iteration-count: infinite;
+    animation-name: flash;
+    animation-play-state: paused;
+    animation-timing-function: ease-in-out;
+    background-color: white;
+    border-radius: 8px;
+    bottom: 0;
+    left: 0;
+    margin: 0 24px;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  #captureOverlay[data-mode='video']:not([hidden]) {
+    animation-play-state: running;
+  }
+
+  #webcamVideo {
+    border-radius: 8px;
+    height: 100%;
+    /*
+     * Mirror the webcam feed because people are used to seeing themselves in a
+     * mirror. Still has to be mirrored even in RTL layouts.
+     */
+    transform: scaleX(-1);
+    width: 100%;
+  }
+
+  cr-button {
+    display: flex;
+    gap: 8px;
+    height: 32px;
+    padding: 6px 16px;
+  }
+
+  #cameraFeedSpinner {
+    bottom: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+
+  svg {
+    border-radius: 8px;
+    bottom: 0;
+    left: 0;
+    margin: 0 24px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+  }
+
+  #previewImg {
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  div[slot='footer'] {
+    border: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+    justify-content: center;
+    min-height: 65px;
+  }
+
+  #loadingButton {
+    /* This button is disabled for aria purposes but should look like a regular
+       primary button. */
+    --disabled-text-color: var(--cros-button-label-color-primary);
+  }
+
+  #loadingButtonSpinner {
+    --paper-spinner-color: var(--cros-button-label-color-primary);
+    height: 14px;
+    width: 14px;
+  }
+</style>
+<cr-dialog id="dialog" show-close-button show-on-attach
+    close-text="$i18n{ariaLabelCloseCamera}">
+  <div slot="body">
+    <template is="dom-if" if="[[showLoading_(cameraStream_, previewBlobUrl_)]]">
+      <paper-spinner-lite id="cameraFeedSpinner" active></paper-spinner-lite>
+    </template>
+    <template is="dom-if" if="[[showSvgMask_(cameraStream_, previewBlobUrl_)]]">
+      <svg viewbox="0 0 100 100" id="svg" hidden="">
+        <defs>
+          <mask id="mask" x="0" y="0" width="100" height="100">
+            <rect x="0" y="0" width="100" height="100" fill="white"></rect>
+            <circle cx="50" cy="50" r="48" fill="black"></circle>
+          </mask>
+        </defs>
+        <rect x="0" y="0" width="100" height="100" mask="url(#mask)"
+            fill-opacity="0.33"></rect>
+      </svg>
+    </template>
+    <video id="webcamVideo" autoplay
+        aria-label="$i18n{ariaLabelWebcamVideo}"
+        hidden$="[[!showCameraFeed_(cameraStream_, previewBlobUrl_)]]"></video>
+    <template is="dom-if" if="[[previewBlobUrl_]]">
+      <img id="previewImg" src$="[[previewBlobUrl_]]">
+    </template>
+    <div id="captureOverlay" data-mode$="[[mode]]"
+        hidden$="[[!captureInProgress_]]"></div>
+  </div>
+  <template is="dom-if" if="[[showFooter_(cameraStream_, previewBlobUrl_)]]">
+    <div slot="footer">
+      <template is="dom-if"
+          if="[[showTakePhotoButton_(cameraStream_, previewBlobUrl_, captureInProgress_)]]">
+        <cr-button id="takePhoto" on-click="takePhoto_" class="primary">
+          <iron-icon icon="[[getTakePhotoIcon_(mode)]]"></iron-icon>
+          <span>[[getTakePhotoText_(mode)]]</span>
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[showLoadingSpinnerButton_(mode, cameraStream_, previewBlobUrl_, captureInProgress_)]]">
+        <cr-button id="loadingButton" class="primary" disabled>
+          <paper-spinner-lite id="loadingButtonSpinner" active></paper-spinner-lite>
+          <span>$i18n{webcamCaptureInProgress}</span>
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[previewBlobUrl_]]">
+        <cr-button id="clearPhoto" on-click="clearPhoto_" class="secondary">
+          <iron-icon icon="personalization:refresh"></iron-icon>
+          <span>$i18n{rejectWebcamPhoto}</span>
+        </cr-button>
+        <cr-button id="confirmPhoto" on-click="confirmPhoto_" class="primary">
+          <iron-icon icon="personalization:circle_checkmark"></iron-icon>
+          <span>[[getConfirmText_(mode)]]</span>
+        </cr-button>
+      </template>
+    </div>
+  </template>
+</cr-dialog>

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -70,7 +71,7 @@ class NaClIPCAdapterTest : public testing::Test {
   //
   // In real life the adapter needs to take ownership so the channel can be
   // destroyed on the right thread.
-  IPC::TestSink* sink_;
+  raw_ptr<IPC::TestSink> sink_;
 };
 
 }  // namespace
@@ -284,7 +285,7 @@ TEST_F(NaClIPCAdapterTest, ReadWithChannelError) {
         : SimpleThread("NaClIPCAdapterThread"),
           adapter_(adapter) {}
     void Run() override {
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+      base::PlatformThread::Sleep(base::Seconds(1));
       adapter_->OnChannelError();
     }
    private:

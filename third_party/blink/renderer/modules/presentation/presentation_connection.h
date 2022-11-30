@@ -1,20 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_H_
 
-#include <memory>
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -32,6 +30,7 @@ enum class FileErrorCode;
 class PresentationController;
 class PresentationReceiver;
 class PresentationRequest;
+class ScriptPromiseResolver;
 class WebString;
 
 class MODULES_EXPORT PresentationConnection
@@ -89,8 +88,6 @@ class MODULES_EXPORT PresentationConnection
   mojom::blink::PresentationConnectionState GetState() const;
 
  protected:
-  static void DispatchEventAsync(EventTarget*, Event*);
-
   PresentationConnection(LocalDOMWindow&, const String& id, const KURL&);
 
   // EventTarget implementation.
@@ -151,9 +148,6 @@ class MODULES_EXPORT PresentationConnection
   // Closes the PresentationConnection with the given reason and notifies the
   // target connection.
   void DoClose(mojom::blink::PresentationConnectionCloseReason);
-
-  // Internal helper function to dispatch state change events asynchronously.
-  void DispatchStateChangeEvent(Event*);
 
   // Cancel loads and pending messages when the connection is closed.
   void TearDown();

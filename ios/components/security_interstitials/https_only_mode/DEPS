@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/security_interstitials/core",
+  "+components/url_formatter",
+  "+net/base/mac",
+  # For net::IsLocalhost.
+  "+net/base/url_util.h",
+]

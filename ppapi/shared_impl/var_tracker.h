@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_checker.h"
@@ -51,6 +50,10 @@ class PPAPI_SHARED_EXPORT VarTracker {
   // CheckThreadingPreconditions() for more details.
   enum ThreadMode { SINGLE_THREADED, THREAD_SAFE };
   explicit VarTracker(ThreadMode thread_mode);
+
+  VarTracker(const VarTracker&) = delete;
+  VarTracker& operator=(const VarTracker&) = delete;
+
   virtual ~VarTracker();
 
   // Called by the Var object to add a new var to the tracker.
@@ -237,8 +240,6 @@ class PPAPI_SHARED_EXPORT VarTracker {
   // other threads (especially the IO thread). On the plugin side, the tracker
   // is protected by the proxy lock and is thread-safe, so this will be NULL.
   std::unique_ptr<base::ThreadChecker> thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(VarTracker);
 };
 
 }  // namespace ppapi

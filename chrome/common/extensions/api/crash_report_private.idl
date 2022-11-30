@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,10 @@ namespace crashReportPrivate {
     // Column number where the error occurred.
     long? columnNumber;
 
+    // Used to map the obfuscated source code back to a source map. If present,
+    // must match the debug_id used to upload the source map.
+    DOMString? debugId;
+
     // String containing the stack trace for the error.
     // Defaults to the empty string.
     DOMString? stackTrace;
@@ -43,6 +47,7 @@ namespace crashReportPrivate {
     // Report and upload an error to Crash.
     // |info|: Information about the error.
     // |callback|: Called when the error has been uploaded.
-    static void reportError(ErrorInfo info, ReportCallback callback);
+    [supportsPromises] static void reportError(ErrorInfo info,
+                                               ReportCallback callback);
   };
 };

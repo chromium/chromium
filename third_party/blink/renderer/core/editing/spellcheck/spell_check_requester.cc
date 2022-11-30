@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
@@ -119,7 +120,7 @@ SpellCheckRequest* SpellCheckRequest::Create(
       PlainText(checking_range, TextIteratorBehavior::Builder()
                                     .SetEmitsObjectReplacementCharacter(true)
                                     .Build());
-  if (text.IsEmpty())
+  if (text.empty())
     return nullptr;
 
   Range* checking_range_object = CreateRange(checking_range);
@@ -165,9 +166,7 @@ void SpellCheckRequest::SetCheckerAndSequence(SpellCheckRequester* requester,
 }
 
 SpellCheckRequester::SpellCheckRequester(LocalDOMWindow& window)
-    : window_(&window),
-      last_request_sequence_(0),
-      last_processed_sequence_(0) {}
+    : window_(&window) {}
 
 SpellCheckRequester::~SpellCheckRequester() = default;
 
@@ -176,8 +175,8 @@ WebTextCheckClient* SpellCheckRequester::GetTextCheckerClient() const {
 }
 
 void SpellCheckRequester::TimerFiredToProcessQueuedRequest() {
-  DCHECK(!request_queue_.IsEmpty());
-  if (request_queue_.IsEmpty())
+  DCHECK(!request_queue_.empty());
+  if (request_queue_.empty())
     return;
 
   InvokeRequest(request_queue_.TakeFirst());
@@ -192,6 +191,8 @@ bool SpellCheckRequester::RequestCheckingFor(const EphemeralRange& range,
   SpellCheckRequest* request = SpellCheckRequest::Create(range, request_num);
   if (!request)
     return false;
+
+  spell_checked_text_length_ += request->GetText().length();
 
   DCHECK_EQ(request->Sequence(),
             SpellCheckRequest::kUnrequestedTextCheckingSequence);
@@ -245,7 +246,7 @@ void SpellCheckRequester::ClearProcessingRequest() {
 void SpellCheckRequester::EnqueueRequest(SpellCheckRequest* request) {
   DCHECK(request);
   bool continuation = false;
-  if (!request_queue_.IsEmpty()) {
+  if (!request_queue_.empty()) {
     SpellCheckRequest* last_request = request_queue_.back();
     // It's a continuation if the number of the last request got incremented in
     // the new one and both apply to the same editable.
@@ -257,12 +258,9 @@ void SpellCheckRequester::EnqueueRequest(SpellCheckRequest* request) {
   // Spellcheck requests for chunks of text in the same element should not
   // overwrite each other.
   if (!continuation) {
-    RequestQueue::const_iterator same_element_request = std::find_if(
-        request_queue_.begin(), request_queue_.end(),
-        [request](const SpellCheckRequest* queued_request) -> bool {
-          return request->RootEditableElement() ==
-                 queued_request->RootEditableElement();
-        });
+    RequestQueue::const_iterator same_element_request =
+        base::ranges::find(request_queue_, request->RootEditableElement(),
+                           &SpellCheckRequest::RootEditableElement);
     if (same_element_request != request_queue_.end())
       request_queue_.erase(same_element_request);
   }
@@ -284,11 +282,11 @@ void SpellCheckRequester::DidCheck(int sequence) {
   last_processed_sequence_ = sequence;
 
   ClearProcessingRequest();
-  if (!request_queue_.IsEmpty()) {
+  if (!request_queue_.empty()) {
     timer_to_process_queued_request_ = PostCancellableTask(
         *window_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-        WTF::Bind(&SpellCheckRequester::TimerFiredToProcessQueuedRequest,
-                  WrapPersistent(this)));
+        WTF::BindOnce(&SpellCheckRequester::TimerFiredToProcessQueuedRequest,
+                      WrapPersistent(this)));
   }
 }
 

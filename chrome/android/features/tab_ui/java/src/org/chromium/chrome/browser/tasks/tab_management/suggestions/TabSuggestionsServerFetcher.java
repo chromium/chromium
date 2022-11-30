@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tasks.tab_management.suggestions;
+
+import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -18,6 +20,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -46,11 +50,15 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
     private static final String EMPTY_RESPONSE = "{}";
 
     private Profile mProfileForTesting;
+    private Context mContext;
 
     /**
      * Acquires Tab suggestions from an endpoint
+     * @param context The activity context.
      */
-    public TabSuggestionsServerFetcher() {}
+    public TabSuggestionsServerFetcher(Context context) {
+        mContext = context;
+    }
 
     /**
      * Constructor for testing
@@ -71,12 +79,14 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
                     return;
                 }
             }
+            // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
+            // annotation.
             EndpointFetcher.fetchUsingChromeAPIKey(res
                     -> { fetchCallback(res, callback, tabContext); },
                     mProfileForTesting == null ? Profile.getLastUsedRegularProfile()
                                                : mProfileForTesting,
                     ENDPOINT, METHOD, CONTENT_TYPE, getTabContextJson(tabContext), TIMEOUT_MS,
-                    new String[] {});
+                    new String[] {}, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
         } catch (JSONException e) {
             // Soft failure for now so we don't crash the app and fall back on client side
             // providers.
@@ -141,14 +151,14 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
         //  flag checking logic to somewhere if this server fetcher supports suggestions other than
         //  grouping in the future.
         return isSignedIn() && isServerFetcherFlagEnabled()
-                && TabUiFeatureUtilities.isTabGroupsAndroidEnabled();
+                && TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext);
     }
 
     @VisibleForTesting
     protected boolean isSignedIn() {
         return IdentityServicesProvider.get()
                 .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount();
+                .hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     @VisibleForTesting

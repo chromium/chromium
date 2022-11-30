@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "mojo/public/cpp/system/core.h"
 
 namespace mojo {
+
+class MessagePipeHandle;
+
 namespace test {
 
 // This overload is used for mojom structures with struct traits. The C++
@@ -22,7 +23,8 @@ namespace test {
 template <typename MojomType,
           typename UserStructType,
           std::enable_if_t<!std::is_enum<UserStructType>::value, int> = 0>
-bool SerializeAndDeserialize(UserStructType& input, UserStructType& output) {
+bool SerializeAndDeserialize(UserStructType& input,
+                             std::remove_const_t<UserStructType>& output) {
   mojo::Message message = MojomType::SerializeAsMessage(&input);
 
   // This accurately simulates full serialization to ensure that all attached
@@ -42,9 +44,15 @@ bool SerializeAndDeserialize(UserStructType& input, UserStructType& output) {
 // back to the C++ structure type.
 template <typename MojomType,
           typename UserStructType,
-          std::enable_if_t<!std::is_enum<UserStructType>::value, int> = 0>
-bool SerializeAndDeserialize(mojo::StructPtr<MojomType>& input,
-                             UserStructType& output) {
+          typename MojomStructPtr,
+          std::enable_if_t<
+              (std::is_same<mojo::InlinedStructPtr<MojomType>,
+                            std::remove_const_t<MojomStructPtr>>::value ||
+               std::is_same<mojo::StructPtr<MojomType>,
+                            std::remove_const_t<MojomStructPtr>>::value) &&
+                  !std::is_enum<UserStructType>::value,
+              int> = 0>
+bool SerializeAndDeserialize(MojomStructPtr& input, UserStructType& output) {
   mojo::Message message = MojomType::SerializeAsMessage(&input);
 
   // This accurately simulates full serialization to ensure that all attached
@@ -96,6 +104,10 @@ void IterateAndReportPerf(const char* test_name,
 class BadMessageObserver {
  public:
   BadMessageObserver();
+
+  BadMessageObserver(const BadMessageObserver&) = delete;
+  BadMessageObserver& operator=(const BadMessageObserver&) = delete;
+
   ~BadMessageObserver();
 
   // Waits for the bad message and returns the error string.
@@ -110,8 +122,33 @@ class BadMessageObserver {
   std::string last_error_for_bad_message_;
   bool got_bad_message_;
   base::RunLoop run_loop_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(BadMessageObserver);
+// Creates a scoped swapped implementation of a mojo Receiver. Callers should
+// ensure that `new_impl` lives for longer than the lifetime of the `receiver`.
+// See also `SwapImplForTesting` implementations for each receiver type.
+template <typename T>
+class ScopedSwapImplForTesting {
+ public:
+  using ImplPointerType = typename T::ImplPointerType;
+
+  ScopedSwapImplForTesting(T& receiver, ImplPointerType new_impl)
+      : receiver_(receiver) {
+    old_impl_ = receiver_.SwapImplForTesting(new_impl);
+  }
+
+  ~ScopedSwapImplForTesting() {
+    std::ignore = receiver_.SwapImplForTesting(old_impl_);
+  }
+
+  ImplPointerType old_impl() const { return old_impl_; }
+
+  ScopedSwapImplForTesting(const ScopedSwapImplForTesting&) = delete;
+  ScopedSwapImplForTesting& operator=(const ScopedSwapImplForTesting&) = delete;
+
+ private:
+  T& receiver_;
+  ImplPointerType old_impl_;
 };
 
 }  // namespace test

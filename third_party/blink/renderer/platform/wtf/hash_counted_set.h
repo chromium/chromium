@@ -21,9 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_COUNTED_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_COUNTED_SET_H_
 
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -63,11 +62,14 @@ class HashCountedSet {
                   "HeapHashCountedSet<Member<T>> instead.");
   }
 
+  HashCountedSet(const HashCountedSet&) = delete;
+  HashCountedSet& operator=(const HashCountedSet&) = delete;
+
   void swap(HashCountedSet& other) { impl_.swap(other.impl_); }
 
   unsigned size() const { return impl_.size(); }
   unsigned Capacity() const { return impl_.capacity(); }
-  bool IsEmpty() const { return impl_.IsEmpty(); }
+  bool empty() const { return impl_.empty(); }
 
   // Iterators iterate over pairs of values (called key) and counts (called
   // value).
@@ -118,8 +120,6 @@ class HashCountedSet {
 
  private:
   ImplType impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(HashCountedSet);
 };
 
 template <typename T, typename U, typename V, typename W>

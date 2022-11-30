@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ namespace WTF {
 
 namespace {
 
-// https://mathml-refresh.github.io/mathml-core/#italic-mappings
+// https://w3c.github.io/mathml-core/#italic-mappings
 TEST(MathTransform, Italics) {
   static struct ItalicsTestData {
     UChar32 code_point;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -40,10 +39,12 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/task_manager/providers/arc/arc_process_task_provider.h"
+#include "chrome/browser/task_manager/providers/crosapi/crosapi_task_provider_ash.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task_provider.h"
-#include "components/arc/arc_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace task_manager {
@@ -88,6 +89,13 @@ TaskManagerImpl::TaskManagerImpl()
     task_providers_.push_back(std::make_unique<ArcProcessTaskProvider>());
   task_providers_.push_back(std::make_unique<VmProcessTaskProvider>());
   arc_shared_sampler_ = std::make_unique<ArcSharedSampler>();
+
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    std::unique_ptr<CrosapiTaskProviderAsh> task_provider =
+        std::make_unique<CrosapiTaskProviderAsh>();
+    crosapi_task_provider_ = task_provider.get();
+    task_providers_.push_back(std::move(task_provider));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -124,7 +132,7 @@ double TaskManagerImpl::GetPlatformIndependentCPUUsage(TaskId task_id) const {
 }
 
 base::Time TaskManagerImpl::GetStartTime(TaskId task_id) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetTaskGroupByTaskId(task_id)->start_time();
 #else
   NOTIMPLEMENTED();
@@ -133,7 +141,7 @@ base::Time TaskManagerImpl::GetStartTime(TaskId task_id) const {
 }
 
 base::TimeDelta TaskManagerImpl::GetCpuTime(TaskId task_id) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetTaskGroupByTaskId(task_id)->cpu_time();
 #else
   NOTIMPLEMENTED();
@@ -146,7 +154,7 @@ int64_t TaskManagerImpl::GetMemoryFootprintUsage(TaskId task_id) const {
 }
 
 int64_t TaskManagerImpl::GetSwappedMemoryUsage(TaskId task_id) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return GetTaskGroupByTaskId(task_id)->swapped_bytes();
 #else
   return -1;
@@ -166,7 +174,7 @@ int TaskManagerImpl::GetIdleWakeupsPerSecond(TaskId task_id) const {
 }
 
 int TaskManagerImpl::GetHardFaultsPerSecond(TaskId task_id) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetTaskGroupByTaskId(task_id)->hard_faults_per_second();
 #else
   return -1;
@@ -184,35 +192,35 @@ int TaskManagerImpl::GetNaClDebugStubPort(TaskId task_id) const {
 void TaskManagerImpl::GetGDIHandles(TaskId task_id,
                                     int64_t* current,
                                     int64_t* peak) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const TaskGroup* task_group = GetTaskGroupByTaskId(task_id);
   *current = task_group->gdi_current_handles();
   *peak = task_group->gdi_peak_handles();
 #else
   *current = -1;
   *peak = -1;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void TaskManagerImpl::GetUSERHandles(TaskId task_id,
                                      int64_t* current,
                                      int64_t* peak) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const TaskGroup* task_group = GetTaskGroupByTaskId(task_id);
   *current = task_group->user_current_handles();
   *peak = task_group->user_peak_handles();
 #else
   *current = -1;
   *peak = -1;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 int TaskManagerImpl::GetOpenFdCount(TaskId task_id) const {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   return GetTaskGroupByTaskId(task_id)->open_fd_count();
 #else
   return -1;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 }
 
 bool TaskManagerImpl::IsTaskOnBackgroundedProcess(TaskId task_id) const {
@@ -316,7 +324,7 @@ int TaskManagerImpl::GetKeepaliveCount(TaskId task_id) const {
 
 const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
   DCHECK(is_running_) << "Task manager is not running. You must observe the "
-      "task manager for it to start running";
+                         "task manager for it to start running";
 
   if (sorted_task_ids_.empty()) {
     // |comparator| groups and sorts by subtask-ness (to push all subtasks to be
@@ -412,6 +420,20 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
         }
       }
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (crosapi_task_provider_) {
+      // Lacros tasks have been pre-sorted in lacros. Place them at the
+      // end of |sorted_task_ids| in the same order they are returned from
+      // crosapi.
+      for (const auto& task_id : crosapi_task_provider_->GetSortedTaskIds()) {
+        Task* task = GetTaskByTaskId(task_id);
+        if (task)
+          sorted_task_ids_.push_back(task_id);
+      }
+    }
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
+
     DCHECK_EQ(num_tasks, sorted_task_ids_.size());
   }
 
@@ -421,7 +443,7 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
 TaskIdList TaskManagerImpl::GetIdsOfTasksSharingSameProcess(
     TaskId task_id) const {
   DCHECK(is_running_) << "Task manager is not running. You must observe the "
-      "task manager for it to start running";
+                         "task manager for it to start running";
 
   TaskIdList result;
   TaskGroup* group = GetTaskGroupByTaskId(task_id);
@@ -445,8 +467,8 @@ TaskId TaskManagerImpl::GetTaskIdForWebContents(
     content::WebContents* web_contents) const {
   if (!web_contents)
     return -1;
-  content::RenderFrameHost* rfh = web_contents->GetMainFrame();
-  Task* task = GetTaskByRoute(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  Task* task = GetTaskByRoute(rfh->GetGlobalId());
   if (!task)
     return -1;
   return task->task_id();
@@ -458,17 +480,21 @@ void TaskManagerImpl::TaskAdded(Task* task) {
   const base::ProcessId proc_id = task->process_id();
   const TaskId task_id = task->task_id();
   const bool is_running_in_vm = task->IsRunningInVM();
-
+  const bool is_running_in_lacros = task->GetType() == Task::LACROS;
   TaskManagerImpl::PidToTaskGroupMap& task_group_map =
       is_running_in_vm ? arc_vm_task_groups_by_proc_id_
-                       : task_groups_by_proc_id_;
+                       : is_running_in_lacros ? crosapi_task_groups_by_proc_id_
+                                              : task_groups_by_proc_id_;
 
   std::unique_ptr<TaskGroup>& task_group = task_group_map[proc_id];
   if (!task_group) {
-    task_group.reset(new TaskGroup(task->process_handle(), proc_id,
-                                   is_running_in_vm,
-                                   on_background_data_ready_callback_,
-                                   shared_sampler_, blocking_pool_runner_));
+    task_group = std::make_unique<TaskGroup>(
+        task->process_handle(), proc_id, is_running_in_vm,
+        on_background_data_ready_callback_, shared_sampler_,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        is_running_in_lacros ? crosapi_task_provider_ : nullptr,
+#endif
+        blocking_pool_runner_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (task->GetType() == Task::ARC)
       task_group->SetArcSampler(arc_shared_sampler_.get());
@@ -491,10 +517,12 @@ void TaskManagerImpl::TaskRemoved(Task* task) {
   const base::ProcessId proc_id = task->process_id();
   const TaskId task_id = task->task_id();
   const bool is_running_in_vm = task->IsRunningInVM();
+  const bool is_running_in_lacros = task->GetType() == Task::LACROS;
 
   TaskManagerImpl::PidToTaskGroupMap& task_group_map =
       is_running_in_vm ? arc_vm_task_groups_by_proc_id_
-                       : task_groups_by_proc_id_;
+                       : is_running_in_lacros ? crosapi_task_groups_by_proc_id_
+                                              : task_groups_by_proc_id_;
 
   DCHECK(task_group_map.count(proc_id));
 
@@ -516,19 +544,24 @@ void TaskManagerImpl::TaskUnresponsive(Task* task) {
   NotifyObserversOnTaskUnresponsive(task->task_id());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void TaskManagerImpl::TaskIdsListToBeInvalidated() {
+  sorted_task_ids_.clear();
+  NotifyObserversOnRefresh(GetTaskIdsList());
+}
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
+
 void TaskManagerImpl::UpdateAccumulatedStatsNetworkForRoute(
-    int process_id,
-    int route_id,
+    content::GlobalRenderFrameHostId render_frame_host_id,
     int64_t recv_bytes,
     int64_t sent_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_running_)
     return;
-  Task* task = GetTaskByRoute(process_id, route_id);
+  Task* task = GetTaskByRoute(render_frame_host_id);
   if (!task) {
     // Orphaned/unaccounted activity is credited to the Browser process.
-    task = GetTaskByRoute(content::ChildProcessHost::kInvalidUniqueID,
-                          MSG_ROUTING_NONE);
+    task = GetTaskByRoute(content::GlobalRenderFrameHostId());
   }
   if (!task)
     return;
@@ -580,8 +613,7 @@ void TaskManagerImpl::Refresh() {
                                         std::move(callback));
   }
   for (auto& groups_itr : task_groups_by_proc_id_) {
-    groups_itr.second->Refresh(gpu_memory_stats_,
-                               GetCurrentRefreshTime(),
+    groups_itr.second->Refresh(gpu_memory_stats_, GetCurrentRefreshTime(),
                                enabled_resources_flags());
   }
 
@@ -591,6 +623,11 @@ void TaskManagerImpl::Refresh() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (auto& groups_itr : crosapi_task_groups_by_proc_id_) {
+    groups_itr.second->Refresh(gpu_memory_stats_, GetCurrentRefreshTime(),
+                               enabled_resources_flags());
+  }
+
   if (TaskManagerObserver::IsResourceRefreshEnabled(
           REFRESH_TYPE_MEMORY_FOOTPRINT, enabled_resources_flags())) {
     arc_shared_sampler_->Refresh();
@@ -625,13 +662,16 @@ void TaskManagerImpl::StopUpdating() {
 
   task_groups_by_proc_id_.clear();
   arc_vm_task_groups_by_proc_id_.clear();
+  crosapi_task_groups_by_proc_id_.clear();
   task_groups_by_task_id_.clear();
   sorted_task_ids_.clear();
 }
 
-Task* TaskManagerImpl::GetTaskByRoute(int child_id, int route_id) const {
+Task* TaskManagerImpl::GetTaskByRoute(
+    content::GlobalRenderFrameHostId render_frame_host_id) const {
   for (const auto& task_provider : task_providers_) {
-    Task* task = task_provider->GetTaskOfUrlRequest(child_id, route_id);
+    Task* task = task_provider->GetTaskOfUrlRequest(
+        render_frame_host_id.child_id, render_frame_host_id.frame_routing_id);
     if (task)
       return task;
   }

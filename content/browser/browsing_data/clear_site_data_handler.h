@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -68,6 +69,9 @@ class CONTENT_EXPORT ClearSiteDataHandler {
     OutputFormattedMessageFunction output_formatted_message_function_;
   };
 
+  ClearSiteDataHandler(const ClearSiteDataHandler&) = delete;
+  ClearSiteDataHandler& operator=(const ClearSiteDataHandler&) = delete;
+
   // |header_value| is the string value of the 'Clear-Site-Data' header. This
   // method calls ParseHeader() to parse it, and then ExecuteClearingTask() if
   // applicable.
@@ -77,6 +81,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       const GURL& url,
       const std::string& header_value,
       int load_flags,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const absl::optional<blink::StorageKey>& storage_key,
       base::OnceClosure callback);
 
   // Exposes ParseHeader() publicly for testing.
@@ -94,6 +100,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       const GURL& url,
       const std::string& header_value,
       int load_flags,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const absl::optional<blink::StorageKey>& storage_key,
       base::OnceClosure callback,
       std::unique_ptr<ConsoleMessagesDelegate> delegate);
   virtual ~ClearSiteDataHandler();
@@ -141,6 +149,15 @@ class CONTENT_EXPORT ClearSiteDataHandler {
 
   const GURL& GetURLForTesting();
 
+  const absl::optional<net::CookiePartitionKey> CookiePartitionKeyForTesting()
+      const {
+    return cookie_partition_key_;
+  }
+
+  const absl::optional<blink::StorageKey> StorageKeyForTesting() const {
+    return storage_key_;
+  }
+
  private:
   // Required to clear the data.
   base::RepeatingCallback<BrowserContext*()> browser_context_getter_;
@@ -155,14 +172,20 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // Load flags of the current request, used to check cookie policies.
   int load_flags_;
 
+  // The cookie partition key for which we need to clear partitioned cookies
+  // when we receive the Clear-Site-Data header.
+  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+
+  // The storage key for which we need to clear partitioned storage when we
+  // receive the Clear-Site-Data header.
+  absl::optional<blink::StorageKey> storage_key_;
+
   // Used to notify that the clearing has completed. Callers could resuming
   // loading after this point.
   base::OnceClosure callback_;
 
   // The delegate that stores and outputs console messages.
   std::unique_ptr<ConsoleMessagesDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearSiteDataHandler);
 };
 
 }  // namespace content

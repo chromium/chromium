@@ -1,18 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/font_list.h"
+#include <fontconfig/fontconfig.h>
 
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
-#include <fontconfig/fontconfig.h>
-
-#include "base/stl_util.h"
 #include "base/values.h"
+#include "content/common/font_list.h"
 
 namespace content {
 
@@ -26,10 +24,10 @@ std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> CreateFormatPattern(
   return pattern;
 }
 
-std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
+base::Value::List GetFontList_SlowBlocking() {
   DCHECK(GetFontListTaskRunner()->RunsTasksInCurrentSequence());
 
-  std::unique_ptr<base::ListValue> font_list(new base::ListValue);
+  base::Value::List font_list;
 
   std::unique_ptr<FcObjectSet, decltype(&FcObjectSetDestroy)> object_set(
       FcObjectSetBuild(FC_FAMILY, NULL), FcObjectSetDestroy);
@@ -39,7 +37,7 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
   // See https://www.freetype.org/freetype2/docs/reference/ft2-font_formats.html
   // for the list of possible formats.
   const char* allowed_formats[] = { "TrueType", "CFF" };
-  for (size_t i = 0; i < base::size(allowed_formats); ++i) {
+  for (size_t i = 0; i < std::size(allowed_formats); ++i) {
     auto format_pattern = CreateFormatPattern(allowed_formats[i]);
     std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> fontset(
         FcFontList(nullptr, format_pattern.get(), object_set.get()),
@@ -62,11 +60,11 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
   sorted_families.insert("Serif");
 
   for (const auto& family : sorted_families) {
-    std::unique_ptr<base::ListValue> font_item(new base::ListValue());
-    font_item->AppendString(family);
-    font_item->AppendString(family);  // localized name.
+    base::Value::List font_item;
+    font_item.Append(family);
+    font_item.Append(family);  // localized name.
     // TODO(yusukes): Support localized family names.
-    font_list->Append(std::move(font_item));
+    font_list.Append(std::move(font_item));
   }
 
   return font_list;

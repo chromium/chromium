@@ -1,14 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WebURLLoaderMockFactoryImpl_h
-#define WebURLLoaderMockFactoryImpl_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -36,6 +35,9 @@ class WebURLLoaderTestDelegate;
 class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
  public:
   WebURLLoaderMockFactoryImpl(TestingPlatformSupport*);
+  WebURLLoaderMockFactoryImpl(const WebURLLoaderMockFactoryImpl&) = delete;
+  WebURLLoaderMockFactoryImpl& operator=(const WebURLLoaderMockFactoryImpl&) =
+      delete;
   ~WebURLLoaderMockFactoryImpl() override;
 
   // WebURLLoaderMockFactory:
@@ -64,7 +66,7 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
   // Called by the loader to load a resource.
   void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
                          WebURLResponse* response,
-                         base::Optional<WebURLError>* error,
+                         absl::optional<WebURLError>* error,
                          WebData* data,
                          int64_t* encoded_data_length);
   void LoadAsynchronouly(std::unique_ptr<network::ResourceRequest> request,
@@ -85,7 +87,7 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
   // accordingly.
   void LoadRequest(const WebURL& url,
                    WebURLResponse* response,
-                   base::Optional<WebURLError>* error,
+                   absl::optional<WebURLError>* error,
                    WebData* data);
 
   // Checks if the loader is pending. Otherwise, it may have been deleted.
@@ -95,7 +97,7 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
   //
   // If the URL is found, returns true and sets |error| and |response_info|.
   bool LookupURL(const WebURL& url,
-                 base::Optional<WebURLError>* error,
+                 absl::optional<WebURLError>* error,
                  ResponseInfo* response_info);
 
   // Reads |m_filePath| and puts its content in |data|.
@@ -111,7 +113,7 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
 
   // All values must be valid, but we use Optional because HashMap requires
   // "empty value".
-  typedef HashMap<KURL, base::Optional<WebURLError>> URLToErrorMap;
+  typedef HashMap<KURL, absl::optional<WebURLError>> URLToErrorMap;
   URLToErrorMap url_to_error_info_;
 
   // Table of the registered URLs and the responses that they should receive.
@@ -124,10 +126,8 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
   ProtocolToResponseMap protocol_to_response_info_;
 
   TestingPlatformSupport* platform_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebURLLoaderMockFactoryImpl);
 };
 
 }  // namespace blink
 
-#endif  // WebURLLoaderMockFactoryImpl_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_

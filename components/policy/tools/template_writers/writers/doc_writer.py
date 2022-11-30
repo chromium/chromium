@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -127,7 +127,11 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     '''
     dd = self._AddPolicyAttribute(parent, 'schema', None,
                                   ['.monospace', '.pre-wrap'])
-    schema_json = json.dumps(schema, indent=2, sort_keys=True)
+    # Explicitly specify separators since defaults depend on python version.
+    schema_json = json.dumps(schema,
+                             indent=2,
+                             sort_keys=True,
+                             separators=(", ", ": "))
     self.AddText(dd, schema_json)
 
   def _AddFeatures(self, parent, policy):
@@ -141,8 +145,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     '''
     features = []
     # The sorting is to make the order well-defined for testing.
-    keys = policy['features'].keys()
-    keys.sort()
+    keys = sorted(policy['features'].keys())
     for key in keys:
       key_name = self._FEATURE_MAP[key]
       if policy['features'][key]:
@@ -224,7 +227,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
         '[\n%s\n]' % ',\n'.join('  "%s"' % item for item in example_value))
 
   def _AddListExample(self, parent, policy):
-    '''Adds the example value of a 'list' policy to a DOM node. Example output:
+    r'''Adds the example value of a 'list' policy to a DOM node. Example output:
     <dl>
       <dt>Windows (Windows clients):</dt>
       <dd>
@@ -325,7 +328,11 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     self.AddElement(parent, 'dt', {}, os_header)
     element = self._AddStyledElement(parent, 'dd', ['.monospace', '.pre-wrap'])
     key_name = self._GetRegistryKeyName(policy, is_win)
-    example = json.dumps(policy['example_value'], indent=2, sort_keys=True)
+    # Explicitly specify separators since defaults depend on python version.
+    example = json.dumps(policy['example_value'],
+                         indent=2,
+                         sort_keys=True,
+                         separators=(", ", ": "))
     self.AddText(element, '%s\\%s = %s' % (key_name, policy['name'], example))
 
   def _AddDictionaryExampleAndroidLinux(self, parent, policy):
@@ -339,7 +346,11 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     '''
     self.AddElement(parent, 'dt', {}, 'Android/Linux:')
     element = self._AddStyledElement(parent, 'dd', ['.monospace', '.pre-wrap'])
-    example = json.dumps(policy['example_value'], indent=2, sort_keys=True)
+    # Explicitly specify separators since defaults depend on python version.
+    example = json.dumps(policy['example_value'],
+                         indent=2,
+                         sort_keys=True,
+                         separators=(", ", ": "))
     self.AddText(element, '%s: %s' % (policy['name'], example))
 
   def _AddDictionaryExample(self, parent, policy):
@@ -664,20 +675,6 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
                       {'href': policy_group_ref + '#' + policy['atomic_group']},
                       policy['atomic_group'])
 
-  def _AddPolicyNote(self, parent, policy):
-    '''If a policy has an additional web page assigned with it, then add
-    a link for that page.
-
-    Args:
-      policy: The data structure of the policy.
-    '''
-    if 'problem_href' not in policy:
-      return
-    problem_href = policy['problem_href']
-    div = self._AddStyledElement(parent, 'div', ['div.note'])
-    note = self.GetLocalizedMessage('note').replace('$6', problem_href)
-    self._AddParagraphs(div, note)
-
   def _AddPolicyRow(self, parent, policy):
     '''Adds a row for the policy in the summary table.
 
@@ -729,7 +726,6 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
         policy_name_text += self.GetLocalizedMessage('deprecated') + ")"
       self.AddText(h2, policy_name_text)
       self.AddElement(parent2, 'span', {}, policy['caption'])
-      self._AddPolicyNote(parent2, policy)
       self._AddPolicyDetails(parent2, policy)
     else:
       # Groups get a more compact description.
@@ -813,6 +809,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
         'android': 'Android',
         'win7': 'Windows 7',
         'ios': 'iOS',
+        'fuchsia': 'Fuchsia',
     }
     # Human-readable names of supported products.
     self._PRODUCT_MAP = {

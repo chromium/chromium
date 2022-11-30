@@ -1,0 +1,52 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+source_set("internal") {
+  sources = [
+    "feature_notification_guide_notification_client.cc",
+    "feature_notification_guide_notification_client.h",
+    "feature_notification_guide_service_impl.cc",
+    "feature_notification_guide_service_impl.h",
+    "utils.cc",
+    "utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/feature_guide/notifications:public",
+    "//components/feature_engagement/public",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/segmentation_platform/public",
+    "//skia",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "feature_notification_guide_service_impl_unittest.cc",
+    "utils_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/feature_guide/notifications:public",
+    "//chrome/browser/notifications/scheduler/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/segmentation_platform/public",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

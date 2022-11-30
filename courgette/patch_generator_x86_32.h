@@ -1,14 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COURGETTE_PATCH_GENERATOR_X86_32_H_
 #define COURGETTE_PATCH_GENERATOR_X86_32_H_
 
-#include <memory>
-
 #include "base/logging.h"
-#include "base/macros.h"
 #include "courgette/courgette_flow.h"
 #include "courgette/ensemble.h"
 #include "courgette/patcher_x86_32.h"
@@ -27,6 +24,9 @@ class PatchGeneratorX86_32 : public TransformationPatchGenerator {
       : TransformationPatchGenerator(old_element, new_element, patcher),
         kind_(kind) {
   }
+
+  PatchGeneratorX86_32(const PatchGeneratorX86_32&) = delete;
+  PatchGeneratorX86_32& operator=(const PatchGeneratorX86_32&) = delete;
 
   virtual ExecutableType Kind() { return kind_; }
 
@@ -107,8 +107,6 @@ class PatchGeneratorX86_32 : public TransformationPatchGenerator {
   virtual ~PatchGeneratorX86_32() { }
 
   ExecutableType kind_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatchGeneratorX86_32);
 };
 
 }  // namespace courgette

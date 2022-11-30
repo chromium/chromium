@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
@@ -31,7 +31,7 @@ class SharedContextState;
 class SharedImageFactory;
 class SharedImageRepresentationFactory;
 
-extern const base::Feature kGPUMemoryAblationFeature;
+BASE_DECLARE_FEATURE(kGPUMemoryAblationFeature);
 
 // When enabled, this experiment allocates additional memory alongside each
 // normal allocation. This will allow a study of the correlation between
@@ -72,23 +72,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryAblationExperiment
   void StopSequence(uint32_t sequence_num);
 
  private:
-  // Tracks the time spent doing the allocations/deallocations in order to
-  // determine if the change in metrics was solely due to the ablation.
-  //
-  // The memory allocated for ablation is not reported directly to
-  // GpuChannelManager::GpuPeakMemoryMonitor, as GpuMemoryAblationExperiment
-  // acts as the MemoryTracker for its own allocations. This tracks the peak
-  // allocation so that it can be reported.
-  struct SequenceTracker {
-   public:
-    SequenceTracker() = default;
-    ~SequenceTracker() = default;
-
-    base::TimeDelta allocs_;
-    base::TimeDelta deallocs_;
-    uint64_t peak_memory_ = 0u;
-  };
-
   // The initialization status of the feature. It defaults to |UNINITIALIZED|
   // and is updated upon the success or failure of initializing the needed GPU
   // resources.
@@ -133,10 +116,12 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryAblationExperiment
   // The Mailboxes allocated for each image.
   std::vector<Mailbox> mailboxes_;
 
-  // Tracks the time spent doing the allocations/deallocations, along with the
-  // peak memory allocated. Thus allowing to determine if the change in only
-  // metrics was solely due to the ablation.
-  base::flat_map<uint32_t, SequenceTracker> sequences_;
+  // The memory allocated for ablation is not reported directly to
+  // GpuChannelManager::GpuPeakMemoryMonitor, as GpuMemoryAblationExperiment
+  // acts as the MemoryTracker for its own allocations. This tracks the peak
+  // allocation so that it can be reported.
+  base::flat_map<uint32_t /*sequence_num*/, uint64_t /*peak_memory*/>
+      sequences_;
 
   // The memory allocated for ablation is not reported directly to
   // GpuChannelManager::GpuPeakMemoryMonitor, as this class acts as the
@@ -147,7 +132,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryAblationExperiment
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;
   std::unique_ptr<SharedImageRepresentationFactory> rep_factory_;
-  GpuChannelManager* channel_manager_;
+  raw_ptr<GpuChannelManager> channel_manager_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<GpuMemoryAblationExperiment> weak_factory_{this};
 };

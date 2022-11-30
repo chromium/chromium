@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,59 +16,35 @@ class QRCodeGeneratorBubbleControllerTest : public testing::Test {
  public:
   QRCodeGeneratorBubbleControllerTest() = default;
 
+  QRCodeGeneratorBubbleControllerTest(
+      const QRCodeGeneratorBubbleControllerTest&) = delete;
+  QRCodeGeneratorBubbleControllerTest& operator=(
+      const QRCodeGeneratorBubbleControllerTest&) = delete;
+
   ~QRCodeGeneratorBubbleControllerTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorBubbleControllerTest);
 };
 
 TEST_F(QRCodeGeneratorBubbleControllerTest, AllowedURLs) {
-  scoped_feature_list_.InitAndEnableFeature(kSharingQRCodeGenerator);
-
   // Allow valid http/https URLs.
   ASSERT_TRUE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("http://www.example.com"), false));
+      GURL("http://www.example.com")));
   ASSERT_TRUE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com"), false));
+      GURL("https://www.example.com")));
   ASSERT_TRUE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com/path?q=abc"), false));
-
-  // Disallow those URLs in incognito.
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("http://www.example.com"), true));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com"), true));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com/path?q=abc"), true));
+      GURL("https://www.example.com/path?q=abc")));
 
   // Disallow browser-ui URLs.
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("about:blank"), false));
+      GURL("about:blank")));
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("chrome://newtab"), false));
+      GURL("chrome://newtab")));
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("chrome://settings"), false));
+      GURL("chrome://settings")));
 
   // Disallow invalid URLs.
+  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL("")));
   ASSERT_FALSE(
-      QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL(""), false));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("NotAURL"), false));
-}
-
-TEST_F(QRCodeGeneratorBubbleControllerTest, UnavailableWithFeatureOff) {
-  scoped_feature_list_.InitAndDisableFeature(kSharingQRCodeGenerator);
-
-  // Normally-available URLs should not be allowed when the feature is off.
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("http://www.example.com"), false));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com"), false));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com/path?q=abc"), false));
+      QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL("NotAURL")));
 }
 
 }  // namespace qrcode_generator

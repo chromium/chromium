@@ -1,6 +1,6 @@
 - name: 2d.fillStyle.invalidstring
   testing:
-  - 2d.colours.invalidstring
+  - 2d.colors.invalidstring
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -12,7 +12,7 @@
 
 - name: 2d.fillStyle.invalidtype
   testing:
-  - 2d.colours.invalidtype
+  - 2d.colors.invalidtype
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -24,8 +24,8 @@
 
 - name: 2d.fillStyle.get.solid
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.solid
+  - 2d.colors.getcolor
+  - 2d.serializecolor.solid
   code: |
     ctx.fillStyle = '#fa0';
     @assert ctx.fillStyle === '#ffaa00';
@@ -33,17 +33,26 @@
 
 - name: 2d.fillStyle.get.semitransparent
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.transparent
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
   code: |
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     @assert ctx.fillStyle =~ /^rgba\(255, 255, 255, 0\.4\d+\)$/;
     t.done();
 
+- name: 2d.fillStyle.get.halftransparent
+  testing:
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
+  code: |
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    @assert ctx.fillStyle === 'rgba(255, 255, 255, 0.5)';
+    t.done();
+
 - name: 2d.fillStyle.get.transparent
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.transparent
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
   code: |
     ctx.fillStyle = 'rgba(0,0,0,0)';
     @assert ctx.fillStyle === 'rgba(0, 0, 0, 0)';
@@ -51,14 +60,14 @@
 
 - name: 2d.fillStyle.default
   testing:
-  - 2d.colours.default
+  - 2d.colors.default
   code: |
     @assert ctx.fillStyle === '#000000';
     t.done();
 
 - name: 2d.strokeStyle.default
   testing:
-  - 2d.colours.default
+  - 2d.colors.default
   code: |
     @assert ctx.strokeStyle === '#000000';
     t.done();
@@ -66,7 +75,7 @@
 - name: 2d.fillStyle.toStringFunctionCallback
   desc: Passing a function in to ctx.fillStyle or ctx.strokeStyle with a toString callback works as specified
   testing:
-    2d.colours.toStringFunctionCallback
+    2d.colors.toStringFunctionCallback
   code: |
     ctx.fillStyle = { toString: function() { return "#008000"; } };
     @assert ctx.fillStyle === "#008000";
@@ -96,7 +105,7 @@
     @assert pixel 50,25 == 0,255,0,255;
     t.done();
 
-- name: 2d.gradient.interpolate.colour
+- name: 2d.gradient.interpolate.color
   testing:
   - 2d.gradient.interpolate.linear
   code: |
@@ -126,7 +135,7 @@
     @assert pixel 75,25 ==~ 63,63,191,255 +/- 3;
     t.done();
 
-- name: 2d.gradient.interpolate.colouralpha
+- name: 2d.gradient.interpolate.coloralpha
   testing:
   - 2d.gradient.interpolate.alpha
   code: |
@@ -250,7 +259,7 @@
   testing:
   - 2d.gradient.interpolate.linear
   code: |
-    offscreenCanvas.width = 200;
+    canvas.width = 200;
     var g = ctx.createLinearGradient(0, 0, 200, 0);
     g.addColorStop(0, '#ff0');
     g.addColorStop(0.5, '#0ff');
@@ -266,7 +275,7 @@
   testing:
   - 2d.gradient.interpolate.overlap
   code: |
-    offscreenCanvas.width = 200;
+    canvas.width = 200;
     var g = ctx.createLinearGradient(0, 0, 200, 0);
     g.addColorStop(0, '#f00');
     g.addColorStop(0, '#ff0');
@@ -378,9 +387,9 @@
     @assert throws TypeError g.addColorStop(NaN, '#000');
     t.done();
 
-- name: 2d.gradient.object.invalidcolour
+- name: 2d.gradient.object.invalidcolor
   testing:
-  - 2d.gradient.invalidcolour
+  - 2d.gradient.invalidcolor
   code: |
     var g = ctx.createLinearGradient(0, 0, 100, 0);
     @assert throws SYNTAX_ERR g.addColorStop(0, "");
@@ -949,21 +958,45 @@
     @assert pixel 75,25 == 0,255,0,255;
     t.done();
 
-- name: 2d.gradient.conic
-  desc: Conic gradient function exists
+- name: 2d.gradient.conic.positive.rotation
+  desc: Conic gradient with positive rotation
   code: |
-    const g = ctx.createConicGradient(0, 0, 25);
-    g.addColorStop(0, "#0f0");
-    g.addColorStop(0.5, "#0f0");
-    g.addColorStop(0.5, "#f00");
-    g.addColorStop(1, "#f00");
+    const g = ctx.createConicGradient(3*Math.PI/2, 50, 25);
+    // It's red in the upper right region and green on the lower left region
+    g.addColorStop(0, "#f00");
+    g.addColorStop(0.25, "#0f0");
+    g.addColorStop(0.50, "#0f0");
+    g.addColorStop(0.75, "#f00");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,15 ==~ 255,0,0,255 +/- 3;
+    @assert pixel 75,40 ==~ 0,255,0,255 +/- 3;
     t.done();
-  expected: green
+
+- name: 2d.gradient.conic.negative.rotation
+  desc: Conic gradient with negative rotation
+  code: |
+    const g = ctx.createConicGradient(-Math.PI/2, 50, 25);
+    // It's red in the upper right region and green on the lower left region
+    g.addColorStop(0, "#f00");
+    g.addColorStop(0.25, "#0f0");
+    g.addColorStop(0.50, "#0f0");
+    g.addColorStop(0.75, "#f00");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 25,15 ==~ 255,0,0,255 +/- 3;
+    @assert pixel 75,40 ==~ 0,255,0,255 +/- 3;
+    t.done();
+
+- name: 2d.gradient.conic.invalid.inputs
+  desc: Conic gradient function with invalid inputs
+  code: |
+    @nonfinite @assert throws TypeError ctx.createConicGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>);
+
+    const g = ctx.createConicGradient(0, 0, 25);
+    @nonfinite @assert throws TypeError g.addColorStop(<Infinity -Infinity NaN>, <'#f00'>);
+    @nonfinite @assert throws SYNTAX_ERR g.addColorStop(<0>, <Infinity -Infinity NaN>);
+    t.done();
 
 - name: 2d.pattern.basic.image
   testing:
@@ -1020,21 +1053,21 @@
   testing:
   - 2d.pattern.zerocanvas
   code: |
-    offscreenCanvas.width = 0;
-    offscreenCanvas.height = 10;
-    @assert offscreenCanvas.width === 0;
-    @assert offscreenCanvas.height === 10;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(offscreenCanvas, 'repeat');
-    offscreenCanvas.width = 10;
-    offscreenCanvas.height = 0;
-    @assert offscreenCanvas.width === 10;
-    @assert offscreenCanvas.height === 0;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(offscreenCanvas, 'repeat');
-    offscreenCanvas.width = 0;
-    offscreenCanvas.height = 0;
-    @assert offscreenCanvas.width === 0;
-    @assert offscreenCanvas.height === 0;
-    @assert throws INVALID_STATE_ERR ctx.createPattern(offscreenCanvas, 'repeat');
+    canvas.width = 0;
+    canvas.height = 10;
+    @assert canvas.width === 0;
+    @assert canvas.height === 10;
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
+    canvas.width = 10;
+    canvas.height = 0;
+    @assert canvas.width === 10;
+    @assert canvas.height === 0;
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
+    canvas.width = 0;
+    canvas.height = 0;
+    @assert canvas.width === 0;
+    @assert canvas.height === 0;
+    @assert throws INVALID_STATE_ERR ctx.createPattern(canvas, 'repeat');
     t.done();
 
 - name: 2d.pattern.basic.nocontext
@@ -1106,42 +1139,42 @@
   testing:
   - 2d.pattern.unrecognised
   code: |
-    @assert ctx.createPattern(offscreenCanvas, null) != null;
+    @assert ctx.createPattern(canvas, null) != null;
     t.done();
 
 - name: 2d.pattern.repeat.undefined
   testing:
   - 2d.pattern.unrecognised
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(offscreenCanvas, undefined);
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, undefined);
     t.done();
 
 - name: 2d.pattern.repeat.unrecognised
   testing:
   - 2d.pattern.unrecognised
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(offscreenCanvas, "invalid");
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, "invalid");
     t.done();
 
 - name: 2d.pattern.repeat.unrecognisednull
   testing:
   - 2d.pattern.unrecognised
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(offscreenCanvas, "null");
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, "null");
     t.done();
 
 - name: 2d.pattern.repeat.case
   testing:
   - 2d.pattern.exact
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(offscreenCanvas, "Repeat");
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, "Repeat");
     t.done();
 
 - name: 2d.pattern.repeat.nullsuffix
   testing:
   - 2d.pattern.exact
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(offscreenCanvas, "repeat\0");
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, "repeat\0");
     t.done();
 
 - name: 2d.pattern.modify.canvas1
@@ -1731,4 +1764,3 @@
     @assert pixel 1,48 == 0,255,0,255;
     @assert pixel 98,48 == 0,255,0,255;
     t.done();
-

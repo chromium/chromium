@@ -1,26 +1,24 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"
 #include "chrome/browser/ash/arc/auth/arc_robot_auth_code_fetcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -61,6 +59,12 @@ void ResponseJob(const network::ResourceRequest& request,
 }  // namespace
 
 class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
+ public:
+  ArcRobotAuthCodeFetcherBrowserTest(
+      const ArcRobotAuthCodeFetcherBrowserTest&) = delete;
+  ArcRobotAuthCodeFetcherBrowserTest& operator=(
+      const ArcRobotAuthCodeFetcherBrowserTest&) = delete;
+
  protected:
   // Test configuration for whether to set up the CloudPolicyClient connection.
   // By default, the test sets up the connection.
@@ -93,9 +97,9 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
     if (cloud_policy_client_setup_ == CloudPolicyClientSetup::kSkip)
       return;
 
-    policy::BrowserPolicyConnectorChromeOS* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    policy::DeviceCloudPolicyManagerChromeOS* const cloud_policy_manager =
+    policy::BrowserPolicyConnectorAsh* const connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
+    policy::DeviceCloudPolicyManagerAsh* const cloud_policy_manager =
         connector->GetDeviceCloudPolicyManager();
 
     cloud_policy_manager->StartConnection(
@@ -147,8 +151,6 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAuthCodeFetcherBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcRobotAuthCodeFetcherBrowserTest,
@@ -191,14 +193,17 @@ IN_PROC_BROWSER_TEST_F(ArcRobotAuthCodeFetcherBrowserTest,
 
 class ArcRobotAuthCodeFetcherOfflineBrowserTest
     : public ArcRobotAuthCodeFetcherBrowserTest {
+ public:
+  ArcRobotAuthCodeFetcherOfflineBrowserTest(
+      const ArcRobotAuthCodeFetcherOfflineBrowserTest&) = delete;
+  ArcRobotAuthCodeFetcherOfflineBrowserTest& operator=(
+      const ArcRobotAuthCodeFetcherOfflineBrowserTest&) = delete;
+
  protected:
   ArcRobotAuthCodeFetcherOfflineBrowserTest()
       : ArcRobotAuthCodeFetcherBrowserTest(CloudPolicyClientSetup::kSkip) {}
 
   ~ArcRobotAuthCodeFetcherOfflineBrowserTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAuthCodeFetcherOfflineBrowserTest);
 };
 
 // Tests that the fetch fails when CloudPolicyClient has not been set up yet.

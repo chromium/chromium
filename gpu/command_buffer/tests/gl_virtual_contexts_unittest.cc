@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -159,7 +160,7 @@ TEST_P(GLVirtualContextsTest, Basic) {
   struct TestInfo {
     int size;
     uint8_t color[4];
-    GLManager* manager;
+    raw_ptr<GLManager> manager;
   };
   const int kNumTests = 3;
   TestInfo tests[] = {
@@ -426,7 +427,7 @@ static const GpuDriverBugWorkarounds workarounds_cases[] = {
     // No extra workarounds.
     GpuDriverBugWorkarounds(),
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Regression tests for https://crbug.com/768324
     //
     // TODO(kainino): The #if is added because this case does not pass on Mac

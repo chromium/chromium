@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
@@ -32,6 +31,12 @@ class CheckFileSystemAccessWriteRequest
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+
+  CheckFileSystemAccessWriteRequest(const CheckFileSystemAccessWriteRequest&) =
+      delete;
+  CheckFileSystemAccessWriteRequest& operator=(
+      const CheckFileSystemAccessWriteRequest&) = delete;
+
   ~CheckFileSystemAccessWriteRequest() override;
 
  private:
@@ -42,17 +47,20 @@ class CheckFileSystemAccessWriteRequest
   base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() override;
 
   void NotifySendRequest(const ClientDownloadRequest* request) override;
-  void SetDownloadPingToken(const std::string& token) override;
+  void SetDownloadProtectionData(
+      const std::string& token,
+      const ClientDownloadResponse::Verdict& verdict,
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict) override;
   void MaybeStorePingsForDownload(DownloadCheckResult result,
                                   bool upload_requested,
                                   const std::string& request_data,
                                   const std::string& response_body) override;
-  base::Optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
+  absl::optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
       DownloadCheckResultReason reason) override;
-  void UploadBinary(DownloadCheckResultReason reason,
+  void UploadBinary(DownloadCheckResult result,
+                    DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;
-  bool ShouldPromptForDeepScanning(
-      DownloadCheckResultReason reason) const override;
+  bool ShouldPromptForDeepScanning(bool server_requests_prompt) const override;
   void NotifyRequestFinished(DownloadCheckResult result,
                              DownloadCheckResultReason reason) override;
   bool IsAllowlistedByPolicy() const override;
@@ -62,8 +70,6 @@ class CheckFileSystemAccessWriteRequest
 
   base::WeakPtrFactory<CheckFileSystemAccessWriteRequest> weakptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckFileSystemAccessWriteRequest);
 };
 
 }  // namespace safe_browsing

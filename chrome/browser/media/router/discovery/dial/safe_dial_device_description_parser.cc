@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ void SafeDialDeviceDescriptionParser::Parse(const std::string& xml_text,
                                             ParseCallback callback) {
   DCHECK(callback);
   GetDataDecoder().ParseXml(
-      xml_text,
+      xml_text, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
       base::BindOnce(&SafeDialDeviceDescriptionParser::OnXmlParsingDone,
                      weak_factory_.GetWeakPtr(), std::move(callback), app_url));
 }
@@ -53,7 +53,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
     SafeDialDeviceDescriptionParser::ParseCallback callback,
     const GURL& app_url,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value || !result.value->is_dict()) {
+  if (!result.has_value() || !result->is_dict()) {
     std::move(callback).Run(
         ParsedDialDeviceDescription(),
         SafeDialDeviceDescriptionParser::ParsingError::kInvalidXml);
@@ -62,7 +62,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
 
   bool unique_device = true;
   const base::Value* device_element = data_decoder::FindXmlElementPath(
-      *result.value, {"root", "device"}, &unique_device);
+      *result, {"root", "device"}, &unique_device);
   if (!device_element) {
     NotifyParsingError(
         std::move(callback),
@@ -95,8 +95,8 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
     if (value) {
       DCHECK_EQ(1, data_decoder::GetXmlElementChildrenCount(*device_element,
                                                             kNodeNames[i]));
-      bool result = data_decoder::GetXmlElementText(*value, kFields[i]);
-      if (!result) {
+      bool parsed = data_decoder::GetXmlElementText(*value, kFields[i]);
+      if (!parsed) {
         NotifyParsingError(std::move(callback), kParsingErrors[i]);
         return;
       }

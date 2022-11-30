@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_PLUGIN_VM_PLUGIN_VM_INSTALLER_VIEW_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;
@@ -26,7 +25,11 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
                               public plugin_vm::PluginVmInstaller::Observer {
  public:
   METADATA_HEADER(PluginVmInstallerView);
+
   explicit PluginVmInstallerView(Profile* profile);
+
+  PluginVmInstallerView(const PluginVmInstallerView&) = delete;
+  PluginVmInstallerView& operator=(const PluginVmInstallerView&) = delete;
 
   static PluginVmInstallerView* GetActiveViewForTesting();
 
@@ -76,6 +79,7 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   void OnLinkClicked();
   // views::BubbleDialogDelegateView implementation.
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
   std::u16string GetDownloadProgressMessage(uint64_t bytes_downloaded,
                                             int64_t content_length) const;
@@ -98,11 +102,9 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
 
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
-  base::Optional<plugin_vm::PluginVmInstaller::FailureReason> reason_;
+  absl::optional<plugin_vm::PluginVmInstaller::FailureReason> reason_;
 
   base::OnceCallback<void(bool success)> finished_callback_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PLUGIN_VM_PLUGIN_VM_INSTALLER_VIEW_H_

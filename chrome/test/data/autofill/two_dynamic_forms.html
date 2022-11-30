@@ -55,10 +55,6 @@
 
 <script src="dynamic_form_utils.js"></script>
 <script>
-
-var notify_on_first_name_input_change = {};
-var first_name_input_changed = {};
-
 function CountryChanged(select_element) {
   var form_id = select_element.form.id;
   var form_name = select_element.form.name;
@@ -68,22 +64,9 @@ function CountryChanged(select_element) {
 
   var first_name_input_id = 'firstname_' + form_id;
   var first_name_input = new_form.elements[0];
-  first_name_input.onchange = function() {
-    if (notify_on_first_name_input_change[first_name_input_id])
-      window.domAutomationController.send(first_name_input.value != '');
-    else
-      first_name_input_changed[first_name_input_id] = true;
-  }
+  window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 
   document.getElementsByTagName('body')[0].appendChild(new_form);
-}
-
-function hasRefilled(first_name_input_id) {
-  var first_name_input = document.getElementById(first_name_input_id);
-  if (first_name_input && first_name_input_changed[first_name_input_id]) {
-    window.domAutomationController.send(first_name_input.value != '');
-  } else {
-    notify_on_first_name_input_change[first_name_input_id] = true;
-  }
 }
 </script>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 
@@ -29,6 +28,8 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerFuchsia
   VirtualKeyboardControllerFuchsia operator=(
       VirtualKeyboardControllerFuchsia&) = delete;
 
+  void UpdateTextType();
+
   // VirtualKeyboardController implementation.
   bool DisplayVirtualKeyboard() override;
   void DismissVirtualKeyboard() override;
@@ -43,9 +44,15 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerFuchsia
   // Handles the visibility change response from the service.
   void OnVisibilityChange(bool is_visible);
 
+  // Gets the Fuchsia TextType corresponding to the currently focused field.
+  fuchsia::input::virtualkeyboard::TextType GetFocusedTextType() const;
+
   ui::InputMethodBase* const input_method_;
+  fuchsia::input::virtualkeyboard::TextType requested_type_ =
+      fuchsia::input::virtualkeyboard::TextType::ALPHANUMERIC;
   fuchsia::input::virtualkeyboard::ControllerPtr controller_service_;
   bool keyboard_visible_ = false;
+  bool requested_visible_ = false;
 };
 
 }  // namespace ui

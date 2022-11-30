@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // Toolbar configuration object giving access to styling elements.
 @interface ToolbarConfiguration : NSObject
 
-// Init the toolbar configuration with the desired |style|.
+// Init the toolbar configuration with the desired `style`.
 - (instancetype)initWithStyle:(ToolbarStyle)style NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -25,6 +25,10 @@
 
 // Background color of the toolbar.
 @property(nonatomic, readonly) UIColor* backgroundColor;
+
+// Focused background color of the toolbar.
+// Used only in Updated Popup treatment 2.
+@property(nonatomic, readonly) UIColor* focusedBackgroundColor;
 
 // Tint color of the buttons.
 @property(nonatomic, readonly) UIColor* buttonsTintColor;
@@ -39,9 +43,14 @@
 // Color for the spotlight view's background when the toolbar is dimmed.
 @property(nonatomic, readonly) UIColor* dimmedButtonsSpotlightColor;
 
-// Returns the background color of the location bar, with a |visibilityFactor|.
-// The |visibilityFactor| is here to alter the alpha value of the background
-// color. Even with a |visibilityFactor| of 1, the final color could is
+// Used as Omnibox background color when focused.
+// Used only in Updated Popup treatment 2.
+// See locationBarBackgroundColorWithVisibility: below for defocused.
+@property(nonatomic, readonly) UIColor* focusedLocationBarBackgroundColor;
+
+// Returns the background color of the location bar, with a `visibilityFactor`.
+// The `visibilityFactor` is here to alter the alpha value of the background
+// color. Even with a `visibilityFactor` of 1, the final color could is
 // translucent.
 - (UIColor*)locationBarBackgroundColorWithVisibility:(CGFloat)visibilityFactor;
 

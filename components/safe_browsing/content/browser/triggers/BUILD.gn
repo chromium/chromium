@@ -1,0 +1,116 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("triggers") {
+  sources = [
+    "trigger_manager.cc",
+    "trigger_manager.h",
+  ]
+  public_deps = [
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//content/public/browser",
+  ]
+  deps = [
+    ":trigger_throttler",
+    "//base:base",
+    "//components/prefs",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
+    "//net",
+  ]
+}
+
+source_set("trigger_throttler") {
+  sources = [
+    "trigger_throttler.cc",
+    "trigger_throttler.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+  ]
+}
+
+source_set("trigger_util") {
+  sources = [
+    "trigger_util.cc",
+    "trigger_util.h",
+  ]
+  deps = [
+    ":triggers",
+    "//content/public/browser",
+  ]
+}
+
+source_set("ad_sampler_trigger") {
+  sources = [
+    "ad_sampler_trigger.cc",
+    "ad_sampler_trigger.h",
+  ]
+  deps = [
+    ":trigger_throttler",
+    ":trigger_util",
+    ":triggers",
+    "//base:base",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("suspicious_site_trigger") {
+  sources = [
+    "suspicious_site_trigger.cc",
+    "suspicious_site_trigger.h",
+  ]
+  deps = [
+    ":trigger_throttler",
+    ":triggers",
+    "//base:base",
+    "//components/history/core/browser:browser",
+    "//components/prefs:prefs",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
+    "//content/public/browser",
+    "//net:net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ad_sampler_trigger_unittest.cc",
+    "mock_trigger_manager.cc",
+    "mock_trigger_manager.h",
+    "suspicious_site_trigger_unittest.cc",
+    "trigger_manager_unittest.cc",
+    "trigger_throttler_unittest.cc",
+  ]
+  deps = [
+    ":ad_sampler_trigger",
+    ":suspicious_site_trigger",
+    ":trigger_throttler",
+    ":triggers",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/browser:browser",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
+    "//components/subresource_filter/content/browser:test_support",
+    "//content/public/browser:browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

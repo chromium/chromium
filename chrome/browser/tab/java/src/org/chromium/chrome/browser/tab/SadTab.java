@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -191,11 +191,10 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
      */
     private static CharSequence getHelpMessage(
             Context context, final Runnable suggestionAction, final boolean showSendFeedback) {
-        NoUnderlineClickableSpan linkSpan =
-                new NoUnderlineClickableSpan(context.getResources(), (view) -> {
-                    recordEvent(showSendFeedback, SadTabEvent.HELP_LINK_CLICKED);
-                    suggestionAction.run();
-                });
+        NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(context, (view) -> {
+            recordEvent(showSendFeedback, SadTabEvent.HELP_LINK_CLICKED);
+            suggestionAction.run();
+        });
 
         if (showSendFeedback) {
             SpannableString learnMoreLink =

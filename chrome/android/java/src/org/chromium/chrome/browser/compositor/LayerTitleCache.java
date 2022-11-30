@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,13 +26,14 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.BitmapDynamicResource;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.url.GURL;
 
 /**
  * A version of the {@link LayerTitleCache} that builds native cc::Layer objects
  * that represent the cached title textures.
  */
 @JNINamespace("android")
-public class LayerTitleCache implements TitleCache {
+public class LayerTitleCache {
     private static int sNextResourceId = 1;
 
     private final Context mContext;
@@ -96,12 +97,11 @@ public class LayerTitleCache implements TitleCache {
         if (mTabModelSelector == null) return;
 
         Tab tab = mTabModelSelector.getTabById(tabId);
-        if (tab == null) return;
+        if (tab == null || tab.isDestroyed()) return;
 
         getUpdatedTitle(tab, "");
     }
 
-    @Override
     public String getUpdatedTitle(Tab tab, String defaultTitle) {
         // If content view core is null, tab does not have direct access to the favicon, and we
         // will initially show default favicon. But favicons are stored in the history database, so
@@ -121,7 +121,7 @@ public class LayerTitleCache implements TitleCache {
         Bitmap originalFavicon = TabFavicon.getBitmap(tab);
         if (originalFavicon == null) {
             originalFavicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(
-                    mContext.getResources(), tab.getUrlString(), !isDarkTheme);
+                    mContext.getResources(), tab.getUrl(), !isDarkTheme);
         }
 
         TitleBitmapFactory titleBitmapFactory =
@@ -155,11 +155,11 @@ public class LayerTitleCache implements TitleCache {
         // to get the correct profile.
         Profile profile = !tab.isIncognito()
                 ? Profile.getLastUsedRegularProfile()
-                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true);
         mFaviconHelper.getLocalFaviconImageForURL(
-                profile, tab.getUrlString(), mFaviconSize, new FaviconImageCallback() {
+                profile, tab.getUrl(), mFaviconSize, new FaviconImageCallback() {
                     @Override
-                    public void onFaviconAvailable(Bitmap favicon, String iconUrl) {
+                    public void onFaviconAvailable(Bitmap favicon, GURL iconUrl) {
                         updateFaviconFromHistory(tab, favicon);
                     }
                 });
@@ -173,7 +173,7 @@ public class LayerTitleCache implements TitleCache {
     private String getTitleForTab(Tab tab, String defaultTitle) {
         String title = tab.getTitle();
         if (TextUtils.isEmpty(title)) {
-            title = tab.getUrlString();
+            title = tab.getUrl().getSpec();
             if (TextUtils.isEmpty(title)) {
                 title = defaultTitle;
                 if (TextUtils.isEmpty(title)) {
@@ -198,7 +198,6 @@ public class LayerTitleCache implements TitleCache {
         }
     }
 
-    @Override
     public void remove(int tabId) {
         Title title = mTitles.get(tabId);
         if (title == null) return;
@@ -209,7 +208,6 @@ public class LayerTitleCache implements TitleCache {
                 mNativeLayerTitleCache, LayerTitleCache.this, tabId, -1, -1, false, false);
     }
 
-    @Override
     public void clearExcept(int exceptId) {
         Title title = mTitles.get(exceptId);
         for (int i = 0; i < mTitles.size(); i++) {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/optional.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -21,7 +22,7 @@ template <VARTYPE ElementVartype>
 int CompareAgainstSafearray(const std::vector<ScopedVariant>& vector,
                             const ScopedSafearray& safearray,
                             bool ignore_case) {
-  base::Optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
+  absl::optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
       safearray.CreateLockScope<ElementVartype>();
   // If we fail to create a lock scope, then arbitrarily treat |this| as
   // greater. This should only happen when the SAFEARRAY fails to be locked,
@@ -320,7 +321,7 @@ SAFEARRAY* VariantVector::CreateAndPopulateSafearray() {
   DCHECK(!Empty());
 
   ScopedSafearray scoped_safearray(
-      SafeArrayCreateVector(ElementVartype, 0, Size()));
+      SafeArrayCreateVector(ElementVartype, 0, checked_cast<ULONG>(Size())));
   if (!scoped_safearray.Get()) {
     constexpr size_t kElementSize =
         sizeof(typename internal::VariantUtil<ElementVartype>::Type);
@@ -328,7 +329,7 @@ SAFEARRAY* VariantVector::CreateAndPopulateSafearray() {
                                       (Size() * kElementSize));
   }
 
-  base::Optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
+  absl::optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
       scoped_safearray.CreateLockScope<ElementVartype>();
   DCHECK(lock_scope);
 

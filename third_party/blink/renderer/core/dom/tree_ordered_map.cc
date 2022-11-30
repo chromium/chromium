@@ -100,7 +100,7 @@ void TreeOrderedMap::Remove(const AtomicString& key, Element& element) {
     map_.erase(it);
   } else {
     if (entry->element == element) {
-      DCHECK(entry->ordered_list.IsEmpty() ||
+      DCHECK(entry->ordered_list.empty() ||
              entry->ordered_list.front() == element);
       entry->element =
           entry->ordered_list.size() > 1 ? entry->ordered_list[1] : nullptr;
@@ -115,10 +115,10 @@ inline Element* TreeOrderedMap::Get(const AtomicString& key,
                                     const TreeScope& scope) const {
   DCHECK(key);
 
-  MapEntry* entry = map_.at(key);
-  if (!entry)
+  auto it = map_.find(key);
+  if (it == map_.end())
     return nullptr;
-
+  MapEntry* entry = it->value;
   DCHECK(entry->count);
   if (entry->element)
     return entry->element;
@@ -163,8 +163,8 @@ const HeapVector<Member<Element>>& TreeOrderedMap::GetAllElementsById(
   Member<MapEntry>& entry = it->value;
   DCHECK(entry->count);
 
-  if (entry->ordered_list.IsEmpty()) {
-    entry->ordered_list.ReserveCapacity(entry->count);
+  if (entry->ordered_list.empty()) {
+    entry->ordered_list.reserve(entry->count);
     for (Element* element =
              entry->element ? entry->element.Get()
                             : ElementTraversal::FirstWithin(scope.RootNode());
@@ -197,9 +197,10 @@ HTMLSlotElement* TreeOrderedMap::GetSlotByName(const AtomicString& key,
 
 Element* TreeOrderedMap::GetCachedFirstElementWithoutAccessingNodeTree(
     const AtomicString& key) {
-  MapEntry* entry = map_.at(key);
-  if (!entry)
+  auto it = map_.find(key);
+  if (it == map_.end())
     return nullptr;
+  MapEntry* entry = it->value;
   DCHECK(entry->count);
   return entry->element;
 }

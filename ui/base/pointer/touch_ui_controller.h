@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 #define UI_BASE_POINTER_TOUCH_UI_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace gfx {
 class SingletonHwndObserver;
 }
@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
     void UpdateState(bool enabled);
 
    private:
-    TouchUiController* const controller_;
+    const raw_ptr<TouchUiController> controller_;
     const TouchUiState old_state_;
   };
 
@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
   bool tablet_mode_ = false;
   TouchUiState touch_ui_state_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 #endif
 

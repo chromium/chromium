@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "media/base/media_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -46,6 +45,10 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   bool has_trusted_rate_controller = false;
   bool is_hardware_accelerated = true;
   bool supports_simulcast = false;
+  // True if encoder uses same QP for all macroblocks of a picture without
+  // per-macroblock QP adjustment, and that QP can be calculated from
+  // uncompressed sequence/frame/slice/tile headers.
+  bool reports_average_qp = true;
 
   std::vector<uint8_t> fps_allocation[kMaxSpatialLayers];
   std::vector<ResolutionBitrateLimit> resolution_bitrate_limits;

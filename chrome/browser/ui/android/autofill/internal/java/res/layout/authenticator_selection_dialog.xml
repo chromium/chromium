@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_height="match_parent"
+  android:layout_width="match_parent">
+  <LinearLayout
+      android:id="@+id/authenticator_selection_dialog_contents"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:orientation="vertical">
+    <TextView
+        android:id="@+id/authenticator_selection_header"
+        style="@style/AlertDialogContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/autofill_payments_authenticator_selection_dialog_header"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/authenticator_options_view"
+        style="@style/AlertDialogContent"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+    <TextView
+        android:id="@+id/authenticator_selection_footer"
+        style="@style/AlertDialogContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/autofill_payments_authenticator_selection_dialog_footer"/>
+  </LinearLayout>
+  <LinearLayout
+        android:id="@+id/progress_bar_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/authenticator_selection_dialog_contents"
+        android:layout_alignBottom="@+id/authenticator_selection_dialog_contents"
+        android:layout_alignStart="@+id/authenticator_selection_dialog_contents"
+        android:layout_alignEnd="@+id/authenticator_selection_dialog_contents"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"/>
+        <TextView
+            android:id="@+id/progress_bar_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/autofill_payments_authenticator_selection_dialog_progress_bar_message"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
+    </LinearLayout>
+</RelativeLayout>

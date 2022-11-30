@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -20,6 +19,10 @@ class FakePasswordGenerationDriver
     : public autofill::mojom::PasswordGenerationDriver {
  public:
   FakePasswordGenerationDriver();
+
+  FakePasswordGenerationDriver(const FakePasswordGenerationDriver&) = delete;
+  FakePasswordGenerationDriver& operator=(const FakePasswordGenerationDriver&) =
+      delete;
 
   ~FakePasswordGenerationDriver() override;
 
@@ -50,8 +53,6 @@ class FakePasswordGenerationDriver
  private:
   mojo::AssociatedReceiver<autofill::mojom::PasswordGenerationDriver> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakePasswordGenerationDriver);
 };
 
 #endif  // CHROME_RENDERER_AUTOFILL_FAKE_PASSWORD_GENERATION_DRIVER_H_

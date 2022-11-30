@@ -1,10 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/base/test_proxy_delegate.h"
 
 #include "net/base/net_errors.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -31,22 +33,7 @@ void TestProxyDelegate::OnResolveProxy(
     const GURL& url,
     const std::string& method,
     const ProxyRetryInfoMap& proxy_retry_info,
-    ProxyInfo* result) {
-  if (!trusted_spdy_proxy_.is_valid())
-    return;
-  ProxyList new_proxy_list;
-  for (const auto& proxy_server : result->proxy_list().GetAll()) {
-    if (proxy_server == trusted_spdy_proxy_) {
-      new_proxy_list.AddProxyServer(ProxyServer(
-          proxy_server.scheme(), proxy_server.host_port_pair(), true));
-    } else {
-      new_proxy_list.AddProxyServer(proxy_server);
-    }
-  }
-  result->UseProxyList(new_proxy_list);
-  result->set_traffic_annotation(
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-}
+    ProxyInfo* result) {}
 
 void TestProxyDelegate::OnFallback(const ProxyServer& bad_proxy,
                                    int net_error) {}
@@ -56,7 +43,7 @@ void TestProxyDelegate::OnBeforeTunnelRequest(
     HttpRequestHeaders* extra_headers) {
   on_before_tunnel_request_called_ = true;
   if (extra_headers)
-    extra_headers->SetHeader("Foo", proxy_server.ToURI());
+    extra_headers->SetHeader("Foo", ProxyServerToProxyUri(proxy_server));
 }
 
 Error TestProxyDelegate::OnTunnelHeadersReceived(

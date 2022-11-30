@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
 namespace history {
@@ -45,38 +47,110 @@ size_t URLRow::EstimateMemoryUsage() const {
 
 // Annotations
 // ----------------------------------------------------------
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-VisitContentAnnotations::Category::Category(int id, int weight)
+VisitContentModelAnnotations::Category::Category(const std::string& id,
+                                                 int weight)
     : id(id), weight(weight) {}
-VisitContentAnnotations::Category::Category() = default;
+VisitContentModelAnnotations::Category::Category() = default;
 
-bool VisitContentAnnotations::Category::operator==(
-    const VisitContentAnnotations::Category& other) const {
+// static
+absl::optional<VisitContentModelAnnotations::Category>
+VisitContentModelAnnotations::Category::FromStringVector(
+    const std::vector<std::string>& vector) {
+  if (vector.size() != 2)
+    return absl::nullopt;
+
+  VisitContentModelAnnotations::Category category;
+  category.id = vector[0];
+  if (!base::StringToInt(vector[1], &category.weight))
+    return absl::nullopt;
+  return category;
+}
+
+std::string VisitContentModelAnnotations::Category::ToString() const {
+  return base::StrCat({id, ":", base::NumberToString(weight)});
+}
+
+bool VisitContentModelAnnotations::Category::operator==(
+    const VisitContentModelAnnotations::Category& other) const {
   return id == other.id && weight == other.weight;
 }
 
-bool VisitContentAnnotations::Category::operator!=(
-    const VisitContentAnnotations::Category& other) const {
+bool VisitContentModelAnnotations::Category::operator!=(
+    const VisitContentModelAnnotations::Category& other) const {
   return !(*this == other);
 }
 
-VisitContentAnnotations::VisitContentAnnotations(
-    float floc_protected_score,
+VisitContentModelAnnotations::VisitContentModelAnnotations(
+    float visibility_score,
     const std::vector<Category>& categories,
-    int64_t page_topics_model_version)
-    : floc_protected_score(floc_protected_score),
+    int64_t page_topics_model_version,
+    const std::vector<Category>& entities)
+    : visibility_score(visibility_score),
       categories(categories),
-      page_topics_model_version(page_topics_model_version) {}
+      page_topics_model_version(page_topics_model_version),
+      entities(entities) {}
+VisitContentModelAnnotations::VisitContentModelAnnotations() = default;
+VisitContentModelAnnotations::VisitContentModelAnnotations(
+    const VisitContentModelAnnotations&) = default;
+VisitContentModelAnnotations::~VisitContentModelAnnotations() = default;
+
+// static
+void VisitContentModelAnnotations::MergeCategoryIntoVector(
+    const Category& category,
+    std::vector<Category>* categories) {
+  DCHECK(categories);
+  for (auto& this_category : *categories) {
+    // If this visit already has the category, upgrade the weight.
+    if (category.id == this_category.id) {
+      this_category.weight = std::max(this_category.weight, category.weight);
+      return;
+    }
+  }
+
+  // Append the category since it wasn't found in our existing `categories`.
+  categories->push_back(category);
+}
+
+void VisitContentModelAnnotations::MergeFrom(
+    const VisitContentModelAnnotations& other) {
+  // To be conservative, we use the lesser of the two visibility scores, but
+  // ignore sentinel values (which are negative).
+  if (other.visibility_score >= 0 &&
+      other.visibility_score < visibility_score) {
+    visibility_score = other.visibility_score;
+  }
+
+  for (auto& other_category : other.categories) {
+    MergeCategoryIntoVector(other_category, &categories);
+  }
+  for (auto& other_entity : other.entities) {
+    MergeCategoryIntoVector(other_entity, &entities);
+  }
+}
+
+VisitContentAnnotations::VisitContentAnnotations(
+    VisitContentAnnotationFlags annotation_flags,
+    VisitContentModelAnnotations model_annotations,
+    const std::vector<std::string>& related_searches,
+    const GURL& search_normalized_url,
+    const std::u16string& search_terms,
+    const std::string& alternative_title,
+    const std::string& page_language,
+    PasswordState password_state)
+    : annotation_flags(annotation_flags),
+      model_annotations(model_annotations),
+      related_searches(related_searches),
+      search_normalized_url(search_normalized_url),
+      search_terms(search_terms),
+      alternative_title(alternative_title),
+      page_language(page_language),
+      password_state(password_state) {}
 VisitContentAnnotations::VisitContentAnnotations() = default;
 VisitContentAnnotations::VisitContentAnnotations(
     const VisitContentAnnotations&) = default;
 VisitContentAnnotations::~VisitContentAnnotations() = default;
 
-#endif
-
-URLResult::URLResult() {}
+URLResult::URLResult() = default;
 
 URLResult::URLResult(const GURL& url, base::Time visit_time)
     : URLRow(url), visit_time_(visit_time) {}
@@ -90,10 +164,7 @@ URLResult::URLResult(const URLResult& other) = default;
 URLResult::URLResult(URLResult&& other) noexcept
     : URLRow(std::move(other)),
       visit_time_(other.visit_time_),
-      floc_allowed_(other.floc_allowed_),
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
       content_annotations_(other.content_annotations_),
-#endif
       snippet_(std::move(other.snippet_)),
       title_match_positions_(std::move(other.title_match_positions_)),
       blocked_visit_(other.blocked_visit_) {
@@ -107,10 +178,7 @@ URLResult& URLResult::operator=(const URLResult&) = default;
 void URLResult::SwapResult(URLResult* other) {
   URLRow::Swap(other);
   std::swap(visit_time_, other->visit_time_);
-  std::swap(floc_allowed_, other->floc_allowed_);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::swap(content_annotations_, other->content_annotations_);
-#endif
   snippet_.Swap(&other->snippet_);
   title_match_positions_.swap(other->title_match_positions_);
   std::swap(blocked_visit_, other->blocked_visit_);

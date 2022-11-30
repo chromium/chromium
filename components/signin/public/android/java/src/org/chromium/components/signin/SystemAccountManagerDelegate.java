@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.os.Process;
@@ -28,20 +27,15 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.gms.ChromiumPlayServicesAvailability;
+import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.metrics.FetchAccountCapabilitiesFromSystemLibraryResult;
 
 import java.io.IOException;
 
@@ -51,26 +45,26 @@ import java.io.IOException;
  */
 public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     private final AccountManager mAccountManager;
-    private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
-    private boolean mRegisterObserversCalled;
+    private AccountsChangeObserver mObserver;
 
     private static final String TAG = "Auth";
 
     public SystemAccountManagerDelegate() {
         Context context = ContextUtils.getApplicationContext();
         mAccountManager = AccountManager.get(context);
+        mObserver = null;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public void registerObservers() {
-        assert !mRegisterObserversCalled;
+    public void attachAccountsChangeObserver(AccountsChangeObserver observer) {
+        assert mObserver == null : "Another AccountsChangeObserver is already attached!";
 
+        mObserver = observer;
         Context context = ContextUtils.getApplicationContext();
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(final Context context, final Intent intent) {
-                fireOnAccountsChangedNotification();
+                mObserver.onAccountsChanged();
             }
         };
         IntentFilter accountsChangedIntentFilter = new IntentFilter();
@@ -84,60 +78,27 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
                 "com.google.android.gms", PatternMatcher.PATTERN_PREFIX);
 
         context.registerReceiver(receiver, gmsPackageReplacedFilter);
-
-        mRegisterObserversCalled = true;
     }
 
-    protected void checkCanUseGooglePlayServices() throws AccountManagerDelegateException {
-        Context context = ContextUtils.getApplicationContext();
-        final int resultCode =
-                ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);
-        if (resultCode == ConnectionResult.SUCCESS) {
-            return;
+    @Override
+    public Account[] getAccounts() {
+        if (hasGetAccountsPermission() && isGooglePlayServicesAvailable()) {
+            long startTime = SystemClock.elapsedRealtime();
+            Account[] accounts =
+                    mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+            RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountsTime_AccountManager",
+                    SystemClock.elapsedRealtime() - startTime);
+            return accounts;
         }
-
-        throw new GmsAvailabilityException(
-                String.format("Can't use Google Play Services: %s",
-                        GoogleApiAvailability.getInstance().getErrorString(resultCode)),
-                resultCode);
-    }
-
-    @Override
-    public void addObserver(AccountsChangeObserver observer) {
-        assert mRegisterObserversCalled : "Should call registerObservers first";
-        mObservers.addObserver(observer);
-    }
-
-    @Override
-    public void removeObserver(AccountsChangeObserver observer) {
-        boolean success = mObservers.removeObserver(observer);
-        assert success : "Can't find observer";
-    }
-
-    @Override
-    public Account[] getAccountsSync() throws AccountManagerDelegateException {
         // Account seeding relies on GoogleAuthUtil.getAccountId to get GAIA ids,
         // so don't report any accounts if Google Play Services are out of date.
-        checkCanUseGooglePlayServices();
-
-        if (!hasGetAccountsPermission()) {
-            return new Account[] {};
-        }
-        long now = SystemClock.elapsedRealtime();
-        Account[] accounts = mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-        long elapsed = SystemClock.elapsedRealtime() - now;
-        recordElapsedTimeHistogram("Signin.AndroidGetAccountsTime_AccountManager", elapsed);
-        if (ThreadUtils.runningOnUiThread()) {
-            recordElapsedTimeHistogram(
-                    "Signin.AndroidGetAccountsTimeUiThread_AccountManager", elapsed);
-        }
-        return accounts;
+        return new Account[] {};
     }
 
     @Override
     public AccessTokenData getAuthToken(Account account, String authTokenScope)
             throws AuthException {
-        assert !ThreadUtils.runningOnUiThread();
+        ThreadUtils.assertOnBackgroundThread();
         assert AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(account.type);
         try {
             return new AccessTokenData(GoogleAuthUtil.getTokenWithNotification(
@@ -156,8 +117,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     public void invalidateAuthToken(String authToken) throws AuthException {
         try {
             GoogleAuthUtil.clearToken(ContextUtils.getApplicationContext(), authToken);
-        } catch (GooglePlayServicesAvailabilityException ex) {
-            throw new AuthException(AuthException.NONTRANSIENT, ex);
         } catch (GoogleAuthException ex) {
             throw new AuthException(AuthException.NONTRANSIENT, ex);
         } catch (IOException ex) {
@@ -170,32 +129,29 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         return mAccountManager.getAuthenticatorTypes();
     }
 
-    @Override
-    public boolean hasFeatures(Account account, String[] features) {
-        if (!hasGetAccountsPermission()) {
-            return false;
-        }
-        try {
-            return mAccountManager.hasFeatures(account, features, null, null).getResult();
-        } catch (AuthenticatorException | IOException e) {
-            Log.e(TAG, "Error while checking features: ", e);
-        } catch (OperationCanceledException e) {
-            Log.e(TAG, "Checking features was cancelled. This should not happen.");
+    protected boolean hasFeatures(Account account, String[] features) {
+        if (hasGetAccountsPermission()) {
+            try {
+                return mAccountManager.hasFeatures(account, features, null, null).getResult();
+            } catch (AuthenticatorException | IOException | OperationCanceledException e) {
+                Log.e(TAG, "Error while checking features: ", e);
+            }
         }
         return false;
     }
 
-    /**
-     * Records a histogram value for how long time an action has taken using
-     * {@link RecordHistogram#recordTimesHistogram(String, long))} if the browser
-     * process has been initialized.
-     *
-     * @param histogramName the name of the histogram.
-     * @param elapsedMs the elapsed time in milliseconds.
-     */
-    protected static void recordElapsedTimeHistogram(String histogramName, long elapsedMs) {
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-        RecordHistogram.recordTimesHistogram(histogramName, elapsedMs);
+    @Override
+    public boolean hasFeature(Account account, String feature) {
+        return hasFeatures(account, new String[] {feature});
+    }
+
+    @Override
+    public @CapabilityResponse int hasCapability(Account account, String capability) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+                FetchAccountCapabilitiesFromSystemLibraryResult.API_NOT_AVAILABLE,
+                FetchAccountCapabilitiesFromSystemLibraryResult.MAX_VALUE + 1);
+        return CapabilityResponse.EXCEPTION;
     }
 
     // No permission is needed on 23+ and Chrome always has MANAGE_ACCOUNTS permission on lower APIs
@@ -221,13 +177,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     public void updateCredentials(
             Account account, Activity activity, final Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
-        if (!hasManageAccountsPermission()) {
-            if (callback != null) {
-                ThreadUtils.postOnUiThread(callback.bind(false));
-            }
-            return;
-        }
-
         AccountManagerCallback<Bundle> realCallback = future -> {
             Bundle bundle = null;
             try {
@@ -260,33 +209,13 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         }
     }
 
-    @Override
-    public boolean isGooglePlayServicesAvailable() {
-        // TODO(http://crbug.com/577190): Remove StrictMode override.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
-                    ContextUtils.getApplicationContext());
-        }
+    protected boolean isGooglePlayServicesAvailable() {
+        return ExternalAuthUtils.getInstance().canUseGooglePlayServices();
     }
 
     protected boolean hasGetAccountsPermission() {
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
                        Manifest.permission.GET_ACCOUNTS, Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
-    }
-
-    protected boolean hasManageAccountsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return true;
-        }
-        return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                       "android.permission.MANAGE_ACCOUNTS", Process.myPid(), Process.myUid())
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void fireOnAccountsChangedNotification() {
-        for (AccountsChangeObserver observer : mObservers) {
-            observer.onAccountsChanged();
-        }
     }
 }

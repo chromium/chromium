@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -120,7 +120,7 @@ bool IsInDefaultState(const HTMLFormControlElement& form_element) {
   if (auto* input = DynamicTo<HTMLInputElement>(form_element)) {
     if (input->type() == input_type_names::kCheckbox ||
         input->type() == input_type_names::kRadio) {
-      return input->checked() ==
+      return input->Checked() ==
              input->FastHasAttribute(html_names::kCheckedAttr);
     }
   } else if (auto* select = DynamicTo<HTMLSelectElement>(form_element)) {
@@ -193,7 +193,7 @@ bool BuildSearchString(const HTMLFormElement& form,
     control->AppendToFormData(*form_data);
 
     for (const auto& entry : form_data->Entries()) {
-      if (!encoded_string->IsEmpty())
+      if (!encoded_string->empty())
         encoded_string->push_back('&');
       FormDataEncoder::EncodeStringAsFormData(*encoded_string,
                                               form_data->Encode(entry->name()),

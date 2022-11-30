@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 16,
+MOVE_TO, 13.33f, 7.33f,
+H_LINE_TO, 5.22f,
+R_LINE_TO, 3.73f, -3.73f,
+LINE_TO, 8, 2.67f,
+LINE_TO, 2.67f, 8,
+LINE_TO, 8, 13.33f,
+R_LINE_TO, 0.94f, -0.94f,
+R_LINE_TO, -3.72f, -3.73f,
+R_H_LINE_TO, 8.11f,
+V_LINE_TO, 7.33f,
+CLOSE

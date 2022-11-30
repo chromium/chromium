@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Beklenmeyen bir hata oluştu. Lütfen bu sorunu geliştiricilere bildirin.</translation>
 <translation id="1697532407822776718">Artık hazırsınız!</translation>
 <translation id="1742469581923031760">Bağlanıyor...</translation>
+<translation id="177040763384871009">Uzak cihazda tıklanan bağlantıların istemci tarayıcısında açılmasına izin vermek için sistemin web tarayıcısını "<ph name="URL_FORWARDER_NAME" />" olarak değiştirmeniz gerekir.</translation>
 <translation id="177096447311351977">İstemci için kanal IP'si: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" host_ip="<ph name="HOST_IP_ADDRESS_AND_PORT" />" channel="<ph name="CHANNEL_TYPE" />" connection="<ph name="CONNECTION_TYPE" />".</translation>
 <translation id="1897488610212723051">Sil</translation>
 <translation id="2009755455353575666">Bağlantı başarısız oldu</translation>
@@ -24,7 +25,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 "<ph name="SERVICE_SCRIPT_NAME" />" zaten işaretliyse işaretini kaldırıp yeniden işaretleyin.</translation>
 <translation id="225614027745146050">Hoş Geldiniz</translation>
 <translation id="2320166752086256636">Klavyeyi gizle</translation>
-<translation id="2333212046079545895">Telif hakkı 2021 Google LLC. Tüm Hakları Saklıdır.</translation>
+<translation id="2329392777730037872"><ph name="URL" /> adresi istemcide açılamadı.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2366718077645204424">Ana bilgisayara erişilemiyor. Bu sorun, kullandığınız ağın yapılandırmasından kaynaklanıyor olabilir.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Çevrimiçi olarak son görüldüğü zaman: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="2599300881200251572">Bu hizmet Chrome Uzaktan Masaüstü istemcilerinden gelen bağlantıları etkinleştirir.</translation>
 <translation id="2647232381348739934">Chromoting Hizmeti</translation>
 <translation id="2676780859508944670">Çalışıyor...</translation>
+<translation id="2692522824157224199">Telif hakkı 2022 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Kimlik doğrulanırken bir sorun oluştu, lütfen tekrar giriş yapın.</translation>
 <translation id="2803375539583399270">PIN girin</translation>
@@ -55,6 +57,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="369442766917958684">Çevrimdışı.</translation>
 <translation id="3695446226812920698">Nasıl yapacağınızı öğrenin</translation>
 <translation id="3776024066357219166">Chrome Uzaktan Masaüstü oturumunuz sonlandı.</translation>
+<translation id="3858860766373142691">Ad</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3905196214175737742">Ana makinenin sahip alan adı geçersiz.</translation>
 <translation id="3931191050278863510">Ana makine durdu.</translation>
@@ -67,14 +70,16 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4176825807642096119">Erişim kodu</translation>
 <translation id="4227991223508142681">Ana Makine Temel Hazırlık Yardımcı Programı</translation>
 <translation id="4240294130679914010">Chromoting Ana Makine Yüklemesini Kaldırma Programı</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Yönlendirici</translation>
 <translation id="4277736576214464567">Erişim kodu geçersiz. Lütfen tekrar deneyin.</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
+<translation id="4372650392690220936">Telif hakkı 2022 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="4405930547258349619">Çekirdek Kitaplığı</translation>
 <translation id="443560535555262820">Erişilebilirlik Tercihlerini Aç</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
-<translation id="4512952200932940229">Telif hakkı 2021 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4563926062592110512">İstemcinin bağlantısı kesildi: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> doğru yapılandırılmamış. Lütfen farklı bir varsayılan web tarayıcısı seçip URL yönlendirmeyi tekrar etkinleştirin.</translation>
 <translation id="4635770493235256822">Uzak cihazlar</translation>
 <translation id="4660011489602794167">Klavyeyi göster</translation>
 <translation id="4703799847237267011">Chromoting oturumunuz sonlandırıldı.</translation>
@@ -87,6 +92,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4867841927763172006">PrtScn Gönder</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> adlı ana makinenin bağlantısı kapandı</translation>
 <translation id="4985296110227979402">İlk olarak bilgisayarınızı uzaktan erişim için ayarlamanız gerekir</translation>
+<translation id="4987330545941822761">Chrome Uzaktan Masaüstü, URL'leri yerel olarak açacak tarayıcıyı belirleyemiyor. Lütfen aşağıdaki listeden seçin.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (çevrimdışı)</translation>
 <translation id="507204348399810022"><ph name="HOSTNAME" /> adlı ana bilgisayara uzaktan bağlantıları devre dışı bırakmak istediğinizden emin misiniz?</translation>
 <translation id="5170982930780719864">Ana makine kimliği geçersiz.</translation>
@@ -94,7 +100,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5308380583665731573">Bağlan</translation>
-<translation id="5327248766486351172">Ad</translation>
 <translation id="533625276787323658">Bağlanacak herhangi bir bilgisayar yok</translation>
 <translation id="5397086374758643919">Chrome Uzaktan Masaüstü Ana Makine Yüklemesini Kaldırma Programı</translation>
 <translation id="5419418238395129586">Son çevrimiçi olduğu tarih: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> olarak oturum açtınız.</translation>
 <translation id="579702532610384533">Yeniden bağlan</translation>
 <translation id="5810269635982033450">Ekran dokunmatik yüzey gibi çalışır</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> kullanıcısı, ekranınızı görüp klavye ve farenizi kontrol etmek için erişim istedi. Bu istekten haberiniz yoksa "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" seçeneğine basın. Haberiniz varsa da hazır olduğunuzda bağlantıya izin vermek için "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" seçeneğini işaretleyin.</translation>
 <translation id="5823658491130719298">Uzaktan erişmek istediğiniz bilgisayarda Chrome'u açın ve <ph name="INSTALLATION_LINK" /> bağlantısını ziyaret edin</translation>
 <translation id="5841343754884244200">Görüntüleme seçenekleri</translation>
 <translation id="6033507038939587647">Klavye seçenekleri</translation>
@@ -121,6 +127,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="6612717000975622067">Ctrl-Alt-Del Gönder</translation>
 <translation id="6654753848497929428">Paylaş</translation>
 <translation id="677755392401385740">Ana makine bu kullanıcı için başlatıldı: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> istemcisinde URL açmak için yardımcı uygulama</translation>
 <translation id="6939719207673461467">Klavyeyi göster/gizle</translation>
 <translation id="6963936880795878952">Bir kullanıcı geçersiz PIN ile bağlanmaya çalıştığından uzak bilgisayara yapılan bağlantılar geçici olarak engellenmiştir. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="6965382102122355670">Tamam</translation>
@@ -133,10 +140,12 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="7144878232160441200">Yeniden dene</translation>
 <translation id="7312846573060934304">Ana makine çevrimdışı.</translation>
 <translation id="7319983568955948908">Paylaşmayı Durdur</translation>
+<translation id="7359298090707901886">Seçilen tarayıcı, yerel makinedeki URL'leri açmak için kullanılamaz.</translation>
 <translation id="7401733114166276557">Chrome Uzaktan Masaüstü</translation>
 <translation id="7434397035092923453">Şu istemci için erişim reddedildi: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">İstemci bağlandı: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Hesabı değiştirir</translation>
+<translation id="7535110896613603182">Varsayılan Uygulama Ayarlarını Aç</translation>
 <translation id="7628469622942688817">Bu cihazda PIN'imi hatırla</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">İptal</translation>
@@ -161,6 +170,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıklayarak "Erişilebilirlik" tercihleri bölmesini açın ve ardından, "<ph name="SERVICE_SCRIPT_NAME" />" öğesinin yanındaki kutuyu işaretleyin.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" zaten işaretliyse işaretini kaldırıp yeniden işaretleyin.</translation>
+<translation id="8305209735512572429">Web Kimlik Doğrulama Uzaktan Erişim İşlemi</translation>
 <translation id="8383794970363966105">Chromoting'i kullanmak için cihazınıza Google Hesabı eklemeniz gerekir.</translation>
 <translation id="8386846956409881180">Ana makine, geçersiz OAuth kimlik bilgileriyle yapılandırılmış.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> için izin ver</translation>

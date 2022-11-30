@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ class BufferIdManagerTest : public testing::Test {
         .WillOnce(Return(MediaPipelineBackend::AudioDecoder::RenderingDelay(
             rendering_delay, timestamp)));
     auto buffer = base::MakeRefCounted<CastDecoderBufferImpl>(1);
-    buffer->set_timestamp(base::TimeDelta::FromMicroseconds(pts));
+    buffer->set_timestamp(base::Microseconds(pts));
     auto result = id_manager_->AssignBufferId(*buffer);
     Mock::VerifyAndClearExpectations(&audio_decoder_);
     return result;

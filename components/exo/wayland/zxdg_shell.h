@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_EXO_WAYLAND_ZXDG_SHELL_H_
 
 #include <stdint.h>
-
-#include "base/macros.h"
 
 struct wl_client;
 
@@ -21,13 +19,14 @@ struct WaylandZxdgShell {
   WaylandZxdgShell(Display* display, SerialTracker* serial_tracker)
       : display(display), serial_tracker(serial_tracker) {}
 
+  WaylandZxdgShell(const WaylandZxdgShell&) = delete;
+  WaylandZxdgShell& operator=(const WaylandZxdgShell&) = delete;
+
   // Owned by WaylandServerController, which always outlives zxdg_shell.
   Display* const display;
 
   // Owned by Server, which always outlives zxdg_shell.
   SerialTracker* const serial_tracker;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandZxdgShell);
 };
 
 void bind_zxdg_shell_v6(wl_client* client,

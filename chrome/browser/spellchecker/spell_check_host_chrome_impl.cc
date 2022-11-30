@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -25,11 +24,6 @@
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && BUILDFLAG(ENABLE_SPELLING_SERVICE)
 #include "chrome/browser/spellchecker/spelling_request.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace {
 
 SpellCheckHostChromeImpl::Binder& GetSpellCheckHostBinderOverride() {
@@ -140,39 +134,8 @@ void SpellCheckHostChromeImpl::CallSpellingServiceDone(
       base::UTF16ToUTF8(text), *spellcheck->GetCustomDictionary(),
       service_results);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(chromeos::features::kOnDeviceGrammarCheck) &&
-      results.empty()) {
-    auto* host = content::RenderProcessHost::FromID(render_process_id_);
-    if (!host) {
-      std::move(callback).Run(false, std::vector<SpellCheckResult>());
-      return;
-    }
-    grammar_client_.RequestTextCheck(
-        Profile::FromBrowserContext(host->GetBrowserContext()), text,
-        base::BindOnce(&SpellCheckHostChromeImpl::CallGrammarServiceDone,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-#endif
-
   std::move(callback).Run(success, results);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void SpellCheckHostChromeImpl::CallGrammarServiceDone(
-    CallSpellingServiceCallback callback,
-    bool success,
-    const std::vector<SpellCheckResult>& results) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SpellcheckService* spellcheck = GetSpellcheckService();
-  if (!spellcheck) {  // Teardown.
-    std::move(callback).Run(false, std::vector<SpellCheckResult>());
-    return;
-  }
-  std::move(callback).Run(success, results);
-}
-#endif
 
 // static
 std::vector<SpellCheckResult> SpellCheckHostChromeImpl::FilterCustomWordResults(
@@ -232,7 +195,7 @@ void SpellCheckHostChromeImpl::RequestTextCheck(
                      base::Unretained(this))));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void SpellCheckHostChromeImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -294,7 +257,7 @@ void SpellCheckHostChromeImpl::OnDictionariesInitialized() {
   std::move(dictionaries_loaded_callback_)
       .Run(std::move(dictionaries), custom_words, enable);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void SpellCheckHostChromeImpl::OnRequestFinished(SpellingRequest* request) {
   auto iterator = requests_.find(request);
@@ -310,7 +273,7 @@ void SpellCheckHostChromeImpl::CombineResultsForTesting(
 #endif  //  BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
         //  BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 int SpellCheckHostChromeImpl::ToDocumentTag(int route_id) {
   if (!tag_map_.count(route_id))
     tag_map_[route_id] = spellcheck_platform::GetDocumentTag();
@@ -324,7 +287,7 @@ void SpellCheckHostChromeImpl::RetireDocumentTag(int route_id) {
   spellcheck_platform::CloseDocumentWithTag(ToDocumentTag(route_id));
   tag_map_.erase(route_id);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 SpellcheckService* SpellCheckHostChromeImpl::GetSpellcheckService() const {
   auto* host = content::RenderProcessHost::FromID(render_process_id_);

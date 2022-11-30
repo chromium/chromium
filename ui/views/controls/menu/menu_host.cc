@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -24,15 +26,21 @@
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
 
-#if !defined(OS_APPLE)
+#if defined(USE_AURA)
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#endif
+
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace views {
 
 namespace internal {
 
-#if !defined(OS_APPLE)
+#if defined(USE_AURA)
 // This class adds itself as the pre target handler for the |window|
 // passed in. It currently handles touch events and forwards them to the
 // controller. Reason for this approach is views does not get raw touch
@@ -50,6 +58,10 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
     window_->AddPreTargetHandler(this);
     window_->AddObserver(this);
   }
+
+  PreMenuEventDispatchHandler(const PreMenuEventDispatchHandler&) = delete;
+  PreMenuEventDispatchHandler& operator=(const PreMenuEventDispatchHandler&) =
+      delete;
 
   ~PreMenuEventDispatchHandler() override { StopObserving(); }
 
@@ -73,22 +85,25 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
     window_ = nullptr;
   }
 
-  MenuController* menu_controller_;
-  SubmenuView* submenu_;
-  aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreMenuEventDispatchHandler);
+  raw_ptr<MenuController> menu_controller_;
+  raw_ptr<SubmenuView> submenu_;
+  raw_ptr<aura::Window> window_;
 };
-#endif  // OS_APPLE
+#endif  // USE_AURA
 
-void TransferGesture(Widget* source, Widget* target) {
-#if defined(OS_APPLE)
+void TransferGesture(ui::GestureRecognizer* gesture_recognizer,
+                     gfx::NativeView source,
+                     gfx::NativeView target) {
+#if defined(USE_AURA)
+  // Use kCancel for the transfer touches behavior to ensure that `source` sees
+  // a valid touch stream. If kCancel is not used source's touch state may not
+  // be valid after the menu is closed, potentially causing it to drop touch
+  // events it encounters immediately after the menu is closed.
+  gesture_recognizer->TransferEventsTo(source, target,
+                                       ui::TransferTouchesBehavior::kCancel);
+#else
   NOTIMPLEMENTED();
-#else   // !defined(OS_APPLE)
-  source->GetGestureRecognizer()->TransferEventsTo(
-      source->GetNativeView(), target->GetNativeView(),
-      ui::TransferTouchesBehavior::kDontCancel);
-#endif  // defined(OS_APPLE)
+#endif  // defined(USE_AURA)
 }
 
 }  // namespace internal
@@ -107,10 +122,7 @@ MenuHost::~MenuHost() {
   CHECK(!IsInObserverList());
 }
 
-void MenuHost::InitMenuHost(Widget* parent,
-                            const gfx::Rect& bounds,
-                            View* contents_view,
-                            bool do_capture) {
+void MenuHost::InitMenuHost(const InitParams& init_params) {
   TRACE_EVENT0("views", "MenuHost::InitMenuHost");
   Widget::InitParams params(Widget::InitParams::TYPE_MENU);
   const MenuController* menu_controller =
@@ -119,19 +131,34 @@ void MenuHost::InitMenuHost(Widget* parent,
   bool rounded_border = menu_config.CornerRadiusForMenu(menu_controller) != 0;
   bool bubble_border = submenu_->GetScrollViewContainer() &&
                        submenu_->GetScrollViewContainer()->HasBubbleBorder();
-  params.shadow_type = bubble_border ? Widget::InitParams::ShadowType::kNone
-                                     : Widget::InitParams::ShadowType::kDrop;
+  params.shadow_type =
+      (bubble_border || (menu_config.win11_style_menus && rounded_border))
+          ? Widget::InitParams::ShadowType::kNone
+          : Widget::InitParams::ShadowType::kDrop;
   params.opacity = (bubble_border || rounded_border)
                        ? Widget::InitParams::WindowOpacity::kTranslucent
                        : Widget::InitParams::WindowOpacity::kOpaque;
-  params.parent = parent ? parent->GetNativeView() : gfx::kNullNativeView;
-  params.bounds = bounds;
+  params.parent = init_params.parent ? init_params.parent->GetNativeView()
+                                     : gfx::kNullNativeView;
+  params.context = init_params.context ? init_params.context->GetNativeWindow()
+                                       : gfx::kNullNativeWindow;
+  params.bounds = init_params.bounds;
+
+#if defined(USE_AURA)
+  // TODO(msisov): remove kMenutype once positioning of anchored windows
+  // finally migrates to a new path.
+  params.init_properties_container.SetProperty(aura::client::kMenuType,
+                                               init_params.menu_type);
+  params.init_properties_container.SetProperty(aura::client::kOwnedWindowAnchor,
+                                               init_params.owned_window_anchor);
+#endif
   // If MenuHost has no parent widget, it needs to be marked
   // Activatable, so that calling Show in ShowMenuHost will
   // get keyboard focus.
-  if (parent == nullptr)
-    params.activatable = Widget::InitParams::ACTIVATABLE_YES;
-#if defined(OS_WIN)
+  if (init_params.parent == nullptr)
+    params.activatable = Widget::InitParams::Activatable::kYes;
+
+#if BUILDFLAG(IS_WIN)
   // On Windows use the software compositor to ensure that we don't block
   // the UI thread blocking issue during command buffer creation. We can
   // revert this change once http://crbug.com/125248 is fixed.
@@ -139,19 +166,21 @@ void MenuHost::InitMenuHost(Widget* parent,
 #endif
   Init(std::move(params));
 
-#if !defined(OS_APPLE)
+#if defined(USE_AURA)
   pre_dispatch_handler_ =
       std::make_unique<internal::PreMenuEventDispatchHandler>(
           menu_controller, submenu_, GetNativeView());
 #endif
 
   DCHECK(!owner_);
-  owner_ = parent;
+  owner_ = init_params.parent;
   if (owner_)
     owner_->AddObserver(this);
 
-  SetContentsView(contents_view);
-  ShowMenuHost(do_capture);
+  native_view_for_gestures_ = init_params.native_view_for_gestures;
+
+  SetContentsView(init_params.contents_view);
+  ShowMenuHost(init_params.do_capture);
 }
 
 bool MenuHost::IsMenuHostVisible() {
@@ -170,7 +199,11 @@ void MenuHost::ShowMenuHost(bool do_capture) {
       // TransferGesture when owner needs gesture events so that the incoming
       // touch events after MenuHost is created are properly translated into
       // gesture events instead of being dropped.
-      internal::TransferGesture(owner_, this);
+      gfx::NativeView source_view = native_view_for_gestures_
+                                        ? native_view_for_gestures_
+                                        : owner_->GetNativeView();
+      internal::TransferGesture(GetGestureRecognizer(), source_view,
+                                GetNativeView());
     } else {
       GetGestureRecognizer()->CancelActiveTouchesExcept(nullptr);
     }
@@ -187,7 +220,11 @@ void MenuHost::HideMenuHost() {
       submenu_->GetMenuItem()->GetMenuController();
   if (owner_ && menu_controller &&
       menu_controller->send_gesture_events_to_owner()) {
-    internal::TransferGesture(this, owner_);
+    gfx::NativeView target_view = native_view_for_gestures_
+                                      ? native_view_for_gestures_
+                                      : owner_->GetNativeView();
+    internal::TransferGesture(GetGestureRecognizer(), GetNativeView(),
+                              target_view);
   }
   ignore_capture_lost_ = true;
   ReleaseMenuHostCapture();
@@ -199,7 +236,7 @@ void MenuHost::DestroyMenuHost() {
   HideMenuHost();
   destroying_ = true;
   static_cast<MenuHostRootView*>(GetRootView())->ClearSubmenu();
-#if !defined(OS_APPLE)
+#if defined(USE_AURA)
   pre_dispatch_handler_.reset();
 #endif
   Close();
@@ -207,6 +244,14 @@ void MenuHost::DestroyMenuHost() {
 
 void MenuHost::SetMenuHostBounds(const gfx::Rect& bounds) {
   SetBounds(bounds);
+}
+
+void MenuHost::SetMenuHostOwnedWindowAnchor(
+    const ui::OwnedWindowAnchor& anchor) {
+#if defined(USE_AURA)
+  native_widget_private()->GetNativeWindow()->SetProperty(
+      aura::client::kOwnedWindowAnchor, anchor);
+#endif
 }
 
 void MenuHost::ReleaseMenuHostCapture() {
@@ -289,10 +334,16 @@ void MenuHost::OnDragComplete() {
     native_widget_private()->SetCapture();
 }
 
+Widget* MenuHost::GetPrimaryWindowWidget() {
+  return owner_ ? owner_->GetPrimaryWindowWidget()
+                : Widget::GetPrimaryWindowWidget();
+}
+
 void MenuHost::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(owner_, widget);
   owner_->RemoveObserver(this);
   owner_ = nullptr;
+  native_view_for_gestures_ = nullptr;
 }
 
 }  // namespace views

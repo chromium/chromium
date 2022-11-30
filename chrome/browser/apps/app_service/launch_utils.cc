@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,12 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/extensions/tab_helper.h"
+#include "base/notreached.h"
+#include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -14,82 +19,129 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_extensions_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+// Use manual mapping for launch container and window open disposition because
+// we cannot use mojom traits for crosapi::mojom::LaunchParams yet. Move to auto
+// mapping when the AppService Intent struct is converted to use FilePaths.
+crosapi::mojom::LaunchContainer ConvertAppServiceToCrosapiLaunchContainer(
+    apps::LaunchContainer input) {
+  switch (input) {
+    case apps::LaunchContainer::kLaunchContainerWindow:
+      return crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+    case apps::LaunchContainer::kLaunchContainerTab:
+      return crosapi::mojom::LaunchContainer::kLaunchContainerTab;
+    case apps::LaunchContainer::kLaunchContainerNone:
+      return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
+      NOTREACHED();
+      return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
+  }
+  NOTREACHED();
+}
+
+apps::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
+    crosapi::mojom::LaunchContainer input) {
+  switch (input) {
+    case crosapi::mojom::LaunchContainer::kLaunchContainerWindow:
+      return apps::LaunchContainer::kLaunchContainerWindow;
+    case crosapi::mojom::LaunchContainer::kLaunchContainerTab:
+      return apps::LaunchContainer::kLaunchContainerTab;
+    case crosapi::mojom::LaunchContainer::kLaunchContainerNone:
+      return apps::LaunchContainer::kLaunchContainerNone;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
+    WindowOpenDisposition input) {
+  switch (input) {
+    case WindowOpenDisposition::UNKNOWN:
+      return crosapi::mojom::WindowOpenDisposition::kUnknown;
+    case WindowOpenDisposition::CURRENT_TAB:
+      return crosapi::mojom::WindowOpenDisposition::kCurrentTab;
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      return crosapi::mojom::WindowOpenDisposition::kNewBackgroundTab;
+    case WindowOpenDisposition::NEW_WINDOW:
+      return crosapi::mojom::WindowOpenDisposition::kNewWindow;
+    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+      NOTREACHED();
+      return crosapi::mojom::WindowOpenDisposition::kUnknown;
+  }
+
+  NOTREACHED();
+}
+
+WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
+    crosapi::mojom::WindowOpenDisposition input) {
+  switch (input) {
+    case crosapi::mojom::WindowOpenDisposition::kUnknown:
+      return WindowOpenDisposition::UNKNOWN;
+    case crosapi::mojom::WindowOpenDisposition::kCurrentTab:
+      return WindowOpenDisposition::CURRENT_TAB;
+    case crosapi::mojom::WindowOpenDisposition::kNewForegroundTab:
+      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    case crosapi::mojom::WindowOpenDisposition::kNewBackgroundTab:
+      return WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    case crosapi::mojom::WindowOpenDisposition::kNewWindow:
+      return WindowOpenDisposition::NEW_WINDOW;
+  }
+
+  NOTREACHED();
+}
+
+apps::LaunchContainer ConvertWindowModeToAppLaunchContainer(
+    apps::WindowMode window_mode) {
+  switch (window_mode) {
+    case apps::WindowMode::kBrowser:
+      return apps::LaunchContainer::kLaunchContainerTab;
+    case apps::WindowMode::kWindow:
+    case apps::WindowMode::kTabbedWindow:
+      return apps::LaunchContainer::kLaunchContainerWindow;
+    case apps::WindowMode::kUnknown:
+      return apps::LaunchContainer::kLaunchContainerNone;
+  }
+}
+
+}  // namespace
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace apps {
-
-std::string GetAppIdForWebContents(content::WebContents* web_contents) {
-  std::string app_id;
-
-  web_app::WebAppTabHelperBase* web_app_tab_helper =
-      web_app::WebAppTabHelperBase::FromWebContents(web_contents);
-  // web_app_tab_helper is nullptr in some unit tests.
-  if (web_app_tab_helper) {
-    app_id = web_app_tab_helper->GetAppId();
-  }
-
-  if (app_id.empty()) {
-    extensions::TabHelper* extensions_tab_helper =
-        extensions::TabHelper::FromWebContents(web_contents);
-    // extensions_tab_helper is nullptr in some tests.
-    if (extensions_tab_helper) {
-      app_id = extensions_tab_helper->GetExtensionAppId();
-    }
-  }
-
-  return app_id;
-}
-
-bool IsInstalledApp(Profile* profile, const std::string& app_id) {
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-          app_id);
-  if (extension && !extension->from_bookmark()) {
-    DCHECK(extension->is_app());
-    return true;
-  }
-  web_app::AppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(profile)->registrar();
-  return registrar.IsInstalled(app_id);
-}
-
-void SetAppIdForWebContents(Profile* profile,
-                            content::WebContents* web_contents,
-                            const std::string& app_id) {
-  if (!web_app::AreWebAppsEnabled(profile)) {
-    return;
-  }
-  extensions::TabHelper::CreateForWebContents(web_contents);
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents);
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-          app_id);
-  if (extension && !extension->from_bookmark()) {
-    DCHECK(extension->is_app());
-    web_app::WebAppTabHelperBase::FromWebContents(web_contents)
-        ->SetAppId(std::string());
-    extensions::TabHelper::FromWebContents(web_contents)
-        ->SetExtensionAppById(app_id);
-  } else {
-    web_app::AppRegistrar& registrar =
-        web_app::WebAppProviderBase::GetProviderBase(profile)->registrar();
-    web_app::WebAppTabHelperBase::FromWebContents(web_contents)
-        ->SetAppId(registrar.IsInstalled(app_id) ? app_id : std::string());
-    extensions::TabHelper::FromWebContents(web_contents)
-        ->SetExtensionAppById(std::string());
-  }
-}
 
 std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
     const base::CommandLine& command_line) {
@@ -98,13 +150,19 @@ std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
     return launch_files;
   }
 
-  // Assume all args passed were intended as files to pass to the app.
   launch_files.reserve(command_line.GetArgs().size());
   for (const auto& arg : command_line.GetArgs()) {
-    base::FilePath path(arg);
-    if (path.empty()) {
+#if BUILDFLAG(IS_WIN)
+    GURL url(base::AsStringPiece16(arg));
+#else
+    GURL url(arg);
+#endif
+    if (url.is_valid() && !url.SchemeIsFile())
       continue;
-    }
+
+    base::FilePath path(arg);
+    if (path.empty())
+      continue;
 
     launch_files.push_back(path);
   }
@@ -119,7 +177,7 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile) {
   NavigateParams params(browser, GURL(chrome::kChromeUINewTabURL),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;
+  params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
   Navigate(&params);
 
   browser->window()->Show();
@@ -129,20 +187,20 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile) {
 AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     const std::string& app_id,
     int event_flags,
-    apps::mojom::AppLaunchSource source,
+    LaunchSource launch_source,
     int64_t display_id,
-    apps::mojom::LaunchContainer fallback_container) {
+    LaunchContainer fallback_container) {
   WindowOpenDisposition raw_disposition =
       ui::DispositionFromEventFlags(event_flags);
 
-  apps::mojom::LaunchContainer container;
+  LaunchContainer container;
   WindowOpenDisposition disposition;
   if (raw_disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
       raw_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    container = apps::mojom::LaunchContainer::kLaunchContainerTab;
+    container = LaunchContainer::kLaunchContainerTab;
     disposition = raw_disposition;
   } else if (raw_disposition == WindowOpenDisposition::NEW_WINDOW) {
-    container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    container = LaunchContainer::kLaunchContainerWindow;
     disposition = raw_disposition;
   } else {
     // Look at preference to find the right launch container.  If no preference
@@ -150,67 +208,109 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     container = fallback_container;
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
-  return AppLaunchParams(app_id, container, disposition, source, display_id);
+  return AppLaunchParams(app_id, container, disposition, launch_source,
+                         display_id);
 }
 
-apps::AppLaunchParams CreateAppLaunchParamsForIntent(
+AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::AppLaunchSource source,
+    LaunchSource launch_source,
     int64_t display_id,
-    apps::mojom::LaunchContainer fallback_container,
-    apps::mojom::IntentPtr&& intent) {
+    LaunchContainer fallback_container,
+    IntentPtr&& intent,
+    Profile* profile) {
   auto params = CreateAppIdLaunchParamsWithEventFlags(
-      app_id, event_flags, source, display_id, fallback_container);
+      app_id, event_flags, launch_source, display_id, fallback_container);
 
   if (intent->url.has_value()) {
-    params.source = apps::mojom::AppLaunchSource::kSourceIntentUrl;
     params.override_url = intent->url.value();
   }
+
+  // On Lacros, the caller of this function attaches the intent files to the
+  // AppLaunchParams.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!intent->files.empty()) {
+    std::vector<GURL> file_urls;
+    for (const auto& intent_file : intent->files) {
+      if (intent_file->url.SchemeIsFile()) {
+        DCHECK(file_urls.empty());
+        break;
+      }
+      file_urls.push_back(intent_file->url);
+    }
+    if (!file_urls.empty()) {
+      std::vector<storage::FileSystemURL> file_system_urls =
+          GetFileSystemURL(profile, file_urls);
+      for (const auto& file_system_url : file_system_urls) {
+        params.launch_files.push_back(file_system_url.path());
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   params.intent = std::move(intent);
 
   return params;
 }
 
-apps::mojom::AppLaunchSource GetAppLaunchSource(
-    apps::mojom::LaunchSource launch_source) {
+extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
   switch (launch_source) {
-    case apps::mojom::LaunchSource::kUnknown:
-    case apps::mojom::LaunchSource::kFromAppListGrid:
-    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
-    case apps::mojom::LaunchSource::kFromAppListQuery:
-    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
-    case apps::mojom::LaunchSource::kFromAppListRecommendation:
-    case apps::mojom::LaunchSource::kFromParentalControls:
-    case apps::mojom::LaunchSource::kFromShelf:
-    case apps::mojom::LaunchSource::kFromLink:
-    case apps::mojom::LaunchSource::kFromOmnibox:
-    case apps::mojom::LaunchSource::kFromOtherApp:
-    case apps::mojom::LaunchSource::kFromMenu:
-    case apps::mojom::LaunchSource::kFromSharesheet:
-      return apps::mojom::AppLaunchSource::kSourceAppLauncher;
-    case apps::mojom::LaunchSource::kFromKeyboard:
-      return apps::mojom::AppLaunchSource::kSourceKeyboard;
-    case apps::mojom::LaunchSource::kFromFileManager:
-      return apps::mojom::AppLaunchSource::kSourceFileHandler;
-    case apps::mojom::LaunchSource::kFromChromeInternal:
-    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
-    case apps::mojom::LaunchSource::kFromFullRestore:
-    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
-      return apps::mojom::AppLaunchSource::kSourceChromeInternal;
-    case apps::mojom::LaunchSource::kFromInstalledNotification:
-      return apps::mojom::AppLaunchSource::kSourceInstalledNotification;
-    case apps::mojom::LaunchSource::kFromTest:
-      return apps::mojom::AppLaunchSource::kSourceTest;
-    case apps::mojom::LaunchSource::kFromArc:
-      return apps::mojom::AppLaunchSource::kSourceArc;
+    case LaunchSource::kUnknown:
+    case LaunchSource::kFromAppListGrid:
+    case LaunchSource::kFromAppListGridContextMenu:
+    case LaunchSource::kFromAppListQuery:
+    case LaunchSource::kFromAppListQueryContextMenu:
+    case LaunchSource::kFromAppListRecommendation:
+    case LaunchSource::kFromParentalControls:
+    case LaunchSource::kFromShelf:
+    case LaunchSource::kFromLink:
+    case LaunchSource::kFromOmnibox:
+    case LaunchSource::kFromOtherApp:
+    case LaunchSource::kFromSharesheet:
+      return extensions::AppLaunchSource::kSourceAppLauncher;
+    case LaunchSource::kFromMenu:
+      return extensions::AppLaunchSource::kSourceContextMenu;
+    case LaunchSource::kFromKeyboard:
+      return extensions::AppLaunchSource::kSourceKeyboard;
+    case LaunchSource::kFromFileManager:
+      return extensions::AppLaunchSource::kSourceFileHandler;
+    case LaunchSource::kFromChromeInternal:
+    case LaunchSource::kFromReleaseNotesNotification:
+    case LaunchSource::kFromFullRestore:
+    case LaunchSource::kFromSmartTextContextMenu:
+    case LaunchSource::kFromDiscoverTabNotification:
+      return extensions::AppLaunchSource::kSourceChromeInternal;
+    case LaunchSource::kFromInstalledNotification:
+      return extensions::AppLaunchSource::kSourceInstalledNotification;
+    case LaunchSource::kFromTest:
+      return extensions::AppLaunchSource::kSourceTest;
+    case LaunchSource::kFromArc:
+      return extensions::AppLaunchSource::kSourceArc;
+    case LaunchSource::kFromManagementApi:
+      return extensions::AppLaunchSource::kSourceManagementApi;
+    case LaunchSource::kFromKiosk:
+      return extensions::AppLaunchSource::kSourceKiosk;
+    case LaunchSource::kFromCommandLine:
+      return extensions::AppLaunchSource::kSourceCommandLine;
+    case LaunchSource::kFromBackgroundMode:
+      return extensions::AppLaunchSource::kSourceBackground;
+    case LaunchSource::kFromNewTabPage:
+      return extensions::AppLaunchSource::kSourceNewTabPage;
+    case LaunchSource::kFromIntentUrl:
+      return extensions::AppLaunchSource::kSourceIntentUrl;
+    case LaunchSource::kFromOsLogin:
+      return extensions::AppLaunchSource::kSourceRunOnOsLogin;
+    case LaunchSource::kFromProtocolHandler:
+      return extensions::AppLaunchSource::kSourceProtocolHandler;
+    case LaunchSource::kFromUrlHandler:
+      return extensions::AppLaunchSource::kSourceUrlHandler;
+    case apps::LaunchSource::kFromLockScreen:
+      return extensions::AppLaunchSource::kSourceUntracked;
   }
 }
 
-int GetEventFlags(apps::mojom::LaunchContainer container,
-                  WindowOpenDisposition disposition,
-                  bool prefer_container) {
+int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container) {
   if (prefer_container) {
     return ui::EF_NONE;
   }
@@ -249,6 +349,21 @@ apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info) {
+  if (!window_info) {
+    return nullptr;
+  }
+
+  arc::mojom::WindowInfoPtr arc_window_info = arc::mojom::WindowInfo::New();
+  arc_window_info->window_id = window_info->window_id;
+  arc_window_info->state = window_info->state;
+  arc_window_info->display_id = window_info->display_id;
+  if (window_info->bounds.has_value()) {
+    arc_window_info->bounds = std::move(window_info->bounds);
+  }
+  return arc_window_info;
+}
+
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(
     apps::mojom::WindowInfoPtr window_info) {
   if (!window_info) {
@@ -267,5 +382,97 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(
   return arc_window_info;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
+    const AppLaunchParams& params,
+    Profile* profile) {
+  auto crosapi_params = crosapi::mojom::LaunchParams::New();
+
+  std::string id = params.app_id;
+  // In Lacros, all platform apps must be converted to use a muxed id.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // During testing, the profile could be nullptr.
+  if (profile) {
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(profile);
+    const extensions::Extension* extension =
+        registry->GetExtensionById(id, extensions::ExtensionRegistry::ENABLED);
+    if (extension && extension->is_platform_app()) {
+      id = lacros_extensions_util::MuxId(profile, extension);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  crosapi_params->app_id = id;
+  crosapi_params->launch_source = params.launch_source;
+
+  // Both launch_files and override_url will be represent by intent in crosapi
+  // launch params. These info will normally represent in the intent field in
+  // the launch params, if not, then generate the intent from these fields
+  if (params.intent) {
+    crosapi_params->intent =
+        apps_util::ConvertAppServiceToCrosapiIntent(params.intent, profile);
+  } else if (!params.override_url.is_empty()) {
+    crosapi_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
+        apps_util::CreateIntentFromUrl(params.override_url), profile);
+  } else if (!params.launch_files.empty()) {
+    std::vector<base::FilePath> files = params.launch_files;
+    crosapi_params->intent =
+        apps_util::CreateCrosapiIntentForViewFiles(std::move(files));
+  }
+  crosapi_params->container =
+      ConvertAppServiceToCrosapiLaunchContainer(params.container);
+  crosapi_params->disposition =
+      ConvertWindowOpenDispositionToCrosapi(params.disposition);
+  crosapi_params->display_id = params.display_id;
+  return crosapi_params;
+}
+
+AppLaunchParams ConvertCrosapiToLaunchParams(
+    const crosapi::mojom::LaunchParamsPtr& crosapi_params,
+    Profile* profile) {
+  AppLaunchParams params(
+      crosapi_params->app_id,
+      ConvertCrosapiToAppServiceLaunchContainer(crosapi_params->container),
+      ConvertWindowOpenDispositionFromCrosapi(crosapi_params->disposition),
+      crosapi_params->launch_source, crosapi_params->display_id);
+  if (!crosapi_params->intent) {
+    return params;
+  }
+
+  if (crosapi_params->intent->url.has_value()) {
+    params.override_url = crosapi_params->intent->url.value();
+  }
+
+  if (crosapi_params->intent->files.has_value()) {
+    for (const auto& file : crosapi_params->intent->files.value()) {
+      params.launch_files.push_back(file->file_path);
+    }
+  }
+
+  params.intent = apps_util::CreateAppServiceIntentFromCrosapi(
+      crosapi_params->intent, profile);
+  return params;
+}
+
+crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
+    AppServiceProxy* proxy,
+    const std::string& app_id,
+    int event_flags,
+    LaunchSource launch_source,
+    int64_t display_id) {
+  WindowMode window_mode = WindowMode::kUnknown;
+  proxy->AppRegistryCache().ForOneApp(app_id,
+                                      [&window_mode](const AppUpdate& update) {
+                                        window_mode = update.WindowMode();
+                                      });
+  auto launch_params = apps::CreateAppIdLaunchParamsWithEventFlags(
+      app_id, event_flags, launch_source, display_id,
+      /*fallback_container=*/
+      ConvertWindowModeToAppLaunchContainer(window_mode));
+  return apps::ConvertLaunchParamsToCrosapi(launch_params, proxy->profile());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

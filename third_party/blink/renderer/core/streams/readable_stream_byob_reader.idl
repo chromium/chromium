@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 
     [CallWith=ScriptState, RaisesException] Promise<ReadableStreamBYOBReadResult> read(ArrayBufferView view);
     [CallWith=ScriptState, RaisesException] void releaseLock();
-
-    // includes ReadableStreamGenericReader
-    [CallWith=ScriptState] readonly attribute Promise<void> closed;
-    [CallWith=ScriptState, RaisesException] Promise<void> cancel(optional any reason);
 };
+
+ReadableStreamBYOBReader includes ReadableStreamGenericReader;

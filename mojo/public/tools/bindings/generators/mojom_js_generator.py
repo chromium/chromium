@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generates JavaScript source files from a mojom.Module."""
@@ -8,12 +8,9 @@ import mojom.generate.module as mojom
 import mojom.generate.pack as pack
 import os
 import sys
+import urllib.request
 from mojom.generate.template_expander import UseJinja
 
-if sys.version_info.major == 2:
-  import urllib as urllib_request
-else:
-  import urllib.request as urllib_request
 
 _kind_to_javascript_default_value = {
     mojom.BOOL: "false",
@@ -130,7 +127,7 @@ _kind_to_lite_js_type = {
 _js_reserved_keywords = [
     'arguments',
     'await',
-    'break'
+    'break',
     'case',
     'catch',
     'class',
@@ -206,16 +203,20 @@ _primitive_kind_to_fuzz_type = {
 _SHARED_MODULE_PREFIX = 'chrome://resources/mojo'
 
 
+def _IsAbsoluteChromeResourcesPath(path):
+  return path.startswith('chrome://resources/')
+
+
 def _GetWebUiModulePath(module):
   """Returns the path to a WebUI module, from the perspective of a WebUI page
   that makes it available. This is based on the corresponding mojom target's
   webui_module_path value. Returns None if the target specifies no module
   path. Otherwise, returned paths always end in a '/' and begin with either
-  `_SHARED_MODULE_PREFIX` or a '/'."""
+  `chrome://resources/` or a '/'."""
   path = module.metadata.get('webui_module_path')
   if path is None or path == '/':
     return path
-  if path.startswith(_SHARED_MODULE_PREFIX):
+  if _IsAbsoluteChromeResourcesPath(path):
     return path.rstrip('/') + '/'
   return '/{}/'.format(path.strip('/'))
 
@@ -246,7 +247,7 @@ def GetArrayExpectedDimensionSizes(kind):
 
 
 def GetRelativeUrl(module, base_module):
-  return urllib_request.pathname2url(
+  return urllib.request.pathname2url(
       os.path.relpath(module.path, os.path.dirname(base_module.path)))
 
 
@@ -290,8 +291,6 @@ class Generator(generator.Generator):
         self.module.enums,
         "for_bindings_internals":
         self.disallow_native_types,
-        "html_imports":
-        self._GenerateHtmlImports(),
         "imports":
         self.module.imports,
         "interfaces":
@@ -302,8 +301,6 @@ class Generator(generator.Generator):
         self.module.kinds,
         "module":
         self.module,
-        "mojom_filename":
-        os.path.basename(self.module.path),
         "mojom_namespace":
         self.module.mojom_namespace,
         "structs":
@@ -367,12 +364,10 @@ class Generator(generator.Generator):
         "method_passes_associated_kinds": mojom.MethodPassesAssociatedKinds,
         "namespace_declarations": self._NamespaceDeclarations,
         "closure_type_with_nullability": self._ClosureTypeWithNullability,
-        "lite_closure_param_type": self._LiteClosureParamType,
         "lite_closure_type": self._LiteClosureType,
         "lite_closure_type_with_nullability":
         self._LiteClosureTypeWithNullability,
         "lite_closure_field_type": self._LiteClosureFieldType,
-        "param_type_in_js_module": self._GetParamTypeInJsModule,
         "payload_size": JavaScriptPayloadSize,
         "spec_type_in_js_module": self._GetSpecTypeInJsModule,
         "to_camel": generator.ToCamel,
@@ -398,14 +393,6 @@ class Generator(generator.Generator):
 
   @UseJinja("module.amd.tmpl")
   def _GenerateAMDModule(self):
-    return self._GetParameters()
-
-  @UseJinja("externs/module.externs.tmpl")
-  def _GenerateExterns(self):
-    return self._GetParameters()
-
-  @UseJinja("lite/mojom.html.tmpl")
-  def _GenerateLiteHtml(self):
     return self._GetParameters()
 
   @UseJinja("lite/mojom-lite.js.tmpl")
@@ -436,23 +423,18 @@ class Generator(generator.Generator):
     self._SetUniqueNameForImports()
 
     self.WriteWithComment(self._GenerateAMDModule(), "%s.js" % self.module.path)
-    self.WriteWithComment(self._GenerateExterns(),
-                          "%s.externs.js" % self.module.path)
-    if self.js_bindings_mode == "new":
-      self.WriteWithComment(self._GenerateLiteHtml(),
-                            "%s.html" % self.module.path)
-      self.WriteWithComment(self._GenerateLiteBindings(),
-                            "%s-lite.js" % self.module.path)
-      self.WriteWithComment(self._GenerateLiteBindingsForCompile(),
-                            "%s-lite-for-compile.js" % self.module.path)
-      self.WriteWithComment(self._GenerateJsModule(),
-                            "%s.m.js" % self.module.path)
-      if _GetWebUiModulePath(self.module) is not None:
-        self.WriteWithComment(self._GenerateWebUiModule(),
-                              "mojom-webui/%s-webui.js" % self.module.path)
+    self.WriteWithComment(self._GenerateLiteBindings(),
+                          "%s-lite.js" % self.module.path)
+    self.WriteWithComment(self._GenerateLiteBindingsForCompile(),
+                          "%s-lite-for-compile.js" % self.module.path)
+    self.WriteWithComment(self._GenerateJsModule(),
+                          "%s.m.js" % self.module.path)
+    if _GetWebUiModulePath(self.module) is not None:
+      self.WriteWithComment(self._GenerateWebUiModule(),
+                            "mojom-webui/%s-webui.js" % self.module.path)
 
   def _GetRelativePath(self, path):
-    relpath = urllib_request.pathname2url(
+    relpath = urllib.request.pathname2url(
         os.path.relpath(path, os.path.dirname(self.module.path)))
     if relpath.startswith('.') or relpath.startswith('/'):
       return relpath
@@ -460,7 +442,7 @@ class Generator(generator.Generator):
 
   def _GetBindingsLibraryPath(self, for_webui_module=False):
     if for_webui_module:
-      return "chrome://resources/mojo/mojo/public/js/bindings.js"
+      return "//resources/mojo/mojo/public/js/bindings.js"
     return self._GetRelativePath('mojo/public/js/bindings.js')
 
   def _SetUniqueNameForImports(self):
@@ -607,32 +589,6 @@ class Generator(generator.Generator):
 
   def _ClosureTypeWithNullability(self, kind):
     return ("" if mojom.IsNullableKind(kind) else "!") + self._ClosureType(kind)
-
-  def _GetParamTypeNameForNewBindings(self, kind, for_module=False):
-    def get_type_name(kind):
-      if mojom.IsEnumKind(kind):
-        return "number"
-      prefix = "" if mojom.IsNullableKind(kind) else "!"
-      if mojom.IsArrayKind(kind):
-        return prefix + ("Array<%s>" % get_type_name(kind.kind))
-      if mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind):
-        return "(%sMap<%s, %s>|%sObject<%s, %s>)" % (
-            prefix, get_type_name(kind.key_kind), get_type_name(
-                kind.value_kind), prefix, get_type_name(
-                    kind.key_kind), get_type_name(kind.value_kind))
-      if mojom.IsMapKind(kind):
-        return "{}Map<{}, {}>".format(prefix, get_type_name(kind.key_kind),
-                                      get_type_name(kind.value_kind))
-      return prefix + self._GetTypeNameForNewBindings(kind,
-                                                      for_module=for_module)
-
-    return get_type_name(kind)
-
-  def _LiteClosureParamType(self, kind):
-    return self._GetParamTypeNameForNewBindings(kind, for_module=False)
-
-  def _GetParamTypeInJsModule(self, kind):
-    return self._GetParamTypeNameForNewBindings(kind, for_module=True)
 
   def _LiteClosureTypeWithNullability(self, kind):
     return self._GetTypeNameForNewBindings(kind,
@@ -1038,13 +994,6 @@ class Generator(generator.Generator):
   def _GetConstantValueInJsModule(self, constant):
     return self._GetConstantValue(constant, for_module=True)
 
-  def _GenerateHtmlImports(self):
-    result = []
-    for full_import in self.module.imports:
-      result.append(
-          os.path.relpath(full_import.path, os.path.dirname(self.module.path)))
-    return result
-
   def _GetJsModuleImports(self, for_webui_module=False):
     this_module_path = _GetWebUiModulePath(self.module)
     this_module_is_shared = bool(
@@ -1057,28 +1006,45 @@ class Generator(generator.Generator):
         assert base_path is not None
         import_path = '{}{}-webui.js'.format(base_path,
                                              os.path.basename(kind.module.path))
+
         import_module_is_shared = import_path.startswith(_SHARED_MODULE_PREFIX)
-        if import_module_is_shared == this_module_is_shared:
-          # Either we're a non-shared resource importing another non-shared
-          # resource, or we're a shared resource importing another shared
-          # resource. In both cases, we assume a relative import path will
-          # suffice.
+        if this_module_is_shared:
+          assert import_module_is_shared, \
+              'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
+                  'module "{}"'.format(self.module.path, kind.module.path)
+
+        # Some Mojo JS files are served from chrome://resources/, but not from
+        # chrome://resources/mojo/, for example from
+        # chrome://resources/cr_components/. Need to use absolute paths when
+        # referring to such files from other modules, so that TypeScript can
+        # correctly resolve them since they belong to a different ts_library()
+        # target compared to |this_module_path|.
+        import_module_is_in_chrome_resources = _IsAbsoluteChromeResourcesPath(
+            import_path)
+        use_absolute_path = import_module_is_in_chrome_resources and not \
+                import_module_is_shared
+
+        # Either we're a non-shared resource importing another non-shared
+        # resource, or we're a shared resource importing another shared
+        # resource. In both cases, we assume a relative import path will
+        # suffice.
+        use_relative_path = not use_absolute_path and \
+                import_module_is_shared == this_module_is_shared
+
+        if use_relative_path:
+
           def strip_prefix(s, prefix):
             if s.startswith(prefix):
               return s[len(prefix):]
             return s
 
-          import_path = urllib_request.pathname2url(
+          import_path = urllib.request.pathname2url(
               os.path.relpath(
                   strip_prefix(import_path, _SHARED_MODULE_PREFIX),
                   strip_prefix(this_module_path, _SHARED_MODULE_PREFIX)))
           if (not import_path.startswith('.')
               and not import_path.startswith('/')):
             import_path = './' + import_path
-        else:
-          assert import_module_is_shared, \
-              'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
-                  'module "{}"'.format(self.module.path, kind.module.path)
       else:
         import_path = self._GetRelativePath(kind.module.path) + '.m.js'
 

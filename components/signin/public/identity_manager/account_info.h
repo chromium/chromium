@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -64,12 +65,16 @@ struct AccountInfo : public CoreAccountInfo {
   std::string picture_url;
   std::string last_downloaded_image_url_with_size;
   gfx::Image account_image;
-  bool is_child_account = false;
+
+  AccountCapabilities capabilities;
+  signin::Tribool is_child_account = signin::Tribool::kUnknown;
 
   // Returns true if all fields in the account info are empty.
   bool IsEmpty() const;
 
-  // Returns true if all fields in this account info are filled.
+  // Returns true if all non-optional fields in this account info are filled.
+  // Note: IsValid() does not check if `is_child_account` or `capabilities` are
+  // filled.
   bool IsValid() const;
 
   // Updates the empty fields of |this| with |other|. Returns whether at least
@@ -89,7 +94,7 @@ bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);
 bool operator!=(const CoreAccountInfo& l, const CoreAccountInfo& r);
 std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Constructs a Java CoreAccountInfo from the provided C++ CoreAccountInfo
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
     JNIEnv* env,

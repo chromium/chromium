@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,19 @@
 
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "net/cert/cert_verifier.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "remoting/base/vlog_net_log.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "net/log/net_log.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -25,7 +26,7 @@ URLRequestContextGetter::URLRequestContextGetter(
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner)
     : network_task_runner_(network_task_runner),
       proxy_config_service_(
-          net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
+          net::ProxyConfigService::CreateSystemProxyConfigService(
               network_task_runner)) {}
 
 net::URLRequestContext* URLRequestContextGetter::GetURLRequestContext() {
@@ -34,7 +35,7 @@ net::URLRequestContext* URLRequestContextGetter::GetURLRequestContext() {
     net::URLRequestContextBuilder builder;
     builder.DisableHttpCache();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (base::win::GetVersion() <= base::win::Version::WIN7) {
       // The network stack of Windows 7 and older systems has a bug such that
       // proxy resolution always fails and blocks each request for ~10-30
@@ -45,12 +46,16 @@ net::URLRequestContext* URLRequestContextGetter::GetURLRequestContext() {
               std::move(proxy_config_service_), net::NetLog::Get());
       builder.set_proxy_resolution_service(std::move(proxy_resolution_service));
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     if (proxy_config_service_) {
       builder.set_proxy_config_service(std::move(proxy_config_service_));
     }
+    cert_net_fetcher_ = base::MakeRefCounted<net::CertNetFetcherURLRequest>();
+    auto cert_verifier = net::CertVerifier::CreateDefault(cert_net_fetcher_);
+    builder.SetCertVerifier(std::move(cert_verifier));
     url_request_context_ = builder.Build();
+    cert_net_fetcher_->SetURLRequestContext(url_request_context_.get());
   }
   return url_request_context_.get();
 }
@@ -60,6 +65,10 @@ URLRequestContextGetter::GetNetworkTaskRunner() const {
   return network_task_runner_;
 }
 
-URLRequestContextGetter::~URLRequestContextGetter() = default;
+URLRequestContextGetter::~URLRequestContextGetter() {
+  if (cert_net_fetcher_) {
+    cert_net_fetcher_->Shutdown();
+  }
+}
 
 }  // namespace remoting

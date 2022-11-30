@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@ import android.os.Build;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebViewDelegate;
 
 import androidx.annotation.Nullable;
-
-import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwHistogramRecorder;
@@ -125,7 +124,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             if (TRACE) Log.i(TAG, "onPageCommitVisible=" + url);
             if (mSupportLibClient.isFeatureAvailable(Features.VISUAL_STATE_CALLBACK)) {
                 mSupportLibClient.onPageCommitVisible(mWebView, url);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            } else {
                 ApiHelperForM.onPageCommitVisible(mWebViewClient, mWebView, url);
             }
 
@@ -140,35 +139,10 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     }
 
     /**
-     * @see ContentViewClient#onReceivedError(int,String,String)
-     */
-    @Override
-    public final void onReceivedError(int errorCode, String description, String failingUrl) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return;
-
-        // This event is handled by the support lib in {@link #onReceivedError2}.
-        if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_WEB_RESOURCE_ERROR)) return;
-
-        try {
-            TraceEvent.begin("WebViewContentsClientAdapter.onReceivedError");
-            if (description == null || description.isEmpty()) {
-                // ErrorStrings is @hidden, so we can't do this in AwContents.  Normally the net/
-                // layer will set a valid description, but for synthesized callbacks (like in the
-                // case for intercepted requests) AwContents will pass in null.
-                description = mWebViewDelegate.getErrorString(mContext, errorCode);
-            }
-            if (TRACE) Log.i(TAG, "onReceivedError=" + failingUrl);
-            mWebViewClient.onReceivedError(mWebView, errorCode, description, failingUrl);
-        } finally {
-            TraceEvent.end("WebViewContentsClientAdapter.onReceivedError");
-        }
-    }
-
-    /**
      * @see ContentViewClient#onReceivedError(AwWebResourceRequest,AwWebResourceError)
      */
     @Override
-    public void onReceivedError2(AwWebResourceRequest request, AwWebResourceError error) {
+    public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
         try {
             TraceEvent.begin("WebViewContentsClientAdapter.onReceivedError");
             if (error.description == null || error.description.isEmpty()) {
@@ -179,13 +153,12 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             }
             if (TRACE) Log.i(TAG, "onReceivedError=" + request.url);
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_WEB_RESOURCE_ERROR)) {
-                // Note: we must pass AwWebResourceError, since this class was introduced after L.
                 mSupportLibClient.onReceivedError(
                         mWebView, new WebResourceRequestAdapter(request), error);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                GlueApiHelperForM.onReceivedError(mWebViewClient, mWebView, request, error);
+            } else {
+                mWebViewClient.onReceivedError(mWebView, new WebResourceRequestAdapter(request),
+                        new WebResourceErrorAdapter(error));
             }
-            // Otherwise, this is handled by {@link #onReceivedError}.
         } finally {
             TraceEvent.end("WebViewContentsClientAdapter.onReceivedError");
         }
@@ -219,25 +192,28 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             TraceEvent.begin("WebViewContentsClientAdapter.onReceivedHttpError");
             if (TRACE) Log.i(TAG, "onReceivedHttpError=" + request.url);
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_HTTP_ERROR)) {
-                String reasonPhrase = response.getReasonPhrase();
-                if (reasonPhrase == null || reasonPhrase.isEmpty()) {
-                    // We cannot pass a null or empty reasonPhrase, because this version of the
-                    // WebResourceResponse constructor will throw. But we may legitimately not
-                    // receive a reasonPhrase in the HTTP response, since HTTP/2 removed
-                    // Reason-Phrase from the spec (and discourages it). Instead, assign some dummy
-                    // value to avoid the crash. See http://crbug.com/925887.
-                    reasonPhrase = "UNKNOWN";
-                }
-
-                // Note: we do not create an immutable instance here, because that constructor is
-                // not available on L.
+                // Note: we use the @SystemApi constructor here because it relaxes several
+                // requirements:
+                // * response.getReasonPhrase() may legitimately be empty because HTTP/2 removed
+                //   Reason-Phrase from the spec (https://crbug.com/925887).
+                // * response.getStatusCode() may be out of the valid range if the web server is not
+                //   obeying the HTTP spec (ex. http://b/235960500).
+                //
+                // Immutability is not strictly necessary, but apps should not not need to modify
+                // the WebResourceResponse received in this callback (they can always construct
+                // their own instance).
                 mSupportLibClient.onReceivedHttpError(mWebView,
                         new WebResourceRequestAdapter(request),
-                        new WebResourceResponse(response.getMimeType(), response.getCharset(),
-                                response.getStatusCode(), reasonPhrase,
-                                response.getResponseHeaders(), response.getData()));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                GlueApiHelperForM.onReceivedHttpError(mWebViewClient, mWebView, request, response);
+                        new WebResourceResponse(/* immutable= */ true, response.getMimeType(),
+                                response.getCharset(), response.getStatusCode(),
+                                response.getReasonPhrase(), response.getResponseHeaders(),
+                                response.getData()));
+            } else {
+                mWebViewClient.onReceivedHttpError(mWebView, new WebResourceRequestAdapter(request),
+                        new WebResourceResponse(/* immutable= */ true, response.getMimeType(),
+                                response.getCharset(), response.getStatusCode(),
+                                response.getReasonPhrase(), response.getResponseHeaders(),
+                                response.getData()));
             }
             // Otherwise, the API does not exist, so do nothing.
         } finally {

@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 6: Uncaught Error: An exception
+CONSOLE ERROR: Uncaught Error: An exception
 This tests that 'window.onerror' is called on the window object.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

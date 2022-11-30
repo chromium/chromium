@@ -1,16 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef WEBLAYER_BROWSER_MEDIA_LOCAL_PRESENTATION_MANAGER_FACTORY_H_
 #define WEBLAYER_BROWSER_MEDIA_LOCAL_PRESENTATION_MANAGER_FACTORY_H_
 
+#include "base/no_destructor.h"
 #include "components/media_router/browser/presentation/local_presentation_manager_factory.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace content {
 class BrowserContext;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -91,7 +92,8 @@ int32_t MessageLoopResource::AttachToCurrentThread() {
   AddRef();
   slot->Set(this);
 
-  single_thread_task_executor_.reset(new base::SingleThreadTaskExecutor);
+  single_thread_task_executor_ =
+      std::make_unique<base::SingleThreadTaskExecutor>();
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
   // Post all pending work to the task executor.
@@ -192,7 +194,7 @@ void MessageLoopResource::PostClosure(const base::Location& from_here,
                                       int64_t delay_ms) {
   if (task_runner_.get()) {
     task_runner_->PostDelayedTask(from_here, std::move(closure),
-                                  base::TimeDelta::FromMilliseconds(delay_ms));
+                                  base::Milliseconds(delay_ms));
   } else {
     TaskInfo info;
     info.from_here = FROM_HERE;

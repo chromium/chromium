@@ -1,0 +1,113 @@
+Verifies that webbundle events are triggered
+requestWillBeSent[
+    [0] : {
+        documentURL : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
+        frameId : <string>
+        hasUserGesture : false
+        initiator : {
+            type : other
+        }
+        loaderId : <string>
+        redirectHasExtraInfo : false
+        request : {
+            headers : {
+                Accept-Language : en-us
+                Upgrade-Insecure-Requests : 1
+                User-Agent : <string>
+                sec-ch-ua : "content_shell";v="999"
+                sec-ch-ua-mobile : ?0
+                sec-ch-ua-platform : "Unknown"
+            }
+            initialPriority : VeryHigh
+            isSameSite : true
+            method : GET
+            mixedContentType : none
+            referrerPolicy : strict-origin-when-cross-origin
+            url : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
+        }
+        requestId : <string>
+        timestamp : <number>
+        type : Document
+        wallTime : <number>
+    }
+    [1] : {
+        documentURL : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
+        frameId : <string>
+        hasUserGesture : false
+        initiator : {
+            columnNumber : 11
+            lineNumber : 13
+            type : parser
+            url : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
+        }
+        loaderId : <string>
+        redirectHasExtraInfo : false
+        request : {
+            headers : {
+                Accept-Language : en-us
+                Referer : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
+                User-Agent : <string>
+                sec-ch-ua : "content_shell";v="999"
+                sec-ch-ua-mobile : ?0
+                sec-ch-ua-platform : "Unknown"
+            }
+            initialPriority : High
+            isSameSite : true
+            method : GET
+            mixedContentType : none
+            referrerPolicy : strict-origin-when-cross-origin
+            url : http://127.0.0.1:8000/inspector-protocol/network/resources/webbundle.php
+        }
+        requestId : <string>
+        timestamp : <number>
+        type : Other
+        wallTime : <number>
+    }
+    [2] : {
+        documentURL : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
+        frameId : <string>
+        hasUserGesture : false
+        initiator : {
+            columnNumber : 78
+            lineNumber : 14
+            type : parser
+            url : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
+        }
+        loaderId : <string>
+        redirectHasExtraInfo : false
+        request : {
+            headers : {
+                Referer : http://127.0.0.1:8000/
+                User-Agent : <string>
+            }
+            initialPriority : High
+            isSameSite : false
+            method : GET
+            mixedContentType : none
+            referrerPolicy : strict-origin-when-cross-origin
+            url : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+        }
+        requestId : <string>
+        timestamp : <number>
+        type : Script
+        wallTime : <number>
+    }
+]
+webBundleMetadataReceived{
+    requestId : <string>
+    urls : [
+        [0] : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+        [1] : uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
+    ]
+}
+webBundleInnerResponse{
+    bundleRequestId : <string>
+    innerRequestId : <string>
+    innerRequestURL : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+}
+webBundleMetadataReceived.urls: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720,uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
+webBundleInnerResponse.innerRequestURL: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+bundle request ID from webBundleMetadataReceived matches ID from requestWillBeSent
+inner request ID from webBundleInnerResponse matches ID from requestWillBeSent
+inner request ID from webBundleInnerResponse matches ID from webBundleMetadataReceived
+

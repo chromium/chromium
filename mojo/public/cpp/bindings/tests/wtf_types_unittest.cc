@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
@@ -32,20 +31,20 @@ class TestWTFImpl : public TestWTF {
       : receiver_(this, std::move(receiver)) {}
 
   // mojo::test::TestWTF implementation:
-  void EchoString(const base::Optional<std::string>& str,
+  void EchoString(const absl::optional<std::string>& str,
                   EchoStringCallback callback) override {
     std::move(callback).Run(str);
   }
 
   void EchoStringArray(
-      const base::Optional<std::vector<base::Optional<std::string>>>& arr,
+      const absl::optional<std::vector<absl::optional<std::string>>>& arr,
       EchoStringArrayCallback callback) override {
     std::move(callback).Run(std::move(arr));
   }
 
   void EchoStringMap(
-      const base::Optional<
-          base::flat_map<std::string, base::Optional<std::string>>>& str_map,
+      const absl::optional<
+          base::flat_map<std::string, absl::optional<std::string>>>& str_map,
       EchoStringMapCallback callback) override {
     std::move(callback).Run(std::move(str_map));
   }
@@ -90,17 +89,17 @@ void ExpectString(const WTF::String& expected_string,
   std::move(closure).Run();
 }
 
-void ExpectStringArray(base::Optional<WTF::Vector<WTF::String>>* expected_arr,
+void ExpectStringArray(absl::optional<WTF::Vector<WTF::String>>* expected_arr,
                        base::OnceClosure closure,
-                       const base::Optional<WTF::Vector<WTF::String>>& arr) {
+                       const absl::optional<WTF::Vector<WTF::String>>& arr) {
   EXPECT_EQ(*expected_arr, arr);
   std::move(closure).Run();
 }
 
 void ExpectStringMap(
-    base::Optional<WTF::HashMap<WTF::String, WTF::String>>* expected_map,
+    absl::optional<WTF::HashMap<WTF::String, WTF::String>>* expected_map,
     base::OnceClosure closure,
-    const base::Optional<WTF::HashMap<WTF::String, WTF::String>>& map) {
+    const absl::optional<WTF::HashMap<WTF::String, WTF::String>>& map) {
   EXPECT_EQ(*expected_map, map);
   std::move(closure).Run();
 }
@@ -166,7 +165,7 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorToStlVector) {
       0, true, new mojo::internal::ContainerValidateParams(0, false, nullptr));
   mojo::internal::Serialize<MojomType>(cloned_strs, fragment, &validate_params);
 
-  std::vector<base::Optional<std::string>> strs2;
+  std::vector<absl::optional<std::string>> strs2;
   mojo::internal::Deserialize<MojomType>(fragment.data(), &strs2, &message);
 
   ASSERT_EQ(4u, strs2.size());
@@ -199,7 +198,7 @@ TEST_F(WTFTypesTest, SendString) {
     base::RunLoop loop;
     // Test that a WTF::String is unchanged after the following conversion:
     //   - serialized;
-    //   - deserialized as base::Optional<std::string>;
+    //   - deserialized as absl::optional<std::string>;
     //   - serialized;
     //   - deserialized as WTF::String.
     remote->EchoString(
@@ -213,21 +212,21 @@ TEST_F(WTFTypesTest, SendStringArray) {
   TestWTFImpl impl(
       ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
-  base::Optional<WTF::Vector<WTF::String>> arrs[3];
+  absl::optional<WTF::Vector<WTF::String>> arrs[3];
   // arrs[0] is empty.
   arrs[0].emplace();
   // arrs[1] is null.
   arrs[2] = ConstructStringArray();
 
-  for (size_t i = 0; i < base::size(arrs); ++i) {
+  for (size_t i = 0; i < std::size(arrs); ++i) {
     base::RunLoop loop;
-    // Test that a base::Optional<WTF::Vector<WTF::String>> is unchanged after
+    // Test that a absl::optional<WTF::Vector<WTF::String>> is unchanged after
     // the following conversion:
     //   - serialized;
     //   - deserialized as
-    //     base::Optional<std::vector<base::Optional<std::string>>>;
+    //     absl::optional<std::vector<absl::optional<std::string>>>;
     //   - serialized;
-    //   - deserialized as base::Optional<WTF::Vector<WTF::String>>.
+    //   - deserialized as absl::optional<WTF::Vector<WTF::String>>.
     remote->EchoStringArray(
         arrs[i], base::BindOnce(&ExpectStringArray, base::Unretained(&arrs[i]),
                                 loop.QuitClosure()));
@@ -240,21 +239,21 @@ TEST_F(WTFTypesTest, SendStringMap) {
   TestWTFImpl impl(
       ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
-  base::Optional<WTF::HashMap<WTF::String, WTF::String>> maps[3];
+  absl::optional<WTF::HashMap<WTF::String, WTF::String>> maps[3];
   // maps[0] is empty.
   maps[0].emplace();
   // maps[1] is null.
   maps[2] = ConstructStringMap();
 
-  for (size_t i = 0; i < base::size(maps); ++i) {
+  for (size_t i = 0; i < std::size(maps); ++i) {
     base::RunLoop loop;
-    // Test that a base::Optional<WTF::HashMap<WTF::String, WTF::String>> is
+    // Test that a absl::optional<WTF::HashMap<WTF::String, WTF::String>> is
     // unchanged after the following conversion:
     //   - serialized;
-    //   - deserialized as base::Optional<
-    //         base::flat_map<std::string, base::Optional<std::string>>>;
+    //   - deserialized as absl::optional<
+    //         base::flat_map<std::string, absl::optional<std::string>>>;
     //   - serialized;
-    //   - deserialized as base::Optional<WTF::HashMap<WTF::String,
+    //   - deserialized as absl::optional<WTF::HashMap<WTF::String,
     //     WTF::String>>.
     remote->EchoStringMap(
         maps[i], base::BindOnce(&ExpectStringMap, base::Unretained(&maps[i]),

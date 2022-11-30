@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace {
 
@@ -28,20 +25,6 @@ typedef InProcessBrowserTest NavigationMetricsRecorderBrowserTest;
 
 // A site engagement score that falls into the range for HIGH engagement level.
 const int kHighEngagementScore = 50;
-
-// Types a character in the given web content.
-void TypeText(content::WebContents* web_contents) {
-  content::DOMMessageQueue msg_queue;
-  const std::string code_string = "KeyA";
-  std::string reply;
-  ui::DomKey dom_key = ui::KeycodeConverter::KeyStringToDomKey(code_string);
-  ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(code_string);
-  SimulateKeyPress(web_contents, dom_key, dom_code,
-                   ui::DomCodeToUsLayoutKeyboardCode(dom_code), false, false,
-                   false, false);
-  ASSERT_TRUE(msg_queue.WaitForMessage(&reply));
-  ASSERT_EQ("\"entry\"", reply);
-}
 
 IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest, TestMetrics) {
   content::WebContents* web_contents =
@@ -53,8 +36,8 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest, TestMetrics) {
   ASSERT_TRUE(recorder);
 
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("data:text/html, <html></html>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html, <html></html>")));
   histograms.ExpectTotalCount(navigation_metrics::kMainFrameScheme, 1);
   histograms.ExpectBucketCount(navigation_metrics::kMainFrameScheme,
                                5 /* data: */, 1);
@@ -64,8 +47,14 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest, TestMetrics) {
       navigation_metrics::kMainFrameSchemeDifferentPage, 5 /* data: */, 1);
 }
 
+// crbug.com/1292471: the test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Navigation_EngagementLevel DISABLED_Navigation_EngagementLevel
+#else
+#define MAYBE_Navigation_EngagementLevel Navigation_EngagementLevel
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
-                       Navigation_EngagementLevel) {
+                       MAYBE_Navigation_EngagementLevel) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -76,14 +65,14 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
 
   const GURL url("https://google.com");
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 1);
   histograms.ExpectBucketCount("Navigation.MainFrame.SiteEngagementLevel",
                                blink::mojom::EngagementLevel::NONE, 1);
 
   site_engagement::SiteEngagementService::Get(browser()->profile())
       ->ResetBaseScoreForURL(url, kHighEngagementScore);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 2);
   histograms.ExpectBucketCount("Navigation.MainFrame.SiteEngagementLevel",
                                blink::mojom::EngagementLevel::NONE, 1);
@@ -98,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/form.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Submit a form and check the histograms. Before doing so, we set a high site
   // engagement score so that a single form submission doesn't affect the score
@@ -118,58 +107,68 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
       blink::mojom::EngagementLevel::HIGH, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
-                       PasswordEntry_EngagementLevel) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+class NavigationMetricsRecorderPrerenderBrowserTest
+    : public NavigationMetricsRecorderBrowserTest {
+ public:
+  NavigationMetricsRecorderPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &NavigationMetricsRecorderPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~NavigationMetricsRecorderPrerenderBrowserTest() override = default;
+  NavigationMetricsRecorderPrerenderBrowserTest(
+      const NavigationMetricsRecorderPrerenderBrowserTest&) = delete;
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(
-      embedded_test_server()->GetURL("/password/password_form.html"));
-  site_engagement::SiteEngagementService::Get(browser()->profile())
-      ->ResetBaseScoreForURL(url, kHighEngagementScore);
-  ui_test_utils::NavigateToURL(browser(), url);
+  NavigationMetricsRecorderPrerenderBrowserTest& operator=(
+      const NavigationMetricsRecorderPrerenderBrowserTest&) = delete;
 
-  // Submit a form and check the histograms. Before doing so, we set a high site
-  // engagement score so that a single form submission doesn't affect the score
-  // much.
-  site_engagement::SiteEngagementService::Get(browser()->profile())
-      ->ResetBaseScoreForURL(url, kHighEngagementScore);
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    NavigationMetricsRecorderBrowserTest::SetUp();
+  }
 
-  // Setup handlers:
-  const char* const kScript =
-      "var f = document.getElementById('password_field');"
-      "f.onfocus = function() { "
-      "  setTimeout(function() { window.domAutomationController.send('focus'); "
-      "}, "
-      "0);};"
-      "f.onkeyup = function() { "
-      "  setTimeout(function() { window.domAutomationController.send('entry'); "
-      "}, "
-      "0);};"
-      "window.domAutomationController.send('setup');";
-  std::string reply1;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractString(web_contents, kScript, &reply1));
-  EXPECT_EQ("setup", reply1);
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    NavigationMetricsRecorderBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderPrerenderBrowserTest,
+                       PrerenderingShouldNotRecordSiteEngagementLevelMetric) {
+  NavigationMetricsRecorder* recorder =
+      content::WebContentsUserData<NavigationMetricsRecorder>::FromWebContents(
+          GetWebContents());
+  ASSERT_TRUE(recorder);
 
   base::HistogramTester histograms;
-  std::string reply;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "document.getElementById('password_field').focus()",
-      &reply));
-  EXPECT_EQ("focus", reply);
-  TypeText(web_contents);
-  // Navigate away to flush the metrics.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  histograms.ExpectTotalCount("Security.PasswordFocus.SiteEngagementLevel", 1);
-  histograms.ExpectBucketCount("Security.PasswordFocus.SiteEngagementLevel",
-                               blink::mojom::EngagementLevel::HIGH, 1);
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 1);
 
-  histograms.ExpectTotalCount("Security.PasswordEntry.SiteEngagementLevel", 1);
-  histograms.ExpectBucketCount("Security.PasswordEntry.SiteEngagementLevel",
-                               blink::mojom::EngagementLevel::HIGH, 1);
+  // Load a prerender page and prerendering should not increase the total count.
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 1);
+
+  // Activate the prerender page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 2);
 }
 
 }  // namespace

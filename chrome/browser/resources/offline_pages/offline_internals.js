@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {IsLogging, OfflineInternalsBrowserProxy, OfflineInternalsBrowserProxyImpl, OfflinePage, SavePageRequest} from './offline_internals_browser_proxy.js';
 
@@ -296,7 +296,7 @@ function initialize() {
               saveUrls[i] + ' has been added to queue.\n';
           $('url').value = '';
           counter--;
-          if (counter == 0) {
+          if (counter === 0) {
             browserProxy.getRequestQueue().then(fillRequestQueue);
           }
         } else {
@@ -315,9 +315,6 @@ function initialize() {
     browserProxy.cancelNwake()
         .then(setPrefetchResult)
         .catch(prefetchResultError);
-  };
-  $('show-notification').onclick = function() {
-    browserProxy.showPrefetchNotification().then(setPrefetchResult);
   };
   $('generate-page-bundle').onclick = function() {
     browserProxy.generatePageBundle($('generate-urls').value)

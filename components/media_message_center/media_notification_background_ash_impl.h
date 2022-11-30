@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,14 @@
 #include "components/media_message_center/media_notification_background.h"
 
 #include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+
+class SkPath;
+
+namespace gfx {
+class Rect;
+}
 
 namespace media_message_center {
 
@@ -16,7 +23,7 @@ namespace media_message_center {
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundAshImpl
     : public MediaNotificationBackground {
  public:
-  MediaNotificationBackgroundAshImpl() = default;
+  explicit MediaNotificationBackgroundAshImpl(bool paint_artwork = true);
   MediaNotificationBackgroundAshImpl(
       const MediaNotificationBackgroundAshImpl&) = delete;
   MediaNotificationBackgroundAshImpl& operator=(
@@ -41,6 +48,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundAshImpl
   SkPath GetArtworkClipPath(const gfx::Rect& view_bounds) const;
 
   gfx::ImageSkia artwork_;
+
+  // True if this should paint the artwork as part of the background.
+  bool paint_artwork_;
 };
 
 }  // namespace media_message_center

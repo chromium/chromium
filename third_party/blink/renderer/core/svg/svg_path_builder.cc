@@ -23,18 +23,19 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_builder.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 namespace blink {
 
-FloatPoint SVGPathBuilder::SmoothControl(bool is_compatible_segment) const {
+gfx::PointF SVGPathBuilder::SmoothControl(bool is_compatible_segment) const {
   // The control point is assumed to be the reflection of the control point on
   // the previous command relative to the current point. If there is no previous
   // command or if the previous command was not a [quad/cubic], assume the
   // control point is coincident with the current point.
   // [https://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands]
   // [https://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands]
-  FloatPoint control_point = current_point_;
+  gfx::PointF control_point = current_point_;
   if (is_compatible_segment)
     control_point += current_point_ - last_control_point_;
 
@@ -50,25 +51,25 @@ void SVGPathBuilder::EmitClose() {
   current_point_ = subpath_point_;
 }
 
-void SVGPathBuilder::EmitMoveTo(const FloatPoint& p) {
+void SVGPathBuilder::EmitMoveTo(const gfx::PointF& p) {
   path_.MoveTo(p);
 
   subpath_point_ = p;
   current_point_ = p;
 }
 
-void SVGPathBuilder::EmitLineTo(const FloatPoint& p) {
+void SVGPathBuilder::EmitLineTo(const gfx::PointF& p) {
   path_.AddLineTo(p);
   current_point_ = p;
 }
 
-void SVGPathBuilder::EmitQuadTo(const FloatPoint& c0, const FloatPoint& p) {
+void SVGPathBuilder::EmitQuadTo(const gfx::PointF& c0, const gfx::PointF& p) {
   path_.AddQuadCurveTo(c0, p);
   last_control_point_ = c0;
   current_point_ = p;
 }
 
-void SVGPathBuilder::EmitSmoothQuadTo(const FloatPoint& p) {
+void SVGPathBuilder::EmitSmoothQuadTo(const gfx::PointF& p) {
   bool last_was_quadratic =
       last_command_ == kPathSegCurveToQuadraticAbs ||
       last_command_ == kPathSegCurveToQuadraticRel ||
@@ -78,16 +79,16 @@ void SVGPathBuilder::EmitSmoothQuadTo(const FloatPoint& p) {
   EmitQuadTo(SmoothControl(last_was_quadratic), p);
 }
 
-void SVGPathBuilder::EmitCubicTo(const FloatPoint& c0,
-                                 const FloatPoint& c1,
-                                 const FloatPoint& p) {
+void SVGPathBuilder::EmitCubicTo(const gfx::PointF& c0,
+                                 const gfx::PointF& c1,
+                                 const gfx::PointF& p) {
   path_.AddBezierCurveTo(c0, c1, p);
   last_control_point_ = c1;
   current_point_ = p;
 }
 
-void SVGPathBuilder::EmitSmoothCubicTo(const FloatPoint& c1,
-                                       const FloatPoint& p) {
+void SVGPathBuilder::EmitSmoothCubicTo(const gfx::PointF& c1,
+                                       const gfx::PointF& p) {
   bool last_was_cubic = last_command_ == kPathSegCurveToCubicAbs ||
                         last_command_ == kPathSegCurveToCubicRel ||
                         last_command_ == kPathSegCurveToCubicSmoothAbs ||
@@ -96,12 +97,13 @@ void SVGPathBuilder::EmitSmoothCubicTo(const FloatPoint& c1,
   EmitCubicTo(SmoothControl(last_was_cubic), c1, p);
 }
 
-void SVGPathBuilder::EmitArcTo(const FloatPoint& p,
-                               const FloatSize& r,
+void SVGPathBuilder::EmitArcTo(const gfx::PointF& p,
+                               float radius_x,
+                               float radius_y,
                                float rotate,
                                bool large_arc,
                                bool sweep) {
-  path_.AddArcTo(p, r, rotate, large_arc, sweep);
+  path_.AddArcTo(p, radius_x, radius_y, rotate, large_arc, sweep);
   current_point_ = p;
 }
 
@@ -114,62 +116,64 @@ void SVGPathBuilder::EmitSegment(const PathSegmentData& segment) {
       EmitMoveTo(segment.target_point);
       break;
     case kPathSegMoveToRel:
-      EmitMoveTo(current_point_ + segment.target_point);
+      EmitMoveTo(current_point_ + segment.target_point.OffsetFromOrigin());
       break;
     case kPathSegLineToAbs:
       EmitLineTo(segment.target_point);
       break;
     case kPathSegLineToRel:
-      EmitLineTo(current_point_ + segment.target_point);
+      EmitLineTo(current_point_ + segment.target_point.OffsetFromOrigin());
       break;
     case kPathSegLineToHorizontalAbs:
-      EmitLineTo(FloatPoint(segment.target_point.X(), current_point_.Y()));
+      EmitLineTo(gfx::PointF(segment.target_point.x(), current_point_.y()));
       break;
     case kPathSegLineToHorizontalRel:
-      EmitLineTo(current_point_ + FloatSize(segment.target_point.X(), 0));
+      EmitLineTo(current_point_ + gfx::Vector2dF(segment.target_point.x(), 0));
       break;
     case kPathSegLineToVerticalAbs:
-      EmitLineTo(FloatPoint(current_point_.X(), segment.target_point.Y()));
+      EmitLineTo(gfx::PointF(current_point_.x(), segment.target_point.y()));
       break;
     case kPathSegLineToVerticalRel:
-      EmitLineTo(current_point_ + FloatSize(0, segment.target_point.Y()));
+      EmitLineTo(current_point_ + gfx::Vector2dF(0, segment.target_point.y()));
       break;
     case kPathSegCurveToQuadraticAbs:
       EmitQuadTo(segment.point1, segment.target_point);
       break;
     case kPathSegCurveToQuadraticRel:
-      EmitQuadTo(current_point_ + segment.point1,
-                 current_point_ + segment.target_point);
+      EmitQuadTo(current_point_ + segment.point1.OffsetFromOrigin(),
+                 current_point_ + segment.target_point.OffsetFromOrigin());
       break;
     case kPathSegCurveToQuadraticSmoothAbs:
       EmitSmoothQuadTo(segment.target_point);
       break;
     case kPathSegCurveToQuadraticSmoothRel:
-      EmitSmoothQuadTo(current_point_ + segment.target_point);
+      EmitSmoothQuadTo(current_point_ +
+                       segment.target_point.OffsetFromOrigin());
       break;
     case kPathSegCurveToCubicAbs:
       EmitCubicTo(segment.point1, segment.point2, segment.target_point);
       break;
     case kPathSegCurveToCubicRel:
-      EmitCubicTo(current_point_ + segment.point1,
-                  current_point_ + segment.point2,
-                  current_point_ + segment.target_point);
+      EmitCubicTo(current_point_ + segment.point1.OffsetFromOrigin(),
+                  current_point_ + segment.point2.OffsetFromOrigin(),
+                  current_point_ + segment.target_point.OffsetFromOrigin());
       break;
     case kPathSegCurveToCubicSmoothAbs:
       EmitSmoothCubicTo(segment.point2, segment.target_point);
       break;
     case kPathSegCurveToCubicSmoothRel:
-      EmitSmoothCubicTo(current_point_ + segment.point2,
-                        current_point_ + segment.target_point);
+      EmitSmoothCubicTo(
+          current_point_ + segment.point2.OffsetFromOrigin(),
+          current_point_ + segment.target_point.OffsetFromOrigin());
       break;
     case kPathSegArcAbs:
-      EmitArcTo(segment.target_point, ToFloatSize(segment.ArcRadii()),
-                segment.ArcAngle(), segment.LargeArcFlag(),
-                segment.SweepFlag());
+      EmitArcTo(segment.target_point, segment.ArcRadiusX(),
+                segment.ArcRadiusY(), segment.ArcAngle(),
+                segment.LargeArcFlag(), segment.SweepFlag());
       break;
     case kPathSegArcRel:
-      EmitArcTo(current_point_ + segment.target_point,
-                ToFloatSize(segment.ArcRadii()), segment.ArcAngle(),
+      EmitArcTo(current_point_ + segment.target_point.OffsetFromOrigin(),
+                segment.ArcRadiusX(), segment.ArcRadiusY(), segment.ArcAngle(),
                 segment.LargeArcFlag(), segment.SweepFlag());
       break;
     default:

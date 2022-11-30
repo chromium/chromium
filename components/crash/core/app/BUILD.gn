@@ -1,8 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+# TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
 assert(!is_fuchsia)
 
 import("//components/gwp_asan/buildflags/buildflags.gni")
@@ -53,11 +53,15 @@ static_library("app") {
   ]
 
   if (is_linux || is_chromeos) {
+    sources += [ "crashpad_linux.cc" ]
+  }
+
+  if (is_chromeos || is_castos) {
     sources += [
       "breakpad_linux.cc",
       "breakpad_linux.h",
+      "breakpad_linux_impl.cc",
       "breakpad_linux_impl.h",
-      "crashpad_linux.cc",
     ]
   }
 
@@ -68,13 +72,17 @@ static_library("app") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/crash/core/common:crash_key_lib",
     "//content/public/common:content_descriptors",
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/util",
   ]
 
   if (is_ios) {
-    deps -= [ "//content/public/common:content_descriptors" ]
+    deps -= [
+      "//components/crash/core/common:crash_key_lib",
+      "//content/public/common:content_descriptors",
+    ]
   }
 
   if (is_android) {
@@ -96,7 +104,7 @@ static_library("app") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_chromeos || is_castos) {
     deps += [ "//third_party/breakpad:client" ]
   }
 
@@ -127,10 +135,7 @@ static_library("app") {
 
   if (is_ios) {
     sources += [ "crashpad_ios.mm" ]
-  }
-
-  if (is_linux || is_chromeos) {
-    data_deps = [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
+    deps += [ "//third_party/crashpad/crashpad/minidump" ]
   }
 }
 
@@ -214,7 +219,7 @@ if (is_win) {
   }
 }
 
-if (is_mac || is_android) {
+if (is_mac || is_android || is_linux || is_chromeos) {
   # We build a chromium-specific crashpad_handler executable so that we can
   # define custom UserStreamDataSources.
   executable("chrome_crashpad_handler") {
@@ -225,24 +230,21 @@ if (is_mac || is_android) {
       "//third_party/crashpad/crashpad/handler",
     ]
 
-    if (is_mac && is_component_build) {
+    if (is_mac && (is_component_build || is_asan)) {
       ldflags = [
         # The handler is in
         # Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/A/Helpers/
         # or
         # Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Helpers/
-        # so set rpath up to the base.
-        "-rpath",
-        "@loader_path/../../../../../../..",
+        # so set rpath up to the base. This is the only case needed for is_asan.
+        "-Wl,-rpath,@loader_path/../../../../../../..",
 
         # The handler can also be executed in an unbundled framework at
         # Chromium Framework.framework/Versions/A/Helpers/
-        "-rpath",
-        "@loader_path/../../../..",
+        "-Wl,-rpath,@loader_path/../../../..",
 
         # The handler can be executed from headless_browsertests in Helpers/
-        "-rpath",
-        "@loader_path/..",
+        "-Wl,-rpath,@loader_path/..",
       ]
     }
   }
@@ -293,10 +295,22 @@ source_set("unit_tests") {
     ]
     deps += [
       ":run_as_crashpad_handler",
+      "//components/crash/win:unit_tests",
       "//third_party/breakpad:client",
       "//third_party/crashpad/crashpad/client:client",
       "//third_party/crashpad/crashpad/snapshot:snapshot",
       "//third_party/crashpad/crashpad/util",
+    ]
+  }
+  if (is_ios) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+
+    sources += [ "crashpad_ios_unittest.mm" ]
+    deps += [
+      ":app",
+      "//components/crash/core/common:reporter_running_ios",
+      "//third_party/crashpad/crashpad/client:common",
+      "//third_party/crashpad/crashpad/test",
     ]
   }
 }

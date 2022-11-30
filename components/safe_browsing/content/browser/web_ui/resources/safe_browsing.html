@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Safe Browsing</title>
+    <link rel="stylesheet" href="safe_browsing.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  </head>
+  <body>
+    <div id="header">
+      <h1 id="sb-title">Safe Browsing</h1>
+    </div>
+    <cr-tab-box id='tabbox'>
+      <div slot="tab" id="preferences">Preferences</div>
+      <div slot="tab" id="db-manager">Database Manager</div>
+      <div slot="tab" id="hash-cache">Hash Cache</div>
+      <div slot="tab" id="csbrr">Client Safe Browsing Report Requests</div>
+      <div slot="tab" id="download-protection">Download Protection</div>
+      <div slot="tab" id="cpr">Client Phishing Requests</div>
+      <div slot="tab" id="password-protection">Password Protection</div>
+      <div slot="tab" id="rt-lookup">RT Lookup</div>
+      <div slot="tab" id="referrer-chain">Referrer Chain</div>
+      <div slot="tab" id="log">Log Messages</div>
+      <div slot="tab" id="reporting">Reporting Events</div>
+      <div slot="tab" id="deep-scan">Deep Scans</div>
+      <div slot="panel">
+        <h2>Experiments</h2>
+        <div class="content">
+          <p id="experiments-list" class="result-container"></p>
+        </div>
+        <h2>Preferences</h2>
+        <div class="content">
+          <p id="preferences-list" class="result-container"></p>
+        </div>
+        <h2>Policies</h2>
+        <div class="content">
+          <p id="policies-list" class="result-container"></p>
+        </div>
+        <h2>Safe Browsing Cookie</h2>
+        <div class="content">
+          <p id="cookie-panel" class="result-container"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Database Manager</h2>
+        <div class="content">
+          <p id="database-info-list" class="result-container"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Full Hash Cache</h2>
+        <div class="content">
+          <p id="full-hash-cache-info"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>CSBRRs (ClientSafeBrowsingReportRequest) sent</h2>
+        <div class="content">
+          <p id="sent-csbrrs-list" class="result-container"></p>
+        </div>
+        <h2>Hit Reports sent</h2>
+        <div class="content">
+          <p id="sent-hit-report-list" class="result-container"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Download URLs checked</h2>
+        <div class="content">
+          <p id="download-urls-checked-list"></p>
+        </div>
+        <h2>Download requests (ClientDownloadRequest) sent</h2>
+        <div class="content">
+          <p id="sent-client-download-requests-list"></p>
+        </div>
+        <h2>Download responses (ClientDownloadResponse) received</h2>
+        <div class="content">
+          <p id="received-client-download-response-list"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Client Phishing requests sent</h2>
+        <div class="content">
+          <p id="sent-client-phishing-requests-list"></p>
+        </div>
+        <h2>Client Phishing responses sent</h2>
+        <div class="content">
+          <p id="received-client-phishing-response-list"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Saved Password Hashes</h2>
+        <div class="content">
+          <p id="saved-passwords"></p>
+        </div>
+        <h2>Password Protection Events</h2>
+        <div class="content">
+          <p id="pg-event-log"></p>
+        </div>
+        <h2>Security Events</h2>
+        <div class="content">
+          <p id="security-event-log"></p>
+        </div>
+        <h2>Password Protection Pings</h2>
+        <table id="pg-ping-list" class="request-response"></table>
+      </div>
+      <div slot="panel">
+        <h2>RT Lookup Pings</h2>
+        <table id="rt-lookup-ping-list" class="request-response"></table>
+      </div>
+      <div slot="panel">
+        <h2>Referrer Chain</h2>
+        <form id="get-referrer-chain-form">
+          <input type="text" id="referrer-chain-url">
+          <input type="submit" value="Get Chain">
+        </form>
+        <div class="content">
+          <p id="referrer-chain-content"></p>
+        </div>
+<if expr="is_android">
+        <h2>Most Recent Referring App Info (Android)</h2>
+        <p id="referring-app-info" class="result-container"></p>
+</if>
+      </div>
+      <div slot="panel">
+        <h2>Log Messages</h2>
+        <div class="content">
+          <p id="log-messages"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Reporting Events</h2>
+        <div class="content">
+          <p id="reporting-events"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Deep Scans</h2>
+        <table id="deep-scan-list" class="request-response"></table>
+      </div>
+    </cr-tab-box>
+    <template id="result-template">
+      <div>
+        <span class="bold-span"></span>
+        <span></span>
+      </div>
+    </template>
+    <template id="cookie-template">
+      <div>
+        <span class="bold-span">Value: </span>
+        <span class="result"></span>
+      </div>
+      <span class="bold-span">Created: </span>
+      <span class="result"></span>
+    </template>
+    <template id="rt-lookup-template">
+      <span class="bold-span">RT Lookup Experiment Enabled: </span>
+      <span id="experiment-bool"></span>
+    </template>
+    <script type="module" src="safe_browsing.js"></script>
+  </body>
+</html>

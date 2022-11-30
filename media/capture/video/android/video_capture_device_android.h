@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -67,8 +66,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
     ANDROID_API_2_ACQUIRED_IMAGE_IS_NULL = 9,
   };
 
+  VideoCaptureDeviceAndroid() = delete;
+
   explicit VideoCaptureDeviceAndroid(
       const VideoCaptureDeviceDescriptor& device_descriptor);
+
+  VideoCaptureDeviceAndroid(const VideoCaptureDeviceAndroid&) = delete;
+  VideoCaptureDeviceAndroid& operator=(const VideoCaptureDeviceAndroid&) =
+      delete;
+
   ~VideoCaptureDeviceAndroid() override;
 
   static VideoCaptureDevice* Create(
@@ -207,8 +213,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   base::android::ScopedJavaLocalRef<jobject> j_capture_;
 
   base::WeakPtrFactory<VideoCaptureDeviceAndroid> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceAndroid);
 };
 
 }  // namespace media

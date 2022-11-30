@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,16 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "extensions/buildflags/buildflags.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
 
@@ -54,13 +51,14 @@ TEST(MediaRouterFeatureTest, GetReceiverIdHashToken) {
   EXPECT_EQ(token, GetReceiverIdHashToken(pref_service.get()));
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 class MediaRouterEnabledTest : public ::testing::Test {
  public:
   MediaRouterEnabledTest() = default;
   MediaRouterEnabledTest(const MediaRouterEnabledTest&) = delete;
   ~MediaRouterEnabledTest() override = default;
   MediaRouterEnabledTest& operator=(const MediaRouterEnabledTest&) = delete;
+  void SetUp() override { ClearMediaRouterStoredPrefsForTesting(); }
+  void TearDown() override { ClearMediaRouterStoredPrefsForTesting(); }
 
  protected:
   content::BrowserTaskEnvironment test_environment;
@@ -77,6 +75,9 @@ TEST_F(MediaRouterEnabledTest, TestEnabledByPolicy) {
       ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
   // Runtime changes are not supported.
   EXPECT_TRUE(MediaRouterEnabled(&enabled_profile));
+  // Should remain enabled for incognito too.
+  EXPECT_TRUE(MediaRouterEnabled(
+      TestingProfile::Builder().BuildIncognito(&enabled_profile)));
 }
 
 TEST_F(MediaRouterEnabledTest, TestDisabledByPolicy) {
@@ -88,7 +89,9 @@ TEST_F(MediaRouterEnabledTest, TestDisabledByPolicy) {
       ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(true));
   // Runtime changes are not supported.
   EXPECT_FALSE(MediaRouterEnabled(&disabled_profile));
+  // Should remain disabled for incognito too.
+  EXPECT_FALSE(MediaRouterEnabled(
+      TestingProfile::Builder().BuildIncognito(&disabled_profile)));
 }
-#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace media_router

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,22 @@ bool IsValuePatternSupported(AXPlatformNodeDelegate* delegate) {
   //
   // IValueProvider must be implemented by controls such as the color picker
   // selection control [...]
+  //
+  // We also support the Value pattern on platform documents mostly for
+  // historical reasons - it was supported as a way to get the URL of a document
+  // via IA2's get_accValue, and the UIA bridge also populates an IValueProvider
+  // with the same information.
 
   // https://www.w3.org/TR/html-aam-1.0/
   // The HTML AAM maps "href [a; area]" to UIA Value.Value
   return delegate->GetData().IsRangeValueSupported() ||
-         IsReadOnlySupported(delegate->GetData().role) ||
-         IsLink(delegate->GetData().role) ||
-         delegate->GetData().role == ax::mojom::Role::kColorWell ||
-         delegate->IsCellOrHeaderOfARIAGrid();
+         delegate->IsReadOnlySupported() || IsLink(delegate->GetRole()) ||
+         delegate->GetRole() == ax::mojom::Role::kColorWell ||
+         delegate->IsCellOrHeaderOfAriaGrid() ||
+         (delegate->GetRole() == ax::mojom::Role::kButton &&
+          delegate->HasStringAttribute(ax::mojom::StringAttribute::kValue)) ||
+         (IsPlatformDocument(delegate->GetRole()) &&
+          delegate->GetRole() != ax::mojom::Role::kPdfRoot);
 }
 
 }  // namespace ui

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -19,6 +18,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_util.h"
 
 extern "C" {
@@ -31,12 +31,14 @@ static void GetDecoderThreadCounts(const int coded_height,
                                    int* tile_threads,
                                    int* frame_threads) {
   // Tile thread counts based on currently available content. Recommended by
-  // YouTube, while frame thread values fit within limits::kMaxVideoThreads.
+  // YouTube, while frame thread values fit within
+  // limits::kMaxVideoDecodeThreads.
   if (coded_height >= 700) {
     *tile_threads =
         4;  // Current 720p content is encoded in 5 tiles and 1080p content with
-            // 8 tiles, but we'll exceed limits::kMaxVideoThreads with 5+ tile
-            // threads with 3 frame threads (5 * 3 + 3 = 18 threads vs 16 max).
+            // 8 tiles, but we'll exceed limits::kMaxVideoDecodeThreads with 5+
+            // tile threads with 3 frame threads (5 * 3 + 3 = 18 threads vs 16
+            // max).
             //
             // Since 720p playback isn't smooth without 3 frame threads, we've
             // chosen a slightly lower tile thread count.
@@ -167,13 +169,14 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
                                          : std::move(init_cb);
   if (config.is_encrypted()) {
-    std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    std::move(bound_init_cb)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
-  if (config.codec() != kCodecAV1) {
+  if (config.codec() != VideoCodec::kAV1) {
     std::move(bound_init_cb)
-        .Run(Status(StatusCode::kDecoderUnsupportedCodec)
+        .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec)
                  .WithData("codec", config.codec()));
     return;
   }
@@ -186,44 +189,20 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Compute the ideal thread count values. We'll then clamp these based on the
   // maximum number of recommended threads (using number of processors, etc).
-  //
-  // dav1d will spawn |n_tile_threads| per frame thread.
-  GetDecoderThreadCounts(config.coded_size().height(), &s.n_tile_threads,
-                         &s.n_frame_threads);
+  int tile_threads, frame_threads;
+  GetDecoderThreadCounts(config.coded_size().height(), &tile_threads,
+                         &frame_threads);
 
-  const int max_threads = VideoDecoder::GetRecommendedThreadCount(
-      s.n_frame_threads * (s.n_tile_threads + 1));
+  // While dav1d has switched to a thread pool, preserve the same thread counts
+  // we used when tile and frame threads were configured distinctly. It may be
+  // possible to lower this after some performance analysis of the new system.
+  s.n_threads = VideoDecoder::GetRecommendedThreadCount(frame_threads *
+                                                        (tile_threads + 1));
 
-  // First clamp tile threads to the allowed maximum. We prefer tile threads
-  // over frame threads since dav1d folk indicate they are more efficient. In an
-  // ideal world this would be auto-detected by dav1d from the content.
-  //
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1536783#c0
-  s.n_tile_threads = std::min(max_threads, s.n_tile_threads);
-
-  // Now clamp frame threads based on the number of total threads that would be
-  // created with the given |n_tile_threads| value. Note: A thread count of 1
-  // generates no additional threads since the calling thread (this thread) is
-  // counted as a thread.
-  //
   // We only want 1 frame thread in low delay mode, since otherwise we'll
   // require at least two buffers before the first frame can be output.
-  //
-  // If a system has the cores for it, we'll end up using the following:
-  // <300p: 2 tile threads, 2 frame threads = 2 * 2 + 2 = 6 total threads.
-  // <700p: 3 tile threads, 2 frame threads = 3 * 2 + 2 = 8 total threads.
-  //
-  // For higher resolutions we hit limits::kMaxVideoThreads (16):
-  // >700p: 4 tile threads, 3 frame threads = 4 * 3 + 3  = 15 total threads.
-  //
-  // Due to the (surprising) performance issues which occurred when setting
-  // |n_frame_threads|=1 (https://crbug.com/957511) the minimum total number of
-  // threads is 6 (two tile and two frame) regardless of core count. The maximum
-  // is min(2 * base::SysInfo::NumberOfProcessors(), limits::kMaxVideoThreads).
   if (low_delay || config.is_rtc())
-    s.n_frame_threads = 1;
-  else if (s.n_frame_threads * (s.n_tile_threads + 1) > max_threads)
-    s.n_frame_threads = std::max(2, max_threads / (s.n_tile_threads + 1));
+    s.max_frame_delay = 1;
 
   // Route dav1d internal logs through Chrome's DLOG system.
   s.logger = {nullptr, &LogDav1dMessage};
@@ -233,14 +212,14 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // TODO(tmathmeyer) write the dav1d error into the data for the media error.
   if (dav1d_open(&dav1d_decoder_, &s) < 0) {
-    std::move(bound_init_cb).Run(StatusCode::kDecoderFailedInitialization);
+    std::move(bound_init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
 
   config_ = config;
   state_ = DecoderState::kNormal;
   output_cb_ = output_cb;
-  std::move(bound_init_cb).Run(OkStatus());
+  std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -256,18 +235,18 @@ void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                  : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!DecodeBuffer(std::move(buffer))) {
     state_ = DecoderState::kError;
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   // VideoDecoderShim expects |decode_cb| call after |output_cb_|.
-  std::move(bound_decode_cb).Run(DecodeStatus::OK);
+  std::move(bound_decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
@@ -280,10 +259,6 @@ void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
                                                      std::move(reset_cb));
   else
     std::move(reset_cb).Run();
-}
-
-bool Dav1dVideoDecoder::IsOptimizedForRTC() const {
-  return true;
 }
 
 void Dav1dVideoDecoder::Detach() {
@@ -387,8 +362,8 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
     // When we use bind mode, our image data is dependent on the Dav1dPicture,
     // so we must ensure it stays alive along enough.
-    frame->AddDestructionObserver(base::BindOnce(
-        base::DoNothing::Once<ScopedPtrDav1dPicture>(), std::move(p)));
+    frame->AddDestructionObserver(
+        base::BindOnce([](ScopedPtrDav1dPicture) {}, std::move(p)));
     output_cb_.Run(std::move(frame));
   }
 
@@ -412,7 +387,7 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
   const bool needs_fake_uv_planes = pic->p.layout == DAV1D_PIXEL_LAYOUT_I400;
   if (needs_fake_uv_planes) {
     // UV planes are half the size of the Y plane.
-    uv_plane_stride = base::bits::Align(pic->stride[0] / 2, 2);
+    uv_plane_stride = base::bits::AlignUp(pic->stride[0] / 2, ptrdiff_t{2});
     const auto uv_plane_height = (pic->p.h + 1) / 2;
     const size_t size_needed = uv_plane_stride * uv_plane_height;
 
@@ -441,18 +416,17 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
 
   auto frame = VideoFrame::WrapExternalYuvData(
       pixel_format, visible_size, gfx::Rect(visible_size),
-      GetNaturalSize(gfx::Rect(visible_size), config_.GetPixelAspectRatio()),
+      config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size)),
       pic->stride[0], uv_plane_stride, uv_plane_stride,
       static_cast<uint8_t*>(pic->data[0]), u_plane, v_plane,
-      base::TimeDelta::FromMicroseconds(pic->m.timestamp));
+      base::Microseconds(pic->m.timestamp));
   if (!frame)
     return nullptr;
 
   // Each frame needs a ref on the fake UV data to keep it alive until done.
   if (needs_fake_uv_planes) {
     frame->AddDestructionObserver(base::BindOnce(
-        base::DoNothing::Once<scoped_refptr<base::RefCountedBytes>>(),
-        fake_uv_data_));
+        [](scoped_refptr<base::RefCountedBytes>) {}, fake_uv_data_));
   }
 
   return frame;

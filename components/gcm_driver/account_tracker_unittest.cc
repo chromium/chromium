@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/gcm_driver/account_tracker.h"
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "base/strings/stringprintf.h"
@@ -233,8 +234,8 @@ class AccountTrackerTest : public testing::Test {
   ~AccountTrackerTest() override {}
 
   void SetUp() override {
-    account_tracker_.reset(
-        new AccountTracker(identity_test_env_.identity_manager()));
+    account_tracker_ =
+        std::make_unique<AccountTracker>(identity_test_env_.identity_manager());
     account_tracker_->AddObserver(&observer_);
   }
 
@@ -256,7 +257,8 @@ class AccountTrackerTest : public testing::Test {
   // exercise functionality dependent on that callback firing are not relevant
   // on ChromeOS and should simply not run on that platform.
   CoreAccountInfo SetActiveAccount(const std::string& email) {
-    return identity_test_env_.SetPrimaryAccount(email);
+    return identity_test_env_.SetPrimaryAccount(email,
+                                                signin::ConsentLevel::kSync);
   }
 
 // Helpers that go through a logout flow.

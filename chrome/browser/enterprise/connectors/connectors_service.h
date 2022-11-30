@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_types.h"
@@ -21,23 +23,19 @@ template <typename T>
 struct DefaultSingletonTraits;
 }
 
+namespace storage {
+class FileSystemURL;
+}
+
 namespace enterprise_connectors {
 
 // Controls whether the Enterprise Connectors policies should be read by
 // ConnectorsManager.
-extern const base::Feature kEnterpriseConnectorsEnabled;
+BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabled);
 
-// Controls whether per-profile Enterprise Connector policies are applied.
-extern const base::Feature kPerProfileConnectorsEnabled;
-
-// For the moment, service provider configurations are static and only support
-// google endpoints.  Therefore the configuration is placed here directly.
-// Once the configuration becomes more dynamic this static string will be
-// removed and replaced with a service to keep it up to date.
-extern const char kServiceProviderConfig[];
-
-// Accessor for the ServiceProviderConfig.
-ServiceProviderConfig* GetServiceProviderConfig();
+// Controls whether the Enterprise Connectors policies should be read by
+// ConnectorsManager in Managed Guest Sessions.
+BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabledOnMGS);
 
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public KeyedService {
@@ -48,12 +46,20 @@ class ConnectorsService : public KeyedService {
 
   // Accessors that check kEnterpriseConnectorsEnabled is enabled, and then call
   // the corresponding method in ConnectorsManager.
-  base::Optional<ReportingSettings> GetReportingSettings(
+  absl::optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
-  base::Optional<AnalysisSettings> GetAnalysisSettings(
+  absl::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
-  base::Optional<FileSystemSettings> GetFileSystemSettings(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<AnalysisSettings> GetAnalysisSettings(
+      const storage::FileSystemURL& source_url,
+      const storage::FileSystemURL& destination_url,
+      AnalysisConnector connector);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<FileSystemSettings> GetFileSystemGlobalSettings(
+      FileSystemConnector connector);
+  absl::optional<FileSystemSettings> GetFileSystemSettings(
       const GURL& url,
       FileSystemConnector connector);
 
@@ -63,21 +69,45 @@ class ConnectorsService : public KeyedService {
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 
+  // Gets custom message if set by the admin.
+  absl::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
+                                                  const std::string& tag);
+
+  // Gets custom learn more URL if provided by the admin.
+  absl::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
+                                       const std::string& tag);
+
+  // Returns true if the admin enabled Bypass Justification.
+  bool GetBypassJustificationRequired(AnalysisConnector connector,
+                                      const std::string& tag);
+
+  // Returns true if the admin has opted into custom message, learn more URL or
+  // letting the user provide bypass justifications in an input dialog.
+  bool HasExtraUiToDisplay(AnalysisConnector connector, const std::string& tag);
+
   std::vector<std::string> GetAnalysisServiceProviderNames(
       AnalysisConnector connector);
   std::vector<std::string> GetReportingServiceProviderNames(
       ReportingConnector connector);
 
+  std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
+      AnalysisConnector connector);
+
   // DM token accessor function for real-time URL checks. Returns a profile or
-  // browser DM token depending on the policy scope, and base::nullopt if there
+  // browser DM token depending on the policy scope, and absl::nullopt if there
   // is no token to use.
-  base::Optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
+  absl::optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
 
   // Returns the value to used by the enterprise real-time URL check Connector
   // if it is set and if the scope it's set at has a valid browser-profile
   // affiliation.
   safe_browsing::EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck()
       const;
+
+  // Returns the CBCM domain or profile domain that enables connector policies.
+  // If both set Connector policies, the CBCM domain is returned as it has
+  // precedence.
+  std::string GetManagementDomain();
 
   // Testing functions.
   ConnectorsManager* ConnectorsManagerForTesting();
@@ -97,12 +127,16 @@ class ConnectorsService : public KeyedService {
     policy::PolicyScope scope;
   };
 
+  absl::optional<AnalysisSettings> GetCommonAnalysisSettings(
+      absl::optional<AnalysisSettings> settings,
+      AnalysisConnector connector);
+
   // Returns the DM token to use with the given |scope_pref|. That pref should
   // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
-  base::Optional<DmToken> GetDmToken(const char* scope_pref) const;
-  base::Optional<DmToken> GetBrowserDmToken() const;
+  absl::optional<DmToken> GetDmToken(const char* scope_pref) const;
+  absl::optional<DmToken> GetBrowserDmToken() const;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Optional<DmToken> GetProfileDmToken() const;
+  absl::optional<DmToken> GetProfileDmToken() const;
 
   // Returns true if the browser isn't managed by CBCM, otherwise this checks if
   // the affiliations IDs from the profile and browser policy fetching responses
@@ -118,7 +152,12 @@ class ConnectorsService : public KeyedService {
   // - The profile is incognito
   bool ConnectorsEnabled() const;
 
-  content::BrowserContext* context_;
+  // Obtain a ClientMetadata instance corresponding to the current
+  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
+  // based service provider and false when using a local service provider.
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
+
+  raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
 };
 

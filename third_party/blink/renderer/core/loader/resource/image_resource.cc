@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -65,7 +64,7 @@ namespace {
 // The amount of time to wait before informing the clients that the image has
 // been updated (in seconds). This effectively throttles invalidations that
 // result from new data arriving for this image.
-constexpr auto kFlushDelay = base::TimeDelta::FromSeconds(1);
+constexpr auto kFlushDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -102,10 +101,10 @@ class ImageResource::ImageResourceInfoImpl final
   bool HasCacheControlNoStoreHeader() const override {
     return resource_->HasCacheControlNoStoreHeader();
   }
-  base::Optional<ResourceError> GetResourceError() const override {
+  absl::optional<ResourceError> GetResourceError() const override {
     if (resource_->LoadFailedOrCanceled())
       return resource_->GetResourceError();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   void SetDecodedSize(size_t size) override { resource_->SetDecodedSize(size); }
@@ -242,8 +241,8 @@ void ImageResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   Resource::OnMemoryDump(level_of_detail, memory_dump);
   const String name = GetMemoryDumpName() + "/image_content";
   auto* dump = memory_dump->CreateMemoryAllocatorDump(name);
-  if (content_->HasImage() && content_->GetImage()->Data())
-    dump->AddScalar("size", "bytes", content_->GetImage()->Data()->size());
+  if (content_->HasImage() && content_->GetImage()->HasData())
+    dump->AddScalar("size", "bytes", content_->GetImage()->DataSize());
 }
 
 void ImageResource::Trace(Visitor* visitor) const {
@@ -305,7 +304,7 @@ scoped_refptr<const SharedBuffer> ImageResource::ResourceBuffer() const {
 void ImageResource::AppendData(const char* data, size_t length) {
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(length);
   if (multipart_parser_) {
-    multipart_parser_->AppendData(data, SafeCast<wtf_size_t>(length));
+    multipart_parser_->AppendData(data, base::checked_cast<wtf_size_t>(length));
   } else {
     Resource::AppendData(data, length);
 
@@ -337,10 +336,11 @@ void ImageResource::AppendData(const char* data, size_t length) {
       DCHECK_LE(last_flush_time_, now);
       base::TimeDelta flush_delay =
           std::max(base::TimeDelta(), last_flush_time_ - now + kFlushDelay);
-      task_runner->PostDelayedTask(FROM_HERE,
-                                   WTF::Bind(&ImageResource::FlushImageIfNeeded,
-                                             WrapWeakPersistent(this)),
-                                   flush_delay);
+      task_runner->PostDelayedTask(
+          FROM_HERE,
+          WTF::BindOnce(&ImageResource::FlushImageIfNeeded,
+                        WrapWeakPersistent(this)),
+          flush_delay);
       is_pending_flushing_ = true;
     }
   }
@@ -382,7 +382,7 @@ void ImageResource::DecodeError(bool all_data_received) {
     DCHECK_EQ(result, ImageResourceContent::UpdateImageResult::kNoDecodeError);
   }
 
-  GetMemoryCache()->Remove(this);
+  MemoryCache::Get()->Remove(this);
 }
 
 void ImageResource::UpdateImageAndClearBuffer() {
@@ -435,7 +435,7 @@ void ImageResource::ResponseReceived(const ResourceResponse& response) {
     Vector<char> boundary = network_utils::ParseMultipartBoundary(
         response.HttpHeaderField(http_names::kContentType));
     // If there's no boundary, just handle the request normally.
-    if (!boundary.IsEmpty()) {
+    if (!boundary.empty()) {
       multipart_parser_ = MakeGarbageCollected<MultipartImageResourceParser>(
           response, boundary, this);
     }

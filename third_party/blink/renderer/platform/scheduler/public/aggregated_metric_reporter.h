@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <array>
 
+#include "base/check_op.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -37,7 +37,7 @@ class AggregatedMetricReporter {
   // to histogram and modifies the passed value.
   // Example: aggregate(time) {
   //   return time.InMilliseconds();
-  //   time %= base::TimeDelta::FromMilliseconds(1);
+  //   time %= base::Milliseconds(1);
   // }
   using AggregatorFuncPtr = int (*)(ValueType&);
 
@@ -51,6 +51,8 @@ class AggregatedMetricReporter {
                 static_cast<int>(TaskClass::kCount) + 1,
                 base::HistogramBase::kUmaTargetedHistogramFlag),
             aggregator) {}
+  AggregatedMetricReporter(const AggregatedMetricReporter&) = delete;
+  AggregatedMetricReporter& operator=(const AggregatedMetricReporter&) = delete;
 
   ~AggregatedMetricReporter() {}
 
@@ -82,8 +84,6 @@ class AggregatedMetricReporter {
   AggregatorFuncPtr aggregator_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AggregatedMetricReporter);
 };
 
 }  // namespace scheduler

@@ -1,12 +1,12 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/base/fake_demuxer_stream.h"
 
 #include <stdint.h>
-#include <memory>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -14,8 +14,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
@@ -75,8 +74,8 @@ void FakeDemuxerStream::Initialize() {
   num_configs_left_ = num_configs_;
   num_buffers_left_in_current_config_ = num_buffers_in_one_config_;
   num_buffers_returned_ = 0;
-  current_timestamp_ = base::TimeDelta::FromMilliseconds(kStartTimestampMs);
-  duration_ = base::TimeDelta::FromMilliseconds(kDurationMs);
+  current_timestamp_ = base::Milliseconds(kStartTimestampMs);
+  duration_ = base::Milliseconds(kDurationMs);
   next_size_ = start_coded_size_;
   next_read_num_ = 0;
 }
@@ -172,7 +171,7 @@ void FakeDemuxerStream::SeekToEndOfStream() {
 void FakeDemuxerStream::UpdateVideoDecoderConfig() {
   const gfx::Rect kVisibleRect(next_size_.width(), next_size_.height());
   video_decoder_config_.Initialize(
-      kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
+      VideoCodec::kVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
       kNoTransformation, next_size_, kVisibleRect, next_size_, EmptyExtraData(),
       is_encrypted_ ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted);
@@ -206,9 +205,8 @@ void FakeDemuxerStream::DoRead() {
   // TODO(xhwang): Output out-of-order buffers if needed.
   if (is_encrypted_) {
     buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
-        std::string(kKeyId, kKeyId + base::size(kKeyId)),
-        std::string(kIv, kIv + base::size(kIv)),
-        std::vector<SubsampleEntry>()));
+        std::string(kKeyId, kKeyId + std::size(kKeyId)),
+        std::string(kIv, kIv + std::size(kIv)), std::vector<SubsampleEntry>()));
   }
   buffer->set_timestamp(current_timestamp_);
   buffer->set_duration(duration_);

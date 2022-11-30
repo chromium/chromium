@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/exo/notification_surface_manager.h"
 
@@ -23,6 +23,12 @@ class ArcNotificationSurfaceManagerImpl
       public exo::NotificationSurfaceManager {
  public:
   ArcNotificationSurfaceManagerImpl();
+
+  ArcNotificationSurfaceManagerImpl(const ArcNotificationSurfaceManagerImpl&) =
+      delete;
+  ArcNotificationSurfaceManagerImpl& operator=(
+      const ArcNotificationSurfaceManagerImpl&) = delete;
+
   ~ArcNotificationSurfaceManagerImpl() override;
 
   // ArcNotificationSurfaceManager:
@@ -44,8 +50,6 @@ class ArcNotificationSurfaceManagerImpl
   NotificationSurfaceMap notification_surface_map_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationSurfaceManagerImpl);
 };
 
 }  // namespace ash

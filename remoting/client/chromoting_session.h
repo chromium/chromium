@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_client.h"
@@ -95,6 +95,9 @@ class ChromotingSession : public ClientInputInjector {
                     std::unique_ptr<protocol::AudioStub> audio_player,
                     const ConnectToHostInfo& info);
 
+  ChromotingSession(const ChromotingSession&) = delete;
+  ChromotingSession& operator=(const ChromotingSession&) = delete;
+
   ~ChromotingSession() override;
 
   // Gets the current feedback data and returns it to the callback on the
@@ -135,13 +138,11 @@ class ChromotingSession : public ClientInputInjector {
                                   Args&&... args);
 
   // Used to obtain task runner references.
-  ChromotingClientRuntime* const runtime_;
+  const raw_ptr<ChromotingClientRuntime> runtime_;
 
   // Created when the session is connected, then used, and destroyed on the
   // network thread when the instance is destroyed.
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingSession);
 };
 
 }  // namespace remoting

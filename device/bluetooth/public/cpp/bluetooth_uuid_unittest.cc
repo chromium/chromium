@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include <sstream>
+
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -99,7 +100,7 @@ TEST(BluetoothUUIDTest, BluetoothUUID) {
   EXPECT_EQ(uuid1, uuid6);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(BluetoothUUIDTest, BluetoothUUID_GUID) {
   const char kValid128Bit0[] = "12345678-1234-5678-9abc-def123456789";
   GUID guid;
@@ -138,7 +139,7 @@ TEST(BluetoothUUIDTest, GetCanonicalValueAsGUID) {
   EXPECT_EQ(0x67, guid.Data4[6]);
   EXPECT_EQ(0x89, guid.Data4[7]);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Verify that UUIDs are parsed case-insensitively
 TEST(BluetoothUUIDTest, BluetoothUUID_CaseInsensitive) {
@@ -161,13 +162,24 @@ TEST(BluetoothUUIDTest, BluetoothUUID_CaseInsensitive) {
       {"00001aBc-0000-1000-8000-00805F9b34fB", k128Bit},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE("Input UUID: " + test_cases[i].input_uuid);
     BluetoothUUID uuid(test_cases[i].input_uuid);
     EXPECT_TRUE(uuid.IsValid());
     EXPECT_EQ(test_cases[i].expected_value, uuid.value());
     EXPECT_EQ(k128Bit, uuid.canonical_value());
   }
+}
+
+TEST(BluetoothUUIDTest, BluetoothUUID_stream_insertion_operator) {
+  const std::string uuid_str("00001abc-0000-1000-8000-00805f9b34fb");
+
+  BluetoothUUID uuid(uuid_str);
+  std::ostringstream ss;
+  ss << uuid;
+  const std::string out = ss.str();
+
+  EXPECT_EQ(uuid_str, out);
 }
 
 }  // namespace device

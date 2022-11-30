@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,9 @@ class HSTSCallbackHelper : public base::RefCounted<HSTSCallbackHelper> {
   explicit HSTSCallbackHelper(HSTSCallback user_callback)
       : user_callback_(std::move(user_callback)) {}
 
+  HSTSCallbackHelper(const HSTSCallbackHelper&) = delete;
+  HSTSCallbackHelper& operator=(const HSTSCallbackHelper&) = delete;
+
   void ReportResult(bool result) {
     std::move(user_callback_).Run(result ? HSTSResult::kYes : HSTSResult::kNo);
   }
@@ -32,8 +35,6 @@ class HSTSCallbackHelper : public base::RefCounted<HSTSCallbackHelper> {
   ~HSTSCallbackHelper() = default;
 
   HSTSCallback user_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HSTSCallbackHelper);
 };
 
 }  // namespace

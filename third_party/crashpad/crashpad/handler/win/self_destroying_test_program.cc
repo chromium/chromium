@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <winternl.h>
 
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "client/crashpad_client.h"
 #include "snapshot/win/process_reader_win.h"
 

@@ -4,9 +4,6 @@
     <message name="IDS_SYNC_BASIC_ENCRYPTION_DATA" desc="Text of the radio that when selected enables basic encryption.">
       Encrypt synced passwords with your Google Account
     </message>
-    <message name="IDS_SYNC_CONFIGURE_ENCRYPTION" desc="Link to configure sync encryption for passwords">
-      Please update your sync passphrase.
-    </message>
     <message name="IDS_SYNC_DATATYPE_AUTOFILL" desc="Form Autofill items, one of the data types that we allow syncing.">
       Addresses and More
     </message>
@@ -34,9 +31,6 @@
     <message name="IDS_SYNC_ENCRYPTION_SECTION_TITLE" desc="Title of the section containing sync encryption preferences.">
       Encryption options
     </message>
-    <message name="IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY" desc="Instructions for the dialog where the user needs to enter their previous google passphrase.">
-      You already have data that is encrypted using a different version of your Google Account password. Please enter it below.
-    </message>
     <message name="IDS_SYNC_FULL_ENCRYPTION_DATA" desc="Text of the radio that when selected enables full encryption.">
       Encrypt synced data with your own sync passphrase
     </message>
@@ -55,22 +49,9 @@
     <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE" desc="Instructions for the dialog where the user enters their Sync passphrase.">
     Your data was encrypted with your <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="TIME">$2<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
     </message>
-    <message name="IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY_WITH_DATE" desc="Instructions for the dialog where the user needs to enter their previous google passphrase.">
-        Your data was encrypted with your <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Google password<ph name="END_LINK">&lt;/a&gt;</ph> as of <ph name="TIME">$2<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
-    </message>
   </if>
 
-  <if expr="is_android">
-    <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user enters their Sync passphrase.">
-      Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/learnmore&gt;</ph> on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
-    </message>
-    <message name="IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user needs to enter their previous google passphrase.">
-        Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>Google password<ph name="END_LINK">&lt;/learnmore&gt;</ph> as of <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
-    </message>
-
-  </if>
-
-  <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY" desc="Instructions for the dialog where the user enters the passphrase.">
+  <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY" formatter_data="android_java"  desc="Instructions for the dialog where the user enters the passphrase.">
     Your data is encrypted with your sync passphrase. Enter it to start sync.
   </message>
 </grit-part>

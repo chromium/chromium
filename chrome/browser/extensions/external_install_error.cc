@@ -1,19 +1,22 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/external_install_error.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_install_error_menu_item_id_provider.h"
@@ -80,6 +83,10 @@ MapDefaultButtonStringToSetting(const std::string& button_setting_string) {
 class ExternalInstallMenuAlert : public GlobalError {
  public:
   explicit ExternalInstallMenuAlert(ExternalInstallError* error);
+
+  ExternalInstallMenuAlert(const ExternalInstallMenuAlert&) = delete;
+  ExternalInstallMenuAlert& operator=(const ExternalInstallMenuAlert&) = delete;
+
   ~ExternalInstallMenuAlert() override;
 
  private:
@@ -95,12 +102,10 @@ class ExternalInstallMenuAlert : public GlobalError {
   GlobalErrorBubbleViewBase* GetBubbleView() override;
 
   // The owning ExternalInstallError.
-  ExternalInstallError* error_;
+  raw_ptr<ExternalInstallError> error_;
 
   // Provides menu item id for GlobalError.
   ExtensionInstallErrorMenuItemIdProvider id_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallMenuAlert);
 };
 
 // A global error that spawns a bubble when the menu item is clicked.
@@ -108,6 +113,11 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
  public:
   ExternalInstallBubbleAlert(ExternalInstallError* error,
                              ExtensionInstallPrompt::Prompt* prompt);
+
+  ExternalInstallBubbleAlert(const ExternalInstallBubbleAlert&) = delete;
+  ExternalInstallBubbleAlert& operator=(const ExternalInstallBubbleAlert&) =
+      delete;
+
   ~ExternalInstallBubbleAlert() override;
 
  private:
@@ -129,14 +139,12 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
   void BubbleViewCancelButtonPressed(Browser* browser) override;
 
   // The owning ExternalInstallError.
-  ExternalInstallError* error_;
+  raw_ptr<ExternalInstallError> error_;
   ExtensionInstallErrorMenuItemIdProvider id_provider_;
 
   // The Prompt with all information, which we then use to populate the bubble.
   // Owned by |error|.
-  ExtensionInstallPrompt::Prompt* prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallBubbleAlert);
+  raw_ptr<ExtensionInstallPrompt::Prompt> prompt_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +191,7 @@ void ExternalInstallMenuAlert::ShowBubbleView(Browser* browser) {
 }
 
 GlobalErrorBubbleViewBase* ExternalInstallMenuAlert::GetBubbleView() {
-  return NULL;
+  return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -279,12 +287,14 @@ void ExternalInstallBubbleAlert::OnBubbleViewDidClose(Browser* browser) {
 
 void ExternalInstallBubbleAlert::BubbleViewAcceptButtonPressed(
     Browser* browser) {
-  error_->OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+  error_->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+      ExtensionInstallPrompt::Result::ACCEPTED));
 }
 
 void ExternalInstallBubbleAlert::BubbleViewCancelButtonPressed(
     Browser* browser) {
-  error_->OnInstallPromptDone(ExtensionInstallPrompt::Result::USER_CANCELED);
+  error_->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+      ExtensionInstallPrompt::Result::USER_CANCELED));
 }
 
 }  // namespace
@@ -326,15 +336,14 @@ ExternalInstallError::ExternalInstallError(
       manager_(manager),
       error_service_(GlobalErrorServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context_))) {
-  prompt_.reset(new ExtensionInstallPrompt::Prompt(
-      ExtensionInstallPrompt::EXTERNAL_INSTALL_PROMPT));
+  prompt_ = std::make_unique<ExtensionInstallPrompt::Prompt>(
+      ExtensionInstallPrompt::EXTERNAL_INSTALL_PROMPT);
 
-  webstore_data_fetcher_.reset(
-      new WebstoreDataFetcher(this, GURL(), extension_id_));
-  webstore_data_fetcher_->Start(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context_)
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  webstore_data_fetcher_ =
+      std::make_unique<WebstoreDataFetcher>(this, GURL(), extension_id_);
+  webstore_data_fetcher_->Start(browser_context_->GetDefaultStoragePartition()
+                                    ->GetURLLoaderFactoryForBrowserProcess()
+                                    .get());
 }
 
 ExternalInstallError::~ExternalInstallError() {
@@ -349,7 +358,7 @@ ExternalInstallError::~ExternalInstallError() {
 }
 
 void ExternalInstallError::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
   const Extension* extension = GetExtension();
 
   // If the error isn't removed and deleted as part of handling the user's
@@ -359,7 +368,7 @@ void ExternalInstallError::OnInstallPromptDone(
       FROM_HERE, base::BindOnce(&ExternalInstallError::RemoveError,
                                 weak_factory_.GetWeakPtr()));
 
-  switch (result) {
+  switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
     case ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED:
       if (extension) {
@@ -396,13 +405,11 @@ void ExternalInstallError::ShowDialog(Browser* browser) {
   DCHECK(install_ui_.get());
   DCHECK(prompt_.get());
   DCHECK(browser);
-  content::WebContents* web_contents = NULL;
+  content::WebContents* web_contents = nullptr;
   web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  install_ui_show_params_.reset(
-      new ExtensionInstallPromptShowParams(web_contents));
   manager_->DidChangeInstallAlertVisibility(this, true);
   ExtensionInstallPrompt::GetDefaultShowDialogCallback().Run(
-      install_ui_show_params_.get(),
+      std::make_unique<ExtensionInstallPromptShowParams>(web_contents),
       base::BindOnce(&ExternalInstallError::OnInstallPromptDone,
                      weak_factory_.GetWeakPtr()),
       std::move(prompt_));
@@ -421,12 +428,12 @@ void ExternalInstallError::OnWebstoreRequestFailure(
 void ExternalInstallError::OnWebstoreResponseParseSuccess(
     const std::string& extension_id,
     std::unique_ptr<base::DictionaryValue> webstore_data) {
-  std::string localized_user_count;
-  double average_rating = 0;
-  int rating_count = 0;
-  if (!webstore_data->GetString(kUsersKey, &localized_user_count) ||
-      !webstore_data->GetDouble(kAverageRatingKey, &average_rating) ||
-      !webstore_data->GetInteger(kRatingCountKey, &rating_count)) {
+  absl::optional<double> average_rating =
+      webstore_data->FindDoubleKey(kAverageRatingKey);
+  absl::optional<int> rating_count = webstore_data->FindIntKey(kRatingCountKey);
+  const std::string* localized_user_count =
+      webstore_data->GetDict().FindString(kUsersKey);
+  if (!localized_user_count || !average_rating || !rating_count) {
     // If we don't get a valid webstore response, short circuit, and continue
     // to show a prompt without webstore data.
     OnFetchComplete();
@@ -435,11 +442,12 @@ void ExternalInstallError::OnWebstoreResponseParseSuccess(
 
   default_dialog_button_setting_ = GetDefaultDialogButton(*webstore_data.get());
 
-  bool show_user_count = true;
-  webstore_data->GetBoolean(kShowUserCountKey, &show_user_count);
+  absl::optional<bool> show_user_count =
+      webstore_data->FindBoolKey(kShowUserCountKey);
 
-  prompt_->SetWebstoreData(
-      localized_user_count, show_user_count, average_rating, rating_count);
+  prompt_->SetWebstoreData(*localized_user_count,
+                           show_user_count.value_or(true), *average_rating,
+                           *rating_count);
   OnFetchComplete();
 }
 
@@ -453,9 +461,9 @@ void ExternalInstallError::OnFetchComplete() {
   // Create a new ExtensionInstallPrompt. We pass in NULL for the UI
   // components because we display at a later point, and don't want
   // to pass ones which may be invalidated.
-  install_ui_.reset(
+  install_ui_ = base::WrapUnique(
       new ExtensionInstallPrompt(Profile::FromBrowserContext(browser_context_),
-                                 NULL));  // NULL native window.
+                                 /*native_window=*/nullptr));
 
   install_ui_->ShowDialog(
       base::BindOnce(&ExternalInstallError::OnInstallPromptDone,
@@ -468,13 +476,14 @@ void ExternalInstallError::OnFetchComplete() {
 }
 
 void ExternalInstallError::OnDialogReady(
-    ExtensionInstallPromptShowParams* show_params,
+    std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
     ExtensionInstallPrompt::DoneCallback callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   prompt_ = std::move(prompt);
 
   if (alert_type_ == BUBBLE_ALERT) {
-    global_error_.reset(new ExternalInstallBubbleAlert(this, prompt_.get()));
+    global_error_ =
+        std::make_unique<ExternalInstallBubbleAlert>(this, prompt_.get());
     error_service_->AddUnownedGlobalError(global_error_.get());
 
     if (!manager_->has_currently_visible_install_alert()) {
@@ -489,7 +498,7 @@ void ExternalInstallError::OnDialogReady(
     }
   } else {
     DCHECK(alert_type_ == MENU_ALERT);
-    global_error_.reset(new ExternalInstallMenuAlert(this));
+    global_error_ = std::make_unique<ExternalInstallMenuAlert>(this);
     error_service_->AddUnownedGlobalError(global_error_.get());
   }
 }

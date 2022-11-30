@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_BASE_AUDIO_BLOCK_FIFO_H_
 #define MEDIA_BASE_AUDIO_BLOCK_FIFO_H_
 
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 
@@ -21,10 +20,14 @@ class MEDIA_EXPORT AudioBlockFifo {
   // Creates a new AudioBlockFifo and allocates |blocks| memory, each block
   // of memory can store |channels| of length |frames| data.
   AudioBlockFifo(int channels, int frames, int blocks);
+
+  AudioBlockFifo(const AudioBlockFifo&) = delete;
+  AudioBlockFifo& operator=(const AudioBlockFifo&) = delete;
+
   virtual ~AudioBlockFifo();
 
   // Pushes interleaved audio data from |source| to the FIFO.
-  // The method will deinterleave the data into a audio bus.
+  // The method will deinterleave the data into an audio bus.
   // Push() will crash if the allocated space is insufficient.
   void Push(const void* source, int frames, int bytes_per_sample);
 
@@ -78,8 +81,6 @@ class MEDIA_EXPORT AudioBlockFifo {
 
   // Current write position in the current written block.
   int write_pos_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBlockFifo);
 };
 
 }  // namespace media

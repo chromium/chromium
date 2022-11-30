@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,16 @@ class Window;
 
 namespace borealis {
 
+// Borealis windows are created with app/startup ids beginning with this.
+extern const char kBorealisWindowPrefix[];
+
+// Base64-encoded shell application id of borealis client when it is in full-
+// screen mode.
+extern const char kFullscreenClientShellId[];
+
+// Base64-encoded application id suffix for borealis client windows.
+extern const char kBorealisClientSuffix[];
+
 // The borealis window manager keeps track of the association of windows to
 // borealis apps. This includes determining which windows belong to a borealis
 // app, what the lifetime of the app is relative to its windows, and the
@@ -30,10 +40,17 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
  public:
   // Returns true if this window belongs to a borealis VM (based on its app_id
   // and startup_id).
-  static bool IsBorealisWindow(aura::Window* window);
+  static bool IsBorealisWindow(const aura::Window* window);
 
   // Returns true if this window's ID belongs to a borealis VM.
   static bool IsBorealisWindowId(const std::string& window_id);
+
+  // Determines if a newly created window should be minimized on creation.
+  // TODO(b/210569001): this is intended to be a temporary solution.
+  static bool ShouldNewWindowBeMinimized(const std::string& window_id);
+
+  // Returns true when the given |app_id| is for an anonymous borealis app.
+  static bool IsAnonymousAppId(const std::string& app_id);
 
   // An observer for tracking the creation and deletion of anonymous windows.
   class AnonymousAppObserver : public base::CheckedObserver {
@@ -78,7 +95,8 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
 
     // Called when the last window for |app_id|'s app goes away, implying the
     // app has no visible windows until OnAppStarted() is called again.
-    virtual void OnAppFinished(const std::string& app_id) {}
+    virtual void OnAppFinished(const std::string& app_id,
+                               aura::Window* last_window) {}
 
     // Called when a window associated with |app_id|'s app comes into existence.
     // Note that this has nothing to do with the visible state of |window|,

@@ -8,6 +8,8 @@
 
   await dp.Page.enable();
   const response = await dp.Page.getResourceTree();
-  testRunner.log(response.result.frameTree.frame);
+  testRunner.log(
+      response.result.frameTree.frame, `Frame: `,
+      [`adFrameStatus`, `id`, `loaderId`]);
   testRunner.completeTest();
 });

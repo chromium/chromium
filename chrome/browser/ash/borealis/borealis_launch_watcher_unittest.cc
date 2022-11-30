@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,155 +6,122 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace borealis {
 namespace {
 
-class CallbackForTestingExpectation {
- public:
-  base::OnceCallback<void(base::Optional<std::string>)> GetCallback() {
-    return base::BindOnce(&CallbackForTestingExpectation::Callback,
-                          base::Unretained(this));
-  }
-  MOCK_METHOD(void, Callback, (base::Optional<std::string>), ());
-};
+using CallbackFactory =
+    StrictCallbackFactory<void(absl::optional<std::string>)>;
 
-class BorealisLaunchWatcherTest : public testing::Test {
- public:
-  BorealisLaunchWatcherTest() = default;
-  BorealisLaunchWatcherTest(const BorealisLaunchWatcherTest&) = delete;
-  BorealisLaunchWatcherTest& operator=(const BorealisLaunchWatcherTest&) =
-      delete;
-  ~BorealisLaunchWatcherTest() override = default;
-
+class BorealisLaunchWatcherTest : public testing::Test,
+                                  protected guest_os::FakeVmServicesHelper {
  protected:
-  void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    fake_cicerone_client_ = static_cast<chromeos::FakeCiceroneClient*>(
-        chromeos::DBusThreadManager::Get()->GetCiceroneClient());
-  }
-
-  void TearDown() override {
-    chromeos::DBusThreadManager::Shutdown();
-    profile_.reset();
-  }
-
-  // Owned by DBusThreadManager
-  chromeos::FakeCiceroneClient* fake_cicerone_client_ = nullptr;
-
-  std::unique_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  void CreateProfile() {
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName("defaultprofile");
-    profile_ = profile_builder.Build();
-  }
+  // This test doesn't actually need the profile for anything meaningful,
+  // beyond hashing, so it is safe for it to be nullptr.
+  Profile* profile_ = nullptr;
 };
 
 TEST_F(BorealisLaunchWatcherTest, VmStartsCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
+  CallbackFactory callback_expectation;
+  BorealisLaunchWatcher watcher(profile_, "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
-  signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_.get()));
+  signal.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal.set_vm_name("FooVm");
   signal.set_container_name("FooContainer");
 
   EXPECT_CALL(callback_expectation,
-              Callback(base::Optional<std::string>("FooContainer")));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
-  fake_cicerone_client_->NotifyContainerStarted(std::move(signal));
+              Call(absl::optional<std::string>("FooContainer")));
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
+  FakeCiceroneClient()->NotifyContainerStarted(std::move(signal));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmTimesOutCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
-  watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
+  CallbackFactory callback_expectation;
+  BorealisLaunchWatcher watcher(profile_, "FooVm");
+  watcher.SetTimeoutForTesting(base::Milliseconds(0));
 
   EXPECT_CALL(callback_expectation,
-              Callback(base::Optional<std::string>(base::nullopt)));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+              Call(absl::optional<std::string>(absl::nullopt)));
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmAlreadyStartedCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
+  CallbackFactory callback_expectation;
+  BorealisLaunchWatcher watcher(profile_, "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
-  signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_.get()));
+  signal.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal.set_vm_name("FooVm");
   signal.set_container_name("FooContainer");
 
   EXPECT_CALL(callback_expectation,
-              Callback(base::Optional<std::string>("FooContainer")));
-  fake_cicerone_client_->NotifyContainerStarted(std::move(signal));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+              Call(absl::optional<std::string>("FooContainer")));
+  FakeCiceroneClient()->NotifyContainerStarted(std::move(signal));
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmStartsMultipleCallbacksRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
+  CallbackFactory callback_expectation;
+  BorealisLaunchWatcher watcher(profile_, "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
-  signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_.get()));
+  signal.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal.set_vm_name("FooVm");
   signal.set_container_name("FooContainer");
 
   EXPECT_CALL(callback_expectation,
-              Callback(base::Optional<std::string>("FooContainer")))
+              Call(absl::optional<std::string>("FooContainer")))
       .Times(2);
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
-  fake_cicerone_client_->NotifyContainerStarted(std::move(signal));
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
+  FakeCiceroneClient()->NotifyContainerStarted(std::move(signal));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmTimesOutMultipleCallbacksRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
-  watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
+  CallbackFactory callback_expectation;
+  BorealisLaunchWatcher watcher(profile_, "FooVm");
+  watcher.SetTimeoutForTesting(base::Milliseconds(0));
 
   EXPECT_CALL(callback_expectation,
-              Callback(base::Optional<std::string>(base::nullopt)))
+              Call(absl::optional<std::string>(absl::nullopt)))
       .Times(2);
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, OtherVmsStartBorealisTimesOutCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
-  watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
+  CallbackFactory callback_expectation;
+  BorealisLaunchWatcher watcher(profile_, "FooVm");
+  watcher.SetTimeoutForTesting(base::Milliseconds(0));
   vm_tools::cicerone::ContainerStartedSignal signal1;
   signal1.set_owner_id("not-the-owner");
   signal1.set_vm_name("FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal2;
-  signal2.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_.get()));
+  signal2.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal2.set_vm_name("not-FooVm");
 
   EXPECT_CALL(callback_expectation,
-              Callback(base::Optional<std::string>(base::nullopt)));
-  fake_cicerone_client_->NotifyContainerStarted(std::move(signal1));
-  fake_cicerone_client_->NotifyContainerStarted(std::move(signal2));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+              Call(absl::optional<std::string>(absl::nullopt)));
+  FakeCiceroneClient()->NotifyContainerStarted(std::move(signal1));
+  FakeCiceroneClient()->NotifyContainerStarted(std::move(signal2));
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }

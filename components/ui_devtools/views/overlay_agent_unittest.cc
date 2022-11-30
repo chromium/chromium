@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/overlay_agent_views.h"
 
+#include "base/strings/stringprintf.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/views/dom_agent_views.h"
@@ -114,12 +115,14 @@ class OverlayAgentTest : public views::ViewsTestBase {
   }
 #endif
 
-  void CreateWidget(const gfx::Rect& bounds) {
+  void CreateWidget(const gfx::Rect& bounds,
+                    views::Widget::InitParams::Type type) {
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params;
     params.delegate = nullptr;
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = bounds;
+    params.type = type;
 #if defined(USE_AURA)
     params.parent = GetContext();
 #endif
@@ -129,7 +132,8 @@ class OverlayAgentTest : public views::ViewsTestBase {
 
   void CreateWidget() {
     // Create a widget with default bounds.
-    return CreateWidget(gfx::Rect(0, 0, 400, 400));
+    return CreateWidget(gfx::Rect(0, 0, 400, 400),
+                        views::Widget::InitParams::Type::TYPE_WINDOW);
   }
 
   views::Widget* widget() { return widget_.get(); }
@@ -176,13 +180,14 @@ TEST_F(OverlayAgentTest, FindElementIdTargetedByPointWindow) {
 #endif
 
 TEST_F(OverlayAgentTest, FindElementIdTargetedByPointViews) {
-  CreateWidget();
+  // Use a frameless window instead of deleting all children of |contents_view|
+  CreateWidget(gfx::Rect(0, 0, 400, 400),
+               views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS);
 
   std::unique_ptr<protocol::DOM::Node> root;
   dom_agent()->getDocument(&root);
 
-  views::View* contents_view = widget()->GetContentsView();
-  contents_view->RemoveAllChildViews(true);
+  views::View* contents_view = widget()->GetRootView();
 
   views::View* child_1 = new views::View;
   views::View* child_2 = new views::View;
@@ -203,7 +208,7 @@ TEST_F(OverlayAgentTest, FindElementIdTargetedByPointViews) {
   child_1->SetBounds(20, 20, 100, 100);
   child_2->SetBounds(90, 50, 100, 100);
 
-  EXPECT_EQ(GetViewAtPoint(1, 1), widget()->GetContentsView());
+  EXPECT_EQ(GetViewAtPoint(1, 1), widget()->GetRootView());
   EXPECT_EQ(GetViewAtPoint(21, 21), child_1);
   EXPECT_EQ(GetViewAtPoint(170, 130), child_2);
   // At the overlap.
@@ -237,7 +242,7 @@ TEST_F(OverlayAgentTest, HighlightRects) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message() << "Case: " << test_case.name);
-    CreateWidget(kWidgetBounds);
+    CreateWidget(kWidgetBounds, views::Widget::InitParams::Type::TYPE_WINDOW);
     // Can't just use kWidgetBounds because of Mac's menu bar.
     gfx::Vector2d widget_screen_offset =
         widget()->GetClientAreaBoundsInScreen().OffsetFromOrigin();
@@ -265,7 +270,6 @@ TEST_F(OverlayAgentTest, HighlightRects) {
     overlay_agent()->setInspectMode(
         "searchForNode", protocol::Maybe<protocol::Overlay::HighlightConfig>());
     ui::test::EventGenerator generator(GetRootWindow(widget()));
-    generator.set_assume_window_at_origin(false);
 
     // Highlight child 1.
     generator.MoveMouseTo(GetOriginInScreen(child_1));
@@ -314,7 +318,7 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
   // Moving the mouse cursor over the widget bounds should request a node
   // highlight.
   ui::test::EventGenerator generator(GetRootWindow(widget()));
-  generator.MoveMouseBy(p.x(), p.y());
+  generator.MoveMouseTo(widget()->GetClientAreaBoundsInScreen().origin());
 
   // Aura platforms generate both ET_MOUSE_ENTERED and ET_MOUSE_MOVED for
   // this but Mac just generates ET_MOUSE_ENTERED, so just ensure we sent
@@ -340,7 +344,7 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
   // Press escape to exit inspect mode. We're intentionally not supporting
   // this on Mac due do difficulties in receiving key events without aura::Env.
 #if defined(USE_AURA)
-  generator.PressKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  generator.PressKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
   // Upon exiting inspect mode, the element is inspected and highlighted.
   EXPECT_EQ(inspect_node_notification_count + 1,
             GetOverlayInspectNodeRequestedCount(node_id));

@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module photos.mojom;
+
+import "url/mojom/url.mojom";
+
+// A Google Photos Memory.
+struct Memory {
+  // The ID of the Memory.
+  string id;
+  // The title of the Memory.
+  string title;
+  // The URL to navigate to the Memory.
+  url.mojom.Url item_url;
+  // The URL of the cover of the Memory.
+  url.mojom.Url cover_url;
+};
+
+// Browser-side handler for requests from NTP Module UI.
+interface PhotosHandler {
+  // Fetches memories from Google Photos API.
+  GetMemories() => (array<Memory> memories);
+  // Dismissed module for fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
+  // Returns whether to show opt-in surface in the module.
+  ShouldShowOptInScreen() => (bool show_opt_in_screen);
+  // Stores in profile prefs whether the user has opt-in
+  // see the module content.
+  OnUserOptIn(bool accept);
+  // Stores the last time the user opened a memory.
+  OnMemoryOpen();
+  // Returns whether to show the soft opt out button.
+  ShouldShowSoftOptOutButton() => (bool show_soft_opt_out_button);
+  // Dismisses the module for fixed amount of time before asking the user
+  // to opt in again.
+  SoftOptOut();
+  // Returns the string which should be shown as the opt-in card title.
+  GetOptInTitleText(array<Memory> memories) => (string opt_in_title_text);
+};

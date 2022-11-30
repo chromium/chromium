@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,18 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
-#include "chrome/browser/metrics/tab_stats/tab_stats_tracker_delegate.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/metrics/daily_event.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class PrefRegistrySimple;
@@ -42,10 +39,15 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 //         std::make_unique<TabStatsTracker>(g_browser_process->local_state()));
 class TabStatsTracker : public TabStripModelObserver,
                         public BrowserListObserver,
-                        public base::PowerSuspendObserver {
+                        public base::PowerSuspendObserver,
+                        public resource_coordinator::TabLifecycleObserver {
  public:
   // Constructor. |pref_service| must outlive this object.
   explicit TabStatsTracker(PrefService* pref_service);
+
+  TabStatsTracker(const TabStatsTracker&) = delete;
+  TabStatsTracker& operator=(const TabStatsTracker&) = delete;
+
   ~TabStatsTracker() override;
 
   // Sets the |TabStatsTracker| global instance.
@@ -65,16 +67,13 @@ class TabStatsTracker : public TabStripModelObserver,
   // Registers prefs used to track tab stats.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  void SetDelegateForTesting(
-      std::unique_ptr<TabStatsTrackerDelegate> new_delegate);
-
   // Accessors.
   const TabStatsDataStore::TabsStats& tab_stats() const;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TabDeletionGetsHandledProperly);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TestCalculateAndRecordNativeWindowVisibilities);
 #endif
@@ -91,6 +90,10 @@ class TabStatsTracker : public TabStripModelObserver,
     TabStatsDailyObserver(UmaStatsReportingDelegate* reporting_delegate,
                           TabStatsDataStore* data_store)
         : reporting_delegate_(reporting_delegate), data_store_(data_store) {}
+
+    TabStatsDailyObserver(const TabStatsDailyObserver&) = delete;
+    TabStatsDailyObserver& operator=(const TabStatsDailyObserver&) = delete;
+
     ~TabStatsDailyObserver() override {}
 
     // Callback called when the daily event happen.
@@ -98,12 +101,10 @@ class TabStatsTracker : public TabStripModelObserver,
 
    private:
     // The delegate used to report the metrics.
-    UmaStatsReportingDelegate* reporting_delegate_;
+    raw_ptr<UmaStatsReportingDelegate> reporting_delegate_;
 
     // The data store that houses the metrics.
-    TabStatsDataStore* data_store_;
-
-    DISALLOW_COPY_AND_ASSIGN(TabStatsDailyObserver);
+    raw_ptr<TabStatsDataStore> data_store_;
   };
 
   // Accessors, exposed for unittests:
@@ -154,6 +155,14 @@ class TabStatsTracker : public TabStripModelObserver,
   // base::PowerSuspendObserver:
   void OnResume() override;
 
+  // resource_coordinator::TabLifecycleObserver:
+  void OnDiscardedStateChange(content::WebContents* contents,
+                              ::mojom::LifecycleUnitDiscardReason reason,
+                              bool is_discarded) override;
+
+  void OnAutoDiscardableStateChange(content::WebContents* contents,
+                                    bool is_auto_discardable) override;
+
   // Callback when an interval timer triggers.
   void OnInterval(base::TimeDelta interval,
                   TabStatsDataStore::TabsStateDuringIntervalMap* interval_map);
@@ -163,12 +172,6 @@ class TabStatsTracker : public TabStripModelObserver,
 
   // Functions to call when a WebContents get destroyed.
   void OnWebContentsDestroyed(content::WebContents* web_contents);
-
-#if defined(OS_WIN)
-  // Function to call aura_extra::ComputeNativeWindowOcclusionStatus() and
-  // record the Visibility of all Chrome browser windows on Windows.
-  void CalculateAndRecordNativeWindowVisibilities();
-#endif
 
   // Function to call to report the tab heartbeat metrics.
   void OnHeartbeatEvent();
@@ -187,9 +190,6 @@ class TabStatsTracker : public TabStripModelObserver,
   // The delegate that reports the events.
   std::unique_ptr<UmaStatsReportingDelegate> reporting_delegate_;
 
-  // Delegate to collect data;
-  std::unique_ptr<TabStatsTrackerDelegate> delegate_;
-
   // The tab stats.
   std::unique_ptr<TabStatsDataStore> tab_stats_data_store_;
 
@@ -203,12 +203,6 @@ class TabStatsTracker : public TabStripModelObserver,
   // triggered.
   base::RepeatingTimer daily_event_timer_;
 
-#if defined(OS_WIN)
-  // The timer used to periodically calculate the occlusion status of native
-  // windows on Windows.
-  base::RepeatingTimer native_window_occlusion_timer_;
-#endif
-
   // The timers used to analyze how tabs are used during a given interval of
   // time.
   std::vector<std::unique_ptr<base::RepeatingTimer>> usage_interval_timers_;
@@ -221,8 +215,6 @@ class TabStatsTracker : public TabStripModelObserver,
       web_contents_usage_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TabStatsTracker);
 };
 
 // The reporting delegate, which reports metrics via UMA.
@@ -259,8 +251,20 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // The name of the histogram that records each window's width, in DIPs.
   static const char kWindowWidthHistogramName[];
 
-  UmaStatsReportingDelegate() {}
-  virtual ~UmaStatsReportingDelegate() {}
+  // The names of the histograms that record daily discard/reload counts caused
+  // by external/urgent event.
+  static const char kDailyDiscardsExternalHistogramName[];
+  static const char kDailyDiscardsUrgentHistogramName[];
+  static const char kDailyReloadsExternalHistogramName[];
+  static const char kDailyReloadsUrgentHistogramName[];
+
+  UmaStatsReportingDelegate() = default;
+
+  UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
+  UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
+      delete;
+
+  virtual ~UmaStatsReportingDelegate() = default;
 
   // Called at resume from sleep/hibernate.
   void ReportTabCountOnResume(size_t tab_count);
@@ -277,12 +281,6 @@ class TabStatsTracker::UmaStatsReportingDelegate {
       const TabStatsDataStore::TabsStateDuringIntervalMap& interval_map,
       base::TimeDelta interval);
 
-#if defined(OS_WIN)
-  void RecordNativeWindowVisibilities(size_t num_occluded,
-                                      size_t num_visible,
-                                      size_t num_hidden);
-#endif
-
  protected:
   // Generates the name of the histograms that will track tab usage during a
   // given period of time.
@@ -292,9 +290,6 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // Checks if Chrome is running in background with no visible windows, virtual
   // for unittesting.
   virtual bool IsChromeBackgroundedWithoutWindows();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UmaStatsReportingDelegate);
 };
 
 }  // namespace metrics

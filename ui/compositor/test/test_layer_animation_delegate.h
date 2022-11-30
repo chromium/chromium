@@ -1,16 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_COMPOSITOR_TEST_TEST_LAYER_ANIMATION_DELEGATE_H_
 #define UI_COMPOSITOR_TEST_TEST_LAYER_ANIMATION_DELEGATE_H_
 
-#include "base/compiler_specific.h"
 #include "cc/layers/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_threaded_animation_delegate.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
@@ -45,7 +45,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   // advancing of animations. It can also be used to simulate the availability
   // of the frame number when Layer is attached to, or detached from a frame
   // number source, i.e. Compositor.
-  void SetFrameNumber(base::Optional<int> frame_number);
+  void SetFrameNumber(absl::optional<int> frame_number);
 
   // Implementation of LayerAnimationDelegate
   void SetBoundsFromAnimation(const gfx::Rect& bounds,
@@ -67,6 +67,8 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   void SetRoundedCornersFromAnimation(
       const gfx::RoundedCornersF& rounded_corners,
       PropertyChangeReason reason) override;
+  void SetGradientMaskFromAnimation(const gfx::LinearGradient& gradient_mask,
+                                    PropertyChangeReason reason) override;
   void ScheduleDrawForAnimation() override;
   const gfx::Rect& GetBoundsForAnimation() const override;
   gfx::Transform GetTransformForAnimation() const override;
@@ -77,12 +79,13 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   SkColor GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
+  const gfx::LinearGradient& GetGradientMaskForAnimation() const override;
   float GetDeviceScaleFactor() const override;
   LayerAnimatorCollection* GetLayerAnimatorCollection() override;
   ui::Layer* GetLayer() override;
   cc::Layer* GetCcLayer() const override;
   LayerThreadedAnimationDelegate* GetThreadedAnimationDelegate() override;
-  base::Optional<int> GetFrameNumber() const override;
+  absl::optional<int> GetFrameNumber() const override;
   float GetRefreshRate() const override;
 
  private:
@@ -103,8 +106,9 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   SkColor color_;
   gfx::Rect clip_rect_;
   gfx::RoundedCornersF rounded_corners_;
+  gfx::LinearGradient gradient_mask_;
   scoped_refptr<cc::Layer> cc_layer_;
-  base::Optional<int> frame_number_;
+  absl::optional<int> frame_number_;
 
   // Allow copy and assign.
 };

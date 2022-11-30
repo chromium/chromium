@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
@@ -66,7 +66,7 @@ void IsolatedFileSystemBackend::Initialize(FileSystemContext* context) {}
 
 void IsolatedFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                            OpenFileSystemMode mode,
-                                           OpenFileSystemCallback callback) {
+                                           ResolveURLCallback callback) {
   // We never allow opening a new isolated FileSystem via usual ResolveURL.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), GURL(), std::string(),
@@ -102,7 +102,8 @@ IsolatedFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-FileSystemOperation* IsolatedFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+IsolatedFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

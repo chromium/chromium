@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -33,6 +32,7 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/active_use_util.h"
+#include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -41,15 +41,13 @@
 #include "chrome/installer/util/util_constants.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "content/public/common/content_switches.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/win/src/sandbox.h"
 
 namespace {
 // The entry point signature of chrome.dll.
-typedef int (*DLL_MAIN)(HINSTANCE,
-                        sandbox::SandboxInterfaceInfo*,
-                        int64_t,
-                        base::PrefetchResultCode);
+typedef int (*DLL_MAIN)(HINSTANCE, sandbox::SandboxInterfaceInfo*, int64_t);
 
 typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
 
@@ -86,40 +84,39 @@ base::FilePath GetModulePath(base::WStringPiece module_name) {
   return exe_dir.Append(module_name);
 }
 
+// Prefetches and loads |module| after setting the CWD to |module|'s
+// directory. Returns a handle to the loaded module on success, or nullptr on
+// failure.
+HMODULE LoadModuleWithDirectory(const base::FilePath& module) {
+  ::SetCurrentDirectoryW(module.DirName().value().c_str());
+  base::PreReadFile(module, /*is_executable=*/true);
+  HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
+                                    LOAD_WITH_ALTERED_SEARCH_PATH);
+  return handle;
+}
+
+// Prefetches and loads the appropriate DLL for the process type
+// |process_type_|. Populates |module| with the path of the loaded DLL.
+// Returns a handle to the loaded DLL, or nullptr on failure.
+HMODULE Load(base::FilePath* module) {
+  *module = GetModulePath(installer::kChromeDll);
+  if (module->empty()) {
+    PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
+    return nullptr;
+  }
+  HMODULE dll = LoadModuleWithDirectory(*module);
+  if (!dll)
+    PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
+  return dll;
+}
+
 }  // namespace
 
 //=============================================================================
 
-MainDllLoader::MainDllLoader()
-    : dll_(nullptr) {
-}
+MainDllLoader::MainDllLoader() : dll_(nullptr) {}
 
-MainDllLoader::~MainDllLoader() {
-}
-
-// static
-MainDllLoader::LoadResult MainDllLoader::Load(base::FilePath* module) {
-  *module = GetModulePath(installer::kChromeDll);
-  if (module->empty()) {
-    PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
-    return {nullptr, base::PrefetchResultCode::kInvalidFile};
-  }
-  LoadResult load_result = LoadModuleWithDirectory(*module);
-  if (!load_result.handle)
-    PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
-  return load_result;
-}
-
-// static
-MainDllLoader::LoadResult MainDllLoader::LoadModuleWithDirectory(
-    const base::FilePath& module) {
-  ::SetCurrentDirectoryW(module.DirName().value().c_str());
-  base::PrefetchResultCode prefetch_result_code =
-      base::PreReadFile(module, /*is_executable=*/true).code_;
-  HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
-                                    LOAD_WITH_ALTERED_SEARCH_PATH);
-  return {handle, prefetch_result_code};
-}
+MainDllLoader::~MainDllLoader() = default;
 
 const int kNonBrowserShutdownPriority = 0x280;
 
@@ -133,23 +130,23 @@ int MainDllLoader::Launch(HINSTANCE instance,
   // Initialize the sandbox services.
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   const bool is_browser = process_type_.empty();
-  const bool is_cloud_print_service =
-      process_type_ == switches::kCloudPrintServiceProcess;
   // IsUnsandboxedSandboxType() can't be used here because its result can be
   // gated behind a feature flag, which are not yet initialized.
   const bool is_sandboxed =
       sandbox::policy::SandboxTypeFromCommandLine(cmd_line) !=
-      sandbox::policy::SandboxType::kNoSandbox;
-  if (is_browser || is_cloud_print_service || is_sandboxed) {
+      sandbox::mojom::Sandbox::kNoSandbox;
+  if (is_browser || is_sandboxed) {
     // For child processes that are running as --no-sandbox, don't initialize
     // the sandbox info, otherwise they'll be treated as brokers (as if they
     // were the browser).
-    content::InitializeSandboxInfo(&sandbox_info);
+    content::InitializeSandboxInfo(
+        &sandbox_info, IsExtensionPointDisableSet()
+                           ? sandbox::MITIGATION_EXTENSION_POINT_DISABLE
+                           : 0);
   }
 
   base::FilePath file;
-  LoadResult load_result = Load(&file);
-  dll_ = load_result.handle;
+  dll_ = Load(&file);
   if (!dll_)
     return chrome::RESULT_CODE_MISSING_DATA;
 
@@ -167,8 +164,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   DLL_MAIN chrome_main =
       reinterpret_cast<DLL_MAIN>(::GetProcAddress(dll_, "ChromeMain"));
   int rc = chrome_main(instance, &sandbox_info,
-                       exe_entry_point_ticks.ToInternalValue(),
-                       load_result.prefetch_result_code);
+                       exe_entry_point_ticks.ToInternalValue());
   return rc;
 }
 

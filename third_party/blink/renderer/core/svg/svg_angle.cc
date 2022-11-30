@@ -24,7 +24,9 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -95,11 +97,11 @@ SVGAngle* SVGAngle::Clone() const {
 float SVGAngle::Value() const {
   switch (unit_type_) {
     case kSvgAngletypeGrad:
-      return grad2deg(value_in_specified_units_);
+      return Grad2deg(value_in_specified_units_);
     case kSvgAngletypeRad:
-      return rad2deg(value_in_specified_units_);
+      return Rad2deg(value_in_specified_units_);
     case kSvgAngletypeTurn:
-      return turn2deg(value_in_specified_units_);
+      return Turn2deg(value_in_specified_units_);
     case kSvgAngletypeUnspecified:
     case kSvgAngletypeUnknown:
     case kSvgAngletypeDeg:
@@ -113,13 +115,13 @@ float SVGAngle::Value() const {
 void SVGAngle::SetValue(float value) {
   switch (unit_type_) {
     case kSvgAngletypeGrad:
-      value_in_specified_units_ = deg2grad(value);
+      value_in_specified_units_ = Deg2grad(value);
       break;
     case kSvgAngletypeRad:
-      value_in_specified_units_ = deg2rad(value);
+      value_in_specified_units_ = Deg2rad(value);
       break;
     case kSvgAngletypeTurn:
-      value_in_specified_units_ = deg2turn(value);
+      value_in_specified_units_ = Deg2turn(value);
       break;
     case kSvgAngletypeUnspecified:
     case kSvgAngletypeUnknown:
@@ -187,7 +189,7 @@ String SVGAngle::ValueAsString() const {
   }
   StringBuilder builder;
   builder.AppendNumber(value_in_specified_units_);
-  builder.Append(unit_string, strlen(unit_string));
+  builder.Append(unit_string, static_cast<unsigned>(strlen(unit_string)));
   return builder.ToString();
 }
 
@@ -208,7 +210,7 @@ static SVGParsingError ParseValue(const CharType* start,
 }
 
 SVGParsingError SVGAngle::SetValueAsString(const String& value) {
-  if (value.IsEmpty()) {
+  if (value.empty()) {
     NewValueSpecifiedUnits(kSvgAngletypeUnspecified, 0);
     return SVGParseStatus::kNoError;
   }
@@ -256,15 +258,15 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
     case kSvgAngletypeTurn:
       switch (unit_type) {
         case kSvgAngletypeGrad:
-          value_in_specified_units_ = turn2grad(value_in_specified_units_);
+          value_in_specified_units_ = Turn2grad(value_in_specified_units_);
           break;
         case kSvgAngletypeUnspecified:
         case kSvgAngletypeDeg:
-          value_in_specified_units_ = turn2deg(value_in_specified_units_);
+          value_in_specified_units_ = Turn2deg(value_in_specified_units_);
           break;
         case kSvgAngletypeRad:
           value_in_specified_units_ =
-              deg2rad(turn2deg(value_in_specified_units_));
+              Deg2rad(Turn2deg(value_in_specified_units_));
           break;
         case kSvgAngletypeTurn:
         case kSvgAngletypeUnknown:
@@ -275,15 +277,15 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
     case kSvgAngletypeRad:
       switch (unit_type) {
         case kSvgAngletypeGrad:
-          value_in_specified_units_ = rad2grad(value_in_specified_units_);
+          value_in_specified_units_ = Rad2grad(value_in_specified_units_);
           break;
         case kSvgAngletypeUnspecified:
         case kSvgAngletypeDeg:
-          value_in_specified_units_ = rad2deg(value_in_specified_units_);
+          value_in_specified_units_ = Rad2deg(value_in_specified_units_);
           break;
         case kSvgAngletypeTurn:
           value_in_specified_units_ =
-              deg2turn(rad2deg(value_in_specified_units_));
+              Deg2turn(Rad2deg(value_in_specified_units_));
           break;
         case kSvgAngletypeRad:
         case kSvgAngletypeUnknown:
@@ -294,14 +296,14 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
     case kSvgAngletypeGrad:
       switch (unit_type) {
         case kSvgAngletypeRad:
-          value_in_specified_units_ = grad2rad(value_in_specified_units_);
+          value_in_specified_units_ = Grad2rad(value_in_specified_units_);
           break;
         case kSvgAngletypeUnspecified:
         case kSvgAngletypeDeg:
-          value_in_specified_units_ = grad2deg(value_in_specified_units_);
+          value_in_specified_units_ = Grad2deg(value_in_specified_units_);
           break;
         case kSvgAngletypeTurn:
-          value_in_specified_units_ = grad2turn(value_in_specified_units_);
+          value_in_specified_units_ = Grad2turn(value_in_specified_units_);
           break;
         case kSvgAngletypeGrad:
         case kSvgAngletypeUnknown:
@@ -315,13 +317,13 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
     case kSvgAngletypeDeg:
       switch (unit_type) {
         case kSvgAngletypeRad:
-          value_in_specified_units_ = deg2rad(value_in_specified_units_);
+          value_in_specified_units_ = Deg2rad(value_in_specified_units_);
           break;
         case kSvgAngletypeGrad:
-          value_in_specified_units_ = deg2grad(value_in_specified_units_);
+          value_in_specified_units_ = Deg2grad(value_in_specified_units_);
           break;
         case kSvgAngletypeTurn:
-          value_in_specified_units_ = deg2turn(value_in_specified_units_);
+          value_in_specified_units_ = Deg2turn(value_in_specified_units_);
           break;
         case kSvgAngletypeUnspecified:
         case kSvgAngletypeDeg:

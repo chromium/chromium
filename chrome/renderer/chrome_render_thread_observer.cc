@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,16 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -36,12 +35,11 @@
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/url_constants.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
+#include "components/web_cache/public/features.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/resource_usage_reporter_type_converters.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
-#include "content/public/renderer/render_view_visitor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/base/localized_strings.h"
@@ -49,6 +47,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_module.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -59,7 +58,7 @@
 #include "third_party/blink/public/web/web_view.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/renderer/extensions/extension_localization_peer.h"
+#include "extensions/renderer/localization_peer.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -79,15 +78,27 @@ class RendererResourceDelegate
  public:
   RendererResourceDelegate() = default;
 
+  RendererResourceDelegate(const RendererResourceDelegate&) = delete;
+  RendererResourceDelegate& operator=(const RendererResourceDelegate&) = delete;
+
   void OnRequestComplete() override {
     // Update the browser about our cache.
+
+    // No need to update the browser if the WebCache manager doesn't need this
+    // information.
+    if (base::FeatureList::IsEnabled(
+            web_cache::kTrimWebCacheOnMemoryPressureOnly) ||
+        base::FeatureList::IsEnabled(
+            blink::features::kNoCentralWebCacheLimitControl)) {
+      return;
+    }
     // Rate limit informing the host of our cache stats.
     if (!weak_factory_.HasWeakPtrs()) {
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&RendererResourceDelegate::InformHostOfCacheStats,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kCacheStatsDelayMS));
+          base::Milliseconds(kCacheStatsDelayMS));
     }
   }
 
@@ -105,6 +116,10 @@ class RendererResourceDelegate
 
  private:
   void InformHostOfCacheStats() {
+    DCHECK(!base::FeatureList::IsEnabled(
+        web_cache::kTrimWebCacheOnMemoryPressureOnly));
+    DCHECK(!base::FeatureList::IsEnabled(
+        blink::features::kNoCentralWebCacheLimitControl));
     WebCache::UsageStats stats;
     WebCache::GetUsageStats(&stats);
     if (!cache_stats_recorder_) {
@@ -118,8 +133,6 @@ class RendererResourceDelegate
       cache_stats_recorder_;
 
   base::WeakPtrFactory<RendererResourceDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererResourceDelegate);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -214,9 +227,10 @@ ChromeRenderThreadObserver::GetDynamicParams() {
 
 void ChromeRenderThreadObserver::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
-  associated_interfaces->AddInterface(base::BindRepeating(
-      &ChromeRenderThreadObserver::OnRendererConfigurationAssociatedRequest,
-      base::Unretained(this)));
+  associated_interfaces->AddInterface<chrome::mojom::RendererConfiguration>(
+      base::BindRepeating(
+          &ChromeRenderThreadObserver::OnRendererConfigurationAssociatedRequest,
+          base::Unretained(this)));
 }
 
 void ChromeRenderThreadObserver::UnregisterMojoInterfaces(
@@ -228,7 +242,11 @@ void ChromeRenderThreadObserver::UnregisterMojoInterfaces(
 void ChromeRenderThreadObserver::SetInitialConfiguration(
     bool is_incognito_process,
     mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
-        chromeos_listener_receiver) {
+        chromeos_listener_receiver,
+    mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+        content_settings_manager) {
+  if (content_settings_manager)
+    content_settings_manager_.Bind(std::move(content_settings_manager));
   is_incognito_process_ = is_incognito_process;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos_listener_receiver) {
@@ -243,18 +261,8 @@ void ChromeRenderThreadObserver::SetConfiguration(
   *GetDynamicConfigParams() = std::move(*params);
 }
 
-void ChromeRenderThreadObserver::SetContentSettingRules(
-    const RendererContentSettingRules& rules) {
-  content_setting_rules_ = rules;
-}
-
 void ChromeRenderThreadObserver::OnRendererConfigurationAssociatedRequest(
     mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>
         receiver) {
   renderer_configuration_receivers_.Add(this, std::move(receiver));
-}
-
-const RendererContentSettingRules*
-ChromeRenderThreadObserver::content_setting_rules() const {
-  return &content_setting_rules_;
 }

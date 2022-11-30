@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,16 +48,19 @@ std::string ToLowerASCIIInternal(CHARTYPE* str, SIZETYPE length) {
 
 // Does the same as ToASCIIOrEmpty, but also makes the chars lower.
 std::string ToLowerASCIIOrEmpty(const String& str) {
-  if (str.IsEmpty() || !str.ContainsOnlyASCIIOrEmpty())
+  if (str.empty() || !str.ContainsOnlyASCIIOrEmpty())
     return std::string();
   if (str.Is8Bit())
     return ToLowerASCIIInternal(str.Characters8(), str.length());
   return ToLowerASCIIInternal(str.Characters16(), str.length());
 }
 
-STATIC_ASSERT_ENUM(MIMETypeRegistry::kIsNotSupported, media::IsNotSupported);
-STATIC_ASSERT_ENUM(MIMETypeRegistry::kIsSupported, media::IsSupported);
-STATIC_ASSERT_ENUM(MIMETypeRegistry::kMayBeSupported, media::MayBeSupported);
+STATIC_ASSERT_ENUM(MIMETypeRegistry::kNotSupported,
+                   media::SupportsType::kNotSupported);
+STATIC_ASSERT_ENUM(MIMETypeRegistry::kSupported,
+                   media::SupportsType::kSupported);
+STATIC_ASSERT_ENUM(MIMETypeRegistry::kMaybeSupported,
+                   media::SupportsType::kMaybeSupported);
 
 }  // namespace
 
@@ -118,39 +121,13 @@ bool MIMETypeRegistry::IsJSONMimeType(const String& mime_type) {
   return blink::IsJSONMimeType(ToLowerASCIIOrEmpty(mime_type));
 }
 
-bool MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(
-    const String& language) {
-  // Mozilla 1.8 accepts javascript1.0 - javascript1.7, but WinIE 7 accepts only
-  // javascript1.1 - javascript1.3.
-  // Mozilla 1.8 and WinIE 7 both accept javascript and livescript.
-  // WinIE 7 accepts ecmascript and jscript, but Mozilla 1.8 doesn't.
-  // Neither Mozilla 1.8 nor WinIE 7 accept leading or trailing whitespace.
-  // We want to accept all the values that either of these browsers accept, but
-  // not other values.
-
-  // FIXME: This function is not HTML5 compliant. These belong in the MIME
-  // registry as "text/javascript<version>" entries.
-  return EqualIgnoringASCIICase(language, "javascript") ||
-         EqualIgnoringASCIICase(language, "javascript1.0") ||
-         EqualIgnoringASCIICase(language, "javascript1.1") ||
-         EqualIgnoringASCIICase(language, "javascript1.2") ||
-         EqualIgnoringASCIICase(language, "javascript1.3") ||
-         EqualIgnoringASCIICase(language, "javascript1.4") ||
-         EqualIgnoringASCIICase(language, "javascript1.5") ||
-         EqualIgnoringASCIICase(language, "javascript1.6") ||
-         EqualIgnoringASCIICase(language, "javascript1.7") ||
-         EqualIgnoringASCIICase(language, "livescript") ||
-         EqualIgnoringASCIICase(language, "ecmascript") ||
-         EqualIgnoringASCIICase(language, "jscript");
-}
-
 bool MIMETypeRegistry::IsSupportedNonImageMIMEType(const String& mime_type) {
   return blink::IsSupportedNonImageMimeType(ToLowerASCIIOrEmpty(mime_type));
 }
 
 bool MIMETypeRegistry::IsSupportedMediaMIMEType(const String& mime_type,
                                                 const String& codecs) {
-  return SupportsMediaMIMEType(mime_type, codecs) != kIsNotSupported;
+  return SupportsMediaMIMEType(mime_type, codecs) != kNotSupported;
 }
 
 MIMETypeRegistry::SupportsType MIMETypeRegistry::SupportsMediaMIMEType(
@@ -168,7 +145,7 @@ MIMETypeRegistry::SupportsType MIMETypeRegistry::SupportsMediaSourceMIMEType(
     const String& codecs) {
   const std::string ascii_mime_type = ToLowerASCIIOrEmpty(mime_type);
   if (ascii_mime_type.empty())
-    return kIsNotSupported;
+    return kNotSupported;
   std::vector<std::string> parsed_codec_ids;
   media::SplitCodecs(ToASCIIOrEmpty(codecs), &parsed_codec_ids);
   return static_cast<SupportsType>(media::StreamParserFactory::IsTypeSupported(

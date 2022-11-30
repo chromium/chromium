@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,7 +94,7 @@ bool ProcUtil::HasOpenDirectory(int proc_fd) {
 
     struct stat s;
     // It's OK to use proc_self_fd here, fstatat won't modify it.
-    CHECK(fstatat(proc_self_fd, de->d_name, &s, 0) == 0);
+    PCHECK(fstatat(proc_self_fd, de->d_name, &s, 0) == 0);
     if (S_ISDIR(s.st_mode)) {
       return true;
     }

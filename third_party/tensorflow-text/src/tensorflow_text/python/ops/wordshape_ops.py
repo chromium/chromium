@@ -373,7 +373,16 @@ _add_identifier_list_to_docstring(WordShape)
 
 
 def wordshape(input_tensor, pattern, name=None):
-  """Determine wordshape features for each input string.
+  r"""Determine wordshape features for each input string.
+
+    In this example, we test for title case (the first character is upper or
+    title case, and the remaining characters are lowercase).
+    >>> input = [
+    ... u"abc", u"ABc", u"ABC", u"Abc", u"aBcd", u"\u01c8bc".encode("utf-8")
+    ... ]
+    >>> wordshape(input, WordShape.HAS_TITLE_CASE)
+    <tf.Tensor: shape=(6,), dtype=bool,
+     numpy=array([False, False, False,  True, False,  True])>
 
   Args:
     input_tensor: string `Tensor` with any shape.

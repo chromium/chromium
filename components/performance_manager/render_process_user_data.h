@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -35,6 +35,9 @@ class RenderProcessUserData : public base::SupportsUserData::Data,
         content::RenderProcessHost*) = 0;
   };
 
+  RenderProcessUserData(const RenderProcessUserData&) = delete;
+  RenderProcessUserData& operator=(const RenderProcessUserData&) = delete;
+
   ~RenderProcessUserData() override;
 
   static const void* UserDataKey();
@@ -46,6 +49,10 @@ class RenderProcessUserData : public base::SupportsUserData::Data,
   // destroyed. Can only be set to non-nullptr if it was previously nullptr, and
   // vice-versa.
   void SetDestructionObserver(DestructionObserver* destruction_observer);
+
+  // Invoked when a process is launched for this RenderProcessHost
+  // (immediately after RenderProcessHost::GetProcess() becomes valid).
+  void OnProcessLaunched();
 
   ProcessNodeImpl* process_node() { return process_node_.get(); }
 
@@ -61,19 +68,16 @@ class RenderProcessUserData : public base::SupportsUserData::Data,
       content::RenderProcessHost* host);
 
   // RenderProcessHostObserver overrides
-  void RenderProcessReady(content::RenderProcessHost* host) override;
   void RenderProcessExited(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
-  content::RenderProcessHost* const host_;
+  const raw_ptr<content::RenderProcessHost> host_;
 
   std::unique_ptr<ProcessNodeImpl> process_node_;
 
-  DestructionObserver* destruction_observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessUserData);
+  raw_ptr<DestructionObserver> destruction_observer_ = nullptr;
 };
 
 }  // namespace performance_manager

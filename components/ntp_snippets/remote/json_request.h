@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,15 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/status.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -70,6 +71,8 @@ class JsonRequest {
     Builder();
     Builder(Builder&&);
     ~Builder();
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
 
     // Builds a Request object that contains all data to fetch new snippets.
     std::unique_ptr<JsonRequest> Build() const;
@@ -119,7 +122,7 @@ class JsonRequest {
 
     // Only required, if the request needs to be sent.
     std::string auth_header_;
-    const base::Clock* clock_;
+    raw_ptr<const base::Clock> clock_;
     RequestParams params_;
     ParseJSONCallback parse_json_callback_;
     GURL url_;
@@ -128,22 +131,22 @@ class JsonRequest {
     // Optional properties.
     std::string user_class_;
     std::string display_capability_;
-    const language::UrlLanguageHistogram* language_histogram_;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
+    raw_ptr<const language::UrlLanguageHistogram> language_histogram_;
   };
 
-  JsonRequest(base::Optional<Category> exclusive_category,
+  JsonRequest(absl::optional<Category> exclusive_category,
               const base::Clock* clock,
               const ParseJSONCallback& callback);
   JsonRequest(JsonRequest&&);
+  JsonRequest(const JsonRequest&) = delete;
+  JsonRequest& operator=(const JsonRequest&) = delete;
   ~JsonRequest();
 
   void Start(CompletedCallback callback);
 
   static int Get5xxRetryCount(bool interactive_request);
 
-  const base::Optional<Category>& exclusive_category() const {
+  const absl::optional<Category>& exclusive_category() const {
     return exclusive_category_;
   }
 
@@ -165,12 +168,12 @@ class JsonRequest {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // If set, only return results for this category.
-  base::Optional<Category> exclusive_category_;
+  absl::optional<Category> exclusive_category_;
 
   // Use the Clock from the Fetcher to measure the fetch time. It will be
   // used on creation and after the fetch returned. It has to be alive until the
   // request is destroyed.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
   base::Time creation_time_;
 
   // This callback is called to parse a json string. It contains callbacks for
@@ -184,8 +187,6 @@ class JsonRequest {
   std::string last_response_string_;
 
   base::WeakPtrFactory<JsonRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsonRequest);
 };
 
 }  // namespace internal

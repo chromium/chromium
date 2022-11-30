@@ -8,21 +8,23 @@
 
 # Reviewers (comments indicate areas of expertise):
 alexis.menard@intel.com
+almaher@microsoft.com
+andruud@chromium.org
 # bokan reviews changes around viewport behavior, scrolling, cc/blink interaction, co-ordinate spaces and input events
 bokan@chromium.org
 cbiesinger@chromium.org
 chrishtr@chromium.org
 clamy@chromium.org
+dbaron@chromium.org
 dcheng@chromium.org
 dgozman@chromium.org
+dlibby@microsoft.com
+dom@chromium.org
 # drott reviews font specific changes.
 drott@chromium.org
-dsinclair@chromium.org
-dstockwell@chromium.org
 # dtapuska reviews input-related changes
 dtapuska@chromium.org
-enne@chromium.org
-# flackr reviews animation- and scrolling-related changes.
+# flackr reviews animation, input-related and scrolling-related changes.
 flackr@chromium.org
 fmalita@chromium.org
 # foolip reviews <video>, <track>, WebVTT and Fullscreen.
@@ -35,17 +37,13 @@ haraken@chromium.org
 hayato@chromium.org
 hiroshige@chromium.org
 ikilpatrick@chromium.org
-inferno@chromium.org
 japhet@chromium.org
 jarhar@chromium.org
 jbroman@chromium.org
 jfernandez@igalia.com
-jianli@chromium.org
-jochen@chromium.org
 junov@chromium.org
 kbr@chromium.org
 keishi@chromium.org
-kenneth.r.christiansen@intel.com
 kinuko@chromium.org
 kojii@chromium.org
 kouhei@chromium.org
@@ -56,23 +54,18 @@ nhiroki@chromium.org
 obrufau@igalia.com
 # pdr reviews many svg and text autosizing patches.
 pdr@chromium.org
-pfeldman@chromium.org
 pkasting@chromium.org
 rego@igalia.com
-rbyers@chromium.org
 rbuis@igalia.com
-robhogan@gmail.com
 schenney@chromium.org
 senorblanco@chromium.org
 skobes@chromium.org
 svillar@igalia.com
 szager@chromium.org
 thakis@chromium.org
-timloh@chromium.org
 tkent@chromium.org
 vmpstr@chromium.org
 vollick@chromium.org
 wangxianzhu@chromium.org
-yhirano@chromium.org
+xiaochengh@chromium.org
 yoavweiss@chromium.org
-yutak@chromium.org

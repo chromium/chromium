@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/filters/ffmpeg_glue.h"
@@ -23,10 +23,16 @@ class DataSource;
 // sequenced blocking pool.
 class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
  public:
+  BlockingUrlProtocol() = delete;
+
   // Implements FFmpegURLProtocol using the given |data_source|. |error_cb| is
   // fired any time DataSource::Read() returns an error.
   BlockingUrlProtocol(DataSource* data_source,
                       const base::RepeatingClosure& error_cb);
+
+  BlockingUrlProtocol(const BlockingUrlProtocol&) = delete;
+  BlockingUrlProtocol& operator=(const BlockingUrlProtocol&) = delete;
+
   virtual ~BlockingUrlProtocol();
 
   // Aborts any pending reads by returning a read error. After this method
@@ -50,7 +56,7 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
   // all outstanding access to |data_source_|. Typically Abort() is called from
   // the media thread while ffmpeg is operating on another thread.
   base::Lock data_source_lock_;
-  DataSource* data_source_;
+  raw_ptr<DataSource> data_source_;
 
   base::RepeatingClosure error_cb_;
   const bool is_streaming_;
@@ -64,8 +70,6 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
 
   // Cached position within the data source.
   int64_t read_position_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BlockingUrlProtocol);
 };
 
 }  // namespace media

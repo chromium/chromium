@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+Regression test for crbug.com/1361165
+There should be a solid green rectangle below this line of text.
+<canvas id='c'></canvas>
+<script>
+const c = document.getElementById('c')
+const ctx = c.getContext("2d");
+ctx.fillStyle = '#0f0';
+ctx.fillRect(0,0,c.width,c.height);
+</script>

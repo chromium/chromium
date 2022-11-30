@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,14 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/system_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
@@ -129,8 +130,10 @@ bool CrosSettings::GetBoolean(const std::string& path,
                               bool* bool_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsBoolean(bool_value);
+  if (value && value->is_bool()) {
+    *bool_value = value->GetBool();
+    return true;
+  }
   return false;
 }
 
@@ -138,17 +141,22 @@ bool CrosSettings::GetInteger(const std::string& path,
                               int* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsInteger(out_value);
+  if (value && value->is_int()) {
+    *out_value = value->GetInt();
+    return true;
+  }
   return false;
 }
 
 bool CrosSettings::GetDouble(const std::string& path,
                              double* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsDouble(out_value);
+  // `GetIfDouble` incapsulates type check.
+  absl::optional<double> maybe_value = GetPref(path)->GetIfDouble();
+  if (maybe_value.has_value()) {
+    *out_value = maybe_value.value();
+    return true;
+  }
   return false;
 }
 
@@ -156,36 +164,41 @@ bool CrosSettings::GetString(const std::string& path,
                              std::string* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsString(out_value);
+  if (value && value->is_string()) {
+    *out_value = value->GetString();
+    return true;
+  }
   return false;
 }
 
 bool CrosSettings::GetList(const std::string& path,
-                           const base::ListValue** out_value) const {
+                           const base::Value::List** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsList(out_value);
+  if (value && value->is_list()) {
+    *out_value = &value->GetList();
+    return true;
+  }
   return false;
 }
 
-bool CrosSettings::GetDictionary(
-    const std::string& path,
-    const base::DictionaryValue** out_value) const {
+bool CrosSettings::GetDictionary(const std::string& path,
+                                 const base::Value::Dict** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsDictionary(out_value);
+  if (value && value->is_dict()) {
+    *out_value = &value->GetDict();
+    return true;
+  }
   return false;
 }
 
 bool CrosSettings::IsUserAllowlisted(
     const std::string& username,
     bool* wildcard_match,
-    const base::Optional<user_manager::UserType>& user_type) const {
+    const absl::optional<user_manager::UserType>& user_type) const {
   // Skip allowlist check for tests.
-  if (chromeos::switches::ShouldSkipOobePostLogin()) {
+  if (switches::ShouldSkipOobePostLogin()) {
     return true;
   }
 
@@ -207,18 +220,18 @@ bool CrosSettings::FindEmailInList(const std::string& path,
                                    bool* wildcard_match) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::ListValue* list;
+  const base::Value::List* list;
   if (!GetList(path, &list)) {
     if (wildcard_match)
       *wildcard_match = false;
     return false;
   }
 
-  return FindEmailInList(list, email, wildcard_match);
+  return FindEmailInList(*list, email, wildcard_match);
 }
 
 // static
-bool CrosSettings::FindEmailInList(const base::ListValue* list,
+bool CrosSettings::FindEmailInList(const base::Value::List& list,
                                    const std::string& email,
                                    bool* wildcard_match) {
   std::string canonicalized_email(
@@ -234,16 +247,13 @@ bool CrosSettings::FindEmailInList(const base::ListValue* list,
     *wildcard_match = false;
 
   bool found_wildcard_match = false;
-  for (base::ListValue::const_iterator entry(list->begin());
-       entry != list->end();
-       ++entry) {
-    std::string entry_string;
-    if (!entry->GetAsString(&entry_string)) {
+  for (const auto& entry : list) {
+    if (!entry.is_string()) {
       NOTREACHED();
       continue;
     }
     std::string canonicalized_entry(
-        gaia::CanonicalizeEmail(gaia::SanitizeEmail(entry_string)));
+        gaia::CanonicalizeEmail(gaia::SanitizeEmail(entry.GetString())));
 
     if (canonicalized_entry != wildcard_email &&
         canonicalized_entry == canonicalized_email) {
@@ -281,11 +291,8 @@ bool CrosSettings::AddSettingsProvider(
 std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
     CrosSettingsProvider* provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = std::find_if(
-      providers_.begin(), providers_.end(),
-      [provider](const std::unique_ptr<CrosSettingsProvider>& ptr) {
-        return ptr.get() == provider;
-      });
+  auto it = base::ranges::find(providers_, provider,
+                               &std::unique_ptr<CrosSettingsProvider>::get);
   if (it != providers_.end()) {
     std::unique_ptr<CrosSettingsProvider> ptr = std::move(*it);
     providers_.erase(it);

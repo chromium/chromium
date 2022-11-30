@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ ImpressionDetail::ImpressionDetail(
     size_t current_max_daily_show,
     size_t num_shown_today,
     size_t num_negative_events,
-    base::Optional<base::Time> last_negative_event_ts,
-    base::Optional<base::Time> last_shown_ts)
+    absl::optional<base::Time> last_negative_event_ts,
+    absl::optional<base::Time> last_shown_ts)
     : current_max_daily_show(current_max_daily_show),
       num_shown_today(num_shown_today),
       num_negative_events(num_negative_events),

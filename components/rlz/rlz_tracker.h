@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -38,6 +38,9 @@ class RLZTrackerDelegate;
 
 class RLZTracker {
  public:
+  RLZTracker(const RLZTracker&) = delete;
+  RLZTracker& operator=(const RLZTracker&) = delete;
+
   // Sets the RLZTrackerDelegate that should be used by the global RLZTracker
   // instance. Must be called before calling any other method of RLZTracker.
   static void SetRlzDelegate(std::unique_ptr<RLZTrackerDelegate> delegate);
@@ -67,7 +70,7 @@ class RLZTracker {
 
   // For the point parameter of RecordProductEvent.
   static rlz_lib::AccessPoint ChromeOmnibox();
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   static rlz_lib::AccessPoint ChromeHomePage();
   static rlz_lib::AccessPoint ChromeAppList();
 #endif
@@ -100,7 +103,7 @@ class RLZTracker {
   // Enables zero delay for InitRlzDelayed. For testing only.
   static void EnableZeroDelayForTesting();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Records that the app list search has been used.
   static void RecordAppListSearch();
 #endif
@@ -218,7 +221,8 @@ class RLZTracker {
   // The cache must be protected by a lock since it may be accessed from
   // the UI thread for reading and the IO thread for reading and/or writing.
   base::Lock cache_lock_;
-  std::map<rlz_lib::AccessPoint, std::u16string> rlz_cache_;
+  std::map<rlz_lib::AccessPoint, std::u16string> rlz_cache_
+      GUARDED_BY(cache_lock_);
 
   // Keeps track of whether the omnibox, home page or app list have been used.
   bool omnibox_used_;
@@ -239,8 +243,6 @@ class RLZTracker {
   // occur in the correct sequence, especially in tests.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RLZTracker);
 };
 
 }  // namespace rlz

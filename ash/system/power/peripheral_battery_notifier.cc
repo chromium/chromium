@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/power/hid_battery_util.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -39,8 +41,7 @@ namespace {
 const uint8_t kLowBatteryLevel = 16;
 
 // Don't show 2 low battery notification within |kNotificationInterval|.
-constexpr base::TimeDelta kNotificationInterval =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kNotificationInterval = base::Seconds(60);
 
 constexpr char kNotifierStylusBattery[] = "ash.stylus-battery";
 
@@ -95,7 +96,7 @@ const char PeripheralBatteryNotifier::kStylusNotificationId[] =
 PeripheralBatteryNotifier::NotificationInfo::NotificationInfo() = default;
 
 PeripheralBatteryNotifier::NotificationInfo::NotificationInfo(
-    base::Optional<uint8_t> level,
+    absl::optional<uint8_t> level,
     base::TimeTicks last_notification_timestamp)
     : level(level),
       last_notification_timestamp(last_notification_timestamp),
@@ -122,6 +123,18 @@ PeripheralBatteryNotifier::~PeripheralBatteryNotifier() {
 
 void PeripheralBatteryNotifier::OnUpdatedBatteryLevel(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
+  if ((battery_info.type == PeripheralBatteryListener::BatteryInfo::
+                                PeripheralType::kStylusViaCharger ||
+       battery_info.type == PeripheralBatteryListener::BatteryInfo::
+                                PeripheralType::kStylusViaScreen) &&
+      !ash::features::IsStylusBatteryStatusEnabled()) {
+    return;
+  }
+
+  // TODO(b/187703348): it is worth listening to charger events if they
+  // might remove the notification: we want to clear it as soon as
+  // we believe the battery to have been charged, or at least starting
+  // charging.
   if (battery_info.type == PeripheralBatteryListener::BatteryInfo::
                                PeripheralType::kStylusViaCharger) {
     return;
@@ -141,7 +154,7 @@ void PeripheralBatteryNotifier::OnRemovingBattery(
 
 void PeripheralBatteryNotifier::UpdateBattery(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
-  if (!battery_info.level) {
+  if (!battery_info.level || !battery_info.battery_report_eligible) {
     CancelNotification(battery_info);
     return;
   }
@@ -159,7 +172,7 @@ void PeripheralBatteryNotifier::UpdateBattery(
     battery_notifications_[map_key] = new_notification_info;
   } else {
     NotificationInfo& existing_notification_info = it->second;
-    base::Optional<uint8_t> old_level = existing_notification_info.level;
+    absl::optional<uint8_t> old_level = existing_notification_info.level;
     was_old_battery_level_low = old_level && *old_level <= kLowBatteryLevel;
     existing_notification_info.level = battery_info.level;
   }
@@ -231,7 +244,8 @@ void PeripheralBatteryNotifier::ShowOrUpdateNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
       params.message, std::u16string(), params.url,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 params.notifier_name),
+                                 params.notifier_name,
+                                 NotificationCatalogName::kPeripheralBattery),
       message_center::RichNotificationData(), std::move(delegate), *params.icon,
       message_center::SystemNotificationWarningLevel::WARNING);
 

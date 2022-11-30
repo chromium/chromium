@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/model/data_type_activation_request.h"
-#include "components/sync/model/data_type_error_handler_impl.h"
 #include "components/sync/model/type_entities_count.h"
 
 namespace syncer {
@@ -77,16 +75,6 @@ void ModelTypeController::InitModelTypeController(
   }
 }
 
-std::unique_ptr<DataTypeActivationResponse>
-ModelTypeController::ActivateManuallyForNigori() {
-  // To avoid abuse of this temporary API, we restrict it to NIGORI.
-  DCHECK_EQ(NIGORI, type());
-  DCHECK_EQ(MODEL_LOADED, state_);
-  DCHECK(activation_response_);
-  state_ = RUNNING;
-  return std::move(activation_response_);
-}
-
 void ModelTypeController::LoadModels(
     const ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
@@ -95,11 +83,11 @@ void ModelTypeController::LoadModels(
   DCHECK_EQ(NOT_RUNNING, state_);
 
   auto it = delegate_map_.find(configure_context.sync_mode);
-  DCHECK(it != delegate_map_.end()) << ModelTypeToString(type());
+  DCHECK(it != delegate_map_.end()) << ModelTypeToDebugString(type());
   delegate_ = it->second.get();
   DCHECK(delegate_);
 
-  DVLOG(1) << "Sync starting for " << ModelTypeToString(type());
+  DVLOG(1) << "Sync starting for " << ModelTypeToDebugString(type());
   state_ = MODEL_STARTING;
   model_load_callback_ = model_load_callback;
 
@@ -122,47 +110,29 @@ void ModelTypeController::LoadModels(
                               base::AsWeakPtr(this)));
 }
 
-DataTypeController::ActivateDataTypeResult
-ModelTypeController::ActivateDataType(ModelTypeConfigurer* configurer) {
+std::unique_ptr<DataTypeActivationResponse> ModelTypeController::Connect() {
   DCHECK(CalledOnValidThread());
-  DCHECK(configurer);
   DCHECK(activation_response_);
   DCHECK_EQ(MODEL_LOADED, state_);
 
-  bool initial_sync_done =
-      activation_response_->model_type_state.initial_sync_done();
-  // Pass activation context to ModelTypeRegistry, where ModelTypeWorker gets
-  // created and connected with the delegate (processor).
-  configurer->ActivateDataType(type(), std::move(activation_response_));
-
   state_ = RUNNING;
-  DVLOG(1) << "Sync running for " << ModelTypeToString(type());
+  DVLOG(1) << "Sync running for " << ModelTypeToDebugString(type());
 
-  return initial_sync_done ? TYPE_ALREADY_DOWNLOADED : TYPE_NOT_YET_DOWNLOADED;
+  return std::move(activation_response_);
 }
 
-void ModelTypeController::DeactivateDataType(ModelTypeConfigurer* configurer) {
-  DCHECK(CalledOnValidThread());
-  DCHECK(configurer);
-  if (state_ == RUNNING) {
-    configurer->DeactivateDataType(type());
-    state_ = MODEL_LOADED;
-  }
-}
-
-void ModelTypeController::Stop(ShutdownReason shutdown_reason,
-                               StopCallback callback) {
+void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
   DCHECK(CalledOnValidThread());
 
   // Leave metadata if we do not disable sync completely.
   SyncStopMetadataFate metadata_fate = KEEP_METADATA;
-  switch (shutdown_reason) {
-    case STOP_SYNC:
+  switch (reason) {
+    case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
       break;
-    case DISABLE_SYNC:
+    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
       metadata_fate = CLEAR_METADATA;
       break;
-    case BROWSER_SHUTDOWN:
+    case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
       break;
   }
 
@@ -185,7 +155,7 @@ void ModelTypeController::Stop(ShutdownReason shutdown_reason,
     case MODEL_STARTING:
       DCHECK(model_load_callback_);
       DCHECK(model_stop_callbacks_.empty());
-      DLOG(WARNING) << "Deferring stop for " << ModelTypeToString(type())
+      DLOG(WARNING) << "Deferring stop for " << ModelTypeToDebugString(type())
                     << " because it's still starting";
       model_load_callback_.Reset();
       model_stop_metadata_fate_ = metadata_fate;
@@ -196,7 +166,7 @@ void ModelTypeController::Stop(ShutdownReason shutdown_reason,
 
     case MODEL_LOADED:
     case RUNNING:
-      DVLOG(1) << "Stopping sync for " << ModelTypeToString(type());
+      DVLOG(1) << "Stopping sync for " << ModelTypeToDebugString(type());
       model_load_callback_.Reset();
       state_ = NOT_RUNNING;
       delegate_->OnSyncStopping(metadata_fate);
@@ -301,25 +271,25 @@ void ModelTypeController::OnDelegateStarted(
       DCHECK(!model_stop_callbacks_.empty());
       DCHECK(!model_load_callback_);
       state_ = NOT_RUNNING;
-      FALLTHROUGH;
+      [[fallthrough]];
     case FAILED:
       DVLOG(1) << "Successful sync start completion received late for "
-               << ModelTypeToString(type())
+               << ModelTypeToDebugString(type())
                << ", it has been stopped meanwhile";
       delegate_->OnSyncStopping(model_stop_metadata_fate_);
       delegate_ = nullptr;
       break;
     case MODEL_STARTING:
       DCHECK(model_stop_callbacks_.empty());
-      // Hold on to the activation context until ActivateDataType is called.
+      // Hold on to the activation context until Connect is called.
       activation_response_ = std::move(activation_response);
       state_ = MODEL_LOADED;
-      DVLOG(1) << "Sync start completed for " << ModelTypeToString(type());
+      DVLOG(1) << "Sync start completed for " << ModelTypeToDebugString(type());
       break;
     case MODEL_LOADED:
     case RUNNING:
     case NOT_RUNNING:
-      NOTREACHED() << " type " << ModelTypeToString(type()) << " state "
+      NOTREACHED() << " type " << ModelTypeToDebugString(type()) << " state "
                    << StateToString(state_);
   }
 

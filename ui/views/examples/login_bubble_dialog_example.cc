@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
@@ -17,24 +16,21 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout.h"
 
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
 // Adds a label textfield pair to the login dialog's layout.
 Textfield* AddFormRow(LoginBubbleDialogView* bubble,
-                      GridLayout* layout,
                       const std::u16string& label_text) {
-  layout->StartRow(0, 0);
-  Label* label = layout->AddView(std::make_unique<Label>(label_text));
-  Textfield* textfield = layout->AddView(std::make_unique<Textfield>());
+  Label* label = bubble->AddChildView(std::make_unique<Label>(label_text));
+  Textfield* textfield = bubble->AddChildView(std::make_unique<Textfield>());
   textfield->SetAssociatedLabel(label);
   textfield->set_controller(bubble);
   constexpr int kDefaultTextfieldWidth = 30;
@@ -89,29 +85,28 @@ LoginBubbleDialogView::LoginBubbleDialogView(
                  l10n_util::GetStringUTF16(IDS_LOGIN_OK_BUTTON_LABEL));
 
   const LayoutProvider* provider = LayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
   const int related_control_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   const int label_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL,
-                        GridLayout::kFixedSize,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(0, label_padding);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  SetLayoutManager(std::make_unique<TableLayout>())
+      ->AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStretch,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(TableLayout::kFixedSize, label_padding)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, 1.0,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
+      .AddRows(1, TableLayout::kFixedSize);
 
-  username_ = AddFormRow(this, layout,
-                         l10n_util::GetStringUTF16(IDS_LOGIN_USERNAME_LABEL));
-
-  layout->AddPaddingRow(0, related_control_padding);
-
-  password_ = AddFormRow(this, layout,
-                         l10n_util::GetStringUTF16(IDS_LOGIN_PASSWORD_LABEL));
+  username_ =
+      AddFormRow(this, l10n_util::GetStringUTF16(IDS_LOGIN_USERNAME_LABEL));
+  password_ =
+      AddFormRow(this, l10n_util::GetStringUTF16(IDS_LOGIN_PASSWORD_LABEL));
   password_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
@@ -126,35 +121,37 @@ void LoginBubbleDialogExample::CreateExampleView(View* container) {
   const int label_padding = LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<GridLayout>());
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL,
-                        GridLayout::kFixedSize,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(0, label_padding);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL, 1.0,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  container->SetLayoutManager(std::make_unique<TableLayout>())
+      ->AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStretch,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(TableLayout::kFixedSize, label_padding)
+      .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStretch, 1.0,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
+      .AddRows(1, TableLayout::kFixedSize);
 
-  layout->StartRowWithPadding(0, 0, 0, related_control_padding);
-  button_ = layout->AddView(std::make_unique<MdTextButton>(
+  button_ = container->AddChildView(std::make_unique<MdTextButton>(
       Button::PressedCallback(), GetStringUTF16(IDS_LOGIN_SHOW_BUTTON_LABEL)));
   button_->SetCallback(base::BindRepeating(
       &LoginBubbleDialogView::Show, button_, BubbleBorder::TOP_LEFT,
       base::BindRepeating(&LoginBubbleDialogExample::OnSubmit,
                           base::Unretained(this))));
+  container->AddChildView(std::make_unique<View>());
 
-  layout->StartRowWithPadding(0, 0, 0, related_control_padding);
-  username_label_ = layout->AddView(std::make_unique<Label>(
+  username_label_ = container->AddChildView(std::make_unique<Label>(
       l10n_util::GetStringUTF16(IDS_LOGIN_USERNAME_LABEL)));
   username_label_->SetVisible(false);
-  username_input_ = layout->AddView(std::make_unique<Label>());
+  username_input_ = container->AddChildView(std::make_unique<Label>());
 
-  layout->StartRowWithPadding(0, 0, 0, related_control_padding);
-  password_label_ = layout->AddView(std::make_unique<Label>(
+  password_label_ = container->AddChildView(std::make_unique<Label>(
       l10n_util::GetStringUTF16(IDS_LOGIN_PASSWORD_LABEL)));
   password_label_->SetVisible(false);
-  password_input_ = layout->AddView(std::make_unique<Label>());
+  password_input_ = container->AddChildView(std::make_unique<Label>());
 }
 
 void LoginBubbleDialogExample::OnSubmit(std::u16string username,
@@ -165,5 +162,4 @@ void LoginBubbleDialogExample::OnSubmit(std::u16string username,
   password_input_->SetText(password);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

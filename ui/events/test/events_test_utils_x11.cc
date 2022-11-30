@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/devices/x11/xinput_util.h"
 #include "ui/events/event_constants.h"
@@ -121,7 +120,7 @@ x11::Event CreateXInput2Event(int deviceid,
   event.event_y = ToFp1616(location.y()),
   event.event = x11::Connection::Get()->default_root();
   event.button_mask = {0, 0};
-  return x11::Event(std::move(event));
+  return x11::Event(false, std::move(event));
 }
 
 }  // namespace
@@ -142,7 +141,7 @@ void ScopedXI2Event::InitKeyEvent(EventType type,
       .same_screen = true,
   };
 
-  x11::Event x11_event(key_event);
+  x11::Event x11_event(false, key_event);
   event_ = std::move(x11_event);
 }
 
@@ -150,15 +149,15 @@ void ScopedXI2Event::InitMotionEvent(const gfx::Point& location,
                                      const gfx::Point& root_location,
                                      int flags) {
   x11::MotionNotifyEvent motion_event{
-      .root_x = root_location.x(),
-      .root_y = root_location.y(),
-      .event_x = location.x(),
-      .event_y = location.y(),
+      .root_x = static_cast<int16_t>(root_location.x()),
+      .root_y = static_cast<int16_t>(root_location.y()),
+      .event_x = static_cast<int16_t>(location.x()),
+      .event_y = static_cast<int16_t>(location.y()),
       .state = static_cast<x11::KeyButMask>(XEventState(flags)),
       .same_screen = true,
   };
 
-  x11::Event x11_event(motion_event);
+  x11::Event x11_event(false, motion_event);
   event_ = std::move(x11_event);
 }
 
@@ -169,14 +168,14 @@ void ScopedXI2Event::InitButtonEvent(EventType type,
       .opcode = type == ui::ET_MOUSE_PRESSED ? x11::ButtonEvent::Press
                                              : x11::ButtonEvent::Release,
       .detail = static_cast<x11::Button>(XButtonEventButton(type, flags)),
-      .root_x = location.x(),
-      .root_y = location.y(),
-      .event_x = location.x(),
-      .event_y = location.y(),
+      .root_x = static_cast<int16_t>(location.x()),
+      .root_y = static_cast<int16_t>(location.y()),
+      .event_x = static_cast<int16_t>(location.x()),
+      .event_y = static_cast<int16_t>(location.y()),
       .same_screen = true,
   };
 
-  x11::Event x11_event(button_event);
+  x11::Event x11_event(false, button_event);
   event_ = std::move(x11_event);
 }
 
@@ -234,7 +233,7 @@ void ScopedXI2Event::InitScrollEvent(int deviceid,
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_offset_ordinal),
       Valuator(DeviceDataManagerX11::DT_CMT_FINGER_COUNT, finger_count)};
   SetUpValuators(
-      std::vector<Valuator>(valuators, valuators + base::size(valuators)));
+      std::vector<Valuator>(valuators, valuators + std::size(valuators)));
 }
 
 void ScopedXI2Event::InitFlingScrollEvent(int deviceid,
@@ -254,7 +253,7 @@ void ScopedXI2Event::InitFlingScrollEvent(int deviceid,
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_velocity_ordinal)};
 
   SetUpValuators(
-      std::vector<Valuator>(valuators, valuators + base::size(valuators)));
+      std::vector<Valuator>(valuators, valuators + std::size(valuators)));
 }
 
 void ScopedXI2Event::InitTouchEvent(int deviceid,

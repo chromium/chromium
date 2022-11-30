@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,22 +13,22 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_service.h"
+#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_mixer.h"
+#include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "chromecast/media/base/default_monotonic_clock.h"
 #include "chromecast/media/cma/test/mock_cma_backend_factory.h"
 #include "chromecast/media/cma/test/mock_multiroom_manager.h"
 #include "chromecast/public/task_runner.h"
 #include "chromecast/public/volume_control.h"
-#include "content/public/test/browser_task_environment.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,12 +40,11 @@
 using testing::_;
 using testing::Invoke;
 using testing::NiceMock;
+using testing::Return;
 
 namespace {
 
-std::string DummyGetSessionId(const std::string& /* audio_group_id */) {
-  return "AABBCCDDEE";
-}
+constexpr char kSessionId[] = "01234567-89ab-cdef-0123-456789abcdef";
 
 }  // namespace
 
@@ -83,7 +82,7 @@ class NotifyPushBufferCompleteTask : public chromecast::TaskRunner::Task {
 
 class FakeAudioDecoder : public CmaBackend::AudioDecoder {
  public:
-  enum PipelineStatus {
+  enum TestingPipelineStatus {
     PIPELINE_STATUS_OK,
     PIPELINE_STATUS_BUSY,
     PIPELINE_STATUS_ERROR,
@@ -134,12 +133,17 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
     return true;
   }
   RenderingDelay GetRenderingDelay() override { return rendering_delay_; }
+  AudioTrackTimestamp GetAudioTrackTimestamp() override {
+    return AudioTrackTimestamp();
+  }
+  int GetStartThresholdInFrames() override {
+    return 0;
+  }
   bool RequiresDecryption() override { return false; }
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
   const AudioConfig& config() const { return config_; }
   float volume() const { return volume_; }
-  void set_pipeline_status(PipelineStatus status) {
+  void set_pipeline_status(TestingPipelineStatus status) {
     if (status == PIPELINE_STATUS_OK && pending_push_) {
       pending_push_ = false;
       params_.task_runner->PostTask(new NotifyPushBufferCompleteTask(delegate_),
@@ -158,7 +162,7 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
   AudioConfig config_;
   float volume_;
 
-  PipelineStatus pipeline_status_;
+  TestingPipelineStatus pipeline_status_;
   bool pending_push_;
   int pushed_buffer_count_;
   scoped_refptr<DecoderBufferBase> last_buffer_;
@@ -221,16 +225,19 @@ class FakeCmaBackend : public CmaBackend {
   std::unique_ptr<FakeAudioDecoder> audio_decoder_;
 };
 
-class CastAudioOutputStreamTest : public ::testing::Test,
-                                  public chromecast::mojom::ServiceConnector {
+class CastAudioOutputStreamTest : public ::testing::Test {
  public:
   CastAudioOutputStreamTest()
       : audio_thread_("CastAudioThread"),
         task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         format_(::media::AudioParameters::AUDIO_PCM_LINEAR),
-        channel_layout_(::media::CHANNEL_LAYOUT_MONO),
+        channel_layout_config_(::media::ChannelLayoutConfig::Mono()),
         sample_rate_(::media::AudioParameters::kAudioCDSampleRate),
-        frames_per_buffer_(256) {}
+        frames_per_buffer_(256) {
+    chromecast_service_.AddInterface(&multiroom_manager_);
+    connector_.RegisterService(chromecast::mojom::kChromecastServiceName,
+                               &chromecast_service_);
+  }
 
   void SetUp() override {
     CreateAudioManagerForTesting();
@@ -243,25 +250,9 @@ class CastAudioOutputStreamTest : public ::testing::Test,
     audio_thread_.Stop();
   }
 
-  // chromecast::mojom::ServiceConnector:
-  void Connect(const std::string& service_name,
-               mojo::GenericPendingReceiver receiver) override {
-    if (service_name != chromecast::mojom::kChromecastServiceName)
-      return;
-
-    if (auto r = receiver.As<mojom::MultiroomManager>())
-      multiroom_manager_.Bind(r.PassPipe());
-  }
-
  protected:
   CmaBackendFactory* GetCmaBackendFactory() {
     return mock_backend_factory_.get();
-  }
-
-  mojo::PendingRemote<chromecast::mojom::ServiceConnector> CreateConnector() {
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector;
-    connector_receivers_.Add(this, connector.InitWithNewPipeAndPassReceiver());
-    return connector;
   }
 
   void CreateAudioManagerForTesting(bool use_mixer = false) {
@@ -278,12 +269,11 @@ class CastAudioOutputStreamTest : public ::testing::Test,
     CHECK(audio_thread_.StartAndWaitForTesting());
     mock_backend_factory_ = std::make_unique<MockCmaBackendFactory>();
     audio_manager_ = base::WrapUnique(new CastAudioManager(
-        std::make_unique<::media::TestAudioThread>(), nullptr,
+        std::make_unique<::media::TestAudioThread>(), nullptr, &delegate_,
         base::BindRepeating(&CastAudioOutputStreamTest::GetCmaBackendFactory,
                             base::Unretained(this)),
-        base::BindRepeating(&DummyGetSessionId),
         task_environment_.GetMainThreadTaskRunner(),
-        audio_thread_.task_runner(), CreateConnector(), use_mixer,
+        audio_thread_.task_runner(), &connector_, use_mixer,
         true /* force_use_cma_backend_for_output*/));
     // A few AudioManager implementations post initialization tasks to
     // audio thread. Flush the thread to ensure that |audio_manager_| is
@@ -337,8 +327,8 @@ class CastAudioOutputStreamTest : public ::testing::Test,
   }
 
   ::media::AudioParameters GetAudioParams() {
-    return ::media::AudioParameters(format_, channel_layout_, sample_rate_,
-                                    frames_per_buffer_);
+    return ::media::AudioParameters(format_, channel_layout_config_,
+                                    sample_rate_, frames_per_buffer_);
   }
 
   FakeAudioDecoder* GetAudioDecoder() {
@@ -358,14 +348,16 @@ class CastAudioOutputStreamTest : public ::testing::Test,
   std::unique_ptr<MockCmaBackendFactory> mock_backend_factory_;
 
   FakeCmaBackend* cma_backend_ = nullptr;
+  MockCastAudioManagerHelperDelegate delegate_;
+  external_service_support::FakeExternalConnector connector_;
+  external_service_support::ExternalService chromecast_service_;
   std::unique_ptr<CastAudioManager> audio_manager_;
-  mojo::ReceiverSet<chromecast::mojom::ServiceConnector> connector_receivers_;
   MockMultiroomManager multiroom_manager_;
 
   // AudioParameters used to create AudioOutputStream.
   // Tests can modify these parameters before calling CreateStream.
   ::media::AudioParameters::Format format_;
-  ::media::ChannelLayout channel_layout_;
+  ::media::ChannelLayoutConfig channel_layout_config_;
   int sample_rate_;
   int frames_per_buffer_;
 };
@@ -593,7 +585,7 @@ TEST_F(CastAudioOutputStreamTest, Format) {
   ::media::AudioParameters::Format format[] = {
       ::media::AudioParameters::AUDIO_PCM_LINEAR,
       ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY};
-  for (size_t i = 0; i < base::size(format); ++i) {
+  for (size_t i = 0; i < std::size(format); ++i) {
     format_ = format[i];
     ::media::AudioOutputStream* stream = CreateStream();
     ASSERT_TRUE(stream);
@@ -612,10 +604,11 @@ TEST_F(CastAudioOutputStreamTest, Format) {
 }
 
 TEST_F(CastAudioOutputStreamTest, ChannelLayout) {
-  ::media::ChannelLayout layout[] = {::media::CHANNEL_LAYOUT_MONO,
-                                     ::media::CHANNEL_LAYOUT_STEREO};
-  for (size_t i = 0; i < base::size(layout); ++i) {
-    channel_layout_ = layout[i];
+  ::media::ChannelLayoutConfig layout[] = {
+      ::media::ChannelLayoutConfig::Mono(),
+      ::media::ChannelLayoutConfig::Stereo()};
+  for (size_t i = 0; i < std::size(layout); ++i) {
+    channel_layout_config_ = layout[i];
     ::media::AudioOutputStream* stream = CreateStream();
     ASSERT_TRUE(stream);
     EXPECT_TRUE(stream->Open());
@@ -624,7 +617,8 @@ TEST_F(CastAudioOutputStreamTest, ChannelLayout) {
     FakeAudioDecoder* audio_decoder = GetAudioDecoder();
     ASSERT_TRUE(audio_decoder);
     const AudioConfig& audio_config = audio_decoder->config();
-    EXPECT_EQ(::media::ChannelLayoutToChannelCount(channel_layout_),
+    EXPECT_EQ(::media::ChannelLayoutToChannelCount(
+                  channel_layout_config_.channel_layout()),
               audio_config.channel_number);
 
     stream->Close();
@@ -914,7 +908,7 @@ TEST_F(CastAudioOutputStreamTest, AudioDelay) {
   audio_decoder->set_rendering_delay(
       CmaBackend::AudioDecoder::RenderingDelay(kDelayUs, MonotonicClockNow()));
   ::media::MockAudioSourceCallback source_callback;
-  const base::TimeDelta delay(base::TimeDelta::FromMicroseconds(kDelayUs));
+  const base::TimeDelta delay(base::Microseconds(kDelayUs));
   // OnMoreData can be called with a shorter delay than the rendering delay in
   // order to prefetch audio data faster.
   EXPECT_CALL(source_callback, OnMoreData(testing::Le(delay), _, _, _))
@@ -929,7 +923,7 @@ TEST_F(CastAudioOutputStreamTest, AudioDelay) {
 
 TEST_F(CastAudioOutputStreamTest, MultiroomInfo) {
   chromecast::mojom::MultiroomInfo info(true, AudioChannel::kAll,
-                                        base::TimeDelta::FromSeconds(3), "");
+                                        base::Seconds(3), "");
   multiroom_manager_.SetMultiroomInfo(info);
 
   ::media::AudioOutputStream* stream = CreateStream();
@@ -950,8 +944,7 @@ TEST_F(CastAudioOutputStreamTest, MultiroomInfo) {
   MediaPipelineDeviceParams params = cma_backend_->params();
   EXPECT_EQ(params.multiroom, true);
   EXPECT_EQ(params.audio_channel, AudioChannel::kAll);
-  EXPECT_EQ(params.output_delay_us,
-            base::TimeDelta::FromSeconds(3).InMicroseconds());
+  EXPECT_EQ(params.output_delay_us, base::Seconds(3).InMicroseconds());
 
   stream->Stop();
   stream->Close();
@@ -961,6 +954,7 @@ TEST_F(CastAudioOutputStreamTest, SessionId) {
   format_ = ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY;
   ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
       GetAudioParams(), "DummyGroupId", ::media::AudioManager::LogCallback());
+  EXPECT_CALL(delegate_, GetSessionId(_)).WillOnce(Return(kSessionId));
   ASSERT_TRUE(stream);
   ASSERT_TRUE(stream->Open());
   RunThreadsUntilIdle();
@@ -977,11 +971,10 @@ TEST_F(CastAudioOutputStreamTest, SessionId) {
   // TODO(awolter, b/111669896): Verify that the session id is correct after
   // piping has been added. For now, we want to verify that the session id is
   // empty, so that basic MZ continues to work.
-  std::string session_id = DummyGetSessionId("");
   ASSERT_TRUE(cma_backend_);
-  EXPECT_EQ(multiroom_manager_.GetLastSessionId(), session_id);
+  EXPECT_EQ(multiroom_manager_.GetLastSessionId(), kSessionId);
   MediaPipelineDeviceParams params = cma_backend_->params();
-  EXPECT_EQ(params.session_id, session_id);
+  EXPECT_EQ(params.session_id, kSessionId);
 
   stream->Stop();
   stream->Close();

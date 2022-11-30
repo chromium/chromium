@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/sessions/core/tab_restore_service_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class TabRestoreServiceImplTest;
@@ -30,21 +29,28 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
                         PrefService* pref_service,
                         TimeFactory* time_factory);
 
+  TabRestoreServiceImpl(const TabRestoreServiceImpl&) = delete;
+  TabRestoreServiceImpl& operator=(const TabRestoreServiceImpl&) = delete;
+
   ~TabRestoreServiceImpl() override;
 
   // TabRestoreService:
   void AddObserver(TabRestoreServiceObserver* observer) override;
   void RemoveObserver(TabRestoreServiceObserver* observer) override;
-  base::Optional<SessionID> CreateHistoricalTab(LiveTab* live_tab,
+  absl::optional<SessionID> CreateHistoricalTab(LiveTab* live_tab,
                                                 int index) override;
   void BrowserClosing(LiveTabContext* context) override;
   void BrowserClosed(LiveTabContext* context) override;
+  void CreateHistoricalGroup(LiveTabContext* context,
+                             const tab_groups::TabGroupId& id) override;
+  void GroupClosed(const tab_groups::TabGroupId& group) override;
+  void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
   void ClearEntries() override;
   void DeleteNavigationEntries(const DeletionPredicate& predicate) override;
   const Entries& entries() const override;
   std::vector<LiveTab*> RestoreMostRecentEntry(
       LiveTabContext* context) override;
-  std::unique_ptr<Tab> RemoveTabEntryById(SessionID id) override;
+  void RemoveTabEntryById(SessionID id) override;
   std::vector<LiveTab*> RestoreEntryById(
       LiveTabContext* context,
       SessionID id,
@@ -54,6 +60,8 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   void DeleteLastSession() override;
   bool IsRestoring() const override;
   void Shutdown() override;
+
+  void CreateRestoredEntryCommandForTest(SessionID id);
 
  private:
   friend class ::TabRestoreServiceImplTest;
@@ -69,8 +77,6 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   std::unique_ptr<PersistenceDelegate> persistence_delegate_;
   TabRestoreServiceHelper helper_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreServiceImpl);
 };
 
 }  // namespace sessions

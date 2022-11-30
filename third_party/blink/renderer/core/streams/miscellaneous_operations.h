@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,6 +84,13 @@ CORE_EXPORT StreamStartAlgorithm* CreateTrivialStartAlgorithm();
 // undefined.
 CORE_EXPORT StreamAlgorithm* CreateTrivialStreamAlgorithm();
 
+// Returns a strategy object that has no size() function and the supplied
+// highWaterMark. It has a null prototype so that it won't be affected by
+// changes to the global Object prototype. It behaves the same as a
+// CountQueuingStrategy but is faster and safer to use from C++.
+CORE_EXPORT ScriptValue CreateTrivialQueuingStrategy(v8::Isolate*,
+                                                     size_t high_water_mark);
+
 // Used in place of InvokeOrNoop in spec. Always takes 1 argument.
 // https://streams.spec.whatwg.org/#invoke-or-noop
 CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(ScriptState*,
@@ -161,6 +168,8 @@ class StrategyUnpacker final {
   // arbitrary user code. The object cannot be used if
   // exception_state.HadException() is true.
   StrategyUnpacker(ScriptState*, ScriptValue strategy, ExceptionState&);
+  StrategyUnpacker(const StrategyUnpacker&) = delete;
+  StrategyUnpacker& operator=(const StrategyUnpacker&) = delete;
   ~StrategyUnpacker() = default;
 
   // Performs MakeSizeAlgorithmFromSizeFunction on |size_|. Because this method
@@ -179,8 +188,6 @@ class StrategyUnpacker final {
  private:
   v8::Local<v8::Value> size_;
   v8::Local<v8::Value> high_water_mark_;
-
-  DISALLOW_COPY_AND_ASSIGN(StrategyUnpacker);
 };
 
 }  // namespace blink

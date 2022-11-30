@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 
 #include <string>
 
-#include "ash/components/account_manager/account_manager.h"
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "components/account_manager_core/account.h"
-#include "google_apis/gaia/gaia_auth_consumer.h"
-#include "google_apis/gaia/gaia_auth_fetcher.h"
 
 class PrefRegistrySimple;
 
@@ -22,34 +21,54 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
  public:
   explicit InlineLoginHandlerChromeOS(
       const base::RepeatingClosure& close_dialog_closure);
+
+  InlineLoginHandlerChromeOS(const InlineLoginHandlerChromeOS&) = delete;
+  InlineLoginHandlerChromeOS& operator=(const InlineLoginHandlerChromeOS&) =
+      delete;
+
   ~InlineLoginHandlerChromeOS() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // InlineLoginHandler overrides.
   void RegisterMessages() override;
-  void SetExtraInitParams(base::DictionaryValue& params) override;
-  void CompleteLogin(const std::string& email,
-                     const std::string& password,
-                     const std::string& gaia_id,
-                     const std::string& auth_code,
-                     bool skip_for_now,
-                     bool trusted,
-                     bool trusted_found,
-                     bool choose_what_to_sync,
-                     base::Value edu_login_params) override;
-  void HandleDialogClose(const base::ListValue* args) override;
+  void SetExtraInitParams(base::Value::Dict& params) override;
+  void CompleteLogin(const CompleteLoginParams& params) override;
+  void HandleDialogClose(const base::Value::List& args) override;
 
  private:
-  void ShowIncognitoAndCloseDialog(const base::ListValue* args);
-  void GetAccountsInSession(const base::ListValue* args);
+  // A callback for `GetAccounts` invoked from `CompleteLogin`.
+  void OnGetAccountsToCompleteLogin(
+      const CompleteLoginParams& params,
+      const std::vector<::account_manager::Account>& accounts);
+  // Creates a `SigninHelper` instance to complete login of the new account.
+  void CreateSigninHelper(const CompleteLoginParams& params,
+                          std::unique_ptr<SigninHelper::ArcHelper> arc_helper);
+  void ShowIncognitoAndCloseDialog(const base::Value::List& args);
+  void GetAccountsInSession(const base::Value::List& args);
   void OnGetAccounts(const std::string& callback_id,
                      const std::vector<::account_manager::Account>& accounts);
-  void HandleSkipWelcomePage(const base::ListValue* args);
+  void GetAccountsNotAvailableInArc(const base::Value::List& args);
+  void ContinueGetAccountsNotAvailableInArc(
+      const std::string& callback_id,
+      const std::vector<::account_manager::Account>& accounts);
+  void FinishGetAccountsNotAvailableInArc(
+      const std::string& callback_id,
+      const std::vector<::account_manager::Account>& accounts,
+      const base::flat_set<account_manager::Account>& arc_accounts);
+  void MakeAvailableInArcAndCloseDialog(const base::Value::List& args);
+  void HandleSkipWelcomePage(const base::Value::List& args);
+  void OpenGuestWindowAndCloseDialog(const base::Value::List& args);
+  // Fires WebUIListener `show-signin-error-page` that would display an error
+  // page informing the reason of the account not being added as a Secondary
+  // account.
+  void ShowSigninErrorPage(const std::string& email,
+                           const std::string& hosted_domain);
 
   base::RepeatingClosure close_dialog_closure_;
+  base::RepeatingCallback<void(const std::string&, const std::string&)>
+      show_signin_error_;
   base::WeakPtrFactory<InlineLoginHandlerChromeOS> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHandlerChromeOS);
 };
 
 }  // namespace chromeos

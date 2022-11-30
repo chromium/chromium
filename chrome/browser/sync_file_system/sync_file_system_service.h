@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
@@ -27,6 +27,10 @@
 #include "url/gurl.h"
 
 class Profile;
+
+namespace content {
+class StoragePartition;
+}
 
 namespace storage {
 class FileSystemContext;
@@ -55,6 +59,9 @@ class SyncFileSystemService
   using ExtensionStatusMapCallback =
       base::OnceCallback<void(const RemoteFileSyncService::OriginStatusMap&)>;
 
+  SyncFileSystemService(const SyncFileSystemService&) = delete;
+  SyncFileSystemService& operator=(const SyncFileSystemService&) = delete;
+
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -63,7 +70,9 @@ class SyncFileSystemService
                         SyncStatusCallback callback);
 
   void GetExtensionStatusMap(ExtensionStatusMapCallback callback);
-  void DumpFiles(const GURL& origin, DumpFilesCallback callback);
+  void DumpFiles(content::StoragePartition* storage_partition,
+                 const GURL& origin,
+                 DumpFilesCallback callback);
   void DumpDatabase(DumpFilesCallback callback);
 
   // Returns the file |url|'s sync status.
@@ -158,14 +167,14 @@ class SyncFileSystemService
 
   // Check the profile's sync preference settings and call
   // remote_file_service_->SetSyncEnabled() to update the status.
-  // |profile_sync_service| must be non-null.
-  void UpdateSyncEnabledStatus(syncer::SyncService* profile_sync_service);
+  // |sync_service| must be non-null.
+  void UpdateSyncEnabledStatus(syncer::SyncService* sync_service);
 
   // Runs the SyncProcessRunner method of all sync runners (e.g. for Local sync
   // and Remote sync).
   void RunForEachSyncRunners(void(SyncProcessRunner::*method)());
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<LocalFileSyncService> local_service_;
   std::unique_ptr<RemoteFileSyncService> remote_service_;
@@ -182,8 +191,6 @@ class SyncFileSystemService
 
   bool promoting_demoted_changes_;
   base::OnceClosure idle_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemService);
 };
 
 }  // namespace sync_file_system

@@ -2,6 +2,7 @@
   "android-official": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "is_official_build": true,
       "symbol_level": 1,
       "target_os": "android",

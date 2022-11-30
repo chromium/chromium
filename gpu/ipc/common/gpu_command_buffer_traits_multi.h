@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,23 +137,25 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::Capabilities)
   IPC_STRUCT_TRAITS_MEMBER(msaa_is_slow)
   IPC_STRUCT_TRAITS_MEMBER(disable_one_component_textures)
   IPC_STRUCT_TRAITS_MEMBER(gpu_rasterization)
+  IPC_STRUCT_TRAITS_MEMBER(shared_image_d3d)
   IPC_STRUCT_TRAITS_MEMBER(chromium_image_rgb_emulation)
   IPC_STRUCT_TRAITS_MEMBER(dc_layers)
   IPC_STRUCT_TRAITS_MEMBER(protected_video_swap_chain)
   IPC_STRUCT_TRAITS_MEMBER(gpu_vsync)
   IPC_STRUCT_TRAITS_MEMBER(shared_image_swap_chain)
+  IPC_STRUCT_TRAITS_MEMBER(angle_rgbx_internal_format)
   IPC_STRUCT_TRAITS_MEMBER(avoid_stencil_buffers)
   IPC_STRUCT_TRAITS_MEMBER(disable_2d_canvas_copy_on_write)
   IPC_STRUCT_TRAITS_MEMBER(texture_npot)
   IPC_STRUCT_TRAITS_MEMBER(texture_storage_image)
   IPC_STRUCT_TRAITS_MEMBER(supports_oop_raster)
   IPC_STRUCT_TRAITS_MEMBER(chromium_gpu_fence)
-  IPC_STRUCT_TRAITS_MEMBER(unpremultiply_and_dither_copy)
   IPC_STRUCT_TRAITS_MEMBER(separate_stencil_ref_mask_writemask)
   IPC_STRUCT_TRAITS_MEMBER(use_gpu_fences_for_overlay_planes)
   IPC_STRUCT_TRAITS_MEMBER(context_supports_distance_field_text)
   IPC_STRUCT_TRAITS_MEMBER(chromium_nonblocking_readback)
   IPC_STRUCT_TRAITS_MEMBER(mesa_framebuffer_flip_y)
+  IPC_STRUCT_TRAITS_MEMBER(disable_legacy_mailbox)
 
   IPC_STRUCT_TRAITS_MEMBER(major_version)
   IPC_STRUCT_TRAITS_MEMBER(minor_version)

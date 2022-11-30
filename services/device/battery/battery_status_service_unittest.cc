@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "services/device/battery/battery_status_manager.h"
@@ -23,6 +23,10 @@ class FakeBatteryManager : public BatteryStatusManager {
   explicit FakeBatteryManager(
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : callback_(callback), start_invoked_count_(0), stop_invoked_count_(0) {}
+
+  FakeBatteryManager(const FakeBatteryManager&) = delete;
+  FakeBatteryManager& operator=(const FakeBatteryManager&) = delete;
+
   ~FakeBatteryManager() override {}
 
   // Methods from Battery Status Manager
@@ -44,8 +48,6 @@ class FakeBatteryManager : public BatteryStatusManager {
   BatteryStatusService::BatteryUpdateCallback callback_;
   int start_invoked_count_;
   int stop_invoked_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBatteryManager);
 };
 
 }  // namespace
@@ -56,6 +58,10 @@ class BatteryStatusServiceTest : public testing::Test {
       : battery_manager_(nullptr),
         callback1_invoked_count_(0),
         callback2_invoked_count_(0) {}
+
+  BatteryStatusServiceTest(const BatteryStatusServiceTest&) = delete;
+  BatteryStatusServiceTest& operator=(const BatteryStatusServiceTest&) = delete;
+
   ~BatteryStatusServiceTest() override {}
 
  protected:
@@ -110,14 +116,12 @@ class BatteryStatusServiceTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   BatteryStatusService battery_service_;
-  FakeBatteryManager* battery_manager_;
+  raw_ptr<FakeBatteryManager> battery_manager_;
   BatteryStatusService::BatteryUpdateCallback callback1_;
   BatteryStatusService::BatteryUpdateCallback callback2_;
   int callback1_invoked_count_;
   int callback2_invoked_count_;
   mojom::BatteryStatus battery_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusServiceTest);
 };
 
 TEST_F(BatteryStatusServiceTest, AddFirstCallback) {

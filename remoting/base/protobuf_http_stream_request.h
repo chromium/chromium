@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/base/protobuf_http_request_base.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -35,7 +36,7 @@ class ProtobufHttpStreamRequest final
       base::OnceCallback<void(const ProtobufHttpStatus& status)>;
 
   static constexpr base::TimeDelta kStreamReadyTimeoutDuration =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
 
   explicit ProtobufHttpStreamRequest(
       std::unique_ptr<ProtobufHttpRequestConfig> config);
@@ -83,7 +84,7 @@ class ProtobufHttpStreamRequest final
   void OnStreamReadyTimeout();
 
   // Used to create new response message instances.
-  const google::protobuf::MessageLite* default_message_;
+  raw_ptr<const google::protobuf::MessageLite> default_message_;
 
   std::unique_ptr<ProtobufHttpStreamParser> stream_parser_;
 

@@ -1,0 +1,109 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Composite message type for messages sent over the remote-webauthn data
+// channel.
+// Next ID: 10
+message RemoteWebAuthn {
+  // Message that represents a DOMException, yielded by the remote request
+  // during a Create or Get request.
+  // Next ID: 3
+  message ExceptionDetails {
+    optional string name = 1;
+    optional string message = 2;
+  }
+
+  // Requests the client to handle a call to
+  // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().
+  message IsUvpaaRequest {}
+
+  // Response for IsUvpaaRequest.
+  // Next ID: 2
+  message IsUvpaaResponse { optional bool is_available = 1; }
+
+  // Requests the client to handle a navigator.credentials.create() call.
+  // Next ID: 2
+  message CreateRequest {
+    // A JSON serialized representation of PublicKeyCredentialCreationOptions
+    // passed to navigator.credentials.create().
+    optional string request_details_json = 1;
+  }
+
+  // Response for CreateRequest.
+  // Next ID: 3
+  message CreateResponse {
+    // If neither of the fields is set, it means that the remote create() call
+    // has yielded `null`, which is still a valid response according to the
+    // spec.
+    oneof result {
+      // The `DOMException`, if any, yielded by the remote request.
+      ExceptionDetails error = 1;
+
+      // A JSON serialized representation of the `PublicKeyCredential`
+      // (https://w3c.github.io/webauthn/#publickeycredential), if any.
+      string response_json = 2;
+    }
+  }
+
+  // Requests the client to handle a navigator.credentials.get() call.
+  // Next ID: 2
+  message GetRequest {
+    // A JSON serialized representation of CredentialRequestOptions passed to
+    // navigator.credentials.get().
+    optional string request_details_json = 1;
+  }
+
+  // Response for GetRequest.
+  // Next ID: 3
+  message GetResponse {
+    // If neither of the fields is set, it means that the remote get() call
+    // has yielded `null`, which is still a valid response according to the
+    // spec.
+    oneof result {
+      // The `DOMException`, if any, yielded by the remote request.
+      ExceptionDetails error = 1;
+
+      // A JSON serialized representation of the `PublicKeyCredential`
+      // (https://w3c.github.io/webauthn/#publickeycredential), if any.
+      string response_json = 2;
+    }
+  }
+
+  // Requests the client to abort an ongoing Create or Get request.
+  // The |id| field of this message should be set to the same value as the
+  // to-be-canceled GetRequest/CreateRequest's |id| field.
+  message CancelRequest {}
+
+  // Response for CancelRequest.
+  // Next ID: 2
+  message CancelResponse {
+    // Boolean indicating whether the request has been successfully canceled.
+    // If this is true, no future CreateResponse/GetResponse will be delivered
+    // for the same |id|.
+    optional bool was_canceled = 1;
+  }
+
+  // ID used to multiplex requests.
+  optional uint64 id = 1;
+
+  oneof message {
+    IsUvpaaRequest is_uvpaa_request = 2;
+    IsUvpaaResponse is_uvpaa_response = 3;
+
+    CreateRequest create_request = 4;
+    CreateResponse create_response = 5;
+
+    CancelRequest cancel_request = 6;
+    CancelResponse cancel_response = 7;
+
+    GetRequest get_request = 8;
+    GetResponse get_response = 9;
+  }
+}

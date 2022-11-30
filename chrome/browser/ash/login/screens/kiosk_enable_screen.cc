@@ -1,15 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
 
 #include "base/logging.h"
+#include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr const char kClose[] = "close";
@@ -18,25 +18,15 @@ constexpr const char kEnable[] = "enable";
 }  // namespace
 
 KioskEnableScreen::KioskEnableScreen(
-    KioskEnableScreenView* view,
+    base::WeakPtr<KioskEnableScreenView> view,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(KioskEnableScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->SetScreen(this);
 }
 
-KioskEnableScreen::~KioskEnableScreen() {
-  if (view_)
-    view_->SetScreen(nullptr);
-}
-
-void KioskEnableScreen::OnViewDestroyed(KioskEnableScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+KioskEnableScreen::~KioskEnableScreen() = default;
 
 void KioskEnableScreen::ShowImpl() {
   if (view_)
@@ -59,13 +49,14 @@ void KioskEnableScreen::OnGetConsumerKioskAutoLaunchStatus(
 
 void KioskEnableScreen::HideImpl() {}
 
-void KioskEnableScreen::OnUserAction(const std::string& action_id) {
+void KioskEnableScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kClose)
     HandleClose();
   else if (action_id == kEnable)
     HandleEnable();
   else
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
 }
 
 void KioskEnableScreen::HandleClose() {
@@ -84,10 +75,11 @@ void KioskEnableScreen::HandleEnable() {
 }
 
 void KioskEnableScreen::OnEnableConsumerKioskAutoLaunch(bool success) {
-  view_->ShowKioskEnabled(success);
+  if (view_)
+    view_->ShowKioskEnabled(success);
   if (!success) {
     LOG(WARNING) << "Consumer kiosk mode can't be enabled!";
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

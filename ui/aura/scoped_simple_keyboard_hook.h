@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 #define UI_AURA_SCOPED_SIMPLE_KEYBOARD_HOOK_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 
 namespace ui {
@@ -24,16 +23,18 @@ namespace aura {
 class ScopedSimpleKeyboardHook : public ScopedKeyboardHook {
  public:
   explicit ScopedSimpleKeyboardHook(
-      base::Optional<base::flat_set<ui::DomCode>> dom_codes);
+      absl::optional<base::flat_set<ui::DomCode>> dom_codes);
+
+  ScopedSimpleKeyboardHook(const ScopedSimpleKeyboardHook&) = delete;
+  ScopedSimpleKeyboardHook& operator=(const ScopedSimpleKeyboardHook&) = delete;
+
   ~ScopedSimpleKeyboardHook() override;
 
   // ScopedKeyboardHook override.
   bool IsKeyLocked(ui::DomCode dom_code) override;
 
  private:
-  base::Optional<base::flat_set<ui::DomCode>> dom_codes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSimpleKeyboardHook);
+  absl::optional<base::flat_set<ui::DomCode>> dom_codes_;
 };
 
 }  // namespace aura

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace android {
@@ -21,12 +20,18 @@ class SequencedTaskRunner;
 
 class AfterStartupTaskUtils {
  public:
+  AfterStartupTaskUtils() = delete;
+  AfterStartupTaskUtils(const AfterStartupTaskUtils&) = delete;
+  AfterStartupTaskUtils& operator=(const AfterStartupTaskUtils&) = delete;
+
   // Observes startup and when complete runs tasks that have accrued.
   static void StartMonitoringStartup();
 
-  // Used to augment the behavior of BrowserThread::PostAfterStartupTask
-  // for chrome. Tasks are queued until startup is complete.
-  // Note: see browser_thread.h
+  // Queues `task` to run on `destination_runner` after startup is complete.
+  // Note: prefer to simply post a task with BEST_EFFORT priority. This will
+  // delay the task until higher priority tasks are finished, which includes
+  // critical startup tasks. The BrowserThread::PostBestEffortTask() helper can
+  // post a BEST_EFFORT task to an arbitrary task runner.
   static void PostTask(
       const base::Location& from_here,
       const scoped_refptr<base::SequencedTaskRunner>& destination_runner,
@@ -50,8 +55,6 @@ class AfterStartupTaskUtils {
   friend class android::AfterStartupTaskUtilsJNI;
 
   static void SetBrowserStartupIsComplete();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AfterStartupTaskUtils);
 };
 
 #endif  // CHROME_BROWSER_AFTER_STARTUP_TASK_UTILS_H_

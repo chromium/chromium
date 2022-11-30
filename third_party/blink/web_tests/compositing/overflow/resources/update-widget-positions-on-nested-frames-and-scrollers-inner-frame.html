@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="../../../resources/testdriver.js"></script>
+  <script src="../../../resources/testdriver-vendor.js"></script>
   <script src="../../../fast/forms/resources/picker-common.js"></script>
   <style>
     select {
@@ -18,7 +20,9 @@
 
       var select = document.getElementById('select');
       var selectRect = select.getBoundingClientRect();
-      clickToOpenPicker(selectRect.left, selectRect.top, callback, function () {
+      openPicker(select)
+      .then(callback)
+      .catch(() => {
           setTimeout(callback, 0);
       });
     }

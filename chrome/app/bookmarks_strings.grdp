@@ -79,11 +79,17 @@
           =1 {Open in &amp;new window}
           other {Open all ({COUNT}) in &amp;new window}}
     </message>
-    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO" desc="Menu description for opening all urls in a bookmark folder in an incognito window">
+    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO" desc="Menu description for opening all urls in a bookmark folder in an Incognito window">
         {COUNT, plural,
-          =0 {Open all in &amp;incognito window}
-          =1 {Open in &amp;incognito window}
-          other {Open all ({COUNT}) in &amp;incognito window}}
+          =0 {Open all in &amp;Incognito window}
+          =1 {Open in &amp;Incognito window}
+          other {Open all ({COUNT}) in &amp;Incognito window}}
+    </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP" desc="Menu description for opening all urls in a bookmark folder in a new group">
+        {COUNT, plural,
+          =0 {Open all in &amp;new tab group}
+          =1 {Open in &amp;new tab group}
+          other {Open all ({COUNT}) in &amp;new tab group}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB" desc="Menu description for loading bookmark in a new tab">
       &amp;Open in new tab
@@ -91,8 +97,8 @@
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_WINDOW" desc="Menu description for loading bookmark in a new window">
       Open in &amp;new window
     </message>
-    <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="Menu description for opening bookmark in incognito window">
-      Open in &amp;incognito window
+    <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="Menu description for opening bookmark in Incognito window">
+      Open in &amp;Incognito window
     </message>
     <message name="IDS_BOOKMARK_BAR_EDIT" desc="Title of the bookmark context menu item that brings up the bookmark editor">
       &amp;Edit...
@@ -131,11 +137,17 @@
           =1 {Open in &amp;New Window}
           other {Open All ({COUNT}) in &amp;New Window}}
     </message>
-    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO" desc="In Title Case: Menu description for opening all urls in a bookmark folder in an incognito window">
+    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO" desc="In Title Case: Menu description for opening all urls in a bookmark folder in an Incognito window">
         {COUNT, plural,
           =0 {Open All in &amp;Incognito Window}
           =1 {Open in &amp;Incognito Window}
           other {Open All ({COUNT}) in &amp;Incognito Window}}
+    </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP" desc="In Title Case: Menu title for opening all urls in a bookmark folder in a new group">
+        {COUNT, plural,
+          =0 {Open All in &amp;New Tab Group}
+          =1 {Open in &amp;New Tab Group}
+          other {Open All ({COUNT}) in &amp;New Tab Group}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB" desc="In Title Case: Menu description for loading bookmark in a new tab">
       &amp;Open in New Tab
@@ -143,7 +155,7 @@
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_WINDOW" desc="In Title Case: Menu description for loading bookmark in a new window">
       Open in &amp;New Window
     </message>
-    <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="In Title Case: Menu description for opening bookmark in incognito window">
+    <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="In Title Case: Menu description for opening bookmark in Incognito window">
       Open in &amp;Incognito Window
     </message>
     <message name="IDS_BOOKMARK_BAR_EDIT" desc="In Title Case: Title of the bookmark context menu item that brings up the bookmark editor">
@@ -179,7 +191,7 @@
   <message name="IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK" desc="Title of the bubble when re-clicking on a bookmark">
     Edit bookmark
   </message>
-  <message name="IDS_BOOKMARK_BUBBLE_NAME_LABEL" desc="Text preceding the title of the page that was bookmarked">
+  <message name="IDS_BOOKMARK_BUBBLE_NAME_LABEL" desc="Text preceding the title of the page that was bookmarked" meaning="Name of an inanimate object">
     Name
   </message>
   <message name="IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL" desc="Text preceding the title of the page that was bookmarked, read by spoken feedback">
@@ -233,7 +245,7 @@
   <!-- End of Desktop to iOS Promo strings. -->
 
   <!-- Begin of Bookmark Editor strings. -->
-  <message name="IDS_BOOKMARK_EDITOR_NAME_LABEL" desc="Label shown before the title/name of the URL.">
+  <message name="IDS_BOOKMARK_EDITOR_NAME_LABEL" desc="Label shown before the title/name of the URL." meaning="Name of an inanimate object">
     Name
   </message>
   <message name="IDS_BOOKMARK_AX_EDITOR_NAME_LABEL" desc="Spoken text for bookmark name text field in edit folder dialog">
@@ -268,6 +280,9 @@
     <message name="IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW" desc="Window title of editor for new bookmark folders">
       New folder
     </message>
+    <message name="IDS_UNNAMED_BOOKMARK_FOLDER" desc="Tooltip for unnamed bookmark folders">
+      Unnamed folder
+    </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="The title of the Bookmark All Tabs dialog.">
       Bookmark all tabs
     </message>
@@ -284,6 +299,9 @@
     </message>
     <message name="IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW" desc="In Title Case: Window title of editor for new bookmark folders">
       New Folder
+    </message>
+    <message name="IDS_UNNAMED_BOOKMARK_FOLDER" desc="In Title Case: Tooltip for unnamed bookmark folders">
+      Unnamed Folder
     </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="In Title Case: The title of the Bookmark All Tabs dialog.">
       Bookmark All Tabs
@@ -364,9 +382,6 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_COPY" desc="Title of the bookmark dropdown menu item that copies one or more bookmarks.">
     Copy
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_MENU_COPY_URL" desc="Title of the bookmark dropdown menu item that copies the url of the bookmark.">
-    Copy URL
-  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_PASTE" desc="Title of the bookmark dropdown menu item that pastes one or more bookmarks.">
     Paste
   </message>
@@ -378,6 +393,12 @@
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_IMPORT" desc="Title of the bookmark toolbar dropdown menu item that imports bookmarks.">
     Import bookmarks
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_IMPORT_BEGAN" desc="Accessibility text for after the user selects bookmarks to import.">
+    Importing bookmarks...
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_IMPORT_ENDED" desc="Accessibility text for after the bookmarks manager has finished importing bookmarks.">
+    Bookmarks imported.
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL" desc="Menu title for opening all urls in a bookmark folder">
     Open all
@@ -391,11 +412,11 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_WINDOW_WITH_COUNT" desc="Menu title for opening all urls in a bookmark folder in a new window, which includes a count of urls">
     Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in new window
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO" desc="Menu description for opening all urls in a bookmark folder in an incognito window">
-    Open all in incognito window
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO" desc="Menu description for opening all urls in a bookmark folder in an Incognito window">
+    Open all in Incognito window
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT" desc="Menu description for opening all urls in a bookmark folder in an incognito window, which includes a count of urls">
-    Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in incognito window
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT" desc="Menu description for opening all urls in a bookmark folder in an Incognito window, which includes a count of urls">
+    Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in Incognito window
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB" desc="Menu description for opening a bookmark in a new tab">
     Open in new tab
@@ -403,8 +424,8 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_WINDOW" desc="Menu description for opening a bookmark in a new window">
     Open in new window
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO" desc="Menu description for opening a bookmark in incognito window">
-    Open in incognito window
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO" desc="Menu description for opening a bookmark in Incognito window">
+    Open in Incognito window
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_RENAME" desc="Title of the bookmark list dropdown menu item that renames folders.">
     Rename
@@ -450,9 +471,6 @@
       =1 {1 bookmark deleted}
       other {{COUNT} bookmarks deleted}}
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_TOAST_URL_COPIED" desc="Label displayed in toast popup message when a URL is copied.">
-    URL copied
-  </message>
   <message name="IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED" desc="Label displayed in toast popup message when a single item is copied.">
     '<ph name="COPIED_ITEM_NAME">$1<ex>Bookmark X</ex></ph>' copied
   </message>
@@ -494,5 +512,17 @@
     Edit bookmark for this tab
   </message>
   <!-- End of Bookmark Star button strings. -->
+
+  <!-- Begin of screen reader message strings. -->
+  <message name="IDS_BOOKMARK_SCREEN_READER_CREATED" desc="Screen reader message that is read when a bookmark is created.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' created.
+  </message>
+  <message name="IDS_BOOKMARK_SCREEN_READER_REORDERED" desc="Screen reader message that is read when a bookmark is reordered.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' moved.
+  </message>
+  <message name="IDS_BOOKMARK_SCREEN_READER_MOVED" desc="Screen reader message that is read when a bookmark is moved into a different folder.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' moved into '<ph name="NEW_FOLDER_TITLE">$2<ex>Search engines</ex></ph>'.
+  </message>
+  <!-- End of screen reader message strings. -->
 
 </grit-part>

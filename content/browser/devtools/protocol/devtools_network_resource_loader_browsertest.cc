@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   mojo::Remote<network::mojom::URLLoaderFactory> CreateURLLoaderFactory() {
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest,
       source_map_url, protocol::DevToolsNetworkResourceLoader::Caching::kBypass,
       base::BindOnce(CheckSuccess, this, &run_loop));
   run_loop.Run();
-  base::Optional<network::ResourceRequest> request =
+  absl::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(source_map_url);
   EXPECT_TRUE(request->load_flags & net::LOAD_BYPASS_CACHE);
 }
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest,
                    base::BindOnce(CheckSuccess, this, &run_loop));
   run_loop.Run();
 
-  base::Optional<network::ResourceRequest> request =
+  absl::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(source_map_url);
   EXPECT_TRUE(
       frame->ComputeSiteForCookies().IsEquivalent(request->site_for_cookies));

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -68,47 +66,6 @@ public class AwContentsClientOnUnhandledKeyEventTest {
         mContentsClient = new KeyEventTestAwContentsClient();
         mHelper = new UnhandledKeyEventHelper();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-    }
-
-    /*
-    @SmallTest
-    @Feature({"AndroidWebView", "TextInput"})
-     * http://crbug.com/538377
-     * Chromium WebView currently sends unhandled events for all KeyUps and
-     * composition codes (and always has), even when the textbox is handling
-     * the corresponding KeyDowns.  This behavior violates Android's
-     * InputEventConsistencyVerifier, although there are no currently known
-     * broken use cases.  The correct fix for this is still unclear, but I'm
-     * adding this new test as @DisabledTest to provide a tool for further
-     * work.
-    */
-    @Test
-    @DisabledTest(message = "https://crbug.com/538377")
-    public void testTextboxConsumesKeyEvents() throws Throwable {
-        AwActivityTestRule.enableJavaScriptOnUiThread(mTestContainerView.getAwContents());
-        final String data = "<html><head></head><body><textarea id='textarea0'></textarea></body>"
-                + "</html>";
-        mActivityTestRule.loadDataSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), data, "text/html", false);
-        mActivityTestRule.executeJavaScriptAndWaitForResult(mTestContainerView.getAwContents(),
-                mContentsClient, "document.getElementById('textarea0').select();");
-
-        int callCount;
-
-        callCount = mHelper.getCallCount();
-        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
-
-        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_DEL);
-
-        // COMPOSITION_KEY is synthetically created for DOM's onkeydown() event while composing
-        // text. We don't want to propagate it to WebViewClient.
-        dispatchDownAndUpKeyEvents(ImeAdapter.COMPOSITION_KEY_CODE);
-
-        // Alt-left should be unhandled but none of the previous events should be.
-        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_ALT_LEFT);
-
-        mHelper.waitForCallback(callCount, 2);
-        assertUnhandledDownAndUp(KeyEvent.KEYCODE_ALT_LEFT);
     }
 
     @Test

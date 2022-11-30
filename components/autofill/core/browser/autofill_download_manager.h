@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -35,7 +36,7 @@ namespace autofill {
 class AutofillDriver;
 class LogManager;
 
-const size_t kMaxAPIQueryGetSize = 10240;  // 10 KiB
+const size_t kMaxQueryGetSize = 10240;  // 10 KiB
 
 // A helper to make sure that tests which modify the set of active autofill
 // experiments do not interfere with one another.
@@ -154,10 +155,6 @@ class AutofillDownloadManager {
   std::tuple<GURL, std::string> GetRequestURLAndMethod(
       const FormRequestData& request_data) const;
 
-  // Same as GetRequestURLAndMethod, but for the API.
-  std::tuple<GURL, std::string> GetRequestURLAndMethodForApi(
-      const FormRequestData& request_data) const;
-
   // Initiates request to Autofill servers to download/upload type predictions.
   // |request_data| - form signature hash(es), request payload data and request
   //   type (query or upload).
@@ -198,17 +195,17 @@ class AutofillDownloadManager {
 
   // The AutofillDriver that this instance will use. Must not be null, and must
   // outlive this instance.
-  AutofillDriver* const driver_;  // WEAK
+  const raw_ptr<AutofillDriver> driver_;  // WEAK
 
   // The observer to notify when server predictions are successfully received.
   // Must not be null.
-  AutofillDownloadManager::Observer* const observer_;  // WEAK
+  const raw_ptr<AutofillDownloadManager::Observer> observer_;  // WEAK
 
   // Callback function to retrieve API key.
   const std::string api_key_;
 
   // Access to leave log messages for chrome://autofill-internals, may be null.
-  LogManager* const log_manager_;  // WEAK
+  const raw_ptr<LogManager> log_manager_;  // WEAK
 
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.

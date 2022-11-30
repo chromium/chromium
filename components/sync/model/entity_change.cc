@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,6 @@ EntityChange::EntityChange(const std::string& storage_key,
                            EntityData data)
     : storage_key_(storage_key), type_(type), data_(std::move(data)) {}
 
-EntityChange::~EntityChange() {}
+EntityChange::~EntityChange() = default;
 
 }  // namespace syncer

@@ -1,21 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/browsing_data/system_cookie_store_util.h"
+#import "ios/web/public/browsing_data/system_cookie_store_util.h"
 
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/net/cookies/cookie_store_ios_test_util.h"
-#include "ios/net/cookies/system_cookie_store.h"
+#import "ios/net/cookies/cookie_store_ios_test_util.h"
+#import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/net/cookies/wk_cookie_util.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/test/web_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,11 +28,10 @@ namespace web {
 
 namespace {
 
-// Checks if |system_cookie| was set in WKHTTPCookieStore |cookie_store|.
+// Checks if `system_cookie` was set in WKHTTPCookieStore `cookie_store`.
 bool IsCookieSetInWKCookieStore(NSHTTPCookie* system_cookie,
                                 NSURL* url,
-                                WKHTTPCookieStore* cookie_store)
-    API_AVAILABLE(ios(11.0)) {
+                                WKHTTPCookieStore* cookie_store) {
   __block bool is_set = false;
   __block bool verification_done = false;
   [cookie_store getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
@@ -54,7 +53,7 @@ bool IsCookieSetInWKCookieStore(NSHTTPCookie* system_cookie,
   return is_set;
 }
 
-// Sets |cookie| in SystemCookieStore |store| , and wait until set callback
+// Sets `cookie` in SystemCookieStore `store` , and wait until set callback
 // is finished.
 bool SetCookieInCookieStore(NSHTTPCookie* cookie,
                             net::SystemCookieStore* store) {

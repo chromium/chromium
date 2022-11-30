@@ -11,8 +11,12 @@
 <script>
 function finish() {
     document.body.innerHTML = "PASS";
-	if (window.testRunner)
-	    testRunner.notifyDone();
+    if (window.testRunner) {
+        // Force style recalc to trigger console messages before done.
+        // Workaround for crbug.com/1362133.
+        document.body.offsetLeft;
+        testRunner.notifyDone();
+    }
 }
 
 if (window.testRunner) {

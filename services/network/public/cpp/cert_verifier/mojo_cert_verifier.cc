@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
@@ -62,7 +64,7 @@ class CertVerifierRequestImpl : public mojom::CertVerifierRequest,
   // Certificate being verified.
   scoped_refptr<net::X509Certificate> cert_;
   // Out parameter for the result.
-  net::CertVerifyResult* cert_verify_result_;
+  raw_ptr<net::CertVerifyResult> cert_verify_result_;
   // Callback to call once the result is available.
   net::CompletionOnceCallback completion_callback_;
 
@@ -122,7 +124,9 @@ int MojoCertVerifier::Verify(
   mojo::PendingRemote<mojom::CertVerifierRequest> cert_verifier_request;
   auto cert_verifier_receiver =
       cert_verifier_request.InitWithNewPipeAndPassReceiver();
-  mojo_cert_verifier_->Verify(params, std::move(cert_verifier_request));
+  mojo_cert_verifier_->Verify(
+      params, static_cast<uint32_t>(net_log.source().type), net_log.source().id,
+      net_log.source().start_time, std::move(cert_verifier_request));
   *out_req = std::make_unique<CertVerifierRequestImpl>(
       std::move(cert_verifier_receiver), params.certificate(), verify_result,
       std::move(callback), net_log);

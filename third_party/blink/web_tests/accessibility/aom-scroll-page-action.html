@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<!--
+
+Accessibility Object Model - synthesized keyboard events for user action events from Assistive Technology
+Explainer: https://github.com/WICG/aom/blob/gh-pages/explainer.md#user-action-events-from-assistive-technology
+Spec: https://wicg.github.io/aom/spec/
+
+-->
+<script>
+test(function(t) {
+  assert_true(internals.runtimeFlags.synthesizedKeyboardEventsForAccessibilityActionsEnabled);
+}, "Make sure that keyboard event synthesis is enabled");
+</script>
+
+<input id="text" style="margin-top: 10000px;">
+
+<script>
+// Traverse ancestors up until reaching web document node, which is the one
+// exposing the scroll accessibility actions.
+let axDocument = accessibilityController.accessibleElementById("text");
+while (axDocument.role != "AXRole: AXRootWebArea")
+  axDocument = axDocument.parentElement();
+
+promise_test(function(t) {
+  let oldY;
+  return new Promise(resolve => {
+    window.addEventListener('keydown', resolve);
+    oldY = window.pageYOffset;
+    axDocument.scrollDown();
+  }).then(event => {
+    assert_equals(event.type, "keydown");
+    assert_equals(event.keyCode, 34); // 34 = page down key
+    assert_true(window.pageYOffset > oldY);
+  });
+}, "Test for synthesized keydown event in scroll down action");
+
+promise_test(function(t) {
+  let oldY;
+  return new Promise(resolve => {
+    window.addEventListener('keyup', resolve);
+    oldY = window.pageYOffset;
+    axDocument.scrollDown();
+  }).then(event => {
+    assert_equals(event.type, "keyup");
+    assert_equals(event.keyCode, 34); // 34 = page down key
+    assert_true(window.pageYOffset > oldY);
+  });
+}, "Test for synthesized keyup event in scroll down action");
+
+promise_test(function(t) {
+  let oldY;
+  return new Promise(resolve => {
+    window.addEventListener('keydown', resolve);
+    oldY = window.pageYOffset;
+    axDocument.scrollUp();
+  }).then(event => {
+    assert_equals(event.type, "keydown");
+    assert_equals(event.keyCode, 33); // 33 = page up key
+    assert_true(window.pageYOffset < oldY);
+  });
+}, "Test for synthesized keydown event in scroll up action");
+
+promise_test(function(t) {
+  let oldY;
+  return new Promise(resolve => {
+    window.addEventListener('keyup', resolve);
+    oldY = window.pageYOffset;
+    axDocument.scrollUp();
+  }).then(event => {
+    assert_equals(event.type, "keyup");
+    assert_equals(event.keyCode, 33); // 33 = page up key
+    assert_true(window.pageYOffset < oldY);
+  });
+}, "Test for synthesized keyup event in scroll up action");
+</script>

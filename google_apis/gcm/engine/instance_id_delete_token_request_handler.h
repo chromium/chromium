@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "google_apis/gcm/engine/unregistration_request.h"
 
 namespace gcm {
@@ -21,6 +20,12 @@ class GCM_EXPORT InstanceIDDeleteTokenRequestHandler :
       const std::string& authorized_entity,
       const std::string& scope,
       int gcm_version);
+
+  InstanceIDDeleteTokenRequestHandler(
+      const InstanceIDDeleteTokenRequestHandler&) = delete;
+  InstanceIDDeleteTokenRequestHandler& operator=(
+      const InstanceIDDeleteTokenRequestHandler&) = delete;
+
   ~InstanceIDDeleteTokenRequestHandler() override;
 
    // UnregistrationRequest overrides:
@@ -34,8 +39,6 @@ class GCM_EXPORT InstanceIDDeleteTokenRequestHandler :
   std::string authorized_entity_;
   std::string scope_;
   int gcm_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDDeleteTokenRequestHandler);
 };
 
 }  // namespace gcm

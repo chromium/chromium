@@ -14,17 +14,17 @@ behavioral features, such as web accessible resources or event pages.
 ## Files
 
 There are four different feature files used:
-* [\_api\_features](https://chromium.googlesource.com/chromium/src/+/master/chrome/common/extensions/api/_api_features.json):
+* [\_api\_features](https://chromium.googlesource.com/chromium/src/+/main/chrome/common/extensions/api/_api_features.json):
 Specifies the requirements for API availability. If an extension doesn't satisfy
 the requirements, the API will not be accessible in the extension's code.
-* [\_permission\_features](https://chromium.googlesource.com/chromium/src/+/master/chrome/common/extensions/api/_permission_features.json):
+* [\_permission\_features](https://chromium.googlesource.com/chromium/src/+/main/chrome/common/extensions/api/_permission_features.json):
 Specifies the requirements for permission availability. If an extension doesn't
 satisfy the requirements, the permission will not be granted and the extension
 will have an install warning.
-* [\_manifest\_features](https://chromium.googlesource.com/chromium/src/+/master/chrome/common/extensions/api/_manifest_features.json):
+* [\_manifest\_features](https://chromium.googlesource.com/chromium/src/+/main/chrome/common/extensions/api/_manifest_features.json):
 Specifies the requirements for manifest entry availability. If an extension
 doesn't satisfy the requirements, the extension will fail to load with an error.
-* [\_behavior\_features](https://chromium.googlesource.com/chromium/src/+/master/extensions/common/api/_behavior_features.json):
+* [\_behavior\_features](https://chromium.googlesource.com/chromium/src/+/main/extensions/common/api/_behavior_features.json):
 Specifies the requirements for miscellaneous extension behaviors. This should
 typically not be used.
 
@@ -165,9 +165,9 @@ most one alias.
 For complex features, `alias` property will be set to the `alias` value of the
 first component simple feature that has it set.
 
-### blacklist
+### blocklist
 
-The `blacklist` property specifies a list of ID hashes for extensions that
+The `blocklist` property specifies a list of ID hashes for extensions that
 cannot access a feature. See ID Hashes in this document for how to generate
 these hashes.
 
@@ -195,7 +195,7 @@ preceeding '--').
 The `feature_flag` property specifies the name of a `base::Feature` flag that
 must be enabled for the feature to be available. This can be used to implement a
 remote kill switch for the feature. These feature flags should be defined at
-[feature_flags.cc](https://source.chromium.org/chromium/chromium/src/+/master:extensions/common/features/feature_flags.cc).
+[feature_flags.cc](https://source.chromium.org/chromium/chromium/src/+/main:extensions/common/features/feature_flags.cc).
 
 Accepted value is a single string for the feature flag.
 
@@ -314,8 +314,8 @@ The only accepted value is the bool `true`.
 The `platforms` property specifies the properties the feature should be
 available on.
 
-The accepted values are lists of strings from `chromeos`, `mac`, `lacros`,
-`linux`, and `win`.
+The accepted values are lists of strings from `chromeos`, `fuchsia`, `lacros`,
+`linux`, `mac`, and `win`.
 
 ### session\_types
 
@@ -350,19 +350,19 @@ documentation.
 For complex features, `source` property will be set to the `source` value of the
 first component simple feature that has it set.
 
-### whitelist
+### allowlist
 
-The `whitelist` property specifies a list of ID hashes for extensions that
+The `allowlist` property specifies a list of ID hashes for extensions that
 are the only extensions allowed to access a feature.
 
 Accepted values are lists of id hashes.
 
 ## ID Hashes
 
-Instead of listing the ID directly in the whitelist or blacklist section, we
+Instead of listing the ID directly in the allowlist or blocklist section, we
 use an uppercased SHA1 hash of the id.
 
-To generate a new whitelisted ID for an extension ID, do the following in bash:
+To generate a new allowlist ID for an extension ID, do the following in bash:
 ```
 $ echo -n "aaaabbbbccccddddeeeeffffgggghhhh" | \
      sha1sum | tr '[:lower:]' '[:upper:]'
@@ -374,10 +374,10 @@ The output should be something like:
 9A0417016F345C934A1A88F55CA17C05014EEEBA  -
 ```
 
-Add the ID to the whitelist or blacklist for the desired feature. It is also
+Add the ID to the allowlist or blocklist for the desired feature. It is also
 often useful to link the crbug next to the id hash, e.g.:
 ```
-"whitelist": [
+"allowlist": [
   "9A0417016F345C934A1A88F55CA17C05014EEEBA"  // crbug.com/<num>
 ]
 ```

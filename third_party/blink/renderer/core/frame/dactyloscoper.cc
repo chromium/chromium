@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ void Dactyloscoper::Record(WebFeature feature) {
 namespace {
 
 bool ShouldSample(WebFeature feature) {
-  return IdentifiabilityStudySettings::Get()->ShouldSample(
+  return IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
       IdentifiableSurface::FromTypeAndToken(
           IdentifiableSurface::Type::kWebFeature, feature));
 }
@@ -50,13 +50,10 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const IdentifiableToken& value) {
   if (!context || !ShouldSample(feature))
     return;
-  auto* window = DynamicTo<LocalDOMWindow>(context);
-  if (!window)
-    return;
-  Document* document = window->document();
-  IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .SetWebfeature(feature, value)
-      .Record(document->UkmRecorder());
+
+  IdentifiabilityMetricBuilder(context->UkmSourceID())
+      .AddWebFeature(feature, value)
+      .Record(context->UkmRecorder());
 }
 
 // static
@@ -65,7 +62,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const String& str) {
   if (!context || !ShouldSample(feature))
     return;
-  if (str.IsEmpty())
+  if (str.empty())
     return;
   Dactyloscoper::RecordDirectSurface(context, feature,
                                      IdentifiabilitySensitiveStringToken(str));
@@ -77,7 +74,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const Vector<String>& strs) {
   if (!context || !ShouldSample(feature))
     return;
-  if (strs.IsEmpty())
+  if (strs.empty())
     return;
   IdentifiableTokenBuilder builder;
   for (const auto& str : strs) {

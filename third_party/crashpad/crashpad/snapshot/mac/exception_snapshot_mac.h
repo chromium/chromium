@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/exception_snapshot.h"
@@ -38,6 +37,10 @@ namespace internal {
 class ExceptionSnapshotMac final : public ExceptionSnapshot {
  public:
   ExceptionSnapshotMac();
+
+  ExceptionSnapshotMac(const ExceptionSnapshotMac&) = delete;
+  ExceptionSnapshotMac& operator=(const ExceptionSnapshotMac&) = delete;
+
   ~ExceptionSnapshotMac() override;
 
   //! \brief Initializes the object.
@@ -96,8 +99,6 @@ class ExceptionSnapshotMac final : public ExceptionSnapshot {
   exception_type_t exception_;
   uint32_t exception_code_0_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSnapshotMac);
 };
 
 }  // namespace internal

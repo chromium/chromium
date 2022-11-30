@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
@@ -21,6 +20,11 @@ class TextToSpeechPlaybackController : public KeyedService,
                                        public web::WebStateObserver {
  public:
   explicit TextToSpeechPlaybackController();
+
+  TextToSpeechPlaybackController(const TextToSpeechPlaybackController&) =
+      delete;
+  TextToSpeechPlaybackController& operator=(
+      const TextToSpeechPlaybackController&) = delete;
 
   // The BrowserState's WebStateList.
   void SetWebStateList(WebStateList* web_state_list);
@@ -71,8 +75,6 @@ class TextToSpeechPlaybackController : public KeyedService,
 
   // The WebState being observed.
   web::WebState* web_state_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TextToSpeechPlaybackController);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_VOICE_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_H_

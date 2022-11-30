@@ -1,15 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/security/wk_web_view_security_util.h"
 
-#include "base/mac/scoped_cftyperef.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util_ios.h"
-#include "net/ssl/ssl_info.h"
+#import "base/mac/scoped_cftyperef.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util_apple.h"
+#import "net/ssl/ssl_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

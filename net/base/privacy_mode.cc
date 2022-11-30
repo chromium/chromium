@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@ const char* PrivacyModeToDebugString(PrivacyMode privacy_mode) {
       return "enabled";
     case PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS:
       return "enabled without client certs";
+    case PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED:
+      return "enabled partitioned state allowed";
   }
   NOTREACHED();
   return "";

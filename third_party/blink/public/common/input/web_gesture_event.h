@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/input/gesture_event.mojom-shared.h"
+#include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -31,14 +32,17 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
   // The pointer type for the first touch point in the gesture.
   WebPointerProperties::PointerType primary_pointer_type =
       WebPointerProperties::PointerType::kUnknown;
+  // The unique_touch_event id of the first touch in the gesture sequence
+  uint32_t primary_unique_touch_event_id = 0;
 
   // If the WebGestureEvent has source_device ==
   // mojom::GestureDevice::kTouchscreen, this field contains the unique
   // identifier for the touch event that released this event at
   // TouchDispositionGestureFilter. If the WebGestureEvents was not released
-  // through a touch event (e.g. timer-released gesture events or gesture events
-  // with source_device != mojom::GestureDevice::kTouchscreen), the field
-  // contains 0. See crbug.com/618738.
+  // through a touch event (e.g. synthesized gesture events and pinches
+  // or gesture events with source_device !=
+  // mojom::GestureDevice::kTouchscreen), the field contains 0. See
+  // crbug.com/618738.
   uint32_t unique_touch_event_id = 0;
 
   union {
@@ -63,7 +67,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       float height;
     } show_press;
 
-    // This is used for both GestureLongPress and GestureLongTap.
+    // This is used for GestureShortPress , GestureLongPress and GestureLongTap.
     struct {
       float width;
       float height;
@@ -98,8 +102,8 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // If true, this event will skip hit testing to find a scroll
       // target and instead just scroll the viewport.
       bool target_viewport;
-      // True if this event is generated from a wheel event with synthetic
-      // phase.
+      // True if this event is generated from a mousewheel or scrollbar.
+      // Synthetic GSB(s) are ignored by the blink::ElasticOverscrollController.
       bool synthetic;
       // If true, this event has been hit tested by the main thread and the
       // result is stored in scrollable_area_element_id. Used only in scroll
@@ -212,7 +216,10 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;
   void Coalesce(const WebInputEvent& event) override;
-  base::Optional<ui::ScrollInputType> GetScrollInputType() const override;
+
+  // Returns the input type of a scroll event. Should not be called on
+  // non-scroll events.
+  ui::ScrollInputType GetScrollInputType() const;
 
   void SetPositionInWidget(const gfx::PointF& point) {
     position_in_widget_ = point;
@@ -261,6 +268,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       case Type::kGestureShowPress:
       case Type::kGestureTapCancel:
       case Type::kGestureTwoFingerTap:
+      case Type::kGestureShortPress:
       case Type::kGestureLongPress:
       case Type::kGestureLongTap:
         return false;

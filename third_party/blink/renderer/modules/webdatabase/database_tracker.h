@@ -32,15 +32,15 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_error.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -54,6 +54,10 @@ class MODULES_EXPORT DatabaseTracker {
 
  public:
   static DatabaseTracker& Tracker();
+
+  DatabaseTracker(const DatabaseTracker&) = delete;
+  DatabaseTracker& operator=(const DatabaseTracker&) = delete;
+
   // This singleton will potentially be used from multiple worker threads and
   // the page's context thread simultaneously.  To keep this safe, it's
   // currently using 4 locks.  In order to avoid deadlock when taking multiple
@@ -93,11 +97,10 @@ class MODULES_EXPORT DatabaseTracker {
                                    const String& name,
                                    Database*);
 
-  Mutex open_database_map_guard_;
+  base::Lock open_database_map_guard_;
 
-  mutable std::unique_ptr<DatabaseOriginMap> open_database_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseTracker);
+  mutable std::unique_ptr<DatabaseOriginMap> open_database_map_
+      GUARDED_BY(open_database_map_guard_);
 };
 
 }  // namespace blink

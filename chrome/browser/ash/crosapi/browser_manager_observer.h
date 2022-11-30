@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@ class BrowserManagerObserver : public base::CheckedObserver {
   virtual void OnMojoDisconnected() {}
   // Invoked when lacros-chrome state changes, without specifying the state.
   virtual void OnStateChanged() {}
+  // Invoked when the browser loader has finished loading an image.
+  virtual void OnLoadComplete(bool success) {}
 };
 
 }  // namespace crosapi

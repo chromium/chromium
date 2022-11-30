@@ -1,0 +1,126 @@
+# Copyright 2022 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+group("all") {
+  deps = [
+    ":libpuffdiff",
+    ":libpuffin-proto",
+    ":libpuffpatch",
+    ":puffin",
+  ]
+}
+
+config("target_defaults") {
+  cflags = [ "-Wextra" ]
+  cflags_cc = [
+    "-Wnon-virtual-dtor",
+    "-Wno-unused-parameter",
+  ]
+  include_dirs = [
+    "//third_party/puffin/src/include",
+    "//third_party",
+    "//components",
+  ]
+  defines = [ "_FILE_OFFSET_BITS=64" ]
+}
+
+proto_library("libpuffin-proto") {
+  sources = [ "src/puffin.proto" ]
+  proto_out_dir = "puffin/src"
+}
+
+static_library("libpuffpatch") {
+  configs += [ ":target_defaults" ]
+  complete_static_lib = true
+  deps = [
+    ":libpuffin-proto",
+    "//base",
+    "//components/zucchini:zucchini_lib",
+    "//third_party/brotli:dec",
+    "//third_party/brotli:enc",
+  ]
+  sources = [
+    "src/bit_reader.cc",
+    "src/bit_writer.cc",
+    "src/brotli_util.cc",
+    "src/file_stream.cc",
+    "src/huffer.cc",
+    "src/huffman_table.cc",
+    "src/memory_stream.cc",
+    "src/puff_reader.cc",
+    "src/puff_writer.cc",
+    "src/puffer.cc",
+    "src/puffin_stream.cc",
+    "src/puffpatch.cc",
+  ]
+}
+
+static_library("libpuffdiff") {
+  configs += [ ":target_defaults" ]
+  deps = [
+    ":libpuffin-proto",
+    "//base",
+    "//components/zucchini:zucchini_lib",
+    "//third_party/brotli:dec",
+    "//third_party/brotli:enc",
+  ]
+  sources = [
+    "src/file_stream.cc",
+    "src/puffdiff.cc",
+    "src/utils.cc",
+  ]
+}
+
+executable("puffin") {
+  configs += [ ":target_defaults" ]
+  deps = [
+    ":libpuffdiff",
+    ":libpuffpatch",
+    "//base",
+  ]
+  sources = [ "src/chromium_main.cc" ]
+}
+
+config("test_defaults") {
+  cflags = [
+    "-Wextra",
+    "-Wno-sign-compare",
+  ]
+  cflags_cc = [
+    "-Wnon-virtual-dtor",
+    "-Wno-unused-parameter",
+  ]
+  include_dirs = [
+    "../protobuf/src",
+    "src/include",
+    "//third_party",
+    "//components",
+  ]
+  defines = [ "_FILE_OFFSET_BITS=64" ]
+}
+
+executable("puffin_unittest") {
+  testonly = true
+  configs += [ ":test_defaults" ]
+  sources = [
+    "src/bit_io_unittest.cc",
+    "src/brotli_util_unittest.cc",
+    "src/integration_test.cc",
+    "src/patching_unittest.cc",
+    "src/puff_io_unittest.cc",
+    "src/puffin_unittest.cc",
+    "src/stream_unittest.cc",
+    "src/testrunner.cc",
+    "src/unittest_common.cc",
+    "src/utils_unittest.cc",
+  ]
+  data_deps = [ "//components/test/data/update_client/puffin_patch_test:puffin_patch_test_files" ]
+  deps = [
+    ":libpuffdiff",
+    ":libpuffpatch",
+    "//base",
+    "//testing/gtest:gtest",
+  ]
+}

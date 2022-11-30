@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 namespace {
@@ -133,15 +133,18 @@ ShadowData InterpolableShadow::CreateShadowData(
     const StyleResolverState& state) const {
   const CSSToLengthConversionData& conversion_data =
       state.CssToLengthConversionData();
-  Length shadow_x = x_->CreateLength(conversion_data, kValueRangeAll);
-  Length shadow_y = y_->CreateLength(conversion_data, kValueRangeAll);
+  Length shadow_x = x_->CreateLength(conversion_data, Length::ValueRange::kAll);
+  Length shadow_y = y_->CreateLength(conversion_data, Length::ValueRange::kAll);
   Length shadow_blur =
-      blur_->CreateLength(conversion_data, kValueRangeNonNegative);
-  Length shadow_spread = spread_->CreateLength(conversion_data, kValueRangeAll);
-  DCHECK(shadow_x.IsFixed() && shadow_y.IsFixed() && shadow_blur.IsFixed() &&
-         shadow_spread.IsFixed());
+      blur_->CreateLength(conversion_data, Length::ValueRange::kNonNegative);
+  Length shadow_spread =
+      spread_->CreateLength(conversion_data, Length::ValueRange::kAll);
+  DCHECK(shadow_x.IsFixed());
+  DCHECK(shadow_y.IsFixed());
+  DCHECK(shadow_blur.IsFixed());
+  DCHECK(shadow_spread.IsFixed());
   return ShadowData(
-      FloatPoint(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
+      gfx::PointF(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
       shadow_spread.Value(), shadow_style_,
       StyleColor(
           CSSColorInterpolationType::ResolveInterpolableColor(*color_, state)));

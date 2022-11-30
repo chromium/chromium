@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -271,9 +271,8 @@ Response CSSAgent::setStyleTexts(
 
     if (!ui_element)
       return Response::ServerError("Node id not found");
-    // Handle setting properties from metadata for View.
-    if (ui_element->type() != VIEW ||
-        !ui_element->SetPropertiesFromString(edit->getText())) {
+    // Handle setting properties from metadata for elements which use metadata.
+    if (!ui_element->SetPropertiesFromString(edit->getText())) {
       gfx::Rect updated_bounds;
       bool visible = false;
       if (!GetPropertiesForUIElement(ui_element, &updated_bounds, &visible))

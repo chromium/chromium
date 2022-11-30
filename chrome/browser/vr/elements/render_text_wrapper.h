@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_VR_ELEMENTS_RENDER_TEXT_WRAPPER_H_
 #define CHROME_BROWSER_VR_ELEMENTS_RENDER_TEXT_WRAPPER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/render_text.h"
 
@@ -16,6 +16,10 @@ namespace vr {
 class VR_UI_EXPORT RenderTextWrapper {
  public:
   explicit RenderTextWrapper(gfx::RenderText* render_text);
+
+  RenderTextWrapper(const RenderTextWrapper&) = delete;
+  RenderTextWrapper& operator=(const RenderTextWrapper&) = delete;
+
   virtual ~RenderTextWrapper();
 
   virtual void SetColor(SkColor value);
@@ -32,9 +36,7 @@ class VR_UI_EXPORT RenderTextWrapper {
   virtual void SetDirectionalityMode(gfx::DirectionalityMode mode);
 
  private:
-  gfx::RenderText* render_text_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextWrapper);
+  raw_ptr<gfx::RenderText> render_text_ = nullptr;
 };
 
 }  // namespace vr

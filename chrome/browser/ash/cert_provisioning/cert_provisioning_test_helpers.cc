@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_test_helpers.h"
 
-#include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -56,17 +55,18 @@ CertificateHelperForTesting::CertificateHelperForTesting(
 CertificateHelperForTesting::~CertificateHelperForTesting() = default;
 
 void CertificateHelperForTesting::GetCertificates(
-    platform_keys::TokenId token_id,
+    chromeos::platform_keys::TokenId token_id,
     platform_keys::GetCertificatesCallback callback) {
   auto result = std::make_unique<net::CertificateList>();
   *result = cert_list_;
-  std::move(callback).Run(std::move(result), platform_keys::Status::kSuccess);
+  std::move(callback).Run(std::move(result),
+                          chromeos::platform_keys::Status::kSuccess);
 }
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const base::Optional<CertProfileId>& cert_profile_id,
-    platform_keys::Status status,
+    const absl::optional<CertProfileId>& cert_profile_id,
+    chromeos::platform_keys::Status status,
     base::Time not_valid_before,
     base::Time not_valid_after) {
   net::CertBuilder cert_builder(template_cert_->cert_buffer(),
@@ -78,8 +78,9 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
       *platform_keys_service_,
       GetAttributeForKey(
           GetPlatformKeysTokenId(cert_scope),
-          platform_keys::GetSubjectPublicKeyInfo(cert),
-          platform_keys::KeyAttributeType::kCertificateProvisioningId, _))
+          chromeos::platform_keys::GetSubjectPublicKeyInfo(cert),
+          chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
+          _))
       .WillRepeatedly(RunOnceCallback<3>(cert_profile_id, status));
 
   cert_list_.push_back(cert);
@@ -88,23 +89,20 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const base::Optional<CertProfileId>& cert_profile_id) {
-  base::Time not_valid_before =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
-  base::Time not_valid_after =
-      base::Time::Now() + base::TimeDelta::FromDays(365);
-  return AddCert(cert_scope, cert_profile_id, platform_keys::Status::kSuccess,
-                 not_valid_before, not_valid_after);
+    const absl::optional<CertProfileId>& cert_profile_id) {
+  base::Time not_valid_before = base::Time::Now() - base::Days(1);
+  base::Time not_valid_after = base::Time::Now() + base::Days(365);
+  return AddCert(cert_scope, cert_profile_id,
+                 chromeos::platform_keys::Status::kSuccess, not_valid_before,
+                 not_valid_after);
 }
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const base::Optional<CertProfileId>& cert_profile_id,
-    platform_keys::Status status) {
-  base::Time not_valid_before =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
-  base::Time not_valid_after =
-      base::Time::Now() + base::TimeDelta::FromDays(365);
+    const absl::optional<CertProfileId>& cert_profile_id,
+    chromeos::platform_keys::Status status) {
+  base::Time not_valid_before = base::Time::Now() - base::Days(1);
+  base::Time not_valid_after = base::Time::Now() + base::Days(365);
   return AddCert(cert_scope, cert_profile_id, status, not_valid_before,
                  not_valid_after);
 }
@@ -145,9 +143,6 @@ void ProfileHelperForTesting::Init(bool user_is_affiliated) {
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
   user_ = fake_user_manager_.AddUserWithAffiliation(test_account,
                                                     user_is_affiliated);
-
-  ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-      fake_user_manager_.GetPrimaryUser(), testing_profile_);
 }
 
 Profile* ProfileHelperForTesting::GetProfile() const {

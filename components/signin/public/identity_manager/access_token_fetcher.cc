@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/access_token_constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -96,7 +97,7 @@ AccessTokenFetcher::AccessTokenFetcher(
       mode_(mode),
       callback_(std::move(callback)) {
   DCHECK(client_id_.empty() == client_secret_.empty());
-  DCHECK(client_id_.empty() || !url_loader_factory);
+  DCHECK(client_id_.empty() || !url_loader_factory_);
 
   if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
     StartAccessTokenRequest();
@@ -106,12 +107,18 @@ AccessTokenFetcher::AccessTokenFetcher(
   // Start observing the IdentityManager. This observer will be removed either
   // when a refresh token is obtained and an access token request is started or
   // when this object is destroyed.
-  token_service_observation_.Observe(token_service_);
+  token_service_observation_.Observe(token_service_.get());
 }
 
 AccessTokenFetcher::~AccessTokenFetcher() {}
 
 void AccessTokenFetcher::VerifyScopeAccess() {
+  if (account_id_.empty()) {
+    // Fetching access tokens for an empty account should fail, but not crash.
+    // Verifying the OAuth scopes based on the consent level is thus not needed.
+    return;
+  }
+
   // The consumer has privileged access to all scopes, return early.
   if (GetPrivilegedOAuth2Consumers().count(/*oauth_consumer_name=*/id())) {
     VLOG(1) << id() << " has access rights to scopes: "
@@ -121,11 +128,8 @@ void AccessTokenFetcher::VerifyScopeAccess() {
     return;
   }
 
-#if DCHECK_IS_ON()
   for (const std::string& scope : scopes_) {
-    // TODO(crbug.com/1172944): Change this to CHECK once we are confident
-    // that the list of scopes is correct.
-    DCHECK(!GetPrivilegedOAuth2Scopes().count(scope)) << base::StringPrintf(
+    CHECK(!GetPrivilegedOAuth2Scopes().count(scope)) << base::StringPrintf(
         "You are attempting to access a privileged scope '%s' without the "
         "required access, please file a bug for access at "
         "https://bugs.chromium.org/p/chromium/issues/"
@@ -136,14 +140,14 @@ void AccessTokenFetcher::VerifyScopeAccess() {
   // Only validate scope access if the user has not given sync consent.
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
     for (const std::string& scope : scopes_) {
-      DCHECK(GetUnconsentedOAuth2Scopes().count(scope)) << base::StringPrintf(
+      CHECK(GetUnconsentedOAuth2Scopes().count(scope)) << base::StringPrintf(
           "Consumer '%s' is requesting scope '%s' that requires user consent. "
           "Please check that the user has consented to Sync before "
           "using this API.",
           id().c_str(), scope.c_str());
     }
   }
-#endif  // DCHECK_IS_ON()
+
   VLOG(1) << id() << " has access rights to scopes: "
           << base::JoinString(
                  std::vector<std::string>(scopes_.begin(), scopes_.end()), ",");
@@ -160,7 +164,7 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
 
   // By the time of starting an access token request, we should no longer be
   // listening for signin-related events.
-  DCHECK(!token_service_observation_.IsObservingSource(token_service_));
+  DCHECK(!token_service_observation_.IsObservingSource(token_service_.get()));
 
   // Note: We might get here even in cases where we know that there's no refresh
   // token. We're requesting an access token anyway, so that the token service
@@ -168,7 +172,7 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
   DCHECK(!access_token_request_);
 
   // Ensure that the client has the appropriate user consent for accessing the
-  // API scopes in this request.
+  // OAuth API scopes in this request.
   VerifyScopeAccess();
 
   // TODO(843510): Consider making the request to ProfileOAuth2TokenService
@@ -199,7 +203,7 @@ void AccessTokenFetcher::OnRefreshTokenAvailable(
   if (!IsRefreshTokenAvailable())
     return;
 
-  DCHECK(token_service_observation_.IsObservingSource(token_service_));
+  DCHECK(token_service_observation_.IsObservingSource(token_service_.get()));
   token_service_observation_.Reset();
 
   StartAccessTokenRequest();

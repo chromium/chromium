@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include <memory>
 #include <queue>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"
@@ -23,13 +21,16 @@ namespace content {
 
 class RendererPpapiHost;
 
-class CONTENT_EXPORT PepperWebSocketHost
-    : public ppapi::host::ResourceHost,
-      public ::blink::WebPepperSocketClient {
+class PepperWebSocketHost : public ppapi::host::ResourceHost,
+                            public ::blink::WebPepperSocketClient {
  public:
   explicit PepperWebSocketHost(RendererPpapiHost* host,
                                PP_Instance instance,
                                PP_Resource resource);
+
+  PepperWebSocketHost(const PepperWebSocketHost&) = delete;
+  PepperWebSocketHost& operator=(const PepperWebSocketHost&) = delete;
+
   ~PepperWebSocketHost() override;
 
   int32_t OnResourceMessageReceived(
@@ -89,8 +90,6 @@ class CONTENT_EXPORT PepperWebSocketHost
   // Keeps the WebKit side WebSocket object. This is used for calling WebKit
   // side functions via WebKit API.
   std::unique_ptr<blink::WebPepperSocket> websocket_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperWebSocketHost);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 
 #include <string>
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace gfx {
 
@@ -100,8 +103,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   }
 
   // This is the number of times that the keyframe model will play. If this
-  // value is zero the keyframe model will not play. If it is negative, then
-  // the keyframe model will loop indefinitely.
+  // value is zero or negative, the keyframe model will not play. If it is
+  // std::numeric_limits<double>::infinity(), then the keyframe model will loop
+  // indefinitely.
   double iterations() const { return iterations_; }
   void set_iterations(double n) { iterations_ = n; }
 
@@ -121,6 +125,21 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
 
   bool HasActiveTime(base::TimeTicks monotonic_time) const;
 
+  template <typename T>
+  void Retarget(base::TimeTicks now,
+                int property_id,
+                const T& new_target_value) {
+    if (!curve_)
+      return;
+    base::TimeDelta now_delta = TrimTimeToCurrentIteration(now);
+
+    DCHECK_EQ(CalculatePhase(now_delta), KeyframeModel::Phase::ACTIVE);
+    auto* keyframed_curve = AnimationTraits<T>::ToKeyframedCurve(curve_.get());
+    DCHECK(keyframed_curve);
+    if (auto new_curve = keyframed_curve->Retarget(now_delta, new_target_value))
+      curve_ = std::move(new_curve);
+  }
+
   // Some clients may run threaded animations and may need to defer starting
   // until the animation on the other thread has been started.
   virtual bool StartShouldBeDeferred() const;
@@ -139,7 +158,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
                 int target_property_id);
 
   void ForceRunState(RunState run_state) { run_state_ = run_state; }
-  base::Optional<base::TimeDelta> CalculateActiveTime(
+  absl::optional<base::TimeDelta> CalculateActiveTime(
       base::TimeTicks monotonic_time) const;
 
  private:

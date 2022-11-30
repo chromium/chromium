@@ -1,0 +1,19 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
+++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT label='Option 1'
+++++++++++++++++UNKNOWN label='Option 1'
+++++++++++++UNKNOWN hidden
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN actions='{DEFAULT}' value='Custom selectmenu button'
+++++++++++++STATIC_TEXT label='Custom selectmenu button'
+++++++++++++++UNKNOWN label='Custom selectmenu button'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden

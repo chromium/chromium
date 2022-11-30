@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/client/chromoting_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -57,7 +58,8 @@ void ChromotingClient::set_host_experiment_config(
     const std::string& experiment_config) {
   DCHECK(!connection_)
       << "set_host_experiment_config() cannot be called after Start().";
-  host_experiment_sender_.reset(new HostExperimentSender(experiment_config));
+  host_experiment_sender_ =
+      std::make_unique<HostExperimentSender>(experiment_config);
 }
 
 void ChromotingClient::SetConnectionToHostForTests(
@@ -83,15 +85,10 @@ void ChromotingClient::Start(
 
   if (!connection_) {
     if (protocol_config_->webrtc_supported()) {
-      DCHECK(!protocol_config_->ice_supported());
-#if !defined(ENABLE_WEBRTC_REMOTING_CLIENT)
       LOG(FATAL) << "WebRTC is not supported.";
-#else
-      connection_.reset(new protocol::WebrtcConnectionToHost());
-#endif
     } else {
       DCHECK(protocol_config_->ice_supported());
-      connection_.reset(new protocol::IceConnectionToHost());
+      connection_ = std::make_unique<protocol::IceConnectionToHost>();
     }
   }
   connection_->set_client_stub(this);
@@ -105,7 +102,8 @@ void ChromotingClient::Start(
     protocol_config_->DisableAudioChannel();
   }
 
-  session_manager_.reset(new protocol::JingleSessionManager(signal_strategy));
+  session_manager_ =
+      std::make_unique<protocol::JingleSessionManager>(signal_strategy);
   session_manager_->set_protocol_config(std::move(protocol_config_));
 
   client_auth_config_ = client_auth_config;
@@ -204,9 +202,6 @@ void ChromotingClient::SetVideoLayout(const protocol::VideoLayout& layout) {
 
 void ChromotingClient::SetTransportInfo(
     const protocol::TransportInfo& transport_info) {}
-
-void ChromotingClient::OpenUrl(
-    const protocol::OpenUrlRequest& open_url_request) {}
 
 void ChromotingClient::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {

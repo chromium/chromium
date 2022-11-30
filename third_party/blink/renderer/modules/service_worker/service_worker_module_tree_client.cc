@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,15 +40,19 @@ void ServiceWorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   }
 
   // With top-level await: https://github.com/w3c/ServiceWorker/pull/1444
-  if (!module_script->HasEmptyRecord() &&
-      module_script->V8Module()->IsGraphAsync()) {
-    worker_reporting_proxy.DidFailToFetchModuleScript();
-    worker_global_scope->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "Top-level await is disallowed in service workers."));
-    worker_global_scope->close();
-    return;
+  if (!module_script->HasEmptyRecord()) {
+    v8::Local<v8::Module> record = module_script->V8Module();
+    if (record->GetStatus() >= v8::Module::kInstantiated &&
+        record->IsGraphAsync()) {
+      worker_reporting_proxy.DidFailToFetchModuleScript();
+      worker_global_scope->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kError,
+              "Top-level await is disallowed in service workers."));
+      worker_global_scope->close();
+      return;
+    }
   }
 
   worker_reporting_proxy.DidFetchScript();
@@ -57,7 +61,7 @@ void ServiceWorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   // the algorithm's asynchronous completion, with script being the asynchronous
   // completion value."
   worker_global_scope->WorkerScriptFetchFinished(
-      *module_script, base::nullopt /* v8_inspector::V8StackTraceId */);
+      *module_script, absl::nullopt /* v8_inspector::V8StackTraceId */);
 }
 
 void ServiceWorkerModuleTreeClient::Trace(Visitor* visitor) const {

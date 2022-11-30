@@ -7,24 +7,45 @@
         overflow: hidden;
       }
 
-      /* Sizing this with flex causes slow load performance, see
-       * crbug.com/618153. TODO(dbeam): is this still an issue? */
       #main-container {
+        display: flex;
         height: calc(100% - var(--toolbar-height));
         position: relative;
       }
 
-      #content-side-bar {
-        float: left;
-      }
-
-      :host-context([dir='rtl']) #content-side-bar {
-        float: right;
+      #content {
+        flex: 1;
+        min-width: 0;
       }
 
       #content,
       #content > * {
         height: 100%;
+      }
+
+      #tabs-container {
+        --cr-tabs-height: 48px;
+        --tabs-margin-top: 16px;
+      }
+
+      #tabs {
+        --cr-tabs-icon-margin-end: 12px;
+        --cr-tabs-selection-bar-width: 3px;
+        --cr-tabs-tab-inline-padding: 16px;
+        border-bottom: 1px solid var(--separator-color);
+        display: flex;
+        justify-content: start;
+        margin: 0 auto;
+        max-width: var(--cluster-max-width);
+      }
+
+      #tabs-content,
+      #tabs-content > * {
+        height: 100%;
+      }
+
+      :host([show-history-clusters_]) #tabs-content {
+        height: calc(100% - var(--cr-tabs-height));
       }
 
       :host([toolbar-shadow_]) #drop-shadow {
@@ -51,24 +72,49 @@
                                              queryState_.incremental,
                                              queryState_.searchTerm)]]">
     </history-toolbar>
-
     <div id="drop-shadow" class="cr-container-shadow"></div>
     <div id="main-container">
       <history-side-bar id="content-side-bar" selected-page="{{selectedPage_}}"
+          selected-tab="{{selectedTab_}}"
           footer-info="[[footerInfo]]"
+          history-clusters-enabled="[[historyClustersEnabled_]]"
+          history-clusters-visible="{{historyClustersVisible_}}"
           hidden$="[[hasDrawer_]]">
       </history-side-bar>
       <iron-pages id="content" attr-for-selected="path"
           fallback-selection="history"
           selected="[[getSelectedPage_(selectedPage_, items)]]"
-          selected-item="{{scrollTarget}}"
+          on-selected-item-changed="updateScrollTarget_"
           items="{{items}}">
-        <history-list id="history" query-state="[[queryState_]]"
-            searched-term="[[queryResult_.info.term]]"
-            pending-delete="{{pendingDelete_}}"
-            query-result="[[queryResult_]]"
-            path="history">
-        </history-list>
+        <div id="tabs-container" path="history">
+          <template is="dom-if" if="[[showHistoryClusters_]]">
+            <div id="tabs">
+              <cr-tabs tab-names="[[tabsNames_]]"
+                  tab-icons="[[tabsIcons_]]"
+                  selected="{{selectedTab_}}">
+              </cr-tabs>
+            </div>
+          </template>
+          <iron-pages id="tabs-content" attr-for-selected="path"
+              fallback-selection="history"
+              selected="[[getSelectedPage_(selectedPage_, items)]]"
+              on-selected-item-changed="updateScrollTarget_"
+              items="{{items}}">
+            <history-list id="history" query-state="[[queryState_]]"
+                searched-term="[[queryResult_.info.term]]"
+                pending-delete="{{pendingDelete_}}"
+                query-result="[[queryResult_]]"
+                path="history">
+            </history-list>
+            <template is="dom-if"
+                if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
+              <history-clusters id="history-clusters"
+                  query="[[queryState_.searchTerm]]"
+                  path="journeys">
+              </history-clusters>
+            </template>
+          </iron-pages>
+        </div>
         <template is="dom-if" if="[[syncedTabsSelected_(selectedPage_)]]">
           <history-synced-device-manager id="synced-devices"
               session-list="[[queryResult_.sessionList]]"
@@ -83,8 +129,11 @@
     <cr-lazy-render id="drawer">
       <template>
         <cr-drawer heading="$i18n{title}" align="$i18n{textdirection}">
-          <history-side-bar id="drawer-side-bar" class="drawer-content"
+          <history-side-bar id="drawer-side-bar" slot="body"
               selected-page="{{selectedPage_}}"
+              selected-tab="{{selectedTab_}}"
+              history-clusters-enabled="[[historyClustersEnabled_]]"
+              history-clusters-visible="{{historyClustersVisible_}}"
               footer-info="[[footerInfo]]">
           </history-side-bar>
         </cr-drawer>

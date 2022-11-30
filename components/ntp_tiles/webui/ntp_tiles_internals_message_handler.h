@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/values.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace favicon {
 class FaviconService;
@@ -39,6 +35,12 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
   // |favicon_service| must not be null and must outlive this object.
   explicit NTPTilesInternalsMessageHandler(
       favicon::FaviconService* favicon_service);
+
+  NTPTilesInternalsMessageHandler(const NTPTilesInternalsMessageHandler&) =
+      delete;
+  NTPTilesInternalsMessageHandler& operator=(
+      const NTPTilesInternalsMessageHandler&) = delete;
+
   ~NTPTilesInternalsMessageHandler() override;
 
   // Called when the WebUI page's JavaScript has loaded and it is ready to
@@ -50,10 +52,9 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
                                     favicon_base::FaviconRawBitmapResult>;
 
   // Callbacks registered in RegisterMessages().
-  void HandleRegisterForEvents(const base::ListValue* args);
-  void HandleUpdate(const base::ListValue* args);
-  void HandleFetchSuggestions(const base::ListValue* args);
-  void HandleViewPopularSitesJson(const base::ListValue* args);
+  void HandleRegisterForEvents(const base::Value::List& args);
+  void HandleUpdate(const base::Value::List& args);
+  void HandleViewPopularSitesJson(const base::Value::List& args);
 
   void SendSourceInfo();
   void SendTiles(const NTPTilesVector& tiles,
@@ -70,21 +71,18 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
                            const GURL& page_url,
                            const favicon_base::FaviconRawBitmapResult& result);
 
-  favicon::FaviconService* favicon_service_;
+  raw_ptr<favicon::FaviconService> favicon_service_;
 
   // Bridge to embedder's API.
-  NTPTilesInternalsMessageHandlerClient* client_;
+  raw_ptr<NTPTilesInternalsMessageHandlerClient> client_;
 
   int site_count_;
   std::unique_ptr<MostVisitedSites> most_visited_sites_;
 
-  std::string suggestions_status_;
   std::string popular_sites_json_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
   base::WeakPtrFactory<NTPTilesInternalsMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NTPTilesInternalsMessageHandler);
 };
 
 }  // namespace ntp_tiles

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <cinttypes>
 
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/debug/alias.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
@@ -17,13 +19,21 @@
 
 namespace base {
 
+using ScopedSuppressRandomnessForTesting =
+    PoissonAllocationSampler::ScopedSuppressRandomnessForTesting;
+
 class SamplingHeapProfilerTest : public ::testing::Test {
  public:
   void SetUp() override {
-#if defined(OS_APPLE)
-    allocator::InitializeAllocatorShim();
+#if BUILDFLAG(IS_APPLE)
+    allocator_shim::InitializeAllocatorShim();
 #endif
     SamplingHeapProfiler::Init();
+
+    // Ensure the PoissonAllocationSampler starts in the default state.
+    ASSERT_FALSE(PoissonAllocationSampler::AreHookedSamplesMuted());
+    ASSERT_FALSE(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
+    ASSERT_FALSE(ScopedSuppressRandomnessForTesting::IsSuppressed());
   }
 
   size_t GetNextSample(size_t mean_interval) {
@@ -68,13 +78,13 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
 
  private:
   size_t watch_size_;
-  void* sample_address_ = nullptr;
+  raw_ptr<void> sample_address_ = nullptr;
 };
 
 TEST_F(SamplingHeapProfilerTest, SampleObserver) {
+  ScopedSuppressRandomnessForTesting suppress;
   SamplesCollector collector(10000);
   auto* sampler = PoissonAllocationSampler::Get();
-  sampler->SuppressRandomnessForTest(true);
   sampler->SetSamplingInterval(1024);
   sampler->AddSamplesObserver(&collector);
   void* volatile p = malloc(10000);
@@ -85,9 +95,9 @@ TEST_F(SamplingHeapProfilerTest, SampleObserver) {
 }
 
 TEST_F(SamplingHeapProfilerTest, SampleObserverMuted) {
+  ScopedSuppressRandomnessForTesting suppress;
   SamplesCollector collector(10000);
   auto* sampler = PoissonAllocationSampler::Get();
-  sampler->SuppressRandomnessForTest(true);
   sampler->SetSamplingInterval(1024);
   sampler->AddSamplesObserver(&collector);
   {
@@ -101,7 +111,7 @@ TEST_F(SamplingHeapProfilerTest, SampleObserverMuted) {
 }
 
 TEST_F(SamplingHeapProfilerTest, IntervalRandomizationSanity) {
-  PoissonAllocationSampler::Get()->SuppressRandomnessForTest(false);
+  ASSERT_FALSE(ScopedSuppressRandomnessForTesting::IsSuppressed());
   constexpr int iterations = 50;
   constexpr size_t target = 10000000;
   int sum = 0;
@@ -116,7 +126,7 @@ TEST_F(SamplingHeapProfilerTest, IntervalRandomizationSanity) {
   EXPECT_NEAR(1000, mean_samples, 100);  // 10% tolerance.
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // iOS devices generally have ~4GB of RAM with no swap and therefore need a
 // lower allocation limit here.
 const int kNumberOfAllocations = 1000;
@@ -158,8 +168,8 @@ class MyThread2 : public SimpleThread {
 };
 
 void CheckAllocationPattern(void (*allocate_callback)()) {
+  ASSERT_FALSE(ScopedSuppressRandomnessForTesting::IsSuppressed());
   auto* profiler = SamplingHeapProfiler::Get();
-  PoissonAllocationSampler::Get()->SuppressRandomnessForTest(false);
   profiler->SetSamplingInterval(10240);
   base::TimeTicks t0 = base::TimeTicks::Now();
   std::map<size_t, size_t> sums;
@@ -223,7 +233,7 @@ TEST_F(SamplingHeapProfilerTest, DISABLED_SequentialLargeSmallStats) {
 // Platform TLS: alloc+free[ns]: 22.184  alloc[ns]: 8.910  free[ns]: 13.274
 // thread_local: alloc+free[ns]: 18.353  alloc[ns]: 5.021  free[ns]: 13.331
 // TODO(crbug.com/1117342) Disabled on Mac
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MANUAL_SamplerMicroBenchmark DISABLED_MANUAL_SamplerMicroBenchmark
 #else
 #define MAYBE_MANUAL_SamplerMicroBenchmark MANUAL_SamplerMicroBenchmark
@@ -273,16 +283,10 @@ class StartStopThread : public SimpleThread {
   }
 
  private:
-  WaitableEvent* event_;
+  raw_ptr<WaitableEvent> event_;
 };
 
-// Flaky on Mac. crbug.com/1116543
-#if defined(OS_MAC)
-#define MAYBE_StartStop DISABLED_StartStop
-#else
-#define MAYBE_StartStop StartStop
-#endif
-TEST_F(SamplingHeapProfilerTest, MAYBE_StartStop) {
+TEST_F(SamplingHeapProfilerTest, StartStop) {
   auto* profiler = SamplingHeapProfiler::Get();
   EXPECT_EQ(0, GetRunningSessionsCount());
   profiler->Start();
@@ -293,7 +297,16 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_StartStop) {
   EXPECT_EQ(1, GetRunningSessionsCount());
   profiler->Stop();
   EXPECT_EQ(0, GetRunningSessionsCount());
+}
 
+// TODO(crbug.com/1116543): Test is crashing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ConcurrentStartStop DISABLED_ConcurrentStartStop
+#else
+#define MAYBE_ConcurrentStartStop ConcurrentStartStop
+#endif
+TEST_F(SamplingHeapProfilerTest, MAYBE_ConcurrentStartStop) {
+  auto* profiler = SamplingHeapProfiler::Get();
   WaitableEvent event;
   StartStopThread thread(&event);
   thread.Start();
@@ -301,6 +314,51 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_StartStop) {
   RunStartStopLoop(profiler);
   thread.Join();
   EXPECT_EQ(0, GetRunningSessionsCount());
+}
+
+TEST_F(SamplingHeapProfilerTest, HookedAllocatorMuted) {
+  ScopedSuppressRandomnessForTesting suppress;
+  EXPECT_FALSE(PoissonAllocationSampler::AreHookedSamplesMuted());
+
+  auto* sampler = PoissonAllocationSampler::Get();
+  sampler->SetSamplingInterval(1024);
+
+  {
+    PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting mute_hooks;
+    EXPECT_TRUE(PoissonAllocationSampler::AreHookedSamplesMuted());
+
+    SamplesCollector collector(10000);
+
+    // A ScopedMuteHookedSamplesForTesting exists so hooked allocations should
+    // be ignored.
+    sampler->AddSamplesObserver(&collector);
+    void* volatile p = malloc(10000);
+    free(p);
+    sampler->RemoveSamplesObserver(&collector);
+    EXPECT_FALSE(collector.sample_added);
+    EXPECT_FALSE(collector.sample_removed);
+
+    // Manual allocations should be captured.
+    sampler->AddSamplesObserver(&collector);
+    void* const kAddress = reinterpret_cast<void*>(0x1234);
+    sampler->RecordAlloc(kAddress, 10000,
+                         PoissonAllocationSampler::kManualForTesting, nullptr);
+    sampler->RecordFree(kAddress);
+    sampler->RemoveSamplesObserver(&collector);
+    EXPECT_TRUE(collector.sample_added);
+    EXPECT_TRUE(collector.sample_removed);
+  }
+
+  EXPECT_FALSE(PoissonAllocationSampler::AreHookedSamplesMuted());
+
+  // Hooked allocations should be captured again.
+  SamplesCollector collector(10000);
+  sampler->AddSamplesObserver(&collector);
+  void* volatile p = malloc(10000);
+  free(p);
+  sampler->RemoveSamplesObserver(&collector);
+  EXPECT_TRUE(collector.sample_added);
+  EXPECT_TRUE(collector.sample_removed);
 }
 
 }  // namespace base

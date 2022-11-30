@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "base/component_export.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -23,7 +23,8 @@ namespace audio {
 // Provides media::AudioSystem implementation on top of Audio service.
 // In case connection to Audio service is lost, reply callbacks will run with
 // empty optionals / false booleans.
-class AudioSystemToServiceAdapter : public media::AudioSystem {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioSystemToServiceAdapter
+    : public media::AudioSystem {
  public:
   // A callback which can be used to acquire a new SystemInfo interface pipe
   // lazily as needed.
@@ -36,6 +37,11 @@ class AudioSystemToServiceAdapter : public media::AudioSystem {
   AudioSystemToServiceAdapter(SystemInfoBinder system_info_binder,
                               base::TimeDelta disconnect_timeout);
   explicit AudioSystemToServiceAdapter(SystemInfoBinder system_info_binder);
+
+  AudioSystemToServiceAdapter(const AudioSystemToServiceAdapter&) = delete;
+  AudioSystemToServiceAdapter& operator=(const AudioSystemToServiceAdapter&) =
+      delete;
+
   ~AudioSystemToServiceAdapter() override;
 
   // AudioSystem implementation.
@@ -69,7 +75,6 @@ class AudioSystemToServiceAdapter : public media::AudioSystem {
   const base::TimeDelta disconnect_timeout_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AudioSystemToServiceAdapter);
 };
 
 }  // namespace audio

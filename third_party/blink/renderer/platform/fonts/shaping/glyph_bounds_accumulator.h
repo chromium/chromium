@@ -33,7 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_BOUNDS_ACCUMULATOR_H_
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -49,13 +49,13 @@ struct GlyphBoundsAccumulator {
 
   // The accumulated glyph bounding box in physical coordinate, until
   // ConvertVerticalRunToLogical().
-  FloatRect bounds;
+  gfx::RectF bounds;
   // The current origin, in logical coordinate.
   float origin;
 
   // Unite a glyph bounding box to |bounds|.
   template <bool is_horizontal_run>
-  void Unite(FloatRect bounds_for_glyph,
+  void Unite(gfx::RectF bounds_for_glyph,
              ShapeResult::GlyphOffset glyph_offset) {
     if (UNLIKELY(bounds_for_glyph.IsEmpty()))
       return;
@@ -64,17 +64,17 @@ struct GlyphBoundsAccumulator {
     // All positions in hb_glyph_position_t are relative to the current point.
     // https://behdad.github.io/harfbuzz/harfbuzz-Buffers.html#hb-glyph-position-t-struct
     if (is_horizontal_run)
-      bounds_for_glyph.SetX(bounds_for_glyph.X() + origin);
+      bounds_for_glyph.set_x(bounds_for_glyph.x() + origin);
     else
-      bounds_for_glyph.SetY(bounds_for_glyph.Y() + origin);
-    bounds_for_glyph.Move(glyph_offset);
+      bounds_for_glyph.set_y(bounds_for_glyph.y() + origin);
+    bounds_for_glyph.Offset(glyph_offset);
 
-    bounds.Unite(bounds_for_glyph);
+    bounds.Union(bounds_for_glyph);
   }
 
   // Non-template version of |Unite()|, see above.
   void Unite(bool is_horizontal_run,
-             FloatRect bounds_for_glyph,
+             gfx::RectF bounds_for_glyph,
              ShapeResult::GlyphOffset glyph_offset) {
     is_horizontal_run ? Unite<true>(bounds_for_glyph, glyph_offset)
                       : Unite<false>(bounds_for_glyph, glyph_offset);
@@ -84,16 +84,16 @@ struct GlyphBoundsAccumulator {
   // need conversions because physical and logical are the same.
   void ConvertVerticalRunToLogical(const FontMetrics& font_metrics) {
     // Convert physical glyph_bounding_box to logical.
-    bounds = bounds.TransposedRect();
+    bounds.Transpose();
 
-    // The glyph bounding box of a vertical run uses ideographic baseline.
-    // Adjust the box Y position because the bounding box of a ShapeResult uses
-    // alphabetic baseline.
+    // The glyph bounding box of a vertical run uses ideographic central
+    // baseline. Adjust the box Y position because the bounding box of a
+    // ShapeResult uses alphabetic baseline.
     // See diagrams of base lines at
     // https://drafts.csswg.org/css-writing-modes-3/#intro-baselines
-    int baseline_adjust = font_metrics.Ascent(kIdeographicBaseline) -
+    int baseline_adjust = font_metrics.Ascent(kCentralBaseline) -
                           font_metrics.Ascent(kAlphabeticBaseline);
-    bounds.SetY(bounds.Y() + baseline_adjust);
+    bounds.set_y(bounds.y() + baseline_adjust);
   }
 };
 

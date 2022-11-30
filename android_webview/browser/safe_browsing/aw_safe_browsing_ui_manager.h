@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/safe_browsing/content/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,7 +21,6 @@ class SharedURLLoaderFactory;
 
 namespace safe_browsing {
 class BaseBlockingPage;
-class PingManager;
 class SafeBrowsingNetworkContext;
 }  // namespace safe_browsing
 
@@ -46,16 +45,23 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   // Construction needs to happen on the UI thread.
   AwSafeBrowsingUIManager();
 
+  AwSafeBrowsingUIManager(const AwSafeBrowsingUIManager&) = delete;
+  AwSafeBrowsingUIManager& operator=(const AwSafeBrowsingUIManager&) = delete;
+
   // Gets the correct ErrorUiType for the web contents
   int GetErrorUiType(content::WebContents* web_contents) const;
 
   // BaseUIManager methods:
   void DisplayBlockingPage(const UnsafeResource& resource) override;
 
-  // Called on the UI thread by the ThreatDetails with the serialized
-  // protocol buffer, so the service can send it over.
-  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
-                                   const std::string& serialized) override;
+  // Called on the UI thread by the ThreatDetails with the report, so the
+  // service can send it over.
+  void SendThreatDetails(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report)
+      override;
+
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   // Called on the IO thread to get a SharedURLLoaderFactory that can be used on
   // the IO thread.
@@ -76,9 +82,6 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   void CreateURLLoaderFactoryForIO(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver);
 
-  // Provides phishing and malware statistics. Accessed on IO thread.
-  std::unique_ptr<safe_browsing::PingManager> ping_manager_;
-
   // This is what owns the URLRequestContext inside the network service. This is
   // used by SimpleURLLoader for Safe Browsing requests.
   std::unique_ptr<safe_browsing::SafeBrowsingNetworkContext> network_context_;
@@ -87,8 +90,6 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_on_io_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_on_io_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwSafeBrowsingUIManager);
 };
 
 }  // namespace android_webview

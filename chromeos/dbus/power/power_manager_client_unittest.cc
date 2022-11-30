@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -91,6 +90,10 @@ class TestObserver : public PowerManagerClient::Observer {
   explicit TestObserver(PowerManagerClient* client) : client_(client) {
     client_->AddObserver(this);
   }
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override { client_->RemoveObserver(this); }
 
   int num_suspend_imminent() const { return num_suspend_imminent_; }
@@ -111,7 +114,7 @@ class TestObserver : public PowerManagerClient::Observer {
   }
 
   // Runs |block_suspend_token_|.
-  bool UnblockSuspend() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool UnblockSuspend() {
     if (block_suspend_token_.is_empty())
       return false;
 
@@ -168,7 +171,6 @@ class TestObserver : public PowerManagerClient::Observer {
 
   // Ambient color temperature
   int32_t ambient_color_temperature_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 // Stub implementation of PowerManagerClient::RenderProcessManagerDelegate.
@@ -177,6 +179,10 @@ class TestDelegate : public PowerManagerClient::RenderProcessManagerDelegate {
   explicit TestDelegate(PowerManagerClient* client) {
     client->SetRenderProcessManagerDelegate(weak_ptr_factory_.GetWeakPtr());
   }
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() override = default;
 
   int num_suspend_imminent() const { return num_suspend_imminent_; }
@@ -192,31 +198,32 @@ class TestDelegate : public PowerManagerClient::RenderProcessManagerDelegate {
   int num_suspend_done_ = 0;
 
   base::WeakPtrFactory<TestDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
-// Local implementation of base::PowerMonitorTestObserver to add callback to
-// OnThermalStateChange.
-class PowerMonitorTestObserverLocal : public base::PowerMonitorTestObserver {
+// Local implementation of base::test::PowerMonitorTestObserver to add callback
+// to OnThermalStateChange.
+class PowerMonitorTestObserverLocal
+    : public base::test::PowerMonitorTestObserver {
  public:
-  using base::PowerMonitorTestObserver::PowerMonitorTestObserver;
+  using base::test::PowerMonitorTestObserver::PowerMonitorTestObserver;
+
+  PowerMonitorTestObserverLocal(const PowerMonitorTestObserverLocal&) = delete;
+  PowerMonitorTestObserverLocal& operator=(
+      const PowerMonitorTestObserverLocal&) = delete;
 
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override {
-    ASSERT_TRUE(cb);
-    base::PowerMonitorTestObserver::OnThermalStateChange(new_state);
-    std::move(cb).Run();
+    ASSERT_TRUE(cb_);
+    base::test::PowerMonitorTestObserver::OnThermalStateChange(new_state);
+    std::move(cb_).Run();
   }
 
   void set_cb_for_testing(base::OnceCallback<void()> cb) {
-    this->cb = std::move(cb);
+    cb_ = std::move(cb);
   }
 
  private:
-  base::OnceCallback<void()> cb;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTestObserverLocal);
+  base::OnceCallback<void()> cb_;
 };
 
 }  // namespace
@@ -224,6 +231,10 @@ class PowerMonitorTestObserverLocal : public base::PowerMonitorTestObserver {
 class PowerManagerClientTest : public testing::Test {
  public:
   PowerManagerClientTest() = default;
+
+  PowerManagerClientTest(const PowerManagerClientTest&) = delete;
+  PowerManagerClientTest& operator=(const PowerManagerClientTest&) = delete;
+
   ~PowerManagerClientTest() override = default;
 
   void SetUp() override {
@@ -391,8 +402,6 @@ class PowerManagerClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
                                   std::move(response)));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerClientTest);
 };
 
 // Tests that suspend readiness is reported immediately when there are no
@@ -645,20 +654,15 @@ TEST_F(PowerManagerClientTest, ChangeAmbientColorTemperature) {
 
 // Tests that base::PowerMonitor observers are notified about thermal event.
 TEST_F(PowerManagerClientTest, ChangeThermalState) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
   PowerMonitorTestObserverLocal observer;
   base::PowerMonitor::AddPowerThermalObserver(&observer);
-
-  base::PowerMonitor::Initialize(
-      std::make_unique<base::PowerMonitorTestSource>());
 
   typedef struct {
     power_manager::ThermalEvent::ThermalState dbus_state;
     base::PowerThermalObserver::DeviceThermalState expected_state;
   } ThermalDBusTestType;
   ThermalDBusTestType thermal_states[] = {
-      {.dbus_state = power_manager::ThermalEvent_ThermalState_UNKNOWN,
-       .expected_state =
-           base::PowerThermalObserver::DeviceThermalState::kUnknown},
       {.dbus_state = power_manager::ThermalEvent_ThermalState_NOMINAL,
        .expected_state =
            base::PowerThermalObserver::DeviceThermalState::kNominal},
@@ -670,6 +674,12 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
       {.dbus_state = power_manager::ThermalEvent_ThermalState_CRITICAL,
        .expected_state =
            base::PowerThermalObserver::DeviceThermalState::kCritical},
+      // Testing of power thermal state 'Unknown' cannot be the first one
+      // since the initial state in the PowerMonitor is 'Unknown' and the
+      // notifications are deduplicated and not sent if unchanged.
+      {.dbus_state = power_manager::ThermalEvent_ThermalState_UNKNOWN,
+       .expected_state =
+           base::PowerThermalObserver::DeviceThermalState::kUnknown},
   };
 
   for (const auto& p : thermal_states) {
@@ -691,7 +701,6 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
   }
 
   base::PowerMonitor::RemovePowerThermalObserver(&observer);
-  base::PowerMonitor::ShutdownForTesting();
 }
 
 }  // namespace chromeos

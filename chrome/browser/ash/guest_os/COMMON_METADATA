@@ -1,0 +1,11 @@
+monorail: {
+  project: "chromium"
+  component: "UI>Shell>Containers"
+}
+buganizer: {
+  component_id: 658562   # ChromeOS > Software > Guest OS
+}
+buganizer_public: {
+  component_id: 1161264  # Chrome OS Public Tracker > Core Systems > Virtualization > Guests
+}
+team_email: "clumptini@google.com"

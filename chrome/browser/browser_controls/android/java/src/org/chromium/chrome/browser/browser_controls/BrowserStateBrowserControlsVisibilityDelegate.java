@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,12 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.FeatureList;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.ui.util.TokenHolder;
@@ -22,7 +25,7 @@ import org.chromium.ui.util.TokenHolder;
  * running activity.
  */
 public class BrowserStateBrowserControlsVisibilityDelegate
-        extends BrowserControlsVisibilityDelegate {
+        extends BrowserControlsVisibilityDelegate implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
     @VisibleForTesting
     static final long MINIMUM_SHOW_DURATION_MS = 3000;
@@ -120,6 +123,9 @@ public class BrowserStateBrowserControlsVisibilityDelegate
             return BrowserControlsState.HIDDEN;
         } else if (mTokenHolder.hasTokens() && !sDisableOverridesForTesting) {
             return BrowserControlsState.SHOWN;
+        } else if (FeatureList.isNativeInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
+            return BrowserControlsState.SHOWN;
         }
         return BrowserControlsState.BOTH;
     }
@@ -138,6 +144,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate
     /**
      * Performs clean-up.
      */
+    @Override
     public void destroy() {
         mHandler.removeCallbacksAndMessages(null);
     }

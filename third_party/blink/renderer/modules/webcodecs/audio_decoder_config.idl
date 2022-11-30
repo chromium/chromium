@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,15 @@
 // audio_decoder.cc.
 
 dictionary AudioDecoderConfig {
-  // TODO(chcunningham): reference spec registry.
   required DOMString codec;
 
   // Rate of samples per second. 44100, 48000, etc.
-  required unsigned long sampleRate;
+  required [EnforceRange] unsigned long sampleRate;
 
   // 1, 2, etc.
-  required unsigned long numberOfChannels;
+  required [EnforceRange] unsigned long numberOfChannels;
 
   // Optional byte data required to initialize audio decoders such as Vorbis
   // codebooks.
-  BufferSource description;
+  AllowSharedBufferSource description;
 };

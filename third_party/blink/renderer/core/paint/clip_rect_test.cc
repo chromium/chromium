@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ TEST_F(ClipRectTest, IntersectEmptyRect) {
 TEST_F(ClipRectTest, IntersectsInfinite) {
   ClipRect rect;
 
-  EXPECT_TRUE(rect.Intersects(HitTestLocation(FloatPoint(100000, -3333333))));
+  EXPECT_TRUE(rect.Intersects(HitTestLocation(gfx::PointF(100000, -3333333))));
 }
 
 TEST_F(ClipRectTest, ToString) {

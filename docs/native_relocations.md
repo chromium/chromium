@@ -30,7 +30,7 @@
 [cros]: https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1210982
 
 ### Windows Relocations (PE Format)
- * For PE files, relocaitons are stored in per-code-page
+ * For PE files, relocations are stored in per-code-page
    [`.reloc` sections][win_relocs].
  * Each relocation is stored using 2 bytes. Each `.reloc` section has a small
    overhead as well.

@@ -4,7 +4,7 @@ addEventListener('fetch', e => {
 });
 
 async function fetchAndMessagePriority(request) {
-  const priorityPromise = internals.getResourcePriority(request.url, self);
+  const priorityPromise = internals.getInitialResourcePriority(request.url, self);
   const response = await fetch(request);
   const priority = await priorityPromise;
   const clientArray = await clients.matchAll({includeUncontrolled: true});

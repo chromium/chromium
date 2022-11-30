@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,28 +39,24 @@ function getFileEntry(volumeType, path) {
 function openGallery(entry, expectedResult) {
   // "jhdjimmaggjajfjphpljagpgkidjilnj" is the MediaApp app id. This task id is
   // hard-coded in the Camera component app.
-  const id = 'jhdjimmaggjajfjphpljagpgkidjilnj|web|open';
+  const descriptor = {
+    appId: 'jhdjimmaggjajfjphpljagpgkidjilnj',
+    taskType: 'web',
+    actionId: 'chrome://media-app/open'
+  };
   function taskCallback(taskResult) {
     chrome.test.assertEq(expectedResult, taskResult);
     chrome.test.succeed();
   }
-  chrome.fileManagerPrivate.executeTask(id, [entry], taskCallback);
+  chrome.fileManagerPrivate.executeTask(descriptor, [entry], taskCallback);
 }
 
 function openGalleryExpectOpened(entry) {
   openGallery(entry, chrome.fileManagerPrivate.TaskResult.OPENED);
 }
 
-function openGalleryExpectMsgSent(entry) {
-  openGallery(entry, chrome.fileManagerPrivate.TaskResult.MESSAGE_SENT);
-}
-
 function testPngOpensGalleryReturnsOpened() {
   getFileEntry('testing', kTestPng).then(openGalleryExpectOpened);
-}
-
-function testPngOpensGalleryReturnsMsgSent() {
-  getFileEntry('testing', kTestPng).then(openGalleryExpectMsgSent);
 }
 
 // Handle the case where JSTestStarter has already injected a test to run.

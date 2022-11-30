@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace chromeos {
+namespace ash {
 
 OobeWindowVisibilityWaiter::OobeWindowVisibilityWaiter(bool target_visibilty)
     : target_visibility_(target_visibilty) {}
@@ -27,7 +27,7 @@ void OobeWindowVisibilityWaiter::Wait() {
 
   base::RunLoop run_loop;
   wait_stop_closure_ = run_loop.QuitClosure();
-  window_observer_.Add(window);
+  window_observation_.Observe(window);
   run_loop.Run();
 }
 
@@ -35,13 +35,13 @@ void OobeWindowVisibilityWaiter::OnWindowVisibilityChanged(aura::Window* window,
                                                            bool visible) {
   if (visible != target_visibility_)
     return;
-  window_observer_.RemoveAll();
+  window_observation_.Reset();
   std::move(wait_stop_closure_).Run();
 }
 
 void OobeWindowVisibilityWaiter::OnWindowDestroyed(aura::Window* window) {
   DCHECK(!target_visibility_);
-  window_observer_.RemoveAll();
+  window_observation_.Reset();
   std::move(wait_stop_closure_).Run();
 }
 
@@ -52,4 +52,4 @@ aura::Window* OobeWindowVisibilityWaiter::GetWindow() {
   return host->GetOobeWebContents()->GetTopLevelNativeWindow();
 }
 
-}  // namespace chromeos
+}  // namespace ash

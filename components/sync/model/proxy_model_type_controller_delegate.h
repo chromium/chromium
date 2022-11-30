@@ -1,16 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_MODEL_PROXY_MODEL_TYPE_CONTROLLER_DELEGATE_H_
 #define COMPONENTS_SYNC_MODEL_PROXY_MODEL_TYPE_CONTROLLER_DELEGATE_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 
 namespace syncer {
@@ -27,6 +25,12 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   ProxyModelTypeControllerDelegate(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const DelegateProvider& delegate_provider);
+
+  ProxyModelTypeControllerDelegate(const ProxyModelTypeControllerDelegate&) =
+      delete;
+  ProxyModelTypeControllerDelegate& operator=(
+      const ProxyModelTypeControllerDelegate&) = delete;
+
   ~ProxyModelTypeControllerDelegate() override;
 
   // ModelTypeControllerDelegate implementation.
@@ -49,8 +53,6 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const DelegateProvider delegate_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyModelTypeControllerDelegate);
 };
 
 }  // namespace syncer

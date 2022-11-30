@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,35 +21,29 @@ class SecureBoxKeyPair;
 class DownloadKeysResponseHandler {
  public:
   struct ProcessedResponse {
-    explicit ProcessedResponse(TrustedVaultRequestStatus status);
-    ProcessedResponse(TrustedVaultRequestStatus status,
+    explicit ProcessedResponse(TrustedVaultDownloadKeysStatus status);
+    ProcessedResponse(TrustedVaultDownloadKeysStatus status,
                       std::vector<std::vector<uint8_t>> new_keys,
                       int last_key_version);
     ProcessedResponse(const ProcessedResponse& other);
     ProcessedResponse& operator=(const ProcessedResponse& other);
     ~ProcessedResponse();
 
-    // kSuccess is reported if extraction was successful and there are new
-    // trusted vault keys.
-    // kLocalDataObsolete is reported if it's impossible to extract keys due to
-    // data corruption or absence of sync SecurityDomainMembership or if there
-    // is no new keys.
-    // kOtherError is reported in case of http/network errors or if the response
-    // isn't valid serialized SecurityDomainMember proto.
-    TrustedVaultRequestStatus status;
+    TrustedVaultDownloadKeysStatus status;
 
     // Contains new keys (e.g. keys are stored by the server, excluding last
-    // known key and keys that predate it).
+    // known key and keys that predate it).  Excludes first key if it's a
+    // constant key.
+    // TODO(crbug.com/1267391): return all keys obtained from the server and
+    // update StandaloneTrustedVaultBackend to store them.
     std::vector<std::vector<uint8_t>> new_keys;
     int last_key_version;
   };
 
-  // |device_key_pair| must not be null. If |last_trusted_vault_key_and_version|
-  // is provided, then it will be verified that the new keys are result of
-  // rotating the provided key.
+  // |device_key_pair| must not be null. It will be verified that the new keys
+  // are result of rotating |last_trusted_vault_key_and_version|.
   DownloadKeysResponseHandler(
-      const base::Optional<TrustedVaultKeyAndVersion>&
-          last_trusted_vault_key_and_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair);
   DownloadKeysResponseHandler(const DownloadKeysResponseHandler& other) =
       delete;
@@ -61,8 +55,7 @@ class DownloadKeysResponseHandler {
                                     const std::string& response_body) const;
 
  private:
-  const base::Optional<TrustedVaultKeyAndVersion>
-      last_trusted_vault_key_and_version_;
+  const TrustedVaultKeyAndVersion last_trusted_vault_key_and_version_;
   const std::unique_ptr<SecureBoxKeyPair> device_key_pair_;
 };
 

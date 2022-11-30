@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromecast/media/audio/mixer_service/receiver/receiver.h"
 
 namespace chromecast {
@@ -24,6 +23,10 @@ class MixerSocket;
 class MixerServiceReceiver : public mixer_service::Receiver {
  public:
   MixerServiceReceiver(StreamMixer* mixer, LoopbackHandler* loopback_handler);
+
+  MixerServiceReceiver(const MixerServiceReceiver&) = delete;
+  MixerServiceReceiver& operator=(const MixerServiceReceiver&) = delete;
+
   ~MixerServiceReceiver() override;
 
   // Called by the mixer when the active stream count changes.
@@ -54,8 +57,6 @@ class MixerServiceReceiver : public mixer_service::Receiver {
       control_connections_;
   int primary_stream_count_ = 0;
   int sfx_stream_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerServiceReceiver);
 };
 
 }  // namespace media

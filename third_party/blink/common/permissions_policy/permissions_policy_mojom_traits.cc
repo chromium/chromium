@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,18 @@
 #include "url/mojom/origin_mojom_traits.h"
 
 namespace mojo {
+
+bool StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
+                  blink::OriginWithPossibleWildcards>::
+    Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
+         blink::OriginWithPossibleWildcards* out) {
+  out->has_subdomain_wildcard = in.has_subdomain_wildcard();
+  if (!in.ReadOrigin(&out->origin))
+    return false;
+
+  // An opaque origin cannot have a wildcard.
+  return !out->origin.opaque() || !out->has_subdomain_wildcard;
+}
 
 bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
                   blink::ParsedPermissionsPolicyDeclaration>::

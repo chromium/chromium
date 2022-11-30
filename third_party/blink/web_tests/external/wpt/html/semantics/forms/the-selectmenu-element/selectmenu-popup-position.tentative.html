@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<title>HTMLSelectMenuElement Test: popup position</title>
+<link rel="author" title="Ionel Popescu" href="mailto:iopopesc@microsoft.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  #selectMenu0 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  }
+
+  #selectMenu1 {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+  }
+
+  #selectMenu2 {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
+
+  #selectMenu3 {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+  }
+</style>
+
+<selectmenu id="selectMenu0">
+  <div popup slot="listbox" behavior="listbox" id="selectMenu0-popup">
+    <option>bottom left</option>
+    <option>two</option>
+    <option>three</option>
+  </div>
+</selectmenu>
+<br>
+
+<selectmenu id="selectMenu1">
+  <div popup slot="listbox" behavior="listbox" id="selectMenu1-popup">
+    <option>top left</option>
+    <option>two</option>
+    <option>three</option>
+  </div>
+</selectmenu>
+
+<selectmenu id="selectMenu2">
+  <div popup slot="listbox" behavior="listbox" id="selectMenu2-popup">
+    <option>bottom right</option>
+    <option>two</option>
+    <option>three</option>
+  </div>
+</selectmenu>
+
+<selectmenu id="selectMenu3">
+  <div popup slot="listbox" behavior="listbox" id="selectMenu3-popup">
+    <option>top right</option>
+    <option>two</option>
+    <option>three</option>
+  </div>
+</selectmenu>
+
+<script>
+  function clickOn(element) {
+    const actions = new test_driver.Actions();
+    return actions.pointerMove(0, 0, {origin: element})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerUp({button: actions.ButtonType.LEFT})
+      .send();
+  }
+
+  promise_test(async () => {
+    const selectMenu0 = document.getElementById("selectMenu0");
+    const selectMenu0Popup = document.getElementById("selectMenu0-popup");
+
+    await clickOn(selectMenu0);
+    assert_equals(Math.abs(Math.trunc(selectMenu0.getBoundingClientRect().bottom - selectMenu0Popup.getBoundingClientRect().top)), 0);
+    assert_equals(Math.abs(Math.trunc(selectMenu0.getBoundingClientRect().left - selectMenu0Popup.getBoundingClientRect().left)), 0);
+  }, "The popup should be bottom left positioned");
+
+  promise_test(async () => {
+    const selectMenu1 = document.getElementById("selectMenu1");
+    const selectMenu1Popup = document.getElementById("selectMenu1-popup");
+
+    await clickOn(selectMenu1);
+    assert_equals(Math.abs(Math.trunc(selectMenu1.getBoundingClientRect().top - selectMenu1Popup.getBoundingClientRect().bottom)), 0);
+    assert_equals(Math.abs(Math.trunc(selectMenu1.getBoundingClientRect().left - selectMenu1Popup.getBoundingClientRect().left)), 0);
+  }, "The popup should be top left positioned");
+
+  promise_test(async () => {
+    const selectMenu2 = document.getElementById("selectMenu2");
+    const selectMenu2Popup = document.getElementById("selectMenu2-popup");
+
+    await clickOn(selectMenu2);
+    assert_equals(Math.abs(Math.trunc(selectMenu2.getBoundingClientRect().bottom - selectMenu2Popup.getBoundingClientRect().top)), 0);
+    assert_equals(Math.abs(Math.trunc(selectMenu2.getBoundingClientRect().right - selectMenu2Popup.getBoundingClientRect().right)), 0);
+  }, "The popup should be bottom right positioned");
+
+  promise_test(async () => {
+    const selectMenu3 = document.getElementById("selectMenu3");
+    const selectMenu3Popup = document.getElementById("selectMenu3-popup");
+
+    await clickOn(selectMenu3);
+    assert_equals(Math.abs(Math.trunc(selectMenu3.getBoundingClientRect().top - selectMenu3Popup.getBoundingClientRect().bottom)), 0);
+    assert_equals(Math.abs(Math.trunc(selectMenu3.getBoundingClientRect().right - selectMenu3Popup.getBoundingClientRect().right)), 0);
+  }, "The popup should be top right positioned");
+
+</script>

@@ -1,0 +1,42 @@
+<style include="multidevice-setup-shared">
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #button-container {
+    display: flex;
+  }
+
+  @media screen and (max-width: 767px) {
+    #shadow {
+      background: linear-gradient(0deg,
+                                  rgba(var(--google-grey-100-rgb), 1) 0,
+                                  rgba(var(--google-grey-100-rgb), 0) 8px);
+      height: 8px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: -8px;
+    }
+  }
+</style>
+<div id="shadow" hidden$="[[!shouldShowShadow]]"></div>
+<div id="button-container">
+  <div id="backward"
+      on-click="onBackwardButtonClicked_"
+      hidden$="[[backwardButtonHidden]]">
+    <slot name="backward-button"></slot>
+  </div>
+  <div class="flex"></div>
+  <div id="cancel"
+      on-click="onCancelButtonClicked_"
+      hidden$="[[cancelButtonHidden]]">
+    <slot name="cancel-button"></slot>
+  </div>
+  <div id="forward"
+      on-click="onForwardButtonClicked_"
+      hidden$="[[forwardButtonHidden]]">
+    <slot name="forward-button"></slot>
+  </div>
+</div>

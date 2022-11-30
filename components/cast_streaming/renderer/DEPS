@@ -1,0 +1,7 @@
+include_rules = [
+  "+media/base",
+  "+media/mojo",
+  "+mojo/public",
+  "+ui/gfx",
+  "+url",
+]

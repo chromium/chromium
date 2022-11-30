@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -16,6 +15,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -65,7 +65,7 @@ class SchemaMapTest : public testing::Test {
     DomainMap domain_map;
     domain_map[POLICY_DOMAIN_EXTENSIONS] = component_map;
 
-    return new SchemaMap(domain_map);
+    return new SchemaMap(std::move(domain_map));
   }
 };
 
@@ -88,12 +88,13 @@ TEST_F(SchemaMapTest, HasComponents) {
   component_map[""] = schema;
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_CHROME] = component_map;
-  map = new SchemaMap(domain_map);
+  map = new SchemaMap(std::move(domain_map));
   EXPECT_FALSE(map->HasComponents());
 
   // An extension schema does.
+  domain_map.clear();
   domain_map[POLICY_DOMAIN_EXTENSIONS] = component_map;
-  map = new SchemaMap(domain_map);
+  map = new SchemaMap(std::move(domain_map));
   EXPECT_TRUE(map->HasComponents());
 }
 
@@ -132,7 +133,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
 
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["abc"] = schema;
-  scoped_refptr<SchemaMap> schema_map = new SchemaMap(domain_map);
+  scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
   PolicyBundle bundle;
   schema_map->FilterBundle(&bundle, /*drop_invalid_component_policies=*/true);
@@ -158,8 +159,8 @@ TEST_F(SchemaMapTest, FilterBundle) {
   PolicyNamespace extension_ns(POLICY_DOMAIN_EXTENSIONS, "abc");
   PolicyMap& map = expected_bundle.Get(extension_ns);
   base::ListValue list;
-  list.AppendString("a");
-  list.AppendString("b");
+  list.Append("a");
+  list.Append("b");
   map.Set("list", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
           POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
   map.Set("boolean", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -168,11 +169,11 @@ TEST_F(SchemaMapTest, FilterBundle) {
           POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   map.Set("double", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
           POLICY_SOURCE_CLOUD, base::Value(1.2), nullptr);
-  base::DictionaryValue dict;
-  dict.SetString("a", "b");
-  dict.SetInteger("b", 2);
+  base::Value::Dict dict;
+  dict.Set("a", "b");
+  dict.Set("b", 2);
   map.Set("object", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-          POLICY_SOURCE_CLOUD, dict.Clone(), nullptr);
+          POLICY_SOURCE_CLOUD, base::Value(dict.Clone()), nullptr);
   map.Set("string", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
           POLICY_SOURCE_CLOUD, base::Value("value"), nullptr);
 
@@ -209,7 +210,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
   badmap.Set("object", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   badmap.Set("string", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-             POLICY_SOURCE_CLOUD, base::nullopt,
+             POLICY_SOURCE_CLOUD, absl::nullopt,
              std::make_unique<ExternalDataFetcher>(nullptr, std::string()));
 
   schema_map->FilterBundle(&bundle, /*drop_invalid_component_policies=*/true);
@@ -232,7 +233,7 @@ TEST_F(SchemaMapTest, LegacyComponents) {
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = schema;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["without-schema"] = Schema();
-  scoped_refptr<SchemaMap> schema_map = new SchemaMap(domain_map);
+  scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
   // |bundle| contains policies loaded by a policy provider.
   PolicyBundle bundle;
@@ -290,7 +291,7 @@ TEST_F(SchemaMapTest, FilterBundleInvalidatesPolicies) {
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = schema;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["without-schema"] = Schema();
-  scoped_refptr<SchemaMap> schema_map = new SchemaMap(domain_map);
+  scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
   // |bundle| contains policies loaded by a policy provider.
   PolicyBundle bundle;
@@ -349,9 +350,10 @@ TEST_F(SchemaMapTest, FilterBundleInvalidatesPolicies) {
 TEST_F(SchemaMapTest, GetChanges) {
   DomainMap map;
   map[POLICY_DOMAIN_CHROME][""] = Schema();
-  scoped_refptr<SchemaMap> older = new SchemaMap(map);
+  scoped_refptr<SchemaMap> older = new SchemaMap(std::move(map));
+  map.clear();
   map[POLICY_DOMAIN_CHROME][""] = Schema();
-  scoped_refptr<SchemaMap> newer = new SchemaMap(map);
+  scoped_refptr<SchemaMap> newer = new SchemaMap(std::move(map));
 
   PolicyNamespaceList removed;
   PolicyNamespaceList added;
@@ -359,17 +361,19 @@ TEST_F(SchemaMapTest, GetChanges) {
   EXPECT_TRUE(removed.empty());
   EXPECT_TRUE(added.empty());
 
+  map.clear();
   map[POLICY_DOMAIN_CHROME][""] = Schema();
   map[POLICY_DOMAIN_EXTENSIONS]["xyz"] = Schema();
-  newer = new SchemaMap(map);
+  newer = new SchemaMap(std::move(map));
   newer->GetChanges(older, &removed, &added);
   EXPECT_TRUE(removed.empty());
   ASSERT_EQ(1u, added.size());
   EXPECT_EQ(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz"), added[0]);
 
   older = newer;
+  map.clear();
   map[POLICY_DOMAIN_EXTENSIONS]["abc"] = Schema();
-  newer = new SchemaMap(map);
+  newer = new SchemaMap(std::move(map));
   newer->GetChanges(older, &removed, &added);
   ASSERT_EQ(2u, removed.size());
   EXPECT_EQ(PolicyNamespace(POLICY_DOMAIN_CHROME, ""), removed[0]);

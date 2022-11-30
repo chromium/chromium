@@ -1,24 +1,24 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <functional>
-#include <string>
+#import <functional>
+#import <string>
 
-#include <TargetConditionals.h>
+#import <TargetConditionals.h>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/testing/embedded_test_server_handlers.h"
-#include "ios/web/common/features.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/common/features.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,6 +29,22 @@ namespace {
 std::string GetErrorMessage() {
   return net::ErrorToShortString(net::ERR_CONNECTION_CLOSED);
 }
+
+const std::string kRedirectPage = "/redirect-page.html";
+
+// Provides responses for the different pages.
+std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path() == kRedirectPage) {
+    auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+    result->set_code(net::HTTP_MOVED_PERMANENTLY);
+    result->AddCustomHeader("Location", "data:text/plain,Hello World");
+    return std::move(result);
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 // Tests critical user journeys reloated to page load errors.
@@ -41,21 +57,6 @@ std::string GetErrorMessage() {
 @implementation ErrorPageTestCase
 @synthesize serverRespondsWithContent = _serverRespondsWithContent;
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  // Features are enabled or disabled based on the name of the test that is
-  // running. This is done because it is inefficient to use
-  // ensureAppLaunchedWithConfiguration for each test.
-  if ([self isRunningTest:@selector(testRestoreErrorPage)]) {
-    config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
-    config.features_enabled.push_back(web::features::kUseJSForErrorPage);
-  } else {
-    config.features_enabled.push_back(kEnableCloseAllTabsConfirmation);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 
@@ -64,6 +65,8 @@ std::string GetErrorMessage() {
       &net::test_server::HandlePrefixedRequest, "/echo-query",
       base::BindRepeating(&testing::HandleEchoQueryOrCloseSocket,
                           std::cref(_serverRespondsWithContent))));
+  self.testServer->RegisterDefaultHandler(
+      base::BindRepeating(&StandardResponse));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
@@ -86,24 +89,24 @@ std::string GetErrorMessage() {
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
   // Add some delay otherwise the back/forward navigations are occurring too
   // fast.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   // Navigate to a page which responds.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?bar")];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
@@ -181,6 +184,18 @@ std::string GetErrorMessage() {
   GREYAssertEqual(1, [ChromeEarlGrey navigationBackListItemsCount],
                   @"The navigation back list should still have only 1 entries "
                   @"after the restoration.");
+}
+
+// Loads a URL which redirect to a data URL and check that the navigation is
+// blocked on the first URL.
+- (void)testRedirectToData {
+  self.serverRespondsWithContent = YES;
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kRedirectPage)];
+  [ChromeEarlGrey waitForWebStateContainingText:net::ErrorToShortString(
+                                                    net::ERR_UNSAFE_REDIRECT)];
+  [ChromeEarlGrey waitForWebStateContainingText:kRedirectPage];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(kRedirectPage)];
 }
 
 @end

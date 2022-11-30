@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,6 +103,11 @@ void DelegatingProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   for (const auto& provider : metrics_providers_)
     provider->ProvideCurrentSessionData(uma_proto);
+}
+
+void DelegatingProvider::ProvideCurrentSessionUKMData() {
+  for (const auto& provider : metrics_providers_)
+    provider->ProvideCurrentSessionUKMData();
 }
 
 void DelegatingProvider::ClearSavedStabilityMetrics() {

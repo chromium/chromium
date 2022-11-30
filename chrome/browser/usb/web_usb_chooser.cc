@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,38 +6,29 @@
 
 #include <utility>
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/usb/usb_chooser_context.h"
-#include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "build/build_config.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
-WebUsbChooser::WebUsbChooser(content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(render_frame_host);
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/usb/android/web_usb_chooser_android.h"
+#else
+#include "chrome/browser/usb/web_usb_chooser_desktop.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// static
+std::unique_ptr<WebUsbChooser> WebUsbChooser::Create(
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<UsbChooserController> controller) {
+  std::unique_ptr<WebUsbChooser> chooser;
+#if BUILDFLAG(IS_ANDROID)
+  chooser = std::make_unique<WebUsbChooserAndroid>();
+#else
+  chooser = std::make_unique<WebUsbChooserDesktop>();
+#endif  // BUILDFLAG(IS_ANDROID)
+  chooser->ShowChooser(render_frame_host, std::move(controller));
+  return chooser;
 }
 
-WebUsbChooser::~WebUsbChooser() {}
+WebUsbChooser::~WebUsbChooser() = default;
 
-void WebUsbChooser::GetPermission(
-    std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
-    blink::mojom::WebUsbService::GetPermissionCallback callback) {
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host_);
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* context = UsbChooserContextFactory::GetForProfile(profile);
-  if (!context->CanRequestObjectPermission(origin)) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  auto controller = std::make_unique<UsbChooserController>(
-      render_frame_host_, std::move(device_filters), std::move(callback));
-  ShowChooser(std::move(controller));
-}
+WebUsbChooser::WebUsbChooser() = default;

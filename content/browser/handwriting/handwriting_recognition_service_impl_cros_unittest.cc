@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
 
 namespace content {
@@ -26,10 +28,12 @@ class HandwritingRecognitionServiceImplCrOSTest
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_ml_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+    // We need to add the switch to "enable" HWR support.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        ash::switches::kOndeviceHandwritingSwitch, "use_rootfs");
   }
 
   chromeos::machine_learning::FakeServiceConnectionImpl&
@@ -42,8 +46,7 @@ class HandwritingRecognitionServiceImplCrOSTest
       fake_ml_service_connection_;
 };
 
-TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       DISABLED_CreateHandwritingRecognizer) {
+TEST_F(HandwritingRecognitionServiceImplCrOSTest, CreateHandwritingRecognizer) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(
@@ -68,12 +71,10 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest,
   EXPECT_TRUE(is_callback_called);
 }
 
-// The recognition conversion code should have some ability to handle the wrong
-// recognition output from OS (at least do not crash). Here we test the case
-// that `ink_range->end_stroke >= strokes.size()` which can cause crash if this
-// case is not checked.
+// In this test we provide valid input/output to check the mojo calls and data
+// copying code work correctly.
 TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       DISABLED_GetPredictionInvalidRecognitionResult) {
+       GetPredictionCorrectConversion) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(
@@ -100,110 +101,30 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest,
   ASSERT_TRUE(is_callback_called);
 
   // Generate and set the fake recognition result.
-  auto recognition_result =
-      chromeos::machine_learning::mojom::HandwritingRecognizerResult::New();
-  recognition_result->status = chromeos::machine_learning::mojom::
-      HandwritingRecognizerResult::Status::OK;
-  auto candidate =
-      chromeos::machine_learning::mojom::HandwritingRecognizerCandidate::New();
-  candidate->text = "text wrote";
-  candidate->score = 0.4f;  // Does not matter because we do not use it.
-  auto segmentation = chromeos::machine_learning::mojom::
-      HandwritingRecognizerSegmentation::New();
-  auto segment =
-      chromeos::machine_learning::mojom::HandwritingRecognizerSegment::New();
-  segment->sublabel = "seg";
-  auto ink_range =
-      chromeos::machine_learning::mojom::HandwritingRecognizerInkRange::New();
-  ink_range->start_stroke = 0u;
-  // ink_range->end_stroke is set to be larger than the number of input strokes.
-  ink_range->end_stroke = 1u;
-  ink_range->start_stroke = 10u;
-  ink_range->end_stroke = 12u;
-  segment->ink_ranges.emplace_back(std::move(ink_range));
-  segmentation->segments.emplace_back(std::move(segment));
-  candidate->segmentation = std::move(segmentation);
-  recognition_result->candidates.emplace_back(std::move(candidate));
-  GetMlServiceConnection().SetOutputHandwritingRecognizerResult(
-      std::move(recognition_result));
+  auto prediction = chromeos::machine_learning::web_platform::mojom::
+      HandwritingPrediction::New();
+  prediction->text = "text wrote";
+  auto segment = chromeos::machine_learning::web_platform::mojom::
+      HandwritingSegment::New();
+  segment->grapheme = "seg";
+  segment->begin_index = 0u;
+  segment->end_index = 3u;
+  segment->drawing_segments.push_back(
+      chromeos::machine_learning::web_platform::mojom::
+          HandwritingDrawingSegment::New(0u, 10u, 15u));
+  segment->drawing_segments.push_back(
+      chromeos::machine_learning::web_platform::mojom::
+          HandwritingDrawingSegment::New(1u, 0u, 13u));
+  prediction->segmentation_result.push_back(std::move(segment));
 
-  // Use 0 input strokes.
-  is_callback_called = false;
-  base::RunLoop runloop_prediction;
-  recognizer_remote->GetPrediction(
-      std::vector<handwriting::mojom::HandwritingStrokePtr>(),
-      handwriting::mojom::HandwritingHints::New(),
-      base::BindLambdaForTesting(
-          [&](base::Optional<std::vector<
-                  handwriting::mojom::HandwritingPredictionPtr>> result) {
-            is_callback_called = true;
-            // No result is returned because `ink_range->end_stroke >=
-            // strokes.size()`.
-            ASSERT_FALSE(result.has_value());
-            runloop_prediction.Quit();
-          }));
-  runloop_prediction.Run();
-  EXPECT_TRUE(is_callback_called);
-}
+  std::vector<
+      chromeos::machine_learning::web_platform::mojom::HandwritingPredictionPtr>
+      predictions;
+  predictions.push_back(std::move(prediction));
+  GetMlServiceConnection().SetOutputWebPlatformHandwritingRecognizerResult(
+      std::move(predictions));
 
-// In this test we provide valid input/output to check the conversion code works
-// correctly.
-TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       DISABLED_GetPredictionCorrectConversion) {
-  mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
-      service_remote;
-  CrOSHandwritingRecognitionServiceImpl::Create(
-      service_remote.BindNewPipeAndPassReceiver());
-  auto model_constraint = handwriting::mojom::HandwritingModelConstraint::New();
-  model_constraint->languages.push_back("en");
-  bool is_callback_called = false;
-  mojo::Remote<handwriting::mojom::HandwritingRecognizer> recognizer_remote;
-  base::RunLoop runloop_create_recognizer;
-  service_remote->CreateHandwritingRecognizer(
-      std::move(model_constraint),
-      base::BindLambdaForTesting(
-          [&](handwriting::mojom::CreateHandwritingRecognizerResult result,
-              mojo::PendingRemote<handwriting::mojom::HandwritingRecognizer>
-                  input_remote) {
-            is_callback_called = true;
-            ASSERT_EQ(
-                result,
-                handwriting::mojom::CreateHandwritingRecognizerResult::kOk);
-            recognizer_remote.Bind(std::move(input_remote));
-            runloop_create_recognizer.Quit();
-          }));
-  runloop_create_recognizer.Run();
-  ASSERT_TRUE(is_callback_called);
-
-  // Generate and set the fake recognition result.
-  auto recognition_result =
-      chromeos::machine_learning::mojom::HandwritingRecognizerResult::New();
-  recognition_result->status = chromeos::machine_learning::mojom::
-      HandwritingRecognizerResult::Status::OK;
-  auto candidate =
-      chromeos::machine_learning::mojom::HandwritingRecognizerCandidate::New();
-  candidate->text = "text wrote";
-  candidate->score = 0.4f;  // Does not matter because we do not use it.
-  auto segmentation = chromeos::machine_learning::mojom::
-      HandwritingRecognizerSegmentation::New();
-  auto segment =
-      chromeos::machine_learning::mojom::HandwritingRecognizerSegment::New();
-  segment->sublabel = "seg";
-  auto ink_range =
-      chromeos::machine_learning::mojom::HandwritingRecognizerInkRange::New();
-  ink_range->start_stroke = 0u;
-  ink_range->end_stroke = 1u;
-  ink_range->start_point = 10u;
-  ink_range->end_point = 12u;
-  segment->ink_ranges.emplace_back(std::move(ink_range));
-  segmentation->segments.emplace_back(std::move(segment));
-  candidate->segmentation = std::move(segmentation);
-  recognition_result->candidates.emplace_back(std::move(candidate));
-  GetMlServiceConnection().SetOutputHandwritingRecognizerResult(
-      std::move(recognition_result));
-
-  // Generate 3 input strokes. Note that the number of strokes should be larger
-  // than `ink_range->end_stroke+1`.
+  // Generate 3 input strokes.
   std::vector<handwriting::mojom::HandwritingStrokePtr> strokes;
   const std::vector<int> num_points = {15, 10, 21};
   for (int npts : num_points) {
@@ -220,7 +141,7 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest,
   recognizer_remote->GetPrediction(
       std::move(strokes), handwriting::mojom::HandwritingHints::New(),
       base::BindLambdaForTesting(
-          [&](base::Optional<std::vector<
+          [&](absl::optional<std::vector<
                   handwriting::mojom::HandwritingPredictionPtr>> result) {
             is_callback_called = true;
             ASSERT_TRUE(result.has_value());

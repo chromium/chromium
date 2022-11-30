@@ -1,13 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/item_icon.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,18 +34,6 @@ TEST_F(TableViewItemTest, ConfigureCellPortsAccessibilityProperties) {
   EXPECT_NSEQ(@"test_identifier", [cell accessibilityIdentifier]);
 }
 
-TEST_F(TableViewItemTest, ConfigureCellWithStyler) {
-  TableViewItem* item = [[TableViewItem alloc] initWithType:0];
-  TableViewCell* cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewCell class]]);
-
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = UIColor.redColor;
-  styler.tableViewBackgroundColor = testColor;
-  [item configureCell:cell withStyler:styler];
-  EXPECT_NSEQ(testColor, cell.backgroundColor);
-}
-
 TEST_F(TableViewItemTest, NoBackgroundColorIfBackgroundViewIsPresent) {
   TableViewItem* item = [[TableViewItem alloc] initWithType:0];
   TableViewCell* cell = [[[item cellClass] alloc] init];
@@ -58,6 +48,23 @@ TEST_F(TableViewItemTest, NoBackgroundColorIfBackgroundViewIsPresent) {
   styler.tableViewBackgroundColor = testColor;
   [item configureCell:cell withStyler:styler];
   EXPECT_FALSE([testColor isEqual:cell.backgroundColor]);
+}
+
+TEST_F(TableViewItemTest, ConfigureCellAccessoryViewProperties) {
+  UIImageView* expectedImage = [[UIImageView alloc]
+      initWithImage:DefaultSymbolTemplateWithPointSize(
+                        kChevronForwardSymbol, kSymbolAccessoryPointSize)];
+  TableViewItem* item = [[TableViewItem alloc] initWithType:0];
+  item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  item.accessoryView = expectedImage;
+
+  TableViewCell* cell = [[[item cellClass] alloc] init];
+  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
+  [item configureCell:cell withStyler:styler];
+  // Internally in UITableViewCell, accessoryView takes precedence over
+  // accessoryType property.
+  EXPECT_EQ(cell.accessoryType, UITableViewCellAccessoryDisclosureIndicator);
+  EXPECT_EQ(cell.accessoryView, expectedImage);
 }
 
 }  // namespace

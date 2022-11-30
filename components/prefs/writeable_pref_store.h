@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/prefs/pref_store.h"
 
 namespace base {
@@ -35,10 +34,13 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
 
   WriteablePrefStore() {}
 
-  // Sets a |value| for |key| in the store. |value| must be non-NULL. |flags| is
-  // a bitmask of PrefWriteFlags.
+  WriteablePrefStore(const WriteablePrefStore&) = delete;
+  WriteablePrefStore& operator=(const WriteablePrefStore&) = delete;
+
+  // Sets a |value| for |key| in the store. |flags| is a bitmask of
+  // PrefWriteFlags.
   virtual void SetValue(const std::string& key,
-                        std::unique_ptr<base::Value> value,
+                        base::Value value,
                         uint32_t flags) = 0;
 
   // Removes the value for |key|.
@@ -73,7 +75,7 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
   // tests rely on the number of notifications generated. |flags| is a bitmask
   // of PrefWriteFlags.
   virtual void SetValueSilently(const std::string& key,
-                                std::unique_ptr<base::Value> value,
+                                base::Value value,
                                 uint32_t flags) = 0;
 
   // Clears all the preferences which names start with |prefix| and doesn't
@@ -82,9 +84,6 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
 
  protected:
   ~WriteablePrefStore() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WriteablePrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_WRITEABLE_PREF_STORE_H_

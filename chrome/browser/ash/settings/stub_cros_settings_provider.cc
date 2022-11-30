@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace ash {
 
@@ -33,7 +33,7 @@ const base::Value* StubCrosSettingsProvider::Get(
   const base::Value* value;
   if (values_.GetValue(path, &value))
     return value;
-  return NULL;
+  return nullptr;
 }
 
 CrosSettingsProvider::TrustedStatus
@@ -96,7 +96,6 @@ void StubCrosSettingsProvider::SetDefaults() {
   values_.SetBoolean(kAccountsPrefAllowGuest, true);
   values_.SetBoolean(kAccountsPrefAllowNewUser, true);
   values_.SetBoolean(kAccountsPrefFamilyLinkAccountsAllowed, false);
-  values_.SetBoolean(kAccountsPrefSupervisedUsersEnabled, true);
   values_.SetBoolean(kAccountsPrefShowUserNamesOnSignIn, true);
   values_.SetValue(kAccountsPrefUsers, base::Value(base::Value::Type::LIST));
   values_.SetBoolean(kAllowBluetooth, true);
@@ -106,6 +105,7 @@ void StubCrosSettingsProvider::SetDefaults() {
   values_.SetValue(kAccountsPrefDeviceLocalAccounts,
                    base::Value(base::Value::Type::LIST));
   values_.SetBoolean(kDevicePeripheralDataAccessEnabled, true);
+  values_.SetBoolean(kRevenEnableDeviceHWDataUsage, false);
   // |kDeviceOwner| will be set to the logged-in user by |UserManager|.
 }
 

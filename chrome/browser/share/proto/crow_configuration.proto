@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package crow.mojom;
+
+option optimize_for = LITE_RUNTIME;
+
+// Information about an allowlisted hostname.
+// A wire-compatible proto is maintained in the server code base.
+message CrowConfiguration {
+  // List of allowed publisher ID/host mappings.
+  repeated Publisher publisher = 1;
+
+  // Allowed locales. Feature is initially en-US.
+  repeated string allowed_country_codes = 2;
+
+  // Disallowed hostnames, takes priority over |publisher.host|.
+  repeated string denied_hosts = 3;
+}
+
+message Publisher {
+  // Key for publication.
+  optional string publication_id = 1;
+
+  // List of hostnames for this allowlisted publisher.
+  repeated string host = 2;
+}

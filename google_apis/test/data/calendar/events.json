@@ -1,0 +1,270 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"p32ofplf5q6gf20g\"",
+  "summary": "test1@google.com",
+  "updated": "2021-06-18T07:17:10.718Z",
+  "timeZone": "America/Los_Angeles",
+  "accessRole": "owner",
+  "defaultReminders": [
+    {
+      "method": "popup",
+      "minutes": 10
+    }
+  ],
+  "nextSyncToken": "CLD81eXRoPECtest",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "etag": "\"3231955547274000\"",
+      "id": "or8221sirt4ogftest",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "created": "2018-05-14T18:55:59.000Z",
+      "updated": "2021-03-17T10:42:53.637Z",
+      "summary": "Mobile weekly team meeting ",
+      "description": "\u003ca href=\"https://docs.google.com/document/d/1BSA5pn6dpPQOIBuvtest/edit\"\u003eMeeting agenda and notes\u003c/a\u003e",
+      "colorId": "3",
+      "creator": {
+        "email": "test2@google.com",
+        "displayName": "test2 testlatname2"
+      },
+      "organizer": {
+        "email": "test3@google.com"
+      },
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20201109T075959Z;BYDAY=MO"
+      ],
+      "iCalUID": "or8221test@google.com",
+      "sequence": 6,
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "needsAction"
+        },
+        {
+          "email": "google.com_726f6f6d5f75735f6d7test@resource.calendar.google.com",
+          "displayName": "MTV-1055-2-Pellucid (3) [GVC, Jamboard, Phone]",
+          "resource": true,
+          "responseStatus": "declined"
+        },
+        {
+          "email": "test1@google.com",
+          "displayName": "test1 testlatname1",
+          "self": true,
+          "responseStatus": "needsAction"
+        },
+        {
+          "email": "test2@google.com",
+          "displayName": "test2 testlatname2",
+          "responseStatus": "accepted"
+        }
+      ],
+      "hangoutLink": "https://meet.google.com/jbe-test",
+      "conferenceData": {
+        "entryPoints": [
+          {
+            "entryPointType": "video",
+            "uri": "https://meet.google.com/jbe-test",
+            "label": "meet.google.com/jbe-test"
+          },
+          {
+            "entryPointType": "more",
+            "uri": "https://tel.meet/jbe-test?pin=6390031303227",
+            "pin": "6390031303227"
+          },
+          {
+            "regionCode": "US",
+            "entryPointType": "phone",
+            "uri": "tel:+1-469-305-0860",
+            "label": "+1 469-305-0860",
+            "pin": "383483"
+          }
+        ],
+        "conferenceSolution": {
+          "key": {
+            "type": "hangoutsMeet"
+          },
+          "name": "Google Meet",
+          "iconUri": "https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png"
+        },
+        "conferenceId": "jbe-test",
+        "signature": "ACn9hYFMw8sU85VncET68xXqnRrE"
+      },
+      "guestsCanModify": true,
+      "reminders": {
+        "useDefault": true
+      },
+      "eventType": "default"
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"3246207098130000\"",
+      "id": "7749obefodf44k4kt7r8lr0l8b",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=Nzc0OW9iZWZvZGY0NGs0a3Q3cjtest",
+      "created": "2021-05-24T18:52:31.000Z",
+      "updated": "2021-06-07T22:05:49.065Z",
+      "summary": "Calendar view weekly meeting",
+      "description": "meeting notes: \u003ca href=\"https://docs.google.com/document/d/1UikvkL__BYOtest/edit?resourcekey=0-e1MW5R3-74eHVaj4Fad_vw#\"\u003ehttps://docs.google.com/document/d/1UikvkL__BYOtest/edit?resourcekey=0-e1MW5R3-74eHVaj4Fad_vw#\u003c/a\u003e",
+      "colorId": "3",
+      "creator": {
+        "email": "test1@google.com",
+        "displayName": "test1 testlatname1",
+        "self": true
+      },
+      "organizer": {
+        "email": "test1@google.com",
+        "displayName": "test1 testlatname1",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2021-06-07T15:00:00-07:00"
+      },
+      "end": {
+        "dateTime": "2021-06-07T15:30:00-07:00"
+      },
+      "iCalUID": "7749obefodf44k4kt7r8lr0l8b@google.com",
+      "sequence": 1,
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "displayName": "test test4",
+          "responseStatus": "accepted"
+        },
+        {
+          "email": "test6@google.com",
+          "displayName": "test test6",
+          "responseStatus": "accepted"
+        },
+        {
+          "email": "test1@google.com",
+          "displayName": "test1 testlatname1",
+          "organizer": true,
+          "self": true,
+          "responseStatus": "accepted"
+        }
+      ],
+      "hangoutLink": "https://meet.google.com/dbp-qnpu-dtr",
+      "conferenceData": {
+        "entryPoints": [
+          {
+            "entryPointType": "video",
+            "uri": "https://meet.google.com/dbp-qnpu-dtr",
+            "label": "meet.google.com/dbp-qnpu-dtr"
+          },
+          {
+            "entryPointType": "more",
+            "uri": "https://tel.meet/dbp-qnpu-dtr?pin=9643865380295",
+            "pin": "9643865380295"
+          },
+          {
+            "regionCode": "US",
+            "entryPointType": "phone",
+            "uri": "tel:+1-505-445-7759",
+            "label": "+1 505-445-7759",
+            "pin": "537999715"
+          }
+        ],
+        "conferenceSolution": {
+          "key": {
+            "type": "hangoutsMeet"
+          },
+          "name": "Google Meet",
+          "iconUri": "https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png"
+        },
+        "conferenceId": "dbp-qnpu-dtr",
+        "signature": "ACn9hYEoGEiIFbVraLJKk6nZMT8W"
+      },
+      "reminders": {
+        "useDefault": true
+      },
+      "eventType": "default"
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"3246695702310000\"",
+      "id": "1a5n209tijjtrd1mhn2lkgdaq9",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=MWE1bjIwOXRpamp0cmQxbWhuMmxrZ2RhcTlfMjAyMTA1MTBUMTgzMDAwWiBqaWFtaW5nY0Bnb29nbGUuY29t",
+      "created": "2021-05-07T18:17:01.000Z",
+      "updated": "2021-06-10T17:57:31.155Z",
+      "summary": "System UI sync",
+      "creator": {
+        "email": "test5@google.com",
+        "displayName": "test test5"
+      },
+      "organizer": {
+        "email": "test5@google.com",
+        "displayName": "test test5"
+      },
+      "start": {
+        "dateTime": "2021-05-10T11:30:00-07:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2021-05-10T12:00:00-07:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20210614T065959Z;BYDAY=MO"
+      ],
+      "iCalUID": "1a5n209tijjtrd1mhn2lkgdaq9@google.com",
+      "sequence": 0,
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "needsAction"
+        },
+        {
+          "email": "test1@google.com",
+          "displayName": "test1 testlatname1",
+          "self": true,
+          "responseStatus": "accepted"
+        }
+      ],
+      "hangoutLink": "https://meet.google.com/kid-test",
+      "conferenceData": {
+        "entryPoints": [
+          {
+            "entryPointType": "video",
+            "uri": "https://meet.google.com/kid-test",
+            "label": "meet.google.com/kid-test"
+          },
+          {
+            "entryPointType": "more",
+            "uri": "https://tel.meet/kid-test?pin=2281762872233",
+            "pin": "2281762872233"
+          },
+          {
+            "regionCode": "US",
+            "entryPointType": "phone",
+            "uri": "tel:+1-631-621-7845",
+            "label": "+1 631-621-7845",
+            "pin": "757210"
+          }
+        ],
+        "conferenceSolution": {
+          "key": {
+            "type": "hangoutsMeet"
+          },
+          "name": "Google Meet",
+          "iconUri": "https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png"
+        },
+        "conferenceId": "kid-test",
+        "signature": "ACn9hYECv1wqAa2nRcODwiTjDSb9"
+      },
+      "reminders": {
+        "useDefault": true
+      },
+      "eventType": "default"
+    }
+  ]
+}

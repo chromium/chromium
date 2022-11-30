@@ -22,9 +22,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_
 
+#include <array>
 #include <bitset>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -33,8 +35,7 @@
 
 namespace blink {
 
-class CSSToLengthConversionData;
-class Length;
+class CSSLengthResolver;
 
 // Dimension calculations are imprecise, often resulting in values of e.g.
 // 44.99998. We need to go ahead and round if we're really close to the next
@@ -79,12 +80,49 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kPoints,
     kPicas,
     kQuarterMillimeters,
+
+    // https://drafts.csswg.org/css-values-4/#viewport-relative-lengths
+    //
+    // See also IsViewportPercentageLength.
     kViewportWidth,
     kViewportHeight,
+    kViewportInlineSize,
+    kViewportBlockSize,
     kViewportMin,
     kViewportMax,
+    kSmallViewportWidth,
+    kSmallViewportHeight,
+    kSmallViewportInlineSize,
+    kSmallViewportBlockSize,
+    kSmallViewportMin,
+    kSmallViewportMax,
+    kLargeViewportWidth,
+    kLargeViewportHeight,
+    kLargeViewportInlineSize,
+    kLargeViewportBlockSize,
+    kLargeViewportMin,
+    kLargeViewportMax,
+    kDynamicViewportWidth,
+    kDynamicViewportHeight,
+    kDynamicViewportInlineSize,
+    kDynamicViewportBlockSize,
+    kDynamicViewportMin,
+    kDynamicViewportMax,
+
+    // https://drafts.csswg.org/css-contain-3/#container-lengths
+    //
+    // See also IsContainerPercentageLength.
+    kContainerWidth,
+    kContainerHeight,
+    kContainerInlineSize,
+    kContainerBlockSize,
+    kContainerMin,
+    kContainerMax,
+
     kRems,
     kChs,
+    kIcs,
+    kLhs,
     kUserUnits,  // The SVG term for unitless lengths
     // Angle units
     kDegrees,
@@ -122,29 +160,88 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeZeroCharacterWidth,
     kUnitTypeViewportWidth,
     kUnitTypeViewportHeight,
+    kUnitTypeViewportInlineSize,
+    kUnitTypeViewportBlockSize,
     kUnitTypeViewportMin,
     kUnitTypeViewportMax,
+    // Units above this line are supported by CSSLengthArray.
+    // See CSSLengthArray::kSize.
+    kUnitTypeSmallViewportWidth,
+    kUnitTypeSmallViewportHeight,
+    kUnitTypeSmallViewportInlineSize,
+    kUnitTypeSmallViewportBlockSize,
+    kUnitTypeSmallViewportMin,
+    kUnitTypeSmallViewportMax,
+    kUnitTypeLargeViewportWidth,
+    kUnitTypeLargeViewportHeight,
+    kUnitTypeLargeViewportInlineSize,
+    kUnitTypeLargeViewportBlockSize,
+    kUnitTypeLargeViewportMin,
+    kUnitTypeLargeViewportMax,
+    kUnitTypeDynamicViewportWidth,
+    kUnitTypeDynamicViewportHeight,
+    kUnitTypeDynamicViewportInlineSize,
+    kUnitTypeDynamicViewportBlockSize,
+    kUnitTypeDynamicViewportMin,
+    kUnitTypeDynamicViewportMax,
+    kUnitTypeContainerWidth,
+    kUnitTypeContainerHeight,
+    kUnitTypeContainerInlineSize,
+    kUnitTypeContainerBlockSize,
+    kUnitTypeContainerMin,
+    kUnitTypeContainerMax,
+    kUnitTypeIdeographicFullWidth,
+    kUnitTypeLineHeight,
 
     // This value must come after the last length unit type to enable iteration
     // over the length unit types.
     kLengthUnitTypeCount,
   };
 
-  using LengthTypeFlags = std::bitset<kLengthUnitTypeCount>;
+  // For performance reasons, InterpolableLength represents "sufficiently
+  // simple" <length> values as the terms in a sum, e.g.(10px + 1em + ...),
+  // stored in this class.
+  //
+  // For cases which can't be covered by CSSLengthArray [1], we instead
+  // interpolate using CSSMathExpressionNodes.
+  //
+  // To avoid an excessively large array of size kLengthUnitTypeCount, only a
+  // small subset of the units are supported in this optimization.
+  //
+  // [1] See AccumulateLengthArray.
   struct CSSLengthArray {
-    CSSLengthArray() : values(kLengthUnitTypeCount) {
-    }
+    static const wtf_size_t kSize = kUnitTypeViewportMax + 1u;
+    static_assert(kUnitTypePixels < kSize, "px unit supported");
+    static_assert(kUnitTypePercentage < kSize, "percentage supported");
+    static_assert(kUnitTypeFontSize < kSize, "em unit supported");
+    static_assert(kUnitTypeFontXSize < kSize, "ex unit supported");
+    static_assert(kUnitTypeRootFontSize < kSize, "rem unit supported");
+    static_assert(kUnitTypeZeroCharacterWidth < kSize, "ch unit supported");
+    static_assert(kUnitTypeViewportWidth < kSize, "vw unit supported");
+    static_assert(kUnitTypeViewportHeight < kSize, "vh unit supported");
+    static_assert(kUnitTypeViewportInlineSize < kSize, "vi unit supported");
+    static_assert(kUnitTypeViewportBlockSize < kSize, "vb unit supported");
+    static_assert(kUnitTypeViewportMin < kSize, "vmin unit supported");
+    static_assert(kUnitTypeViewportMax < kSize, "vmax unit supported");
 
-    Vector<double, CSSPrimitiveValue::kLengthUnitTypeCount> values;
-    LengthTypeFlags type_flags;
+    std::array<double, kSize> values{{0}};
+    // Indicates whether or not a given value is explicitly set in |values|.
+    std::bitset<kSize> type_flags;
   };
 
-  // Returns false if the value cannot be represented as a length array, which
-  // happens when comparisons are involved (e.g., max(10px, 10%)).
+  // Returns false if the value cannot be represented as a CSSLengthArray,
+  // which happens when comparisons are involved (e.g., max(10px, 10%)),
+  // or when we encounter a unit which is not supported by CSSLengthArray.
   bool AccumulateLengthArray(CSSLengthArray&, double multiplier = 1) const;
 
   // Returns all types of length units involved in this value.
+  using LengthTypeFlags = std::bitset<kLengthUnitTypeCount>;
   void AccumulateLengthUnitTypes(LengthTypeFlags& types) const;
+
+  // v*, sv*, lv*
+  static bool HasStaticViewportUnits(const LengthTypeFlags&);
+  // dv*
+  static bool HasDynamicViewportUnits(const LengthTypeFlags&);
 
   enum UnitCategory {
     kUNumber,
@@ -159,13 +256,28 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitCategory UnitTypeToUnitCategory(UnitType);
   static float ClampToCSSLengthRange(double);
 
+  enum class ValueRange {
+    kAll,
+    kNonNegative,
+    kInteger,
+    kNonNegativeInteger,
+    kPositiveInteger
+  };
+
+  static Length::ValueRange ConversionToLengthValueRange(ValueRange);
+  static ValueRange ValueRangeForLengthValueRange(Length::ValueRange);
+
   static bool IsAngle(UnitType unit) {
     return unit == UnitType::kDegrees || unit == UnitType::kRadians ||
            unit == UnitType::kGradians || unit == UnitType::kTurns;
   }
   bool IsAngle() const;
   static bool IsViewportPercentageLength(UnitType type) {
-    return type >= UnitType::kViewportWidth && type <= UnitType::kViewportMax;
+    return type >= UnitType::kViewportWidth &&
+           type <= UnitType::kDynamicViewportMax;
+  }
+  static bool IsContainerPercentageLength(UnitType type) {
+    return type >= UnitType::kContainerWidth && type <= UnitType::kContainerMax;
   }
   static bool IsLength(UnitType type) {
     return (type >= UnitType::kEms && type <= UnitType::kUserUnits) ||
@@ -174,7 +286,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static inline bool IsRelativeUnit(UnitType type) {
     return type == UnitType::kPercentage || type == UnitType::kEms ||
            type == UnitType::kExs || type == UnitType::kRems ||
-           type == UnitType::kChs || IsViewportPercentageLength(type);
+           type == UnitType::kChs || type == UnitType::kIcs ||
+           type == UnitType::kLhs || IsViewportPercentageLength(type) ||
+           IsContainerPercentageLength(type);
   }
   bool IsLength() const;
   bool IsNumber() const;
@@ -204,6 +318,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // "global" information that cannot be changed by CSS.
   bool IsComputationallyIndependent() const;
 
+  // True if this value contains any of cq[w,h,i,b,min,max], false otherwise.
+  bool HasContainerRelativeUnits() const;
+
   // Creates either a |CSSNumericLiteralValue| or a |CSSMathFunctionValue|,
   // depending on whether |value| is calculated or not. We should never create a
   // |CSSPrimitiveValue| that's not of any of its subclasses.
@@ -215,10 +332,10 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   // Computes a length in pixels, resolving relative lengths
   template <typename T>
-  T ComputeLength(const CSSToLengthConversionData&) const;
+  T ComputeLength(const CSSLengthResolver&) const;
 
   // Converts to a Length (Fixed, Percent or Calculated)
-  Length ConvertToLength(const CSSToLengthConversionData&) const;
+  Length ConvertToLength(const CSSLengthResolver&) const;
 
   bool IsZero() const;
 
@@ -237,7 +354,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   int GetIntValue() const { return GetValue<int>(); }
   template <typename T>
   inline T GetValue() const {
-    return clampTo<T>(GetDoubleValue());
+    return ClampTo<T>(GetDoubleValue());
   }
 
   template <typename T>
@@ -269,7 +386,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitType StringToUnitType(const LChar*, unsigned length);
   static UnitType StringToUnitType(const UChar*, unsigned length);
 
-  double ComputeLengthDouble(const CSSToLengthConversionData&) const;
+  double ComputeLengthDouble(const CSSLengthResolver&) const;
 };
 
 using CSSLengthArray = CSSPrimitiveValue::CSSLengthArray;
@@ -282,26 +399,24 @@ struct DowncastTraits<CSSPrimitiveValue> {
 };
 
 template <>
-int CSSPrimitiveValue::ComputeLength(const CSSToLengthConversionData&) const;
+int CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
-Length CSSPrimitiveValue::ComputeLength(const CSSToLengthConversionData&) const;
+Length CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
-unsigned CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+unsigned CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
-int16_t CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+int16_t CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
 CORE_EXPORT float CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+    const CSSLengthResolver&) const;
 
 template <>
 CORE_EXPORT double CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+    const CSSLengthResolver&) const;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_

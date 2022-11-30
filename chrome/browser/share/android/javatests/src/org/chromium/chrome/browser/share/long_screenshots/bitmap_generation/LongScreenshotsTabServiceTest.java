@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 
 /** Tests for the Paint Preview Tab Manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -45,14 +42,10 @@ public class LongScreenshotsTabServiceTest {
     private TestCaptureProcessor mProcessor;
 
     class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
-        private PaintPreviewProto mActualReponse;
         @Status
         private int mActualStatus;
         private boolean mProcessCapturedTabCalled;
-
-        public PaintPreviewProto getResponse() {
-            return mActualReponse;
-        }
+        private long mNativeCaptureResultPtr;
 
         public @Status int getStatus() {
             return mActualStatus;
@@ -62,17 +55,22 @@ public class LongScreenshotsTabServiceTest {
             return mProcessCapturedTabCalled;
         }
 
+        public long getNativeCaptureResultPtr() {
+            return mNativeCaptureResultPtr;
+        }
+
         @Override
-        public void processCapturedTab(PaintPreviewProto response, @Status int status) {
+        public void processCapturedTab(long nativeCaptureResultPtr, @Status int status) {
             mProcessCapturedTabCalled = true;
-            mActualReponse = response;
+            mNativeCaptureResultPtr = nativeCaptureResultPtr;
             mActualStatus = status;
         }
     }
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityWithURL(
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html"));
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mProcessor = new TestCaptureProcessor();
 
@@ -88,13 +86,10 @@ public class LongScreenshotsTabServiceTest {
     @Test
     @MediumTest
     @Feature({"LongScreenshots"})
-    public void testCaptured() throws Exception {
-        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        final String url = testServer.getURL("/chrome/test/data/android/about.html");
-
+    public void testCapturedFilesystem() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTab.loadUrl(new LoadUrlParams(url));
-            mLongScreenshotsTabService.captureTab(mTab, new Rect(0, 0, 100, 100));
+            mLongScreenshotsTabService.captureTab(
+                    mTab, new Rect(0, 0, 100, 100), /*inMemory=*/false);
         });
 
         CriteriaHelper.pollUiThread(() -> {
@@ -103,7 +98,33 @@ public class LongScreenshotsTabServiceTest {
         });
 
         Assert.assertEquals(Status.OK, mProcessor.getStatus());
-        Assert.assertNotNull(mProcessor.getResponse());
-        Assert.assertFalse(mProcessor.getResponse().getRootFrame().getFilePath().isEmpty());
+        Assert.assertNotEquals(0, mProcessor.getNativeCaptureResultPtr());
+        mLongScreenshotsTabService.releaseNativeCaptureResultPtr(
+                mProcessor.getNativeCaptureResultPtr());
+        mLongScreenshotsTabService.longScreenshotsClosed();
+    }
+
+    /**
+     * Verifies that a Tab's contents are captured in-memory.
+     */
+    @Test
+    @MediumTest
+    @Feature({"LongScreenshots"})
+    public void testCapturedMemory() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mLongScreenshotsTabService.captureTab(
+                    mTab, new Rect(0, 0, 100, 100), /*inMemory=*/true);
+        });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Callback was not called", mProcessor.getProcessCapturedTabCalled(),
+                    Matchers.is(true));
+        });
+
+        Assert.assertEquals(Status.OK, mProcessor.getStatus());
+        Assert.assertNotEquals(0, mProcessor.getNativeCaptureResultPtr());
+        mLongScreenshotsTabService.releaseNativeCaptureResultPtr(
+                mProcessor.getNativeCaptureResultPtr());
+        mLongScreenshotsTabService.longScreenshotsClosed();
     }
 }

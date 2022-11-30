@@ -1,16 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_INPUT_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_INPUT_SOURCE_H_
 
-#include "base/optional.h"
+#include <memory>
+
+#include "base/time/time.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
-#include "third_party/blink/renderer/modules/xr/xr_native_origin_information.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -81,12 +83,9 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
     return state_.target_ray_mode;
   }
 
-  base::Optional<TransformationMatrix> MojoFromInput() const;
+  absl::optional<TransformationMatrix> MojoFromInput() const;
 
-  base::Optional<TransformationMatrix> InputFromPointer() const;
-
-  base::Optional<device::mojom::blink::XRNativeOriginInformation> nativeOrigin()
-      const;
+  absl::optional<TransformationMatrix> InputFromPointer() const;
 
   void OnSelectStart();
   void OnSelectEnd();
@@ -155,7 +154,10 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
 
   // Note that UpdateGamepad should only be called after a check/recreation
   // from InvalidatesSameObject
-  void UpdateGamepad(const base::Optional<device::Gamepad>& gamepad);
+  void UpdateGamepad(const absl::optional<device::Gamepad>& gamepad);
+
+  void UpdateHand(
+      const device::mojom::blink::XRHandTrackingData* hand_joint_data);
 
   XRInputSourceEvent* CreateInputSourceEvent(const AtomicString& type);
 

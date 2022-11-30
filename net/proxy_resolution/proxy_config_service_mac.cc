@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,18 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -41,9 +45,10 @@ bool GetBoolFromDictionary(CFDictionaryRef dict,
 void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
                            ProxyConfigWithAnnotation* config) {
   base::ScopedCFTypeRef<CFDictionaryRef> config_dict(
-      SCDynamicStoreCopyProxies(NULL));
+      SCDynamicStoreCopyProxies(nullptr));
   DCHECK(config_dict);
   ProxyConfig proxy_config;
+  proxy_config.set_from_system(true);
 
   // auto-detect
 
@@ -69,11 +74,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesFTPEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_HTTP,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesFTPProxy,
-                                    kSCPropNetProxiesFTPPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_HTTP, config_dict.get(), kSCPropNetProxiesFTPProxy,
+        kSCPropNetProxiesFTPPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -84,11 +87,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesHTTPEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_HTTP,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesHTTPProxy,
-                                    kSCPropNetProxiesHTTPPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_HTTP, config_dict.get(), kSCPropNetProxiesHTTPProxy,
+        kSCPropNetProxiesHTTPPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -99,11 +100,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesHTTPSEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_HTTP,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesHTTPSProxy,
-                                    kSCPropNetProxiesHTTPSPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_HTTP, config_dict.get(),
+        kSCPropNetProxiesHTTPSProxy, kSCPropNetProxiesHTTPSPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -114,11 +113,9 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   if (GetBoolFromDictionary(config_dict.get(),
                             kSCPropNetProxiesSOCKSEnable,
                             false)) {
-    ProxyServer proxy_server =
-        ProxyServer::FromDictionary(ProxyServer::SCHEME_SOCKS5,
-                                    config_dict.get(),
-                                    kSCPropNetProxiesSOCKSProxy,
-                                    kSCPropNetProxiesSOCKSPort);
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        ProxyServer::SCHEME_SOCKS5, config_dict.get(),
+        kSCPropNetProxiesSOCKSProxy, kSCPropNetProxiesSOCKSPort);
     if (proxy_server.is_valid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
@@ -173,9 +170,7 @@ class ProxyConfigServiceMac::Helper
   }
 
   // Called when the parent is destroyed.
-  void Orphan() {
-    parent_ = NULL;
-  }
+  void Orphan() { parent_ = nullptr; }
 
   void OnProxyConfigChanged(const ProxyConfigWithAnnotation& new_config) {
     if (parent_)
@@ -184,9 +179,9 @@ class ProxyConfigServiceMac::Helper
 
  private:
   friend class base::RefCountedThreadSafe<Helper>;
-  ~Helper() {}
+  ~Helper() = default;
 
-  ProxyConfigServiceMac* parent_;
+  raw_ptr<ProxyConfigServiceMac> parent_;
 };
 
 void ProxyConfigServiceMac::Forwarder::SetDynamicStoreNotificationKeys(
@@ -203,12 +198,11 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
     const scoped_refptr<base::SequencedTaskRunner>& sequenced_task_runner,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : forwarder_(this),
-      has_fetched_config_(false),
-      helper_(new Helper(this)),
+      helper_(base::MakeRefCounted<Helper>(this)),
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {
   DCHECK(sequenced_task_runner_.get());
-  config_watcher_.reset(new NetworkConfigWatcherMac(&forwarder_));
+  config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
 }
 
 ProxyConfigServiceMac::~ProxyConfigServiceMac() {
@@ -247,11 +241,11 @@ void ProxyConfigServiceMac::SetDynamicStoreNotificationKeys(
     SCDynamicStoreRef store) {
   // Called on notifier thread.
 
-  CFStringRef proxies_key = SCDynamicStoreKeyCreateProxies(NULL);
-  CFArrayRef key_array = CFArrayCreate(
-      NULL, (const void **)(&proxies_key), 1, &kCFTypeArrayCallBacks);
+  CFStringRef proxies_key = SCDynamicStoreKeyCreateProxies(nullptr);
+  CFArrayRef key_array = CFArrayCreate(nullptr, (const void**)(&proxies_key), 1,
+                                       &kCFTypeArrayCallBacks);
 
-  bool ret = SCDynamicStoreSetNotificationKeys(store, key_array, NULL);
+  bool ret = SCDynamicStoreSetNotificationKeys(store, key_array, nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 

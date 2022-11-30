@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,11 @@
 
 #include <string>
 
+#include "base/observer_list.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,15 +27,31 @@ using offline_items_collection::OfflineItemState;
 DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
     OfflineItemModelManager* manager,
     const OfflineItem& offline_item) {
-  DownloadUIModel::DownloadUIModelPtr model(
-      new OfflineItemModel(manager, offline_item),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
-  return model;
+  return std::make_unique<OfflineItemModel>(manager, offline_item);
+}
+
+// static
+DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
+    OfflineItemModelManager* manager,
+    const OfflineItem& offline_item,
+    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
+        status_text_builder) {
+  return std::make_unique<OfflineItemModel>(manager, offline_item,
+                                            std::move(status_text_builder));
 }
 
 OfflineItemModel::OfflineItemModel(OfflineItemModelManager* manager,
                                    const OfflineItem& offline_item)
-    : manager_(manager),
+    : OfflineItemModel(manager,
+                       offline_item,
+                       std::make_unique<StatusTextBuilder>()) {}
+
+OfflineItemModel::OfflineItemModel(
+    OfflineItemModelManager* manager,
+    const OfflineItem& offline_item,
+    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase> status_text_builder)
+    : DownloadUIModel(std::move(status_text_builder)),
+      manager_(manager),
       offline_item_(std::make_unique<OfflineItem>(offline_item)) {
   Profile* profile = Profile::FromBrowserContext(manager_->browser_context());
   offline_items_collection::OfflineContentAggregator* aggregator =
@@ -82,6 +102,18 @@ void OfflineItemModel::SetWasUINotified(bool was_ui_notified) {
   OfflineItemModelData* data =
       manager_->GetOrCreateOfflineItemModelData(offline_item_->id);
   data->was_ui_notified_ = was_ui_notified;
+}
+
+bool OfflineItemModel::WasActionedOn() const {
+  const OfflineItemModelData* data =
+      manager_->GetOrCreateOfflineItemModelData(offline_item_->id);
+  return data->actioned_on_;
+}
+
+void OfflineItemModel::SetActionedOn(bool actioned_on) {
+  OfflineItemModelData* data =
+      manager_->GetOrCreateOfflineItemModelData(offline_item_->id);
+  data->actioned_on_ = actioned_on;
 }
 
 base::FilePath OfflineItemModel::GetFileNameToReportUser() const {
@@ -136,13 +168,13 @@ download::DownloadItem::DownloadState OfflineItemModel::GetState() const {
     return download::DownloadItem::CANCELLED;
   switch (offline_item_->state) {
     case OfflineItemState::IN_PROGRESS:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PAUSED:
       return download::DownloadItem::IN_PROGRESS;
     case OfflineItemState::PENDING:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::INTERRUPTED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::FAILED:
       return download::DownloadItem::INTERRUPTED;
     case OfflineItemState::COMPLETE:
@@ -163,9 +195,16 @@ bool OfflineItemModel::IsPaused() const {
 bool OfflineItemModel::TimeRemaining(base::TimeDelta* remaining) const {
   if (!offline_item_ || offline_item_->time_remaining_ms == -1)
     return false;
-  *remaining =
-      base::TimeDelta::FromMilliseconds(offline_item_->time_remaining_ms);
+  *remaining = base::Milliseconds(offline_item_->time_remaining_ms);
   return true;
+}
+
+base::Time OfflineItemModel::GetStartTime() const {
+  return offline_item_->creation_time;
+}
+
+base::Time OfflineItemModel::GetEndTime() const {
+  return offline_item_->completion_time;
 }
 
 bool OfflineItemModel::IsDone() const {
@@ -173,17 +212,17 @@ bool OfflineItemModel::IsDone() const {
     return true;
   switch (offline_item_->state) {
     case OfflineItemState::IN_PROGRESS:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PAUSED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PENDING:
       return false;
     case OfflineItemState::INTERRUPTED:
       return !offline_item_->is_resumable;
     case OfflineItemState::FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::COMPLETE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::CANCELLED:
       return true;
     case OfflineItemState::NUM_ENTRIES:
@@ -210,7 +249,7 @@ bool OfflineItemModel::GetFileExternallyRemoved() const {
 }
 
 GURL OfflineItemModel::GetURL() const {
-  return offline_item_ ? offline_item_->page_url : GURL();
+  return offline_item_ ? offline_item_->url : GURL();
 }
 
 bool OfflineItemModel::ShouldRemoveFromShelfWhenComplete() const {
@@ -226,17 +265,18 @@ OfflineContentProvider* OfflineItemModel::GetProvider() const {
 }
 
 void OfflineItemModel::OnItemRemoved(const ContentId& id) {
-  for (auto& obs : observers_)
-    obs.OnDownloadDestroyed();
   offline_item_.reset();
+  // The object could get deleted after this.
+  if (delegate_)
+    delegate_->OnDownloadDestroyed(id);
 }
 
 void OfflineItemModel::OnItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   offline_item_ = std::make_unique<OfflineItem>(item);
-  for (auto& obs : observers_)
-    obs.OnDownloadUpdated();
+  if (delegate_)
+    delegate_->OnDownloadUpdated();
 }
 
 FailState OfflineItemModel::GetLastFailState() const {
@@ -251,11 +291,14 @@ bool OfflineItemModel::ShouldPromoteOrigin() const {
   return offline_item_ && offline_item_->promote_origin;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool OfflineItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      return false;
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::PLATFORM_OPEN:
@@ -266,7 +309,6 @@ bool OfflineItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL:
     case DownloadCommands::RESUME:
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
     case DownloadCommands::DISCARD:
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
@@ -274,6 +316,8 @@ bool OfflineItemModel::IsCommandEnabled(
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
   NOTREACHED();
@@ -284,6 +328,9 @@ bool OfflineItemModel::IsCommandChecked(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      return false;
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
       NOTIMPLEMENTED();
@@ -300,9 +347,10 @@ bool OfflineItemModel::IsCommandChecked(
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
       return false;
   }
   return false;
@@ -311,6 +359,9 @@ bool OfflineItemModel::IsCommandChecked(
 void OfflineItemModel::ExecuteCommand(DownloadCommands* download_commands,
                                       DownloadCommands::Command command) {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
@@ -326,9 +377,10 @@ void OfflineItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::PAUSE:
     case DownloadCommands::RESUME:
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
       DownloadUIModel::ExecuteCommand(download_commands, command);
       break;
   }

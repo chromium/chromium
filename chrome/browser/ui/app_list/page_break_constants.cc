@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
 
 namespace app_list {
 
@@ -17,8 +16,7 @@ const char* const kDefaultPageBreakAppIds[] = {
     kDefaultPageBreak1,
 };
 
-const size_t kDefaultPageBreakAppIdsLength =
-    base::size(kDefaultPageBreakAppIds);
+const size_t kDefaultPageBreakAppIdsLength = std::size(kDefaultPageBreakAppIds);
 
 // Returns true if |item_id| is of a default-installed page break item.
 bool IsDefaultPageBreakItem(const std::string& item_id) {

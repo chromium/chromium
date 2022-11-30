@@ -110,8 +110,8 @@ static void **NextStackFrame(void **old_frame_pointer, const void *uc) {
   }
 #endif
 
-  // aarch64 ABI requires stack pointer to be 16-byte-aligned.
-  if ((reinterpret_cast<uintptr_t>(new_frame_pointer) & 15) != 0)
+  // The frame pointer should be 8-byte aligned.
+  if ((reinterpret_cast<uintptr_t>(new_frame_pointer) & 7) != 0)
     return nullptr;
 
   // Check frame size.  In strict mode, we assume frames to be under
@@ -176,12 +176,17 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
     // Implementation detail: we clamp the max of frames we are willing to
     // count, so as not to spend too much time in the loop below.
     const int kMaxUnwind = 200;
-    int j = 0;
-    for (; frame_pointer != nullptr && j < kMaxUnwind; j++) {
+    int num_dropped_frames = 0;
+    for (int j = 0; frame_pointer != nullptr && j < kMaxUnwind; j++) {
+      if (skip_count > 0) {
+        skip_count--;
+      } else {
+        num_dropped_frames++;
+      }
       frame_pointer =
           NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp);
     }
-    *min_dropped_frames = j;
+    *min_dropped_frames = num_dropped_frames;
   }
   return n;
 }

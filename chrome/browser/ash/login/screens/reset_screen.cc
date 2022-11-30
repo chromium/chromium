@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,40 +7,39 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/scoped_guest_button_blocker.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
-#include "chrome/browser/ash/login/screens/error_screen.h"
-#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/reset/metrics.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
+namespace ash {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace reset = ::ash::reset;
 
 constexpr const char kUserActionCancelReset[] = "cancel-reset";
 constexpr const char kUserActionResetRestartPressed[] = "restart-pressed";
@@ -51,6 +50,8 @@ constexpr const char kUserActionResetShowConfirmationPressed[] =
     "show-confirmation";
 constexpr const char kUserActionResetResetConfirmationDismissed[] =
     "reset-confirm-dismissed";
+constexpr const char kUserActionTpmFirmwareUpdateChecked[] =
+    "tpmfirmware-update-checked";
 constexpr const char kUserActionTPMFirmwareUpdateLearnMore[] =
     "tpm-firmware-update-learn-more-link";
 
@@ -96,7 +97,7 @@ void StartTPMFirmwareUpdate(
 // Checks if powerwash is allowed based on update modes and passes the result
 // to `callback`.
 void OnUpdateModesAvailable(
-    base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
+    base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
         callback,
     const std::set<tpm_firmware_update::Mode>& modes) {
   using tpm_firmware_update::Mode;
@@ -107,7 +108,7 @@ void OnUpdateModesAvailable(
     std::move(callback).Run(true, mode);
     return;
   }
-  std::move(callback).Run(false, base::nullopt);
+  std::move(callback).Run(false, absl::nullopt);
 }
 
 }  // namespace
@@ -120,11 +121,11 @@ void ResetScreen::SetTpmFirmwareUpdateCheckerForTesting(
 
 // static
 void ResetScreen::CheckIfPowerwashAllowed(
-    base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
+    base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
         callback) {
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->IsEnterpriseManaged()) {
+          ->browser_policy_connector_ash()
+          ->IsDeviceEnterpriseManaged()) {
     // Powerwash is allowed by default, if the policy is loaded. Admin can
     // explicitly forbid powerwash. If the policy is not loaded yet, we
     // consider by default that the device is not allowed to powerwash.
@@ -132,7 +133,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
     CrosSettings::Get()->GetBoolean(kDevicePowerwashAllowed,
                                     &is_powerwash_allowed);
     if (is_powerwash_allowed) {
-      std::move(callback).Run(true, base::nullopt);
+      std::move(callback).Run(true, absl::nullopt);
       return;
     }
 
@@ -148,18 +149,16 @@ void ResetScreen::CheckIfPowerwashAllowed(
   // and thus pending for enterprise management. These should not be allowed to
   // powerwash either. Note that taking consumer device ownership has the side
   // effect of dropping the FRE requirement if it was previously in effect.
-  std::move(callback).Run(
-      AutoEnrollmentController::GetFRERequirement() !=
-          AutoEnrollmentController::FRERequirement::kExplicitlyRequired,
-      base::nullopt);
+  const auto is_reset_allowed =
+      policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD() !=
+      policy::AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired;
+  std::move(callback).Run(is_reset_allowed, absl::nullopt);
 }
 
-ResetScreen::ResetScreen(ResetView* view,
-                         ErrorScreen* error_screen,
+ResetScreen::ResetScreen(base::WeakPtr<ResetView> view,
                          const base::RepeatingClosure& exit_callback)
     : BaseScreen(ResetView::kScreenId, OobeScreenPriority::SCREEN_RESET),
-      view_(view),
-      error_screen_(error_screen),
+      view_(std::move(view)),
       exit_callback_(exit_callback),
       tpm_firmware_update_checker_(
           g_tpm_firmware_update_checker
@@ -168,7 +167,6 @@ ResetScreen::ResetScreen(ResetView* view,
                     &tpm_firmware_update::GetAvailableUpdateModes)) {
   DCHECK(view_);
   if (view_) {
-    view_->Bind(this);
     view_->SetScreenState(ResetView::State::kRestartRequired);
     view_->SetIsRollbackAvailable(false);
     view_->SetIsRollbackRequested(false);
@@ -181,9 +179,7 @@ ResetScreen::ResetScreen(ResetView* view,
 }
 
 ResetScreen::~ResetScreen() {
-  if (view_)
-    view_->Unbind();
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 // static
@@ -202,7 +198,7 @@ void ResetScreen::ShowImpl() {
   // reset screen is shown.
   if (!scoped_guest_button_blocker_) {
     scoped_guest_button_blocker_ =
-        ash::LoginScreen::Get()->GetScopedGuestButtonBlocker();
+        LoginScreen::Get()->GetScopedGuestButtonBlocker();
   }
 
   reset::DialogViewType dialog_type =
@@ -227,10 +223,8 @@ void ResetScreen::ShowImpl() {
       view_->SetIsRollbackAvailable(false);
     dialog_type = reset::DialogViewType::kShortcutOfferingRollbackUnavailable;
   } else {
-    chromeos::DBusThreadManager::Get()
-        ->GetUpdateEngineClient()
-        ->CanRollbackCheck(base::BindOnce(&ResetScreen::OnRollbackCheck,
-                                          weak_ptr_factory_.GetWeakPtr()));
+    UpdateEngineClient::Get()->CanRollbackCheck(base::BindOnce(
+        &ResetScreen::OnRollbackCheck, weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (dialog_type < reset::DialogViewType::kCount) {
@@ -260,7 +254,7 @@ void ResetScreen::ShowImpl() {
     tpm_firmware_update_checker_.Run(
         base::BindOnce(&ResetScreen::OnTPMFirmwareUpdateAvailableCheck,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(10));
+        base::Seconds(10));
   }
 
   if (view_) {
@@ -276,36 +270,60 @@ void ResetScreen::ShowImpl() {
 }
 
 void ResetScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-
   scoped_guest_button_blocker_.reset();
 }
 
-void ResetScreen::OnViewDestroyed(ResetView* view) {
-  if (view_ == view)
-    view_ = nullptr;
+void ResetScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+  if (action_id == kUserActionCancelReset) {
+    OnCancel();
+    return;
+  }
+  if (action_id == kUserActionResetRestartPressed) {
+    OnRestart();
+    return;
+  }
+  if (action_id == kUserActionResetPowerwashPressed) {
+    OnPowerwash();
+    return;
+  }
+  if (action_id == kUserActionResetLearnMorePressed) {
+    ShowHelpArticle(HelpAppLauncher::HELP_POWERWASH);
+    return;
+  }
+  if (action_id == kUserActionResetRollbackToggled) {
+    OnToggleRollback();
+    return;
+  }
+  if (action_id == kUserActionResetShowConfirmationPressed) {
+    OnShowConfirm();
+    return;
+  }
+  if (action_id == kUserActionResetResetConfirmationDismissed) {
+    OnConfirmationDismissed();
+    return;
+  }
+  if (action_id == kUserActionTPMFirmwareUpdateLearnMore) {
+    ShowHelpArticle(HelpAppLauncher::HELP_TPM_FIRMWARE_UPDATE);
+    return;
+  }
+  if (action_id == kUserActionTpmFirmwareUpdateChecked) {
+    CHECK_EQ(args.size(), 2u);
+    bool checked = args[1].GetBool();
+    if (view_) {
+      view_->SetIsTpmFirmwareUpdateChecked(checked);
+    }
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
-void ResetScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionCancelReset)
-    OnCancel();
-  else if (action_id == kUserActionResetRestartPressed)
-    OnRestart();
-  else if (action_id == kUserActionResetPowerwashPressed)
-    OnPowerwash();
-  else if (action_id == kUserActionResetLearnMorePressed)
-    ShowHelpArticle(HelpAppLauncher::HELP_POWERWASH);
-  else if (action_id == kUserActionResetRollbackToggled)
+bool ResetScreen::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kShowResetScreen) {
     OnToggleRollback();
-  else if (action_id == kUserActionResetShowConfirmationPressed)
-    OnShowConfirm();
-  else if (action_id == kUserActionResetResetConfirmationDismissed)
-    OnConfirmationDismissed();
-  else if (action_id == kUserActionTPMFirmwareUpdateLearnMore)
-    ShowHelpArticle(HelpAppLauncher::HELP_TPM_FIRMWARE_UPDATE);
-  else
-    BaseScreen::OnUserAction(action_id);
+    return true;
+  }
+  return false;
 }
 
 void ResetScreen::OnCancel() {
@@ -318,7 +336,7 @@ void ResetScreen::OnCancel() {
       view_->GetIsRollbackRequested()) {
     OnToggleRollback();
   }
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   exit_callback_.Run();
 }
 
@@ -340,9 +358,9 @@ void ResetScreen::OnPowerwash() {
   if (view_ && view_->GetIsRollbackAvailable() &&
       view_->GetIsRollbackRequested()) {
     view_->SetScreenState(ResetView::State::kRevertPromise);
-    DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+    UpdateEngineClient::Get()->AddObserver(this);
     VLOG(1) << "Starting Rollback";
-    DBusThreadManager::Get()->GetUpdateEngineClient()->Rollback();
+    UpdateEngineClient::Get()->Rollback();
   } else if (view_ && view_->GetIsTpmFirmwareUpdateChecked()) {
     VLOG(1) << "Starting TPM firmware update";
     // Re-check availability with a couple seconds timeout. This addresses the
@@ -351,7 +369,7 @@ void ResetScreen::OnPowerwash() {
     tpm_firmware_update_checker_.Run(
         base::BindOnce(&StartTPMFirmwareUpdate,
                        view_->GetTpmFirmwareUpdateMode()),
-        base::TimeDelta::FromSeconds(10));
+        base::Seconds(10));
   } else {
     VLOG(1) << "Starting Powerwash";
     SessionManagerClient::Get()->StartDeviceWipe();
@@ -427,14 +445,9 @@ void ResetScreen::UpdateStatusChanged(
       status.current_operation() ==
           update_engine::Operation::REPORTING_ERROR_EVENT) {
     view_->SetScreenState(ResetView::State::kError);
-    // Show error screen.
-    error_screen_->SetUIState(NetworkError::UI_STATE_ROLLBACK_ERROR);
-    error_screen_->SetHideCallback(
-        base::BindOnce(&ResetScreen::OnCancel, weak_ptr_factory_.GetWeakPtr()));
-    error_screen_->Show(nullptr);
   } else if (status.current_operation() ==
              update_engine::Operation::UPDATED_NEED_REBOOT) {
-    PowerManagerClient::Get()->RequestRestart(
+    chromeos::PowerManagerClient::Get()->RequestRestart(
         power_manager::REQUEST_RESTART_FOR_UPDATE, "login reset screen update");
   }
 }
@@ -442,11 +455,11 @@ void ResetScreen::UpdateStatusChanged(
 // Invoked from call to CanRollbackCheck upon completion of the DBus call.
 void ResetScreen::OnRollbackCheck(bool can_rollback) {
   VLOG(1) << "Callback from CanRollbackCheck, result " << can_rollback;
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   const bool rollback_available =
-      !connector->IsEnterpriseManaged() && can_rollback;
+      !connector->IsDeviceEnterpriseManaged() && can_rollback;
   reset::DialogViewType dialog_type =
       rollback_available
           ? reset::DialogViewType::kShortcutOfferingRollbackAvailable
@@ -465,4 +478,4 @@ void ResetScreen::OnTPMFirmwareUpdateAvailableCheck(
     view_->SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode::kPowerwash);
 }
 
-}  // namespace chromeos
+}  // namespace ash

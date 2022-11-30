@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,22 +18,53 @@
 #import <UIKit/UIKit.h>
 
 @interface CPTestSharedObject : NSObject
+
 // Returns the string "crashpad" for testing EDO.
 - (NSString*)testEDO;
+
+// Tell Crashpad to process intermediate dumps.
+- (void)processIntermediateDumps;
+
+// Clear pending reports from Crashpad database.
+- (void)clearPendingReports;
+
+// Returns the number of pending reports, or -1 if there's an error getting
+// report.
+- (int)pendingReportCount;
+
+// Returns true if there's a single pending report and sets the exception code
+// in the out |exception| parameter. Returns false if there's a different number
+// of pending reports.
+- (bool)pendingReportException:(NSNumber**)exception;
+
+// Returns true if there's a single pending report and sets the second-level
+// exception code in the out |exception_info| parameter. Returns false if
+// there's a different number of pending reports.
+- (bool)pendingReportExceptionInfo:(NSNumber**)exception_info;
+
+// Return an NSDictionary with a dictionary named "simplemap", an array named
+// "vector" and an array named "objects", representing the combination of all
+// modules AnnotationsSimpleMap, AnnotationsVector and AnnotationObjects
+// (strings only) respectively.
+- (NSDictionary*)getAnnotations;
+
+// Return an NSDictionary representing the ProcessSnapshotMinidump
+// AnnotationsSimpleMap.
+- (NSDictionary*)getProcessAnnotations;
 
 // Triggers an EXC_BAD_ACCESS exception and crash.
 - (void)crashBadAccess;
 
-// Triggers a crash with a call to kill(SIGABRT).
+// Triggers a crash with a call to kill(SIGABRT). This crash runs with
+// ReplaceAllocatorsWithHandlerForbidden.
 - (void)crashKillAbort;
 
-// Triggers a segfault crash.
-- (void)crashSegv;
-
-// Trigger a crash with a __builtin_trap.
+// Trigger a crash with a __builtin_trap. This crash runs with
+// ReplaceAllocatorsWithHandlerForbidden.
 - (void)crashTrap;
 
-// Trigger a crash with an abort().
+// Trigger a crash with an abort(). This crash runs with
+// ReplaceAllocatorsWithHandlerForbidden.
 - (void)crashAbort;
 
 // Trigger a crash with an uncaught exception.
@@ -42,14 +73,48 @@
 // Trigger a crash with an uncaught NSException.
 - (void)crashNSException;
 
-// Trigger an unrecognized selector after delay.
-- (void)crashUnreocgnizedSelectorAfterDelay;
+// Trigger a crash with an uncaught and unhandled NSException.
+- (void)crashUnhandledNSException;
 
-// Trigger a caught NSxception.
+// Trigger an unrecognized selector after delay.
+- (void)crashUnrecognizedSelectorAfterDelay;
+
+// Trigger a caught NSException, this will not crash
 - (void)catchNSException;
+
+// Trigger an NSException with sinkholes in CoreAutoLayout.
+- (void)crashCoreAutoLayoutSinkhole;
 
 // Trigger a crash with an infinite recursion.
 - (void)crashRecursion;
+
+// Trigger a crash dlsym that contains a crash_info message.
+- (void)crashWithCrashInfoMessage;
+
+// Trigger an error that will to the dyld error string `_error_string`
+- (void)crashWithDyldErrorString;
+
+// Trigger a crash after writing various annotations.
+- (void)crashWithAnnotations;
+
+// Triggers a DumpWithoutCrash |dump_count| times in each of |threads| threads.
+- (void)generateDumpWithoutCrash:(int)dump_count threads:(int)threads;
+
+// Triggers a simulataneous Mach exception and signal in different threads.
+- (void)crashConcurrentSignalAndMach;
+
+// Triggers a SIGABRT signal while handling an NSException to test reentrant
+// exceptions.
+- (void)crashInHandlerReentrant;
+
+// Runs with ReplaceAllocatorsWithHandlerForbidden and allocates memory, testing
+// that the handler forbidden allocator works.
+- (void)allocateWithForbiddenAllocators;
+
+// Return the contents of the RawLog output from the previous run of the host
+// application.
+- (NSString*)rawLogContents;
+
 @end
 
 #endif  // CRASHPAD_TEST_IOS_HOST_SHARED_OBJECT_H_

@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SURFACE_WRAPPER_IMPL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SURFACE_WRAPPER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 
 #include <cstdint>
-#include <string>
 
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -33,19 +33,22 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   // ShellSurfaceWrapper overrides:
   bool Initialize() override;
   void AckConfigure(uint32_t serial) override;
+  bool IsConfigured() override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
 
+  struct xdg_surface* xdg_surface() const;
+
+ private:
   // xdg_surface_listener
   static void Configure(void* data,
                         struct xdg_surface* xdg_surface,
                         uint32_t serial);
 
-  struct xdg_surface* xdg_surface() const;
-
- private:
   // Non-owing WaylandWindow that uses this surface wrapper.
-  WaylandWindow* const wayland_window_;
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandWindow> wayland_window_;
+  const raw_ptr<WaylandConnection> connection_;
+
+  bool is_configured_ = false;
 
   wl::Object<struct xdg_surface> xdg_surface_;
 };

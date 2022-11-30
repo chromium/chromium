@@ -1,4 +1,4 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++embeddedObject
+++++++embeddedObject restriction=disabled

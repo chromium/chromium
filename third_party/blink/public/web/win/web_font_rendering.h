@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WIN_WEB_FONT_RENDERING_H_
 
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -14,22 +15,30 @@ class SkTypeface;
 
 namespace blink {
 
-class WebFontRendering {
+class WebFontRenderingClient;
+
+class BLINK_EXPORT WebFontRendering {
  public:
-  BLINK_EXPORT static void SetSkiaFontManager(sk_sp<SkFontMgr>);
-  BLINK_EXPORT static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
-  BLINK_EXPORT static void SetMenuFontMetrics(const WebString& family_name,
-                                              int32_t font_height);
-  BLINK_EXPORT static void SetSmallCaptionFontMetrics(
-      const WebString& family_name,
-      int32_t font_height);
-  BLINK_EXPORT static void SetStatusFontMetrics(const WebString& family_name,
-                                                int32_t font_height);
-  BLINK_EXPORT static void SetAntialiasedTextEnabled(bool);
-  BLINK_EXPORT static void SetLCDTextEnabled(bool);
-  BLINK_EXPORT static void SetUseSkiaFontFallback(bool);
+  static void SetSkiaFontManager(sk_sp<SkFontMgr>);
+  // Set an instance of |WebFontPrewarmer|. The instance must be kept alive
+  // until the process exits.
+  static void SetFontPrewarmer(WebFontPrewarmer*);
+  // Set an instance of `WebFontRenderingClient`. The instance must be kept
+  // alive until the process exits.
+  static void SetFontRenderingClient(WebFontRenderingClient*);
+  static WebFontPrewarmer* GetFontPrewarmer();
+  static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
+  static void SetMenuFontMetrics(const WebString& family_name,
+                                 int32_t font_height);
+  static void SetSmallCaptionFontMetrics(const WebString& family_name,
+                                         int32_t font_height);
+  static void SetStatusFontMetrics(const WebString& family_name,
+                                   int32_t font_height);
+  static void SetAntialiasedTextEnabled(bool);
+  static void SetLCDTextEnabled(bool);
+  static void SetUseSkiaFontFallback(bool);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WIN_WEB_FONT_RENDERING_H_

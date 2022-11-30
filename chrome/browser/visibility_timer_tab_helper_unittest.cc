@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ TEST_F(VisibilityTimerTabHelperTest, Delay) {
                                     EXPECT_FALSE(task_executed);
                                     task_executed = true;
                                   }),
-                                  base::TimeDelta::FromSecondsD(1));
+                                  base::Seconds(1));
 
   EXPECT_FALSE(task_executed);
 
@@ -33,7 +33,7 @@ TEST_F(VisibilityTimerTabHelperTest, Delay) {
   // the tab is not visible, so these 500ms never add up to >= 1 second.
   for (int n = 0; n < 10; n++) {
     web_contents()->WasShown();
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment()->FastForwardBy(base::Milliseconds(500));
     web_contents()->WasHidden();
   }
 
@@ -46,19 +46,52 @@ TEST_F(VisibilityTimerTabHelperTest, Delay) {
   // scheduled task, and when it fires Timer::RunScheduledTask will call
   // TimeTicks::Now() (which unlike task_environment()->NowTicks(), we can't
   // fake), and miscalculate the remaining delay at which to fire the timer.
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment()->FastForwardBy(base::Days(1));
 
   EXPECT_FALSE(task_executed);
 
   // So 500ms is still not enough.
   web_contents()->WasShown();
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
 
   EXPECT_FALSE(task_executed);
 
   // But 5*500ms > 1 second, so it should now be blocked.
   for (int n = 0; n < 4; n++)
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment()->FastForwardBy(base::Milliseconds(500));
 
   EXPECT_TRUE(task_executed);
+}
+
+TEST_F(VisibilityTimerTabHelperTest, TasksAreQueuedInDormantState) {
+  std::string tasks_executed;
+  VisibilityTimerTabHelper::CreateForWebContents(web_contents());
+
+  VisibilityTimerTabHelper::FromWebContents(web_contents())
+      ->PostTaskAfterVisibleDelay(
+          FROM_HERE, base::BindLambdaForTesting([&] { tasks_executed += "1"; }),
+          base::Seconds(1));
+  web_contents()->WasShown();
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // Add second task. Its timer does not advance until after the first task
+  // completes.
+  VisibilityTimerTabHelper::FromWebContents(web_contents())
+      ->PostTaskAfterVisibleDelay(
+          FROM_HERE, base::BindLambdaForTesting([&] { tasks_executed += "2"; }),
+          base::Seconds(1));
+
+  web_contents()->WasHidden();
+  web_contents()->WasShown();
+  task_environment()->FastForwardBy(base::Milliseconds(990));
+
+  EXPECT_EQ("", tasks_executed);
+
+  task_environment()->FastForwardBy(base::Milliseconds(11));
+
+  EXPECT_EQ("1", tasks_executed);
+
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+
+  EXPECT_EQ("12", tasks_executed);
 }

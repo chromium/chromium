@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+// The storage proto for removed results, used by the RemovedResultsRanker
+// class. See the header of that class for more information.
+message RemovedResultsProto {
+  // Versioning information that can be used to discard on-disk state if an
+  // incompatible change is made to the RemovedResultsRanker. Currently unset
+  // and unused.
+  optional int32 version = 1;
+
+  // All (string) search result IDs that should be removed.
+  // We only need support for quick key lookup, and we do not care about the
+  // (bool) value.
+  map<string, bool> removed_ids = 2;
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -47,7 +48,8 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
-    ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
 @Restriction(
     {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherThumbnailTest {
@@ -60,13 +62,14 @@ public class TabSwitcherThumbnailTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private TabListMediator.ThumbnailFetcher mNullThumbnailProvider =
-            new TabListMediator.ThumbnailFetcher((tabId, callback, forceUpdate, writeToCache)
-                                                         -> callback.onResult(null),
+            new TabListMediator.ThumbnailFetcher(
+                    (tabId, thumbnailSize, callback, forceUpdate, writeToCache, isSelected)
+                            -> callback.onResult(null),
                     Tab.INVALID_TAB_ID, false, false);
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         TabGridViewBinder.setThumbnailFeatureForTesting(mNullThumbnailProvider);
     }
 
@@ -123,7 +126,8 @@ public class TabSwitcherThumbnailTest {
         // There is a higher chance for the test to fail with backward counting, because after the
         // view being recycled, its height might have the correct measurement.
         for (int i = tabCounts - 1; i >= 0; i--) {
-            onView(allOf(withParent(withId(org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),
+            onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                                 mActivityTestRule.getActivity()))),
                            withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                     .perform(scrollToPosition(i))
                     .check(ThumbnailHeightAssertion.notZeroAt(i))

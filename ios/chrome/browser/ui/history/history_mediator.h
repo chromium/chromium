@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class ChromeBrowserState;
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 
 - (instancetype)init NS_UNAVAILABLE;
-// Init method. |browserState| can't be nil.
+// Init method. `browserState` can't be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 

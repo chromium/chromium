@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -25,6 +25,10 @@ class RateCounter {
  public:
   // Constructs a rate counter over the specified |time_window|.
   explicit RateCounter(base::TimeDelta time_window);
+
+  RateCounter(const RateCounter&) = delete;
+  RateCounter& operator=(const RateCounter&) = delete;
+
   virtual ~RateCounter();
 
   // Records a point event count to include in the rate.
@@ -54,11 +58,10 @@ class RateCounter {
   // Sum of values in |data_points_|.
   int64_t sum_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RateCounter);
 };
 
 }  // namespace remoting

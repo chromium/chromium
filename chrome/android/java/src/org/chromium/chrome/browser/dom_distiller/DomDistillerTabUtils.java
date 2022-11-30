@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -132,6 +132,14 @@ public class DomDistillerTabUtils {
     public static boolean isCctMode() {
         if (!ChromeFeatureList.isInitialized()) return false;
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_IN_CCT);
+    }
+
+    /**
+     * Returns true if reader mode prompt should be displayed as a message. Otherwise it will be
+     * displayed as an infobar.
+     */
+    public static boolean useMessagesForReaderModePrompt() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE);
     }
 
     /**

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,27 +7,34 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/stop_recording_button_tray.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/callback_layer_animation_observer.h"
-#include "ui/compositor/layer_animation_element.h"
-#include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
-#include "ui/views/style/platform_style.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -37,143 +44,144 @@ namespace {
 constexpr int kCaptureLabelRadius = 18;
 
 constexpr int kCountDownStartSeconds = 3;
-constexpr int kCountDownEndSeconds = 1;
 
 constexpr base::TimeDelta kCaptureLabelOpacityFadeoutDuration =
-    base::TimeDelta::FromMilliseconds(33);
-// Opacity fade in animation duration and scale up animation duration when the
-// timeout label enters 3.
-constexpr base::TimeDelta kCountDownEnter3Duration =
-    base::TimeDelta::FromMilliseconds(267);
-// Opacity fade out animation duration and scale down animation duration when
-// the timeout label exits 1.
-constexpr base::TimeDelta kCountDownExit1Duration =
-    base::TimeDelta::FromMilliseconds(333);
-// For other number enter/exit fade in/out, scale up/down animation duration.
-constexpr base::TimeDelta kCountDownEnterExitDuration =
-    base::TimeDelta::FromMilliseconds(167);
+    base::Milliseconds(33);
 
 // Delay to enter number 3 to start count down.
-constexpr base::TimeDelta kStartCountDownDelay =
-    base::TimeDelta::FromMilliseconds(233);
-// Delay to exit a number after entering animation is completed.
-constexpr base::TimeDelta kCountDownExitDelay =
-    base::TimeDelta::FromMilliseconds(667);
+constexpr base::TimeDelta kStartCountDownDelay = base::Milliseconds(233);
 
-// Different scales for enter/exiting countdown numbers.
-constexpr float kEnterLabelScaleDown = 0.8f;
-constexpr float kExitLabelScaleUp = 1.2f;
-// Scale when exiting the number 1, unlike the other numbers, it will shrink
-// down a bit and fade out.
-constexpr float kExitLabel1ScaleDown = 0.8f;
+// The duration of the counter (e.g. "3", "2", etc.) fade in animation. The
+// counter also scales up as it fades in with the same duration.
+constexpr base::TimeDelta kCounterFadeInDuration = base::Milliseconds(250);
 
-void GetOpacityCountDownAnimationSetting(int count_down_number,
-                                         bool enter,
-                                         base::TimeDelta* duration,
-                                         gfx::Tween::Type* tween_type) {
-  if (count_down_number == kCountDownStartSeconds && enter) {
-    *duration = kCountDownEnter3Duration;
-    *tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
-  } else if (count_down_number == kCountDownEndSeconds && !enter) {
-    *duration = kCountDownExit1Duration;
-    *tween_type = gfx::Tween::EASE_OUT_3;
-  } else {
-    *duration = kCountDownEnterExitDuration;
-    *tween_type = gfx::Tween::LINEAR;
-  }
-}
+// The delay we wait before we fade out the counter after it fades in with the
+// above duration.
+constexpr base::TimeDelta kCounterFadeOutDuration = base::Milliseconds(150);
 
-void GetTransformCountDownAnimationSetting(int count_down_number,
-                                           bool enter,
-                                           base::TimeDelta* duration,
-                                           gfx::Tween::Type* tween_type) {
-  if (count_down_number == kCountDownStartSeconds && enter) {
-    *duration = kCountDownEnter3Duration;
-    *tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
-  } else if (count_down_number == kCountDownEndSeconds && !enter) {
-    *duration = kCountDownExit1Duration;
-    *tween_type = gfx::Tween::EASE_OUT_3;
-  } else if (enter) {
-    *duration = kCountDownEnterExitDuration;
-    *tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
-  } else {
-    *duration = kCountDownEnterExitDuration;
-    *tween_type = gfx::Tween::FAST_OUT_LINEAR_IN;
-  }
-}
+// The duration of the fade out and scale up animation of the counter when its
+// value is `kCountDownStartSeconds`.
+constexpr base::TimeDelta kStartCounterFadeOutDelay = base::Milliseconds(900);
 
-std::unique_ptr<ui::LayerAnimationElement> CreateOpacityLayerAnimationElement(
-    float target_opacity,
-    base::TimeDelta duration,
-    gfx::Tween::Type tween_type) {
-  std::unique_ptr<ui::LayerAnimationElement> opacity_element =
-      ui::LayerAnimationElement::CreateOpacityElement(target_opacity, duration);
-  opacity_element->set_tween_type(tween_type);
-  return opacity_element;
-}
+// Same as above but for all other counters (i.e. "2" and "1").
+constexpr base::TimeDelta kAllCountersFadeOutDelay = base::Milliseconds(850);
 
-std::unique_ptr<ui::LayerAnimationElement> CreateTransformLayerAnimationElement(
-    const gfx::Transform& target_transform,
-    base::TimeDelta duration,
-    gfx::Tween::Type tween_type) {
-  std::unique_ptr<ui::LayerAnimationElement> transform_element =
-      ui::LayerAnimationElement::CreateTransformElement(target_transform,
-                                                        duration);
-  transform_element->set_tween_type(tween_type);
-  return transform_element;
-}
+// The duration of the fade out animation applied on the label widget once the
+// count down value reaches 1.
+constexpr base::TimeDelta kWidgetFadeOutDuration = base::Milliseconds(333);
 
-// Returns the transform that can scale |bounds| around its center point.
-gfx::Transform GetScaleTransform(const gfx::Rect& bounds, float scale) {
-  const gfx::Point center_point = bounds.CenterPoint();
-  return gfx::GetScaleTransform(
-      gfx::Point(center_point.x() - bounds.x(), center_point.y() - bounds.y()),
-      scale);
-}
+// The duration of drop to stop recording button position animation.
+constexpr base::TimeDelta kDropToStopRecordingButtonDuration =
+    base::Milliseconds(500);
+
+// The counter starts at 80% scale as it fades in, and animates to a scale of
+// 100%.
+constexpr float kCounterInitialFadeInScale = 0.8f;
+
+// The counter ends at 120% when it finishes its fade out animation.
+constexpr float kCounterFinalFadeOutScale = 1.2f;
+
+// The label widget scales down to 80% as it fades out at the very end of the
+// count down.
+constexpr float kWidgetFinalFadeOutScale = 0.8f;
 
 }  // namespace
 
-CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
-    : timeout_count_down_(kCountDownStartSeconds),
-      capture_mode_session_(capture_mode_session) {
+// -----------------------------------------------------------------------------
+// DropToStopRecordingButtonAnimation:
+
+// Defines an animation that calculates the transform of the label widget at
+// each step of the drop towards the stop recording button position animation.
+class DropToStopRecordingButtonAnimation : public gfx::LinearAnimation {
+ public:
+  DropToStopRecordingButtonAnimation(gfx::AnimationDelegate* delegate,
+                                     const gfx::Point& start_position,
+                                     const gfx::Point& target_position)
+      : LinearAnimation(kDropToStopRecordingButtonDuration,
+                        gfx::LinearAnimation::kDefaultFrameRate,
+                        delegate),
+        start_position_(start_position),
+        target_position_(target_position) {}
+  DropToStopRecordingButtonAnimation(
+      const DropToStopRecordingButtonAnimation&) = delete;
+  DropToStopRecordingButtonAnimation& operator=(
+      const DropToStopRecordingButtonAnimation&) = delete;
+  ~DropToStopRecordingButtonAnimation() override = default;
+
+  const gfx::Transform& current_transform() const { return current_transform_; }
+
+  // gfx::LinearAnimation:
+  void AnimateToState(double state) override {
+    // Note that this animation moves the widget at different speeds in X and Y.
+    // This results in motion on a curve.
+    const int new_x = gfx::Tween::IntValueBetween(
+        gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_LINEAR_IN, state),
+        start_position_.x(), target_position_.x());
+    const int new_y = gfx::Tween::IntValueBetween(
+        gfx::Tween::CalculateValue(gfx::Tween::ACCEL_30_DECEL_20_85, state),
+        start_position_.y(), target_position_.y());
+
+    current_transform_.MakeIdentity();
+    current_transform_.Translate(gfx::Point(new_x, new_y) - start_position_);
+  }
+
+ private:
+  // Note that the coordinate system of both `start_position_` and
+  // `target_position_` must be the same. They can be both in screen, or both in
+  // root. They're used to calculate and offset for a translation transform, so
+  // it doesn't matter which coordinate system as long as they has the same.
+
+  // The origin of the label widget at the start of this animation.
+  const gfx::Point start_position_;
+
+  // The origin of the stop recording button, which is the target position of
+  // this animation.
+  const gfx::Point target_position_;
+
+  // The current value of the transform at each step of this animation which
+  // will be applied on the label widget's layer.
+  gfx::Transform current_transform_;
+};
+
+// -----------------------------------------------------------------------------
+// CaptureLabelView:
+
+CaptureLabelView::CaptureLabelView(
+    CaptureModeSession* capture_mode_session,
+    base::RepeatingClosure on_capture_button_pressed)
+    : capture_mode_session_(capture_mode_session) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  auto* color_provider = AshColorProvider::Get();
-  SkColor background_color = color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  SetBackground(views::CreateSolidBackground(background_color));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
-  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-  SkColor text_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
   label_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      base::BindRepeating(&CaptureLabelView::OnButtonPressed,
-                          base::Unretained(this)),
-      std::u16string()));
+      std::move(on_capture_button_pressed), std::u16string()));
   label_button_->SetPaintToLayer();
   label_button_->layer()->SetFillsBoundsOpaquely(false);
-  label_button_->SetEnabledTextColors(text_color);
   label_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_button_->SetNotifyEnterExitOnChild(true);
 
-  label_button_->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
-  const auto ripple_attributes =
-      color_provider->GetRippleAttributes(background_color);
-  label_button_->SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
-  label_button_->SetInkDropBaseColor(ripple_attributes.base_color);
+  views::InkDrop::Get(label_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
+  StyleUtil::ConfigureInkDropAttributes(
+      label_button_, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
   label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
-  label_->SetEnabledColor(text_color);
+  label_->SetEnabledColorId(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
-  UpdateIconAndText();
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kCaptureLabelRadius, views::HighlightBorder::Type::kHighlightBorder2,
+        /*use_light_colors=*/false));
+  }
 }
 
 CaptureLabelView::~CaptureLabelView() = default;
@@ -183,9 +191,8 @@ void CaptureLabelView::UpdateIconAndText() {
   const CaptureModeSource source = controller->source();
   const bool is_capturing_image = controller->type() == CaptureModeType::kImage;
   const bool in_tablet_mode = TabletModeController::Get()->InTabletMode();
-  auto* color_provider = AshColorProvider::Get();
-  SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const SkColor icon_color =
+      GetColorProvider()->GetColor(kColorAshIconColorPrimary);
 
   gfx::ImageSkia icon;
   std::u16string text;
@@ -234,7 +241,13 @@ void CaptureLabelView::UpdateIconAndText() {
   if (!icon.isNull()) {
     label_->SetVisible(false);
     label_button_->SetVisible(true);
-    label_button_->SetImage(views::Button::STATE_NORMAL, icon);
+    // Update the icon only if one is not already present or it has changed to
+    // reduce repainting.
+    if (!label_button_->HasImage(views::Button::STATE_NORMAL) ||
+        !icon.BackedBySameObjectAs(
+            label_button_->GetImage(views::Button::STATE_NORMAL))) {
+      label_button_->SetImage(views::Button::STATE_NORMAL, icon);
+    }
     label_button_->SetText(text);
   } else if (!text.empty()) {
     label_button_->SetVisible(false);
@@ -261,21 +274,22 @@ void CaptureLabelView::StartCountDown(
     animation_layer = label_button_->layer();
   if (label_->GetVisible())
     animation_layer = label_->layer();
+
   if (animation_layer) {
     // Fade out the opacity.
     animation_layer->SetOpacity(1.f);
-    ui::ScopedLayerAnimationSettings settings(animation_layer->GetAnimator());
-    settings.SetTweenType(gfx::Tween::LINEAR);
-    settings.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTransitionDuration(kCaptureLabelOpacityFadeoutDuration);
-    animation_layer->SetOpacity(0.f);
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(kCaptureLabelOpacityFadeoutDuration)
+        .SetOpacity(animation_layer, 0.f);
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&CaptureLabelView::ScheduleCountDownAnimation,
-                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&CaptureLabelView::FadeInAndOutCounter,
+                     weak_factory_.GetWeakPtr(), kCountDownStartSeconds),
       kStartCountDownDelay);
 }
 
@@ -317,6 +331,14 @@ gfx::Size CaptureLabelView::CalculatePreferredSize() const {
                    kCaptureLabelRadius * 2);
 }
 
+void CaptureLabelView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  UpdateIconAndText();
+  label_button_->SetEnabledTextColors(
+      GetColorProvider()->GetColor(kColorAshTextColorPrimary));
+}
+
 views::View* CaptureLabelView::GetView() {
   return label_button_;
 }
@@ -327,142 +349,107 @@ CaptureLabelView::CreatePathGenerator() {
   // the same size as its widget, inset by half the focus ring thickness to
   // ensure the focus ring is drawn inside the widget bounds.
   return std::make_unique<views::RoundRectHighlightPathGenerator>(
-      gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2),
+      gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2),
       kCaptureLabelRadius);
 }
 
-void CaptureLabelView::ScheduleCountDownAnimation() {
-  label_->SetVisible(true);
-  label_->SetText(base::FormatNumber(timeout_count_down_));
-
-  // Initial setup for entering |timeout_count_down_|:
-  ui::Layer* label_layer = label_->layer();
-  label_layer->SetOpacity(0.f);
-  // Use target bounds as when this function is called, we're still in bounds
-  // change animation, Widget::GetBoundsInScreen() won't return correct value.
-  gfx::Rect bounds = GetWidget()->GetLayer()->GetTargetBounds();
-  bounds.ClampToCenteredSize(label_->GetPreferredSize());
-  label_layer->SetTransform(GetScaleTransform(bounds, kEnterLabelScaleDown));
-  if (!animation_observer_) {
-    animation_observer_ = std::make_unique<ui::CallbackLayerAnimationObserver>(
-        base::BindRepeating(&CaptureLabelView::OnCountDownAnimationCompleted,
-                            base::Unretained(this)));
-  }
-
-  StartLabelLayerAnimationSequences();
-  StartWidgetLayerAnimationSequences();
-  animation_observer_->SetActive();
+void CaptureLabelView::AnimationEnded(const gfx::Animation* animation) {
+  DCHECK_EQ(drop_to_stop_button_animation_.get(), animation);
+  OnCountDownAnimationFinished();
 }
 
-bool CaptureLabelView::OnCountDownAnimationCompleted(
-    const ui::CallbackLayerAnimationObserver& observer) {
-  // If animation was aborted, return directly to avoid crash as |this| may
-  // no longer be valid.
-  if (observer.aborted_count())
-    return false;
-
-  if (timeout_count_down_ == kCountDownEndSeconds) {
-    std::move(countdown_finished_callback_).Run();  // |this| is destroyed here.
-  } else {
-    timeout_count_down_--;
-    ScheduleCountDownAnimation();
-  }
-
-  // Return false to prevent the observer from destroying itself.
-  return false;
+void CaptureLabelView::AnimationProgressed(const gfx::Animation* animation) {
+  DCHECK_EQ(drop_to_stop_button_animation_.get(), animation);
+  GetWidget()->GetLayer()->SetTransform(
+      drop_to_stop_button_animation_->current_transform());
 }
 
-void CaptureLabelView::StartLabelLayerAnimationSequences() {
-  // Create |label_opacity_sequence|. Note we don't need the exit animation for
-  // the last countdown number 1, since when exiting number 1, we'll fade out
-  // the entire widget, not just the label.
-  std::unique_ptr<ui::LayerAnimationSequence> label_opacity_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  base::TimeDelta enter_duration, exit_duration;
-  gfx::Tween::Type enter_type, exit_type;
-  GetOpacityCountDownAnimationSetting(timeout_count_down_, /*enter=*/true,
-                                      &enter_duration, &enter_type);
-  GetOpacityCountDownAnimationSetting(timeout_count_down_, /*enter=*/false,
-                                      &exit_duration, &exit_type);
-
-  label_opacity_sequence->AddElement(
-      CreateOpacityLayerAnimationElement(1.f, enter_duration, enter_type));
-  label_opacity_sequence->AddElement(
-      ui::LayerAnimationElement::CreatePauseElement(
-          ui::LayerAnimationElement::OPACITY, kCountDownExitDelay));
-  const bool is_final_second = timeout_count_down_ == kCountDownEndSeconds;
-  if (!is_final_second) {
-    label_opacity_sequence->AddElement(
-        CreateOpacityLayerAnimationElement(0.f, exit_duration, exit_type));
-  }
-
-  // Construct |label_transfrom_sequence|. Same reason above, we don't need
-  // the exit animation for the last countdown number 1.
-  std::unique_ptr<ui::LayerAnimationSequence> label_transfrom_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  GetTransformCountDownAnimationSetting(timeout_count_down_, /*enter=*/true,
-                                        &enter_duration, &enter_type);
-  GetTransformCountDownAnimationSetting(timeout_count_down_, /*enter=*/false,
-                                        &exit_duration, &exit_type);
-
-  label_transfrom_sequence->AddElement(CreateTransformLayerAnimationElement(
-      gfx::Transform(), enter_duration, enter_type));
-  label_transfrom_sequence->AddElement(
-      ui::LayerAnimationElement::CreatePauseElement(
-          ui::LayerAnimationElement::TRANSFORM, kCountDownExitDelay));
-  if (!is_final_second) {
-    gfx::Rect bounds = GetWidget()->GetLayer()->GetTargetBounds();
-    bounds.ClampToCenteredSize(label_->GetPreferredSize());
-    label_transfrom_sequence->AddElement(CreateTransformLayerAnimationElement(
-        GetScaleTransform(bounds, kExitLabelScaleUp), exit_duration,
-        exit_type));
-  }
-
-  label_opacity_sequence->AddObserver(animation_observer_.get());
-  label_transfrom_sequence->AddObserver(animation_observer_.get());
-  label_->layer()->GetAnimator()->StartTogether(
-      {label_opacity_sequence.release(), label_transfrom_sequence.release()});
-}
-
-void CaptureLabelView::StartWidgetLayerAnimationSequences() {
-  // Only need animate the widget layer when exiting the last countdown number.
-  if (timeout_count_down_ != kCountDownEndSeconds)
+void CaptureLabelView::FadeInAndOutCounter(int counter_value) {
+  if (counter_value == 0) {
+    DropWidgetToStopRecordingButton();
     return;
+  }
 
-  std::unique_ptr<ui::LayerAnimationSequence> widget_opacity_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  base::TimeDelta exit_duration;
-  gfx::Tween::Type exit_type;
-  GetOpacityCountDownAnimationSetting(timeout_count_down_, /*enter=*/false,
-                                      &exit_duration, &exit_type);
-  widget_opacity_sequence->AddElement(
-      ui::LayerAnimationElement::CreatePauseElement(
-          ui::LayerAnimationElement::OPACITY,
-          kCountDownEnterExitDuration + kCountDownExitDelay));
-  widget_opacity_sequence->AddElement(
-      CreateOpacityLayerAnimationElement(0.f, exit_duration, exit_type));
+  label_->SetVisible(true);
+  label_->SetText(base::FormatNumber(counter_value));
+  Layout();
 
-  std::unique_ptr<ui::LayerAnimationSequence> widget_transform_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  GetTransformCountDownAnimationSetting(timeout_count_down_, /*enter=*/false,
-                                        &exit_duration, &exit_type);
-  widget_transform_sequence->AddElement(
-      ui::LayerAnimationElement::CreatePauseElement(
-          ui::LayerAnimationElement::TRANSFORM,
-          kCountDownEnterExitDuration + kCountDownExitDelay));
-  const gfx::Rect bounds = GetWidget()->GetLayer()->GetTargetBounds();
-  widget_transform_sequence->AddElement(CreateTransformLayerAnimationElement(
-      GetScaleTransform(bounds, kExitLabel1ScaleDown), exit_duration,
-      exit_type));
+  // The counter should be initially fully transparent and scaled down 80%.
+  ui::Layer* layer = label_->layer();
+  layer->SetOpacity(0.f);
+  layer->SetTransform(capture_mode_util::GetScaleTransformAboutCenter(
+      layer, kCounterInitialFadeInScale));
 
-  widget_opacity_sequence->AddObserver(animation_observer_.get());
-  widget_transform_sequence->AddObserver(animation_observer_.get());
-  GetWidget()->GetLayer()->GetAnimator()->StartTogether(
-      {widget_opacity_sequence.release(), widget_transform_sequence.release()});
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&CaptureLabelView::FadeInAndOutCounter,
+                              weak_factory_.GetWeakPtr(), counter_value - 1))
+      .Once()
+      .SetDuration(kCounterFadeInDuration)
+      .SetOpacity(layer, 1.f)
+      .SetTransform(layer, gfx::Transform(), gfx::Tween::LINEAR_OUT_SLOW_IN)
+      .At(counter_value == kCountDownStartSeconds ? kStartCounterFadeOutDelay
+                                                  : kAllCountersFadeOutDelay)
+      .SetDuration(kCounterFadeOutDuration)
+      .SetOpacity(layer, 0.f)
+      .SetTransform(layer,
+                    capture_mode_util::GetScaleTransformAboutCenter(
+                        layer, kCounterFinalFadeOutScale),
+                    gfx::Tween::FAST_OUT_LINEAR_IN);
 }
 
-void CaptureLabelView::OnButtonPressed() {
-  CaptureModeController::Get()->PerformCapture();
+void CaptureLabelView::DropWidgetToStopRecordingButton() {
+  auto* widget_window = GetWidget()->GetNativeWindow();
+  StopRecordingButtonTray* stop_recording_button =
+      capture_mode_util::GetStopRecordingButtonForRoot(
+          widget_window->GetRootWindow());
+
+  // Fall back to the fade out animation of the widget in case the button is not
+  // available.
+  if (!stop_recording_button) {
+    FadeOutWidget();
+    return;
+  }
+
+  // Temporarily show the button (without animation, i.e. don't use
+  // `SetVisiblePreferred()`) in order to layout and get the position in which
+  // it will be placed when we actually show it. `ShelfLayoutManager` will take
+  // care of updating the layout when the visibility changes.
+  stop_recording_button->SetVisible(true);
+  stop_recording_button->UpdateLayout();
+  const auto target_position =
+      stop_recording_button->GetBoundsInScreen().origin();
+  stop_recording_button->SetVisible(false);
+
+  drop_to_stop_button_animation_ =
+      std::make_unique<DropToStopRecordingButtonAnimation>(
+          this, widget_window->GetBoundsInScreen().origin(), target_position);
+  drop_to_stop_button_animation_->Start();
+}
+
+void CaptureLabelView::FadeOutWidget() {
+  const auto tween = gfx::Tween::EASE_OUT_3;
+  auto* widget_layer = GetWidget()->GetLayer();
+  views::AnimationBuilder builder;
+  builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&CaptureLabelView::OnCountDownAnimationFinished,
+                              weak_factory_.GetWeakPtr()))
+      .Once()
+      .At(kCounterFadeInDuration + kAllCountersFadeOutDelay)
+      .SetDuration(kWidgetFadeOutDuration)
+      .SetOpacity(widget_layer, 0.f, tween)
+      .SetTransform(widget_layer,
+                    capture_mode_util::GetScaleTransformAboutCenter(
+                        widget_layer, kWidgetFinalFadeOutScale),
+                    tween);
+}
+
+void CaptureLabelView::OnCountDownAnimationFinished() {
+  DCHECK(countdown_finished_callback_);
+  std::move(countdown_finished_callback_).Run();  // `this` is destroyed here.
 }
 
 BEGIN_METADATA(CaptureLabelView, views::View)

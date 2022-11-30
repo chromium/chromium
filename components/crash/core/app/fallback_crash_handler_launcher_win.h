@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/startup_information.h"
 
@@ -25,6 +24,11 @@ namespace crash_reporter {
 class FallbackCrashHandlerLauncher {
  public:
   FallbackCrashHandlerLauncher();
+
+  FallbackCrashHandlerLauncher(const FallbackCrashHandlerLauncher&) = delete;
+  FallbackCrashHandlerLauncher& operator=(const FallbackCrashHandlerLauncher&) =
+      delete;
+
   ~FallbackCrashHandlerLauncher();
 
   // Initializes everything that's needed in LaunchAndWaitForHandler.
@@ -59,8 +63,6 @@ class FallbackCrashHandlerLauncher {
   // An inheritable handle to our own process, the raw handle is necessary
   // for pre-computing the startup info.
   base::win::ScopedHandle self_process_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(FallbackCrashHandlerLauncher);
 };
 
 }  // namespace crash_reporter

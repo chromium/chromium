@@ -1,6 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {EventGenerator} from '../../common/event_generator.js';
+import {KeyCode} from '../../common/key_code.js';
 
 import {BasicNode, BasicRootNode} from './basic_node.js';
 
@@ -21,7 +24,7 @@ export class ModalDialogRootNode extends BasicRootNode {
    */
   static buildTree(dialogNode) {
     const root = new ModalDialogRootNode(dialogNode);
-    const childConstructor = (node) => BasicNode.create(node, root);
+    const childConstructor = node => BasicNode.create(node, root);
 
     BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;

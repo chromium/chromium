@@ -1,0 +1,23 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojom;
+
+// Mojo struct for fidl::InterfaceRequest<fuchsia::media::AudioConsumer>.
+struct AudioConsumerRequest {
+  handle<platform> request;
+};
+
+// Interface used by the render to create media resources. Instances are
+// document-scoped.
+interface WebEngineMediaResourceProvider {
+  // Returns true if the frame should use AudioConsumer to render audio
+  // streams. The call needs to be synchronous because `media::Renderer` needs
+  // to be constructed synchronously.
+  [Sync]
+  ShouldUseAudioConsumer() => (bool result);
+
+  // Creates a fuchsia.media.AudioConsumer for the current frame.
+  CreateAudioConsumer(AudioConsumerRequest request);
+};

@@ -1,137 +1,238 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/key_system_support_impl.h"
 
 #include <string>
-#include <vector>
 
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/token.h"
-#include "content/public/browser/cdm_registry.h"
-#include "content/public/browser/plugin_service.h"
-#include "content/public/common/cdm_info.h"
-#include "content/public/common/webplugininfo.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "content/public/test/browser_task_environment.h"
-#include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
+#include "media/cdm/cdm_capability.h"
+#include "mojo/public/cpp/bindings/equals_traits.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
-namespace {
-
+using AudioCodec = media::AudioCodec;
 using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
+using Robustness = CdmInfo::Robustness;
+using base::test::RunOnceCallback;
+using media::CdmCapability;
+using media::mojom::KeySystemCapability;
+using testing::_;
+using testing::SaveArg;
 
-const base::Token kTestCdmGuid{1234, 5678};
-const char kVersion[] = "1.1.1.1";
-const char kTestPath[] = "/aa/bb";
-const char kTestFileSystemId[] = "file_system_id";
+const char kTestKeySystem[] = "com.example.somesystem";
 
-// Helper function to compare a STL container to an initializer_list.
-template <typename Container, typename T>
-bool StlEquals(const Container a, std::initializer_list<T> b) {
-  return a == Container(b);
+// Ids to keep track of observers.
+const int kObserver1 = 1;
+const int kObserver2 = 2;
+
+ACTION_TEMPLATE(PostOnceCallback,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(p0)) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(std::get<k>(args)), p0));
 }
 
-#define EXPECT_STL_EQ(a, ...)                 \
-  do {                                        \
-    EXPECT_TRUE(StlEquals(a, {__VA_ARGS__})); \
-  } while (false)
+namespace {
 
-#define EXPECT_VIDEO_CODECS(...) \
-  EXPECT_STL_EQ(capability_->video_codecs, __VA_ARGS__)
+using KeySystemSupportCB =
+    base::RepeatingCallback<void(KeySystemCapabilityPtrMap)>;
 
-#define EXPECT_ENCRYPTION_SCHEMES(...) \
-  EXPECT_STL_EQ(capability_->encryption_schemes, __VA_ARGS__)
+class KeySystemSupportObserverImpl
+    : public media::mojom::KeySystemSupportObserver {
+ public:
+  explicit KeySystemSupportObserverImpl(KeySystemSupportCB cb)
+      : key_system_support_cb_(std::move(cb)) {}
+  KeySystemSupportObserverImpl(const KeySystemSupportObserverImpl&) = delete;
+  KeySystemSupportObserverImpl& operator=(const KeySystemSupportObserverImpl&) =
+      delete;
+  ~KeySystemSupportObserverImpl() override = default;
 
-#define EXPECT_SESSION_TYPES(...) \
-  EXPECT_STL_EQ(capability_->session_types, __VA_ARGS__)
+  // media::mojom::KeySystemSupportObserver
+  void OnKeySystemSupportUpdated(KeySystemCapabilityPtrMap capabilities) final {
+    key_system_support_cb_.Run(std::move(capabilities));
+  }
+
+ private:
+  KeySystemSupportCB key_system_support_cb_;
+};
+
+CdmCapability TestCdmCapability() {
+  return CdmCapability(
+      {AudioCodec::kVorbis}, {{VideoCodec::kVP8, {}}, {VideoCodec::kVP9, {}}},
+      {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
+      {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
+}
+
+KeySystemCapabilities TestKeySystemCapabilities(
+    absl::optional<CdmCapability> sw_secure_capability,
+    absl::optional<CdmCapability> hw_secure_capability) {
+  KeySystemCapabilities key_system_capabilities;
+  key_system_capabilities[kTestKeySystem] = KeySystemCapability(
+      std::move(sw_secure_capability), std::move(hw_secure_capability));
+  return key_system_capabilities;
+}
 
 }  // namespace
 
-class KeySystemSupportTest : public testing::Test {
- protected:
-  void SetUp() final {
-    DVLOG(1) << __func__;
-    KeySystemSupportImpl::Create(
+class KeySystemSupportImplTest : public testing::Test {
+ public:
+  KeySystemSupportImplTest() {
+    LOG(ERROR) << __func__;
+    key_system_support_impl_.SetGetKeySystemCapabilitiesUpdateCbForTesting(
+        get_support_cb_.Get());
+    key_system_support_impl_.Bind(
         key_system_support_.BindNewPipeAndPassReceiver());
   }
 
-  // TODO(xhwang): Add tests for hardware secure video codecs and encryption
-  // schemes.
-  CdmCapability GetTestCdmCapability() {
-    return CdmCapability(
-        {VideoCodec::kCodecVP8, VideoCodec::kCodecVP9},
-        {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
-        {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
+  void OnKeySystemSupportUpdated(int observer_id,
+                                 base::OnceClosure done_cb,
+                                 KeySystemCapabilityPtrMap capabilities) {
+    results_[observer_id].push_back(std::move(capabilities));
+    std::move(done_cb).Run();
   }
 
-  // Registers |key_system| with |capability|. All other values for CdmInfo have
-  // some default value as they're not returned by IsKeySystemSupported().
-  void Register(const std::string& key_system, CdmCapability capability) {
+ protected:
+  void GetKeySystemSupport() {
     DVLOG(1) << __func__;
 
-    CdmRegistry::GetInstance()->RegisterCdm(
-        CdmInfo(key_system, kTestCdmGuid, base::Version(kVersion),
-                base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId,
-                std::move(capability), key_system, false));
+    base::RunLoop run_loop;
+    mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<KeySystemSupportObserverImpl>(base::BindRepeating(
+            &KeySystemSupportImplTest::OnKeySystemSupportUpdated,
+            base::Unretained(this), kObserver1, run_loop.QuitClosure())),
+        observer_remote.InitWithNewPipeAndPassReceiver());
+    key_system_support_->AddObserver(std::move(observer_remote));
+    run_loop.Run();
   }
 
-  // Determines if |key_system| is registered. If it is, updates |codecs_|
-  // and |persistent_|.
-  bool IsSupported(const std::string& key_system) {
-    DVLOG(1) << __func__;
-    bool is_available = false;
-    key_system_support_->IsKeySystemSupported(key_system, &is_available,
-                                              &capability_);
-    return is_available;
-  }
-
-  mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
   BrowserTaskEnvironment task_environment_;
+  KeySystemSupportImpl key_system_support_impl_;
+  mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
+  base::MockCallback<KeySystemSupportImpl::GetKeySystemCapabilitiesUpdateCB>
+      get_support_cb_;
 
-  // Updated by IsSupported().
-  media::mojom::KeySystemCapabilityPtr capability_;
+  // KeySystemSupport update results. It's a map from the "observer ID" to the
+  // list of updates received by that observer.
+  std::map<int, std::vector<KeySystemCapabilityPtrMap>> results_;
 };
 
-// Note that as CdmRegistry::GetInstance() is a static, it is shared between
-// tests. So use unique key system names in each test below to avoid
-// interactions between the tests.
+TEST_F(KeySystemSupportImplTest, NoKeySystems) {
+  EXPECT_CALL(get_support_cb_, Run(_))
+      .WillOnce(RunOnceCallback<0>(KeySystemCapabilities()));
+  GetKeySystemSupport();
 
-TEST_F(KeySystemSupportTest, NoKeySystems) {
-  EXPECT_FALSE(IsSupported("KeySystem1"));
-  EXPECT_FALSE(capability_);
+  EXPECT_EQ(results_.size(), 1u);              // One observer
+  EXPECT_TRUE(results_.count(kObserver1));     // Observer 1
+  EXPECT_EQ(results_[kObserver1].size(), 1u);  // One update for observer 1
+
+  const auto& capabilities = results_[kObserver1][0];
+  EXPECT_TRUE(capabilities.empty());  // No capabilities
 }
 
-TEST_F(KeySystemSupportTest, OneKeySystem) {
-  Register("KeySystem2", GetTestCdmCapability());
+TEST_F(KeySystemSupportImplTest, OneObserver) {
+  EXPECT_CALL(get_support_cb_, Run(_))
+      .WillOnce(RunOnceCallback<0>(
+          TestKeySystemCapabilities(TestCdmCapability(), absl::nullopt)));
+  GetKeySystemSupport();
 
-  EXPECT_TRUE(IsSupported("KeySystem2"));
-  EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
-  EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
-  EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
-                       CdmSessionType::kPersistentLicense);
+  EXPECT_EQ(results_.size(), 1u);              // One observer
+  EXPECT_TRUE(results_.count(kObserver1));     // Observer 1
+  EXPECT_EQ(results_[kObserver1].size(), 1u);  // One update for observer 1
+
+  auto& capabilities = results_[kObserver1][0];
+  ASSERT_TRUE(capabilities.count(kTestKeySystem));
+  const auto& capability = capabilities[kTestKeySystem];
+  EXPECT_TRUE(capability->sw_secure_capability);
+  EXPECT_FALSE(capability->hw_secure_capability);
 }
 
-TEST_F(KeySystemSupportTest, MultipleKeySystems) {
-  Register("KeySystem3", GetTestCdmCapability());
-  Register("KeySystem4", GetTestCdmCapability());
+TEST_F(KeySystemSupportImplTest, TwoObservers) {
+  EXPECT_CALL(get_support_cb_, Run(_))
+      .WillOnce(RunOnceCallback<0>(
+          TestKeySystemCapabilities(TestCdmCapability(), absl::nullopt)));
 
-  EXPECT_TRUE(IsSupported("KeySystem3"));
-  EXPECT_TRUE(IsSupported("KeySystem4"));
+  base::RunLoop run_loop;
+  mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_1_remote;
+  mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_2_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<KeySystemSupportObserverImpl>(base::BindRepeating(
+          &KeySystemSupportImplTest::OnKeySystemSupportUpdated,
+          base::Unretained(this), kObserver1, base::DoNothing())),
+      observer_1_remote.InitWithNewPipeAndPassReceiver());
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<KeySystemSupportObserverImpl>(base::BindRepeating(
+          &KeySystemSupportImplTest::OnKeySystemSupportUpdated,
+          base::Unretained(this), kObserver2, run_loop.QuitClosure())),
+      observer_2_remote.InitWithNewPipeAndPassReceiver());
+  key_system_support_->AddObserver(std::move(observer_1_remote));
+  key_system_support_->AddObserver(std::move(observer_2_remote));
+  run_loop.Run();
+
+  EXPECT_EQ(results_.size(), 2u);  // Two observers
+
+  EXPECT_TRUE(results_.count(kObserver1));     // Observer 1
+  EXPECT_EQ(results_[kObserver1].size(), 1u);  // One update for observer 1
+  auto& capabilities = results_[kObserver1][0];
+  ASSERT_TRUE(capabilities.count(kTestKeySystem));
+  const auto& capability = capabilities[kTestKeySystem];
+  EXPECT_TRUE(capability->sw_secure_capability);
+  EXPECT_FALSE(capability->hw_secure_capability);
+
+  EXPECT_TRUE(results_.count(kObserver2));     // Observer 2
+  EXPECT_EQ(results_[kObserver2].size(), 1u);  // One update for observer 1
+  EXPECT_TRUE(mojo::Equals(results_[kObserver1][0], results_[kObserver2][0]));
 }
 
-TEST_F(KeySystemSupportTest, MissingKeySystem) {
-  Register("KeySystem5", GetTestCdmCapability());
+TEST_F(KeySystemSupportImplTest, TwoUpdates) {
+  KeySystemCapabilitiesUpdateCB callback;
+  EXPECT_CALL(get_support_cb_, Run(_)).WillOnce(SaveArg<0>(&callback));
 
-  EXPECT_FALSE(IsSupported("KeySystem6"));
-  EXPECT_FALSE(capability_);
+  base::RunLoop run_loop_1;
+  mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<KeySystemSupportObserverImpl>(base::BindRepeating(
+          &KeySystemSupportImplTest::OnKeySystemSupportUpdated,
+          base::Unretained(this), kObserver1, base::DoNothing())),
+      observer_remote.InitWithNewPipeAndPassReceiver());
+  key_system_support_->AddObserver(std::move(observer_remote));
+  run_loop_1.RunUntilIdle();
+
+  // Update twice, one with hardware capability, one without.
+  base::RunLoop run_loop_2;
+  callback.Run(TestKeySystemCapabilities(TestCdmCapability(), absl::nullopt));
+  callback.Run(
+      TestKeySystemCapabilities(TestCdmCapability(), TestCdmCapability()));
+  run_loop_2.RunUntilIdle();
+
+  EXPECT_EQ(results_.size(), 1u);              // One observer
+  EXPECT_TRUE(results_.count(kObserver1));     // Observer 1
+  EXPECT_EQ(results_[kObserver1].size(), 2u);  // Two updates for observer 1
+
+  auto& capabilities_1 = results_[kObserver1][0];
+  ASSERT_TRUE(capabilities_1.count(kTestKeySystem));
+  const auto& capability_1 = capabilities_1[kTestKeySystem];
+  EXPECT_TRUE(capability_1->sw_secure_capability);
+  EXPECT_FALSE(capability_1->hw_secure_capability);
+
+  auto& capabilities_2 = results_[kObserver1][1];
+  ASSERT_TRUE(capabilities_2.count(kTestKeySystem));
+  const auto& capability_2 = capabilities_2[kTestKeySystem];
+  EXPECT_TRUE(capability_2->sw_secure_capability);
+  EXPECT_TRUE(capability_2->hw_secure_capability);
 }
 
 }  // namespace content

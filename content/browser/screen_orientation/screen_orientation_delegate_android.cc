@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,8 @@ void ScreenOrientationDelegateAndroid::Lock(
       static_cast<jbyte>(lock_orientation));
 }
 
-bool ScreenOrientationDelegateAndroid::ScreenOrientationProviderSupported() {
+bool ScreenOrientationDelegateAndroid::ScreenOrientationProviderSupported(
+    WebContents* web_contentss) {
   // TODO(MLamouri): Consider moving isOrientationLockEnabled to a separate
   // function, so reported error messages can differentiate between the device
   // never supporting orientation or currently not support orientation.

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/url_request/url_request.h"
@@ -31,13 +30,16 @@ class TokenValidatorBase
       const ThirdPartyAuthConfig& third_party_auth_config,
       const std::string& token_scope,
       scoped_refptr<net::URLRequestContextGetter> request_context_getter);
+
+  TokenValidatorBase(const TokenValidatorBase&) = delete;
+  TokenValidatorBase& operator=(const TokenValidatorBase&) = delete;
+
   ~TokenValidatorBase() override;
 
   // TokenValidator interface.
   void ValidateThirdPartyToken(
       const std::string& token,
-      base::OnceCallback<void(const std::string& shared_secret)>
-          on_token_validated) override;
+      TokenValidatedCallback on_token_validated) override;
 
   const GURL& token_url() const override;
   const std::string& token_scope() const override;
@@ -61,7 +63,7 @@ class TokenValidatorBase
       scoped_refptr<net::X509Certificate> client_cert,
       scoped_refptr<net::SSLPrivateKey> client_private_key);
   virtual bool IsValidScope(const std::string& token_scope);
-  std::string ProcessResponse(int net_result);
+  protocol::TokenValidator::ValidationResult ProcessResponse(int net_result);
 
   // Constructor parameters.
   ThirdPartyAuthConfig third_party_auth_config_;
@@ -85,14 +87,11 @@ class TokenValidatorBase
   // needs to be retried.
   std::string token_;
 
-  base::OnceCallback<void(const std::string& shared_secret)>
-      on_token_validated_;
+  TokenValidatedCallback on_token_validated_;
 
   base::WeakPtrFactory<TokenValidatorBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TokenValidatorBase);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_TOKEN_VALIDATOR_BASE_H
+#endif  // REMOTING_HOST_TOKEN_VALIDATOR_BASE_H_

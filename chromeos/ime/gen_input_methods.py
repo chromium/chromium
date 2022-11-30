@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,6 +35,8 @@ const char* const kLoginXkbLayoutIds[] = {
 #endif  // CHROMEOS_IME_INPUT_METHODS_H_
 
 """
+
+from __future__ import print_function
 
 import fileinput
 import re
@@ -78,7 +80,7 @@ def CreateEngineHeader(login_xkb_layout_ids):
 
 def main(argv):
   if len(argv) != 3:
-    print 'Usage: gen_input_methods.py [input_methods.txt] [output]'
+    print('Usage: gen_input_methods.py [input_methods.txt] [output]')
     sys.exit(1)
   login_xkb_layout_ids = []
   for line in fileinput.input(sys.argv[1]):

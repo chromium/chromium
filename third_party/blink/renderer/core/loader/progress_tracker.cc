@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 
+#include "third_party/blink/public/common/loader/loader_constants.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -37,18 +39,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
-// Always start progress at initialProgressValue. This helps provide feedback as
-// soon as a load starts.
-static const double kInitialProgressValue = 0.1;
+static constexpr int kProgressItemDefaultEstimatedLength = 1024 * 1024;
 
-static const int kProgressItemDefaultEstimatedLength = 1024 * 1024;
-
-static const double kProgressNotificationInterval = 0.02;
-static const double kProgressNotificationTimeInterval = 0.1;
+static constexpr double kProgressNotificationInterval = 0.02;
+static constexpr double kProgressNotificationTimeInterval = 0.1;
 
 ProgressTracker::ProgressTracker(LocalFrame* frame)
     : frame_(frame),
@@ -91,7 +88,7 @@ LocalFrameClient* ProgressTracker::GetLocalFrameClient() const {
 
 void ProgressTracker::ProgressStarted() {
   Reset();
-  progress_value_ = kInitialProgressValue;
+  progress_value_ = kInitialLoadProgress;
   if (!frame_->IsLoading()) {
     GetLocalFrameClient()->DidStartLoading();
     frame_->SetIsLoading(true);
@@ -184,7 +181,7 @@ void ProgressTracker::MaybeSendProgress() {
   if (!frame_->IsLoading())
     return;
 
-  progress_value_ = kInitialProgressValue + 0.1;  // +0.1 for committing
+  progress_value_ = kInitialLoadProgress + 0.1;  // +0.1 for committing
   if (finished_parsing_)
     progress_value_ += 0.1;
   if (did_first_contentful_paint_)
@@ -203,7 +200,7 @@ void ProgressTracker::MaybeSendProgress() {
                 (double)estimated_bytes_for_pending_requests_;
   progress_value_ += percent_of_bytes_received / 2;
 
-  DCHECK_GE(progress_value_, kInitialProgressValue);
+  DCHECK_GE(progress_value_, kInitialLoadProgress);
   // Always leave space at the end. This helps show the user that we're not
   // done until we're done.
   DCHECK_LE(progress_value_, 0.9);

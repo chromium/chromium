@@ -1,26 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 
-#include <algorithm>
-
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
+#include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-
-namespace edu_coexistence = ::chromeos::edu_coexistence;
 
 void EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -41,7 +39,7 @@ void EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
 EduCoexistenceConsentInvalidationController::
     EduCoexistenceConsentInvalidationController(
         Profile* profile,
-        AccountManager* account_manager,
+        account_manager::AccountManager* account_manager,
         account_manager::AccountManagerFacade* account_manager_facade,
         const AccountId& device_account_id)
     : profile_(profile),
@@ -87,16 +85,13 @@ void EduCoexistenceConsentInvalidationController::
   //  |new_edu_account_consent_list|.
   for (const auto& account : accounts) {
     // Don't add the device account id.
-    if (account.key.id == device_account_id_.GetGaiaId()) {
+    if (account.key.id() == device_account_id_.GetGaiaId()) {
       continue;
     }
 
-    auto iterator =
-        std::find_if(current_edu_account_consent_list.begin(),
-                     current_edu_account_consent_list.end(),
-                     [&account](const edu_coexistence::UserConsentInfo& info) {
-                       return info.edu_account_gaia_id == account.key.id;
-                     });
+    auto iterator = base::ranges::find(
+        current_edu_account_consent_list, account.key.id(),
+        &edu_coexistence::UserConsentInfo::edu_account_gaia_id);
 
     // If account exists in |current_edu_account_consent_list| copy the entry
     // over.
@@ -107,7 +102,7 @@ void EduCoexistenceConsentInvalidationController::
       // This will be used to add secondary edu accounts added in the first
       // version of EduCoexistence.
       new_edu_account_consent_list.push_back(edu_coexistence::UserConsentInfo{
-          account.key.id,
+          account.key.id(),
           edu_coexistence::
               kMinTOSVersionNumber /* default terms of service version */});
     }
@@ -143,23 +138,24 @@ void EduCoexistenceConsentInvalidationController::InvalidateEduAccounts(
     const std::vector<std::string>& account_gaia_ids_to_invalidate,
     const std::vector<::account_manager::Account>& accounts) {
   for (const ::account_manager::Account& account : accounts) {
-    if (account.key.account_type != account_manager::AccountType::kGaia) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       continue;
     }
 
     // Do not invalidate the Device Account.
     if (device_account_id_.GetAccountType() == AccountType::GOOGLE &&
-        account.key.id == device_account_id_.GetGaiaId()) {
+        account.key.id() == device_account_id_.GetGaiaId()) {
       continue;
     }
 
     // This account should not be invalidated.
-    if (!base::Contains(account_gaia_ids_to_invalidate, account.key.id)) {
+    if (!base::Contains(account_gaia_ids_to_invalidate, account.key.id())) {
       continue;
     }
 
     // This account is a Secondary EDU Gaia account. Invalidate it.
-    account_manager_->UpdateToken(account.key, AccountManager::kInvalidToken);
+    account_manager_->UpdateToken(
+        account.key, account_manager::AccountManager::kInvalidToken);
   }
 }
 

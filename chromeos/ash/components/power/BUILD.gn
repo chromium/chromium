@@ -1,0 +1,37 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("power") {
+  output_name = "chromeos_ash_components_power"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POWER_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/power",
+    "//services/device/public/mojom",
+  ]
+
+  sources = [
+    "dark_resume_controller.cc",
+    "dark_resume_controller.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "dark_resume_controller_unittest.cc" ]
+
+  deps = [
+    ":power",
+    "//base/test:test_support",
+    "//chromeos/dbus/power",
+    "//services/device/public/cpp:test_support",
+    "//services/device/public/mojom",
+    "//testing/gtest",
+  ]
+}

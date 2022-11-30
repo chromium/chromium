@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,17 +22,16 @@ namespace {
 const char kTestPrefName[] = "test_pref_name";
 
 // Copied from nearby_share_scheduler_impl.cc.
-constexpr base::TimeDelta kZeroTimeDelta = base::TimeDelta::FromSeconds(0);
-constexpr base::TimeDelta kBaseRetryDelay = base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kMaxRetryDelay = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kZeroTimeDelta = base::Seconds(0);
+constexpr base::TimeDelta kBaseRetryDelay = base::Seconds(5);
+constexpr base::TimeDelta kMaxRetryDelay = base::Hours(1);
 
-constexpr base::TimeDelta kTestTimeUntilRecurringRequest =
-    base::TimeDelta::FromMinutes(123);
+constexpr base::TimeDelta kTestTimeUntilRecurringRequest = base::Minutes(123);
 
 class NearbyShareSchedulerBaseForTest : public NearbyShareSchedulerBase {
  public:
   NearbyShareSchedulerBaseForTest(
-      base::Optional<base::TimeDelta> time_until_recurring_request,
+      absl::optional<base::TimeDelta> time_until_recurring_request,
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,
@@ -50,12 +49,12 @@ class NearbyShareSchedulerBaseForTest : public NearbyShareSchedulerBase {
   ~NearbyShareSchedulerBaseForTest() override = default;
 
  private:
-  base::Optional<base::TimeDelta> TimeUntilRecurringRequest(
+  absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const override {
     return time_until_recurring_request_;
   }
 
-  base::Optional<base::TimeDelta> time_until_recurring_request_;
+  absl::optional<base::TimeDelta> time_until_recurring_request_;
 };
 
 }  // namespace
@@ -75,7 +74,7 @@ class NearbyShareSchedulerBaseTest : public ::testing::Test {
   void CreateScheduler(
       bool retry_failures,
       bool require_connectivity,
-      base::Optional<base::TimeDelta> time_until_recurring_request =
+      absl::optional<base::TimeDelta> time_until_recurring_request =
           kTestTimeUntilRecurringRequest) {
     scheduler_ = std::make_unique<NearbyShareSchedulerBaseForTest>(
         time_until_recurring_request, retry_failures, require_connectivity,
@@ -106,7 +105,7 @@ class NearbyShareSchedulerBaseTest : public ::testing::Test {
 
   void RunPendingRequest() {
     EXPECT_FALSE(scheduler_->IsWaitingForResult());
-    base::Optional<base::TimeDelta> time_until_next_request =
+    absl::optional<base::TimeDelta> time_until_next_request =
         scheduler_->GetTimeUntilNextRequest();
     ASSERT_TRUE(time_until_next_request);
     FastForward(*time_until_next_request);
@@ -116,14 +115,14 @@ class NearbyShareSchedulerBaseTest : public ::testing::Test {
     EXPECT_TRUE(scheduler_->IsWaitingForResult());
     EXPECT_FALSE(scheduler_->GetTimeUntilNextRequest());
     size_t num_failures = scheduler_->GetNumConsecutiveFailures();
-    base::Optional<base::Time> last_success_time =
+    absl::optional<base::Time> last_success_time =
         scheduler_->GetLastSuccessTime();
     scheduler_->HandleResult(success);
     EXPECT_FALSE(scheduler_->IsWaitingForResult());
     EXPECT_EQ(success ? 0 : num_failures + 1,
               scheduler_->GetNumConsecutiveFailures());
     EXPECT_EQ(
-        success ? base::make_optional<base::Time>(Now()) : last_success_time,
+        success ? absl::make_optional<base::Time>(Now()) : last_success_time,
         scheduler_->GetLastSuccessTime());
   }
 
@@ -169,7 +168,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RecurringRequest) {
 TEST_F(NearbyShareSchedulerBaseTest, NoRecurringRequest) {
   // The flavor of the schedule does not schedule recurring requests.
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true,
-                  /*time_until_recurring_request=*/base::nullopt);
+                  /*time_until_recurring_request=*/absl::nullopt);
   StartScheduling();
   EXPECT_FALSE(scheduler()->GetTimeUntilNextRequest());
 
@@ -403,7 +402,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_FailureRetry) {
 
   // 1s elapses while there is no scheduler. When the scheduler is recreated,
   // the retry request is rescheduled, accounting for the elapsed time.
-  base::TimeDelta elapsed_time = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta elapsed_time = base::Seconds(1);
   FastForward(elapsed_time);
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   StartScheduling();
@@ -418,8 +417,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_FailureRetry) {
 
 TEST_F(NearbyShareSchedulerBaseTest, RestoreSchedulingData) {
   // Succeed immediately, then fail once before destroying scheduler.
-  base::Time expected_last_success_time =
-      Now() + base::TimeDelta::FromSeconds(100);
+  base::Time expected_last_success_time = Now() + base::Seconds(100);
   FastForward(expected_last_success_time - Now());
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();

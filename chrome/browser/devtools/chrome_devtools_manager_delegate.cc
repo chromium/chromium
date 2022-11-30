@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -46,7 +47,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #endif
 
 using content::DevToolsAgentHost;
@@ -97,7 +97,7 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
   DCHECK(!g_instance);
   g_instance = this;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Only create and hold keep alive for automation test for non ChromeOS.
   // ChromeOS automation test (aka tast) manages chrome instance via session
   // manager daemon. The extra keep alive is not needed and makes ChromeOS
@@ -110,8 +110,8 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
     // we are controlled entirely by the automation process.
     // Keep the application running until explicit close through DevTools
     // protocol.
-    keep_alive_.reset(new ScopedKeepAlive(KeepAliveOrigin::REMOTE_DEBUGGING,
-                                          KeepAliveRestartOption::DISABLED));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::REMOTE_DEBUGGING, KeepAliveRestartOption::DISABLED);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -190,7 +190,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     const extensions::Extension* extension) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kForceDevToolsAvailable))
+  if (command_line->HasSwitch(ash::switches::kForceDevToolsAvailable))
     return true;
 #endif
 
@@ -247,11 +247,6 @@ ChromeDevToolsManagerDelegate::CreateNewTarget(const GURL& url) {
     return nullptr;
   return DevToolsAgentHost::GetOrCreateFor(
       params.navigated_or_inserted_contents);
-}
-
-std::string ChromeDevToolsManagerDelegate::GetDiscoveryPageHTML() {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-      IDR_DEVTOOLS_DISCOVERY_PAGE_HTML);
 }
 
 std::vector<content::BrowserContext*>

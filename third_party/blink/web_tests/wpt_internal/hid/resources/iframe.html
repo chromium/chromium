@@ -1,0 +1,16 @@
+<script type="module">
+  import {HidService} from '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js';
+  const interceptor =
+      new MojoInterfaceInterceptor(HidService.$interfaceName);
+  interceptor.oninterfacerequest = (e) => {
+    window.parent.postMessage({
+      type: 'Attach',
+      handle: e.handle
+    }, '*', [e.handle]);
+  };
+  interceptor.start();
+  // Wait for a call to getDevices() to complete to ensure that the interface
+  // handle has been bound to the parent context.
+  await navigator.hid.getDevices();
+  window.parent.postMessage({ type: 'Ready'}, '*');
+</script>

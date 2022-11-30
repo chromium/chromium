@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,6 +29,8 @@ grit("ios_resources") {
     "grit/ios_resources.h",
     "ios_resources.pak",
   ]
+
+  deps = [ "//components/ukm/debug:build_ts" ]
 }
 
 group("packed_resources") {
@@ -41,8 +43,8 @@ group("packed_resources") {
 
 ios_chrome_repack_locales("repack_locales") {
   visibility = [ ":packed_resources" ]
-  input_locales = ios_packed_locales
-  output_locales = ios_packed_locales_as_mac_outputs
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
 }
 
 ios_chrome_repack_scalables("repack_scalable_resources") {
@@ -59,16 +61,19 @@ repack("repack_unscaled_resources") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
+    "$root_gen_dir/components/download_internals_resources.pak",
+    "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/sync_driver_sync_internals_resources.pak",
     "$root_gen_dir/ios/chrome/ios_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
   deps = [
     ":ios_resources",
+    "//components/download/resources/download_internals:resources",
+    "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/resources",
     "//components/sync/driver/resources",
     "//ios/web:resources",
@@ -91,7 +96,6 @@ appiconset("chromium_icons") {
     "chromium/AppIcon.appiconset/Icon-29.png",
     "chromium/AppIcon.appiconset/Icon-40.png",
     "chromium/AppIcon.appiconset/Icon-58.png",
-    "chromium/AppIcon.appiconset/Icon-76.png",
     "chromium/AppIcon.appiconset/Icon-80.png",
     "chromium/AppIcon.appiconset/Icon-87.png",
   ]
@@ -139,7 +143,7 @@ generate_localizable_strings("system_strings") {
   config_file = "chrome_localize_strings_config.plist"
   datapack_dir = get_label_info("//ios/chrome/app/resources:packed_resources",
                                 "target_gen_dir")
-  packed_locales = ios_packed_locales_as_mac_outputs
+  packed_locales = locales_as_apple_outputs
   output_filenames = [
     "InfoPlist.strings",
     "Localizable.strings",

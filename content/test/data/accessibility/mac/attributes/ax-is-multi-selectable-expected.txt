@@ -1,0 +1,6 @@
+listbox.accessibilityAttributeNames.has(AXIsMultiSelectable)='no'
+listbox.accessibilityAttributeValue(AXIsMultiSelectable)=1
+listbox_not.accessibilityAttributeNames.has(AXIsMultiSelectable)='no'
+listbox_not.accessibilityAttributeValue(AXIsMultiSelectable)=0
+not_applicable.accessibilityAttributeNames.has(AXIsMultiSelectable)='no'
+not_applicable.accessibilityAttributeValue(AXIsMultiSelectable)=0

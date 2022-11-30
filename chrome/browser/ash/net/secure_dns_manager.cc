@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,14 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "components/country_codes/country_codes.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace net {
+namespace ash {
 
 SecureDnsManager::SecureDnsManager(PrefService* pref_service) {
   registrar_.Init(pref_service);
@@ -42,17 +43,18 @@ SecureDnsManager::~SecureDnsManager() {
 }
 
 void SecureDnsManager::LoadProviders() {
-  auto local_providers = chrome_browser_net::secure_dns::ProvidersForCountry(
-      net::DohProviderEntry::GetList(), country_codes::GetCurrentCountryID());
-  local_providers = chrome_browser_net::secure_dns::RemoveDisabledProviders(
-      local_providers, chrome_browser_net::secure_dns::GetDisabledProviders());
+  const net::DohProviderEntry::List local_providers =
+      chrome_browser_net::secure_dns::SelectEnabledProviders(
+          chrome_browser_net::secure_dns::ProvidersForCountry(
+              net::DohProviderEntry::GetList(),
+              country_codes::GetCurrentCountryID()));
 
   for (const auto* provider : local_providers) {
     std::vector<std::string> ip_addrs;
     std::transform(provider->ip_addresses.begin(), provider->ip_addresses.end(),
                    std::back_inserter(ip_addrs),
-                   [](const IPAddress& addr) { return addr.ToString(); });
-    local_doh_providers_[provider->dns_over_https_template] =
+                   [](const net::IPAddress& addr) { return addr.ToString(); });
+    local_doh_providers_[provider->doh_server_config] =
         base::JoinString(ip_addrs, ",");
   }
 }
@@ -79,8 +81,9 @@ base::Value SecureDnsManager::GetProviders(const std::string& mode,
 
   const bool want_all = doh_providers.DictEmpty();
   for (const auto& provider : local_doh_providers_) {
-    if (want_all || doh_providers.FindKey(provider.first)) {
-      doh_providers.SetKey(provider.first, base::Value(provider.second));
+    const std::string& server_template = provider.first.server_template();
+    if (want_all || doh_providers.FindKey(server_template)) {
+      doh_providers.SetKey(server_template, base::Value(provider.second));
     }
   }
   return doh_providers.Clone();
@@ -91,9 +94,8 @@ void SecureDnsManager::OnPrefChanged() {
       registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
       registrar_.prefs()->GetString(prefs::kDnsOverHttpsTemplates));
 
-  chromeos::NetworkHandler::Get()
-      ->network_configuration_handler()
-      ->SetManagerProperty(shill::kDNSProxyDOHProvidersProperty, doh_providers);
+  NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
+      shill::kDNSProxyDOHProvidersProperty, doh_providers);
 }
 
-}  // namespace net
+}  // namespace ash

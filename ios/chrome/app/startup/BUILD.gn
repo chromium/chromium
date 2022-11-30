@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,7 +27,7 @@ source_set("startup_basic") {
     "//base",
     "//components/component_updater",
     "//components/crash/core/common",
-    "//ios/chrome/browser:chrome_paths",
+    "//ios/chrome/browser/paths",
     "//ios/web/public/init",
     "//skia",
   ]
@@ -80,17 +80,17 @@ source_set("startup") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/net:net",
-    "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web",
     "//ios/web/public/init",
-    ios_provider_target,
   ]
 }
 
@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/app",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/common/app_group",
     "//ios/components/webui:url_constants",
     "//testing/gtest",

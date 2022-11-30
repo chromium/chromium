@@ -1,11 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 
 #include "base/synchronization/waitable_event.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -29,12 +30,13 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
   PaintWorkletGlobalScopeTest() = default;
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     NavigateTo(KURL("https://example.com/"));
     // This test only needs the proxy client set to avoid calling
     // PaintWorkletProxyClient::Create, but it doesn't need the dispatcher/etc.
     proxy_client_ = MakeGarbageCollected<PaintWorkletProxyClient>(
-        1, nullptr, nullptr, nullptr);
+        1, nullptr, GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+        nullptr, nullptr);
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
   }
 
@@ -81,9 +83,9 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
               paint (ctx, size) {}
             });
           )JS";
-      ASSERT_TRUE(
-          ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-              ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
       CSSPaintDefinition* definition = global_scope->FindDefinition("test");
       ASSERT_TRUE(definition);
     }
@@ -92,9 +94,9 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
       // registerPaint() with a null class definition should fail to define a
       // painter.
       String source_code = "registerPaint('null', null);";
-      ASSERT_FALSE(
-          ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-              ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
       EXPECT_FALSE(global_scope->FindDefinition("null"));
     }
 

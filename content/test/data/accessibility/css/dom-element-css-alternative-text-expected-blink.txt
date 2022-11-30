@@ -2,3 +2,4 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++image name='alternative text'
+++++++++staticText ignored name='DOM text'

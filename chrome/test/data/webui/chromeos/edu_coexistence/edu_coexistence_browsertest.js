@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,16 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "ash/constants/ash_features.h"');
 
 const EduCoexistenceTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overridden by subclasses';
+    throw new Error('this is abstract and should be overridden by subclasses');
   }
 
   get suiteName() {
-    throw 'this is abstract and should be overridden by subclasses';
+    throw new Error('this is abstract and should be overridden by subclasses');
   }
 
   /** @param {string} testName The name of the test to run. */
@@ -28,7 +29,7 @@ var EduCoexistenceAppTest = class extends EduCoexistenceTest {
   /** @override */
   get browsePreload() {
     return 'chrome://chrome-signin/test_loader.html?module=' +
-        'chromeos/edu_coexistence/edu_coexistence_app_test.js';
+        'chromeos/edu_coexistence/edu_coexistence_app_test.js&host=test';
   }
 
   /** @override */
@@ -69,12 +70,38 @@ TEST_F(
                             .ShowErrorScreenImmediatelyOnLoadAbort);
     });
 
+// TODO(crbug.com/1347746): Merge this test suite with the test above after the
+// feature is launched.
+var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
+    class extends EduCoexistenceAppTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kLacrosSupport',
+      ],
+    };
+  }
+};
+
+TEST_F(
+    'EduCoexistenceAppTestWithArcAccountRestrictionsEnabled', 'ShowArcPicker',
+    function() {
+      this.runMochaTest(edu_coexistence_app_tests.TestNames.ShowArcPicker);
+    });
+
+TEST_F(
+    'EduCoexistenceAppTestWithArcAccountRestrictionsEnabled',
+    'ArcPickerSwitchToNormalSignin', function() {
+      this.runMochaTest(
+          edu_coexistence_app_tests.TestNames.ArcPickerSwitchToNormalSignin);
+    });
 
 var EduCoexistenceControllerTest = class extends EduCoexistenceTest {
   /** @override */
   get browsePreload() {
     return 'chrome://chrome-signin/test_loader.html?module=' +
-        'chromeos/edu_coexistence/edu_coexistence_controller_test.js';
+        'chromeos/edu_coexistence/edu_coexistence_controller_test.js&host=test';
   }
 
   /** @override */
@@ -92,7 +119,7 @@ var EduCoexistenceUiTest = class extends EduCoexistenceTest {
   /** @override */
   get browsePreload() {
     return 'chrome://chrome-signin/test_loader.html?module=' +
-        'chromeos/edu_coexistence/edu_coexistence_ui_test.js';
+        'chromeos/edu_coexistence/edu_coexistence_ui_test.js&host=test';
   }
 
   /** @override */

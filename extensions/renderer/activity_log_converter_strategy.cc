@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,13 @@
 #include <memory>
 
 #include "base/values.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace extensions {
 
@@ -42,12 +48,11 @@ std::unique_ptr<base::Value> SummarizeV8Value(v8::Isolate* isolate,
                             v8::String::NewFromUtf8Literal(isolate, "]"));
 
   if (try_catch.HasCaught()) {
-    return std::unique_ptr<base::Value>(
-        new base::Value("[JS Execution Exception]"));
+    return std::make_unique<base::Value>("[JS Execution Exception]");
   }
 
-  return std::unique_ptr<base::Value>(
-      new base::Value(std::string(*v8::String::Utf8Value(isolate, name))));
+  return std::make_unique<base::Value>(
+      std::string(*v8::String::Utf8Value(isolate, name)));
 }
 
 }  // namespace

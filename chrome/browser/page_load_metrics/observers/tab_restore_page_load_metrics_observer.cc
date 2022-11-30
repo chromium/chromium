@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,26 @@ TabRestorePageLoadMetricsObserver::OnStart(
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   return IsTabRestore(navigation_handle) ? CONTINUE_OBSERVING : STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+TabRestorePageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested only in the primary page's performance to
+  // report at OnComplete or FlushMetricsOnAppEnterBackground. Events for
+  // OnResourceDataUseObserved are forwarded at PageLoadTracker and observer
+  // doesn't need to forward it.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+TabRestorePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested in performance on tab restoration. Prerendering
+  // doesn't occur in such a case.
+  return STOP_OBSERVING;
 }
 
 void TabRestorePageLoadMetricsObserver::OnResourceDataUseObserved(

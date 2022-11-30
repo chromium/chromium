@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,18 @@
 namespace {
 
 std::string TabToString(const StartupTab& tab) {
-  return tab.url.spec() + ":" + (tab.is_pinned ? "pinned" : "");
+  std::string type_description;
+  switch (tab.type) {
+    case StartupTab::Type::kNormal:
+      break;
+    case StartupTab::Type::kPinned:
+      type_description = "pinned";
+      break;
+    case StartupTab::Type::kFromLastAndUrlsStartupPref:
+      type_description = "from LAST_AND_URLS startup pref";
+      break;
+  }
+  return tab.url.spec() + ":" + type_description;
 }
 
 }  // namespace

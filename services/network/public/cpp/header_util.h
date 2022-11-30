@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,18 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 
+class GURL;
 namespace net {
 class HttpRequestHeaders;
+class HttpResponseHeaders;
 }  // namespace net
 
 namespace network {
+namespace mojom {
+class URLResponseHead;
+}  // namespace mojom
 
 // Checks if a single request header is safe to send.
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -24,6 +30,22 @@ bool IsRequestHeaderSafe(const base::StringPiece& key,
 // individually.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers);
+
+// Parses the referrer policy header if present. Returns
+// mojom::ReferrerPolicy::kDefault if the header is absent.
+COMPONENT_EXPORT(NETWORK_CPP)
+mojom::ReferrerPolicy ParseReferrerPolicy(
+    const net::HttpResponseHeaders& request_headers);
+
+// Checks whether mime type sniffing should be enabled, considering response
+// headers, current mime type and URL scheme.
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ShouldSniffContent(const GURL& url,
+                        const mojom::URLResponseHead& response);
+
+// https://fetch.spec.whatwg.org/#ok-status aka a successful 2xx status code,
+// https://www.rfc-editor.org/rfc/rfc9110#status.2xx.
+COMPONENT_EXPORT(NETWORK_CPP) bool IsSuccessfulStatus(int status);
 
 }  // namespace network
 

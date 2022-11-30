@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 
 #include <tuple>
 
-#include "base/macros.h"
+#include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
@@ -24,30 +27,89 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/aura/test/aura_test_utils.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
+#endif
+
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
+#include "content/browser/compositor/image_transport_factory.h"
+#endif
+
 namespace content {
 namespace {
+
+scoped_refptr<viz::ContextProvider> GetContextProvider() {
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
+  auto* image_transport_factory = ImageTransportFactory::GetInstance();
+  DCHECK(image_transport_factory);
+
+  auto* ui_context_factory = image_transport_factory->GetContextFactory();
+  if (!ui_context_factory) {
+    return nullptr;
+  }
+
+  return ui_context_factory->SharedMainThreadContextProvider();
+#else
+  return nullptr;
+#endif
+}
+
+bool IsGpuRastrizationEnabled() {
+  auto context_provider = GetContextProvider();
+  if (!context_provider)
+    return false;
+
+  return context_provider->ContextCapabilities().gpu_rasterization;
+}
 
 class WebContentsVideoCaptureDeviceBrowserTest
     : public ContentCaptureDeviceBrowserTestBase,
       public FrameTestUtil {
  public:
   WebContentsVideoCaptureDeviceBrowserTest() = default;
+
+  WebContentsVideoCaptureDeviceBrowserTest(
+      const WebContentsVideoCaptureDeviceBrowserTest&) = delete;
+  WebContentsVideoCaptureDeviceBrowserTest& operator=(
+      const WebContentsVideoCaptureDeviceBrowserTest&) = delete;
+
   ~WebContentsVideoCaptureDeviceBrowserTest() override = default;
 
   // Runs the browser until a frame whose content matches the given |color| is
   // found in the captured frames queue, or until a testing failure has
-  // occurred.
-  void WaitForFrameWithColor(SkColor color) {
-    VLOG(1) << "Waiting for frame content area filled with color: red="
-            << SkColorGetR(color) << ", green=" << SkColorGetG(color)
-            << ", blue=" << SkColorGetB(color);
+  // occurred. When |tolerate_color| is non-nullopt, encountering a frame that
+  // does not match both |color| and |tolerate_color| will cause a testing
+  // failure. This allows the callers to tighten the tolerance on the frames
+  // they are willing to accept (since specifying `tolerate_color` causes the
+  // test to fail in case we encounter something else).
+  void WaitForFrameWithColor(
+      SkColor color,
+      absl::optional<SkColor> tolerate_color = absl::nullopt) {
+    const std::string color_string =
+        base::StringPrintf("red=%d, green=%d, blue=%d", SkColorGetR(color),
+                           SkColorGetG(color), SkColorGetB(color));
+    const std::string tolerated_color_string =
+        tolerate_color
+            ? base::StringPrintf(
+                  "red=%d, green=%d, blue=%d", SkColorGetR(*tolerate_color),
+                  SkColorGetG(*tolerate_color), SkColorGetB(*tolerate_color))
+            : std::string("<none>");
+    VLOG(1) << "Waiting for frame content area filled with color: "
+            << color_string << ", tolerated color: " << tolerated_color_string;
 
     while (!testing::Test::HasFailure()) {
       EXPECT_TRUE(capture_stack()->started());
@@ -61,10 +123,20 @@ class WebContentsVideoCaptureDeviceBrowserTest
         const SkBitmap rgb_frame = capture_stack()->NextCapturedFrame();
         EXPECT_FALSE(rgb_frame.empty());
 
-        // Three regions of the frame will be analyzed: 1) the upper-left
-        // quadrant of the content region where the iframe draws; 2) the
-        // remaining three quadrants of the content region where the main frame
-        // draws; and 3) the non-content (i.e., letterboxed) region.
+        // Three regions of the frame will be analyzed:
+        // 1. The upper-left quadrant of the content region where the iframe
+        // draws. If the iframe is not present (the non-cross-frame test
+        // variant), this region will come from the main frame.
+        // 2. The remaining three quadrants of the content region where the main
+        // frame draws.
+        // 3. The non-content (i.e., letterboxed) region.
+        //
+        // In both cross-site and non-cross-site variants, region #1 should be
+        // of |color|. Region #2 should be of |color| in non-cross-site tests,
+        // and white in cross-site tests. And region #3 must always be black,
+        // but won't be present at all if the tests don't request fixed aspect
+        // ratio frames.
+
         const gfx::Size frame_size(rgb_frame.width(), rgb_frame.height());
         const gfx::Size source_size = GetExpectedSourceSize();
         const gfx::Rect iframe_rect(0, 0, source_size.width() / 2,
@@ -79,10 +151,8 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
         // viz::SoftwareRenderer does not do color space management. Otherwise
         // (normal case), be strict about color differences.
-        // TODO(crbug/795132): SkiaRenderer temporarily uses same code as
-        // software compositor. Fix plumbing for SkiaRenderer.
         const int max_color_diff =
-            (IsSoftwareCompositingTest() || features::IsUsingSkiaRenderer())
+            (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled())
                 ? kVeryLooseMaxColorDifference
                 : kMaxColorDifference;
 
@@ -107,39 +177,72 @@ class WebContentsVideoCaptureDeviceBrowserTest
                "approx. "
             << ToSafeIncludeRect(content_in_frame_rect_f).ToString()
             << " and has average color " << average_mainframe_rgb
-            << ", letterbox region has average color " << average_letterbox_rgb;
+            << ", letterbox region has average color " << average_letterbox_rgb
+            << ", max_color_diff is " << max_color_diff;
 
-        // The letterboxed region should always be black.
-        if (IsFixedAspectRatioTest()) {
-          EXPECT_TRUE(IsApproximatelySameColor(
-              SK_ColorBLACK, average_letterbox_rgb, max_color_diff));
-        }
-
-        if (testing::Test::HasFailure()) {
-          ADD_FAILURE() << "Test failure occurred at this frame; PNG dump: "
+        if (IsFixedAspectRatioTest() &&
+            !IsApproximatelySameColor(
+                rgb_frame, gfx::Rect(frame_size),
+                ToSafeExcludeRect(content_in_frame_rect_f), SK_ColorBLACK,
+                max_color_diff)) {
+          // The letterboxed region should always be black for fixed aspect
+          // ratio tests, and not present otherwise.
+          ADD_FAILURE() << "Letterbox region is not black; PNG dump:\n"
                         << cc::GetPNGDataUrl(rgb_frame);
           return;
         }
 
-        // Return if the content region(s) now has/have the expected color(s).
-        if (IsCrossSiteCaptureTest() &&
-            IsApproximatelySameColor(color, average_iframe_rgb,
-                                     max_color_diff) &&
-            IsApproximatelySameColor(SK_ColorWHITE, average_mainframe_rgb,
-                                     max_color_diff)) {
+        const SkColor expected_mainframe_color =
+            IsCrossSiteCaptureTest() ? SK_ColorWHITE : color;
+        const SkColor tolerated_mainframe_color =
+            IsCrossSiteCaptureTest() ? SK_ColorWHITE
+                                     : tolerate_color.value_or(SK_ColorWHITE);
+
+        if (IsApproximatelySameColor(rgb_frame,
+                                     ToSafeIncludeRect(iframe_in_frame_rect_f),
+                                     gfx::Rect(), color, max_color_diff) &&
+            IsApproximatelySameColor(
+                rgb_frame, ToSafeIncludeRect(content_in_frame_rect_f),
+                ToSafeExcludeRect(iframe_in_frame_rect_f),
+                expected_mainframe_color, max_color_diff)) {
+          // If we have a frame that matches all expectations, we can stop
+          // waiting.
           VLOG(1) << "Observed desired frame.";
           return;
-        } else if (!IsCrossSiteCaptureTest() &&
-                   IsApproximatelySameColor(color, average_iframe_rgb,
-                                            max_color_diff) &&
-                   IsApproximatelySameColor(color, average_mainframe_rgb,
-                                            max_color_diff)) {
-          VLOG(1) << "Observed desired frame.";
-          return;
-        } else {
-          VLOG(3) << "PNG dump of undesired frame: "
-                  << cc::GetPNGDataUrl(rgb_frame);
         }
+
+        if (tolerate_color &&
+            IsApproximatelySameColor(
+                rgb_frame, ToSafeIncludeRect(iframe_in_frame_rect_f),
+                gfx::Rect(), *tolerate_color, max_color_diff) &&
+            IsApproximatelySameColor(
+                rgb_frame, ToSafeIncludeRect(content_in_frame_rect_f),
+                ToSafeExcludeRect(iframe_in_frame_rect_f),
+                tolerated_mainframe_color, max_color_diff)) {
+          // Otherwise, if the frame matches a color that the caller told us to
+          // tolearate, we'll keep waiting for the frame.
+          VLOG(1) << "Observed frame with tolerated color. This is fine, keep "
+                     "waiting.";
+          continue;  // Skip requesting refreshed frame - the damage signal
+                     // should propagate eventually and we should get a new
+                     // frame.
+        }
+
+        if (tolerate_color) {
+          // Otherwise, if the tolerated color was set and we reached this
+          // point, it means the frame we got did not match both expected and
+          // tolerated colors.
+          ADD_FAILURE() << "Observed frame that did not match both expected "
+                           "and tolerated colors. color="
+                        << color_string
+                        << ", tolerated_color=" << tolerated_color_string
+                        << ", PNG dump:\n"
+                        << cc::GetPNGDataUrl(rgb_frame);
+          return;
+        }
+
+        // Otherwise, we weren't told to tolerate colors other than the expected
+        // one, and the frame did not match. Keep waiting.
       }
 
       // Wait for at least the minimum capture period before checking for more
@@ -164,22 +267,20 @@ class WebContentsVideoCaptureDeviceBrowserTest
   gfx::Size GetCapturedSourceSize() const final {
     return shell()
         ->web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetView()
         ->GetViewBounds()
         .size();
   }
 
   std::unique_ptr<FrameSinkVideoCaptureDevice> CreateDevice() final {
-    auto* const main_frame = shell()->web_contents()->GetMainFrame();
-    return std::make_unique<WebContentsVideoCaptureDevice>(
-        main_frame->GetProcess()->GetID(), main_frame->GetRoutingID());
+    auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+    const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
+                                     main_frame->GetRoutingID());
+    return std::make_unique<WebContentsVideoCaptureDevice>(id);
   }
 
   void WaitForFirstFrame() final { WaitForFrameWithColor(SK_ColorBLACK); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsVideoCaptureDeviceBrowserTest);
 };
 
 // Tests that the device refuses to start if the WebContents target was
@@ -188,19 +289,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
                        ErrorsOutIfWebContentsHasGoneBeforeDeviceStart) {
   NavigateToInitialDocument();
 
-  auto* const main_frame = shell()->web_contents()->GetMainFrame();
-  const auto render_process_id = main_frame->GetProcess()->GetID();
-  const auto render_frame_id = main_frame->GetRoutingID();
+  auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   const auto capture_params = SnapshotCaptureParams();
 
+  const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
+                                   main_frame->GetRoutingID());
   // Delete the WebContents instance and the Shell. This makes the
   // render_frame_id invalid.
   shell()->web_contents()->Close();
-  ASSERT_FALSE(RenderFrameHost::FromID(render_process_id, render_frame_id));
+  ASSERT_FALSE(RenderFrameHost::FromID(id));
 
   // Create the device.
-  auto device = std::make_unique<WebContentsVideoCaptureDevice>(
-      render_process_id, render_frame_id);
+  auto device = std::make_unique<WebContentsVideoCaptureDevice>(id);
   // Running the pending UI tasks should cause the device to realize the
   // WebContents is gone.
   RunUntilIdle();
@@ -269,6 +369,50 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   WaitForFrameWithColor(SK_ColorGREEN);
 }
 
+#if BUILDFLAG(IS_WIN)
+class WebContentsVideoCaptureDeviceBrowserTestAura
+    : public WebContentsVideoCaptureDeviceBrowserTest {
+ public:
+  // WebContentsVideoCaptureDeviceBrowserTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kApplyNativeOcclusionToCompositor,
+        {{features::kApplyNativeOcclusionToCompositorType,
+          features::kApplyNativeOcclusionToCompositorTypeRelease}});
+
+    WebContentsVideoCaptureDeviceBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies capture still works if the WindowTreeHost is occluded.
+IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
+                       CapturesWhenOccluded) {
+  aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
+  aura::test::DisableNativeWindowOcclusionTracking(window_tree_host);
+  NavigateToInitialDocument();
+  AllocateAndStartAndWaitForFirstFrame();
+  EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
+
+  // Make a content change in the first page and wait for capture to reflect
+  // that.
+  ChangePageContentColor(SK_ColorRED);
+  WaitForFrameWithColor(SK_ColorRED);
+
+  // Simulate the WindowTreeHost being occluded.
+  window_tree_host->SetNativeWindowOcclusionState(
+      aura::Window::OcclusionState::OCCLUDED, {});
+
+  EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
+
+  // Make a change and ensure it was captured.
+  ChangePageContentColor(SK_ColorGREEN);
+  WaitForFrameWithColor(SK_ColorGREEN);
+}
+#endif
+
 // Tests that capture is re-targetted when a renderer crash is followed by a
 // reload. Regression test for http://crbug.com/916332.
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
@@ -321,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   ChangePageContentColor(SK_ColorGREEN);
   base::RunLoop run_loop;
   GetUIThreadTaskRunner({})->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                                             base::TimeDelta::FromSeconds(5));
+                                             base::Seconds(5));
   run_loop.Run();
   EXPECT_FALSE(HasCapturedFramesInQueue());
 
@@ -360,7 +504,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 class WebContentsVideoCaptureDeviceBrowserTestP
     : public WebContentsVideoCaptureDeviceBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<bool, bool, bool, media::VideoPixelFormat>> {
  public:
   bool IsSoftwareCompositingTest() const override {
     return std::get<0>(GetParam());
@@ -371,9 +516,29 @@ class WebContentsVideoCaptureDeviceBrowserTestP
   bool IsCrossSiteCaptureTest() const override {
     return std::get<2>(GetParam());
   }
+  media::VideoPixelFormat GetVideoPixelFormat() const override {
+    return std::get<3>(GetParam());
+  }
+
+  // Returns human-readable description of the test based on test parameters.
+  // Currently unused due to CQ treating the tests as new and applying higher
+  // flakiness bar for them, which makes it impossible to land them (they
+  // flake ~1 in 20 times).
+  static std::string GetDescription(
+      const testing::TestParamInfo<
+          WebContentsVideoCaptureDeviceBrowserTestP::ParamType>& info) {
+    std::string name = base::StrCat(
+        {std::get<0>(info.param) ? "Software_" : "GPU_",
+         std::get<1>(info.param) ? "Fixed_" : "Variable_",
+         std::get<2>(info.param) ? "CrossSite_" : "Main_",
+         std::get<3>(info.param) == media::VideoPixelFormat::PIXEL_FORMAT_I420
+             ? "I420"
+             : "Detect"});
+    return name;
+  }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebContentsVideoCaptureDeviceBrowserTestP,
@@ -383,7 +548,26 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(false /* variable aspect ratio */,
                         true /* fixed aspect ratio */),
         testing::Values(false /* page has only a main frame */,
-                        true /* page contains a cross-site iframe */)));
+                        true /* page contains a cross-site iframe */),
+        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)),
+    &WebContentsVideoCaptureDeviceBrowserTestP::GetDescription);
+#elif BUILDFLAG(IS_MAC)
+// On MacOS, there is a newly added support for NV12-in-GMB. It relies on GPU
+// acceleration, but has a feature detection built-in if the format is
+// specified as media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebContentsVideoCaptureDeviceBrowserTestP,
+    testing::Combine(
+        testing::Values(false /* GPU-accelerated compositing */,
+                        true /* software compositing */),
+        testing::Values(false /* variable aspect ratio */,
+                        true /* fixed aspect ratio */),
+        testing::Values(false /* page has only a main frame */,
+                        true /* page contains a cross-site iframe */),
+        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420,
+                        media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)),
+    &WebContentsVideoCaptureDeviceBrowserTestP::GetDescription);
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -394,36 +578,52 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(false /* variable aspect ratio */,
                         true /* fixed aspect ratio */),
         testing::Values(false /* page has only a main frame */,
-                        true /* page contains a cross-site iframe */)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+                        true /* page contains a cross-site iframe */),
+        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)),
+    &WebContentsVideoCaptureDeviceBrowserTestP::GetDescription);
+#endif
 
 // Tests that the device successfully captures a series of content changes,
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
-
-// Fails on LACROS for Chrome OS and linux. http://crbug.com/1108205
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
-#else
-#define MAYBE_CapturesContentChanges CapturesContentChanges
-#endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       MAYBE_CapturesContentChanges) {
+                       CapturesContentChanges) {
+  media::VideoPixelFormat specified_format = GetVideoPixelFormat();
+  media::VideoPixelFormat expected_format = specified_format;
+  if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
+    if (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled()) {
+      expected_format = media::VideoPixelFormat::PIXEL_FORMAT_I420;
+    } else {
+      expected_format = media::VideoPixelFormat::PIXEL_FORMAT_NV12;
+    }
+  }
+
   SCOPED_TRACE(testing::Message()
                << "Test parameters: "
                << (IsSoftwareCompositingTest() ? "Software Compositing"
                                                : "GPU Compositing")
                << " with "
                << (IsFixedAspectRatioTest() ? "Fixed Video Aspect Ratio"
-                                            : "Variable Video Aspect Ratio"));
+                                            : "Variable Video Aspect Ratio")
+               << ", specified format is "
+               << media::VideoPixelFormatToString(specified_format));
+
+  capture_stack()->SetFrameReceivedCallback(base::BindRepeating(
+      [](media::VideoPixelFormat expected_format, media::VideoFrame* frame) {
+        EXPECT_EQ(frame->format(), expected_format);
+      },
+      expected_format));
 
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
 
-  for (int visilibilty_case = 0; visilibilty_case < 3; ++visilibilty_case) {
-    switch (visilibilty_case) {
+  // First frame is supposed to be black, store this as a previous color:
+  absl::optional<SkColor> previous_color = SK_ColorBLACK;
+
+  for (int visibility_case = 0; visibility_case < 3; ++visibility_case) {
+    switch (visibility_case) {
       case 0: {
         SCOPED_TRACE(testing::Message()
                      << "Visibility case: WebContents is showing.");
@@ -461,9 +661,11 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
         SK_ColorRED,  SK_ColorGREEN,   SK_ColorBLUE,  SK_ColorYELLOW,
         SK_ColorCYAN, SK_ColorMAGENTA, SK_ColorWHITE,
     };
+
     for (SkColor color : kColorsToCycleThrough) {
       ChangePageContentColor(color);
-      WaitForFrameWithColor(color);
+      WaitForFrameWithColor(color, previous_color);
+      previous_color = color;
     }
   }
 

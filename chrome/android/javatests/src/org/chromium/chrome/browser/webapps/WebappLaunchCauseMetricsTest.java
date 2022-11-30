@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,16 +23,17 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
-import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests basic functionality of WebappLaunchCauseMetrics.
@@ -46,25 +48,32 @@ public final class WebappLaunchCauseMetricsTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule
+    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
+
+    @BeforeClass
+    public static void setUpClass() {
+        // Needs to load before HistogramTestRule is applied.
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
 
     @Before
     public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         });
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ApplicationStatus.resetActivitiesForInstrumentationTests();
             LaunchCauseMetrics.resetForTests();
         });
     }
 
-    private static int histogramCountForValue(int value) {
-        return RecordHistogram.getHistogramValueCountForTesting(
+    private int histogramCountForValue(int value) {
+        return mHistogramTestRule.getHistogramValueCount(
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, value);
     }
 
@@ -119,5 +128,19 @@ public final class WebappLaunchCauseMetricsTest {
         metrics.recordLaunchCause();
         ++count;
         Assert.assertEquals(count, histogramCountForValue(LaunchCause.EXTERNAL_VIEW_INTENT));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testNullWebAppInfo() throws Throwable {
+        int count = histogramCountForValue(LaunchCause.OTHER);
+
+        WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, null);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(count, histogramCountForValue(LaunchCause.OTHER));
     }
 }

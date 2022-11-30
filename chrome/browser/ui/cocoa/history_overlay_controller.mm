@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,16 +39,14 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
   base::scoped_nsobject<CAShapeLayer> _shapeLayer;
 }
 @property(nonatomic) CGFloat shieldAlpha;
-- (id)initWithMode:(HistoryOverlayMode)mode
-             image:(NSImage*)image;
+- (instancetype)initWithMode:(HistoryOverlayMode)mode image:(NSImage*)image;
 @end
 
 @implementation HistoryOverlayView
 
 @synthesize shieldAlpha = _shieldAlpha;
 
-- (id)initWithMode:(HistoryOverlayMode)mode
-             image:(NSImage*)image {
+- (instancetype)initWithMode:(HistoryOverlayMode)mode image:(NSImage*)image {
   NSRect frame = NSMakeRect(0, 0, kShieldWidth, kShieldHeight);
   if ((self = [super initWithFrame:frame])) {
     _mode = mode;
@@ -101,7 +99,7 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 
 @implementation HistoryOverlayController
 
-- (id)initForMode:(HistoryOverlayMode)mode {
+- (instancetype)initForMode:(HistoryOverlayMode)mode {
   if ((self = [super init])) {
     _mode = mode;
     DCHECK(mode == kHistoryOverlayModeBack ||

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -69,6 +71,27 @@ void LogDeserializationError(int version) {
 
 }  // namespace
 
+FrameTokenWithPredecessor::FrameTokenWithPredecessor() = default;
+FrameTokenWithPredecessor::FrameTokenWithPredecessor(
+    const FrameTokenWithPredecessor&) = default;
+FrameTokenWithPredecessor::FrameTokenWithPredecessor(
+    FrameTokenWithPredecessor&&) = default;
+FrameTokenWithPredecessor& FrameTokenWithPredecessor::operator=(
+    const FrameTokenWithPredecessor&) = default;
+FrameTokenWithPredecessor& FrameTokenWithPredecessor::operator=(
+    FrameTokenWithPredecessor&&) = default;
+FrameTokenWithPredecessor::~FrameTokenWithPredecessor() = default;
+
+bool operator==(const FrameTokenWithPredecessor& a,
+                const FrameTokenWithPredecessor& b) {
+  return a.token == b.token && a.predecessor == b.predecessor;
+}
+
+bool operator!=(const FrameTokenWithPredecessor& a,
+                const FrameTokenWithPredecessor& b) {
+  return !(a == b);
+}
+
 FormData::FormData() = default;
 
 FormData::FormData(const FormData&) = default;
@@ -98,8 +121,7 @@ bool FormData::SimilarFormAs(const FormData& form) const {
   if (name != form.name || id_attribute != form.id_attribute ||
       name_attribute != form.name_attribute || url != form.url ||
       action != form.action || is_action_empty != form.is_action_empty ||
-      is_form_tag != form.is_form_tag ||
-      fields.size() != form.fields.size()) {
+      is_form_tag != form.is_form_tag || fields.size() != form.fields.size()) {
     return false;
   }
   for (size_t i = 0; i < fields.size(); ++i) {
@@ -112,8 +134,9 @@ bool FormData::SimilarFormAs(const FormData& form) const {
 bool FormData::DynamicallySameFormAs(const FormData& form) const {
   if (name != form.name || id_attribute != form.id_attribute ||
       name_attribute != form.name_attribute ||
-      fields.size() != form.fields.size())
+      fields.size() != form.fields.size()) {
     return false;
+  }
   for (size_t i = 0; i < fields.size(); ++i) {
     if (!fields[i].DynamicallySameFieldAs(form.fields[i]))
       return false;
@@ -121,22 +144,25 @@ bool FormData::DynamicallySameFormAs(const FormData& form) const {
   return true;
 }
 
-bool FormData::IdentityComparator::operator()(const FormData& a,
-                                              const FormData& b) const {
-  // |unique_renderer_id| uniquely identifies the form, if and only if it is
-  // set; the other members compared below together uniquely identify the form
-  // as well.
-  auto tie = [](const FormData& f) {
-    return std::tie(f.unique_renderer_id, f.name, f.id_attribute,
-                    f.name_attribute, f.url, f.action, f.is_form_tag);
-  };
-  if (tie(a) < tie(b))
-    return true;
-  if (tie(b) < tie(a))
+// static
+bool FormData::DeepEqual(const FormData& a, const FormData& b) {
+  // We compare all unique identifiers first, including the field renderer IDs,
+  // because we expect most inequalities to be due to them.
+  if (a.unique_renderer_id != b.unique_renderer_id ||
+      a.child_frames != b.child_frames ||
+      !base::ranges::equal(a.fields, b.fields, {},
+                           &FormFieldData::unique_renderer_id,
+                           &FormFieldData::unique_renderer_id)) {
     return false;
-  return std::lexicographical_compare(a.fields.begin(), a.fields.end(),
-                                      b.fields.begin(), b.fields.end(),
-                                      FormFieldData::IdentityComparator());
+  }
+
+  if (a.name != b.name || a.id_attribute != b.id_attribute ||
+      a.name_attribute != b.name_attribute || a.url != b.url ||
+      a.action != b.action || a.is_form_tag != b.is_form_tag ||
+      !base::ranges::equal(a.fields, b.fields, &FormFieldData::DeepEqual)) {
+    return false;
+  }
+  return true;
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {
@@ -237,7 +263,12 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << Tag{"div"} << Attrib{"class", "form"};
   buffer << Tag{"table"};
   buffer << Tr{} << "Form name:" << form.name;
-  buffer << Tr{} << "Unique renderer Id:" << form.unique_renderer_id.value();
+  buffer << Tr{} << "Identifiers: "
+         << base::StrCat(
+                {"renderer id: ",
+                 base::NumberToString(form.global_id().renderer_id.value()),
+                 ", host frame: ", form.global_id().frame_token.ToString(),
+                 " (", url::Origin::Create(form.url).Serialize(), ")"});
   buffer << Tr{} << "URL:" << form.url;
   buffer << Tr{} << "Action:" << form.action;
   buffer << Tr{} << "Is action empty:" << form.is_action_empty;
@@ -253,11 +284,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << CTag{"table"};
   buffer << CTag{"div"};
   return buffer;
-}
-
-bool FormDataEqualForTesting(const FormData& lhs, const FormData& rhs) {
-  FormData::IdentityComparator less;
-  return !less(lhs, rhs) && !less(rhs, lhs);
 }
 
 }  // namespace autofill

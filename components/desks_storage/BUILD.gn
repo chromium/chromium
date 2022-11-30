@@ -1,0 +1,84 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("desks_storage") {
+  output_name = "desks_storage_lib"
+
+  sources = [
+    "core/desk_model.cc",
+    "core/desk_model.h",
+    "core/desk_model_observer.h",
+    "core/desk_model_wrapper.cc",
+    "core/desk_model_wrapper.h",
+    "core/desk_sync_bridge.cc",
+    "core/desk_sync_bridge.h",
+    "core/desk_sync_service.cc",
+    "core/desk_sync_service.h",
+    "core/desk_template_conversion.cc",
+    "core/desk_template_conversion.h",
+    "core/desk_template_util.cc",
+    "core/desk_template_util.h",
+    "core/local_desk_data_manager.cc",
+    "core/local_desk_data_manager.h",
+  ]
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/crosapi/cpp",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/app_restore",
+    "//components/sync",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/version_info:channel",
+    "//third_party/re2",
+    "//ui/gfx/geometry",
+  ]
+
+  defines = [ "IS_DESKS_STORAGE_IMPL" ]
+
+  public_deps = []
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "core/desk_test_util.cc",
+    "core/desk_test_util.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//components/app_constants",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "core/desk_model_wrapper_unittests.cc",
+    "core/desk_sync_bridge_unittest.cc",
+    "core/desk_template_conversion_unittests.cc",
+    "core/desk_template_semantics_unittests.cc",
+    "core/desk_template_util_unittests.cc",
+    "core/desk_test_util_unittests.cc",
+    "core/local_desk_data_manager_unittests.cc",
+    "core/saved_desk_builder.cc",
+    "core/saved_desk_builder.h",
+    "core/saved_desk_test_util.cc",
+    "core/saved_desk_test_util.h",
+  ]
+  deps = [
+    ":desks_storage",
+    ":test_support",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//components/app_constants",
+    "//components/sync:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -1,78 +1,88 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-HTMLImports.whenReady(() => {
-// <include src="../login/components/multi_step_behavior.js">
-// <include src="../login/components/oobe_types.js">
-// <include src="../login/components/oobe_buttons.js">
-// <include src="assistant_optin_flow.js">
-// <include src="browser_proxy.js">
+import {$} from 'chrome://resources/js/util.js';
 
-cr.define('login.AssistantOptInFlowScreen', function() {
-  return {
+import './assistant_optin_flow.m.js';
+import {BrowserProxyImpl} from './browser_proxy.m.js';
 
+class InSessionAssistantScreen {
     /**
      * Starts the assistant opt-in flow.
      */
-    show() {
+    static show() {
       var url = new URL(document.URL);
       $('assistant-optin-flow-card').onBeforeShow();
       $('assistant-optin-flow-card')
           .onShow(
               url.searchParams.get('flow-type'),
-              url.searchParams.get('caption-bar-height'),
-              url.searchParams.get('oobe-dialog-height'),
-              url.searchParams.get('oobe-dialog-width'));
-    },
+              url.searchParams.get('caption-bar-height'));
+    }
 
     /**
      * Reloads localized strings.
      * @param {!Object} data New dictionary with i18n values.
      */
-    reloadContent(data) {
+    static reloadContent(data) {
       $('assistant-optin-flow-card').reloadContent(data);
-    },
+    }
 
     /**
      * Add a setting zippy object in the corresponding screen.
      * @param {string} type type of the setting zippy.
      * @param {!Object} data String and url for the setting zippy.
      */
-    addSettingZippy(type, data) {
+    static addSettingZippy(type, data) {
       $('assistant-optin-flow-card').addSettingZippy(type, data);
-    },
+    }
 
     /**
      * Show the next screen in the flow.
      */
-    showNextScreen() {
+    static showNextScreen() {
       $('assistant-optin-flow-card').showNextScreen();
-    },
+    }
 
     /**
      * Called when the Voice match state is updated.
      * @param {string} state the voice match state.
      */
-    onVoiceMatchUpdate(state) {
+    static onVoiceMatchUpdate(state) {
       $('assistant-optin-flow-card').onVoiceMatchUpdate(state);
-    },
+    }
+
+    /**
+     * Called to show the next settings when there are multiple unbundled
+     * activity control settings in the Value prop screen.
+     */
+    static onValuePropUpdate() {
+      $('assistant-optin-flow-card').onValuePropUpdate();
+    }
 
     /**
      * Called when the flow finished and close the dialog.
      */
-    closeDialog() {
-      assistant.BrowserProxyImpl.getInstance().dialogClose();
-    },
-  };
-});
+    static closeDialog() {
+      BrowserProxyImpl.getInstance().dialogClose();
+    }
+}
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function() {
-    login.AssistantOptInFlowScreen.show();
-  });
-} else {
+function initializeInSessionAssistant() {
+  if (document.readyState === 'loading') {
+    return;
+  }
+  document.removeEventListener('DOMContentLoaded', initializeInSessionAssistant);
+
   login.AssistantOptInFlowScreen.show();
 }
 
-});
+
+window.login = {};
+window.login.AssistantOptInFlowScreen = InSessionAssistantScreen;
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeInSessionAssistant);
+} else {
+  initializeInSessionAssistant();
+}

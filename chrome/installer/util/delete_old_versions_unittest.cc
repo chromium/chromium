@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
@@ -28,6 +27,10 @@ namespace installer {
 namespace {
 
 class DeleteOldVersionsTest : public testing::Test {
+ public:
+  DeleteOldVersionsTest(const DeleteOldVersionsTest&) = delete;
+  DeleteOldVersionsTest& operator=(const DeleteOldVersionsTest&) = delete;
+
  protected:
   DeleteOldVersionsTest() = default;
 
@@ -98,8 +101,6 @@ class DeleteOldVersionsTest : public testing::Test {
 
  private:
   base::ScopedTempDir install_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOldVersionsTest);
 };
 
 }  // namespace

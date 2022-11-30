@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,6 +79,10 @@ class DataItem {
            ValueStoreCache* value_store_cache,
            base::SequencedTaskRunner* task_runner,
            const std::string& crypto_key);
+
+  DataItem(const DataItem&) = delete;
+  DataItem& operator=(const DataItem&) = delete;
+
   virtual ~DataItem();
 
   // Registers the data item in the persistent data item storage.
@@ -133,8 +137,6 @@ class DataItem {
   const std::string crypto_key_;
 
   base::WeakPtrFactory<DataItem> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataItem);
 };
 
 }  // namespace lock_screen_data

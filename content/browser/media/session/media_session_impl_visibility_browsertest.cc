@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -68,6 +69,11 @@ class MediaSessionImplVisibilityBrowserTest
     EnableDisableResumingBackgroundVideos(params.background_resuming ==
                                           BackgroundResuming::ENABLED);
   }
+
+  MediaSessionImplVisibilityBrowserTest(
+      const MediaSessionImplVisibilityBrowserTest&) = delete;
+  MediaSessionImplVisibilityBrowserTest& operator=(
+      const MediaSessionImplVisibilityBrowserTest&) = delete;
 
   ~MediaSessionImplVisibilityBrowserTest() override = default;
 
@@ -132,7 +138,7 @@ class MediaSessionImplVisibilityBrowserTest
         GetVisibilityTestData().session_state_after_hide;
 
     if (state_before_hide == state_after_hide) {
-      Wait(base::TimeDelta::FromSeconds(1));
+      Wait(base::Seconds(1));
       ASSERT_EQ(state_after_hide,
                 media_session_->GetMediaSessionInfoSync()->state);
     } else {
@@ -148,7 +154,7 @@ class MediaSessionImplVisibilityBrowserTest
   }
 
   void RunScript(const std::string& script) {
-    ASSERT_TRUE(ExecuteScript(web_contents_->GetMainFrame(), script));
+    ASSERT_TRUE(ExecJs(web_contents_->GetPrimaryMainFrame(), script));
   }
 
   // TODO(zqzhang): This method is shared with
@@ -168,10 +174,8 @@ class MediaSessionImplVisibilityBrowserTest
   base::test::ScopedFeatureList ms_feature_list_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  WebContents* web_contents_;
-  MediaSessionImpl* media_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionImplVisibilityBrowserTest);
+  raw_ptr<WebContents> web_contents_;
+  raw_ptr<MediaSessionImpl> media_session_;
 };
 
 namespace {

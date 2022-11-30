@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
-#include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/android/chrome_jni_headers/QualityEnforcer_jni.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -23,7 +22,8 @@ namespace {
 // Do not modify or reuse existing entries; they are used in a UMA histogram.
 // Please also edit TrustedWebActivityQualityEnforcementViolationType in the
 // enums.xml if adding new value.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browserservices
+// GENERATED_JAVA_ENUM_PACKAGE: (
+// org.chromium.chrome.browser.browserservices.constants)
 enum class QualityEnforcementViolationType {
   kHttpError404 = 0,
   kHttpError5xx = 1,
@@ -62,15 +62,15 @@ static void JNI_QualityEnforcer_ReportDevtoolsIssue(
     return;
 
   std::string url = base::android::ConvertJavaStringToUTF8(env, jurl);
-  base::Optional<std::string> package_name =
+  absl::optional<std::string> package_name =
       jpackage_name
-          ? base::make_optional(
+          ? absl::make_optional(
                 base::android::ConvertJavaStringToUTF8(env, jpackage_name))
-          : base::nullopt;
-  base::Optional<std::string> signature =
-      jsignature ? base::make_optional(
+          : absl::nullopt;
+  absl::optional<std::string> signature =
+      jsignature ? absl::make_optional(
                        base::android::ConvertJavaStringToUTF8(env, jsignature))
-                 : base::nullopt;
+                 : absl::nullopt;
 
   auto details = blink::mojom::InspectorIssueDetails::New();
   auto twa_issue = blink::mojom::TrustedWebActivityIssueDetails::New(

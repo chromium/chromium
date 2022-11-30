@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,6 @@ public final class ErrorCodeConversionHelper {
             case NetError.ERR_NO_SSL_VERSIONS_ENABLED:
             case NetError.ERR_SSL_VERSION_OR_CIPHER_MISMATCH:
             case NetError.ERR_SSL_RENEGOTIATION_REQUESTED:
-            case NetError.ERR_CERT_ERROR_IN_SSL_RENEGOTIATION:
             case NetError.ERR_BAD_SSL_CLIENT_AUTH_CERT:
             case NetError.ERR_SSL_NO_RENEGOTIATION:
             case NetError.ERR_SSL_DECOMPRESSION_FAILURE_ALERT:

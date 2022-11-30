@@ -1,17 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_HDR_METADATA_H_
 #define UI_GFX_HDR_METADATA_H_
 
+#include <string>
+
+#include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
-// SMPTE ST 2086 mastering metadata.
-struct GFX_EXPORT MasteringMetadata {
+// SMPTE ST 2086 color volume metadata.
+struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
   using Chromaticity = PointF;
   Chromaticity primary_r;
   Chromaticity primary_g;
@@ -20,10 +22,13 @@ struct GFX_EXPORT MasteringMetadata {
   float luminance_max = 0;
   float luminance_min = 0;
 
-  MasteringMetadata();
-  MasteringMetadata(const MasteringMetadata& rhs);
+  ColorVolumeMetadata();
+  ColorVolumeMetadata(const ColorVolumeMetadata& rhs);
+  ColorVolumeMetadata& operator=(const ColorVolumeMetadata& rhs);
 
-  bool operator==(const MasteringMetadata& rhs) const {
+  std::string ToString() const;
+
+  bool operator==(const ColorVolumeMetadata& rhs) const {
     return ((primary_r == rhs.primary_r) && (primary_g == rhs.primary_g) &&
             (primary_b == rhs.primary_b) && (white_point == rhs.white_point) &&
             (luminance_max == rhs.luminance_max) &&
@@ -32,8 +37,8 @@ struct GFX_EXPORT MasteringMetadata {
 };
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
-struct GFX_EXPORT HDRMetadata {
-  MasteringMetadata mastering_metadata;
+struct COLOR_SPACE_EXPORT HDRMetadata {
+  ColorVolumeMetadata color_volume_metadata;
   // Max content light level (CLL), i.e. maximum brightness level present in the
   // stream), in nits.
   unsigned max_content_light_level = 0;
@@ -43,19 +48,24 @@ struct GFX_EXPORT HDRMetadata {
 
   HDRMetadata();
   HDRMetadata(const HDRMetadata& rhs);
+  HDRMetadata& operator=(const HDRMetadata& rhs);
 
   bool IsValid() const {
     return !((max_content_light_level == 0) &&
              (max_frame_average_light_level == 0) &&
-             (mastering_metadata == MasteringMetadata()));
+             (color_volume_metadata == ColorVolumeMetadata()));
   }
+
+  std::string ToString() const;
 
   bool operator==(const HDRMetadata& rhs) const {
     return (
         (max_content_light_level == rhs.max_content_light_level) &&
         (max_frame_average_light_level == rhs.max_frame_average_light_level) &&
-        (mastering_metadata == rhs.mastering_metadata));
+        (color_volume_metadata == rhs.color_volume_metadata));
   }
+
+  bool operator!=(const HDRMetadata& rhs) const { return !(*this == rhs); }
 };
 
 // HDR metadata types as described in

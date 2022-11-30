@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/core/user_message_impl.h"
 
 #include <algorithm>
+#include <atomic>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -268,14 +268,14 @@ MojoResult CreateOrExtendSerializedEventMessage(
   return MOJO_RESULT_OK;
 }
 
-base::subtle::Atomic32 g_message_count = 0;
+std::atomic<uint32_t> g_message_count{0};
 
 void IncrementMessageCount() {
-  base::subtle::NoBarrier_AtomicIncrement(&g_message_count, 1);
+  g_message_count.fetch_add(1, std::memory_order_relaxed);
 }
 
 void DecrementMessageCount() {
-  base::subtle::NoBarrier_AtomicIncrement(&g_message_count, -1);
+  g_message_count.fetch_add(-1, std::memory_order_relaxed);
 }
 
 class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
@@ -284,6 +284,10 @@ class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "MojoMessages", nullptr);
   }
+
+  MessageMemoryDumpProvider(const MessageMemoryDumpProvider&) = delete;
+  MessageMemoryDumpProvider& operator=(const MessageMemoryDumpProvider&) =
+      delete;
 
   ~MessageMemoryDumpProvider() override {
     base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
@@ -297,16 +301,14 @@ class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
     auto* dump = pmd->CreateAllocatorDump("mojo/messages");
     dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
                     base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                    base::subtle::NoBarrier_Load(&g_message_count));
+                    g_message_count.load(std::memory_order_relaxed));
     return true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MessageMemoryDumpProvider);
 };
 
 void EnsureMemoryDumpProviderExists() {
-  static base::NoDestructor<MessageMemoryDumpProvider> provider;
-  ALLOW_UNUSED_LOCAL(provider);
+  [[maybe_unused]] static base::NoDestructor<MessageMemoryDumpProvider>
+      provider;
 }
 
 }  // namespace
@@ -418,7 +420,14 @@ Channel::MessagePtr UserMessageImpl::FinalizeEventMessage(
   if (channel_message) {
     void* data;
     size_t size;
-    NodeChannel::GetEventMessageData(channel_message.get(), &data, &size);
+    // The `channel_message` must either be produced locally or must have
+    // already been validated by the caller, as is done for example by
+    // NodeController::DeserializeEventMessage before
+    // NodeController::OnBroadcast re-serializes each copy of the message it
+    // received.
+    bool result =
+        NodeChannel::GetEventMessageData(*channel_message, &data, &size);
+    DCHECK(result);
     message_event->Serialize(data);
   }
 
@@ -505,8 +514,9 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
       size_t user_payload_offset =
           static_cast<uint8_t*>(user_payload_) -
           static_cast<const uint8_t*>(channel_message_->payload());
-      channel_message_->ExtendPayload(user_payload_offset + user_payload_size_ +
-                                      additional_payload_size);
+      Channel::Message::ExtendPayload(
+          channel_message_,
+          user_payload_offset + user_payload_size_ + additional_payload_size);
       header_ = static_cast<uint8_t*>(channel_message_->mutable_payload()) +
                 header_offset;
       user_payload_ =

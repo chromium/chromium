@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace remoting {
@@ -32,9 +30,10 @@ class ConfigWatcher {
 
   ConfigWatcher() {}
 
+  ConfigWatcher(const ConfigWatcher&) = delete;
+  ConfigWatcher& operator=(const ConfigWatcher&) = delete;
+
   virtual ~ConfigWatcher() {}
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigWatcher);
 };
 
 }  // namespace remoting

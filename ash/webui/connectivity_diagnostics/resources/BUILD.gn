@@ -1,0 +1,57 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+
+preprocess_folder = "preprocessed"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+  deps = [ ":connectivity_diagnostics" ]
+}
+
+js_library("connectivity_diagnostics") {
+  deps = [
+    "//ash/webui/common/resources:cr_container_shadow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network_health:network_diagnostics",
+    "//ash/webui/common/resources/network_health:network_health_summary",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+generate_grd("build_grd") {
+  deps = [ ":preprocess_generated" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "index.html",
+    "app_icon_192.png",
+    "app_icon_256.png",
+  ]
+  grd_prefix = "connectivity_diagnostics"
+  out_grd = "$target_gen_dir/connectivity_diagnostics_resources.grd"
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [ "connectivity_diagnostics.js" ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "connectivity_diagnostics.js" ]
+}

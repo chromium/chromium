@@ -1,11 +1,10 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
-import("//build/config/crypto.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 
@@ -49,9 +48,6 @@ config("feature_flags") {
   defines = []
   if (dcheck_always_on) {
     defines += [ "DCHECK_ALWAYS_ON=1" ]
-    if (dcheck_is_configurable) {
-      defines += [ "DCHECK_IS_CONFIGURABLE" ]
-    }
   }
   if (use_udev) {
     # TODO(brettw) should probably be "=1".
@@ -63,9 +59,6 @@ config("feature_flags") {
   if (use_glib) {
     defines += [ "USE_GLIB=1" ]
   }
-  if (use_nss_certs) {
-    defines += [ "USE_NSS_CERTS=1" ]
-  }
   if (use_ozone && !is_android) {
     # Note that some Chrome OS builds unconditionally set |use_ozone| to true,
     # but they also build some targets with the Android toolchain. This ensures
@@ -74,9 +67,6 @@ config("feature_flags") {
     # TODO(crbug.com/837032): Maybe this can be cleaned up if we can avoid
     # setting use_ozone globally.
     defines += [ "USE_OZONE=1" ]
-  }
-  if (use_x11) {
-    defines += [ "USE_X11=1" ]
   }
   if (is_asan || is_hwasan || is_lsan || is_tsan || is_msan) {
     defines += [ "MEMORY_TOOL_REPLACES_ALLOCATOR" ]
@@ -96,7 +86,7 @@ config("feature_flags") {
   if (is_msan) {
     defines += [ "MEMORY_SANITIZER" ]
   }
-  if (is_ubsan || is_ubsan_null || is_ubsan_vptr || is_ubsan_security) {
+  if (is_ubsan || is_ubsan_vptr || is_ubsan_security) {
     defines += [ "UNDEFINED_SANITIZER" ]
   }
   if (is_official_build) {
@@ -264,6 +254,9 @@ group("common_deps") {
   if (is_fuchsia) {
     public_deps +=
         [ "//third_party/fuchsia-sdk/sdk/build/config:runtime_library_group" ]
+    if (is_asan) {
+      public_deps += [ "//build/config/fuchsia:asan_runtime_library" ]
+    }
   }
 }
 
@@ -310,10 +303,8 @@ config("executable_config") {
     ]
   } else if (is_linux || is_chromeos || is_android || current_os == "aix") {
     configs += [ "//build/config/gcc:executable_config" ]
-    if (is_chromecast) {
+    if (is_castos || is_cast_android) {
       configs += [ "//build/config/chromecast:executable_config" ]
-    } else if (is_fuchsia) {
-      configs += [ "//build/config/fuchsia:executable_config" ]
     }
   }
 
@@ -343,7 +334,7 @@ config("shared_library_config") {
       "//build/config/ios:ios_dynamic_flags",
       "//build/config/ios:ios_shared_library_flags",
     ]
-  } else if (is_chromecast) {
+  } else if (is_castos || is_cast_android) {
     configs += [ "//build/config/chromecast:shared_library_config" ]
   } else if (is_linux || is_chromeos || current_os == "aix") {
     configs += [ "//build/config/gcc:shared_library_config" ]
@@ -387,4 +378,11 @@ config("precompiled_headers") {
       precompiled_source = "//build/precompile.h"
     }
   }
+}
+
+# Add this config to link steps in order to compress debug sections. This is
+# especially useful on 32-bit architectures in order to keep file sizes under
+# 4gb.
+config("compress_debug_sections") {
+  ldflags = [ "-gz" ]
 }

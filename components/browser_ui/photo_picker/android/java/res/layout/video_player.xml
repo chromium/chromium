@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -21,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="56dp"
         android:layout_marginTop="16dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
 
     <VideoView
         android:id="@+id/video_player"
@@ -66,19 +68,19 @@
                     android:layout_height="24dp"
                     android:layout_marginEnd="8dp"
                     android:contentDescription="@string/accessibility_pause_video"
-                    app:srcCompat="@drawable/ic_fast_rewind_white_36dp" />
+                    app:srcCompat="@drawable/ic_fast_rewind_white_24dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/fast_forward_hint"
-                    android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light" />
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
                 <ImageView
                     android:id="@+id/fast_forward"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="8dp"
                     android:contentDescription="@string/accessibility_pause_video"
-                    app:srcCompat="@drawable/ic_fast_forward_white_36dp" />
+                    app:srcCompat="@drawable/ic_fast_forward_white_24dp" />
             </LinearLayout>
 
             <ImageView
@@ -97,7 +99,7 @@
                 android:layout_marginBottom="24dp"
                 android:layout_marginStart="16dp"
                 android:clickable="true"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary.Light" />
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline.Light" />
             <ImageView
                 android:id="@+id/mute"
                 android:layout_width="26dp"

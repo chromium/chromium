@@ -1,0 +1,149 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutUserActions.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/AutofillProfileItemProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/AutofillProfileItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/CreditCardItemProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/CreditCardItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/DetailItemDecoration.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/DetailScreenCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/DetailScreenViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/FooterItemProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/detail_screen/FooterItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/home_screen/HomeScreenCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/home_screen/HomeScreenViewBinder.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/browser/ui/android/fast_checkout:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/autofill_assistant/android:public_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_recycler_view_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.ui.fast_checkout"
+}
+
+android_resources("java_resources") {
+  deps = [
+    ":java_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
+  sources = [
+    "java/res/drawable-v24/fast_checkout_item_background_bottom.xml",
+    "java/res/drawable-v24/fast_checkout_item_background_top.xml",
+    "java/res/drawable-v24/fast_checkout_list_view_background_middle.xml",
+    "java/res/drawable/fast_checkout_item_background_bottom.xml",
+    "java/res/drawable/fast_checkout_item_background_top.xml",
+    "java/res/drawable/fast_checkout_list_view_background_middle.xml",
+    "java/res/layout/fast_checkout_autofill_profile_item.xml",
+    "java/res/layout/fast_checkout_bottom_sheet.xml",
+    "java/res/layout/fast_checkout_credit_card_item.xml",
+    "java/res/layout/fast_checkout_detail_screen_sheet.xml",
+    "java/res/layout/fast_checkout_footer_item.xml",
+    "java/res/layout/fast_checkout_home_screen_sheet.xml",
+    "java/res/menu/fast_checkout_toolbar_menu.xml",
+    "java/res/values/dimens.xml",
+  ]
+  custom_package = "org.chromium.chrome.browser.ui.fast_checkout"
+}
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file = "java/strings/android_fast_checkout_strings.grd"
+  outputs =
+      [ "values/android_fast_checkout_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "values-{{source_name_part}}/android_fast_checkout_strings.xml" ])
+}
+
+android_library("test_java") {
+  sources = [ "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutTestUtils.java" ]
+  deps = [
+    "//chrome/browser/ui/android/fast_checkout:java",
+    "//components/autofill/android:main_autofill_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutDetailScreenViewTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutHomeScreenViewTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutMediatorTest.java",
+  ]
+  deps = [
+    ":java",
+    ":test_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/fast_checkout:java",
+    "//components/autofill_assistant/android:public_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutIntegrationTest.java" ]
+  deps = [
+    ":java",
+    ":test_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/fast_checkout:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/autofill_assistant/android:public_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

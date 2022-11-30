@@ -1,0 +1,54 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("background_service") {
+  assert(is_ios)
+  sources = [
+    "background_download_service_impl.cc",
+    "background_download_service_impl.h",
+    "background_download_task_helper.h",
+    "background_download_task_helper.mm",
+    "entry_utils.cc",
+    "entry_utils.h",
+  ]
+
+  visibility = [
+    ":*",
+    "//ios/chrome/browser/download/background_service",
+    "//ios/chrome/browser/download/background_service:unit_tests",
+    "//ios/chrome/browser/optimization_guide:unit_tests",
+  ]
+
+  deps = [
+    "//components/download/internal/background_service:common",
+    "//components/download/internal/background_service:storage",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  public_deps = [ "//components/download/public/background_service:public" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  assert(is_ios)
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":background_service",
+    "//base",
+    "//base/test:test_support",
+    "//components/download/internal/background_service:common",
+    "//components/download/internal/background_service/test:test_support",
+    "//components/download/public/background_service/test:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "background_download_service_impl_unittest.cc",
+    "background_download_task_helper_unittest.mm",
+    "entry_utils_unittest.cc",
+  ]
+}

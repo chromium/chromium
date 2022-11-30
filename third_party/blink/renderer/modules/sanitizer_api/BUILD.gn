@@ -1,16 +1,129 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("sanitizer_api") {
   sources = [
+    "$target_gen_dir/builtins/sanitizer_attribute_lists.cc",
+    "$target_gen_dir/builtins/sanitizer_attribute_lists_with_namespaces.cc",
+    "$target_gen_dir/builtins/sanitizer_builtins.cc",
+    "$target_gen_dir/builtins/sanitizer_builtins_with_namespaces.cc",
+    "builtins.cc",
+    "builtins.h",
+    "builtins/sanitizer_builtins.h",
+    "config_util.cc",
+    "config_util.h",
+    "element_sanitizer.cc",
+    "element_sanitizer.h",
     "sanitizer.cc",
     "sanitizer.h",
+    "sanitizer_config_impl.h",
   ]
+  deps = [
+    ":generate_sanitizer_attribute_lists",
+    ":generate_sanitizer_attribute_lists_with_namespaces",
+    ":generate_sanitizer_builtins",
+    ":generate_sanitizer_builtins_with_namespaces",
+  ]
+}
+
+# The Sanitizer API relies on several spec-defined constants. For easier
+# maintenance we generate the constants from spec snippets.
+action("generate_sanitizer_builtins") {
+  script = "builtins/generate_builtins.py"
+  source_attributes = "builtins/baseline_attribute_allow_list.txt"
+  source_elements = "builtins/baseline_element_allow_list.txt"
+  source_default = "builtins/default_configuration.txt"
+  sources = [
+    source_attributes,
+    source_default,
+    source_elements,
+  ]
+  outputs = [ "$target_gen_dir/builtins/sanitizer_builtins.cc" ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--baseline-elements",
+    rebase_path(source_elements, root_build_dir),
+    "--baseline-attributes",
+    rebase_path(source_attributes, root_build_dir),
+    "--default-configuration",
+    rebase_path(source_default, root_build_dir),
+  ]
+}
+
+# We (temporarily) supoprt a second set of builtins, to be enabled by a
+# runtime feature. We'll simply re-use the :generate_sanitizer_builtins rule,
+# but with a different set of inputs.
+action("generate_sanitizer_builtins_with_namespaces") {
+  script = "builtins/generate_builtins.py"
+  source_attributes =
+      "builtins/baseline_attribute_allow_list_with_namespaces.txt"
+  source_elements = "builtins/baseline_element_allow_list_with_namespaces.txt"
+  source_default = "builtins/default_configuration.txt"
+  sources = [
+    source_attributes,
+    source_default,
+    source_elements,
+  ]
+  outputs = [ "$target_gen_dir/builtins/sanitizer_builtins_with_namespaces.cc" ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--baseline-elements",
+    rebase_path(source_elements, root_build_dir),
+    "--baseline-attributes",
+    rebase_path(source_attributes, root_build_dir),
+    "--default-configuration",
+    rebase_path(source_default, root_build_dir),
+    "--cxx-namespace",
+    "with_namespace_names",
+  ]
+}
+
+blink_python_runner("generate_sanitizer_attribute_lists") {
+  script = "builtins/generate_attribute_lists.py"
+  sources =
+      [ "//third_party/blink/renderer/core/html/html_attribute_names.json5" ]
+  inputs = sources + scripts_for_json5_files
+  outputs = [ "$target_gen_dir/builtins/sanitizer_attribute_lists.cc" ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  foreach(source, sources) {
+    args += [ rebase_path(source, root_build_dir) ]
+  }
+}
+
+blink_python_runner("generate_sanitizer_attribute_lists_with_namespaces") {
+  script = "builtins/generate_attribute_lists.py"
+  sources = [
+    "//third_party/blink/renderer/core/html/html_attribute_names.json5",
+    "//third_party/blink/renderer/core/mathml/mathml_attribute_names.json5",
+    "//third_party/blink/renderer/core/svg/svg_attribute_names.json5",
+    "//third_party/blink/renderer/core/svg/xlink_attribute_names.json5",
+    "//third_party/blink/renderer/core/xml/xml_attribute_names.json5",
+    "//third_party/blink/renderer/core/xml/xmlns_attribute_names.json5",
+  ]
+  inputs = sources + scripts_for_json5_files
+  outputs = [
+    "$target_gen_dir/builtins/sanitizer_attribute_lists_with_namespaces.cc",
+  ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--cxx-namespace",
+    "with_namespace_names",
+  ]
+  foreach(source, sources) {
+    args += [ rebase_path(source, root_build_dir) ]
+  }
 }
 
 if (use_libfuzzer) {
@@ -22,12 +135,14 @@ if (use_libfuzzer) {
   corpus_source_config = [  # These match source files: corpus/*.txt
     "config1",
     "config2",
+    "config3",
     "default",
   ]
   corpus_source_html = [  # These match source files: corpus/*.html
     "simple1",
     "simple2",
     "simple3",
+    "simple4",
     "medium1",
     "medium2",
     "medium3",
@@ -71,7 +186,6 @@ if (use_libfuzzer) {
     deps = [
       ":generate_sanitizer_fuzzer_corpus",
       ":sanitizer_config_proto",
-      "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_impl_generated",
       "//third_party/blink/renderer/controller:blink_bindings_test_sources",
       "//third_party/blink/renderer/core:testing",
       "//third_party/blink/renderer/modules:modules",

@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -75,8 +75,7 @@ if (enable_nocompile_tests) {
   template("nocompile_test") {
     nocompile_target = target_name + "_run_nocompile"
 
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    python2_action_foreach(nocompile_target) {
+    action_foreach(nocompile_target) {
       testonly = true
       script = "//tools/nocompile_driver.py"
       sources = invoker.sources
@@ -97,19 +96,18 @@ if (enable_nocompile_tests) {
         "-nostdinc++",
         "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
         "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-Werror",
         "-Wfatal-errors",
         "-Wthread-safety",
         "-I" + rebase_path("//", root_build_dir),
+        "-I" + rebase_path("//third_party/abseil-cpp/", root_build_dir),
+        "-I" + rebase_path("//buildtools/third_party/libc++/", root_build_dir),
         "-I" + rebase_path(root_gen_dir, root_build_dir),
 
         # TODO(https://crbug.com/989932): Track build/config/compiler/BUILD.gn
         "-Wno-implicit-int-float-conversion",
-
-        # TODO(crbug.com/1166707): libc++ now requires this macro to be defined.
-        "-D_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS",
       ]
 
       if (is_apple && host_os != "mac") {
@@ -127,6 +125,13 @@ if (enable_nocompile_tests) {
         args += [
           "--sysroot",
           rebase_path(sysroot, root_build_dir),
+        ]
+      }
+
+      if (!is_nacl) {
+        args += [
+          # TODO(crbug.com/1343975) Evaluate and possibly enable.
+          "-Wno-deprecated-builtins",
         ]
       }
     }

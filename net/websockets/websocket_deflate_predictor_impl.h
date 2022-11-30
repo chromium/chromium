@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ struct WebSocketFrame;
 class NET_EXPORT_PRIVATE WebSocketDeflatePredictorImpl
     : public WebSocketDeflatePredictor {
  public:
-  ~WebSocketDeflatePredictorImpl() override {}
+  ~WebSocketDeflatePredictorImpl() override = default;
 
   Result Predict(const std::vector<std::unique_ptr<WebSocketFrame>>& frames,
                  size_t frame_index) override;

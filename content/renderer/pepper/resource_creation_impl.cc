@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "ppapi/shared_impl/ppb_input_event_shared.h"
 #include "ppapi/shared_impl/var.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "base/win/windows_version.h"
 #endif
@@ -81,13 +81,6 @@ PP_Resource ResourceCreationImpl::CreateCameraDevicePrivate(
   return 0;  // Not supported in-process.
 }
 
-PP_Resource ResourceCreationImpl::CreateFlashFontFile(
-    PP_Instance instance,
-    const PP_BrowserFont_Trusted_Description* description,
-    PP_PrivateFontCharset charset) {
-  return 0;  // Not supported in-process.
-}
-
 PP_Resource ResourceCreationImpl::CreateGraphics3D(PP_Instance instance,
                                                    PP_Resource share_context,
                                                    const int32_t* attrib_list) {
@@ -119,7 +112,7 @@ PP_Resource ResourceCreationImpl::CreateImageData(PP_Instance instance,
                                                   PP_ImageDataFormat format,
                                                   const PP_Size* size,
                                                   PP_Bool init_to_zero) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If Win32K lockdown mitigations are enabled for Windows 8 and beyond,
   // we use the SIMPLE image data type as the PLATFORM image data type
   // calls GDI functions to create DIB sections etc which fail in Win32K

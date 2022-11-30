@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/policy_conversions_client_ios.h"
+#import "ios/chrome/browser/policy/policy_conversions_client_ios.h"
 
-#include "base/check.h"
-#include "base/values.h"
-#include "components/policy/core/browser/policy_conversions_client.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#import "base/check.h"
+#import "base/values.h"
+#import "components/policy/core/browser/policy_conversions_client.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,8 +44,8 @@ bool PolicyConversionsClientIOS::HasUserPolicies() const {
   return browser_state_ != nullptr;
 }
 
-base::Value PolicyConversionsClientIOS::GetExtensionPolicies(
+base::Value::List PolicyConversionsClientIOS::GetExtensionPolicies(
     policy::PolicyDomain policy_domain) {
   // Return an empty list since extensions are not supported on iOS.
-  return base::Value(base::Value::Type::LIST);
+  return base::Value::List();
 }

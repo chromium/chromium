@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,12 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "base/values.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace prerender {
 
@@ -59,6 +55,10 @@ class PrerenderHistory {
 
   // Creates a history with capacity for |max_items| entries.
   explicit PrerenderHistory(size_t max_items);
+
+  PrerenderHistory(const PrerenderHistory&) = delete;
+  PrerenderHistory& operator=(const PrerenderHistory&) = delete;
+
   ~PrerenderHistory();
 
   // Adds |entry| to the history. If at capacity, the oldest entry is dropped.
@@ -67,16 +67,14 @@ class PrerenderHistory {
   // Deletes all history entries.
   void Clear();
 
-  // Retrieves the entries as a value which can be displayed.
-  std::unique_ptr<base::Value> CopyEntriesAsValue() const;
+  // Retrieves the entries as a list of values which can be displayed.
+  base::Value::List CopyEntriesAsValue() const;
 
  private:
   std::list<Entry> entries_;
   size_t max_items_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderHistory);
 };
 
 }  // namespace prerender

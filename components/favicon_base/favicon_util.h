@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@ class Image;
 namespace favicon_base {
 
 // Returns the scales at which favicons should be fetched. This is
-// different from ui::GetSupportedScaleFactors() because clients which do
-// not support 1x should still fetch a favicon for 1x to push to sync. This
+// different from ui::GetSupportedResourceScaleFactors() because clients which
+// do not support 1x should still fetch a favicon for 1x to push to sync. This
 // guarantees that the clients receiving sync updates pushed by this client
 // receive a favicon (potentially of the wrong scale factor) and do not show
 // the default favicon.
@@ -45,6 +45,6 @@ favicon_base::FaviconRawBitmapResult ResizeFaviconBitmapResult(
         favicon_bitmap_results,
     int desired_size_in_pixel);
 
-}  // namspace favicon_base
+}  // namespace favicon_base
 
 #endif  // COMPONENTS_FAVICON_BASE_FAVICON_UTIL_H_

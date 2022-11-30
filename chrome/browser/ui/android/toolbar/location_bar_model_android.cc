@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/android/toolbar/location_bar_model_android.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/LocationBarModel_jni.h"
+#include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
@@ -50,7 +50,8 @@ ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetURLForDisplay(
 jint LocationBarModelAndroid::GetPageClassification(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    bool is_focused_from_fakebox) {
+    bool is_focused_from_fakebox,
+    bool is_prefetch) {
   // On phones, the omnibox is not initially shown on the NTP.  In this case,
   // treat the fakebox like the omnibox.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE)

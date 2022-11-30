@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,43 +16,68 @@
  *   id="lockScreenPasswordPrompt"
  * </settings-lock-screen-password-prompt-dialog>
  */
-Polymer({
-  is: 'settings-lock-screen-password-prompt-dialog',
+import '../../controls/password_prompt_dialog.js';
 
-  behaviors: [
-    LockStateBehavior,
-  ],
+import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * writeUma_ is a function that handles writing uma stats. It may be
-     * overridden for tests.
-     *
-     * @type {Function}
-     * @private
-     */
-    writeUma_: {
-      type: Object,
-      value() {
-        return settings.recordLockScreenProgress;
-      }
-    },
-  },
+import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LockStateBehaviorInterface}
+ */
+const SettingsLockScreenPasswordPromptDialogElementBase =
+    mixinBehaviors([LockStateBehavior], PolymerElement);
+
+/** @polymer */
+class SettingsLockScreenPasswordPromptDialogElement extends
+    SettingsLockScreenPasswordPromptDialogElementBase {
+  static get is() {
+    return 'settings-lock-screen-password-prompt-dialog';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * writeUma_ is a function that handles writing uma stats. It may be
+       * overridden for tests.
+       *
+       * @type {Function}
+       * @private
+       */
+      writeUma_: {
+        type: Object,
+        value() {
+          return recordLockScreenProgress;
+        },
+      },
+    };
+  }
 
   /** @override */
-  attached() {
-    this.writeUma_(settings.LockScreenProgress.START_SCREEN_LOCK);
-  },
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.writeUma_(LockScreenProgress.START_SCREEN_LOCK);
+  }
 
   /**
    * @param {!CustomEvent<!chrome.quickUnlockPrivate.TokenInfo>} e
    * @private
    */
-  onTokenObtained_(e) {
+  onTokenObtained_({detail}) {
     // The user successfully authenticated.
-    this.writeUma_(settings.LockScreenProgress.ENTER_PASSWORD_CORRECTLY);
-    this.fire('auth-token-obtained', e.detail);
-  },
+    this.writeUma_(LockScreenProgress.ENTER_PASSWORD_CORRECTLY);
+    const authTokenObtainedEvent = new CustomEvent(
+        'auth-token-obtained', {bubbles: true, composed: true, detail});
+    this.dispatchEvent(authTokenObtainedEvent);
+  }
 
   /**
    * Looks up the translation id, which depends on PIN login support.
@@ -65,5 +90,9 @@ Polymer({
       return this.i18n('passwordPromptEnterPasswordLoginLock');
     }
     return this.i18n('passwordPromptEnterPasswordLock');
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsLockScreenPasswordPromptDialogElement.is,
+    SettingsLockScreenPasswordPromptDialogElement);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 
 namespace {
 NavigateParams CreateNavigateParams(Profile* profile,
@@ -36,7 +38,9 @@ NavigateParams CreateNavigateParams(Profile* profile,
 }
 }  // namespace
 
-TargetHandler::TargetHandler(protocol::UberDispatcher* dispatcher) {
+TargetHandler::TargetHandler(protocol::UberDispatcher* dispatcher,
+                             bool is_trusted)
+    : is_trusted_(is_trusted) {
   protocol::Target::Dispatcher::wire(dispatcher, this);
 }
 
@@ -75,7 +79,7 @@ protocol::Response TargetHandler::CreateTarget(
     protocol::Maybe<bool> new_window,
     protocol::Maybe<bool> background,
     std::string* out_target_id) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = nullptr;
   if (browser_context_id.isJust()) {
     std::string profile_id = browser_context_id.fromJust();
     profile =
@@ -84,7 +88,11 @@ protocol::Response TargetHandler::CreateTarget(
       return protocol::Response::ServerError(
           "Failed to find browser context with id " + profile_id);
     }
+  } else {
+    profile = ProfileManager::GetLastUsedProfile();
+    DCHECK(profile);
   }
+
   bool create_new_window = new_window.fromMaybe(false);
   bool create_in_background = background.fromMaybe(false);
   Browser* target_browser = nullptr;
@@ -112,6 +120,11 @@ protocol::Response TargetHandler::CreateTarget(
   GURL gurl(url);
   if (gurl.is_empty()) {
     gurl = GURL(url::kAboutBlankURL);
+  }
+
+  if (!is_trusted_ && gurl.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return protocol::Response::ServerError(
+        "Refusing to create a target with the specified URL");
   }
 
   create_new_window = !target_browser;

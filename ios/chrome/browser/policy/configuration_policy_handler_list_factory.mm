@@ -1,35 +1,44 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "components/autofill/core/browser/autofill_address_policy_handler.h"
-#include "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
-#include "components/content_settings/core/common/pref_names.h"
-#include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/policy/core/browser/configuration_policy_handler.h"
-#include "components/policy/core/browser/configuration_policy_handler_list.h"
-#include "components/policy/core/browser/configuration_policy_handler_parameters.h"
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"
-#include "components/policy/core/common/policy_pref_names.h"
-#include "components/policy/policy_constants.h"
-#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/search_engines/default_search_policy_handler.h"
-#include "components/translate/core/browser/translate_pref_names.h"
-#include "components/unified_consent/pref_names.h"
-#include "components/variations/pref_names.h"
-#include "components/variations/service/variations_service.h"
-#include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
-#include "ios/chrome/browser/policy/policy_features.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "base/bind.h"
+#import "base/check.h"
+#import "components/autofill/core/browser/autofill_address_policy_handler.h"
+#import "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
+#import "components/commerce/core/pref_names.h"
+#import "components/component_updater/pref_names.h"
+#import "components/content_settings/core/common/pref_names.h"
+#import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
+#import "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/history/core/common/pref_names.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/policy/core/browser/configuration_policy_handler.h"
+#import "components/policy/core/browser/configuration_policy_handler_list.h"
+#import "components/policy/core/browser/configuration_policy_handler_parameters.h"
+#import "components/policy/core/browser/url_blocklist_policy_handler.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/policy/policy_constants.h"
+#import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/search_engines/default_search_policy_handler.h"
+#import "components/security_interstitials/core/https_only_mode_policy_handler.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/sync/driver/sync_policy_handler.h"
+#import "components/translate/core/browser/translate_pref_names.h"
+#import "components/unified_consent/pref_names.h"
+#import "components/variations/pref_names.h"
+#import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/policy/browser_signin_policy_handler.h"
+#import "ios/chrome/browser/policy/new_tab_page_location_policy_handler.h"
+#import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,12 +53,15 @@ namespace {
 // that directly map to a single preference.
 // clang-format off
 const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
+  { policy::key::kAllowChromeDataInBackups,
+    prefs::kAllowChromeDataInBackups,
+    base::Value::Type::BOOLEAN },
+  { policy::key::kComponentUpdatesEnabled,
+    prefs::kComponentUpdatesEnabled,
+    base::Value::Type::BOOLEAN },
   { policy::key::kChromeVariations,
     variations::prefs::kVariationsRestrictionsByPolicy,
     base::Value::Type::INTEGER },
-  { policy::key::kCloudReportingEnabled,
-    enterprise_reporting::kCloudReportingEnabled,
-    base::Value::Type::BOOLEAN },
   { policy::key::kDisableSafeBrowsingProceedAnyway,
     prefs::kSafeBrowsingProceedAnywayDisabled,
     base::Value::Type::BOOLEAN },
@@ -65,6 +77,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kIncognitoModeAvailability,
     prefs::kIncognitoModeAvailability,
     base::Value::Type::INTEGER },
+  { policy::key::kNTPContentSuggestionsEnabled,
+    prefs::kNTPContentSuggestionsEnabled,
+    base::Value::Type::BOOLEAN },
   { policy::key::kMetricsReportingEnabled,
     metrics::prefs::kMetricsReportingEnabled,
     base::Value::Type::BOOLEAN },
@@ -90,7 +105,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kSearchSuggestEnabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kTranslateEnabled,
-    prefs::kOfferTranslateEnabled,
+    translate::prefs::kOfferTranslateEnabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kURLAllowlist,
     policy::policy_prefs::kUrlAllowlist,
@@ -98,6 +113,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
     unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
     base::Value::Type::BOOLEAN },
+  { policy::key::kShoppingListEnabled,
+    commerce::kShoppingListEnabledPrefName,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 
@@ -109,19 +127,13 @@ void PopulatePolicyHandlerParameters(
 std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
     bool allow_future_policies,
     const policy::Schema& chrome_schema) {
-  DCHECK(IsEnterprisePolicyEnabled());
   std::unique_ptr<policy::ConfigurationPolicyHandlerList> handlers =
       std::make_unique<policy::ConfigurationPolicyHandlerList>(
           base::BindRepeating(&PopulatePolicyHandlerParameters),
           base::BindRepeating(&policy::GetChromePolicyDetails),
           allow_future_policies);
 
-  // Check the feature flag before adding handlers to the list.
-  if (!ShouldInstallEnterprisePolicyHandlers()) {
-    return handlers;
-  }
-
-  for (size_t i = 0; i < base::size(kSimplePolicyMap); ++i) {
+  for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
         kSimplePolicyMap[i].policy_name, kSimplePolicyMap[i].preference_path,
         kSimplePolicyMap[i].value_type));
@@ -133,17 +145,24 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<policy::RestrictAccountsPolicyHandler>(chrome_schema));
   handlers->AddHandler(std::make_unique<policy::DefaultSearchPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<bookmarks::ManagedBookmarksPolicyHandler>(
           chrome_schema));
-
-  if (ShouldInstallURLBlocklistPolicyHandlers()) {
-    handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
-        policy::key::kURLBlocklist));
-  }
+  handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<enterprise_reporting::CloudReportingPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_reporting::CloudReportingFrequencyPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<policy::NewTabPageLocationPolicyHandler>());
+  handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
+      policy::key::kURLBlocklist));
 
   return handlers;
 }

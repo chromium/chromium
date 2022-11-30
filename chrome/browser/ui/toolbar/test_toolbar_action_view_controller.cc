@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -50,18 +51,25 @@ std::u16string TestToolbarActionViewController::GetTooltip(
   return tooltip_;
 }
 
+ToolbarActionViewController::HoverCardState
+TestToolbarActionViewController::GetHoverCardState(
+    content::WebContents* web_contents) const {
+  return ToolbarActionViewController::HoverCardState::
+      kExtensionDoesNotWantAccess;
+}
+
 bool TestToolbarActionViewController::IsEnabled(
     content::WebContents* web_contents) const {
   return is_enabled_;
 }
 
-bool TestToolbarActionViewController::HasPopup(
-    content::WebContents* web_contents) const {
-  return true;
-}
-
 bool TestToolbarActionViewController::IsShowingPopup() const {
   return popup_showing_;
+}
+
+bool TestToolbarActionViewController::IsRequestingSiteAccess(
+    content::WebContents* web_contents) const {
+  return false;
 }
 
 void TestToolbarActionViewController::HidePopup() {
@@ -73,28 +81,28 @@ gfx::NativeView TestToolbarActionViewController::GetPopupNativeView() {
   return nullptr;
 }
 
-ui::MenuModel* TestToolbarActionViewController::GetContextMenu() {
+ui::MenuModel* TestToolbarActionViewController::GetContextMenu(
+    extensions::ExtensionContextMenuModel::ContextMenuSource
+        context_menu_source) {
   return nullptr;
 }
 
-bool TestToolbarActionViewController::ExecuteAction(bool by_user,
-                                                    InvocationSource source) {
+void TestToolbarActionViewController::ExecuteUserAction(
+    InvocationSource source) {
   ++execute_action_count_;
-  return false;
 }
+
+void TestToolbarActionViewController::TriggerPopupForAPI(
+    ShowPopupCallback callback) {}
 
 void TestToolbarActionViewController::UpdateState() {
   UpdateDelegate();
 }
 
-bool TestToolbarActionViewController::DisabledClickOpensMenu() const {
-  return disabled_click_opens_menu_;
-}
-
-ToolbarActionViewController::PageInteractionStatus
-TestToolbarActionViewController::GetPageInteractionStatus(
+extensions::SitePermissionsHelper::SiteInteraction
+TestToolbarActionViewController::GetSiteInteraction(
     content::WebContents* web_contents) const {
-  return PageInteractionStatus::kNone;
+  return extensions::SitePermissionsHelper::SiteInteraction::kNone;
 }
 
 void TestToolbarActionViewController::ShowPopup(bool by_user) {
@@ -122,12 +130,6 @@ void TestToolbarActionViewController::SetTooltip(
 
 void TestToolbarActionViewController::SetEnabled(bool is_enabled) {
   is_enabled_ = is_enabled;
-  UpdateDelegate();
-}
-
-void TestToolbarActionViewController::SetDisabledClickOpensMenu(
-    bool disabled_click_opens_menu) {
-  disabled_click_opens_menu_ = disabled_click_opens_menu;
   UpdateDelegate();
 }
 

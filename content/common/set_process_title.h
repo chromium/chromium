@@ -1,11 +1,9 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_COMMON_SET_PROCESS_TITLE_H_
 #define CONTENT_COMMON_SET_PROCESS_TITLE_H_
-
-#include "content/common/content_export.h"
 
 namespace content {
 
@@ -23,7 +21,7 @@ namespace content {
 // makes the process name that shows up in "ps" etc. for the child processes
 // show as "exe" instead of "chrome" or something reasonable. This function
 // will try to fix it so the "effective" command line shows up instead.
-CONTENT_EXPORT void SetProcessTitleFromCommandLine(const char** main_argv);
+void SetProcessTitleFromCommandLine(const char** main_argv);
 
 }  // namespace content
 

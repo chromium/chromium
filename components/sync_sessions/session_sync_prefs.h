@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -20,6 +20,10 @@ class SessionSyncPrefs {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit SessionSyncPrefs(PrefService* pref_service);
+
+  SessionSyncPrefs(const SessionSyncPrefs&) = delete;
+  SessionSyncPrefs& operator=(const SessionSyncPrefs&) = delete;
+
   ~SessionSyncPrefs();
 
   std::string GetLegacySyncSessionsGUID() const;
@@ -28,9 +32,7 @@ class SessionSyncPrefs {
   void SetLegacySyncSessionsGUIDForTesting(const std::string& guid);
 
  private:
-  PrefService* const pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncPrefs);
+  const raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace sync_sessions

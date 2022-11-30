@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ class CredentialManagerPendingPreventSilentAccessTaskDelegateMock
   ~CredentialManagerPendingPreventSilentAccessTaskDelegateMock() override =
       default;
 
-  MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (override));
-  MOCK_METHOD(PasswordStore*, GetAccountPasswordStore, (), (override));
+  MOCK_METHOD(PasswordStoreInterface*, GetProfilePasswordStore, (), (override));
+  MOCK_METHOD(PasswordStoreInterface*, GetAccountPasswordStore, (), (override));
   MOCK_METHOD(void, DoneRequiringUserMediation, (), (override));
 };
 
@@ -32,10 +32,12 @@ class CredentialManagerPendingPreventSilentAccessTaskTest
  public:
   CredentialManagerPendingPreventSilentAccessTaskTest() {
     profile_store_ = new TestPasswordStore(IsAccountStore(false));
-    profile_store_->Init(/*prefs=*/nullptr);
+    profile_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
 
     account_store_ = new TestPasswordStore(IsAccountStore(true));
-    account_store_->Init(/*prefs=*/nullptr);
+    account_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
   }
   ~CredentialManagerPendingPreventSilentAccessTaskTest() override = default;
 
@@ -64,9 +66,9 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest, ProfileStoreOnly) {
 
   CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
 
-  task.AddOrigin(PasswordStore::FormDigest(PasswordForm::Scheme::kHtml,
-                                           /*signon_realm=*/"www.example.com",
-                                           GURL("www.example.com")));
+  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    /*signon_realm=*/"www.example.com",
+                                    GURL("www.example.com")));
 
   // We are expecting results from only one store, delegate should be called
   // upon getting a response from the store.
@@ -83,9 +85,9 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
 
   CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
 
-  task.AddOrigin(PasswordStore::FormDigest(PasswordForm::Scheme::kHtml,
-                                           /*signon_realm=*/"www.example.com",
-                                           GURL("www.example.com")));
+  task.AddOrigin(PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    /*signon_realm=*/"www.example.com",
+                                    GURL("www.example.com")));
 
   // We are expecting results from 2 stores, the delegate shouldn't be called
   // until both stores respond.

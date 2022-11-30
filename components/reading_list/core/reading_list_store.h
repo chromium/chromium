@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -27,6 +28,10 @@ class ReadingListStore : public ReadingListModelStorage {
   ReadingListStore(
       syncer::OnceModelTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  ReadingListStore(const ReadingListStore&) = delete;
+  ReadingListStore& operator=(const ReadingListStore&) = delete;
+
   ~ReadingListStore() override;
 
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
@@ -57,16 +62,16 @@ class ReadingListStore : public ReadingListModelStorage {
   // atomically, should save the metadata after the data changes, so that this
   // merge will be re-driven by sync if is not completely saved during the
   // current run.
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-      syncer::EntityChangeList entity_data) override;
+      syncer::EntityChangeList entity_changes) override;
 
   // Apply changes from the sync server locally.
   // Please note that |entity_changes| might have fewer entries than
   // |metadata_change_list| in case when some of the data changes are filtered
   // out, or even be empty in case when a commit confirmation is processed and
   // only the metadata needs to persisted.
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
 
@@ -127,19 +132,20 @@ class ReadingListStore : public ReadingListModelStorage {
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
   // Methods used as callbacks given to DataTypeStore.
-  void OnStoreCreated(const base::Optional<syncer::ModelError>& error,
+  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
 
   class ScopedBatchUpdate : public ReadingListModelStorage::ScopedBatchUpdate {
    public:
     explicit ScopedBatchUpdate(ReadingListStore* store);
 
+    ScopedBatchUpdate(const ScopedBatchUpdate&) = delete;
+    ScopedBatchUpdate& operator=(const ScopedBatchUpdate&) = delete;
+
     ~ScopedBatchUpdate() override;
 
    private:
-    ReadingListStore* store_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedBatchUpdate);
+    raw_ptr<ReadingListStore> store_;
   };
 
  private:
@@ -147,30 +153,28 @@ class ReadingListStore : public ReadingListModelStorage {
   void CommitTransaction();
   // Callbacks needed for the database handling.
   void OnDatabaseLoad(
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
-  void OnDatabaseSave(const base::Optional<syncer::ModelError>& error);
-  void OnReadAllMetadata(const base::Optional<syncer::ModelError>& error,
+  void OnDatabaseSave(const absl::optional<syncer::ModelError>& error);
+  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  ReadingListModel* model_;
-  ReadingListStoreDelegate* delegate_;
+  raw_ptr<ReadingListModel> model_;
+  raw_ptr<ReadingListStoreDelegate> delegate_;
   syncer::OnceModelTypeStoreFactory create_store_callback_;
 
   int pending_transaction_count_;
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ReadingListStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListStore);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_H_

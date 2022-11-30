@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,11 @@ class CertificatePolicyCache;
 // BrowserState.  Must be accessed on the UI thread.
 class SessionCertificatePolicyCache {
  public:
-  // |browser_state| should be non-null.
+  // `browser_state` should be non-null.
   SessionCertificatePolicyCache(BrowserState* browser_state);
   virtual ~SessionCertificatePolicyCache();
 
-  // Transfers the allowed certificate information from this session to |cache|.
+  // Transfers the allowed certificate information from this session to `cache`.
   //
   // TODO(crbug.com/1040566): Delete this method since
   // RegisterAllowedCertificate already updates the CertificatePolicyCache.

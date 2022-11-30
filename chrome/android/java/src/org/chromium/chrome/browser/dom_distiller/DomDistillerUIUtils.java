@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ public final class DomDistillerUIUtils {
         if (webContents != null && activity != null) {
             RecordUserAction.record("DomDistiller_DistilledPagePrefsOpened");
             AlertDialog.Builder builder =
-                    new AlertDialog.Builder(activity, R.style.Theme_Chromium_AlertDialog);
+                    new AlertDialog.Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog);
             builder.setView(DistilledPagePrefsView.create(activity));
             builder.show();
         }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,9 @@ class PlatformSensorLinux : public PlatformSensor {
                       SensorReadingSharedBuffer* reading_buffer,
                       PlatformSensorProvider* provider,
                       const SensorInfoLinux* sensor_device);
+
+  PlatformSensorLinux(const PlatformSensorLinux&) = delete;
+  PlatformSensorLinux& operator=(const PlatformSensorLinux&) = delete;
 
   mojom::ReportingMode GetReportingMode() override;
 
@@ -43,14 +46,7 @@ class PlatformSensorLinux : public PlatformSensor {
   // and stores them to a SensorReading structure.
   std::unique_ptr<SensorReader> sensor_reader_;
 
-  // Stores previously read values that are used to
-  // determine whether the recent values are changed
-  // and IPC can be notified that updates are available.
-  SensorReading old_values_;
-
   base::WeakPtrFactory<PlatformSensorLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorLinux);
 };
 
 }  // namespace device

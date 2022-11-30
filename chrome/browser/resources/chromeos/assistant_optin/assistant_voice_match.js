@@ -1,6 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+/**
+ * @fileoverview Polymer element for displaying material design assistant
+ * voice match screen.
+ */
+
+/* #js_imports_placeholder */
 
 /** Maximum recording index. */
 const MAX_INDEX = 4;
@@ -19,43 +26,95 @@ const VoiceMatchUIState = {
 };
 
 /**
- * @fileoverview Polymer element for displaying material design assistant
- * voice match screen.
- *
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MultiStepBehaviorInterface}
  */
-Polymer({
-  is: 'assistant-voice-match',
+const AssistantVoiceMatchBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior], Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, MultiStepBehavior],
+/**
+ * @polymer
+ */
+class AssistantVoiceMatch extends AssistantVoiceMatchBase {
+  static get is() {
+    return 'assistant-voice-match';
+  }
 
-  /**
-   * Whether voice match is the first screen of the flow.
-   * @type {boolean}
-   */
-  isFirstScreen: false,
+  /* #html_template_placeholder */
 
-  /**
-   * Current recording index.
-   * @type {number}
-   * @private
-   */
-  currentIndex_: 0,
+  static get properties() {
+    return {
+      /**
+       * Indicates whether to use same design for accept/decline buttons.
+       */
+      equalWeightButtons_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /**
-   * The delay in ms between speaker ID enrollment finishes and the
-   * voice-match-done action is reported to chrome.
-   * @private {number}
-   */
-  doneActionDelayMs_: 3000,
+      /**
+       * The given name of the user, if a child account is in use; otherwise,
+       * this is an empty string.
+       */
+      childName_: {
+        type: String,
+        value: '',
+      },
 
-  /** @private {?assistant.BrowserProxy} */
-  browserProxy_: null,
+      /**
+       * Whether the {prefers-color-scheme: dark}
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * @private {boolean}
+       */
+      isTabletMode_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * Whether voice match is the first screen of the flow.
+     * @type {boolean}
+     */
+    this.isFirstScreen = false;
+
+    /**
+     * Current recording index.
+     * @type {number}
+     * @private
+     */
+    this.currentIndex_ = 0;
+
+    /**
+     * The delay in ms between speaker ID enrollment finishes and the
+     * voice-match-done action is reported to chrome.
+     * @private {number}
+     */
+    this.doneActionDelayMs_ = 3000;
+
+    /** @private {?assistant.BrowserProxy} */
+    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
+  }
 
   defaultUIStep() {
     return VoiceMatchUIState.INTRO;
-  },
+  }
 
-  UI_STEPS: VoiceMatchUIState,
+  get UI_STEPS() {
+    return VoiceMatchUIState;
+  }
 
   /**
    * Overrides the default delay for sending voice-match-done action.
@@ -63,7 +122,7 @@ Polymer({
    */
   setDoneActionDelayForTesting(delay) {
     this.doneActionDelayMs_ = delay;
-  },
+  }
 
   /**
    * On-tap event handler for skip button.
@@ -71,9 +130,9 @@ Polymer({
    * @private
    */
   onSkipTap_() {
-    this.$['voice-match-lottie'].setPlay(false);
+    this.$['voice-match-lottie'].playing = false;
     this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['skip-pressed']);
-  },
+  }
 
   /**
    * On-tap event handler for agree button.
@@ -82,9 +141,10 @@ Polymer({
    */
   onAgreeTap_() {
     this.setUIStep(VoiceMatchUIState.RECORDING);
-    this.fire('loading');
+    this.dispatchEvent(
+        new CustomEvent('loading', {bubbles: true, composed: true}));
     this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['record-pressed']);
-  },
+  }
 
   /**
    * Reset the status of page elements.
@@ -98,17 +158,21 @@ Polymer({
     this.$['later-button'].hidden = false;
     this.$['loading-animation'].hidden = true;
 
-    for (var i = 0; i < MAX_INDEX; ++i) {
-      var entry = this.$['voice-entry-' + i];
+    for (let i = 0; i < MAX_INDEX; ++i) {
+      const entry = this.$['voice-entry-' + i];
       entry.removeAttribute('active');
       entry.removeAttribute('completed');
     }
-  },
+  }
 
-  /** @override */
-  created() {
-    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
-  },
+  /**
+   * Reload the page with the given settings data.
+   */
+  reloadContent(data) {
+    this.equalWeightButtons_ = data['equalWeightButtons'];
+    this.childName_ = data['childName'];
+    this.isTabletMode_ = data['isTabletMode'];
+  }
 
   /**
    * Reloads voice match flow.
@@ -118,29 +182,31 @@ Polymer({
     this.$['agree-button'].focus();
     this.resetElements_();
     this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['reload-requested']);
-    this.fire('loaded');
-  },
+    this.dispatchEvent(
+        new CustomEvent('loaded', {bubbles: true, composed: true}));
+  }
 
   /**
    * Called when the server is ready to listening for hotword.
    */
   listenForHotword() {
     if (this.currentIndex_ == 0) {
-      this.fire('loaded');
+      this.dispatchEvent(
+          new CustomEvent('loaded', {bubbles: true, composed: true}));
       announceAccessibleMessage(
           loadTimeData.getString('assistantVoiceMatchRecording'));
       announceAccessibleMessage(
           loadTimeData.getString('assistantVoiceMatchA11yMessage'));
     }
-    var currentEntry = this.$['voice-entry-' + this.currentIndex_];
+    const currentEntry = this.$['voice-entry-' + this.currentIndex_];
     currentEntry.setAttribute('active', true);
-  },
+  }
 
   /**
    * Called when the server has detected and processing hotword.
    */
   processingHotword() {
-    var currentEntry = this.$['voice-entry-' + this.currentIndex_];
+    const currentEntry = this.$['voice-entry-' + this.currentIndex_];
     currentEntry.removeAttribute('active');
     currentEntry.setAttribute('completed', true);
     this.currentIndex_++;
@@ -154,10 +220,11 @@ Polymer({
       announceAccessibleMessage(
           loadTimeData.getString('assistantVoiceMatchComplete'));
     }
-  },
+  }
 
   voiceMatchDone() {
-    this.fire('loaded');
+    this.dispatchEvent(
+        new CustomEvent('loaded', {bubbles: true, composed: true}));
     announceAccessibleMessage(
         loadTimeData.getString('assistantVoiceMatchCompleted'));
     if (this.currentIndex_ != MAX_INDEX) {
@@ -168,11 +235,11 @@ Polymer({
       this.setUIStep(VoiceMatchUIState.COMPLETED);
     }
 
-    window.setTimeout(function() {
-      this.$['voice-match-lottie'].setPlay(false);
+    window.setTimeout(() => {
+      this.$['voice-match-lottie'].playing = false;
       this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['voice-match-done']);
-    }.bind(this), this.doneActionDelayMs_);
-  },
+    }, this.doneActionDelayMs_);
+  }
 
   /**
    * Signal from host to show the screen.
@@ -181,15 +248,63 @@ Polymer({
     if (this.isFirstScreen) {
       // If voice match is the first screen, slightly delay showing the content
       // for the lottie animations to load.
-      this.fire('loading');
-      window.setTimeout(function() {
-        this.fire('loaded');
-      }.bind(this), 100);
+      this.dispatchEvent(
+          new CustomEvent('loading', {bubbles: true, composed: true}));
+      window.setTimeout(() => {
+        this.dispatchEvent(
+            new CustomEvent('loaded', {bubbles: true, composed: true}));
+      }, 100);
     }
 
     this.browserProxy_.screenShown(VOICE_MATCH_SCREEN_ID);
-    this.$['voice-match-lottie'].setPlay(true);
+    this.$['voice-match-lottie'].playing = true;
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['agree-button'].focus());
-  },
-});
+  }
+
+  /**
+   * Returns the text for dialog title.
+   */
+  getDialogTitle_(locale, uiStep, childName) {
+    if (uiStep == VoiceMatchUIState.INTRO) {
+      return childName ?
+          this.i18n('assistantVoiceMatchTitleForChild', childName) :
+          this.i18n('assistantVoiceMatchTitle');
+    } else if (uiStep === VoiceMatchUIState.RECORDING) {
+      return childName ?
+          this.i18n('assistantVoiceMatchRecordingForChild', childName) :
+          this.i18n('assistantVoiceMatchRecording');
+    } else if (uiStep === VoiceMatchUIState.COMPLETED) {
+      return this.i18n('assistantVoiceMatchCompleted');
+    }
+  }
+
+  /**
+   * Returns the text for subtitle.
+   */
+  getSubtitleMessage_(locale, uiStep, childName) {
+    if (uiStep == VoiceMatchUIState.INTRO) {
+      return childName ? this.i18nAdvanced(
+                             'assistantVoiceMatchMessageForChild',
+                             {substitutions: [childName]}) :
+                         this.i18nAdvanced('assistantVoiceMatchMessage');
+    } else if (
+        uiStep === VoiceMatchUIState.RECORDING ||
+        uiStep === VoiceMatchUIState.COMPLETED) {
+      return this.i18nAdvanced(
+          'assistantVoiceMatchFooterForChild', {substitutions: [childName]});
+    }
+  }
+
+  getReadyImgUrl_(isDarkMode) {
+    return './assistant_optin/assistant_ready_' + (isDarkMode ? 'dm' : 'lm') +
+        '.json';
+  }
+
+  getVoiceMatchAnimationUrl_(isDarkMode, isTabletMode) {
+    return './assistant_optin/voice_' + (isTabletMode ? 'tablet' : 'laptop') +
+        '_' + (isDarkMode ? 'dm' : 'lm') + '.json';
+  }
+}
+
+customElements.define(AssistantVoiceMatch.is, AssistantVoiceMatch);

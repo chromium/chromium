@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.diceResponseHeaderCount = 0;
-window.controlResponseHeaderCount = 0;
+self.diceResponseHeaderCount = 0;
+self.controlResponseHeaderCount = 0;
 
 chrome.webRequest.onHeadersReceived.addListener(function(details) {
   let diceHeaderFound = false;
@@ -11,11 +11,11 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
   const diceResponseHeader = 'X-Chrome-ID-Consistency-Response';
   details.responseHeaders.forEach(function(header) {
     if (header.name == diceResponseHeader){
-      ++window.diceResponseHeaderCount;
+      ++self.diceResponseHeaderCount;
       diceHeaderFound = true;
       header.value = headerValue;
     } else if (header.name == 'X-Control'){
-      ++window.controlResponseHeaderCount;
+      ++self.controlResponseHeaderCount;
       header.value = headerValue;
     }
   });

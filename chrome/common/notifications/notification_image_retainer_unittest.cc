@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 namespace {
 
 // This value has to stay in sync with that in notification_image_retainer.cc.
-constexpr base::TimeDelta kDeletionDelay = base::TimeDelta::FromSeconds(12);
+constexpr base::TimeDelta kDeletionDelay = base::Seconds(12);
 
 }  // namespace
 
@@ -83,7 +83,7 @@ TEST_F(NotificationImageRetainerTest, DeleteFilesInBatch) {
 
   // Simulate ticking of the clock so that the next image file has a different
   // registration time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // Create 2nd image file on disk.
   base::FilePath temp_file2 = image_retainer->RegisterTemporaryImage(image);
@@ -92,7 +92,7 @@ TEST_F(NotificationImageRetainerTest, DeleteFilesInBatch) {
 
   // Simulate ticking of the clock so that the next image file has a different
   // registration time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // Create 3rd image file on disk.
   base::FilePath temp_file3 = image_retainer->RegisterTemporaryImage(image);

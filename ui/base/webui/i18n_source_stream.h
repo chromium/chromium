@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/filter/filter_source_stream.h"
 #include "ui/base/template_expressions.h"
 
@@ -18,6 +18,9 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
     : public net::FilterSourceStream {
  public:
+  I18nSourceStream(const I18nSourceStream&) = delete;
+  I18nSourceStream& operator=(const I18nSourceStream&) = delete;
+
   ~I18nSourceStream() override;
 
   // Factory function to create an I18nSourceStream.
@@ -34,12 +37,13 @@ class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
 
   // SourceStream implementation.
   std::string GetTypeAsString() const override;
-  int FilterData(net::IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 net::IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool upstream_end_reached) override;
+  base::expected<size_t, net::Error> FilterData(
+      net::IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      net::IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool upstream_end_reached) override;
 
   // Keep split $i18n tags (wait for the whole tag). This is expected to vary
   // in size from 0 to a few KB and should never be larger than the input file
@@ -52,9 +56,7 @@ class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
   std::string output_;
 
   // A map of i18n replacement keys and translations.
-  const TemplateReplacements* replacements_;
-
-  DISALLOW_COPY_AND_ASSIGN(I18nSourceStream);
+  raw_ptr<const TemplateReplacements> replacements_;
 };
 
 }  // namespace ui

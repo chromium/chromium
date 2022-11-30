@@ -10,8 +10,6 @@ handler: layer(800x600) has hit test rect (0,0 800x600)
 handler: layer(800x600) has hit test rect (0,0 800x600)
 handler: layer(800x600) has hit test rect (0,0 800x600)
 handler: layer(800x600) has hit test rect (0,0 800x600)
-handler: layer(800x600) has hit test rect (0,0 800x600)
-handler: layer(800x600) has hit test rect (0,0 800x600)
 
 Found composited video layer, as expected
 END OF TEST

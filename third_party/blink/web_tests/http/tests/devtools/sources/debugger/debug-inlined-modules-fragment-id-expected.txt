@@ -1,0 +1,25 @@
+Tests that all inlined modules from the same document are shown in the same source frame with html script tags. Bug 1338257.
+
+window.location: #hash
+Script source was shown.
+Script execution paused.
+Call stack:
+    0) f4 (inline-modules.html:7)
+    1)  (inline-modules.html:9)
+==Source frame contents start==
+<!DOCTYPE html>
+<html>
+<head>
+<script type="module">
+function f4()
+{
+    return 0;
+}
+f4();
+</script>
+</head>
+</html>
+
+==Source frame contents end==
+Page reloaded.
+

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:title="@string/privacy_sandbox_ad_personalization_subtitle"
+        android:selectable="false"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
+        android:key="ad_personalization_description"
+        android:selectable="false"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:key="topic_interests"
+        android:title="@string/privacy_sandbox_topic_interests_subtitle"
+        app:isPreferenceVisible="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="empty_topics"
+        android:summary="@string/privacy_sandbox_topic_empty_state"
+        android:selectable="false"
+        app:isPreferenceVisible="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="removed_topics"
+        android:title="@string/privacy_sandbox_remove_interest_title"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
+        app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="false" />
+
+    <PreferenceCategory
+        android:key="fledge_interests"
+        android:title="@string/privacy_sandbox_fledge_subtitle"
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="true" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="empty_fledge"
+        android:summary="@string/privacy_sandbox_fledge_empty_state"
+        android:selectable="false"
+        app:isPreferenceVisible="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="removed_sites"
+        android:title="@string/privacy_sandbox_remove_sites_title"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
+        app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false" />
+
+</PreferenceScreen>

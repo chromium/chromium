@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,30 @@
 
 #include <string>
 
-#include "base/callback.h"
-#include "base/macros.h"
+#include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "base/time/time.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/uninstall_reason.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 
 class Profile;
 
 namespace base {
 class TickClock;
+class TimeTicks;
+}  // namespace base
+
+namespace content {
+class BrowserContext;
 }
 
 namespace extensions {
 class Extension;
-class ExtensionRegistry;
 }  // namespace extensions
 
 namespace lock_screen_apps {
@@ -33,10 +39,14 @@ class LockScreenProfileCreator;
 
 // The default implementation of lock_screen_apps::AppManager.
 class AppManagerImpl : public AppManager,
-                       public chromeos::NoteTakingHelper::Observer,
+                       public ash::NoteTakingHelper::Observer,
                        public extensions::ExtensionRegistryObserver {
  public:
   explicit AppManagerImpl(const base::TickClock* tick_clock);
+
+  AppManagerImpl(const AppManagerImpl&) = delete;
+  AppManagerImpl& operator=(const AppManagerImpl&) = delete;
+
   ~AppManagerImpl() override;
 
   // AppManager implementation:
@@ -58,7 +68,7 @@ class AppManagerImpl : public AppManager,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // chromeos::NoteTakingHelper::Observer:
+  // ash::NoteTakingHelper::Observer:
   void OnAvailableNoteTakingAppsUpdated() override;
   void OnPreferredNoteTakingAppUpdated(Profile* profile) override;
 
@@ -163,16 +173,16 @@ class AppManagerImpl : public AppManager,
 
   const base::TickClock* tick_clock_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extensions_observer_;
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      lock_screen_profile_extensions_observer_;
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extensions_observation_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      lock_screen_profile_extensions_observation_{this};
 
-  ScopedObserver<chromeos::NoteTakingHelper,
-                 chromeos::NoteTakingHelper::Observer>
-      note_taking_helper_observer_;
+  base::ScopedObservation<ash::NoteTakingHelper,
+                          ash::NoteTakingHelper::Observer>
+      note_taking_helper_observation_{this};
 
   // To be called when the lock screen app availability changes.
   base::RepeatingClosure app_changed_callback_;
@@ -187,8 +197,6 @@ class AppManagerImpl : public AppManager,
   int available_lock_screen_app_reloads_ = 0;
 
   base::WeakPtrFactory<AppManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppManagerImpl);
 };
 
 }  // namespace lock_screen_apps

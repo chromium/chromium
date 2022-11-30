@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "headless/public/devtools/domains/accessibility.h"
 #include "headless/public/devtools/domains/animation.h"
-#include "headless/public/devtools/domains/application_cache.h"
 #include "headless/public/devtools/domains/browser.h"
 #include "headless/public/devtools/domains/cache_storage.h"
 #include "headless/public/devtools/domains/console.h"
@@ -61,12 +61,16 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
       public internal::MessageDispatcher {
  public:
   HeadlessDevToolsClientImpl();
+
+  HeadlessDevToolsClientImpl(const HeadlessDevToolsClientImpl&) = delete;
+  HeadlessDevToolsClientImpl& operator=(const HeadlessDevToolsClientImpl&) =
+      delete;
+
   ~HeadlessDevToolsClientImpl() override;
 
   // HeadlessDevToolsClient implementation:
   accessibility::Domain* GetAccessibility() override;
   animation::Domain* GetAnimation() override;
-  application_cache::Domain* GetApplicationCache() override;
   browser::Domain* GetBrowser() override;
   cache_storage::Domain* GetCacheStorage() override;
   console::Domain* GetConsole() override;
@@ -117,10 +121,10 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   // internal::MessageDispatcher implementation:
   void SendMessage(
       const char* method,
-      std::unique_ptr<base::Value> params,
+      base::Value params,
       base::OnceCallback<void(const base::Value&)> callback) override;
   void SendMessage(const char* method,
-                   std::unique_ptr<base::Value> params,
+                   base::Value params,
                    base::OnceClosure callback) override;
   void RegisterEventHandler(
       const char* method,
@@ -152,12 +156,11 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   };
 
   template <typename CallbackType>
-  void FinalizeAndSendMessage(base::DictionaryValue* message,
-                              CallbackType callback);
+  void FinalizeAndSendMessage(base::Value::Dict message, CallbackType callback);
 
   template <typename CallbackType>
   void SendMessageWithParams(const char* method,
-                             std::unique_ptr<base::Value> params,
+                             base::Value params,
                              CallbackType callback);
 
   bool DispatchMessageReply(std::unique_ptr<base::Value> owning_message,
@@ -177,22 +180,21 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
 
   void ReceiveProtocolMessage(base::span<const uint8_t> json_message,
                               std::unique_ptr<base::DictionaryValue> message);
-  void SendProtocolMessage(const base::DictionaryValue* message);
+  void SendProtocolMessage(const base::Value::Dict& message);
 
   std::unique_ptr<HeadlessDevToolsChannel> channel_;
-  ExternalHost* external_host_ = nullptr;
-  RawProtocolListener* raw_protocol_listener_ = nullptr;
+  raw_ptr<ExternalHost> external_host_ = nullptr;
+  raw_ptr<RawProtocolListener> raw_protocol_listener_ = nullptr;
 
   std::unordered_map<int, Callback> pending_messages_;
   EventHandlerMap event_handlers_;
   std::string session_id_;
-  HeadlessDevToolsClientImpl* parent_client_ = nullptr;
+  raw_ptr<HeadlessDevToolsClientImpl> parent_client_ = nullptr;
   base::flat_map<std::string, HeadlessDevToolsClientImpl*> sessions_;
   bool renderer_crashed_ = false;
 
   accessibility::ExperimentalDomain accessibility_domain_;
   animation::ExperimentalDomain animation_domain_;
-  application_cache::ExperimentalDomain application_cache_domain_;
   browser::ExperimentalDomain browser_domain_;
   cache_storage::ExperimentalDomain cache_storage_domain_;
   console::ExperimentalDomain console_domain_;
@@ -226,8 +228,6 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   tracing::ExperimentalDomain tracing_domain_;
   scoped_refptr<base::SequencedTaskRunner> browser_main_thread_;
   base::WeakPtrFactory<HeadlessDevToolsClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsClientImpl);
 };
 
 }  // namespace headless

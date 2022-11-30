@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/payments/migratable_card_view.h"
 
+#include "base/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_state.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_dialog_view.h"
@@ -14,9 +15,12 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
@@ -24,7 +28,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace autofill {
 
@@ -43,31 +46,25 @@ MigratableCardView::MigratableCardView(
                                                 should_show_checkbox)
                    .release());
 
-  checkbox_uncheck_text_container_ = new views::View();
+  checkbox_uncheck_text_container_ =
+      AddChildView(std::make_unique<views::View>());
   views::BoxLayout* layout = checkbox_uncheck_text_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
-          gfx::Insets(provider->GetDistanceMetric(
-                          views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                      provider->GetDistanceMetric(
-                          views::DISTANCE_RELATED_CONTROL_HORIZONTAL)),
+          gfx::Insets::VH(provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                          provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)),
           provider->GetDistanceMetric(
               views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  views::Label* checkbox_uncheck_text_ = new views::Label(
+  checkbox_uncheck_text_container_->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_CHECKBOX_UNCHECK_WARNING),
-      CONTEXT_DIALOG_BODY_TEXT_SMALL, ChromeTextStyle::STYLE_RED);
-
-  checkbox_uncheck_text_container_->AddChildView(checkbox_uncheck_text_);
-  checkbox_uncheck_text_container_->SetBackground(
-      views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_BubbleFooterBackground)));
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, ChromeTextStyle::STYLE_RED));
   checkbox_uncheck_text_container_->SetVisible(false);
-
-  AddChildView(checkbox_uncheck_text_container_);
 }
 
 MigratableCardView::~MigratableCardView() = default;
@@ -83,6 +80,12 @@ std::string MigratableCardView::GetGuid() const {
 std::u16string MigratableCardView::GetCardIdentifierString() const {
   return migratable_credit_card_.credit_card()
       .CardIdentifierStringForAutofillDisplay();
+}
+
+void MigratableCardView::OnThemeChanged() {
+  View::OnThemeChanged();
+  checkbox_uncheck_text_container_->SetBackground(views::CreateSolidBackground(
+      GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground)));
 }
 
 std::unique_ptr<views::View>
@@ -119,27 +122,28 @@ MigratableCardView::GetMigratableCardDescriptionView(
         // TODO(crbug/867194): Currently the ink drop animation circle is
         // cropped by the border of scroll bar view. Find a way to adjust the
         // format.
-        checkbox_->SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
+        views::InkDrop::Get(checkbox_)->SetMode(
+            views::InkDropHost::InkDropMode::OFF);
         checkbox_->SetAssociatedLabel(card_description.get());
       }
       break;
     }
     case MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD: {
-      auto* migration_succeeded_image = new views::ImageView();
-      migration_succeeded_image->SetImage(gfx::CreateVectorIcon(
-          vector_icons::kCheckCircleIcon, kMigrationResultImageSize,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_AlertSeverityLow)));
-      migratable_card_description_view->AddChildView(migration_succeeded_image);
+      auto* migration_succeeded_image =
+          migratable_card_description_view->AddChildView(
+              std::make_unique<views::ImageView>());
+      migration_succeeded_image->SetImage(ui::ImageModel::FromVectorIcon(
+          vector_icons::kCheckCircleIcon, ui::kColorAlertLowSeverity,
+          kMigrationResultImageSize));
       break;
     }
     case MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD: {
-      auto* migration_failed_image = new views::ImageView();
-      migration_failed_image->SetImage(gfx::CreateVectorIcon(
-          vector_icons::kErrorIcon, kMigrationResultImageSize,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_AlertSeverityHigh)));
-      migratable_card_description_view->AddChildView(migration_failed_image);
+      auto* migration_failed_image =
+          migratable_card_description_view->AddChildView(
+              std::make_unique<views::ImageView>());
+      migration_failed_image->SetImage(ui::ImageModel::FromVectorIcon(
+          vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
+          kMigrationResultImageSize));
       break;
     }
   }

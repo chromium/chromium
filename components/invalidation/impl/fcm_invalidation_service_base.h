@@ -1,12 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_BASE_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/invalidation_logger.h"
@@ -50,7 +52,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
           per_user_topic_subscription_manager_callback,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* pref_service,
-      const std::string& sender_id = {});
+      const std::string& sender_id);
   FCMInvalidationServiceBase(const FCMInvalidationServiceBase& other) = delete;
   FCMInvalidationServiceBase& operator=(
       const FCMInvalidationServiceBase& other) = delete;
@@ -65,13 +67,13 @@ class FCMInvalidationServiceBase : public InvalidationService,
   void RegisterInvalidationHandler(InvalidationHandler* handler) override;
   bool UpdateInterestedTopics(InvalidationHandler* handler,
                               const TopicSet& topics) override;
+  void UnsubscribeFromUnregisteredTopics(InvalidationHandler* handler) override;
   void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
   InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;
   InvalidationLogger* GetInvalidationLogger() override;
   void RequestDetailedStatus(
-      base::RepeatingCallback<void(const base::DictionaryValue&)> caller)
-      const override;
+      base::RepeatingCallback<void(base::Value::Dict)> caller) const override;
 
   // FCMInvalidationListener::Delegate implementation.
   void OnInvalidate(const TopicInvalidationMap& invalidation_map) override;
@@ -82,7 +84,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
   void InitForTest(
       std::unique_ptr<FCMInvalidationListener> invalidation_listener);
 
-  virtual base::DictionaryValue CollectDebugData() const;
+  virtual base::Value::Dict CollectDebugData() const;
 
   // Returns true if the service is currently started and able to receive
   // invalidations.
@@ -127,11 +129,11 @@ class FCMInvalidationServiceBase : public InvalidationService,
   PerUserTopicSubscriptionManagerCallback
       per_user_topic_subscription_manager_callback_;
 
-  instance_id::InstanceIDDriver* const instance_id_driver_;
+  const raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   // The invalidator client ID, aka instance ID.
   std::string client_id_;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   bool update_was_requested_ = false;
   Diagnostics diagnostic_info_;

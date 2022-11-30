@@ -1,7 +1,7 @@
 Name: libxslt
 URL: http://xmlsoft.org/XSLT
-Version: 7238299d64847e44bfe92170af1c7c57e26d469a
-CPEPrefix: cpe:/a:xmlsoft:libxslt:1.1.34
+Version: 5d8d8dd892b5b5827e1e7ba915158e33f4dfe606
+CPEPrefix: cpe:/a:xmlsoft:libxslt:1.1.37
 Security Critical: yes
 License: MIT
 License File: src/Copyright

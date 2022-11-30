@@ -1,44 +1,65 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("./modules/modules.gni")
+import("./realbox/realbox.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
+# Test files that do not require preprocessing.
+non_preprocessed_files = [
+                           "app_test.ts",
+                           "background_manager_test.ts",
+                           "customize_backgrounds_test.ts",
+                           "customize_dialog_focus_test.ts",
+                           "customize_dialog_test.ts",
+                           "customize_modules_test.ts",
+                           "customize_shortcuts_test.ts",
+                           "doodle_share_dialog_focus_test.ts",
+                           "doodle_share_dialog_test.ts",
+                           "lens_form_test.ts",
+                           "lens_upload_dialog_test.ts",
+                           "logo_test.ts",
+                           "metrics_test_support.ts",
+                           "metrics_utils_test.ts",
+                           "middle_slot_promo_test.ts",
+                           "test_support.ts",
+                           "utils_test.ts",
+                           "voice_search_overlay_test.ts",
+                         ] + modules_test_files + realbox_test_files
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://new-tab-page/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = non_preprocessed_files
+
+  definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
+
   deps = [
-    ":img_test",
-    ":metrics_utils_test",
-    ":test_support",
-    "modules:module_header_test",
-    "modules:module_registry_test",
+    "..:build_ts",
+    "//chrome/browser/resources/new_tab_page:build_ts",
   ]
 }
 
-js_library("img_test") {
-  deps = [ "//chrome/browser/resources/new_tab_page" ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
+generate_grd("build_grdp") {
+  grd_prefix = "webui_new_tab_page"
+  out_grd = "$target_gen_dir/resources.grdp"
 
-js_library("metrics_test_support") {
-}
-
-js_library("metrics_utils_test") {
-  deps = [
-    ":metrics_test_support",
-    "//chrome/browser/resources/new_tab_page",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("test_support") {
-  deps = [
-    "//chrome/browser/resources/new_tab_page",
-    "//chrome/test/data/webui:test_browser_proxy.m",
-  ]
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "new_tab_page"
 }

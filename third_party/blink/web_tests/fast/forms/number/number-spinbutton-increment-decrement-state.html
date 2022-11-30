@@ -8,10 +8,13 @@ This test validates that behavior. -->
 <div id = "numValue">input number value: 0</div>
 <script>
     var num1 = document.getElementById("num1");
-    var mouseX = num1.offsetLeft + num1.offsetWidth - 5;
-    var mouseY = num1.offsetTop + 5;
-    eventSender.mouseMoveTo(mouseX, mouseY);
+    // Border and padding of the input element make the minimum 3,
+    // so we use 5 for vertical offset.
+    var verticalOffsetToUpButton = 5;
+    var upButtonX = num1.offsetLeft + num1.offsetWidth - 5;
+    var upButtonY = num1.offsetTop + verticalOffsetToUpButton;
+    eventSender.mouseMoveTo(upButtonX, upButtonY);
     eventSender.mouseDown();
-    eventSender.mouseMoveTo(mouseX, mouseY + 10);
+    eventSender.mouseMoveTo(upButtonX, upButtonY + 10);
     document.getElementById("numValue").innerHTML = `input number value: ${num1.value}`;
 </script>

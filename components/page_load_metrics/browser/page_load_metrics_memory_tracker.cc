@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 namespace features {
 
 // Enables or disables per-frame memory monitoring.
-const base::Feature kV8PerFrameMemoryMonitoring{
-    "V8PerFrameMemoryMonitoring", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kV8PerFrameMemoryMonitoring,
+             "V8PerFrameMemoryMonitoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -47,9 +48,8 @@ PageLoadMetricsMemoryTracker::PageLoadMetricsMemoryTracker() {
   if (base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
     memory_request_ = std::make_unique<
         performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
-        base::TimeDelta::FromSeconds(60),
-        performance_manager::v8_memory::V8DetailedMemoryRequest::
-            MeasurementMode::kLazy);
+        base::Seconds(60), performance_manager::v8_memory::
+                               V8DetailedMemoryRequest::MeasurementMode::kLazy);
     memory_request_->AddObserver(this);
   }
 }
@@ -74,7 +74,7 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
 
   // Iterate through frames with available measurements.
   for (const auto& map_pair : frame_data) {
-    content::GlobalFrameRoutingId frame_routing_id = map_pair.first;
+    content::GlobalRenderFrameHostId frame_routing_id = map_pair.first;
     content::RenderFrameHost* rfh =
         content::RenderFrameHost::FromID(frame_routing_id);
 
@@ -104,14 +104,13 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
       continue;
 
     auto emplace_pair = memory_update_map.emplace(std::make_pair(
-        observer,
-        ObserverWeakPtrAndMemoryUpdates(
-            observer->AsWeakPtr(),
-            MemoryUpdate(rfh->GetGlobalFrameRoutingId(), delta_bytes))));
+        observer, ObserverWeakPtrAndMemoryUpdates(
+                      observer->AsWeakPtr(),
+                      MemoryUpdate(rfh->GetGlobalId(), delta_bytes))));
 
     if (!emplace_pair.second) {
       emplace_pair.first->second.updates.emplace_back(
-          MemoryUpdate(rfh->GetGlobalFrameRoutingId(), delta_bytes));
+          MemoryUpdate(rfh->GetGlobalId(), delta_bytes));
     }
   }
 
@@ -152,8 +151,8 @@ void PageLoadMetricsMemoryTracker::OnRenderFrameDeleted(
   if (delta_bytes == 0)
     return;
 
-  std::vector<MemoryUpdate> update({MemoryUpdate(
-      render_frame_host->GetGlobalFrameRoutingId(), delta_bytes)});
+  std::vector<MemoryUpdate> update(
+      {MemoryUpdate(render_frame_host->GetGlobalId(), delta_bytes)});
   observer->OnV8MemoryChanged(update);
 }
 

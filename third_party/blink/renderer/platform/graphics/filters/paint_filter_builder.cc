@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkTableColorFilter.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 namespace paint_filter_builder {
@@ -115,7 +116,8 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
     // raster the mask to a bitmap, then encode it in an SkImageSource, which
     // can be serialized.
     SkBitmap bitmap;
-    const SkRect mask_record_bounds = reflection.MaskBounds();
+    const SkRect mask_record_bounds =
+        gfx::RectFToSkRect(reflection.MaskBounds());
     SkRect mask_bounds_rounded;
     mask_record_bounds.roundOut(&mask_bounds_rounded);
     SkScalar mask_buffer_size =
@@ -124,7 +126,7 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
       bitmap.allocPixels(SkImageInfo::MakeN32Premul(
           mask_bounds_rounded.width(), mask_bounds_rounded.height()));
       SkiaPaintCanvas canvas(bitmap);
-      canvas.clear(SK_ColorTRANSPARENT);
+      canvas.clear(SkColors::kTransparent);
       canvas.translate(-mask_record_bounds.x(), -mask_record_bounds.y());
       canvas.drawPicture(mask_record);
       PaintImage image = PaintImageBuilder::WithDefault()
@@ -142,8 +144,9 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
           SkBlendMode::kSrcIn,
           sk_make_sp<OffsetPaintFilter>(
               mask_record_bounds.x(), mask_record_bounds.y(),
-              sk_make_sp<ImagePaintFilter>(std::move(image), image_rect,
-                                           image_rect, kHigh_SkFilterQuality)),
+              sk_make_sp<ImagePaintFilter>(
+                  std::move(image), image_rect, image_rect,
+                  cc::PaintFlags::FilterQuality::kHigh)),
           input, &crop_rect);
     } else {
       // If the buffer is excessively big, give up and make an
@@ -159,7 +162,7 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
     masked_input = input;
   }
   sk_sp<PaintFilter> flip_image_filter = sk_make_sp<MatrixPaintFilter>(
-      reflection.ReflectionMatrix(), kLow_SkFilterQuality,
+      reflection.ReflectionMatrix(), cc::PaintFlags::FilterQuality::kLow,
       std::move(masked_input));
   return sk_make_sp<XfermodePaintFilter>(
       SkBlendMode::kSrcOver, std::move(flip_image_filter), std::move(input));

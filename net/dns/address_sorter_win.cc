@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@
 #include <winsock2.h>
 
 #include <algorithm>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/winsock_init.h"
@@ -30,21 +29,26 @@ class AddressSorterWin : public AddressSorter {
     EnsureWinsockInit();
   }
 
+  AddressSorterWin(const AddressSorterWin&) = delete;
+  AddressSorterWin& operator=(const AddressSorterWin&) = delete;
+
   ~AddressSorterWin() override {}
 
   // AddressSorter:
-  void Sort(const AddressList& list, CallbackType callback) const override {
-    DCHECK(!list.empty());
-    Job::Start(list, std::move(callback));
+  void Sort(const std::vector<IPEndPoint>& endpoints,
+            CallbackType callback) const override {
+    DCHECK(!endpoints.empty());
+    Job::Start(endpoints, std::move(callback));
   }
 
  private:
   // Executes the SIO_ADDRESS_LIST_SORT ioctl asynchronously, and
-  // performs the necessary conversions to/from AddressList.
+  // performs the necessary conversions to/from `std::vector<IPEndPoint>`.
   class Job : public base::RefCountedThreadSafe<Job> {
    public:
-    static void Start(const AddressList& list, CallbackType callback) {
-      auto job = base::WrapRefCounted(new Job(list, std::move(callback)));
+    static void Start(const std::vector<IPEndPoint>& endpoints,
+                      CallbackType callback) {
+      auto job = base::WrapRefCounted(new Job(endpoints, std::move(callback)));
       base::ThreadPool::PostTaskAndReply(
           FROM_HERE,
           {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
@@ -52,26 +56,28 @@ class AddressSorterWin : public AddressSorter {
           base::BindOnce(&Job::OnComplete, job));
     }
 
+    Job(const Job&) = delete;
+    Job& operator=(const Job&) = delete;
+
    private:
     friend class base::RefCountedThreadSafe<Job>;
 
-    Job(const AddressList& list, CallbackType callback)
+    Job(const std::vector<IPEndPoint>& endpoints, CallbackType callback)
         : callback_(std::move(callback)),
           buffer_size_((sizeof(SOCKET_ADDRESS_LIST) +
-                        base::CheckedNumeric<DWORD>(list.size()) *
+                        base::CheckedNumeric<DWORD>(endpoints.size()) *
                             (sizeof(SOCKET_ADDRESS) + sizeof(SOCKADDR_STORAGE)))
                            .ValueOrDie<DWORD>()),
           input_buffer_(
               reinterpret_cast<SOCKET_ADDRESS_LIST*>(malloc(buffer_size_))),
           output_buffer_(
-              reinterpret_cast<SOCKET_ADDRESS_LIST*>(malloc(buffer_size_))),
-          success_(false) {
-      input_buffer_->iAddressCount = base::checked_cast<INT>(list.size());
+              reinterpret_cast<SOCKET_ADDRESS_LIST*>(malloc(buffer_size_))) {
+      input_buffer_->iAddressCount = base::checked_cast<INT>(endpoints.size());
       SOCKADDR_STORAGE* storage = reinterpret_cast<SOCKADDR_STORAGE*>(
           input_buffer_->Address + input_buffer_->iAddressCount);
 
-      for (size_t i = 0; i < list.size(); ++i) {
-        IPEndPoint ipe = list[i];
+      for (size_t i = 0; i < endpoints.size(); ++i) {
+        IPEndPoint ipe = endpoints[i];
         // Addresses must be sockaddr_in6.
         if (ipe.address().IsIPv4()) {
           ipe = IPEndPoint(ConvertIPv4ToIPv4MappedIPv6(ipe.address()),
@@ -108,9 +114,9 @@ class AddressSorterWin : public AddressSorter {
 
     // Executed on the calling thread.
     void OnComplete() {
-      AddressList list;
+      std::vector<IPEndPoint> sorted;
       if (success_) {
-        list.reserve(output_buffer_->iAddressCount);
+        sorted.reserve(output_buffer_->iAddressCount);
         for (int i = 0; i < output_buffer_->iAddressCount; ++i) {
           IPEndPoint ipe;
           bool result =
@@ -123,29 +129,25 @@ class AddressSorterWin : public AddressSorter {
             ipe = IPEndPoint(ConvertIPv4MappedIPv6ToIPv4(ipe.address()),
                              ipe.port());
           }
-          list.push_back(ipe);
+          sorted.push_back(ipe);
         }
       }
-      std::move(callback_).Run(success_, list);
+      std::move(callback_).Run(success_, std::move(sorted));
     }
 
     CallbackType callback_;
     const DWORD buffer_size_;
     std::unique_ptr<SOCKET_ADDRESS_LIST, base::FreeDeleter> input_buffer_;
     std::unique_ptr<SOCKET_ADDRESS_LIST, base::FreeDeleter> output_buffer_;
-    bool success_;
-
-    DISALLOW_COPY_AND_ASSIGN(Job);
+    bool success_ = false;
   };
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSorterWin);
 };
 
 }  // namespace
 
 // static
 std::unique_ptr<AddressSorter> AddressSorter::CreateAddressSorter() {
-  return std::unique_ptr<AddressSorter>(new AddressSorterWin());
+  return std::make_unique<AddressSorterWin>();
 }
 
 }  // namespace net

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,16 +18,14 @@ BluetoothGattCharacteristicDelegateWrapper::
 
 void BluetoothGattCharacteristicDelegateWrapper::GetValue(
     const dbus::ObjectPath& device_path,
-    device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
+    device::BluetoothLocalGattService::Delegate::ValueCallback callback) {
   device::BluetoothDevice* device = GetDeviceWithPath(device_path);
   if (!device) {
     LOG(WARNING) << "Bluetooth device not found: " << device_path.value();
     return;
   }
-  service()->GetDelegate()->OnCharacteristicReadRequest(
-      device, characteristic_, 0, std::move(callback),
-      std::move(error_callback));
+  service()->GetDelegate()->OnCharacteristicReadRequest(device, characteristic_,
+                                                        0, std::move(callback));
 }
 
 void BluetoothGattCharacteristicDelegateWrapper::SetValue(

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Device Attributes API entry point in Origin-Trial enabled document. assert_true: getAnnotatedAssetId method exists on managed scope expected true got false
+Harness: the test ran to completion.
+

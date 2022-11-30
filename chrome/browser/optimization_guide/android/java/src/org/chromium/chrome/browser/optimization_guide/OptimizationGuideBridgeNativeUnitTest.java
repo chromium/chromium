@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.optimization_guide;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -58,36 +57,38 @@ public class OptimizationGuideBridgeNativeUnitTest {
     public void testRegisterOptimizationTypes() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
         bridge.registerOptimizationTypes(Arrays.asList(new OptimizationType[] {
-                OptimizationType.PERFORMANCE_HINTS, OptimizationType.DEFER_ALL_SCRIPT}));
+                OptimizationType.LOADING_PREDICTOR, OptimizationType.DEFER_ALL_SCRIPT}));
     }
 
     @CalledByNative
-    public void testCanApplyOptimizationPreInit() {
+    public void testCanApplyOptimizationAsyncHasHint() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
         NavigationHandle navHandle =
-                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
+                new NavigationHandle(0, new GURL(TEST_URL), GURL.emptyGURL(), GURL.emptyGURL(),
+                        true, false, false, null, 0, false, false, false, false, 0, false, false);
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
-        bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, callback);
+        bridge.canApplyOptimizationAsync(navHandle, OptimizationType.LOADING_PREDICTOR, callback);
 
         assertTrue(callback.wasCalled());
-        assertEquals(OptimizationGuideDecision.UNKNOWN, callback.getDecision());
-        assertNull(callback.getMetadata());
+        assertEquals(OptimizationGuideDecision.TRUE, callback.getDecision());
+        assertNotNull(callback.getMetadata());
+        assertEquals("optimization_guide.proto.LoadingPredictorMetadata",
+                callback.getMetadata().getTypeUrl());
     }
 
     @CalledByNative
     public void testCanApplyOptimizationHasHint() {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
 
-        NavigationHandle navHandle =
-                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
         OptimizationGuideCallback callback = new OptimizationGuideCallback();
-        bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, callback);
+        bridge.canApplyOptimization(
+                new GURL(TEST_URL), OptimizationType.LOADING_PREDICTOR, callback);
 
         assertTrue(callback.wasCalled());
         assertEquals(OptimizationGuideDecision.TRUE, callback.getDecision());
         assertNotNull(callback.getMetadata());
-        assertEquals("optimization_guide.proto.PerformanceHintsMetadata",
+        assertEquals("optimization_guide.proto.LoadingPredictorMetadata",
                 callback.getMetadata().getTypeUrl());
     }
 }

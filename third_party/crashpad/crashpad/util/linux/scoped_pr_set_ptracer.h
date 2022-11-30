@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -37,13 +36,14 @@ class ScopedPrSetPtracer {
   //! \param[in] may_log if `true`, this class may log error messages.
   ScopedPrSetPtracer(pid_t pid, bool may_log);
 
+  ScopedPrSetPtracer(const ScopedPrSetPtracer&) = delete;
+  ScopedPrSetPtracer& operator=(const ScopedPrSetPtracer&) = delete;
+
   ~ScopedPrSetPtracer();
 
  private:
   bool success_;
   bool may_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPrSetPtracer);
 };
 
 }  // namespace crashpad

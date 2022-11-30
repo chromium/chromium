@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -32,6 +33,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -205,20 +208,22 @@ public class PseudoTabUnitTest {
     @Test
     public void getTitle_provider() {
         String title = "title provider";
-        PseudoTab.TitleProvider provider = (tab) -> title;
+        PseudoTab.TitleProvider provider = (context, tab) -> title;
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(title, tab.getTitle(provider));
+        Assert.assertEquals(title, tab.getTitle(ContextUtils.getApplicationContext(), provider));
 
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);
-        Assert.assertEquals(title, realTab.getTitle(provider));
+        Assert.assertEquals(
+                title, realTab.getTitle(ContextUtils.getApplicationContext(), provider));
     }
 
     @Test
     public void getTitle_nullProvider() {
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(tab.getTitle(), tab.getTitle(null));
+        Assert.assertEquals(
+                tab.getTitle(), tab.getTitle(ContextUtils.getApplicationContext(), null));
     }
 
     @Test
@@ -249,11 +254,11 @@ public class PseudoTabUnitTest {
 
     @Test
     public void getUrl_real() {
-        String url = "url 1 real";
-        doReturn(url).when(mTab1).getUrlString();
+        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        doReturn(url).when(mTab1).getUrl();
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals("", tab.getUrl());
+        Assert.assertEquals(GURL.emptyGURL(), tab.getUrl());
 
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);
@@ -262,11 +267,11 @@ public class PseudoTabUnitTest {
 
     @Test
     public void getUrl_cache() {
-        String url = "url 1";
-        TabAttributeCache.setUrlForTesting(TAB1_ID, url);
+        String url = JUnitTestGURLs.URL_1;
+        TabAttributeCache.setUrlForTesting(TAB1_ID, JUnitTestGURLs.getGURL(url));
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(url, tab.getUrl());
+        Assert.assertEquals(url, tab.getUrl().getSpec());
 
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);
@@ -347,7 +352,8 @@ public class PseudoTabUnitTest {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 
         PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(tab1, mTabModelSelector);
+        List<PseudoTab> related = PseudoTab.getRelatedTabs(
+                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
         Assert.assertEquals(1, related.size());
         Assert.assertEquals(TAB1_ID, related.get(0).getId());
     }
@@ -365,7 +371,8 @@ public class PseudoTabUnitTest {
         PseudoTab tab2 = PseudoTab.fromTabId(TAB2_ID);
         Assert.assertEquals(TAB1_ID, tab2.getRootId());
 
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(tab1, mTabModelSelector);
+        List<PseudoTab> related = PseudoTab.getRelatedTabs(
+                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
         Assert.assertEquals(1, related.size());
         Assert.assertEquals(TAB1_ID, related.get(0).getId());
     }
@@ -376,7 +383,8 @@ public class PseudoTabUnitTest {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 
         PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(tab1, mTabModelSelector);
+        List<PseudoTab> related = PseudoTab.getRelatedTabs(
+                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
         Assert.assertEquals(1, related.size());
         Assert.assertEquals(TAB1_ID, related.get(0).getId());
     }
@@ -391,7 +399,8 @@ public class PseudoTabUnitTest {
         PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
         PseudoTab.fromTabId(TAB2_ID);
 
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(tab1, mTabModelSelector);
+        List<PseudoTab> related = PseudoTab.getRelatedTabs(
+                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
         Assert.assertEquals(2, related.size());
         Assert.assertEquals(TAB1_ID, related.get(0).getId());
         Assert.assertEquals(TAB2_ID, related.get(1).getId());
@@ -409,7 +418,8 @@ public class PseudoTabUnitTest {
         PseudoTab.fromTabId(TAB2_ID);
         PseudoTab.fromTabId(TAB3_ID);
 
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(tab1, mTabModelSelector);
+        List<PseudoTab> related = PseudoTab.getRelatedTabs(
+                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
         Assert.assertEquals(1, related.size());
         Assert.assertEquals(TAB1_ID, related.get(0).getId());
     }
@@ -422,7 +432,8 @@ public class PseudoTabUnitTest {
         doReturn(tabs).when(mTabModelFilter).getRelatedTabList(TAB1_ID);
 
         PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(tab1, mTabModelSelector);
+        List<PseudoTab> related = PseudoTab.getRelatedTabs(
+                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
         Assert.assertEquals(3, related.size());
         Assert.assertEquals(TAB1_ID, related.get(0).getId());
         Assert.assertEquals(TAB2_ID, related.get(1).getId());
@@ -440,7 +451,8 @@ public class PseudoTabUnitTest {
         doReturn(tabs).when(mTabModelFilter2).getRelatedTabList(TAB1_ID);
 
         PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(tab1, mTabModelSelector);
+        List<PseudoTab> related = PseudoTab.getRelatedTabs(
+                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
         Assert.assertEquals(2, related.size());
         Assert.assertEquals(TAB1_ID, related.get(0).getId());
         Assert.assertEquals(TAB2_ID, related.get(1).getId());
@@ -465,7 +477,7 @@ public class PseudoTabUnitTest {
         // Url was not set. Without the isInitialized() check,
         // pseudoTab.getUrl() would crash here with
         // UnsupportedOperationException
-        Assert.assertEquals("", pseudoTab.getUrl());
+        Assert.assertEquals("", pseudoTab.getUrl().getSpec());
     }
 
     @Test

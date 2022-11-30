@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,9 @@ class BASE_EXPORT UnguessableTokenAndroid {
       JNIEnv* env,
       const JavaRef<jobject>& token);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnguessableTokenAndroid);
+  UnguessableTokenAndroid() = delete;
+  UnguessableTokenAndroid(const UnguessableTokenAndroid&) = delete;
+  UnguessableTokenAndroid& operator=(const UnguessableTokenAndroid&) = delete;
 };
 
 }  // namespace android

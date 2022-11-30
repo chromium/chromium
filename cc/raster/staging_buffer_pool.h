@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,10 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_event.h"
@@ -127,7 +128,7 @@ class CC_EXPORT StagingBufferPool final
       base::MemoryPressureListener::MemoryPressureLevel level);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  viz::RasterContextProvider* const worker_context_provider_;
+  const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
   const bool use_partial_raster_;
 
   mutable base::Lock lock_;

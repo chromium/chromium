@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ void TextDetectionImpl::Create(
     DVLOG(1) << "Optical character recognition not supported before Windows 10";
     return;
   }
-  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240);
+  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
   // Loads functions dynamically at runtime to prevent library dependencies.
   if (!(base::win::ResolveCoreWinRTDelayload() &&
@@ -219,9 +219,9 @@ TextDetectionImplWin::BuildTextDetectionResult(ComPtr<IOcrResult> ocr_result) {
       break;
 
     auto result = shape_detection::mojom::TextDetectionResult::New();
-    for (uint32_t i = 0; i < words_count; ++i) {
+    for (uint32_t word_num = 0; word_num < words_count; ++word_num) {
       ComPtr<IOcrWord> word;
-      hr = ocr_words->GetAt(i, &word);
+      hr = ocr_words->GetAt(word_num, &word);
       if (FAILED(hr))
         break;
 

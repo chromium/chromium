@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_SELECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_SELECTION_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -154,10 +155,10 @@ PositionInFlatTree ComputeEndRespectingGranularity(
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::VisibleSelection&);
-void showTree(const blink::VisibleSelection*);
-void showTree(const blink::VisibleSelectionInFlatTree&);
-void showTree(const blink::VisibleSelectionInFlatTree*);
+void ShowTree(const blink::VisibleSelection&);
+void ShowTree(const blink::VisibleSelection*);
+void ShowTree(const blink::VisibleSelectionInFlatTree&);
+void ShowTree(const blink::VisibleSelectionInFlatTree*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_SELECTION_H_

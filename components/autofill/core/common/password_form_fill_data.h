@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,8 @@ struct PasswordFormFillData {
   // An URL consisting of the scheme, host, port and path; the rest is stripped.
   GURL url;
 
-  // The action target of the form; like |url| URL consists of the scheme,
-  // host, port and path; the rest is stripped.
+  // The action target of the form; like |url|, consists of the scheme, host,
+  // port and path; the rest is stripped.
   GURL action;
 
   // Username and password input fields in the form.

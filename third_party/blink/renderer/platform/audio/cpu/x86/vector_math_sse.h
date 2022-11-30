@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ namespace blink {
 namespace vector_math {
 namespace sse {
 
-constexpr size_t kBitsPerRegister = 128u;
-constexpr size_t kPackedFloatsPerRegister = kBitsPerRegister / 32u;
+constexpr uint32_t kBitsPerRegister = 128u;
+constexpr uint32_t kPackedFloatsPerRegister = kBitsPerRegister / 32u;
 constexpr size_t kFramesToProcessMask = ~(kPackedFloatsPerRegister - 1u);
 
 bool IsAligned(const float*);

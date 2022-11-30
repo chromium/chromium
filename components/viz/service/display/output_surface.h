@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,27 +9,31 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "gpu/ipc/gpu_task_scheduler_helper.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/surface_origin.h"
 #include "ui/latency/latency_info.h"
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 class ColorSpace;
 class Rect;
 class Size;
@@ -60,8 +64,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   struct Capabilities {
     Capabilities();
     Capabilities(const Capabilities& capabilities);
+    Capabilities& operator=(const Capabilities& capabilities);
 
-    int max_frames_pending = 1;
+    PendingSwapParams pending_swap_params{1};
     // The number of buffers for the SkiaOutputDevice. If the
     // |supports_post_sub_buffer| true, SkiaOutputSurfaceImpl will track target
     // damaged area based on this number.
@@ -71,10 +76,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     bool uses_default_gl_framebuffer = true;
     // Where (0,0) is on this OutputSurface.
     gfx::SurfaceOrigin output_surface_origin = gfx::SurfaceOrigin::kBottomLeft;
-    // Whether this OutputSurface supports stencil operations or not.
-    // Note: HasExternalStencilTest() must return false when an output surface
-    // has been configured for stencil usage.
-    bool supports_stencil = false;
     // Whether this OutputSurface supports post sub buffer or not.
     bool supports_post_sub_buffer = false;
     // Whether this OutputSurface supports commit overlay planes.
@@ -127,29 +128,45 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // True if the OutputSurface can resize to match the size of the root
     // surface. E.g. Wayland protocol allows this.
     bool resize_based_on_root_surface = false;
+    // Some configuration supports allocating frame buffers on demand.
+    // When enabled, `number_of_buffers` should be interpreted as the maximum
+    // number of buffers to allocate.
+    bool supports_dynamic_frame_buffer_allocation = false;
+    // True when SkiaRenderer allocates and maintains a buffer queue of images
+    // for the root render pass.
+    bool renderer_allocates_images = false;
+    // Wayland only: determines whether BufferQueue needs a background image to
+    // be stacked below an AcceleratedWidget to make a widget opaque.
+    bool needs_background_image = false;
+    // Whether the platform supports non-backed solid color overlays. The
+    // Wayland backend is able to delegate these overlays without buffer
+    // backings depending on the availability of a certain protocol.
+    bool supports_non_backed_solid_color_overlays = false;
 
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =
         {};
+
+    // Max size for textures.
+    int max_texture_size = 0;
   };
 
   // Constructor for skia-based compositing.
   explicit OutputSurface(Type type);
-  // Constructor for GL-based compositing.
-  explicit OutputSurface(scoped_refptr<ContextProvider> context_provider);
   // Constructor for software compositing.
   explicit OutputSurface(std::unique_ptr<SoftwareOutputDevice> software_device);
+
+  OutputSurface(const OutputSurface&) = delete;
+  OutputSurface& operator=(const OutputSurface&) = delete;
 
   virtual ~OutputSurface();
 
   const Capabilities& capabilities() const { return capabilities_; }
   Type type() const { return type_; }
 
-  // Obtain the 3d context or the software device associated with this output
-  // surface. Either of these may return a null pointer, but not both.
-  // In the event of a lost context, the entire output surface should be
-  // recreated.
-  ContextProvider* context_provider() const { return context_provider_.get(); }
+  // Obtain the software device associated with this output surface. This will
+  // return non-null for a software output surface and null for skia output
+  // surface.
   SoftwareOutputDevice* software_device() const {
     return software_device_.get();
   }
@@ -157,10 +174,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Downcasts to SkiaOutputSurface if it is one and returns nullptr otherwise.
   virtual SkiaOutputSurface* AsSkiaOutputSurface();
 
-  void set_color_matrix(const SkMatrix44& color_matrix) {
+  void set_color_matrix(const SkM44& color_matrix) {
     color_matrix_ = color_matrix;
   }
-  const SkMatrix44& color_matrix() const { return color_matrix_; }
+  const SkM44& color_matrix() const { return color_matrix_; }
 
   // Only useful for GPU backend.
   virtual gpu::SurfaceHandle GetSurfaceHandle() const;
@@ -170,12 +187,14 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   virtual void EnsureBackbuffer() = 0;
   virtual void DiscardBackbuffer() = 0;
 
-  // Bind the default framebuffer for drawing to, only valid for GL backed
-  // OutputSurfaces.
-  virtual void BindFramebuffer() = 0;
-
   // Marks that the given rectangle will be drawn to on the default, bound
-  // framebuffer. Only valid if |capabilities().supports_dc_layers| is true.
+  // framebuffer. The contents of the framebuffer are undefined after this
+  // command and must be filled in completely before a swap happens. Drawing
+  // outside this rectangle causes undefined behavior.
+  //
+  // Note: This is only valid to call if `capabilities().supports_dc_layers` is
+  // true. It can only be called once per swap and must be called before
+  // drawing to the default framebuffer.
   virtual void SetDrawRectangle(const gfx::Rect& rect);
 
   // Enable or disable DC layers. Must be called before DC layers are scheduled.
@@ -185,24 +204,31 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Returns true if a main image overlay plane should be scheduled.
   virtual bool IsDisplayedAsOverlayPlane() const = 0;
 
-  // Get the texture for the main image's overlay.
-  virtual unsigned GetOverlayTextureId() const = 0;
-
   // Returns the |mailbox| corresponding to the main image's overlay.
   virtual gpu::Mailbox GetOverlayMailbox() const;
 
-  virtual void Reshape(const gfx::Size& size,
-                       float device_scale_factor,
-                       const gfx::ColorSpace& color_space,
-                       gfx::BufferFormat format,
-                       bool use_stencil) = 0;
+  // Reshape the output surface.
+  struct ReshapeParams {
+    gfx::Size size;
+    float device_scale_factor = 1.f;
+    gfx::ColorSpace color_space;
+    float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+    // TODO(sunnyps): Change to SkColorType.
+    gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+    SkAlphaType alpha_type = kPremul_SkAlphaType;
 
-  virtual bool HasExternalStencilTest() const = 0;
-  virtual void ApplyExternalStencil() = 0;
-
-  // Gives the GL internal format that should be used for calling CopyTexImage2D
-  // when the framebuffer is bound via BindFramebuffer().
-  virtual uint32_t GetFramebufferCopyTextureFormat() = 0;
+    bool operator==(const ReshapeParams& other) const {
+      return size == other.size &&
+             device_scale_factor == other.device_scale_factor &&
+             color_space == other.color_space &&
+             sdr_white_level == other.sdr_white_level &&
+             format == other.format && alpha_type == other.alpha_type;
+    }
+    bool operator!=(const ReshapeParams& other) const {
+      return !(*this == other);
+    }
+  };
+  virtual void Reshape(const ReshapeParams& params) = 0;
 
   // Swaps the current backbuffer to the screen. For successful swaps, the
   // implementation must call OutputSurfaceClient::DidReceiveSwapBuffersAck()
@@ -218,14 +244,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // surface itself.
   // TODO(dcastagna): Consider making the following pure virtual.
   virtual gfx::Rect GetCurrentFramebufferDamage() const;
-
-  // Updates the GpuFence associated with this surface. The id of a newly
-  // created GpuFence is returned, or if an error occurs, or fences are not
-  // supported, the special id of 0 (meaning "no fence") is returned.  In all
-  // cases, any previously associated fence is destroyed. The returned fence id
-  // corresponds to the GL id used by the CHROMIUM_gpu_fence GL extension and
-  // can be passed directly to any related extension functions.
-  virtual unsigned UpdateGpuFence() = 0;
 
   // Sets callback to receive updated vsync parameters after SwapBuffers() if
   // supported.
@@ -277,16 +295,19 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Notifies the OutputSurface of rate of content updates in frames per second.
   virtual void SetFrameRate(float frame_rate) {}
 
+  // Sends the pending delegated ink renderer receiver to GPU Main to allow the
+  // browser process to send points directly there.
+  virtual void InitDelegatedInkPointRendererReceiver(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+          pending_receiver);
+
  protected:
   struct OutputSurface::Capabilities capabilities_;
-  scoped_refptr<ContextProvider> context_provider_;
-  std::unique_ptr<SoftwareOutputDevice> software_device_;
 
  private:
   const Type type_;
-  SkMatrix44 color_matrix_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputSurface);
+  std::unique_ptr<SoftwareOutputDevice> software_device_;
+  SkM44 color_matrix_;
 };
 
 }  // namespace viz

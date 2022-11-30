@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace media {
 
@@ -89,19 +91,14 @@ void MojoAudioInputStream::OnStreamCreated(
   mojo::PlatformHandle socket_handle(foreign_socket->Take());
 
   std::move(stream_created_callback_)
-      .Run({base::in_place, std::move(shared_memory_region),
+      .Run({absl::in_place, std::move(shared_memory_region),
             std::move(socket_handle)},
            initially_muted);
 }
 
-void MojoAudioInputStream::OnMuted(int stream_id, bool is_muted) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_->OnMutedStateChanged(is_muted);
-}
-
 void MojoAudioInputStream::OnStreamError(int stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_->OnError();
+  client_->OnError(mojom::InputStreamErrorCode::kUnknown);
   OnError();
 }
 

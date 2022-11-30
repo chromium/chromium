@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,31 +10,93 @@
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
+#include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/assistant/assistant_interaction_controller_impl.h"
+#include "ash/assistant/model/assistant_interaction_model.h"
+#include "ash/constants/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
+#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/callback.h"
+#include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/platform/platform_event_source.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 
 namespace ash {
+namespace {
+
+using assistant::AssistantInteractionMetadata;
 
 constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";
 
+class AmbientUiVisibilityBarrier : public AmbientUiModelObserver {
+ public:
+  explicit AmbientUiVisibilityBarrier(AmbientUiVisibility target_visibility)
+      : target_visibility_(target_visibility) {
+    observation_.Observe(AmbientUiModel::Get());
+  }
+  AmbientUiVisibilityBarrier(const AmbientUiVisibilityBarrier&) = delete;
+  AmbientUiVisibilityBarrier& operator=(const AmbientUiVisibilityBarrier&) =
+      delete;
+  ~AmbientUiVisibilityBarrier() override = default;
+
+  void WaitWithTimeout(base::TimeDelta timeout) {
+    if (AmbientUiModel::Get()->ui_visibility() == target_visibility_)
+      return;
+
+    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, timeout);
+    base::RunLoop run_loop;
+    run_loop_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) override {
+    if (visibility == target_visibility_ && run_loop_quit_closure_) {
+      // Post task so that any existing tasks get run before WaitWithTimeout()
+      // completes.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(run_loop_quit_closure_));
+    }
+  }
+
+  const AmbientUiVisibility target_visibility_;
+  base::ScopedObservation<AmbientUiModel, AmbientUiModelObserver> observation_{
+      this};
+  base::RepeatingClosure run_loop_quit_closure_;
+};
+
+}  // namespace
+
 class AmbientControllerTest : public AmbientAshTestBase {
  public:
-  AmbientControllerTest() : AmbientAshTestBase() {}
+  AmbientControllerTest() = default;
   ~AmbientControllerTest() override = default;
 
   // AmbientAshTestBase:
@@ -52,10 +114,9 @@ class AmbientControllerTest : public AmbientAshTestBase {
 
   bool WidgetsVisible() {
     const auto& views = GetContainerViews();
-    return views.size() > 0 &&
-           std::all_of(views.cbegin(), views.cend(), [](const auto* view) {
-             return view->GetWidget()->IsVisible();
-           });
+    return !views.empty() && base::ranges::all_of(views, [](const auto* view) {
+      return view->GetWidget()->IsVisible();
+    });
   }
 
   bool AreSessionSpecificObserversBound() {
@@ -77,7 +138,37 @@ class AmbientControllerTest : public AmbientAshTestBase {
   }
 };
 
-TEST_F(AmbientControllerTest, ShowAmbientScreenUponLock) {
+// Tests for behavior that are agnostic to the AmbientAnimationTheme selected by
+// the user should use this test harness.
+//
+// Currently there are test cases that actually fall under this category but
+// do not use this test fixture. This is done purely for time constraint reasons
+// (it takes a lot of compute time to repeat every single one of these test
+// cases).
+class AmbientControllerTestForAnyTheme
+    : public AmbientControllerTest,
+      public ::testing::WithParamInterface<AmbientAnimationTheme> {
+ protected:
+  void SetUp() override {
+    AmbientControllerTest::SetUp();
+    SetAmbientAnimationTheme(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    SlideshowAndAnimationTheme,
+    AmbientControllerTestForAnyTheme,
+    // Only one lottie-animated theme is sufficient here. The main goal here is
+    // to make sure that fundamental behavior holds for both the slideshow and
+    // lottie-animated codepaths.
+    testing::Values(AmbientAnimationTheme::kSlideshow
+#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
+                    ,
+                    AmbientAnimationTheme::kFeelTheBreeze
+#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
+                    ));
+
+TEST_P(AmbientControllerTestForAnyTheme, ShowAmbientScreenUponLock) {
   LockScreen();
   // Lockscreen will not immediately show Ambient mode.
   EXPECT_FALSE(ambient_controller()->IsShown());
@@ -97,7 +188,7 @@ TEST_F(AmbientControllerTest, ShowAmbientScreenUponLock) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest, NotShowAmbientWhenPrefNotEnabled) {
+TEST_P(AmbientControllerTestForAnyTheme, NotShowAmbientWhenPrefNotEnabled) {
   SetAmbientModeEnabled(false);
 
   LockScreen();
@@ -119,7 +210,7 @@ TEST_F(AmbientControllerTest, NotShowAmbientWhenPrefNotEnabled) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest, HideAmbientScreen) {
+TEST_P(AmbientControllerTestForAnyTheme, HideAmbientScreen) {
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -141,7 +232,7 @@ TEST_F(AmbientControllerTest, HideAmbientScreen) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest, CloseAmbientScreenUponUnlock) {
+TEST_P(AmbientControllerTestForAnyTheme, CloseAmbientScreenUponUnlock) {
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -161,7 +252,8 @@ TEST_F(AmbientControllerTest, CloseAmbientScreenUponUnlock) {
   EXPECT_TRUE(GetContainerViews().empty());
 }
 
-TEST_F(AmbientControllerTest, CloseAmbientScreenUponUnlockSecondaryUser) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       CloseAmbientScreenUponUnlockSecondaryUser) {
   // Simulate the login screen.
   ClearLogin();
   SimulateUserLogin(kUser1);
@@ -232,14 +324,14 @@ TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
   EXPECT_TRUE(GetContainerViews().empty());
 }
 
-TEST_F(AmbientControllerTest, ShouldRequestAccessTokenWhenLockingScreen) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShouldRequestAccessTokenWhenLockingScreen) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  std::string access_token = "access_token";
-  IssueAccessToken(access_token, /*with_error=*/false);
+  IssueAccessToken(/*is_empty=*/false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Should close ambient widget already when unlocking screen.
@@ -259,14 +351,13 @@ TEST_F(AmbientControllerTest, ShouldNotRequestAccessTokenWhenPrefNotEnabled) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 }
 
-TEST_F(AmbientControllerTest, ShouldReturnCachedAccessToken) {
+TEST_P(AmbientControllerTestForAnyTheme, ShouldReturnCachedAccessToken) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  std::string access_token = "access_token";
-  IssueAccessToken(access_token, /*with_error=*/false);
+  IssueAccessToken(/*is_empty=*/false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Another token request will return cached token.
@@ -274,7 +365,7 @@ TEST_F(AmbientControllerTest, ShouldReturnCachedAccessToken) {
   base::RunLoop run_loop;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
       [&](const std::string& gaia_id, const std::string& access_token_fetched) {
-        EXPECT_EQ(access_token_fetched, access_token);
+        EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
         run_loop.Quit();
@@ -292,8 +383,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  std::string access_token = "access_token";
-  IssueAccessToken(access_token, /*with_error=*/false);
+  IssueAccessToken(/*is_empty=*/false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Another token request will return cached token.
@@ -301,7 +391,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   base::RunLoop run_loop_1;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
       [&](const std::string& gaia_id, const std::string& access_token_fetched) {
-        EXPECT_EQ(access_token_fetched, access_token);
+        EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
         run_loop_1.Quit();
@@ -311,8 +401,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
 
   base::RunLoop run_loop_2;
   // When token expired, another token request will get empty token.
-  constexpr base::TimeDelta kTokenRefreshDelay =
-      base::TimeDelta::FromSeconds(60);
+  constexpr base::TimeDelta kTokenRefreshDelay = base::Seconds(60);
   task_environment()->FastForwardBy(kTokenRefreshDelay);
 
   closure = base::MakeExpectedRunClosure(FROM_HERE);
@@ -336,7 +425,7 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Token request automatically retry.
@@ -353,13 +442,13 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   base::TimeDelta delay1 = GetRefreshTokenDelay();
   task_environment()->FastForwardBy(delay1 * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   base::TimeDelta delay2 = GetRefreshTokenDelay();
@@ -378,25 +467,25 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
   // Lock the screen will request a token.
   LockScreen();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // 1st retry.
   task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // 2nd retry.
   task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // 3rd retry.
   task_environment()->FastForwardBy(GetRefreshTokenDelay() * 1.1);
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(/*access_token=*/std::string(), /*with_error=*/true);
+  IssueAccessToken(/*is_empty=*/true);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Will not retry.
@@ -441,15 +530,54 @@ TEST_F(AmbientControllerTest,
 }
 
 TEST_F(AmbientControllerTest,
+       CheckAcquireAndReleaseWakeLockWhenBatteryBatteryIsFullAndDischarging) {
+  SetPowerStateDischarging();
+  SetBatteryPercent(100.f);
+  SetExternalPowerConnected();
+
+  // Lock screen to start ambient mode, and flush the loop to ensure
+  // the acquire wake lock request has reached the wake lock provider.
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  HideAmbientScreen();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  // Ambient screen showup again after inactivity.
+  FastForwardToLockScreenTimeout();
+
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  // Unlock screen to exit ambient mode.
+  UnlockScreen();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+}
+
+TEST_F(AmbientControllerTest,
        CheckAcquireAndReleaseWakeLockWhenBatteryStateChanged) {
   SetPowerStateDischarging();
+  SetExternalPowerConnected();
+  SetBatteryPercent(50.f);
+
   // Lock screen to start ambient mode.
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
 
   EXPECT_TRUE(ambient_controller()->IsShown());
-  // Should not acquire wake lock when device is not charging.
+  // Should not acquire wake lock when device is not charging and with low
+  // battery.
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 
@@ -462,7 +590,7 @@ TEST_F(AmbientControllerTest,
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 
   // Simulates a full battery.
-  SetPowerStateFull();
+  SetBatteryPercent(100.f);
 
   // Should keep the wake lock as the charger is still connected.
   EXPECT_EQ(1, GetNumOfActiveWakeLocks(
@@ -472,7 +600,28 @@ TEST_F(AmbientControllerTest,
   SetPowerStateDischarging();
   base::RunLoop().RunUntilIdle();
 
-  // Should release the wake lock when battery is not charging.
+  // Should keep the wake lock when battery is high.
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  SetBatteryPercent(50.f);
+  base::RunLoop().RunUntilIdle();
+
+  // Should release the wake lock when battery is not charging and low.
+  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  SetBatteryPercent(100.f);
+  base::RunLoop().RunUntilIdle();
+
+  // Should take the wake lock when battery is not charging and high.
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  SetExternalPowerDisconnected();
+  base::RunLoop().RunUntilIdle();
+
+  // Should release the wake lock when power is not connected.
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 
@@ -483,7 +632,7 @@ TEST_F(AmbientControllerTest,
 }
 
 // TODO(cowmoo): find a way to simulate events to trigger |UserActivityDetector|
-TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnEvents) {
+TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnEvents) {
   std::vector<std::unique_ptr<ui::Event>> events;
 
   for (auto mouse_event_type : {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_MOVED}) {
@@ -522,7 +671,7 @@ TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnEvents) {
   }
 }
 
-TEST_F(AmbientControllerTest, ShouldDismissAndThenComesBack) {
+TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissAndThenComesBack) {
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -539,11 +688,9 @@ TEST_F(AmbientControllerTest, ShouldDismissAndThenComesBack) {
   EXPECT_TRUE(WidgetsVisible());
 }
 
-TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnKeyEvent) {
+TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnKeyEvent) {
   // Without user interaction, should show ambient mode.
-  ambient_controller()->ShowUi();
-  EXPECT_FALSE(WidgetsVisible());
-  FastForwardTiny();
+  ShowAmbientScreen();
   EXPECT_TRUE(WidgetsVisible());
   CloseAmbientScreen();
 
@@ -553,8 +700,7 @@ TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnKeyEvent) {
 
   // General key press will exit ambient mode.
   // Simulate key press to close the widget.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
@@ -577,8 +723,7 @@ TEST_F(AmbientControllerTest,
 
   // General key press will exit ambient mode.
   // Simulate key press to close the widget.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
@@ -672,6 +817,65 @@ TEST_F(AmbientControllerTest, ShouldShowAmbientScreenWhenScreenIsDimmed) {
 
   FastForwardToBackgroundLockScreenTimeout();
   EXPECT_FALSE(IsLocked());
+
+  // Closes ambient for clean-up.
+  CloseAmbientScreen();
+}
+
+TEST_F(AmbientControllerTest, HandlesPreviousImageFailuresWithLockScreen) {
+  // Simulate failures to download FIFE urls. Ambient mode should close and
+  // remember the old failure.
+  SetDownloadPhotoData("");
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+  AmbientUiVisibilityBarrier ambient_closed_barrier(
+      AmbientUiVisibility::kClosed);
+  ambient_closed_barrier.WaitWithTimeout(base::Seconds(15));
+  ASSERT_FALSE(ambient_controller()->IsShown());
+  UnlockScreen();
+
+  // Now simulate FIFE downloads starting to work again. The device should be
+  // able to enter ambient mode.
+  ClearDownloadPhotoData();
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, HandlesPreviousImageFailuresWithDimmedScreen) {
+  GetSessionControllerClient()->SetShouldLockScreenAutomatically(false);
+  SetPowerStateCharging();
+
+  // Simulate failures to download FIFE urls. Ambient mode should close and
+  // remember the old failure.
+  SetDownloadPhotoData("");
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+  AmbientUiVisibilityBarrier ambient_closed_barrier(
+      AmbientUiVisibility::kClosed);
+  ambient_closed_barrier.WaitWithTimeout(base::Seconds(15));
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/false, /*is_off=*/false);
+
+  // Usually would enter ambient mode when the screen is dimmed, but this time
+  // it shouldn't because of the previous image failures.
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  FastForwardTiny();
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/false, /*is_off=*/false);
+
+  // Now simulate FIFE downloads starting to work again. The device should be
+  // able to enter ambient mode.
+  ClearDownloadPhotoData();
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
 
   // Closes ambient for clean-up.
   CloseAmbientScreen();
@@ -776,7 +980,19 @@ TEST_F(AmbientControllerTest,
   EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest, HideCursor) {
+TEST_F(AmbientControllerTest, HandlesPhotoDownloadOutage) {
+  SetDownloadPhotoData("");
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+  AmbientUiVisibilityBarrier ambient_closed_barrier(
+      AmbientUiVisibility::kClosed);
+  ambient_closed_barrier.WaitWithTimeout(base::Seconds(15));
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_P(AmbientControllerTestForAnyTheme, HideCursor) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   LockScreen();
 
@@ -797,26 +1013,39 @@ TEST_F(AmbientControllerTest, HideCursor) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest, ShowsOnMultipleDisplays) {
+TEST_P(AmbientControllerTestForAnyTheme, ShowsOnMultipleDisplays) {
   UpdateDisplay("800x600,800x600");
   FastForwardTiny();
 
   ShowAmbientScreen();
-  FastForwardToNextImage();
 
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
+  AmbientViewID expected_child_view_id =
+      GetParam() == AmbientAnimationTheme::kSlideshow
+          ? AmbientViewID::kAmbientPhotoView
+          : AmbientViewID::kAmbientAnimationView;
+  EXPECT_TRUE(GetContainerViews().front()->GetViewByID(expected_child_view_id));
+  EXPECT_TRUE(GetContainerViews().back()->GetViewByID(expected_child_view_id));
   // Check that each root controller has an ambient widget.
   for (auto* ctrl : RootWindowController::root_window_controllers())
     EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
                 ctrl->ambient_widget_for_testing()->IsVisible());
 }
 
-TEST_F(AmbientControllerTest, RespondsToDisplayAdded) {
+TEST_P(AmbientControllerTestForAnyTheme, RespondsToDisplayAdded) {
+  // UpdateDisplay triggers a rogue MouseEvent that cancels Ambient mode when
+  // testing with Xvfb. A corresponding MouseEvent is not fired on a real device
+  // when an external display is added. Ignore this MouseEvent for testing.
+  // Store the old |ShouldIgnoreNativePlatformEvents| value and reset it at the
+  // end of the test.
+  bool old_should_ignore_events =
+      ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents();
+  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
+
   UpdateDisplay("800x600");
   ShowAmbientScreen();
-  FastForwardToNextImage();
 
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 1);
@@ -831,14 +1060,16 @@ TEST_F(AmbientControllerTest, RespondsToDisplayAdded) {
   for (auto* ctrl : RootWindowController::root_window_controllers())
     EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
                 ctrl->ambient_widget_for_testing()->IsVisible());
+
+  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(
+      old_should_ignore_events);
 }
 
-TEST_F(AmbientControllerTest, HandlesDisplayRemoved) {
+TEST_P(AmbientControllerTestForAnyTheme, HandlesDisplayRemoved) {
   UpdateDisplay("800x600,800x600");
   FastForwardTiny();
 
   ShowAmbientScreen();
-  FastForwardToNextImage();
 
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
@@ -976,6 +1207,189 @@ TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {
 
   EXPECT_FALSE(ctrl->user_activity_observer_.IsObserving());
   EXPECT_FALSE(ctrl->power_status_observer_.IsObserving());
+}
+
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShowDismissAmbientScreenUponAssistantQuery) {
+  // Without user interaction, should show ambient mode.
+  ShowAmbientScreen();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  // Trigger Assistant interaction.
+  static_cast<AssistantInteractionControllerImpl*>(
+      AssistantInteractionController::Get())
+      ->OnInteractionStarted(AssistantInteractionMetadata());
+  base::RunLoop().RunUntilIdle();
+
+  // Ambient screen should dismiss.
+  EXPECT_TRUE(GetContainerViews().empty());
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+// For all test cases that depend on ash ambient resources (lottie files, image
+// assets, etc) being present to run.
+#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
+#define ANIMATION_TEST_WITH_RESOURCES(test_case_name) test_case_name
+#else
+#define ANIMATION_TEST_WITH_RESOURCES(test_case_name) DISABLED_##test_case_name
+#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
+
+TEST_F(AmbientControllerTest,
+       ANIMATION_TEST_WITH_RESOURCES(RendersCorrectView)) {
+  SetAmbientAnimationTheme(AmbientAnimationTheme::kFeelTheBreeze);
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_FALSE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientAnimationView));
+
+  UnlockScreen();
+  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  EXPECT_FALSE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientAnimationView));
+
+  UnlockScreen();
+  SetAmbientAnimationTheme(AmbientAnimationTheme::kFeelTheBreeze);
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_FALSE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientAnimationView));
+}
+
+TEST_F(AmbientControllerTest,
+       ANIMATION_TEST_WITH_RESOURCES(ClearsCacheWhenSwitchingThemes)) {
+  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  ASSERT_FALSE(GetCachedFiles().empty());
+
+  UnlockScreen();
+  SetAmbientAnimationTheme(AmbientAnimationTheme::kFeelTheBreeze);
+
+  // Mimic a network outage where no photos can be downloaded. Since the cache
+  // should have been cleared when we switched ambient animation themes, the
+  // UI shouldn't start with a photo cached during slideshow mode.
+  SetDownloadPhotoData(/*data=*/"");
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  EXPECT_FALSE(GetContainerView());
+  EXPECT_TRUE(GetCachedFiles().empty());
+}
+
+TEST_P(AmbientControllerTestForAnyTheme, MetricsEngagementTime) {
+  // TODO(esum): Find a better way of fast forwarding time for lottie animations
+  // in unit tests. Currently, the whole compositor stack is being used in this
+  // test harness and there is no good way to control the frame rate, so
+  // FastForwardBy() blocks for long periods of time. Do not make this value
+  // too high, or the test is at risk of timing out.
+  constexpr base::TimeDelta kExpectedEngagementTime = base::Milliseconds(100);
+
+  base::HistogramTester histogram_tester;
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  LockScreen();
+
+  // Unlike other tests, the exact amount of time we spend in ambient mode
+  // matters to write the correct test expectation. So fast forward by the
+  // exact amount needed to trigger ambient mode.
+  // (FastForwardToLockScreenTimeout() adds on a little buffer to the timeout)
+  task_environment()->FastForwardBy(ambient_controller()
+                                        ->ambient_ui_model()
+                                        ->lock_screen_inactivity_timeout());
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  task_environment()->FastForwardBy(kExpectedEngagementTime);
+
+  UnlockScreen();
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Ash.AmbientMode.EngagementTime.ClamshellMode", kExpectedEngagementTime,
+      1);
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      kExpectedEngagementTime, 1);
+
+  // Now do the same sequence in tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  LockScreen();
+
+  task_environment()->FastForwardBy(ambient_controller()
+                                        ->ambient_ui_model()
+                                        ->lock_screen_inactivity_timeout());
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  task_environment()->FastForwardBy(kExpectedEngagementTime);
+
+  UnlockScreen();
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Ash.AmbientMode.EngagementTime.TabletMode", kExpectedEngagementTime, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      kExpectedEngagementTime, 2);
+}
+
+TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTime) {
+  base::HistogramTester histogram_tester;
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}), 1);
+
+  UnlockScreen();
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}), 2);
+}
+
+TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTimeFailedToStart) {
+  // Simulate IMAX outage that doesn't return any photos.
+  backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
+
+  base::HistogramTester histogram_tester;
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  task_environment()->FastForwardBy(base::Minutes(1));
+  ASSERT_TRUE(GetContainerViews().empty());
+
+  UnlockScreen();
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
+      base::Minutes(1), 1);
 }
 
 }  // namespace ash

@@ -32,11 +32,11 @@
 
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -45,7 +45,7 @@ namespace blink {
 PrerenderHandle* PrerenderHandle::Create(
     Document& document,
     const KURL& url,
-    mojom::blink::PrerenderRelType prerender_rel_type) {
+    mojom::blink::PrerenderTriggerType trigger_type) {
   // Prerenders are unlike requests in most ways (for instance, they pass down
   // fragments, and they don't return data), but they do have referrers.
 
@@ -58,35 +58,25 @@ PrerenderHandle* PrerenderHandle::Create(
 
   auto attributes = mojom::blink::PrerenderAttributes::New();
   attributes->url = url;
-  attributes->rel_type = prerender_rel_type;
+  attributes->trigger_type = trigger_type;
   attributes->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), referrer.referrer), referrer.referrer_policy);
-  attributes->view_size =
-      gfx::Size(document.GetFrame()->GetMainFrameViewportSize());
+  // TODO(bokan): This is the _frame_ size, which is affected by the viewport
+  // <meta> tag, and is likely not what we want to use here. For example, if a
+  // page sets <meta name="viewport" content="width=42"> the frame size will
+  // have width=42. The prerendered page is unlikely to share the same
+  // viewport. I think this wants the size of the outermost WebView but that's
+  // not currently plumbed into child renderers AFAICT.
+  attributes->view_size = document.GetFrame()->GetOutermostMainFrameSize();
 
-  HeapMojoRemote<mojom::blink::PrerenderProcessor> prerender_processor(context);
   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor> prefetch_processor(
       context);
 
-  // Run prerendering only when kPrerender2 is enabled and the origin of the
-  // prerendering URL is the same as the origin of the trigger context.
-  // TODO(https://crbug.com/1176054): This is a tentative behavior. We plan to
-  // support cross-origin prerendering later.
-  if (features::IsPrerender2Enabled() &&
-      context->GetSecurityOrigin()->IsSameOriginWith(
-          SecurityOrigin::Create(url).get())) {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        prerender_processor.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-    prerender_processor->Start(std::move(attributes));
-  } else {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        prefetch_processor.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-    prefetch_processor->Start(std::move(attributes));
-  }
+  context->GetBrowserInterfaceBroker().GetInterface(
+      prefetch_processor.BindNewPipeAndPassReceiver(
+          context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  prefetch_processor->Start(std::move(attributes));
   return MakeGarbageCollected<PrerenderHandle>(PassKey(), context, url,
-                                               std::move(prerender_processor),
                                                std::move(prefetch_processor));
 }
 
@@ -94,20 +84,14 @@ PrerenderHandle::PrerenderHandle(
     PassKey pass_key,
     ExecutionContext* context,
     const KURL& url,
-    HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_prerender_processor,
     HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor>
         remote_fetch_processor)
     : url_(url),
-      remote_prerender_processor_(std::move(remote_prerender_processor)),
       remote_prefetch_processor_(std::move(remote_fetch_processor)) {}
 
 PrerenderHandle::~PrerenderHandle() = default;
 
 void PrerenderHandle::Cancel() {
-  if (remote_prerender_processor_.is_bound())
-    remote_prerender_processor_->Cancel();
-  remote_prerender_processor_.reset();
-
   if (remote_prefetch_processor_.is_bound())
     remote_prefetch_processor_->Cancel();
   remote_prefetch_processor_.reset();
@@ -118,7 +102,6 @@ const KURL& PrerenderHandle::Url() const {
 }
 
 void PrerenderHandle::Trace(Visitor* visitor) const {
-  visitor->Trace(remote_prerender_processor_);
   visitor->Trace(remote_prefetch_processor_);
 }
 

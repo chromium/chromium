@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,17 @@ namespace net {
 enum class SSLLegacyCryptoFallback {
   // The connection did not use the fallback.
   kNoFallback = 0,
-  // The connection used the fallback and negotiated 3DES.
-  kUsed3DES = 1,
+  // No longer used.
+  //   kUsed3DES = 1,
   // The connection used the fallback and negotiated SHA-1.
   kUsedSHA1 = 2,
-  // The connection used the fallback and sent a SHA-1 certificate.
+  // The connection used the fallback and sent a certificate signed with
+  // RSASSA-PKCS1-v1_5-SHA-1.
   kSentSHA1Cert = 3,
-  // The connection used the fallback, negotiated 3DES, and sent a SHA-1
-  // certificate.
-  kSentSHA1CertAndUsed3DES = 4,
-  // The connection used the fallback, negotiated SHA-1, and sent a SHA-1
-  // certificate.
+  // No longer used.
+  //   kSentSHA1CertAndUsed3DES = 4,
+  // The connection used the fallback, negotiated SHA-1, and sent a certificate
+  // signed with RSASSA-PKCS1-v1_5-SHA-1.
   kSentSHA1CertAndUsedSHA1 = 5,
   // The connection used the fallback for an unknown reason, likely a
   // transient network error.

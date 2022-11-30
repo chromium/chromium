@@ -1,0 +1,37 @@
+{
+  "discounts": [
+    {
+      "_comment": [
+        "Use case for:",
+        "FetchFLCodelessDiscountWorkerBrowserTest.SimplePercentOffTest",
+        "FetchFLCodelessDiscountWorkerBrowserTest.TwoCartsOneWithDiscountOneWithoutDiscount"
+      ],
+      "merchantIdentifier": {
+        "cartUrl": "https://www.merchant1.com/cart",
+        "merchantId": "10046"
+      },
+      "couponDiscounts": [{
+        "type": "FREE_LISTING_WITHOUT_CODE"
+      }],
+      "overallDiscountInfo": {
+        "text": "10% off",
+        "languageCode": "en-US"
+      }
+    },
+    {
+      "_comment": "Use case for: FetchFLCodelessDiscountWorkerBrowserTest.SimpleDollarOffTest",
+      "merchantIdentifier": {
+        "cartUrl": "https://www.merchant2.com/cart",
+        "merchantId": "10046"
+      },
+      "couponDiscounts": [{
+        "type": "FREE_LISTING_WITHOUT_CODE"
+      }],
+      "overallDiscountInfo": {
+        "text": "$2 off",
+        "languageCode": "en-US"
+      }
+    }
+  ],
+  "_comment": "cartUrl needs to be unique. Next cartUrl is https://www.merchant3.com/cart."
+}

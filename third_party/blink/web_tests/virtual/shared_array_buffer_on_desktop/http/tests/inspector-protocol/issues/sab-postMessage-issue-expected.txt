@@ -1,0 +1,56 @@
+Verifies that post-messaging a SAB causes an issue.
+
+Creation issue: {
+    issue : {
+        code : SharedArrayBufferIssue
+        details : {
+            sharedArrayBufferIssueDetails : {
+                isWarning : true
+                sourceCodeLocation : {
+                    columnNumber : 18
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : CreationIssue
+            }
+        }
+    }
+}
+Deprecation issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 18
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : SharedArrayBufferConstructedWithoutIsolation
+            }
+        }
+    }
+}
+Transfer issue: {
+    issue : {
+        code : SharedArrayBufferIssue
+        details : {
+            sharedArrayBufferIssueDetails : {
+                isWarning : true
+                sourceCodeLocation : {
+                    columnNumber : 1
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : TransferIssue
+            }
+        }
+    }
+}
+

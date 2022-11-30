@@ -43,36 +43,9 @@
 
 #include <cert.h>
 
-#include <string>
-
-#include "net/cert/cert_database.h"
 #include "net/cert/cert_type.h"
 
 namespace mozilla_security_manager {
-
-std::string DumpOidString(SECItem* oid);
-std::string GetOIDText(SECItem* oid);
-
-std::string ProcessRDN(CERTRDN* rdn);
-std::string ProcessName(CERTName* name);
-std::string ProcessBasicConstraints(SECItem* extension_data);
-std::string ProcessGeneralName(PRArenaPool* arena,
-                               CERTGeneralName* current);
-std::string ProcessGeneralNames(PRArenaPool* arena,
-                                CERTGeneralName* name_list);
-std::string ProcessAltName(SECItem* extension_data);
-std::string ProcessSubjectKeyId(SECItem* extension_data);
-std::string ProcessAuthKeyId(SECItem* extension_data);
-std::string ProcessCrlDistPoints(SECItem* extension_data);
-std::string ProcessAuthInfoAccess(SECItem* extension_data);
-std::string ProcessIA5String(SECItem* extension_data);
-std::string ProcessBMPString(SECItem* extension_data);
-std::string ProcessNSCertTypeExtension(SECItem* extension_data);
-std::string ProcessKeyUsageBitString(SECItem* bitstring, char sep);
-std::string ProcessKeyUsageExtension(SECItem* extension_data);
-std::string ProcessExtKeyUsage(SECItem* extension_data);
-std::string ProcessExtensionData(CERTCertExtension* extension);
-std::string ProcessSubjectPublicKeyInfo(CERTSubjectPublicKeyInfo* spki);
 
 net::CertType GetCertType(CERTCertificate *cert);
 

@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>PopupBlocker"
-}
+mixins: "//components/blocked_content/COMMON_METADATA"

@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/network_time",
+  "+components/prefs",
+  "+mojo/public/cpp/bindings",
+  "+services/cert_verifier/public/mojom",
+  "+services/network",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+]

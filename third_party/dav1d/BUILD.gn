@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,6 +17,8 @@ if (is_win) {
   assert(current_cpu == "x64" && (is_linux || is_chromeos),
          "Only Linux X64 MSAN is supported")
   platform_config_root = "config/linux-noasm/$current_cpu"
+} else if (current_cpu == "riscv64" || current_cpu == "loong64") {
+  platform_config_root = "config/linux-noasm/generic"
 } else {
   # Linux configuration files seem to work on Mac, so just reuse them.
   platform_config_root = "config/linux/$current_cpu"
@@ -79,6 +81,10 @@ config("public_dav1d_config") {
     defines += [ "STACK_ALIGNMENT=$stack_alignment" ]
   }
 
+  if (!is_android && !is_win) {
+    defines += [ "HAVE_PTHREAD_GETAFFINITY_NP=1" ]
+  }
+
   # Don't let dav1d export any symbols. Otherwise the verify_order step on macOS
   # can fail since these exports end up in the final Chromium binary.
   defines += [ "DAV1D_API=" ]
@@ -111,7 +117,7 @@ if (is_win) {
   if (needs_stack_alignment) {
     dav1d_copts += [ stackalign_flag ]
   }
-  if (is_mac) {
+  if (is_mac || is_ios) {
     dav1d_copts += [ "-D_DARWIN_C_SOURCE" ]
   }
   if (is_linux || is_chromeos || is_android || current_os == "aix") {
@@ -146,7 +152,7 @@ if (enable_nasm) {
     }
 
     # Necessary to ensure macOS symbols end up with a _ prefix.
-    if (is_mac) {
+    if (is_mac || is_ios) {
       defines += [ "PREFIX" ]
     }
   }
@@ -196,6 +202,8 @@ static_library("dav1d_8bit") {
     sources += arm_template_sources
   } else if (current_cpu == "arm64") {
     sources += arm_template_sources
+  } else if (current_cpu == "ppc64") {
+    sources += ppc64_template_sources
   }
 
   cflags = dav1d_copts
@@ -226,6 +234,8 @@ static_library("dav1d_10bit") {
     sources += arm_template_sources
   } else if (current_cpu == "arm64") {
     sources += arm_template_sources
+  } else if (current_cpu == "ppc64") {
+    sources += ppc64_template_sources
   }
 
   cflags = dav1d_copts
@@ -239,6 +249,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     sources = [
       "libdav1d/src/x86/cpu.c",
       "libdav1d/src/x86/cpu.h",
+      "libdav1d/src/x86/refmvs_init.c",
     ]
 
     # x86/msac.h redefines macros in msac.h if x86/msac.h is included and
@@ -262,6 +273,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     sources = [
       "libdav1d/src/arm/cpu.c",
       "libdav1d/src/arm/cpu.h",
+      "libdav1d/src/arm/refmvs_init.c",
     ]
 
     # These are not template based so should only be built once.
@@ -278,10 +290,27 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     ]
 
     # Necessary to ensure macOS symbols end up with a _ prefix.
-    if (is_mac) {
+    if (is_mac || is_ios) {
       defines = [ "PREFIX" ]
     }
 
+    cflags = dav1d_copts
+
+    deps = [ ":dav1d_headers" ]
+    allow_circular_includes_from = [ ":dav1d_headers" ]
+  }
+} else if (current_cpu == "ppc64") {
+  static_library("dav1d_ppc64") {
+    sources = [
+      "libdav1d/src/ppc/cpu.c",
+      "libdav1d/src/ppc/cpu.h",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":dav1d_config",
+    ]
     cflags = dav1d_copts
 
     deps = [ ":dav1d_headers" ]
@@ -315,5 +344,7 @@ static_library("dav1d") {
     }
   } else if (current_cpu == "arm" || current_cpu == "arm64") {
     deps += [ ":dav1d_arm" ]
+  } else if (current_cpu == "ppc64") {
+    deps += [ ":dav1d_ppc64" ]
   }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace {
@@ -29,8 +31,6 @@ bool InitStringUnicode(const wchar_t* source,
 
 namespace sandbox {
 
-SANDBOX_INTERCEPT NtExports g_nt;
-
 // Note: The opcodes are implemented as functions (as opposed to classes derived
 // from PolicyOpcode) because you should not add more member variables to the
 // PolicyOpcode class since it would cause object slicing on the target. So to
@@ -41,6 +41,11 @@ SANDBOX_INTERCEPT NtExports g_nt;
 // function together to stress the close relationship between both. For example,
 // only the factory method and the evaluation function know the stored argument
 // order and meaning.
+
+size_t OpcodeFactory::memory_size() const {
+  DCHECK_GE(memory_bottom_, memory_top_);
+  return memory_bottom_ - memory_top_;
+}
 
 template <int>
 EvalResult OpcodeEval(PolicyOpcode* opcode,
@@ -269,7 +274,7 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
   // Advance the source string to the last successfully evaluated position
   // according to the match context.
   source_str = &source_str[context->position];
-  int source_len = static_cast<int>(g_nt.wcslen(source_str));
+  int source_len = static_cast<int>(GetNtExports()->wcslen(source_str));
 
   if (0 == source_len) {
     // If we reached the end of the source string there is nothing we can
@@ -314,8 +319,8 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
         !InitStringUnicode(source_str, match_len, &source_ustr))
       return EVAL_ERROR;
 
-    if (0 == g_nt.RtlCompareUnicodeString(&match_ustr, &source_ustr,
-                                          case_sensitive)) {
+    if (0 == GetNtExports()->RtlCompareUnicodeString(&match_ustr, &source_ustr,
+                                                     case_sensitive)) {
       // Match! update the match context.
       context->position += start_position + match_len;
       return EVAL_TRUE;
@@ -330,8 +335,8 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
       return EVAL_ERROR;
 
     do {
-      if (0 == g_nt.RtlCompareUnicodeString(&match_ustr, &source_ustr,
-                                            case_sensitive)) {
+      if (0 == GetNtExports()->RtlCompareUnicodeString(
+                   &match_ustr, &source_ustr, case_sensitive)) {
         // Match! update the match context.
         context->position += (source_ustr.Buffer - source_str) + match_len;
         return EVAL_TRUE;
@@ -370,7 +375,7 @@ ptrdiff_t OpcodeFactory::AllocRelative(void* start,
   if (memory_size() < bytes)
     return 0;
   memory_bottom_ -= bytes;
-  if (reinterpret_cast<UINT_PTR>(memory_bottom_) & 1) {
+  if (reinterpret_cast<UINT_PTR>(memory_bottom_.get()) & 1) {
     // TODO(cpu) replace this for something better.
     ::DebugBreak();
   }

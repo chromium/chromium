@@ -1,143 +1,345 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1018219910092211213">‏DNS کو حل نہیں کیا جا سکتا</translation>
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
+<translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
+<translation id="1062407476771304334">بدلیں</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">فائروال کا پتا چلا</translation>
 <translation id="1075811647922107217">صفحہ کا سائز</translation>
+<translation id="1094693127011229778">‏IP پتہ دستیاب نہیں ہے</translation>
+<translation id="1113892970288677790">کیوریٹ کردہ نیٹ ورک اور تصاویر کو منتخب کریں</translation>
+<translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1124772482545689468">صارف</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">خارجی آلات کے لیے فرم ویئر کو اپ ڈیٹ کریں کا ونڈو کھلا ہے۔ <ph name="NUM_UPDATES" /> اپ ڈیٹس دستیاب ہیں۔</translation>
+<translation id="1145516343487477149">‏امدادی مضامین اور Chromebook سے متعلق عام سوالات کے جوابات تلاش کریں</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> اس <ph name="DEVICE_TYPE" /> کا نظم کرتا ہے۔</translation>
+<translation id="1175951029573070619">اوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
+<translation id="1196959502276349371">ورژن <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">چلائیں/روکیں</translation>
+<translation id="1201402288615127009">اگلا</translation>
 <translation id="1204296502688602597">‏DNS تاخیر</translation>
+<translation id="1207734034680156868">تجاویز آپ کی تفصیل پر مبنی ہیں</translation>
 <translation id="123124571410524056">پورٹل مشکوک ہے</translation>
 <translation id="1238612778414822719">‏HTTPS تاخیر</translation>
+<translation id="1264369926465113395">‏تخلیق کاران کے لیے Chromebook کی نئی ڈیجیٹل میگزین چیک کریں</translation>
 <translation id="1270369111467284986">مشکوک کیپٹو پورٹل</translation>
 <translation id="1290331692326790741">کمزور سگنل</translation>
+<translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">اپ ڈیٹ ہو رہا ہے (<ph name="PERCENTAGE_VALUE" />% مکمل)</translation>
+<translation id="1310380015393971138">کوئی <ph name="NETWORK_NAME" /> نیٹ ورک دستیاب نہیں</translation>
+<translation id="131421566576084655">آخری ڈیٹا ری سیٹ کی تاریخ دستیاب نہیں ہے</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ہوم نیٹ ورک، رومنگ نہیں</translation>
 <translation id="1327977588028644528">گیٹ وے</translation>
+<translation id="1328223165223065150">وال پیپر کا رنگ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">اسکین کرنے کی جگہ تک فٹ کریں</translation>
+<translation id="1367951781824006909">ایک فائل منتخب کریں</translation>
 <translation id="1387854245479784695">یہ سبھی کورز کا مجموعہ ہے</translation>
+<translation id="1394661041439318933">آلے کے کیس میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="1397738625398125236">گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
 <translation id="1398634363027580500">‏بہت زیادہ HTTPS تاخیر</translation>
+<translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">میرے پاس کلیدوں کا ایک جوڑا ہے</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> کلید نہیں دبائی گئی</translation>
+<translation id="1435763214710588005">ہر ماہ منتخب کردہ دن پر ڈیٹا کے استعمال کو خودکار طور پر ری سیٹ کرتا ہے</translation>
+<translation id="1442433966118452622">تصویر کا ماخذ</translation>
+<translation id="1451536289672181509">آلہ ایک کی بورڈ ہے۔</translation>
+<translation id="1459693405370120464">موسم</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور آپ کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="1478594628797167447">اسکینر</translation>
+<translation id="1483493594462132177">بھیجیں</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> فرم ویئر کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="150962533380566081">‏غلط PUK۔</translation>
 <translation id="1510238584712386396">لانچر</translation>
+<translation id="1526389707933164996">اسکرین سیور اینیمیشن</translation>
+<translation id="152892567002884378">والیوم بڑھائیں</translation>
+<translation id="1555130319947370107">نیلا</translation>
+<translation id="155865706765934889">ٹچ پیڈ</translation>
+<translation id="1561927818299383735">بیک لٹ کا رنگ</translation>
+<translation id="1565038567006703504"><ph name="DEVICE_NAME" /> کو اپ ڈیٹ نہیں کر سکتے</translation>
+<translation id="1567064801249837505">البمز</translation>
+<translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
+<translation id="1578784163189013834">اسکرین سیور کا پس منظر منتخب کریں</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> سے ڈیٹا کا استعمال</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
+<translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
+<translation id="1643449475550628585">وال پیپر کی تصویر کو روزانہ تبدیل کریں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
+<translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> کا پیش منظر دیکھیں</translation>
+<translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
+<translation id="1672499492233627739">ویب کیم ویڈیو فیڈ</translation>
+<translation id="1676557873873341166">ویڈیو بنائی جا رہی ہے</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏DNS ریزولور دستیاب ہے</translation>
+<translation id="1715359911173058521">‏اسکینر کے ساتھ مواصلت کرنے میں ایک مسئلہ در پیش ہے۔ نیٹ ورک یا USB کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> اور <ph name="SECOND_MANAGER" /> کے زیر انتظام ہے</translation>
+<translation id="1726100011689679555">نام سرورز</translation>
+<translation id="1731082422893354635">بلوٹوتھ ٹچ پیڈ</translation>
+<translation id="1745577949879301685">تصاویر لوڈ نہیں ہو سکیں۔ اپنا نیٹ ورک کنکشن چیک کریں یا تصاویر کو دوبارہ لوڈ کرنے کی کوشش کریں۔</translation>
+<translation id="1751249301761991853">ذاتی</translation>
+<translation id="1753496554272155572">وال پیپر کے پیش منظر سے باہر نکلیں</translation>
+<translation id="1755556344721611131">تشخیصات کی ایپ</translation>
+<translation id="175763766237925754">اچھا (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">تصدیق کی قسم</translation>
+<translation id="1782199038061388045">ترجمہ</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
+<translation id="1801418420130173017">گہری تھیم غیر فعال کریں</translation>
+<translation id="1807246157184219062">روشنی</translation>
+<translation id="1827738518074806965">آرٹ گیلری</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
+<translation id="1852934301711881861">‏ChromeOS Flex انسٹال کریں</translation>
+<translation id="1856388568474281774">نیچے تیر کا نشان</translation>
+<translation id="1858620243986915808">اسکرین شاٹ منسلک کریں</translation>
+<translation id="1871569928317311284">گہری تھیم آف کریں</translation>
+<translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">تاریک وضع آف کریں</translation>
+<translation id="1881188606372070653">‏قانونی وجوہات کی بنا پر مواد میں تبدیلی کی درخواست کرنے کے لیے <ph name="BEGIN_LINK1" />قانونی مدد کے صفحہ<ph name="END_LINK1" /> پر جائیں۔ اکاؤنٹ اور سسٹم کی کچھ معلومات Google کو بھیجی جا سکتی ہے۔ ہم اپنی <ph name="BEGIN_LINK2" />رازداری کی پالیسی<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />سروس کی شرائط<ph name="END_LINK3" /> کے ساتھ مشروط، تکنیکی مسائل حل کرنے اور اپنی سروسز کو بہتر بنانے کیلئے آپ کی فراہم کردہ معلومات کا استعمال کریں گے۔</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
+<translation id="1904932688895783618">کچھ دوسرے مددگار وسائل یہ ہیں:</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1908234395526491708">‏UDP درخواست کی ناکامیاں</translation>
-<translation id="1930797645656624981">‏Chrome OS اندراج کے طریقہ کی سروس</translation>
 <translation id="1947737735496445907">پرنٹ ہو گیا</translation>
+<translation id="1951012854035635156">اسسٹنٹ</translation>
+<translation id="1977994649430373166">‏Google پروفائل کی تصویر</translation>
 <translation id="1979103255016296513">پاس ورڈ تبدیل کرنے میں تاخیر ہو گئی ہے</translation>
 <translation id="1999615961760456652">کیپٹو پورٹل</translation>
+<translation id="200669432486043882">فائل تبدیل کریں</translation>
+<translation id="2006864819935886708">کنیکٹویٹی</translation>
 <translation id="2008685064673031089">پرائم تلاش</translation>
+<translation id="2011174342667534258">‏SDK ورژن:</translation>
+<translation id="2016697457005847575">ٹربل شوٹنگ اقدامات کو آزمائیں</translation>
+<translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">براہ کرم کسی نیٹ ورک سے منسلک ہوں اور اسکرین سیور دیکھنے کے لیے صفحے کو دوبارہ لوڈ کریں۔</translation>
 <translation id="2080070583977670716">مزید ترتیبات</translation>
+<translation id="2085089206770112532">ڈسپلے کی چمک کم کرنے کی کلید</translation>
+<translation id="2105810540595158374">آلہ ایک گیم کنٹرولر ہے۔</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، ورژن <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">‏‎<ph name="TOTAL_MEMORY" /> GB میں سے ‎<ph name="AVAILABLE_MEMORY" /> GB دستیاب ہے</translation>
+<translation id="2138109643290557664">اینیمیشن کے ذریعے دکھائيں</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> تصاویر</translation>
 <translation id="2157959690810728433">قطار بند</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
+<translation id="2163937499206714165">تاریک وضع آن کریں</translation>
+<translation id="2180197493692062006">کچھ غلط ہوگیا۔ ایپ کو دوبار کھولنے کی کوشش کریں۔</translation>
+<translation id="2182088270354640012">‏تاثرات کا شکریہ۔ آپ کے تاثرات سے Chrome OS کو بہتر بنانے میں مدد ملتی ہے اور Chrome OS ٹیم اس کا جائزہ لے گی۔ جمع کرائی گئی رپورٹس کی تعداد کی وجہ سے، آپ کو براہ راست جواب نہیں ملے گا۔</translation>
+<translation id="2209788852729124853">ٹریفک کاؤنٹرز ری سیٹ کریں</translation>
+<translation id="2212733584906323460">ریزولیوشن کا نام دیں</translation>
 <translation id="2217935453350629363">موجودہ رفتار</translation>
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
+<translation id="222447520299472966">کم از کم ایک آرٹ گیلری البم کو منتخب کرنے کی ضرورت ہے</translation>
+<translation id="2230005943220647148">سیلسیئس</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">کی بورڈ بیک لائٹ ٹوگل کریں</translation>
+<translation id="2240366984605217732">لے آؤٹ کو سوئچ کرنے کی کلید</translation>
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
+<translation id="2271469253353559191">تاریک وضع شیڈول</translation>
+<translation id="2276999893457278469">سرفہرست مددگار مواد</translation>
+<translation id="2287186687001756809">کوئی تصویر دستیاب نہیں ہے۔ تصاویر شامل کرنے کے لیے، <ph name="LINK" /> پر جائیں</translation>
+<translation id="2307344026739914387">موجودہ کلیدوں کا جوڑا استعمال کریں</translation>
+<translation id="2320295602967756579">ہلکی تھیم فعال کریں</translation>
+<translation id="2323506179655536734">نظر انداز کردہ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
+<translation id="2346474577291266260">عمدہ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2364498172489649528">پاس ہو گیا</translation>
+<translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">تاثرات کی رپورٹ بھیجیں</translation>
+<translation id="2407209115954268704">‏SIM لاک اسٹیٹس</translation>
+<translation id="2414886740292270097">گہری</translation>
 <translation id="2418150275289244458">ترتیبات میں کھولیں</translation>
+<translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> میں سے تصویر <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2448312741937722512">قسم</translation>
 <translation id="2461822463642141190">حالیہ</translation>
+<translation id="248546197012830854">‏آلہ آف لائن ہے۔ مدد کا مواد دیکھنے کے لیے Wi-Fi نیٹ ورک سے منسلک ہوں۔</translation>
+<translation id="2491955442992294626">آپ کے دوسری ونڈو کا استعمال کرنے کے دوران کلیدوں کی جانچ نہیں کی جاتی ہیں</translation>
+<translation id="2493126929778606526">آپ کی بہترین تصاویر، خودکار طور پر منتخب کی گئیں</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2505327257735685095">وال پیپر کی موجودہ تصویر کو ریفریش کریں</translation>
+<translation id="2513396635448525189">لاگ ان کی تصویر</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
+<translation id="2526590354069164005">ڈیسک ٹاپ</translation>
+<translation id="253029298928638905">ری سٹارٹ ہو رہا ہے...</translation>
+<translation id="2533048460510040082">تجویز کردہ مددگار مواد</translation>
+<translation id="2536159006530886390">انٹرنیٹ سے منسلک نہیں کر سکتے۔</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
-<translation id="2585245331261708204">‏Chrome OS میں نیا کیا ہے</translation>
+<translation id="2584559707064218956">سیٹ اپ کرنے کیلئے، ترتیبات پر جائیں</translation>
+<translation id="2597774443162333062">‏ڈیبگ کرنے کیلئے فائلز Google کو بھیج دی جائے گی</translation>
+<translation id="2619761439309613843">روزانہ ریفریش کریں</translation>
 <translation id="2620436844016719705">سسٹم</translation>
+<translation id="2638662041295312666">سائن ان کی تصویر</translation>
+<translation id="2640549051766135490">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کیا گیا</translation>
+<translation id="2712812801627182647">‏TLS تصدیقی کلید</translation>
+<translation id="2713444072780614174">سفید</translation>
+<translation id="2717139507051041123">گہرے رنگ کے موڈ کو فعال کریں</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2751739896257479635">‏EAP مرحلہ 2 توثیق</translation>
+<translation id="2783010256799387990">پاس ہو گیا</translation>
 <translation id="2789486458103222910">ٹھیک ہے</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
-<translation id="2862104018715411648">اپنی دستاویز کو اسکینر پر رکھیں اور شروع کرنے کیلئے 'اسکین کریں' کو منتخب کریں</translation>
+<translation id="28232023175184696">انٹرنیٹ سے منسلک نہیں کر سکتے۔ دوبارہ کوشش کرنے کے لیے کلک کریں۔</translation>
+<translation id="2859243502336719778">اہم اپ ڈیٹ</translation>
+<translation id="2860473693272905224">اسکینر پر کوئی دوسرا صفحہ رکھیں</translation>
 <translation id="2872961005593481000">بند کریں</translation>
+<translation id="2874939134665556319">پچھلا ٹریک</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> ڈسچارج ہوئی۔</translation>
+<translation id="2926057806159140518">‏اپنا صارف نام اور پاس ورڈ درج کریں یا اپنا QR کوڈ اسکین کریں</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
+<translation id="3017079585324758401">پس منظر</translation>
+<translation id="3027578600144895987">کیمرا بند کریں</translation>
+<translation id="3031560714565892478">آلہ ایک ویڈیو کیمرا ہے۔</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3056720590588772262">اینڈ پوائنٹ</translation>
 <translation id="3069085583900247081">ٹیسٹ ناکام ہو گیا</translation>
 <translation id="3083667275341675831">کنیکٹویٹی ڈائيگناسٹکس</translation>
+<translation id="3084958266922136097">اسکرین سیور غیر فعال کریں</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
 <translation id="3102119246920354026">کیش</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">آلہ منسلک ہے۔</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{صفحہ ہٹائیں؟}=1{{PAGE_NUMBER} صفحہ ہٹائیں؟}other{{PAGE_NUMBER} صفحہ ہٹائیں؟}}</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
+<translation id="3156846309055100599">صفحہ <ph name="PAGE_NUMBER" /> کو اسکین کیا جا رہا ہے...</translation>
 <translation id="315738237743207937">کیپٹو پورٹل کا پتا چلا</translation>
+<translation id="3170673040743561620">اپنی دستاویز کو اسکینر پر رکھیں</translation>
 <translation id="3188257591659621405">میری فائلز</translation>
+<translation id="319101249942218879">اوتار تصویر تبدیل کی گئی</translation>
+<translation id="3192947282887913208">آڈیو فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
+<translation id="3275729367986477355">اوتار کی تصویر</translation>
+<translation id="3283504360622356314">{0,plural, =1{فائل میں ترمیم کریں}other{فائلز میں ترمیم کریں}}</translation>
 <translation id="3286515922899063534">‎<ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">کلیدی ڈائریکشن</translation>
+<translation id="3294437725009624529">مہمان</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
+<translation id="3340011300870565703">آلے کے دائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
+<translation id="3404249063913988450">اسکرین سیور فعال کریں</translation>
+<translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> میں سے <ph name="PRINTED_PAGES" /> پرنٹ کئے ہوئے صفحات۔</translation>
 <translation id="345898999683440380">صفحہ <ph name="PAGE_NUM" /> اسکین ہو رہا ہے۔ <ph name="PERCENTAGE_VALUE" />% مکمل ہو گیا۔</translation>
 <translation id="3459509316159669723">پرنٹ کیا جا رہا ہے</translation>
+<translation id="346539236881580388">دوبارہ لیں</translation>
+<translation id="3484914941826596830">فرم ویئر اپ ڈیٹ کرنے کے دوران اس خارجی آلے کو ان پلگ یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
+<translation id="3486220673238053218">وضاحت</translation>
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
+<translation id="3510890413042482857"><ph name="BEGIN_LINK1" />کارکردگی کا پتا لگانے کا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
+<translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
+<translation id="3557205324756024651">مقامی شناخت (اختیاری)</translation>
+<translation id="3565064564551103223">‏اجازت یافتہ IPs</translation>
+<translation id="3569407787324516067">اسکرین سیور</translation>
+<translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="357889014807611375">‏میٹرڈ Wi-Fi</translation>
+<translation id="3583278742022654445">‏کمزور سگنل کی مضبوطی۔ Wi-Fi سگنل ماخذ کے قریب منتقل کرنے کی کوشش کریں۔</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
+<translation id="3600339377155080675">اسکرین مرر</translation>
+<translation id="3603829704940252505">اوتار</translation>
+<translation id="3604713164406837697">وال پیپر تبدیل کریں</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
+<translation id="3606583719724308068">‏HTTPS ویب سائٹس پر زیادہ تاخیر</translation>
+<translation id="361575905210396100">آپ کے تاثرات کا شکریہ</translation>
+<translation id="3621202678540785336">ان پٹ</translation>
+<translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
+<translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
+<translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
+<translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> جائزے)</translation>
 <translation id="3748026146096797577">منسلک نہیں ہے</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
+<translation id="3771294271822695279">ویڈیو فائلیں</translation>
+<translation id="3784455785234192852">مقفل کریں</translation>
 <translation id="38114475217616659">تمام سرگزشت صاف کریں</translation>
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
+<translation id="3824259034819781947">فائلز منسلک کریں</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
+<translation id="385051799172605136">پیچھے</translation>
+<translation id="3858860766373142691">نام</translation>
+<translation id="3862598938296403232">تفصیل درکار ہے</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
+<translation id="3866249974567520381">تفصیل</translation>
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
+<translation id="3885327323343477505">اسکرین سیور تبدیل کریں</translation>
+<translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
+<translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
 <translation id="3942420633017001071">تشخیصات</translation>
+<translation id="3954678691475912818">ڈیوائس کی قسم نامعلوم ہے۔</translation>
+<translation id="3966286471246132217">مزید درست نتائج کیلئے، ٹیسٹ مکمل ہونے تک تمام ایپس کو بند کریں۔</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
+<translation id="3969602104473960991">‏ChromeOS پاس ورڈ اپ ڈیٹ کیا گيا</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
+<translation id="3993704782688964914">آپ کا <ph name="DEVICE_NAME" /> اب اپ ٹو ڈیٹ ہے</translation>
 <translation id="4003384961948020559">ناکام ہو گیا - آؤٹ پٹ مکمل</translation>
 <translation id="4034824040120875894">پرنٹر</translation>
+<translation id="4044093238444069296">گیٹ وے سے رابطہ منسلک نہیں کیا جا سکتا</translation>
+<translation id="4046123991198612571">اگلا ٹریک</translation>
+<translation id="404928562651467259">وارننگ</translation>
+<translation id="4093865285251893588">پروفائل تصویر</translation>
+<translation id="409427325554347132">ٹیسٹ کی تفصیلات محفوظ کریں</translation>
+<translation id="4110686435123617899">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کریں</translation>
+<translation id="4111761024568264522">‏USB ٹچ پیڈ</translation>
+<translation id="4117637339509843559">تاریک وضع</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
+<translation id="4147897805161313378">‏Google تصاویر</translation>
 <translation id="4155551848414053977">یقینی بنائیں کہ اسکینر آن ہے اور آپ کے نیٹ ورک یا براہ راست کنکشن کے ذریعے دستیاب ہے</translation>
+<translation id="4159784952369912983">جامنی</translation>
+<translation id="4170180284036919717">ایک تصویر لیں</translation>
 <translation id="4170700058716978431">ناکام</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
+<translation id="4176659219503619100">کنٹرول پینل</translation>
+<translation id="420283545744377356">اسکرین سیور آف کریں</translation>
+<translation id="4213104098953699324">‏USB کی بورڈ</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
+<translation id="4239069858505860023">GPRS</translation>
+<translation id="4244962993387259361">‏میموری ٹیسٹ چلانے کیلئے آپ کے پاس کم از کم MB‏ 500 خالی ہونا ضروری ہے۔ اسپیس خالی کرنے کیلئے ترتیبات &gt; اسٹوریج مینیجمنٹ پر جائیں۔</translation>
+<translation id="4250229828105606438">اسکرین شاٹ</translation>
+<translation id="4258281355379922695">‏HTTPS کی درخواستوں میں تاخیر</translation>
+<translation id="4271957103967917607">فُل اسکرین میں دیکھیں</translation>
+<translation id="4289540628985791613">عمومی جائزہ</translation>
+<translation id="4289849978083912975">سلائیڈ شو</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> کلید دبائی گئی</translation>
 <translation id="4378373042927530923">نہیں چلا</translation>
+<translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> ری اسٹارٹ ہو رہا ہے</translation>
+<translation id="4415951057168511744">موجودہ اوتار</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> آف ہے</translation>
 <translation id="4429881212383817840">‏Kerberos کی ٹکٹ کی میعاد جلد ہی ختم ہو جائے گی</translation>
 <translation id="4431821876790500265">رپورٹ دیکھیں</translation>
 <translation id="445059817448385655">پرانا پاس ورڈ</translation>
@@ -145,87 +347,172 @@
 <translation id="4454245904991689773">اس میں اسکین کریں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4503223151711056411">بائیں تیر کا نشان</translation>
 <translation id="4511264077854731334">پورٹل</translation>
+<translation id="4521826082652183069">موضوع کا متبادل نام مماثل کریں</translation>
+<translation id="4536864596629708641">‏IP کنفیگریشن</translation>
+<translation id="4546131424594385779">ایک لوپنگ ویڈیو تخلیق کریں</translation>
 <translation id="4548483925627140043">سگنل نہیں ملا</translation>
+<translation id="4556753742174065117">سبھی فرم ویئر اپ ٹو ڈیٹ ہے</translation>
 <translation id="455835558791489930">‏mAh<ph name="CHARGE_VALUE" /> بیٹری</translation>
+<translation id="4561801978359312462">‏SIM غیر مقفل ہے</translation>
 <translation id="4562494484721939086">کوئی سروس نہیں</translation>
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
+<translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
+<translation id="463791356324567266">اسکین کا عمل منسوخ کیا جا رہا ہے...</translation>
 <translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
-<translation id="4652335678334611408">سیشن لاگ محفوظ کریں</translation>
+<translation id="4650608062294027130">دائیں شفٹ</translation>
+<translation id="4654549501020883054">روزانہ تبدیل کریں</translation>
 <translation id="4665014895760275686">مینوفیکچرر</translation>
 <translation id="467510802200863975">پاس ورڈز مماثل نہیں ہیں</translation>
 <translation id="467715984478005772">فائروال مشکوک ہے</translation>
 <translation id="4691278870498629773">رک گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="469379815867856270">سگنل کی مضبوطی</translation>
-<translation id="4707579418881001319">‏L2TP/IPsec + صارف سرٹیفکیٹ</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
+<translation id="473775607612524610">اپ ڈيٹ کریں</translation>
+<translation id="4744944742468440486">آپ کے انتخاب سے متعلقہ معلومات</translation>
 <translation id="4773299976671772492">روک دیا گیا</translation>
+<translation id="4782311465517282004">جب آپ دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کریں اور دبائے رکھیں تو تعریفیں، ترجمے یونٹ کی تبدیلیاں حاصل کریں</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> تصویر</translation>
+<translation id="4793710386569335688">مزید مدد کے لیے، <ph name="BEGIN_LINK" />مرکز امداد<ph name="END_LINK" /> پر جائیں۔</translation>
+<translation id="4793756956024303490">کمپریشن الگورتھم</translation>
+<translation id="4794140124556169553">‏CPU ٹیسٹ چلانے سے آپ کے سسٹم کی کارکردگی متاثر ہو سکتی ہے</translation>
+<translation id="4800589996161293643">‏Chromebook کمیونٹی</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> پرنٹ جاب منسوخ کر دی گئی</translation>
+<translation id="4809927044794281115">ہلکی تھیم</translation>
+<translation id="4813136279048157860">میری تصاویر</translation>
 <translation id="4813345808229079766">کنکشن</translation>
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
 <translation id="4835901797422965222">کوئی فعال نیٹ ورک نہیں</translation>
+<translation id="4839698083503556542">اپنی خود کی مووی بنائیں</translation>
+<translation id="484462545196658690">خودکار</translation>
+<translation id="4847902821209177679">‏<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> منتخب کیا گیا، <ph name="TOPIC_SOURCE" /> البمز منتخب کرنے کے لیے Enter دبائیں</translation>
+<translation id="484790837831576105">‏‎(Android) DNS ریزولیوشن</translation>
 <translation id="4848429997038228357">جاری ہے</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} کوشش باقی ہے}other{<ph name="ERROR_MESSAGE" /> {0} کوششیں باقی ہیں}}</translation>
+<translation id="4873827928179867585">تصدیقی الگورتھم</translation>
 <translation id="4880328057631981605">رسائی کی جگہ کا نام</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4891842000192098784">اسٹریس</translation>
+<translation id="4897058166682006107">آلے کے بائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
+<translation id="4905998861748258752">اسکرین سیور کے اختیارات کو منتخب کرنے کے لیے خصوصیت کو آن کریں</translation>
 <translation id="4917385247580444890">مضبوط</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
+<translation id="491791267030419270">تاثرات لکھنے کے متعلق تجاویز</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> چارج کیا گیا۔</translation>
+<translation id="4930320165497208503">کنکشن سیٹ اپ کرنے یا اپ ڈیٹ کرنے کیلئے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="4950314376641394653">فرم ویئر <ph name="DEVICE_NAME" /> کو ورژن <ph name="VERSION" /> میں اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="4987769320337599931">فائروال</translation>
 <translation id="4999333166442584738">رپورٹ چھپائیں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
+<translation id="5019310272469539976">آپ کی اسکرین کے معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔</translation>
+<translation id="5039804452771397117">اجازت دیں</translation>
+<translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">گروپ کا نام</translation>
+<translation id="5051044138948155788">یہ واحد صفحہ ہے۔ یہ آپ کو سکیننگ اسٹارٹ سکرین پر لے جائے گا۔</translation>
 <translation id="5088172560898466307">سرور کا میزبان نام</translation>
 <translation id="5089810972385038852">ریاست</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">تصدیق</translation>
 <translation id="5154917547274118687">میموری</translation>
+<translation id="5160857336552977725">اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کریں</translation>
+<translation id="5166918508782100047">فوری جوابات کی ترتیبات</translation>
 <translation id="5168185087976003268">بیٹری کی صحت</translation>
+<translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
+<translation id="5190187232518914472">‏اپنی پسندیدہ میموریز کو دوبارہ زندہ کریں۔ البمز کو شامل یا ان میں ترمیم کرنے کے لیے، <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="5212543919916444558">مجھے آپ کی اسکرین پر ایسا کچھ نہیں ملا جس سے متعلق میں آپ کی مدد کر سکوں۔ مجھ سے کچھ بھی پوچھنے کے لیے مائیک کو تھپتھپانے کی کوشش کریں۔</translation>
+<translation id="5212593641110061691">ٹیبلائڈ</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
+<translation id="522307662484862935">ای میل پتہ شامل نہ کریں</translation>
+<translation id="5227902338748591677">گہری تھیم شیڈول کریں</translation>
+<translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="5252456968953390977">رومنگ</translation>
+<translation id="5257811368506016604">ہلکے رنگ کے موڈ کو فعال کریں</translation>
 <translation id="5264277876637023664">‏CPU ٹیسٹ چلائیں</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">روٹینز کو دوبارہ چلائیں</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">بیک لائٹ کا رنگ</translation>
 <translation id="5294769550414936029">‏ورژن ‎<ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300814202279832142">ونڈو کو ڈیسک میں منتقل کریں</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">شناخت</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318334351163689047">‏TCP درخواست کی ناکامیاں</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ابھی ایک نیا پاس ورڈ منتخب کریں</translation>
 <translation id="5333530671332546086">پورٹل کی صورتحال نامعلوم ہے</translation>
+<translation id="5346687412805619883">مقامی نیٹ ورک</translation>
+<translation id="5358174242040570474">کچھ غلط ہوگیا۔ وال پیپر کو دوبارہ منتخب کرنے کی کوشش کریں یا ایپ کو دوبارہ کھولیں۔</translation>
 <translation id="5372659122375744710">‏WiFi نیٹ ورک محفوظ نہیں ہے</translation>
+<translation id="5376354385557966694">خودکار لائٹ موڈ</translation>
+<translation id="5389159777326897627">وال پیپر اور اسٹائل</translation>
+<translation id="5389224261615877010">قوس قزح</translation>
+<translation id="5400907029458559844">آلہ منسلک ہو رہا ہے۔</translation>
 <translation id="5401938042319910061">تمام روٹینز چلائیں</translation>
 <translation id="5423849171846380976">فعال</translation>
 <translation id="5430931332414098647">فوری ٹیدرنگ</translation>
 <translation id="5431318178759467895">رنگ</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">مہمان کے بطور براؤز کریں</translation>
 <translation id="54609108002486618">نظم کردہ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} کوشش باقی ہے}other{{0} کوششیں باقی ہیں}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">اسکین مکمل نہیں ہو سکا</translation>
+<translation id="5499762266711462226">کی بورڈ کا رنگ وال پیپر کی بنیاد پر ہوتا ہے</translation>
+<translation id="5502931783115429516">‏Android نہیں چل رہا ہے</translation>
+<translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5559898619118303662">غروب آفتاب کے وقت خود کار طور پر گہری تھیم پر سوئچ کریں</translation>
+<translation id="5578477003638479617">UMTS</translation>
+<translation id="5578519639599103840">دوبارہ اسکین کریں</translation>
+<translation id="5583640892426849032">بیک اسپیس</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> کلید ٹیسٹ کی گئی</translation>
+<translation id="5620281292257375798">صرف داخلی</translation>
+<translation id="5649768706273821470">سنیں</translation>
+<translation id="5655283760733841251">کی بورڈ کی چمک بڑھانے کی کلید</translation>
+<translation id="5659593005791499971">ای میل</translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">فیملی</translation>
+<translation id="5695599963893094957">اپنے کی بورڈ پر کوئی بھی کلید دبائیں۔ آپ ایک ہی وقت میں 4 تک کلیدیں دبا سکتے ہیں۔</translation>
+<translation id="5701381305118179107">مرکز</translation>
+<translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
+<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> اپ ڈیٹ کریں</translation>
 <translation id="5760715441271661976">پورٹل صورت حال</translation>
-<translation id="5797428682393400134">کامیاب</translation>
+<translation id="576835345334454681">ڈسپلے کی چمک بڑھانے کی کلید</translation>
+<translation id="57838592816432529">آواز بند کریں</translation>
+<translation id="5784136236926853061">‏زیادہ HTTPS تاخیر</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
 <translation id="583281660410589416">نامعلوم</translation>
+<translation id="5843706793424741864">فارن ہائیٹ</translation>
 <translation id="5849570051105887917">گھر فراہم کرنے والے کا کوڈ</translation>
+<translation id="5859603669299126575">آرٹ گیلری البم</translation>
+<translation id="5860033963881614850">آف</translation>
+<translation id="5860491529813859533">آن کریں</translation>
 <translation id="5866840822086176774">کافی مضبوط</translation>
+<translation id="588258955323874662">پوری اسکرین</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
+<translation id="5901630391730855834">پیلا</translation>
+<translation id="5903200662178656908">آلہ ایک کی بورڈ اور ماؤس کومبو ہے۔</translation>
+<translation id="5907649332524363701">کلید کا رنگ</translation>
 <translation id="5916084858004523819">ممنوعہ</translation>
+<translation id="5916664084637901428">آن</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{آپ کی فائل کامیابی کے ساتھ اسکین ہو گئی ہے اور اسے <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}other{آپ کی فائلیں کامیابی کے ساتھ اسکین ہو گئی ہیں اور انہیں <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}}</translation>
 <translation id="5931523347251946569">فائل نہیں ملی</translation>
+<translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
+<translation id="594552776027197022">رینڈم کلیدوں کا جوڑا بنائیں</translation>
+<translation id="5972388717451707488">انجن اپ ڈیٹ کریں</translation>
+<translation id="5984145644188835034">ڈیفالٹ وال پیپر</translation>
+<translation id="6017514345406065928">سبز</translation>
+<translation id="6034694447310538551">خودکار ماہانہ ری سیٹ فعال کریں</translation>
+<translation id="6037291330010597344">اسکینر کا دستاویز فیڈر خالی ہے۔ دستاویزات شامل کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6040852767465482106">گمنام شناخت</translation>
 <translation id="604124094241169006">خود کار</translation>
@@ -233,146 +520,328 @@
 <translation id="6050189528197190982">گرے اسکیل</translation>
 <translation id="6058625436358447366">مکمل کرنے کے لئے اپنے پرانے اور نئے پاس ورڈز درج کریں</translation>
 <translation id="6061772781719867950">‏ناکام HTTP درخواستیں</translation>
+<translation id="6075872808778243331">‏‎(Android) HTTP میں تاخیر</translation>
 <translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
+<translation id="6112878310391905610">یہ ترتیب آپ کے منتظمین کے زیر انتظام ہے</translation>
+<translation id="6113701710518389813">اوپر تیر کا نشان</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />، +<ph name="NUMBER" /> مزید البمز</translation>
 <translation id="6122191549521593678">آن لائن</translation>
+<translation id="6122277663991249694">‏ChromeOS اندراج کے طریقہ کی سروس</translation>
 <translation id="6137767437444130246">صارف کا سرٹیفیکیٹ</translation>
 <translation id="6146993107019042706">مکمل کرنے کے لئے اپنا نیا پاس ورڈ درج کریں</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">استعمال کے ساتھ بیٹری کی صلاحیت کم ہوتی ہے</translation>
 <translation id="6191293864534840972">نام سرورز غلط ہے</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
 <translation id="6232017090690406397">بیٹری</translation>
+<translation id="6235460611964961764">ڈیٹا کے استعمال کو دستی طور پر ری سیٹ کریں</translation>
+<translation id="6243280677745499710">فی الحال سیٹ ہے</translation>
+<translation id="6275224645089671689">دائیں تیر کا نشان</translation>
+<translation id="6278428485366576908">تھیم</translation>
+<translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">گہری تھیم آن کریں</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
+<translation id="631063167932043783">ایکسپلور ایپ</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> پر فرم ویئر اپ ڈیٹ کریں</translation>
+<translation id="6321407676395378991">اسکرین سیور آن کریں</translation>
 <translation id="6325525973963619867">ناکام</translation>
+<translation id="6331191339300272798">خودکار گہری تھیم</translation>
+<translation id="6340526405444716530">ذاتی نوعیت سازی</translation>
+<translation id="6348738456043757611">صارف نام اور پاس ورڈ</translation>
+<translation id="6359706544163531585">ہلکی تھیم غیر فعال کریں</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
+<translation id="6379086450106841622">ٹچ اسکرین</translation>
+<translation id="6381741036071372448">اپنے کی بورڈ کو ٹیسٹ کریں</translation>
+<translation id="6388847657025262518">اسکینر کا دستاویز فیڈر جام ہے۔ فیڈر چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="6394634179843537518">فائل شامل کریں</translation>
+<translation id="6410257289063177456">تصویری فائلیں</translation>
 <translation id="641081527798843608">موضوع کی مماثلت</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">کمزور (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">اکاؤنٹ کی ترتیبات پر جائیں</translation>
 <translation id="6456394469623773452">لطیف</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{صفحہ دوبارہ اسکین کریں؟}=1{{PAGE_NUMBER} صفحہ دوبارہ اسکین کریں؟}other{{PAGE_NUMBER} صفحہ دوبارہ اسکین کریں؟}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="649050271426829538">رک گیا - پیپر جام</translation>
+<translation id="6494974875566443634">حسب ضرورت بنانا</translation>
+<translation id="6500818810472529210">‏Google تلاش میں نتیجہ دیکھیں</translation>
+<translation id="650266656685499220">‏البمز تخلیق کرنے کے لیے Google تصاویر پر جائیں</translation>
 <translation id="6516990319416533844">بیٹری چارجنگ کی شرح ٹیسٹ کرنے کے لئے اپنی بیٹری کو تھوڑے وقفہ کے لئے ختم ہونے دیں</translation>
 <translation id="6517239166834772319">دریافت</translation>
 <translation id="6527081081771465939">‏نامعلوم WiFi سیکیورٹی پروٹوکول</translation>
+<translation id="6535178685492749208">آپ آف لائن ہیں۔ تاثرات بعد میں بھیجے جائیں گے۔</translation>
 <translation id="65587193855025101">فلیٹ بیڈ</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
+<translation id="6566314079205407217">کثیر صفحاتی اسکین</translation>
+<translation id="6574762126505704998">بھریں</translation>
+<translation id="6575134580692778371">کنفیگر نہیں ہے</translation>
+<translation id="6579509898032828423">یہ تصویر استعمال کریں</translation>
+<translation id="6596816719288285829">‏IP پتہ</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
+<translation id="6624819909909965616">‏10‎ MB سے بڑی فائل اپ لوڈ نہیں کی جا سکتی</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
+<translation id="6647510110698214773">مرموز کاری الگورتھم</translation>
+<translation id="6650062777702288430">کانا/الفانیومیرک کو سوئچ کرنے کی کلید</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
+<translation id="6659594942844771486">براؤزر ٹیب</translation>
+<translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6704062477274546131">‏DNS ریزولیوشن</translation>
+<translation id="6723839937902243910">پاور</translation>
+<translation id="6723847290197874913">کی بورڈ بیک لائٹ</translation>
+<translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
 <translation id="6747215703636344499">رک گیا - آؤٹ پٹ بھر گیا ہے</translation>
+<translation id="6749473226660745022">تصاویر</translation>
+<translation id="6753452347192452143">آلہ ایک کمپیوٹر ہے۔</translation>
 <translation id="6756731097889387912">اسکین کا عمل منسوخ نہیں کیا جا سکا</translation>
+<translation id="6760706756348334449">والیوم کم کریں</translation>
 <translation id="6766275201586212568">‏ناکام DNS ریزولیوشنز</translation>
 <translation id="6768237774506518020">‏DNS ریزولیوشن ناکام ہونے کی زیادہ شرح</translation>
+<translation id="6791471867139427246">کی بورڈ کا ہلکا رنگ</translation>
+<translation id="680983167891198932">کلید</translation>
+<translation id="6816797338148849397">آپ کے انتخاب سے متعلقہ معلومات دستیاب ہے۔ رسائی حاصل کرنے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="6853312040151791195">ڈسچارج ہونے کی شرح</translation>
-<translation id="6898743098396957679">اسکین کا عمل مکمل نہیں ہو سکا</translation>
+<translation id="6889786074662672253">ری سٹارٹ کرنے کے دوران، اس خارجی آلے کو ان پلگ نہ کریں یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
+<translation id="6905724422583748843"><ph name="PAGE_NAME" /> پر واپس جائیں</translation>
+<translation id="6910312834584889076">اسکینر کا سرورق کھلا ہوا ہے۔ سرورق کو بند کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6911383237894364323">میڈیا سرورز سے منسلک ہونے سے قاصر</translation>
+<translation id="6943893908656559156">ریموٹ شناخت (اختیاری)</translation>
 <translation id="6957231940976260713">سروس کا نام</translation>
+<translation id="6961170852793647506">شروع کرنے کیلئے، اپنی دستاویز کو اسکینر پر رکھیں</translation>
+<translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6977381486153291903">فرم ویئر نظر ثانی</translation>
+<translation id="7005833343836210400">آلہ آف لائن ہے</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="7040230719604914234">آپریٹر</translation>
+<translation id="7041549558901442110">آلہ منسلک نہیں ہے۔</translation>
+<translation id="7058278511608979688">ختم کریں اور محفوظ کریں</translation>
 <translation id="7059230779847288458">چارج ہو رہا ہے، مکمل ہونے میں <ph name="TIME_VALUE" /> باقی</translation>
+<translation id="7068619307603204412">اپنا آلہ تیار کریں</translation>
 <translation id="708426984172631313">روک دیا گیا</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">ناکام ہو گئی - اجازت دہندگی ناکام ہو گئی</translation>
+<translation id="7103252855940681301"><ph name="INDEX" /> میں <ph name="NAME" /> نام کے <ph name="COUNT" /> آلے ہے۔</translation>
+<translation id="7134436342991564651">{0,plural, =1{نام سرور}other{نام سرورز}}</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
+<translation id="7154020516215182599">اپنے تاثرات کا اشتراک کریں یا اپنے مسئلہ کی وضاحت کریں۔ اگر ممکن ہو تو اپنے مسئلے کو دوبارہ پیش کرنے کے لیے اقدامات شامل کریں۔</translation>
+<translation id="7155171745945906037">کیمرے یا فائل سے موجودہ تصویر</translation>
 <translation id="7162487448488904999">گیلری</translation>
+<translation id="7170236477717446850">پروفائل تصویر</translation>
+<translation id="7172721935181587524">1 تصویر</translation>
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
+<translation id="7180611975245234373">ریفریش کریں</translation>
+<translation id="7212734716605298123">بیرونی آلات کیلئے فرم ویئر اپ ڈیٹس</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
+<translation id="725133483556299729">ای میل منتخب کریں</translation>
+<translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">ہوا کا جھونکا محسوس کریں</translation>
+<translation id="7287310195820267359">وال پیپر کے مجموعے</translation>
+<translation id="7297226631177386107">‏فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
+<translation id="7302860742311162920">ICCID</translation>
+<translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">‏Chromebook امدادی فورم میں ماہرین سے پوچھیں</translation>
+<translation id="7311368985037279727">کی بورڈ کا رنگ</translation>
+<translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
+<translation id="73631062356239394">تشخیصی ڈیٹا کا اشتراک کریں</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7397270852490618635">ہلکی تھیم آف کریں</translation>
+<translation id="741244894080940828">تبدیلی</translation>
+<translation id="7415801143053185905">‏بہت زیادہ HTTPS تاخیر</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکیننگ مکمل ہو گئی۔ 1 صفحہ اسکین ہو گیا}other{اسکیننگ مکمل ہو گئی۔ {NUMBER_OF_PAGES} صفحات اسکین ہو گئے}}</translation>
 <translation id="7469648432129124067">پورٹل کا پتہ چلا</translation>
+<translation id="7481312909269577407">فارورڈ کریں</translation>
 <translation id="7487067081878637334">ٹیکنالوجی</translation>
 <translation id="7490813197707563893">‏MAC پتہ</translation>
 <translation id="7497215489070763236">‏سرور CA سرٹیفکیٹ</translation>
 <translation id="7502658306369382406">‏IPv6 پتہ</translation>
+<translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">ہلکی تھیم آن کریں</translation>
 <translation id="7550715992156305117">ڈائیگناسٹک روٹینز</translation>
+<translation id="7551123448725492271">آلہ ایک آڈیو آلہ ہے۔</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">‏USB ٹچ اسکرین</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7620771111601174153">مرکز امداد میں مزید جانیں</translation>
+<translation id="763165478673169849">آخری ری سیٹ کرنے کا وقت</translation>
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
+<translation id="7656388927906093505">آلہ ایک ماؤس ہے۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
+<translation id="7665800271478495366">اوتار تبدیل کریں</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">دورانیے کی تعداد</translation>
+<translation id="7747039790905080783">پہلے سے اشتراک کردہ کلید</translation>
+<translation id="7762130827864645708">آپ کا پاس ورڈ کامیابی سے تبدیل کر دیا گیا۔ براہ کرم اب سے نیا پاس ورڈ استعمال کریں۔</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />سسٹم اور ایپ کی معلومات<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />میٹرکس<ph name="END_LINK2" /> بھیجیں</translation>
+<translation id="7763470514545477072">ڈومین لاحقہ کا مماثل</translation>
 <translation id="7769672763586021400">‏ماڈل ID</translation>
+<translation id="7784116172884276937">‏کوئی DNS سرور سیٹ اپ نہیں کیا گیا ہے</translation>
+<translation id="779591286616261875">نئی رپورٹ بھیجیں</translation>
+<translation id="7799817062559422778">لائٹ موڈ</translation>
+<translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7819857487979277519">‏‫‫PSK‎‏ (WPA یا RSN)‏</translation>
+<translation id="7841134249932030522">تاریک وضع فعال کریں</translation>
+<translation id="7846634333498149051">کی بورڈ</translation>
+<translation id="7856267634822906833">بلوٹوتھ ٹچ اسکرین</translation>
+<translation id="7869143217755017858">تاریک وضع غیر فعال کریں</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">فراہم کنندہ کی قسم</translation>
+<translation id="7882501334836096755">عوامی کلید</translation>
+<translation id="7890841768028788197">پہلے سے شامل ٹچ اسکرین</translation>
 <translation id="7936303884198020182">کوئی نام سرور نہیں ملا</translation>
+<translation id="7942349550061667556">سرخ</translation>
+<translation id="7943235353293548836">‏مسلسل keepalive وقفہ</translation>
+<translation id="7955587717700691983">بلوٹوتھ کی بورڈ</translation>
 <translation id="7960831585769876809">درجہ حرارت</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
+<translation id="7978412674231730200">نجی کلید</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">خودکار رنگ موڈ کو فعال کریں</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
+<translation id="8045012663542226664">مائیکروفون خاموش ہے</translation>
 <translation id="8075838845814659848">باقی چارج</translation>
+<translation id="8082366717211101304">‏Android ایپس سے DNS کو حل نہیں کیا جا سکتا</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
+<translation id="8094062939584182041">‏Google کو اس مسئلے کے بارے میں آپ کو ای میل کرنے کی اجازت دیں</translation>
+<translation id="8104083085214006426">آپ ایک اوپن اور غیر محفوظ نیٹ ورک استعمال کر رہے ہیں</translation>
+<translation id="811820734797650957">‏(Android) گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
+<translation id="8132480444149501833">ٹریفک کاؤنٹرز کی درخواست کریں</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> منتخب کریں</translation>
+<translation id="8179976553408161302">انٹر</translation>
 <translation id="8206859287963243715">سیلولر</translation>
 <translation id="8208861521865154048">فوائد</translation>
+<translation id="8226628635270268143">اپنی پسندیدہ تصاویر اور البمز منتخب کریں</translation>
+<translation id="8227119283605456246">فائل منسلک کریں</translation>
 <translation id="8230672074305416752">ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="8246209727385807362">نامعلوم کیریئر</translation>
+<translation id="827422111966801947">گہرا نیلا</translation>
+<translation id="8286154143153872371">براہ کرم کسی نیٹ ورک سے منسلک ہوں اور وال پیپر دیکھنے کے لیے صفحے کو دوبارہ لوڈ کریں۔</translation>
 <translation id="8291967909914612644">گھر فراہم کرنے والے کا ملک</translation>
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8297006494302853456">کمزور</translation>
 <translation id="8302368968391049045">‏HTTPS فائروال</translation>
+<translation id="8318753676953949627">کوئی تصویر نہیں ہے</translation>
+<translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8352772353338965963">متعدد سائن ان میں ایک اکاؤنٹ شامل کریں۔ سبھی سائن ان کردہ اکاؤنٹس تک پاس ورڈ کے بغیر رسائی کی جا سکتی ہے لہذا یہ خصوصیت صرف بھروسہ مند اکاؤنٹس کے ساتھ استعمال کی جانی چاہیے۔</translation>
 <translation id="8364946094152050673">نام سرورز خالی ہیں</translation>
 <translation id="8372477600026034341">بہت زیادہ میزبان</translation>
 <translation id="8395584934117017006">یہ <ph name="DEVICE_TYPE" /> انٹرپرائز کے زیر انتظام ہے</translation>
 <translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
+<translation id="8420955526972171689">ہارڈ ویئر کے مسائل کے لیے ٹیسٹس اور ٹربل شوٹنگ چلائیں</translation>
+<translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">پہلے سے شامل کی بورڈ</translation>
+<translation id="8431300646573772016">‏ChromeOS میں نیا کیا ہے</translation>
+<translation id="843568408673868420">انٹرنیٹ کنیکٹویٹی</translation>
+<translation id="844521431886043384">‏DNS سیٹ اپ نہیں ہے</translation>
+<translation id="8456761643544401578">خودکار تاریک وضع</translation>
 <translation id="8461329675984532579">گھر فراہم کرنے والے کا نام</translation>
 <translation id="8475690821716466388">‏WiFi نیٹ ورک کمزور پروٹوکول WEP PSK کے ساتھ محفوظ ہے</translation>
 <translation id="8477551185774834963">‏DNS تاخیر قابل اجازت حد سے تھوڑی سی زیادہ ہے</translation>
 <translation id="8483248364096924578">‏IP پتہ</translation>
+<translation id="8491311378305535241">‏Android ایپس سے فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
+<translation id="8498220429738806196">ٹریفک کاؤنٹرز</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8503836310948963452">صرف چند مزید منٹ...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
+<translation id="8575298406870537639">آپ کے کیریئر کو اپنے نیٹ ورک سے منسلک ہونے کیلئے اس اختیار کی ضرورت پڑ سکتی ہے۔ تفصیلات کیلئے اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
 <translation id="8620617069779373398">رومنگ کی صورتحال</translation>
+<translation id="8655295600908251630">چینل</translation>
+<translation id="8655828773034788261">‏URL کا اشتراک کریں:</translation>
+<translation id="8660881923941176839">پاؤنڈز</translation>
 <translation id="8675354002693747642">پہلے سے اشتراک کردہ کلید</translation>
+<translation id="8677859815076891398">‏کوئی البم نہیں ہے۔ <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> میں ایک البم تخلیق کریں۔</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> اس خصوصیت کا نظم کرنے کے لئے بائیں یا دائیں تیر کے نشان کی کلیدیں استعمال کریں۔</translation>
+<translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="871560550817059752">ناکام ہو گیا - سیاہی ختم ہو گئی</translation>
 <translation id="8723108084122415655">تاخیر کی حد کے اوپر غیر ڈیفالٹ نیٹ ورک</translation>
+<translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8726019395068607495">رک گیا - دروازہ کھلا ہے</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8747900814994928677">تبدیلی کی توثیق کریں</translation>
+<translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">‏Google تصاویر کا البم</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">اس نیٹ ورک میں ایک کیپٹو پورٹل ہو سکتا ہے</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
 <translation id="8798441408945964110">فراہم کنندہ کا نام</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">وال پیپر</translation>
+<translation id="8834539327799336565">فی الحال منسلک ہے</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
+<translation id="8855781559874488009">‏فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
+<translation id="885701979325669005">اسٹوریج</translation>
+<translation id="8863170912498892583">گہری تھیم فعال کریں</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" اور مزید کے لیے <ph name="INTENT" /> حاصل کریں</translation>
+<translation id="8864415976656252616">کوئی تجویز کردہ مواد نہیں ہے۔ سرفہرست مددگار مواد دیکھیں۔</translation>
+<translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">آلہ ایک ٹیبلیٹ ہے۔</translation>
 <translation id="8881098542468797602">ٹیسٹ کامیاب ہو گیا</translation>
 <translation id="8898840733695078011">سگنل کی مضبوطی</translation>
 <translation id="8910721771319628100">تاخیر کی حد کے اوپر ڈیفالٹ نیٹ ورک</translation>
+<translation id="8918637186205009138"><ph name="GIVEN_NAME" /> کا <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ناکام ہو گیا - ٹرے موجود نہیں ہے</translation>
+<translation id="8923267550422472772">ری سیٹ کرنے کے لیے مہینے کا دن</translation>
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
+<translation id="8930521118335213258">پیئر</translation>
 <translation id="8930622219860340959">وائرلیس</translation>
+<translation id="8936793075252196307">‏کلائنٹ IP پتہ</translation>
+<translation id="8945750210906526975">پہلے سے شامل ٹچ پیڈ</translation>
+<translation id="894617464444543719">آلہ ایک فون ہے۔</translation>
 <translation id="8968751544471797276">چارج ہونے کی شرح</translation>
 <translation id="8970109610781093811">دوبارہ چلائيں</translation>
+<translation id="8983038754672563810">HSPA</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکین کریں}=1{{NUMBER_OF_PAGES} صفحہ اسکین کریں}other{{NUMBER_OF_PAGES} صفحہ اسکین کریں}}</translation>
+<translation id="8997710128084572139">آلے میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="9003704114456258138">فریکوئنسی</translation>
+<translation id="9025198690966128418">ذاتی آلے کے طور پر استعمال کریں</translation>
+<translation id="9028832514430399253">اسکرین سیور کے اختیارات کو منتخب کرنے کے لیے ٹوگل آن کریں</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">‏DNS ریزولیوشن کی تاخیر بہت زیادہ ہے</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
+<translation id="9082718469794970195">یہ ویڈیو استعمال کریں</translation>
+<translation id="9087578468327036362">اس استفسار کی اطلاع دیں</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
+<translation id="9092255287806472980">‏آپ کے تاثرات سے Chrome OS کو بہتر بنانے میں مدد ملتی ہے اور ہماری ٹیم اس کا جائزہ لے گی۔ رپورٹس کی بڑی تعداد کی وجہ سے، ہم جواب نہیں بھیج سکیں گے۔</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
+<translation id="9122602430962285795">دوبارہ منسلک ہونے کیلئے، ترتیبات پر جائیں</translation>
+<translation id="9126720536733509015">‏متعدد صفحات کو ایک PDF میں محفوظ کریں</translation>
 <translation id="9137526406337347448">‏Google سروسز</translation>
+<translation id="9138630967333032450">بائیں شفٹ</translation>
 <translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
 <translation id="9173638680043580060">ایک منٹ سے کم باقی ہے</translation>
-<translation id="9190063653747922532">‏‎L2TP/IPsec + پیشگی اشتراک کردہ کلید</translation>
+<translation id="917720651393141712">ٹیسٹ</translation>
+<translation id="9188992814426075118">آپ کا کی بورڈ خودکار طور پر آپ کے وال پیپر سے مماثل ہو سکتا ہے</translation>
+<translation id="9204237731135241582">‏Android ایپس سے گیٹ وے رابطے کو منسلک نہیں کیا جا سکتا</translation>
+<translation id="9211490828691860325">تمام ڈیسکس</translation>
+<translation id="932327136139879170">ھوم</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="952992212772159698">فعال نہیں ہے</translation>
 <translation id="960719561871045870">آپریٹر کوڈ</translation>
 <translation id="982713511914535780">ڈسچارج ٹیسٹ چلائیں</translation>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <ostream>
 #include <string>
 
-#include "base/optional.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class NearbyShareHttpError {
   // Request could not be completed because the device is offline or has issues
@@ -64,7 +64,7 @@ class NearbyShareHttpStatus {
  private:
   enum class Status { kSuccess, kNetworkFailure, kHttpFailure } status_;
   int net_error_code_;
-  base::Optional<int> http_response_code_;
+  absl::optional<int> http_response_code_;
 };
 
 NearbyShareHttpError NearbyShareHttpErrorForHttpResponseCode(int response_code);

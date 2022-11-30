@@ -1,0 +1,35 @@
+UNKNOWN focusable has_input_focus label='Table example - focusable thead, tbody, tfoot'
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE number_of_rows=4 number_of_columns=2
+++++++++ROW_GROUP focusable
+++++++++++TABLE_ROW
+++++++++++++COLUMN_HEADER label='Sum' cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Sum'
+++++++++++++++++UNKNOWN label='Sum'
+++++++++++++COLUMN_HEADER label='Subtraction' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Subtraction'
+++++++++++++++++UNKNOWN label='Subtraction'
+++++++++ROW_GROUP focusable
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL label='10' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='10'
+++++++++++++++++UNKNOWN label='10'
+++++++++++++CELL label='7' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='7'
+++++++++++++++++UNKNOWN label='7'
+++++++++++TABLE_ROW row_index=2
+++++++++++++CELL label='2' cell_row_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='2'
+++++++++++++++++UNKNOWN label='2'
+++++++++++++CELL label='4' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='4'
+++++++++++++++++UNKNOWN label='4'
+++++++++ROW_GROUP focusable
+++++++++++TABLE_ROW row_index=3
+++++++++++++CELL label='12' cell_row_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='12'
+++++++++++++++++UNKNOWN label='12'
+++++++++++++CELL label='3' cell_row_index=3 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='3'
+++++++++++++++++UNKNOWN label='3'

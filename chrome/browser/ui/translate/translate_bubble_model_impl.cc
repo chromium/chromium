@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 
@@ -14,14 +15,19 @@ TranslateBubbleModelImpl::TranslateBubbleModelImpl(
     translate::TranslateStep step,
     std::unique_ptr<translate::TranslateUIDelegate> ui_delegate)
     : ui_delegate_(std::move(ui_delegate)),
-      view_state_transition_(TranslateStepToViewState(step)),
       translation_declined_(false),
       translate_executed_(false) {
+  ViewState view_state = TranslateStepToViewState(step);
+  // The initial view type must not be 'Advanced'.
+  DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
+  DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
+  current_view_state_ = view_state;
+
   if (GetViewState() != TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE)
     translate_executed_ = true;
 }
 
-TranslateBubbleModelImpl::~TranslateBubbleModelImpl() {}
+TranslateBubbleModelImpl::~TranslateBubbleModelImpl() = default;
 
 // static
 TranslateBubbleModel::ViewState
@@ -43,7 +49,7 @@ TranslateBubbleModelImpl::TranslateStepToViewState(
 }
 
 TranslateBubbleModel::ViewState TranslateBubbleModelImpl::GetViewState() const {
-  return view_state_transition_.view_state();
+  return current_view_state_;
 }
 
 bool TranslateBubbleModelImpl::ShouldAlwaysTranslateBeCheckedByDefault() const {
@@ -56,16 +62,12 @@ bool TranslateBubbleModelImpl::ShouldShowAlwaysTranslateShortcut() const {
 
 void TranslateBubbleModelImpl::SetViewState(
     TranslateBubbleModel::ViewState view_state) {
-  view_state_transition_.SetViewState(view_state);
+  current_view_state_ = view_state;
 }
 
 void TranslateBubbleModelImpl::ShowError(
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   ui_delegate_->OnErrorShown(error_type);
-}
-
-void TranslateBubbleModelImpl::GoBackFromAdvanced() {
-  view_state_transition_.GoBackFromAdvanced();
 }
 
 int TranslateBubbleModelImpl::GetNumberOfSourceLanguages() const {
@@ -130,11 +132,11 @@ bool TranslateBubbleModelImpl::ShouldNeverTranslateSite() {
 }
 
 void TranslateBubbleModelImpl::SetNeverTranslateSite(bool value) {
-  ui_delegate_->SetNeverPrompt(value);
+  ui_delegate_->SetNeverPromptSite(value);
 }
 
-bool TranslateBubbleModelImpl::CanBlocklistSite() {
-  return ui_delegate_->CanAddToNeverPromptList();
+bool TranslateBubbleModelImpl::CanAddSiteToNeverPromptList() {
+  return ui_delegate_->CanAddSiteToNeverPromptList();
 }
 
 bool TranslateBubbleModelImpl::ShouldAlwaysTranslate() const {
@@ -165,15 +167,25 @@ void TranslateBubbleModelImpl::OnBubbleClosing() {
 }
 
 bool TranslateBubbleModelImpl::IsPageTranslatedInCurrentLanguages() const {
-  const translate::LanguageState& language_state =
+  const translate::LanguageState* language_state =
       ui_delegate_->GetLanguageState();
-  return ui_delegate_->GetSourceLanguageCode() ==
-             language_state.original_language() &&
-         ui_delegate_->GetTargetLanguageCode() ==
-             language_state.current_language();
+  if (language_state) {
+    return ui_delegate_->GetSourceLanguageCode() ==
+               language_state->source_language() &&
+           ui_delegate_->GetTargetLanguageCode() ==
+               language_state->current_language();
+  }
+  // If LanguageState does not exist, it means that TranslateManager has been
+  // destructed. Return true so that callers don't try to kick off any more
+  // translations.
+  return true;
 }
 
 void TranslateBubbleModelImpl::ReportUIInteraction(
     translate::UIInteraction ui_interaction) {
   ui_delegate_->ReportUIInteraction(ui_interaction);
+}
+
+void TranslateBubbleModelImpl::ReportUIChange(bool is_ui_shown) {
+  ui_delegate_->ReportUIChange(is_ui_shown);
 }

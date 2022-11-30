@@ -1,50 +1,33 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_INVALIDATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_INVALIDATOR_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class PrePaintTreeWalk;
-
 struct CORE_EXPORT PaintInvalidatorContext {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
-  class ParentContextAccessor {
-   public:
-    ParentContextAccessor() = default;
-    ParentContextAccessor(PrePaintTreeWalk* tree_walk,
-                          wtf_size_t parent_context_index)
-        : tree_walk_(tree_walk), parent_context_index_(parent_context_index) {}
-    const PaintInvalidatorContext* ParentContext() const;
-
-   private:
-    PrePaintTreeWalk* tree_walk_ = nullptr;
-    wtf_size_t parent_context_index_ = 0u;
-  };
-
   PaintInvalidatorContext() = default;
 
-  PaintInvalidatorContext(const ParentContextAccessor& parent_context_accessor)
-      : parent_context_accessor_(parent_context_accessor),
-        subtree_flags(ParentContext()->subtree_flags),
-        directly_composited_container(
-            ParentContext()->directly_composited_container),
-        directly_composited_container_for_stacked_contents(
-            ParentContext()
-                ->directly_composited_container_for_stacked_contents),
-        painting_layer(ParentContext()->painting_layer) {}
+  explicit PaintInvalidatorContext(const PaintInvalidatorContext& parent)
+      : parent_context(&parent),
+        subtree_flags(parent.subtree_flags),
+        painting_layer(parent.painting_layer),
+        inside_opaque_layout_shift_root(
+            parent.inside_opaque_layout_shift_root) {}
 
   bool NeedsSubtreeWalk() const {
     return subtree_flags &
@@ -52,16 +35,12 @@ struct CORE_EXPORT PaintInvalidatorContext {
             kSubtreeFullInvalidationForStackedContents);
   }
 
+  // TODO(pdr): Remove this accessor.
   const PaintInvalidatorContext* ParentContext() const {
-    return parent_context_accessor_.ParentContext();
+    return parent_context;
   }
+  const PaintInvalidatorContext* parent_context = nullptr;
 
- private:
-  // Parent context accessor has to be initialized first, so inject the private
-  // access block here for that reason.
-  ParentContextAccessor parent_context_accessor_;
-
- public:
   // When adding new subtree flags, ensure |NeedsSubtreeWalk| is updated.
   enum SubtreeFlag {
     kSubtreeInvalidationChecking = 1 << 0,
@@ -83,17 +62,6 @@ struct CORE_EXPORT PaintInvalidatorContext {
   // The following fields can be null only before
   // PaintInvalidator::updateContext().
 
-  // The current directly composited  container for normal flow objects.
-  // It is the enclosing composited object.
-  const LayoutBoxModelObject* directly_composited_container = nullptr;
-
-  // The current directly composited container for stacked contents (stacking
-  // contexts or positioned objects). It is the nearest ancestor composited
-  // object which establishes a stacking context. For more information, see:
-  // https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md#Stacked-elements-and-stacking-contexts
-  const LayoutBoxModelObject*
-      directly_composited_container_for_stacked_contents = nullptr;
-
   PaintLayer* painting_layer = nullptr;
 
   // The previous PaintOffset of FragmentData.
@@ -101,18 +69,20 @@ struct CORE_EXPORT PaintInvalidatorContext {
 
   const FragmentData* fragment_data = nullptr;
 
+  // Set when we have entered something that shouldn't track layout shift
+  // inside (multicol container).
+  bool inside_opaque_layout_shift_root = false;
+
  private:
   friend class PaintInvalidator;
 
-  // Not using Optional because we need to keep the pointer stable when the
-  // vector containing this PaintInvalidatorContext reallocates.
-  std::unique_ptr<LayoutShiftTracker::ContainingBlockScope>
+  absl::optional<LayoutShiftTracker::ContainingBlockScope>
       containing_block_scope_;
   const TransformPaintPropertyNodeOrAlias* transform_ = nullptr;
 };
 
-class PaintInvalidator {
-  DISALLOW_NEW();
+class PaintInvalidator final {
+  STACK_ALLOCATED();
 
  public:
   // Returns true if the object is invalidated.
@@ -127,14 +97,9 @@ class PaintInvalidator {
 
  private:
   friend struct PaintInvalidatorContext;
-  friend class PrePaintTreeWalk;
 
   ALWAYS_INLINE void UpdatePaintingLayer(const LayoutObject&,
-                                         PaintInvalidatorContext&,
-                                         bool is_ng_painting);
-  ALWAYS_INLINE void UpdateDirectlyCompositedContainer(const LayoutObject&,
-                                                       PaintInvalidatorContext&,
-                                                       bool is_ng_painting);
+                                         PaintInvalidatorContext&);
   ALWAYS_INLINE void UpdateFromTreeBuilderContext(
       const PaintPropertyTreeBuilderFragmentContext&,
       PaintInvalidatorContext&);
@@ -143,7 +108,7 @@ class PaintInvalidator {
       const PaintPropertyTreeBuilderFragmentContext&,
       PaintInvalidatorContext&);
 
-  Vector<const LayoutObject*> pending_delayed_paint_invalidations_;
+  HeapVector<Member<const LayoutObject>> pending_delayed_paint_invalidations_;
 };
 
 }  // namespace blink

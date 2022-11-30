@@ -1,5 +1,5 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style_ license that can be
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
@@ -13,6 +13,7 @@ namespace blink {
 int TextDecorationOffset::ComputeUnderlineOffsetForUnder(
     const Length& style_underline_offset,
     float computed_font_size,
+    const SimpleFontData*,
     float text_decoration_thickness,
     FontVerticalPositionType position_type) const {
   const RootInlineBox& root = inline_text_box_->Root();

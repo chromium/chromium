@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,12 @@ constexpr char kImageData[] = "data";
 class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
  public:
   CachedImageFetcherImageDataStoreDiskTest() {}
+
+  CachedImageFetcherImageDataStoreDiskTest(
+      const CachedImageFetcherImageDataStoreDiskTest&) = delete;
+  CachedImageFetcherImageDataStoreDiskTest& operator=(
+      const CachedImageFetcherImageDataStoreDiskTest&) = delete;
+
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void CreateDataStore() {
@@ -93,8 +99,6 @@ class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
   ScopedTempDir temp_dir_;
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherImageDataStoreDiskTest);
 };
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, SanityTest) {

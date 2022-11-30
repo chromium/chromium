@@ -1,5 +1,5 @@
-CONSOLE MESSAGE: line 9: filesystem:http://localhost:8000/temporary/page.html created.
-CONSOLE ERROR: line 8: Not allowed to load local resource: filesystem:http://localhost:8000/temporary/page.html
+CONSOLE MESSAGE: filesystem:http://localhost:8000/temporary/page.html created.
+CONSOLE ERROR: Not allowed to load local resource: filesystem:http://localhost:8000/temporary/page.html
 This test is to see if a remote file can include a local page via a filesystem: URI in an iFrame.
 
 

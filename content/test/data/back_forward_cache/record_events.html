@@ -1,0 +1,25 @@
+<!-- Ensure we don't over-count with cross-site subframes for
+  https://crbug.com/1234634. -->
+<iframe src="https://c.com/title1.html"></iframe>
+<script>
+  window.testObservedEvents = [];
+  let event_list = [
+    'visibilitychange',
+    'pagehide',
+    'pageshow',
+    'freeze',
+    'resume',
+  ];
+
+  for (const event of event_list) {
+    window.addEventListener(event, event => {
+      if (event.persisted)
+        window.testObservedEvents.push(`window.${event.type}.persisted`);
+      else
+        window.testObservedEvents.push(`window.${event.type}`);
+    });
+    document.addEventListener(event, event => {
+      window.testObservedEvents.push(`document.${event.type}`);
+    });
+  }
+</script>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,39 +16,39 @@ namespace display {
 
 TEST(DisplayTest, WorkArea) {
   Display display(0, gfx::Rect(0, 0, 100, 100));
-  EXPECT_EQ("0,0 100x100", display.bounds().ToString());
-  EXPECT_EQ("0,0 100x100", display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), display.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), display.work_area());
 
   display.set_work_area(gfx::Rect(3, 4, 90, 80));
-  EXPECT_EQ("0,0 100x100", display.bounds().ToString());
-  EXPECT_EQ("3,4 90x80", display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), display.bounds());
+  EXPECT_EQ(gfx::Rect(3, 4, 90, 80), display.work_area());
 
   display.SetScaleAndBounds(1.0f, gfx::Rect(10, 20, 50, 50));
-  EXPECT_EQ("10,20 50x50", display.bounds().ToString());
-  EXPECT_EQ("13,24 40x30", display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(10, 20, 50, 50), display.bounds());
+  EXPECT_EQ(gfx::Rect(13, 24, 40, 30), display.work_area());
 
   display.SetSize(gfx::Size(200, 200));
-  EXPECT_EQ("13,24 190x180", display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(13, 24, 190, 180), display.work_area());
 
-  display.UpdateWorkAreaFromInsets(gfx::Insets(3, 4, 5, 6));
-  EXPECT_EQ("14,23 190x192", display.work_area().ToString());
+  display.UpdateWorkAreaFromInsets(gfx::Insets::TLBR(3, 4, 5, 6));
+  EXPECT_EQ(gfx::Rect(14, 23, 190, 192), display.work_area());
 }
 
 TEST(DisplayTest, Scale) {
   Display display(0, gfx::Rect(0, 0, 100, 100));
   display.set_work_area(gfx::Rect(10, 10, 80, 80));
-  EXPECT_EQ("0,0 100x100", display.bounds().ToString());
-  EXPECT_EQ("10,10 80x80", display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), display.bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, 80, 80), display.work_area());
 
   // Scale it back to 2x
   display.SetScaleAndBounds(2.0f, gfx::Rect(0, 0, 140, 140));
-  EXPECT_EQ("0,0 70x70", display.bounds().ToString());
-  EXPECT_EQ("10,10 50x50", display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 70, 70), display.bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, 50, 50), display.work_area());
 
   // Scale it back to 1x
   display.SetScaleAndBounds(1.0f, gfx::Rect(0, 0, 100, 100));
-  EXPECT_EQ("0,0 100x100", display.bounds().ToString());
-  EXPECT_EQ("10,10 80x80", display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), display.bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, 80, 80), display.work_area());
 }
 
 // https://crbug.com/517944
@@ -79,6 +79,16 @@ TEST(DisplayTest, DisplayFrequency) {
 
   display.set_display_frequency(120);
   EXPECT_EQ(120, display.display_frequency());
+}
+
+TEST(DisplayTest, DisplayLabel) {
+  Display display(0, gfx::Rect(0, 0, 100, 100));
+
+  display.set_label("Display 1");
+  EXPECT_EQ("Display 1", display.label());
+
+  display.set_label("Display 2");
+  EXPECT_EQ("Display 2", display.label());
 }
 
 }  // namespace display

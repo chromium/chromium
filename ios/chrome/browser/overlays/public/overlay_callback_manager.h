@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ class OverlayResponse;
 // Completion callback for OverlayRequests.  If an overlay requires a completion
 // block to be executed after its UI is dismissed, OverlayPresenter clients can
 // provide a callback that uses the OverlayResponse provided to the request.
-// |response| may be null if no response has been provided.
+// `response` may be null if no response has been provided.
 typedef base::OnceCallback<void(OverlayResponse* response)>
     OverlayCompletionCallback;
 
@@ -27,7 +27,7 @@ class OverlayCallbackManager {
   virtual ~OverlayCallbackManager() = default;
 
   // The completion response object for the request whose callbacks are being
-  // managed by this object.  |response| is passed as the argument for
+  // managed by this object.  `response` is passed as the argument for
   // completion callbacks when the overlay UI is finished or the request is
   // cancelled.
   virtual void SetCompletionResponse(
@@ -39,12 +39,12 @@ class OverlayCallbackManager {
   // or the request is cancelled.
   virtual void AddCompletionCallback(OverlayCompletionCallback callback) = 0;
 
-  // Dispatches |response| to all callbacks that have been added for its
+  // Dispatches `response` to all callbacks that have been added for its
   // info type.  Used to send user interaction information back to the overlay's
   // requester for ongoing overlay UI.
   virtual void DispatchResponse(std::unique_ptr<OverlayResponse> response) = 0;
 
-  // Adds |callback| to be executed for dispatched responses.  The provided
+  // Adds `callback` to be executed for dispatched responses.  The provided
   // callbacks are not guaranteed to be called, as there is no guarantee that a
   // supported response will be sent for the overlay.
   virtual void AddDispatchCallback(OverlayDispatchCallback callback) = 0;

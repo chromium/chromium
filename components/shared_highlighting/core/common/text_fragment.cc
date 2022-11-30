@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,16 @@
 
 #include <sstream>
 
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/shared_highlighting/core/common/text_fragments_constants.h"
-#include "net/base/escape.h"
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 
 namespace {
 
 // Escapes any special character such that the fragment can be added to a URL.
 std::string Escape(const std::string& str) {
-  std::string escaped = net::EscapeQueryParamValue(str, /*usePlus=*/false);
+  std::string escaped = base::EscapeQueryParamValue(str, /*usePlus=*/false);
 
   // Hyphens must also be escaped since they are used to indicate prefix/suffix
   // components.
@@ -63,7 +63,7 @@ TextFragment::TextFragment(const TextFragment& other)
 TextFragment::~TextFragment() = default;
 
 // static
-base::Optional<TextFragment> TextFragment::FromEscapedString(
+absl::optional<TextFragment> TextFragment::FromEscapedString(
     std::string escaped_string) {
   // Text fragments have the format: [prefix-,]textStart[,textEnd][,-suffix]
   // That is, textStart is the only required param, all params are separated by
@@ -93,7 +93,7 @@ base::Optional<TextFragment> TextFragment::FromEscapedString(
 
   if (pieces.size() > 2 || pieces.empty() || pieces[0].empty()) {
     // Malformed if no piece is left for the textStart
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::string text_start = pieces[0];
@@ -105,7 +105,7 @@ base::Optional<TextFragment> TextFragment::FromEscapedString(
       suffix.find_first_of("&-,") != std::string::npos) {
     // Malformed if any of the pieces contain characters that are supposed to be
     // URL-encoded.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return TextFragment(Unescape(text_start), Unescape(text_end),
@@ -113,9 +113,9 @@ base::Optional<TextFragment> TextFragment::FromEscapedString(
 }
 
 // static
-base::Optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
+absl::optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
   if (!value || !value->is_dict()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string* text_start = value->FindStringKey(kFragmentTextStartKey);
@@ -125,7 +125,7 @@ base::Optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
 
   if (!HasValue(text_start)) {
     // Text Start is the only required parameter.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return TextFragment(*text_start, ValueOrDefault(text_end),
@@ -137,7 +137,7 @@ std::string TextFragment::ToEscapedString() const {
     return std::string();
   }
   std::stringstream ss;
-  ss << kFragmentParameterName;
+  ss << kTextDirectiveParameterName;
 
   if (!prefix_.empty()) {
     ss << Escape(prefix_) << "-,";

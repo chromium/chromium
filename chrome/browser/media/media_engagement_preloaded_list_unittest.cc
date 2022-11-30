@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -19,8 +18,14 @@
 
 namespace {
 
+#if BUILDFLAG(IS_FUCHSIA)
+// Generated files are re-homed to the package root.
+const base::FilePath kTestDataPath = base::FilePath(
+    FILE_PATH_LITERAL("chrome/test/data/media/engagement/preload"));
+#else
 const base::FilePath kTestDataPath = base::FilePath(
     FILE_PATH_LITERAL("gen/chrome/test/data/media/engagement/preload"));
+#endif
 
 // This sample data is auto generated at build time.
 const base::FilePath kSampleDataPath = kTestDataPath.AppendASCII("test.pb");
@@ -35,14 +40,8 @@ const base::FilePath kEmptyFilePath = kTestDataPath.AppendASCII("empty.pb");
 const base::FilePath kFileReadFailedPath =
     base::FilePath(FILE_PATH_LITERAL(".."));
 
-base::FilePath GetModulePath() {
-  base::FilePath module_dir;
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &module_dir));
-#else
-  EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &module_dir));
-#endif
-  return module_dir;
+base::FilePath GeneratedTestDataRoot() {
+  return base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT);
 }
 
 }  // namespace
@@ -68,8 +67,8 @@ class MediaEngagementPreloadedListTest : public ::testing::Test {
            MediaEngagementPreloadedList::DafsaResult::kNotFound;
   }
 
-  base::FilePath GetFilePathRelativeToModule(base::FilePath path) {
-    return GetModulePath().Append(path);
+  base::FilePath GetAbsolutePathToGeneratedTestFile(base::FilePath path) {
+    return GeneratedTestDataRoot().Append(path);
   }
 
   bool IsLoaded() { return preloaded_list_->loaded(); }
@@ -157,7 +156,8 @@ class MediaEngagementPreloadedListTest : public ::testing::Test {
 };
 
 TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent) {
-  ASSERT_TRUE(LoadFromFile(GetFilePathRelativeToModule(kSampleDataPath)));
+  ASSERT_TRUE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kSampleDataPath)));
   EXPECT_TRUE(IsLoaded());
   EXPECT_FALSE(IsEmpty());
 
@@ -193,7 +193,8 @@ TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadMissingFile) {
-  ASSERT_FALSE(LoadFromFile(GetFilePathRelativeToModule(kMissingFilePath)));
+  ASSERT_FALSE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kMissingFilePath)));
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
@@ -207,7 +208,13 @@ TEST_F(MediaEngagementPreloadedListTest, LoadMissingFile) {
   ExpectCheckResultNotLoadedCount(1);
 }
 
-TEST_F(MediaEngagementPreloadedListTest, LoadFileReadFailed) {
+#if BUILDFLAG(IS_FUCHSIA)
+// ".." is not a file that can be opened on Fuchsia.
+#define MAYBE_LoadFileReadFailed DISABLED_LoadFileReadFailed
+#else
+#define MAYBE_LoadFileReadFailed LoadFileReadFailed
+#endif  // BUILDFLAG(IS_FUCHSIA)
+TEST_F(MediaEngagementPreloadedListTest, MAYBE_LoadFileReadFailed) {
   ASSERT_FALSE(LoadFromFile(kFileReadFailedPath));
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
@@ -223,7 +230,8 @@ TEST_F(MediaEngagementPreloadedListTest, LoadFileReadFailed) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadBadFormatFile) {
-  ASSERT_FALSE(LoadFromFile(GetFilePathRelativeToModule(kBadFormatFilePath)));
+  ASSERT_FALSE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kBadFormatFilePath)));
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
@@ -238,7 +246,7 @@ TEST_F(MediaEngagementPreloadedListTest, LoadBadFormatFile) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadEmptyFile) {
-  ASSERT_TRUE(LoadFromFile(GetFilePathRelativeToModule(kEmptyFilePath)));
+  ASSERT_TRUE(LoadFromFile(GetAbsolutePathToGeneratedTestFile(kEmptyFilePath)));
   EXPECT_TRUE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
@@ -253,7 +261,8 @@ TEST_F(MediaEngagementPreloadedListTest, LoadEmptyFile) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent_UnsecureSchemes) {
-  ASSERT_TRUE(LoadFromFile(GetFilePathRelativeToModule(kSampleDataPath)));
+  ASSERT_TRUE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kSampleDataPath)));
   EXPECT_TRUE(IsLoaded());
   EXPECT_FALSE(IsEmpty());
 

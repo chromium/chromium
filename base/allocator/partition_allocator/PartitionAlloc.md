@@ -1,113 +1,203 @@
 # PartitionAlloc Design
 
-This document describes PartitionAlloc at a high level. For documentation about
-its implementation, see the comments in `partition_alloc.h`.
+This document describes PartitionAlloc at a high level, with some architectural
+details. For implementation details, see the comments in
+`partition_alloc_constants.h`.
 
-[TOC]
+## Quick Links
+
+* [Glossary](./glossary.md): Definitions of terms commonly used in
+  PartitionAlloc. The present document largely avoids defining terms.
+
+* [Build Config](./build_config.md): Pertinent GN args, buildflags, and
+  macros.
+
+* [Chrome-External Builds](./external_builds.md): Further considerations
+  for standalone PartitionAlloc, plus an embedder's guide for some extra
+  GN args.
 
 ## Overview
 
-PartitionAlloc is a memory allocator optimized for security, low allocation
-latency (when called appropriately), and good space efficiency (when called
-appropriately). This document aims to help you understand how PartitionAlloc
-works so that you can use it effectively.
+PartitionAlloc is a memory allocator optimized for space efficiency,
+allocation latency, and security.
 
-## Partitions And Buckets
-
-A *partition* is a heap that contains certain object types, objects of certain
-sizes, or objects of a certain lifetime (as the caller prefers). Callers can
-create as many partitions as they need. Each partition is separate and protected
-from any other partitions.
-
-Each partition holds multiple buckets. A *bucket* is a region in a partition
-that contains similar-sized objects.
-
-PartitionAlloc aligns each object allocation with the closest bucket size. For
-example, if a partition has 3 buckets for 64 bytes, 256 bytes, and 1024 bytes,
-then PartitionAlloc will satisfy an allocation request for 128 bytes by rounding
-it up to 256 bytes and allocating from the second bucket.
-
-## Performance
-
-The current implementation is optimized for the main thread use-case. For
-example, PartitionAlloc doesn't have threaded caches.
+### Performance
 
 PartitionAlloc is designed to be extremely fast in its fast paths. The fast
-paths of allocation and deallocation require just 2 (reasonably predictable)
+paths of allocation and deallocation require very few (reasonably predictable)
 branches. The number of operations in the fast paths is minimal, leading to the
 possibility of inlining.
 
-For an example of how to use partitions to get good performance and good safety,
-see Blink's usage, as described in `wtf/allocator/Allocator.md`.
+![The central allocator manages slots and spans. It is locked on a
+  per-partition basis. Separately, the thread cache consumes slots
+  from the central allocator, allowing it to hand out memory
+  quickly to individual threads.](./dot/layers.png)
 
-Large allocations (> kMaxBucketed == 960KB) are realized by direct
-memory mmapping. This size makes sense because 960KB = 0xF0000. The next larger
-bucket size is 1MB = 0x100000 which is greater than 1/2 the available space in
-a SuperPage meaning it would not be possible to pack even 2 sequential
-allocations in a SuperPage.
+However, even the fast path isn't the fastest, because it requires taking
+a per-partition lock. Although we optimized the lock, there was still room for
+improvement; to this end, we introduced the thread cache.
+The thread cache has been tailored to satisfy a vast majority of requests by
+allocating from and releasing memory to the main allocator in batches,
+amortizing lock acquisition and further improving locality while not trapping
+excess memory.
 
-`PartitionRoot<internal::ThreadSafe>::Alloc()` acquires a lock for thread
-safety. (The current implementation uses a spin lock on the assumption that
-thread contention will be rare in its callers. The original caller was Blink,
-where this is generally true. Spin locks also have the benefit of simplicity.)
+### Security
 
-Callers can get thread-unsafe performance using a
-`PartitionRoot<internal::NotThreadSafe>::Alloc()` or otherwise using
-`PartitionAlloc<internal::NotThreadSafe>`. Callers can also arrange for low
-contention, such as by using a dedicated partition for single-threaded,
-latency-critical allocations.
-
-Because PartitionAlloc guarantees that address space regions used for one
-partition are never reused for other partitions, partitions can eat a large
-amount of virtual address space (even if not of actual memory).
-
-Mixing various random objects in the same partition will generally lead to lower
-efficiency. For good performance, group similar objects into the same partition.
-
-## Security
-
-Security is one of the most important goals of PartitionAlloc.
+Security is one of the important goals of PartitionAlloc.
 
 PartitionAlloc guarantees that different partitions exist in different regions
-of the process' address space. When the caller has freed all objects contained
+of the process's address space. When the caller has freed all objects contained
 in a page in a partition, PartitionAlloc returns the physical memory to the
 operating system, but continues to reserve the region of address space.
 PartitionAlloc will only reuse an address space region for the same partition.
 
+Similarly, one page can contain only objects from the same bucket.
+When freed, PartitionAlloc returns the physical memory, but continues to reserve
+the region for this very bucket.
+
+The above techniques help avoid type confusion attacks. Note, however, these
+apply only to normal buckets and not to direct map, as it'd waste too much
+address space.
+
 PartitionAlloc also guarantees that:
 
-* Linear overflows cannot corrupt into the partition. (There is a guard page at
-the beginning of each partition.)
+* Linear overflows/underflows cannot corrupt into, out of, or between
+  partitions. There are guard pages at the beginning and the end of each memory
+  region owned by a partition.
 
-* Linear overflows cannot corrupt out of the partition. (There is a guard page
-at the end of each partition.)
-
-* Linear overflow or underflow cannot corrupt the allocation metadata.
-PartitionAlloc records metadata in a dedicated region out-of-line (not adjacent
-to objects).
-
-* Objects of different sizes will likely be allocated in different buckets, and
-hence at different addresses. One page can contain only similar-sized objects.
-
-* Dereference of a freelist pointer should fault.
+* Linear overflows/underflows cannot corrupt the allocation metadata.
+  PartitionAlloc records metadata in a dedicated, out-of-line region (not
+  adjacent to objects), surrounded by guard pages. (Freelist pointers are an
+  exception.)
 
 * Partial pointer overwrite of freelist pointer should fault.
 
-* Large allocations have guard pages at the beginning and end.
+* Direct map allocations have guard pages at the beginning and the end.
 
-## Alignment
+### Alignment
 
-PartitionAlloc doesn't have explicit support for a `posix_memalign()` type call,
-however it provides some guarantees on the alignment of returned pointers.
+PartitionAlloc guarantees that returned pointers are aligned on
+`partition_alloc::internal::kAlignment` boundary (typically 16B on
+64-bit systems, and 8B on 32-bit).
 
-All pointers are aligned on the smallest allocation granularity, namely
-`sizeof(void*)`. Additionally, for power-of-two sized allocations, the behavior
-depends on the compilation flags:
+PartitionAlloc also supports higher levels of alignment, that can be requested
+via `PartitionAlloc::AlignedAllocWithFlags()` or platform-specific APIs (such as
+`posix_memalign()`). The requested
+alignment has to be a power of two. PartitionAlloc reserves the right to round
+up the requested size to the nearest power of two, greater than or equal to the
+requested alignment. This may be wasteful, but allows taking advantage of
+natural PartitionAlloc alignment guarantees. Allocations with an alignment
+requirement greater than `partition_alloc::internal::kAlignment` are expected
+to be very rare.
 
-* With `DCHECK_IS_ON()`, returned pointers are never guaranteed to be aligned on
-  more than 16 bytes.
+## Architecture
 
-* Otherwise, the returned pointer is guaranteed to be aligned on
-  `min(allocation_size, system page size)`.
+### Layout in Memory
 
-See the tests in `partition_alloc_unittest.cc` for more details.
+PartitionAlloc handles normal buckets by reserving (not committing) 2MiB super
+pages. Each super page is split into partition pages.
+The first and the last partition page are permanently inaccessible and serve
+as guard pages, with the exception of one system page in the middle of the first
+partition page that holds metadata (32B struct per partition page).
+
+![A super page is shown full of slot spans. The slot spans are logically
+  strung together to form buckets. At both extremes of the super page
+  are guard pages. PartitionAlloc metadata is hidden inside the
+  guard pages at the "front."](./dot/super-page.png)
+
+* The slot span numbers provide a visual hint of their size (in partition
+  pages).
+* Colors provide a visual hint of the bucket to which the slot span belongs.
+    * Although only five colors are shown, in reality, a super page holds
+      tens of slot spans, some of which belong to the same bucket.
+* The system page that holds metadata tracks each partition page with one 32B
+  [`PartitionPage` struct][PartitionPage], which is either
+    * a [`SlotSpanMetadata`][SlotSpanMetadata] ("v"s in the diagram) or
+    * a [`SubsequentPageMetadata`][SubsequentPageMetadata] ("+"s in the
+      diagram).
+* Gray fill denotes guard pages (one partition page each at the head and tail
+  of each super page).
+* In some configurations, PartitionAlloc stores more metadata than can
+  fit in the one system page at the front. These are the bitmaps for
+  StarScan and `MTECheckedPtr<T>`, and they are relegated to the head of
+  what would otherwise be usable space for slot spans. One, both, or
+  none of these bitmaps may be present, depending on build
+  configuration, runtime configuration, and type of allocation.
+  See [`SuperPagePayloadBegin()`][payload-start] for details.
+
+As allocation requests arrive, there is eventually a need to allocate a new slot
+span.
+Address space for such a slot span is carved out from the last super page. If
+not enough space, a new super page is allocated. Due to varying sizes of slot
+span, this may lead to leaving space unused (we never go back to fill previous
+super pages), which is fine because this memory is merely reserved, which is far
+less precious than committed memory. Note also that address space reserved for a
+slot span is never released, even if the slot span isn't used for a long time.
+
+All slots in a newly allocated slot span are *free*, i.e. available for
+allocation.
+
+### Freelist Pointers
+
+All free slots within a slot span are chained into a singly-linked free-list,
+by writing the *next* pointer at the beginning of each slot, and the head of the
+list is written in the metadata struct.
+
+However, writing a pointer in each free slot of a newly allocated span would
+require committing and faulting in physical pages upfront, which would be
+unacceptable. Therefore, PartitionAlloc has a concept of *provisioning slots*.
+Only provisioned slots are chained into the freelist.
+Once provisioned slots in a span are depleted, then another page worth of slots
+is provisioned (note, a slot that crosses a page boundary only gets
+provisioned with slots of the next page). See
+`PartitionBucket::ProvisionMoreSlotsAndAllocOne()` for more details.
+
+Freelist pointers are stored at the beginning of each free slot. As such, they
+are the only metadata that is inline, i.e. stored among the
+objects. This makes them prone to overruns. On little-endian systems, the
+pointers are encoded by reversing byte order, so that partial overruns will very
+likely result in destroying the pointer, as opposed to forming a valid pointer
+to a nearby location.
+
+Furthermore, a shadow of a freelist pointer is stored next to it, encoded in a
+different manner. This helps PartitionAlloc detect corruptions.
+
+### Slot Span States
+
+A slot span can be in any of 4 states:
+* *Full*. A full span has no free slots.
+* *Empty*. An empty span has no allocated slots, only free slots.
+* *Active*. An active span is anything in between the above two.
+* *Decommitted*. A decommitted span is a special case of an empty span, where
+  all pages are decommitted from memory.
+
+PartitionAlloc prioritizes getting an available slot from an active span, over
+an empty one, in hope that the latter can be soon transitioned into a
+decommitted state, thus releasing memory. There is no mechanism, however, to
+prioritize selection of a slot span based on the number of already allocated
+slots.
+
+An empty span becomes decommitted either when there are too many empty spans
+(FIFO), or when `PartitionRoot::PurgeMemory()` gets invoked periodically (or in
+low memory pressure conditions). An allocation can be satisfied from
+a decommitted span if there are no active or empty spans available. The slot
+provisioning mechanism kicks back in, committing the pages gradually as needed,
+and the span becomes active. (There is currently no other way
+to unprovision slots than decommitting the entire span).
+
+As mentioned above, a bucket is a collection of slot spans containing slots of
+the same size. In fact, each bucket has 3 linked-lists, chaining active, empty
+and decommitted spans (see `PartitionBucket::*_slot_spans_head`).
+There is no need for a full span list. The lists are updated lazily. An empty,
+decommitted or full span may stay on the active list for some time, until
+`PartitionBucket::SetNewActiveSlotSpan()` encounters it.
+A decommitted span may stay on the empty list for some time,
+until `PartitionBucket<thread_safe>::SlowPathAlloc()` encounters it. However,
+the inaccuracy can't happen in the other direction, i.e. an active span can only
+be on the active list, and an empty span can only be on the active or empty
+list.
+
+[PartitionPage]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=314;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[SlotSpanMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=120;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[SubsequentPageMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=295;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[payload-start]: https://source.chromium.org/chromium/chromium/src/+/35b2deed603dedd4abb37f204d516ed62aa2b85c:base/allocator/partition_allocator/partition_page.h;l=454

@@ -1,12 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 #define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
@@ -29,6 +31,11 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   MediaRouterContextualMenu(Browser* browser,
                             bool shown_by_policy,
                             Observer* observer);
+
+  MediaRouterContextualMenu(const MediaRouterContextualMenu&) = delete;
+  MediaRouterContextualMenu& operator=(const MediaRouterContextualMenu&) =
+      delete;
+
   ~MediaRouterContextualMenu() override;
 
   // Creates a menu model with |this| as its delegate.
@@ -60,25 +67,20 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   void OnMenuWillShow(ui::SimpleMenuModel* source) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
-  // Toggles the enabled/disabled state of cloud services. This may show a
-  // dialog asking the user to acknowledge the Google Privacy Policy before
-  // enabling the services.
-  void ToggleCloudServices();
-
   // Toggles the preference to enable or disable media remoting.
   void ToggleMediaRemoting();
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Opens feedback page loaded from the media router extension.
   void ReportIssue();
+#endif
 
-  Browser* const browser_;
-  Observer* const observer_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<Observer> observer_;
 
   // Whether the Cast toolbar icon this context menu is shown for is shown by
   // the administrator policy.
   const bool shown_by_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterContextualMenu);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_

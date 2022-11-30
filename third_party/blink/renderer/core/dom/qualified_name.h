@@ -54,11 +54,10 @@ class CORE_EXPORT QualifiedName {
  public:
   class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
    public:
-    static scoped_refptr<QualifiedNameImpl> Create(
-        const AtomicString& prefix,
-        const AtomicString& local_name,
-        const AtomicString& namespace_uri,
-        bool is_static) {
+    static scoped_refptr<QualifiedNameImpl> Create(StringImpl* prefix,
+                                                   StringImpl* local_name,
+                                                   StringImpl* namespace_uri,
+                                                   bool is_static) {
       return base::AdoptRef(
           new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static));
     }
@@ -89,9 +88,9 @@ class CORE_EXPORT QualifiedName {
     mutable AtomicString local_name_upper_;
 
    private:
-    QualifiedNameImpl(const AtomicString& prefix,
-                      const AtomicString& local_name,
-                      const AtomicString& namespace_uri,
+    QualifiedNameImpl(StringImpl* prefix,
+                      StringImpl* local_name,
+                      StringImpl* namespace_uri,
                       bool is_static)
         : existing_hash_(0),
           is_static_(is_static),
@@ -100,7 +99,7 @@ class CORE_EXPORT QualifiedName {
           namespace_(namespace_uri)
 
     {
-      DCHECK(!namespace_uri.IsEmpty() || namespace_uri.IsNull());
+      DCHECK(!namespace_.empty() || namespace_.IsNull());
     }
   };
 
@@ -114,6 +113,8 @@ class CORE_EXPORT QualifiedName {
     impl_ = other.impl_;
     return *this;
   }
+  QualifiedName(QualifiedName&& other) = default;
+  QualifiedName& operator=(QualifiedName&& other) = default;
 
   bool operator==(const QualifiedName& other) const {
     return impl_ == other.impl_;
@@ -260,4 +261,4 @@ struct HashTraits<blink::QualifiedName>
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_QUALIFIED_NAME_H_

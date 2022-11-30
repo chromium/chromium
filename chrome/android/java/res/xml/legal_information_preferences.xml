@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,7 +21,7 @@
         android:title="@string/chrome_additional_terms_of_service_title"
         app:url="@string/chrome_additional_terms_of_service_url" />
     <org.chromium.chrome.browser.about_settings.HyperlinkPreference
-        android:key="privacy_notice"
-        android:title="@string/privacy_notice_title"
-        app:url="@string/chrome_privacy_notice_url" />
+        android:key="privacy_policy"
+        android:title="@string/privacy_policy_title"
+        app:url="@string/google_privacy_policy_url" />
 </PreferenceScreen>

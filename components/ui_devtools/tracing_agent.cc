@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/tracing_agent.h"
 
 #include <algorithm>
+#include <memory>
 #include <unordered_set>
 #include <vector>
 
@@ -67,8 +68,7 @@ class TracingAgent::DevToolsTraceEndpointProxy
     if (TracingAgent* h = tracing_agent_.get())
       h->OnTraceDataCollected(std::move(chunk));
   }
-  void ReceiveTraceFinalContents(
-      std::unique_ptr<const base::DictionaryValue> metadata) {
+  void ReceiveTraceFinalContents() {
     if (TracingAgent* h = tracing_agent_.get())
       h->OnTraceComplete();
   }
@@ -143,7 +143,7 @@ class TracingAgent::PerfettoTracingSession
     if (!tracing_session_host_) {
       if (endpoint_) {
         // Will delete |this|.
-        endpoint_->ReceiveTraceFinalContents(nullptr);
+        endpoint_->ReceiveTraceFinalContents();
       }
       return;
     }
@@ -219,7 +219,7 @@ class TracingAgent::PerfettoTracingSession
       std::move(pending_disable_tracing_task_).Run();
 
     if (endpoint_) {
-      endpoint_->ReceiveTraceFinalContents(nullptr);
+      endpoint_->ReceiveTraceFinalContents();
     }
   }
 
@@ -267,7 +267,7 @@ class TracingAgent::PerfettoTracingSession
     if (!endpoint_)
       return;
     // Will delete |this|.
-    endpoint_->ReceiveTraceFinalContents(nullptr);
+    endpoint_->ReceiveTraceFinalContents();
   }
 
   mojo::Receiver<tracing::mojom::TracingSessionClient> receiver_{this};
@@ -462,8 +462,8 @@ void TracingAgent::SetupTimer(double usage_reporting_interval) {
     usage_reporting_interval = kMinimumReportingInterval;
 
   base::TimeDelta interval =
-      base::TimeDelta::FromMilliseconds(std::ceil(usage_reporting_interval));
-  buffer_usage_poll_timer_.reset(new base::RepeatingTimer());
+      base::Milliseconds(std::ceil(usage_reporting_interval));
+  buffer_usage_poll_timer_ = std::make_unique<base::RepeatingTimer>();
   buffer_usage_poll_timer_->Start(
       FROM_HERE, interval,
       base::BindRepeating(&TracingAgent::UpdateBufferUsage,

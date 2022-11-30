@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,16 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/captive_portal/core/captive_portal_export.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/memory/weak_ptr.h"
-#endif
+#include "url/gurl.h"
 
 class GURL;
 
@@ -30,6 +26,8 @@ namespace captive_portal {
 
 class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
  public:
+  enum class State { kUnknown, kInit, kProbe, kCompleted, kCancelled };
+
   struct Results {
     captive_portal::CaptivePortalResult result =
         captive_portal::RESULT_NO_RESPONSE;
@@ -49,6 +47,10 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
 
   explicit CaptivePortalDetector(
       network::mojom::URLLoaderFactory* loader_factory);
+
+  CaptivePortalDetector(const CaptivePortalDetector&) = delete;
+  CaptivePortalDetector& operator=(const CaptivePortalDetector&) = delete;
+
   ~CaptivePortalDetector();
 
   // Triggers a check for a captive portal. After completion, runs the
@@ -104,7 +106,7 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
 
   DetectionCallback detection_callback_;
 
-  network::mojom::URLLoaderFactory* loader_factory_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   // Test time used by unit tests.
@@ -113,13 +115,9 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
   // Probe URL accessed by tests.
   GURL probe_url_;
 
+  State state_ = State::kInit;
+
   SEQUENCE_CHECKER(sequence_checker_);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::WeakPtrFactory<CaptivePortalDetector> weak_factory_;
-#endif
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalDetector);
 };
 
 }  // namespace captive_portal

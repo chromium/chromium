@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define NET_COOKIES_COOKIE_UTIL_H_
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -14,8 +13,11 @@
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -25,6 +27,7 @@ namespace net {
 class IsolationInfo;
 class SchemefulSite;
 class CookieAccessDelegate;
+class CookieInclusionStatus;
 
 namespace cookie_util {
 
@@ -61,6 +64,7 @@ NET_EXPORT std::string GetEffectiveDomain(const std::string& scheme,
 // begin with a '.' character.
 NET_EXPORT bool GetCookieDomainWithString(const GURL& url,
                                           const std::string& domain_string,
+                                          CookieInclusionStatus& status,
                                           std::string* result);
 
 // Returns true if a domain string represents a host-only cookie,
@@ -158,7 +162,7 @@ NET_EXPORT std::string SerializeRequestCookieLine(
 // `initiator` is the origin ultimately responsible for getting the request
 // issued. It may be different from `site_for_cookies`.
 //
-// base::nullopt for `initiator` denotes that the navigation was initiated by
+// absl::nullopt for `initiator` denotes that the navigation was initiated by
 // the user directly interacting with the browser UI, e.g. entering a URL
 // or selecting a bookmark.
 //
@@ -183,7 +187,7 @@ NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForRequest(const std::string& http_method,
                                  const std::vector<GURL>& url_chain,
                                  const SiteForCookies& site_for_cookies,
-                                 const base::Optional<url::Origin>& initiator,
+                                 const absl::optional<url::Origin>& initiator,
                                  bool is_main_frame_navigation,
                                  bool force_ignore_site_for_cookies);
 
@@ -193,7 +197,7 @@ ComputeSameSiteContextForRequest(const std::string& http_method,
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
-                                   const base::Optional<url::Origin>& initiator,
+                                   const absl::optional<url::Origin>& initiator,
                                    bool force_ignore_site_for_cookies);
 
 // Determines which of the cookies for the request URL can be set from a network
@@ -211,7 +215,7 @@ ComputeSameSiteContextForScriptGet(const GURL& url,
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForResponse(const std::vector<GURL>& url_chain,
                                   const SiteForCookies& site_for_cookies,
-                                  const base::Optional<url::Origin>& initiator,
+                                  const absl::optional<url::Origin>& initiator,
                                   bool is_main_frame_navigation,
                                   bool force_ignore_site_for_cookies);
 
@@ -234,28 +238,34 @@ ComputeSameSiteContextForSubresource(const GURL& url,
                                      const SiteForCookies& site_for_cookies,
                                      bool force_ignore_site_for_cookies);
 
-// Returns whether the respective SameSite feature is enabled.
-NET_EXPORT bool IsSameSiteByDefaultCookiesEnabled();
-NET_EXPORT bool IsCookiesWithoutSameSiteMustBeSecureEnabled();
+// Returns whether the respective feature is enabled.
 NET_EXPORT bool IsSchemefulSameSiteEnabled();
 
-NET_EXPORT bool IsFirstPartySetsEnabled();
-
-// Compute SameParty context, determines which of the cookies for `request_url`
-// can be accessed. Returns either kCrossParty or kSameParty. `isolation_info`
-// must be fully populated. In Chrome, all requests with credentials enabled
-// have a fully populated IsolationInfo.  But that might not be true for other
-// embedders yet (including cast, WebView, etc).  Also not sure about iOS.
-NET_EXPORT CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
-    const net::SchemefulSite& request_url,
+// Computes the First-Party Sets metadata, determining which of the cookies for
+// `request_site` can be accessed. `isolation_info` must be fully populated.  If
+// `force_ignore_top_frame_party` is true, the top frame from `isolation_info`
+// will be assumed to be same-party with `request_site`, regardless of what it
+// is.
+//
+// The result may be returned synchronously, or `callback` may be invoked
+// asynchronously with the result. The callback will be invoked iff the return
+// value is nullopt; i.e. a result will be provided via return value or
+// callback, but not both, and not neither.
+[[nodiscard]] NET_EXPORT absl::optional<FirstPartySetMetadata>
+ComputeFirstPartySetMetadataMaybeAsync(
+    const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
-    const CookieAccessDelegate* cookie_access_delegate);
+    const CookieAccessDelegate* cookie_access_delegate,
+    bool force_ignore_top_frame_party,
+    base::OnceCallback<void(FirstPartySetMetadata)> callback);
 
 // Get the SameParty inclusion status. If the cookie is not SameParty, returns
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
 // valid context, returns kEnforceSamePartyExclude.
 NET_EXPORT CookieSamePartyStatus
-GetSamePartyStatus(const CanonicalCookie& cookie, const CookieOptions& options);
+GetSamePartyStatus(const CanonicalCookie& cookie,
+                   const CookieOptions& options,
+                   bool same_party_attribute_enabled);
 
 // Takes a callback accepting a CookieAccessResult and returns a callback
 // that accepts a bool, setting the bool to true if the CookieInclusionStatus
@@ -273,6 +283,15 @@ StripAccessResults(const CookieAccessResultList& cookie_access_result_list);
 
 // Records port related metrics from Omnibox navigations.
 NET_EXPORT void RecordCookiePortOmniboxHistograms(const GURL& url);
+
+// Checks invariants that should be upheld w.r.t. the included and excluded
+// cookies. Namely: the included cookies should be elements of
+// `included_cookies`; excluded cookies should be elements of
+// `excluded_cookies`; and included cookies should be in the correct sorted
+// order.
+NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
+    const CookieAccessResultList& included_cookies,
+    const CookieAccessResultList& excluded_cookies);
 
 }  // namespace cookie_util
 

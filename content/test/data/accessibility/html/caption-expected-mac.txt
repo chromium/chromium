@@ -36,3 +36,18 @@ AXWebArea
 ++++++++AXStaticText AXValue='Browser'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Engine'
+++AXTable AXDescription='Name' AXHelp='Description'
+++++AXGroup
+++++++AXStaticText AXValue='Description'
+++++AXRow
+++++++AXCell
+++++++++AXStaticText AXValue='A'
+++++++AXCell
+++++++++AXStaticText AXValue='B'
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='A'
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='B'
+++++AXGroup

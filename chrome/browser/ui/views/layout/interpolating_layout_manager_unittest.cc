@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -74,7 +76,7 @@ class InterpolatingLayoutManagerTest : public testing::Test {
   views::View* host_view() { return host_view_.get(); }
 
  private:
-  InterpolatingLayoutManager* layout_manager_ = nullptr;
+  raw_ptr<InterpolatingLayoutManager> layout_manager_ = nullptr;
   std::unique_ptr<views::View> host_view_;
 };
 
@@ -172,14 +174,14 @@ TEST_F(InterpolatingLayoutManagerTest, InvalidateLayout) {
   host_view()->SetSize(kLayoutSize);
   EXPECT_EQ(1, first_layout->num_layouts_generated());
   EXPECT_EQ(1, second_layout->num_layouts_generated());
-  host_view()->Layout();
+  views::test::RunScheduledLayout(host_view());
   EXPECT_EQ(1, first_layout->num_layouts_generated());
   EXPECT_EQ(1, second_layout->num_layouts_generated());
   host_view()->InvalidateLayout();
-  host_view()->Layout();
+  views::test::RunScheduledLayout(host_view());
   EXPECT_EQ(2, first_layout->num_layouts_generated());
   EXPECT_EQ(2, second_layout->num_layouts_generated());
-  host_view()->Layout();
+  views::test::RunScheduledLayout(host_view());
   EXPECT_EQ(2, first_layout->num_layouts_generated());
   EXPECT_EQ(2, second_layout->num_layouts_generated());
 }
@@ -267,7 +269,7 @@ TEST_F(InterpolatingLayoutManagerTest, GetPreferredHeightForWidth_Horizontal) {
             layout_manager()->GetPreferredHeightForWidth(host_view(), 5));
   EXPECT_EQ(other_height,
             layout_manager()->GetPreferredHeightForWidth(host_view(), 10));
-  EXPECT_EQ(int{default_height * 0.4f + other_height * 0.6f},
+  EXPECT_EQ(static_cast<int>(default_height * 0.4f + other_height * 0.6f),
             layout_manager()->GetPreferredHeightForWidth(host_view(), 8));
 }
 

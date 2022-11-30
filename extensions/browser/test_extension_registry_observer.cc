@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 
 namespace extensions {
@@ -14,6 +13,9 @@ namespace extensions {
 class TestExtensionRegistryObserver::Waiter {
  public:
   Waiter() : observed_(false), extension_(nullptr) {}
+
+  Waiter(const Waiter&) = delete;
+  Waiter& operator=(const Waiter&) = delete;
 
   scoped_refptr<const Extension> Wait() {
     if (!observed_)
@@ -31,8 +33,6 @@ class TestExtensionRegistryObserver::Waiter {
   bool observed_;
   base::RunLoop run_loop_;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(Waiter);
 };
 
 TestExtensionRegistryObserver::TestExtensionRegistryObserver(

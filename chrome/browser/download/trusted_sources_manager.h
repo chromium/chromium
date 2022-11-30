@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/scheme_host_port_matcher.h"
 
 class GURL;
@@ -15,6 +14,9 @@ class GURL;
 // Identifies if a URL is from a trusted source.
 class TrustedSourcesManager {
  public:
+  TrustedSourcesManager(const TrustedSourcesManager&) = delete;
+  TrustedSourcesManager& operator=(const TrustedSourcesManager&) = delete;
+
   virtual ~TrustedSourcesManager();
 
   // Creates a platform-dependent instance of TrustedSourcesManager.
@@ -42,8 +44,6 @@ class TrustedSourcesManager {
 
  private:
   net::SchemeHostPortMatcher matcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustedSourcesManager);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_TRUSTED_SOURCES_MANAGER_H_

@@ -1,0 +1,586 @@
+<style>
+  :host {
+    /* Colors: */
+    --memory-background-color: var(--google-grey-200);
+    --memory-title-color: rgb(255, 255, 255);
+    --shape-blue-color: var(--google-blue-500);
+    --shape-green-color: var(--google-green-500);
+    --shape-yellow-color: var(--google-yellow-500);
+    /* Other: */
+    --memory-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
+        0 2px 6px 2px rgba(60, 64, 67, 0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      /* Colors: */
+      --memory-background-color: var(--google-grey-800);
+      --shape-blue-color: var(--google-blue-400);
+      --shape-green-color: var(--google-green-400);
+      --shape-yellow-color: var(--google-yellow-400);
+      /* Other: */
+      --memory-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15),
+          0px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  :host {
+    display: block;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+  }
+
+  ntp-module-header {
+    margin-bottom: 8px;
+  }
+
+  #memories {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 164px;
+    overflow: hidden;
+    padding: 16px;
+    padding-inline-end: 4px;
+  }
+
+  :host([show-opt-in-screen]) #memories {
+    height: 190px;
+    overflow: initial;
+    padding: 0;
+  }
+
+  .card {
+    border-radius: 8px;
+    height: 164px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #memories > .card {
+    border-radius: 8px;
+    display: flex;
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-bottom: 16px;
+    margin-inline-end: 12px;
+    max-width: 258px;
+    min-width: 123px;
+  }
+
+  .memory {
+    background: var(--memory-background-color);
+    box-shadow: var(--memory-shadow);
+  }
+
+  .memory:not(.no-title)::before {
+    background: linear-gradient(180deg,
+                              rgba(0, 0, 0, 0) 47.92%,
+                              rgb(0, 0, 0) 100%);
+    bottom: 0;
+    content: ' ';
+    left: 0;
+    opacity: 0.54;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+  }
+
+  .memory-title {
+    align-items: flex-end;
+    bottom: 0;
+    color: var(--memory-title-color);
+    display: flex;
+    font-size: 16px;
+    left: 0;
+    letter-spacing: 0.1px;
+    line-height: 24px;
+    margin: 5px 12px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+  }
+
+  .memory-img {
+    min-height: 100%;
+    min-width: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    position: relative;
+  }
+
+  #exploreCard {
+    align-items: center;
+    border: 1px solid var(--color-new-tab-page-border);
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  #exploreIconContainer {
+    align-content: center;
+    background: var(--color-new-tab-page-module-icon-container-background);
+    border-radius: 4px;
+    display: grid;
+    height: 24px;
+    justify-content: center;
+    width: 24px;
+  }
+
+  #exploreIcon {
+    -webkit-mask-image: url(modules/photos/icons/explore_icon.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--color-new-tab-page-selected-border);
+    height: 16px;
+    width: 16px;
+  }
+
+  #exploreText {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin: 8px 32px;
+    text-align: center;
+  }
+
+  #optInCard {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  #optInContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 16px;
+    max-width: 288px;
+  }
+
+  #optInTitleText {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 22px;
+    font-weight: normal;
+    line-height: 26px;
+    margin: 8px 0;
+  }
+
+  #optInTitleDesc {
+    color: var(--color-new-tab-page-secondary-foreground);
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  #optInButton {
+    margin-inline-end: 8px;
+  }
+
+  #girlIllustration {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 152px;
+    left: 12px;
+    position: absolute;
+    top: 42px;
+    width: 114px;
+  }
+
+  #girlTitle {
+    bottom: 3.29%;
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    left: 8.77%;
+    letter-spacing: 0.1px;
+    line-height: 20px;
+    position: absolute;
+    right: 3.51%;
+    top: 83.55%;
+  }
+
+  #baloonTitle {
+    bottom: 3.29%;
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    left: 8.77%;
+    letter-spacing: 0.1px;
+    line-height: 20px;
+    position: absolute;
+    right: 3.51%;
+    top: 83.55%;
+  }
+
+  #baloonIllustration {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 152px;
+    left: 138px;
+    position: absolute;
+    top: 42px;
+    width: 114px;
+  }
+
+  #birthdayBoy,
+  #lake {
+    height: 160px;
+    position: absolute;
+    right: 96px;
+    top: 24px;
+    width: 120px;
+  }
+
+  #birthdayBoyTitle,
+  #lakeTitle {
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    height: 20px;
+    letter-spacing: 0.1px;
+    line-height: 20px;
+    position: absolute;
+    right: 29px;
+    top: 133px;
+    width: 79px;
+  }
+
+  #dog,
+  #smallBirthdayBoy {
+    height: 120px;
+    position: absolute;
+    right: -10px;
+    top: 100px;
+    width: 90px;
+  }
+
+  #photosLogo {
+    height: 64px;
+    left: 160px;
+    position: absolute;
+    top: 16px;
+    width: 64px;
+  }
+
+  #yellowSemiCircle {
+    height: 40px;
+    left: 8px;
+    position: absolute;
+    top: 200px;
+    width: 40px;
+  }
+
+  #blueQuarterCircle {
+    height: 88px;
+    left: 100px;
+    position: absolute;
+    top: 200px;
+    width: 88px;
+  }
+
+  #yellowShape {
+    -webkit-mask-image: url(modules/photos/icons/shape_1.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--shape-yellow-color);
+    height: 40px;
+    left: 0;
+    position: absolute;
+    top: 16px;
+    width: 20px;
+  }
+
+  :host-context([dir='rtl']) #yellowShape {
+    left: auto;
+    right: 0;
+    transform: scaleX(-1);
+  }
+
+  #blueShape {
+    -webkit-mask-image: url(modules/photos/icons/shape_2.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--shape-blue-color);
+    height: 29px;
+    left: 110px;
+    position: absolute;
+    top: 0;
+    width: 80px;
+  }
+
+  :host-context([dir='rtl']) #blueShape {
+    left: auto;
+    right: 104px;
+  }
+
+  #greenShape {
+    -webkit-mask-image: url(modules/photos/icons/shape_3.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--shape-green-color);
+    bottom: 0;
+    height: 26px;
+    left: 108px;
+    position: absolute;
+    width: 40px;
+  }
+
+  :host-context([dir='rtl']) #greenShape {
+    left: auto;
+    right: 108px;
+    transform: scaleX(-1);
+  }
+
+  #memoryMain {
+    background: url(modules/photos/images/main_example_2x.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 160px;
+    left: 40px;
+    position: absolute;
+    top: 38px;
+    width: 120px;
+  }
+
+  :host-context([dir='rtl']) #memoryMain {
+    left: auto;
+    right: 40px;
+  }
+
+  #memorySecond {
+    background: url(modules/photos/images/second_example_2x.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 132px;
+    left: 176px;
+    position: absolute;
+    top: 126px;
+    width: 99px;
+  }
+
+  :host-context([dir='rtl'])  #memorySecond {
+    left: auto;
+    right: 176px;
+  }
+
+  #memoryThird {
+    background: url(modules/photos/images/third_example_2x.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100px;
+    left: 192px;
+    position: absolute;
+    top: 10px;
+    width: 75px;
+  }
+
+  :host-context([dir='rtl']) #memoryThird {
+    left: auto;
+    right: 192px;
+  }
+
+  .opt-in-artwork {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 236px;
+    margin-top: -46px;
+    max-width: 240px;
+    overflow: hidden;
+    position: relative;
+    right: 0;
+    z-index: -1;
+  }
+
+  ntp-info-dialog a {
+    color: var(--cr-link-color);
+    cursor: pointer;
+  }
+
+  ntp-info-dialog a:focus {
+    border-radius: 2px;
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+</style>
+<ntp-module-header
+    chip-text="[[headerChipText_]]"
+    hide-menu-button="[[hideMenuButton]]"
+    show-info-button="[[!showOptInScreen]]"
+    on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button="[[!showSoftOptOutButton]]"
+    on-dismiss-button-click="onDismissButtonClick_"
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesPhotosMemoriesHideToday')]]"
+    on-disable-button-click="onDisableButtonClick_"
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesPhotosMemoriesDisable')]]">
+  $i18n{modulesPhotosTitle}
+</ntp-module-header>
+<div id="memories">
+  <template id="welcomeCardElement" is="dom-if" if="[[showOptInScreen]]">
+    <div id="optInCard">
+      <div id="optInContent">
+        <div>
+          <h1 id="optInTitleText">
+            [[optInTitleText]]
+          </h1>
+          <span id="optInTitleDesc">
+            $i18n{modulesPhotosMemoriesWelcomeText}
+          </span>
+        </div>
+        <div>
+          <cr-button id="optInButton" class="action-button"
+              on-click="onOptInClick_">
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptIn}
+          </cr-button>
+          <cr-button id="optOutButton"
+              on-click="onOptOutClick_"
+              hidden="[[showSoftOptOutButton]]">
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptOut}
+          </cr-button>
+          <cr-button id="softOptOutButton"
+            on-click="onSoftOptOutClick_"
+            hidden="[[!showSoftOptOutButton]]">
+              $i18n{modulesPhotosMemoriesWelcomeButtonSoftOptOut}
+          </cr-button>
+        </div>
+      </div>
+
+      <template is="dom-if" if="[[showDefaultOptInscreen()]]">
+        <div id="defaultOpInArtWork", class="opt-in-artwork">
+          <div id="yellowShape"></div>
+          <div id="blueShape"></div>
+          <div id="greenShape"></div>
+          <div id="memoryMain" class="memory card">
+            <div class="memory-title" dir="auto">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
+          </div>
+          <div id="memorySecond" class="memory card no-title"></div>
+          <div id="memoryThird" class="memory card no-title"></div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[showCustomArtWork_]]">
+        <div id="customArtWork" class="opt-in-artwork">
+          <img src="[[customArtworkUrl_]]">
+        </div>
+      </template>
+      <template is="dom-if" if="[[showSplitSvgCustomArtWork_]]">
+        <template is="dom-if" if="[[isEqual(customArtworkIndex_, '1')]]">
+        <div id="boyDogcustomArtWork" class="opt-in-artwork">
+          <div id="birthdayBoy">
+            <img
+            src="modules/photos/images/birthday_boy.png">
+            <div id="birthdayBoyTitle">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
+          </div>
+          <div id="dog">
+            <img  src="modules/photos/images/dog.png">
+          </div>
+          <div id="photosLogo">
+            <img
+            src="modules/photos/images/photos_logo.png">
+          </div>
+          <div id="yellowSemiCircle">
+            <img src="modules/photos/images/yellow_semi_circle.png">
+          </div>
+          <div id="blueQuarterCircle">
+            <img src="modules/photos/images/blue_quarter_circle.png">
+          </div>
+        </div>
+        </template>
+        <template is="dom-if" if="[[isEqual(customArtworkIndex_, '2')]]">
+        <div id="lakeBoycustomArtWork" class="opt-in-artwork">
+          <div id="lake">
+            <img  src="modules/photos/images/lake.png">
+            <div id="lakeTitle">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
+          </div>
+          <div id="smallBirthdayBoy">
+            <img src="modules/photos/images/small_birthday_boy.png">
+          </div>
+          <div id="photosLogo">
+            <img
+            src="modules/photos/images/photos_logo.png">
+          </div>
+          <div id="yellowSemiCircle">
+            <img src="modules/photos/images/yellow_semi_circle.png">
+          </div>
+          <div id="blueQuarterCircle">
+            <img  src="modules/photos/images/blue_quarter_circle.png">
+          </div>
+        </div>
+        </template>
+        <template is="dom-if" if="[[isEqual(customArtworkIndex_, '3')]]">
+          <div id="illustrationsCustomArtWork" class="opt-in-artwork">
+            <div id="girlIllustration">
+              <img  src="modules/photos/images/girl_illustration.png"
+              >
+              <div id="girlTitle">
+                $i18n{modulesPhotosMemoriesWelcomeExample}
+              </div>
+            </div>
+            <div id="baloonIllustration">
+              <img  src= "modules/photos/images/baloon_illustration.png"
+              >
+              <div id="baloonTitle">
+                $i18n{modulesPhotosMemoriesBaloonIllustrationTitle}
+              </div>
+            </div>
+          </div>
+        </template>
+      </template>
+    </div>
+  </template>
+  <template id="memoriesElement" is="dom-if" if="[[!showOptInScreen]]">
+    <template id="memoryRepeat" is="dom-repeat" items="[[memories]]">
+      <a class="memory card" href="[[item.itemUrl.url]]"
+          on-click="onMemoryClick_">
+        <img class="memory-img" is="cr-auto-img"
+            on-load="onImageLoadSuccess_"
+            on-error="onImageLoadError_"
+            auto-src="[[resizeImageUrl_(item.coverUrl.url, memories.length)]]"
+            draggable="false"></img>
+        <div class="memory-title" dir="auto">[[item.title]]</div>
+      </a>
+    </template>
+    <template id="exploreCardElement" is="dom-if" if="[[showExploreMore_]]">
+      <a href="https://photos.google.com?referrer=CHROME_NTP" class="card"
+          on-click="onMemoryClick_" target="_blank" id="exploreCard">
+        <div id="exploreIconContainer">
+          <div id="exploreIcon"></div>
+        </div>
+        <div id="exploreText">
+          $i18n{modulesPhotosMemoriesExplore}
+        </div>
+      </a>
+    </template>
+  </template>
+</div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesPhotosInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

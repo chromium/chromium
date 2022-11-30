@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS Test creating a VideoFrame with a same-origin HTMLImageElement
+PASS Test creating a VideoFrame with a cross-origin HTMLImageElement
+PASS Test creating a VideoFrame with a CORS enabled cross-origin HTMLImageElement without setting crossorigin
+PASS Test creating a VideoFrame with a CORS enabled cross-origin HTMLImageElement with crossorigin="anonymous"
+PASS Test creating a VideoFrame with a same-origin SVGImageElement
+PASS Test creating a VideoFrame with a cross-origin SVGImageElement
+PASS Test creating a VideoFrame with a CORS enabled cross-origin SVGImageElement without setting crossorigin
+FAIL Test creating a VideoFrame with a CORS enabled cross-origin SVGImageElement with crossorigin="anonymous" promise_test: Unhandled rejection with value: object "SecurityError: Failed to construct 'VideoFrame': VideoFrames can't be created from tainted sources."
+FAIL Test creating a VideoFrame with a same-origin HTMLVideoElement promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to construct 'VideoFrame': Invalid source state"
+PASS Test creating a VideoFrame with a cross-origin HTMLVideoElement
+PASS Test creating a VideoFrame with a CORS enabled cross-origin HTMLVideoElement without setting crossorigin
+FAIL Test creating a VideoFrame with a CORS enabled cross-origin HTMLVideoElement with crossorigin="anonymous" promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to construct 'VideoFrame': Invalid source state"
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <string>
 
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace test {
 
@@ -26,16 +24,16 @@ namespace test {
 // the video_tx_oneway bucket.
 // If |video_codec| is a non-empty string, the codec name is appended last for
 // video metrics, e.g. 'video_tx_oneway_VP9'.
-void PrintBweForVideoMetrics(const base::DictionaryValue& pc_dict,
+void PrintBweForVideoMetrics(const base::Value::Dict& pc_dict,
                              const std::string& modifier,
                              const std::string& video_codec);
-void PrintMetricsForAllStreams(const base::DictionaryValue& pc_dict,
+void PrintMetricsForAllStreams(const base::Value::Dict& pc_dict,
                                const std::string& modifier,
                                const std::string& video_codec);
-void PrintMetricsForSendStreams(const base::DictionaryValue& pc_dict,
+void PrintMetricsForSendStreams(const base::Value::Dict& pc_dict,
                                 const std::string& modifier,
                                 const std::string& video_codec);
-void PrintMetricsForRecvStreams(const base::DictionaryValue& pc_dict,
+void PrintMetricsForRecvStreams(const base::Value::Dict& pc_dict,
                                 const std::string& modifier,
                                 const std::string& video_codec);
 

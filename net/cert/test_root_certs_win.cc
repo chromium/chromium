@@ -1,7 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "crypto/scoped_capi_types.h"
 #include "net/cert/test_root_certs.h"
 
 #include <stdint.h>
@@ -136,7 +137,7 @@ BOOL WINAPI InterceptedOpenStoreW(LPCSTR store_provider,
 
 }  // namespace
 
-bool TestRootCerts::Add(X509Certificate* certificate) {
+bool TestRootCerts::AddImpl(X509Certificate* certificate) {
   // Ensure that the default CryptoAPI functionality has been intercepted.
   // If a test certificate is never added, then no interception should
   // happen.
@@ -153,13 +154,10 @@ bool TestRootCerts::Add(X509Certificate* certificate) {
     return GetLastError() == static_cast<DWORD>(CRYPT_E_EXISTS);
   }
 
-  empty_ = false;
   return true;
 }
 
-void TestRootCerts::Clear() {
-  empty_ = true;
-
+void TestRootCerts::ClearImpl() {
   for (PCCERT_CONTEXT prev_cert =
            CertEnumCertificatesInStore(temporary_roots_, nullptr);
        prev_cert;
@@ -167,13 +165,11 @@ void TestRootCerts::Clear() {
     CertDeleteCertificateFromStore(prev_cert);
 }
 
-bool TestRootCerts::IsEmpty() const {
-  return empty_;
-}
-
-HCERTCHAINENGINE TestRootCerts::GetChainEngine() const {
-  if (IsEmpty())
-    return nullptr;  // Default chain engine will suffice.
+crypto::ScopedHCERTCHAINENGINE TestRootCerts::GetChainEngine() const {
+  if (IsEmpty()) {
+    // Default chain engine will suffice.
+    return crypto::ScopedHCERTCHAINENGINE();
+  }
 
   // Windows versions before 8 don't accept the struct size for later versions.
   // We report the size of the old struct since we don't need the new members.
@@ -194,8 +190,10 @@ HCERTCHAINENGINE TestRootCerts::GetChainEngine() const {
   engine_config.dwFlags =
       CERT_CHAIN_ENABLE_CACHE_AUTO_UPDATE |
       CERT_CHAIN_ENABLE_SHARE_STORE;
-  HCERTCHAINENGINE chain_engine = nullptr;
-  BOOL ok = CertCreateCertificateChainEngine(&engine_config, &chain_engine);
+  crypto::ScopedHCERTCHAINENGINE chain_engine;
+  BOOL ok = CertCreateCertificateChainEngine(
+      &engine_config,
+      crypto::ScopedHCERTCHAINENGINE::Receiver(chain_engine).get());
   DCHECK(ok);
   return chain_engine;
 }
@@ -205,7 +203,6 @@ TestRootCerts::~TestRootCerts() {
 }
 
 void TestRootCerts::Init() {
-  empty_ = true;
   temporary_roots_ =
       CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL,
                     CERT_STORE_DEFER_CLOSE_UNTIL_LAST_FREE_FLAG, nullptr);

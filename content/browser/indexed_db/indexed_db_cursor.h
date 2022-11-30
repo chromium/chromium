@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
@@ -19,14 +17,22 @@
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
+namespace storage {
+struct BucketLocator;
+}  // namespace storage
+
 namespace content {
 
-class CONTENT_EXPORT IndexedDBCursor {
+class IndexedDBCursor {
  public:
   IndexedDBCursor(std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
                   indexed_db::CursorType cursor_type,
                   blink::mojom::IDBTaskType task_type,
                   base::WeakPtr<IndexedDBTransaction> transaction);
+
+  IndexedDBCursor(const IndexedDBCursor&) = delete;
+  IndexedDBCursor& operator=(const IndexedDBCursor&) = delete;
+
   ~IndexedDBCursor();
 
   void Advance(uint32_t count,
@@ -75,7 +81,7 @@ class CONTENT_EXPORT IndexedDBCursor {
       IndexedDBTransaction* transaction);
 
  private:
-  const url::Origin origin_;
+  const storage::BucketLocator bucket_locator_;
   blink::mojom::IDBTaskType task_type_;
   indexed_db::CursorType cursor_type_;
 
@@ -92,8 +98,6 @@ class CONTENT_EXPORT IndexedDBCursor {
   bool closed_;
 
   base::WeakPtrFactory<IndexedDBCursor> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBCursor);
 };
 
 }  // namespace content

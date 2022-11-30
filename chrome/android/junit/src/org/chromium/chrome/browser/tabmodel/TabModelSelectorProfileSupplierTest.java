@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -105,11 +105,14 @@ public class TabModelSelectorProfileSupplierTest {
     }
 
     @Test
-    public void testDestroy() {
+    public void testDestroyPreInitialization() {
         mSupplier.destroy();
         // There's nothing to tear down before the tab model selector is initialized.
         verify(mTabModelSelector, never()).removeObserver(mSupplier);
+    }
 
+    @Test
+    public void testDestroyPostInitialization() {
         mTabModelSelectorSupplier.set(mTabModelSelector);
         mSupplier.destroy();
         verify(mTabModelSelector).removeObserver(mSupplier);

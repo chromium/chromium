@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@ namespace test {
 class TestInkDrop : public InkDrop {
  public:
   TestInkDrop();
+
+  TestInkDrop(const TestInkDrop&) = delete;
+  TestInkDrop& operator=(const TestInkDrop&) = delete;
+
   ~TestInkDrop() override;
 
   bool is_hovered() const { return is_hovered_; }
@@ -39,8 +43,6 @@ class TestInkDrop : public InkDrop {
  private:
   InkDropState state_ = InkDropState::HIDDEN;
   bool is_hovered_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDrop);
 };
 
 }  // namespace test

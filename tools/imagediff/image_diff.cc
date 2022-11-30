@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,16 +23,16 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/imagediff/image_diff_png.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "windows.h"
 #endif
 
@@ -70,6 +70,7 @@ class Image {
   }
 
   Image(const Image& image) = default;
+  Image& operator=(const Image& image) = default;
 
   bool has_image() const {
     return w_ > 0 && h_ > 0;
@@ -496,7 +497,7 @@ int DiffImages(const base::FilePath& file1,
 // program reads paths on stdin and the program that spawns it outputs
 // paths as non-wide strings anyway.
 base::FilePath FilePathFromASCII(const std::string& str) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::ASCIIToWide(str));
 #else
   return base::FilePath(str);

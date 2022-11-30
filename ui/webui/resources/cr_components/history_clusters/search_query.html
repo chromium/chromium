@@ -1,0 +1,39 @@
+<style include="history-clusters-shared-style">
+  :host {
+    display: block;
+    min-width: 0;
+  }
+
+  a {
+    align-items: center;
+    color: inherit;
+    display: flex;
+    outline: none;
+    text-decoration: none;
+  }
+
+  :host(:hover) a {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  :host(:active) a {
+    background-color: var(--cr-active-background-color);
+  }
+
+  :host-context(.focus-outline-visible) a:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  .icon {
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-color: var(--icon-color);
+    --cr-icon-image: url(chrome://resources/images/icon_search.svg);
+    --cr-icon-ripple-margin: 0;
+    --cr-icon-ripple-size: 20px;
+  }
+</style>
+<a class="pill pill-icon-start" href$="[[searchQuery.url.url]]"
+    on-click="onClick_" on-auxclick="onAuxClick_" on-keydown="onKeydown_">
+  <span class="icon cr-icon"></span>
+  <span class="truncate">[[searchQuery.query]]</span>
+</a>

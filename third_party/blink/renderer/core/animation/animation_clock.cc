@@ -37,8 +37,7 @@ namespace blink {
 namespace {
 // This is an approximation of time between frames, used when ticking the
 // animation clock outside of animation frame callbacks.
-constexpr base::TimeDelta kApproximateFrameTime =
-    base::TimeDelta::FromSecondsD(1 / 60.0);
+constexpr base::TimeDelta kApproximateFrameTime = base::Seconds(1 / 60.0);
 }  // namespace
 
 unsigned AnimationClock::currently_running_task_ = 0;

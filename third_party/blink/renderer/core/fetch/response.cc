@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "services/network/public/cpp/header_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_form_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
@@ -158,11 +157,16 @@ Response* Response::Create(ScriptState* script_state,
   } else if (body->IsArrayBuffer()) {
     // Avoid calling into V8 from the following constructor parameters, which
     // is potentially unsafe.
-    DOMArrayBuffer* array_buffer = V8ArrayBuffer::ToImpl(body.As<v8::Object>());
+    DOMArrayBuffer* array_buffer =
+        NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, body,
+                                                       exception_state);
+    if (exception_state.HadException())
+      return nullptr;
     if (!base::CheckedNumeric<wtf_size_t>(array_buffer->ByteLength())
              .IsValid()) {
       exception_state.ThrowRangeError(
           "The provided ArrayBuffer exceeds the maximum supported size");
+      return nullptr;
     } else {
       body_buffer = BodyStreamBuffer::Create(
           script_state,
@@ -173,11 +177,16 @@ Response* Response::Create(ScriptState* script_state,
     // Avoid calling into V8 from the following constructor parameters, which
     // is potentially unsafe.
     DOMArrayBufferView* array_buffer_view =
-        V8ArrayBufferView::ToImpl(body.As<v8::Object>());
+        NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
+            isolate, body, exception_state)
+            .Get();
+    if (exception_state.HadException())
+      return nullptr;
     if (!base::CheckedNumeric<wtf_size_t>(array_buffer_view->byteLength())
              .IsValid()) {
       exception_state.ThrowRangeError(
           "The provided ArrayBufferView exceeds the maximum supported size");
+      return nullptr;
     } else {
       body_buffer = BodyStreamBuffer::Create(
           script_state,
@@ -266,7 +275,7 @@ Response* Response::Create(ScriptState* script_state,
     r->response_->HeaderList()->ClearList();
     // "2. Fill |r|'s Headers object with |init|'s headers member. Rethrow
     // any exceptions."
-    r->headers_->FillWith(init->headers(), exception_state);
+    r->headers_->FillWith(script_state, init->headers(), exception_state);
     if (exception_state.HadException())
       return nullptr;
   }
@@ -303,7 +312,7 @@ Response* Response::Create(ScriptState* script_state,
     // "4. If |Content-Type| is non-null and |r|'s response's header list
     // contains no header named `Content-Type`, append `Content-Type`/
     // |Content-Type| to |r|'s response's header list."
-    if (!content_type.IsEmpty() &&
+    if (!content_type.empty() &&
         !r->response_->HeaderList()->Has("Content-Type"))
       r->response_->HeaderList()->Append("Content-Type", content_type);
   }
@@ -366,6 +375,40 @@ Response* Response::redirect(ScriptState* script_state,
   return r;
 }
 
+Response* Response::staticJson(ScriptState* script_state,
+                               ScriptValue data,
+                               const ResponseInit* init,
+                               ExceptionState& exception_state) {
+  // "1. Let bytes the result of running serialize a JavaScript value to JSON
+  // bytes on data."
+  v8::Local<v8::String> v8_string;
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  if (!v8::JSON::Stringify(script_state->GetContext(), data.V8Value())
+           .ToLocal(&v8_string)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return nullptr;
+  }
+
+  String string = ToBlinkString<String>(v8_string, kDoNotExternalize);
+
+  // JSON.stringify can fail to produce a string value in one of two ways: it
+  // can throw an exception (as with unserializable objects), or it can return
+  // `undefined` (as with e.g. passing a function). If JSON.stringify returns
+  // `undefined`, the v8 API then coerces it to the string value "undefined".
+  // Check for this, and consider it a failure.
+  if (string == "undefined") {
+    exception_state.ThrowTypeError("The data is not JSON serializable");
+    return nullptr;
+  }
+
+  BodyStreamBuffer* body_buffer = BodyStreamBuffer::Create(
+      script_state, MakeGarbageCollected<FormDataBytesConsumer>(string),
+      /*abort_signal=*/nullptr, /*cached_metadata_handler=*/nullptr);
+  String content_type = "application/json";
+
+  return Create(script_state, body_buffer, content_type, init, exception_state);
+}
+
 FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
     ScriptState* script_state,
     mojom::blink::FetchAPIResponse& fetch_api_response) {
@@ -390,6 +433,8 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
       WTF::AtomicString(fetch_api_response.alpn_negotiated_protocol));
   response->SetWasFetchedViaSpdy(fetch_api_response.was_fetched_via_spdy);
   response->SetHasRangeRequested(fetch_api_response.has_range_requested);
+  response->SetRequestIncludeCredentials(
+      fetch_api_response.request_include_credentials);
 
   for (const auto& header : fetch_api_response.headers)
     response->HeaderList()->Append(header.key, header.value);
@@ -459,7 +504,7 @@ uint16_t Response::status() const {
 bool Response::ok() const {
   // "The ok attribute's getter must return true
   // if response's status is in the range 200 to 299, and false otherwise."
-  return cors::IsOkStatus(status());
+  return network::IsSuccessfulStatus(status());
 }
 
 String Response::statusText() const {

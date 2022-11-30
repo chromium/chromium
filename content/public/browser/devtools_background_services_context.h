@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace url {
@@ -35,6 +34,12 @@ enum class DevToolsBackgroundService {
 class CONTENT_EXPORT DevToolsBackgroundServicesContext {
  public:
   DevToolsBackgroundServicesContext() = default;
+
+  DevToolsBackgroundServicesContext(const DevToolsBackgroundServicesContext&) =
+      delete;
+  DevToolsBackgroundServicesContext& operator=(
+      const DevToolsBackgroundServicesContext&) = delete;
+
   virtual ~DevToolsBackgroundServicesContext() = default;
 
   // Whether events related to |service| should be recorded.
@@ -52,9 +57,6 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContext {
       const std::string& event_name,
       const std::string& instance_id,
       const std::map<std::string, std::string>& event_metadata) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DevToolsBackgroundServicesContext);
 };
 
 }  // namespace content

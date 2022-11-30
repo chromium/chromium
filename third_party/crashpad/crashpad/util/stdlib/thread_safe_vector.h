@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 
 namespace crashpad {
@@ -32,6 +31,10 @@ template <typename T>
 class ThreadSafeVector {
  public:
   ThreadSafeVector() : vector_(), lock_() {}
+
+  ThreadSafeVector(const ThreadSafeVector&) = delete;
+  ThreadSafeVector& operator=(const ThreadSafeVector&) = delete;
+
   ~ThreadSafeVector() {}
 
   //! \brief Wraps `std::vector<>::%push_back()`.
@@ -54,8 +57,6 @@ class ThreadSafeVector {
  private:
   std::vector<T> vector_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeVector);
 };
 
 }  // namespace crashpad

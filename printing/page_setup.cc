@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@ namespace printing {
 
 namespace {
 
-// Checks whether |printable_area| can be used to form a valid symmetrical
+// Checks whether `printable_area` can be used to form a valid symmetrical
 // printable area, so that margin_left equals margin_right, and margin_top
 // equals margin_bottom.  For example if
 // printable_area.x() * 2 >= page_size.width(), then the
 // content_width = page_size.width() - 2 * printable_area.x() would be zero or
 // negative, which is invalid.
-// |page_size| is the physical page size that includes margins.
+// `page_size` is the physical page size that includes margins.
 bool IsValidPrintableArea(const gfx::Size& page_size,
                           const gfx::Rect& printable_area) {
   return !printable_area.IsEmpty() && printable_area.x() >= 0 &&
@@ -36,6 +36,19 @@ bool IsValidPrintableArea(const gfx::Size& page_size,
 PageMargins::PageMargins()
     : header(0), footer(0), left(0), right(0), top(0), bottom(0) {}
 
+PageMargins::PageMargins(int header,
+                         int footer,
+                         int left,
+                         int right,
+                         int top,
+                         int bottom)
+    : header(header),
+      footer(footer),
+      left(left),
+      right(right),
+      top(top),
+      bottom(bottom) {}
+
 void PageMargins::Clear() {
   header = 0;
   footer = 0;
@@ -52,6 +65,15 @@ bool PageMargins::Equals(const PageMargins& rhs) const {
 
 PageSetup::PageSetup() {
   Clear();
+}
+
+PageSetup::PageSetup(const gfx::Size& physical_size,
+                     const gfx::Rect& printable_area,
+                     const PageMargins& requested_margins,
+                     bool forced_margins,
+                     int text_height)
+    : requested_margins_(requested_margins), forced_margins_(forced_margins) {
+  Init(physical_size, printable_area, text_height);
 }
 
 PageSetup::PageSetup(const PageSetup& other) = default;

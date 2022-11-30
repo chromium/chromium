@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
@@ -23,8 +23,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kUserCreationId[] = "user-creation";
@@ -41,28 +40,26 @@ const test::UIPath kChildSignInButton = {kUserCreationId, "childSignInButton"};
 const test::UIPath kChildBackButton = {kUserCreationId, "childBackButton"};
 const test::UIPath kChildNextButton = {kUserCreationId, "childNextButton"};
 
-}  // namespace
-
-class UserCreationScreenTest : public OobeBaseTest {
+class UserCreationScreenTest
+    : public OobeBaseTest,
+      public UserCreationScreen::UserCreationScreenExitTestDelegate {
  public:
-  UserCreationScreenTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kChildSpecificSignin);
-  }
+  UserCreationScreenTest() = default;
   ~UserCreationScreenTest() override = default;
 
   void SetUpOnMainThread() override {
-    UserCreationScreen* screen = static_cast<UserCreationScreen*>(
-        WizardController::default_controller()->screen_manager()->GetScreen(
-            UserCreationView::kScreenId));
-    original_callback_ = screen->get_exit_callback_for_testing();
-    screen->set_exit_callback_for_testing(base::BindRepeating(
-        &UserCreationScreenTest::HandleScreenExit, base::Unretained(this)));
+    UserCreationScreen::SetUserCreationScreenExitTestDelegate(this);
     OobeBaseTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    OobeBaseTest::TearDownOnMainThread();
+    UserCreationScreen::SetUserCreationScreenExitTestDelegate(nullptr);
+  }
+
   void SelectUserTypeOnUserCreationScreen(test::UIPath element_id) {
-    ASSERT_TRUE(ash::LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+    ASSERT_TRUE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
     test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
     test::OobeJS().ExpectHasAttribute("checked", kSelfButton);
     test::OobeJS().ClickOnPath(element_id);
@@ -70,7 +67,8 @@ class UserCreationScreenTest : public OobeBaseTest {
   }
 
   void SelectSetUpMethodOnChildScreen(test::UIPath element_id) {
-    ASSERT_FALSE(ash::LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+    ASSERT_FALSE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
     test::OobeJS().ExpectHiddenPath(kUserCreationDialog);
     test::OobeJS().ExpectVisiblePath(kChildSignInDialog);
     test::OobeJS().ClickOnPath(element_id);
@@ -85,38 +83,40 @@ class UserCreationScreenTest : public OobeBaseTest {
     run_loop.Run();
   }
 
-  base::Optional<UserCreationScreen::Result> screen_result_;
+  absl::optional<UserCreationScreen::Result> screen_result_;
 
  protected:
-  chromeos::DeviceStateMixin device_state_{
-      &mixin_host_, chromeos::DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
-  void HandleScreenExit(UserCreationScreen::Result result) {
+  // UserCreationScreen::UserCreationScreenExitTestDelegate
+  void OnUserCreationScreenExit(UserCreationScreen::Result result,
+                                const UserCreationScreen::ScreenExitCallback&
+                                    original_callback) override {
     ASSERT_FALSE(screen_exited_);
     screen_exited_ = true;
     screen_result_ = result;
-    original_callback_.Run(result);
+    original_callback.Run(result);
     if (screen_exit_callback_)
       std::move(screen_exit_callback_).Run();
   }
 
   bool screen_exited_ = false;
   base::RepeatingClosure screen_exit_callback_;
-  UserCreationScreen::ScreenExitCallback original_callback_;
 
   base::test::ScopedFeatureList feature_list_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 // Verify flow for setting up the device for self.
 IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SignInForSelf) {
   SelectUserTypeOnUserCreationScreen(kSelfButton);
   WaitForScreenExit();
-  EXPECT_FALSE(WizardController::default_controller()
-                   ->get_wizard_context_for_testing()
+  EXPECT_FALSE(LoginDisplayHost::default_host()
+                   ->GetWizardContextForTesting()
                    ->sign_in_as_child);
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
@@ -128,11 +128,11 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, CreateAccountForChild) {
   SelectUserTypeOnUserCreationScreen(kChildButton);
   SelectSetUpMethodOnChildScreen(kChildCreateButton);
   WaitForScreenExit();
-  EXPECT_TRUE(WizardController::default_controller()
-                  ->get_wizard_context_for_testing()
+  EXPECT_TRUE(LoginDisplayHost::default_host()
+                  ->GetWizardContextForTesting()
                   ->sign_in_as_child);
-  EXPECT_TRUE(WizardController::default_controller()
-                  ->get_wizard_context_for_testing()
+  EXPECT_TRUE(LoginDisplayHost::default_host()
+                  ->GetWizardContextForTesting()
                   ->is_child_gaia_account_new);
   EXPECT_EQ(screen_result_.value(),
             UserCreationScreen::Result::CHILD_ACCOUNT_CREATE);
@@ -145,11 +145,11 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SignInForChild) {
   SelectUserTypeOnUserCreationScreen(kChildButton);
   SelectSetUpMethodOnChildScreen(kChildSignInButton);
   WaitForScreenExit();
-  EXPECT_TRUE(WizardController::default_controller()
-                  ->get_wizard_context_for_testing()
+  EXPECT_TRUE(LoginDisplayHost::default_host()
+                  ->GetWizardContextForTesting()
                   ->sign_in_as_child);
-  EXPECT_FALSE(WizardController::default_controller()
-                   ->get_wizard_context_for_testing()
+  EXPECT_FALSE(LoginDisplayHost::default_host()
+                   ->GetWizardContextForTesting()
                    ->is_child_gaia_account_new);
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::CHILD_SIGNIN);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, Cancel) {
 // Verify enterprise enrollment button is available during the oobe flow (when
 // no existing users).
 IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, EnterpriseEnroll) {
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickEnterpriseEnrollmentButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickEnterpriseEnrollmentButton());
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             UserCreationScreen::Result::ENTERPRISE_ENROLL);
@@ -196,7 +196,7 @@ class UserCreationScreenLoginTest : public UserCreationScreenTest {
   UserCreationScreenLoginTest() : UserCreationScreenTest() {
     login_manager_mixin_.AppendRegularUsers(1);
     device_state_.SetState(
-        chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED);
+        DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED);
   }
 
  private:
@@ -207,10 +207,10 @@ class UserCreationScreenLoginTest : public UserCreationScreenTest {
 // existing users) and clicking it closes the oobe dialog. Enterprise
 // enrollment button is hidden when there are existing users.
 IN_PROC_BROWSER_TEST_F(UserCreationScreenLoginTest, Cancel) {
-  EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  ASSERT_FALSE(ash::LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
+  ASSERT_FALSE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
 
   test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
   test::OobeJS().ClickOnPath(kChildButton);
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenLoginTest, Cancel) {
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::CANCEL);
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class UserCreationScreenEnrolledTest : public UserCreationScreenTest {
@@ -235,7 +235,7 @@ class UserCreationScreenEnrolledTest : public UserCreationScreenTest {
   UserCreationScreenEnrolledTest() : UserCreationScreenTest() {
     login_manager_mixin_.AppendRegularUsers(1);
     device_state_.SetState(
-        chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+        DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
   }
 
  private:
@@ -246,12 +246,13 @@ class UserCreationScreenEnrolledTest : public UserCreationScreenTest {
 // managed device.
 IN_PROC_BROWSER_TEST_F(UserCreationScreenEnrolledTest,
                        ShouldSkipUserCreationScreen) {
-  EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS().ClickOnPath(
       {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

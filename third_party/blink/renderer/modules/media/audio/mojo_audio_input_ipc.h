@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/audio/audio_source_parameters.h"
+#include "media/base/audio_processor_controls.h"
 #include "media/mojo/mojom/audio_input_stream.mojom-blink.h"
+#include "media/mojo/mojom/audio_processing.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,6 +29,7 @@ namespace blink {
 // thread.
 class MODULES_EXPORT MojoAudioInputIPC
     : public media::AudioInputIPC,
+      public media::AudioProcessorControls,
       public mojom::blink::RendererAudioInputStreamFactoryClient,
       public media::mojom::blink::AudioInputStreamClient {
  public:
@@ -39,6 +40,8 @@ class MODULES_EXPORT MojoAudioInputIPC
       const media::AudioSourceParameters& source_params,
       mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
           client,
+      mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+          controls_receiver,
       const media::AudioParameters& params,
       bool automatic_gain_control,
       uint32_t total_segments)>;
@@ -50,6 +53,10 @@ class MODULES_EXPORT MojoAudioInputIPC
   MojoAudioInputIPC(const media::AudioSourceParameters& source_params,
                     StreamCreatorCB stream_creator,
                     StreamAssociatorCB stream_associator);
+
+  MojoAudioInputIPC(const MojoAudioInputIPC&) = delete;
+  MojoAudioInputIPC& operator=(const MojoAudioInputIPC&) = delete;
+
   ~MojoAudioInputIPC() override;
 
   // AudioInputIPC implementation
@@ -61,7 +68,12 @@ class MODULES_EXPORT MojoAudioInputIPC
   void RecordStream() override;
   void SetVolume(double volume) override;
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
+  media::AudioProcessorControls* GetProcessorControls() override;
   void CloseStream() override;
+
+  // AudioProcessorControls implementation
+  void GetStats(GetStatsCB callback) override;
+  void SetPreferredNumCaptureChannels(int32_t num_preferred_channels) override;
 
  private:
   void StreamCreated(
@@ -70,9 +82,11 @@ class MODULES_EXPORT MojoAudioInputIPC
           stream_client_receiver,
       media::mojom::blink::ReadOnlyAudioDataPipePtr data_pipe,
       bool initially_muted,
-      const base::Optional<base::UnguessableToken>& stream_id) override;
-  void OnError() override;
+      const absl::optional<base::UnguessableToken>& stream_id) override;
+  void OnError(media::mojom::InputStreamErrorCode code) override;
   void OnMutedStateChanged(bool is_muted) override;
+
+  void OnDisconnect(uint32_t error, const std::string& reason);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -82,16 +96,16 @@ class MODULES_EXPORT MojoAudioInputIPC
   StreamAssociatorCB stream_associator_;
 
   mojo::Remote<media::mojom::blink::AudioInputStream> stream_;
+  mojo::Remote<media::mojom::blink::AudioProcessorControls> processor_controls_;
+
   // Initialized on StreamCreated.
-  base::Optional<base::UnguessableToken> stream_id_;
+  absl::optional<base::UnguessableToken> stream_id_;
   mojo::Receiver<AudioInputStreamClient> stream_client_receiver_{this};
   mojo::Receiver<mojom::blink::RendererAudioInputStreamFactoryClient>
       factory_client_receiver_{this};
   media::AudioInputIPCDelegate* delegate_ = nullptr;
 
   base::WeakPtrFactory<MojoAudioInputIPC> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioInputIPC);
 };
 
 }  // namespace blink

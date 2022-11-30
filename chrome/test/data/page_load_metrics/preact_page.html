@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+
+<body>
+  <div id="nothing"></div>
+  <div id="container">
+    <div id="root">
+      This is a test to see if a page with a div with __k property is
+      detected as using the Preact JavaScript framework.
+    </div>
+  </div>
+  <script>
+    document.getElementById('root').__k = "test";
+  </script>
+</body>

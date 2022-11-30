@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/settings_reset_prompt/default_settings_fetcher.h"
 
 class Profile;
@@ -31,6 +30,10 @@ class PostCleanupSettingsResetter {
   class Delegate {
    public:
     Delegate();
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     virtual void FetchDefaultSettings(
@@ -38,12 +41,14 @@ class PostCleanupSettingsResetter {
 
     virtual std::unique_ptr<ProfileResetter> GetProfileResetter(
         Profile* profile);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   PostCleanupSettingsResetter();
+
+  PostCleanupSettingsResetter(const PostCleanupSettingsResetter&) = delete;
+  PostCleanupSettingsResetter& operator=(const PostCleanupSettingsResetter&) =
+      delete;
+
   virtual ~PostCleanupSettingsResetter();
 
   // Returns true if the in-browser cleaner UI is enabled.
@@ -71,8 +76,6 @@ class PostCleanupSettingsResetter {
   // to wait for the callback to be run to release it. If you are intending to
   // change that assumption, please make sure you don't break the contract
   // where this class is used.
-
-  DISALLOW_COPY_AND_ASSIGN(PostCleanupSettingsResetter);
 };
 
 }  // namespace safe_browsing

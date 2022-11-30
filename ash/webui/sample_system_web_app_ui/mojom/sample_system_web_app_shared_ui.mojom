@@ -1,0 +1,31 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom.sample_swa;
+
+// Interfaces for inter-frame communication between chrome:// and its embedded
+// chrome-untrusted:// child page.
+
+// Implemented in JavaScript by the chrome-untrusted:// page, represents the
+// embedded chrome-untrusted:// page.
+interface ChildUntrustedPage {
+  // Called when the embedding (parent) page has a task for the child.
+  DoSomethingForParent(string task);
+};
+
+
+// Implemented in the embedding chrome:// page's JavaScript, used to
+// communicate with the child page.
+interface ParentTrustedPage {
+  // Called when the child page requests the parent page to perform `task`,
+  // replies with the task result `resp`.
+  //
+  // Keep in mind that:
+  // - `task` is untrustworthy. The implementation should sanitize and verify
+  //   its content before processing.
+  // - `resp` is sent to an untrusted context, which is beyond the browser's
+  //   control. A compromised chrome-untrusted:// page could use this to
+  //   exfiltrate browser data to the Web.
+  DoSomethingForChild(string task) => (string resp);
+};

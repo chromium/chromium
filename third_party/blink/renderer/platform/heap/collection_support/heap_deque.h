@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 // Include heap_vector.h to also make general VectorTraits available.
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
@@ -21,25 +21,37 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
   DISALLOW_NEW();
 
  public:
-  HeapDeque() = default;
+  HeapDeque() { CheckType(); }
 
   explicit HeapDeque(wtf_size_t size) : Deque<T, 0, HeapAllocator>(size) {
+    CheckType();
   }
 
   HeapDeque(wtf_size_t size, const T& val)
       : Deque<T, 0, HeapAllocator>(size, val) {
+    CheckType();
+  }
+
+  HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {
+    CheckType();
   }
 
   HeapDeque& operator=(const HeapDeque& other) {
-    HeapDeque<T> copy(other);
-    Deque<T, 0, HeapAllocator>::Swap(copy);
+    Deque<T, 0, HeapAllocator>::operator=(other);
     return *this;
   }
 
-  HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {}
+  HeapDeque(HeapDeque&& other) noexcept
+      : Deque<T, 0, HeapAllocator>(std::move(other)) {
+    CheckType();
+  }
+
+  HeapDeque& operator=(HeapDeque&& other) noexcept {
+    Deque<T, 0, HeapAllocator>::operator=(std::move(other));
+    return *this;
+  }
 
   void Trace(Visitor* visitor) const {
-    CheckType();
     Deque<T, 0, HeapAllocator>::Trace(visitor);
   }
 

@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_DOT_INDICATOR_H_
 #define UI_VIEWS_CONTROLS_DOT_INDICATOR_H_
 
-#include "base/macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 
@@ -34,9 +33,10 @@ class VIEWS_EXPORT DotIndicator : public View {
 
   // View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
-  SkColor dot_color_ = gfx::kPlaceholderColor;
-  SkColor border_color_ = gfx::kPlaceholderColor;
+  absl::optional<SkColor> dot_color_;
+  absl::optional<SkColor> border_color_;
 };
 
 }  // namespace views

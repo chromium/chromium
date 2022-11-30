@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_PREFERENCES_COOKIE_CONTROLS_SERVICE_BRIDGE_H_
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 
@@ -15,6 +16,10 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
  public:
   CookieControlsServiceBridge(JNIEnv* env,
                               const base::android::JavaParamRef<jobject>& obj);
+
+  CookieControlsServiceBridge(const CookieControlsServiceBridge&) = delete;
+  CookieControlsServiceBridge& operator=(const CookieControlsServiceBridge&) =
+      delete;
 
   ~CookieControlsServiceBridge() override;
 
@@ -36,10 +41,8 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
   // Starts a service to observe the current profile.
   void UpdateServiceIfNecessary();
 
-  CookieControlsService* service_;
+  raw_ptr<CookieControlsService> service_;
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsServiceBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_COOKIE_CONTROLS_SERVICE_BRIDGE_H_

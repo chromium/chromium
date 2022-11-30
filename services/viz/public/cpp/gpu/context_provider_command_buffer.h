@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,11 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/shared_memory_mapper.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -78,7 +80,8 @@ class ContextProviderCommandBuffer
       bool support_grcontext,
       const gpu::SharedMemoryLimits& memory_limits,
       const gpu::ContextCreationAttribs& attributes,
-      command_buffer_metrics::ContextType type);
+      command_buffer_metrics::ContextType type,
+      base::SharedMemoryMapper* buffer_mapper = nullptr);
 
   gpu::CommandBufferProxyImpl* GetCommandBufferProxy();
   // Gives the GL internal format that should be used for calling CopyTexImage2D
@@ -148,7 +151,8 @@ class ContextProviderCommandBuffer
   const command_buffer_metrics::ContextType context_type_;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  raw_ptr<gpu::GpuMemoryBufferManager, DanglingUntriaged>
+      gpu_memory_buffer_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
   // |shared_image_interface_| must be torn down after |command_buffer_| to
@@ -161,12 +165,14 @@ class ContextProviderCommandBuffer
   std::unique_ptr<gpu::CommandBufferHelper> helper_;
   std::unique_ptr<gpu::TransferBuffer> transfer_buffer_;
 
-  // Owned by either gles2_impl_ or raster_interface_, not both.
-  gpu::ImplementationBase* impl_;
   std::unique_ptr<gpu::gles2::GLES2Implementation> gles2_impl_;
   std::unique_ptr<gpu::gles2::GLES2TraceImplementation> trace_impl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
   std::unique_ptr<gpu::webgpu::WebGPUInterface> webgpu_interface_;
+
+  // Owned by one of gles2_impl_, raster_interface_, or webgpu_interface_. It
+  // must be declared last and cleared first.
+  raw_ptr<gpu::ImplementationBase> impl_;
 
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -176,6 +182,12 @@ class ContextProviderCommandBuffer
   std::unique_ptr<ContextCacheController> cache_controller_;
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
+
+  // Shared memory mapper used by command buffer proxies created from this
+  // provider when creating shared memory mappings.
+  // TODO(crbug.com/1321521) remove this member again once users of the command
+  // buffer proxy can specify the mapper for each mapping individually.
+  raw_ptr<base::SharedMemoryMapper> buffer_mapper_ = nullptr;
 };
 
 }  // namespace viz

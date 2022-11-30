@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -16,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -26,15 +26,14 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class CustomElementRegistryTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
 
   CustomElementRegistry& Registry() {
     return *GetFrame().DomWindow()->customElements();
@@ -66,7 +65,7 @@ TEST_F(CustomElementRegistryTest,
   HeapVector<Member<Element>> elements;
   CollectCandidates(CustomElementDescriptor("a-a", "a-a"), &elements);
 
-  EXPECT_TRUE(elements.IsEmpty())
+  EXPECT_TRUE(elements.empty())
       << "no candidates should have been found, but we have "
       << elements.size();
   EXPECT_FALSE(elements.Contains(element))
@@ -86,7 +85,7 @@ TEST_F(CustomElementRegistryTest,
   HeapVector<Member<Element>> elements;
   CollectCandidates(CustomElementDescriptor("a-a", "a-a"), &elements);
 
-  EXPECT_TRUE(elements.IsEmpty())
+  EXPECT_TRUE(elements.empty())
       << "no candidates should have been found, but we have "
       << elements.size();
   EXPECT_FALSE(elements.Contains(element))
@@ -172,6 +171,8 @@ class LogUpgradeDefinition : public TestCustomElementDefinition {
                 "attr1", "attr2", html_names::kContenteditableAttr.LocalName(),
             },
             {}) {}
+  LogUpgradeDefinition(const LogUpgradeDefinition&) = delete;
+  LogUpgradeDefinition& operator=(const LogUpgradeDefinition&) = delete;
 
   void Trace(Visitor* visitor) const override {
     TestCustomElementDefinition::Trace(visitor);
@@ -253,8 +254,6 @@ class LogUpgradeDefinition : public TestCustomElementDefinition {
     EXPECT_EQ(&element, element_);
     attribute_changed_.push_back(AttributeChanged{name, old_value, new_value});
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LogUpgradeDefinition);
 };
 
 class LogUpgradeBuilder final : public TestCustomElementDefinitionBuilder {
@@ -262,13 +261,13 @@ class LogUpgradeBuilder final : public TestCustomElementDefinitionBuilder {
 
  public:
   LogUpgradeBuilder() = default;
+  LogUpgradeBuilder(const LogUpgradeBuilder&) = delete;
+  LogUpgradeBuilder& operator=(const LogUpgradeBuilder&) = delete;
 
   CustomElementDefinition* Build(const CustomElementDescriptor& descriptor,
                                  CustomElementDefinition::Id) override {
     return MakeGarbageCollected<LogUpgradeDefinition>(descriptor);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LogUpgradeBuilder);
 };
 
 TEST_F(CustomElementRegistryTest, define_upgradesInDocumentElements) {

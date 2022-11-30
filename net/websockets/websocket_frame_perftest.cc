@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/stl_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -30,7 +29,7 @@ perf_test::PerfResultReporter SetUpWebSocketFrameMaskReporter(
   return reporter;
 }
 
-static_assert(base::size(kMaskingKey) ==
+static_assert(std::size(kMaskingKey) ==
                   WebSocketFrameHeader::kMaskingKeyLength + 1,
               "incorrect masking key size");
 
@@ -56,7 +55,7 @@ class WebSocketFrameTestMaskBenchmark : public ::testing::Test {
 
 TEST_F(WebSocketFrameTestMaskBenchmark, BenchmarkMaskShortPayload) {
   static const char kShortPayload[] = "Short Payload";
-  Benchmark("short_payload", kShortPayload, base::size(kShortPayload));
+  Benchmark("short_payload", kShortPayload, std::size(kShortPayload));
 }
 
 TEST_F(WebSocketFrameTestMaskBenchmark, BenchmarkMaskLongPayload) {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 
 namespace content {
 
@@ -19,6 +20,7 @@ class BlobHandle {
   virtual ~BlobHandle() {}
   virtual std::string GetUUID() = 0;
   virtual mojo::PendingRemote<blink::mojom::Blob> PassBlob() = 0;
+  virtual blink::mojom::SerializedBlobPtr Serialize() = 0;
 
  protected:
   BlobHandle() {}

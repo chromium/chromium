@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define MEDIA_LEARNING_IMPL_RANDOM_NUMBER_GENERATOR_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace media {
 
@@ -18,6 +17,10 @@ namespace media {
 class COMPONENT_EXPORT(LEARNING_IMPL) RandomNumberGenerator {
  public:
   RandomNumberGenerator() = default;
+
+  RandomNumberGenerator(const RandomNumberGenerator&) = delete;
+  RandomNumberGenerator& operator=(const RandomNumberGenerator&) = delete;
+
   virtual ~RandomNumberGenerator() = default;
 
   // Return a random generator that will return unpredictable values in the
@@ -36,9 +39,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) RandomNumberGenerator {
   // This isn't an overload of Generate() to be sure that one isn't surprised by
   // the result.
   double GenerateDouble(double range);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RandomNumberGenerator);
 };
 
 // Handy mix-in class if you want to support rng injection.
@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(LEARNING_IMPL) HasRandomNumberGenerator {
   RandomNumberGenerator* rng() const { return rng_; }
 
  private:
-  RandomNumberGenerator* rng_ = nullptr;
+  raw_ptr<RandomNumberGenerator> rng_ = nullptr;
 };
 
 }  // namespace media

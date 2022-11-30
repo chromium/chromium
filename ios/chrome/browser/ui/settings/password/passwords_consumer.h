@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 // Enum with all possible UI states of password check.
@@ -33,13 +33,21 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
 // Consumer for the Passwords Screen.
 @protocol PasswordsConsumer <NSObject>
 
-// Displays current password check UI state on screen.
+// Displays current password check UI state on screen for unmuted compromised
+// credentials.
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-      compromisedPasswordsCount:(NSInteger)count;
+    unmutedCompromisedPasswordsCount:(NSInteger)count;
 
 // Displays password and blocked forms.
-- (void)setPasswordsForms:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)forms;
+- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
+        blockedSites:
+            (std::vector<password_manager::CredentialUIEntry>)blockedSites;
+
+// Updates "On/Off" state for Passwords In Other Apps item.
+- (void)updatePasswordsInOtherAppsDetailedText;
+
+// Updates "on-device encryption" related UI.
+- (void)updateOnDeviceEncryptionSessionAndUpdateTableView;
 
 @end
 

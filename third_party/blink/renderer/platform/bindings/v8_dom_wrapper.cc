@@ -37,41 +37,7 @@
 
 namespace blink {
 
-v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(
-    v8::Isolate* isolate,
-    v8::Local<v8::Object> creation_context,
-    const WrapperTypeInfo* type) {
-  RUNTIME_CALL_TIMER_SCOPE(isolate,
-                           RuntimeCallStats::CounterId::kCreateWrapper);
-
-  // TODO(adithyas): We should abort wrapper creation if the context access
-  // check fails and throws an exception.
-  V8WrapperInstantiationScope scope(creation_context, isolate, type);
-  CHECK(!scope.AccessCheckFailed());
-
-  V8PerContextData* per_context_data =
-      V8PerContextData::From(scope.GetContext());
-  v8::Local<v8::Object> wrapper;
-  if (per_context_data) {
-    wrapper = per_context_data->CreateWrapperFromCache(type);
-    CHECK(!wrapper.IsEmpty());
-  } else {
-    // The context is detached, but still accessible.
-    // TODO(yukishiino): This code does not create a wrapper with
-    // the correct settings.  Should follow the same way as
-    // V8PerContextData::createWrapperFromCache, though there is no need to
-    // cache resulting objects or their constructors.
-    const DOMWrapperWorld& world = DOMWrapperWorld::World(scope.GetContext());
-    wrapper = type->GetV8ClassTemplate(isolate, world)
-                  .As<v8::FunctionTemplate>()
-                  ->InstanceTemplate()
-                  ->NewInstance(scope.GetContext())
-                  .ToLocalChecked();
-  }
-  return wrapper;
-}
-
-v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapperV2(
+v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapper(
     ScriptState* script_state,
     const WrapperTypeInfo* type) {
   RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,11 +64,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Build random examples.
   while (provider.remaining_bytes() > 0) {
     base::UnguessableToken id = base::UnguessableToken::Create();
-    base::Optional<TargetValue> default_target;
+    absl::optional<TargetValue> default_target;
     if (provider.ConsumeBool())
       default_target = TargetValue(ConsumeDouble(&provider));
     controller.BeginObservation(id, ConsumeFeatureVector(&provider),
-                                default_target, base::nullopt);
+                                default_target, absl::nullopt);
     controller.CompleteObservation(
         id, ObservationCompletion(TargetValue(ConsumeDouble(&provider)),
                                   ConsumeDouble(&provider)));

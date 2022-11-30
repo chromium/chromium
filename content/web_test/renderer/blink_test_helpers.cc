@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +18,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/display/display.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #endif
@@ -27,6 +26,8 @@
 using blink::WebURL;
 
 namespace {
+
+constexpr base::StringPiece kFileScheme = "file:///";
 
 base::FilePath GetWebTestsFilePath() {
   static base::FilePath path;
@@ -39,21 +40,34 @@ base::FilePath GetWebTestsFilePath() {
   return path;
 }
 
-// Tests in csswg-test use absolute path links such as
+base::FilePath GetExternalWPTFilePath() {
+  static base::FilePath path;
+  if (path.empty()) {
+    base::FilePath root_path;
+    bool success = base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+    CHECK(success);
+    path = root_path.Append(
+        FILE_PATH_LITERAL("third_party/blink/web_tests/external/wpt"));
+  }
+  return path;
+}
+
+// WPT tests use absolute path links such as
 //   <script src="/resources/testharness.js">.
-// Because we load the tests as local files, such links don't work.
-// This function fixes this issue by rewriting file: URLs which were produced
-// from such links so that they point actual files in web_tests/resources/.
+// If we load the tests as local files (e.g. when we run
+// `content_shell --run-web-tests manually for testing or debugging), such
+// links don't work. This function fixes this issue by rewriting file: URLs
+// which were produced from such links so that they point actual files under
+// the WPT test directory.
 //
-// Note that this isn't applied to external/wpt because tests in external/wpt
-// are accessed via http.
-WebURL RewriteAbsolutePathInCsswgTest(base::StringPiece utf8_url) {
-  static constexpr base::StringPiece kFileScheme = "file:///";
-  if (!base::StartsWith(utf8_url, kFileScheme, base::CompareCase::SENSITIVE))
-    return WebURL();
-  if (utf8_url.find("/web_tests/") != std::string::npos)
-    return WebURL();
-#if defined(OS_WIN)
+// Note that this doesn't apply when the WPT tests are run by the python script.
+WebURL RewriteWPTAbsolutePath(base::StringPiece utf8_url) {
+  if (!base::StartsWith(utf8_url, kFileScheme, base::CompareCase::SENSITIVE) ||
+      utf8_url.find("/web_tests/") != std::string::npos) {
+    return WebURL(GURL(utf8_url));
+  }
+
+#if BUILDFLAG(IS_WIN)
   // +3 for a drive letter, :, and /.
   static constexpr size_t kFileSchemeAndDriveLen = kFileScheme.size() + 3;
   if (utf8_url.size() <= kFileSchemeAndDriveLen)
@@ -62,7 +76,7 @@ WebURL RewriteAbsolutePathInCsswgTest(base::StringPiece utf8_url) {
 #else
   base::StringPiece path = utf8_url.substr(kFileScheme.size());
 #endif
-  base::FilePath new_path = GetWebTestsFilePath().AppendASCII(path);
+  base::FilePath new_path = GetExternalWPTFilePath().AppendASCII(path);
   return WebURL(net::FilePathToFileURL(new_path));
 }
 
@@ -95,7 +109,7 @@ void ExportWebTestSpecificPreferences(const TestPreferences& from,
 }
 
 static base::FilePath GetBuildDirectory() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::mac::AmIBundled()) {
     // If this is a bundled Content Shell.app, go up one from the outer bundle
     // directory.
@@ -111,12 +125,8 @@ static base::FilePath GetBuildDirectory() {
 }
 
 WebURL RewriteWebTestsURL(base::StringPiece utf8_url, bool is_wpt_mode) {
-  if (is_wpt_mode) {
-    WebURL rewritten_url = RewriteAbsolutePathInCsswgTest(utf8_url);
-    if (!rewritten_url.IsEmpty())
-      return rewritten_url;
-    return WebURL(GURL(utf8_url));
-  }
+  if (is_wpt_mode)
+    return RewriteWPTAbsolutePath(utf8_url);
 
   static constexpr base::StringPiece kGenPrefix = "file:///gen/";
 
@@ -142,15 +152,17 @@ WebURL RewriteWebTestsURL(base::StringPiece utf8_url, bool is_wpt_mode) {
 }
 
 WebURL RewriteFileURLToLocalResource(base::StringPiece resource) {
-  // Some web tests use file://// which we resolve as a UNC path. Normalize
-  // them to just file:///.
-  std::string result = resource.as_string();
-  static const size_t kFileLen = sizeof("file:///") - 1;
-  while (base::StartsWith(base::ToLowerASCII(result), "file:////",
-                          base::CompareCase::SENSITIVE)) {
-    result = result.substr(0, kFileLen) + result.substr(kFileLen + 1);
-  }
-  return RewriteWebTestsURL(result, /*is_wpt_mode=*/false);
+  return RewriteWebTestsURL(resource, /*is_wpt_mode=*/false);
+}
+
+bool IsWebPlatformTest(base::StringPiece test_url) {
+  // ://web-platform.test is a part of the http/https URL of a wpt test run by
+  // the python script.
+  return test_url.find("://web-platform.test") != std::string::npos ||
+         // These are part of the file URL of a wpt test run manually with
+         // content_shell without a web server.
+         test_url.find("/external/wpt/") != std::string::npos ||
+         test_url.find("/wpt_internal/") != std::string::npos;
 }
 
 }  // namespace content

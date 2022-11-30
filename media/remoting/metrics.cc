@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@ namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
 // BEGIN: These were all borrowed from src/media/filters/ffmpeg_demuxer.cc.
-// TODO(miu): This code will be de-duped in a soon-upcoming change.
-
 // Some videos just want to watch the world burn, with a height of 0; cap the
 // "infinite" aspect ratio resulting.
 constexpr int kInfiniteRatio = 99999;
@@ -42,10 +40,10 @@ constexpr int kVideoWidthBuckets[] = {
 }  // namespace
 
 SessionMetricsRecorder::SessionMetricsRecorder()
-    : last_audio_codec_(kUnknownAudioCodec),
+    : last_audio_codec_(AudioCodec::kUnknown),
       last_channel_layout_(CHANNEL_LAYOUT_NONE),
       last_sample_rate_(0),
-      last_video_codec_(kUnknownVideoCodec),
+      last_video_codec_(VideoCodec::kUnknown),
       last_video_profile_(VIDEO_CODEC_PROFILE_UNKNOWN) {}
 
 SessionMetricsRecorder::~SessionMetricsRecorder() = default;
@@ -59,11 +57,16 @@ void SessionMetricsRecorder::WillStartSession(StartTrigger trigger) {
 void SessionMetricsRecorder::DidStartSession() {
   UMA_HISTOGRAM_ENUMERATION("Media.Remoting.SessionStartTrigger",
                             *start_trigger_, START_TRIGGER_MAX + 1);
-  if (last_audio_codec_ != kUnknownAudioCodec)
+  if (last_audio_codec_ != AudioCodec::kUnknown)
     RecordAudioConfiguration();
-  if (last_video_codec_ != kUnknownVideoCodec)
+  if (last_video_codec_ != VideoCodec::kUnknown)
     RecordVideoConfiguration();
   RecordTrackConfiguration();
+}
+
+void SessionMetricsRecorder::StartSessionFailed(
+    mojom::RemotingStartFailReason reason) {
+  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.SessionStartFailedReason", reason);
 }
 
 void SessionMetricsRecorder::WillStopSession(StopTrigger trigger) {
@@ -77,33 +80,31 @@ void SessionMetricsRecorder::WillStopSession(StopTrigger trigger) {
   // Record the session duration.
   const base::TimeDelta session_duration = base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.SessionDuration", session_duration,
-                             base::TimeDelta::FromSeconds(15),
-                             base::TimeDelta::FromHours(12), 50);
+                             base::Seconds(15), base::Hours(12), 50);
 
-  if (session_duration <= base::TimeDelta::FromSeconds(15)) {
+  if (session_duration <= base::Seconds(15)) {
     // Record the session duration in finer scale for short sessions
     UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.ShortSessionDuration",
-                               session_duration,
-                               base::TimeDelta::FromSecondsD(0.1),
-                               base::TimeDelta::FromSeconds(15), 60);
+                               session_duration, base::Seconds(0.1),
+                               base::Seconds(15), 60);
 
-    if (session_duration <= base::TimeDelta::FromSecondsD(0.1)) {
+    if (session_duration <= base::Seconds(0.1)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration0To100MilliSec", trigger,
           STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(1)) {
+    } else if (session_duration <= base::Seconds(1)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration100MilliSecTo1Sec",
           trigger, STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(3)) {
+    } else if (session_duration <= base::Seconds(3)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration1To3Sec", trigger,
           STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(5)) {
+    } else if (session_duration <= base::Seconds(5)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration3To5Sec", trigger,
           STOP_TRIGGER_MAX + 1);
-    } else if (session_duration <= base::TimeDelta::FromSeconds(10)) {
+    } else if (session_duration <= base::Seconds(10)) {
       UMA_HISTOGRAM_ENUMERATION(
           "Media.Remoting.SessionStopTrigger.Duration5To10Sec", trigger,
           STOP_TRIGGER_MAX + 1);
@@ -116,7 +117,7 @@ void SessionMetricsRecorder::WillStopSession(StopTrigger trigger) {
 
   // Reset |start_trigger_| since metrics recording of the current remoting
   // session has now completed.
-  start_trigger_ = base::nullopt;
+  start_trigger_ = absl::nullopt;
 }
 
 void SessionMetricsRecorder::OnPipelineMetadataChanged(
@@ -134,7 +135,7 @@ void SessionMetricsRecorder::OnPipelineMetadataChanged(
     if (need_to_record_audio_configuration)
       RecordAudioConfiguration();
   } else {
-    last_audio_codec_ = kUnknownAudioCodec;
+    last_audio_codec_ = AudioCodec::kUnknown;
     last_channel_layout_ = CHANNEL_LAYOUT_NONE;
     last_sample_rate_ = 0;
   }
@@ -152,7 +153,7 @@ void SessionMetricsRecorder::OnPipelineMetadataChanged(
     if (need_to_record_video_configuration)
       RecordVideoConfiguration();
   } else {
-    last_video_codec_ = kUnknownVideoCodec;
+    last_video_codec_ = VideoCodec::kUnknown;
     last_video_profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
     last_natural_size_ = gfx::Size();
   }
@@ -182,12 +183,15 @@ void SessionMetricsRecorder::RecordVideoPixelRateSupport(
 
 void SessionMetricsRecorder::RecordCompatibility(
     RemotingCompatibility compatibility) {
+  if (did_record_compatibility_) {
+    return;
+  }
+  did_record_compatibility_ = true;
   base::UmaHistogramEnumeration("Media.Remoting.Compatibility", compatibility);
 }
 
 void SessionMetricsRecorder::RecordAudioConfiguration() {
-  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.AudioCodec", last_audio_codec_,
-                            kAudioCodecMax + 1);
+  base::UmaHistogramEnumeration("Media.Remoting.AudioCodec", last_audio_codec_);
   UMA_HISTOGRAM_ENUMERATION("Media.Remoting.AudioChannelLayout",
                             last_channel_layout_, CHANNEL_LAYOUT_MAX + 1);
   AudioSampleRate asr;
@@ -201,8 +205,7 @@ void SessionMetricsRecorder::RecordAudioConfiguration() {
 }
 
 void SessionMetricsRecorder::RecordVideoConfiguration() {
-  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.VideoCodec", last_video_codec_,
-                            kVideoCodecMax + 1);
+  base::UmaHistogramEnumeration("Media.Remoting.VideoCodec", last_video_codec_);
   UMA_HISTOGRAM_ENUMERATION("Media.Remoting.VideoCodecProfile",
                             last_video_profile_, VIDEO_CODEC_PROFILE_MAX + 1);
   UMA_HISTOGRAM_CUSTOM_ENUMERATION(
@@ -220,9 +223,9 @@ void SessionMetricsRecorder::RecordVideoConfiguration() {
 
 void SessionMetricsRecorder::RecordTrackConfiguration() {
   TrackConfiguration config = NEITHER_AUDIO_NOR_VIDEO;
-  if (last_audio_codec_ != kUnknownAudioCodec)
+  if (last_audio_codec_ != AudioCodec::kUnknown)
     config = AUDIO_ONLY;
-  if (last_video_codec_ != kUnknownVideoCodec) {
+  if (last_video_codec_ != VideoCodec::kUnknown) {
     if (config == AUDIO_ONLY)
       config = AUDIO_AND_VIDEO;
     else
@@ -241,9 +244,8 @@ void RendererMetricsRecorder::OnRendererInitialized() {
   const base::TimeDelta elapsed_since_start =
       base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.TimeUntilRemoteInitialized",
-                             elapsed_since_start,
-                             base::TimeDelta::FromMilliseconds(10),
-                             base::TimeDelta::FromSeconds(30), 50);
+                             elapsed_since_start, base::Milliseconds(10),
+                             base::Seconds(30), 50);
 }
 
 void RendererMetricsRecorder::OnEvidenceOfPlayoutAtReceiver() {
@@ -252,9 +254,8 @@ void RendererMetricsRecorder::OnEvidenceOfPlayoutAtReceiver() {
   const base::TimeDelta elapsed_since_start =
       base::TimeTicks::Now() - start_time_;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Remoting.TimeUntilFirstPlayout",
-                             elapsed_since_start,
-                             base::TimeDelta::FromMilliseconds(10),
-                             base::TimeDelta::FromSeconds(30), 50);
+                             elapsed_since_start, base::Milliseconds(10),
+                             base::Seconds(30), 50);
   did_record_first_playout_ = true;
 }
 

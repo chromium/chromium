@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Ralat yang tidak dijangka telah berlaku. Sila laporkan masalah ini kepada pembangun.</translation>
 <translation id="1697532407822776718">Anda telah bersedia!</translation>
 <translation id="1742469581923031760">Menyambung…</translation>
+<translation id="177040763384871009">Untuk membolehkan pautan yang diklik pada peranti jauh dibuka pada penyemak imbas klien, anda perlu menukar penyemak imbas web sistem kepada "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP Saluran untuk klien: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Padam</translation>
 <translation id="2009755455353575666">Sambungan gagal</translation>
@@ -24,7 +25,7 @@ Untuk memberikan kebenaran ini, klik '<ph name="BUTTON_NAME" />' di bawah untuk 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tandai sekali lagi.</translation>
 <translation id="225614027745146050">Selamat datang</translation>
 <translation id="2320166752086256636">Sembunyikan papan kekunci</translation>
-<translation id="2333212046079545895">Hak Cipta 2021 Google LLC. Hak Cipta Terpelihara.</translation>
+<translation id="2329392777730037872">Gagal membuka <ph name="URL" /> pada klien.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2366718077645204424">Tidak dapat mencapai hos. Hal ini mungkin disebabkan oleh konfigurasi rangkaian yang anda gunakan.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Terakhir dilihat dalam talian <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="2599300881200251572">Perkhidmatan ini membolehkan sambungan masuk daripada klien Desktop Jauh Chrome.</translation>
 <translation id="2647232381348739934">Perkhidmatan Chromoting</translation>
 <translation id="2676780859508944670">Mengusahakan...</translation>
+<translation id="2692522824157224199">Hak Cipta 2022 Google LLC. Hak Cipta Terpelihara.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Terdapat masalah semasa mengesahkan, sila log masuk semula.</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
@@ -55,6 +57,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="369442766917958684">Luar talian.</translation>
 <translation id="3695446226812920698">Ketahui caranya</translation>
 <translation id="3776024066357219166">Sesi Desktop Jauh Chrome anda telah tamat.</translation>
+<translation id="3858860766373142691">Nama</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Domain pemilik hos tidak sah.</translation>
 <translation id="3931191050278863510">Hos dihentikan.</translation>
@@ -67,14 +70,16 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="4176825807642096119">Kod akses</translation>
 <translation id="4227991223508142681">Utiliti Peruntukan Hos</translation>
 <translation id="4240294130679914010">Penyahpasang Hos Chromoting</translation>
+<translation id="4257751272692708833">Pemaju URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kod akses tidak sah. Sila cuba lagi.</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
+<translation id="4372650392690220936">Hak cipta 2022 The Chromium Authors. Hak Cipta Terpelihara.</translation>
 <translation id="4405930547258349619">Pustaka Teras</translation>
 <translation id="443560535555262820">Buka Pilihan Kebolehaksesan</translation>
 <translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
-<translation id="4512952200932940229">Hak cipta 2021 The Chromium Authors. Hak Cipta Terpelihara.</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
 <translation id="4563926062592110512">Klien diputuskan sambungan: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> tidak dikonfigurasikan dengan betul. Sila pilih penyemak imbas web lalai yang lain, kemudian dayakan pemajuan URL sekali lagi.</translation>
 <translation id="4635770493235256822">Peranti jauh</translation>
 <translation id="4660011489602794167">Tunjukkan papan kekunci</translation>
 <translation id="4703799847237267011">Sesi Chromoting anda telah tamat.</translation>
@@ -87,6 +92,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="4867841927763172006">Hantar PrtScn</translation>
 <translation id="4974476491460646149">Sambungan ditutup untuk <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Anda perlu menyediakan komputer untuk akses jauh terlebih dahulu</translation>
+<translation id="4987330545941822761">Desktop Jauh Chrome tidak dapat menentukan penyemak imbas untuk membuka URL secara setempat. Sila pilih penyemak imbas daripada senarai di bawah.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (luar talian)</translation>
 <translation id="507204348399810022">Adakah anda pasti mahu melumpuhkan sambungan jauh ke <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Id hos tidak sah.</translation>
@@ -94,7 +100,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="5222676887888702881">Log keluar</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
 <translation id="5308380583665731573">Sambung</translation>
-<translation id="5327248766486351172">Nama</translation>
 <translation id="533625276787323658">Tiada peranti untuk disambungkan</translation>
 <translation id="5397086374758643919">Penyahpasang Hos Desktop Jauh Chrome</translation>
 <translation id="5419418238395129586">Terakhir dalam talian: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="5750083143895808682">Log masuk sebagai <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Sambung semula</translation>
 <translation id="5810269635982033450">Skrin bertindak seperti pad jejak</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat skrin anda serta mengawal papan kekunci dan tetikus anda. Tekan ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' jika anda tidak menjangkakan permintaan ini. Jika tidak, pilih ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' untuk membenarkan sambungan apabila anda bersedia.</translation>
 <translation id="5823658491130719298">Buka Chrome dan lawati <ph name="INSTALLATION_LINK" /> pada komputer yang ingin diakses dari jauh</translation>
 <translation id="5841343754884244200">Pilihan paparan</translation>
 <translation id="6033507038939587647">Pilihan papan kekunci</translation>
@@ -121,6 +127,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="6612717000975622067">Hantar Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Kongsi</translation>
 <translation id="677755392401385740">Hos dimulakan untuk pengguna: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplikasi pembantu untuk membuka URL pada klien <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Paparkan/Sembunyikan papan kekunci.</translation>
 <translation id="6963936880795878952">Sambungan kepada komputer jauh disekat buat sementara waktu kerana seseorang sedang cuba untuk menyambung kepadanya dengan PIN yang tidak sah. Sila cuba sebentar lagi.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -133,10 +140,12 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7312846573060934304">Hos di luar talian.</translation>
 <translation id="7319983568955948908">Hentikan Perkongsian</translation>
+<translation id="7359298090707901886">Penyemak imbas yang dipilih tidak dapat digunakan untuk membuka URL pada mesin setempat.</translation>
 <translation id="7401733114166276557">Desktop Jauh Chrome</translation>
 <translation id="7434397035092923453">Akses ditolak untuk klien: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klien disambungkan: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Tukar akaun</translation>
+<translation id="7535110896613603182">Buka Tetapan Apl Lalai</translation>
 <translation id="7628469622942688817">Ingat PIN saya pada peranti ini.</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
@@ -161,6 +170,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 Untuk memberikan kebenaran ini, klik '<ph name="BUTTON_NAME" />' di bawah. Dalam anak tetingkap pilihan 'Kebolehaksesan' yang dibuka, tandai kotak di sebelah '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tandai sekali lagi.</translation>
+<translation id="8305209735512572429">Proses Pengawalan Pengesahan Web dari Jauh</translation>
 <translation id="8383794970363966105">Untuk menggunakan Chromoting, anda perlu menambahkan Akaun Google kepada peranti anda.</translation>
 <translation id="8386846956409881180">Hos dikonfigurasikan dengan bukti kelayakan OAuth yang tidak sah.</translation>
 <translation id="8397385476380433240">Berikan kebenaran kepada <ph name="PRODUCT_NAME" /></translation>

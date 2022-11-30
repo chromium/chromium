@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+<title>CSS Test: font-synthesis-style: auto enables fake italic/oblique</title>
+<!--Sylfaen is only available in Regular style in the Windows set of test fonts that are used as system fonts in Windows testing-->
+<style>
+    .test {
+        font-family: Sylfaen;
+        font-size: 3em;
+        font-style: italic;
+    }
+</style>
+
+<p>Test passes if the two lines below are identical and there is no red.</p>
+<section class="test">
+    <p>текст-заполнитель</p>
+    <p>текст-заполнитель</p>
+</section>

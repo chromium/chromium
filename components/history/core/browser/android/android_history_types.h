@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 
@@ -137,7 +137,7 @@ class HistoryAndBookmarkRow {
   }
   URLID url_id() const { return url_id_; }
 
-  // Returns true if the given |id| has been set explicitly.
+  // Returns true if the given `id` has been set explicitly.
   bool is_value_set_explicitly(ColumnID id) const {
     return values_set_.find(id) != values_set_.end();
   }
@@ -214,7 +214,7 @@ class SearchRow {
     keyword_id_ = keyword_id;
   }
 
-  // Returns true if the given |id| has been set explicitly.
+  // Returns true if the given `id` has been set explicitly.
   bool is_value_set_explicitly(ColumnID id) const {
     return values_set_.find(id) != values_set_.end();
   }
@@ -269,6 +269,10 @@ struct SearchTermRow {
 class AndroidStatement {
  public:
   AndroidStatement(sql::Statement* statement, int favicon_index);
+
+  AndroidStatement(const AndroidStatement&) = delete;
+  AndroidStatement& operator=(const AndroidStatement&) = delete;
+
   ~AndroidStatement();
 
   sql::Statement* statement() { return statement_.get(); }
@@ -280,8 +284,6 @@ class AndroidStatement {
  private:
   std::unique_ptr<sql::Statement> statement_;
   int favicon_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidStatement);
 };
 
 }  // namespace history

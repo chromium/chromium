@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 

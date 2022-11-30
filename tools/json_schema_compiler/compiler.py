@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generator for C++ structs from api json files.
@@ -18,6 +18,7 @@ Usage example:
 
 from __future__ import print_function
 
+import io
 import optparse
 import os
 import shlex
@@ -146,7 +147,8 @@ def GenerateSchema(generator_name,
         output_dir = os.path.join(destdir, src_path)
       if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-      with open(os.path.join(output_dir, filename), 'w') as f:
+      generator_filepath = os.path.join(output_dir, filename)
+      with io.open(generator_filepath, 'w', encoding='utf-8') as f:
         f.write(code)
     # If multiple files are being output, add the filename for each file.
     if len(generators) > 1:

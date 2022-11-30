@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <deque>
 
-#include "base/macros.h"
 #include "chromecast/base/statistics/weighted_mean.h"
 
 namespace chromecast {
@@ -24,6 +23,10 @@ namespace chromecast {
 class WeightedMovingAverage {
  public:
   explicit WeightedMovingAverage(int64_t max_x_range);
+
+  WeightedMovingAverage(const WeightedMovingAverage&) = delete;
+  WeightedMovingAverage& operator=(const WeightedMovingAverage&) = delete;
+
   ~WeightedMovingAverage();
 
   int64_t max_x_range() const { return max_x_range_; }
@@ -52,8 +55,6 @@ class WeightedMovingAverage {
   const int64_t max_x_range_;
   std::deque<Sample> samples_;
   WeightedMean mean_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeightedMovingAverage);
 };
 
 }  // namespace chromecast

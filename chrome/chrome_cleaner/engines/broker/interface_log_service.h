@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
 #include "chrome/chrome_cleaner/logging/proto/interface_logger.pb.h"
 
@@ -24,6 +25,9 @@ class InterfaceLogService : public InterfaceMetadataObserver {
   static std::unique_ptr<InterfaceLogService> Create(
       const base::WStringPiece file_name,
       const base::WStringPiece build_version);
+
+  InterfaceLogService(const InterfaceLogService&) = delete;
+  InterfaceLogService& operator=(const InterfaceLogService&) = delete;
 
   ~InterfaceLogService() override;
 
@@ -62,8 +66,6 @@ class InterfaceLogService : public InterfaceMetadataObserver {
   mutable base::Lock lock_;
 
   base::TimeDelta GetTicksSinceCreation() const;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceLogService);
 };
 
 }  // namespace chrome_cleaner

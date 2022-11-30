@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -9,6 +9,7 @@
 #include <portabledevice.h>
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -17,13 +18,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/win/mtp_device_object_entry.h"
@@ -86,8 +85,7 @@ std::wstring GetFileObjectIdFromPathOnBlockingPoolThread(
           file_path, &relative_path))
     return std::wstring();
 
-  std::vector<std::wstring> path_components;
-  relative_path.GetComponents(&path_components);
+  std::vector<std::wstring> path_components = relative_path.GetComponents();
   DCHECK(!path_components.empty());
   std::wstring parent_id(device_info.storage_object_id);
   std::wstring file_object_id;
@@ -113,21 +111,21 @@ CreateFileEnumeratorOnBlockingPoolThread(
       PortableDeviceMapService::GetInstance()->GetPortableDevice(
           device_info.registered_device_path);
   if (!device)
-    return std::unique_ptr<MTPDeviceObjectEnumerator>();
+    return nullptr;
 
   std::wstring object_id =
       GetFileObjectIdFromPathOnBlockingPoolThread(device_info, root);
   if (object_id.empty())
-    return std::unique_ptr<MTPDeviceObjectEnumerator>();
+    return nullptr;
 
   MTPDeviceObjectEntries entries;
   if (!media_transfer_protocol::GetDirectoryEntries(device, object_id,
                                                     &entries) ||
-      entries.empty())
-    return std::unique_ptr<MTPDeviceObjectEnumerator>();
+      entries.empty()) {
+    return nullptr;
+  }
 
-  return std::unique_ptr<MTPDeviceObjectEnumerator>(
-      new MTPDeviceObjectEnumerator(entries));
+  return std::make_unique<MTPDeviceObjectEnumerator>(entries);
 }
 
 // Opens the device for communication on a blocking pool thread.

@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/env python
 #
 # Original script modified in November 2003 to take advantage of
 # the character-validation range routines, and updated to the
@@ -31,7 +31,7 @@ blockAliases.append("PrivateUse:PrivateUseArea,SupplementaryPrivateUseArea-A," +
 # number, inline comparisons are generated
 minTableSize = 8
 
-(blockfile, catfile) = string.split(sources)
+(blockfile, catfile) = sources.split()
 
 
 #
@@ -43,23 +43,23 @@ BlockNames = {}
 try:
     blocks = open(blockfile, "r")
 except:
-    print "Missing %s, aborting ..." % blockfile
+    print("Missing %s, aborting ..." % blockfile)
     sys.exit(1)
 
 for line in blocks.readlines():
     if line[0] == '#':
         continue
-    line = string.strip(line)
+    line = line.strip()
     if line == '':
         continue
     try:
-        fields = string.split(line, ';')
-        range = string.strip(fields[0])
-        (start, end) = string.split(range, "..")
-        name = string.strip(fields[1])
-        name = string.replace(name, ' ', '')
+        fields = line.split(';')
+        range = fields[0].strip()
+        (start, end) = range.split("..")
+        name = fields[1].strip()
+        name = name.replace(' ', '')
     except:
-        print "Failed to process line: %s" % (line)
+        print("Failed to process line: %s" % (line))
         continue
     start = "0x" + start
     end = "0x" + end
@@ -68,19 +68,19 @@ for line in blocks.readlines():
     except:
         BlockNames[name] = [(start, end)]
 blocks.close()
-print "Parsed %d blocks descriptions" % (len(BlockNames.keys()))
+print("Parsed %d blocks descriptions" % (len(BlockNames.keys())))
 
 for block in blockAliases:
-    alias = string.split(block,':')
-    alist = string.split(alias[1],',')
+    alias = block.split(':')
+    alist = alias[1].split(',')
     for comp in alist:
-        if BlockNames.has_key(comp):
+        if comp in BlockNames:
             if alias[0] not in BlockNames:
                 BlockNames[alias[0]] = []
             for r in BlockNames[comp]:
                 BlockNames[alias[0]].append(r)
         else:
-            print "Alias %s: %s not in Blocks" % (alias[0], comp)
+            print("Alias %s: %s not in Blocks" % (alias[0], comp))
             continue
 
 #
@@ -96,7 +96,7 @@ for block in blockAliases:
 try:
     data = open(catfile, "r")
 except:
-    print "Missing %s, aborting ..." % catfile
+    print("Missing %s, aborting ..." % catfile)
     sys.exit(1)
 
 nbchar = 0;
@@ -104,12 +104,12 @@ Categories = {}
 for line in data.readlines():
     if line[0] == '#':
         continue
-    line = string.strip(line)
+    line = line.strip()
     if line == '':
         continue
     try:
-        fields = string.split(line, ';')
-        point = string.strip(fields[0])
+        fields = line.split(';')
+        point = fields[0].strip()
         value = 0
         while point != '':
             value = value * 16
@@ -122,7 +122,7 @@ for line in data.readlines():
             point = point[1:]
         name = fields[2]
     except:
-        print "Failed to process line: %s" % (line)
+        print("Failed to process line: %s" % (line))
         continue
     
     nbchar = nbchar + 1
@@ -133,7 +133,7 @@ for line in data.readlines():
         try:
             Categories[name] = [value]
         except:
-            print "Failed to process line: %s" % (line)
+            print("Failed to process line: %s" % (line))
     # update "general category" name
     try:
         Categories[name[0]].append(value)
@@ -141,10 +141,10 @@ for line in data.readlines():
         try:
             Categories[name[0]] = [value]
         except:
-            print "Failed to process line: %s" % (line)
+            print("Failed to process line: %s" % (line))
 
 blocks.close()
-print "Parsed %d char generating %d categories" % (nbchar, len(Categories.keys()))
+print("Parsed %d char generating %d categories" % (nbchar, len(Categories.keys())))
 
 #
 # The data is now all read.  Time to process it into a more useful form.
@@ -184,11 +184,9 @@ for cat in Categories.keys():
 # Assure all data is in alphabetic order, since we will be doing binary
 # searches on the tables.
 #
-bkeys = BlockNames.keys()
-bkeys.sort()
+bkeys = sorted(BlockNames.keys())
 
-ckeys = Categories.keys()
-ckeys.sort()
+ckeys = sorted(Categories.keys())
 
 #
 # Generate the resulting files
@@ -196,13 +194,13 @@ ckeys.sort()
 try:
     header = open("include/libxml/xmlunicode.h", "w")
 except:
-    print "Failed to open include/libxml/xmlunicode.h"
+    print("Failed to open include/libxml/xmlunicode.h")
     sys.exit(1)
 
 try:
     output = open("xmlunicode.c", "w")
 except:
-    print "Failed to open xmlunicode.c"
+    print("Failed to open xmlunicode.c")
     sys.exit(1)
 
 date = time.asctime(time.localtime(time.time()))
@@ -272,14 +270,14 @@ typedef struct {
 } xmlUnicodeNameTable;
 
 
-static xmlIntFunc *xmlUnicodeLookup(xmlUnicodeNameTable *tptr, const char *tname);
+static xmlIntFunc *xmlUnicodeLookup(const xmlUnicodeNameTable *tptr, const char *tname);
 
 static const xmlUnicodeRange xmlUnicodeBlocks[] = {
 """ % (webpage, date, sources));
 
 flag = 0
 for block in bkeys:
-    name = string.replace(block, '-', '')
+    name = block.replace('-', '')
     if flag:
         output.write(',\n')
     else:
@@ -287,7 +285,7 @@ for block in bkeys:
     output.write('  {"%s", xmlUCSIs%s}' % (block, name))
 output.write('};\n\n')
 
-output.write('static xmlUnicodeRange xmlUnicodeCats[] = {\n')
+output.write('static const xmlUnicodeRange xmlUnicodeCats[] = {\n')
 flag = 0;
 for name in ckeys:
     if flag:
@@ -315,7 +313,7 @@ for name in ckeys:
           pline = "static const xmlChSRange xml%sS[] = {" % name
           sptr = "xml%sS" % name
         else:
-          pline += ", "
+          pline += ","
         numshort += 1
       else:
         if numlong == 0:
@@ -324,19 +322,21 @@ for name in ckeys:
           pline = "static const xmlChLRange xml%sL[] = {" % name
           lptr = "xml%sL" % name
         else:
-          pline += ", "
+          pline += ","
         numlong += 1
       if len(pline) > 60:
         output.write(pline + "\n")
         pline = "    "
+      elif pline[-1:] == ",":
+        pline += " "
       pline += "{%s, %s}" % (hex(low), hex(high))
-    output.write(pline + " };\nstatic xmlChRangeGroup xml%sG = {%s,%s,%s,%s};\n\n"
+    output.write(pline + " };\nstatic const xmlChRangeGroup xml%sG = {%s,%s,%s,%s};\n\n"
          % (name, numshort, numlong, sptr, lptr))
 
 
 output.write(
-"""static xmlUnicodeNameTable xmlUnicodeBlockTbl = {xmlUnicodeBlocks, %s};
-static xmlUnicodeNameTable xmlUnicodeCatTbl = {xmlUnicodeCats, %s};
+"""static const xmlUnicodeNameTable xmlUnicodeBlockTbl = {xmlUnicodeBlocks, %s};
+static const xmlUnicodeNameTable xmlUnicodeCatTbl = {xmlUnicodeCats, %s};
 
 /**
  * xmlUnicodeLookup:
@@ -348,9 +348,9 @@ static xmlUnicodeNameTable xmlUnicodeCatTbl = {xmlUnicodeCats, %s};
  * Returns pointer to range function if found, otherwise NULL
  */
 static xmlIntFunc
-*xmlUnicodeLookup(xmlUnicodeNameTable *tptr, const char *tname) {
+*xmlUnicodeLookup(const xmlUnicodeNameTable *tptr, const char *tname) {
     int low, high, mid, cmp;
-    xmlUnicodeRange *sptr;
+    const xmlUnicodeRange *sptr;
 
     if ((tptr == NULL) || (tname == NULL)) return(NULL);
 
@@ -366,13 +366,13 @@ static xmlIntFunc
 	else
 	    low = mid + 1;
     }
-    return (NULL);    
+    return (NULL);
 }
 
 """ % (len(BlockNames), len(Categories)) )
 
 for block in bkeys:
-    name = string.replace(block, '-', '')
+    name = block.replace('-', '')
     header.write("XMLPUBFUN int XMLCALL xmlUCSIs%s\t(int code);\n" % name)
     output.write("/**\n * xmlUCSIs%s:\n * @code: UCS code point\n" % (name))
     output.write(" *\n * Check whether the character is part of %s UCS Block\n"%
@@ -459,8 +459,6 @@ xmlUCSIsCat(int code, const char *cat) {
     return (func(code));
 }
 
-#define bottom_xmlunicode
-#include "elfgcchack.h"
 #endif /* LIBXML_UNICODE_ENABLED */
 """)
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define ASH_SYSTEM_CAST_CAST_FEATURE_POD_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -19,13 +19,19 @@ class ASH_EXPORT CastFeaturePodController
     : public FeaturePodControllerBase,
       public CastConfigController::Observer {
  public:
-  CastFeaturePodController(UnifiedSystemTrayController* tray_controller);
+  explicit CastFeaturePodController(
+      UnifiedSystemTrayController* tray_controller);
+
+  CastFeaturePodController(const CastFeaturePodController&) = delete;
+  CastFeaturePodController& operator=(const CastFeaturePodController&) = delete;
+
   ~CastFeaturePodController() override;
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
+  void OnLabelPressed() override;
 
   // CastConfigControllerObserver:
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
@@ -36,8 +42,6 @@ class ASH_EXPORT CastFeaturePodController
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CastFeaturePodController);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -11,10 +11,9 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/services/printing/public/mojom/pdf_thumbnailer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,8 +33,6 @@ class FileManagerPrivateGetThumbnailFunction : public LoggedExtensionFunction {
 
   // Responds with a base64 encoded PNG thumbnail data.
   void SendEncodedThumbnail(std::string thumbnail_data_url);
-
-  const ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class FileManagerPrivateInternalGetDriveThumbnailFunction
@@ -54,7 +51,7 @@ class FileManagerPrivateInternalGetDriveThumbnailFunction
 
  private:
   // A callback invoked when thumbnail data has been generated.
-  void GotThumbnail(const base::Optional<std::vector<uint8_t>>& data);
+  void GotThumbnail(const absl::optional<std::vector<uint8_t>>& data);
 };
 
 class FileManagerPrivateInternalGetPdfThumbnailFunction

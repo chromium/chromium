@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/views_delegate.h"
@@ -17,6 +17,10 @@ namespace views {
 class TestViewsDelegate : public ViewsDelegate {
  public:
   TestViewsDelegate();
+
+  TestViewsDelegate(const TestViewsDelegate&) = delete;
+  TestViewsDelegate& operator=(const TestViewsDelegate&) = delete;
+
   ~TestViewsDelegate() override;
 
   // If set to |true|, forces widgets that do not provide a native widget to use
@@ -30,7 +34,14 @@ class TestViewsDelegate : public ViewsDelegate {
     use_transparent_windows_ = transparent;
   }
 
-#if defined(OS_APPLE)
+// When running on ChromeOS, NativeWidgetAura requires the parent and/or context
+// to be non-null. Some test views provide neither, so we do it here. Normally
+// this is done by the browser-specific ViewsDelegate.
+#if BUILDFLAG(IS_CHROMEOS)
+  void set_context(gfx::NativeWindow context) { context_ = context; }
+#endif
+
+#if BUILDFLAG(IS_MAC)
   // Allows tests to provide a ContextFactory via the ViewsDelegate interface.
   void set_context_factory(ui::ContextFactory* context_factory) {
     context_factory_ = context_factory;
@@ -45,25 +56,26 @@ class TestViewsDelegate : public ViewsDelegate {
   }
 
   // ViewsDelegate:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HICON GetSmallWindowIcon() const override;
 #endif
   void OnBeforeWidgetInit(Widget::InitParams* params,
                           internal::NativeWidgetDelegate* delegate) override;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   ui::ContextFactory* GetContextFactory() override;
 #endif
 
  private:
-#if defined(OS_APPLE)
-  ui::ContextFactory* context_factory_ = nullptr;
+#if BUILDFLAG(IS_MAC)
+  raw_ptr<ui::ContextFactory> context_factory_ = nullptr;
 #endif
   bool use_desktop_native_widgets_ = false;
   bool use_transparent_windows_ = false;
   std::unique_ptr<LayoutProvider> layout_provider_ =
       std::make_unique<LayoutProvider>();
-
-  DISALLOW_COPY_AND_ASSIGN(TestViewsDelegate);
+#if BUILDFLAG(IS_CHROMEOS)
+  gfx::NativeWindow context_ = nullptr;
+#endif
 };
 
 }  // namespace views

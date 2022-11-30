@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,12 +14,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chromeos/chromeos_export.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 namespace chromeos {
@@ -32,7 +31,7 @@ namespace chromeos {
 //
 // This class must always be constructed on, used on, and destroyed from
 // a sequenced context.
-class CHROMEOS_EXPORT PrinterConfigCache {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterConfigCache {
  public:
   // |loader_factory_dispenser| is a functor that can create fresh
   // URLLoaderFactory instances. We use this indirection to avoid

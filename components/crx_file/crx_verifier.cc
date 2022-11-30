@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/crx_file/crx3.pb.h"
 #include "components/crx_file/crx_file.h"
@@ -26,6 +25,7 @@
 #include "crypto/secure_util.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crx_file {
 
@@ -74,8 +74,7 @@ bool ReadHashAndVerifyArchive(base::File* file,
                               const VerifierCollection& verifiers) {
   uint8_t buffer[1 << 12] = {};
   size_t len = 0;
-  while ((len = ReadAndHashBuffer(buffer, base::size(buffer), file, hash)) >
-         0) {
+  while ((len = ReadAndHashBuffer(buffer, std::size(buffer), file, hash)) > 0) {
     for (auto& verifier : verifiers)
       verifier->VerifyUpdate(base::make_span(buffer, len));
   }
@@ -133,8 +132,10 @@ VerifierResult VerifyCrx3(
   // Create a little-endian representation of [signed-header-size].
   const int signed_header_size = signed_header_data_str.size();
   const uint8_t header_size_octets[] = {
-      signed_header_size, signed_header_size >> 8, signed_header_size >> 16,
-      signed_header_size >> 24};
+      static_cast<uint8_t>(signed_header_size),
+      static_cast<uint8_t>(signed_header_size >> 8),
+      static_cast<uint8_t>(signed_header_size >> 16),
+      static_cast<uint8_t>(signed_header_size >> 24)};
 
   // Create a set of all required key hashes.
   std::set<std::vector<uint8_t>> required_key_set(required_key_hashes.begin(),
@@ -156,7 +157,7 @@ VerifierResult VerifyCrx3(
 
   std::vector<uint8_t> publisher_key(std::begin(kPublisherKeyHash),
                                      std::end(kPublisherKeyHash));
-  base::Optional<std::vector<uint8_t>> publisher_test_key;
+  absl::optional<std::vector<uint8_t>> publisher_test_key;
   if (accept_publisher_test_key) {
     publisher_test_key.emplace(std::begin(kPublisherTestKeyHash),
                                std::end(kPublisherTestKeyHash));
@@ -187,7 +188,7 @@ VerifierResult VerifyCrx3(
                          base::as_bytes(base::make_span(sig)),
                          base::as_bytes(base::make_span(key))))
         return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
-      v->VerifyUpdate(kSignatureContext);
+      v->VerifyUpdate(base::as_bytes(base::make_span(kSignatureContext)));
       v->VerifyUpdate(header_size_octets);
       v->VerifyUpdate(base::as_bytes(base::make_span(signed_header_data_str)));
       verifiers.push_back(std::move(v));

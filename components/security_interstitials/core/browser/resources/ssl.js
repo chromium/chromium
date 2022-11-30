@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,8 @@ function setupSSLDebuggingInfo() {
     appendDebuggingField('Certificate Transparency', ctInfo);
   }
 
-  $('error-code').addEventListener('click', toggleDebuggingInfo);
-  $('error-code').setAttribute('role', 'button');
-  $('error-code').setAttribute('aria-expanded', false);
+  const errorCode = document.querySelector('#error-code');
+  errorCode.addEventListener('click', toggleDebuggingInfo);
+  errorCode.setAttribute('role', 'button');
+  errorCode.setAttribute('aria-expanded', false);
 }

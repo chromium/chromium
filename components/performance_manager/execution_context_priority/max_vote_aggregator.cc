@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ void MaxVoteAggregator::OnVoteSubmitted(
 
   // Remember the previous top vote before adding the new vote. There could be
   // none if this is the first vote submitted for |execution_context|.
-  base::Optional<Vote> old_top_vote;
+  absl::optional<Vote> old_top_vote;
   if (!vote_data.IsEmpty())
     old_top_vote = vote_data.GetTopVote();
 

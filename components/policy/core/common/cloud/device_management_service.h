@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,21 +13,15 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string_split.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/policy_export.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -82,6 +76,7 @@ class POLICY_EXPORT DeviceManagementService {
   static constexpr int kPendingApproval = 412;
   static constexpr int kRequestTooLarge = 413;
   static constexpr int kConsumerAccountWithPackagedLicense = 417;
+  static constexpr int kInvalidPackagedDeviceForKiosk = 418;
   static constexpr int kTooManyRequests = 429;
   static constexpr int kInternalServerError = 500;
   static constexpr int kServiceUnavailable = 503;
@@ -104,24 +99,24 @@ class POLICY_EXPORT DeviceManagementService {
     virtual ~Configuration() {}
 
     // Server at which to contact the service (DMServer).
-    virtual std::string GetDMServerUrl() = 0;
+    virtual std::string GetDMServerUrl() const = 0;
 
     // Agent reported in the "agent" query parameter.
-    virtual std::string GetAgentParameter() = 0;
+    virtual std::string GetAgentParameter() const = 0;
 
     // The platform reported in the "platform" query parameter.
-    virtual std::string GetPlatformParameter() = 0;
+    virtual std::string GetPlatformParameter() const = 0;
 
     // Server at which to contact the real time reporting service.
-    virtual std::string GetRealtimeReportingServerUrl() = 0;
+    virtual std::string GetRealtimeReportingServerUrl() const = 0;
 
     // Server endpoint for encrypted events.
-    virtual std::string GetEncryptedReportingServerUrl() = 0;
+    virtual std::string GetEncryptedReportingServerUrl() const = 0;
 
     // Server at which to contact the real time reporting service for
     // enterprise connectors.
     virtual std::string GetReportingConnectorServerUrl(
-        content::BrowserContext* context) = 0;
+        content::BrowserContext* context) const = 0;
   };
 
   // A DeviceManagementService job manages network requests to the device
@@ -135,9 +130,8 @@ class POLICY_EXPORT DeviceManagementService {
   // of network requests.  This object is not immutable and may be changed after
   // a call to OnBeforeRetry().  DeviceManagementService calls the GetXXX
   // methods again to create a new network request for each retry.
-  //
-  // JobControl is the interface used internally by DeviceManagementService to
-  // control a job.
+
+  class JobConfiguration;
 
   class POLICY_EXPORT Job {
    public:
@@ -151,6 +145,38 @@ class POLICY_EXPORT DeviceManagementService {
     };
 
     virtual ~Job() {}
+  };
+
+  class JobImpl;
+
+  // JobForTesting is a test API to access jobs.
+  // See also |FakeDeviceManagementService|.
+  class POLICY_EXPORT JobForTesting {
+   public:
+    JobForTesting();
+    explicit JobForTesting(JobImpl* job_impl);
+    JobForTesting(const JobForTesting&);
+    JobForTesting(JobForTesting&&) noexcept;
+    JobForTesting& operator=(const JobForTesting&);
+    JobForTesting& operator=(JobForTesting&&) noexcept;
+    ~JobForTesting();
+
+    bool IsActive() const;
+    void Deactivate();
+
+    // TODO(rbock) make return type const.
+    JobConfiguration* GetConfigurationForTesting() const;
+
+    Job::RetryMethod SetResponseForTesting(
+        // TODO(rbock) change type to net::Error
+        int net_error,
+        int response_code,
+        const std::string& response_body,
+        const std::string& mime_type,
+        bool was_fetched_via_proxy);
+
+   private:
+    base::WeakPtr<JobImpl> job_impl_;
   };
 
   class POLICY_EXPORT JobConfiguration {
@@ -192,6 +218,10 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_CERT_PROVISIONING_REQUEST = 25,
       TYPE_PSM_HAS_DEVICE_STATE_REQUEST = 26,
       TYPE_UPLOAD_ENCRYPTED_REPORT = 27,
+      TYPE_CHECK_USER_ACCOUNT = 28,
+      TYPE_UPLOAD_EUICC_INFO = 29,
+      TYPE_BROWSER_UPLOAD_PUBLIC_KEY = 30,
+      TYPE_CHROME_PROFILE_REPORT = 31,
     };
 
     // The set of HTTP query parameters of the request.
@@ -247,39 +277,19 @@ class POLICY_EXPORT DeviceManagementService {
                                    int net_error,
                                    int response_code,
                                    const std::string& response_body) = 0;
-  };
 
-  class POLICY_EXPORT JobControl {
-   public:
-    virtual ~JobControl() {}
-
-    // Returns the configuration that controls the parameters of network
-    // requests managed by this job.  The Job owns the configuration.
-    virtual JobConfiguration* GetConfiguration() = 0;
-
-    // Gets a weakpointer to the Job that is used to delay retries of the job.
-    virtual base::WeakPtr<JobControl> GetWeakPtr() = 0;
-
-    // Creates the URL loader for this job.
-    virtual std::unique_ptr<network::SimpleURLLoader> CreateFetcher() = 0;
-
-    // Handle the response of this job.  If the function returns anything other
-    // than NO_RETRY, the the job did not complete and must be retried.  In this
-    // case, *|retry_delay| contains the retry delay in ms.
-    virtual Job::RetryMethod OnURLLoadComplete(const std::string& response_body,
-                                               const std::string& mime_type,
-                                               int net_error,
-                                               int response_code,
-                                               bool was_fetched_via_proxy,
-                                               int* retry_delay) = 0;
+    virtual absl::optional<base::TimeDelta> GetTimeoutDuration() = 0;
   };
 
   explicit DeviceManagementService(
       std::unique_ptr<Configuration> configuration);
+  DeviceManagementService(const DeviceManagementService&) = delete;
+  DeviceManagementService& operator=(const DeviceManagementService&) = delete;
   virtual ~DeviceManagementService();
 
-  // Creates a new device management request job.
-  std::unique_ptr<Job> CreateJob(std::unique_ptr<JobConfiguration> config);
+  // Creates and queues/starts a new Job.
+  virtual std::unique_ptr<Job> CreateJob(
+      std::unique_ptr<JobConfiguration> config);
 
   // Schedules a task to run |Initialize| after |delay_milliseconds| had passed.
   void ScheduleInitialization(int64_t delay_milliseconds);
@@ -287,107 +297,68 @@ class POLICY_EXPORT DeviceManagementService {
   // Makes the service stop all requests.
   void Shutdown();
 
-  Configuration* configuration() { return configuration_.get(); }
-
-  // Called by SimpleURLLoader.
-  void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           std::unique_ptr<std::string> response_body);
-
-  // Called by OnURLLoaderComplete, exposed publicly to ease unit testing.
-  void OnURLLoaderCompleteInternal(network::SimpleURLLoader* url_loader,
-                                   const std::string& response_body,
-                                   const std::string& mime_type,
-                                   int net_error,
-                                   int response_code,
-                                   bool was_fetched_via_proxy);
-
-  // Returns the SimpleURLLoader for testing. Expects that there's only one.
-  network::SimpleURLLoader* GetSimpleURLLoaderForTesting();
+  const Configuration* configuration() const { return configuration_.get(); }
 
   // Sets the retry delay to a shorter time to prevent browser tests from
   // timing out.
   static void SetRetryDelayForTesting(long retryDelayMs);
 
  protected:
+  // Creates a new Job without starting it.
+  // Used by `FakeDeviceManagementService` to avoid queueing/starting of
+  // jobs in tests.
+  std::pair<std::unique_ptr<Job>, JobForTesting> CreateJobForTesting(
+      std::unique_ptr<JobConfiguration> config);
+
+  const scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForTesting() {
+    return task_runner_;
+  }
+
+ private:
+  using JobQueue = std::vector<base::WeakPtr<JobImpl>>;
+
   // Starts processing any queued jobs.
   void Initialize();
 
-  // Starts a job.  Virtual for overriding in tests.
-  virtual void StartJob(JobControl* job);
-  void StartJobAfterDelay(base::WeakPtr<JobControl> job);
-
-  // Adds a job. Caller must make sure the job pointer stays valid until the job
-  // completes or gets canceled via RemoveJob().
-  void AddJob(JobControl* job);
-
-  // Removes a job. The job will be removed and won't receive a completion
-  // callback.
-  void RemoveJob(JobControl* job);
+  // If called before |Initialize| this queues job.
+  // Otherwise it starts the job.
+  void AddJob(JobImpl* job);
 
   base::WeakPtr<DeviceManagementService> GetWeakPtr();
-
-  const scoped_refptr<base::SequencedTaskRunner> task_runner() {
-    return task_runner_;
-  }
 
   // Moves jobs from the queued state to the pending state and starts them.
   // This should only be called when DeviceManagementService is already
   // initialized.
   void StartQueuedJobs();
 
-  // Used in tests to queue jobs to be executed later via StartQueuedJobs().
-  // This should only be called when DeviceManagementService is already
-  // initialized.
-  void RequeueJobForTesting(JobControl* job);
-
- private:
-  typedef std::map<const network::SimpleURLLoader*, JobControl*> JobFetcherMap;
-  typedef base::circular_deque<JobControl*> JobQueue;
-
-  class JobImpl;
-
   // A Configuration implementation that is used to obtain various parameters
   // used to talk to the device management server.
   std::unique_ptr<Configuration> configuration_;
 
-  // The jobs we currently have in flight.
-  JobFetcherMap pending_jobs_;
-
-  // Jobs that are registered, but not started yet.
+  // Jobs that are added, but not started yet.
   JobQueue queued_jobs_;
 
-  // If this service is initialized, incoming requests get fired instantly.
+  // If this service is initialized, incoming requests get started instantly.
   // If it is not initialized, incoming requests are queued.
   bool initialized_;
 
   // TaskRunner used to schedule retry attempts.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  // Used to create tasks which run delayed on the UI thread.
+  // Used to run delayed tasks (e.g. |Initialize()|).
   base::WeakPtrFactory<DeviceManagementService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceManagementService);
 };
 
 // Base class used to implement job configurations.
 class POLICY_EXPORT JobConfigurationBase
     : public DeviceManagementService::JobConfiguration {
- protected:
-  JobConfigurationBase(JobType type,
-                       DMAuth auth_data,
-                       base::Optional<std::string> oauth_token,
-                       scoped_refptr<network::SharedURLLoaderFactory> factory);
-  ~JobConfigurationBase() override;
+ public:
+  JobConfigurationBase(const JobConfigurationBase&) = delete;
+  JobConfigurationBase& operator=(const JobConfigurationBase&) = delete;
 
-  // Adds the query parameter to the network request's URL.  If the parameter
-  // already exists its value is replaced.
-  void AddParameter(const std::string& name, const std::string& value);
-
-  const DMAuth& GetAuth() const override;
-
-  // DeviceManagementService::JobConfiguration.
+  // DeviceManagementService::JobConfiguration:
   JobType GetType() override;
   const ParameterMap& GetQueryParams() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory() override;
@@ -398,9 +369,26 @@ class POLICY_EXPORT JobConfigurationBase
   DeviceManagementService::Job::RetryMethod ShouldRetry(
       int response_code,
       const std::string& response_body) override;
+  absl::optional<base::TimeDelta> GetTimeoutDuration() override;
+
+ protected:
+  JobConfigurationBase(JobType type,
+                       DMAuth auth_data,
+                       absl::optional<std::string> oauth_token,
+                       scoped_refptr<network::SharedURLLoaderFactory> factory);
+  ~JobConfigurationBase() override;
+
+  // Adds the query parameter to the network request's URL.  If the parameter
+  // already exists its value is replaced.
+  void AddParameter(const std::string& name, const std::string& value);
+
+  const DMAuth& GetAuth() const override;
 
   // Derived classes should return the base URL for the request.
   virtual GURL GetURL(int last_error) const = 0;
+
+  // Timeout for job request
+  absl::optional<base::TimeDelta> timeout_;
 
  private:
   JobType type_;
@@ -412,12 +400,10 @@ class POLICY_EXPORT JobConfigurationBase
 
   // OAuth token that will be passed as a query parameter. Both |auth_data_|
   // and |oauth_token_| can be specified for one request.
-  base::Optional<std::string> oauth_token_;
+  absl::optional<std::string> oauth_token_;
 
   // Query parameters for the network request.
   ParameterMap query_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobConfigurationBase);
 };
 
 }  // namespace policy

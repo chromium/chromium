@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -134,7 +133,7 @@ TEST_F(DepthTextureTest, RenderTo) {
     { GL_DEPTH_COMPONENT, GL_UNSIGNED_INT },
     { GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES },
   };
-  for (size_t ii = 0; ii < base::size(format_types); ++ii) {
+  for (size_t ii = 0; ii < std::size(format_types); ++ii) {
     const FormatType& format_type = format_types[ii];
     GLenum format = format_type.format;
     GLenum type = format_type.type;

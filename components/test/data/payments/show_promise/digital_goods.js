@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Chromium Authors. All rights reserved.
+ * Copyright 2019 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -8,10 +8,15 @@ var request = null;
 
 /**
  * Create an instance of PaymentRequest.
+ * @param {DOMString} supportedMethods - The payment method name. If absent,
+ * then the page URL is used instead.
  */
-function create() { // eslint-disable-line no-unused-vars
+function create(supportedMethods) { // eslint-disable-line no-unused-vars
+  if (!supportedMethods) {
+    supportedMethods = window.location.href;
+  }
   try {
-    request = new PaymentRequest([{supportedMethods: 'basic-card'}], {
+    request = new PaymentRequest([{supportedMethods}], {
       total:
           {label: 'PENDING TOTAL', amount: {currency: 'USD', value: '99.99'}},
     });

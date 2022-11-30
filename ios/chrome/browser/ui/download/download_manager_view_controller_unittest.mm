@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/download/download_manager_state_view.h"
+#import "ios/chrome/browser/ui/download/legacy_download_manager_state_view.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,7 +36,8 @@ TEST_F(DownloadManagerViewControllerTest, NotStartedWithLongFileName) {
               view_controller_.statusLabel.text);
   EXPECT_NSEQ(@"Download", [view_controller_.actionButton
                                titleForState:UIControlStateNormal]);
-  EXPECT_EQ(kDownloadManagerStateNotStarted, view_controller_.stateIcon.state);
+  EXPECT_EQ(kDownloadManagerStateNotStarted,
+            view_controller_.legacyStateIcon.state);
   EXPECT_TRUE(view_controller_.progressView.hidden);
 }
 
@@ -51,7 +52,8 @@ TEST_F(DownloadManagerViewControllerTest,
   EXPECT_NSEQ(@"file.zip - 1.05 GB", view_controller_.statusLabel.text);
   EXPECT_NSEQ(@"Download", [view_controller_.actionButton
                                titleForState:UIControlStateNormal]);
-  EXPECT_EQ(kDownloadManagerStateNotStarted, view_controller_.stateIcon.state);
+  EXPECT_EQ(kDownloadManagerStateNotStarted,
+            view_controller_.legacyStateIcon.state);
   EXPECT_TRUE(view_controller_.progressView.hidden);
 }
 
@@ -65,7 +67,8 @@ TEST_F(DownloadManagerViewControllerTest, InProgressWithLongFileName) {
 
   EXPECT_NSEQ(@"Downloading… Zero KB/10 KB", view_controller_.statusLabel.text);
   EXPECT_TRUE(view_controller_.actionButton.hidden);
-  EXPECT_EQ(kDownloadManagerStateInProgress, view_controller_.stateIcon.state);
+  EXPECT_EQ(kDownloadManagerStateInProgress,
+            view_controller_.legacyStateIcon.state);
   EXPECT_FALSE(view_controller_.progressView.hidden);
   EXPECT_EQ(0.0f, view_controller_.progressView.progress);
 }
@@ -82,7 +85,8 @@ TEST_F(DownloadManagerViewControllerTest,
 
   EXPECT_NSEQ(@"Downloading… 900 bytes", view_controller_.statusLabel.text);
   EXPECT_TRUE(view_controller_.actionButton.hidden);
-  EXPECT_EQ(kDownloadManagerStateInProgress, view_controller_.stateIcon.state);
+  EXPECT_EQ(kDownloadManagerStateInProgress,
+            view_controller_.legacyStateIcon.state);
   EXPECT_FALSE(view_controller_.progressView.hidden);
   EXPECT_EQ(0.9f, view_controller_.progressView.progress);
 }
@@ -96,7 +100,8 @@ TEST_F(DownloadManagerViewControllerTest, SuceededWithWithLongFileName) {
   EXPECT_NSEQ(@"file.txt", view_controller_.statusLabel.text);
   EXPECT_NSEQ(@"Open in…", [view_controller_.actionButton
                                titleForState:UIControlStateNormal]);
-  EXPECT_EQ(kDownloadManagerStateSucceeded, view_controller_.stateIcon.state);
+  EXPECT_EQ(kDownloadManagerStateSucceeded,
+            view_controller_.legacyStateIcon.state);
   EXPECT_TRUE(view_controller_.progressView.hidden);
 }
 
@@ -109,7 +114,8 @@ TEST_F(DownloadManagerViewControllerTest, Failed) {
   EXPECT_NSEQ(@"Couldn't Download", view_controller_.statusLabel.text);
   EXPECT_NSEQ(@"Try Again", [view_controller_.actionButton
                                 titleForState:UIControlStateNormal]);
-  EXPECT_EQ(kDownloadManagerStateFailed, view_controller_.stateIcon.state);
+  EXPECT_EQ(kDownloadManagerStateFailed,
+            view_controller_.legacyStateIcon.state);
   EXPECT_TRUE(view_controller_.progressView.hidden);
 }
 

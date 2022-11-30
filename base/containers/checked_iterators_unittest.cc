@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,7 +88,7 @@ TEST(CheckedContiguousIterator, ConvertingComparisonOperators) {
 // lags a bit behind.
 // TODO(crbug.com/1166360): Enable this test on ChromeOS once the shared libc++
 // is sufficiently modern.
-#if defined(_LIBCPP_VERSION) && !defined(OS_NACL) && !defined(OS_CHROMEOS)
+#if defined(_LIBCPP_VERSION) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // Helper template that wraps an iterator and disables its dereference and

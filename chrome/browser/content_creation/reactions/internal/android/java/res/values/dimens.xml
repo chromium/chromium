@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="button_icon_padding">5dp</dimen>
+    <dimen name="button_size">24dp</dimen>
+    <dimen name="border_inset">12dp</dimen>
+    <dimen name="delete_icon_padding">3dp</dimen>
+    <dimen name="reaction_padding">24dp</dimen>
+    <dimen name="rtl_auto_mirror_scale">1</dimen>
+    <dimen name="toolbar_row_height">56dp</dimen>
+    <dimen name="toolbar_total_height">112dp</dimen>
+    <dimen name="toolbar_separator_height">1dp</dimen>
+    <dimen name="toolbar_button_size">40dp</dimen>
+    <dimen name="toolbar_button_margin">16dp</dimen>
+    <dimen name="toolbar_button_padding">8dp</dimen>
+    <dimen name="toolbar_reactions_margin">10dp</dimen>
+</resources>

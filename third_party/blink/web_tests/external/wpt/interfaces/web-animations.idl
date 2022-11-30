@@ -3,12 +3,6 @@
 // (https://github.com/w3c/webref)
 // Source: Web Animations (https://drafts.csswg.org/web-animations-1/)
 
-[Exposed=Window]
-interface AnimationTimeline {
-    readonly attribute double? currentTime;
-    readonly attribute TimelinePhase phase;
-};
-
 dictionary DocumentTimelineOptions {
   DOMHighResTimeStamp originTime = 0;
 };
@@ -25,8 +19,6 @@ interface Animation : EventTarget {
              attribute DOMString                id;
              attribute AnimationEffect?         effect;
              attribute AnimationTimeline?       timeline;
-             attribute double?                  startTime;
-             attribute double?                  currentTime;
              attribute double                   playbackRate;
     readonly attribute AnimationPlayState       playState;
     readonly attribute AnimationReplaceState    replaceState;
@@ -43,14 +35,13 @@ interface Animation : EventTarget {
     undefined updatePlaybackRate(double playbackRate);
     undefined reverse();
     undefined persist();
+    [CEReactions]
     undefined commitStyles();
 };
 
 enum AnimationPlayState { "idle", "running", "paused", "finished" };
 
 enum AnimationReplaceState { "active", "removed", "persisted" };
-
-enum TimelinePhase { "inactive", "before", "active", "after" };
 
 [Exposed=Window]
 interface AnimationEffect {
@@ -60,12 +51,9 @@ interface AnimationEffect {
 };
 
 dictionary EffectTiming {
-    double                             delay = 0;
-    double                             endDelay = 0;
     FillMode                           fill = "auto";
     double                             iterationStart = 0.0;
     unrestricted double                iterations = 1.0;
-    (unrestricted double or DOMString) duration = "auto";
     PlaybackDirection                  direction = "normal";
     DOMString                          easing = "linear";
 };
@@ -86,9 +74,6 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" };
 
 dictionary ComputedEffectTiming : EffectTiming {
-    unrestricted double  endTime;
-    unrestricted double  activeDuration;
-    double?              localTime;
     double?              progress;
     unrestricted double? currentIteration;
 };
@@ -158,14 +143,3 @@ partial interface mixin DocumentOrShadowRoot {
 };
 
 Element includes Animatable;
-
-[Exposed=Window]
-interface AnimationPlaybackEvent : Event {
-    constructor(DOMString type, optional AnimationPlaybackEventInit eventInitDict = {});
-    readonly attribute double? currentTime;
-    readonly attribute double? timelineTime;
-};
-dictionary AnimationPlaybackEventInit : EventInit {
-    double? currentTime = null;
-    double? timelineTime = null;
-};

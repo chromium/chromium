@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/overlay_agent_views.h"
+
+#include <memory>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -417,7 +419,7 @@ void OverlayAgentViews::ShowDistancesInHighlightOverlay(int pinned_id,
       element_r2->GetNodeWindowAndScreenBounds());
   const std::pair<gfx::NativeWindow, gfx::Rect> pair_r1(
       element_r1->GetNodeWindowAndScreenBounds());
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // TODO(lgrey): Explain this
   if (pair_r1.first != pair_r2.first) {
     pinned_id_ = 0;
@@ -475,7 +477,8 @@ protocol::Response OverlayAgentViews::HighlightNode(int node_id,
     return protocol::Response::ServerError("Cannot highlight root node.");
 
   if (!layer_for_highlighting_) {
-    layer_for_highlighting_.reset(new ui::Layer(ui::LayerType::LAYER_TEXTURED));
+    layer_for_highlighting_ =
+        std::make_unique<ui::Layer>(ui::LayerType::LAYER_TEXTURED);
     layer_for_highlighting_->SetName("HighlightingLayer");
     layer_for_highlighting_->set_delegate(this);
     layer_for_highlighting_->SetFillsBoundsOpaquely(false);
@@ -711,7 +714,7 @@ bool OverlayAgentViews::UpdateHighlight(
     return false;
   }
   ui::Layer* root_layer = nullptr;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(window_and_bounds.first);
   root_layer = widget->GetLayer();
@@ -722,7 +725,7 @@ bool OverlayAgentViews::UpdateHighlight(
   root_layer = root->layer();
   layer_for_highlighting_screen_offset_ =
       root->GetBoundsInScreen().OffsetFromOrigin();
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
   DCHECK(root_layer);
 
   layer_for_highlighting_->SetBounds(root_layer->bounds());

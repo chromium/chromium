@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 
@@ -19,6 +17,10 @@ namespace content {
 class TestContentBrowserClient : public ContentBrowserClient {
  public:
   TestContentBrowserClient();
+
+  TestContentBrowserClient(const TestContentBrowserClient&) = delete;
+  TestContentBrowserClient& operator=(const TestContentBrowserClient&) = delete;
+
   ~TestContentBrowserClient() override;
 
   static TestContentBrowserClient* GetInstance();
@@ -33,20 +35,18 @@ class TestContentBrowserClient : public ContentBrowserClient {
       content::BrowserContext* context) override;
   std::string GetUserAgent() override;
   std::string GetApplicationLocale() override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   // Temporary directory for GetDefaultDownloadDirectory.
   base::ScopedTempDir download_dir_;
   std::string application_locale_;
   static TestContentBrowserClient* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentBrowserClient);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,18 @@
 
 #include <string.h>
 
-#include "base/command_line.h"
-#include "base/macros.h"
+#include <utility>
+
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/randr.h"
 
 namespace remoting {
+
+class X11CrtcResizer;
 
 // Wrapper class for the XRRScreenResources struct.
 class ScreenResources {
@@ -27,12 +29,6 @@ class ScreenResources {
   bool Refresh(x11::RandR* randr, x11::Window window);
 
   x11::RandR::Mode GetIdForMode(const std::string& name);
-
-  // For now, assume we're only ever interested in the first output.
-  x11::RandR::Output GetOutput();
-
-  // For now, assume we're only ever interested in the first crtc.
-  x11::RandR::Crtc GetCrtc();
 
   x11::RandR::GetScreenResourcesCurrentReply* get();
 
@@ -48,40 +44,48 @@ class DesktopResizerX11 : public DesktopResizer {
   ~DesktopResizerX11() override;
 
   // DesktopResizer interface
-  ScreenResolution GetCurrentResolution() override;
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override;
   std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred) override;
-  void SetResolution(const ScreenResolution& resolution) override;
-  void RestoreResolution(const ScreenResolution& original) override;
+      const ScreenResolution& preferred,
+      webrtc::ScreenId screen_id) override;
+  void SetResolution(const ScreenResolution& resolution,
+                     webrtc::ScreenId screen_id) override;
+  void RestoreResolution(const ScreenResolution& original,
+                         webrtc::ScreenId screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
+  using OutputInfoList = std::vector<
+      std::pair<x11::RandR::Output, x11::RandR::GetOutputInfoReply>>;
+
   // Add a mode matching the specified resolution and switch to it.
-  void SetResolutionNewMode(const ScreenResolution& resolution);
+  void SetResolutionForOutput(x11::RandR::Output output,
+                              const ScreenResolution& resolution);
 
-  // Attempt to switch to an existing mode matching the specified resolution
-  // using RandR, if such a resolution exists. Otherwise, do nothing.
-  void SetResolutionExistingMode(const ScreenResolution& resolution);
+  // Removes the existing mode from the output and replaces it with the new
+  // size. Returns the new mode ID, or None (0) on failure.
+  x11::RandR::Mode UpdateMode(x11::RandR::Output output, int width, int height);
 
-  // Create a mode, and attach it to the primary output. If the mode already
-  // exists, it is left unchanged.
-  void CreateMode(const char* name, int width, int height);
+  // Remove the specified mode from the output, and delete it. If the mode is in
+  // use, it is not deleted.
+  // |name| should be set to GetModeNameForOutput(output). The parameter is to
+  // avoid creating the mode name twice.
+  void DeleteMode(x11::RandR::Output output, const std::string& name);
 
-  // Remove the specified mode from the primary output, and delete it. If the
-  // mode is in use, it is not deleted.
-  void DeleteMode(const char* name);
+  // Updates the root window using the bounding box of the CRTCs, then
+  // re-activate all CRTCs.
+  void UpdateRootWindow(X11CrtcResizer& resizer);
 
-  // Switch the primary output to the specified mode. If name is nullptr, the
-  // primary output is disabled instead, which is required before changing
-  // its resolution.
-  void SwitchToMode(const char* name);
+  // Gets a list of outputs that are not connected to any CRTCs.
+  OutputInfoList GetDisabledOutputs();
 
-  x11::Connection* connection_;
-  x11::RandR* const randr_ = nullptr;
-  const x11::Screen* const screen_ = nullptr;
+  raw_ptr<x11::Connection> connection_;
+  const raw_ptr<x11::RandR> randr_ = nullptr;
+  const raw_ptr<const x11::Screen> screen_ = nullptr;
   x11::Window root_;
   ScreenResources resources_;
-  bool exact_resize_;
   bool has_randr_;
+  bool is_virtual_session_;
 };
 
 }  // namespace remoting

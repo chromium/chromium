@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -50,12 +50,9 @@ void PaymentRequestRespondWithObserver::OnResponseRejected(
 void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
     const ScriptValue& value,
-    ExceptionState::ContextType context_type,
-    const char* interface_name,
-    const char* property_name) {
+    const ExceptionContext& exception_context) {
   DCHECK(GetExecutionContext());
-  ExceptionState exception_state(script_state->GetIsolate(), context_type,
-                                 interface_name, property_name);
+  ExceptionState exception_state(script_state->GetIsolate(), exception_context);
   PaymentHandlerResponse* response =
       NativeValueTraits<PaymentHandlerResponse>::NativeValue(
           script_state->GetIsolate(), value.V8Value(), exception_state);
@@ -66,7 +63,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
   }
 
   // Check payment response validity.
-  if (!response->hasMethodName() || response->methodName().IsEmpty() ||
+  if (!response->hasMethodName() || response->methodName().empty() ||
       !response->hasDetails() || response->details().IsNull() ||
       !response->details().IsObject()) {
     GetExecutionContext()->AddConsoleMessage(
@@ -78,7 +75,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
             "be empty in payment response."));
   }
 
-  if (!response->hasMethodName() || response->methodName().IsEmpty()) {
+  if (!response->hasMethodName() || response->methodName().empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYMENT_METHOD_NAME_EMPTY);
     return;
   }
@@ -111,22 +108,22 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
   }
 
   String details = ToCoreString(details_value);
-  DCHECK(!details.IsEmpty());
+  DCHECK(!details.empty());
 
   String payer_name = response->hasPayerName() ? response->payerName() : "";
-  if (should_have_payer_name_ && payer_name.IsEmpty()) {
+  if (should_have_payer_name_ && payer_name.empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYER_NAME_EMPTY);
     return;
   }
 
   String payer_email = response->hasPayerEmail() ? response->payerEmail() : "";
-  if (should_have_payer_email_ && payer_email.IsEmpty()) {
+  if (should_have_payer_email_ && payer_email.empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYER_EMAIL_EMPTY);
     return;
   }
 
   String payer_phone = response->hasPayerPhone() ? response->payerPhone() : "";
-  if (should_have_payer_phone_ && payer_phone.IsEmpty()) {
+  if (should_have_payer_phone_ && payer_phone.empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYER_PHONE_EMPTY);
     return;
   }
@@ -151,7 +148,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
 
   String selected_shipping_option_id =
       response->hasShippingOption() ? response->shippingOption() : "";
-  if (should_have_shipping_info_ && selected_shipping_option_id.IsEmpty()) {
+  if (should_have_shipping_info_ && selected_shipping_option_id.empty()) {
     BlankResponseWithError(PaymentEventResponseType::SHIPPING_OPTION_EMPTY);
     return;
   }
@@ -162,7 +159,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
           selected_shipping_option_id);
 }
 
-void PaymentRequestRespondWithObserver::OnNoResponse() {
+void PaymentRequestRespondWithObserver::OnNoResponse(ScriptState*) {
   BlankResponseWithError(PaymentEventResponseType::PAYMENT_EVENT_NO_RESPONSE);
 }
 

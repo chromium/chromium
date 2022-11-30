@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,12 @@
 #include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "content/public/browser/browser_thread.h"
@@ -43,6 +44,9 @@ class PwgRasterConverterHelper
   PwgRasterConverterHelper(const PdfRenderSettings& settings,
                            const PwgRasterSettings& bitmap_settings);
 
+  PwgRasterConverterHelper(const PwgRasterConverterHelper&) = delete;
+  PwgRasterConverterHelper& operator=(const PwgRasterConverterHelper&) = delete;
+
   void Convert(const base::RefCountedMemory* data,
                PwgRasterConverter::ResultCallback callback);
 
@@ -59,8 +63,6 @@ class PwgRasterConverterHelper
   mojo::Remote<printing::mojom::PdfToPwgRasterConverter>
       pdf_to_pwg_raster_converter_remote_;
   PwgRasterConverter::ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterHelper);
 };
 
 PwgRasterConverterHelper::PwgRasterConverterHelper(
@@ -94,7 +96,7 @@ void PwgRasterConverterHelper::Convert(
     return;
   }
 
-  // TODO(thestig): Write |data| into shared memory in the first place, to avoid
+  // TODO(thestig): Write `data` into shared memory in the first place, to avoid
   // this memcpy().
   memcpy(memory.mapping.memory(), data->front(), data->size());
   pdf_to_pwg_raster_converter_remote_->Convert(
@@ -124,6 +126,10 @@ void PwgRasterConverterHelper::RunCallback(
 class PwgRasterConverterImpl : public PwgRasterConverter {
  public:
   PwgRasterConverterImpl();
+
+  PwgRasterConverterImpl(const PwgRasterConverterImpl&) = delete;
+  PwgRasterConverterImpl& operator=(const PwgRasterConverterImpl&) = delete;
+
   ~PwgRasterConverterImpl() override;
 
   void Start(const base::RefCountedMemory* data,
@@ -137,8 +143,6 @@ class PwgRasterConverterImpl : public PwgRasterConverter {
   // Cancelable version of PwgRasterConverter::ResultCallback.
   base::CancelableOnceCallback<void(base::ReadOnlySharedMemoryRegion)>
       cancelable_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterImpl);
 };
 
 PwgRasterConverterImpl::PwgRasterConverterImpl() = default;
@@ -205,11 +209,11 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
   if (duplex_item.LoadFrom(ticket))
     duplex_value = duplex_item.value();
 
-  // This assumes |ticket| contains a color ticket item. In case it does not, or
-  // the color is invalid, |color_value| will default to AUTO_COLOR, which works
+  // This assumes `ticket` contains a color ticket item. In case it does not, or
+  // the color is invalid, `color_value` will default to AUTO_COLOR, which works
   // just fine. With AUTO_COLOR, it may be possible to better determine the
-  // value for |use_color| based on |printer_capabilities|, rather than just
-  // defaulting to the safe value of true. Parsing |printer_capabilities|
+  // value for `use_color` based on `printer_capabilities`, rather than just
+  // defaulting to the safe value of true. Parsing `printer_capabilities`
   // requires work, which this method is avoiding on purpose.
   cloud_devices::printer::Color color_value;
   cloud_devices::printer::ColorTicketItem color_item;
@@ -231,12 +235,12 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
 
     default:
       NOTREACHED();
-      use_color = true;  // Still need to initialize |color| or MSVC will warn.
+      use_color = true;  // Still need to initialize `color` or MSVC will warn.
       break;
   }
 
   cloud_devices::printer::PwgRasterConfigCapability raster_capability;
-  // If the raster capability fails to load, |raster_capability| will contain
+  // If the raster capability fails to load, `raster_capability` will contain
   // the default value.
   raster_capability.LoadFrom(printer_capabilities);
   cloud_devices::printer::DocumentSheetBack document_sheet_back =
@@ -272,7 +276,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
   result.rotate_all_pages = raster_capability.value().rotate_all_pages;
   result.reverse_page_order = raster_capability.value().reverse_order_streaming;
 
-  // No need to check for SRGB_8 support in |types|. CDD spec says:
+  // No need to check for SRGB_8 support in `types`. CDD spec says:
   // "any printer that doesn't support SGRAY_8 must be able to perform
   // conversion from RGB to grayscale... "
   const auto& types = raster_capability.value().document_types_supported;

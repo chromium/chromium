@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS The signal option must be an AbortSignal
+PASS Passing an already aborted signal aborts
+PASS An aborted request results in AbortError
+PASS Abort after a timeout
+PASS Signal that is not aborted
+PASS Synchronously signaled abort
+PASS Abort signaled after lock granted
+PASS Abort signaled after lock released
+PASS Abort should process the next pending lock request
+FAIL Aborted promise should reject with the custom abort reason promise_rejects_exactly: Rejection should give the abort reason function "function() { throw e }" threw object "AbortError: The request was aborted." but we expected it to throw "My cat handled it"
+FAIL Aborted promise should reject with the default abort reason promise_rejects_exactly: Should be the same reason function "function() { throw e }" threw object "AbortError: The request was aborted." but we expected it to throw object "AbortError: signal is aborted without reason"
+Harness: the test ran to completion.
+

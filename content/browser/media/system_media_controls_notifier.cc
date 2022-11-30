@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,11 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "ui/base/idle/idle.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -30,25 +30,23 @@ using PlaybackStatus =
 const int kMinImageSize = 71;
 const int kDesiredImageSize = 150;
 
-#if defined(OS_WIN)
-constexpr base::TimeDelta kScreenLockPollInterval =
-    base::TimeDelta::FromSeconds(1);
+#if BUILDFLAG(IS_WIN)
+constexpr base::TimeDelta kScreenLockPollInterval = base::Seconds(1);
 constexpr int kHideSmtcDelaySeconds = 5;
-constexpr base::TimeDelta kHideSmtcDelay =
-    base::TimeDelta::FromSeconds(kHideSmtcDelaySeconds);
-#endif  // defined(OS_WIN)
+constexpr base::TimeDelta kHideSmtcDelay = base::Seconds(kHideSmtcDelaySeconds);
+#endif  // BUILDFLAG(IS_WIN)
 
 SystemMediaControlsNotifier::SystemMediaControlsNotifier(
     system_media_controls::SystemMediaControls* system_media_controls)
     : system_media_controls_(system_media_controls) {
   DCHECK(system_media_controls_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   lock_polling_timer_.Start(
       FROM_HERE, kScreenLockPollInterval,
       base::BindRepeating(&SystemMediaControlsNotifier::CheckLockState,
                           base::Unretained(this)));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Connect to the MediaControllerManager and create a MediaController that
   // controls the active session so we can observe it.
@@ -76,17 +74,17 @@ void SystemMediaControlsNotifier::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info_ptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool is_playing = false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   session_info_ptr_ = std::move(session_info_ptr);
   if (session_info_ptr_) {
     if (session_info_ptr_->playback_state ==
         media_session::mojom::MediaPlaybackState::kPlaying) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       is_playing = true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
       system_media_controls_->SetPlaybackStatus(PlaybackStatus::kPlaying);
     } else {
       system_media_controls_->SetPlaybackStatus(PlaybackStatus::kPaused);
@@ -101,18 +99,18 @@ void SystemMediaControlsNotifier::MediaSessionInfoChanged(
     system_media_controls_->ClearMetadata();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (screen_locked_) {
     if (is_playing)
       StopHideSmtcTimer();
     else if (!hide_smtc_timer_.IsRunning())
       StartHideSmtcTimer();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void SystemMediaControlsNotifier::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (metadata.has_value()) {
@@ -149,6 +147,16 @@ void SystemMediaControlsNotifier::MediaSessionActionsChanged(
   system_media_controls_->SetIsSeekToEnabled(seek_available);
 }
 
+void SystemMediaControlsNotifier::MediaSessionChanged(
+    const absl::optional<base::UnguessableToken>& request_id) {
+  if (!request_id.has_value()) {
+    system_media_controls_->SetID(nullptr);
+    return;
+  }
+  auto string_id = request_id->ToString();
+  system_media_controls_->SetID(&string_id);
+}
+
 void SystemMediaControlsNotifier::MediaControllerImageChanged(
     media_session::mojom::MediaSessionImageType type,
     const SkBitmap& bitmap) {
@@ -164,7 +172,7 @@ void SystemMediaControlsNotifier::MediaControllerImageChanged(
     // If no images are fetched in the fetch image algorithm, the user agent
     // may have fallback behavior such as displaying a default image as artwork.
     // We display the application icon if no artwork is provided.
-    base::Optional<gfx::ImageSkia> icon =
+    absl::optional<gfx::ImageSkia> icon =
         GetContentClient()->browser()->GetProductLogo();
     if (icon.has_value())
       system_media_controls_->SetThumbnail(*icon->bitmap());
@@ -174,7 +182,7 @@ void SystemMediaControlsNotifier::MediaControllerImageChanged(
 }
 
 void SystemMediaControlsNotifier::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (position) {
@@ -184,7 +192,7 @@ void SystemMediaControlsNotifier::MediaSessionPositionChanged(
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void SystemMediaControlsNotifier::CheckLockState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -240,6 +248,6 @@ void SystemMediaControlsNotifier::HideSmtcTimerFired() {
 
   system_media_controls_->SetEnabled(false);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

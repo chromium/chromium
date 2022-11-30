@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/annotation_snapshot.h"
 
 namespace crashpad {
@@ -49,6 +48,10 @@ class PEImageAnnotationsReader {
   PEImageAnnotationsReader(ProcessReaderWin* process_reader,
                            const PEImageReader* pe_image_reader,
                            const std::wstring& name);
+
+  PEImageAnnotationsReader(const PEImageAnnotationsReader&) = delete;
+  PEImageAnnotationsReader& operator=(const PEImageAnnotationsReader&) = delete;
+
   ~PEImageAnnotationsReader() {}
 
   //! \brief Returns the module's annotations that are organized as key-value
@@ -73,8 +76,6 @@ class PEImageAnnotationsReader {
   std::wstring name_;
   ProcessReaderWin* process_reader_;  // weak
   const PEImageReader* pe_image_reader_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(PEImageAnnotationsReader);
 };
 
 }  // namespace crashpad

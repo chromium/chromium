@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockVersionUpdaterDelegate : public VersionUpdater::Delegate {
  public:
@@ -23,13 +23,13 @@ class MockVersionUpdaterDelegate : public VersionUpdater::Delegate {
   MOCK_METHOD0(OnWaitForRebootTimeElapsed, void());
   MOCK_METHOD0(PrepareForUpdateCheck, void());
   MOCK_METHOD3(UpdateErrorMessage,
-               void(const NetworkPortalDetector::CaptivePortalStatus status,
-                    const NetworkError::ErrorState& error_state,
+               void(NetworkState::PortalState state,
+                    NetworkError::ErrorState error_state,
                     const std::string& network_name));
   MOCK_METHOD0(ShowErrorMessage, void());
   MOCK_METHOD0(DelayErrorMessage, void());
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_MOCK_VERSION_UPDATER_DELEGATE_H_

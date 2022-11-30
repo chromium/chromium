@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_message_support_export.h"
@@ -67,7 +66,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   // Initializes a message from a const block of data.  The data is not copied;
   // instead the data is merely referenced by this message.  Only const methods
   // should be used on the message when initialized this way.
-  Message(const char* data, int data_len);
+  Message(const char* data, size_t data_len);
 
   Message(const Message& other);
   Message& operator=(const Message& other);
@@ -112,7 +111,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
     if (unblock) {
       header()->flags |= UNBLOCK_BIT;
     } else {
-      header()->flags &= ~UNBLOCK_BIT;
+      header()->flags &= static_cast<uint32_t>(~UNBLOCK_BIT);
     }
   }
 
@@ -243,7 +242,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
     int32_t routing;  // ID of the view that this message is destined for
     uint32_t type;    // specifies the user-defined message type
     uint32_t flags;   // specifies control flags for the message
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     uint16_t num_fds; // the number of descriptors included with this message
     uint16_t pad;     // explicitly initialize this to appease valgrind
 #endif

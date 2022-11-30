@@ -1,14 +1,16 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ppapi/proxy/raw_var_data.h"
 
+#include <memory>
+#include <unordered_set>
+
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/stl_util.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/proxy/ppapi_param_traits.h"
 #include "ppapi/shared_impl/array_var.h"
@@ -685,7 +687,7 @@ bool ResourceRawVarData::Init(const PP_Var& var, PP_Instance /*instance*/) {
   pp_resource_ = resource_var->GetPPResource();
   const IPC::Message* message = resource_var->GetCreationMessage();
   if (message)
-    creation_message_.reset(new IPC::Message(*message));
+    creation_message_ = std::make_unique<IPC::Message>(*message);
   else
     creation_message_.reset();
   pending_renderer_host_id_ = resource_var->GetPendingRendererHostId();
@@ -738,7 +740,7 @@ bool ResourceRawVarData::Read(PP_VarType type,
   if (!iter->ReadBool(&has_creation_message))
     return false;
   if (has_creation_message) {
-    creation_message_.reset(new IPC::Message());
+    creation_message_ = std::make_unique<IPC::Message>();
     if (!IPC::ReadParam(m, iter, creation_message_.get()))
       return false;
   } else {

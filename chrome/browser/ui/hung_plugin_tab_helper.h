@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,8 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "base/time/time.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,6 +35,9 @@ class HungPluginTabHelper
       public infobars::InfoBarManager::Observer,
       public content::WebContentsUserData<HungPluginTabHelper> {
  public:
+  HungPluginTabHelper(const HungPluginTabHelper&) = delete;
+  HungPluginTabHelper& operator=(const HungPluginTabHelper&) = delete;
+
   ~HungPluginTabHelper() override;
 
   // content::WebContentsObserver:
@@ -71,12 +71,11 @@ class HungPluginTabHelper
   // All currently hung plugins.
   std::map<int, std::unique_ptr<PluginState>> hung_plugins_;
 
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_{this};
+  base::ScopedMultiSourceObservation<infobars::InfoBarManager,
+                                     infobars::InfoBarManager::Observer>
+      infobar_observations_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(HungPluginTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_HUNG_PLUGIN_TAB_HELPER_H_

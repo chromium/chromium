@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -13,16 +13,18 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/util_constants.h"
 #include "rlz/buildflags/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::Optional;
 
 // A helper class to set the "GoogleUpdateIsMachine" environment variable.
 class ScopedGoogleUpdateIsMachine {
@@ -107,7 +109,7 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       installer::initial_preferences::kRequireEula,
   };
 
-  for (size_t i = 0; i < base::size(expected_true); ++i) {
+  for (size_t i = 0; i < std::size(expected_true); ++i) {
     bool value = false;
     EXPECT_TRUE(prefs.GetBool(expected_true[i], &value));
     EXPECT_TRUE(value) << expected_true[i];
@@ -148,7 +150,7 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
   };
 
   bool value = false;
-  for (size_t i = 0; i < base::size(expected_bool); ++i) {
+  for (size_t i = 0; i < std::size(expected_bool); ++i) {
     EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
     EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
   }
@@ -159,7 +161,7 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
       installer::initial_preferences::kMakeChromeDefaultForUser,
   };
 
-  for (size_t i = 0; i < base::size(missing_bools); ++i) {
+  for (size_t i = 0; i < std::size(missing_bools); ++i) {
     EXPECT_FALSE(prefs.GetBool(missing_bools[i], &value)) << missing_bools[i];
   }
 
@@ -205,26 +207,20 @@ TEST(MasterPrefsExtension, ValidateExtensionJSON) {
                    .AppendASCII("Preferences");
 
   installer::InitialPreferences prefs(prefs_path);
-  base::DictionaryValue* extensions = nullptr;
-  EXPECT_TRUE(prefs.GetExtensionsBlock(&extensions));
-  int location = 0;
-  EXPECT_TRUE(extensions->GetInteger(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.location", &location));
-  int state = 0;
-  EXPECT_TRUE(
-      extensions->GetInteger("behllobkkfkfnphdnhnkndlbkcpglgmj.state", &state));
-  std::string path;
-  EXPECT_TRUE(
-      extensions->GetString("behllobkkfkfnphdnhnkndlbkcpglgmj.path", &path));
-  std::string key;
-  EXPECT_TRUE(extensions->GetString(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.key", &key));
-  std::string name;
-  EXPECT_TRUE(extensions->GetString(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.name", &name));
-  std::string version;
-  EXPECT_TRUE(extensions->GetString(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.version", &version));
+  const base::Value::Dict* extensions = nullptr;
+  EXPECT_TRUE(prefs.GetExtensionsBlock(extensions));
+  EXPECT_TRUE(extensions->FindIntByDottedPath(
+      "behllobkkfkfnphdnhnkndlbkcpglgmj.location"));
+  EXPECT_TRUE(extensions->FindIntByDottedPath(
+      "behllobkkfkfnphdnhnkndlbkcpglgmj.state"));
+  EXPECT_TRUE(extensions->FindStringByDottedPath(
+      "behllobkkfkfnphdnhnkndlbkcpglgmj.path"));
+  EXPECT_TRUE(extensions->FindStringByDottedPath(
+      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.key"));
+  EXPECT_TRUE(extensions->FindStringByDottedPath(
+      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.name"));
+  EXPECT_TRUE(extensions->FindStringByDottedPath(
+      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.version"));
 }
 
 // Test that we are parsing initial preferences correctly.
@@ -261,7 +257,7 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
 
   // Now check that prefs got merged correctly.
   bool value = false;
-  for (size_t i = 0; i < base::size(expected_bool); ++i) {
+  for (size_t i = 0; i < std::size(expected_bool); ++i) {
     EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
     EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
   }
@@ -278,7 +274,7 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
       {installer::initial_preferences::kDoNotLaunchChrome, true},
   };
 
-  for (size_t i = 0; i < base::size(expected_bool2); ++i) {
+  for (size_t i = 0; i < std::size(expected_bool2); ++i) {
     EXPECT_TRUE(prefs2.GetBool(expected_bool2[i].name, &value));
     EXPECT_EQ(value, expected_bool2[i].expected_value)
         << expected_bool2[i].name;
@@ -331,24 +327,20 @@ TEST_F(InitialPreferencesTest, EnforceLegacyPreferences) {
   EXPECT_TRUE(do_not_create_quick_launch_shortcut);
   EXPECT_FALSE(do_not_create_taskbar_shortcut);
 
-  bool actual_value = false;
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportBookmarks,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportHistory,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportHomepage,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportSearchEngine,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
+  EXPECT_THAT(prefs.initial_dictionary().FindBool(prefs::kImportBookmarks),
+              Optional(true));
+  EXPECT_THAT(prefs.initial_dictionary().FindBool(prefs::kImportHistory),
+              Optional(true));
+  EXPECT_THAT(prefs.initial_dictionary().FindBool(prefs::kImportHomepage),
+              Optional(true));
+  EXPECT_THAT(prefs.initial_dictionary().FindBool(prefs::kImportSearchEngine),
+              Optional(true));
 
 #if BUILDFLAG(ENABLE_RLZ)
-  int rlz_ping_delay = 0;
-  EXPECT_TRUE(prefs.initial_dictionary().GetInteger(prefs::kRlzPingDelaySeconds,
-                                                    &rlz_ping_delay));
+  absl::optional<int> rlz_ping_delay =
+      prefs.initial_dictionary().FindInt(prefs::kRlzPingDelaySeconds);
+  EXPECT_TRUE(rlz_ping_delay);
+  EXPECT_GT(rlz_ping_delay, 0);
   EXPECT_EQ(40, rlz_ping_delay);
 #endif  // BUILDFLAG(ENABLE_RLZ)
 }

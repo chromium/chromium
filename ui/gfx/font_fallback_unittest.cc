@@ -1,12 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/font_fallback_win.h"
-
 #include <tuple>
 
-#include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -16,10 +14,11 @@
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "ui/gfx/font_fallback_win.h"
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/test/font_fallback_test_data.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -57,6 +56,9 @@ class GetFallbackFontTest
     : public ::testing::TestWithParam<FallbackFontTestParamInfo> {
  public:
   GetFallbackFontTest() = default;
+
+  GetFallbackFontTest(const GetFallbackFontTest&) = delete;
+  GetFallbackFontTest& operator=(const GetFallbackFontTest&) = delete;
 
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<FallbackFontTestParamInfo> param_info) {
@@ -142,8 +144,6 @@ class GetFallbackFontTest
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-
-  DISALLOW_COPY_AND_ASSIGN(GetFallbackFontTest);
 };
 
 }  // namespace
@@ -169,7 +169,7 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
                          base_font_option_.weight);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Skip testing this call to GetFallbackFont on older windows versions. Some
   // fonts only got introduced on windows 10 and the test will fail on previous
   // versions.
@@ -238,7 +238,7 @@ std::vector<FallbackFontTestCase> GetSampleFontTestCases() {
     char16_t text[8];
     UErrorCode errorCode = U_ZERO_ERROR;
     int text_length =
-        uscript_getSampleString(script, text, base::size(text), &errorCode);
+        uscript_getSampleString(script, text, std::size(text), &errorCode);
     if (text_length <= 0 || errorCode != U_ZERO_ERROR)
       continue;
 

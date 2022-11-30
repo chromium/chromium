@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 
@@ -43,6 +42,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
+      bool is_for_scalable_page,
       content::TestRunner* test_runner);
 
   ~WebTestWebFrameWidgetImpl() override;
@@ -53,6 +53,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   void SynchronouslyCompositeAfterTest() override;
   void UpdateAllLifecyclePhasesAndComposite(
       base::OnceClosure completion_callback) override;
+  void DisableEndDocumentTransition() override;
 
   // WebFrameWidget overrides.
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
@@ -67,12 +68,15 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   void StartDragging(const WebDragData& drag_data,
                      DragOperationsMask operations_allowed,
                      const SkBitmap& drag_image,
-                     const gfx::Point& drag_image_offset) override;
+                     const gfx::Vector2d& cursor_offset,
+                     const gfx::Rect& drag_obj_rect) override;
+  void DidAutoResize(const gfx::Size& size) override;
 
   // WidgetBaseClient overrides:
   void ScheduleAnimation() override;
   void WillBeginMainFrame() override;
   void ScheduleAnimationForWebTests() override;
+  bool AllowsScrollResampling() override { return false; }
 
   content::TestRunner* GetTestRunner();
 
@@ -99,7 +103,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   // Otherwise, any scheduled AnimateNow() calls will only perform the animation
   // step, which calls out to blink but doesn't composite for performance
   // reasons. See setAnimationRequiresRaster() in
-  // https://chromium.googlesource.com/chromium/src/+/master/docs/testing/writing_web_tests.md
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/testing/writing_web_tests.md
   // for details on the optimization.
   bool composite_requested_ = false;
   // Synchronous composites should not be nested inside another

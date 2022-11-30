@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/platform_thread.h"
 #include "components/history/core/browser/download_types.h"
 
@@ -32,6 +31,10 @@ class DownloadDatabase {
   // Must call InitDownloadTable before using any other functions.
   DownloadDatabase(DownloadInterruptReason download_interrupt_reason_none,
                    DownloadInterruptReason download_interrupt_reason_crash);
+
+  DownloadDatabase(const DownloadDatabase&) = delete;
+  DownloadDatabase& operator=(const DownloadDatabase&) = delete;
+
   virtual ~DownloadDatabase();
 
   uint32_t GetNextDownloadId();
@@ -40,7 +43,7 @@ class DownloadDatabase {
   void QueryDownloads(std::vector<DownloadRow>* results);
 
   // Update the state of one download. Returns true if successful.
-  // Does not update |url|, |start_time|; uses |id| only
+  // Does not update `url`, `start_time`; uses `id` only
   // to select the row in the database table to update.
   bool UpdateDownload(const DownloadRow& data);
 
@@ -48,7 +51,7 @@ class DownloadDatabase {
   // creation succeeded, false otherwise.
   bool CreateDownload(const DownloadRow& info);
 
-  // Remove |id| from the database.
+  // Remove `id` from the database.
   void RemoveDownload(DownloadId id);
 
   size_t CountDownloads();
@@ -61,7 +64,7 @@ class DownloadDatabase {
   bool MigrateMimeType();
 
   // Returns true if able to successfully rewrite the invalid values for the
-  // |state| field from 3 to 4. Returns false if there was an error fixing the
+  // `state` field from 3 to 4. Returns false if there was an error fixing the
   // database. See http://crbug.com/140687
   bool MigrateDownloadsState();
 
@@ -93,6 +96,10 @@ class DownloadDatabase {
   // table.
   bool MigrateDownloadSiteInstanceUrl();
 
+  // Returns true if able to add the embedder_download_data column to the
+  // download table.
+  bool MigrateEmbedderDownloadData();
+
   // Returns true if able to add last_access_time column to the download table.
   bool MigrateDownloadLastAccessTime();
 
@@ -116,14 +123,14 @@ class DownloadDatabase {
   // Fixes state of the download entries. Sometimes entries with IN_PROGRESS
   // state are not updated during browser shutdown (particularly when crashing).
   // On the next start such entries are considered interrupted with
-  // interrupt reason |DOWNLOAD_INTERRUPT_REASON_CRASH|.  This function
+  // interrupt reason `DOWNLOAD_INTERRUPT_REASON_CRASH`.  This function
   // fixes such entries.
   void EnsureInProgressEntriesCleanedUp();
 
   // Ensures a column exists in downloads table.
   bool EnsureColumnExists(const std::string& name, const std::string& type);
 
-  // Ensures a column exists in |table|.
+  // Ensures a column exists in `table`.
   bool EnsureColumnExistsInTable(const std::string& table,
                                  const std::string& name,
                                  const std::string& type);
@@ -137,10 +144,20 @@ class DownloadDatabase {
   // Delete all the download slices associated with one DownloadRow.
   void RemoveDownloadSlices(DownloadId id);
 
-  // Helper method to query the download slices for all the records in
-  // |download_row_map|.
+  // Query the download slices for all the records in `download_row_map`.
   using DownloadRowMap = std::map<DownloadId, DownloadRow*>;
   void QueryDownloadSlices(DownloadRowMap* download_row_map);
+
+  // Creates a new reroute info if it doesn't exist, or updates an existing
+  // one. Returns true on success, or false otherwise.
+  bool CreateOrUpdateDownloadRerouteInfo(
+      DownloadId id,
+      const std::string& reroute_info_serialized);
+
+  // Delete the download reroute info associated with one DownloadRow.
+  void RemoveDownloadRerouteInfo(DownloadId id);
+  // Query the download reroute infos for all the records in `download_row_map`.
+  void QueryDownloadRerouteInfos(DownloadRowMap* download_row_map);
 
   bool owning_thread_set_;
   base::PlatformThreadId owning_thread_;
@@ -157,8 +174,6 @@ class DownloadDatabase {
   // to use for respectively an undefined value and in case of a crash.
   DownloadInterruptReason download_interrupt_reason_none_;
   DownloadInterruptReason download_interrupt_reason_crash_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDatabase);
 };
 
 }  // namespace history

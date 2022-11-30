@@ -1,0 +1,13 @@
+{
+  "name": "Not Installed",
+  "icons": [
+    {
+      "src": "192x192-blue.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/webapps_integration/not_installed/index.html",
+  "scope" : "/webapps_integration/not_installed/",
+  "display": "standalone"
+}

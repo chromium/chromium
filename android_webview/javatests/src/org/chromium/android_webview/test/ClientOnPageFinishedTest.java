@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
@@ -71,7 +72,7 @@ public class ClientOnPageFinishedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @FlakyTest(message = "crbug.com/652577")
+    @DisabledTest(message = "crbug.com/652577")
     public void testCalledAfterError() throws Throwable {
         class LocalTestClient extends TestAwContentsClient {
             private boolean mIsOnReceivedErrorCalled;
@@ -79,14 +80,14 @@ public class ClientOnPageFinishedTest {
             private boolean mAllowAboutBlank;
 
             @Override
-            public void onReceivedError(int errorCode, String description, String failingUrl) {
-                Assert.assertEquals("onReceivedError called twice for " + failingUrl, false,
+            public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
+                Assert.assertEquals("onReceivedError called twice for " + request.url, false,
                         mIsOnReceivedErrorCalled);
                 mIsOnReceivedErrorCalled = true;
                 Assert.assertEquals(
-                        "onPageFinished called before onReceivedError for " + failingUrl, false,
+                        "onPageFinished called before onReceivedError for " + request.url, false,
                         mIsOnPageFinishedCalled);
-                super.onReceivedError(errorCode, description, failingUrl);
+                super.onReceivedError(request, error);
             }
 
             @Override
@@ -110,15 +111,14 @@ public class ClientOnPageFinishedTest {
         LocalTestClient testContentsClient = new LocalTestClient();
         setTestAwContentsClient(testContentsClient);
 
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
 
         String invalidUrl = "http://localhost:7/non_existent";
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, invalidUrl);
 
-        Assert.assertEquals(invalidUrl, onReceivedErrorHelper.getFailingUrl());
+        Assert.assertEquals(invalidUrl, onReceivedErrorHelper.getRequest().url);
         Assert.assertEquals(invalidUrl, onPageFinishedHelper.getUrl());
 
         // Rather than wait a fixed time to see that another onPageFinished callback isn't issued
@@ -612,6 +612,45 @@ public class ClientOnPageFinishedTest {
             mActivityTestRule.loadUrlAsync(mAwContents, redirectUrl);
             mActivityTestRule.waitForVisualStateCallback(mAwContents);
             Assert.assertEquals(webpageNotAvailable, mAwContents.getTitle());
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    /**
+     * Fragment navigation triggered by history APIs can trigger onPageFinished.
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testCalledForHistoryApiFragmentNavigation() throws Throwable {
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            final String testHtml = "<html><head>Header</head><body>Body</body></html>";
+            final String testPath = "/test.html";
+            final String fragmentPath = "/test.html#fragment";
+
+            final String testUrl = webServer.setResponse(testPath, testHtml, null);
+            final String fragmentUrl = webServer.getResponseUrl(fragmentPath);
+
+            int currentCallCount = onPageFinishedHelper.getCallCount();
+            mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, testUrl);
+            onPageFinishedHelper.waitForCallback(currentCallCount);
+            Assert.assertEquals(testUrl, onPageFinishedHelper.getUrl());
+            Assert.assertEquals(1, onPageFinishedHelper.getCallCount());
+
+            currentCallCount = onPageFinishedHelper.getCallCount();
+            // History APIs can trigger fragment navigation, and this fragment navigation will
+            // trigger onPageFinished, the parameter url carried by onPageFinished will be the
+            // parameter url carried by history API.
+            mActivityTestRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient,
+                    "history.pushState(null, null, '" + fragmentPath + "');");
+            onPageFinishedHelper.waitForCallback(currentCallCount);
+            Assert.assertEquals(fragmentUrl, onPageFinishedHelper.getUrl());
+            Assert.assertEquals(2, onPageFinishedHelper.getCallCount());
         } finally {
             webServer.shutdown();
         }

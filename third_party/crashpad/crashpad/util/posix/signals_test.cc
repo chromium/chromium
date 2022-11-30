@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,16 +17,14 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <iterator>
 #include <limits>
 
-#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -35,40 +33,84 @@
 #include "test/scoped_temp_dir.h"
 #include "util/posix/scoped_mmap.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#include <sys/auxv.h>
+#include <sys/prctl.h>
+
+#if defined(ARCH_CPU_ARM64)
+#ifndef HWCAP2_MTE
+#define HWCAP2_MTE (1 << 18)
+#endif
+#ifndef SEGV_MTEAERR
+#define SEGV_MTEAERR 8
+#endif
+#ifndef PROT_MTE
+#define PROT_MTE 0x20
+#endif
+#ifndef PR_SET_TAGGED_ADDR_CTRL
+#define PR_SET_TAGGED_ADDR_CTRL 55
+#endif
+#ifndef PR_TAGGED_ADDR_ENABLE
+#define PR_TAGGED_ADDR_ENABLE (1UL << 0)
+#endif
+#ifndef PR_MTE_TCF_ASYNC
+#define PR_MTE_TCF_ASYNC (1UL << 2)
+#endif
+#endif  // defined(ARCH_CPU_ARM64)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 namespace crashpad {
 namespace test {
 namespace {
 
 constexpr int kUnexpectedExitStatus = 3;
 
+struct TestableSignal {
+  int sig, code;
+};
+
 // Keep synchronized with CauseSignal().
-bool CanCauseSignal(int sig) {
-  return sig == SIGABRT ||
-         sig == SIGALRM ||
-         sig == SIGBUS ||
-#if !defined(ARCH_CPU_ARM64)
-         sig == SIGFPE ||
-#endif  // !defined(ARCH_CPU_ARM64)
+std::vector<TestableSignal> TestableSignals() {
+  std::vector<TestableSignal> signals;
+  signals.push_back({SIGABRT, 0});
+  signals.push_back({SIGALRM, 0});
+  signals.push_back({SIGBUS, 0});
+/* According to DDI0487D (Armv8 Architecture Reference Manual) the expected
+ * behavior for division by zero (Section 3.4.8) is: "... results in a
+ * zero being written to the destination register, without any
+ * indication that the division by zero occurred.".
+ * This applies to Armv8 (and not earlier) for both 32bit and 64bit app code.
+ */
+#if defined(ARCH_CPU_X86_FAMILY)
+  signals.push_back({SIGFPE, 0});
+#endif
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
-         sig == SIGILL ||
+  signals.push_back({SIGILL, 0});
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
-         sig == SIGPIPE ||
-         sig == SIGSEGV ||
-#if defined(OS_APPLE)
-         sig == SIGSYS ||
-#endif  // OS_APPLE
+  signals.push_back({SIGPIPE, 0});
+  signals.push_back({SIGSEGV, 0});
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || \
+     BUILDFLAG(IS_CHROMEOS)) &&                      \
+    defined(ARCH_CPU_ARM64)
+  if (getauxval(AT_HWCAP2) & HWCAP2_MTE) {
+    signals.push_back({SIGSEGV, SEGV_MTEAERR});
+  }
+#endif
+#if BUILDFLAG(IS_APPLE)
+  signals.push_back({SIGSYS, 0});
+#endif  // BUILDFLAG(IS_APPLE)
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM64)
-         sig == SIGTRAP ||
+  signals.push_back({SIGTRAP, 0});
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM64)
-         false;
+  return signals;
 }
 
-// Keep synchronized with CanCauseSignal().
-void CauseSignal(int sig) {
+// Keep synchronized with TestableSignals().
+void CauseSignal(int sig, int code) {
   switch (sig) {
     case SIGABRT: {
       abort();
-      break;
     }
 
     case SIGALRM: {
@@ -114,36 +156,25 @@ void CauseSignal(int sig) {
       *mapped_file.addr_as<char*>() = 0;
 
       _exit(kUnexpectedExitStatus);
-      break;
     }
 
-#if !defined(ARCH_CPU_ARM64)
-    // ARM64 has hardware integer division instructions that don’t generate a
-    // trap for divide-by-zero, so this doesn’t produce SIGFPE.
     case SIGFPE: {
-      // Optimization makes this tricky, so get zero from a system call likely
-      // to succeed, and try to do something with the result.
-      struct stat stat_buf;
-      int zero = stat("/", &stat_buf);
-      if (zero == -1) {
-        // It’s important to check |== -1| and not |!= 0|. An optimizer is free
-        // to discard an |== 0| branch entirely, because division by zero is
-        // undefined behavior.
-        PLOG(ERROR) << "stat";
-        _exit(kUnexpectedExitStatus);
-      }
-
-      int quotient = 2 / zero;
-      fstat(quotient, &stat_buf);
+/* Enabled only for x86, since a division by zero won't raise a signal
+ * on Armv8, please see comment at the top of file concerning the
+ * Arm architecture.
+ */
+#if defined(ARCH_CPU_X86_FAMILY)
+      [[maybe_unused]] volatile int a = 42;
+      volatile int b = 0;
+      a = a / b;
+#endif
       break;
     }
-#endif  // ARCH_CPU_ARM64
 
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
     case SIGILL: {
       // __builtin_trap() causes SIGTRAP on arm64 on Android.
       __builtin_trap();
-      break;
     }
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
 
@@ -172,12 +203,42 @@ void CauseSignal(int sig) {
     }
 
     case SIGSEGV: {
-      volatile int* i = nullptr;
-      *i = 0;
+      switch (code) {
+        case 0: {
+          volatile int* i = nullptr;
+          *i = 0;
+          break;
+        }
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || \
+     BUILDFLAG(IS_CHROMEOS)) &&                      \
+    defined(ARCH_CPU_ARM64)
+        case SEGV_MTEAERR: {
+          ScopedMmap mapping;
+          if (!mapping.ResetMmap(nullptr,
+                                 getpagesize(),
+                                 PROT_READ | PROT_WRITE | PROT_MTE,
+                                 MAP_PRIVATE | MAP_ANON,
+                                 -1,
+                                 0)) {
+            _exit(kUnexpectedExitStatus);
+          }
+          if (prctl(PR_SET_TAGGED_ADDR_CTRL,
+                PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_ASYNC,
+                0,
+                0,
+                0) != 0) {
+            _exit(kUnexpectedExitStatus);
+          }
+          mapping.addr_as<char*>()[1ULL << 56] = 0;
+          break;
+        }
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_ARM64)
+      }
       break;
     }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     case SIGSYS: {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -189,7 +250,7 @@ void CauseSignal(int sig) {
       }
       break;
     }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM64)
     case SIGTRAP: {
@@ -208,7 +269,6 @@ void CauseSignal(int sig) {
     default: {
       LOG(ERROR) << "unexpected signal " << sig;
       _exit(kUnexpectedExitStatus);
-      break;
     }
   }
 }
@@ -227,11 +287,16 @@ class SignalsTest : public Multiprocess {
   };
   static constexpr int kExitingHandlerExitStatus = 2;
 
-  SignalsTest(TestType test_type, SignalSource signal_source, int sig)
+  SignalsTest(TestType test_type, SignalSource signal_source, int sig, int code)
       : Multiprocess(),
         sig_(sig),
+        code_(code),
         test_type_(test_type),
         signal_source_(signal_source) {}
+
+  SignalsTest(const SignalsTest&) = delete;
+  SignalsTest& operator=(const SignalsTest&) = delete;
+
   ~SignalsTest() {}
 
  private:
@@ -304,7 +369,7 @@ class SignalsTest : public Multiprocess {
 
     switch (signal_source_) {
       case SignalSource::kCause:
-        CauseSignal(sig_);
+        CauseSignal(sig_, code_);
         break;
       case SignalSource::kRaise:
         raise(sig_);
@@ -315,11 +380,10 @@ class SignalsTest : public Multiprocess {
   }
 
   int sig_;
+  int code_;
   TestType test_type_;
   SignalSource signal_source_;
   static Signals::OldActions old_actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignalsTest);
 };
 
 Signals::OldActions SignalsTest::old_actions_;
@@ -346,7 +410,7 @@ TEST(Signals, WillSignalReraiseAutonomously) {
       {SIGHUP, SEGV_MAPERR, false},
       {SIGINT, SI_USER, false},
   };
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto test_data = kTestData[index];
     SCOPED_TRACE(base::StringPrintf(
         "index %zu, sig %d, code %d", index, test_data.sig, test_data.code));
@@ -359,32 +423,28 @@ TEST(Signals, WillSignalReraiseAutonomously) {
 }
 
 TEST(Signals, Cause_DefaultHandler) {
-  for (int sig = 1; sig < NSIG; ++sig) {
-    SCOPED_TRACE(base::StringPrintf("sig %d (%s)", sig, strsignal(sig)));
-
-    if (!CanCauseSignal(sig)) {
-      continue;
-    }
+  for (TestableSignal s : TestableSignals()) {
+    SCOPED_TRACE(base::StringPrintf(
+        "sig %d (%s), code %d", s.sig, strsignal(s.sig), s.code));
 
     SignalsTest test(SignalsTest::TestType::kDefaultHandler,
                      SignalsTest::SignalSource::kCause,
-                     sig);
-    test.SetExpectedChildTermination(Multiprocess::kTerminationSignal, sig);
+                     s.sig,
+                     s.code);
+    test.SetExpectedChildTermination(Multiprocess::kTerminationSignal, s.sig);
     test.Run();
   }
 }
 
 TEST(Signals, Cause_HandlerExits) {
-  for (int sig = 1; sig < NSIG; ++sig) {
-    SCOPED_TRACE(base::StringPrintf("sig %d (%s)", sig, strsignal(sig)));
-
-    if (!CanCauseSignal(sig)) {
-      continue;
-    }
+  for (TestableSignal s : TestableSignals()) {
+    SCOPED_TRACE(base::StringPrintf(
+        "sig %d (%s), code %d", s.sig, strsignal(s.sig), s.code));
 
     SignalsTest test(SignalsTest::TestType::kHandlerExits,
                      SignalsTest::SignalSource::kCause,
-                     sig);
+                     s.sig,
+                     s.code);
     test.SetExpectedChildTermination(Multiprocess::kTerminationNormal,
                                      SignalsTest::kExitingHandlerExitStatus);
     test.Run();
@@ -392,32 +452,28 @@ TEST(Signals, Cause_HandlerExits) {
 }
 
 TEST(Signals, Cause_HandlerReraisesToDefault) {
-  for (int sig = 1; sig < NSIG; ++sig) {
-    SCOPED_TRACE(base::StringPrintf("sig %d (%s)", sig, strsignal(sig)));
-
-    if (!CanCauseSignal(sig)) {
-      continue;
-    }
+  for (TestableSignal s : TestableSignals()) {
+    SCOPED_TRACE(base::StringPrintf(
+        "sig %d (%s), code %d", s.sig, strsignal(s.sig), s.code));
 
     SignalsTest test(SignalsTest::TestType::kHandlerReraisesToDefault,
                      SignalsTest::SignalSource::kCause,
-                     sig);
-    test.SetExpectedChildTermination(Multiprocess::kTerminationSignal, sig);
+                     s.sig,
+                     s.code);
+    test.SetExpectedChildTermination(Multiprocess::kTerminationSignal, s.sig);
     test.Run();
   }
 }
 
 TEST(Signals, Cause_HandlerReraisesToPrevious) {
-  for (int sig = 1; sig < NSIG; ++sig) {
-    SCOPED_TRACE(base::StringPrintf("sig %d (%s)", sig, strsignal(sig)));
-
-    if (!CanCauseSignal(sig)) {
-      continue;
-    }
+  for (TestableSignal s : TestableSignals()) {
+    SCOPED_TRACE(base::StringPrintf(
+        "sig %d (%s), code %d", s.sig, strsignal(s.sig), s.code));
 
     SignalsTest test(SignalsTest::TestType::kHandlerReraisesToPrevious,
                      SignalsTest::SignalSource::kCause,
-                     sig);
+                     s.sig,
+                     s.code);
     test.SetExpectedChildTermination(Multiprocess::kTerminationNormal,
                                      SignalsTest::kExitingHandlerExitStatus);
     test.Run();
@@ -434,7 +490,8 @@ TEST(Signals, Raise_DefaultHandler) {
 
     SignalsTest test(SignalsTest::TestType::kDefaultHandler,
                      SignalsTest::SignalSource::kRaise,
-                     sig);
+                     sig,
+                     0);
     test.SetExpectedChildTermination(Multiprocess::kTerminationSignal, sig);
     test.Run();
   }
@@ -450,7 +507,8 @@ TEST(Signals, Raise_HandlerExits) {
 
     SignalsTest test(SignalsTest::TestType::kHandlerExits,
                      SignalsTest::SignalSource::kRaise,
-                     sig);
+                     sig,
+                     0);
     test.SetExpectedChildTermination(Multiprocess::kTerminationNormal,
                                      SignalsTest::kExitingHandlerExitStatus);
     test.Run();
@@ -465,7 +523,7 @@ TEST(Signals, Raise_HandlerReraisesToDefault) {
       continue;
     }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     if (sig == SIGBUS
 #if defined(ARCH_CPU_ARM64)
         || sig == SIGILL || sig == SIGSEGV
@@ -478,11 +536,12 @@ TEST(Signals, Raise_HandlerReraisesToDefault) {
       // test must be skipped.
       continue;
     }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
     SignalsTest test(SignalsTest::TestType::kHandlerReraisesToDefault,
                      SignalsTest::SignalSource::kRaise,
-                     sig);
+                     sig,
+                     0);
     test.SetExpectedChildTermination(Multiprocess::kTerminationSignal, sig);
     test.Run();
   }
@@ -496,7 +555,7 @@ TEST(Signals, Raise_HandlerReraisesToPrevious) {
       continue;
     }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     if (sig == SIGBUS
 #if defined(ARCH_CPU_ARM64)
         || sig == SIGILL || sig == SIGSEGV
@@ -509,11 +568,12 @@ TEST(Signals, Raise_HandlerReraisesToPrevious) {
       // test must be skipped.
       continue;
     }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
     SignalsTest test(SignalsTest::TestType::kHandlerReraisesToPrevious,
                      SignalsTest::SignalSource::kRaise,
-                     sig);
+                     sig,
+                     0);
     test.SetExpectedChildTermination(Multiprocess::kTerminationNormal,
                                      SignalsTest::kExitingHandlerExitStatus);
     test.Run();

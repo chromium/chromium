@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,15 @@ enum class DownloadOpenSource {
   kOfflineIndicator = 11,
   // Android notification for offline content.
   kOfflineContentNotification = 12,
-  kMaxValue = kOfflineContentNotification
+  // Download progress message.
+  kDownloadProgressMessage = 13,
+  // Duplicate download dialog.
+  kDuplicateDownloadDialog = 14,
+  // Download triggered by external app.
+  kExternalApp = 15,
+  // New download tab open button.
+  kNewDownloadTabOpenButton = 16,
+  kMaxValue = kNewDownloadTabOpenButton
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_OPEN_SOURCE_H_

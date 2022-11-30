@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
+#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -39,12 +40,16 @@ constexpr char kUserClicksInOobeHistogramName[] = "Ash.Login.OOBE.UserClicks";
 class LoginMetricsRecorderTest : public LoginTestBase {
  public:
   LoginMetricsRecorderTest() = default;
+
+  LoginMetricsRecorderTest(const LoginMetricsRecorderTest&) = delete;
+  LoginMetricsRecorderTest& operator=(const LoginMetricsRecorderTest&) = delete;
+
   ~LoginMetricsRecorderTest() override = default;
 
   // LoginTestBase:
   void SetUp() override {
     LoginTestBase::SetUp();
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
  protected:
@@ -77,9 +82,6 @@ class LoginMetricsRecorderTest : public LoginTestBase {
 
   // Used to verify recorded data.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginMetricsRecorderTest);
 };
 
 }  // namespace
@@ -334,6 +336,12 @@ TEST_F(LoginMetricsRecorderTest, RecordUserClickEventInOobe) {
   histogram_tester_->ExpectTotalCount(kUserClicksInOobeHistogramName, 5);
   ExpectBucketCount(kUserClicksInOobeHistogramName,
                     LoginMetricsRecorder::OobeUserClickTarget::kImeTray, 1);
+
+  metrics_recorder()->RecordUserShelfButtonClick(
+      LoginMetricsRecorder::ShelfButtonClickTarget::kSignIn);
+  histogram_tester_->ExpectTotalCount(kUserClicksInOobeHistogramName, 6);
+  ExpectBucketCount(kUserClicksInOobeHistogramName,
+                    LoginMetricsRecorder::OobeUserClickTarget::kSignIn, 1);
 }
 
 }  // namespace ash

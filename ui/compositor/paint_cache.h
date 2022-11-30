@@ -1,12 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_COMPOSITOR_PAINT_CACHE_H_
 #define UI_COMPOSITOR_PAINT_CACHE_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,6 +22,10 @@ class PaintRecorder;
 class COMPOSITOR_EXPORT PaintCache {
  public:
   PaintCache();
+
+  PaintCache(const PaintCache&) = delete;
+  PaintCache& operator=(const PaintCache&) = delete;
+
   ~PaintCache();
 
   // Returns true if the PaintCache was able to insert a previously-saved
@@ -48,8 +50,6 @@ class COMPOSITOR_EXPORT PaintCache {
   // then we can reject it instead of returning the incorrect cache entry.
   // See https://crbug.com/834114 for details.
   float device_scale_factor_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintCache);
 };
 
 }  // namespace ui

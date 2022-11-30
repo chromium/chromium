@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,8 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerFactory.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerImpl.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/download/home/OfflineItemSource.java",
@@ -28,7 +30,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/home/filter/OfflineItemFilterSource.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/SearchOfflineItemFilter.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/TypeOfflineItemFilter.java",
-    "java/src/org/chromium/chrome/browser/download/home/glue/OfflineContentProviderGlue.java",
     "java/src/org/chromium/chrome/browser/download/home/glue/ThumbnailRequestGlue.java",
     "java/src/org/chromium/chrome/browser/download/home/list/BatchListModel.java",
     "java/src/org/chromium/chrome/browser/download/home/list/DateOrderedListCoordinator.java",
@@ -96,25 +97,39 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/home/toolbar/ToolbarCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/home/toolbar/ToolbarUtils.java",
     "java/src/org/chromium/chrome/browser/download/home/view/SelectionView.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialCoordinatorFactory.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialCoordinatorImpl.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialMediator.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialProperties.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialView.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialViewBinder.java",
   ]
 
   deps = [
     ":java_resources",
     ":jni_headers",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/download/android:file_provider_java",
     "//chrome/browser/download/android:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/thumbnail:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/share/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/messages/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -123,7 +138,9 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -137,7 +154,6 @@ generate_jni("jni_headers") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/circular_progress_bar_background_large.xml",
-    "java/res/drawable/circular_progress_bar_background_small.xml",
     "java/res/drawable/circular_progress_bar_determinate_large.xml",
     "java/res/drawable/circular_progress_bar_determinate_small.xml",
     "java/res/drawable/circular_progress_bar_indeterminate_large.xml",
@@ -145,11 +161,15 @@ android_resources("java_resources") {
     "java/res/drawable/circular_progress_bar_pause_tiny.xml",
     "java/res/drawable/circular_progress_bar_resume_tiny.xml",
     "java/res/drawable/circular_progress_bar_retry_tiny.xml",
+    "java/res/drawable/download_interstitial_icon.xml",
+    "java/res/drawable/downloading_fill_animation_24dp.xml",
     "java/res/drawable/group_card_footer_curved_border.xml",
     "java/res/drawable/group_card_header_curved_border.xml",
     "java/res/drawable/group_card_item_border.xml",
+    "java/res/drawable/infobar_download_complete_animation.xml",
     "java/res/layout/download_home_tabs.xml",
     "java/res/layout/download_home_toolbar.xml",
+    "java/res/layout/download_interstitial.xml",
     "java/res/layout/download_manager_audio.xml",
     "java/res/layout/download_manager_card_divider_bottom.xml",
     "java/res/layout/download_manager_card_divider_middle.xml",
@@ -177,6 +197,7 @@ android_resources("java_resources") {
     "java/res/values-v17/dimens.xml",
     "java/res/values-v17/ids.xml",
     "java/res/values-v17/styles.xml",
+    "java/res/values/drawables.xml",
   ]
 
   deps = [
@@ -194,10 +215,36 @@ android_resources("java_resources") {
 
 android_library("javatests") {
   testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/browser/download/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/messages/android:java",
+    "//components/offline_items_collection/core:core_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+    "//url:gurl_junit_test_support",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.download.internal"
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/download/home/DownloadActivityV2Test.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedOfflineContentProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedProvider.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialMediatorTest.java",
   ]
 
   deps = [
@@ -208,11 +255,14 @@ android_library("javatests") {
     "//chrome/browser/download/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/messages/android:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/messages/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//components/url_formatter/android:url_formatter_java",
@@ -234,15 +284,14 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 
   resources_package = "org.chromium.chrome.browser.download.internal"
 }
 
-android_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/home/filter/DeleteUndoOfflineItemFilterTest.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/FiltersTest.java",
@@ -265,11 +314,12 @@ android_library("junit") {
     "//components/browser_ui/util/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/url_formatter/android:url_formatter_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 
   resources_package = "org.chromium.chrome.browser.download.internal"

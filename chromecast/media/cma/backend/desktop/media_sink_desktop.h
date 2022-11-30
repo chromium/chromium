@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_DESKTOP_MEDIA_SINK_DESKTOP_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "media/base/time_delta_interpolator.h"
 
@@ -18,6 +18,10 @@ class MediaSinkDesktop {
  public:
   MediaSinkDesktop(MediaPipelineBackend::Decoder::Delegate* delegate,
                    base::TimeDelta start_pts);
+
+  MediaSinkDesktop(const MediaSinkDesktop&) = delete;
+  MediaSinkDesktop& operator=(const MediaSinkDesktop&) = delete;
+
   ~MediaSinkDesktop();
 
   void SetPlaybackRate(float rate);
@@ -34,8 +38,6 @@ class MediaSinkDesktop {
   base::TimeDelta last_frame_pts_;
   bool received_eos_;
   base::CancelableOnceClosure eos_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSinkDesktop);
 };
 
 }  // namespace media

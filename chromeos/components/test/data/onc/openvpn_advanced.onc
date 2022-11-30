@@ -1,0 +1,17 @@
+{
+    "GUID": "openvpn_guid",
+    "Name": "openvpn",
+    "Type": "VPN",
+    "VPN": {
+        "Host": "example.com",
+        "Type": "OpenVPN",
+        "OpenVPN": {
+            "Auth": "MD5",
+            "Cipher": "AES-192-CBC",
+            "ClientCertType": "None",
+            "CompressionAlgorithm": "LZO",
+            "KeyDirection": "1",
+            "TLSAuthContents": "-----BEGIN OpenVPN Static key V1-----\n2447ec1a396b3ea62213f0203f5d1f34\n7c3a32df744694796db50eb22c773dce\n037021473633e15f48338ab60ad91b7f\nab8ac1b2e99ae3be69dfe5220d5c9c29\n696819d4d4a44f356be0cb57f395df5e\n775d9d7d5d5bbb40325b70b064ee93a1\nb83e4b8d61d1b63d9737c2ec2576873b\n958c806df952f0d92ac1f9ba1294f770\na481ccea11e0459a7924440777279b25\n496f5cebe9c8ce9d007e5066e69f65d0\n1c2a7818f8950fcea1c0950e5bd6612a\nc341eb76bec4b8d75514e3801347b6e1\n256cba9bcbfccca64229ecb0a7938639\n4b7a6175d7c58ae871df211066ade567\n2d1236b5a9afc21db8da2dfd229b5dc7\n41e83232cd03df5fc1f3c215407fcd3f\n-----END OpenVPN Static key V1-----\n"
+        }
+    }
+}

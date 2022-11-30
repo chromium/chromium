@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,277 +10,15 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 
-// These are from <dxva.h> in a newer SDK than the one Chrome ships with. They
-// should be deleted once Chrome switches to the updated SDK; they have been
-// copied from: https://www.microsoft.com/en-us/download/details.aspx?id=101577
-#pragma pack(push, 1)
-typedef struct _DXVA_PicEntry_AV1 {
-  UINT width;
-  UINT height;
-
-  // Global motion parameters
-  INT wmmat[6];
-  union {
-    struct {
-      UCHAR wminvalid : 1;
-      UCHAR wmtype : 2;
-      UCHAR Reserved : 5;
-    };
-    UCHAR wGlobalMotionFlags;
-  };
-
-  UCHAR Index;
-  USHORT Reserved16Bits;
-
-} DXVA_PicEntry_AV1, *LPDXVA_PicEntry_AV1;
-
-/* AV1 picture parameters structure */
-typedef struct _DXVA_PicParams_AV1 {
-  UINT width;
-  UINT height;
-
-  UINT max_width;
-  UINT max_height;
-
-  UCHAR CurrPicTextureIndex;
-  UCHAR superres_denom;
-  UCHAR bitdepth;
-  UCHAR seq_profile;
-
-  // Tiles:
-  struct {
-    UCHAR cols;
-    UCHAR rows;
-    USHORT context_update_id;
-    USHORT widths[64];
-    USHORT heights[64];
-  } tiles;
-
-  // Coding Tools
-  union {
-    struct {
-      UINT use_128x128_superblock : 1;
-      UINT intra_edge_filter : 1;
-      UINT interintra_compound : 1;
-      UINT masked_compound : 1;
-      UINT warped_motion : 1;
-      UINT dual_filter : 1;
-      UINT jnt_comp : 1;
-      UINT screen_content_tools : 1;
-      UINT integer_mv : 1;
-      UINT cdef : 1;
-      UINT restoration : 1;
-      UINT film_grain : 1;
-      UINT intrabc : 1;
-      UINT high_precision_mv : 1;
-      UINT switchable_motion_mode : 1;
-      UINT filter_intra : 1;
-      UINT disable_frame_end_update_cdf : 1;
-      UINT disable_cdf_update : 1;
-      UINT reference_mode : 1;
-      UINT skip_mode : 1;
-      UINT reduced_tx_set : 1;
-      UINT superres : 1;
-      UINT tx_mode : 2;
-      UINT use_ref_frame_mvs : 1;
-      UINT enable_ref_frame_mvs : 1;
-      UINT reference_frame_update : 1;
-      UINT Reserved : 5;
-    };
-    UINT32 CodingParamToolFlags;
-  } coding;
-
-  // Format & Picture Info flags
-  union {
-    struct {
-      UCHAR frame_type : 2;
-      UCHAR show_frame : 1;
-      UCHAR showable_frame : 1;
-      UCHAR subsampling_x : 1;
-      UCHAR subsampling_y : 1;
-      UCHAR mono_chrome : 1;
-      UCHAR Reserved : 1;
-    };
-    UCHAR FormatAndPictureInfoFlags;
-  } format;
-
-  // References
-  UCHAR primary_ref_frame;
-  UCHAR order_hint;
-  UCHAR order_hint_bits;
-
-  DXVA_PicEntry_AV1 frame_refs[7];
-  UCHAR RefFrameMapTextureIndex[8];
-
-  // Loop filter parameters
-  struct {
-    UCHAR filter_level[2];
-    UCHAR filter_level_u;
-    UCHAR filter_level_v;
-
-    UCHAR sharpness_level;
-    union {
-      struct {
-        UCHAR mode_ref_delta_enabled : 1;
-        UCHAR mode_ref_delta_update : 1;
-        UCHAR delta_lf_multi : 1;
-        UCHAR delta_lf_present : 1;
-        UCHAR Reserved : 4;
-      };
-      UCHAR ControlFlags;
-    } DUMMYUNIONNAME;
-    CHAR ref_deltas[8];
-    CHAR mode_deltas[2];
-    UCHAR delta_lf_res;
-    UCHAR frame_restoration_type[3];
-    USHORT log2_restoration_unit_size[3];
-    UINT16 Reserved16Bits;
-  } loop_filter;
-
-  // Quantization
-  struct {
-    union {
-      struct {
-        UCHAR delta_q_present : 1;
-        UCHAR delta_q_res : 2;
-        UCHAR Reserved : 5;
-      };
-      UCHAR ControlFlags;
-    } DUMMYUNIONNAME;
-
-    UCHAR base_qindex;
-    CHAR y_dc_delta_q;
-    CHAR u_dc_delta_q;
-    CHAR v_dc_delta_q;
-    CHAR u_ac_delta_q;
-    CHAR v_ac_delta_q;
-    // using_qmatrix:
-    UCHAR qm_y;
-    UCHAR qm_u;
-    UCHAR qm_v;
-    UINT16 Reserved16Bits;
-  } quantization;
-
-  // Cdef parameters
-  struct {
-    union {
-      struct {
-        UCHAR damping : 2;
-        UCHAR bits : 2;
-        UCHAR Reserved : 4;
-      };
-      UCHAR ControlFlags;
-    } DUMMYUNIONNAME;
-
-    union {
-      struct {
-        UCHAR primary : 6;
-        UCHAR secondary : 2;
-      };
-      UCHAR combined;
-    } y_strengths[8];
-
-    union {
-      struct {
-        UCHAR primary : 6;
-        UCHAR secondary : 2;
-      };
-      UCHAR combined;
-    } uv_strengths[8];
-
-  } cdef;
-
-  UCHAR interp_filter;
-
-  // Segmentation
-  struct {
-    union {
-      struct {
-        UCHAR enabled : 1;
-        UCHAR update_map : 1;
-        UCHAR update_data : 1;
-        UCHAR temporal_update : 1;
-        UCHAR Reserved : 4;
-      };
-      UCHAR ControlFlags;
-    } DUMMYUNIONNAME;
-    UCHAR Reserved24Bits[3];
-
-    union {
-      struct {
-        UCHAR alt_q : 1;
-        UCHAR alt_lf_y_v : 1;
-        UCHAR alt_lf_y_h : 1;
-        UCHAR alt_lf_u : 1;
-        UCHAR alt_lf_v : 1;
-        UCHAR ref_frame : 1;
-        UCHAR skip : 1;
-        UCHAR globalmv : 1;
-      };
-      UCHAR mask;
-    } feature_mask[8];
-
-    SHORT feature_data[8][8];
-
-  } segmentation;
-
-  struct {
-    union {
-      struct {
-        USHORT apply_grain : 1;
-        USHORT scaling_shift_minus8 : 2;
-        USHORT chroma_scaling_from_luma : 1;
-        USHORT ar_coeff_lag : 2;
-        USHORT ar_coeff_shift_minus6 : 2;
-        USHORT grain_scale_shift : 2;
-        USHORT overlap_flag : 1;
-        USHORT clip_to_restricted_range : 1;
-        USHORT matrix_coeff_is_identity : 1;
-        USHORT Reserved : 3;
-      };
-      USHORT ControlFlags;
-    } DUMMYUNIONNAME;
-
-    USHORT grain_seed;
-    UCHAR scaling_points_y[14][2];
-    UCHAR num_y_points;
-    UCHAR scaling_points_cb[10][2];
-    UCHAR num_cb_points;
-    UCHAR scaling_points_cr[10][2];
-    UCHAR num_cr_points;
-    UCHAR ar_coeffs_y[24];
-    UCHAR ar_coeffs_cb[25];
-    UCHAR ar_coeffs_cr[25];
-    UCHAR cb_mult;
-    UCHAR cb_luma_mult;
-    UCHAR cr_mult;
-    UCHAR cr_luma_mult;
-    UCHAR Reserved8Bits;
-    SHORT cb_offset;
-    SHORT cr_offset;
-  } film_grain;
-
-  UINT Reserved32Bits;
-  UINT StatusReportFeedbackNumber;
-} DXVA_PicParams_AV1, *LPDXVA_PicParams_AV1;
-
-typedef struct _DXVA_Tile_AV1 {
-  UINT DataOffset;
-  UINT DataSize;
-  USHORT row;
-  USHORT column;
-  USHORT Reserved16Bits;
-  UCHAR anchor_frame;
-  UCHAR Reserved8Bits;
-} DXVA_Tile_AV1, *LPDXVA_Tile_AV1;
-#pragma pack(pop)
-
 namespace media {
+
+using DecodeStatus = AV1Decoder::AV1Accelerator::Status;
 
 class D3D11AV1Picture : public AV1Picture {
  public:
@@ -308,8 +46,8 @@ class D3D11AV1Picture : public AV1Picture {
     return this;
   }
 
-  D3D11PictureBuffer* const picture_buffer_;
-  D3D11VideoDecoderClient* const client_;
+  const raw_ptr<D3D11PictureBuffer> picture_buffer_;
+  const raw_ptr<D3D11VideoDecoderClient> client_;
   const bool apply_grain_;
   const size_t picture_index_;
 };
@@ -369,9 +107,9 @@ class D3D11AV1Accelerator::ScopedDecoderBuffer {
   HRESULT error() const { return driver_call_result_; }
 
  private:
-  MediaLog* const media_log_;
-  VideoContextWrapper* const context_;
-  ID3D11VideoDecoder* const decoder_;
+  const raw_ptr<MediaLog> media_log_;
+  const raw_ptr<VideoContextWrapper> context_;
+  const raw_ptr<ID3D11VideoDecoder> decoder_;
   const D3D11_VIDEO_DECODER_BUFFER_TYPE type_;
   base::span<uint8_t> buffer_;
   HRESULT driver_call_result_ = S_OK;
@@ -395,11 +133,15 @@ D3D11AV1Accelerator::D3D11AV1Accelerator(
 D3D11AV1Accelerator::~D3D11AV1Accelerator() {}
 
 void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
+                                        D3D11Status error) {
+  RecordFailure(fail_type, error.message(), error.code());
+}
+
+void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
                                         const std::string& message,
-                                        StatusCode reason) {
+                                        D3D11Status::Codes reason) {
   MEDIA_LOG(ERROR, media_log_)
       << "DX11AV1Failure(" << fail_type << ")=" << message;
-  base::UmaHistogramSparse("Media.D3D11.AV1Status", static_cast<int>(reason));
 }
 
 scoped_refptr<AV1Picture> D3D11AV1Accelerator::CreateAV1Picture(
@@ -424,7 +166,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   if (params_buffer.empty() || params_buffer.size() < sizeof(pic_params)) {
     RecordFailure("SubmitDecoderBuffers",
                   logging::SystemErrorCodeToString(params_buffer.error()),
-                  StatusCode::kGetPicParamBufferFailed);
+                  D3D11Status::Codes::kGetPicParamBufferFailed);
     return false;
   }
 
@@ -436,7 +178,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   if (tile_buffer.empty() || tile_buffer.size() < tile_size) {
     RecordFailure("SubmitDecoderBuffers",
                   logging::SystemErrorCodeToString(tile_buffer.error()),
-                  StatusCode::kGetSliceControlBufferFailed);
+                  D3D11Status::Codes::kGetSliceControlBufferFailed);
     return false;
   }
 
@@ -450,7 +192,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   if (bitstream_buffer.empty() || bitstream_buffer.size() < bitstream_size) {
     RecordFailure("SubmitDecoderBuffers",
                   logging::SystemErrorCodeToString(bitstream_buffer.error()),
-                  StatusCode::kGetBitstreamBufferFailed);
+                  D3D11Status::Codes::kGetBitstreamBufferFailed);
     return false;
   }
 
@@ -485,14 +227,14 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
                                                        kBuffersCount, buffers);
   if (FAILED(hr)) {
     RecordFailure("SubmitDecoderBuffers", logging::SystemErrorCodeToString(hr),
-                  StatusCode::kSubmitDecoderBuffersFailed);
+                  D3D11Status::Codes::kSubmitDecoderBuffersFailed);
     return false;
   }
 
   return true;
 }
 
-bool D3D11AV1Accelerator::SubmitDecode(
+DecodeStatus D3D11AV1Accelerator::SubmitDecode(
     const AV1Picture& pic,
     const libgav1::ObuSequenceHeader& seq_header,
     const AV1ReferenceFrameVector& ref_frames,
@@ -500,17 +242,24 @@ bool D3D11AV1Accelerator::SubmitDecode(
     base::span<const uint8_t> data) {
   const D3D11AV1Picture* pic_ptr = static_cast<const D3D11AV1Picture*>(&pic);
   do {
-    const auto hr = video_context_->DecoderBeginFrame(
-        video_decoder_.Get(), pic_ptr->picture_buffer()->output_view().Get(), 0,
-        nullptr);
+    ID3D11VideoDecoderOutputView* output_view = nullptr;
+    auto result = pic_ptr->picture_buffer()->AcquireOutputView();
+    if (result.has_value()) {
+      output_view = std::move(result).value();
+    } else {
+      RecordFailure("AcquireOutputView", std::move(result).error());
+      return DecodeStatus::kFail;
+    }
+    const auto hr = video_context_->DecoderBeginFrame(video_decoder_.Get(),
+                                                      output_view, 0, nullptr);
     if (SUCCEEDED(hr)) {
       break;
     } else if (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING) {
       base::PlatformThread::YieldCurrentThread();
     } else if (FAILED(hr)) {
       RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr),
-                    StatusCode::kDecoderBeginFrameFailed);
-      return false;
+                    D3D11Status::Codes::kDecoderBeginFrameFailed);
+      return DecodeStatus::kFail;
     }
   } while (true);
 
@@ -520,16 +269,16 @@ bool D3D11AV1Accelerator::SubmitDecode(
                 ref_frames, &pic_params);
 
   if (!SubmitDecoderBuffer(pic_params, tile_buffers))
-    return false;
+    return DecodeStatus::kFail;
 
   const auto hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (FAILED(hr)) {
     RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr),
-                  StatusCode::kDecoderEndFrameFailed);
-    return false;
+                  D3D11Status::Codes::kDecoderEndFrameFailed);
+    return DecodeStatus::kFail;
   }
 
-  return true;
+  return DecodeStatus::kOk;
 }
 
 bool D3D11AV1Accelerator::OutputPicture(const AV1Picture& pic) {
@@ -744,14 +493,20 @@ void D3D11AV1Accelerator::FillPicParams(
   pp->cdef.damping = frame_header.cdef.damping - coeff_shift - 3u;
   pp->cdef.bits = frame_header.cdef.bits;
   for (size_t i = 0; i < libgav1::kMaxCdefStrengths; ++i) {
+    // libgav1's computation will give values of |4| for secondary strengths
+    // despite it being a two-bit entry with range 0-3, so check for this, and
+    // subtract.
+    // See https://aomediacodec.github.io/av1-spec/#cdef-params-syntax
+    uint8_t y_str = frame_header.cdef.y_secondary_strength[i] >> coeff_shift;
+    uint8_t uv_str = frame_header.cdef.uv_secondary_strength[i] >> coeff_shift;
+    y_str = y_str == 4 ? 3 : y_str;
+    uv_str = uv_str == 4 ? 3 : uv_str;
     pp->cdef.y_strengths[i].primary =
         frame_header.cdef.y_primary_strength[i] >> coeff_shift;
-    pp->cdef.y_strengths[i].secondary =
-        frame_header.cdef.y_secondary_strength[i] >> coeff_shift;
+    pp->cdef.y_strengths[i].secondary = y_str;
     pp->cdef.uv_strengths[i].primary =
         frame_header.cdef.uv_primary_strength[i] >> coeff_shift;
-    pp->cdef.uv_strengths[i].secondary =
-        frame_header.cdef.uv_secondary_strength[i] >> coeff_shift;
+    pp->cdef.uv_strengths[i].secondary = uv_str;
   }
 
   pp->interp_filter = frame_header.interpolation_filter;
@@ -798,19 +553,26 @@ void D3D11AV1Accelerator::FillPicParams(
       pp->film_grain.scaling_points_cr[i][0] = fg.point_v_value[i];
       pp->film_grain.scaling_points_cr[i][1] = fg.point_v_scaling[i];
     }
-    for (size_t i = 0; i < base::size(fg.auto_regression_coeff_y); ++i) {
+    for (size_t i = 0; i < std::size(fg.auto_regression_coeff_y); ++i) {
       pp->film_grain.ar_coeffs_y[i] = fg.auto_regression_coeff_y[i] + 128;
     }
-    for (size_t i = 0; i < base::size(fg.auto_regression_coeff_u); ++i) {
+    for (size_t i = 0; i < std::size(fg.auto_regression_coeff_u); ++i) {
       pp->film_grain.ar_coeffs_cb[i] = fg.auto_regression_coeff_u[i] + 128;
       pp->film_grain.ar_coeffs_cr[i] = fg.auto_regression_coeff_v[i] + 128;
     }
-    pp->film_grain.cb_mult = fg.u_multiplier;
-    pp->film_grain.cb_luma_mult = fg.u_luma_multiplier;
-    pp->film_grain.cb_offset = fg.u_offset;
-    pp->film_grain.cr_mult = fg.v_multiplier;
-    pp->film_grain.cr_luma_mult = fg.v_luma_multiplier;
-    pp->film_grain.cr_offset = fg.v_offset;
+    // libgav1 will provide the multipliers by subtracting 128 and the offsets
+    // by subtracting 256. Restore values as DXVA spec requires values without
+    // subtraction.
+    if (fg.num_u_points > 0) {
+      pp->film_grain.cb_mult = fg.u_multiplier + 128;
+      pp->film_grain.cb_luma_mult = fg.u_luma_multiplier + 128;
+      pp->film_grain.cb_offset = fg.u_offset + 256;
+    }
+    if (fg.num_v_points > 0) {
+      pp->film_grain.cr_mult = fg.v_multiplier + 128;
+      pp->film_grain.cr_luma_mult = fg.v_luma_multiplier + 128;
+      pp->film_grain.cr_offset = fg.v_offset + 256;
+    }
   }
 
   // StatusReportFeedbackNumber "should not be equal to 0"... but it crashes :|

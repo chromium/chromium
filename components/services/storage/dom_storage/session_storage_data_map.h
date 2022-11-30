@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 
@@ -57,6 +57,9 @@ class SessionStorageDataMap final
       scoped_refptr<SessionStorageMetadata::MapData> map_data,
       scoped_refptr<SessionStorageDataMap> clone_from);
 
+  SessionStorageDataMap(const SessionStorageDataMap&) = delete;
+  SessionStorageDataMap& operator=(const SessionStorageDataMap&) = delete;
+
   Listener* listener() const { return listener_; }
 
   StorageAreaImpl* storage_area() { return storage_area_ptr_; }
@@ -94,7 +97,7 @@ class SessionStorageDataMap final
 
   static StorageAreaImpl::Options GetOptions();
 
-  Listener* listener_;
+  raw_ptr<Listener> listener_;
   int binding_count_ = 0;
 
   // If we're cloning from another map, we need to keep it alive while it forks.
@@ -109,9 +112,7 @@ class SessionStorageDataMap final
   // called and need access  to the StorageAreaImpl instance. The
   // unique_ptr could already be null, but this field should still be valid.
   // TODO(dmurph): Change delegate ownership so this doesn't have to be done.
-  StorageAreaImpl* storage_area_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageDataMap);
+  raw_ptr<StorageAreaImpl> storage_area_ptr_;
 };
 
 }  // namespace storage

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div role="menubar">
+  <div id="extra">
+    <div role="menuitem" tabindex="0" id="file-menuitem" aria-haspopup="true" aria-label="File">File
+      <div role="menu" id="file-menu" aria-label="File" tabindex="0">
+        <div role="menuitem" id="new">New</div>
+        <div role="menuitem" id="open">Open...</div>
+        <div role="menuitem" id="quit">Quit</div>
+      </div>
+    </div>
+    <div role="menuitem" id="about" tabindex="0">About</div>
+  </div>
+</div>
+<script>
+  var file_menu = document.getElementById("file-menu");
+  file_menu.focus();
+  const go_passes = [
+    () => file_menu.setAttribute("aria-activedescendant", "new"),
+    () => file_menu.setAttribute("aria-activedescendant", "open"),
+    () => document.getElementById("extra").setAttribute("role", "group"),
+    () => file_menu.setAttribute("aria-activedescendant", "quit"),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 /**
  * @typedef {{
  *   origin: string,
- *   tabId: (number|undefined)
- *   frameId: (number|undefined)
+ *   tabId: number,
+ *   frameId: number,
  * }}
  */
 var WebRequestSender;
@@ -25,14 +25,22 @@ var WebRequestSender;
  *     sender is invalid.
  */
 function createSenderFromMessageSender(messageSender) {
-  var origin = getOriginFromUrl(/** @type {string} */ (messageSender.url));
-  if (!origin) {
+  var origin = messageSender.origin;
+  if (!origin ||
+      (!origin.startsWith('http://') && !origin.startsWith('https://'))) {
     return null;
   }
   var sender = {origin: origin};
   if (messageSender.tab) {
     sender.tabId = messageSender.tab.id;
     sender.frameId = messageSender.frameId;
+  } else {
+    // The MessageSender tab and frameId properties are unset if the
+    // `chrome.tabs` API is unavailable because the request was not sent from a
+    // tab. This is the case for requests made on the Chrome OS sign-in screen
+    // during SAML SSO device login.
+    sender.tabId = chrome.tabs.TAB_ID_NONE;
+    sender.frameId = -1;
   }
   return sender;
 }
@@ -47,7 +55,7 @@ function createSenderFromMessageSender(messageSender) {
  */
 function tabMatchesOrigin(tab, origin) {
   // If the tab's origin matches, trust that the request came from this tab.
-  if (getOriginFromUrl(tab.url) == origin) {
+  if (getOriginFromUrl(tab.url) === origin) {
     return Promise.resolve(tab.id);
   }
   return Promise.reject(false);
@@ -87,7 +95,7 @@ function getTabIdWhenPossible(sender) {
                     },
                     function() {
                       // Didn't match? Check if the debugger is open.
-                      if (tab.url.indexOf('devtools://') != 0) {
+                      if (tab.url.indexOf('devtools://') !== 0) {
                         reject(false);
                         return;
                       }

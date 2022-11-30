@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@
 
 #include <string>
 
-#include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
+#include "base/values.h"
+#include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 
 class PrefService;
 class Profile;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace chromeos {
 
@@ -40,46 +38,58 @@ enum AssistantOptInFlowStatus {
   RELATED_INFO_SHOWN = 16,
   RELATED_INFO_ACCEPTED = 17,
   RELATED_INFO_SKIPPED = 18,
+  ACTIVITY_CONTROL_DA_ACCEPTED = 19,
+  ACTIVITY_CONTROL_DA_SKIPPED = 20,
+  ACTIVITY_CONTROL_WAA_ACCEPTED = 21,
+  ACTIVITY_CONTROL_WAA_SKIPPED = 22,
   // Magic constant used by the histogram macros.
-  kMaxValue = VOICE_MATCH_ENROLLMENT_ERROR
+  kMaxValue = ACTIVITY_CONTROL_WAA_SKIPPED
 };
 
 void RecordAssistantOptInStatus(AssistantOptInFlowStatus);
+void RecordAssistantActivityControlOptInStatus(
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+        setting_type,
+    bool opted_in);
 
 // Construct SettingsUiSelector for the ConsentFlow UI.
-assistant::SettingsUiSelector GetSettingsUiSelector();
+ash::assistant::SettingsUiSelector GetSettingsUiSelector();
 
 // Construct SettingsUiUpdate for user opt-in.
-assistant::SettingsUiUpdate GetSettingsUiUpdate(
+ash::assistant::SettingsUiUpdate GetSettingsUiUpdate(
     const std::string& consent_token);
 
-// Construct SettingsUiUpdate for email opt-in.
-assistant::SettingsUiUpdate GetEmailOptInUpdate(bool opted_in);
-
 using SettingZippyList = google::protobuf::RepeatedPtrField<
-    assistant::ClassicActivityControlUiTexts::SettingZippy>;
+    ash::assistant::ClassicActivityControlUiTexts::SettingZippy>;
+using ActivityControlUi =
+    ash::assistant::ConsentFlowUi::ConsentUi::ActivityControlUi;
 // Helper method to create zippy data.
-base::Value CreateZippyData(const SettingZippyList& zippy_list);
+base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
+                                  bool is_minor_mode);
 
 // Helper method to create disclosure data.
-base::Value CreateDisclosureData(const SettingZippyList& disclosure_list);
-
-// Helper method to create get more screen data.
-base::Value CreateGetMoreData(bool email_optin_needed,
-                              const assistant::EmailOptInUi& email_optin_ui,
-                              PrefService* prefs);
+base::Value::List CreateDisclosureData(const SettingZippyList& disclosure_list);
 
 // Get string constants for settings ui.
-base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
-                                 bool activity_control_needed);
+base::Value::Dict GetSettingsUiStrings(
+    const ash::assistant::SettingsUi& settings_ui,
+    bool activity_control_needed,
+    bool equal_weight_buttons);
 
-void RecordActivityControlConsent(Profile* profile,
-                                  std::string ui_audit_key,
-                                  bool opted_in);
+void RecordActivityControlConsent(
+    Profile* profile,
+    std::string ui_audit_key,
+    bool opted_in,
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+        setting_type);
 
 bool IsHotwordDspAvailable();
 
-bool IsVoiceMatchEnforcedOff(const PrefService* prefs);
+bool IsVoiceMatchEnforcedOff(const PrefService* prefs,
+                             bool is_oobe_in_progress);
+
+sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+GetActivityControlConsentSettingType(const SettingZippyList& setting_zippys);
 
 }  // namespace chromeos
 

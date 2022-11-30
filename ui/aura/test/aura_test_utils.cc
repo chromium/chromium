@@ -1,12 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/aura/test/aura_test_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
-#include "base/macros.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -16,6 +17,9 @@ namespace test {
 class WindowTreeHostTestApi {
  public:
   explicit WindowTreeHostTestApi(WindowTreeHost* host) : host_(host) {}
+
+  WindowTreeHostTestApi(const WindowTreeHostTestApi&) = delete;
+  WindowTreeHostTestApi& operator=(const WindowTreeHostTestApi&) = delete;
 
   const gfx::Point& last_cursor_request_position_in_host() {
     return host_->last_cursor_request_position_in_host_;
@@ -27,10 +31,12 @@ class WindowTreeHostTestApi {
 
   void disable_ime() { host_->dispatcher_->set_skip_ime(true); }
 
- private:
-  WindowTreeHost* host_;
+  static const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
+    return WindowTreeHost::GetThrottledHostsForTesting();
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHostTestApi);
+ private:
+  raw_ptr<WindowTreeHost> host_;
 };
 
 const gfx::Point& QueryLatestMousePositionRequestInHost(WindowTreeHost* host) {
@@ -46,6 +52,14 @@ void SetHostDispatcher(WindowTreeHost* host,
 
 void DisableIME(WindowTreeHost* host) {
   WindowTreeHostTestApi(host).disable_ime();
+}
+
+void DisableNativeWindowOcclusionTracking(WindowTreeHost* host) {
+  NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host);
+}
+
+const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
+  return WindowTreeHostTestApi::GetThrottledHosts();
 }
 
 }  // namespace test

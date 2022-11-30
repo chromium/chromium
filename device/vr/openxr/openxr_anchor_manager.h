@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
-#include "base/optional.h"
 #include "device/vr/openxr/openxr_anchor_request.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -23,6 +23,10 @@ class OpenXrAnchorManager {
   OpenXrAnchorManager(const OpenXrExtensionHelper& extension_helper,
                       XrSession session,
                       XrSpace mojo_space);
+
+  OpenXrAnchorManager(const OpenXrAnchorManager&) = delete;
+  OpenXrAnchorManager& operator=(const OpenXrAnchorManager&) = delete;
+
   ~OpenXrAnchorManager();
 
   void AddCreateAnchorRequest(
@@ -56,14 +60,14 @@ class OpenXrAnchorManager {
     XrPosef pose;
     XrSpace space;
   };
-  base::Optional<XrLocation> GetXrLocationFromNativeOriginInformation(
+  absl::optional<XrLocation> GetXrLocationFromNativeOriginInformation(
       OpenXrApiWrapper* openxr,
       const mojom::VRStageParametersPtr& current_stage_parametersm,
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& native_origin_from_anchor,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state) const;
 
-  base::Optional<XrLocation> GetXrLocationFromReferenceSpace(
+  absl::optional<XrLocation> GetXrLocationFromReferenceSpace(
       OpenXrApiWrapper* openxr,
       const mojom::VRStageParametersPtr& current_stage_parameters,
       const mojom::XRNativeOriginInformation& native_origin_information,
@@ -89,7 +93,6 @@ class OpenXrAnchorManager {
 
   AnchorId::Generator anchor_id_generator_;  // 0 is not a valid anchor ID
   std::map<AnchorId, AnchorData> openxr_anchors_;
-  DISALLOW_COPY_AND_ASSIGN(OpenXrAnchorManager);
 };
 
 }  // namespace device

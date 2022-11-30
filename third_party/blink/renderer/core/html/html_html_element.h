@@ -43,11 +43,7 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
       scoped_refptr<const ComputedStyle> style);
 
  private:
-  void MaybeSetupApplicationCache();
-
   bool IsURLAttribute(const Attribute&) const override;
-  const CSSPropertyValueSet* AdditionalPresentationAttributeStyle() override;
-  void AttachLayoutTree(AttachContext&) override;
 };
 
 }  // namespace blink

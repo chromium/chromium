@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -15,22 +14,22 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/screen_orientation/lock_orientation_callback.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
-// This code assumes that mojom::blink::ScreenOrientation values are included in
-// device::mojom::blink::ScreenOrientationLockType.
+// This code assumes that display::mojom::blink::ScreenOrientation values are
+// included in device::mojom::blink::ScreenOrientationLockType.
 STATIC_ASSERT_ENUM(
-    blink::mojom::blink::ScreenOrientation::kPortraitPrimary,
+    display::mojom::blink::ScreenOrientation::kPortraitPrimary,
     device::mojom::blink::ScreenOrientationLockType::PORTRAIT_PRIMARY);
 STATIC_ASSERT_ENUM(
-    blink::mojom::blink::ScreenOrientation::kPortraitSecondary,
+    display::mojom::blink::ScreenOrientation::kPortraitSecondary,
     device::mojom::blink::ScreenOrientationLockType::PORTRAIT_SECONDARY);
 STATIC_ASSERT_ENUM(
-    blink::mojom::blink::ScreenOrientation::kLandscapePrimary,
+    display::mojom::blink::ScreenOrientation::kLandscapePrimary,
     device::mojom::blink::ScreenOrientationLockType::LANDSCAPE_PRIMARY);
 STATIC_ASSERT_ENUM(
-    blink::mojom::blink::ScreenOrientation::kLandscapeSecondary,
+    display::mojom::blink::ScreenOrientation::kLandscapeSecondary,
     device::mojom::blink::ScreenOrientationLockType::LANDSCAPE_SECONDARY);
 
 namespace blink {
@@ -67,13 +66,13 @@ static ScreenOrientationInfo* OrientationsMap(unsigned& length) {
       {portrait, device::mojom::blink::ScreenOrientationLockType::PORTRAIT},
       {landscape, device::mojom::blink::ScreenOrientationLockType::LANDSCAPE},
       {natural, device::mojom::blink::ScreenOrientationLockType::NATURAL}};
-  length = base::size(orientation_map);
+  length = std::size(orientation_map);
 
   return orientation_map;
 }
 
 const AtomicString& ScreenOrientation::OrientationTypeToString(
-    mojom::blink::ScreenOrientation orientation) {
+    display::mojom::blink::ScreenOrientation orientation) {
   unsigned length = 0;
   ScreenOrientationInfo* orientation_map = OrientationsMap(length);
   for (unsigned i = 0; i < length; ++i) {
@@ -110,7 +109,7 @@ ScreenOrientation* ScreenOrientation::Create(LocalDOMWindow* window) {
 
 ScreenOrientation::ScreenOrientation(LocalDOMWindow* window)
     : ExecutionContextClient(window),
-      type_(mojom::blink::ScreenOrientation::kUndefined),
+      type_(display::mojom::blink::ScreenOrientation::kUndefined),
       angle_(0) {}
 
 ScreenOrientation::~ScreenOrientation() = default;
@@ -131,7 +130,7 @@ uint16_t ScreenOrientation::angle() const {
   return angle_;
 }
 
-void ScreenOrientation::SetType(mojom::blink::ScreenOrientation type) {
+void ScreenOrientation::SetType(display::mojom::blink::ScreenOrientation type) {
   type_ = type;
 }
 
@@ -152,8 +151,12 @@ ScriptPromise ScreenOrientation::lock(ScriptState* state,
   if (GetExecutionContext()->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kOrientationLock)) {
     exception_state.ThrowSecurityError(
-        "The window is sandboxed and lacks the "
-        "'allow-orientation-lock' flag.");
+        To<LocalDOMWindow>(GetExecutionContext())
+                ->GetFrame()
+                ->IsInFencedFrameTree()
+            ? "The window is in a fenced frame tree."
+            : "The window is sandboxed and lacks the 'allow-orientation-lock' "
+              "flag.");
     return ScriptPromise();
   }
 

@@ -1,26 +1,24 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 
-#include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
-#include "base/run_loop.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/run_loop.h"
 #import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#include "ui/base/test/ios/ui_image_test_utils.h"
-#include "ui/gfx/image/image.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -65,7 +63,7 @@ using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
 namespace {
 
-// Returns whether the |image| dominant color is |color|.
+// Returns whether the `image` dominant color is `color`.
 bool IsDominantColorForImage(UIImage* image, UIColor* color) {
   UIColor* dominant_color =
       DominantColorForImage(gfx::Image(image), /*opacity=*/1.0);
@@ -87,9 +85,8 @@ class SnapshotTabHelperTest : public PlatformTest {
  public:
   SnapshotTabHelperTest() {
     // Create the SnapshotTabHelper with a fake delegate.
-    snapshot_id_ = [[NSUUID UUID] UUIDString];
     delegate_ = [[TabHelperSnapshotGeneratorDelegate alloc] init];
-    SnapshotTabHelper::CreateForWebState(&web_state_, snapshot_id_);
+    SnapshotTabHelper::CreateForWebState(&web_state_);
     SnapshotTabHelper::FromWebState(&web_state_)->SetDelegate(delegate_);
 
     // Set custom snapshot cache.
@@ -107,10 +104,15 @@ class SnapshotTabHelperTest : public PlatformTest {
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
   }
+
+  SnapshotTabHelperTest(const SnapshotTabHelperTest&) = delete;
+  SnapshotTabHelperTest& operator=(const SnapshotTabHelperTest&) = delete;
+
   ~SnapshotTabHelperTest() override { [snapshot_cache_ shutdown]; }
 
   void SetCachedSnapshot(UIImage* image) {
-    [snapshot_cache_ setImage:image withSnapshotID:snapshot_id_];
+    [snapshot_cache_ setImage:image
+               withSnapshotID:web_state_.GetStableIdentifier()];
   }
 
   UIImage* GetCachedSnapshot() {
@@ -118,7 +120,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    [snapshot_cache_ retrieveImageForSnapshotID:snapshot_id_
+    [snapshot_cache_ retrieveImageForSnapshotID:web_state_.GetStableIdentifier()
                                        callback:^(UIImage* cached_snapshot) {
                                          snapshot = cached_snapshot;
                                          run_loop_ptr->Quit();
@@ -133,11 +135,7 @@ class SnapshotTabHelperTest : public PlatformTest {
   base::ScopedTempDir scoped_temp_directory_;
   TabHelperSnapshotGeneratorDelegate* delegate_ = nil;
   SnapshotCache* snapshot_cache_ = nil;
-  NSString* snapshot_id_ = nil;
   web::FakeWebState web_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SnapshotTabHelperTest);
 };
 
 // Tests that RetrieveColorSnapshot uses the image from the cache if
@@ -351,11 +349,10 @@ TEST_F(SnapshotTabHelperTest, RemoveSnapshot) {
 TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   id partialMock = OCMPartialMock(snapshot_cache_);
   auto web_state = std::make_unique<web::FakeWebState>();
-  TabIdTabHelper::CreateForWebState(web_state.get());
 
-  NSString* tab_id = TabIdTabHelper::FromWebState(web_state.get())->tab_id();
-  SnapshotTabHelper::CreateForWebState(web_state.get(), tab_id);
-  [[partialMock reject] removeImageWithSnapshotID:tab_id];
+  SnapshotTabHelper::CreateForWebState(web_state.get());
+  [[partialMock reject]
+      removeImageWithSnapshotID:web_state.get()->GetStableIdentifier()];
 
   // Use @try/@catch as -reject raises an exception.
   @try {

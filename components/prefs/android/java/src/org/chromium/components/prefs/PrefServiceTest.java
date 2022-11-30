@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,5 +104,13 @@ public class PrefServiceTest {
         doReturn(expected).when(mNativeMock).isManagedPreference(NATIVE_HANDLE, PREF);
 
         assertEquals(expected, mPrefService.isManagedPreference(PREF));
+    }
+
+    @Test
+    public void testIsDefaultValuePreference() {
+        for (boolean expected : new boolean[] {false, true}) {
+            doReturn(expected).when(mNativeMock).isDefaultValuePreference(NATIVE_HANDLE, PREF);
+            assertEquals(expected, mPrefService.isDefaultValuePreference(PREF));
+        }
     }
 }

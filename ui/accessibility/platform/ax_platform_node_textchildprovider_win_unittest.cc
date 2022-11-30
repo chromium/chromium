@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,7 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
 
     Init(update);
 
-    AXNode* root_node = GetRootAsAXNode();
+    AXNode* root_node = GetRoot();
     AXNode* nontext_child_of_root_node = root_node->children()[0];
     AXNode* text_child_of_root_node = root_node->children()[1];
     AXNode* nontext_child_of_nontext_node =
@@ -105,6 +105,7 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
     InitITextChildProvider(text_child_of_text_node,
                            text_child_of_text_text_provider_raw_,
                            text_child_of_text_text_child_provider_);
+    AXPlatformNodeWinTest::SetUp();
   }
 
   void InitITextChildProvider(
@@ -127,6 +128,16 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
           ui::AXPlatformNodeTextChildProviderWin::Create(platform_node);
       new_child_provider->QueryInterface(IID_PPV_ARGS(&text_child_provider));
     }
+  }
+
+  void SetOwner(AXPlatformNodeWin* owner,
+                ITextRangeProvider* destination_range) {
+    ComPtr<ITextRangeProvider> destination_provider = destination_range;
+    ComPtr<AXPlatformNodeTextRangeProviderWin> destination_provider_interal;
+
+    destination_provider->QueryInterface(
+        IID_PPV_ARGS(&destination_provider_interal));
+    destination_provider_interal->SetOwnerForTesting(owner);
   }
 
   ComPtr<IRawElementProviderSimple> root_provider_raw_;
@@ -267,12 +278,18 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       nontext_child_of_root_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
+  ASSERT_NE(nullptr, owner);
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
+  // By design, empty objects, such as the unlabelled image in this case, are
+  // placed in their own paragraph for easier screen reader navigation.
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(base::WideToUTF16(text_content.Get()),
-            kEmbeddedCharacterAsString + u"text child of nontext.");
+            kEmbeddedCharacterAsString + u"\ntext child of nontext.");
 
   ComPtr<IRawElementProviderSimple> enclosing_element;
   text_range_provider->GetEnclosingElement(&enclosing_element);
@@ -286,6 +303,10 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       text_child_of_root_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
+  ASSERT_NE(nullptr, owner);
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
@@ -305,6 +326,10 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       nontext_child_of_nontext_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
+  ASSERT_NE(nullptr, owner);
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
@@ -324,6 +349,10 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       text_child_of_nontext_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
+  ASSERT_NE(nullptr, owner);
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
@@ -343,6 +372,10 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       text_child_of_text_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
+  ASSERT_NE(nullptr, owner);
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(

@@ -15,7 +15,7 @@
     <div class="list-item" focus-row-container>
       <div class="settings-row"
           actionable$="[[allowNavigateToSiteDetail_]]" on-click="onOriginTap_">
-        <site-favicon url="[[model.origin]]"></site-favicon>
+        <site-favicon url="[[computeFaviconOrigin_(model)]]"></site-favicon>
         <div class="middle no-min-width">
           <div class="text-elide">
             <span class="url-directionality">
@@ -23,7 +23,7 @@
           </div>
 
           <!-- This div must not contain extra whitespace. -->
-          <div class="secondary text-elide"
+          <div class="secondary"
               id="siteDescription">[[computeSiteDescription_(model)]]</div>
         </div>
         <template is="dom-if" if="[[allowNavigateToSiteDetail_]]">

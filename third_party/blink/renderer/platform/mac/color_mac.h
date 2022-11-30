@@ -39,4 +39,4 @@ namespace blink {
 PLATFORM_EXPORT NSColor* NsColor(const Color&);
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MAC_COLOR_MAC_H_

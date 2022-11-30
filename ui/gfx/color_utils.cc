@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -18,7 +19,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_palette.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "skia/ext/skia_utils_win.h"
 #endif
@@ -64,7 +65,244 @@ float Linearize(float eight_bit_component) {
                                  : pow((component + 0.055f) / 1.055f, 2.4f);
 }
 
+constexpr size_t kNumGoogleColors = 12;
+constexpr SkColor kGrey[kNumGoogleColors] = {
+    SK_ColorWHITE,       gfx::kGoogleGrey050, gfx::kGoogleGrey100,
+    gfx::kGoogleGrey200, gfx::kGoogleGrey300, gfx::kGoogleGrey400,
+    gfx::kGoogleGrey500, gfx::kGoogleGrey600, gfx::kGoogleGrey700,
+    gfx::kGoogleGrey800, gfx::kGoogleGrey900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kRed[kNumGoogleColors] = {
+    SK_ColorWHITE,      gfx::kGoogleRed050, gfx::kGoogleRed100,
+    gfx::kGoogleRed200, gfx::kGoogleRed300, gfx::kGoogleRed400,
+    gfx::kGoogleRed500, gfx::kGoogleRed600, gfx::kGoogleRed700,
+    gfx::kGoogleRed800, gfx::kGoogleRed900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kOrange[kNumGoogleColors] = {
+    SK_ColorWHITE,         gfx::kGoogleOrange050, gfx::kGoogleOrange100,
+    gfx::kGoogleOrange200, gfx::kGoogleOrange300, gfx::kGoogleOrange400,
+    gfx::kGoogleOrange500, gfx::kGoogleOrange600, gfx::kGoogleOrange700,
+    gfx::kGoogleOrange800, gfx::kGoogleOrange900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kYellow[kNumGoogleColors] = {
+    SK_ColorWHITE,         gfx::kGoogleYellow050, gfx::kGoogleYellow100,
+    gfx::kGoogleYellow200, gfx::kGoogleYellow300, gfx::kGoogleYellow400,
+    gfx::kGoogleYellow500, gfx::kGoogleYellow600, gfx::kGoogleYellow700,
+    gfx::kGoogleYellow800, gfx::kGoogleYellow900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kGreen[kNumGoogleColors] = {
+    SK_ColorWHITE,        gfx::kGoogleGreen050, gfx::kGoogleGreen100,
+    gfx::kGoogleGreen200, gfx::kGoogleGreen300, gfx::kGoogleGreen400,
+    gfx::kGoogleGreen500, gfx::kGoogleGreen600, gfx::kGoogleGreen700,
+    gfx::kGoogleGreen800, gfx::kGoogleGreen900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kCyan[kNumGoogleColors] = {
+    SK_ColorWHITE,       gfx::kGoogleCyan050, gfx::kGoogleCyan100,
+    gfx::kGoogleCyan200, gfx::kGoogleCyan300, gfx::kGoogleCyan400,
+    gfx::kGoogleCyan500, gfx::kGoogleCyan600, gfx::kGoogleCyan700,
+    gfx::kGoogleCyan800, gfx::kGoogleCyan900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kBlue[kNumGoogleColors] = {
+    SK_ColorWHITE,       gfx::kGoogleBlue050, gfx::kGoogleBlue100,
+    gfx::kGoogleBlue200, gfx::kGoogleBlue300, gfx::kGoogleBlue400,
+    gfx::kGoogleBlue500, gfx::kGoogleBlue600, gfx::kGoogleBlue700,
+    gfx::kGoogleBlue800, gfx::kGoogleBlue900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kPurple[kNumGoogleColors] = {
+    SK_ColorWHITE,         gfx::kGooglePurple050, gfx::kGooglePurple100,
+    gfx::kGooglePurple200, gfx::kGooglePurple300, gfx::kGooglePurple400,
+    gfx::kGooglePurple500, gfx::kGooglePurple600, gfx::kGooglePurple700,
+    gfx::kGooglePurple800, gfx::kGooglePurple900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kMagenta[kNumGoogleColors] = {
+    SK_ColorWHITE,          gfx::kGoogleMagenta050, gfx::kGoogleMagenta100,
+    gfx::kGoogleMagenta200, gfx::kGoogleMagenta300, gfx::kGoogleMagenta400,
+    gfx::kGoogleMagenta500, gfx::kGoogleMagenta600, gfx::kGoogleMagenta700,
+    gfx::kGoogleMagenta800, gfx::kGoogleMagenta900, gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kPink[kNumGoogleColors] = {
+    SK_ColorWHITE,       gfx::kGooglePink050, gfx::kGooglePink100,
+    gfx::kGooglePink200, gfx::kGooglePink300, gfx::kGooglePink400,
+    gfx::kGooglePink500, gfx::kGooglePink600, gfx::kGooglePink700,
+    gfx::kGooglePink800, gfx::kGooglePink900, gfx::kGoogleGrey900,
+};
+
+SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
+                        SkColor color,
+                        SkColor background_color_a,
+                        SkColor background_color_b,
+                        float min_contrast) {
+  // Compute source color, the color in `colors` which is closest to `color`.
+  // First set up `lum_colors`, the corresponding relative luminances of
+  // `colors`.  These could be precomputed and recorded next to `kGrey` etc. for
+  // some runtime speedup at the cost of maintenance pain.
+  float lum_colors[kNumGoogleColors];
+  std::transform(std::cbegin(colors), std::cend(colors), std::begin(lum_colors),
+                 &GetRelativeLuminance);
+  // This function returns an iterator to the least-contrasting luminance (in
+  // `lum_colors`) to `lum`.
+  const auto find_nearest_lum_it = [&lum_colors](float lum) {
+    // Find the first luminance (since they're sorted decreasing) <= `lum`.
+    const auto* it = std::lower_bound(
+        std::cbegin(lum_colors), std::cend(lum_colors), lum, std::greater<>());
+    // If applicable, check against the next greater luminance for whichever is
+    // lower-contrast.
+    if (it == std::cend(lum_colors) ||
+        ((it != std::cbegin(lum_colors)) &&
+         (GetContrastRatio(lum, *it) > GetContrastRatio(*(it - 1), lum)))) {
+      --it;
+    }
+    return it;
+  };
+  const auto* const src_it = find_nearest_lum_it(GetRelativeLuminance(color));
+
+  // Compute target color, the color in `colors` which maximizes simultaneous
+  // contrast against both backgrounds, i.e. maximizes the minimum of the
+  // contrasts with both.
+  // Skip various unnecessary calculations in the common case that there is
+  // really only one background color to contrast with.
+  const bool one_bg = background_color_a == background_color_b;
+  const float lum_a = GetRelativeLuminance(background_color_a);
+  const float lum_b = one_bg ? lum_a : GetRelativeLuminance(background_color_b);
+  // `lum_mid` is a relative luminance between `lum_a` and `lum_b` that
+  // contrasts equally with both.
+  const float lum_mid =
+      one_bg ? lum_a : (std::sqrt((lum_a + 0.05f) * (lum_b + 0.05f)) - 0.05f);
+  // Of the two luminance endpoints, choose the one that contrasts more with
+  // `lum_mid`, as this maximizes the contrast against both backgrounds.  When
+  // there is only one background color, this is the target color.
+  const auto* targ_it = (lum_mid < g_luminance_midpoint)
+                            ? std::cbegin(lum_colors)
+                            : (std::cend(lum_colors) - 1);
+  // This function returns the luminance of whichever background contrasts less
+  // with `lum`.
+  const auto bg_lum_near_lum = [&](float lum) {
+    return ((lum_a > lum_b) == (lum > lum_mid)) ? lum_a : lum_b;
+  };
+  if (!one_bg) {
+    // The most-contrasting color, and thus target, is either the closest color
+    // to `lum_mid` (if the backgrounds are near both endpoints) or the
+    // previously-selected endpoint.  Compare their minimum contrasts.
+    const auto* const mid_it = find_nearest_lum_it(lum_mid);
+    if (GetContrastRatio(bg_lum_near_lum(*mid_it), *mid_it) >
+        GetContrastRatio(bg_lum_near_lum(*targ_it), *targ_it)) {
+      targ_it = mid_it;
+    }
+  }
+
+  // Find first color between source and target, inclusive, for which contrast
+  // reaches `min_contrast` threshold.
+  const auto* res_it = src_it;
+  // This function returns whether the minimum contrast of `lum` against the
+  // backgrounds is underneath the threshold `con`.
+  const auto comp = [&](float lum, float con) {
+    const float lum_near = bg_lum_near_lum(lum);
+    return GetContrastRatio(lum, lum_near) < con;
+  };
+  // Depending on how the colors are arranged, the source may have sufficient
+  // contrast against both backgrounds while some subsequent colors do not.  In
+  // this case we can return immediately.
+  if ((src_it != targ_it) && comp(*src_it, min_contrast)) {
+    // The source does not have sufficient contrast, which means the range of
+    // `lum_colors` we care about is partitioned into a set that contrasts
+    // insufficiently followed by a (possibly-empty) set that contrasts
+    // sufficiently.  Use std::lower_bound() to find the first element of the
+    // latter set (or, if that set is empty, the last element of the former).
+    if (targ_it < src_it) {
+      // Reverse iterate over [src_it - 1, targ_it).
+      const auto res_it_reversed = std::lower_bound(
+          std::make_reverse_iterator(src_it),
+          std::make_reverse_iterator(targ_it + 1), min_contrast, comp);
+      res_it = res_it_reversed.base() - 1;
+    } else {
+      res_it = std::lower_bound(src_it + 1, targ_it, min_contrast, comp);
+    }
+  }
+  return colors[res_it - std::begin(lum_colors)];
+}
+
+template <typename T>
+SkColor PickGoogleColorImpl(SkColor color, T pick_color) {
+  HSL hsl;
+  SkColorToHSL(color, &hsl);
+  if (hsl.s < 0.1) {
+    // Low saturation, let this be a grey.
+    return pick_color(kGrey);
+  }
+
+  // Map hue to angles for readability.
+  const float color_angle = hsl.h * 360;
+
+  // Hues in comments below are of the corresponding kGoogleXXX500 color.
+  // Every cutoff is a halfway point between the two neighboring hue values to
+  // provide as fair of a representation as possible for what color should be
+  // used.
+  // RED: 4
+  if (color_angle < 15)
+    return pick_color(kRed);
+  // ORANGE: 26
+  if (color_angle < 35)
+    return pick_color(kOrange);
+  // YELLOW: 44
+  if (color_angle < 90)
+    return pick_color(kYellow);
+  // GREEN: 136
+  if (color_angle < 163)
+    return pick_color(kGreen);
+  // CYAN: 189
+  // In dark mode, the Mac system blue hue is right on the border between a
+  // kGoogleCyan and kGoogleBlue color, so the cutoff point is tweaked to make
+  // it map to a kGoogleBlue color.
+  if (color_angle < 202)
+    return pick_color(kCyan);
+  // BLUE: 217
+  if (color_angle < 245)
+    return pick_color(kBlue);
+  // PURPLE: 272
+  if (color_angle < 284)
+    return pick_color(kPurple);
+  // MAGENTA: 295
+  if (color_angle < 311)
+    return pick_color(kMagenta);
+  // PINK: 326
+  if (color_angle < 345)
+    return pick_color(kPink);
+
+  // End of hue wheel is red.
+  return pick_color(kRed);
+}
+
 }  // namespace
+
+SkColor PickGoogleColor(SkColor color,
+                        SkColor background_color,
+                        float min_contrast) {
+  const auto pick_color = [&](const SkColor(&colors)[kNumGoogleColors]) {
+    return PickGoogleColor(colors, color, background_color, background_color,
+                           min_contrast);
+  };
+  return PickGoogleColorImpl(color, pick_color);
+}
+
+SkColor PickGoogleColor(SkColor color,
+                        SkColor background_color_a,
+                        SkColor background_color_b,
+                        float min_contrast) {
+  const auto pick_color = [&](const SkColor(&colors)[kNumGoogleColors]) {
+    return PickGoogleColor(colors, color, background_color_a,
+                           background_color_b, min_contrast);
+  };
+  return PickGoogleColorImpl(color, pick_color);
+}
 
 float GetContrastRatio(SkColor color_a, SkColor color_b) {
   return GetContrastRatio(GetRelativeLuminance(color_a),
@@ -234,28 +472,6 @@ SkColor HSLShift(SkColor color, const HSL& shift) {
                         base::ClampRound<U8CPU>(g), base::ClampRound<U8CPU>(b));
 }
 
-void BuildLumaHistogram(const SkBitmap& bitmap, int histogram[256]) {
-  DCHECK_EQ(kN32_SkColorType, bitmap.colorType());
-
-  int pixel_width = bitmap.width();
-  int pixel_height = bitmap.height();
-  for (int y = 0; y < pixel_height; ++y) {
-    for (int x = 0; x < pixel_width; ++x)
-      ++histogram[GetLuma(bitmap.getColor(x, y))];
-  }
-}
-
-double CalculateBoringScore(const SkBitmap& bitmap) {
-  if (bitmap.isNull() || bitmap.empty())
-    return 1.0;
-  int histogram[256] = {0};
-  BuildLumaHistogram(bitmap, histogram);
-
-  int color_count = *std::max_element(histogram, histogram + 256);
-  int pixel_count = bitmap.width() * bitmap.height();
-  return static_cast<double>(color_count) / pixel_count;
-}
-
 SkColor AlphaBlend(SkColor foreground, SkColor background, SkAlpha alpha) {
   return AlphaBlend(foreground, background, alpha / 255.0f);
 }
@@ -293,7 +509,7 @@ SkColor AlphaBlend(SkColor foreground, SkColor background, float alpha) {
 
 SkColor GetResultingPaintColor(SkColor foreground, SkColor background) {
   return AlphaBlend(SkColorSetA(foreground, SK_AlphaOPAQUE), background,
-                    SkAlpha{SkColorGetA(foreground)});
+                    static_cast<SkAlpha>(SkColorGetA(foreground)));
 }
 
 bool IsDark(SkColor color) {
@@ -329,7 +545,7 @@ SkColor PickContrastingColor(SkColor foreground1,
 BlendResult BlendForMinContrast(
     SkColor default_foreground,
     SkColor background,
-    base::Optional<SkColor> high_contrast_foreground,
+    absl::optional<SkColor> high_contrast_foreground,
     float contrast_ratio) {
   DCHECK_EQ(SkColorGetA(background), SK_AlphaOPAQUE);
   default_foreground = GetResultingPaintColor(default_foreground, background);
@@ -368,7 +584,7 @@ SkColor InvertColor(SkColor color) {
 }
 
 SkColor GetSysSkColor(int which) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return skia::COLORREFToSkColor(GetSysColor(which));
 #else
   NOTIMPLEMENTED();
@@ -390,9 +606,18 @@ std::string SkColorToRgbaString(SkColor color) {
       base::NumberToString(SkColorGetA(color) / 255.0).c_str());
 }
 
+std::string SkColor4fToRgbaString(SkColor4f color) {
+  return base::StringPrintf("rgba(%f, %f, %f, %f", color.fR, color.fG, color.fB,
+                            color.fA);
+}
+
 std::string SkColorToRgbString(SkColor color) {
   return base::StringPrintf("%d,%d,%d", SkColorGetR(color), SkColorGetG(color),
                             SkColorGetB(color));
+}
+
+std::string SkColor4fToRgbString(SkColor4f color) {
+  return base::StringPrintf("rgba(%f, %f, %f", color.fR, color.fG, color.fB);
 }
 
 SkColor SetDarkestColorForTesting(SkColor color) {

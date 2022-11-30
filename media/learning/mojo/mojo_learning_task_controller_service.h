@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom.h"
 
 namespace media {
@@ -28,19 +27,25 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskControllerService
       const LearningTask& task,
       ukm::SourceId source_id,
       std::unique_ptr<::media::learning::LearningTaskController> impl);
+
+  MojoLearningTaskControllerService(const MojoLearningTaskControllerService&) =
+      delete;
+  MojoLearningTaskControllerService& operator=(
+      const MojoLearningTaskControllerService&) = delete;
+
   ~MojoLearningTaskControllerService() override;
 
   // mojom::LearningTaskController
   void BeginObservation(
       const base::UnguessableToken& id,
       const FeatureVector& features,
-      const base::Optional<TargetValue>& default_target) override;
+      const absl::optional<TargetValue>& default_target) override;
   void CompleteObservation(const base::UnguessableToken& id,
                            const ObservationCompletion& completion) override;
   void CancelObservation(const base::UnguessableToken& id) override;
   void UpdateDefaultTarget(
       const base::UnguessableToken& id,
-      const base::Optional<TargetValue>& default_target) override;
+      const absl::optional<TargetValue>& default_target) override;
   void PredictDistribution(const FeatureVector& features,
                            PredictDistributionCallback callback) override;
 
@@ -53,8 +58,6 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskControllerService
   std::unique_ptr<::media::learning::LearningTaskController> impl_;
 
   std::set<base::UnguessableToken> in_flight_observations_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoLearningTaskControllerService);
 };
 
 }  // namespace learning

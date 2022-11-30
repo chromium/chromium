@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
@@ -24,6 +23,10 @@ class WebViewSigninClientFactory : public BrowserStateKeyedServiceFactory {
       ios_web_view::WebViewBrowserState* browser_state);
   static WebViewSigninClientFactory* GetInstance();
 
+  WebViewSigninClientFactory(const WebViewSigninClientFactory&) = delete;
+  WebViewSigninClientFactory& operator=(const WebViewSigninClientFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<WebViewSigninClientFactory>;
 
@@ -33,8 +36,6 @@ class WebViewSigninClientFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewSigninClientFactory);
 };
 
 }  // namespace ios_web_view

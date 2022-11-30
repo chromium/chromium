@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,8 @@ class TestReceivingUiHandler : public ReceivingUiHandler {
   void DismissEntries(const std::vector<std::string>& guids) override {}
 
   size_t number_displayed_entries() const { return number_displayed_entries_; }
+
+  const Profile* profile() const override { return nullptr; }
 
  private:
   size_t number_displayed_entries_ = 0;
@@ -84,9 +86,9 @@ TEST(SendTabToSelfClientServiceTest, MultipleEntriesAdded) {
 
   // Create 2 entries and simulated that they were both added remotely.
   SendTabToSelfEntry entry1("a", GURL("http://www.example-a.com"), "a site",
-                            base::Time(), base::Time(), "device a", "device b");
+                            base::Time(), "device a", "device b");
   SendTabToSelfEntry entry2("b", GURL("http://www.example-b.com"), "b site",
-                            base::Time(), base::Time(), "device b", "device a");
+                            base::Time(), "device b", "device a");
   client_service.EntriesAddedRemotely({&entry1, &entry2});
 
   EXPECT_EQ(2u, test_handler->number_displayed_entries());

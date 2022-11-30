@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <mach/mach.h>
 
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "util/mach/exc_server_variants.h"
 
 namespace crashpad {
@@ -37,6 +36,10 @@ class ExceptionHandlerServer {
   //!     signal.
   ExceptionHandlerServer(base::mac::ScopedMachReceiveRight receive_port,
                          bool launchd);
+
+  ExceptionHandlerServer(const ExceptionHandlerServer&) = delete;
+  ExceptionHandlerServer& operator=(const ExceptionHandlerServer&) = delete;
+
   ~ExceptionHandlerServer();
 
   //! \brief Runs the exception-handling server.
@@ -73,8 +76,6 @@ class ExceptionHandlerServer {
   base::mac::ScopedMachReceiveRight receive_port_;
   base::mac::ScopedMachReceiveRight notify_port_;
   bool launchd_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerServer);
 };
 
 }  // namespace crashpad

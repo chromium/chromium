@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,16 +85,14 @@ void NowPlayingInfoCenterDelegate::SetPosition(
 
 void NowPlayingInfoCenterDelegate::StartTimer() {
   timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(100),
+      FROM_HERE, base::Milliseconds(100),
       base::BindOnce(
           &NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition,
           base::Unretained(this)));
 }
 
 void NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition() {
-  auto position = position_.value_or(media_session::MediaPosition(
-      0 /* playback_rate */, base::TimeDelta::FromSeconds(0) /* duration */,
-      base::TimeDelta::FromSeconds(0) /* position */));
+  auto position = position_.value_or(media_session::MediaPosition());
   auto playback_status =
       playback_status_.value_or(SystemMediaControls::PlaybackStatus::kStopped);
 

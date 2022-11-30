@@ -1,0 +1,135 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+[Stable]
+struct VpnErrorResponse {
+  string? name@0;
+  string? message@1;
+};
+
+// Adapter that allows packets received by ash to be routed through
+// PepperVpnProviderResourceHostProxy running in lacros.
+// See content/public/browser/pepper_vpn_provider_resource_host_proxy.h for
+// details.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="abf3cd5e-a471-40a1-947b-3be9f8519da4"]
+interface PepperVpnProxyObserver {
+  // Invoked when the active Vpn configuration disconnects.
+  // Corresponds to
+  //    PepperVpnProviderResourceHostProxy::SendOnUnbind().
+  OnUnbind@0();
+
+  // Invoked when the active Vpn configuration receives |data| packet.
+  // Corresponds to
+  //    PepperVpnProviderResourceHostProxy::SendOnPacketReceived(...).
+  OnPacketReceived@1(array<uint8> data);
+};
+
+// Listens to events dispatched by VpnServiceForExtension.
+// See
+//   * chrome.vpnProvider.onPlatformMessage
+//   * chrome.vpnProvider.onPacketReceived
+//   * chrome.vpnProvider.onConfigRemoved
+//   * chrome.vpnProvider.onUIEvent
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="76ed414e-1710-4b5c-895d-181714376511"]
+interface EventObserverForExtension {
+  // Dispatches UI_EVENT_SHOWADDDIALOG.
+  OnAddDialog@0();
+
+  // Dispatches UI_EVENT_SHOWCONFIGUREDIALOG.
+  OnConfigureDialog@1(string configuration_name);
+
+  // Dispatches OnConfigRemoved event.
+  OnConfigRemoved@2(string configuration_name);
+
+  // Dispatches OnPlatformMessage event.
+  OnPlatformMessage@3(string configuration_name,
+      int32 platform_message, string? error);
+
+  // Dispatches OnPacketReceived event.
+  OnPacketReceived@4(array<uint8> data);
+};
+
+// VpnServiceForExtension manages VPN configurations for a specific extension.
+// Next version: 1
+// Next method id: 8
+[Stable, Uuid="6743d9c7-e6c1-4f12-8f6c-571264044dea"]
+interface VpnServiceForExtension {
+  // Creates a new VPN configuration with |configuration_name| as the name and
+  // attaches it to the extension.
+  // See chrome.vpnProvider.createConfiguration(...)
+  CreateConfiguration@0(string configuration_name)
+      => (VpnErrorResponse? error);
+
+  // Destroys the VPN configuration with |configuration_name| after verifying
+  // that it belongs to the extension.
+  // See chrome.vpnProvider.destroyConfiguration(...)
+  DestroyConfiguration@1(string configuration_name)
+      => (VpnErrorResponse? error);
+
+  // Set |parameters| for the active VPN configuration after verifying that it
+  // belongs to the extension.
+  // See chrome.vpnProvider.setParameters(...)
+  // We use mojo_base.mojom.DictionaryValue as the type because:
+  // * The shill counterpart is stable and expects base::Value with type=dict.
+  // * Both the supplier and consumer of this information uses a type
+  //   interchangeable with mojo_base.mojom.DictionaryValue. While we could add
+  //   a translation layer to a strongly typed mojom struct, this adds an
+  //   overhead and the potential for errors with no benefit.
+  SetParameters@2(mojo_base.mojom.DictionaryValue parameters)
+      => (VpnErrorResponse? error);
+
+  // Sends an IP packet contained in |data| to the active VPN configuration
+  // after verifying that it belongs to the extension.
+  // See chrome.vpnProvider.sendPacket(...)
+  SendPacket@3(array<uint8> data)
+      => (VpnErrorResponse? error);
+
+  // Notifies new connection state to the active VPN configuration after
+  // verifying that it belongs to the extension.
+  // See chrome.vpnProvider.notifyConnectionStateChanged(...)
+  NotifyConnectionStateChanged@4(bool connection_success)
+      => (VpnErrorResponse? error);
+
+  // Binds |pepper_vpn_proxy_observer| to the active configuration if it belongs
+  // to the extension and has name equal to
+  // |configuration_name|. On success all packets will be routed through
+  // Pepper API.
+  BindPepperVpnProxyObserver@5(string configuration_name,
+      pending_remote<PepperVpnProxyObserver> pepper_vpn_proxy_observer)
+      => (VpnErrorResponse? error);
+
+  // Informs all connected clients that an ADD_DIALOG event should be dispatched
+  // to the extension.
+  DispatchAddDialogEvent@6();
+
+  // Informs all connected clients that a CONFIGURE_DIALOG event should be
+  // dispatched to the extension.
+  DispatchConfigureDialogEvent@7(string configuration_name);
+};
+
+// VpnService manages VPN connections on the ash side.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="52659296-1b2a-4b8d-a219-0ca57710fe03"]
+interface VpnService {
+  // Registers a service for the given extension and allows ash to send events
+  // via |observer|.
+  RegisterVpnServiceForExtension@0(string extension_id,
+      pending_receiver<VpnServiceForExtension> receiver,
+      pending_remote<EventObserverForExtension> observer);
+
+  // Updates current Vpn connection state to FAILURE if the active configuration
+  // belongs to extension with id |extension_id|. If |destroy_configurations| is
+  // true, also destroys all configurations owned by this extension.
+  MaybeFailActiveConnectionAndDestroyConfigurations@1(string extension_id,
+      bool destroy_configurations);
+};

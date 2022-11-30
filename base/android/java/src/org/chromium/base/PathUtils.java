@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.MainDex;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -201,8 +201,8 @@ public abstract class PathUtils {
     /**
      * Returns the downloads directory. Before Android Q, this returns the public download directory
      * for Chrome app. On Q+, this returns the first private download directory for the app, since Q
-     * will block public directory access. May return null when there is no external storage volumes
-     * mounted.
+     * will block public directory access. May return empty string when there are no external
+     * storage volumes mounted.
      */
     @SuppressWarnings("unused")
     @CalledByNative
@@ -217,7 +217,7 @@ public abstract class PathUtils {
                 // storage for which no additional permissions are required.
                 String[] dirs = getAllPrivateDownloadsDirectories();
                 assert dirs != null;
-                return dirs[0];
+                return dirs.length == 0 ? "" : dirs[0];
             }
             return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     .getPath();
@@ -258,13 +258,14 @@ public abstract class PathUtils {
                         ContextUtils.getApplicationContext(), StorageManager.class);
                 File volumeDir =
                         ApiHelperForR.getVolumeDir(manager, MediaStore.Files.getContentUri(vol));
-                assert volumeDir.isDirectory();
-                assert volumeDir.exists();
-
-                File volumeDownloadDir =
-                        new File(volumeDir.getAbsolutePath(), Environment.DIRECTORY_DOWNLOADS);
-                assert volumeDownloadDir.isDirectory();
-                assert volumeDownloadDir.exists();
+                File volumeDownloadDir = new File(volumeDir, Environment.DIRECTORY_DOWNLOADS);
+                // Happens in rare case when Android doesn't create the download directory for this
+                // volume.
+                if (!volumeDownloadDir.isDirectory()) {
+                    Log.w(TAG, "Download dir missing: %s, parent dir:%s, isDirectory:%s",
+                            volumeDownloadDir.getAbsolutePath(), volumeDir.getAbsolutePath(),
+                            volumeDir.isDirectory());
+                }
                 files.add(volumeDownloadDir);
             }
         }

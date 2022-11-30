@@ -1,10 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module gfx.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+[EnableIf=is_mac]
+import "ui/gfx/mojom/ca_layer_result.mojom";
 
 // gfx::PresentationFeedback
 struct PresentationFeedback {
@@ -15,4 +17,7 @@ struct PresentationFeedback {
   mojo_base.mojom.TimeTicks available_timestamp;
   mojo_base.mojom.TimeTicks ready_timestamp;
   mojo_base.mojom.TimeTicks latch_timestamp;
+  mojo_base.mojom.TimeTicks writes_done_timestamp;
+[EnableIf=is_mac]
+  CALayerResult ca_layer_error_code;
 };

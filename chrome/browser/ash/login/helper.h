@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -9,10 +9,8 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
 
@@ -35,7 +33,7 @@ class NetworkContext;
 class SharedURLLoaderFactory;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Returns bounds of the screen to use for login wizard.
 // The rect is centered within the default monitor and sized accordingly if
@@ -61,6 +59,10 @@ bool LoginScrollIntoViewEnabled();
 class NetworkStateHelper {
  public:
   NetworkStateHelper();
+
+  NetworkStateHelper(const NetworkStateHelper&) = delete;
+  NetworkStateHelper& operator=(const NetworkStateHelper&) = delete;
+
   virtual ~NetworkStateHelper();
 
   // Returns name of the currently connected network.
@@ -73,6 +75,9 @@ class NetworkStateHelper {
   // Returns true if the default network is in connected state.
   virtual bool IsConnected() const;
 
+  // Returns true if the ethernet network is in connected state.
+  virtual bool IsConnectedToEthernet() const;
+
   // Returns true if the default network is in connecting state.
   virtual bool IsConnecting() const;
 
@@ -81,8 +86,6 @@ class NetworkStateHelper {
                              network_handler::ErrorCallback error_callback,
                              const std::string& service_path,
                              const std::string& guid) const;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHelper);
 };
 
 //
@@ -93,6 +96,10 @@ class NetworkStateHelper {
 // returns nullptr if the sign-in partition is not available yet, or if sign-in
 // webui is torn down.
 content::StoragePartition* GetSigninPartition();
+
+// Returns the storage partition for the lock screen webview. Can return nullptr
+// if the lock screen partition is not available.
+content::StoragePartition* GetLockScreenPartition();
 
 // Returns the network context for the sign-in webview. Note the function
 // returns nullptr if the sign-in partition is not available yet, or if sign-in
@@ -116,13 +123,13 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
                                    base::TimeDelta offline_signin_limit);
 
 }  // namespace login
-
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace ash {
-namespace login = ::chromeos::login;
-using ::chromeos::GetCurrentUserImageSize;
-}  // namespace ash
+namespace chromeos {
+namespace login {
+using ::ash::login::NetworkStateHelper;
+}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_HELPER_H_

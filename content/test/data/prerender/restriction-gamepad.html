@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<script>
+
+const prerenderingChanged = new Promise(
+  resolve => {
+    document.addEventListener('prerenderingchange', () => {
+      const [_] = navigator.getGamepads();
+      resolve(true);
+    });
+  }
+);
+
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,52 +7,70 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/isolation_info.h"
-
-#if !defined(OS_IOS)
-#include "components/autofill/core/browser/payments/internal_authenticator.h"
-#endif
+#include "ui/accessibility/ax_tree_id.h"
+#include "url/origin.h"
 
 namespace network {
 class SharedURLLoaderFactory;
-}
-
-namespace gfx {
-class RectF;
-}
-
-namespace ui {
-class AXTreeID;
 }
 
 namespace autofill {
 
 class FormStructure;
 
-// Interface that allows Autofill core code to interact with its driver (i.e.,
-// obtain information from it and give information to it). A concrete
-// implementation must be provided by the driver.
+// AutofillDriver is Autofill's lowest-level abstraction of a frame that is
+// shared among all platforms.
+//
+// Most notably, it is a gateway for all communication from the browser code to
+// the DOM, or more precisely, to the AutofillAgent (which are different classes
+// of the same name in non-iOS vs iOS).
+//
+// The reverse communication, from the AutofillAgent to the browser code, goes
+// through mojom::AutofillDriver on non-iOS, and directly to AutofillManager on
+// iOS.
+//
+// An AutofillDriver corresponds to a frame, rather than a document, in the
+// sense that it may survive navigations.
+//
+// AutofillDriver has two implementations:
+// - AutofillDriverIOS for iOS,
+// - ContentAutofillDriver for all other platforms.
+//
+// An AutofillDriver's lifetime should be contained by the associated frame.
+//
+// AutofillDriverIOS is co-owned by AutofillDriverIOSWebFrame, which itself is
+// owned by the WebFrame, and the iOS-specific AutofillAgent, which extends the
+// driver's lifetime beyond the WebFrame's (crbug.com/892612).
+//
+// ContentAutofillDriver is owned by ContentAutofillDriverFactory, which ensures
+// that the associated RenderFrameHost's lifetime contains the driver's
+// lifetime.
 class AutofillDriver {
  public:
-   // The possible actions that the renderer can take on receiving form data.
-  enum RendererFormDataAction {
-    // The renderer should fill the form data.
-    FORM_DATA_ACTION_FILL,
-    // The renderer should preview the form data.
-    FORM_DATA_ACTION_PREVIEW
-  };
-
-  virtual ~AutofillDriver() {}
+  virtual ~AutofillDriver() = default;
 
   // Returns whether the user is currently operating in an incognito context.
   virtual bool IsIncognito() const = 0;
 
-  // Returns whether AutofillDriver instance is associated to the main frame.
-  virtual bool IsInMainFrame() const = 0;
+  // Returns whether the AutofillDriver instance is associated with an active
+  // frame in the MPArch sense.
+  virtual bool IsInActiveFrame() const = 0;
+
+  // Returns whether the AutofillDriver instance is associated with a main
+  // frame, in the MPArch sense. This can be a primary or non-primary main
+  // frame.
+  virtual bool IsInAnyMainFrame() const = 0;
+
+  // Returns whether the AutofillDriver instance is associated with a
+  // prerendered frame.
+  virtual bool IsPrerendering() const = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.
@@ -68,27 +86,33 @@ class AutofillDriver {
   // Returns true iff the renderer is available for communication.
   virtual bool RendererIsAvailable() = 0;
 
-#if !defined(OS_IOS)
-  // Gets or creates a pointer to an implementation of InternalAuthenticator.
-  virtual InternalAuthenticator*
-  GetOrCreateCreditCardInternalAuthenticator() = 0;
-#endif
-
-  // Forwards |data| to the renderer. |query_id| is the id of the renderer's
-  // original request for the data. |action| is the action the renderer should
-  // perform with the |data|. This method is a no-op if the renderer is not
-  // currently available.
-  virtual void SendFormDataToRenderer(int query_id,
-                                      RendererFormDataAction action,
-                                      const FormData& data) = 0;
-
-  // Pass the form structures to the password manager to choose correct username
-  // and to the password generation manager to detect account creation forms.
-  virtual void PropagateAutofillPredictions(
-      const std::vector<autofill::FormStructure*>& forms) = 0;
+  // Forwards |data| to the renderer which shall preview or fill the values of
+  // |data|'s fields into the relevant DOM elements.
+  //
+  // |query_id| is the id of the renderer's original request for the data.
+  //
+  // |action| is the action the renderer should perform with the |data|.
+  //
+  // |triggered_origin| is the origin of the field on which Autofill was
+  // triggered, and |field_type_map| contains the type predictions of the fields
+  // that may be previewed or filled; these two parameters can be taken into
+  // account to decide which fields to preview or fill across frames.
+  //
+  // Returns the ids of those fields that are safe to fill according to the
+  // security policy for cross-frame previewing and filling. This is a subset of
+  // the ids of the fields in |data|. It is not necessarily a subset of the
+  // fields in |field_type_map|.
+  //
+  // This method is a no-op if the renderer is not currently available.
+  virtual std::vector<FieldGlobalId> FillOrPreviewForm(
+      int query_id,
+      mojom::RendererFormDataAction action,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
 
   // Forwards parsed |forms| to the embedder.
-  virtual void HandleParsedForms(const std::vector<const FormData*>& forms) = 0;
+  virtual void HandleParsedForms(const std::vector<FormData>& forms) = 0;
 
   // Sends the field type predictions specified in |forms| to the renderer. This
   // method is a no-op if the renderer is not available or the appropriate
@@ -126,13 +150,12 @@ class AutofillDriver {
   // Informs the renderer that the popup has been hidden.
   virtual void PopupHidden() = 0;
 
-  // Transform bounding box coordinates to real viewport coordinates. In
-  // the case of a page spanning multiple renderer processes, subframe
-  // renderers cannot do this transformation themselves.
-  virtual gfx::RectF TransformBoundingBoxToViewportCoordinates(
-      const gfx::RectF& bounding_box) = 0;
-
   virtual net::IsolationInfo IsolationInfo() = 0;
+
+  // Tells the renderer about the form fields that are eligible for triggering
+  // manual filling on form interaction.
+  virtual void SendFieldsEligibleForManualFillingToRenderer(
+      const std::vector<FieldGlobalId>& fields) = 0;
 };
 
 }  // namespace autofill

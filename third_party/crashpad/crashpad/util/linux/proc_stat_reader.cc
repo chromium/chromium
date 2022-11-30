@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <iterator>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "util/file/file_io.h"
 #include "util/misc/lexing.h"
 #include "util/misc/time.h"
@@ -48,7 +49,7 @@ bool ProcStatReader::Initialize(PtraceConnection* connection, pid_t tid) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
   char path[32];
-  snprintf(path, base::size(path), "/proc/%d/stat", tid);
+  snprintf(path, std::size(path), "/proc/%d/stat", tid);
   if (!connection->ReadFileContents(base::FilePath(path), &contents_)) {
     return false;
   }

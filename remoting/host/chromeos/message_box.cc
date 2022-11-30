@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/message_box_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -19,7 +18,7 @@ namespace remoting {
 // MessageBox::Core creates the dialog using the views::DialogWidget.  The
 // DialogWidget is created by the caller but its lifetime is managed by the
 // NativeWidget.  The DialogWidget communicates with the caller using the
-//.DialogDelegateView interface, which must remain valid until DeleteDelegate()
+// DialogDelegateView interface, which must remain valid until DeleteDelegate()
 // is called, at which the DialogDelegateView deletes itself.
 //
 // The Core class is introduced to abstract this awkward ownership model.  The
@@ -47,7 +46,6 @@ class MessageBox::Core : public views::DialogDelegateView {
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  void DeleteDelegate() override;
 
   // Called by MessageBox::Core when it is destroyed.
   void OnMessageBoxDestroyed();
@@ -72,27 +70,31 @@ MessageBox::Core::Core(const std::u16string& title_label,
       message_box_(message_box),
       message_box_view_(new views::MessageBoxView(message_label)) {
   DCHECK(message_box_);
-  DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_label);
-  DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_label);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_label);
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_label);
 
   auto run_callback = [](MessageBox::Core* core, Result result) {
     if (core->result_callback_)
       std::move(core->result_callback_).Run(result);
   };
-  DialogDelegate::SetAcceptCallback(
-      base::BindOnce(run_callback, base::Unretained(this), OK));
-  DialogDelegate::SetCancelCallback(
+  SetAcceptCallback(base::BindOnce(run_callback, base::Unretained(this), OK));
+  SetCancelCallback(
       base::BindOnce(run_callback, base::Unretained(this), CANCEL));
-  DialogDelegate::SetCloseCallback(
+  SetCloseCallback(
       base::BindOnce(run_callback, base::Unretained(this), CANCEL));
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](Core* dialog) {
+        if (dialog->message_box_)
+          dialog->message_box_->core_ = nullptr;
+      },
+      this));
 }
 
 void MessageBox::Core::Show() {
   // The widget is owned by the NativeWidget.  See  comments in widget.h.
   views::Widget* widget =
       CreateDialogWidget(this, /* delegate */
-                         nullptr /* parent window*/,
-                         nullptr /* parent view */);
+                         nullptr /* parent window*/, nullptr /* parent view */);
 
   if (widget) {
     widget->Show();
@@ -125,13 +127,6 @@ const views::Widget* MessageBox::Core::GetWidget() const {
   return message_box_view_->GetWidget();
 }
 
-void MessageBox::Core::DeleteDelegate() {
-  if (message_box_) {
-    message_box_->core_ = nullptr;
-  }
-  delete this;
-}
-
 void MessageBox::Core::OnMessageBoxDestroyed() {
   DCHECK(message_box_);
   message_box_ = nullptr;
@@ -152,7 +147,9 @@ MessageBox::MessageBox(const std::u16string& title_label,
                      ok_label,
                      cancel_label,
                      std::move(result_callback),
-                     this)) {
+                     this)) {}
+
+void MessageBox::Show() {
   core_->Show();
 }
 

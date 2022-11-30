@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ struct CC_EXPORT BeginMainFrameMetrics {
   base::TimeDelta animate;
   base::TimeDelta style_update;
   base::TimeDelta layout_update;
+  base::TimeDelta accessibility;
   base::TimeDelta prepaint;
-  base::TimeDelta compositing_assignments;
   base::TimeDelta compositing_inputs;
   base::TimeDelta paint;
   base::TimeDelta composite_commit;
@@ -33,6 +33,7 @@ struct CC_EXPORT BeginMainFrameMetrics {
   BeginMainFrameMetrics();
 
   BeginMainFrameMetrics(const BeginMainFrameMetrics& other);
+  BeginMainFrameMetrics& operator=(const BeginMainFrameMetrics& other);
 };
 
 }  // namespace cc

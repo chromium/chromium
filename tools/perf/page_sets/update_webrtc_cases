@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,7 +35,7 @@ TEST_PAGES_LOCATION_BY_REPO = {
             'src/content/insertable-streams/video-processing',
             'src/content/peerconnection/negotiate-timing',
             ],
-        'revision': '2cad23c099ce290e5634c856ae1a9ebb8012ba16',
+        'revision': '2c807a20a3d5fca2436ca6608ddd42c22f15be26',
     },
 }
 

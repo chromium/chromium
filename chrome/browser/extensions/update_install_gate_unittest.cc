@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -103,9 +104,12 @@ ExtensionHost* CreateHost(Profile* profile, const Extension* app) {
 class UpdateInstallGateTest : public testing::Test {
  public:
   UpdateInstallGateTest() {
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
   }
+
+  UpdateInstallGateTest(const UpdateInstallGateTest&) = delete;
+  UpdateInstallGateTest& operator=(const UpdateInstallGateTest&) = delete;
 
   // testing::Test
   void SetUp() override {
@@ -138,7 +142,7 @@ class UpdateInstallGateTest : public testing::Test {
         EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
             profile_, base::BindRepeating(&BuildEventRouter)));
 
-    delayer_.reset(new UpdateInstallGate(profile_));
+    delayer_ = std::make_unique<UpdateInstallGate>(profile_);
 
     new_app_ = CreateApp(kAppId, "2.0");
     new_persistent_ = CreateExtension(kPersistentExtensionId, "2.0", true);
@@ -171,7 +175,7 @@ class UpdateInstallGateTest : public testing::Test {
   void MakeExtensionListenForOnUpdateAvailable(
       const std::string& extension_id) {
     const char kOnUpdateAvailableEvent[] = "runtime.onUpdateAvailable";
-    event_router_->AddEventListener(kOnUpdateAvailableEvent, NULL,
+    event_router_->AddEventListener(kOnUpdateAvailableEvent, nullptr,
                                     extension_id);
   }
 
@@ -207,13 +211,13 @@ class UpdateInstallGateTest : public testing::Test {
   // and RenderProcessHosts.
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
-  TestExtensionSystem* system_ = nullptr;
-  ExtensionService* service_ = nullptr;
-  ExtensionRegistry* registry_ = nullptr;
-  EventRouter* event_router_ = nullptr;
+  raw_ptr<TestExtensionSystem> system_ = nullptr;
+  raw_ptr<ExtensionService> service_ = nullptr;
+  raw_ptr<ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<EventRouter> event_router_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Needed for creating ExtensionService.
@@ -226,8 +230,6 @@ class UpdateInstallGateTest : public testing::Test {
   scoped_refptr<const Extension> new_app_;
   scoped_refptr<const Extension> new_persistent_;
   scoped_refptr<const Extension> new_none_persistent_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateInstallGateTest);
 };
 
 TEST_F(UpdateInstallGateTest, InstallOnServiceNotReady) {

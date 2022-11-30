@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -121,14 +122,14 @@ bool CanShare() {
 
 - (void)sharingService:(NSSharingService*)service
          didShareItems:(NSArray*)items {
-  UMA_HISTOGRAM_BOOLEAN("OSX.NativeShare", true);
+  UMA_HISTOGRAM_BOOLEAN("Mac.FileMenuNativeShare", true);
   [self clearTransitionData];
 }
 
 - (void)sharingService:(NSSharingService*)service
     didFailToShareItems:(NSArray*)items
                   error:(NSError*)error {
-  UMA_HISTOGRAM_BOOLEAN("OSX.NativeShare", false);
+  UMA_HISTOGRAM_BOOLEAN("Mac.FileMenuNativeShare", false);
   [self clearTransitionData];
 }
 

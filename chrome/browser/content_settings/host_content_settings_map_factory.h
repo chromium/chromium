@@ -1,23 +1,26 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 
 class HostContentSettingsMap;
 
 class HostContentSettingsMapFactory
-    : public RefcountedBrowserContextKeyedServiceFactory {
+    : public RefcountedProfileKeyedServiceFactory {
  public:
   static HostContentSettingsMap* GetForProfile(
       content::BrowserContext* browser_context);
   static HostContentSettingsMapFactory* GetInstance();
+
+  HostContentSettingsMapFactory(const HostContentSettingsMapFactory&) = delete;
+  HostContentSettingsMapFactory& operator=(
+      const HostContentSettingsMapFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<HostContentSettingsMapFactory>;
@@ -28,10 +31,6 @@ class HostContentSettingsMapFactory
   // RefcountedBrowserContextKeyedServiceFactory methods:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMapFactory);
 };
 
 #endif // CHROME_BROWSER_CONTENT_SETTINGS_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_

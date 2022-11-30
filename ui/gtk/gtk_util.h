@@ -1,33 +1,23 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GTK_GTK_UTIL_H_
 #define UI_GTK_GTK_UTIL_H_
 
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
-
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/scoped_gobject.h"
-#include "ui/gtk/gtk_buildflags.h"
+#include "ui/color/color_id.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"
 
-// Function availability can be tested by checking if the address of gtk_* is
-// not nullptr.
-#define WEAK_GTK_FN(x) extern "C" __attribute__((weak)) decltype(x) x
-
 namespace aura {
 class Window;
-}
-
-namespace base {
-class CommandLine;
 }
 
 namespace ui {
@@ -36,8 +26,11 @@ class KeyEvent;
 
 namespace gtk {
 
-COMPONENT_EXPORT(GTK)
-void GtkInitFromCommandLine(const base::CommandLine& command_line);
+const char* GtkCssMenu();
+const char* GtkCssMenuItem();
+const char* GtkCssMenuScrollbar();
+
+[[nodiscard]] bool GtkInitFromCommandLine(int* argc, char** argv);
 
 // Sets |dialog| as transient for |parent|, which will keep it on top and center
 // it above |parent|. Do nothing if |parent| is nullptr.
@@ -78,8 +71,8 @@ class CairoSurface {
   SkColor GetAveragePixelValue(bool frame);
 
  private:
-  cairo_surface_t* surface_;
-  cairo_t* cairo_;
+  raw_ptr<cairo_surface_t> surface_;
+  raw_ptr<cairo_t> cairo_;
 };
 
 class GtkCssContext {
@@ -91,46 +84,36 @@ class GtkCssContext {
   GtkCssContext& operator=(GtkCssContext&&);
   ~GtkCssContext();
 
-#if BUILDFLAG(GTK_VERSION) >= 4
-  GtkCssContext(GtkWidget* widget, GtkWidget* root);
-
-  operator bool() { return widget_; }
-
-  operator GtkStyleContext*() { return gtk_widget_get_style_context(widget_); }
-
-  operator GtkWidget*() { return widget_; }
-
-  GtkWidget* root() { return root_; }
-
-  GtkCssContext GetParent() {
-    return GtkCssContext(WrapGObject(gtk_widget_get_parent(widget_)),
-                         root_ == widget_ ? nullptr : root_);
-  }
-
- private:
-  // GTK widgets own their children, so instead of keeping a reference to the
-  // widget directly, keep a reference to the root widget.
-  GtkWidget* widget_ = nullptr;
-  ScopedGObject<GtkWidget> root_;
-#else
+  // GTK3 constructor.
   explicit GtkCssContext(GtkStyleContext* context);
 
-  operator bool() { return context_; }
+  // GTK4 constructor.
+  GtkCssContext(GtkWidget* widget, GtkWidget* root);
 
-  operator GtkStyleContext*() { return context_; }
+  // As a convenience, allow using a GtkCssContext as a gtk_style_context()
+  // to avoid repeated use of an explicit getter.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator GtkStyleContext*();
 
-  GtkCssContext GetParent() {
-    return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
-  }
+  GtkCssContext GetParent();
+
+  // Only available on GTK4.
+  GtkWidget* widget();
+  GtkWidget* root();
 
  private:
+  // GTK3 state.
   ScopedGObject<GtkStyleContext> context_;
-#endif
+
+  // GTK4 state.
+  // GTK widgets own their children, so instead of keeping a reference to the
+  // widget directly, keep a reference to the root widget.
+  raw_ptr<GtkWidget> widget_ = nullptr;
+  ScopedGObject<GtkWidget> root_;
 };
 
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
 
-#if BUILDFLAG(GTK_VERSION) < 4
 }  // namespace gtk
 
 // Template override cannot be in the gtk namespace.
@@ -158,12 +141,9 @@ inline void ScopedGObject<GtkStyleContext>::Unref() {
 }
 
 namespace gtk {
-#endif
 
 // Converts ui::NativeTheme::State to GtkStateFlags.
 GtkStateFlags StateToStateFlags(ui::NativeTheme::State state);
-
-SkColor GdkRgbaToSkColor(const GdkRGBA& color);
 
 // If |context| is nullptr, creates a new top-level style context
 // specified by parsing |css_node|.  Otherwise, creates the child
@@ -178,8 +158,6 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
 // is "GtkButton.button.suggested-action:hover:active".  The caller
 // must g_object_unref() the returned context.
 GtkCssContext GetStyleContextFromCss(const std::string& css_selector);
-
-SkColor GetFgColorFromStyleContext(GtkStyleContext* context);
 
 SkColor GetBgColorFromStyleContext(GtkCssContext context);
 
@@ -231,19 +209,24 @@ std::string GetGtkSettingsStringProperty(GtkSettings* settings,
 // https://gitlab.freedesktop.org/xorg/proto/xorgproto/blob/master/include/X11/extensions/XKB.h#L372
 int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group);
 
+// GDK uses different flags for modifiers than are defined in ui::EventFlags.
+// This function translates ui::EventFlags to GDK flags.
+//
+// More details:
+// https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdktypes.h#L131
+GdkModifierType ExtractGdkEventStateFromKeyEventFlags(int flags);
+
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
                         const char* property_key);
 
 GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event);
 
-#if BUILDFLAG(GTK_VERSION) < 4
 // Translates |key_event| into a GdkEvent. GdkEvent::key::window is the only
 // field not set by this function, callers must set it, as the way for
 // retrieving it may vary depending on the event being processed. E.g: for IME
 // Context impl, X11 window XID is obtained through Event::target() which is
-// root aura::Window targeted by that key event.
+// root aura::Window targeted by that key event.  Only available in GTK3.
 GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event);
-#endif
 
 GtkIconTheme* GetDefaultIconTheme();
 
@@ -255,9 +238,8 @@ gfx::Size GetSeparatorSize(bool horizontal);
 
 float GetDeviceScaleFactor();
 
-#if BUILDFLAG(GTK_VERSION) >= 4
+// This should only be called on Gtk4.
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
-#endif
 
 }  // namespace gtk
 

@@ -1,20 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {strf, util} from '../../../common/js/util.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+
+import {strf, util} from '../../../common/js/util.js';
 
 /**
  * Formatter class for file metadatas.
  */
-/* #export */ class FileMetadataFormatter extends cr.EventTarget {
+export class FileMetadataFormatter extends EventTarget {
   constructor() {
     super();
-    this.setDateTimeFormat(true);
 
     /** @private {?Intl.DateTimeFormat} */
     this.timeFormatter_;
@@ -28,29 +26,34 @@
    * @param {boolean} use12hourClock True if 12 hours clock, False if 24 hours.
    */
   setDateTimeFormat(use12hourClock) {
+    const locale = util.getCurrentLocaleOrDefault();
     this.timeFormatter_ = new Intl.DateTimeFormat(
-        navigator.language,
-        {hour: 'numeric', minute: 'numeric', hour12: use12hourClock});
-    this.dateFormatter_ = new Intl.DateTimeFormat(navigator.language, {
+        locale, {hour: 'numeric', minute: 'numeric', hour12: use12hourClock});
+    this.dateFormatter_ = new Intl.DateTimeFormat(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
-      hour12: use12hourClock
+      hour12: use12hourClock,
     });
-    cr.dispatchSimpleEvent(this, 'date-time-format-changed');
+    dispatchSimpleEvent(this, 'date-time-format-changed');
   }
 
   /**
    * Generates a formatted modification time text.
-   * @param {Date} modTime
+   * @param {Date=} modTime
    * @return {string} A string that represents modification time.
    */
   formatModDate(modTime) {
     if (!modTime) {
-      return '...';
+      return '--';
     }
+
+    if (!(this.timeFormatter_ && this.dateFormatter_)) {
+      this.setDateTimeFormat(true);
+    }
+
     const today = new Date();
     today.setHours(0);
     today.setMinutes(0);

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ostream>
 
 #include "base/atomicops.h"
 #include "base/check_op.h"
@@ -16,25 +17,25 @@
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE)
 #include "base/trace_event/cfi_backtrace_android.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/prctl.h>
 #endif
 
 namespace base {
 namespace trace_event {
 
-subtle::Atomic32 AllocationContextTracker::capture_mode_ =
-    static_cast<int32_t>(AllocationContextTracker::CaptureMode::DISABLED);
+std::atomic<AllocationContextTracker::CaptureMode>
+    AllocationContextTracker::capture_mode_{
+        AllocationContextTracker::CaptureMode::DISABLED};
 
 namespace {
 
@@ -62,7 +63,7 @@ ThreadLocalStorage::Slot& AllocationContextTrackerTLS() {
 // are used to tag allocations even after the thread dies.
 const char* GetAndLeakThreadName() {
   char name[16];
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // If the thread name is not set, try to get it from prctl. Thread name might
   // not be set in cases where the thread started before heap profiling was
   // enabled.
@@ -70,7 +71,8 @@ const char* GetAndLeakThreadName() {
   if (!err) {
     return strdup(name);
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
   // Use tid if we don't have a thread name.
   snprintf(name, sizeof(name), "%lu",
@@ -115,30 +117,7 @@ void AllocationContextTracker::SetCurrentThreadName(const char* name) {
 void AllocationContextTracker::SetCaptureMode(CaptureMode mode) {
   // Release ordering ensures that when a thread observes |capture_mode_| to
   // be true through an acquire load, the TLS slot has been initialized.
-  subtle::Release_Store(&capture_mode_, static_cast<int32_t>(mode));
-}
-
-void AllocationContextTracker::PushPseudoStackFrame(
-    AllocationContextTracker::PseudoStackFrame stack_frame) {
-  // Impose a limit on the height to verify that every push is popped, because
-  // in practice the pseudo stack never grows higher than ~20 frames.
-  if (tracked_stack_.size() < kMaxStackDepth) {
-    tracked_stack_.push_back(
-        StackFrame::FromTraceEventName(stack_frame.trace_event_name));
-  } else {
-    NOTREACHED();
-  }
-}
-
-void AllocationContextTracker::PopPseudoStackFrame(
-    AllocationContextTracker::PseudoStackFrame stack_frame) {
-  // Guard for stack underflow. If tracing was started with a TRACE_EVENT in
-  // scope, the frame was never pushed, so it is possible that pop is called
-  // on an empty stack.
-  if (tracked_stack_.empty())
-    return;
-
-  tracked_stack_.pop_back();
+  capture_mode_.store(mode, std::memory_order_release);
 }
 
 void AllocationContextTracker::PushNativeStackFrame(const void* pc) {
@@ -180,11 +159,12 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
   if (ignore_scope_depth_)
     return false;
 
-  CaptureMode mode = static_cast<CaptureMode>(
-      subtle::NoBarrier_Load(&capture_mode_));
+  CaptureMode mode = capture_mode_.load(std::memory_order_relaxed);
 
   auto* backtrace = std::begin(ctx->backtrace.frames);
+#if !BUILDFLAG(IS_NACL)
   auto* backtrace_end = std::end(ctx->backtrace.frames);
+#endif
 
   if (!thread_name_) {
     // Ignore the string allocation made by GetAndLeakThreadName to avoid
@@ -206,16 +186,6 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
       {
         break;
       }
-    case CaptureMode::PSEUDO_STACK:
-    case CaptureMode::MIXED_STACK:
-      {
-        for (const StackFrame& stack_frame : tracked_stack_) {
-          if (backtrace == backtrace_end)
-            break;
-          *backtrace++ = stack_frame;
-        }
-        break;
-      }
     case CaptureMode::NATIVE_STACK:
       {
 // Backtrace contract requires us to return bottom frames, i.e.
@@ -223,20 +193,20 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
 // from this point and up until main(). We intentionally request
 // kMaxFrameCount + 1 frames, so that we know if there are more frames
 // than our backtrace capacity.
-#if !defined(OS_NACL)  // We don't build base/debug/stack_trace.cc for NaCl.
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE)
-        const void* frames[Backtrace::kMaxFrameCount + 1];
-        static_assert(base::size(frames) >= Backtrace::kMaxFrameCount,
-                      "not requesting enough frames to fill Backtrace");
-        size_t frame_count =
-            CFIBacktraceAndroid::GetInitializedInstance()->Unwind(
-                frames, base::size(frames));
+#if !BUILDFLAG(IS_NACL)  // We don't build base/debug/stack_trace.cc for NaCl.
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE)
+      const void* frames[Backtrace::kMaxFrameCount + 1];
+      static_assert(std::size(frames) >= Backtrace::kMaxFrameCount,
+                    "not requesting enough frames to fill Backtrace");
+      size_t frame_count =
+          CFIBacktraceAndroid::GetInitializedInstance()->Unwind(
+              frames, std::size(frames));
 #elif BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
         const void* frames[Backtrace::kMaxFrameCount + 1];
-        static_assert(base::size(frames) >= Backtrace::kMaxFrameCount,
+        static_assert(std::size(frames) >= Backtrace::kMaxFrameCount,
                       "not requesting enough frames to fill Backtrace");
         size_t frame_count = debug::TraceStackFramePointers(
-            frames, base::size(frames),
+            frames, std::size(frames),
             1 /* exclude this function from the trace */);
 #else
         // Fall-back to capturing the stack with base::debug::StackTrace,
@@ -247,22 +217,24 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
 #endif
 
         // If there are too many frames, keep the ones furthest from main().
-        size_t backtrace_capacity = backtrace_end - backtrace;
-        int32_t starting_frame_index = frame_count;
-        if (frame_count > backtrace_capacity) {
-          starting_frame_index = backtrace_capacity - 1;
-          *backtrace++ = StackFrame::FromTraceEventName("<truncated>");
-        }
-        for (int32_t i = starting_frame_index - 1; i >= 0; --i) {
-          const void* frame = frames[i];
-          *backtrace++ = StackFrame::FromProgramCounter(frame);
-        }
-#endif  // !defined(OS_NACL)
+      ptrdiff_t backtrace_capacity = backtrace_end - backtrace;
+      ptrdiff_t starting_frame_index =
+          base::checked_cast<ptrdiff_t>(frame_count);
+      if (starting_frame_index > backtrace_capacity) {
+        starting_frame_index = backtrace_capacity - 1;
+        *backtrace++ = StackFrame::FromProgramCounter(nullptr);
+      }
+      for (ptrdiff_t i = starting_frame_index - 1; i >= 0; --i) {
+        const void* frame = frames[i];
+        *backtrace++ = StackFrame::FromProgramCounter(frame);
+      }
+#endif  // !BUILDFLAG(IS_NACL)
         break;
       }
   }
 
-  ctx->backtrace.frame_count = backtrace - std::begin(ctx->backtrace.frames);
+  ctx->backtrace.frame_count =
+      static_cast<size_t>(backtrace - std::begin(ctx->backtrace.frames));
 
   ctx->type_name = TaskContext();
 

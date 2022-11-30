@@ -1,6 +1,7 @@
 include_rules = [
   "+cc/base",
   "+cc/mojo_embedder",
+  "+cc/metrics/events_metrics_manager.h",
   # TODO(danakj): This should not use LayerTreeFrameSink, which is part of the
   # layer compositor. It should use CompositorFrameSink instead.
   "+cc/trees/layer_tree_frame_sink.h",

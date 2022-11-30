@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+  <TextView
+      android:id="@+id/subtitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingStart="@dimen/dialog_padding_sides"
+      android:paddingEnd="@dimen/dialog_padding_sides"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      tools:text="For Alex Park — 345 Spear street" />
+
+  <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_marginTop="4dp"
+      android:layout_weight="1"
+      android:fadeScrollbars="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="12dp">
+
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingStart="@dimen/dialog_padding_sides"
+          tools:ignore="RtlSymmetry">
+
+        <Space
+            android:id="@+id/no_header_space"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            tools:visibility="gone" />
+
+        <TextView
+            android:id="@+id/header_new"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_below="@id/no_header_space"
+            android:layout_toStartOf="@id/edit_button"
+            android:text="@string/autofill_update_address_prompt_new_values_section_label"
+            android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/details_new"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="3dp"
+            android:layout_below="@id/header_new"
+            android:layout_toStartOf="@id/edit_button"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            app:leading="@dimen/text_size_large_leading"
+            tools:text="Alex Johnson Park\n+1 858 230 4000" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/edit_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignBaseline="@id/details_new"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="8dp"
+            android:baseline="32dp"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/autofill_save_address_prompt_edit_button_tooltip"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/edit_icon"
+            app:tint="@color/default_icon_color_tint_list"
+            tools:src="@drawable/edit_icon" />
+      </RelativeLayout>
+
+      <TextView
+          android:id="@+id/header_old"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="12dp"
+          android:paddingStart="@dimen/dialog_padding_sides"
+          android:paddingEnd="@dimen/dialog_padding_sides"
+          android:text="@string/autofill_update_address_prompt_old_values_section_label"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/details_old"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="3dp"
+          android:paddingStart="@dimen/dialog_padding_sides"
+          android:paddingEnd="@dimen/dialog_padding_sides"
+          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          app:leading="@dimen/text_size_large_leading"
+          tools:text="Alex Park" />
+    </LinearLayout>
+  </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
+</LinearLayout>

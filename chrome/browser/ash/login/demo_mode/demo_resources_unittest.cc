@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,18 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using component_updater::FakeCrOSComponentManager;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::component_updater::FakeCrOSComponentManager;
 
 constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
@@ -36,23 +33,20 @@ void SetBoolean(bool* value) {
   *value = true;
 }
 
-}  // namespace
-
 class DemoResourcesTest : public testing::Test {
  public:
   DemoResourcesTest()
       : browser_process_platform_part_test_api_(
             g_browser_process->platform_part()) {}
+
+  DemoResourcesTest(const DemoResourcesTest&) = delete;
+  DemoResourcesTest& operator=(const DemoResourcesTest&) = delete;
+
   ~DemoResourcesTest() override = default;
 
-  void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    InitializeCrosComponentManager();
-  }
+  void SetUp() override { InitializeCrosComponentManager(); }
 
   void TearDown() override {
-    chromeos::DBusThreadManager::Shutdown();
-
     cros_component_manager_ = nullptr;
     browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
   }
@@ -88,8 +82,6 @@ class DemoResourcesTest : public testing::Test {
 
  private:
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoResourcesTest);
 };
 
 TEST_F(DemoResourcesTest, GetPaths) {
@@ -128,19 +120,6 @@ TEST_F(DemoResourcesTest, LoadResourcesOnline) {
       base::FilePath(kTestDemoModeResourcesMountPoint)));
   EXPECT_FALSE(
       cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-  EXPECT_TRUE(demo_resources.loaded());
-}
-
-TEST_F(DemoResourcesTest, LoadResourcesOffline) {
-  DemoResources demo_resources(DemoSession::DemoModeConfig::kOffline);
-  demo_resources.EnsureLoaded(base::DoNothing());
-
-  EXPECT_FALSE(demo_resources.loaded());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  demo_resources.SetPreinstalledOfflineResourcesLoadedForTesting(
-      base::FilePath(kTestDemoModeResourcesMountPoint));
   EXPECT_TRUE(demo_resources.loaded());
 }
 
@@ -187,52 +166,5 @@ TEST_F(DemoResourcesTest, EnsureLoadedRepeatedlyOnline) {
   EXPECT_TRUE(demo_resources.loaded());
 }
 
-TEST_F(DemoResourcesTest, EnsureLoadedRepeatedlyOffline) {
-  DemoResources demo_resources(DemoSession::DemoModeConfig::kOffline);
-
-  bool first_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &first_callback_called));
-
-  bool second_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &second_callback_called));
-
-  bool third_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &third_callback_called));
-
-  EXPECT_FALSE(demo_resources.loaded());
-  EXPECT_FALSE(first_callback_called);
-  EXPECT_FALSE(second_callback_called);
-  EXPECT_FALSE(third_callback_called);
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  demo_resources.SetPreinstalledOfflineResourcesLoadedForTesting(
-      component_mount_point);
-
-  EXPECT_TRUE(demo_resources.loaded());
-  EXPECT_TRUE(first_callback_called);
-  EXPECT_TRUE(second_callback_called);
-  EXPECT_TRUE(third_callback_called);
-
-  EXPECT_EQ(component_mount_point.AppendASCII(kDemoAppsImageFile),
-            demo_resources.GetDemoAppsPath());
-  EXPECT_EQ(component_mount_point.AppendASCII(kExternalExtensionsPrefsFile),
-            demo_resources.GetExternalExtensionsPrefsPath());
-
-  bool fourth_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &fourth_callback_called));
-  EXPECT_TRUE(fourth_callback_called);
-
-  bool fifth_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &fifth_callback_called));
-  EXPECT_TRUE(fifth_callback_called);
-
-  EXPECT_TRUE(demo_resources.loaded());
-}
-
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

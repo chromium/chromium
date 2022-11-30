@@ -1,20 +1,31 @@
 <style>
   :host {
     /* Values overriden in Javascript from constants.js. */
+    --emoji-group-button-size: 0;
     --emoji-picker-height: 0;
     --emoji-picker-side-padding: 0;
     --emoji-picker-top-padding: 0;
     --emoji-picker-width: 0;
     --emoji-size: 0;
+    --emoji-spacing: 0;
     --emoji-per-row: 0;
     /* Values set in css only. */
-    --emoji-group-tabs-left: -4px;
-    --emoji-group-button-size: 36px;
-    --emoji-divider-color: var(--google-grey-200);
+    --emoji-group-clear-recents-icon-size: 16px;
+    --emoji-group-heading-padding-bottom: 10px;
+    --emoji-group-heading-padding-top: 16px;
+    --emoji-group-heading-size: 32px;
+    --emoji-group-tabs-left: 0;
+    --emoji-hover-background: var(--cros-ripple-color);
+    --emoji-picker-bottom-padding: 14px;
+    --emoji-picker-last-emoji-left: calc(var(--emoji-picker-side-padding)
+            + var(--emoji-size) * (var(--emoji-per-row) - 1)
+            + var(--emoji-spacing) * (var(--emoji-per-row) - 1));
+    --emoji-picker-group-highlight-bar-width: 24px;
+    --emoji-picker-subcategory-bar-inline-margin: 18px;
+    --emoji-tooltip-delay-in: 500ms;
+    --emoji-tooltip-delay-out: 500ms;
     /* Actual properties of the emoji picker */
-
-
-
+    background-color: var(--cros-bg-color);
     display: flex;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
@@ -24,33 +35,56 @@
     width: var(--emoji-picker-width);
   }
 
+  :host([v2-enabled]) {
+    --emoji-group-heading-padding-bottom: 6px;
+    --emoji-group-heading-padding-top: 10px;
+  }
+
   .side-padding {
+    flex-grow: 1;
+    flex-shrink: 0;
+    max-height: 100%;
+    overflow-y: scroll;
     padding-inline-end: var(--emoji-picker-side-padding);
     padding-inline-start: var(--emoji-picker-side-padding);
   }
 
-  @media (prefers-color-scheme-dark) {
-    :host {
-      --emoji-divider-color: var(--google-grey-900);
-    }
-  }
-  
-  #searchContainer,
-  #listContainer {
+  #search-container,
+  #list-container {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow-y: hidden;
+    overflow-y: clip;
     width: 100%;
   }
 
   #tabs {
-    display: flex;
-    flex-shrink: 0;
+    display: grid;
+    grid-gap: var(--emoji-spacing);
+    grid-template-columns: repeat(18,1fr);
     left: var(--emoji-group-tabs-left);
     overflow-x: scroll;
+    padding-bottom: 10px;
+    padding-top: 10px; /* Search field also has some padding below which adds to this. */
     scroll-behavior: smooth;
+    scroll-padding: var(--emoji-size);
+    scroll-snap-type: x mandatory;
     width: 100%;
+  }
+
+  /* Mark the first and 10th group as scroll targets to get the correct scroll
+   * snapping behavior. Scroll snapping is applied in emoji picker v1. */
+  :host(:not([v2-enabled])) #tabs :nth-child(2) {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+  :host(:not([v2-enabled])) #tabs :nth-child(14) {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  :host([v2-enabled]) #tabs {
+    overflow-x: hidden;
   }
 
   #tabs::-webkit-scrollbar {
@@ -63,32 +97,45 @@
 
   #groups {
     flex-grow: 1;
+    flex-shrink: 1;
     overflow-y: scroll;
+    padding-bottom: var(--emoji-picker-bottom-padding);
   }
 
   .chevron {
-    background-color: var(--cr-card-background-color);
-    height: var(--emoji-group-button-size);
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-size: 28px;
+    background-color: var(--cros-bg-color);
+    border-radius: 0;
     margin: 0;
     padding: 0;
     position: absolute;
-    width: var(--emoji-group-button-size);
+    width: var(--emoji-size);
     z-index: 2;
   }
 
-  #rightChevron {
-    left: calc(var(--emoji-group-button-size) * 8 +
-      var(--emoji-picker-side-padding));
+  #right-chevron {
+    left: var(--emoji-picker-last-emoji-left);
+    /* Icons may become visible to the right of this during scrolling without
+     * the additional padding.
+     */
+    padding-inline-end: var(--emoji-picker-side-padding);
   }
 
-  #leftChevron {
+  #left-chevron {
     display: none;
-    left: 10px;
+    left: var(--emoji-picker-side-padding);
   }
 
   .divider {
-    border-top: 1px solid var(--emoji-divider-color);
+    border-top: 1px solid var(--cros-separator-color);
     width: var(--emoji-picker-width);
+  }
+
+  :host([v2-enabled]) .divider {
+    margin-inline: var(--emoji-picker-subcategory-bar-inline-margin);
+    width: unset;
   }
 
   .sr-only {
@@ -97,16 +144,109 @@
     z-index: -2;
   }
 
+  .hidden {
+    display: none;
+  }
+
   #bar {
-    background-color: var(--cr-checked-color);
+    background-color: var(--cros-icon-color-prominent);
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
+    /* This gets made visible after we determine the correct location by loading
+     * history.
+     */
+    display: none;
     flex-shrink: 0;
     height: 2px;
-    margin-inline-start: 2px;
+    /* Left needed so that transition end fires when it changes for the first
+     * time.
+     */
+    left: 0;
+    padding-inline-end: calc((var(--emoji-size)
+      - var(--emoji-picker-group-highlight-bar-width)) / 2);
+    padding-inline-start: calc((var(--emoji-size)
+      - var(--emoji-picker-group-highlight-bar-width)) / 2);
     position: relative;
-    transition: all 200ms;
-    width: 32px;
+    width: var(--emoji-picker-group-highlight-bar-width);
+  }
+
+  .fake {
+    flex-shrink: 0;
+    width: var(--emoji-size);
+  }
+
+  .sr-only {
+    user-select: none;
+  }
+
+  .pagination {
+    align-items: center;
+    display: flex;
+    width: var(--emoji-picker-width);
+  }
+
+  :host([v2-enabled]) {
+    height:
+      calc(var(--v2-emoji-picker-height) - var(--emoji-picker-top-padding));
+    width: var(--v2-emoji-picker-width);
+  }
+
+  :host([v2-enabled]) #tabs {
+    padding-bottom: 6px;
+    padding-top: 0;
+  }
+
+  /* v2Enabled without text bar specifies the v2 emoji-based subcategory bar. */
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #tabs {
+    grid-gap: var(--v2-emoji-group-spacing);
+  }
+
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #left-chevron {
+    display: none;
+  }
+
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #right-chevron {
+    display: none;
+  }
+
+  :host([text-subcategory-bar-enabled]) .chevron {
+    --cr-icon-button-size: var(--emoji-size);
+    width: var(--emoji-size);
+  }
+
+  :host([text-subcategory-bar-enabled]) #left-chevron {
+    left: var(--emoji-picker-subcategory-bar-inline-margin);
+    margin-inline-end: var(--v2-tab-button-margin);
+  }
+
+  :host([text-subcategory-bar-enabled]) #right-chevron {
+    left: calc(var(--v2-emoji-picker-width) - var(--emoji-size)
+    - var(--emoji-picker-subcategory-bar-inline-margin));
+    padding-inline-end: 0;
+  }
+
+  /* Center vertically the history icon and text buttons.*/
+  :host([text-subcategory-bar-enabled]) #tabs {
+    align-items: center;
+    grid-gap: unset;
+  }
+
+  :host([text-subcategory-bar-enabled]) #bar {
+    margin-inline: 9px;
+    padding-inline: 0;
+  }
+
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #bar {
+    /*
+     * Introduce some margin to align the highlight bar vertically centered with
+     * the emoji button.
+     */
+    margin-inline: 4px;
+    padding-inline: 0;
+  }
+
+  :host([v2-enabled]) .category-gap {
+    height: 16px;
   }
 </style>
 
@@ -117,40 +257,108 @@
 </div>
 
 <div id="message" class="sr-only" aria-live="polite"></div>
-<div class="side-padding">
-  <emoji-search id$="searchContainer" emoji-data="[[emojiData]]"
-    search="{{search}}">
+  <emoji-search
+    class="side-padding"
+    id="search-container"
+    categories-data="[[categoriesData]]"
+    lazy-indexing="[[searchLazyIndexing]]"
+    on-scroll="onSearchScroll"
+    category-metadata="[[getCategoryMetadata(category)]]"
+    v2-enabled="[[v2Enabled]]">
   </emoji-search>
-</div>
 
-<div id="listContainer">
+<div id="list-container">
   <div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>
   <div class="side-padding">
     <div id="tabs" on-scroll="onGroupsScroll">
-      <cr-icon-button id="leftChevron" class="chevron"
+      <cr-icon-button id="left-chevron" class="chevron"
         on-click="onLeftChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_left">
       </cr-icon-button>
-      <template is="dom-repeat" items="[[emojiGroupTabs]]">
-        <emoji-group-button data-group$="[[item.groupId]]"
-          group-id="[[item.groupId]]" active="[[item.active]]"
-          icon="[[item.icon]]" name="[[item.name]]">
-        </emoji-group-button>
+      <template is="dom-if" if="[[!textSubcategoryBarEnabled]]">
+        <template is="dom-repeat" items="[[emojiGroupTabs]]">
+          <emoji-group-button data-group$="[[item.groupId]]"
+            group-id="[[item.groupId]]"
+            active="[[item.active]]"
+            disabled="[[item.disabled]]"
+            icon="[[item.icon]]" name="[[item.name]]"
+            v2-enabled$="[[v2Enabled]]"
+            on-focus="preventV2TabScrolling"
+            custom-tab-index="[[getTabIndex(item.pagination,pagination)]]">>
+          </emoji-group-button>
+        </template>
+        <!--Fake group button to increase maximum scrolling, need an icon to
+          render as invisible-->
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake" id="RightChevronScrollTarget"
+          tabindex="-1">
+        </div>
       </template>
-      <!--Fake group button to increase maximum scrolling, need an icon to
-        render as invisible-->
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
-      </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
-      </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
-      </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
-      </emoji-group-button>
-      <emoji-group-button id="RightChevronScrollTarget"
-        icon="[[emojiGroupTabs[0].icon]]">
-      </emoji-group-button>
-      <cr-icon-button id="rightChevron" class="chevron"
+      <template is="dom-if" if="[[textSubcategoryBarEnabled]]">
+        <div class="pagination">
+          <!-- Render history tab. -->
+          <emoji-group-button data-group$="[[emojiGroupTabs.0.groupId]]"
+            group-id="[[emojiGroupTabs.0.groupId]]"
+            active="[[emojiGroupTabs.0.active]]"
+            disabled="[[emojiGroupTabs.0.disabled]]"
+            icon="[[emojiGroupTabs.0.icon]]"
+            name="[[emojiGroupTabs.0.name]]"
+            class="tab"
+            v2-enabled$="[[v2Enabled]]"
+            on-focus="preventV2TabScrolling"
+            custom-tab-index="[[getTabIndex(item.pagination,pagination)]]">
+          </emoji-group-button>
+          <!-- Render non history tab. -->
+          <template is="dom-repeat"
+            items="[[emojiGroupTabs]]"
+            filter="[[filterGroupTabByPagination(1)]]">
+            <text-group-button data-group$="[[item.groupId]]"
+              group-id="[[item.groupId]]"
+              active="[[item.active]]"
+              disabled="[[item.disabled]]"
+              name="[[item.name]]"
+              class="tab"
+              on-focus="preventV2TabScrolling"
+              custom-tab-index=
+              "[[getTabIndex(item.pagination,pagination)]]">
+            </text-group-button>
+          </template>
+        </div>
+        <template is="dom-repeat" as="pageNumber" filter="isNotFirstPage"
+          items="[[getPaginationArray(emojiGroupTabs)]]">
+          <div class="pagination">
+            <template is="dom-repeat"
+              items="[[emojiGroupTabs]]"
+              filter="[[filterGroupTabByPagination(pageNumber)]]">
+              <text-group-button data-group$="[[item.groupId]]"
+                group-id="[[item.groupId]]"
+                active="[[item.active]]"
+                disabled="[[item.disabled]]"
+                name="[[item.name]]"
+                class="tab"
+                on-focus="preventV2TabScrolling"
+                custom-tab-index=
+                "[[getTabIndex(item.pagination,pagination)]]">
+              </text-group-button>
+            </template>
+          </div>
+        </template>
+      </template>
+      <cr-icon-button id="right-chevron" class="chevron"
         on-click="onRightChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_right">
       </cr-icon-button>
@@ -158,24 +366,21 @@
   </div>
   <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
   <div class="side-padding">
-    <div id="bar" on-transitionend="onBarTransitionEnd"></div>
+    <div id="bar"
+      on-transitionend="onBarTransitionEnd"
+      on-transitionstart="onBarTransitionStart"></div>
   </div>
   <div class="divider"></div>
-
   <div class="side-padding" id="groups" on-scroll="onEmojiScroll">
-    <!--
-      history is the "recently used" group and is populated in code,
-      whereas the other groups are created from the emoji metadata.
-    -->
-    <div data-group="history">
-      <template is="dom-if" if="[[history.emoji.length]]">
-        <emoji-group data="[[history]]" preferred="{}">
-        </emoji-group>
-      </template>
-    </div>
-    <template is="dom-repeat" items="[[emojiData]]">
-      <div data-group$="[[index]]">
-        <emoji-group data="[[item]]" preferred="[[preferenceMapping]]">
+    <template is="dom-repeat" items="[[categoriesGroupElements]]">
+      <div data-group$="[[item.groupId]]">
+        <emoji-group data="[[item.emoji]]"
+          group="[[item.name]]"
+          preferred="[[item.preferences]]"
+          clearable$="[[item.isHistory]]"
+          category$="[[item.category]]"
+          class$="[[getEmojiGroupClassNames(item.isHistory,item.emoji)]]"
+          v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </div>
     </template>

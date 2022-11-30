@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,4 +14,7 @@ mojom("mojom") {
     "//chromeos/services/network_config/public/mojom:network_types",
     "//mojo/public/mojom/base",
   ]
+
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
 }

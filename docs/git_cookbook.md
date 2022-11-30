@@ -71,7 +71,7 @@ cherry-pick each one into a separate review branch.
 
 1.  Make and commit a set of independent changes.
 1.  `git log`  # see the hashes for each of your commits.
-1.  repeat checkout, cherry-pick, upload steps for each change1..n
+1.  repeat checkout, cherry-pick, upload steps for each change 1..n
     1.  `git new-branch review-changeN` Create a new review branch
         tracking origin
     1.  `git cherry-pick <hash of change N>`
@@ -91,7 +91,7 @@ working branch, update the commit, and re-cherry-pick it into the review branch.
 1.  `git log`  # observe new hash for the change
 1.  `git checkout review-changeN`
 1.  `git reset --hard`  # remove the previous version of the change
-1.  `cherry-pick <new hash of change N>`
+1.  `git cherry-pick <new hash of change N>`
 1.  `git cl upload`
 
 ## Sharing code between multiple machines
@@ -154,7 +154,7 @@ from that one then adjust it to point it at the real upstream one.
 
 1.  Clone a nearby copy of the code you want: `git clone coworker-machine:/path/to/repo`
 1.  Change the URL your copy fetches from to point at the real git repo:
-    `git set-url origin https://chromium.googlesource.com/chromium/src.git`
+    `git remote set-url origin https://chromium.googlesource.com/chromium/src.git`
 1.  Update your copy: `git fetch`
 1.  Delete any extra branches that you picked up in the initial clone:
     `git prune origin`

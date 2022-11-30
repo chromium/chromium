@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/timer/timer.h"
 #include "components/system_media_controls/system_media_controls.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NowPlayingInfoCenterDelegateCocoa;
 
@@ -43,10 +44,10 @@ class API_AVAILABLE(macos(10.13.1)) NowPlayingInfoCenterDelegate {
   void UpdatePlaybackStatusAndPosition();
 
   // Stores the most recently received playback status.
-  base::Optional<SystemMediaControls::PlaybackStatus> playback_status_;
+  absl::optional<SystemMediaControls::PlaybackStatus> playback_status_;
 
   // Stores the most recently received position.
-  base::Optional<media_session::MediaPosition> position_;
+  absl::optional<media_session::MediaPosition> position_;
 
   // Calls UpdatePlaybackStatusAndPosition() when the timer expires.
   std::unique_ptr<base::OneShotTimer> timer_ =

@@ -19,5 +19,5 @@ SessionManager::Get() method gets the singleton like instance. The instance
 in Chrome browser is ChromeSessionManager derived from SessionManager. This
 is needed because SessionManager logic depends on policy code which is still
 part of the browser. ChromeSessionManager is in browser/ and can access that.
-The ChromeSessionManager instance is created in the PreMainMessageLoopStart
+The ChromeSessionManager instance is created in the PreCreateMainMessageLoop
 stage and destroyed in the PostMainMessageLoopRun.

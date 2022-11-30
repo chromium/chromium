@@ -1,6 +1,7 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 
 from pylib.gtest import gtest_test_instance
 from pylib.instrumentation import instrumentation_test_instance
@@ -33,3 +34,4 @@ def CreateTestRun(env, test_instance, error_func):
 
   error_func('Unable to create test run for %s tests in %s environment'
              % (str(test_instance), str(env)))
+  raise RuntimeError('error_func must call exit inside.')

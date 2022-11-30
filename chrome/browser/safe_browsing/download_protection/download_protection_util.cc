@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,12 +32,6 @@ std::string EscapeCertAttribute(const std::string& attribute) {
 }
 
 }  // namespace
-
-void RecordCountOfAllowlistedDownload(AllowlistType type) {
-  // TODO(jkarlin): Rename to Allowlist.
-  UMA_HISTOGRAM_ENUMERATION("SBClientDownload.CheckWhitelistResult", type,
-                            ALLOWLIST_TYPE_MAX);
-}
 
 void GetCertificateAllowlistStrings(
     const net::X509Certificate& certificate,
@@ -99,7 +93,7 @@ GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url) {
   // "blob:https://my-origin.com/def07373-cbd8-49d2-9ef7-20b071d34a1a". To make
   // these URLs distinguishable from those we use a fixed string rather than a
   // random UUID.
-  return GURL("blob:" + frame_url.GetOrigin().spec() +
+  return GURL("blob:" + frame_url.DeprecatedGetOriginAsURL().spec() +
               "file-system-access-write");
 }
 

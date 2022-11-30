@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -42,25 +43,6 @@ const char kCrossOriginHistogramId[] =
 const char kHeavyAdInterventionTypeHistogramId[] =
     "PageLoad.Clients.Ads.HeavyAds.InterventionType2";
 
-// Use the maximum possible threshold so tests are deterministic.
-const int kMaxHeavyAdNetworkSize =
-    heavy_ad_thresholds::kMaxNetworkBytes +
-    page_load_metrics::AdsPageLoadMetricsObserver::
-        HeavyAdThresholdNoiseProvider::kMaxNetworkThresholdNoiseBytes;
-
-const char kHttpOkResponseHeader[] =
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html; charset=utf-8\r\n"
-    "\r\n";
-
-void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
-                       int bytes) {
-  response->WaitForRequest();
-  response->Send(kHttpOkResponseHeader);
-  response->Send(std::string(bytes, ' '));
-  response->Done();
-}
-
 }  // namespace
 
 class AdsPageLoadMetricsObserverBrowserTest
@@ -90,8 +72,9 @@ class AdsPageLoadMetricsObserverBrowserTest
 };
 
 // Test that an embedded ad is same origin.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricEmbedded) {
+                       DISABLED_OriginStatusMetricEmbedded) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
   NavigateAndWaitForCompletion(
@@ -107,8 +90,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an empty embedded ad isn't reported at all.
+// TODO(crbug.com/1226500): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricEmbeddedEmpty) {
+                       DISABLED_OriginStatusMetricEmbeddedEmpty) {
   base::HistogramTester histogram_tester;
   NavigateAndWaitForCompletion(
       embedded_test_server()->GetURL(
@@ -119,8 +103,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an ad with the same origin as the main page is same origin.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricSame) {
+                       DISABLED_OriginStatusMetricSame) {
   // Set the frame's resource as a rule.
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
@@ -147,8 +132,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an ad with a different origin as the main page is cross origin.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricCross) {
+                       DISABLED_OriginStatusMetricCross) {
   // Note: Cannot navigate cross-origin without dynamically generating the URL.
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -230,15 +216,17 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
       // to trigger the intervention and ensure that the navigation failed.
       content::TestNavigationObserver error_observer(
           web_contents(), net::ERR_BLOCKED_BY_CLIENT);
-      LoadLargeResource(large_resource, kMaxHeavyAdNetworkSize);
+      page_load_metrics::LoadLargeResource(
+          large_resource, page_load_metrics::kMaxHeavyAdNetworkSize);
       error_observer.WaitForNavigationFinished();
       EXPECT_FALSE(error_observer.last_navigation_succeeded());
     } else {
       // Otherwise load the resource, ensuring enough bytes were loaded.
       int64_t current_network_bytes = waiter->current_network_bytes();
-      LoadLargeResource(large_resource, kMaxHeavyAdNetworkSize);
-      waiter->AddMinimumNetworkBytesExpectation(current_network_bytes +
-                                                kMaxHeavyAdNetworkSize);
+      page_load_metrics::LoadLargeResource(
+          large_resource, page_load_metrics::kMaxHeavyAdNetworkSize);
+      waiter->AddMinimumNetworkBytesExpectation(
+          current_network_bytes + page_load_metrics::kMaxHeavyAdNetworkSize);
       waiter->Wait();
     }
   }
@@ -287,7 +275,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   NavigateAndWaitForCompletion(url, shell());
 
   // Load a resource large enough to trigger the intervention.
-  LoadLargeResource(incomplete_resource_response.get(), kMaxHeavyAdNetworkSize);
+  page_load_metrics::LoadLargeResource(
+      incomplete_resource_response.get(),
+      page_load_metrics::kMaxHeavyAdNetworkSize);
 
   // Wait for the intervention page navigation to finish on the frame.
   error_observer.WaitForNavigationFinished();
@@ -310,8 +300,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 // Check that the Heavy Ad Intervention fires the correct number of times to
 // protect privacy, and that after that limit is hit, the Ads Intervention
 // Framework takes over for future navigations.
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       HeavyAdInterventionBlocklistFull_InterventionBlocked) {
+// TODO(crbug.com/1210190): This test is flaky.
+IN_PROC_BROWSER_TEST_F(
+    AdsPageLoadMetricsObserverResourceBrowserTest,
+    DISABLED_HeavyAdInterventionBlocklistFull_InterventionBlocked) {
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       http_responses(4);
   for (auto& http_response : http_responses) {
@@ -393,8 +385,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Check that clearing browsing data resets the number of times that the Heavy
 // Ad Intervention has been triggered.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       ClearBrowsingDataClearsHeavyAdBlocklist) {
+                       DISABLED_ClearBrowsingDataClearsHeavyAdBlocklist) {
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       http_responses(4);
   for (auto& http_response : http_responses) {
@@ -452,8 +445,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
       on_blocklist_cleared_run_loop.QuitClosure());
   base::Time now = base::Time::Now();
   GetProfile()->ClearBrowsingData(
-      {BrowsingDataType::COOKIES_AND_SITE_DATA},
-      now - base::TimeDelta::FromDays(1), now,
+      {BrowsingDataType::COOKIES_AND_SITE_DATA}, now - base::Days(1), now,
       on_browsing_data_cleared_run_loop.QuitClosure());
   on_blocklist_cleared_run_loop.Run();
 
@@ -533,7 +525,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceIncognitoBrowserTest,
   NavigateAndWaitForCompletion(url, shell());
 
   // Load a resource large enough to trigger the intervention.
-  LoadLargeResource(incomplete_resource_response.get(), kMaxHeavyAdNetworkSize);
+  page_load_metrics::LoadLargeResource(
+      incomplete_resource_response.get(),
+      page_load_metrics::kMaxHeavyAdNetworkSize);
 
   // Wait for the intervention page navigation to finish on the frame.
   error_observer.WaitForNavigationFinished();

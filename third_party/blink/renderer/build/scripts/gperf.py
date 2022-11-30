@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import argparse
 import os
 import re
 import subprocess
-import sys
 import template_expander
 
 
@@ -39,7 +38,7 @@ def generate_gperf(gperf_path, gperf_input, gperf_args):
         # so replace gperf's /*FALLTHROUGH*/ comment with the statement.
         # https://savannah.gnu.org/bugs/index.php?53029
         gperf_output = gperf_output.replace('/*FALLTHROUGH*/',
-                                            '  FALLTHROUGH;')
+                                            '  [[fallthrough]];')
         # -Wpointer-to-int-cast warns about casting pointers to smaller ints
         # Replace {(int)(long)&(foo), bar} with
         # {static_cast<int>(reinterpret_cast<uintptr_t>(&(foo)), bar}

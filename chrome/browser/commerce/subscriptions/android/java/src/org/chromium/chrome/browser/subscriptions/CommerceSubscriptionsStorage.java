@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.List;
 
@@ -116,11 +116,15 @@ public class CommerceSubscriptionsStorage {
         mNativeCommerceSubscriptionDB = nativePtr;
     }
 
+    @VisibleForTesting
+    public void setNativeCommerceSubscriptionDBForTesting(long nativeCommerceSubscriptionDB) {
+        mNativeCommerceSubscriptionDB = nativeCommerceSubscriptionDB;
+    }
+
     /**
      * Generate the key for a {@link CommerceSubscription} used to store it in database.
      * @param subscription The {@link CommerceSubscription} whose key we want to generate.
      */
-    @VisibleForTesting
     public static String getKey(CommerceSubscription subscription) {
         return String.format("%s_%s_%s", subscription.getType(), subscription.getTrackingIdType(),
                 subscription.getTrackingId());
@@ -130,8 +134,8 @@ public class CommerceSubscriptionsStorage {
     interface Natives {
         void init(CommerceSubscriptionsStorage caller, BrowserContextHandle handle);
         void destroy(long nativeCommerceSubscriptionDB);
-        void save(long nativeCommerceSubscriptionDB, String key, int type, String trackingId,
-                int managementType, int trackingIdType, long timestamp, Runnable onComplete);
+        void save(long nativeCommerceSubscriptionDB, String key, String type, String trackingId,
+                String managementType, String trackingIdType, long timestamp, Runnable onComplete);
         void load(long nativeCommerceSubscriptionDB, String key,
                 Callback<CommerceSubscription> callback);
         void loadWithPrefix(long nativeCommerceSubscriptionDB, String key,

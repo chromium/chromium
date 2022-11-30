@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Methods for converting model objects to human-readable formats."""
@@ -24,9 +24,9 @@ def _PrettySize(size):
   size /= 1024.0
   if abs(size) < 10:
     return '%.2fkb' % size
-  elif abs(size) < 100:
+  if abs(size) < 100:
     return '%.1fkb' % size
-  elif abs(size) < 1024:
+  if abs(size) < 1024:
     return '%dkb' % size
   size /= 1024.0
   if abs(size) < 10:
@@ -74,7 +74,7 @@ def _GetSectionSizeInfo(unsummed_sections, summed_sections, section_sizes):
   return (total_bytes, section_names)
 
 
-class Histogram(object):
+class Histogram:
   BUCKET_NAMES_FOR_SMALL_VALUES = {-1: '(-1,0)', 0: '{0}', 1: '(0,1)'}
 
   def __init__(self):
@@ -127,7 +127,7 @@ class Histogram(object):
       yield line.rstrip()
 
 
-class Describer(object):
+class Describer:
   def __init__(self):
     pass
 
@@ -173,7 +173,7 @@ class Describer(object):
 
 class DescriberText(Describer):
   def __init__(self, verbose=False, recursive=False, summarize=True):
-    super(DescriberText, self).__init__()
+    super().__init__()
     self.verbose = verbose
     self.recursive = recursive
     self.summarize = summarize
@@ -446,15 +446,15 @@ class DescriberText(Describer):
     yield '{} paths added, {} removed, {} changed'.format(
         len(added), len(removed), len(changed))
 
-    if self.verbose and len(added):
+    if self.verbose and added:
       yield 'Added files:'
       for p in sorted(added):
         yield '  ' + p
-    if self.verbose and len(removed):
+    if self.verbose and removed:
       yield 'Removed files:'
       for p in sorted(removed):
         yield '  ' + p
-    if self.verbose and len(changed):
+    if self.verbose and changed:
       yield 'Changed files:'
       for p in sorted(changed):
         yield '  ' + p
@@ -535,17 +535,12 @@ class DescriberText(Describer):
           self._DescribeDeltaDict('Build config', diff.before.build_config,
                                   diff.after.build_config))
       for c in diff.containers:
-        name = c.name
         desc_list.append(('', ))
-        desc_list.append(('Container: <%s>' % name, ))
-        c_before = diff.before.ContainerForName(
-            name, default=models.Container.Empty())
-        c_after = diff.after.ContainerForName(name,
-                                              default=models.Container.Empty())
+        desc_list.append(('Container<%s>: %s' % (c.short_name, c.name), ))
         desc_list.append(
             self._DescribeDeltaDict('Metadata',
-                                    c_before.metadata,
-                                    c_after.metadata,
+                                    c.before.metadata,
+                                    c.after.metadata,
                                     indent='    '))
         unsummed_sections, summed_sections = c.ClassifySections()
         desc_list.append(
@@ -585,7 +580,7 @@ class DescriberText(Describer):
     for c in containers:
       if c.name:
         desc_list.append(('', ))
-        desc_list.append(('Container <%s>' % c.name, ))
+        desc_list.append(('Container<%s>: %s' % (c.short_name, c.name), ))
       desc_list.append(('Metadata:', ))
       desc_list.append('    %s' % line for line in DescribeDict(c.metadata))
       unsummed_sections, summed_sections = c.ClassifySections()
@@ -603,7 +598,7 @@ class DescriberText(Describer):
 
 class DescriberCsv(Describer):
   def __init__(self, verbose=False):
-    super(DescriberCsv, self).__init__()
+    super().__init__()
     self.verbose = verbose
     self.stringio = io.StringIO()
     self.csv_writer = csv.writer(self.stringio)

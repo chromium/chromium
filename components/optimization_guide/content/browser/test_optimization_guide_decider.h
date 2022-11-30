@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,21 +21,6 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
       delete;
 
   // OptimizationGuideDecider implementation:
-  void RegisterOptimizationTargets(const std::vector<proto::OptimizationTarget>&
-                                       optimization_targets) override;
-  void ShouldTargetNavigationAsync(
-      content::NavigationHandle* navigation_handle,
-      proto::OptimizationTarget optimization_target,
-      const base::flat_map<proto::ClientModelFeature, float>&
-          client_model_feature_values,
-      OptimizationGuideTargetDecisionCallback callback) override;
-  void AddObserverForOptimizationTargetModel(
-      proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
-      OptimizationTargetModelObserver* observer) override;
-  void RemoveObserverForOptimizationTargetModel(
-      proto::OptimizationTarget optimization_target,
-      OptimizationTargetModelObserver* observer) override;
   void RegisterOptimizationTypes(
       const std::vector<proto::OptimizationType>& optimization_types) override;
   void CanApplyOptimizationAsync(
@@ -46,6 +31,14 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
       const GURL& url,
       proto::OptimizationType optimization_type,
       OptimizationMetadata* optimization_metadata) override;
+
+ private:
+  // OptimizationGuideDecider implementation:
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
+      proto::RequestContext request_context,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback) override;
 };
 
 }  // namespace optimization_guide

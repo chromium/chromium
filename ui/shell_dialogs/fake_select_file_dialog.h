@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -75,7 +75,8 @@ class FakeSelectFileDialog : public SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override;
+                      void* params,
+                      const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
   bool IsRunning(gfx::NativeWindow owning_window) const override;
   void ListenerDestroyed() override {}
@@ -89,8 +90,11 @@ class FakeSelectFileDialog : public SelectFileDialog {
 
   // Calls the |FileSelected()| method on listener(). |filter_text| selects
   // which file extension filter to report.
-  bool CallFileSelected(const base::FilePath& file_path,
-                        base::StringPiece filter_text) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CallFileSelected(const base::FilePath& file_path,
+                                      base::StringPiece filter_text);
+
+  // Calls the |MultiFilesSelected()| method on listener().
+  void CallMultiFilesSelected(const std::vector<base::FilePath>& file_path);
 
   base::WeakPtr<FakeSelectFileDialog> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -103,7 +107,7 @@ class FakeSelectFileDialog : public SelectFileDialog {
   std::u16string title_;
   FileTypeInfo file_types_;
   std::string default_extension_;
-  void* params_;
+  raw_ptr<void> params_;
   base::WeakPtrFactory<FakeSelectFileDialog> weak_ptr_factory_{this};
 };
 

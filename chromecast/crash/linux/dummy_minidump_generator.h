@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromecast/crash/linux/minidump_generator.h"
 
 namespace chromecast {
@@ -20,6 +19,9 @@ class DummyMinidumpGenerator : public MinidumpGenerator {
   // directly.
   explicit DummyMinidumpGenerator(const std::string& existing_minidump_path);
 
+  DummyMinidumpGenerator(const DummyMinidumpGenerator&) = delete;
+  DummyMinidumpGenerator& operator=(const DummyMinidumpGenerator&) = delete;
+
   // MinidumpGenerator implementation:
   // Moves the minidump located at |existing_minidump_path_| to |minidump_path|.
   // Returns true if successful, false otherwise. Note that this function MUST
@@ -28,8 +30,6 @@ class DummyMinidumpGenerator : public MinidumpGenerator {
 
  private:
   const std::string existing_minidump_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyMinidumpGenerator);
 };
 
 }  // namespace chromecast

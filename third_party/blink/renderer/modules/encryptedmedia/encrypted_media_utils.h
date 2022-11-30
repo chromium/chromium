@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,10 @@ enum class EmeInitDataType;
 
 namespace blink {
 
-// Reported to UKM. Existing values must not change and new values must be
-// added at the end of the list.
-enum KeySystemForUkm {
+// Deprecated: This was used on some older UKMs. For new UKMs please use
+// media::GetKeySystemIntForUKM() instead. Reported to UKM. Existing values must
+// not change and new values must be added at the end of the list.
+enum KeySystemForUkmLegacy {
   kClearKey = 0,
   kWidevine = 1,
 };
@@ -36,6 +37,12 @@ enum class EmeApiType {
   kUpdate = 6,
   kClose = 7,
   kRemove = 8,
+};
+
+// Config associated with a MediaKeys and its sessions.
+struct MediaKeysConfig {
+  String key_system;
+  bool use_hardware_secure_codecs = false;
 };
 
 constexpr const char* kEncryptedMediaPermissionsPolicyConsoleWarning =

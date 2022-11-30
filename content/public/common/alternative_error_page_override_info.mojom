@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Stores information about an alternative error page to use in place of the
+// embedder's default error page.
+struct AlternativeErrorPageOverrideInfo {
+  // Id of HTML resource of alternative error page to be used.
+  uint32 resource_id;
+
+  // A dictionary containing information needed by alternative error page.
+  mojo_base.mojom.DictionaryValue alternative_error_page_params;
+};

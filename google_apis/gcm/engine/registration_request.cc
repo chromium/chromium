@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "google_apis/gcm/engine/registration_request.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "google_apis/gcm/base/gcm_util.h"
@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace gcm {
@@ -87,9 +88,6 @@ bool ShouldRetryWithStatus(RegistrationRequest::Status status) {
     case RegistrationRequest::TOO_MANY_REGISTRATIONS:
     case RegistrationRequest::REACHED_MAX_RETRIES:
       return false;
-    case RegistrationRequest::STATUS_COUNT:
-      NOTREACHED();
-      break;
   }
   return false;
 }
@@ -183,9 +181,13 @@ void RegistrationRequest::Start() {
   std::string body;
   BuildRequestBody(&body);
 
-  // TODO(crbug.com/1043347): Change back to DVLOG when the bug is resolved.
-  VLOG(1) << "Performing registration for: " << request_info_.app_id();
-  VLOG(1) << "Registration request: " << body;
+  DVLOG(1) << "Performing registration for: " << request_info_.app_id()
+           << ", with android id: " << request_info_.android_id
+           << " and security token: " << request_info_.security_token;
+  DVLOG(1) << "Registration URL: " << registration_url_.possibly_invalid_spec();
+  DVLOG(1) << "Registration request headers: " << request->headers.ToString();
+  DVLOG(1) << "Registration request body: " << body;
+
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   url_loader_->AttachStringForUpload(body, kRegistrationRequestContentType);
@@ -259,9 +261,10 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
   size_t error_pos = response.find(kErrorPrefix);
   if (error_pos != std::string::npos) {
     std::string error =
-        response.substr(error_pos + base::size(kErrorPrefix) - 1);
+        response.substr(error_pos + std::size(kErrorPrefix) - 1);
     LOG(ERROR) << "Registration response error message: " << error;
-    return GetStatusFromError(error);
+    RegistrationRequest::Status status = GetStatusFromError(error);
+    return status;
   }
 
   // Can't even get any header info.
@@ -280,7 +283,7 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
 
   size_t token_pos = response.find(kTokenPrefix);
   if (token_pos != std::string::npos) {
-    *token = response.substr(token_pos + base::size(kTokenPrefix) - 1);
+    *token = response.substr(token_pos + std::size(kTokenPrefix) - 1);
     return SUCCESS;
   }
 
@@ -297,7 +300,7 @@ void RegistrationRequest::OnURLLoadComplete(
                                         source_to_record_, status);
 
   DCHECK(custom_request_handler_.get());
-  custom_request_handler_->ReportStatusToUMA(status);
+  custom_request_handler_->ReportStatusToUMA(status, request_info_.subtype);
   custom_request_handler_->ReportNetErrorCodeToUMA(source->NetError());
 
   if (ShouldRetryWithStatus(status)) {
@@ -311,7 +314,7 @@ void RegistrationRequest::OnURLLoadComplete(
                                           source_to_record_, status);
 
     DCHECK(custom_request_handler_.get());
-    custom_request_handler_->ReportStatusToUMA(status);
+    custom_request_handler_->ReportStatusToUMA(status, request_info_.subtype);
   }
 
   std::move(callback_).Run(status, token);

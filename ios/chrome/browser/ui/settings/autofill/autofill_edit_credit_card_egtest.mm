@@ -1,19 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ios/ios_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/ios/ios_util.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,7 +31,7 @@ using chrome_test_util::TextFieldForCellWithLabelId;
 
 namespace {
 
-// Matcher for the 'Nickname' text field in the add credit card view.
+// Matcher for the 'Nickname' text field in the edit credit card view.
 id<GREYMatcher> NicknameTextField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_NICKNAME);
 }
@@ -40,6 +40,7 @@ id<GREYMatcher> NicknameTextField() {
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(
       ButtonWithAccessibilityLabelId(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+      grey_not(chrome_test_util::TabGridEditButton()),
       grey_kindOfClass([UIButton class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
 }
@@ -47,6 +48,11 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Returns an action to scroll down (swipe up).
 id<GREYAction> ScrollDown() {
   return grey_scrollInDirection(kGREYDirectionDown, 150);
+}
+
+// Matcher for the 'Year of Expiry' text field in the edit credit card view.
+id<GREYMatcher> YearOfExpiryTextField() {
+  return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_EXP_YEAR);
 }
 
 }  // namespace
@@ -86,7 +92,7 @@ id<GREYAction> ScrollDown() {
   [self typeNickname:@"Nickname"];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
                                    nil)];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
@@ -98,8 +104,8 @@ id<GREYAction> ScrollDown() {
   [self typeNickname:@"1233"];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 // Tests that clearing a nickname is allowed.
@@ -107,11 +113,24 @@ id<GREYAction> ScrollDown() {
   [self typeNickname:@"To be removed"];
 
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
-      performAction:grey_clearText()];
+      performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
                                    nil)];
+}
+
+// Tests that the Done button in the navigation bar is disabled on entering
+// invalid year of expiry in the edit credit card form.
+- (void)testDoneOnInvalidYearInEditCreditCard {
+  [[[EarlGrey selectElementWithMatcher:YearOfExpiryTextField()]
+         usingSearchAction:ScrollDown()
+      onElementWithMatcher:chrome_test_util::AutofillCreditCardEditTableView()]
+      performAction:grey_replaceText(@"2000")];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 #pragma mark - Helper methods

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,4 +22,4 @@ class CORE_EXPORT WasmResponseExtensions {
 
 }  // namespace blink
 
-#endif  // V8WasmResponseextensions_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_WASM_RESPONSE_EXTENSIONS_H_

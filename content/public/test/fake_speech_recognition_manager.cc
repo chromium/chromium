@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -16,6 +16,7 @@
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 
 namespace {
@@ -71,6 +72,7 @@ void FakeSpeechRecognitionManager::SendFakeResponse(
 
 void FakeSpeechRecognitionManager::OnRecognitionStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  is_recognizing_ = true;
   // Complete the closure on the UI thread instead of the IO thread to avoid
   // threading issues.
   if (recognition_started_closure_)
@@ -79,6 +81,7 @@ void FakeSpeechRecognitionManager::OnRecognitionStarted() {
 
 void FakeSpeechRecognitionManager::OnRecognitionEnded() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  is_recognizing_ = false;
   // Complete the closure on the UI thread instead of the IO thread to avoid
   // threading issues.
   if (recognition_ended_closure_)
@@ -92,8 +95,10 @@ void FakeSpeechRecognitionManager::OnFakeResponseSent() {
   }
 }
 
-void FakeSpeechRecognitionManager::SetFakeResult(const std::string& value) {
+void FakeSpeechRecognitionManager::SetFakeResult(const std::string& value,
+                                                 bool is_final) {
   fake_result_ = value;
+  is_final_ = is_final;
 }
 
 int FakeSpeechRecognitionManager::CreateSession(
@@ -101,7 +106,7 @@ int FakeSpeechRecognitionManager::CreateSession(
   VLOG(1) << "FAKE CreateSession invoked.";
   // FakeSpeechRecognitionManager only allows one active session at a time.
   EXPECT_EQ(0, session_id_);
-  EXPECT_EQ(nullptr, listener_);
+  EXPECT_EQ(nullptr, listener_.get());
   listener_ = config.event_listener.get();
   if (config.grammars.size() > 0)
     grammar_ = config.grammars[0].url.spec();
@@ -185,7 +190,6 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
   if (!session_id_)  // Do a check in case we were cancelled..
     return;
   VLOG(1) << "Setting fake recognition result.";
-  LOG(ERROR) << "SetFakeRecognitionResult";
   if (!has_sent_result_) {
     listener_->OnAudioStart(session_id_);
     listener_->OnSoundStart(session_id_);
@@ -194,7 +198,11 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
   blink::mojom::SpeechRecognitionResultPtr result =
       blink::mojom::SpeechRecognitionResult::New();
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::ASCIIToUTF16(fake_result_), 1.0));
+      base::UTF8ToUTF16(fake_result_), 1.0));
+  // If `is_provisional` is true, then the result is an interim result that
+  // could be changed. Otherwise, it's a final result. Consequently,
+  // `is_provisional` is the converse of `is_final`.
+  result->is_provisional = !is_final_;
   std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
   results.push_back(std::move(result));
   listener_->OnRecognitionResults(session_id_, results);
@@ -203,7 +211,6 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
       base::BindOnce(&FakeSpeechRecognitionManager::OnFakeResponseSent,
                      base::Unretained(this)));
   if (end_recognition) {
-    LOG(ERROR) << "Ending recognition";
     // End recognition. Note that in normal SpeechRecognitionManager, a session
     // is not ended after the final result is sent. This behavior is just
     // to make testing easier.
@@ -220,6 +227,41 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
     listener_ = nullptr;
   }
   VLOG(1) << "Finished setting fake recognition result.";
+}
+
+void FakeSpeechRecognitionManager::SendFakeError(
+    base::OnceClosure on_fake_error_sent) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  EXPECT_NE(session_id_, 0);
+  EXPECT_TRUE(listener_ != nullptr);
+  on_fake_error_sent_closure_ = std::move(on_fake_error_sent);
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FakeSpeechRecognitionManager::SendFakeSpeechRecognitionError,
+          base::Unretained(this)));
+}
+
+void FakeSpeechRecognitionManager::SendFakeSpeechRecognitionError() {
+  if (!session_id_)
+    return;
+
+  VLOG(1) << "Sending fake recognition error.";
+  listener_->OnRecognitionError(
+      session_id_, *blink::mojom::SpeechRecognitionError::New(
+                       blink::mojom::SpeechRecognitionErrorCode::kNetwork,
+                       blink::mojom::SpeechAudioErrorDetails::kNone));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&FakeSpeechRecognitionManager::OnFakeErrorSent,
+                                base::Unretained(this)));
+  VLOG(1) << "Finished sending fake recognition error.";
+}
+
+void FakeSpeechRecognitionManager::OnFakeErrorSent() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (on_fake_error_sent_closure_) {
+    std::move(on_fake_error_sent_closure_).Run();
+  }
 }
 
 }  // namespace content

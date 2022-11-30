@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 
 namespace syncer {
 
@@ -18,6 +18,10 @@ namespace syncer {
 // |personalizable_name| for the |client_name| depending on the current
 // SyncMode. Only fully synced clients will use the personalizable name.
 struct LocalDeviceNameInfo {
+  LocalDeviceNameInfo();
+  LocalDeviceNameInfo(const LocalDeviceNameInfo& other);
+  ~LocalDeviceNameInfo();
+
   // Manufacturer name retrieved from SysInfo::GetHardwareInfo() - e.g. LENOVO.
   std::string manufacturer_name;
   // Model name retrieved from SysInfo::GetHardwareInfo() on non CrOS platforms.
@@ -26,13 +30,16 @@ struct LocalDeviceNameInfo {
   // Personalizable device name from GetPersonalizableDeviceNameBlocking(). See
   // documentation below for more information.
   std::string personalizable_name;
+  // Unique hardware class string which details the
+  // HW combination of a CrOS device. Empty on non-CrOS devices.
+  std::string full_hardware_class;
 };
 
 sync_pb::SyncEnums::DeviceType GetLocalDeviceType();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-std::string GetChromeOSDeviceNameFromType();
-#endif
+DeviceInfo::OsType GetLocalDeviceOSType();
+
+DeviceInfo::FormFactor GetLocalDeviceFormFactor();
 
 // Returns the personalizable device name. This may contain
 // personally-identifiable information - e.g. Alex's MacbookPro.

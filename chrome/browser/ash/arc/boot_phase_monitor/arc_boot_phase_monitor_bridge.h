@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/mojom/boot_phase_monitor.mojom.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -17,8 +18,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/mojom/boot_phase_monitor.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -68,8 +67,13 @@ class ArcBootPhaseMonitorBridge : public KeyedService,
 
   ArcBootPhaseMonitorBridge(content::BrowserContext* context,
                             ArcBridgeService* bridge_service);
+  ArcBootPhaseMonitorBridge(const ArcBootPhaseMonitorBridge&) = delete;
+  ArcBootPhaseMonitorBridge& operator=(const ArcBootPhaseMonitorBridge&) =
+      delete;
   ~ArcBootPhaseMonitorBridge() override;
 
+  // If ARC has already been booted, OnBootCompleted() is called immediately for
+  // the |observer|.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -104,8 +108,6 @@ class ArcBootPhaseMonitorBridge : public KeyedService,
 
   // This has to be the last member variable in the class.
   base::WeakPtrFactory<ArcBootPhaseMonitorBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootPhaseMonitorBridge);
 };
 
 // Singleton factory for ArcBootPhaseMonitorBridge.

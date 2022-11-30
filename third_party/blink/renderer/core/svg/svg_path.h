@@ -89,4 +89,4 @@ struct DowncastTraits<SVGPath> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_H_

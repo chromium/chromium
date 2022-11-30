@@ -11,9 +11,9 @@ Note: Another name for static initializers is "global constructors".
 # How Static Initializers are Checked
 
 * For Linux and Mac:
-  * The expected count is stored in [//infra/scripts/legacy/scripts/slave/chromium/sizes.py](https://cs.chromium.org/chromium/src/infra/scripts/legacy/scripts/slave/chromium/sizes.py)
+  * The expected count is stored in [//testing/scripts/check_static_initializers.py](https://source.chromium.org/chromium/chromium/src/+/main:testing/scripts/check_static_initializers.py)
 * For Android:
-  * The expected count is stored in the build target [//chrome/android:monochrome_static_initializers](https://cs.chromium.org/chromium/src/chrome/android/BUILD.gn)
+  * The expected count is stored in [//chrome/android/static_initializers.gni](https://cs.chromium.org/chromium/src/chrome/android/static_initializers.gni)
 
 ## Removing Static Initializers
 
@@ -50,7 +50,7 @@ The last one may actually be the easiest if you've already properly built
 
 ### Step 2 - Ask compiler to report them
 
-If the source of the new initiazers is not obvious from Step 1, you can ask the
+If the source of the new initializers is not obvious from Step 1, you can ask the
 compiler to pinpoint the exact source line.
 
 1. Edit [//build/config/BUILDCONFIG.gn](https://cs.chromium.org/chromium/src/build/config/BUILDCONFIG.gn)
@@ -67,3 +67,56 @@ More details in [crbug/1136086](https://bugs.chromium.org/p/chromium/issues/deta
 
 * For more information about `diagnose_bloat.py`, refer to its [README.md](/tools/binary_size/README.md#diagnose_bloat.py)
 * List of existing static initializers documented in [static_initializers.gni](/chrome/android/static_initializers.gni)
+
+### Step 3 - Manual Verification
+
+If the source of the new initializers is not revealed with
+`dump-static-initializers.py` (e.g. for static initializers introduced in
+compiler-rt), there's a manual option.
+
+1. Locate the address range of the .init_array section with:
+```
+$ third_party/llvm-build/Release+Asserts/bin/llvm-readelf \
+    --hex-dump=.init_array out/Release/lib.unstripped/libmonochrome.so
+Hex dump of section '.init_array':
+0x04064624 294a1a02 154acb00 79d3be01 894c1a02 )J...J..y....L..
+```
+
+* `0x04064624` is the location of `.init_array`.
+* The other four entries are addresses of functions **in little endian**.
+
+2. Convert the address into a function name with:
+
+```
+# Reverse hex pairs to account for endianness.
+$ third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer \
+    --functions -e out/Release/lib.unstripped/libmonochrome.so 0x021a4a29
+_GLOBAL__I_000101
+./../../buildtools/third_party/libc++/trunk/src/iostream.cpp:0:0
+```
+
+3. If any `.init_array` slots are zero, that means they their address is exists
+within the relocation table. To find the address:
+
+```
+# Use the location of ".init_array" printed in step 1, plus an offset for subsequent slots.
+$ third_party/llvm-build/Release+Asserts/bin/llvm-readelf \
+    --relocations out/Release/lib.unstripped/libmonochrome.so | grep 0x04064624
+03dfb7b0  00000017 R_ARM_RELATIVE                    0
+```
+
+### Step 4 - Compiler Naming Heuristics
+
+You might be able to find the static initialzer functions by listing symbols:
+
+```sh
+nm out/Release/lib.unstripped/libmonochrome.so | grep " _GLOBAL__"
+```
+
+This currently yields:
+```
+0214ea45 t _GLOBAL__I_000101
+00cb2315 t _GLOBAL__sub_I_base_logging.cc
+0214eca5 t _GLOBAL__sub_I_iostream.cpp
+01c01219 t _GLOBAL__sub_I_token.cc
+```

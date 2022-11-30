@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,23 @@ void FakeInputDeviceSettings::SetTouchpadSensitivity(int value) {
 void FakeInputDeviceSettings::SetTouchpadScrollSensitivity(int value) {
   TouchpadSettings settings;
   settings.SetScrollSensitivity(value);
+  UpdateTouchpadSettings(settings);
+}
+
+void FakeInputDeviceSettings::HapticTouchpadExists(
+    DeviceExistsCallback callback) {
+  std::move(callback).Run(haptic_touchpad_exists_);
+}
+
+void FakeInputDeviceSettings::SetTouchpadHapticFeedback(bool enabled) {
+  TouchpadSettings settings;
+  settings.SetHapticFeedback(enabled);
+  UpdateTouchpadSettings(settings);
+}
+
+void FakeInputDeviceSettings::SetTouchpadHapticClickSensitivity(int value) {
+  TouchpadSettings settings;
+  settings.SetHapticClickSensitivity(value);
   UpdateTouchpadSettings(settings);
 }
 
@@ -161,6 +178,10 @@ FakeInputDeviceSettings::GetFakeInterface() {
 
 void FakeInputDeviceSettings::set_touchpad_exists(bool exists) {
   touchpad_exists_ = exists;
+}
+
+void FakeInputDeviceSettings::set_haptic_touchpad_exists(bool exists) {
+  haptic_touchpad_exists_ = exists;
 }
 
 void FakeInputDeviceSettings::set_mouse_exists(bool exists) {

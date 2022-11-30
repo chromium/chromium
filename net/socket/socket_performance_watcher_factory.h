@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -23,7 +22,12 @@ class NET_EXPORT_PRIVATE SocketPerformanceWatcherFactory {
   // |SocketPerformanceWatcherFactory|.
   enum Protocol { PROTOCOL_TCP, PROTOCOL_QUIC };
 
-  virtual ~SocketPerformanceWatcherFactory() {}
+  SocketPerformanceWatcherFactory(const SocketPerformanceWatcherFactory&) =
+      delete;
+  SocketPerformanceWatcherFactory& operator=(
+      const SocketPerformanceWatcherFactory&) = delete;
+
+  virtual ~SocketPerformanceWatcherFactory() = default;
 
   // Creates a socket performance watcher that will record statistics for a
   // single socket that uses |protocol| as the transport layer protocol.
@@ -36,10 +40,7 @@ class NET_EXPORT_PRIVATE SocketPerformanceWatcherFactory {
                                  const AddressList& address_list) = 0;
 
  protected:
-  SocketPerformanceWatcherFactory() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SocketPerformanceWatcherFactory);
+  SocketPerformanceWatcherFactory() = default;
 };
 
 }  // namespace net

@@ -1,15 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/system/sys_info.h"
 
-#include <dlfcn.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/system_properties.h>
 
-#include "base/android/jni_android.h"
 #include "base/android/sys_utils.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -19,52 +17,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info_internal.h"
 
-#if (__ANDROID_API__ >= 21 /* 5.0 - Lollipop */)
-
-namespace {
-
-typedef int(SystemPropertyGetFunction)(const char*, char*);
-
-SystemPropertyGetFunction* DynamicallyLoadRealSystemPropertyGet() {
-  // libc.so should already be open, get a handle to it.
-  void* handle = dlopen("libc.so", RTLD_NOLOAD);
-  if (!handle) {
-    LOG(FATAL) << "Cannot dlopen libc.so: " << dlerror();
-  }
-  SystemPropertyGetFunction* real_system_property_get =
-      reinterpret_cast<SystemPropertyGetFunction*>(
-          dlsym(handle, "__system_property_get"));
-  if (!real_system_property_get) {
-    LOG(FATAL) << "Cannot resolve __system_property_get(): " << dlerror();
-  }
-  return real_system_property_get;
-}
-
-static base::LazyInstance<base::internal::LazySysInfoValue<
-    SystemPropertyGetFunction*,
-    DynamicallyLoadRealSystemPropertyGet>>::Leaky
-    g_lazy_real_system_property_get = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
-// Android 'L' removes __system_property_get from the NDK, however it is still
-// a hidden symbol in libc. Until we remove all calls of __system_property_get
-// from Chrome we work around this by defining a weak stub here, which uses
-// dlsym to but ensures that Chrome uses the real system
-// implementatation when loaded.  http://crbug.com/392191.
-BASE_EXPORT int __system_property_get(const char* name, char* value) {
-  return g_lazy_real_system_property_get.Get().value()(name, value);
-}
-
-#endif
-
 namespace {
 
 // Default version of Android to fall back to when actual version numbers
 // cannot be acquired. Use the latest Android release with a higher bug fix
 // version to avoid unnecessarily comparison errors with the latest release.
 // This should be manually kept up to date on each Android release.
-const int kDefaultAndroidMajorVersion = 10;
+const int kDefaultAndroidMajorVersion = 12;
 const int kDefaultAndroidMinorVersion = 0;
 const int kDefaultAndroidBugfixVersion = 99;
 

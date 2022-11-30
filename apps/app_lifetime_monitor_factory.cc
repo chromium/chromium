@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 
 namespace apps {
@@ -28,6 +29,7 @@ AppLifetimeMonitorFactory::AppLifetimeMonitorFactory()
         "AppLifetimeMonitor",
         BrowserContextDependencyManager::GetInstance()) {
   DependsOn(extensions::AppWindowRegistry::Factory::GetInstance());
+  DependsOn(extensions::ExtensionHostRegistry::GetFactory());
 }
 
 AppLifetimeMonitorFactory::~AppLifetimeMonitorFactory() = default;
@@ -43,8 +45,9 @@ bool AppLifetimeMonitorFactory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* AppLifetimeMonitorFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return extensions::ExtensionsBrowserClient::Get()->
-      GetOriginalContext(context);
+  return extensions::ExtensionsBrowserClient::Get()
+      ->GetRedirectedContextInIncognito(context, /*force_guest_profile=*/true,
+                                        /*force_system_profile=*/false);
 }
 
 }  // namespace apps

@@ -1,12 +1,41 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/buildflags.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
-FormFieldTestBase::FormFieldTestBase() = default;
+std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
+  return {
+    {.enable = false, .active_source = nullptr},
+        {.enable = true, .active_source = "legacy"},
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+        {.enable = true, .active_source = "default"},
+        {.enable = true, .active_source = "experimental"},
+        {.enable = true, .active_source = "nextgen"},
+#endif
+  };
+}
+
+FormFieldTestBase::FormFieldTestBase(
+    PatternProviderFeatureState pattern_provider_feature_state) {
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+  std::vector<base::test::FeatureRef> disabled;
+  if (pattern_provider_feature_state.enable) {
+    enabled.emplace_back(
+        features::kAutofillParsingPatternProvider,
+        base::FieldTrialParams{
+            {features::kAutofillParsingPatternActiveSource.name,
+             pattern_provider_feature_state.active_source}});
+  } else {
+    disabled.push_back(features::kAutofillParsingPatternProvider);
+  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+}
+
 FormFieldTestBase::~FormFieldTestBase() = default;
 
 void FormFieldTestBase::AddFormFieldData(std::string control_type,
@@ -37,31 +66,21 @@ void FormFieldTestBase::AddFormFieldDataWithLength(
 void FormFieldTestBase::AddSelectOneFormFieldData(
     std::string name,
     std::string label,
-    const std::vector<std::string>& options_contents,
-    const std::vector<std::string>& options_values,
+    const std::vector<SelectOption>& options,
     ServerFieldType expected_type) {
-  AddSelectOneFormFieldDataWithLength(name, label, 0, options_contents,
-                                      options_values, expected_type);
+  AddSelectOneFormFieldDataWithLength(name, label, 0, options, expected_type);
 }
 
 void FormFieldTestBase::AddSelectOneFormFieldDataWithLength(
     std::string name,
     std::string label,
     int max_length,
-    const std::vector<std::string>& options_contents,
-    const std::vector<std::string>& options_values,
+    const std::vector<SelectOption>& options,
     ServerFieldType expected_type) {
   AddFormFieldData("select-one", name, label, expected_type);
   FormFieldData* field_data = list_.back().get();
   field_data->max_length = max_length;
-
-  for (auto option_content : options_contents) {
-    field_data->option_contents.push_back(base::UTF8ToUTF16(option_content));
-  }
-
-  for (auto option_value : options_values) {
-    field_data->option_values.push_back(base::UTF8ToUTF16(option_value));
-  }
+  field_data->options = options;
 }
 
 // Convenience wrapper for text control elements.
@@ -86,44 +105,32 @@ void FormFieldTestBase::ClassifyAndVerify(ParseResult parse_result,
     return;
   }
   ASSERT_NE(nullptr, field_.get());
-  field_->AddClassificationsForTesting(&field_candidates_map_);
+  field_->AddClassificationsForTesting(field_candidates_map_);
 
   TestClassificationExpectations();
 }
 
 void FormFieldTestBase::TestClassificationExpectations() {
-  for (const std::pair<FieldGlobalId, ServerFieldType> p :
-       expected_classifications_) {
-    if (p.second != UNKNOWN_TYPE) {
-      SCOPED_TRACE(testing::Message()
-                   << "Found type "
-                   << AutofillType::ServerFieldTypeToString(
-                          field_candidates_map_[p.first].BestHeuristicType())
-                   << ", expected type "
-                   << AutofillType::ServerFieldTypeToString(p.second));
-
-      ASSERT_TRUE(field_candidates_map_.find(p.first) !=
-                  field_candidates_map_.end());
-      EXPECT_EQ(p.second, field_candidates_map_[p.first].BestHeuristicType());
-    } else {
-      SCOPED_TRACE(
-          testing::Message()
-          << "Expected type UNKNOWN_TYPE but got "
-          << AutofillType::ServerFieldTypeToString(
-                 field_candidates_map_.find(p.first) !=
-                         field_candidates_map_.end()
-                     ? field_candidates_map_[p.first].BestHeuristicType()
-                     : UNKNOWN_TYPE));
-      EXPECT_EQ(field_candidates_map_.find(p.first),
-                field_candidates_map_.end());
-    }
+  size_t num_classifications = 0;
+  for (const auto [field_id, expected_field_type] : expected_classifications_) {
+    ServerFieldType actual_field_type =
+        field_candidates_map_.contains(field_id)
+            ? field_candidates_map_[field_id].BestHeuristicType()
+            : UNKNOWN_TYPE;
+    SCOPED_TRACE(testing::Message()
+                 << "Found type "
+                 << AutofillType::ServerFieldTypeToString(actual_field_type)
+                 << ", expected type "
+                 << AutofillType::ServerFieldTypeToString(expected_field_type));
+    EXPECT_EQ(expected_field_type, actual_field_type);
+    num_classifications += expected_field_type != UNKNOWN_TYPE;
   }
+  // There shouldn't be any classifications for other fields.
+  EXPECT_EQ(num_classifications, field_candidates_map_.size());
 }
 
 FieldRendererId FormFieldTestBase::MakeFieldRendererId() {
   return FieldRendererId(++id_counter_);
 }
 
-FormFieldTest::FormFieldTest() = default;
-FormFieldTest::~FormFieldTest() = default;
 }  // namespace autofill

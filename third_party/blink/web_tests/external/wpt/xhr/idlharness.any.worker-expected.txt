@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 162 tests; 160 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 160 tests; 158 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: member names are unique
@@ -160,7 +160,5 @@ PASS Stringification of new ProgressEvent("type")
 PASS ProgressEvent interface: new ProgressEvent("type") must inherit property "lengthComputable" with the proper type
 PASS ProgressEvent interface: new ProgressEvent("type") must inherit property "loaded" with the proper type
 PASS ProgressEvent interface: new ProgressEvent("type") must inherit property "total" with the proper type
-PASS Node interface: existence and properties of interface object
-PASS Document interface: existence and properties of interface object
 Harness: the test ran to completion.
 

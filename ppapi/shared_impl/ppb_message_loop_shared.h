@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 #include "ppapi/shared_impl/resource.h"
@@ -36,6 +35,10 @@ class PPAPI_SHARED_EXPORT MessageLoopShared
   // invoked on the main thread.
   struct ForMainThread {};
   explicit MessageLoopShared(ForMainThread);
+
+  MessageLoopShared(const MessageLoopShared&) = delete;
+  MessageLoopShared& operator=(const MessageLoopShared&) = delete;
+
   virtual ~MessageLoopShared();
 
   // Handles posting to the message loop if there is one, or the pending queue
@@ -53,8 +56,6 @@ class PPAPI_SHARED_EXPORT MessageLoopShared
   // from JavaScript. This is used to make it illegal to use blocking callbacks
   // while the thread is handling a blocking message.
   virtual bool CurrentlyHandlingBlockingMessage() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopShared);
 };
 
 }  // namespace ppapi

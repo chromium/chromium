@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ namespace {
 // object of this class exists.
 class ThreadLogMessagesMaster {
  public:
+  ThreadLogMessagesMaster(const ThreadLogMessagesMaster&) = delete;
+  ThreadLogMessagesMaster& operator=(const ThreadLogMessagesMaster&) = delete;
+
   void SetThreadMessageList(std::vector<std::string>* message_list) {
     DCHECK_EQ(logging::GetLogMessageHandler(), &LogMessageHandler);
     DCHECK_NE(tls_.Get() != nullptr, message_list != nullptr);
@@ -70,8 +73,6 @@ class ThreadLogMessagesMaster {
   }
 
   base::ThreadLocalStorage::Slot tls_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLogMessagesMaster);
 };
 
 }  // namespace

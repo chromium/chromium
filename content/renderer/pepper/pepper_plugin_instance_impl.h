@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer.h"
@@ -48,15 +45,14 @@
 #include "ppapi/c/ppp_graphics_3d.h"
 #include "ppapi/c/ppp_input_event.h"
 #include "ppapi/c/ppp_mouse_lock.h"
-#include "ppapi/c/private/ppp_find_private.h"
 #include "ppapi/c/private/ppp_instance_private.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/shared_impl/ppb_instance_shared.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
 #include "ppapi/shared_impl/singleton_resource_id.h"
 #include "ppapi/shared_impl/tracked_callback.h"
 #include "ppapi/thunk/ppb_gamepad_api.h"
 #include "ppapi/thunk/resource_creation_api.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
@@ -67,7 +63,8 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 struct PP_Point;
 
@@ -137,6 +134,9 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // return the instance even if it is in the process of being deleted.
   // Currently only used in tests.
   static PepperPluginInstanceImpl* GetForTesting(PP_Instance instance_id);
+
+  PepperPluginInstanceImpl(const PepperPluginInstanceImpl&) = delete;
+  PepperPluginInstanceImpl& operator=(const PepperPluginInstanceImpl&) = delete;
 
   // Returns the associated RenderFrameImpl. Can be null (in tests) or if the
   // frame has been destroyed.
@@ -272,24 +272,12 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void RemovePluginObject(PluginObject* plugin_object);
 
   std::u16string GetSelectedText(bool html);
-  std::u16string GetLinkAtPosition(const gfx::Point& point);
   void RequestSurroundingText(size_t desired_number_of_characters);
-  bool StartFind(const std::string& search_text,
-                 bool case_sensitive,
-                 int identifier);
-  void SelectFindResult(bool forward, int identifier);
-  void StopFind();
 
   bool SupportsPrintInterface();
   int PrintBegin(const blink::WebPrintParams& print_params);
   void PrintPage(int page_number, cc::PaintCanvas* canvas);
   void PrintEnd();
-  bool GetPrintPresetOptionsFromDocument(
-      blink::WebPrintPresetOptions* preset_options);
-  bool IsPdfPlugin();
-
-  bool CanRotateView();
-  void RotateView(blink::WebPlugin::RotationType type);
 
   // Implementation of PPB_Fullscreen.
 
@@ -334,8 +322,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // which sends it back up to the plugin as if it came from the user.
   void SimulateInputEvent(const ppapi::InputEventData& input_event);
 
-  // Simulates an IME event at the level of RenderView which sends it back up to
-  // the plugin as if it came from the user.
+  // Simulates an IME event at the level of `blink::WebView` which sends it back
+  // up to the plugin as if it came from the user.
   bool SimulateIMEEvent(const ppapi::InputEventData& input_event);
   void SimulateImeSetCompositionEvent(const ppapi::InputEventData& input_event);
 
@@ -376,20 +364,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void SetLinkUnderCursor(const std::string& url) override;
   void SetTextInputType(ui::TextInputType type) override;
   void PostMessageToJavaScript(PP_Var message) override;
-  void SetCaretPosition(const gfx::PointF& position) override;
-  void MoveRangeSelectionExtent(const gfx::PointF& extent) override;
-  void SetSelectionBounds(const gfx::PointF& base,
-                          const gfx::PointF& extent) override;
-  bool CanEditText() override;
-  bool HasEditableText() override;
-  void ReplaceSelection(const std::string& text) override;
-  void SelectAll() override;
-  bool CanUndo() override;
-  bool CanRedo() override;
-  void Undo() override;
-  void Redo() override;
-  void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) override;
 
   // PPB_Instance_API implementation.
   PP_Bool BindGraphics(PP_Instance instance, PP_Resource device) override;
@@ -403,14 +377,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   uint32_t GetAudioHardwareOutputSampleRate(PP_Instance instance) override;
   uint32_t GetAudioHardwareOutputBufferSize(PP_Instance instance) override;
   PP_Var GetDefaultCharSet(PP_Instance instance) override;
-  void SetPluginToHandleFindRequests(PP_Instance) override;
-  void NumberOfFindResultsChanged(PP_Instance instance,
-                                  int32_t total,
-                                  PP_Bool final_result) override;
-  void SelectedFindResultChanged(PP_Instance instance, int32_t index) override;
-  void SetTickmarks(PP_Instance instance,
-                    const PP_Rect* tickmarks,
-                    uint32_t count) override;
   PP_Bool IsFullscreen(PP_Instance instance) override;
   PP_Bool SetFullscreen(PP_Instance instance, PP_Bool fullscreen) override;
   PP_Bool GetScreenSize(PP_Instance instance, PP_Size* size) override;
@@ -476,17 +442,14 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   bool PrepareTransferableResource(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* transferable_resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) override;
+      viz::ReleaseCallback* release_callback) override;
 
   // RenderFrameObserver
-  void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
 
   PepperAudioController& audio_controller() {
     return *audio_controller_;
   }
-
-  bool SupportsKeyboardFocus();
 
  private:
   friend class base::RefCounted<PepperPluginInstanceImpl>;
@@ -504,6 +467,10 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   class ExternalDocumentLoader : public blink::WebAssociatedURLLoaderClient {
    public:
     ExternalDocumentLoader();
+
+    ExternalDocumentLoader(const ExternalDocumentLoader&) = delete;
+    ExternalDocumentLoader& operator=(const ExternalDocumentLoader&) = delete;
+
     ~ExternalDocumentLoader() override;
 
     void ReplayReceivedData(WebAssociatedURLLoaderClient* document_loader);
@@ -517,8 +484,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
     std::list<std::string> data_;
     bool finished_loading_;
     std::unique_ptr<blink::WebURLError> error_;
-
-    DISALLOW_COPY_AND_ASSIGN(ExternalDocumentLoader);
   };
 
   // Implements PPB_Gamepad_API. This is just to avoid having an excessive
@@ -545,10 +510,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
                            blink::WebPluginContainer* container,
                            const GURL& plugin_url);
 
-  bool LoadFindInterface();
   bool LoadInputEventInterface();
   bool LoadMouseLockInterface();
-  bool LoadPdfInterface();
   bool LoadPrintInterface();
   bool LoadPrivateInterface();
   bool LoadTextInputInterface();
@@ -647,8 +610,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Whether a given viz::TransferableResource is in use by |texture_layer_|.
   bool IsTextureInUse(const viz::TransferableResource& resource) const;
 
-  void HandleAccessibilityChange();
-
   RenderFrameImpl* render_frame_;
   scoped_refptr<PluginModule> module_;
   std::unique_ptr<ppapi::PPP_Instance_Combined> instance_interface_;
@@ -711,10 +672,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // The plugin-provided interfaces.
   // When adding PPP interfaces, make sure to reset them in ResetAsProxied.
-  const PPP_Find_Private* plugin_find_interface_;
   const PPP_InputEvent* plugin_input_event_interface_;
   const PPP_MouseLock* plugin_mouse_lock_interface_;
-  const PPP_Pdf* plugin_pdf_interface_;
   const PPP_Instance_Private* plugin_private_interface_;
   const PPP_TextInput_Dev* plugin_textinput_interface_;
 
@@ -722,7 +681,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // corresponding interfaces, so that we can ask only once.
   // When adding flags, make sure to reset them in ResetAsProxied.
   bool checked_for_plugin_input_event_interface_;
-  bool checked_for_plugin_pdf_interface_;
 
   // This is only valid between a successful PrintBegin call and a PrintEnd
   // call.
@@ -798,7 +756,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
     gfx::Rect caret;
     gfx::Rect caret_bounds;
   };
-  base::Optional<TextInputCaretInfo> text_input_caret_info_;
+  absl::optional<TextInputCaretInfo> text_input_caret_info_;
   ui::TextInputType text_input_type_;
 
   // Text selection status.
@@ -869,8 +827,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   base::WeakPtrFactory<PepperPluginInstanceImpl> view_change_weak_ptr_factory_{
       this};
   base::WeakPtrFactory<PepperPluginInstanceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPluginInstanceImpl);
 };
 
 }  // namespace content

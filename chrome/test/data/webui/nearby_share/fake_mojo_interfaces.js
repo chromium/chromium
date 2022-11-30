@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /** @fileoverview Contains fake implementations of mojo interfaces. */
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /**
  * @implements {nearbyShare.mojom.ConfirmationManagerInterface}
@@ -45,6 +45,7 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
       'getPayloadPreview',
       'selectShareTarget',
       'startDiscovery',
+      'stopDiscovery',
       'addDiscoveryObserver',
     ]);
 
@@ -89,6 +90,10 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
   async startDiscovery(listener) {
     this.methodCalled('startDiscovery', listener);
     return {result: this.startDiscoveryResult};
+  }
+
+  async stopDiscovery() {
+    this.methodCalled('stopDiscovery');
   }
 
   /**

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -25,23 +26,27 @@ enum class CallbackInvokeHelperMode {
   kLegacyTreatNonObjectAsNull,
 };
 
+enum class CallbackReturnTypeIsPromise { kNo, kYes };
+
 // This class helps implement the generated Blink-V8 bindings of IDL callback
 // functions and IDL callback interfaces.  This class implements the following
 // algorithms of Web IDL.
 //
-// https://heycam.github.io/webidl/#call-a-user-objects-operation
+// https://webidl.spec.whatwg.org/#call-a-user-objects-operation
 // 3.11. Callback interfaces
 // To call a user object's operation
 //
-// https://heycam.github.io/webidl/#invoke-a-callback-function
+// https://webidl.spec.whatwg.org/#invoke-a-callback-function
 // 3.12. Invoking callback functions
 // To invoke a callback function type value
 //
-// https://heycam.github.io/webidl/#construct-a-callback-function
+// https://webidl.spec.whatwg.org/#construct-a-callback-function
 // 3.12. Invoking callback functions
 // To construct a callback functions type value
 template <class CallbackBase,
-          CallbackInvokeHelperMode mode = CallbackInvokeHelperMode::kDefault>
+          CallbackInvokeHelperMode mode = CallbackInvokeHelperMode::kDefault,
+          CallbackReturnTypeIsPromise return_type_is_promise =
+              CallbackReturnTypeIsPromise::kNo>
 class CallbackInvokeHelper final {
   STACK_ALLOCATED();
 
@@ -68,17 +73,18 @@ class CallbackInvokeHelper final {
   template <typename IDLReturnType, typename ReturnType>
   v8::Maybe<ReturnType> Result() {
     DCHECK(!aborted_);
-    ExceptionState exception_state(callback_->GetIsolate(),
-                                   ExceptionState::kExecutionContext,
+    v8::Isolate* isolate = callback_->GetIsolate();
+    ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                    class_like_name_, property_name_);
     auto&& result = NativeValueTraits<IDLReturnType>::NativeValue(
-        callback_->GetIsolate(), result_, exception_state);
+        isolate, result_, exception_state);
     if (exception_state.HadException())
       return v8::Nothing<ReturnType>();
     return v8::Just<ReturnType>(result);
   }
 
  private:
+  bool CallInternal(int argc, v8::Local<v8::Value>* argv);
   bool Abort() {
     aborted_ = true;
     return false;
@@ -94,6 +100,8 @@ class CallbackInvokeHelper final {
 
   ScriptState::Scope callback_relevant_context_scope_;
   v8::Context::BackupIncumbentScope backup_incumbent_scope_;
+  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+      task_attribution_scope_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
@@ -106,6 +114,14 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
                          CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
     CallbackInvokeHelper<CallbackInterfaceBase>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kDefault,
+                         CallbackReturnTypeIsPromise::kYes>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kConstructorCall,
+                         CallbackReturnTypeIsPromise::kYes>;
 
 }  // namespace bindings
 

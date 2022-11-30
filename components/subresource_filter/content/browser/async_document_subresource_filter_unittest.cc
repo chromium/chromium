@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,6 +29,11 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
  public:
   AsyncDocumentSubresourceFilterTest() = default;
 
+  AsyncDocumentSubresourceFilterTest(
+      const AsyncDocumentSubresourceFilterTest&) = delete;
+  AsyncDocumentSubresourceFilterTest& operator=(
+      const AsyncDocumentSubresourceFilterTest&) = delete;
+
  protected:
   void SetUp() override {
     std::vector<proto::UrlRule> rules;
@@ -41,8 +45,8 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
 
-    dealer_handle_.reset(
-        new VerifiedRulesetDealer::Handle(blocking_task_runner_));
+    dealer_handle_ =
+        std::make_unique<VerifiedRulesetDealer::Handle>(blocking_task_runner_);
   }
 
   void TearDown() override {
@@ -87,8 +91,6 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
       new base::TestSimpleTaskRunner;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncDocumentSubresourceFilterTest);
 };
 
 namespace {
@@ -100,6 +102,9 @@ class TestCallbackReceiver {
  public:
   TestCallbackReceiver() = default;
 
+  TestCallbackReceiver(const TestCallbackReceiver&) = delete;
+  TestCallbackReceiver& operator=(const TestCallbackReceiver&) = delete;
+
   base::OnceClosure GetClosure() {
     return base::BindOnce(&TestCallbackReceiver::Callback,
                           base::Unretained(this));
@@ -110,13 +115,15 @@ class TestCallbackReceiver {
   void Callback() { ++callback_count_; }
 
   int callback_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCallbackReceiver);
 };
 
 class LoadPolicyCallbackReceiver {
  public:
   LoadPolicyCallbackReceiver() = default;
+
+  LoadPolicyCallbackReceiver(const LoadPolicyCallbackReceiver&) = delete;
+  LoadPolicyCallbackReceiver& operator=(const LoadPolicyCallbackReceiver&) =
+      delete;
 
   AsyncDocumentSubresourceFilter::LoadPolicyCallback GetCallback() {
     return base::BindOnce(&LoadPolicyCallbackReceiver::Callback,
@@ -135,8 +142,6 @@ class LoadPolicyCallbackReceiver {
 
   int callback_count_ = 0;
   LoadPolicy last_load_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadPolicyCallbackReceiver);
 };
 
 class MultiLoadPolicyCallbackReceiver {
@@ -519,6 +524,11 @@ class SubresourceFilterComputeActivationStateTest : public ::testing::Test {
  public:
   SubresourceFilterComputeActivationStateTest() {}
 
+  SubresourceFilterComputeActivationStateTest(
+      const SubresourceFilterComputeActivationStateTest&) = delete;
+  SubresourceFilterComputeActivationStateTest& operator=(
+      const SubresourceFilterComputeActivationStateTest&) = delete;
+
  protected:
   void SetUp() override {
     constexpr int32_t kDocument = proto::ACTIVATION_TYPE_DOCUMENT;
@@ -559,8 +569,6 @@ class SubresourceFilterComputeActivationStateTest : public ::testing::Test {
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
   scoped_refptr<const MemoryMappedRuleset> ruleset_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterComputeActivationStateTest);
 };
 
 TEST_F(SubresourceFilterComputeActivationStateTest,
@@ -611,7 +619,7 @@ TEST_F(SubresourceFilterComputeActivationStateTest,
        MakeState(true, true)},
   };
 
-  for (size_t i = 0, size = base::size(kTestCases); i != size; ++i) {
+  for (size_t i = 0, size = std::size(kTestCases); i != size; ++i) {
     SCOPED_TRACE(::testing::Message() << "Test number: " << i);
     const auto& test_case = kTestCases[i];
 

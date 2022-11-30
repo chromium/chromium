@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,9 @@ struct Env {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     auto png_dir_path =
         command_line->HasSwitch("dump-to-png")
-            ? base::Optional<base::FilePath>(
+            ? absl::optional<base::FilePath>(
                   command_line->GetSwitchValuePath("dump-to-png"))
-            : base::nullopt;
+            : absl::nullopt;
 
     // Re-initialize logging in order to pick up any command-line parameters
     // (such as --v=1 to enable verbose logging).

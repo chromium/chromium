@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <tuple>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -53,10 +53,10 @@ bool ShouldRecordMatchedRule(content::BrowserContext* browser_context,
   const PermissionsData* permissions_data = extension->permissions_data();
 
   const bool has_feedback_permission = permissions_data->HasAPIPermission(
-      APIPermission::kDeclarativeNetRequestFeedback);
+      mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
 
   const bool has_active_tab_permission =
-      permissions_data->HasAPIPermission(APIPermission::kActiveTab);
+      permissions_data->HasAPIPermission(mojom::APIPermissionID::kActiveTab);
 
   // Always record a matched rule if |extension| has the feedback permission or
   // the request is associated with a tab and |extension| has the activeTab
@@ -288,7 +288,7 @@ void ActionTracker::ResetTrackedInfoForTab(int tab_id, int64_t navigation_id) {
 
 std::vector<dnr_api::MatchedRuleInfo> ActionTracker::GetMatchedRules(
     const Extension& extension,
-    const base::Optional<int>& tab_id,
+    const absl::optional<int>& tab_id,
     const base::Time& min_time_stamp) {
   TrimRulesFromNonActiveTabs();
 
@@ -431,8 +431,8 @@ void ActionTracker::DispatchOnRuleMatchedDebugIfNeeded(
   matched_rule_info_debug.rule = std::move(matched_rule);
   matched_rule_info_debug.request = std::move(request_details);
 
-  auto args = std::make_unique<base::ListValue>();
-  args->Append(matched_rule_info_debug.ToValue());
+  base::Value::List args;
+  args.Append(matched_rule_info_debug.ToValue());
 
   auto event = std::make_unique<Event>(
       events::DECLARATIVE_NET_REQUEST_ON_RULE_MATCHED_DEBUG,

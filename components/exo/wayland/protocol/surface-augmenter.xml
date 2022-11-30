@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="surface_augmenter">
+
+  <copyright>
+    Copyright 2021 The Chromium Authors
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="surface_augmenter" version="4">
+    <description summary="surface composition delegation">
+      The global interface exposing surface delegated composition
+      capabilities is used to instantiate an interface extension for a
+      wl_surface object. This extended interface will then allow
+      delegated compostion of the surface contents, effectively
+      disconnecting the direct relationship between the buffer and the
+      surface content (adding support for solid quads and rounded corner
+      for instance).
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="Destroy the surface augmenter.">
+        Informs the server that the client will not be using this
+        protocol object anymore. This does not affect any other objects,
+        augmenter objects included.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="augmented_surface_exists" value="0"
+             summary="the surface already has a augmenter object
+             associated"/>
+    </enum>
+
+    <request name="create_solid_color_buffer">
+      <description summary="creates a solid color buffer">
+	Instantiate a buffer of the given size for the purpose of a solid color
+  quad of a given color.
+      </description>
+      <arg name="id" type="new_id" interface="wl_buffer"/>
+      <arg name="color" type="array" summary="quad color represented by a SkColor4f"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </request>
+
+    <request name="get_augmented_surface">
+      <description summary="extend surface interface for delegation">
+	Instantiate an interface extension for the given wl_surface to
+	extend composition of its content. If the given wl_surface already has
+	a augmentation object associated, the delegate_exists protocol error is
+  raised.
+      </description>
+      <arg name="id" type="new_id" interface="augmented_surface"
+           summary="the new augmenter interface id"/>
+      <arg name="surface" type="object" interface="wl_surface"
+           summary="the surface"/>
+    </request>
+
+    <!-- Version 2 additions -->
+
+    <request name="get_augmented_subsurface" since="2">
+      <description summary="extend sub surface interface for delegation">
+	Instantiate an interface extension for the given wl_subsurface to
+	extend composition of its content. If the given wl_subsurface already has
+	a augmentation object associated, the delegate_exists protocol error is
+  raised.
+      </description>
+      <arg name="id" type="new_id" interface="augmented_sub_surface"
+           summary="the new augmenter interface id"/>
+      <arg name="subsurface" type="object" interface="wl_subsurface"
+           summary="the subsurface"/>
+    </request>
+  </interface>
+
+  <interface name="augmented_surface" version="3">
+    <description summary="delegate composition of a wl_surface">
+      An additional interface to a wl_surface object, which allows the
+      client to specify the delegated composition of the surface
+      contents.
+    </description>
+     <request name="destroy" type="destructor">
+      <description summary="remove delegated composition of the surface">
+	The associated wl_surface's augmenter is removed.
+	The change is applied on the next wl_surface.commit.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="bad_value" value="0"
+	     summary="negative values in radius or size"/>
+      <entry name="no_surface" value="1"
+	     summary="the wl_surface was destroyed"/>
+    </enum>
+
+    <request name="set_rounded_corners">
+    <!-- Note that this might be moved to a different protocol if there is
+      usage for it outside of Chrome OS -->
+      <description summary="set the surface rounded corners">
+        [Deprecated] Informs the server that it must apply the rounded corners
+        mask filter that shall be applied on next commit. Use
+        set_rounded_corners_bounds instead.
+      </description>
+      <arg name="top_left" type="fixed" summary="top left corner"/>
+      <arg name="top_right" type="fixed" summary="top right corner"/>
+      <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
+      <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
+    </request>
+
+    <!-- Version 2 additions -->
+
+    <request name="set_destination_size" since="2">
+      <description summary="set the surface destination viewport size, with subpixel accuracy">
+      Sets the surface destination viewport size, with subpixel accuracy.
+      This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="width" type="fixed" summary="width of the surface"/>
+      <arg name="height" type="fixed" summary="height of the surface"/>
+    </request>
+
+    <request name="set_rounded_clip_bounds" since="2">
+    <!-- Note that this might be moved to a different protocol if there is
+      usage for it outside of Chrome OS -->
+      <description summary="set the surface rounded clip bounds">
+        Informs the server that it must apply the rounded clipping mask filter
+        that shall be applied on next commit. The mask can be uniform for
+        several surfaces and applied uniformally so that two or more
+        surfaces visually look as a single surface with rounded corners.
+        Please note this is can only be used on surfaces that are used as
+        overlays, which must not have any subtrees. The rounding will be
+        ignored if the bounds are outside of the surface.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="top_left" type="fixed" summary="top left corner"/>
+      <arg name="top_right" type="fixed" summary="top right corner"/>
+      <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
+      <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
+    </request>
+
+    <!-- Version 3 additions -->
+
+    <request name="set_background_color" since="3">
+      <description summary="sets a background color of this surface">
+        Sets a background color of a this surface. This information will be
+        associated with the next buffer commit. Please note this is different
+        from solid color buffers, which creates a new buffer instance, and
+        rather provides additional information how the buffer should be
+        composited. Passing empty array means the background color is reset.
+        The default value is determined by the Wayland compositor then.
+      </description>
+      <arg name="color" type="array"
+           summary="overlay color represented by a SkColor4f"/>
+    </request>
+  </interface>
+
+  <interface name="augmented_sub_surface" version="4">
+    <description summary="delegate composition of a wl_subsurface">
+      An additional interface to a wl_subsurface object, which allows the
+      client to specify the delegated composition of the surface
+      contents.
+    </description>
+    <request name="destroy" type="destructor">
+      <description summary="remove delegated composition of the surface">
+	The associated wl_surface's augmenter is removed.
+	The change is applied on the next wl_surface.commit.
+      </description>
+    </request>
+    <request name="set_position">
+      <description summary="sets a subsurface position with subpixel accuracy">
+	This schedules a sub-surface position change.
+	The sub-surface will be moved so that its origin (top left
+	corner pixel) will be at the location x, y of the parent surface
+	coordinate system. The coordinates are not restricted to the parent
+	surface area. Negative values are allowed.
+
+	The scheduled coordinates will take effect whenever the state of the
+	parent surface is applied. When this happens depends on whether the
+	parent surface is in synchronized mode or not. See
+	wl_subsurface.set_sync and wl_subsurface.set_desync for details.
+
+	If more than one set_position request is invoked by the client before
+	the commit of the parent surface, the position of a new request always
+	replaces the scheduled position from any previous request.
+
+	The initial position is 0, 0.
+  This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="x" type="fixed" summary="x coordinate in the parent surface"/>
+      <arg name="y" type="fixed" summary="y coordinate in the parent surface"/>
+    </request>
+    <request name="set_clip_rect" since="4">
+      <description summary="sets a subsurface clip rect with subpixel accuracy">
+  This schedules a clip rect to be applied when drawing this sub-surface.
+  The clip will be placed with its origin (top left corner pixel) at the
+  location x, y of the parent surface coordinate system. The coordinates are not
+  restricted to the parent surface area. Negative x and y values are allowed.
+
+  If all of x, y, width and height are -1.0, the clip rect is unset instead.
+
+  Initially, surfaces have no clip set.
+  This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="x" type="fixed" summary="x coordinate in the parent surface"/>
+      <arg name="y" type="fixed" summary="y coordinate in the parent surface"/>
+      <arg name="width" type="fixed" summary="width of the clip rect"/>
+      <arg name="height" type="fixed" summary="height of the clip rect"/>
+    </request>
+  </interface>
+
+</protocol>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -36,6 +35,9 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
                      mojo::PendingRemote<mojom::UsbDeviceClient> client,
                      base::span<const uint8_t> blocked_interface_classes,
                      bool allow_security_key_requests);
+
+  DeviceImpl(const DeviceImpl&) = delete;
+  DeviceImpl& operator=(const DeviceImpl&) = delete;
 
   ~DeviceImpl() override;
 
@@ -82,7 +84,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
                          uint32_t timeout,
                          ControlTransferInCallback callback) override;
   void ControlTransferOut(mojom::UsbControlTransferParamsPtr params,
-                          const std::vector<uint8_t>& data,
+                          base::span<const uint8_t> data,
                           uint32_t timeout,
                           ControlTransferOutCallback callback) override;
   void GenericTransferIn(uint8_t endpoint_number,
@@ -90,7 +92,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
                          uint32_t timeout,
                          GenericTransferInCallback callback) override;
   void GenericTransferOut(uint8_t endpoint_number,
-                          const std::vector<uint8_t>& data,
+                          base::span<const uint8_t> data,
                           uint32_t timeout,
                           GenericTransferOutCallback callback) override;
   void IsochronousTransferIn(uint8_t endpoint_number,
@@ -98,7 +100,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
                              uint32_t timeout,
                              IsochronousTransferInCallback callback) override;
   void IsochronousTransferOut(uint8_t endpoint_number,
-                              const std::vector<uint8_t>& data,
+                              base::span<const uint8_t> data,
                               const std::vector<uint32_t>& packet_lengths,
                               uint32_t timeout,
                               IsochronousTransferOutCallback callback) override;
@@ -110,7 +112,8 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   void OnClientConnectionError();
 
   const scoped_refptr<device::UsbDevice> device_;
-  ScopedObserver<device::UsbDevice, device::UsbDevice::Observer> observer_;
+  base::ScopedObservation<device::UsbDevice, device::UsbDevice::Observer>
+      observation_{this};
 
   // The device handle. Will be null before the device is opened and after it
   // has been closed. |opening_| is set to true while the asynchronous open is
@@ -123,8 +126,6 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   mojo::SelfOwnedReceiverRef<mojom::UsbDevice> receiver_;
   mojo::Remote<device::mojom::UsbDeviceClient> client_;
   base::WeakPtrFactory<DeviceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceImpl);
 };
 
 }  // namespace usb

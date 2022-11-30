@@ -1,0 +1,97 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// A container for the SAML properties that are used to launch a SAML user
+// session.
+[Stable]
+struct SamlUserSessionProperties {
+  // User's email address.
+  string email@0;
+  // User's Gaia ID.
+  string gaia_id@1;
+  // User's password.
+  string password@2;
+  // Oauth_code cookie set in the SAML handshake.
+  string oauth_code@3;
+};
+
+// Interface for the cleanup triggered observer. The cleanup is signaled to
+// Lacros from ash-chrome as part of the |endSharedSession()| API call.
+[Stable, Uuid="883697b4-1fe3-4144-95ae-84afbea67e5c"]
+interface LacrosCleanupTriggeredObserver {
+  // Triggers a session cleanup for the Lacros browser.
+  OnLacrosCleanupTriggered@0() => (string? error);
+};
+
+// Interface for observers of external logout request events.
+[Stable, Uuid="4aee372e-a1f0-482c-bb21-922eac8ba7cc"]
+interface ExternalLogoutRequestObserver {
+  // Called when an external logout is requested.
+  OnRequestExternalLogout@0();
+};
+
+// This API allows Lacros to call the chrome.login extension API.
+//
+// Next MinVersion: 4
+[Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
+interface Login {
+  // Exits the current session. If |data_for_next_login_attempt| is provided,
+  // stores data which can be read by |FetchDataForNextLoginAttempt()|.
+  ExitCurrentSession@1(string? data_for_next_login_attempt) => (string? error);
+
+  // Reads the |data_for_next_login_attempt| set by |ExitCurrentSession()|.
+  // Clears the previously stored data after reading so it can only be read
+  // once.
+  FetchDataForNextLoginAttempt@2() => (string data);
+
+  // Deprecated. Use |LockCurrentSession()| below.
+  LockManagedGuestSession@3() => (string? error);
+
+  // Ends the shared session. Security- and privacy-sensitive data in the
+  // session will be cleaned up on a best effort basis.
+  // Can be called from both the lock screen or in session.
+  // Fails if there is no existing shared session.
+  EndSharedSession@8() => (string? error);
+
+  // Sets data for the next login attempt. The data can be retrieved by
+  // calling |FetchDataForNextLoginAttempt()|.
+  SetDataForNextLoginAttempt@9(string data_for_next_login_attempt) => ();
+
+  // Locks the current session. The session has to be either a user session or a
+  // Managed Guest Session launched by |LaunchManagedGuestSession()| with a
+  // password.
+  [MinVersion=1]
+  LockCurrentSession@11() => (string? error);
+
+  // Adds an observer for the cleanup triggered event.
+  [MinVersion=2]
+  AddLacrosCleanupTriggeredObserver@13(
+      pending_remote<LacrosCleanupTriggeredObserver> observer);
+
+  // Adds an observer for the external logout request events.
+  [MinVersion=3]
+  AddExternalLogoutRequestObserver@14(
+      pending_remote<ExternalLogoutRequestObserver> observer);
+
+  // Notifies the external logout observers with the
+  // `login.onExternalLogoutDone` event. It is called from the in-session
+  // extension (lacros/ash-chrome). The login screen extension running on the
+  // lock screen (ash-chrome) listens for the dispatched event.
+  [MinVersion=3]
+  NotifyOnExternalLogoutDone@16();
+
+  // Removed methods.
+  REMOVED_0@0(string? password) => (string? error);
+  REMOVED_4@4(string password) => (string? error);
+  REMOVED_5@5(string password) => (string? error);
+  REMOVED_6@6(string password) => (string? error);
+  REMOVED_7@7(string password) => (string? error);
+  [MinVersion=1]
+  REMOVED_10@10(SamlUserSessionProperties properties) =>
+      (string? error);
+  [MinVersion=1]
+  REMOVED_12@12(string password) => (string? error);
+};

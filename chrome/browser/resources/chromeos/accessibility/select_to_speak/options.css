@@ -1,4 +1,4 @@
-/* Copyright 2017 The Chromium Authors. All rights reserved.
+/* Copyright 2017 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -18,13 +18,15 @@ select {
 }
 
 h1 {
-  background: rgb(218, 54, 232);
-  color: white;
+  color: rgb(32, 33, 36);
   display: block;
-  font-size: 16px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
   height: 56px;
   line-height: 56px;
-  text-align: center;
+  text-align: start;
   width: 100%;
 }
 
@@ -61,14 +63,14 @@ hr {
   width: 646px;
 }
 
-.option.hidden {
+.option.hidden,
+.option-group.hidden {
   display: none;
 }
 
 .sub-option {
   background-color: #fff;
   font-size: 13px;
-  margin-bottom: 16px;
   max-height: 60px;
   opacity: 1;
   overflow: hidden;
@@ -110,7 +112,7 @@ hr {
   line-height: 60px;
   margin: 20px 0;
   min-height: 20px;
-  padding: 0;
+  padding: 0 0 2px 0;
 }
 
 label {
@@ -118,9 +120,33 @@ label {
   vertical-align: middle;
 }
 
+.sub-option input[type='text'] {
+  background-color: #fff;
+  border-width: 0 0 1px 0;
+  height: 25px;
+  margin-top: 20px;
+  width: 300px;
+}
+
+.tall {
+  margin-bottom: 16px;
+}
+
+.short {
+  line-height: 40px;
+  vertical-align: bottom;
+}
+
+.right {
+  float: right;
+}
+
+.wide {
+  min-width: 200px;
+}
+
 .example {
   display: inline-block;
-  float: right;
   font-size: 1em;
   height: 60px;
   line-height: 60px;
@@ -146,7 +172,8 @@ label {
   z-index: 10;
 }
 
-.option button {
+.option button,
+.sub-option button {
   background-color: #fff;
   border-color: rgb(210, 227, 252);
   border-radius: 4px;
@@ -162,11 +189,13 @@ label {
   vertical-align: middle;
 }
 
-.option button:hover {
+.option button:hover,
+.sub-option button:hover {
   background-color: rgba(66, 133, 244, 0.04);
 }
 
-.option button:active {
+.option button:active,
+.sub-option button:active {
   background-color: rgba(66, 133, 244, 0.15);
 }
 
@@ -209,6 +238,10 @@ label {
 
 .subtitle {
   color: rgb(95, 99, 104);
+}
+
+.subtitle a {
+  color: rgb(26, 115, 232);
 }
 
 #navigationControlsOption {

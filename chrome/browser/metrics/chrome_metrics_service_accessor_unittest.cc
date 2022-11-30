@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/pref_names.h"
@@ -20,6 +19,11 @@ class ChromeMetricsServiceAccessorTest : public testing::Test {
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
   }
 
+  ChromeMetricsServiceAccessorTest(const ChromeMetricsServiceAccessorTest&) =
+      delete;
+  ChromeMetricsServiceAccessorTest& operator=(
+      const ChromeMetricsServiceAccessorTest&) = delete;
+
   PrefService* GetLocalState() {
     return testing_local_state_.Get();
   }
@@ -27,8 +31,6 @@ class ChromeMetricsServiceAccessorTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServiceAccessorTest);
 };
 
 TEST_F(ChromeMetricsServiceAccessorTest, MetricsReportingEnabled) {

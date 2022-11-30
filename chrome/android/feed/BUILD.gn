@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,12 +8,7 @@ import("//components/feed/features.gni")
 
 android_resources("chrome_feed_java_resources") {
   sources = [
-    "core/java/res/drawable/feed_text_ripple_drawable_dark.xml",
-    "core/java/res/drawable/feed_text_ripple_drawable_light.xml",
-    "core/java/res/drawable/hairline_border_card_background_with_inset.xml",
-    "core/java/res/layout/feed_spinner.xml",
-    "core/java/res/layout/no_connection.xml",
-    "core/java/res/layout/no_content_v2.xml",
+    "core/java/res/values-night/colors.xml",
     "core/java/res/values/attrs.xml",
     "core/java/res/values/colors.xml",
     "core/java/res/values/dimens.xml",

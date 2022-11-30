@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<p>foo</p>
+
+<script>
+async_test(t => {
+  testRunner.findString('foo', ['Async']);
+  document.querySelector('p').remove();
+  gc();
+  requestAnimationFrame(t.step_func(() => {
+    gc();
+    requestAnimationFrame(t.step_func_done(() => {}));
+  }));
+});
+</script>

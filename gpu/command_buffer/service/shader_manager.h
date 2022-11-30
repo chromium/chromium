@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shader_translator.h"
@@ -283,6 +283,10 @@ class GPU_GLES2_EXPORT Shader : public base::RefCounted<Shader> {
 class GPU_GLES2_EXPORT ShaderManager {
  public:
   ShaderManager(gl::ProgressReporter* progress_reporter);
+
+  ShaderManager(const ShaderManager&) = delete;
+  ShaderManager& operator=(const ShaderManager&) = delete;
+
   ~ShaderManager();
 
   // Must call before destruction.
@@ -325,13 +329,10 @@ class GPU_GLES2_EXPORT ShaderManager {
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  gl::ProgressReporter* progress_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderManager);
+  raw_ptr<gl::ProgressReporter> progress_reporter_;
 };
 
 }  // namespace gles2
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHADER_MANAGER_H_
-

@@ -1,12 +1,12 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EIGHTBALL_H_
-#define EIGHTBALL_H_
+#ifndef EXAMPLES_TUTORIAL_DLOPEN_EIGHTBALL_H_
+#define EXAMPLES_TUTORIAL_DLOPEN_EIGHTBALL_H_
 
 /* Return an answer. Question not required */
 typedef char* (*TYPE_eightball)(void);
 extern "C" const char* Magic8Ball();
 
-#endif /* EIGHTBALL_H_ */
+#endif  // EXAMPLES_TUTORIAL_DLOPEN_EIGHTBALL_H_

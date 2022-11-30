@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 
@@ -23,7 +23,14 @@ class ConfigureGetUpdatesRequestEvent : public ProtocolEvent {
       base::Time timestamp,
       sync_pb::SyncEnums::GetUpdatesOrigin origin,
       const sync_pb::ClientToServerMessage& request);
+
+  ConfigureGetUpdatesRequestEvent(const ConfigureGetUpdatesRequestEvent&) =
+      delete;
+  ConfigureGetUpdatesRequestEvent& operator=(
+      const ConfigureGetUpdatesRequestEvent&) = delete;
+
   ~ConfigureGetUpdatesRequestEvent() override;
+
   std::unique_ptr<ProtocolEvent> Clone() const override;
 
  private:
@@ -36,8 +43,6 @@ class ConfigureGetUpdatesRequestEvent : public ProtocolEvent {
   const base::Time timestamp_;
   const sync_pb::SyncEnums::GetUpdatesOrigin origin_;
   const sync_pb::ClientToServerMessage request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigureGetUpdatesRequestEvent);
 };
 
 }  // namespace syncer

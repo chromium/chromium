@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_FAKE_PLATFORM_SENSOR_AND_PROVIDER_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_FAKE_PLATFORM_SENSOR_AND_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -18,6 +18,9 @@ class FakePlatformSensor : public PlatformSensor {
                      SensorReadingSharedBuffer* reading_buffer,
                      PlatformSensorProvider* provider);
 
+  FakePlatformSensor(const FakePlatformSensor&) = delete;
+  FakePlatformSensor& operator=(const FakePlatformSensor&) = delete;
+
   // PlatformSensor:
   MOCK_METHOD1(StartSensor,
                bool(const PlatformSensorConfiguration& configuration));
@@ -25,6 +28,9 @@ class FakePlatformSensor : public PlatformSensor {
   void set_maximum_supported_frequency(double maximum_supported_frequency) {
     maximum_supported_frequency_ = maximum_supported_frequency;
   }
+
+  // Public interface to UpdateSharedBufferAndNotifyClients().
+  void AddNewReading(const SensorReading& reading);
 
  protected:
   void StopSensor() override {}
@@ -42,13 +48,16 @@ class FakePlatformSensor : public PlatformSensor {
   double maximum_supported_frequency_ = 50.0;
 
   ~FakePlatformSensor() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePlatformSensor);
 };
 
 class FakePlatformSensorProvider : public PlatformSensorProvider {
  public:
   FakePlatformSensorProvider();
+
+  FakePlatformSensorProvider(const FakePlatformSensorProvider&) = delete;
+  FakePlatformSensorProvider& operator=(const FakePlatformSensorProvider&) =
+      delete;
+
   ~FakePlatformSensorProvider() override;
 
   MOCK_METHOD0(FreeResources, void());
@@ -63,8 +72,6 @@ class FakePlatformSensorProvider : public PlatformSensorProvider {
   void CreateSensorInternal(mojom::SensorType type,
                             SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePlatformSensorProvider);
 };
 
 // Mock for PlatformSensor's client interface that is used to deliver
@@ -75,7 +82,13 @@ class MockPlatformSensorClient : public PlatformSensor::Client {
   // For the given |sensor| this client will be automatically
   // added in the costructor and removed in the destructor.
   explicit MockPlatformSensorClient(scoped_refptr<PlatformSensor> sensor);
+
+  MockPlatformSensorClient(const MockPlatformSensorClient&) = delete;
+  MockPlatformSensorClient& operator=(const MockPlatformSensorClient&) = delete;
+
   ~MockPlatformSensorClient() override;
+
+  scoped_refptr<PlatformSensor> sensor() const { return sensor_; }
 
   // PlatformSensor::Client:
   MOCK_METHOD1(OnSensorReadingChanged, void(mojom::SensorType type));
@@ -84,8 +97,6 @@ class MockPlatformSensorClient : public PlatformSensor::Client {
 
  private:
   scoped_refptr<PlatformSensor> sensor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformSensorClient);
 };
 
 }  // namespace device

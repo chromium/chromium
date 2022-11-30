@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/assistant/util/histogram_util.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/android_intent_helper.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
@@ -31,21 +31,20 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 namespace {
 
-using chromeos::assistant::features::IsWaitSchedulingEnabled;
+using assistant::features::IsWaitSchedulingEnabled;
 
 // Android.
 constexpr char kAndroidIntentScheme[] = "intent://";
@@ -140,8 +139,6 @@ void AssistantInteractionControllerImpl::StartTextInteraction(
     AssistantQuerySource query_source) {
   DCHECK(assistant_);
 
-  StopActiveInteraction(false);
-
   model_.SetPendingQuery(
       std::make_unique<AssistantTextQuery>(text, query_source));
 
@@ -164,23 +161,9 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
   using assistant::util::DeepLinkParam;
   using assistant::util::DeepLinkType;
 
-  if (type == DeepLinkType::kWhatsOnMyScreen) {
-    DCHECK(AssistantState::Get()->IsScreenContextAllowed());
-
-    // Explicitly call ShowUi() to set the correct Assistant entry point.
-    // ShowUi() will no-op if UI is already shown.
-    AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kDeepLink);
-
-    // The "What's on my screen" chip initiates a screen context interaction.
-    StartScreenContextInteraction(
-        /*include_assistant_structure=*/true,
-        /*region=*/gfx::Rect(), AssistantQuerySource::kWhatsOnMyScreen);
-    return;
-  }
-
   if (type == DeepLinkType::kReminders) {
     using ReminderAction = assistant::util::ReminderAction;
-    const base::Optional<ReminderAction>& action =
+    const absl::optional<ReminderAction>& action =
         GetDeepLinkParamAsRemindersAction(params, DeepLinkParam::kAction);
 
     // We treat reminders deeplinks without an action as web deep links.
@@ -196,10 +179,9 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
         break;
 
       case ReminderAction::kEdit:
-        const base::Optional<std::string>& client_id =
+        const absl::optional<std::string>& client_id =
             GetDeepLinkParam(params, DeepLinkParam::kClientId);
         if (client_id && !client_id.value().empty()) {
-          StopActiveInteraction(false);
           model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
               l10n_util::GetStringUTF8(IDS_ASSISTANT_EDIT_REMINDER_QUERY),
               /*query_source=*/AssistantQuerySource::kDeepLink));
@@ -214,7 +196,7 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
   if (type != DeepLinkType::kQuery)
     return;
 
-  const base::Optional<std::string>& query =
+  const absl::optional<std::string>& query =
       GetDeepLinkParam(params, DeepLinkParam::kQuery);
 
   if (!query.has_value())
@@ -255,8 +237,8 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
 void AssistantInteractionControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   switch (new_visibility) {
     case AssistantVisibility::kClosed:
       // When the UI is closed we need to stop any active interaction. We also
@@ -268,6 +250,8 @@ void AssistantInteractionControllerImpl::OnUiVisibilityChanged(
     case AssistantVisibility::kVisible:
       OnUiVisible(entry_point.value());
       break;
+    case AssistantVisibility::kClosing:
+      break;
   }
 }
 
@@ -276,9 +260,7 @@ void AssistantInteractionControllerImpl::OnHighlighterSelectionRecognized(
   DCHECK(AssistantState::Get()->IsScreenContextAllowed());
 
   AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kStylus);
-  StartScreenContextInteraction(
-      /*include_assistant_structure=*/false, rect,
-      AssistantQuerySource::kStylus);
+  StartScreenContextInteraction(rect, AssistantQuerySource::kStylus);
 }
 
 void AssistantInteractionControllerImpl::OnInteractionStateChanged(
@@ -365,6 +347,8 @@ void AssistantInteractionControllerImpl::OnCommittedQueryChanged(
 // pending query that occur outside of this method.
 void AssistantInteractionControllerImpl::OnInteractionStarted(
     const AssistantInteractionMetadata& metadata) {
+  VLOG(1) << __func__;
+
   // Abort any request in progress.
   screen_context_request_factory_.InvalidateWeakPtrs();
 
@@ -376,7 +360,7 @@ void AssistantInteractionControllerImpl::OnInteractionStarted(
   }
 
   const bool is_voice_interaction =
-      chromeos::assistant::AssistantInteractionType::kVoice == metadata.type;
+      assistant::AssistantInteractionType::kVoice == metadata.type;
 
   if (is_voice_interaction) {
     // If the Assistant UI is not visible yet, and |is_voice_interaction| is
@@ -416,6 +400,8 @@ void AssistantInteractionControllerImpl::OnInteractionStarted(
 
 void AssistantInteractionControllerImpl::OnInteractionFinished(
     AssistantInteractionResolution resolution) {
+  VLOG(1) << __func__;
+
   base::UmaHistogramEnumeration("Assistant.Interaction.Resolution", resolution);
   model_.SetMicState(MicState::kClosed);
 
@@ -503,9 +489,11 @@ void AssistantInteractionControllerImpl::OnHtmlResponse(
     return;
   }
 
+  DCHECK(AssistantUiController::Get());
   AssistantResponse* response = GetResponseForActiveInteraction();
-  response->AddUiElement(
-      std::make_unique<AssistantCardElement>(html, fallback));
+  response->AddUiElement(std::make_unique<AssistantCardElement>(
+      html, fallback,
+      AssistantUiController::Get()->GetModel()->AppListBubbleWidth()));
 
   // If |response| is pending, commit it to cause the response for the
   // previous interaction, if one exists, to be animated off stage and the new
@@ -725,7 +713,7 @@ void AssistantInteractionControllerImpl::OnOpenUrlResponse(const GURL& url,
 }
 
 void AssistantInteractionControllerImpl::OnOpenAppResponse(
-    const chromeos::assistant::AndroidAppInfo& app_info) {
+    const assistant::AndroidAppInfo& app_info) {
   if (!HasActiveInteraction()) {
     DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
@@ -801,7 +789,6 @@ void AssistantInteractionControllerImpl::OnUiVisible(
 }
 
 void AssistantInteractionControllerImpl::StartScreenContextInteraction(
-    bool include_assistant_structure,
     const gfx::Rect& region,
     AssistantQuerySource query_source) {
   StopActiveInteraction(false);
@@ -810,24 +797,20 @@ void AssistantInteractionControllerImpl::StartScreenContextInteraction(
       l10n_util::GetStringUTF8(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_SCREEN),
       query_source));
 
-  assistant_controller_->screen_context_controller()->RequestScreenContext(
-      include_assistant_structure, region,
+  assistant_controller_->screen_context_controller()->RequestScreenshot(
+      region,
       base::BindOnce(
           [](const base::WeakPtr<AssistantInteractionControllerImpl>& self,
-             ax::mojom::AssistantStructurePtr assistant_structure,
              const std::vector<uint8_t>& screenshot) {
             if (!self)
               return;
 
-            self->assistant_->StartScreenContextInteraction(
-                std::move(assistant_structure), screenshot);
+            self->assistant_->StartScreenContextInteraction(screenshot);
           },
           screen_context_request_factory_.GetWeakPtr()));
 }
 
 void AssistantInteractionControllerImpl::StartVoiceInteraction() {
-  StopActiveInteraction(false);
-
   model_.SetPendingQuery(std::make_unique<AssistantVoiceQuery>());
 
   assistant_->StartVoiceInteraction();

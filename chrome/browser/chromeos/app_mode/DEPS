@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "chrome_kiosk_app_launcher\.cc": [
+    "+chrome/browser/ash/app_mode/kiosk_app_manager.h",
+  ],
+  "chrome_kiosk_app_launcher_unittest.cc": [
+    "+ash/test/ash_test_helper.h",
+    "+chrome/browser/ash/app_mode/test_kiosk_extension_builder.h",
+  ],
+}

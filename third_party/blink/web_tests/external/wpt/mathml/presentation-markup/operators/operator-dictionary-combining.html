@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <title>Operator dictionary (combining char)</title>
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#operator-fence-separator-or-accent-mo">
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#dictionary-based-attributes">
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#operator-dictionary">
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#layout-of-mrow">
+<link rel="help" href="https://w3c.github.io/mathml-core/#operator-fence-separator-or-accent-mo">
+<link rel="help" href="https://w3c.github.io/mathml-core/#dictionary-based-attributes">
+<link rel="help" href="https://w3c.github.io/mathml-core/#operator-dictionary">
+<link rel="help" href="https://w3c.github.io/mathml-core/#layout-of-mrow">
 <link rel="stylesheet" href="./support/operator-dictionary-tests.css"/>
 <meta name="assert" content="Verify special handling of 2-char operator with a combining character">
 <script src="/resources/testharness.js"></script>
@@ -33,7 +33,12 @@
       var epsilon = 1;
       var emToPx = 25;
 
-      ["equal", "vertical_bar"].forEach(id => {
+      [
+          "equal",
+          "vertical_bar",
+          "left_normal_factor_semidirect_product",
+          "there_exists",
+      ].forEach(id => {
           var div = document.getElementById(id);
           var ref = div.getElementsByClassName("reference")[0];
           var totalSpaceRef = spaceBetween(ref, 0, 2);
@@ -100,6 +105,52 @@
       <math class="combining">
         <mn>&nbsp;</mn>
         <mo stretchy="false">|&#x20D2;</mo>
+        <mn>&nbsp;</mn>
+      </math>
+    </p>
+  </div>
+  <div id="left_normal_factor_semidirect_product">
+    <p>
+      <math class="reference">
+        <mn>&nbsp;</mn>
+        <mo stretchy="false">⋉</mo>
+        <mn>&nbsp;</mn>
+      </math>
+    </p>
+    <p>
+      <math class="combining">
+        <mn>&nbsp;</mn>
+        <mo stretchy="false">⋉&#x338;</mo>
+        <mn>&nbsp;</mn>
+      </math>
+    </p>
+    <p>
+      <math class="combining">
+        <mn>&nbsp;</mn>
+        <mo stretchy="false">⋉&#x20D2;</mo>
+        <mn>&nbsp;</mn>
+      </math>
+    </p>
+  </div>
+  <div id="there_exists">
+    <p>
+      <math class="reference">
+        <mn>&nbsp;</mn>
+        <mo stretchy="false">∃</mo>
+        <mn>&nbsp;</mn>
+      </math>
+    </p>
+    <p>
+      <math class="combining">
+        <mn>&nbsp;</mn>
+        <mo stretchy="false">∃&#x338;</mo>
+        <mn>&nbsp;</mn>
+      </math>
+    </p>
+    <p>
+      <math class="combining">
+        <mn>&nbsp;</mn>
+        <mo stretchy="false">∃&#x20D2;</mo>
         <mn>&nbsp;</mn>
       </math>
     </p>

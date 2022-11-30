@@ -1,13 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_FACTORY_H_
 #define CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class RecoveryInstallGlobalError;
@@ -15,8 +14,7 @@ class RecoveryInstallGlobalError;
 // Singleton that owns all RecoveryInstallGlobalError and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated RecoveryInstallGlobalError.
-class RecoveryInstallGlobalErrorFactory
-    : public BrowserContextKeyedServiceFactory {
+class RecoveryInstallGlobalErrorFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of RecoveryInstallGlobalError associated with this
   // profile, creating one if none exists.
@@ -24,6 +22,11 @@ class RecoveryInstallGlobalErrorFactory
 
   // Returns an instance of the RecoveryInstallGlobalErrorFactory singleton.
   static RecoveryInstallGlobalErrorFactory* GetInstance();
+
+  RecoveryInstallGlobalErrorFactory(const RecoveryInstallGlobalErrorFactory&) =
+      delete;
+  RecoveryInstallGlobalErrorFactory& operator=(
+      const RecoveryInstallGlobalErrorFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<RecoveryInstallGlobalErrorFactory>;
@@ -34,8 +37,6 @@ class RecoveryInstallGlobalErrorFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RecoveryInstallGlobalErrorFactory);
 };
 
 #endif  // CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_FACTORY_H_

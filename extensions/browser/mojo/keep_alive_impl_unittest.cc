@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
@@ -21,6 +20,10 @@ namespace extensions {
 class KeepAliveTest : public ExtensionsTest {
  public:
   KeepAliveTest() : mojo_activity_(Activity::MOJO, "") {}
+
+  KeepAliveTest(const KeepAliveTest&) = delete;
+  KeepAliveTest& operator=(const KeepAliveTest&) = delete;
+
   ~KeepAliveTest() override {}
 
   void SetUp() override {
@@ -76,8 +79,6 @@ class KeepAliveTest : public ExtensionsTest {
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveTest);
 };
 
 TEST_F(KeepAliveTest, Basic) {

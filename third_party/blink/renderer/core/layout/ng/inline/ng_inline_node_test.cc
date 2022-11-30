@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
@@ -37,8 +40,8 @@ class NGInlineNodeForTest : public NGInlineNode {
   using NGInlineNode::NGInlineNode;
 
   std::string Text() const { return Data().text_content.Utf8(); }
-  Vector<NGInlineItem>& Items() { return MutableData()->items; }
-  static Vector<NGInlineItem>& Items(NGInlineNodeData& data) {
+  HeapVector<NGInlineItem>& Items() { return MutableData()->items; }
+  static HeapVector<NGInlineItem>& Items(NGInlineNodeData& data) {
     return data.items;
   }
 
@@ -48,7 +51,6 @@ class NGInlineNodeForTest : public NGInlineNode {
     data->text_content = data->text_content + text;
     data->items.push_back(NGInlineItem(NGInlineItem::kText, start,
                                        start + text.length(), layout_object));
-    data->is_empty_inline_ = false;
   }
 
   void Append(UChar character) {
@@ -58,14 +60,12 @@ class NGInlineNodeForTest : public NGInlineNode {
     data->items.push_back(
         NGInlineItem(NGInlineItem::kBidiControl, end - 1, end, nullptr));
     data->is_bidi_enabled_ = true;
-    data->is_empty_inline_ = false;
   }
 
   void ClearText() {
     NGInlineNodeData* data = MutableData();
     data->text_content = String();
     data->items.clear();
-    data->is_empty_inline_ = true;
   }
 
   void SegmentText() {
@@ -93,7 +93,10 @@ class NGInlineNodeTest : public NGLayoutTest {
     SetupHtml("t", "<div id=t style='font:10px Ahem'>test</div>");
   }
 
-  NGInlineNodeForTest CreateInlineNode() {
+  NGInlineNodeForTest CreateInlineNode(
+      LayoutNGBlockFlow* layout_block_flow = nullptr) {
+    if (layout_block_flow)
+      layout_block_flow_ = layout_block_flow;
     if (!layout_block_flow_)
       SetupHtml("t", "<div id=t style='font:10px'>test</div>");
     NGInlineNodeForTest node(layout_block_flow_);
@@ -120,7 +123,7 @@ class NGInlineNodeTest : public NGLayoutTest {
     return data->text_content;
   }
 
-  Vector<NGInlineItem>& Items() {
+  HeapVector<NGInlineItem>& Items() {
     NGInlineNodeData* data = layout_block_flow_->GetNGInlineNodeData();
     CHECK(data);
     return NGInlineNodeForTest::Items(*data);
@@ -155,8 +158,8 @@ class NGInlineNodeTest : public NGLayoutTest {
     EXPECT_FALSE(expected);
   }
 
-  LayoutNGBlockFlow* layout_block_flow_ = nullptr;
-  LayoutObject* layout_object_ = nullptr;
+  Persistent<LayoutNGBlockFlow> layout_block_flow_;
+  Persistent<LayoutObject> layout_object_;
   FontCachePurgePreventer purge_preventer_;
 };
 
@@ -181,7 +184,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesText) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
   EXPECT_FALSE(node.IsBidiEnabled());
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[1], kOpenTag, 6u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 6u, 12u);
@@ -196,7 +199,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesBR) {
   node.CollectInlines();
   EXPECT_EQ("Hello\nWorld", node.Text());
   EXPECT_FALSE(node.IsBidiEnabled());
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 5u);
   TEST_ITEM_TYPE_OFFSET(items[1], kControl, 5u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 6u, 11u);
@@ -214,9 +217,9 @@ TEST_F(NGInlineNodeTest, CollectInlinesFloat) {
             "</div>");
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  EXPECT_EQ(u8"abc\uFFFCghi\uFFFCmno", node.Text())
+  EXPECT_EQ("abc\uFFFCghi\uFFFCmno", node.Text())
       << "floats are appeared as an object replacement character";
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(5u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 3u);
   TEST_ITEM_TYPE_OFFSET(items[1], kFloating, 3u, 4u);
@@ -232,9 +235,9 @@ TEST_F(NGInlineNodeTest, CollectInlinesInlineBlock) {
             "</div>");
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  EXPECT_EQ(u8"abc\uFFFCjkl", node.Text())
+  EXPECT_EQ("abc\uFFFCjkl", node.Text())
       << "inline-block is appeared as an object replacement character";
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 3u);
   TEST_ITEM_TYPE_OFFSET(items[1], kAtomicInline, 3u, 4u);
@@ -269,7 +272,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesRtlWithSpan) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 2u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kOpenTag, 2u, 2u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kText, 2u, 3u, 1u);
@@ -285,7 +288,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedText) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 7u, 0u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kText, 7u, 9u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kOpenTag, 9u, 9u, 1u);
@@ -301,7 +304,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 7u, 0u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kText, 7u, 9u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kOpenTag, 9u, 9u, 1u);
@@ -311,11 +314,81 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
   EXPECT_EQ(6u, items.size());
 }
 
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<div id=t>a<br>z</div>");
+  NGInlineNodeForTest node =
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+  node.CollectInlines();
+  EXPECT_EQ("a z", node.Text());
+  HeapVector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(3u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "<br> isn't control";
+  TEST_ITEM_TYPE_OFFSET(items[2], kText, 2u, 3u);
+}
+
+// http://crbug.com/1222633
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<li id=t>ab</li>");
+  // LayoutNGListItem {LI}
+  //   LayoutNGOutsideListMarker {::marker}
+  //      LayoutNGTextCombine (anonymous)
+  //        LayoutText (anonymous) "\x{2022} "
+  //   LayoutNGTextCombine (anonymous)
+  //     LayoutText {#text} "a"
+  NGInlineNodeForTest node = CreateInlineNode(
+      To<LayoutNGTextCombine>(layout_object_->SlowFirstChild()));
+  node.CollectInlines();
+  EXPECT_EQ("\u2022", node.Text());
+  HeapVector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(1u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  EXPECT_TRUE(items[0].IsSymbolMarker());
+}
+
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<pre id=t>a\nz</pre>");
+  NGInlineNodeForTest node =
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+  node.CollectInlines();
+  EXPECT_EQ("a z", node.Text());
+  HeapVector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(3u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "newline isn't control";
+  TEST_ITEM_TYPE_OFFSET(items[2], kText, 2u, 3u);
+}
+
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<div id=t>a<wbr>z</div>");
+  NGInlineNodeForTest node =
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+  node.CollectInlines();
+  EXPECT_EQ("a\u200Bz", node.Text());
+  HeapVector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(3u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "<wbr> isn't control";
+  TEST_ITEM_TYPE_OFFSET(items[2], kText, 2u, 3u);
+}
+
 TEST_F(NGInlineNodeTest, SegmentASCII) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.Append("Hello", layout_object_);
   node.SegmentText();
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 5u, TextDirection::kLtr);
 }
@@ -325,7 +398,7 @@ TEST_F(NGInlineNodeTest, SegmentHebrew) {
   node.Append(u"\u05E2\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
   ASSERT_EQ(1u, node.Items().size());
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 5u, TextDirection::kRtl);
 }
@@ -334,7 +407,7 @@ TEST_F(NGInlineNodeTest, SegmentSplit1To2) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.Append(u"Hello \u05E2\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(2u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 11u, TextDirection::kRtl);
@@ -346,7 +419,7 @@ TEST_F(NGInlineNodeTest, SegmentSplit3To4) {
   node.Append(u"lo \u05E2", layout_object_);
   node.Append(u"\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(4u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 3u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 3u, 6u, TextDirection::kLtr);
@@ -361,7 +434,7 @@ TEST_F(NGInlineNodeTest, SegmentBidiOverride) {
   node.Append("ABC", layout_object_);
   node.Append(kPopDirectionalFormattingCharacter);
   node.SegmentText();
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(4u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 7u, TextDirection::kRtl);
@@ -387,7 +460,7 @@ static NGInlineNodeForTest CreateBidiIsolateNode(NGInlineNodeForTest node,
 TEST_F(NGInlineNodeTest, SegmentBidiIsolate) {
   NGInlineNodeForTest node = CreateInlineNode();
   node = CreateBidiIsolateNode(node, layout_object_);
-  Vector<NGInlineItem>& items = node.Items();
+  HeapVector<NGInlineItem>& items = node.Items();
   EXPECT_EQ(9u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 7u, TextDirection::kLtr);
@@ -514,7 +587,7 @@ TEST_F(NGInlineNodeTest, MinMaxSizesTabulationWithBreakWord) {
 
   NGInlineNodeForTest node = CreateInlineNode();
   MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(160, sizes.min_size);
+  EXPECT_EQ(10, sizes.min_size);
   EXPECT_EQ(170, sizes.max_size);
 }
 
@@ -598,8 +671,8 @@ struct StyleChangeData {
     kAll = kText | kParentAndAbove,
   };
   unsigned needs_collect_inlines;
-  base::Optional<bool> is_line_dirty;
-  base::Optional<bool> invalidate_ink_overflow;
+  absl::optional<bool> is_line_dirty;
+  absl::optional<bool> invalidate_ink_overflow;
 } style_change_data[] = {
     // Changing color, text-decoration, outline, etc. should not re-run
     // |CollectInlines()|.
@@ -871,9 +944,9 @@ TEST_F(NGInlineNodeTest, CollectInlinesShouldNotClearFirstInlineFragment) {
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(block_flow->NeedsCollectInlines());
 
-  // |IsEmptyInline| should run |CollectInlines|.
+  // |IsBlockLevel| should run |CollectInlines|.
   NGInlineNode node(block_flow);
-  node.IsEmptyInline();
+  node.IsBlockLevel();
   EXPECT_FALSE(block_flow->NeedsCollectInlines());
 
   // Running |CollectInlines| should not clear |FirstInlineFragment|.
@@ -1110,7 +1183,7 @@ TEST_F(NGInlineNodeTest, RemoveInlineNodeDataIfBlockObtainsBlockChild) {
 // Test inline objects are initialized when |SplitFlow()| moves them.
 TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   SetBodyInnerHTML(R"HTML(
-    <div>
+    <div id=container>
       <span id=outer_span>
         <span id=inner_span>1234</span>
       </span>
@@ -1137,8 +1210,14 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   // no longer has an inline formatting context, the NGPaintFragment subtree is
   // destroyed, and should not be accessible.
   GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_FALSE(text->GetLayoutObject()->IsInLayoutNGInlineFormattingContext());
-  EXPECT_FALSE(text->GetLayoutObject()->HasInlineFragments());
+  const LayoutObject* layout_text = text->GetLayoutObject();
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_TRUE(layout_text->IsInLayoutNGInlineFormattingContext());
+    EXPECT_TRUE(layout_text->HasInlineFragments());
+  } else {
+    EXPECT_FALSE(layout_text->IsInLayoutNGInlineFormattingContext());
+    EXPECT_FALSE(layout_text->HasInlineFragments());
+  }
 
   // Update layout. There should be a different instance of the text fragment.
   UpdateAllLifecyclePhasesForTest();
@@ -1147,15 +1226,25 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   EXPECT_TRUE(after_layout);
 
   // Check it is the one owned by the new root inline formatting context.
-  LayoutBlock* anonymous_block =
-      inner_span->GetLayoutObject()->ContainingBlock();
-  EXPECT_TRUE(anonymous_block->IsAnonymous());
-  NGInlineCursor anonymous_block_cursor(*To<LayoutBlockFlow>(anonymous_block));
-  anonymous_block_cursor.MoveToFirstLine();
-  anonymous_block_cursor.MoveToFirstChild();
-  EXPECT_TRUE(anonymous_block_cursor);
-  EXPECT_EQ(anonymous_block_cursor.Current().GetLayoutObject(),
-            text->GetLayoutObject());
+  LayoutBlock* inner_span_cb = inner_span->GetLayoutObject()->ContainingBlock();
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(inner_span_cb, container);
+  } else {
+    EXPECT_TRUE(inner_span_cb->IsAnonymous());
+    EXPECT_EQ(inner_span_cb->Parent(), container);
+  }
+  NGInlineCursor inner_span_cb_cursor(*To<LayoutBlockFlow>(inner_span_cb));
+  inner_span_cb_cursor.MoveToFirstLine();
+  inner_span_cb_cursor.MoveToFirstChild();
+  EXPECT_TRUE(inner_span_cb_cursor);
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+              outer_span->GetLayoutObject());
+  } else {
+    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+              text->GetLayoutObject());
+  }
 }
 
 TEST_F(NGInlineNodeTest, AddChildToSVGRoot) {
@@ -1325,6 +1414,52 @@ TEST_F(NGInlineNodeTest, SegmentRanges) {
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(9, 12, 1)), expect_9_12);
 }
 
+// https://crbug.com/1275383
+TEST_F(NGInlineNodeTest, ReusingWithPreservedCase1) {
+  SetupHtml("container",
+            "<div id=container>"
+            "a"
+            "<br id='remove'>"
+            "<span style='white-space: pre-wrap'> ijkl </span>"
+            "</div>");
+  EXPECT_EQ(String(u"a\n \u200Bijkl "), GetText());
+  GetElementById("remove")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(String(u"a ijkl "), GetText());
+}
+
+// https://crbug.com/1275383
+TEST_F(NGInlineNodeTest, ReusingWithPreservedCase2) {
+  SetupHtml("container",
+            "<div id=container style='white-space: pre-wrap'>"
+            "a "
+            "<br id='remove'>"
+            "<span> ijkl </span>"
+            "</div>");
+  EXPECT_EQ(String(u"a \n \u200Bijkl "), GetText());
+  GetElementById("remove")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(String(u"a  ijkl "), GetText());
+}
+
+// https://crbug.com/1275383
+TEST_F(NGInlineNodeTest, ReusingWithPreservedCase3) {
+  SetupHtml("container",
+            "<div id=container style='white-space: pre-wrap'>"
+            " "
+            "<br id='remove'>"
+            "<span> ijkl </span>"
+            "</div>");
+  EXPECT_EQ(String(u" \u200B\n \u200Bijkl "), GetText());
+  GetElementById("remove")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  // TODO(jfernandez): This should be "  \u200Bijkl ", but there is clearly a
+  // bug that causes the first control item to be preserved, while the second is
+  // ignored (due to the presence of the previous control break).
+  // https://crbug.com/1276358
+  EXPECT_EQ(String(u" \u200B ijkl "), GetText());
+}
+
 // https://crbug.com/1021677
 TEST_F(NGInlineNodeTest, ReusingWithCollapsed) {
   SetupHtml("container",
@@ -1380,7 +1515,7 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafe) {
   auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
   const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
   ASSERT_TRUE(data);
-  const Vector<NGInlineItem>& items = data->items;
+  const auto& items = data->items;
 
   // We shape "AV" together, which usually has kerning between "A" and "V", then
   // split the |ShapeResult| to two |NGInlineItem|s. The |NGInlineItem| for "V"
@@ -1409,7 +1544,7 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
   auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
   const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
   ASSERT_TRUE(data);
-  const Vector<NGInlineItem>& items = data->items;
+  const auto& items = data->items;
   const NGInlineItem& item_v = items[4];
   EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
   EXPECT_EQ(
@@ -1418,72 +1553,80 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
   EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
 }
 
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterFalse) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: center">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_FALSE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
+TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "  font: 10px/20px Ahem;"
+      "  text-combine-upright: all;"
+      "  writing-mode: vertical-rl;"
+      "}");
+  SetBodyInnerHTML("<div id=t1>0123456789</div><div id=t2>0</div>");
+
+  EXPECT_TRUE(To<LayoutNGTextCombine>(
+                  GetLayoutObjectByElementId("t1")->SlowFirstChild())
+                  ->UsesScaleX())
+      << "We paint combined text '0123456789' with scaling in X-axis.";
+  EXPECT_FALSE(To<LayoutNGTextCombine>(
+                   GetLayoutObjectByElementId("t2")->SlowFirstChild())
+                   ->UsesScaleX())
+      << "We paint combined text '0' without scaling in X-axis.";
 }
 
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterCenterTextIndent) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: center; text-indent: 1em">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
+// http://crbug.com/1226930
+TEST_F(NGInlineNodeTest, TextCombineWordSpacing) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "  font: 10px/20px Ahem;"
+      "  letter-spacing: 1px;"
+      "  text-combine-upright: all;"
+      "  word-spacing: 1px;"
+      "  writing-mode: vertical-rl;"
+      "}");
+  SetBodyInnerHTML("<div id=t1>ab</div>");
+  const auto& text =
+      *To<Text>(GetElementById("t1")->firstChild())->GetLayoutObject();
+  const auto& font_description = text.StyleRef().GetFont().GetFontDescription();
+
+  EXPECT_EQ(0, font_description.LetterSpacing());
+  EXPECT_EQ(0, font_description.WordSpacing());
 }
 
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterCenterPadding) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: center; padding-left: 1em">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
+// crbug.com/1034464 bad.svg
+TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash1) {
+  ScopedSVGTextNGForTest enable_svg_text_ng(true);
+  SetBodyInnerHTML(
+      "<svg><text id='text' xml:space='preserve'>"
+      "<tspan unicode-bidi='embed' x='0'>(</tspan>"
+      "<tspan y='-2' unicode-bidi='embed' x='3'>)</tspan>"
+      "<tspan y='-2' x='6'>&#x05d2;</tspan>"
+      "<tspan y='-2' unicode-bidi='embed' x='10'>(</tspan>"
+      "</text></svg>");
+
+  auto* block_flow = To<LayoutNGSVGText>(GetLayoutObjectByElementId("text"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  EXPECT_TRUE(data);
+  // Pass if no null pointer dereferences.
 }
 
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterRight) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: right; margin-right: -1em">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
-}
+// crbug.com/1034464 good.svg
+TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash2) {
+  ScopedSVGTextNGForTest enable_svg_text_ng(true);
+  SetBodyInnerHTML(
+      "<svg><text id='text' xml:space='preserve'>\n"
+      "<tspan unicode-bidi='embed' x='0'>(</tspan>\n"
+      "<tspan y='-2' unicode-bidi='embed' x='3'>)</tspan>\n"
+      "<tspan y='-2' x='6'>&#x05d2;</tspan>\n"
+      "<tspan y='-2' unicode-bidi='embed' x='10'>(</tspan>\n"
+      "</text></svg>");
 
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterBorder) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em">
-      <span id="span" style="border:1px solid; padding-left:1em">span</span>
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  const LayoutObject* span = GetLayoutObjectByElementId("span");
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      span->SlowFirstChild(), /* first_line */ false, p));
-}
-
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterUnderline) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em">
-      <span id="span" style="text-decoration: underline">span</span>
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  const LayoutObject* span = GetLayoutObjectByElementId("span");
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      span->SlowFirstChild(), /* first_line */ false, p));
+  auto* block_flow = To<LayoutNGSVGText>(GetLayoutObjectByElementId("text"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  EXPECT_TRUE(data);
+  // Pass if no DCHECK() failures.
 }
 
 }  // namespace blink

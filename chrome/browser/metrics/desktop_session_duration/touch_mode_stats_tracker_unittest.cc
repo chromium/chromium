@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,15 @@
 
 #include <memory>
 
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,7 +25,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kInactivityTimeout = base::Minutes(5);
 
 class SessionEndWaiter
     : public metrics::DesktopSessionDurationTracker::Observer {
@@ -54,7 +57,7 @@ class SessionEndWaiter
   }
 
  private:
-  metrics::DesktopSessionDurationTracker* tracker_;
+  raw_ptr<metrics::DesktopSessionDurationTracker> tracker_;
   base::RepeatingClosure end_closure_;
   bool waiting_ = false;
 };
@@ -64,7 +67,9 @@ class SessionEndWaiter
 class TouchModeStatsTrackerTest : public ::testing::Test {
  public:
   TouchModeStatsTrackerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+  }
   ~TouchModeStatsTrackerTest() override = default;
 
   void SetUp() override {
@@ -102,7 +107,7 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<TouchModeStatsTracker> touch_mode_stats_tracker_;
 
  private:
@@ -117,12 +122,12 @@ TEST_F(TouchModeStatsTrackerTest, TouchSession) {
 
   StartSession();
   ASSERT_TRUE(metrics::DesktopSessionDurationTracker::Get()->in_session());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EndSession();
 
   histograms.ExpectUniqueTimeSample(
       TouchModeStatsTracker::kSessionTouchDurationHistogramName,
-      base::TimeDelta::FromMinutes(1), 1);
+      base::Minutes(1), 1);
 }
 
 // The touch duration logged should be 0 for a non-touch session.
@@ -131,7 +136,7 @@ TEST_F(TouchModeStatsTrackerTest, NonTouchSession) {
   base::HistogramTester histograms;
 
   StartSession();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EndSession();
 
   histograms.ExpectUniqueTimeSample(
@@ -149,39 +154,39 @@ TEST_F(TouchModeStatsTrackerTest, TouchChangesDuringSession) {
     base::HistogramTester histograms;
     StartSession();
 
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
     touch_mode_override.UpdateState(true);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
     touch_mode_override.UpdateState(false);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
     touch_mode_override.UpdateState(true);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
     touch_mode_override.UpdateState(false);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
 
     EndSession();
     histograms.ExpectUniqueTimeSample(
         TouchModeStatsTracker::kSessionTouchDurationHistogramName,
-        base::TimeDelta::FromSeconds(30), 1);
+        base::Seconds(30), 1);
   }
 
   touch_mode_override.UpdateState(true);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+  task_environment_.FastForwardBy(base::Seconds(15));
 
   // Check starting in non-touch mode.
   {
     base::HistogramTester histograms;
     StartSession();
 
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
     touch_mode_override.UpdateState(false);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
     touch_mode_override.UpdateState(true);
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+    task_environment_.FastForwardBy(base::Seconds(15));
 
     EndSession();
     histograms.ExpectUniqueTimeSample(
         TouchModeStatsTracker::kSessionTouchDurationHistogramName,
-        base::TimeDelta::FromSeconds(30), 1);
+        base::Seconds(30), 1);
   }
 }

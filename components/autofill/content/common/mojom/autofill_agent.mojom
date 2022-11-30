@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,16 @@ import "mojo/public/mojom/base/string16.mojom";
 // There is one instance of this interface per render frame in the render
 // process. All methods are called by browser on renderer.
 interface AutofillAgent {
-  // Instructs the renderer to fill the active form with the given form data.
-  // Please refer AutofillDriver.QueryFormFieldAutofill comments about the |id|.
-  FillForm(int32 id, FormData form);
+  // Triggers a reparse of the new forms. This is done when a form is seen in
+  // a subframe and it is not known which form is its parent.
+  TriggerReparse();
 
-  // Instructs the renderer to preview the active form with the given form data.
-  // Please refer AutofillDriver.QueryFormFieldAutofill comments about the |id|.
-  PreviewForm(int32 id, FormData form);
+  // Instructs the renderer to fill or preview the active form with the given
+  // form data. Refer to AutofillDriver.AskForValuesToFill for comments
+  // about the |query_id|.
+  FillOrPreviewForm(int32 query_id,
+                    FormData form,
+                    RendererFormDataAction action);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
@@ -74,29 +77,36 @@ interface AutofillAgent {
   // Configures whether AutofillAgent will query password field autofill suggestions. The default is false.
   SetQueryPasswordSuggestion(bool query);
 
-  // Get form element's form and field data.
-  // The form field is given by an path defined by an array of CSS selectors.
-  GetElementFormAndFieldData(array<string> selectors) => (
+  // Get form element's form and field data. The form field is given by a
+  // stable devtools node identifier in the backend node id.
+  // https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BackendNodeId
+  // The corresponding entity in the renderer is the DOMNodeIds.
+  GetElementFormAndFieldDataForDevToolsNodeId(int32 backend_node_id) => (
       autofill.mojom.FormData form, autofill.mojom.FormFieldData field);
 
-  // Set whether or not an assistant action is currently running an action.
-  SetAssistantActionState(bool running);
+  // Set whether or not the Autofill Assistant currently wants to suppress the
+  // keyboard from showing.
+  SetAssistantKeyboardSuppressState(bool suppress);
 
   // Allows heavy scraping of form data (e.g., button titles for
   // unowned forms).
   EnableHeavyFormDataScraping();
+
+  // Update fields that are eligible to show manual filling on form interaction.
+  SetFieldsEligibleForManualFilling(array<FieldRendererId> fields);
 };
 
 // There is one instance of this interface per render frame in the render
 // process.
 interface PasswordAutofillAgent {
-  // Fills a password form and prepare field autocomplete for multiple
-  // matching logins. Lets the renderer know if it should disable the popup
-  // because the browser process will own the popup UI.
-  FillPasswordForm(PasswordFormFillData form_data);
+  // Provides fill information for a password form, which can fill the form and
+  // prepare field autocomplete for multiple matching logins. Lets the renderer
+  // know if it should disable the popup because the browser process will own
+  // the popup UI.
+  SetPasswordFillData(PasswordFormFillData form_data);
 
   // Lets the renderer know that there are no saved credentials for filling.
-  // This is the "no results" equivalent of FillPasswordForm.
+  // This is the "no results" equivalent of SetPasswordFillData.
   InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
   // Fills the given |credential| into the last focused text input.
@@ -108,7 +118,12 @@ interface PasswordAutofillAgent {
 
   // Informs the renderer that the Touch To Fill sheet has been closed.
   // Indicates whether the virtual keyboard should be shown instead.
+  [EnableIf=is_android]
   TouchToFillClosed(bool show_virtual_keyboard);
+
+  // Triggers a form submission on the last interacted element.
+  [EnableIf=is_android]
+  TriggerFormSubmission();
 
   // Annotate password related (username, password) DOM input elements with
   // corresponding HTML attributes. It is used only for debugging.

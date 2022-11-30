@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnReceivedErrorHelper;
 import org.chromium.url.GURL;
 
 /**
@@ -19,14 +18,12 @@ import org.chromium.url.GURL;
 public class TestWebContentsObserver extends WebContentsObserver {
     private final OnPageStartedHelper mOnPageStartedHelper;
     private final OnPageFinishedHelper mOnPageFinishedHelper;
-    private final OnReceivedErrorHelper mOnReceivedErrorHelper;
     private final CallbackHelper mOnFirstVisuallyNonEmptyPaintHelper;
 
     public TestWebContentsObserver(WebContents webContents) {
         super(webContents);
         mOnPageStartedHelper = new OnPageStartedHelper();
         mOnPageFinishedHelper = new OnPageFinishedHelper();
-        mOnReceivedErrorHelper = new OnReceivedErrorHelper();
         mOnFirstVisuallyNonEmptyPaintHelper = new CallbackHelper();
     }
 
@@ -36,10 +33,6 @@ public class TestWebContentsObserver extends WebContentsObserver {
 
     public OnPageFinishedHelper getOnPageFinishedHelper() {
         return mOnPageFinishedHelper;
-    }
-
-    public OnReceivedErrorHelper getOnReceivedErrorHelper() {
-        return mOnReceivedErrorHelper;
     }
 
     public CallbackHelper getOnFirstVisuallyNonEmptyPaintHelper() {
@@ -62,12 +55,6 @@ public class TestWebContentsObserver extends WebContentsObserver {
     public void didStopLoading(GURL url, boolean isKnownValid) {
         super.didStopLoading(url, isKnownValid);
         mOnPageFinishedHelper.notifyCalled(url.getPossiblyInvalidSpec());
-    }
-
-    @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl) {
-        super.didFailLoad(isMainFrame, errorCode, failingUrl);
-        mOnReceivedErrorHelper.notifyCalled(errorCode, "Error " + errorCode, failingUrl.getSpec());
     }
 
     @Override

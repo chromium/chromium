@@ -1,7 +1,7 @@
 {
 "layers": [
 {
-"name": "Scrolling Contents Layer",
+"name": "Scrolling background of LayoutView #document",
 "bounds": [800, 600],
 "contentsOpaque": true,
 "backgroundColor": "#FFFFFF"
@@ -9,6 +9,8 @@
 {
 "name": "LayoutBlockFlow DIV id='multicol'",
 "bounds": [200, 100],
+"contentsOpaqueForText": true,
+"drawsContent": false,
 "transform": 1
 }
 ],

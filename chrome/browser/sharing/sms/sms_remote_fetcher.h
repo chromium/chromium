@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -26,9 +27,9 @@ class Origin;
 // Returns a null callback if fetching from a remote device is disabled.
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
-    const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                            base::Optional<std::string>,
-                            base::Optional<content::SmsFetchFailureType>)>);
+    const std::vector<url::Origin>& origin_list,
+    base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
+                            absl::optional<std::string>,
+                            absl::optional<content::SmsFetchFailureType>)>);
 
 #endif  // CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_

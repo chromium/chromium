@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -89,11 +89,8 @@ testing::AssertionResult VerifyHasPermissionMessageImpl(
     const std::u16string& expected_message,
     const std::vector<std::u16string>& expected_submessages,
     const PermissionMessages& actual_messages) {
-  auto message_it =
-      std::find_if(actual_messages.begin(), actual_messages.end(),
-                   [&expected_message](const PermissionMessage& msg) {
-                     return msg.message() == expected_message;
-                   });
+  auto message_it = base::ranges::find(actual_messages, expected_message,
+                                       &PermissionMessage::message);
   bool found = message_it != actual_messages.end();
   if (!found) {
     // Message: Expected messages to contain "Foo", but got { "Bar", "Baz" }

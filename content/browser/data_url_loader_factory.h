@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_DATA_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_DATA_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -27,6 +27,9 @@ class DataURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   // empty (because it was truncated).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory>
   CreateForOneSpecificUrl(const GURL& url);
+
+  DataURLLoaderFactory(const DataURLLoaderFactory&) = delete;
+  DataURLLoaderFactory& operator=(const DataURLLoaderFactory&) = delete;
 
  private:
   // Initializes a factory with a GURL, which is useful if this factory will
@@ -49,8 +52,6 @@ class DataURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       override;
 
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataURLLoaderFactory);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_reader.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_type_converters.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 
 namespace blink {
 
@@ -48,10 +47,10 @@ void NFCProxy::StartReading(NDEFReader* reader,
   DCHECK(!readers_.Contains(reader));
 
   EnsureMojoConnection();
-  nfc_remote_->Watch(
-      next_watch_id_,
-      WTF::Bind(&NFCProxy::OnReaderRegistered, WrapPersistent(this),
-                WrapPersistent(reader), next_watch_id_, std::move(callback)));
+  nfc_remote_->Watch(next_watch_id_,
+                     WTF::BindOnce(&NFCProxy::OnReaderRegistered,
+                                   WrapPersistent(this), WrapPersistent(reader),
+                                   next_watch_id_, std::move(callback)));
   readers_.insert(reader, next_watch_id_);
   next_watch_id_++;
 }
@@ -87,6 +86,17 @@ void NFCProxy::CancelPush() {
   if (!nfc_remote_)
     return;
   nfc_remote_->CancelPush();
+}
+
+void NFCProxy::MakeReadOnly(device::mojom::blink::NFC::PushCallback cb) {
+  EnsureMojoConnection();
+  nfc_remote_->MakeReadOnly(std::move(cb));
+}
+
+void NFCProxy::CancelMakeReadOnly() {
+  if (!nfc_remote_)
+    return;
+  nfc_remote_->CancelMakeReadOnly();
 }
 
 // device::mojom::blink::NFCClient implementation.
@@ -152,8 +162,8 @@ void NFCProxy::EnsureMojoConnection() {
 
   GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
       nfc_remote_.BindNewPipeAndPassReceiver(task_runner));
-  nfc_remote_.set_disconnect_handler(
-      WTF::Bind(&NFCProxy::OnMojoConnectionError, WrapWeakPersistent(this)));
+  nfc_remote_.set_disconnect_handler(WTF::BindOnce(
+      &NFCProxy::OnMojoConnectionError, WrapWeakPersistent(this)));
 
   // Set client for OnWatch event.
   nfc_remote_->SetClient(
@@ -184,6 +194,7 @@ void NFCProxy::OnMojoConnectionError() {
   // Notify all writers about the connection error and clear the list.
   for (auto& writer : writers_) {
     writer->WriteOnMojoConnectionError();
+    writer->MakeReadOnlyOnMojoConnectionError();
   }
   writers_.clear();
 }

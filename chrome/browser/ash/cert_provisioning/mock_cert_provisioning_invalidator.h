@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class MockCertProvisioningInvalidatorFactory
     : public CertProvisioningInvalidatorFactory {
  public:
   MockCertProvisioningInvalidatorFactory();
-  virtual ~MockCertProvisioningInvalidatorFactory();
+  ~MockCertProvisioningInvalidatorFactory() override;
 
   MOCK_METHOD(std::unique_ptr<CertProvisioningInvalidator>,
               Create,
@@ -28,7 +28,7 @@ class MockCertProvisioningInvalidatorFactory
 class MockCertProvisioningInvalidator : public CertProvisioningInvalidator {
  public:
   MockCertProvisioningInvalidator();
-  virtual ~MockCertProvisioningInvalidator();
+  ~MockCertProvisioningInvalidator() override;
 
   MOCK_METHOD(void,
               Register,

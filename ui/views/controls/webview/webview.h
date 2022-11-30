@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,15 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview_export.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -43,12 +45,17 @@ class WEBVIEW_EXPORT WebView : public View,
   METADATA_HEADER(WebView);
 
   explicit WebView(content::BrowserContext* browser_context = nullptr);
+
+  WebView(const WebView&) = delete;
+  WebView& operator=(const WebView&) = delete;
+
   ~WebView() override;
 
-  // This creates a WebContents if |kBrowserContext| has been set and there is
+  // This creates a WebContents if |browser_context_| has been set and there is
   // not yet a WebContents associated with this WebView, otherwise it will
   // return a nullptr.
-  content::WebContents* GetWebContents();
+  content::WebContents* GetWebContents(
+      base::Location creator_location = base::Location::Current());
 
   // WebView does not assume ownership of WebContents set via this method, only
   // those it implicitly creates via GetWebContents() above.
@@ -108,10 +115,13 @@ class WEBVIEW_EXPORT WebView : public View,
   class WEBVIEW_EXPORT ScopedWebContentsCreatorForTesting {
    public:
     explicit ScopedWebContentsCreatorForTesting(WebContentsCreator creator);
-    ~ScopedWebContentsCreatorForTesting();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedWebContentsCreatorForTesting);
+    ScopedWebContentsCreatorForTesting(
+        const ScopedWebContentsCreatorForTesting&) = delete;
+    ScopedWebContentsCreatorForTesting& operator=(
+        const ScopedWebContentsCreatorForTesting&) = delete;
+
+    ~ScopedWebContentsCreatorForTesting();
   };
 
  protected:
@@ -144,14 +154,10 @@ class WEBVIEW_EXPORT WebView : public View,
                               content::RenderFrameHost* new_host) override;
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override;
-  // Workaround for MSVC++ linker bug/feature that requires
-  // instantiation of the inline IPC::Listener methods in all translation units.
-  void OnChannelConnected(int32_t peer_id) override {}
-  void OnChannelError() override {}
-  void OnBadMessageReceived(const IPC::Message& message) override {}
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
   void AXTreeIDForMainFrameHasChanged() override;
+  void WebContentsDestroyed() override;
 
   // Override from ui::AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;
@@ -178,28 +184,41 @@ class WEBVIEW_EXPORT WebView : public View,
   // Create a regular or test web contents (based on whether we're running
   // in a unit test or not).
   std::unique_ptr<content::WebContents> CreateWebContents(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      base::Location creator_location = base::Location::Current());
 
-  NativeViewHost* const holder_ =
+  const raw_ptr<NativeViewHost> holder_ =
       AddChildView(std::make_unique<NativeViewHost>());
   // Non-NULL if |web_contents()| was created and is owned by this WebView.
   std::unique_ptr<content::WebContents> wc_owner_;
   // Set to true when |holder_| is letterboxed (scaled to be smaller than this
   // view, to preserve its aspect ratio).
   bool is_letterboxing_ = false;
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   bool allow_accelerators_ = false;
-  View* crashed_overlay_view_ = nullptr;
+  raw_ptr<View> crashed_overlay_view_ = nullptr;
   bool is_primary_web_contents_for_window_ = false;
 
   // Minimum and maximum sizes to determine WebView bounds for auto-resizing.
   // Empty if auto resize is not enabled.
   gfx::Size min_size_;
   gfx::Size max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebView);
 };
 
+BEGIN_VIEW_BUILDER(WEBVIEW_EXPORT, WebView, View)
+VIEW_BUILDER_PROPERTY(content::BrowserContext*, BrowserContext)
+VIEW_BUILDER_PROPERTY(content::WebContents*, WebContents)
+VIEW_BUILDER_PROPERTY(bool, FastResize)
+VIEW_BUILDER_METHOD(EnableSizingFromWebContents,
+                    const gfx::Size&,
+                    const gfx::Size&)
+VIEW_BUILDER_PROPERTY(View*, CrashedOverlayView)
+VIEW_BUILDER_METHOD(set_is_primary_web_contents_for_window, bool)
+VIEW_BUILDER_METHOD(set_allow_accelerators, bool)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(WEBVIEW_EXPORT, WebView)
 
 #endif  // UI_VIEWS_CONTROLS_WEBVIEW_WEBVIEW_H_

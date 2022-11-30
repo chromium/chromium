@@ -1,0 +1,146 @@
+<style include="cr-shared-style">
+  ::slotted([slot=bottom-nav-content-drawer]),
+  ::slotted([slot=bottom-nav-content-panel]) {
+    bottom: 24px;
+    inset-inline-start: 16px;
+    position: fixed;
+  }
+
+  ::slotted([slot=banner]) {
+    grid-area: banner;
+  }
+
+  :host([show-banner]) {
+    --left-aligned-top-offset: 120px;
+  }
+
+  :host([show-banner][show-tool-bar]) #container {
+    display: grid;
+    grid-template-areas: var(--areas-nav-banner);
+    grid-template-columns: var(--columns-nav);
+    width: 100%;
+  }
+
+  :host([show-banner]:not([show-tool-bar])) #container {
+    display: grid;
+    grid-template-areas: var(--areas-no-header-nav-banner);
+    grid-template-columns: var(--columns-nav);
+    width: 100%;
+  }
+
+  :host([show-tool-bar]) #container {
+    display: grid;
+    grid-template-areas: var(--areas-nav);
+    grid-template-columns: var(--columns-nav);
+    width: 100%;
+  }
+
+  :host(:not([show-tool-bar])) #container {
+    display: grid;
+    grid-template-areas: var(--areas-no-header-nav);
+    grid-template-columns: var(--columns-nav);
+  }
+
+  :host([show-tool-bar]) #topNav {
+    grid-area: head;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+
+  :host([show-banner]) #banner {
+    grid-area: banner;
+    position: sticky;
+    top: 56px;
+    z-index: 3;
+  }
+
+  cr-drawer {
+    --cr-separator-line: none;
+    --cr-drawer-header-color: var(--cros-text-color-secondary);
+    --cr-drawer-header-font-weight: 500;
+    --cr-drawer-header-padding: 20px;
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
+  }
+
+  #iconButton {
+    cursor: pointer;
+    margin-inline-end: 14px;
+    margin-inline-start: 0;
+    outline: none;
+  }
+
+  #sideNav {
+    display: flex;
+    flex-direction: column;
+    grid-area: sideNav;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  #navigationBody {
+    grid-area: main;
+    justify-self: center;
+    min-width: 0;
+    padding-inline: var(--container-padding-nav);
+  }
+
+  .left-aligned {
+    position: sticky;
+    top: var(--left-aligned-top-offset);
+  }
+
+  page-toolbar {
+    font-size: 0.7rem;
+  }
+
+  page-toolbar[shadow] {
+    box-shadow: 0 5px 6px -3px rgb(var(--cros-shadow-color-key) / .4);
+  }
+</style>
+
+<div id="container">
+  <iron-media-query query="(min-width: 769px)" query-matches="{{showNav}}">
+  </iron-media-query>
+  <template is="dom-if" if="[[showToolBar]]">
+    <div id="topNav">
+      <page-toolbar
+          title="[[title]]"
+          is-narrow="[[!showNav]]"
+          exportparts="title">
+      </page-toolbar>
+    </div>
+  </template>
+  <template is="dom-if" if="[[showBanner]]">
+    <div id="banner">
+      <slot name="banner"></slot>
+    </div>
+  </template>
+  <cr-drawer id="drawer" heading="[[title]]">
+    <div slot="header-icon">
+      <iron-icon id="iconButton" icon="cr20:menu"
+          on-click="onMenuButtonTap_" title="[[title]]"
+          aria-hidden="true">
+      </iron-icon>
+    </div>
+    <div slot="body">
+      <navigation-selector selector-items={{selectorItems_}}
+          selected-item="{{selectedItem}}"
+          exportparts="navigation-item">
+      </navigation-selector>
+    <slot name="bottom-nav-content-drawer"></slot>
+    </div>
+  </cr-drawer>
+  <template is="dom-if" if="[[showNav]]">
+    <div id="sideNav">
+      <div id="navigationSelector" class="left-aligned">
+        <navigation-selector selector-items={{selectorItems_}}
+            selected-item="{{selectedItem}}" exportparts="navigation-item">
+        </navigation-selector>
+        <slot name="bottom-nav-content-panel"></slot>
+      </div>
+    </div>
+  </template>
+
+  <div id="navigationBody" class="right-aligned"></div>
+</div>

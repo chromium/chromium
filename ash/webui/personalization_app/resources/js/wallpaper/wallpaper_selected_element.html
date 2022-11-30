@@ -1,0 +1,125 @@
+<style include="wallpaper common">
+  #container {
+    border-bottom: 1px solid var(--cros-separator-color);
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 224px 32px minmax(0, 1fr);
+    grid-template-rows: 1fr 16px 34px 20px;
+    height: 100%;
+    margin: 0 8px;
+  }
+
+  #container:not(.loading) {
+    grid-template-areas:
+      'image . text'
+      'image . .'
+      'image . buttons'
+      '.     . .';
+  }
+
+  #container.loading {
+    grid-template-areas:
+      'image . text'
+      'image . text'
+      'image . text'
+      '.     . .';
+  }
+
+  #imageContainer,
+  #imagePlaceholder {
+    --animation-delay: 1s;
+    background-color: var(--personalization-app-grid-item-background-color);
+    grid-area: image;
+  }
+
+  #textContainer,
+  #textPlaceholder {
+    grid-area: text;
+  }
+
+  #buttonContainer {
+    grid-area: buttons;
+  }
+
+  #wallpaperOptions .text,
+  #collectionOptions .text {
+    margin-inline-start: 8px;
+  }
+
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  cr-button {
+    border-color: var(--cros-button-stroke-color-secondary);
+    border-radius: 16px;
+  }
+
+  cr-button + cr-button {
+    margin-inline-start: 8px;
+  }
+</style>
+<header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
+  <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
+    <div id="imagePlaceholder" class="placeholder"></div>
+    <div id="textPlaceholder" class="preview-text-placeholder">
+      <div class="placeholder"></div>
+      <div class="placeholder"></div>
+      <div class="placeholder"></div>
+    </div>
+  </template>
+  <template is="dom-if" if="[[showImage_]]">
+    <div id="imageContainer" class="preview-image-container">
+      <div class="preview-image-border"></div>
+      <img class="preview-image" src$="[[image_.url.url]]" aria-hidden="true">
+    </div>
+    <h2 id="textContainer" class="preview-text-container" aria-live="polite" aria-label$="[[getAriaLabel_(image_, dailyRefreshState_)]]">
+      <span id="currentlySet" aria-hidden="true">$i18n{currentlySet}</span>
+      <span id="imageTitle" title$="[[imageTitle_]]" aria-hidden="true">
+        [[imageTitle_]]
+      </span>
+      <dom-repeat items="[[imageOtherAttribution_]]">
+        <template>
+          <span title$="[[item]]" aria-hidden="true">[[item]]</span>
+        </template>
+      </dom-repeat>
+    </h2>
+    <div id="buttonContainer">
+      <template is="dom-if" if="[[showWallpaperOptions_]]">
+        <div id="wallpaperOptions">
+          <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+              aria-pressed$="[[getFillAriaPressed_(image_)]]">
+            <iron-icon icon="[[fillIcon_]]"></iron-icon>
+            <div class="text">$i18n{fill}</div>
+          </cr-button>
+          <cr-button id="center" data-layout="CENTER"
+              on-click="onClickLayoutIcon_"
+              aria-pressed$="[[getCenterAriaPressed_(image_)]]">
+            <iron-icon icon="[[centerIcon_]]"></iron-icon>
+            <div class="text">$i18n{center}</div>
+          </cr-button>
+        </div>
+      </template>
+      <template is="dom-if" if="[[showCollectionOptions_]]">
+        <div id="collectionOptions">
+          <cr-button id="dailyRefresh"
+              aria-label="$i18n{ariaLabelChangeDaily}"
+              aria-pressed$="[[ariaPressed_]]"
+              on-click="onClickDailyRefreshToggle_"
+              hidden$="[[!showDailyRefreshButton_]]">
+            <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
+            <div class="text">$i18n{changeDaily}</div>
+          </cr-button>
+          <cr-button id="refreshWallpaper"
+              aria-label="$i18n{ariaLabelRefresh}"
+              on-click="onClickUpdateDailyRefreshWallpaper_"
+              hidden$="[[!showRefreshButton_]]">
+            <iron-icon icon="personalization:refresh"></iron-icon>
+            <div class="text">$i18n{refresh}</div>
+          </cr-button>
+        </div>
+      </template>
+    </div>
+  </template>
+</header>

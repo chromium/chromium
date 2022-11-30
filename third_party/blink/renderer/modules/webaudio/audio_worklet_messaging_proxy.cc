@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,19 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_object_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
+#include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.h"
-#include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_public.h"
 
 namespace blink {
 
@@ -102,22 +105,19 @@ std::unique_ptr<WorkerThread> AudioWorkletMessagingProxy::CreateWorkerThread() {
   return CreateWorkletThreadWithConstraints(
       WorkletObjectProxy(),
       worklet_->GetBaseAudioContext()->HasRealtimeConstraint(),
-      frame->IsMainFrame());
+      frame->IsOutermostMainFrame());
 }
 
 std::unique_ptr<WorkerThread>
 AudioWorkletMessagingProxy::CreateWorkletThreadWithConstraints(
     WorkerReportingProxy& worker_reporting_proxy,
     const bool has_realtime_constraint,
-    const bool is_top_level_frame) {
-  if (!has_realtime_constraint)
+    const bool is_outermost_main_frame) {
+  if (!has_realtime_constraint) {
     return std::make_unique<OfflineAudioWorkletThread>(worker_reporting_proxy);
+  }
 
-  // If the flag is set, it overrides the default thread priority for
-  // subframes. This is only allowed for the experimental purposes, and this
-  // flag will be deprecated in M90. (See crbug.com/1156842)
-  if (is_top_level_frame ||
-      base::FeatureList::IsEnabled(features::kAudioWorkletRealtimeThread)) {
+  if (is_outermost_main_frame) {
     return std::make_unique<RealtimeAudioWorkletThread>(worker_reporting_proxy);
   }
 

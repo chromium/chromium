@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,44 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/values_test_util.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
@@ -37,7 +56,13 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace extensions {
+
+using testing::Eq;
 
 class DebuggerApiTest : public ExtensionApiTest {
  protected:
@@ -51,6 +76,9 @@ class DebuggerApiTest : public ExtensionApiTest {
   // to succeed.
   testing::AssertionResult RunAttachFunction(const GURL& url,
                                              const std::string& expected_error);
+  testing::AssertionResult RunAttachFunction(
+      const content::WebContents* web_contents,
+      const std::string& expected_error);
 
   const Extension* extension() const { return extension_.get(); }
   base::CommandLine* command_line() const { return command_line_; }
@@ -63,7 +91,7 @@ class DebuggerApiTest : public ExtensionApiTest {
 
   // The command-line for the test process, preserved in order to modify
   // mid-test.
-  base::CommandLine* command_line_;
+  raw_ptr<base::CommandLine> command_line_;
 
   // A basic extension with the debugger permission.
   scoped_refptr<const Extension> extension_;
@@ -97,10 +125,14 @@ void DebuggerApiTest::SetUpOnMainThread() {
 
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
     const GURL& url, const std::string& expected_error) {
-  ui_test_utils::NavigateToURL(browser(), url);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  return RunAttachFunction(browser()->tab_strip_model()->GetActiveWebContents(),
+                           expected_error);
+}
 
+testing::AssertionResult DebuggerApiTest::RunAttachFunction(
+    const content::WebContents* web_contents,
+    const std::string& expected_error) {
   // Attach by tabId.
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   std::string debugee_by_tab = base::StringPrintf("{\"tabId\": %d}", tab_id);
@@ -115,16 +147,19 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   std::unique_ptr<base::Value> value(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           get_targets_function.get(), "[]", browser()));
-  base::ListValue* targets = nullptr;
-  EXPECT_TRUE(value->GetAsList(&targets));
+  EXPECT_TRUE(value->is_list());
+  const base::ListValue& targets = base::Value::AsListValue(*value);
 
   std::string debugger_target_id;
-  for (size_t i = 0; i < targets->GetSize(); ++i) {
-    base::DictionaryValue* target_dict = nullptr;
-    EXPECT_TRUE(targets->GetDictionary(i, &target_dict));
-    int id = -1;
-    if (target_dict->GetInteger("tabId", &id) && id == tab_id) {
-      EXPECT_TRUE(target_dict->GetString("id", &debugger_target_id));
+  for (const base::Value& target_value : targets.GetList()) {
+    EXPECT_TRUE(target_value.is_dict());
+    absl::optional<int> id = target_value.FindIntKey("tabId");
+    if (id == tab_id) {
+      const base::DictionaryValue& target_dict =
+          base::Value::AsDictionaryValue(target_value);
+      const std::string* id_str = target_dict.GetDict().FindString("id");
+      EXPECT_TRUE(id_str);
+      debugger_target_id = *id_str;
       break;
     }
   }
@@ -199,15 +234,69 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerAllowedOnFileUrlsWithFileAccess) {
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "debugger_file_access", .custom_arg = "enabled"},
-      {.allow_file_access = true}))
+  EXPECT_TRUE(RunExtensionTest("debugger_file_access",
+                               {.custom_arg = "enabled"},
+                               {.allow_file_access = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnFileUrlsWithoutAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
+}
+
+class TestInterstitialPage
+    : public security_interstitials::SecurityInterstitialPage {
+ public:
+  TestInterstitialPage(content::WebContents* web_contents,
+                       const GURL& request_url)
+      : SecurityInterstitialPage(
+            web_contents,
+            request_url,
+            std::make_unique<
+                security_interstitials::SecurityInterstitialControllerClient>(
+                web_contents,
+                CreateTestMetricsHelper(web_contents),
+                nullptr,
+                base::i18n::GetConfiguredLocale(),
+                GURL(),
+                /* settings_page_helper*/ nullptr)) {}
+
+  ~TestInterstitialPage() override = default;
+  void OnInterstitialClosing() override {}
+
+ protected:
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
+  }
+
+  std::unique_ptr<security_interstitials::MetricsHelper>
+  CreateTestMetricsHelper(content::WebContents* web_contents) {
+    security_interstitials::MetricsHelper::ReportDetails report_details;
+    report_details.metric_prefix = "test_blocking_page";
+    return std::make_unique<security_interstitials::MetricsHelper>(
+        GURL(), report_details, nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       DebuggerNotAllowedOnSecirutyInterstitials) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      std::make_unique<content::MockNavigationHandle>(
+          GURL("https://google.com/"), web_contents->GetPrimaryMainFrame());
+  navigation_handle->set_has_committed(true);
+  navigation_handle->set_is_same_document(false);
+  EXPECT_TRUE(RunAttachFunction(web_contents, ""));
+
+  security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
+      navigation_handle.get(),
+      std::make_unique<TestInterstitialPage>(web_contents, GURL()));
+  security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+      web_contents)
+      ->DidFinishNavigation(navigation_handle.get());
+
+  EXPECT_TRUE(RunAttachFunction(web_contents, "Cannot attach to this target."));
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
@@ -225,12 +314,15 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
                     another_browser->tab_strip_model()->GetActiveWebContents())
                     .id();
 
-  InfoBarService* service1 = InfoBarService::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  InfoBarService* service2 = InfoBarService::FromWebContents(
-      another_browser->tab_strip_model()->GetWebContentsAt(0));
-  InfoBarService* service3 = InfoBarService::FromWebContents(
-      another_browser->tab_strip_model()->GetWebContentsAt(1));
+  infobars::ContentInfoBarManager* manager1 =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  infobars::ContentInfoBarManager* manager2 =
+      infobars::ContentInfoBarManager::FromWebContents(
+          another_browser->tab_strip_model()->GetWebContentsAt(0));
+  infobars::ContentInfoBarManager* manager3 =
+      infobars::ContentInfoBarManager::FromWebContents(
+          another_browser->tab_strip_model()->GetWebContentsAt(1));
 
   // Attaching to one tab should create infobars in both browsers.
   attach_function = new DebuggerAttachFunction();
@@ -239,9 +331,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
       api_test_utils::NONE));
-  EXPECT_EQ(1u, service1->infobar_count());
-  EXPECT_EQ(1u, service2->infobar_count());
-  EXPECT_EQ(1u, service3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager2->infobar_count());
+  EXPECT_EQ(1u, manager3->infobar_count());
 
   // Attaching to another tab should not create more infobars.
   attach_function = new DebuggerAttachFunction();
@@ -250,9 +342,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id2), browser(),
       api_test_utils::NONE));
-  EXPECT_EQ(1u, service1->infobar_count());
-  EXPECT_EQ(1u, service2->infobar_count());
-  EXPECT_EQ(1u, service3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager2->infobar_count());
+  EXPECT_EQ(1u, manager3->infobar_count());
 
   // Detaching from one of the tabs should not remove infobars.
   detach_function = new DebuggerDetachFunction();
@@ -260,9 +352,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(extension_function_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id2),
       browser(), api_test_utils::NONE));
-  EXPECT_EQ(1u, service1->infobar_count());
-  EXPECT_EQ(1u, service2->infobar_count());
-  EXPECT_EQ(1u, service3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager2->infobar_count());
+  EXPECT_EQ(1u, manager3->infobar_count());
 
   // Detaching from the other tab also should not remove infobars, since even
   // though there is no longer an extension attached, the infobar can only be
@@ -272,9 +364,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(extension_function_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       browser(), api_test_utils::NONE));
-  EXPECT_EQ(1u, service1->infobar_count());
-  EXPECT_EQ(1u, service2->infobar_count());
-  EXPECT_EQ(1u, service3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager2->infobar_count());
+  EXPECT_EQ(1u, manager3->infobar_count());
 
   // Attach again; should not create infobars.
   attach_function = new DebuggerAttachFunction();
@@ -283,19 +375,19 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
       api_test_utils::NONE));
-  EXPECT_EQ(1u, service1->infobar_count());
-  EXPECT_EQ(1u, service2->infobar_count());
-  EXPECT_EQ(1u, service3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager2->infobar_count());
+  EXPECT_EQ(1u, manager3->infobar_count());
 
   // Remove the global infobar by simulating what happens when the user clicks
   // the close button (see InfoBarView::ButtonPressed()).  The
   // InfoBarDismissed() call will remove the infobars everywhere except on
-  // |service2| itself; the RemoveSelf() call removes that one.
-  service2->infobar_at(0)->delegate()->InfoBarDismissed();
-  service2->infobar_at(0)->RemoveSelf();
-  EXPECT_EQ(0u, service1->infobar_count());
-  EXPECT_EQ(0u, service2->infobar_count());
-  EXPECT_EQ(0u, service3->infobar_count());
+  // |manager2| itself; the RemoveSelf() call removes that one.
+  manager2->infobar_at(0)->delegate()->InfoBarDismissed();
+  manager2->infobar_at(0)->RemoveSelf();
+  EXPECT_EQ(0u, manager1->infobar_count());
+  EXPECT_EQ(0u, manager2->infobar_count());
+  EXPECT_EQ(0u, manager3->infobar_count());
   detach_function = new DebuggerDetachFunction();
   detach_function->set_extension(extension());
   // Cannot detach again.
@@ -310,21 +402,21 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
       api_test_utils::NONE));
-  EXPECT_EQ(1u, service1->infobar_count());
-  EXPECT_EQ(1u, service2->infobar_count());
-  EXPECT_EQ(1u, service3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager2->infobar_count());
+  EXPECT_EQ(1u, manager3->infobar_count());
 
   // Closing tab should not affect anything.
   ASSERT_TRUE(another_browser->tab_strip_model()->CloseWebContentsAt(1, 0));
-  service3 = nullptr;
-  EXPECT_EQ(1u, service1->infobar_count());
-  EXPECT_EQ(1u, service2->infobar_count());
+  manager3 = nullptr;
+  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager2->infobar_count());
 
   // Closing browser should not affect anything.
   CloseBrowserSynchronously(another_browser);
-  service2 = nullptr;
+  manager2 = nullptr;
   another_browser = nullptr;
-  EXPECT_EQ(1u, service1->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
 
   // Detach should not affect anything.
   detach_function = new DebuggerDetachFunction();
@@ -332,15 +424,16 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(extension_function_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       browser(), api_test_utils::NONE));
-  EXPECT_EQ(1u, service1->infobar_count());
+  EXPECT_EQ(1u, manager1->infobar_count());
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   int tab_id = sessions::SessionTabHelper::IdForTab(
                    browser()->tab_strip_model()->GetActiveWebContents())
                    .id();
-  InfoBarService* service = InfoBarService::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
 
   // Attaching to the tab should create an infobar.
   auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
@@ -349,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
       api_test_utils::NONE));
-  EXPECT_EQ(1u, service->infobar_count());
+  EXPECT_EQ(1u, manager->infobar_count());
 
   // Detaching from the tab should remove the infobar after 5 seconds.
   auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
@@ -365,13 +458,149 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
-  EXPECT_EQ(1u, service->infobar_count());  // Infobar is still shown.
+  EXPECT_EQ(1u, manager->infobar_count());  // Infobar is still shown.
 
   // Advance the clock by 5 seconds, and verify the infobar is removed.
   AdvanceClock(ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
   run_loop.Run();
 
-  EXPECT_EQ(0u, service->infobar_count());
+  EXPECT_EQ(0u, manager->infobar_count());
+}
+
+class CrossProfileDebuggerApiTest : public DebuggerApiTest {
+ protected:
+  Profile* other_profile() { return other_profile_; }
+  Profile* otr_profile() { return otr_profile_; }
+
+  std::unique_ptr<content::WebContents> CreateTabWithProfileAndNavigate(
+      Profile* profile,
+      const GURL& url) {
+    auto wc = content::WebContents::Create(
+        content::WebContents::CreateParams(profile));
+    EXPECT_TRUE(content::NavigateToURL(wc.get(), url));
+    return wc;
+  }
+
+ private:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    DebuggerApiTest::SetUpOnMainThread();
+    profile_manager_ = g_browser_process->profile_manager();
+
+    other_profile_ = profiles::testing::CreateProfileSync(
+        profile_manager_, profile_manager_->GenerateNextProfileDirectoryPath());
+    otr_profile_ = profile()->GetPrimaryOTRProfile(true);
+  }
+
+  void TearDownOnMainThread() override {
+    ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
+    DebuggerApiTest::TearDownOnMainThread();
+  }
+
+  raw_ptr<ProfileManager> profile_manager_ = nullptr;
+  raw_ptr<Profile> other_profile_ = nullptr;
+  raw_ptr<Profile> otr_profile_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
+  auto wc1 = CreateTabWithProfileAndNavigate(
+      other_profile(),
+      embedded_test_server()->GetURL("/simple.html?other_profile"));
+  auto wc2 = CreateTabWithProfileAndNavigate(
+      otr_profile(),
+      embedded_test_server()->GetURL("/simple.html?off_the_record"));
+
+  {
+    auto get_targets_function =
+        base::MakeRefCounted<DebuggerGetTargetsFunction>();
+    base::Value value = std::move(
+        *extension_function_test_utils::RunFunctionAndReturnSingleResult(
+            get_targets_function.get(), "[]", browser()));
+
+    ASSERT_TRUE(value.is_list());
+    const base::Value::List targets = std::move(value).TakeList();
+    ASSERT_THAT(targets, testing::SizeIs(1));
+    EXPECT_THAT(targets[0], base::test::DictionaryHasValue(
+                                "url", base::Value("about:blank")));
+  }
+
+  {
+    auto get_targets_function =
+        base::MakeRefCounted<DebuggerGetTargetsFunction>();
+    base::Value value = std::move(
+        *extension_function_test_utils::RunFunctionAndReturnSingleResult(
+            get_targets_function.get(), "[]", browser(),
+            api_test_utils::RunFunctionFlags::INCLUDE_INCOGNITO));
+
+    ASSERT_TRUE(value.is_list());
+    const base::Value::List targets = std::move(value).TakeList();
+    std::vector<std::string> urls;
+    std::transform(
+        targets.begin(), targets.end(), std::back_inserter(urls),
+        [](const base::Value& value) -> std::string {
+          GURL::Replacements remove_port;
+          remove_port.ClearPort();
+          const std::string* url = value.GetDict().FindString("url");
+          return url ? GURL(*url).ReplaceComponents(remove_port).spec()
+                     : "<missing field>";
+        });
+    EXPECT_THAT(urls, testing::UnorderedElementsAre(
+                          "about:blank",
+                          "http://127.0.0.1/simple.html?off_the_record"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
+  auto wc1 = CreateTabWithProfileAndNavigate(
+      other_profile(),
+      embedded_test_server()->GetURL("/simple.html?other_profile"));
+  std::string target_in_other_profile = base::StringPrintf(
+      "[{\"targetId\": \"%s\"}, \"1.1\"]",
+      content::DevToolsAgentHost::GetOrCreateFor(wc1.get())->GetId().c_str());
+
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_FALSE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_other_profile, browser(),
+        api_test_utils::NONE));
+  }
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_FALSE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_other_profile.c_str(),
+        browser(), api_test_utils::INCLUDE_INCOGNITO));
+  }
+
+  auto wc2 = CreateTabWithProfileAndNavigate(
+      otr_profile(),
+      embedded_test_server()->GetURL("/simple.html?off_the_record"));
+  std::string target_in_otr_profile = base::StringPrintf(
+      "[{\"targetId\": \"%s\"}, \"1.1\"]",
+      content::DevToolsAgentHost::GetOrCreateFor(wc2.get())->GetId().c_str());
+
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_FALSE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_otr_profile.c_str(),
+        browser(), api_test_utils::NONE));
+  }
+  {
+    auto debugger_attach_function =
+        base::MakeRefCounted<DebuggerAttachFunction>();
+    debugger_attach_function->set_extension(extension());
+    EXPECT_TRUE(extension_function_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_otr_profile.c_str(),
+        browser(), api_test_utils::INCLUDE_INCOGNITO));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
@@ -379,8 +608,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   int tab_id = sessions::SessionTabHelper::IdForTab(
                    browser()->tab_strip_model()->GetActiveWebContents())
                    .id();
-  InfoBarService* service = InfoBarService::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
 
   // Attaching to the tab should create an infobar.
   auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
@@ -389,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
       api_test_utils::NONE));
-  EXPECT_EQ(1u, service->infobar_count());
+  EXPECT_EQ(1u, manager->infobar_count());
 
   // Detaching from the tab and attaching it again before 5 seconds should not
   // remove the infobar.
@@ -398,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   ASSERT_TRUE(extension_function_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       browser(), api_test_utils::NONE));
-  EXPECT_EQ(1u, service->infobar_count());
+  EXPECT_EQ(1u, manager->infobar_count());
 
   attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
   attach_function->set_extension(extension());
@@ -407,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
       api_test_utils::NONE));
   // Verify that only one infobar is created.
-  EXPECT_EQ(1u, service->infobar_count());
+  EXPECT_EQ(1u, manager->infobar_count());
 
   // Verify that infobar is not closed after 5 seconds.
   base::RunLoop run_loop;
@@ -417,7 +647,20 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   AdvanceClock(ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
   run_loop.Run();
 
-  EXPECT_EQ(1u, service->infobar_count());
+  EXPECT_EQ(1u, manager->infobar_count());
+}
+
+// Tests that policy blocked hosts supersede the `debugger`
+// permission. Regression test for crbug.com/1139156.
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url("https://example.com");
+  EXPECT_TRUE(RunAttachFunction(url, std::string()));
+  policy::MockConfigurationPolicyProvider policy_provider;
+  ExtensionManagementPolicyUpdater pref(&policy_provider);
+  pref.AddPolicyBlockedHost("*", url.spec());
+  EXPECT_FALSE(
+      RunAttachFunction(url, manifest_errors::kCannotAccessExtensionUrl));
 }
 
 class DebuggerExtensionApiTest : public ExtensionApiTest {
@@ -447,13 +690,17 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
   GURL url(embedded_test_server()->GetURL(
       "/extensions/api_test/debugger_inspect_worker/inspected_page.html"));
 
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "debugger_inspect_worker", .custom_arg = url.spec().c_str()}))
+  EXPECT_TRUE(RunExtensionTest("debugger_inspect_worker",
+                               {.custom_arg = url.spec().c_str()}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToEmptyUrls) {
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_empty_urls")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToPdf) {
+  ASSERT_TRUE(RunExtensionTest("debugger_attach_to_pdf")) << message_;
 }
 
 // Tests that navigation to a forbidden URL is properly denied and
@@ -463,6 +710,38 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, NavigateToForbiddenUrl) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   ASSERT_TRUE(RunExtensionTest("debugger_navigate_to_forbidden_url"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, NavigateToUntrustedWebUIUrl) {
+  ASSERT_TRUE(RunExtensionTest("debugger_navigate_to_untrusted_webui_url"))
+      << message_;
+}
+
+// Tests that Target.createTarget to WebUI origins are blocked.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, CreateTargetToUntrustedWebUI) {
+  ASSERT_TRUE(RunExtensionTest("debugger_create_target_to_untrusted_webui"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, IsDeveloperModeTrueHistogram) {
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  base::HistogramTester histograms;
+  const char* histogram_name = "Extensions.Debugger.UserIsInDeveloperMode";
+
+  ASSERT_TRUE(RunExtensionTest("debugger_is_developer_mode")) << message_;
+
+  histograms.ExpectBucketCount(histogram_name, true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
+                       IsDeveloperModeFalseHistogram) {
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, false);
+  base::HistogramTester histograms;
+  const char* histogram_name = "Extensions.Debugger.UserIsInDeveloperMode";
+
+  ASSERT_TRUE(RunExtensionTest("debugger_is_developer_mode")) << message_;
+
+  histograms.ExpectBucketCount(histogram_name, false, 1);
 }
 
 class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
@@ -488,8 +767,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
   navigation_manager_iframe.WaitForNavigationFinished();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "debugger", .custom_arg = "oopif.html;oopif_frame.html"}))
+  ASSERT_TRUE(RunExtensionTest("debugger",
+                               {.custom_arg = "oopif.html;oopif_frame.html"}))
       << message_;
 }
 
@@ -498,8 +777,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
   GURL url(embedded_test_server()->GetURL(
       "a.com",
       "/extensions/api_test/debugger_navigate_subframe/inspected_page.html"));
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "debugger_navigate_subframe", .custom_arg = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("debugger_navigate_subframe",
+                               {.custom_arg = url.spec().c_str()}))
       << message_;
 }
 
@@ -508,8 +787,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
   GURL url(embedded_test_server()->GetURL(
       "a.com",
       "/extensions/api_test/debugger_auto_attach_permissions/page.html"));
-  ASSERT_TRUE(RunExtensionTest({.name = "debugger_auto_attach_permissions",
-                                .custom_arg = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("debugger_auto_attach_permissions",
+                               {.custom_arg = url.spec().c_str()}))
       << message_;
 }
 

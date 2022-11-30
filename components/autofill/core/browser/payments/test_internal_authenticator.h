@@ -1,24 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_INTERNAL_AUTHENTICATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_INTERNAL_AUTHENTICATOR_H_
 
-#include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
 namespace autofill {
 
 // Subclass of InternalAuthenticator meant for testing purposes.
-class TestInternalAuthenticator : public InternalAuthenticator {
+class TestInternalAuthenticator : public webauthn::InternalAuthenticator {
  public:
   TestInternalAuthenticator() = default;
   ~TestInternalAuthenticator() override = default;
 
   // InternalAuthenticator:
   void SetEffectiveOrigin(const url::Origin& origin) override {}
+  void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) override {}
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) override {}
@@ -29,6 +30,12 @@ class TestInternalAuthenticator : public InternalAuthenticator {
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
+  bool IsGetMatchingCredentialIdsSupported() override;
+  void GetMatchingCredentialIds(
+      const std::string& relying_party_id,
+      const std::vector<std::vector<uint8_t>>& credential_ids,
+      bool require_third_party_payment_bit,
+      webauthn::GetMatchingCredentialIdsCallback callback) override {}
   void Cancel() override {}
   content::RenderFrameHost* GetRenderFrameHost() override;
 };

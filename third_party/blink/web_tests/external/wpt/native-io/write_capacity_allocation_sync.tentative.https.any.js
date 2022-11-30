@@ -7,8 +7,8 @@ test(testCase => {
     file.close();
     storageFoundation.deleteSync('test_file');
   });
-  const writtenBytes = Uint8Array.from([64, 65, 66, 67]);
-  assert_throws_dom('QuotaExceededError', () => {file.write(writtenBytes, 0)});
+  const writeBuffer = Uint8Array.from([64, 65, 66, 67]);
+  assert_throws_dom('QuotaExceededError', () => {file.write(writeBuffer, 0)});
 }, 'NativeIOFileSync.write() fails without any capacity request.');
 
 test(testCase => {
@@ -23,8 +23,8 @@ test(testCase => {
     storageFoundation.releaseCapacitySync(granted_capacity);
   });
 
-  const writtenBytes = new Uint8Array(granted_capacity - 1).fill(64);
-  file.write(writtenBytes, 0);
+  const writeBuffer = new Uint8Array(granted_capacity - 1).fill(64);
+  file.write(writeBuffer, 0);
 }, 'NativeIOFileSync.write() succeeds when given a buffer of length ' +
      'granted capacity - 1');
 
@@ -38,9 +38,9 @@ test(testCase => {
     storageFoundation.deleteSync('test_file');
     storageFoundation.releaseCapacitySync(granted_capacity);
   });
-  const writtenBytes = new Uint8Array(granted_capacity).fill(64);
+  const writeBuffer = new Uint8Array(granted_capacity).fill(64);
 
-  file.write(writtenBytes, 0);
+  file.write(writeBuffer, 0);
 }, 'NativeIOFileSync.write() succeeds when given the granted capacity');
 
 test(testCase => {
@@ -53,7 +53,7 @@ test(testCase => {
     storageFoundation.deleteSync('test_file');
     storageFoundation.releaseCapacitySync(granted_capacity);
   });
-  const writtenBytes = new Uint8Array(granted_capacity + 1).fill(64);
+  const writeBuffer = new Uint8Array(granted_capacity + 1).fill(64);
 
-  assert_throws_dom('QuotaExceededError', () => {file.write(writtenBytes, 0)});
+  assert_throws_dom('QuotaExceededError', () => {file.write(writeBuffer, 0)});
 }, 'NativeIOFileSync.write() fails when given the granted capacity + 1');

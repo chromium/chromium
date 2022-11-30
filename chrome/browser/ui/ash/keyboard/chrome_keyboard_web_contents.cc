@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_bounds_observer.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -42,6 +42,12 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
                                        public content::WebContentsObserver {
  public:
   ChromeKeyboardContentsDelegate() = default;
+
+  ChromeKeyboardContentsDelegate(const ChromeKeyboardContentsDelegate&) =
+      delete;
+  ChromeKeyboardContentsDelegate& operator=(
+      const ChromeKeyboardContentsDelegate&) = delete;
+
   ~ChromeKeyboardContentsDelegate() override = default;
 
  private:
@@ -126,8 +132,6 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override { delete this; }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardContentsDelegate);
 };
 
 }  // namespace
@@ -150,8 +154,6 @@ ChromeKeyboardWebContents::ChromeKeyboardWebContents(
 
   extensions::SetViewType(web_contents_.get(),
                           extensions::mojom::ViewType::kComponent);
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_.get());
   Observe(web_contents_.get());
   LoadContents(url);
 
@@ -160,7 +162,7 @@ ChromeKeyboardWebContents::ChromeKeyboardWebContents(
 
   // Set the background to be transparent for custom keyboard window shape.
   content::RenderWidgetHostView* view =
-      web_contents_->GetMainFrame()->GetView();
+      web_contents_->GetPrimaryMainFrame()->GetView();
   view->SetBackgroundColor(SK_ColorTRANSPARENT);
   view->GetNativeView()->SetTransparent(true);
 
@@ -190,7 +192,8 @@ void ChromeKeyboardWebContents::SetKeyboardUrl(const GURL& new_url) {
   if (old_url == new_url)
     return;
 
-  if (old_url.GetOrigin() != new_url.GetOrigin()) {
+  if (old_url.DeprecatedGetOriginAsURL() !=
+      new_url.DeprecatedGetOriginAsURL()) {
     // Sets keyboard window rectangle to 0 and closes the current page before
     // navigating to a keyboard in a different extension. This keeps the UX the
     // same as Android. Note we need to explicitly close the current page as it
@@ -213,7 +216,7 @@ void ChromeKeyboardWebContents::SetInitialContentsSize(const gfx::Size& size) {
 
 void ChromeKeyboardWebContents::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
-  if (frame_host->GetParent())
+  if (!frame_host->IsInPrimaryMainFrame())
     return;
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(

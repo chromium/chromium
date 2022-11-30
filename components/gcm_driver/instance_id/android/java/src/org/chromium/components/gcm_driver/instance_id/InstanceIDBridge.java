@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,7 +111,7 @@ public class InstanceIDBridge {
             @Override
             protected String doBackgroundWork() {
                 try {
-                    // TODO(knollr): Migrate stored LazySubscriptionsManager data to
+                    // TODO(crbug.com/1247170): Migrate stored LazySubscriptionsManager data to
                     // SubscriptionFlagManager.
                     LazySubscriptionsManager.storeLazinessInformation(
                             LazySubscriptionsManager.buildSubscriptionUniqueId(

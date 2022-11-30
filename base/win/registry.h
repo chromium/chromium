@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 
 #include "base/base_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -38,6 +37,10 @@ class BASE_EXPORT RegKey {
   RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access);
   RegKey(RegKey&& other) noexcept;
   RegKey& operator=(RegKey&& other);
+
+  RegKey(const RegKey&) = delete;
+  RegKey& operator=(const RegKey&) = delete;
+
   ~RegKey();
 
   LONG Create(HKEY rootkey, const wchar_t* subkey, REGSAM access);
@@ -73,8 +76,11 @@ class BASE_EXPORT RegKey {
   // determined.
   DWORD GetValueCount() const;
 
+  // Returns the last write time or 0 on failure.
+  FILETIME GetLastWriteTime() const;
+
   // Determines the nth value's name.
-  LONG GetValueNameAt(int index, std::wstring* name) const;
+  LONG GetValueNameAt(DWORD index, std::wstring* name) const;
 
   // True while the key is valid.
   bool Valid() const { return key_ != nullptr; }
@@ -148,8 +154,6 @@ class BASE_EXPORT RegKey {
   HKEY key_ = nullptr;  // The registry key being iterated.
   REGSAM wow64access_ = 0;
   std::unique_ptr<Watcher> key_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegKey);
 };
 
 // Iterates the entries found in a particular folder on the registry.
@@ -167,6 +171,9 @@ class BASE_EXPORT RegistryValueIterator {
                         const wchar_t* folder_key,
                         REGSAM wow64access);
 
+  RegistryValueIterator(const RegistryValueIterator&) = delete;
+  RegistryValueIterator& operator=(const RegistryValueIterator&) = delete;
+
   ~RegistryValueIterator();
 
   DWORD ValueCount() const;
@@ -183,7 +190,7 @@ class BASE_EXPORT RegistryValueIterator {
   DWORD ValueSize() const { return value_size_; }
   DWORD Type() const { return type_; }
 
-  int Index() const { return index_; }
+  DWORD Index() const { return index_; }
 
  private:
   // Reads in the current values.
@@ -195,15 +202,13 @@ class BASE_EXPORT RegistryValueIterator {
   HKEY key_;
 
   // Current index of the iteration.
-  int index_;
+  DWORD index_;
 
   // Current values.
   std::wstring name_;
   std::vector<wchar_t> value_;
   DWORD value_size_;
   DWORD type_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryValueIterator);
 };
 
 class BASE_EXPORT RegistryKeyIterator {
@@ -220,6 +225,9 @@ class BASE_EXPORT RegistryKeyIterator {
                       const wchar_t* folder_key,
                       REGSAM wow64access);
 
+  RegistryKeyIterator(const RegistryKeyIterator&) = delete;
+  RegistryKeyIterator& operator=(const RegistryKeyIterator&) = delete;
+
   ~RegistryKeyIterator();
 
   DWORD SubkeyCount() const;
@@ -232,7 +240,7 @@ class BASE_EXPORT RegistryKeyIterator {
 
   const wchar_t* Name() const { return name_; }
 
-  int Index() const { return index_; }
+  DWORD Index() const { return index_; }
 
  private:
   // Reads in the current values.
@@ -244,11 +252,9 @@ class BASE_EXPORT RegistryKeyIterator {
   HKEY key_;
 
   // Current index of the iteration.
-  int index_;
+  DWORD index_;
 
   wchar_t name_[MAX_PATH];
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryKeyIterator);
 };
 
 }  // namespace win

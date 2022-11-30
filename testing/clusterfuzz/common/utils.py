@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,7 @@ def UniformExpoInteger(low, high, base=2):
   return int(math.floor(math.pow(base, random.uniform(low, high))))
 
 
-def WeightedChoice(choices):
+def WeightedChoice(choices): # pylint: disable=inconsistent-return-statements
   """Chooses an item given a sequence of (choice, weight) tuples"""
   total = sum(w for c, w in choices)
   r = random.uniform(0, total)

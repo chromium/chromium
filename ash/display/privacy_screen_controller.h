@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ class ASH_EXPORT PrivacyScreenController
   class Observer : public base::CheckedObserver {
    public:
     // Called when the privacy screen setting is changed.
-    virtual void OnPrivacyScreenSettingChanged(bool enabled) {}
+    virtual void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) {}
 
    protected:
     ~Observer() override = default;
@@ -54,8 +54,6 @@ class ASH_EXPORT PrivacyScreenController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Whether or not the privacy screen feature is supported by the device.
-  bool IsSupported() const;
   // Whether or not the privacy screen feature is enforced by policy.
   bool IsManaged() const;
   // Get the PrivacyScreen settings stored in the current active user prefs.
@@ -67,6 +65,7 @@ class ASH_EXPORT PrivacyScreenController
   void RemoveObserver(Observer* observer);
 
   // PrivacyScreenDlpHelper:
+  bool IsSupported() const override;
   void SetEnforced(bool enforced) override;
 
   // SessionObserver:
@@ -78,17 +77,28 @@ class ASH_EXPORT PrivacyScreenController
       const std::vector<display::DisplaySnapshot*>& displays) override;
 
  private:
+  // Calculates PrivacyScreen's logical status.
+  bool CalculateCurrentStatus() const;
+
   // Called when the user pref or DLP enforcement for the state of PrivacyScreen
   // is changed.
   void OnStateChanged(bool notify_observers);
+
+  // Called when GPU/DRM is done setting the privacy screen panel to
+  // |requested_config|.
+  void OnSetPrivacyScreenComplete(bool from_user_pref_init,
+                                  bool requested_config,
+                                  bool success);
 
   // Called when a change to |active_user_pref_service_| is detected (i.e. when
   // OnActiveUserPrefServiceChanged() is called.
   void InitFromUserPrefs();
 
-  // Get the ID of the internal display that supports privacy screen. Return
-  // display::kInvalidDisplayId if none is found.
-  int64_t GetSupportedDisplayId() const;
+  // Retrieves the current user's PrivacyScreen preference.
+  bool GetStateFromActiveUserPreference() const;
+
+  // Whether or not to alert observers about PrivacyScreen state change.
+  bool ShouldNotifyObservers(bool from_user_pref_init) const;
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
@@ -97,6 +107,9 @@ class ASH_EXPORT PrivacyScreenController
   // Set to true when entering the login screen. This should happen once per
   // Chrome restart.
   bool applying_login_screen_prefs_ = false;
+
+  // Indicates if the PrivacyScreen is currently on or off.
+  bool current_status_ = false;
 
   // Indicates whether PrivacyScreen is enforced by Data Leak Protection
   // feature.
@@ -110,6 +123,9 @@ class ASH_EXPORT PrivacyScreenController
   // PrivacyScreenController settings controlled by this class from the WebUI
   // settings.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // This must be the last variable.
+  base::WeakPtrFactory<PrivacyScreenController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

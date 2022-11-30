@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -27,6 +26,12 @@ class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       base::OnceClosure disconnect_callback);
+
+  LocalHotkeyInputMonitorChromeos(const LocalHotkeyInputMonitorChromeos&) =
+      delete;
+  LocalHotkeyInputMonitorChromeos& operator=(
+      const LocalHotkeyInputMonitorChromeos&) = delete;
+
   ~LocalHotkeyInputMonitorChromeos() override;
 
  private:
@@ -34,6 +39,10 @@ class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
          base::OnceClosure disconnect_callback);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() override;
 
     void Start();
@@ -49,15 +58,11 @@ class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
 
     // Must be called on |caller_task_runner_|.
     base::OnceClosure disconnect_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Task runner on which ui::events are received.
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalHotkeyInputMonitorChromeos);
 };
 
 LocalHotkeyInputMonitorChromeos::LocalHotkeyInputMonitorChromeos(
@@ -115,8 +120,8 @@ void LocalHotkeyInputMonitorChromeos::Core::HandleKeyPressed(
     return;
   }
 
+  DCHECK(event->IsKeyEvent());
   ui::KeyEvent key_event(event);
-  DCHECK(key_event.is_char());
   if (key_event.IsControlDown() && key_event.IsAltDown() &&
       key_event.key_code() == ui::VKEY_ESCAPE) {
     caller_task_runner_->PostTask(FROM_HERE, std::move(disconnect_callback_));

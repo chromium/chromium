@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "chrome/test/chromedriver/basic_types.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 struct Session;
 class Status;
@@ -21,8 +17,7 @@ class WebView;
 
 std::string GetElementKey();
 
-std::unique_ptr<base::DictionaryValue> CreateElement(
-    const std::string& element_id);
+base::Value CreateElement(const std::string& element_id);
 
 std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebPoint& point);
 
@@ -34,8 +29,16 @@ Status FindElement(int interval_ms,
                    const std::string* root_element_id,
                    Session* session,
                    WebView* web_view,
-                   const base::DictionaryValue& params,
+                   const base::Value::Dict& params,
                    std::unique_ptr<base::Value>* value);
+
+Status FindShadowElement(int interval_ms,
+                         bool only_one,
+                         const std::string* shadow_root_id,
+                         Session* session,
+                         WebView* web_view,
+                         const base::Value::Dict& params,
+                         std::unique_ptr<base::Value>* value);
 
 Status GetActiveElement(Session* session,
                         WebView* web_view,

@@ -1,8 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN, BASIC_DRIVE_ENTRY_SET, BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN, BASIC_LOCAL_ENTRY_SET, BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET} from './test_data.js';
 
 /**
  * Gets the common steps to toggle hidden files in the Files app
@@ -216,8 +220,7 @@ testcase.hideCurrentDirectoryByTogglingHiddenAndroidFolders = async () => {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Navigate to "/My files/Play files/A".
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/A', 'My files/Play files', 'android_files');
+  await navigateWithDirectoryTree(appId, '/My files/Play files/A');
 
   // Wait until current directory is changed to "/My files/Play files/A".
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
@@ -284,8 +287,7 @@ testcase.showPasteIntoCurrentFolder = async () => {
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
 
   // 2. Selecting a single regular file
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#gear-button']));
@@ -303,8 +305,7 @@ testcase.showPasteIntoCurrentFolder = async () => {
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
 
   // 3. When ready to paste a file
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Ctrl-C to copy the selected file
   await remoteCall.fakeKeyDown(appId, '#file-list', 'c', true, false, false);
@@ -409,10 +410,11 @@ testcase.newFolderInDownloads = async () => {
 };
 
 /**
- * Tests that Send feedback appears in the gear menu.
+ * Tests that the "Send feedback" button appears in the gear menu and properly
+ * opens the feedback window.
  */
 testcase.showSendFeedbackAction = async () => {
-  const entrySet = [ENTRIES.newlyAdded];
+  const feedbackWindowUrl = 'chrome://feedback/';
 
   // Open Files.App on Downloads.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
@@ -428,12 +430,79 @@ testcase.showSendFeedbackAction = async () => {
   // Wait for the gear menu to appear.
   await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
 
-  // Check #send-feedback is shown and it's enabled.
-  await remoteCall.waitForElement(
+  // Check that there is no feedback window opened.
+  chrome.test.assertFalse(await remoteCall.windowUrlExists(feedbackWindowUrl));
+
+  // Click #send-feedback, which should be shown and enabled.
+  await remoteCall.waitAndClickElement(
       appId,
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#send-feedback\']' +
           ':not([disabled]):not([hidden])');
+
+  // Check that the feedback window is open.
+  const caller = getCaller();
+  return repeatUntil(async () => {
+    if (!await remoteCall.windowUrlExists(feedbackWindowUrl)) {
+      return pending(caller, `Waiting for ${feedbackWindowUrl} to open`);
+    }
+  });
+};
+
+/**
+ * Tests that clicking the gear menu's help button from a Downloads location
+ * navigates the user to the Files app's help page.
+ */
+testcase.openHelpPageFromDownloadsVolume = async () => {
+  // Open Files App on Downloads.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  await remoteCall.waitForElement(appId, '#file-list');
+
+  // Click the gear menu button.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check that #volume-help is shown and enabled and click it.
+  const volumeHelpQuery = '#gear-menu:not([hidden]) ' +
+      'cr-menu-item[command=\'#volume-help\']:not([disabled]):not([hidden])';
+  await remoteCall.waitAndClickElement(appId, volumeHelpQuery);
+
+  // Check that the last visited URL is the Files app's help page.
+  const filesHelpURL = await remoteCall.callRemoteTestUtil(
+      'getTranslatedString', appId, ['FILES_APP_HELP_URL']);
+  chrome.test.assertEq(
+      filesHelpURL,
+      await remoteCall.callRemoteTestUtil('getLastVisitedURL', appId, []));
+};
+
+/**
+ * Tests that clicking the gear menu's help button from a drive location
+ * navigates the user to the Google drive help page.
+ */
+testcase.openHelpPageFromDriveVolume = async () => {
+  // Open Files App on Downloads.
+  const appId = await openNewWindow(RootPath.DRIVE);
+  await remoteCall.waitForElement(appId, '#file-list');
+
+  // Click the gear menu button.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check that #volume-help is shown and enabled and click it.
+  const volumeHelpQuery = '#gear-menu:not([hidden]) ' +
+      'cr-menu-item[command=\'#volume-help\']:not([disabled]):not([hidden])';
+  await remoteCall.waitAndClickElement(appId, volumeHelpQuery);
+
+  // Check that the last visited URL is the Google Drive's help page.
+  const driveHelpURL = await remoteCall.callRemoteTestUtil(
+      'getTranslatedString', appId, ['GOOGLE_DRIVE_HELP_URL']);
+  chrome.test.assertEq(
+      driveHelpURL,
+      await remoteCall.callRemoteTestUtil('getLastVisitedURL', appId, []));
 };
 
 /**
@@ -503,7 +572,7 @@ testcase.showAvailableStorageMyFiles = async () => {
 };
 
 /**
- * Tests that the "xGB available message appears in the gear menu for
+ * Tests that the "xGB available" message appears in the gear menu for
  * the "Google Drive" volume.
  */
 testcase.showAvailableStorageDrive = async () => {
@@ -517,17 +586,19 @@ testcase.showAvailableStorageDrive = async () => {
   // Wait for the gear menu to appear.
   await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
 
-  // Check #volume-storage is shown and disabled (can't manage Drive
-  // storage).
-  await remoteCall.waitForElement(
+  // Check #volume-storage is displayed and get a reference to it.
+  const driveMenuEntry = await remoteCall.waitForElement(
       appId,
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#volume-storage\']' +
           ':not([hidden])');
+
+  // Check that it correctly indicates the available storage.
+  chrome.test.assertTrue(driveMenuEntry.text.trim() === '1 MB available');
 };
 
 /**
- * Tests that the "xGB available message appears in the gear menu for
+ * Tests that the "xGB available" message appears in the gear menu for
  * an SMB volume.
  */
 testcase.showAvailableStorageSmbfs = async () => {
@@ -570,12 +641,12 @@ testcase.showAvailableStorageDocProvider = async () => {
   const documentsProviderVolumeQuery =
       '[has-children="true"] [volume-type-icon="documents_provider"]';
 
-  // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
-
   // Add files to the DocumentsProvider volume.
   await addEntries(
       ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
+
+  // Open Files app.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
   await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
@@ -604,4 +675,52 @@ testcase.showAvailableStorageDocProvider = async () => {
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#volume-storage\']' +
           ':not([hidden])');
+};
+
+/**
+ * Test that the "Mange synced folders" gear menu item is hidden and is also
+ * disabled when the DriveFsMirroring flag is disabled.
+ */
+testcase.showManageMirrorSyncShowsOnlyInLocalRoot = async () => {
+  // Open Files app on Downloads containing ENTRIES.photos.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // If the flag is disabled, the "Manage synced folders" menu item should be
+  // hidden and disabled.
+  if ((await sendTestMessage({name: 'isMirrorSyncEnabled'})) === 'false') {
+    await remoteCall.waitForElement(
+        appId,
+        '#gear-menu:not([hidden]) cr-menu-item' +
+            '[command=\'#manage-mirrorsync\'][disabled][hidden]');
+    return;
+  }
+
+  // The "Manage synced folders" item should be visible and enabled.
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#manage-mirrorsync\']:not([disabled][hidden])');
+
+  // Navigate to the Google Drive root.
+  await navigateWithDirectoryTree(appId, '/My Drive');
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // The "Manage synced folders" item should not be visible and should be
+  // disabled.
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#manage-mirrorsync\'][disabled][hidden]');
 };

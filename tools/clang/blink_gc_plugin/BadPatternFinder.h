@@ -1,7 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+struct BlinkGCPluginOptions;
 class DiagnosticsReporter;
 
 namespace clang {
@@ -10,4 +11,6 @@ class ASTContext;
 
 // Detects and reports use of banned patterns, such as applying
 // std::make_unique to a garbage-collected type.
-void FindBadPatterns(clang::ASTContext& ast_context, DiagnosticsReporter&);
+void FindBadPatterns(clang::ASTContext& ast_context,
+                     DiagnosticsReporter&,
+                     const BlinkGCPluginOptions&);

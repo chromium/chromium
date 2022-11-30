@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_
 #define CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "content/public/browser/browser_child_process_observer.h"
 
@@ -17,6 +18,10 @@ class TracingAgent;
 class DevtoolsProcessObserver : public content::BrowserChildProcessObserver {
  public:
   explicit DevtoolsProcessObserver(ui_devtools::TracingAgent* agent);
+
+  DevtoolsProcessObserver(const DevtoolsProcessObserver&) = delete;
+  DevtoolsProcessObserver& operator=(const DevtoolsProcessObserver&) = delete;
+
   ~DevtoolsProcessObserver() override;
 
  private:
@@ -32,9 +37,7 @@ class DevtoolsProcessObserver : public content::BrowserChildProcessObserver {
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;
 
-  ui_devtools::TracingAgent* tracing_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevtoolsProcessObserver);
+  raw_ptr<ui_devtools::TracingAgent> tracing_agent_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_

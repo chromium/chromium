@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,10 @@
 #define EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE 0x348F
 #endif
 
+#ifndef EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE
+#define EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE 0x3487
+#endif
+
 #ifndef EGL_ANGLE_platform_angle
 #define EGL_ANGLE_platform_angle 1
 #define EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE 0x348F
@@ -35,9 +39,12 @@ namespace ui {
 
 void GetPlatformExtraDisplayAttribs(EGLenum platform_type,
                                     std::vector<EGLAttrib>* attributes) {
-  // ANGLE_NULL doesn't use the visual, and may run without X11 where we can't
-  // get it anyway.
-  if (platform_type != EGL_PLATFORM_ANGLE_TYPE_NULL_ANGLE) {
+  // ANGLE_NULL and SwiftShader backends don't use the visual,
+  // and may run without X11 where we can't get it anyway.
+  if ((platform_type != EGL_PLATFORM_ANGLE_TYPE_NULL_ANGLE) &&
+      (std::find(attributes->begin(), attributes->end(),
+                 EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE) ==
+       attributes->end())) {
     x11::VisualId visual_id;
     XVisualManager::GetInstance()->ChooseVisualForWindow(
         true, &visual_id, nullptr, nullptr, nullptr);
@@ -52,7 +59,8 @@ void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
                                             EGLint* buffer_size) {
   // If we're using ANGLE_NULL, we may not have a display, in which case we
   // can't use XVisualManager.
-  if (gl::GLSurfaceEGL::GetNativeDisplay() != EGL_DEFAULT_DISPLAY) {
+  if (gl::GLSurfaceEGL::GetGLDisplayEGL()->GetNativeDisplay().GetDisplay() !=
+      EGL_DEFAULT_DISPLAY) {
     uint8_t depth;
     XVisualManager::GetInstance()->ChooseVisualForWindow(true, nullptr, &depth,
                                                          nullptr, nullptr);
@@ -63,13 +71,6 @@ void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
 
 bool IsTransparentBackgroundSupported() {
   return ui::XVisualManager::GetInstance()->ArgbVisualAvailable();
-}
-
-bool UpdateVisualsOnGpuInfoChanged(bool software_rendering,
-                                   x11::VisualId default_visual_id,
-                                   x11::VisualId transparent_visual_id) {
-  return XVisualManager::GetInstance()->UpdateVisualsOnGpuInfoChanged(
-      software_rendering, default_visual_id, transparent_visual_id);
 }
 
 }  // namespace ui

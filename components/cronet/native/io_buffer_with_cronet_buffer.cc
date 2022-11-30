@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,14 @@ namespace {
 class Cronet_BufferCallbackUnowned : public Cronet_BufferCallback {
  public:
   Cronet_BufferCallbackUnowned() = default;
+
+  Cronet_BufferCallbackUnowned(const Cronet_BufferCallbackUnowned&) = delete;
+  Cronet_BufferCallbackUnowned& operator=(const Cronet_BufferCallbackUnowned&) =
+      delete;
+
   ~Cronet_BufferCallbackUnowned() override = default;
 
   void OnDestroy(Cronet_BufferPtr buffer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferCallbackUnowned);
 };
 
 }  // namespace

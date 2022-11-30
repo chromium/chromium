@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/send_message_tester.h"
 
 #include "base/strings/stringprintf.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
@@ -25,24 +26,49 @@ SendMessageTester::SendMessageTester(TestIPCMessageSender* ipc_sender,
 
 SendMessageTester::~SendMessageTester() {}
 
-void SendMessageTester::TestSendMessage(const std::string& args,
-                                        const std::string& expected_message,
-                                        const MessageTarget& expected_target,
-                                        PortStatus expected_port_status) {
+v8::Local<v8::Value> SendMessageTester::TestSendMessage(
+    const std::string& args,
+    const std::string& expected_message,
+    const MessageTarget& expected_target,
+    PortStatus expected_port_status) {
   SCOPED_TRACE(base::StringPrintf("Send Message Args: `%s`", args.c_str()));
 
+  v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_MESSAGE);
+                           expected_port_status, SEND_MESSAGE, output);
+  return output;
 }
 
-void SendMessageTester::TestSendRequest(const std::string& args,
-                                        const std::string& expected_message,
-                                        const MessageTarget& expected_target,
-                                        PortStatus expected_port_status) {
+v8::Local<v8::Value> SendMessageTester::TestSendRequest(
+    const std::string& args,
+    const std::string& expected_message,
+    const MessageTarget& expected_target,
+    PortStatus expected_port_status) {
   SCOPED_TRACE(base::StringPrintf("Send Request Args: `%s`", args.c_str()));
 
+  v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_REQUEST);
+                           expected_port_status, SEND_REQUEST, output);
+  return output;
+}
+
+v8::Local<v8::Value> SendMessageTester::TestSendNativeMessage(
+    const std::string& args,
+    const std::string& expected_message,
+    const std::string& expected_application_name) {
+  SCOPED_TRACE(
+      base::StringPrintf("Send Native Message Args: `%s`", args.c_str()));
+
+  // Note: we don't close the native message ports immediately, See comment in
+  // OneTimeMessageSender.
+  PortStatus expected_port_status = OPEN;
+  MessageTarget expected_target(
+      MessageTarget::ForNativeApp(expected_application_name));
+
+  v8::Local<v8::Value> output;
+  TestSendMessageOrRequest(args, expected_message, expected_target,
+                           expected_port_status, SEND_NATIVE_MESSAGE, output);
+  return output;
 }
 
 void SendMessageTester::TestConnect(const std::string& args,
@@ -54,7 +80,8 @@ void SendMessageTester::TestConnect(const std::string& args,
 
   constexpr char kAddPortTemplate[] =
       "(function() { return chrome.%s.connect(%s); })";
-  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true);
+  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
+                          SerializationFormat::kJson);
   EXPECT_CALL(*ipc_sender_,
               SendOpenMessageChannel(script_context_, expected_port_id,
                                      expected_target, expected_channel));
@@ -75,8 +102,10 @@ void SendMessageTester::TestSendMessageOrRequest(
     const std::string& expected_message,
     const MessageTarget& expected_target,
     PortStatus expected_port_status,
-    Method method) {
-  constexpr char kSendMessageTemplate[] = "(function() { chrome.%s.%s(%s); })";
+    Method method,
+    v8::Local<v8::Value>& out_value) {
+  constexpr char kSendMessageTemplate[] =
+      "(function() { return chrome.%s.%s(%s); })";
 
   std::string expected_channel;
   const char* method_name = nullptr;
@@ -89,14 +118,20 @@ void SendMessageTester::TestSendMessageOrRequest(
       method_name = "sendRequest";
       expected_channel = messaging_util::kSendRequestChannel;
       break;
+    case SEND_NATIVE_MESSAGE:
+      method_name = "sendNativeMessage";
+      // sendNativeMessage doesn't have name channels so we don't need to change
+      // expected_channel from an empty string.
+      break;
   }
 
-  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true);
+  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
+                          SerializationFormat::kJson);
 
   EXPECT_CALL(*ipc_sender_,
               SendOpenMessageChannel(script_context_, expected_port_id,
                                      expected_target, expected_channel));
-  Message message(expected_message, false);
+  Message message(expected_message, SerializationFormat::kJson, false);
   EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message));
 
   if (expected_port_status == CLOSED) {
@@ -109,7 +144,7 @@ void SendMessageTester::TestSendMessageOrRequest(
       v8_context,
       base::StringPrintf(kSendMessageTemplate, api_namespace_.c_str(),
                          method_name, args.c_str()));
-  RunFunction(send_message, v8_context, 0, nullptr);
+  out_value = RunFunction(send_message, v8_context, 0, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_sender_);
 }
 

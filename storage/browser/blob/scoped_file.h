@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {
@@ -47,6 +46,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ScopedFile {
     return *this;
   }
 
+  ScopedFile(const ScopedFile&) = delete;
+  ScopedFile& operator=(const ScopedFile&) = delete;
+
   ~ScopedFile();
 
   // The |callback| is fired on |callback_runner| when the final reference
@@ -80,8 +82,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ScopedFile {
   scoped_refptr<base::TaskRunner> file_task_runner_;
   std::vector<std::pair<ScopeOutCallback, scoped_refptr<base::TaskRunner>>>
       scope_out_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFile);
 };
 
 }  // namespace storage

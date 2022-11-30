@@ -1,5 +1,0 @@
-PASS Renderer did not crash.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/controller_impl.h"
-#include "components/download/internal/background_service/download_service_impl.h"
 #include "components/download/internal/background_service/download_store.h"
 #include "components/download/internal/background_service/empty_file_monitor.h"
 #include "components/download/internal/background_service/file_monitor_impl.h"
 #include "components/download/internal/background_service/in_memory_download_driver.h"
+#include "components/download/internal/background_service/init_aware_background_download_service.h"
 #include "components/download/internal/background_service/logger_impl.h"
 #include "components/download/internal/background_service/model_impl.h"
 #include "components/download/internal/background_service/noop_store.h"
@@ -28,12 +28,12 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/background_service/android/battery_status_listener_android.h"
 #include "components/download/network/android/network_status_listener_android.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "components/download/internal/background_service/scheduler/battery_status_listener_mac.h"
-#include "components/download/network/network_status_listener_mac.h"
+#include "components/download/network/network_status_listener_impl.h"
 #else
 #include "components/download/internal/background_service/scheduler/battery_status_listener_impl.h"
 #include "components/download/network/network_status_listener_impl.h"
@@ -48,7 +48,7 @@ const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
 
 // Helper function to create download service with different implementation
 // details.
-std::unique_ptr<DownloadService> CreateDownloadServiceInternal(
+std::unique_ptr<BackgroundDownloadService> CreateDownloadServiceInternal(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     std::unique_ptr<Configuration> config,
@@ -62,13 +62,14 @@ std::unique_ptr<DownloadService> CreateDownloadServiceInternal(
   auto model = std::make_unique<ModelImpl>(std::move(store));
 
 // Build platform network/battery status listener.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto battery_listener = std::make_unique<BatteryStatusListenerAndroid>(
       config->battery_query_interval);
   auto network_listener = std::make_unique<NetworkStatusListenerAndroid>();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   auto battery_listener = std::make_unique<BatteryStatusListenerMac>();
-  auto network_listener = std::make_unique<NetworkStatusListenerMac>();
+  auto network_listener =
+      std::make_unique<NetworkStatusListenerImpl>(network_connection_tracker);
 #else
   auto battery_listener = std::make_unique<BatteryStatusListenerImpl>(
       config->battery_query_interval);
@@ -84,19 +85,20 @@ std::unique_ptr<DownloadService> CreateDownloadServiceInternal(
   auto scheduler = std::make_unique<SchedulerImpl>(
       task_scheduler.get(), config.get(), client_set.get());
   auto logger = std::make_unique<LoggerImpl>();
+  auto* logger_ptr = logger.get();
   auto controller = std::make_unique<ControllerImpl>(
-      config.get(), logger.get(), std::move(client_set), std::move(driver),
-      std::move(model), std::move(device_status_listener), navigation_monitor,
-      std::move(scheduler), std::move(task_scheduler), std::move(file_monitor),
-      files_storage_dir);
-  logger->SetLogSource(controller.get());
+      std::move(config), std::move(logger), logger_ptr, std::move(client_set),
+      std::move(driver), std::move(model), std::move(device_status_listener),
+      navigation_monitor, std::move(scheduler), std::move(task_scheduler),
+      std::move(file_monitor), files_storage_dir);
+  logger_ptr->SetLogSource(controller.get());
 
-  return std::make_unique<DownloadServiceImpl>(
-      std::move(config), std::move(logger), std::move(controller));
+  return std::make_unique<InitAwareBackgroundDownloadService>(
+      std::move(controller));
 }
 
 // Create download service for normal profile.
-std::unique_ptr<DownloadService> BuildDownloadService(
+std::unique_ptr<BackgroundDownloadService> BuildDownloadService(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     network::NetworkConnectionTracker* network_connection_tracker,
@@ -118,8 +120,8 @@ std::unique_ptr<DownloadService> BuildDownloadService(
   auto store = std::make_unique<DownloadStore>(std::move(entry_db));
 
   auto files_storage_dir = storage_dir.Append(kFilesStorageDir);
-  auto file_monitor = std::make_unique<FileMonitorImpl>(
-      files_storage_dir, background_task_runner, config->file_keep_alive_time);
+  auto file_monitor = std::make_unique<FileMonitorImpl>(files_storage_dir,
+                                                        background_task_runner);
 
   return CreateDownloadServiceInternal(
       simple_factory_key, std::move(clients), std::move(config),
@@ -128,7 +130,7 @@ std::unique_ptr<DownloadService> BuildDownloadService(
 }
 
 // Create download service for incognito mode without any database or file IO.
-std::unique_ptr<DownloadService> BuildInMemoryDownloadService(
+std::unique_ptr<BackgroundDownloadService> BuildInMemoryDownloadService(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     network::NetworkConnectionTracker* network_connection_tracker,

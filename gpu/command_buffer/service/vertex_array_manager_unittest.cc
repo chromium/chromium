@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class VertexArrayManagerTest : public GpuServiceTest {
  protected:
   void SetUp() override {
     GpuServiceTest::SetUpWithGLVersion("2.1", "GL_ARB_vertex_array_object");
-    manager_.reset(new VertexArrayManager());
+    manager_ = std::make_unique<VertexArrayManager>();
   }
 
   void TearDown() override {

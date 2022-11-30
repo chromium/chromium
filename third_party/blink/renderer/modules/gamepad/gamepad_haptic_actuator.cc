@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ const char kGamepadHapticActuatorTypeVibration[] = "vibration";
 const char kGamepadHapticActuatorTypeDualRumble[] = "dual-rumble";
 
 const char kGamepadHapticEffectTypeDualRumble[] = "dual-rumble";
+const char kGamepadHapticEffectTypeTriggerRumble[] = "trigger-rumble";
 
 const char kGamepadHapticsResultComplete[] = "complete";
 const char kGamepadHapticsResultPreempted[] = "preempted";
@@ -32,6 +33,9 @@ const char kGamepadHapticsResultNotSupported[] = "not-supported";
 GamepadHapticEffectType EffectTypeFromString(const String& type) {
   if (type == kGamepadHapticEffectTypeDualRumble)
     return GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble;
+
+  if (type == kGamepadHapticEffectTypeTriggerRumble)
+    return GamepadHapticEffectType::GamepadHapticEffectTypeTriggerRumble;
 
   NOTREACHED();
   return GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble;
@@ -70,11 +74,20 @@ GamepadHapticActuator::GamepadHapticActuator(
 GamepadHapticActuator::~GamepadHapticActuator() = default;
 
 void GamepadHapticActuator::SetType(device::GamepadHapticActuatorType type) {
+  supported_effect_types_.clear();
   switch (type) {
     case device::GamepadHapticActuatorType::kVibration:
       type_ = kGamepadHapticActuatorTypeVibration;
       break;
+    // Currently devices that have trigger rumble support, also have dual-rumble
+    // support. Moreover, gamepads that support trigger-rumble should also be
+    // listed as having GamepadHapticActuatorType::kDualRumble, since we want
+    // to encourage the the use of 'canPlay' method instead.
+    case device::GamepadHapticActuatorType::kTriggerRumble:
+      supported_effect_types_.insert(kGamepadHapticEffectTypeTriggerRumble);
+      [[fallthrough]];
     case device::GamepadHapticActuatorType::kDualRumble:
+      supported_effect_types_.insert(kGamepadHapticEffectTypeDualRumble);
       type_ = kGamepadHapticActuatorTypeDualRumble;
       break;
     default:
@@ -90,7 +103,9 @@ ScriptPromise GamepadHapticActuator::playEffect(
 
   if (params->duration() < 0.0 || params->startDelay() < 0.0 ||
       params->strongMagnitude() < 0.0 || params->strongMagnitude() > 1.0 ||
-      params->weakMagnitude() < 0.0 || params->weakMagnitude() > 1.0) {
+      params->weakMagnitude() < 0.0 || params->weakMagnitude() > 1.0 ||
+      params->leftTrigger() < 0.0 || params->leftTrigger() > 1.0 ||
+      params->rightTrigger() < 0.0 || params->rightTrigger() > 1.0) {
     ScriptPromise promise = resolver->Promise();
     resolver->Resolve(kGamepadHapticsResultInvalidParameter);
     return promise;
@@ -108,14 +123,15 @@ ScriptPromise GamepadHapticActuator::playEffect(
   // Avoid resetting vibration for a preempted effect.
   should_reset_ = false;
 
-  auto callback = WTF::Bind(&GamepadHapticActuator::OnPlayEffectCompleted,
-                            WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&GamepadHapticActuator::OnPlayEffectCompleted,
+                                WrapPersistent(this), WrapPersistent(resolver));
 
   gamepad_dispatcher_->PlayVibrationEffectOnce(
       pad_index_, EffectTypeFromString(type),
       device::mojom::blink::GamepadEffectParameters::New(
           params->duration(), params->startDelay(), params->strongMagnitude(),
-          params->weakMagnitude()),
+          params->weakMagnitude(), params->leftTrigger(),
+          params->rightTrigger()),
       std::move(callback));
 
   return resolver->Promise();
@@ -137,10 +153,10 @@ void GamepadHapticActuator::OnPlayEffectCompleted(
       // vibration if the user did not chain another vibration effect in the
       // Promise callback.
       context->GetTaskRunner(TaskType::kMiscPlatformAPI)
-          ->PostTask(
-              FROM_HERE,
-              WTF::Bind(&GamepadHapticActuator::ResetVibrationIfNotPreempted,
-                        WrapPersistent(this)));
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(
+                         &GamepadHapticActuator::ResetVibrationIfNotPreempted,
+                         WrapPersistent(this)));
     } else {
       // The execution context is gone, meaning no new effects can be issued by
       // the page. Stop vibration without waiting for Promise callbacks.
@@ -160,8 +176,8 @@ void GamepadHapticActuator::ResetVibrationIfNotPreempted() {
 ScriptPromise GamepadHapticActuator::reset(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-  auto callback = WTF::Bind(&GamepadHapticActuator::OnResetCompleted,
-                            WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&GamepadHapticActuator::OnResetCompleted,
+                                WrapPersistent(this), WrapPersistent(resolver));
 
   gamepad_dispatcher_->ResetVibrationActuator(pad_index_, std::move(callback));
 
@@ -176,6 +192,10 @@ void GamepadHapticActuator::OnResetCompleted(
     return;
   }
   resolver->Resolve(ResultToString(result));
+}
+
+bool GamepadHapticActuator::canPlay(const String& type) {
+  return supported_effect_types_.Contains(type);
 }
 
 void GamepadHapticActuator::Trace(Visitor* visitor) const {

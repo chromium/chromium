@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -534,6 +534,25 @@ TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithShadow) {
 
   EXPECT_EQ(base, adjusted.Base());
   EXPECT_EQ(extent, adjusted.Extent());
+}
+
+TEST_F(SelectionAdjusterTest, AdjustShadowWithRootAndHost) {
+  SetBodyContent("<div id='host'></div>");
+  ShadowRoot* shadow_root = SetShadowContent("", "host");
+
+  Element* host = GetDocument().getElementById("host");
+  const SelectionInDOMTree& selection = SelectionInDOMTree::Builder()
+                                            .Collapse(Position(shadow_root, 0))
+                                            .Extend(Position(host, 0))
+                                            .Build();
+
+  // Should not crash
+  const SelectionInDOMTree& result =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
+          selection);
+
+  EXPECT_EQ(Position(shadow_root, 0), result.Base());
+  EXPECT_EQ(Position(shadow_root, 0), result.Extent());
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 #include <windows.h>
 
-#include "base/stl_util.h"
+#include <iterator>
+
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_context.h"
@@ -40,7 +41,7 @@ void TestInitializeX86Context() {
   // directly from the supplied thread, float, and debug state parameters.
   {
     CPUContextX86 cpu_context_x86 = {};
-    InitializeX86Context(context, &cpu_context_x86);
+    InitializeX86Context(&context, &cpu_context_x86);
     EXPECT_EQ(cpu_context_x86.eax, 1u);
     EXPECT_EQ(cpu_context_x86.fxsave.ftw, 2u);
     EXPECT_EQ(cpu_context_x86.dr0, 3u);
@@ -72,7 +73,7 @@ void TestInitializeX86Context_FsaveWithoutFxsave() {
 
   {
     CPUContextX86 cpu_context_x86 = {};
-    InitializeX86Context(context, &cpu_context_x86);
+    InitializeX86Context(&context, &cpu_context_x86);
 
     EXPECT_EQ(cpu_context_x86.eax, 1u);
 
@@ -87,13 +88,13 @@ void TestInitializeX86Context_FsaveWithoutFxsave() {
     for (size_t st_mm = 0; st_mm < 7; ++st_mm) {
       EXPECT_EQ(
           BytesToHexString(cpu_context_x86.fxsave.st_mm[st_mm].st,
-                           base::size(cpu_context_x86.fxsave.st_mm[st_mm].st)),
-          std::string(base::size(cpu_context_x86.fxsave.st_mm[st_mm].st) * 2,
+                           std::size(cpu_context_x86.fxsave.st_mm[st_mm].st)),
+          std::string(std::size(cpu_context_x86.fxsave.st_mm[st_mm].st) * 2,
                       '0'))
           << "st_mm " << st_mm;
     }
     EXPECT_EQ(BytesToHexString(cpu_context_x86.fxsave.st_mm[7].st,
-                               base::size(cpu_context_x86.fxsave.st_mm[7].st)),
+                               std::size(cpu_context_x86.fxsave.st_mm[7].st)),
               "0000000000000080ff7f");
 
     EXPECT_EQ(cpu_context_x86.dr0, 3u);
@@ -116,7 +117,7 @@ TEST(CPUContextWin, InitializeX64Context) {
   // set directly from the supplied thread, float, and debug state parameters.
   {
     CPUContextX86_64 cpu_context_x86_64 = {};
-    InitializeX64Context(context, &cpu_context_x86_64);
+    InitializeX64Context(&context, &cpu_context_x86_64);
     EXPECT_EQ(cpu_context_x86_64.rax, 10u);
     EXPECT_EQ(cpu_context_x86_64.fxsave.ftw, 11u);
     EXPECT_EQ(cpu_context_x86_64.dr0, 12u);

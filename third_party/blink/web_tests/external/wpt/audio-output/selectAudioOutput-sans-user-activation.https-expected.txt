@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL selectAudioOutput() before user activation navigator.mediaDevices.selectAudioOutput is not a function
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@
 
 #include <string>
 
+#include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PDF)
 #error "PDF must be enabled"
 #endif
-
-namespace base {
-class Value;
-}
 
 namespace pdf_extension_util {
 
@@ -31,12 +29,13 @@ enum class PdfViewerContext {
   kAll,
 };
 
-// Adds all strings used by the PDF Viewer depending on the provided |context|.
-void AddStrings(PdfViewerContext context, base::Value* dict);
+// Adds all strings used by the PDF Viewer depending on the provided `context`.
+void AddStrings(PdfViewerContext context, base::Value::Dict* dict);
 
-// Adds additional data used by the PDF Viewer UI in |dict|, for example
+// Adds additional data used by the PDF Viewer UI in `dict`, for example
 // whether certain features are enabled/disabled.
-void AddAdditionalData(base::Value* dict);
+// `enable_annotations` only applies on platforms that supports annotations.
+void AddAdditionalData(bool enable_annotations, base::Value::Dict* dict);
 
 }  // namespace pdf_extension_util
 

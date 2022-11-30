@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -100,7 +101,7 @@ namespace v8_memory {
 //       // Creating a V8DetailedMemoryRequest with the |graph| parameter
 //       // automatically starts measurements.
 //       request_ = std::make_unique<V8DetailedMemoryRequest>(
-//           base::TimeDelta::FromSeconds(30), graph);
+//           base::Seconds(30), graph);
 //       observer_ = std::make_unique<Observer>();
 //       request_->AddObserver(observer_.get());
 //     }
@@ -149,12 +150,22 @@ class V8DetailedMemoryExecutionContextData {
     v8_bytes_used_ = v8_bytes_used;
   }
 
+  // Returns the number of bytes used by canvas elements for this frame at the
+  // last measurement. It is empty if the frame has no canvas elements.
+  absl::optional<uint64_t> canvas_bytes_used() const {
+    return canvas_bytes_used_;
+  }
+
+  void set_canvas_bytes_used(uint64_t canvas_bytes_used) {
+    canvas_bytes_used_ = canvas_bytes_used;
+  }
+
   // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
   // the browser does not know URLs of dedicated workers, so we pass them
   // together with the measurement result and store in ExecutionContext data.
-  base::Optional<std::string> url() const { return url_; }
+  absl::optional<std::string> url() const { return url_; }
 
-  void set_url(base::Optional<std::string> url) { url_ = std::move(url); }
+  void set_url(absl::optional<std::string> url) { url_ = std::move(url); }
 
   // Returns frame data for the given node, or nullptr if no measurement has
   // been taken. The returned pointer must only be accessed on the graph
@@ -175,7 +186,8 @@ class V8DetailedMemoryExecutionContextData {
       const WorkerNode* node);
 
   uint64_t v8_bytes_used_ = 0;
-  base::Optional<std::string> url_;
+  absl::optional<uint64_t> canvas_bytes_used_;
+  absl::optional<std::string> url_;
 };
 
 class V8DetailedMemoryProcessData {
@@ -194,6 +206,16 @@ class V8DetailedMemoryProcessData {
 
   void set_detached_v8_bytes_used(uint64_t detached_v8_bytes_used) {
     detached_v8_bytes_used_ = detached_v8_bytes_used;
+  }
+
+  // Returns the number of bytes used by canvas elements at the last
+  // measurement in this process that could not be attributed to a frame.
+  uint64_t detached_canvas_bytes_used() const {
+    return detached_canvas_bytes_used_;
+  }
+
+  void set_detached_canvas_bytes_used(uint64_t detached_canvas_bytes_used) {
+    detached_canvas_bytes_used_ = detached_canvas_bytes_used;
   }
 
   // Returns the number of bytes used by V8 at the last measurement in this
@@ -225,6 +247,7 @@ class V8DetailedMemoryProcessData {
   static V8DetailedMemoryProcessData* GetOrCreateForTesting(
       const ProcessNode* node);
   uint64_t detached_v8_bytes_used_ = 0;
+  uint64_t detached_canvas_bytes_used_ = 0;
   uint64_t shared_v8_bytes_used_ = 0;
   uint64_t blink_bytes_used_ = 0;
 };
@@ -334,7 +357,7 @@ class V8DetailedMemoryRequest {
       base::PassKey<V8DetailedMemoryRequestAnySeq>,
       const base::TimeDelta& min_time_between_requests,
       MeasurementMode mode,
-      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
+      absl::optional<base::WeakPtr<ProcessNode>> process_to_measure,
       base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request);
 
   // Private constructor for V8DetailedMemoryRequestOneShot. Sets
@@ -358,15 +381,15 @@ class V8DetailedMemoryRequest {
 
  private:
   void StartMeasurementFromOffSequence(
-      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
+      absl::optional<base::WeakPtr<ProcessNode>> process_to_measure,
       Graph* graph);
   void StartMeasurementImpl(Graph* graph, const ProcessNode* process_node);
 
   base::TimeDelta min_time_between_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
   MeasurementMode mode_ GUARDED_BY_CONTEXT(sequence_checker_);
-  V8DetailedMemoryDecorator* decorator_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<V8DetailedMemoryDecorator> decorator_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   base::ObserverList<V8DetailedMemoryObserver, /*check_empty=*/true> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -462,7 +485,7 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
   void OnOwnerUnregistered();
 
 #if DCHECK_IS_ON()
-  const ProcessNode* process_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<const ProcessNode> process_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif
 
   MeasurementCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);

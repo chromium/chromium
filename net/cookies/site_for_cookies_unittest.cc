@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cookies/site_for_cookies.h"
 
+#include <string>
 #include <vector>
 
 #include "base/strings/strcat.h"
@@ -600,6 +601,32 @@ TEST(SiteForCookiesTest, SameSchemeOpaque) {
     // null SFCs.
     EXPECT_FALSE(nonsecure_sfc.schemefully_same());
   }
+}
+
+// Quick correctness check that the less-than operator works as expected.
+TEST(SiteForCookiesTest, LessThan) {
+  SiteForCookies first = SiteForCookies::FromUrl(GURL("https://example.com"));
+  SiteForCookies second =
+      SiteForCookies::FromUrl(GURL("https://examplelonger.com"));
+  SiteForCookies third =
+      SiteForCookies::FromUrl(GURL("https://examplelongerstill.com"));
+
+  SiteForCookies null1 = SiteForCookies();
+  SiteForCookies null2 =
+      SiteForCookies::FromUrl(GURL("https://examplelongerstillstill.com"));
+  null2.SetSchemefullySameForTesting(false);
+
+  EXPECT_LT(first, second);
+  EXPECT_LT(second, third);
+  EXPECT_LT(first, third);
+  EXPECT_LT(null1, first);
+  EXPECT_LT(null2, first);
+
+  EXPECT_FALSE(second < first);
+  EXPECT_FALSE(first < null1);
+  EXPECT_FALSE(first < null2);
+  EXPECT_FALSE(null1 < null2);
+  EXPECT_FALSE(null2 < null1);
 }
 
 }  // namespace net

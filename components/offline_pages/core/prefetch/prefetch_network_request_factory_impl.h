@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_network_request_factory.h"
 #include "components/prefs/pref_service.h"
@@ -32,6 +33,11 @@ class PrefetchNetworkRequestFactoryImpl : public PrefetchNetworkRequestFactory {
       version_info::Channel channel,
       const std::string& user_agent,
       PrefService* prefs);
+
+  PrefetchNetworkRequestFactoryImpl(const PrefetchNetworkRequestFactoryImpl&) =
+      delete;
+  PrefetchNetworkRequestFactoryImpl& operator=(
+      const PrefetchNetworkRequestFactoryImpl&) = delete;
 
   ~PrefetchNetworkRequestFactoryImpl() override;
 
@@ -91,11 +97,9 @@ class PrefetchNetworkRequestFactoryImpl : public PrefetchNetworkRequestFactory {
   // Used to id GeneratePageBundle requests so they can be removed from the map.
   uint64_t request_id_ = 0;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   base::WeakPtrFactory<PrefetchNetworkRequestFactoryImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchNetworkRequestFactoryImpl);
 };
 
 }  // namespace offline_pages

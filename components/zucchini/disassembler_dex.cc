@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/buffer_source.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/io_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -68,6 +70,10 @@ size_t GetItemBaseSize(uint16_t type_item_code) {
       return sizeof(dex::MethodIdItem);
     case dex::kTypeClassDefItem:
       return sizeof(dex::ClassDefItem);
+    case dex::kTypeCallSiteIdItem:
+      return sizeof(dex::CallSiteIdItem);
+    case dex::kTypeMethodHandleItem:
+      return sizeof(dex::MethodHandleItem);
     // No need to handle dex::kTypeMapList.
     case dex::kTypeTypeList:
       return sizeof(uint32_t);  // Variable-length.
@@ -238,7 +244,8 @@ class InstructionParser {
  public:
   struct Value {
     offset_t instr_offset;
-    const dex::Instruction* instr = nullptr;  // null for unknown instructions.
+    raw_ptr<const dex::Instruction> instr =
+        nullptr;  // null for unknown instructions.
   };
 
   // Returns pointer to DEX Instruction data for |opcode|, or null if |opcode|
@@ -363,13 +370,13 @@ class InstructionReferenceReader : public ReferenceReader {
   }
 
   // ReferenceReader:
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     while (true) {
       while (parser_.ReadNext()) {
         const auto& v = parser_.value();
         DCHECK_NE(v.instr, nullptr);
         if (v.instr_offset >= hi_)
-          return base::nullopt;
+          return absl::nullopt;
         const offset_t location = filter_.Run(v);
         if (location == kInvalidOffset || location < lo_)
           continue;
@@ -377,7 +384,7 @@ class InstructionReferenceReader : public ReferenceReader {
         // assumption |hi_| and |lo_| do not straddle the body of a Reference.
         // So |reference_width| is unneeded.
         if (location >= hi_)
-          return base::nullopt;
+          return absl::nullopt;
         offset_t target = mapper_.Run(location);
         if (target != kInvalidOffset)
           return Reference{location, target};
@@ -386,7 +393,7 @@ class InstructionReferenceReader : public ReferenceReader {
       }
       ++cur_it_;
       if (cur_it_ == end_it_)
-        return base::nullopt;
+        return absl::nullopt;
       parser_ = InstructionParser(image_, *cur_it_);
     }
   }
@@ -415,17 +422,23 @@ class ItemReferenceReader : public ReferenceReader {
 
   // |item_size| is the size of a fixed-size item. |rel_location| is the
   // relative location of MVI from the start of the item containing it.
+  // |rel_item_offset| is the offset to use relative to |item_offset| in cases
+  // where a value other than |rel_location| is required. For an example of this
+  // see ReadMethodHandleFieldOrMethodId.
   ItemReferenceReader(offset_t lo,
                       offset_t hi,
                       const dex::MapItem& map_item,
                       size_t item_size,
                       size_t rel_location,
-                      Mapper&& mapper)
+                      Mapper&& mapper,
+                      bool mapper_wants_item = false)
       : hi_(hi),
         item_base_offset_(base::checked_cast<offset_t>(map_item.offset)),
         num_items_(base::checked_cast<uint32_t>(map_item.size)),
         item_size_(base::checked_cast<uint32_t>(item_size)),
         rel_location_(base::checked_cast<uint32_t>(rel_location)),
+        mapper_input_delta_(
+            mapper_wants_item ? 0 : base::checked_cast<uint32_t>(rel_location)),
         mapper_(std::move(mapper)) {
     static_assert(sizeof(decltype(map_item.offset)) <= sizeof(offset_t),
                   "map_item.offset too large.");
@@ -447,7 +460,7 @@ class ItemReferenceReader : public ReferenceReader {
   }
 
   // ReferenceReader:
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     while (cur_idx_ < num_items_) {
       const offset_t item_offset = OffsetOfIndex(cur_idx_);
       const offset_t location = item_offset + rel_location_;
@@ -456,7 +469,11 @@ class ItemReferenceReader : public ReferenceReader {
       // |reference_width| is unneeded.
       if (location >= hi_)
         break;
-      const offset_t target = mapper_.Run(location);
+
+      // |location == item_offset + mapper_input_delta_| in the majority of
+      // cases. The exception is when |mapper_| wants an item aligned location
+      // instead e.g. ReadMethodHandleFieldOrMethodId.
+      const offset_t target = mapper_.Run(item_offset + mapper_input_delta_);
 
       // kDexSentinelOffset (0) may appear for the following:
       // - ProtoIdItem: parameters_off.
@@ -466,6 +483,9 @@ class ItemReferenceReader : public ReferenceReader {
       // - AnnotationSetRefItem: annotations_off.
       // kDexSentinelIndexAsOffset (0xFFFFFFFF) may appear for the following:
       // - ClassDefItem: superclass_idx, source_file_idx.
+      // - MethodHandleItem: |mapper_| uses ReadMethodHandleFieldOrMethodId and
+      //   determines the item at |cur_idx_| is not of the required reference
+      //   type.
       if (target == kDexSentinelOffset || target == kDexSentinelIndexAsOffset) {
         ++cur_idx_;
         continue;
@@ -478,7 +498,7 @@ class ItemReferenceReader : public ReferenceReader {
       ++cur_idx_;
       return Reference{location, target};
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  private:
@@ -491,6 +511,7 @@ class ItemReferenceReader : public ReferenceReader {
   const uint32_t num_items_;
   const uint32_t item_size_;
   const uint32_t rel_location_;
+  const uint32_t mapper_input_delta_;
   const Mapper mapper_;
   offset_t cur_idx_ = 0;
 };
@@ -629,9 +650,12 @@ class CachedItemListReferenceReader : public ReferenceReader {
     if (cur_it_ != item_offsets.begin() && *(cur_it_ - 1) + rel_location_ >= lo)
       --cur_it_;
   }
+  CachedItemListReferenceReader(const CachedItemListReferenceReader&) = delete;
+  const CachedItemListReferenceReader& operator=(
+      const CachedItemListReferenceReader&) = delete;
 
   // ReferenceReader:
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     while (cur_it_ < end_it_) {
       const offset_t location = *cur_it_ + rel_location_;
       if (location >= hi_)  // Check is simplified by atomicity assumption.
@@ -649,7 +673,7 @@ class CachedItemListReferenceReader : public ReferenceReader {
         continue;
       return Reference{location, target};
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  private:
@@ -658,8 +682,6 @@ class CachedItemListReferenceReader : public ReferenceReader {
   const std::vector<offset_t>::const_iterator end_it_;
   const Mapper mapper_;
   std::vector<offset_t>::const_iterator cur_it_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedItemListReferenceReader);
 };
 
 // Reads an INT index at |location| in |image| and translates the index to the
@@ -684,6 +706,53 @@ static offset_t ReadTargetIndex(ConstBufferView image,
     return kInvalidOffset;
   return target_map_item.offset +
          base::checked_cast<offset_t>(unsafe_idx * target_item_size);
+}
+
+// Reads a field or method index of the MethodHandleItem located at |location|
+// in |image| and translates |method_handle_item.field_or_method_id| to the
+// offset of a fixed-size item specified by |target_map_item| and
+// |target_item_size|. The index is deemed to be of the correct target type if
+// |method_handle_item.method_handle_type| falls within the range [|min_type|,
+// |max_type|]. If the target type is correct ReadTargetIndex is called.
+// Returns the target offset if valid, or kDexSentinelIndexAsOffset if
+// |method_handle_item.method_handle_type| is of the wrong type, or
+// kInvalidOffset otherwise.
+//
+// As of DEX version 39 MethodHandleType values for FieldId and MethodId each
+// form one consecutive block of values. If this changes, then the interface to
+// this function will need to be redesigned.
+static offset_t ReadMethodHandleFieldOrMethodId(
+    ConstBufferView image,
+    const dex::MapItem& target_map_item,
+    size_t target_item_size,
+    dex::MethodHandleType min_type,
+    dex::MethodHandleType max_type,
+    offset_t location) {
+  dex::MethodHandleItem method_handle_item =
+      image.read<dex::MethodHandleItem>(location);
+
+  // Cannot use base::checked_cast as dex::MethodHandleType is an enum class so
+  // static_assert on the size instead.
+  static_assert(sizeof(decltype(dex::MethodHandleItem::method_handle_type)) <=
+                    sizeof(dex::MethodHandleType),
+                "dex::MethodHandleItem::method_handle_type may not fit into "
+                "dex::MethodHandleType.");
+  dex::MethodHandleType method_handle_type =
+      static_cast<dex::MethodHandleType>(method_handle_item.method_handle_type);
+
+  if (method_handle_type >= dex::MethodHandleType::kMaxMethodHandleType) {
+    return kInvalidOffset;
+  }
+
+  // Use DexSentinelIndexAsOffset to skip the item as it isn't of the
+  // corresponding method handle type.
+  if (method_handle_type < min_type || method_handle_type > max_type) {
+    return kDexSentinelIndexAsOffset;
+  }
+
+  return ReadTargetIndex<decltype(dex::MethodHandleItem::field_or_method_id)>(
+      image, target_map_item, target_item_size,
+      location + offsetof(dex::MethodHandleItem, field_or_method_id));
 }
 
 // Reads uint32_t value in |image| at (valid) |location| and checks whether it
@@ -750,7 +819,7 @@ static void WriteTargetIndex(const dex::MapItem& target_map_item,
 // Buffer for ReadDexHeader() to optionally return results.
 struct ReadDexHeaderResults {
   BufferSource source;
-  const dex::HeaderItem* header;
+  raw_ptr<const dex::HeaderItem> header;
   int dex_version;
 };
 
@@ -777,10 +846,11 @@ bool ReadDexHeader(ConstBufferView image, ReadDexHeaderResults* opt_results) {
     dex_version = dex_version * 10 + (header->magic[i] - '0');
   }
 
-  // Only support DEX versions 35 and 37.
-  // TODO(huangs): Handle version 38.
-  if (dex_version != 35 && dex_version != 37)
+  // Only support DEX versions 35, 37, 38, and 39
+  if (dex_version != 35 && dex_version != 37 && dex_version != 38 &&
+      dex_version != 39) {
     return false;
+  }
 
   if (header->file_size > image.size() ||
       header->file_size < sizeof(dex::HeaderItem) ||
@@ -862,17 +932,26 @@ std::vector<ReferenceGroup> DisassemblerDex::MakeReferenceGroups() const {
       {{2, TypeTag(kCodeToTypeId), PoolTag(kTypeId)},
        &DisassemblerDex::MakeReadCodeToTypeId16,
        &DisassemblerDex::MakeWriteTypeId16},
+      {{2, TypeTag(kCodeToProtoId), PoolTag(kProtoId)},
+       &DisassemblerDex::MakeReadCodeToProtoId16,
+       &DisassemblerDex::MakeWriteProtoId16},
       {{2, TypeTag(kMethodIdToProtoId), PoolTag(kProtoId)},
        &DisassemblerDex::MakeReadMethodIdToProtoId16,
        &DisassemblerDex::MakeWriteProtoId16},
       {{2, TypeTag(kCodeToFieldId), PoolTag(kFieldId)},
        &DisassemblerDex::MakeReadCodeToFieldId16,
        &DisassemblerDex::MakeWriteFieldId16},
+      {{2, TypeTag(kMethodHandleToFieldId), PoolTag(kFieldId)},
+       &DisassemblerDex::MakeReadMethodHandleToFieldId16,
+       &DisassemblerDex::MakeWriteFieldId16},
       {{4, TypeTag(kAnnotationsDirectoryToFieldId), PoolTag(kFieldId)},
        &DisassemblerDex::MakeReadAnnotationsDirectoryToFieldId32,
        &DisassemblerDex::MakeWriteFieldId32},
       {{2, TypeTag(kCodeToMethodId), PoolTag(kMethodId)},
        &DisassemblerDex::MakeReadCodeToMethodId16,
+       &DisassemblerDex::MakeWriteMethodId16},
+      {{2, TypeTag(kMethodHandleToMethodId), PoolTag(kMethodId)},
+       &DisassemblerDex::MakeReadMethodHandleToMethodId16,
        &DisassemblerDex::MakeWriteMethodId16},
       {{4, TypeTag(kAnnotationsDirectoryToMethodId), PoolTag(kMethodId)},
        &DisassemblerDex::MakeReadAnnotationsDirectoryToMethodId32,
@@ -881,6 +960,12 @@ std::vector<ReferenceGroup> DisassemblerDex::MakeReferenceGroups() const {
         PoolTag(kMethodId)},
        &DisassemblerDex::MakeReadAnnotationsDirectoryToParameterMethodId32,
        &DisassemblerDex::MakeWriteMethodId32},
+      {{2, TypeTag(kCodeToCallSiteId), PoolTag(kCallSiteId)},
+       &DisassemblerDex::MakeReadCodeToCallSiteId16,
+       &DisassemblerDex::MakeWriteCallSiteId16},
+      {{2, TypeTag(kCodeToMethodHandle), PoolTag(kMethodHandle)},
+       &DisassemblerDex::MakeReadCodeToMethodHandle16,
+       &DisassemblerDex::MakeWriteMethodHandle16},
       {{4, TypeTag(kProtoIdToParametersTypeList), PoolTag(kTypeList)},
        &DisassemblerDex::MakeReadProtoIdToParametersTypeList,
        &DisassemblerDex::MakeWriteAbs32},
@@ -933,6 +1018,9 @@ std::vector<ReferenceGroup> DisassemblerDex::MakeReferenceGroups() const {
       {{4, TypeTag(kClassDefToAnnotationDirectory),
         PoolTag(kAnnotationsDirectory)},
        &DisassemblerDex::MakeReadClassDefToAnnotationDirectory,
+       &DisassemblerDex::MakeWriteAbs32},
+      {{4, TypeTag(kCallSiteIdToCallSite), PoolTag(kCallSite)},
+       &DisassemblerDex::MakeReadCallSiteIdToCallSite32,
        &DisassemblerDex::MakeWriteAbs32},
   };
 }
@@ -1123,6 +1211,46 @@ DisassemblerDex::MakeReadClassDefToStaticValuesEncodedArray(offset_t lo,
       offsetof(dex::ClassDefItem, static_values_off), std::move(mapper));
 }
 
+std::unique_ptr<ReferenceReader>
+DisassemblerDex::MakeReadCallSiteIdToCallSite32(offset_t lo, offset_t hi) {
+  auto mapper = base::BindRepeating(ReadTargetOffset32, image_);
+  return std::make_unique<ItemReferenceReader>(
+      lo, hi, call_site_map_item_, sizeof(dex::CallSiteIdItem),
+      offsetof(dex::CallSiteIdItem, call_site_off), std::move(mapper));
+}
+
+std::unique_ptr<ReferenceReader>
+DisassemblerDex::MakeReadMethodHandleToFieldId16(offset_t lo, offset_t hi) {
+  auto mapper = base::BindRepeating(ReadMethodHandleFieldOrMethodId, image_,
+                                    field_map_item_, sizeof(dex::FieldIdItem),
+                                    dex::MethodHandleType::kStaticPut,
+                                    dex::MethodHandleType::kInstanceGet);
+  // Use |mapper_wants_item == true| for ItemReferenceReader such that
+  // |location| is aligned with MethodHandleItem when passed to |mapper|. This
+  // allows ReadMethodHandleFieldOrMethodId to safely determine whether the
+  // reference in the MethodHandleItem is of the correct type to be emitted.
+  return std::make_unique<ItemReferenceReader>(
+      lo, hi, method_handle_map_item_, sizeof(dex::MethodHandleItem),
+      offsetof(dex::MethodHandleItem, field_or_method_id), std::move(mapper),
+      /*mapper_wants_item=*/true);
+}
+
+std::unique_ptr<ReferenceReader>
+DisassemblerDex::MakeReadMethodHandleToMethodId16(offset_t lo, offset_t hi) {
+  auto mapper = base::BindRepeating(ReadMethodHandleFieldOrMethodId, image_,
+                                    method_map_item_, sizeof(dex::MethodIdItem),
+                                    dex::MethodHandleType::kInvokeStatic,
+                                    dex::MethodHandleType::kInvokeInterface);
+  // Use |mapper_wants_item == true| for ItemReferenceReader such that
+  // |location| is aligned with MethodHandleItem when passed to |mapper|. This
+  // allows ReadMethodHandleFieldOrMethodId to safely determine whether the
+  // reference in the MethodHandleItem is of the correct type to be emitted.
+  return std::make_unique<ItemReferenceReader>(
+      lo, hi, method_handle_map_item_, sizeof(dex::MethodHandleItem),
+      offsetof(dex::MethodHandleItem, field_or_method_id), std::move(mapper),
+      /*mapper_wants_item=*/true);
+}
+
 std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadTypeListToTypeId16(
     offset_t lo,
     offset_t hi) {
@@ -1231,6 +1359,10 @@ DisassemblerDex::MakeReadAnnotationsDirectoryToParameterAnnotationSetRef(
       std::move(mapper));
 }
 
+// MakeReadCode* readers use offset relative to the instruction beginning based
+// on the instruction format ID.
+// See https://source.android.com/devices/tech/dalvik/instruction-formats
+
 std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToStringId16(
     offset_t lo,
     offset_t hi) {
@@ -1293,6 +1425,71 @@ std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToTypeId16(
       image_, lo, hi, code_item_offsets_, std::move(filter), std::move(mapper));
 }
 
+std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToProtoId16(
+    offset_t lo,
+    offset_t hi) {
+  auto filter = base::BindRepeating(
+      [](const InstructionParser::Value& value) -> offset_t {
+        if (value.instr->format == dex::FormatId::c) {
+          if (value.instr->opcode == 0xFA ||  // invoke-polymorphic
+              value.instr->opcode == 0xFB) {  // invoke-polymorphic/range
+            // HHHH from e.g, invoke-polymorphic {vC, vD, vE, vF, vG},
+            //   meth@BBBB, proto@HHHH
+            return value.instr_offset + 6;
+          }
+          if (value.instr->opcode == 0xFF) {  // const-method-type
+            // BBBB from e.g., const-method-type vAA, proto@BBBB
+            return value.instr_offset + 2;
+          }
+        }
+        return kInvalidOffset;
+      });
+  auto mapper = base::BindRepeating(ReadTargetIndex<uint16_t>, image_,
+                                    proto_map_item_, sizeof(dex::ProtoIdItem));
+  return std::make_unique<InstructionReferenceReader>(
+      image_, lo, hi, code_item_offsets_, std::move(filter), std::move(mapper));
+}
+
+std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToCallSiteId16(
+    offset_t lo,
+    offset_t hi) {
+  auto filter = base::BindRepeating(
+      [](const InstructionParser::Value& value) -> offset_t {
+        if (value.instr->format == dex::FormatId::c &&
+            (value.instr->opcode == 0xFC ||   // invoke-custom
+             value.instr->opcode == 0xFD)) {  // invoke-custom/range
+          // BBBB from e.g, invoke-custom {vC, vD, vE, vF, vG},
+          //   call_site@BBBB
+          return value.instr_offset + 2;
+        }
+        return kInvalidOffset;
+      });
+  auto mapper =
+      base::BindRepeating(ReadTargetIndex<uint16_t>, image_,
+                          call_site_map_item_, sizeof(dex::CallSiteIdItem));
+  return std::make_unique<InstructionReferenceReader>(
+      image_, lo, hi, code_item_offsets_, std::move(filter), std::move(mapper));
+}
+
+std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToMethodHandle16(
+    offset_t lo,
+    offset_t hi) {
+  auto filter = base::BindRepeating(
+      [](const InstructionParser::Value& value) -> offset_t {
+        if (value.instr->format == dex::FormatId::c &&
+            value.instr->opcode == 0xFE) {  // const-method-handle
+          // BBBB from e.g, const-method-handle vAA, method_handle@BBBB
+          return value.instr_offset + 2;
+        }
+        return kInvalidOffset;
+      });
+  auto mapper = base::BindRepeating(ReadTargetIndex<uint16_t>, image_,
+                                    method_handle_map_item_,
+                                    sizeof(dex::MethodHandleItem));
+  return std::make_unique<InstructionReferenceReader>(
+      image_, lo, hi, code_item_offsets_, std::move(filter), std::move(mapper));
+}
+
 std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToFieldId16(
     offset_t lo,
     offset_t hi) {
@@ -1319,7 +1516,9 @@ std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToMethodId16(
       [](const InstructionParser::Value& value) -> offset_t {
         if (value.instr->format == dex::FormatId::c &&
             (value.instr->opcode == 0x6E ||   // invoke-kind
-             value.instr->opcode == 0x74)) {  // invoke-kind/range
+             value.instr->opcode == 0x74 ||   // invoke-kind/range
+             value.instr->opcode == 0xFA ||   // invoke-polymorphic
+             value.instr->opcode == 0xFB)) {  // invoke-polymorphic/range
           // BBBB from e.g., invoke-virtual {vC, vD, vE, vF, vG}, meth@BBBB.
           return value.instr_offset + 2;
         }
@@ -1489,6 +1688,22 @@ std::unique_ptr<ReferenceWriter> DisassemblerDex::MakeWriteMethodId32(
   return std::make_unique<ReferenceWriterAdaptor>(image, std::move(writer));
 }
 
+std::unique_ptr<ReferenceWriter> DisassemblerDex::MakeWriteCallSiteId16(
+    MutableBufferView image) {
+  auto writer =
+      base::BindRepeating(WriteTargetIndex<uint16_t>, call_site_map_item_,
+                          sizeof(dex::CallSiteIdItem));
+  return std::make_unique<ReferenceWriterAdaptor>(image, std::move(writer));
+}
+
+std::unique_ptr<ReferenceWriter> DisassemblerDex::MakeWriteMethodHandle16(
+    MutableBufferView image) {
+  auto writer =
+      base::BindRepeating(WriteTargetIndex<uint16_t>, method_handle_map_item_,
+                          sizeof(dex::MethodHandleItem));
+  return std::make_unique<ReferenceWriterAdaptor>(image, std::move(writer));
+}
+
 std::unique_ptr<ReferenceWriter> DisassemblerDex::MakeWriteRelCode8(
     MutableBufferView image) {
   auto writer = base::BindRepeating([](Reference ref, MutableBufferView image) {
@@ -1585,15 +1800,7 @@ bool DisassemblerDex::ParseHeader() {
     return false;
 
   // Read and validate map list, ensuring that required item types are present.
-  // - GetItemBaseSize() should have an entry for each item.
-  // - dex::kTypeCodeItem is actually not required; it's possible to have a DEX
-  //   file with classes that have no code. However, this is unlikely to appear
-  //   in application, so for simplicity we require DEX files to have code.
-  std::set<uint16_t> required_item_types = {
-      dex::kTypeStringIdItem, dex::kTypeTypeIdItem,   dex::kTypeProtoIdItem,
-      dex::kTypeFieldIdItem,  dex::kTypeMethodIdItem, dex::kTypeClassDefItem,
-      dex::kTypeTypeList,     dex::kTypeCodeItem,
-  };
+  // GetItemBaseSize() should have an entry for each item.
   for (offset_t i = 0; i < list_size; ++i) {
     const dex::MapItem* item = &item_list[i];
     // Reject unreasonably large |item->size|.
@@ -1603,29 +1810,46 @@ bool DisassemblerDex::ParseHeader() {
       return false;
     if (!map_item_map_.insert(std::make_pair(item->type, item)).second)
       return false;  // A given type must appear at most once.
-    required_item_types.erase(item->type);
   }
-  // TODO(huangs): Replace this with guards throughout file.
-  if (!required_item_types.empty())
-    return false;
 
   // Make local copies of main map items.
-  string_map_item_ = *map_item_map_[dex::kTypeStringIdItem];
-  type_map_item_ = *map_item_map_[dex::kTypeTypeIdItem];
-  proto_map_item_ = *map_item_map_[dex::kTypeProtoIdItem];
-  field_map_item_ = *map_item_map_[dex::kTypeFieldIdItem];
-  method_map_item_ = *map_item_map_[dex::kTypeMethodIdItem];
-  class_def_map_item_ = *map_item_map_[dex::kTypeClassDefItem];
-  type_list_map_item_ = *map_item_map_[dex::kTypeTypeList];
-  code_map_item_ = *map_item_map_[dex::kTypeCodeItem];
-
-  // The following types are optional and may not be present in every DEX file.
+  if (map_item_map_.count(dex::kTypeStringIdItem)) {
+    string_map_item_ = *map_item_map_[dex::kTypeStringIdItem];
+  }
+  if (map_item_map_.count(dex::kTypeTypeIdItem)) {
+    type_map_item_ = *map_item_map_[dex::kTypeTypeIdItem];
+  }
+  if (map_item_map_.count(dex::kTypeProtoIdItem)) {
+    proto_map_item_ = *map_item_map_[dex::kTypeProtoIdItem];
+  }
+  if (map_item_map_.count(dex::kTypeFieldIdItem)) {
+    field_map_item_ = *map_item_map_[dex::kTypeFieldIdItem];
+  }
+  if (map_item_map_.count(dex::kTypeMethodIdItem)) {
+    method_map_item_ = *map_item_map_[dex::kTypeMethodIdItem];
+  }
+  if (map_item_map_.count(dex::kTypeClassDefItem)) {
+    class_def_map_item_ = *map_item_map_[dex::kTypeClassDefItem];
+  }
+  if (map_item_map_.count(dex::kTypeCallSiteIdItem)) {
+    call_site_map_item_ = *map_item_map_[dex::kTypeCallSiteIdItem];
+  }
+  if (map_item_map_.count(dex::kTypeMethodHandleItem)) {
+    method_handle_map_item_ = *map_item_map_[dex::kTypeMethodHandleItem];
+  }
+  if (map_item_map_.count(dex::kTypeTypeList)) {
+    type_list_map_item_ = *map_item_map_[dex::kTypeTypeList];
+  }
   if (map_item_map_.count(dex::kTypeAnnotationSetRefList)) {
     annotation_set_ref_list_map_item_ =
         *map_item_map_[dex::kTypeAnnotationSetRefList];
   }
-  if (map_item_map_.count(dex::kTypeAnnotationSetItem))
+  if (map_item_map_.count(dex::kTypeAnnotationSetItem)) {
     annotation_set_map_item_ = *map_item_map_[dex::kTypeAnnotationSetItem];
+  }
+  if (map_item_map_.count(dex::kTypeCodeItem)) {
+    code_map_item_ = *map_item_map_[dex::kTypeCodeItem];
+  }
   if (map_item_map_.count(dex::kTypeAnnotationsDirectoryItem)) {
     annotations_directory_map_item_ =
         *map_item_map_[dex::kTypeAnnotationsDirectoryItem];

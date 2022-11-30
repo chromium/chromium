@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "url/origin.h"
 
@@ -22,31 +23,18 @@ bool IsExpectedResponseCode(int response_code) {
 // static
 void ReauthTabHelper::CreateForWebContents(content::WebContents* web_contents,
                                            const GURL& reauth_url,
-                                           bool restrict_to_reauth_origin,
                                            ReauthCallback callback) {
   DCHECK(web_contents);
   if (!FromWebContents(web_contents)) {
     web_contents->SetUserData(
         UserDataKey(), base::WrapUnique(new ReauthTabHelper(
-                           web_contents, reauth_url, restrict_to_reauth_origin,
-                           std::move(callback))));
+                           web_contents, reauth_url, std::move(callback))));
   } else {
     std::move(callback).Run(signin::ReauthResult::kCancelled);
   }
 }
 
 ReauthTabHelper::~ReauthTabHelper() = default;
-
-bool ReauthTabHelper::ShouldAllowNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
-    return true;
-
-  if (!restrict_to_reauth_origin_)
-    return true;
-
-  return url::IsSameOriginWith(reauth_url_, navigation_handle->GetURL());
-}
 
 void ReauthTabHelper::CompleteReauth(signin::ReauthResult result) {
   if (callback_)
@@ -55,7 +43,7 @@ void ReauthTabHelper::CompleteReauth(signin::ReauthResult result) {
 
 void ReauthTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   is_within_reauth_origin_ &=
@@ -98,13 +86,12 @@ bool ReauthTabHelper::has_last_committed_error_page() {
 
 ReauthTabHelper::ReauthTabHelper(content::WebContents* web_contents,
                                  const GURL& reauth_url,
-                                 bool restrict_to_reauth_origin,
                                  ReauthCallback callback)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<ReauthTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents),
       reauth_url_(reauth_url),
-      restrict_to_reauth_origin_(restrict_to_reauth_origin),
       callback_(std::move(callback)) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReauthTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReauthTabHelper);
 
 }  // namespace signin

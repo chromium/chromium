@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,7 @@
 
 #include "ui/touch_selection/touch_handle.h"
 
-#include <memory>
-
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 
 namespace android_webview {
 
@@ -20,6 +17,10 @@ class PopupTouchHandleDrawable : public ui::TouchHandleDrawable {
   PopupTouchHandleDrawable(JNIEnv* env,
                            jobject obj,
                            float horizontal_padding_ratio);
+
+  PopupTouchHandleDrawable(const PopupTouchHandleDrawable&) = delete;
+  PopupTouchHandleDrawable& operator=(const PopupTouchHandleDrawable&) = delete;
+
   ~PopupTouchHandleDrawable() override;
 
   // ui::TouchHandleDrawable implementation.
@@ -36,8 +37,6 @@ class PopupTouchHandleDrawable : public ui::TouchHandleDrawable {
   JavaObjectWeakGlobalRef java_ref_;
 
   const float drawable_horizontal_padding_ratio_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTouchHandleDrawable);
 };
 
 }  // namespace android_webview

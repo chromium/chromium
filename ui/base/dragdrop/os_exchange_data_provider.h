@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,6 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <objidl.h>
-#endif
-
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -23,7 +19,11 @@
 #include "ui/base/dragdrop/download_file_interface.h"
 #include "url/gurl.h"
 
-#if defined(USE_AURA) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN)
+#include "base/callback_forward.h"
+#endif
+
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #endif
@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual void MarkOriginatedFromRenderer() = 0;
   virtual bool DidOriginateFromRenderer() const = 0;
 
+  virtual void MarkAsFromPrivileged() = 0;
+  virtual bool IsFromPrivileged() const = 0;
+
   virtual void SetString(const std::u16string& data) = 0;
   virtual void SetURL(const GURL& url, const std::u16string& title) = 0;
   virtual void SetFilename(const base::FilePath& path) = 0;
@@ -72,14 +75,12 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual bool HasFile() const = 0;
   virtual bool HasCustomFormat(const ClipboardFormatType& format) const = 0;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
   virtual void SetFileContents(const base::FilePath& filename,
                                const std::string& file_contents) = 0;
-#endif
-#if defined(OS_WIN)
   virtual bool GetFileContents(base::FilePath* filename,
                                std::string* file_contents) const = 0;
   virtual bool HasFileContents() const = 0;
+#if BUILDFLAG(IS_WIN)
   virtual bool HasVirtualFilenames() const = 0;
   virtual bool GetVirtualFilenames(std::vector<FileInfo>* file_names) const = 0;
   virtual bool GetVirtualFilesAsTempFiles(
@@ -100,7 +101,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual bool HasHtml() const = 0;
 #endif
 
-#if defined(USE_AURA) || defined(OS_APPLE)
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
   virtual void SetDragImage(const gfx::ImageSkia& image,
                             const gfx::Vector2d& cursor_offset) = 0;
   virtual gfx::ImageSkia GetDragImage() const = 0;

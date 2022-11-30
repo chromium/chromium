@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,10 @@
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
-#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "services/tracing/public/cpp/stack_sampling/reached_code_data_source_android.h"
 #endif
 
@@ -52,8 +51,7 @@ TraceEventAgent::TraceEventAgent() {
 
   PerfettoTracedProcess::Get()->AddDataSource(
       TraceEventDataSource::GetInstance());
-  TracingSamplerProfiler::RegisterDataSource();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   PerfettoTracedProcess::Get()->AddDataSource(ReachedCodeDataSource::Get());
 #endif
 }
@@ -72,7 +70,16 @@ void TraceEventAgent::AddMetadataGeneratorFunction(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   metadata_generator_functions_.push_back(generator);
 
-  TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(generator);
+  TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
+      base::BindRepeating(
+          [](MetadataGeneratorFunction const& generator)
+              -> absl::optional<base::Value> {
+            if (auto rv = generator.Run()) {
+              return base::Value(std::move(rv.value()));
+            }
+            return absl::nullopt;
+          },
+          std::move(generator)));
 }
 
 }  // namespace tracing

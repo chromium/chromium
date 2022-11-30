@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,9 @@ function generateContents(appIcon, appTitle, appPackageName) {
   // Add keyboard events
   let keyEventFired = false;
   chip.addEventListener('keydown', function(e) {
-    if (!keyEventFired && isConfirmKey_(e))
+    if (!keyEventFired && isConfirmKey_(e)) {
       addRippleCircle_(e);
+    }
     keyEventFired = true;
   });
   chip.addEventListener('keyup', function(e) {
@@ -144,14 +145,6 @@ function selectAll() {
   }
 
   sendNumberOfSelectedApps();
-}
-
-/**
- * Calculate height of the recommend-apps-container.
- * @return {number}
- */
-function getHeight() {
-  return document.querySelector('#recommend-apps-container').clientHeight;
 }
 
 window.addEventListener('message', onMessage_);

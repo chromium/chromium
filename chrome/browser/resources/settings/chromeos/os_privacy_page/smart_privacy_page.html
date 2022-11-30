@@ -1,0 +1,85 @@
+<style include="settings-shared">
+  cr-radio-group {
+    display: flex;
+    flex-flow: column wrap;
+  }
+
+  .indented {
+    margin-inline-start: var(--cr-section-padding);
+  }
+
+  .underbar {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  .left-float-graphic {
+    float: left;
+    height: 200px;
+    margin-inline-end: 10px;
+  }
+
+  .large-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    --iron-icon-stroke-color: var(--cros-icon-color-prominent);
+    --iron-icon-height: 32px;
+    --iron-icon-width: 32px;
+    margin-bottom: 10px;
+  }
+
+  .banner {
+    display: inline-block;
+    margin: 0 0 10px 0;
+    padding: 0 10px 10px 10px;
+  }
+</style>
+
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
+<div class="banner underbar">
+  <!-- No alt since image is purely decorative. -->
+  <img class="left-float-graphic"
+       src="[[getImageSource_(isDarkModeActive_)]]"
+       alt="" aria-hidden="true">
+  <div>
+    <iron-icon class="large-icon" icon="cr:security">
+    </iron-icon>
+  </div>
+  <div>
+    <localized-link
+        localized-string="$i18n{smartPrivacyDesc}"
+        link-url="$i18n{smartPrivacyLearnMoreURL}">
+    </localized-link>
+  </div>
+</div>
+<template is="dom-if" if="[[isQuickDimEnabled_]]" restamp>
+  <settings-toggle-button
+      pref="{{prefs.power.quick_dim_enabled}}"
+      id="quickDimToggle"
+      label="$i18n{smartPrivacyQuickDimTitle}"
+      sub-label="$i18n{smartPrivacyQuickDimSubtext}"
+      deep-link-focus-id$="[[Setting.kQuickDim]]">
+  </settings-toggle-button>
+
+  <!-- Underbar is only needed if we need to separate the two
+       settings. -->
+   <template is="dom-if" if="[[isSnoopingProtectionEnabled_]]" restamp>
+     <div class="underbar"></div>
+   </template>
+</template>
+<template is="dom-if" if="[[isSnoopingProtectionEnabled_]]" restamp>
+  <settings-toggle-button
+      pref="{{prefs.ash.privacy.snooping_protection_enabled}}"
+      id="snoopingProtectionToggle"
+      label="$i18n{smartPrivacySnoopingTitle}"
+      sub-label="$i18n{smartPrivacySnoopingSubtext}"
+      deep-link-focus-id$="[[Setting.kSnoopingProtection]]">
+  </settings-toggle-button>
+  <iron-collapse id="snoopingProtectionOptions"
+      opened="[[prefs.ash.privacy.snooping_protection_enabled.value]]">
+      <settings-toggle-button class="settings-box continuation indented"
+          pref="{{prefs.ash.privacy.snooping_protection_notification_suppression_enabled}}"
+          label="$i18n{smartPrivacySnoopingNotifications}">
+      </settings-toggle-button>
+  </iron-collapse>
+</template>

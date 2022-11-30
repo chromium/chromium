@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ function GoogleCorpIndividualAttestation() {}
  */
 GoogleCorpIndividualAttestation.prototype.requestIndividualAttestation =
     function(appIdHash) {
-  return appIdHash == GoogleCorpIndividualAttestation.GOOGLE_CORP_APP_ID_HASH;
+  return appIdHash === GoogleCorpIndividualAttestation.GOOGLE_CORP_APP_ID_HASH;
 };
 
 /**

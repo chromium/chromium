@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,7 +25,7 @@ outfile = sys.argv[4]
 if not os.path.isfile(outfile) or \
    os.stat(outfile).st_mtime < os.stat(infile).st_mtime:
   with open(outfile, 'w') as outfileobj:
-    subprocess.check_call([dumpsyms, infile], stdout=outfileobj)
+    subprocess.check_call([dumpsyms, '-d', infile], stdout=outfileobj)
 
 if strip_binary != '0':
   subprocess.check_call(['strip', infile])

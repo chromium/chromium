@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
@@ -47,6 +46,10 @@ class DrmWindowHost : public PlatformWindow,
                 DrmCursor* cursor,
                 DrmWindowHostManager* window_manager,
                 DrmDisplayHostManager* display_manager);
+
+  DrmWindowHost(const DrmWindowHost&) = delete;
+  DrmWindowHost& operator=(const DrmWindowHost&) = delete;
+
   ~DrmWindowHost() override;
 
   void Initialize();
@@ -61,8 +64,10 @@ class DrmWindowHost : public PlatformWindow,
   void Close() override;
   bool IsVisible() const override;
   void PrepareForShutdown() override;
-  void SetBounds(const gfx::Rect& bounds) override;
-  gfx::Rect GetBounds() const override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInPixels() const override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInDIP() const override;
   void SetTitle(const std::u16string& title) override;
   void SetCapture() override;
   void ReleaseCapture() override;
@@ -76,11 +81,11 @@ class DrmWindowHost : public PlatformWindow,
   void Deactivate() override;
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
-  void SetCursor(PlatformCursor cursor) override;
+  void SetCursor(scoped_refptr<PlatformCursor> cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
-  void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
-  gfx::Rect GetRestoredBoundsInPixels() const override;
+  void SetRestoredBoundsInDIP(const gfx::Rect& bounds) override;
+  gfx::Rect GetRestoredBoundsInDIP() const override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
@@ -110,8 +115,6 @@ class DrmWindowHost : public PlatformWindow,
   const gfx::AcceleratedWidget widget_;
 
   gfx::Rect cursor_confined_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindowHost);
 };
 
 }  // namespace ui

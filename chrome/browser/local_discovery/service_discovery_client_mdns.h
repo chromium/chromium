@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
@@ -26,6 +25,10 @@ class ServiceDiscoveryClientMdns
   class Proxy;
 
   ServiceDiscoveryClientMdns();
+
+  ServiceDiscoveryClientMdns(const ServiceDiscoveryClientMdns&) = delete;
+  ServiceDiscoveryClientMdns& operator=(const ServiceDiscoveryClientMdns&) =
+      delete;
 
   // ServiceDiscoveryClient:
   std::unique_ptr<ServiceWatcher> CreateServiceWatcher(
@@ -70,8 +73,6 @@ class ServiceDiscoveryClientMdns
   bool need_delay_mdns_tasks_ = true;
 
   base::WeakPtrFactory<ServiceDiscoveryClientMdns> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDiscoveryClientMdns);
 };
 
 }  // namespace local_discovery

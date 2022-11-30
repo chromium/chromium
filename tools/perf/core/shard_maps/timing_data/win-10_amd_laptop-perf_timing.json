@@ -1,0 +1,22 @@
+[
+    {
+        "duration": "154.0",
+        "name": "jetstream/JetStream"
+    },
+    {
+        "duration": "91.0",
+        "name": "jetstream2/JetStream2"
+    },
+    {
+        "duration": "16.0",
+        "name": "kraken/http://krakenbenchmark.mozilla.org/kraken-1.1/driver.html"
+    },
+    {
+        "duration": "38.0",
+        "name": "octane/Octane"
+    },
+    {
+        "duration": "46.0",
+        "name": "speedometer2/Speedometer2"
+    }
+]

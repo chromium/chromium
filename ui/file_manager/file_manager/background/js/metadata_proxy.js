@@ -1,13 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-// #import {LRUCache} from '../../common/js/lru_cache.m.js';
+import {LRUCache} from '../../common/js/lru_cache.js';
 
 // Namespace
 const metadataProxy = {};
@@ -84,5 +79,4 @@ metadataProxy.overrideCacheTtlForTesting = ttl => {
   metadataProxy.cache_ttl_seconds_ = ttl ? ttl : metadataProxy.MAX_TTL_SECONDS_;
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {metadataProxy};
+export {metadataProxy};

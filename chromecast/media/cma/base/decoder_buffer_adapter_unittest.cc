@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 
-#include "base/stl_util.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -12,13 +11,13 @@
 
 namespace {
 static const uint8_t kBufferData[] = "hello";
-static const size_t kBufferDataSize = base::size(kBufferData);
+static const size_t kBufferDataSize = std::size(kBufferData);
 static const int64_t kBufferTimestampUs = 31;
 
 scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer() {
   scoped_refptr<media::DecoderBuffer> buffer =
       media::DecoderBuffer::CopyFrom(kBufferData, kBufferDataSize);
-  buffer->set_timestamp(base::TimeDelta::FromMicroseconds(kBufferTimestampUs));
+  buffer->set_timestamp(base::Microseconds(kBufferTimestampUs));
   return buffer;
 }
 }  // namespace
@@ -51,8 +50,7 @@ TEST(DecoderBufferAdapterTest, Timestamp) {
   EXPECT_EQ(kBufferTimestampUs, buffer_adapter->timestamp());
 
   const int64_t kTestTimestampUs = 62;
-  buffer_adapter->set_timestamp(
-      base::TimeDelta::FromMicroseconds(kTestTimestampUs));
+  buffer_adapter->set_timestamp(base::Microseconds(kTestTimestampUs));
   EXPECT_EQ(kTestTimestampUs, buffer_adapter->timestamp());
 }
 
@@ -63,7 +61,7 @@ TEST(DecoderBufferAdapterTest, Data) {
   EXPECT_EQ(kBufferDataSize, buffer_adapter->data_size());
 
   const uint8_t kTestBufferData[] = "world";
-  const size_t kTestBufferDataSize = base::size(kTestBufferData);
+  const size_t kTestBufferDataSize = std::size(kTestBufferData);
   memcpy(buffer_adapter->writable_data(), kTestBufferData, kTestBufferDataSize);
   EXPECT_EQ(
       0, memcmp(buffer_adapter->data(), kTestBufferData, kTestBufferDataSize));

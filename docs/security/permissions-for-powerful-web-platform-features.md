@@ -1,7 +1,7 @@
 # Controlling Access to Powerful Web Platform Features
 
 _Author: [dominickn@chromium.org](mailto:dominickn@chromium.org)_
-_Contributors: [rorymcclelland@chromium.org](mailto:rorymcclelland@chromium.org)_
+_Contributors: [mgiuca@chromium.org](mailto:mgiuca@chromium.org), [rorymcclelland@chromium.org](mailto:rorymcclelland@chromium.org)_
 
 # Overview
 
@@ -142,7 +142,7 @@ which may include:
 
 These mechanisms must clearly disclose the origin of the request, and follow
 Chromium's
-[guidelines on displaying URLs](https://chromium.googlesource.com/chromium/src/+/master/docs/security/url_display_guidelines/url_display_guidelines.md).
+[guidelines on displaying URLs](https://chromium.googlesource.com/chromium/src/+/main/docs/security/url_display_guidelines/url_display_guidelines.md).
 Implementations may be tested using tools such as
 [Trickuri](https://github.com/chromium/trickuri).
 

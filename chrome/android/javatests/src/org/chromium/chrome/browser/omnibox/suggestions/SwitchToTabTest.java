@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.wait
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
-import android.content.Intent;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -36,6 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -56,8 +58,6 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.WaitForFocusHelper;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -78,10 +78,12 @@ public class SwitchToTabTest {
     private static final long SEARCH_ACTIVITY_MAX_TIME_TO_POLL = 10000L;
 
     private EmbeddedTestServer mTestServer;
+    private OmniboxTestUtils mOmnibox;
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
+        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
     }
 
     @After
@@ -101,8 +103,7 @@ public class SwitchToTabTest {
         final UrlBar urlBar = activity.findViewById(R.id.url_bar);
         Assert.assertNotNull(urlBar);
 
-        WaitForFocusHelper.acquireFocusForView(urlBar);
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
+        mOmnibox.requestFocus();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { urlBar.setText(text); });
     }
@@ -118,7 +119,7 @@ public class SwitchToTabTest {
             LocationBarLayout locationBarLayout, Tab tab) throws InterruptedException {
         typeInOmnibox(activity, ChromeTabUtils.getTitleOnUiThread(tab));
 
-        OmniboxTestUtils.waitForOmniboxSuggestions(locationBarLayout);
+        mOmnibox.checkSuggestionsShown();
         // waitForOmniboxSuggestions only wait until one suggestion shows up, we need to wait util
         // autocomplete return more suggestions.
         CriteriaHelper.pollUiThread(() -> {
@@ -147,7 +148,7 @@ public class SwitchToTabTest {
      *
      * @param locationBarLayout The layout which omnibox suggestions will show in.
      * @param tab The tab which the AutocompleteMatch should suggest.
-     * @return The suggesstion which suggests the |tab|.
+     * @return The suggestion which suggests the |tab|.
      */
     private AutocompleteMatch findTabMatchOmniboxSuggestion(
             LocationBarLayout locationBarLayout, Tab tab) {
@@ -236,28 +237,35 @@ public class SwitchToTabTest {
     }
 
     /**
-     * Launch the SearchActiviy.
+     * Launch the SearchActivity.
      */
     private SearchActivity startSearchActivity() {
         final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        final Context context = instrumentation.getContext();
+
         ActivityMonitor searchMonitor =
                 new ActivityMonitor(SearchActivity.class.getName(), null, false);
         instrumentation.addMonitor(searchMonitor);
 
         // Fire the Intent to start up the SearchActivity.
-        Intent intent = new Intent();
-        SearchWidgetProvider.startSearchActivity(intent, /* isVoiceSearch = */ false);
+        try {
+            SearchWidgetProvider.createIntent(context, false).send();
+        } catch (PendingIntent.CanceledException e) {
+            Assert.assertTrue("Intent canceled", false);
+        }
+
         Activity searchActivity = instrumentation.waitForMonitorWithTimeout(
                 searchMonitor, SEARCH_ACTIVITY_MAX_TIME_TO_POLL);
         Assert.assertNotNull("Activity didn't start", searchActivity);
         Assert.assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
         instrumentation.removeMonitor(searchMonitor);
+        mOmnibox = new OmniboxTestUtils(searchActivity);
         return (SearchActivity) searchActivity;
     }
 
     @Test
     @MediumTest
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
+    @CommandLineFlags.Add({"disable-features=OmniboxUpdateResultDebounce"})
     public void testSwitchToTabSuggestion() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -278,15 +286,15 @@ public class SwitchToTabTest {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab, Matchers.is(aboutTab));
-            Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
+            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(testHttpsUrl1));
         });
     }
 
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
+    @DisabledTest(message = "https://crbug.com/1291136")
     public void testSwitchToTabSuggestionWhenIncognitoTabOnTop() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -318,13 +326,12 @@ public class SwitchToTabTest {
             Tab tab = cta2.getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab, Matchers.is(aboutTab));
-            Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
+            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(testHttpsUrl1));
         });
     }
 
     @Test
     @MediumTest
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
     public void testNoSwitchToIncognitoTabFromNormalModel() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -341,7 +348,7 @@ public class SwitchToTabTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         // trying to match incognito tab.
         mActivityTestRule.typeInOmnibox("about", false);
-        OmniboxTestUtils.waitForOmniboxSuggestions(locationBarLayout);
+        mOmnibox.checkSuggestionsShown();
 
         CriteriaHelper.pollUiThread(() -> {
             AutocompleteMatch matchSuggestion =
@@ -352,7 +359,7 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
+    @CommandLineFlags.Add({"disable-features=OmniboxUpdateResultDebounce"})
     public void testSwitchToTabInSearchActivity() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -387,7 +394,7 @@ public class SwitchToTabTest {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab, Matchers.is(aboutTab));
-            Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
+            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(testHttpsUrl1));
             // Make sure tab is loaded and in foreground.
             Criteria.checkThat(
                     tab.getWindowAndroid().getActivityState(), Matchers.is(ActivityState.RESUMED));

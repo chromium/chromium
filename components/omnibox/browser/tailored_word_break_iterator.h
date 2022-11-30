@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,11 @@ class TailoredWordBreakIterator : public base::i18n::BreakIterator {
   // Returns true if we processing a word with underscores (i.e., |pos| points
   // to a valid position in |underscore_word_|).
   bool HasUnderscoreWord() const;
-  // Updates |prev_| and |pos_| considering underscore.
-  void AdvanceInUnderscoreWord();
+  // Updates |prev_| and |pos_| considering underscore. Returns true if we
+  // successfully advanced within the underscore word, and returns false if
+  // we've exhausted the underscore word, and we should resume the main word
+  // traversal. This is similar to the semantics of `BreakIterator::Advance()`.
+  bool AdvanceInUnderscoreWord();
   // |prev_| and |pos_| are indices to |underscore_word_|.
   size_t prev_, pos_;
   // Set if BreakIterator::GetStringPiece() contains '_', otherwise it's empty.

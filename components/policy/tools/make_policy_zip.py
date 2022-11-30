@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Creates a zip archive with policy template files.
@@ -27,6 +27,10 @@ def main():
   """
   parser = argparse.ArgumentParser()
   parser.add_argument("--output", dest="output")
+  parser.add_argument("--timestamp",
+                      type=int,
+                      metavar="TIME",
+                      help="Unix timestamp to use for files in the archive")
   parser.add_argument("--base_dir", dest="base_dir")
   parser.add_argument("--languages", dest="languages")
   parser.add_argument("--add", action="append", dest="files", default=[])
@@ -34,7 +38,7 @@ def main():
 
   # Process file list, possibly expanding language placeholders.
   _LANG_PLACEHOLDER = "${lang}"
-  languages = filter(bool, args.languages.split(','))
+  languages = list(filter(bool, args.languages.split(',')))
   file_list = []
   for file_to_add in args.files:
     if (_LANG_PLACEHOLDER in file_to_add):
@@ -44,7 +48,7 @@ def main():
       file_list.append(file_to_add)
 
   with build_utils.AtomicOutput(args.output) as f:
-    build_utils.DoZip(file_list, f, args.base_dir)
+    build_utils.DoZip(file_list, f, args.base_dir, timestamp=args.timestamp)
 
 
 if '__main__' == __name__:

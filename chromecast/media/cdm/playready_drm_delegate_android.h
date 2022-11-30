@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/android/media_drm_bridge_delegate.h"
 
 namespace chromecast {
@@ -16,6 +15,11 @@ namespace media {
 class PlayreadyDrmDelegateAndroid : public ::media::MediaDrmBridgeDelegate {
  public:
   PlayreadyDrmDelegateAndroid();
+
+  PlayreadyDrmDelegateAndroid(const PlayreadyDrmDelegateAndroid&) = delete;
+  PlayreadyDrmDelegateAndroid& operator=(const PlayreadyDrmDelegateAndroid&) =
+      delete;
+
   ~PlayreadyDrmDelegateAndroid() override;
 
   // ::media::MediaDrmBridgeDelegate implementation:
@@ -25,9 +29,6 @@ class PlayreadyDrmDelegateAndroid : public ::media::MediaDrmBridgeDelegate {
       const std::vector<uint8_t>& init_data,
       std::vector<uint8_t>* init_data_out,
       std::vector<std::string>* optional_parameters_out) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlayreadyDrmDelegateAndroid);
 };
 
 }  // namespace media

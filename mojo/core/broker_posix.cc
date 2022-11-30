@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,8 @@ Channel::MessagePtr WaitForBrokerMessage(
     size_t expected_num_handles,
     size_t expected_data_size,
     std::vector<PlatformHandle>* incoming_handles) {
-  Channel::MessagePtr message(new Channel::Message(
-      sizeof(BrokerMessageHeader) + expected_data_size, expected_num_handles));
+  Channel::MessagePtr message = Channel::Message::CreateMessage(
+      sizeof(BrokerMessageHeader) + expected_data_size, expected_num_handles);
   std::vector<base::ScopedFD> incoming_fds;
   ssize_t read_result =
       SocketRecvmsg(socket_fd, const_cast<void*>(message->data()),
@@ -43,7 +43,7 @@ Channel::MessagePtr WaitForBrokerMessage(
     LOG(ERROR) << "Invalid node channel message";
     error = true;
   } else if (incoming_fds.size() != expected_num_handles) {
-    LOG(ERROR) << "Received unexpected number of handles";
+    DLOG(ERROR) << "Received unexpected number of handles";
     error = true;
   }
 
@@ -115,7 +115,7 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     return base::WritableSharedMemoryRegion();
   }
 
-#if !defined(OS_POSIX) || defined(OS_ANDROID) || defined(OS_MAC)
+#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   // Non-POSIX systems, as well as Android and Mac, only use a single handle to
   // represent a writable region.
   constexpr size_t kNumExpectedHandles = 1;

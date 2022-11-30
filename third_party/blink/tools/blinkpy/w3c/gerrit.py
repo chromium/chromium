@@ -1,16 +1,17 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import base64
 import json
 import logging
-from urllib2 import HTTPError
+from requests.exceptions import HTTPError
 
 from blinkpy.common.net.network_transaction import NetworkTimeout
+from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_finder import absolute_chromium_dir
-from blinkpy.w3c.common import CHROMIUM_WPT_DIR, is_file_exportable
+from blinkpy.w3c.common import is_file_exportable
 
 _log = logging.getLogger(__name__)
 URL_BASE = 'https://chromium-review.googlesource.com'
@@ -53,13 +54,16 @@ class GerritAPI(object):
         url = URL_BASE + path
         assert self.user and self.token, 'Gerrit user and token required for authenticated routes.'
 
-        b64auth = base64.b64encode('{}:{}'.format(self.user, self.token))
+        b64auth = base64.b64encode('{}:{}'.format(self.user,
+                                                  self.token).encode('utf-8'))
         headers = {
-            'Authorization': 'Basic {}'.format(b64auth),
+            'Authorization': 'Basic {}'.format(b64auth.decode('utf-8')),
             'Content-Type': 'application/json',
         }
-        return self.host.web.request(
-            'POST', url, data=json.dumps(data), headers=headers)
+        return self.host.web.request('POST',
+                                     url,
+                                     data=json.dumps(data).encode('utf-8'),
+                                     headers=headers)
 
     def query_cl_comments_and_revisions(self, change_id):
         """Queries a CL with comments and revisions information."""
@@ -67,7 +71,7 @@ class GerritAPI(object):
 
     def query_cl(self, change_id, query_options=QUERY_OPTIONS):
         """Queries a commit information from Gerrit."""
-        path = '/changes/chromium%2Fsrc~master~{}?{}'.format(
+        path = '/changes/chromium%2Fsrc~main~{}?{}'.format(
             change_id, query_options)
         try:
             cl_data = self.get(path, return_none_on_404=True)
@@ -81,7 +85,7 @@ class GerritAPI(object):
         return cl
 
     def query_exportable_open_cls(self, limit=500):
-        path = ('/changes/?q=project:\"chromium/src\"+branch:master+is:open+'
+        path = ('/changes/?q=project:\"chromium/src\"+branch:main+is:open+'
                 '-is:wip&{}&n={}').format(QUERY_OPTIONS, limit)
         # The underlying host.web.get_binary() automatically retries until it
         # times out, at which point NetworkTimeout is raised.
@@ -158,15 +162,19 @@ class GerritCL(object):
         try:
             return self.api.post(path, {'message': message})
         except HTTPError as e:
-            raise GerritError(
-                'Failed to post a comment to issue {} (code {}).'.format(
-                    self.change_id, e.code))
+            message = 'Failed to post a comment to issue {}'.format(
+                self.change_id)
+            if hasattr(e, 'response'):
+                message += ' (code {})'.format(e.response.status_code)
+            else:
+                message += ' (error {})'.format(e.response.status_code)
+            raise GerritError(message)
 
     def is_exportable(self):
         # TODO(robertma): Consolidate with the related part in chromium_exportable_commits.py.
 
         try:
-            files = self.current_revision['files'].keys()
+            files = list(self.current_revision['files'].keys())
         except KeyError:
             # Empty (deleted) CL is not exportable.
             return False
@@ -183,7 +191,7 @@ class GerritCL(object):
         if 'NOEXPORT=true' in self.current_revision['commit_with_footers']:
             return False
 
-        files_in_wpt = [f for f in files if f.startswith(CHROMIUM_WPT_DIR)]
+        files_in_wpt = [f for f in files if f.startswith(RELATIVE_WPT_TESTS)]
         if not files_in_wpt:
             return False
 

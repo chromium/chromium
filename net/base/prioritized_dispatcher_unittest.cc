@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "net/base/request_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,11 +41,7 @@ class PrioritizedDispatcherTest : public testing::Test {
             char tag,
             Priority priority,
             std::string* log)
-        : dispatcher_(dispatcher),
-          tag_(tag),
-          priority_(priority),
-          running_(false),
-          log_(log) {}
+        : dispatcher_(dispatcher), tag_(tag), priority_(priority), log_(log) {}
 
     bool running() const {
       return running_;
@@ -127,32 +124,32 @@ class PrioritizedDispatcherTest : public testing::Test {
     }
 
    private:
-    PrioritizedDispatcher* dispatcher_;
+    raw_ptr<PrioritizedDispatcher> dispatcher_;
 
     char tag_;
     Priority priority_;
 
     PrioritizedDispatcher::Handle handle_;
-    bool running_;
+    bool running_ = false;
 
-    std::string* log_;
+    raw_ptr<std::string> log_;
   };
 
  protected:
   void Prepare(const PrioritizedDispatcher::Limits& limits) {
-    dispatcher_.reset(new PrioritizedDispatcher(limits));
+    dispatcher_ = std::make_unique<PrioritizedDispatcher>(limits);
   }
 
   std::unique_ptr<TestJob> AddJob(char data, Priority priority) {
-    std::unique_ptr<TestJob> job(
-        new TestJob(dispatcher_.get(), data, priority, &log_));
+    auto job =
+        std::make_unique<TestJob>(dispatcher_.get(), data, priority, &log_);
     job->Add(false);
     return job;
   }
 
   std::unique_ptr<TestJob> AddJobAtHead(char data, Priority priority) {
-    std::unique_ptr<TestJob> job(
-        new TestJob(dispatcher_.get(), data, priority, &log_));
+    auto job =
+        std::make_unique<TestJob>(dispatcher_.get(), data, priority, &log_);
     job->Add(true);
     return job;
   }

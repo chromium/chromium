@@ -1,21 +1,24 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_DOCUMENTS_PROVIDER_ROOT_MAP_FACTORY_H_
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_DOCUMENTS_PROVIDER_ROOT_MAP_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace arc {
 
 class ArcDocumentsProviderRootMap;
 
-class ArcDocumentsProviderRootMapFactory
-    : public BrowserContextKeyedServiceFactory {
+class ArcDocumentsProviderRootMapFactory : public ProfileKeyedServiceFactory {
  public:
+  ArcDocumentsProviderRootMapFactory(
+      const ArcDocumentsProviderRootMapFactory&) = delete;
+  ArcDocumentsProviderRootMapFactory& operator=(
+      const ArcDocumentsProviderRootMapFactory&) = delete;
+
   // Returns the ArcDocumentsProviderRootMap for |context|, creating it if not
   // created yet.
   static ArcDocumentsProviderRootMap* GetForBrowserContext(
@@ -32,12 +35,8 @@ class ArcDocumentsProviderRootMapFactory
   ~ArcDocumentsProviderRootMapFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderRootMapFactory);
 };
 
 }  // namespace arc

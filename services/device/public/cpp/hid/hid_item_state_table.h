@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
@@ -68,7 +69,7 @@ class HidItemStateTable {
                     size_t payload_size);
 
   // The collection that will be modified when main items are encountered.
-  HidCollection* collection = nullptr;
+  raw_ptr<HidCollection> collection = nullptr;
 
   // The report ID is part of the global item state but is not affected by push
   // or pop items.

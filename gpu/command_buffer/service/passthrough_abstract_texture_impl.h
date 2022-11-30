@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_ABSTRACT_TEXTURE_IMPL_H_
 #define GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_ABSTRACT_TEXTURE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
@@ -31,9 +32,10 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
   void SetParameteri(GLenum pname, GLint param) override;
   void BindImage(gl::GLImage* image, bool client_managed) override;
   void BindStreamTextureImage(gl::GLImage* image, GLuint service_id) override;
-  gl::GLImage* GetImage() const override;
+  gl::GLImage* GetImageForTesting() const override;
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;
+  void NotifyOnContextLost() override;
 
   // Called when our decoder is going away, so that we can try to clean up.
   scoped_refptr<TexturePassthrough> OnDecoderWillDestroy();
@@ -41,8 +43,8 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
  private:
   scoped_refptr<TexturePassthrough> texture_passthrough_;
   bool decoder_managed_image_ = false;
-  gl::GLApi* gl_api_;
-  GLES2DecoderPassthroughImpl* decoder_;
+  raw_ptr<gl::GLApi> gl_api_;
+  raw_ptr<GLES2DecoderPassthroughImpl> decoder_;
   CleanupCallback cleanup_cb_;
 };
 

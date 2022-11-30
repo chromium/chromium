@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_GL_SURFACE_EGL_READBACK_WAYLAND_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "ui/ozone/common/gl_surface_egl_readback.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
@@ -33,7 +33,8 @@ class WaylandBufferManagerGpu;
 class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
                                     public WaylandSurfaceGpu {
  public:
-  GLSurfaceEglReadbackWayland(gfx::AcceleratedWidget widget,
+  GLSurfaceEglReadbackWayland(gl::GLDisplayEGL* display,
+                              gfx::AcceleratedWidget widget,
                               WaylandBufferManagerGpu* buffer_manager);
   GLSurfaceEglReadbackWayland(const GLSurfaceEglReadbackWayland&) = delete;
   GLSurfaceEglReadbackWayland& operator=(const GLSurfaceEglReadbackWayland&) =
@@ -46,10 +47,12 @@ class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              gl::FrameData data) override;
   bool SupportsAsyncSwap() override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback) override;
+                        PresentationCallback presentation_callback,
+                        gl::FrameData data) override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
  private:
@@ -72,9 +75,10 @@ class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
   ~GLSurfaceEglReadbackWayland() override;
 
   // WaylandSurfaceGpu:
-  void OnSubmission(uint32_t buffer_id,
-                    const gfx::SwapResult& swap_result) override;
-  void OnPresentation(uint32_t buffer_id,
+  void OnSubmission(uint32_t frame_id,
+                    const gfx::SwapResult& swap_result,
+                    gfx::GpuFenceHandle release_fence) override;
+  void OnPresentation(uint32_t frame_id,
                       const gfx::PresentationFeedback& feedback) override;
 
   void DestroyBuffers();
@@ -82,10 +86,11 @@ class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
   // Widget of the window that this readback writes pixels to.
   const gfx::AcceleratedWidget widget_;
 
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
 
   // Size of the buffer.
   gfx::Size size_;
+  float surface_scale_factor_ = 1.f;
 
   // Available pixel buffers based on shared memory.
   std::vector<std::unique_ptr<PixelBuffer>> available_buffers_;

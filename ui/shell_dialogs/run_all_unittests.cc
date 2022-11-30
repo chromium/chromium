@@ -1,9 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -12,7 +11,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
@@ -22,13 +21,13 @@ class ShellDialogsTestSuite : public base::TestSuite {
  public:
   ShellDialogsTestSuite(int argc, char** argv);
 
+  ShellDialogsTestSuite(const ShellDialogsTestSuite&) = delete;
+  ShellDialogsTestSuite& operator=(const ShellDialogsTestSuite&) = delete;
+
  protected:
   // base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellDialogsTestSuite);
 };
 
 ShellDialogsTestSuite::ShellDialogsTestSuite(int argc, char** argv)
@@ -37,7 +36,7 @@ ShellDialogsTestSuite::ShellDialogsTestSuite(int argc, char** argv)
 void ShellDialogsTestSuite::Initialize() {
   base::TestSuite::Initialize();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   mock_cr_app::RegisterMockCrApp();
 #endif
 

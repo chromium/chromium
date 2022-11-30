@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,6 +80,11 @@ bool ModuleInfoKey::operator<(const ModuleInfoKey& mik) const {
          std::tie(mik.module_path, mik.module_size, mik.module_time_date_stamp);
 }
 
+bool ModuleInfoKey::operator==(const ModuleInfoKey& mik) const {
+  return std::tie(module_path, module_size, module_time_date_stamp) ==
+         std::tie(mik.module_path, mik.module_size, mik.module_time_date_stamp);
+}
+
 // ModuleInspectionResult ------------------------------------------------------
 
 ModuleInspectionResult::ModuleInspectionResult() = default;
@@ -120,7 +125,7 @@ ModuleInspectionResult InspectModule(const base::FilePath& module_path) {
 // (1601-01-01 00:00:00 UTC).
 uint32_t CalculateTimeStamp(base::Time time) {
   const auto delta = time.ToDeltaSinceWindowsEpoch();
-  return delta < base::TimeDelta() ? 0 : static_cast<uint32_t>(delta.InHours());
+  return delta.is_negative() ? 0 : static_cast<uint32_t>(delta.InHours());
 }
 
 std::string GenerateCodeId(const ModuleInfoKey& module_key) {

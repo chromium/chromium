@@ -32,18 +32,20 @@
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -51,7 +53,7 @@ namespace blink {
 IDBCursor::IDBCursor(std::unique_ptr<WebIDBCursor> backend,
                      mojom::IDBCursorDirection direction,
                      IDBRequest* request,
-                     const Source& source,
+                     const Source* source,
                      IDBTransaction* transaction)
     : backend_(std::move(backend)),
       request_(request),
@@ -60,7 +62,7 @@ IDBCursor::IDBCursor(std::unique_ptr<WebIDBCursor> backend,
       transaction_(transaction) {
   DCHECK(backend_);
   DCHECK(request_);
-  DCHECK(!source_.IsNull());
+  DCHECK(source_);
   DCHECK(transaction_);
 }
 
@@ -93,7 +95,7 @@ v8::Local<v8::Object> IDBCursor::AssociateWithWrapper(
 IDBRequest* IDBCursor::update(ScriptState* script_state,
                               const ScriptValue& value,
                               ExceptionState& exception_state) {
-  IDB_TRACE("IDBCursor::updateRequestSetup");
+  TRACE_EVENT0("IndexedDB", "IDBCursor::updateRequestSetup");
   if (!transaction_->IsActive()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kTransactionInactiveError,
@@ -124,12 +126,12 @@ IDBRequest* IDBCursor::update(ScriptState* script_state,
 
   IDBObjectStore* object_store = EffectiveObjectStore();
   return object_store->DoPut(script_state, mojom::IDBPutMode::CursorUpdate,
-                             IDBRequest::Source::FromIDBCursor(this), value,
-                             IdbPrimaryKey(), exception_state);
+                             MakeGarbageCollected<IDBRequest::Source>(this),
+                             value, IdbPrimaryKey(), exception_state);
 }
 
 void IDBCursor::advance(unsigned count, ExceptionState& exception_state) {
-  IDB_TRACE("IDBCursor::advanceRequestSetup");
+  TRACE_EVENT0("IndexedDB", "IDBCursor::advanceRequestSetup");
   IDBRequest::AsyncTraceState metrics("IDBCursor::advance");
   if (!count) {
     exception_state.ThrowTypeError(
@@ -157,13 +159,13 @@ void IDBCursor::advance(unsigned count, ExceptionState& exception_state) {
   request_->SetPendingCursor(this);
   request_->AssignNewMetrics(std::move(metrics));
   got_value_ = false;
-  backend_->Advance(count, request_->CreateWebCallbacks().release());
+  backend_->Advance(count, request_->CreateWebCallbacks());
 }
 
 void IDBCursor::Continue(ScriptState* script_state,
                          const ScriptValue& key_value,
                          ExceptionState& exception_state) {
-  IDB_TRACE("IDBCursor::continueRequestSetup");
+  TRACE_EVENT0("IndexedDB", "IDBCursor::continueRequestSetup");
   IDBRequest::AsyncTraceState metrics("IDBCursor::continue");
 
   if (!transaction_->IsActive()) {
@@ -202,7 +204,7 @@ void IDBCursor::continuePrimaryKey(ScriptState* script_state,
                                    const ScriptValue& key_value,
                                    const ScriptValue& primary_key_value,
                                    ExceptionState& exception_state) {
-  IDB_TRACE("IDBCursor::continuePrimaryKeyRequestSetup");
+  TRACE_EVENT0("IndexedDB", "IDBCursor::continuePrimaryKeyRequestSetup");
   IDBRequest::AsyncTraceState metrics("IDBCursor::continuePrimaryKey");
 
   if (!transaction_->IsActive()) {
@@ -218,7 +220,9 @@ void IDBCursor::continuePrimaryKey(ScriptState* script_state,
     return;
   }
 
-  if (!source_.IsIDBIndex()) {
+  if (
+      !source_->IsIDBIndex()
+  ) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The cursor's source is not an index.");
     return;
@@ -314,12 +318,12 @@ void IDBCursor::Continue(std::unique_ptr<IDBKey> key,
   request_->AssignNewMetrics(std::move(metrics));
   got_value_ = false;
   backend_->CursorContinue(key.get(), primary_key.get(),
-                           request_->CreateWebCallbacks().release());
+                           request_->CreateWebCallbacks());
 }
 
 IDBRequest* IDBCursor::Delete(ScriptState* script_state,
                               ExceptionState& exception_state) {
-  IDB_TRACE("IDBCursor::deleteRequestSetup");
+  TRACE_EVENT0("IndexedDB", "IDBCursor::deleteRequestSetup");
   IDBRequest::AsyncTraceState metrics("IDBCursor::delete");
   if (!transaction_->IsActive()) {
     exception_state.ThrowDOMException(
@@ -419,8 +423,8 @@ ScriptValue IDBCursor::value(ScriptState* script_state) {
   return script_value;
 }
 
-void IDBCursor::source(Source& source) const {
-  source = source_;
+const IDBCursor::Source* IDBCursor::source() const {
+  return source_;
 }
 
 void IDBCursor::SetValueReady(std::unique_ptr<IDBKey> key,
@@ -470,15 +474,25 @@ const IDBKey* IDBCursor::IdbPrimaryKey() const {
 }
 
 IDBObjectStore* IDBCursor::EffectiveObjectStore() const {
-  if (source_.IsIDBObjectStore())
-    return source_.GetAsIDBObjectStore();
-  return source_.GetAsIDBIndex()->objectStore();
+  switch (source_->GetContentType()) {
+    case Source::ContentType::kIDBIndex:
+      return source_->GetAsIDBIndex()->objectStore();
+    case Source::ContentType::kIDBObjectStore:
+      return source_->GetAsIDBObjectStore();
+  }
+  NOTREACHED();
+  return nullptr;
 }
 
 bool IDBCursor::IsDeleted() const {
-  if (source_.IsIDBObjectStore())
-    return source_.GetAsIDBObjectStore()->IsDeleted();
-  return source_.GetAsIDBIndex()->IsDeleted();
+  switch (source_->GetContentType()) {
+    case Source::ContentType::kIDBIndex:
+      return source_->GetAsIDBIndex()->IsDeleted();
+    case Source::ContentType::kIDBObjectStore:
+      return source_->GetAsIDBObjectStore()->IsDeleted();
+  }
+  NOTREACHED();
+  return false;
 }
 
 mojom::IDBCursorDirection IDBCursor::StringToDirection(

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -23,6 +23,7 @@ class LocalDOMWindow;
 class LocalFrame;
 class KURL;
 class Page;
+class ScriptState;
 
 class V8TestingScope {
   STACK_ALLOCATED();
@@ -43,12 +44,16 @@ class V8TestingScope {
   Document& GetDocument();
   ~V8TestingScope();
 
+  // Perform a checkpoint on the context's microtask queue.
+  void PerformMicrotaskCheckpoint();
+
  private:
   std::unique_ptr<DummyPageHolder> holder_;
   v8::HandleScope handle_scope_;
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;
   v8::TryCatch try_catch_;
+  v8::MicrotasksScope microtasks_scope_;
   DummyExceptionStateForTesting exception_state_;
 };
 
@@ -80,11 +85,7 @@ class BindingTestSupportingGC : public testing::Test {
   void RunV8FullGC(
       v8::EmbedderHeapTracer::EmbedderStackState stack_state =
           v8::EmbedderHeapTracer::EmbedderStackState::kNoHeapPointers) {
-    ThreadState::Current()->CollectAllGarbageForTesting(
-        stack_state ==
-                v8::EmbedderHeapTracer::EmbedderStackState::kNoHeapPointers
-            ? BlinkGC::kNoHeapPointersOnStack
-            : BlinkGC::kHeapPointersOnStack);
+    ThreadState::Current()->CollectAllGarbageForTesting(stack_state);
   }
 
  private:

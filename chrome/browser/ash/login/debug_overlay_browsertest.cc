@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -14,16 +13,16 @@
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kOobeScreensCount = 37;
-constexpr int kLoginScreensCount = 33;
+constexpr int kOobeScreensCount = 45;
+constexpr int kLoginScreensCount = 43;
+constexpr int kOsInstallScreensCount = 2;
 
 std::string ElementsInPanel(const std::string& panel) {
   return base::StrCat({"$('", panel, "').children.length"});
@@ -33,12 +32,12 @@ std::string ElementsInPanel(const std::string& panel) {
 
 class DebugOverlayTest : public OobeBaseTest {
  public:
-  DebugOverlayTest() {}
+  DebugOverlayTest() = default;
 
   ~DebugOverlayTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(::chromeos::switches::kShowOobeDevOverlay);
+    command_line->AppendSwitch(switches::kShowOobeDevOverlay);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 };
@@ -63,16 +62,38 @@ IN_PROC_BROWSER_TEST_F(DebugOverlayTest, HideAndShow) {
   test::OobeJS().CreateVisibilityWaiter(false, kDebugOverlay)->Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(DebugOverlayTest, ExpectScreenButtonsCount) {
+class DebugOverlayScreensTest : public DebugOverlayTest,
+                                /* IsOsInstallAllowed */
+                                public ::testing::WithParamInterface<bool> {
+ public:
+  DebugOverlayScreensTest() = default;
+  ~DebugOverlayScreensTest() override = default;
+  // DebugOverlayTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DebugOverlayTest::SetUpCommandLine(command_line);
+    if (!GetParam())
+      return;
+    command_line->AppendSwitch(switches::kAllowOsInstall);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DebugOverlayScreensTest, ExpectScreenButtonsCount) {
   test::OobeJS().ExpectHidden(kDebugOverlay);
   test::OobeJS().ExpectVisible(kDebugButton);
   test::OobeJS().ClickOn(kDebugButton);
   test::OobeJS().CreateVisibilityWaiter(true, kDebugOverlay)->Wait();
-  test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), kOobeScreensCount);
+
+  int screens_count = kOobeScreensCount;
+  if (switches::IsOsInstallAllowed())
+    screens_count += kOsInstallScreensCount;
+
+  test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), screens_count);
 }
 
+INSTANTIATE_TEST_SUITE_P(All, DebugOverlayScreensTest, testing::Bool());
+
 IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   WaitForOobeUI();
   test::OobeJS().ExpectHidden(kDebugOverlay);
   test::OobeJS().ExpectVisible(kDebugButton);
@@ -81,4 +102,4 @@ IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
   test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), kLoginScreensCount);
 }
 
-}  // namespace chromeos
+}  // namespace ash

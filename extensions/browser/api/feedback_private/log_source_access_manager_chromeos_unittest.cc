@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ void DummyCallback(std::unique_ptr<ReadLogSourceResult>) {}
 using LogSourceAccessManagerTest = FeedbackPrivateApiUnittestBase;
 
 TEST_F(LogSourceAccessManagerTest, MaxNumberOfOpenLogSourcesSameExtension) {
-  const base::TimeDelta timeout(base::TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   LogSourceAccessManager manager(browser_context());
@@ -75,7 +75,7 @@ TEST_F(LogSourceAccessManagerTest, MaxNumberOfOpenLogSourcesSameExtension) {
 
 TEST_F(LogSourceAccessManagerTest,
        MaxNumberOfOpenLogSourcesDifferentExtensions) {
-  const base::TimeDelta timeout(base::TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   LogSourceAccessManager manager(browser_context());

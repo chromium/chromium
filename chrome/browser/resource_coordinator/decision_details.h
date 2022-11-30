@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <string>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace ukm {
 namespace builders {
@@ -176,6 +174,10 @@ class DecisionDetails {
   };
 
   DecisionDetails();
+
+  DecisionDetails(const DecisionDetails&) = delete;
+  DecisionDetails& operator=(const DecisionDetails&) = delete;
+
   ~DecisionDetails();
 
   // Allow move assignment.
@@ -225,8 +227,6 @@ class DecisionDetails {
   // reasons after this toggle isn't very informative.
   bool toggled_;
   std::vector<Reason> reasons_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecisionDetails);
 };
 
 }  // namespace resource_coordinator

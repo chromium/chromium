@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/renderer/pepper/host_resource_var.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace IPC {
 class Message;
@@ -60,6 +58,10 @@ class CONTENT_EXPORT ResourceConverter {
 class ResourceConverterImpl : public ResourceConverter {
  public:
   explicit ResourceConverterImpl(PP_Instance instance);
+
+  ResourceConverterImpl(const ResourceConverterImpl&) = delete;
+  ResourceConverterImpl& operator=(const ResourceConverterImpl&) = delete;
+
   ~ResourceConverterImpl() override;
 
   // ResourceConverter overrides.
@@ -98,8 +100,6 @@ class ResourceConverterImpl : public ResourceConverter {
   std::vector<IPC::Message> browser_host_create_messages_;
   // A list of the resource vars associated with browser hosts.
   std::vector<scoped_refptr<HostResourceVar> > browser_vars_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceConverterImpl);
 };
 
 }  // namespace content

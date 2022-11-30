@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,8 +104,7 @@ void UpdateInstallStatus(installer::ArchiveType archive_type,
                          installer::InstallStatus install_status) {
   GoogleUpdateSettings::UpdateInstallStatus(
       install_static::IsSystemInstall(), archive_type,
-      InstallUtil::GetInstallReturnCode(install_status),
-      install_static::GetAppGuid());
+      InstallUtil::GetInstallReturnCode(install_status));
 }
 
 // Returns a string holding the following URL query parameters:

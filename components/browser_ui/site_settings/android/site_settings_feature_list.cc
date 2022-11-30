@@ -1,12 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
-
 #include "components/browser_ui/site_settings/android/features.h"
 #include "components/browser_ui/site_settings/android/site_settings_jni_headers/SiteSettingsFeatureList_jni.h"
 
@@ -20,16 +18,16 @@ namespace {
 // Array of features exposed through the Java ContentFeatureList API. Entries in
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
-const base::Feature* kFeaturesExposedToJava[] = {
-    &kAppNotificationStatusMessaging,
-    &kActionableContentSettings,
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kSiteDataImprovements,
+    &kRequestDesktopSiteExceptionsDowngrade,
 };
 
 // TODO(crbug.com/1060097): Remove this once a generalized FeatureList exists.
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
-  for (size_t i = 0; i < base::size(kFeaturesExposedToJava); ++i) {
-    if (kFeaturesExposedToJava[i]->name == feature_name)
-      return kFeaturesExposedToJava[i];
+  for (const base::Feature* feature : kFeaturesExposedToJava) {
+    if (feature->name == feature_name)
+      return feature;
   }
   NOTREACHED() << "Queried feature not found in SiteSettingsFeatureList: "
                << feature_name;

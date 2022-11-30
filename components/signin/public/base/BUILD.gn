@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,10 +20,10 @@ buildflag_header("signin_buildflags") {
 
 static_library("base") {
   sources = [
-    "account_consistency_method.cc",
     "account_consistency_method.h",
     "avatar_icon_util.cc",
     "avatar_icon_util.h",
+    "consent_level.h",
     "device_id_helper.cc",
     "device_id_helper.h",
     "multilogin_parameters.cc",
@@ -55,12 +55,19 @@ static_library("base") {
 
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager" ]
+    public_deps += [ "//components/account_manager_core" ]
+  }
+  if (is_chromeos_lacros) {
+    public_deps += [ "//components/account_manager_core" ]
   }
 }
 
 if (is_android) {
   java_cpp_enum("signin_metrics_enum_javagen") {
     sources = [ "signin_metrics.h" ]
+  }
+  java_cpp_enum("consent_level_enum_javagen") {
+    sources = [ "consent_level.h" ]
   }
 }
 
@@ -75,6 +82,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//google_apis:test_support",
   ]

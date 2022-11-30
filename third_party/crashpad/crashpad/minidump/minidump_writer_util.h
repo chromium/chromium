@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 
 namespace crashpad {
 namespace internal {
@@ -30,6 +29,10 @@ namespace internal {
 //!     of classes.
 class MinidumpWriterUtil final {
  public:
+  MinidumpWriterUtil() = delete;
+  MinidumpWriterUtil(const MinidumpWriterUtil&) = delete;
+  MinidumpWriterUtil& operator=(const MinidumpWriterUtil&) = delete;
+
   //! \brief Assigns a `time_t` value, logging a warning if the result overflows
   //!     the destination buffer and will be truncated.
   //!
@@ -78,9 +81,6 @@ class MinidumpWriterUtil final {
   static void AssignUTF8ToUTF16(char16_t* destination,
                                 size_t destination_size,
                                 const std::string& source);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MinidumpWriterUtil);
 };
 
 }  // namespace internal

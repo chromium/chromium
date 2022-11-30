@@ -1,0 +1,7 @@
+NetworkFileShares:
+  caption: Network File Shares settings
+  policies:
+  - NetworkFileSharesAllowed
+  - NetBiosShareDiscoveryEnabled
+  - NTLMShareAuthenticationEnabled
+  - NetworkFileSharesPreconfiguredShares

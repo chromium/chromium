@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -34,25 +34,9 @@ class Profile;
 // It is assumed that the account is already in the profile, but not necessarily
 // in the content area (cookies).
 class DiceInterceptedSessionStartupHelper
-    : public content::WebContentsObserver,
-      public signin::IdentityManager::Observer,
+    : public signin::IdentityManager::Observer,
       public AccountReconcilor::Observer {
  public:
-  // Used in UMA histograms, do not reorder or remove values.
-  enum class Result {
-    kReconcilorNothingToDo = 0,
-    kMultiloginNothingToDo = 1,
-    kReconcilorSuccess = 2,       // The account was added by the reconcilor.
-    kMultiloginSuccess = 3,       // The account was added by this object.
-    kMultiloginOtherSuccess = 4,  // The account was added by something else.
-    kMultiloginTimeout = 5,
-    kReconcilorTimeout = 6,
-    kMultiloginTransientError = 7,
-    kMultiloginPersistentError = 8,
-
-    kMaxValue = kMultiloginPersistentError
-  };
-
   // |profile| is the new profile that was created after signin interception.
   // |account_id| is the main account for the profile, it's already in the
   // profile.
@@ -94,9 +78,10 @@ class DiceInterceptedSessionStartupHelper
 
   // Creates a browser with a new tab, and closes the intercepted tab if it's
   // still open.
-  void MoveTab(Result result);
+  void MoveTab();
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
+  base::WeakPtr<content::WebContents> web_contents_;
   bool use_multilogin_;
   CoreAccountId account_id_;
   base::OnceClosure callback_;
@@ -107,7 +92,6 @@ class DiceInterceptedSessionStartupHelper
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
       reconcilor_observer_{this};
   std::unique_ptr<AccountReconcilor::Lock> reconcilor_lock_;
-  base::TimeTicks session_startup_time_;
   // Timeout while waiting for the account to be added to the cookies in the new
   // profile.
   base::CancelableOnceCallback<void()> on_cookie_update_timeout_;

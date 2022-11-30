@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/values.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_event_listeners.h"
@@ -32,6 +31,10 @@ APIEventListeners::ContextOwnerIdGetter CreateContextOwnerIdGetter() {
 class EventEmitterUnittest : public APIBindingTest {
  public:
   EventEmitterUnittest() = default;
+
+  EventEmitterUnittest(const EventEmitterUnittest&) = delete;
+  EventEmitterUnittest& operator=(const EventEmitterUnittest&) = delete;
+
   ~EventEmitterUnittest() override = default;
 
   // A helper method to dispose of a context and set a flag.
@@ -41,9 +44,6 @@ class EventEmitterUnittest : public APIBindingTest {
     *did_invalidate = true;
     DisposeContext(context);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventEmitterUnittest);
 };
 
 TEST_F(EventEmitterUnittest, TestDispatchMethod) {
@@ -79,7 +79,7 @@ TEST_F(EventEmitterUnittest, TestDispatchMethod) {
     v8::Local<v8::Function> listener_function =
         FunctionFromString(context, listener);
     v8::Local<v8::Value> args[] = {v8_event, listener_function};
-    RunFunction(add_listener_function, context, base::size(args), args);
+    RunFunction(add_listener_function, context, std::size(args), args);
   };
 
   const char kListener1[] =
@@ -118,7 +118,7 @@ TEST_F(EventEmitterUnittest, TestDispatchMethod) {
   TestJSRunner::AllowErrors allow_errors;
   v8::Local<v8::Value> dispatch_result =
       RunFunctionOnGlobal(FunctionFromString(context, kDispatch), context,
-                          base::size(dispatch_args), dispatch_args);
+                          std::size(dispatch_args), dispatch_args);
 
   const char kExpectedEventArgs[] = "[\"arg1\",2]";
   for (const char* property :
@@ -180,7 +180,7 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
                           v8::External::New(isolate(), &closure_data))
             .ToLocalChecked();
     v8::Local<v8::Value> args[] = {v8_event, listener};
-    RunFunction(add_listener_function, context, base::size(args), args);
+    RunFunction(add_listener_function, context, std::size(args), args);
   }
 
   EXPECT_EQ(kNumListeners, event->GetNumListeners());

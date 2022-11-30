@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,10 +43,11 @@ BluetoothDeviceMac::GetConnectErrorCodeFromNSError(NSError* error) {
 
 NSError* BluetoothDeviceMac::GetNSErrorFromGattErrorCode(
     BluetoothGattService::GattErrorCode error_code) {
-  // TODO(http://crbug.com/619595): Need to convert the GattErrorCode vale to
+  // TODO(http://crbug.com/619595): Need to convert the GattErrorCode value to
   // a CBError value.
-  return
-      [NSError errorWithDomain:kGattErrorDomain code:error_code userInfo:nil];
+  return [NSError errorWithDomain:kGattErrorDomain
+                             code:static_cast<int>(error_code)
+                         userInfo:nil];
 }
 
 BluetoothGattService::GattErrorCode
@@ -54,16 +55,18 @@ BluetoothDeviceMac::GetGattErrorCodeFromNSError(NSError* error) {
   if ([error.domain isEqualToString:kGattErrorDomain]) {
     BluetoothGattService::GattErrorCode gatt_error_code =
         (BluetoothGattService::GattErrorCode)error.code;
-    if (gatt_error_code >= 0 ||
-        gatt_error_code <= BluetoothGattService::GATT_ERROR_NOT_SUPPORTED) {
+    if (static_cast<int>(gatt_error_code) >= 0 ||
+        static_cast<int>(gatt_error_code) <=
+            static_cast<int>(
+                BluetoothGattService::GattErrorCode::kNotSupported)) {
       return gatt_error_code;
     }
     NOTREACHED();
-    return BluetoothGattService::GATT_ERROR_FAILED;
+    return BluetoothGattService::GattErrorCode::kFailed;
   }
   // TODO(http://crbug.com/619595): Need to convert the error code from
   // CoreBluetooth to a GattErrorCode value.
-  return BluetoothGattService::GATT_ERROR_FAILED;
+  return BluetoothGattService::GattErrorCode::kFailed;
 }
 
 }  // namespace device

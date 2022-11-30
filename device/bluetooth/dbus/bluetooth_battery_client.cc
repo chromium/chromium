@@ -1,13 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/dbus/bluetooth_battery_client.h"
+
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -31,6 +32,10 @@ class BluetoothBatteryClientImpl : public BluetoothBatteryClient,
                                    public dbus::ObjectManager::Interface {
  public:
   BluetoothBatteryClientImpl() = default;
+
+  BluetoothBatteryClientImpl(const BluetoothBatteryClientImpl&) = delete;
+  BluetoothBatteryClientImpl& operator=(const BluetoothBatteryClientImpl&) =
+      delete;
 
   ~BluetoothBatteryClientImpl() override {
     // There is an instance of this client that is created but not initialized
@@ -107,7 +112,7 @@ class BluetoothBatteryClientImpl : public BluetoothBatteryClient,
       observer.BatteryPropertyChanged(object_path, property_name);
   }
 
-  dbus::ObjectManager* object_manager_ = nullptr;
+  raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothBatteryClient::Observer>::Unchecked observers_;
@@ -117,8 +122,6 @@ class BluetoothBatteryClientImpl : public BluetoothBatteryClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothBatteryClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothBatteryClientImpl);
 };
 
 BluetoothBatteryClient::BluetoothBatteryClient() = default;

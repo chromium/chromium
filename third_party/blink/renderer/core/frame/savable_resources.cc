@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -156,7 +156,7 @@ String SavableResources::GetSubResourceLinkFromElement(Element* element) {
   String value = element->getAttribute(attribute_name);
   // If value has content and not start with "javascript:" then return it,
   // otherwise return an empty string.
-  if (!value.IsNull() && !value.IsEmpty() &&
+  if (!value.IsNull() && !value.empty() &&
       !value.StartsWith("javascript:", kTextCaseASCIIInsensitive))
     return value;
 

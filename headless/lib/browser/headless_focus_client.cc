@@ -1,16 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "headless/lib/browser/headless_focus_client.h"
 
+#include "base/observer_list.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window.h"
 
 namespace headless {
 
-HeadlessFocusClient::HeadlessFocusClient()
-    : focused_window_(nullptr), observer_manager_(this) {}
+HeadlessFocusClient::HeadlessFocusClient() : focused_window_(nullptr) {}
 
 HeadlessFocusClient::~HeadlessFocusClient() = default;
 
@@ -28,12 +28,14 @@ void HeadlessFocusClient::FocusWindow(aura::Window* window) {
   if (window && !window->CanFocus())
     return;
 
-  if (focused_window_)
-    observer_manager_.Remove(focused_window_);
+  if (focused_window_) {
+    DCHECK(observation_manager_.IsObservingSource(focused_window_.get()));
+    observation_manager_.Reset();
+  }
   aura::Window* old_focused_window = focused_window_;
   focused_window_ = window;
   if (focused_window_)
-    observer_manager_.Add(focused_window_);
+    observation_manager_.Observe(focused_window_.get());
 
   for (aura::client::FocusChangeObserver& observer : focus_observers_)
     observer.OnWindowFocused(focused_window_, old_focused_window);

@@ -1,10 +1,9 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browser_process_platform_part_mac.h"
 
-#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -13,8 +12,7 @@
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
-#include "chrome/common/chrome_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager_impl_mac.h"
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() {
 }
@@ -63,11 +61,9 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   // ExtensionAppShimManagerDelegate may be changed to nullptr here.
   std::unique_ptr<apps::AppShimManager::Delegate> app_shim_manager_delegate =
       std::make_unique<apps::ExtensionAppShimManagerDelegate>();
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-    app_shim_manager_delegate =
-        std::make_unique<web_app::WebAppShimManagerDelegate>(
-            std::move(app_shim_manager_delegate));
-  }
+  app_shim_manager_delegate =
+      std::make_unique<web_app::WebAppShimManagerDelegate>(
+          std::move(app_shim_manager_delegate));
   app_shim_manager_ = std::make_unique<apps::AppShimManager>(
       std::move(app_shim_manager_delegate));
 
@@ -76,9 +72,8 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   DCHECK(!app_shim_listener_.get());
   app_shim_listener_ = new AppShimListener;
 
-  if (!location_permission_manager_) {
-    location_permission_manager_ =
-        device::GeolocationSystemPermissionManager::Create();
+  if (!geolocation_manager_) {
+    geolocation_manager_ = device::GeolocationManagerImpl::Create();
   }
 }
 
@@ -90,13 +85,11 @@ AppShimListener* BrowserProcessPlatformPart::app_shim_listener() {
   return app_shim_listener_.get();
 }
 
-device::GeolocationSystemPermissionManager*
-BrowserProcessPlatformPart::location_permission_manager() {
-  return location_permission_manager_.get();
+device::GeolocationManager* BrowserProcessPlatformPart::geolocation_manager() {
+  return geolocation_manager_.get();
 }
 
 void BrowserProcessPlatformPart::SetGeolocationManagerForTesting(
-    std::unique_ptr<device::GeolocationSystemPermissionManager>
-        fake_location_manager) {
-  location_permission_manager_ = std::move(fake_location_manager);
+    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
+  geolocation_manager_ = std::move(fake_geolocation_manager);
 }

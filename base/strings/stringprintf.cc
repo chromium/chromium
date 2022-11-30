@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 #include "base/logging.h"
 #include "base/scoped_clear_last_error.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -33,7 +31,7 @@ inline int vsnprintfT(char* buffer,
   return base::vsnprintf(buffer, buf_size, format, argptr);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 inline int vsnprintfT(wchar_t* buffer,
                       size_t buf_size,
                       const wchar_t* format,
@@ -64,20 +62,20 @@ static void StringAppendVT(std::basic_string<CharT>* dst,
   va_copy(ap_copy, ap);
 
   base::ScopedClearLastError last_error;
-  int result = vsnprintfT(stack_buf, base::size(stack_buf), format, ap_copy);
+  int result = vsnprintfT(stack_buf, std::size(stack_buf), format, ap_copy);
   va_end(ap_copy);
 
-  if (result >= 0 && result < static_cast<int>(base::size(stack_buf))) {
+  if (result >= 0 && static_cast<size_t>(result) < std::size(stack_buf)) {
     // It fit.
-    dst->append(stack_buf, result);
+    dst->append(stack_buf, static_cast<size_t>(result));
     return;
   }
 
   // Repeatedly increase buffer size until it fits.
-  int mem_length = base::size(stack_buf);
+  size_t mem_length = std::size(stack_buf);
   while (true) {
     if (result < 0) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // On Windows, vsnprintfT always returns the number of characters in a
       // fully-formatted string, so if we reach this point, something else is
       // wrong and no amount of buffer-doubling is going to fix it.
@@ -90,7 +88,7 @@ static void StringAppendVT(std::basic_string<CharT>* dst,
 #endif
     } else {
       // We need exactly "result + 1" characters.
-      mem_length = result + 1;
+      mem_length = static_cast<size_t>(result) + 1;
     }
 
     if (mem_length > 32 * 1024 * 1024) {
@@ -109,9 +107,9 @@ static void StringAppendVT(std::basic_string<CharT>* dst,
     result = vsnprintfT(&mem_buf[0], mem_length, format, ap_copy);
     va_end(ap_copy);
 
-    if ((result >= 0) && (result < mem_length)) {
+    if ((result >= 0) && (static_cast<size_t>(result) < mem_length)) {
       // It fit.
-      dst->append(&mem_buf[0], result);
+      dst->append(&mem_buf[0], static_cast<size_t>(result));
       return;
     }
   }
@@ -128,7 +126,7 @@ std::string StringPrintf(const char* format, ...) {
   return result;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::wstring StringPrintf(const wchar_t* format, ...) {
   va_list ap;
   va_start(ap, format);
@@ -163,7 +161,7 @@ const std::string& SStringPrintf(std::string* dst, const char* format, ...) {
   return *dst;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const std::wstring& SStringPrintf(std::wstring* dst,
                                   const wchar_t* format, ...) {
   va_list ap;
@@ -193,7 +191,7 @@ void StringAppendF(std::string* dst, const char* format, ...) {
   va_end(ap);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void StringAppendF(std::wstring* dst, const wchar_t* format, ...) {
   va_list ap;
   va_start(ap, format);
@@ -213,7 +211,7 @@ void StringAppendV(std::string* dst, const char* format, va_list ap) {
   StringAppendVT(dst, format, ap);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void StringAppendV(std::wstring* dst, const wchar_t* format, va_list ap) {
   StringAppendVT(dst, format, ap);
 }

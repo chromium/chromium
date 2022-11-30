@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatusObserver, BatteryHealthObserver, CpuUsageObserver, DeviceCapabilities, MemoryUsageObserver, SystemInfo, VersionInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryInfo2, fakeCpuUsage, fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {BatteryChargeStatusObserverRemote, BatteryHealthObserverRemote, CpuUsageObserverRemote, DeviceCapabilities, MemoryUsageObserverRemote, SystemInfo, VersionInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -61,51 +61,56 @@ export function fakeSystemDataProviderTestSuite() {
   test('ObserveBatteryHealth', () => {
     provider.setFakeBatteryHealth(fakeBatteryHealth);
 
-    const batteryHealthObserverRemote = /** @type {!BatteryHealthObserver} */ ({
-      onBatteryHealthUpdated: (batteryHealth) => {
-        assertDeepEquals(fakeBatteryHealth[0], batteryHealth);
-      }
-    });
+    const batteryHealthObserverRemote =
+        /** @type {!BatteryHealthObserverRemote} */ ({
+          onBatteryHealthUpdated: (batteryHealth) => {
+            assertDeepEquals(fakeBatteryHealth[0], batteryHealth);
+          },
+        });
 
-    return provider.observeBatteryHealth(batteryHealthObserverRemote);
+    provider.observeBatteryHealth(batteryHealthObserverRemote);
+    return provider.getObserveBatteryHealthPromiseForTesting();
   });
 
   test('ObserveBatteryChargeStatus', () => {
     provider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
 
     const batteryChargeStatusObserverRemote =
-        /** @type {!BatteryChargeStatusObserver} */ ({
+        /** @type {!BatteryChargeStatusObserverRemote} */ ({
           onBatteryChargeStatusUpdated: (batteryChargeStatus) => {
             assertDeepEquals(fakeBatteryChargeStatus[0], batteryChargeStatus);
-          }
+          },
         });
 
-    return provider.observeBatteryChargeStatus(
-        batteryChargeStatusObserverRemote);
+    provider.observeBatteryChargeStatus(batteryChargeStatusObserverRemote);
+    return provider.getObserveBatteryChargeStatusPromiseForTesting();
   });
 
   test('ObserveCpuUsage', () => {
     provider.setFakeCpuUsage(fakeCpuUsage);
 
-    const cpuObserverRemote = /** @type {!CpuUsageObserver} */ ({
+    const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
       onCpuUsageUpdated: (cpuUsage) => {
         assertDeepEquals(fakeCpuUsage[0], cpuUsage);
-      }
+      },
     });
 
-    return provider.observeCpuUsage(cpuObserverRemote);
+    provider.observeCpuUsage(cpuObserverRemote);
+    return provider.getObserveCpuUsagePromiseForTesting();
   });
 
   test('ObserveMemoryUsage', () => {
     provider.setFakeMemoryUsage(fakeMemoryUsage);
 
-    const memoryUsageObserverRemote = /** @type {!MemoryUsageObserver} */ ({
-      onMemoryUsageUpdated: (memoryUsage) => {
-        assertDeepEquals(fakeMemoryUsage[0], memoryUsage);
-      }
-    });
+    const memoryUsageObserverRemote =
+        /** @type {!MemoryUsageObserverRemote} */ ({
+          onMemoryUsageUpdated: (memoryUsage) => {
+            assertDeepEquals(fakeMemoryUsage[0], memoryUsage);
+          },
+        });
 
-    return provider.observeMemoryUsage(memoryUsageObserverRemote);
+    provider.observeMemoryUsage(memoryUsageObserverRemote);
+    return provider.getObserveMemoryUsagePromiseForTesting();
   });
 
   test('CallMethodWithNoValue', () => {
@@ -157,11 +162,11 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
-    /** @type {!CpuUsageObserver} */
-    const cpuObserverRemote = /** @type {!CpuUsageObserver} */ ({
+    /** @type {!CpuUsageObserverRemote} */
+    const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
       onCpuUsageUpdated: (cpuUsage) => {
         // Only expect 2 calls.
         assertTrue(whichSample >= 0);
@@ -174,10 +179,11 @@ export function fakeSystemDataProviderTestSuite() {
           completeResolver.resolve();
         }
         whichSample++;
-      }
+      },
     });
 
-    return provider.observeCpuUsage(cpuObserverRemote)
+    provider.observeCpuUsage(cpuObserverRemote);
+    return provider.getObserveCpuUsagePromiseForTesting()
         .then(() => {
           return firstResolver.promise;
         })
@@ -196,10 +202,10 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
-    const memoryObserverRemote = /** @type {!MemoryUsageObserver} */ ({
+    const memoryObserverRemote = /** @type {!MemoryUsageObserverRemote} */ ({
       onMemoryUsageUpdated: (memoryUsage) => {
         // Only expect 2 calls.
         assertTrue(whichSample >= 0);
@@ -212,10 +218,11 @@ export function fakeSystemDataProviderTestSuite() {
           completeResolver.resolve();
         }
         whichSample++;
-      }
+      },
     });
 
-    return provider.observeMemoryUsage(memoryObserverRemote)
+    provider.observeMemoryUsage(memoryObserverRemote);
+    return provider.getObserveMemoryUsagePromiseForTesting()
         .then(() => {
           return firstResolver.promise;
         })
@@ -234,26 +241,28 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
-    const batteryHealthObserverRemote = /** @type {!BatteryHealthObserver} */ ({
-      onBatteryHealthUpdated: (batteryHealth) => {
-        // Only expect 2 calls.
-        assertTrue(whichSample >= 0);
-        assertTrue(whichSample <= 1);
-        assertDeepEquals(fakeBatteryHealth[whichSample], batteryHealth);
+    const batteryHealthObserverRemote =
+        /** @type {!BatteryHealthObserverRemote} */ ({
+          onBatteryHealthUpdated: (batteryHealth) => {
+            // Only expect 2 calls.
+            assertTrue(whichSample >= 0);
+            assertTrue(whichSample <= 1);
+            assertDeepEquals(fakeBatteryHealth[whichSample], batteryHealth);
 
-        if (whichSample === 0) {
-          firstResolver.resolve();
-        } else {
-          completeResolver.resolve();
-        }
-        whichSample++;
-      }
-    });
+            if (whichSample === 0) {
+              firstResolver.resolve();
+            } else {
+              completeResolver.resolve();
+            }
+            whichSample++;
+          },
+        });
 
-    return provider.observeBatteryHealth(batteryHealthObserverRemote)
+    provider.observeBatteryHealth(batteryHealthObserverRemote);
+    return provider.getObserveBatteryHealthPromiseForTesting()
         .then(() => {
           return firstResolver.promise;
         })
@@ -272,11 +281,11 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
     const batteryChargeStatusObserverRemote =
-        /** @type {!BatteryChargeStatusObserver} */ ({
+        /** @type {!BatteryChargeStatusObserverRemote} */ ({
           onBatteryChargeStatusUpdated: (batteryChargeStatus) => {
             // Only expect 2 calls.
             assertTrue(whichSample >= 0);
@@ -290,11 +299,11 @@ export function fakeSystemDataProviderTestSuite() {
               completeResolver.resolve();
             }
             whichSample++;
-          }
+          },
         });
 
-    return provider
-        .observeBatteryChargeStatus(batteryChargeStatusObserverRemote)
+    provider.observeBatteryChargeStatus(batteryChargeStatusObserverRemote);
+    return provider.getObserveBatteryChargeStatusPromiseForTesting()
         .then(() => {
           return firstResolver.promise;
         })
@@ -313,11 +322,11 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which call to the callback.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
-    /** @type {!CpuUsageObserver} */
-    const cpuObserverRemote = /** @type {!CpuUsageObserver} */ ({
+    /** @type {!CpuUsageObserverRemote} */
+    const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
       onCpuUsageUpdated: (cpuUsage) => {
         // Only expect 2 calls.
         assertTrue(whichSample >= 0);
@@ -332,10 +341,11 @@ export function fakeSystemDataProviderTestSuite() {
           completeResolver.resolve();
         }
         whichSample++;
-      }
+      },
     });
 
-    return provider.observeCpuUsage(cpuObserverRemote)
+    provider.observeCpuUsage(cpuObserverRemote);
+    return provider.getObserveCpuUsagePromiseForTesting()
         .then(() => {
           return firstResolver.promise;
         })

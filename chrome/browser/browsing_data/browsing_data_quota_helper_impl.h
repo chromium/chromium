@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,18 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
-namespace storage {
-class QuotaManager;
+namespace blink {
+class StorageKey;
 }
 
-namespace url {
-class Origin;
+namespace storage {
+class QuotaManager;
 }
 
 // Implementation of BrowsingDataQuotaHelper.  Since a client of
@@ -34,35 +34,37 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
  public:
   void StartFetching(FetchResultCallback callback) override;
   void RevokeHostQuota(const std::string& host) override;
+  void DeleteHostData(const std::string& host,
+                      blink::mojom::StorageType type) override;
+
+  explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
+
+  BrowsingDataQuotaHelperImpl(const BrowsingDataQuotaHelperImpl&) = delete;
+  BrowsingDataQuotaHelperImpl& operator=(const BrowsingDataQuotaHelperImpl&) =
+      delete;
 
  private:
   using PendingHosts =
       std::set<std::pair<std::string, blink::mojom::StorageType>>;
   using QuotaInfoMap = std::map<std::string, QuotaInfo>;
 
-  explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
   ~BrowsingDataQuotaHelperImpl() override;
 
-  // Calls QuotaManager::GetOriginModifiedSince for each storage type.
+  // Calls QuotaManager::GetStorageKeysModifiedBetween for each storage type.
   void FetchQuotaInfoOnIOThread(FetchResultCallback callback);
 
-  // Callback function for QuotaManager::GetOriginModifiedSince.
-  void GotOrigins(PendingHosts* pending_hosts,
-                  base::OnceClosure completion,
-                  const std::set<url::Origin>& origins,
-                  blink::mojom::StorageType type);
+  // Callback function for QuotaManager::GetStorageKeysForType.
+  void GotStorageKeys(QuotaInfoMap* quota_info,
+                      base::OnceClosure completion,
+                      blink::mojom::StorageType type,
+                      const std::set<blink::StorageKey>& storage_keys);
 
-  // Calls QuotaManager::GetHostUsage for each (origin, type) pair.
-  void OnGetOriginsComplete(FetchResultCallback callback,
-                            PendingHosts* pending_hosts);
-
-  // Callback function for QuotaManager::GetHostUsage.
-  void GotHostUsage(QuotaInfoMap* quota_info,
-                    base::OnceClosure completion,
-                    const std::string& host,
-                    blink::mojom::StorageType type,
-                    int64_t usage,
-                    blink::mojom::UsageBreakdownPtr usage_breakdown);
+  // Callback function for QuotaManager::GetStorageKeyUsage.
+  void GotStorageKeyUsage(QuotaInfoMap* quota_info,
+                          const blink::StorageKey& storage_key,
+                          blink::mojom::StorageType type,
+                          int64_t usage,
+                          blink::mojom::UsageBreakdownPtr usage_breakdown);
 
   // Called when all QuotaManager::GetHostUsage requests are complete.
   void OnGetHostsUsageComplete(FetchResultCallback callback,
@@ -71,14 +73,13 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   void RevokeHostQuotaOnIOThread(const std::string& host);
   void DidRevokeHostQuota(blink::mojom::QuotaStatusCode status, int64_t quota);
 
+  void DeleteHostDataOnIOThread(const std::string& host,
+                                blink::mojom::StorageType type);
+
   scoped_refptr<storage::QuotaManager> quota_manager_;
 
   base::WeakPtrFactory<BrowsingDataQuotaHelperImpl> weak_factory_{this};
 
-  friend class BrowsingDataQuotaHelper;
-  friend class BrowsingDataQuotaHelperTest;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataQuotaHelperImpl);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_IMPL_H_

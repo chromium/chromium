@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 
 namespace blink {
@@ -37,8 +36,12 @@ class AXMenuList final : public AXLayoutObject {
  public:
   AXMenuList(LayoutObject*, AXObjectCacheImpl&);
 
+  AXMenuList(const AXMenuList&) = delete;
+  AXMenuList& operator=(const AXMenuList&) = delete;
+
   AccessibilityExpanded IsExpanded() const final;
   bool OnNativeClickAction() override;
+  void SetNeedsToUpdateChildren() const override;
   void ClearChildren() const override;
   void Detach() override;
 
@@ -46,17 +49,17 @@ class AXMenuList final : public AXLayoutObject {
   void DidShowPopup();
   void DidHidePopup();
 
+  AXObject* GetOrCreateMockPopupChild();
+
  private:
   friend class AXMenuListOption;
 
   bool IsMenuList() const override { return true; }
-  ax::mojom::Role DetermineAccessibilityRole() final;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
 
   void AddChildren() override;
 
   bool IsCollapsed() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMenuList);
 };
 
 template <>

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,7 @@
     _publicKey = base::SysUTF8ToNSString(hostInfo.public_key());
 
     base::Time last_seen_time =
-        base::Time::UnixEpoch() +
-        base::TimeDelta::FromMilliseconds(hostInfo.last_seen_time());
+        base::Time::UnixEpoch() + base::Milliseconds(hostInfo.last_seen_time());
     _updatedTime = base::SysUTF16ToNSString(
         base::TimeFormatShortDateAndTime(last_seen_time));
 

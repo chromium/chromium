@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -39,6 +39,10 @@ class IqSender : public SignalStrategy::Listener {
                               const jingle_xmpp::XmlElement* response)>;
 
   explicit IqSender(SignalStrategy* signal_strategy);
+
+  IqSender(const IqSender&) = delete;
+  IqSender& operator=(const IqSender&) = delete;
+
   ~IqSender() override;
 
   // Send an iq stanza. Returns an IqRequest object that represends
@@ -74,10 +78,8 @@ class IqSender : public SignalStrategy::Listener {
   // Removes |request| from the list of pending requests. Called by IqRequest.
   void RemoveRequest(IqRequest* request);
 
-  SignalStrategy* signal_strategy_;
+  raw_ptr<SignalStrategy> signal_strategy_;
   IqRequestMap requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(IqSender);
 };
 
 // This call must only be used on the thread it was created on.
@@ -86,6 +88,10 @@ class IqRequest {
   IqRequest(IqSender* sender,
             IqSender::ReplyCallback callback,
             const std::string& addressee);
+
+  IqRequest(const IqRequest&) = delete;
+  IqRequest& operator=(const IqRequest&) = delete;
+
   ~IqRequest();
 
   // Sets timeout for the request. When the timeout expires the
@@ -103,13 +109,11 @@ class IqRequest {
 
   void DeliverResponse(std::unique_ptr<jingle_xmpp::XmlElement> stanza);
 
-  IqSender* sender_;
+  raw_ptr<IqSender> sender_;
   IqSender::ReplyCallback callback_;
   std::string addressee_;
 
   base::WeakPtrFactory<IqRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IqRequest);
 };
 
 }  // namespace remoting

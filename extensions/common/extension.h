@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/version.h"
@@ -22,7 +20,6 @@
 #include "extensions/common/extension_guid.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_resource.h"
-#include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -36,18 +33,17 @@
 
 namespace base {
 class DictionaryValue;
-class Version;
 }
 
 namespace extensions {
-class PermissionSet;
+class HashedExtensionId;
 class PermissionsData;
 class PermissionsParser;
 
 // Represents a Chrome extension.
 // Once created, an Extension object is immutable, with the exception of its
-// RuntimeData. This makes it safe to use on any thread, since access to the
-// RuntimeData is protected by a lock.
+// PermissionsData. This makes it safe to use on any thread, since access to the
+// PermissionsData is protected by a lock.
 class Extension final : public base::RefCountedThreadSafe<Extension> {
  public:
   // Do not renumber or reorder these values, as they are stored on-disk in the
@@ -74,7 +70,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // the extension. Related to base::SupportsUserData, but with an immutable
   // thread-safe interface to match Extension.
   struct ManifestData {
-    virtual ~ManifestData() {}
+    virtual ~ManifestData() = default;
   };
 
   // Do not change the order of entries or remove entries in this list
@@ -156,6 +152,9 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // This is the highest bit index of the flags defined above.
   static const int kInitFromValueFlagBits;
 
+  Extension(const Extension&) = delete;
+  Extension& operator=(const Extension&) = delete;
+
   static scoped_refptr<Extension> Create(const base::FilePath& path,
                                          mojom::ManifestLocation location,
                                          const base::DictionaryValue& value,
@@ -173,9 +172,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   // Valid schemes for web extent URLPatterns.
   static const int kValidWebExtentSchemes;
-
-  // Valid schemes for bookmark app installs by the user.
-  static const int kValidBookmarkAppSchemes;
 
   // Valid schemes for host permission URLPatterns.
   static const int kValidHostPermissionSchemes;
@@ -226,6 +222,10 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Returns the base extension url for a given |extension_id|.
   static GURL GetBaseURLFromExtensionId(const ExtensionId& extension_id);
 
+  // Returns the extension origin for a given |extension_id|.
+  static url::Origin CreateOriginFromExtensionId(
+      const ExtensionId& extension_id);
+
   // Returns true if this extension or app includes areas within |origin|.
   bool OverlapsWithOrigin(const GURL& origin) const;
 
@@ -266,7 +266,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   const base::FilePath& path() const { return path_; }
   const GURL& url() const { return extension_url_; }
-  url::Origin origin() const { return url::Origin::Create(extension_url_); }
+  const GURL& dynamic_url() const { return dynamic_url_; }
+  url::Origin origin() const { return extension_origin_; }
   mojom::ManifestLocation location() const;
   const ExtensionId& id() const;
   const HashedExtensionId& hashed_id() const;
@@ -315,7 +316,11 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   }
   int creation_flags() const { return creation_flags_; }
   bool from_webstore() const { return (creation_flags_ & FROM_WEBSTORE) != 0; }
-  bool from_bookmark() const { return (creation_flags_ & FROM_BOOKMARK) != 0; }
+  // TODO(crbug.com/1065748): Retire this function when there are no old
+  // entries.
+  bool from_deprecated_bookmark() const {
+    return (creation_flags_ & FROM_BOOKMARK) != 0;
+  }
   bool may_be_untrusted() const {
     return (creation_flags_ & MAY_BE_UNTRUSTED) != 0;
   }
@@ -337,12 +342,21 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   bool is_shared_module() const;        // Shared module
   bool is_theme() const;                // Theme
   bool is_login_screen_extension() const;  // Extension on login screen.
+  bool is_chromeos_system_extension() const;  // ChromeOS System Extension.
 
   // True if this is a platform app, hosted app, or legacy packaged app.
   bool is_app() const;
 
   void AddWebExtentPattern(const URLPattern& pattern);
   const URLPatternSet& web_extent() const { return extent_; }
+
+  // Sets whether to ignore deprecated manifest versions for testing purposes.
+  // PLEASE DON'T USE THIS. Instead:
+  // * Ideally, use the current manifest version (V3)! :)
+  // * Failing that, please instead allow the warning to be emitted by e.g.
+  //   toggling ignore_manifest_warnings on ChromeTestExtensionLoader.
+  static void set_silence_deprecated_manifest_version_warnings_for_testing(
+      bool silence);
 
  private:
   friend class base::RefCountedThreadSafe<Extension>;
@@ -419,8 +433,12 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Any warnings that occurred when trying to create/parse the extension.
   std::vector<InstallWarning> install_warnings_;
 
-  // The base extension url for the extension.
+  // The extension origin and base url.
+  url::Origin extension_origin_;
   GURL extension_url_;
+
+  // The base extension url for the extension using guid.
+  GURL dynamic_url_;
 
   // The extension's version.
   base::Version version_;
@@ -470,8 +488,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // A dynamic ID that can be used when referencing extension resources via URL
   // instead of an extension ID.
   base::GUID guid_;
-
-  DISALLOW_COPY_AND_ASSIGN(Extension);
 };
 
 typedef std::vector<scoped_refptr<const Extension> > ExtensionList;
@@ -482,6 +498,8 @@ struct ExtensionInfo {
                 const ExtensionId& id,
                 const base::FilePath& path,
                 mojom::ManifestLocation location);
+  ExtensionInfo(const ExtensionInfo&) = delete;
+  ExtensionInfo& operator=(const ExtensionInfo&) = delete;
   ~ExtensionInfo();
 
   // Note: This may be null (e.g. for unpacked extensions retrieved from the
@@ -491,32 +509,6 @@ struct ExtensionInfo {
   ExtensionId extension_id;
   base::FilePath extension_path;
   mojom::ManifestLocation extension_location;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInfo);
-};
-
-// The details sent for EXTENSION_PERMISSIONS_UPDATED notifications.
-struct UpdatedExtensionPermissionsInfo {
-  enum Reason {
-    ADDED,    // The permissions were added to the extension.
-    REMOVED,  // The permissions were removed from the extension.
-    POLICY,   // The policy that affects permissions was updated.
-  };
-
-  Reason reason;
-
-  // The extension who's permissions have changed.
-  const Extension* extension;
-
-  // The permissions that have changed. For Reason::ADDED, this would contain
-  // only the permissions that have added, and for Reason::REMOVED, this would
-  // only contain the removed permissions.
-  const PermissionSet& permissions;
-
-  UpdatedExtensionPermissionsInfo(const Extension* extension,
-                                  const PermissionSet& permissions,
-                                  Reason reason);
 };
 
 }  // namespace extensions

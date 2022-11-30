@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,6 +83,10 @@ void PaymentRequestSpec::Retry(
 
 void PaymentRequestSpec::RecomputeSpecForDetails(JNIEnv* env) {
   spec_->RecomputeSpecForDetails();
+}
+
+bool PaymentRequestSpec::IsSecurePaymentConfirmationRequested(JNIEnv* env) {
+  return spec_->IsSecurePaymentConfirmationRequested();
 }
 
 base::android::ScopedJavaLocalRef<jstring>

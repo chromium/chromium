@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/browsing_data/core/clear_browsing_data_tab.h"
 #include "components/prefs/pref_member.h"
@@ -30,15 +30,17 @@ class BrowsingDataCounter {
   class Result {
    public:
     explicit Result(const BrowsingDataCounter* source);
+
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+
     virtual ~Result();
 
     const BrowsingDataCounter* source() const { return source_; }
     virtual bool Finished() const;
 
    private:
-    const BrowsingDataCounter* source_;
-
-    DISALLOW_COPY_AND_ASSIGN(Result);
+    raw_ptr<const BrowsingDataCounter> source_;
   };
 
   // A subclass of Result returned when the computation has finished. The result
@@ -48,6 +50,10 @@ class BrowsingDataCounter {
   class FinishedResult : public Result {
    public:
     FinishedResult(const BrowsingDataCounter* source, ResultInt value);
+
+    FinishedResult(const FinishedResult&) = delete;
+    FinishedResult& operator=(const FinishedResult&) = delete;
+
     ~FinishedResult() override;
 
     // Result:
@@ -57,8 +63,6 @@ class BrowsingDataCounter {
 
    private:
     ResultInt value_;
-
-    DISALLOW_COPY_AND_ASSIGN(FinishedResult);
   };
 
   // A subclass of FinishedResult that besides |Value()| also stores whether
@@ -68,14 +72,16 @@ class BrowsingDataCounter {
     SyncResult(const BrowsingDataCounter* source,
                ResultInt value,
                bool sync_enabled);
+
+    SyncResult(const SyncResult&) = delete;
+    SyncResult& operator=(const SyncResult&) = delete;
+
     ~SyncResult() override;
 
     bool is_sync_enabled() const { return sync_enabled_; }
 
    private:
     bool sync_enabled_;
-
-    DISALLOW_COPY_AND_ASSIGN(SyncResult);
   };
 
   typedef base::RepeatingCallback<void(std::unique_ptr<Result>)> ResultCallback;

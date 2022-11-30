@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 #include <list>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ClientStub;
 class VideoStub;
@@ -23,6 +22,10 @@ class VideoStub;
 class ClientVideoDispatcher : public ChannelDispatcherBase {
  public:
   ClientVideoDispatcher(VideoStub* video_stub, ClientStub* client_stub);
+
+  ClientVideoDispatcher(const ClientVideoDispatcher&) = delete;
+  ClientVideoDispatcher& operator=(const ClientVideoDispatcher&) = delete;
+
   ~ClientVideoDispatcher() override;
 
  private:
@@ -36,19 +39,16 @@ class ClientVideoDispatcher : public ChannelDispatcherBase {
 
   PendingFramesList pending_frames_;
 
-  VideoStub* video_stub_;
-  ClientStub* client_stub_;
+  raw_ptr<VideoStub> video_stub_;
+  raw_ptr<ClientStub> client_stub_;
 
   webrtc::DesktopSize screen_size_;
   webrtc::DesktopVector screen_dpi_ =
       webrtc::DesktopVector(kDefaultDpi, kDefaultDpi);
 
   base::WeakPtrFactory<ClientVideoDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientVideoDispatcher);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_VIDEO_DISPATCHER_H_

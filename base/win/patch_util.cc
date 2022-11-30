@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ namespace base {
 namespace win {
 namespace internal {
 
-DWORD ModifyCode(void* destination, const void* source, int length) {
+DWORD ModifyCode(void* destination, const void* source, size_t length) {
   if ((nullptr == destination) || (nullptr == source) || (0 == length)) {
     NOTREACHED();
     return ERROR_INVALID_PARAMETER;

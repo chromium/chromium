@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "lib": ["dom", "dom.iterable", "es2020", "webworker"],
+    "module": "commonjs",
+    "target": "es6"
+  },
+  "include": [
+    "imports/*.d.ts",
+    "static/*.js"
+  ],
+  "exclude": [
+    "static/caspian_web.js"
+  ]
+}

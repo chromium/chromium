@@ -1,10 +1,11 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import web_idl
 
 from . import name_style
+from .code_node import FormatNode
 from .code_node import Likeliness
 from .code_node import SymbolDefinitionNode
 from .code_node import SymbolNode
@@ -31,7 +32,11 @@ def blink_class_name(idl_definition):
                   (web_idl.CallbackFunction, web_idl.CallbackInterface,
                    web_idl.Enumeration, web_idl.Typedef)):
         return "V8{}".format(idl_definition.identifier)
-    elif isinstance(idl_definition, web_idl.NewUnion):
+    elif isinstance(idl_definition, web_idl.ObservableArray):
+        return "V8ObservableArray{}".format(
+            idl_definition.element_type.
+            type_name_with_extended_attribute_key_values)
+    elif isinstance(idl_definition, web_idl.Union):
         # Technically this name is not guaranteed to be unique because
         # (X or sequence<Y or Z>) and (X or Y or sequence<Z>) have the same
         # name, but it's highly unlikely to cause a conflict in the actual use
@@ -56,21 +61,11 @@ def v8_bridge_class_name(idl_definition):
     return "V8{}".format(idl_definition.identifier)
 
 
-def blink_type_info(idl_type, use_new_union=False):
+def blink_type_info(idl_type):
     """
-    Returns the types of Blink implementation corresponding to the given IDL
-    type.  The returned object has the following attributes.
-
-      ref_t: The type of a local variable that references to an already-existing
-          value.  E.g. String => String&
-      const_ref_t: A const-qualified reference type.
-      value_t: The type of a variable that behaves as a value.  E.g. String =>
-          String
-      member_t: The type of a member variable.  E.g. T => Member<T>
-      member_ref_t: The type used for input to and output from a member
-          variable.  E.g. T* for Member<T> and const String& for String.
-      has_null_value: True if the Blink implementation type can represent IDL
-          null value by itself without use of base::Optional<T>.
+    Returns an object that represents the types of Blink implementation
+    corresponding to the given IDL type, such as reference type, value type,
+    member type, etc.
     """
     assert isinstance(idl_type, web_idl.IdlType)
 
@@ -82,37 +77,122 @@ def blink_type_info(idl_type, use_new_union=False):
                      const_ref_fmt="const {}",
                      value_fmt="{}",
                      has_null_value=False,
+                     is_gc_type=False,
+                     is_heap_vector_type=False,
+                     is_move_effective=False,
+                     is_traceable=False,
                      clear_member_var_fmt="{}.Clear()"):
-            self.typename = typename
-            self.is_gc_type = is_gc_type(idl_type)
-            self.ref_t = ref_fmt.format(typename)
-            self.const_ref_t = const_ref_fmt.format(typename)
-            self.value_t = value_fmt.format(typename)
-            self.member_t = member_fmt.format(typename)
-            self.member_ref_t = (self.ref_t
-                                 if self.is_gc_type else self.const_ref_t)
-            self.has_null_value = has_null_value
+            self._typename = typename
+            self._has_null_value = has_null_value
+            self._is_gc_type = is_gc_type
+            self._is_heap_vector_type = is_heap_vector_type
+            self._is_move_effective = is_move_effective
+            self._is_traceable = (is_gc_type or is_heap_vector_type
+                                  or is_traceable)
             self._clear_member_var_fmt = clear_member_var_fmt
 
+            self._ref_t = ref_fmt.format(typename)
+            self._const_ref_t = const_ref_fmt.format(typename)
+            self._value_t = value_fmt.format(typename)
+            self._member_t = member_fmt.format(typename)
+            self._member_ref_t = (self._ref_t
+                                  if self._is_gc_type else self._const_ref_t)
+
+        @property
+        def typename(self):
+            """Returns the internal-use-only name.  Do not use this."""
+            return self._typename
+
+        @property
+        def ref_t(self):
+            """
+            Returns the type of a local variable that references to an existing
+            value.  E.g. String => String&
+            """
+            return self._ref_t
+
+        @property
+        def const_ref_t(self):
+            """
+            Returns the const-qualified version of |ref_t|.  E.g. String =>
+            const String&
+            """
+            return self._const_ref_t
+
+        @property
+        def value_t(self):
+            """
+            Returns the type of a variable that behaves as a value.  E.g. String =>
+            String
+            """
+            return self._value_t
+
+        @property
+        def member_t(self):
+            """
+            Returns the type of a member variable.  E.g. Node => Member<Node>
+            """
+            return self._member_t
+
+        @property
+        def member_ref_t(self):
+            """
+            Returns the type used for input to and output from a member
+            variable.  E.g. Node* for Member<Node> and const String& for String
+            """
+            return self._member_ref_t
+
+        @property
+        def has_null_value(self):
+            """
+            Returns True if the Blink implementation type can represent IDL
+            null value without use of absl::optional<T>.  E.g. pointer type =>
+            True and int32_t => False
+            """
+            return self._has_null_value
+
+        @property
+        def is_gc_type(self):
+            """
+            Returns True if the Blink implementation type is a GarbageCollected
+            type.
+            """
+            return self._is_gc_type
+
+        @property
+        def is_heap_vector_type(self):
+            """
+            Returns True if the Blink implementation type is HeapVector<T>.
+
+            HeapVector is very special because HeapVector is GarbageCollected
+            but it's used as a value type rather than a reference type for the
+            most cases because HeapVector had been implemented as a non-GC type
+            for a long time and it turned into a GC type in 2021 January.
+            """
+            return self._is_heap_vector_type
+
+        @property
+        def is_move_effective(self):
+            """
+            Returns True if support of std::move is effective and desired.
+            E.g. Vector => True and int32_t => False
+            """
+            return self._is_move_effective
+
+        @property
+        def is_traceable(self):
+            """
+            Returns True if the Blink implementation type has Trace method.
+            E.g. ScriptValue => True and int32_t => False
+            """
+            return self._is_traceable
+
         def clear_member_var_expr(self, var_name):
-            """Returns an expression to reset the given member variable."""
+            """
+            Returns an expression to reset the given member variable.  E.g.
+            Vector => var_name.clear() and int32_t => var_name = 0
+            """
             return self._clear_member_var_fmt.format(var_name)
-
-    def is_gc_type(idl_type):
-        idl_type = idl_type.unwrap()
-        return bool(
-            idl_type.is_buffer_source_type or
-            (idl_type.type_definition_object and not idl_type.is_enumeration)
-            or (idl_type.new_union_definition_object and use_new_union))
-
-    def vector_element_type(idl_type):
-        # Use |Member<T>| explicitly so that the complete type definition of
-        # |T| will not be required.
-        type_info = blink_type_info(idl_type)
-        if type_info.is_gc_type:
-            return type_info.member_t
-        else:
-            return type_info.typename
 
     real_type = idl_type.unwrap(typedef=True)
 
@@ -141,109 +221,171 @@ def blink_type_info(idl_type, use_new_union=False):
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         has_null_value=True,
+                        is_move_effective=True,
                         clear_member_var_fmt="{} = String()")
 
     if real_type.is_array_buffer:
-        assert "AllowShared" not in real_type.extended_attributes
-        return TypeInfo(
-            'DOM{}'.format(real_type.keyword_typename),
-            member_fmt="Member<{}>",
-            ref_fmt="{}*",
-            const_ref_fmt="const {}*",
-            value_fmt="{}*",
-            has_null_value=True)
+        if "AllowShared" in idl_type.effective_annotations:
+            # DOMArrayBufferBase is the common base class of DOMArrayBuffer and
+            # DOMSharedArrayBuffer, so it works as [AllowShared] ArrayBuffer.
+            typename = "DOMArrayBufferBase"
+        else:
+            typename = "DOMArrayBuffer"
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
 
     if real_type.is_buffer_source_type:
-        if "FlexibleArrayBufferView" in real_type.extended_attributes:
-            assert "AllowShared" in real_type.extended_attributes
-            return TypeInfo(
-                "Flexible{}".format(real_type.keyword_typename),
-                member_fmt="void",
-                ref_fmt="{}",
-                const_ref_fmt="const {}",
-                value_fmt="{}",
-                has_null_value=True)
-        elif "AllowShared" in real_type.extended_attributes:
-            return TypeInfo(
-                "MaybeShared<DOM{}>".format(real_type.keyword_typename),
-                has_null_value=True)
+        if "FlexibleArrayBufferView" in idl_type.effective_annotations:
+            assert "AllowShared" in idl_type.effective_annotations
+            return TypeInfo("Flexible{}".format(real_type.keyword_typename),
+                            member_fmt="void",
+                            ref_fmt="{}",
+                            const_ref_fmt="const {}",
+                            value_fmt="{}",
+                            has_null_value=True,
+                            is_gc_type=True)
+        elif "AllowShared" in idl_type.effective_annotations:
+            return TypeInfo("MaybeShared<DOM{}>".format(
+                real_type.keyword_typename),
+                            has_null_value=True,
+                            is_gc_type=True)
         else:
-            return TypeInfo(
-                "NotShared<DOM{}>".format(real_type.keyword_typename),
-                has_null_value=True)
+            return TypeInfo("NotShared<DOM{}>".format(
+                real_type.keyword_typename),
+                            has_null_value=True,
+                            is_gc_type=True)
 
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
 
     if real_type.is_any or real_type.is_object:
-        return TypeInfo(
-            "ScriptValue",
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&",
-            has_null_value=True)
+        return TypeInfo("ScriptValue",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True,
+                        is_traceable=True)
 
     if real_type.is_void:
         assert False, "Blink does not support/accept IDL void type."
 
     if real_type.type_definition_object:
-        blink_impl_type = blink_class_name(real_type.type_definition_object)
+        typename = blink_class_name(real_type.type_definition_object)
         if real_type.is_enumeration:
-            return TypeInfo(blink_impl_type, clear_member_var_fmt="")
-        return TypeInfo(
-            blink_impl_type,
-            member_fmt="Member<{}>",
-            ref_fmt="{}*",
-            const_ref_fmt="const {}*",
-            value_fmt="{}*",
-            has_null_value=True)
-
-    if (real_type.is_sequence or real_type.is_frozen_array
-            or real_type.is_variadic):
-        typename = "VectorOf<{}>".format(
-            vector_element_type(real_type.element_type))
+            return TypeInfo(typename,
+                            ref_fmt="{}",
+                            const_ref_fmt="{}",
+                            clear_member_var_fmt="")
         return TypeInfo(typename,
-                        ref_fmt="{}&",
-                        const_ref_fmt="const {}&",
-                        clear_member_var_fmt="{}.clear()")
-
-    if real_type.is_record:
-        typename = "VectorOfPairs<{}, {}>".format(
-            vector_element_type(real_type.key_type),
-            vector_element_type(real_type.value_type))
-        return TypeInfo(typename,
-                        ref_fmt="{}&",
-                        const_ref_fmt="const {}&",
-                        clear_member_var_fmt="{}.clear()")
-
-    if real_type.is_promise:
-        return TypeInfo(
-            "ScriptPromise", ref_fmt="{}&", const_ref_fmt="const {}&")
-
-    if real_type.is_union and use_new_union:
-        blink_impl_type = blink_class_name(
-            real_type.new_union_definition_object)
-        return TypeInfo(blink_impl_type,
                         member_fmt="Member<{}>",
                         ref_fmt="{}*",
                         const_ref_fmt="const {}*",
                         value_fmt="{}*",
-                        has_null_value=True)
+                        has_null_value=True,
+                        is_gc_type=True)
+
+    if (real_type.is_sequence or real_type.is_frozen_array
+            or real_type.is_variadic):
+        element_type = blink_type_info(real_type.element_type)
+        if element_type.is_traceable:
+            # HeapVector is GarbageCollected but we'd like to treat it as
+            # a value type (is_gc_type=False, has_null_value=False) rather than
+            # a reference type (is_gc_type=True, has_null_value=True) by
+            # default.
+            typename = "HeapVector<{}>".format(element_type.member_t)
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            has_null_value=False,
+                            is_gc_type=False,
+                            is_move_effective=True,
+                            is_heap_vector_type=True,
+                            clear_member_var_fmt="{}.clear()")
+        else:
+            return TypeInfo("Vector<{}>".format(element_type.value_t),
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            is_move_effective=True,
+                            clear_member_var_fmt="{}.clear()")
+
+    if real_type.is_observable_array:
+        typename = blink_class_name(
+            real_type.observable_array_definition_object)
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
+
+    if real_type.is_record:
+        assert real_type.key_type.is_string
+        key_type = blink_type_info(real_type.key_type)
+        value_type = blink_type_info(real_type.value_type)
+        if value_type.is_traceable:
+            # HeapVector is GarbageCollected but we'd like to treat it as
+            # a value type (is_gc_type=False, has_null_value=False) rather than
+            # a reference type (is_gc_type=True, has_null_value=True) by
+            # default.
+            typename = ("HeapVector<std::pair<{}, {}>>".format(
+                key_type.member_t, value_type.member_t))
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            has_null_value=False,
+                            is_gc_type=False,
+                            is_move_effective=True,
+                            is_heap_vector_type=True,
+                            clear_member_var_fmt="{}.clear()")
+        else:
+            typename = "Vector<std::pair<{}, {}>>".format(
+                key_type.value_t, value_type.value_t)
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            is_move_effective=True,
+                            clear_member_var_fmt="{}.clear()")
+
+    if real_type.is_promise:
+        return TypeInfo("ScriptPromise",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        is_traceable=True)
 
     if real_type.is_union:
-        blink_impl_type = blink_class_name(real_type.union_definition_object)
-        return TypeInfo(
-            blink_impl_type,
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&",
-            has_null_value=True)
+        typename = blink_class_name(real_type.union_definition_object)
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
 
     if real_type.is_nullable:
         inner_type = blink_type_info(real_type.inner_type)
         if inner_type.has_null_value:
             return inner_type
-        return TypeInfo("base::Optional<{}>".format(inner_type.value_t),
+        if inner_type.is_heap_vector_type:
+            return TypeInfo(inner_type.typename,
+                            member_fmt="Member<{}>",
+                            ref_fmt="{}*",
+                            const_ref_fmt="const {}*",
+                            value_fmt="{}*",
+                            has_null_value=True,
+                            is_gc_type=True,
+                            is_move_effective=False,
+                            is_heap_vector_type=False)
+        assert not inner_type.is_traceable
+        return TypeInfo("absl::optional<{}>".format(inner_type.value_t),
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
+                        is_move_effective=inner_type.is_move_effective,
                         clear_member_var_fmt="{}.reset()")
 
     assert False, "Unknown type: {}".format(idl_type.syntactic_form)
@@ -267,27 +409,26 @@ def _native_value_tag_impl(idl_type):
     """Returns the tag type of NativeValueTraits."""
     assert isinstance(idl_type, web_idl.IdlType)
 
-    if idl_type.is_typedef:
-        if idl_type.identifier in ("EventHandler",
-                                   "OnBeforeUnloadEventHandler",
-                                   "OnErrorEventHandler"):
-            return "IDL{}".format(idl_type.identifier)
+    if idl_type.is_event_handler:
+        return "IDL{}".format(idl_type.identifier)
 
     real_type = idl_type.unwrap(typedef=True)
 
-    if (real_type.is_boolean or real_type.is_numeric or real_type.is_any
-            or real_type.is_object):
+    if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
+            or real_type.is_any or real_type.is_object):
         return "IDL{}".format(
             idl_type.type_name_with_extended_attribute_key_values)
 
-    if real_type.is_string:
-        return "IDL{}V2".format(
-            idl_type.type_name_with_extended_attribute_key_values)
-
     if real_type.is_array_buffer:
+        if "BufferSourceTypeNoSizeLimit" in real_type.effective_annotations:
+            return "IDLBufferSourceTypeNoSizeLimit<{}>".format(
+                blink_type_info(real_type).typename)
         return blink_type_info(real_type).typename
 
     if real_type.is_buffer_source_type:
+        if "BufferSourceTypeNoSizeLimit" in real_type.effective_annotations:
+            return "IDLBufferSourceTypeNoSizeLimit<{}>".format(
+                blink_type_info(real_type).value_t)
         return blink_type_info(real_type).value_t
 
     if real_type.is_symbol:
@@ -307,6 +448,9 @@ def _native_value_tag_impl(idl_type):
         return "IDLArray<{}>".format(
             _native_value_tag_impl(real_type.element_type))
 
+    if real_type.is_observable_array:
+        return blink_class_name(real_type.observable_array_definition_object)
+
     if real_type.is_record:
         return "IDLRecord<{}, {}>".format(
             _native_value_tag_impl(real_type.key_type),
@@ -316,10 +460,7 @@ def _native_value_tag_impl(idl_type):
         return "IDLPromise"
 
     if real_type.is_union:
-        class_name = blink_class_name(real_type.union_definition_object)
-        if real_type.does_include_nullable_type:
-            return "IDLUnionINT<{}>".format(class_name)
-        return "IDLUnionNotINT<{}>".format(class_name)
+        return blink_class_name(real_type.union_definition_object)
 
     if real_type.is_nullable:
         return "IDLNullable<{}>".format(
@@ -346,7 +487,7 @@ def make_blink_to_v8_value(
     assert isinstance(creation_context_script_state, str)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     def create_definition(symbol_node):
         binds = {
@@ -368,7 +509,7 @@ def make_blink_to_v8_value(
     return SymbolNode(v8_var_name, definition_constructor=create_definition)
 
 
-def make_default_value_expr(idl_type, default_value, use_new_union=False):
+def make_default_value_expr(idl_type, default_value):
     """
     Returns a set of C++ expressions to be used for initialization with default
     values.  The returned object has the following attributes.
@@ -427,7 +568,7 @@ def make_default_value_expr(idl_type, default_value, use_new_union=False):
             self.assignment_value = assignment_value
             self.assignment_deps = tuple(assignment_deps)
 
-    if idl_type.unwrap(typedef=True).is_union and use_new_union:
+    if idl_type.unwrap(typedef=True).is_union:
         union_type = idl_type.unwrap(typedef=True)
         member_type = None
         for member_type in union_type.flattened_member_types:
@@ -437,8 +578,7 @@ def make_default_value_expr(idl_type, default_value, use_new_union=False):
         assert not (member_type is None) or default_value.idl_type.is_nullable
 
         pattern = "MakeGarbageCollected<{}>({})"
-        union_class_name = blink_class_name(
-            union_type.new_union_definition_object)
+        union_class_name = blink_class_name(union_type.union_definition_object)
 
         if default_value.idl_type.is_nullable:
             value = pattern.format(union_class_name, "nullptr")
@@ -459,39 +599,6 @@ def make_default_value_expr(idl_type, default_value, use_new_union=False):
                 assignment_value=value,
                 assignment_deps=member_default_expr.assignment_deps)
 
-    if idl_type.unwrap(typedef=True).is_union:
-        union_type = idl_type.unwrap(typedef=True)
-        member_type = None
-        for member_type in union_type.flattened_member_types:
-            if default_value.is_type_compatible_with(member_type):
-                member_type = member_type
-                break
-        assert member_type is not None
-
-        union_class_name = blink_class_name(union_type.union_definition_object)
-        member_default_expr = make_default_value_expr(member_type,
-                                                      default_value)
-        if default_value.idl_type.is_nullable:
-            initializer_expr = None
-            assignment_value = _format("{}()", union_class_name)
-        else:
-            func_name = name_style.func("From", member_type.type_name)
-            argument = member_default_expr.assignment_value
-            # TODO(peria): Remove this workaround when we support V8Enum types
-            # in Union.
-            if (member_type.is_sequence
-                    and member_type.element_type.unwrap().is_enumeration):
-                argument = "{}"
-            initializer_expr = _format("{}::{}({})", union_class_name,
-                                       func_name, argument)
-            assignment_value = initializer_expr
-        return DefaultValueExpr(
-            initializer_expr=initializer_expr,
-            initializer_deps=member_default_expr.initializer_deps,
-            is_initialization_lightweight=False,
-            assignment_value=assignment_value,
-            assignment_deps=member_default_expr.assignment_deps)
-
     type_info = blink_type_info(idl_type)
 
     is_initialization_lightweight = False
@@ -499,8 +606,8 @@ def make_default_value_expr(idl_type, default_value, use_new_union=False):
     assignment_deps = []
     if default_value.idl_type.is_nullable:
         if not type_info.has_null_value:
-            initializer_expr = None  # !base::Optional::has_value() by default
-            assignment_value = "base::nullopt"
+            initializer_expr = None  # !absl::optional::has_value() by default
+            assignment_value = "absl::nullopt"
         elif idl_type.unwrap().type_definition_object is not None:
             initializer_expr = "nullptr"
             is_initialization_lightweight = True
@@ -517,25 +624,32 @@ def make_default_value_expr(idl_type, default_value, use_new_union=False):
             initializer_deps = ["isolate"]
             assignment_value = "ScriptValue::CreateNull(${isolate})"
             assignment_deps = ["isolate"]
-        elif idl_type.unwrap().is_union and use_new_union:
+        elif idl_type.unwrap().is_union:
             initializer_expr = "nullptr"
             is_initialization_lightweight = True
             assignment_value = "nullptr"
-        elif idl_type.unwrap().is_union:
-            initializer_expr = None  # <union_type>::IsNull() by default
-            assignment_value = "{}()".format(type_info.value_t)
         else:
             assert False
     elif default_value.idl_type.is_sequence:
         initializer_expr = None  # VectorOf<T>::size() == 0 by default
         assignment_value = "{}()".format(type_info.value_t)
     elif default_value.idl_type.is_object:
-        dict_name = blink_class_name(idl_type.unwrap().type_definition_object)
-        value = _format("{}::Create(${isolate})", dict_name)
-        initializer_expr = value
-        initializer_deps = ["isolate"]
-        assignment_value = value
-        assignment_deps = ["isolate"]
+        dictionary = idl_type.unwrap().type_definition_object
+        # Currently "isolate" is the only possible dependency, so whenever
+        # .initializer_deps exists, it must be ["isolate"].
+        if any((make_default_value_expr(member.idl_type,
+                                        member.default_value).initializer_deps)
+               for member in dictionary.members if member.default_value):
+            value = _format("{}::Create(${isolate})",
+                            blink_class_name(dictionary))
+            initializer_expr = value
+            initializer_deps = ["isolate"]
+            assignment_value = value
+            assignment_deps = ["isolate"]
+        else:
+            value = _format("{}::Create()", blink_class_name(dictionary))
+            initializer_expr = value
+            assignment_value = value
     elif default_value.idl_type.is_boolean:
         value = "true" if default_value.value else "false"
         initializer_expr = value
@@ -602,7 +716,7 @@ def make_v8_to_blink_value(blink_var_name,
     assert isinstance(error_exit_return_statement, str)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
 
     # Use of fast path is a trade-off between speed and binary size, so apply
     # it only when it's effective.  This hack is most significant on Android.
@@ -659,7 +773,7 @@ def make_v8_to_blink_value(blink_var_name,
         else:
             default_expr = None
         exception_exit_node = CxxUnlikelyIfNode(
-            cond="${exception_state}.HadException()",
+            cond="UNLIKELY(${exception_state}.HadException())",
             body=T(error_exit_return_statement))
 
         if not (default_expr or fast_path_cond):
@@ -747,7 +861,7 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
         return SymbolDefinitionNode(symbol_node, [
             TextNode(text),
             CxxUnlikelyIfNode(
-                cond="${exception_state}.HadException()",
+                cond="UNLIKELY(${exception_state}.HadException())",
                 body=TextNode("return;")),
         ])
 

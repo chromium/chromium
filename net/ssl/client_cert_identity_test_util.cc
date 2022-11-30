@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,15 +76,6 @@ void FakeClientCertIdentity::AcquirePrivateKey(
         private_key_callback) {
   std::move(private_key_callback).Run(key_);
 }
-
-#if defined(OS_APPLE)
-SecIdentityRef FakeClientCertIdentity::sec_identity_ref() const {
-  // Any tests that depend on having a real SecIdentityRef should use a real
-  // ClientCertIdentityMac.
-  NOTREACHED();
-  return nullptr;
-}
-#endif
 
 ClientCertIdentityList FakeClientCertIdentityListFromCertificateList(
     const CertificateList& certs) {

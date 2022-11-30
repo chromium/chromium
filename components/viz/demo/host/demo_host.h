@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,10 @@ class DemoHost : public viz::HostFrameSinkClient {
       mojo::PendingReceiver<viz::mojom::FrameSinkManagerClient> client_receiver,
       mojo::PendingRemote<viz::mojom::FrameSinkManager>
           frame_sink_manager_remote);
+
+  DemoHost(const DemoHost&) = delete;
+  DemoHost& operator=(const DemoHost&) = delete;
+
   ~DemoHost() override;
 
   void Resize(const gfx::Size& size);
@@ -69,8 +73,6 @@ class DemoHost : public viz::HostFrameSinkClient {
   // and clients over mojo. The host does not need to have its own thread
   // though.
   base::Thread thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoHost);
 };
 
 }  // namespace demo

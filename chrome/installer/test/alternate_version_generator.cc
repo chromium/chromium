@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -60,7 +59,7 @@
 namespace {
 
 const wchar_t k7zaExe[] = L"7za.exe";
-const wchar_t k7zaPathRelative[] = L"..\\..\\third_party\\lzma_sdk\\Executable";
+const wchar_t k7zaPathRelative[] = L"..\\..\\third_party\\lzma_sdk\\bin\\win64";
 const wchar_t kB7[] = L"B7";
 const wchar_t kBl[] = L"BL";
 const wchar_t kChromeBin[] = L"Chrome-bin";
@@ -82,6 +81,10 @@ const wchar_t kTempDirPrefix[] = L"mini_installer_test_temp";
 class ScopedTempDirectory {
  public:
   ScopedTempDirectory() {}
+
+  ScopedTempDirectory(const ScopedTempDirectory&) = delete;
+  ScopedTempDirectory& operator=(const ScopedTempDirectory&) = delete;
+
   ~ScopedTempDirectory() {
     if (!directory_.empty() && !base::DeletePathRecursively(directory_)) {
       LOG(DFATAL) << "Failed deleting temporary directory \""
@@ -104,7 +107,6 @@ class ScopedTempDirectory {
 
  private:
   base::FilePath directory_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTempDirectory);
 };  // class ScopedTempDirectory
 
 // A helper class for manipulating a Chrome product version.
@@ -143,20 +145,19 @@ class ChromeVersion {
 
 std::wstring ChromeVersion::ToString() const {
   wchar_t buffer[24];
-  int string_len =
-      swprintf_s(&buffer[0], base::size(buffer), L"%hu.%hu.%hu.%hu", major(),
-                 minor(), build(), patch());
+  int string_len = swprintf_s(&buffer[0], std::size(buffer), L"%hu.%hu.%hu.%hu",
+                              major(), minor(), build(), patch());
   DCHECK_NE(-1, string_len);
-  DCHECK_GT(static_cast<int>(base::size(buffer)), string_len);
+  DCHECK_GT(static_cast<int>(std::size(buffer)), string_len);
   return std::wstring(&buffer[0], string_len);
 }
 
 std::string ChromeVersion::ToASCII() const {
   char buffer[24];
-  int string_len = sprintf_s(&buffer[0], base::size(buffer), "%hu.%hu.%hu.%hu",
+  int string_len = sprintf_s(&buffer[0], std::size(buffer), "%hu.%hu.%hu.%hu",
                              major(), minor(), build(), patch());
   DCHECK_NE(-1, string_len);
-  DCHECK_GT(static_cast<int>(base::size(buffer)), string_len);
+  DCHECK_GT(static_cast<int>(std::size(buffer)), string_len);
   return std::string(&buffer[0], string_len);
 }
 
@@ -358,8 +359,9 @@ bool UpdateVersionIfMatch(const base::FilePath& image_file,
   }
 
   uint32_t flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-                   base::File::FLAG_WRITE | base::File::FLAG_EXCLUSIVE_READ |
-                   base::File::FLAG_EXCLUSIVE_WRITE;
+                   base::File::FLAG_WRITE |
+                   base::File::FLAG_WIN_EXCLUSIVE_READ |
+                   base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   base::File file(image_file, flags);
   // It turns out that the underlying CreateFile can fail due to unhelpful
   // security software locking the newly created DLL. So add a few brief

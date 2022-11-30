@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,17 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_NOTIFICATION_CONTROLLER_H_
 
 #include <map>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "ash/ash_export.h"
-#include "chromeos/components/phonehub/feature_status_provider.h"
-#include "chromeos/components/phonehub/notification_manager.h"
-#include "chromeos/components/phonehub/tether_controller.h"
-
-namespace chromeos {
-namespace phonehub {
-class Notification;
-class NotificationInteractionHandler;
-class PhoneHubManager;
-class PhoneModel;
-}  // namespace phonehub
-}  // namespace chromeos
+#include "ash/components/phonehub/camera_roll_manager.h"
+#include "ash/components/phonehub/feature_status_provider.h"
+#include "ash/components/phonehub/notification_manager.h"
+#include "ash/components/phonehub/tether_controller.h"
+#include "base/gtest_prod_util.h"
 
 namespace message_center {
 class MessageView;
@@ -28,12 +25,24 @@ class Notification;
 
 namespace ash {
 
+namespace phonehub {
+class Notification;
+class NotificationInteractionHandler;
+class PhoneHubManager;
+class PhoneModel;
+
+namespace proto {
+class CameraRollItemMetadata;
+}  // namespace proto
+
+}  // namespace phonehub
+
 // This controller creates and manages a message_center::Notification for each
 // PhoneHub corresponding notification.
 class ASH_EXPORT PhoneHubNotificationController
-    : public chromeos::phonehub::FeatureStatusProvider::Observer,
-      public chromeos::phonehub::NotificationManager::Observer,
-      public chromeos::phonehub::TetherController::Observer {
+    : public phonehub::CameraRollManager::Observer,
+      public phonehub::NotificationManager::Observer,
+      public phonehub::TetherController::Observer {
  public:
   PhoneHubNotificationController();
   ~PhoneHubNotificationController() override;
@@ -44,11 +53,13 @@ class ASH_EXPORT PhoneHubNotificationController
 
   // Sets the NotifictionManager that provides the underlying PhoneHub
   // notifications.
-  void SetManager(chromeos::phonehub::PhoneHubManager* phone_hub_manager);
+  void SetManager(phonehub::PhoneHubManager* phone_hub_manager);
 
   const std::u16string GetPhoneName() const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
+                           CustomActionRowExpanded);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
                            ReplyBrieflyDisabled);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
@@ -56,10 +67,7 @@ class ASH_EXPORT PhoneHubNotificationController
 
   class NotificationDelegate;
 
-  // chromeos::phonehub::FeatureStatusProvider::Observer:
-  void OnFeatureStatusChanged() override;
-
-  // chromeos::phonehub::NotificationManager::Observer:
+  // phonehub::NotificationManager::Observer:
   void OnNotificationsAdded(
       const base::flat_set<int64_t>& notification_ids) override;
   void OnNotificationsUpdated(
@@ -67,14 +75,32 @@ class ASH_EXPORT PhoneHubNotificationController
   void OnNotificationsRemoved(
       const base::flat_set<int64_t>& notification_ids) override;
 
-  // chromeos::phonehub::TetherController::Observer:
+  // phonehub::TetherController::Observer:
   void OnAttemptConnectionScanFailed() override;
   void OnTetherStatusChanged() override {}
+
+  // phonehub::CameraRollManager::Observer:
+  void OnCameraRollDownloadError(
+      DownloadErrorType error_type,
+      const phonehub::proto::CameraRollItemMetadata& metadata) override;
+
+  // Helper functions for creating Camera Roll notifications
+  std::unique_ptr<message_center::Notification>
+  CreateCameraRollGenericNotification(
+      const phonehub::proto::CameraRollItemMetadata& metadata);
+  std::unique_ptr<message_center::Notification>
+  CreateCameraRollStorageNotification(
+      const phonehub::proto::CameraRollItemMetadata& metadata);
+  std::unique_ptr<message_center::Notification>
+  CreateCameraRollNetworkNotification(
+      const phonehub::proto::CameraRollItemMetadata& metadata);
 
   // Callbacks for user interactions.
   void OpenSettings();
   void DismissNotification(int64_t notification_id);
-  void HandleNotificationBodyClick(int64_t notification_id);
+  void HandleNotificationBodyClick(
+      int64_t notification_id,
+      const phonehub::Notification::AppMetadata& app_metadata);
   void SendInlineReply(int64_t notification_id,
                        const std::u16string& inline_reply_text);
 
@@ -84,37 +110,39 @@ class ASH_EXPORT PhoneHubNotificationController
   // Shows a Chrome OS notification for the provided phonehub::Notification.
   // If |is_update| is true, this function updates an existing notification;
   // otherwise, a new notification is created.
-  void SetNotification(const chromeos::phonehub::Notification* notification,
+  void SetNotification(const phonehub::Notification* notification,
                        bool is_update);
 
   // Creates a message_center::Notification from the PhoneHub notification data.
   std::unique_ptr<message_center::Notification> CreateNotification(
-      const chromeos::phonehub::Notification* notification,
+      const phonehub::Notification* notification,
       const std::string& cros_id,
       NotificationDelegate* delegate,
       bool is_update);
   int GetSystemPriorityForNotification(
-      const chromeos::phonehub::Notification* notification,
+      const phonehub::Notification* notification,
       bool is_update);
 
   static std::unique_ptr<message_center::MessageView>
   CreateCustomNotificationView(
       base::WeakPtr<PhoneHubNotificationController> notification_controller,
-      const message_center::Notification& notification);
+      const message_center::Notification& notification,
+      bool shown_in_popup);
 
-  chromeos::phonehub::NotificationInteractionHandler*
-      notification_interaction_handler_ = nullptr;
-  chromeos::phonehub::NotificationManager* manager_ = nullptr;
-  chromeos::phonehub::FeatureStatusProvider* feature_status_provider_ = nullptr;
-  chromeos::phonehub::TetherController* tether_controller_ = nullptr;
-  chromeos::phonehub::PhoneModel* phone_model_ = nullptr;
+  static std::unique_ptr<message_center::MessageView>
+  CreateCustomActionNotificationView(
+      base::WeakPtr<PhoneHubNotificationController> notification_controller,
+      const message_center::Notification& notification,
+      bool shown_in_popup);
+
+  phonehub::NotificationInteractionHandler* notification_interaction_handler_ =
+      nullptr;
+  phonehub::NotificationManager* manager_ = nullptr;
+  phonehub::TetherController* tether_controller_ = nullptr;
+  phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
+  phonehub::PhoneModel* phone_model_ = nullptr;
   std::unordered_map<int64_t, std::unique_ptr<NotificationDelegate>>
       notification_map_;
-
-  // A set of notification ids that have been previously shown, even across
-  // disconnects. This is needed to prevent pop-ups from reappearing due to a
-  // flaky connection. See crbug.com/1150621.
-  std::unordered_set<uint64_t> shown_notification_ids_;
 
   base::WeakPtrFactory<PhoneHubNotificationController> weak_ptr_factory_{this};
 };

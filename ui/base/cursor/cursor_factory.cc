@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,13 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/platform_cursor.h"
 
 namespace ui {
 
@@ -18,6 +23,8 @@ namespace {
 CursorFactory* g_instance = nullptr;
 
 }  // namespace
+
+CursorFactoryObserver::~CursorFactoryObserver() = default;
 
 CursorFactory::CursorFactory() {
   DCHECK(!g_instance) << "There should only be a single CursorFactory.";
@@ -34,34 +41,40 @@ CursorFactory* CursorFactory::GetInstance() {
   return g_instance;
 }
 
-base::Optional<PlatformCursor> CursorFactory::GetDefaultCursor(
+void CursorFactory::AddObserver(CursorFactoryObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CursorFactory::RemoveObserver(CursorFactoryObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void CursorFactory::NotifyObserversOnThemeLoaded() {
+  for (auto& observer : observers_)
+    observer.OnThemeLoaded();
+}
+
+scoped_refptr<PlatformCursor> CursorFactory::GetDefaultCursor(
     mojom::CursorType type) {
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return nullptr;
 }
 
-PlatformCursor CursorFactory::CreateImageCursor(mojom::CursorType type,
-                                                const SkBitmap& bitmap,
-                                                const gfx::Point& hotspot) {
+scoped_refptr<PlatformCursor> CursorFactory::CreateImageCursor(
+    mojom::CursorType type,
+    const SkBitmap& bitmap,
+    const gfx::Point& hotspot) {
   NOTIMPLEMENTED();
-  return 0;
+  return nullptr;
 }
 
-PlatformCursor CursorFactory::CreateAnimatedCursor(
+scoped_refptr<PlatformCursor> CursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
     base::TimeDelta frame_delay) {
   NOTIMPLEMENTED();
-  return 0;
-}
-
-void CursorFactory::RefImageCursor(PlatformCursor cursor) {
-  NOTIMPLEMENTED();
-}
-
-void CursorFactory::UnrefImageCursor(PlatformCursor cursor) {
-  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 void CursorFactory::ObserveThemeChanges() {
@@ -70,7 +83,7 @@ void CursorFactory::ObserveThemeChanges() {
 
 void CursorFactory::SetDeviceScaleFactor(float scale) {}
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Returns a cursor name compatible with either X11 or the FreeDesktop.org
 // cursor spec ([1] and [2]), followed by fallbacks that can work as
@@ -119,9 +132,9 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
     case mojom::CursorType::kWestResize:
       return {"w-resize", "left_side"};
     case mojom::CursorType::kNone:
-      return {"none"};
+      return {};
     case mojom::CursorType::kGrab:
-      return {"openhand", "grab"};
+      return {"openhand", "grab", "hand1"};
     case mojom::CursorType::kGrabbing:
       return {"closedhand", "grabbing", "hand2"};
     case mojom::CursorType::kCross:
@@ -165,6 +178,10 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
     case mojom::CursorType::kCopy:
       return {"copy"};
     case mojom::CursorType::kNotAllowed:
+    case mojom::CursorType::kNorthSouthNoResize:
+    case mojom::CursorType::kEastWestNoResize:
+    case mojom::CursorType::kNorthEastSouthWestNoResize:
+    case mojom::CursorType::kNorthWestSouthEastNoResize:
       return {"not-allowed", "crossed_circle"};
     case mojom::CursorType::kDndNone:
       return {"dnd-none", "hand2"};
@@ -178,7 +195,7 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
       // kCustom is for custom image cursors. The platform cursor will be set
       // at WebCursor::GetNativeCursor().
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case mojom::CursorType::kNull:
     case mojom::CursorType::kPointer:
       return {"left_ptr"};
@@ -187,6 +204,6 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
   return {"left_ptr"};
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

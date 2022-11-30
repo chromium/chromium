@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
  public:
   AccessibilityNodeInfoDataWrapper(AXTreeSourceArc* tree_source,
                                    mojom::AccessibilityNodeInfoData* node);
+
+  AccessibilityNodeInfoDataWrapper(const AccessibilityNodeInfoDataWrapper&) =
+      delete;
+  AccessibilityNodeInfoDataWrapper& operator=(
+      const AccessibilityNodeInfoDataWrapper&) = delete;
 
   ~AccessibilityNodeInfoDataWrapper() override;
 
@@ -46,10 +51,6 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   mojom::AccessibilityNodeInfoData* node() { return node_ptr_; }
 
-  void set_container_live_status(mojom::AccessibilityLiveRegionType status) {
-    container_live_status_ = status;
-  }
-
  private:
   bool GetProperty(mojom::AccessibilityBooleanProperty prop) const;
   bool GetProperty(mojom::AccessibilityIntProperty prop,
@@ -74,6 +75,7 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
   void ComputeNameFromContentsInternal(std::vector<std::string>* names) const;
 
   bool IsClickable() const;
+  bool IsLongClickable() const;
   bool IsFocusable() const;
 
   bool IsScrollableContainer() const;
@@ -84,9 +86,6 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   mojom::AccessibilityNodeInfoData* node_ptr_ = nullptr;
 
-  mojom::AccessibilityLiveRegionType container_live_status_ =
-      mojom::AccessibilityLiveRegionType::NONE;
-
   // Properties which should be checked for recursive text computation.
   // It's not clear whether labeled by should be taken into account here.
   static constexpr mojom::AccessibilityStringProperty text_properties_[3] = {
@@ -96,9 +95,7 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   // This property is a cached value so that we can avoid same computation.
   // mutable because once the value is computed it won't change.
-  mutable base::Optional<bool> has_important_property_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityNodeInfoDataWrapper);
+  mutable absl::optional<bool> has_important_property_cache_;
 };
 
 }  // namespace arc

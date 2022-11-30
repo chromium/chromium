@@ -1,0 +1,32 @@
+UNKNOWN focusable has_input_focus label='Table example with rowspan and colspan'
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE number_of_rows=2 number_of_columns=2
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++CELL label='AD' cell_row_span=2 cell_column_span=1
+++++++++++++++STATIC_TEXT label='AD'
+++++++++++++++++UNKNOWN label='AD'
+++++++++++++CELL label='BC' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='BC'
+++++++++++++++++UNKNOWN label='BC'
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL label='EF' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='EF'
+++++++++++++++++UNKNOWN label='EF'
+++++++TABLE number_of_rows=2 number_of_columns=3
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++CELL label='AD' cell_row_span=2 cell_column_span=1
+++++++++++++++STATIC_TEXT label='AD'
+++++++++++++++++UNKNOWN label='AD'
+++++++++++++CELL label='BC' cell_column_index=1 cell_row_span=1 cell_column_span=2
+++++++++++++++STATIC_TEXT label='BC'
+++++++++++++++++UNKNOWN label='BC'
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL label='EF' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='EF'
+++++++++++++++++UNKNOWN label='EF'
+++++++++++++CELL label='GH' cell_row_index=1 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='GH'
+++++++++++++++++UNKNOWN label='GH'

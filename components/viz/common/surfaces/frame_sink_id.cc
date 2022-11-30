@@ -1,9 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/common/surfaces/frame_sink_id.h"
 
+#include <ostream>
+
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 
 namespace viz {
@@ -14,7 +17,7 @@ std::string FrameSinkId::ToString() const {
 
 std::string FrameSinkId::ToString(base::StringPiece debug_label) const {
   return base::StringPrintf("FrameSinkId[%s](%u, %u)",
-                            debug_label.as_string().c_str(), client_id_,
+                            std::string(debug_label).c_str(), client_id_,
                             sink_id_);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_bus.h"
@@ -46,6 +46,9 @@ class InProcessReceiver {
     explicit TransportClient(InProcessReceiver* in_process_receiver)
         : in_process_receiver_(in_process_receiver) {}
 
+    TransportClient(const TransportClient&) = delete;
+    TransportClient& operator=(const TransportClient&) = delete;
+
     void OnStatusChanged(CastTransportStatus status) final;
     void OnLoggingEventsReceived(
         std::unique_ptr<std::vector<FrameEvent>> frame_events,
@@ -53,9 +56,7 @@ class InProcessReceiver {
     void ProcessRtpPacket(std::unique_ptr<Packet> packet) final;
 
    private:
-    InProcessReceiver* in_process_receiver_;
-
-    DISALLOW_COPY_AND_ASSIGN(TransportClient);
+    raw_ptr<InProcessReceiver> in_process_receiver_;
   };
 
   // Construct a receiver with the given configuration.  |remote_end_point| can
@@ -66,6 +67,9 @@ class InProcessReceiver {
                     const net::IPEndPoint& remote_end_point,
                     const FrameReceiverConfig& audio_config,
                     const FrameReceiverConfig& video_config);
+
+  InProcessReceiver(const InProcessReceiver&) = delete;
+  InProcessReceiver& operator=(const InProcessReceiver&) = delete;
 
   virtual ~InProcessReceiver();
 
@@ -140,8 +144,6 @@ class InProcessReceiver {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<InProcessReceiver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessReceiver);
 };
 
 }  // namespace cast

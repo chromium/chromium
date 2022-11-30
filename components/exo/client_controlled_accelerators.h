@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,12 @@ class ClientControlledAcceleratorTarget : public ui::AcceleratorTarget {
  public:
   explicit ClientControlledAcceleratorTarget(
       ClientControlledShellSurface* surface);
+
+  ClientControlledAcceleratorTarget(const ClientControlledAcceleratorTarget&) =
+      delete;
+  ClientControlledAcceleratorTarget& operator=(
+      const ClientControlledAcceleratorTarget&) = delete;
+
   ~ClientControlledAcceleratorTarget() override;
 
   void RegisterAccelerator(const ui::Accelerator& accelerator,
@@ -38,8 +44,6 @@ class ClientControlledAcceleratorTarget : public ui::AcceleratorTarget {
  private:
   ClientControlledShellSurface* surface_;
   std::map<ui::Accelerator, ClientControlledAcceleratorAction> accelerators_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlledAcceleratorTarget);
 };
 
 }  // namespace exo

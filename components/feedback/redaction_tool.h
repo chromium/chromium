@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "components/feedback/pii_types.h"
 
 namespace re2 {
 class RE2;
@@ -28,6 +29,8 @@ struct CustomPatternWithAlias {
   // A RE2 regexp used in the replacing logic. Matches will be replaced by the
   // alias reference described above.
   const char* pattern;
+  // PII category of the data that will be detected using this pattern.
+  PIIType pii_type;
 };
 
 // Formerly known as AnonymizerTool, RedactionTool provides functions for
@@ -35,11 +38,21 @@ struct CustomPatternWithAlias {
 // using custom patterns.
 class RedactionTool {
  public:
+  // Disallow copy or move
+  RedactionTool(const RedactionTool&) = delete;
+  RedactionTool& operator=(const RedactionTool&) = delete;
+  RedactionTool(RedactionTool&&) = delete;
+  RedactionTool& operator=(RedactionTool&&) = delete;
+
   // |first_party_extension_ids| is a null terminated array of all the 1st
   // party extension IDs whose URLs won't be redacted. It is OK to pass null for
   // that value if it's OK to redact those URLs or they won't be present.
   explicit RedactionTool(const char* const* first_party_extension_ids);
   ~RedactionTool();
+
+  // Return a map of [PII-sensitive data type -> set of data] that are detected
+  // in |input|.
+  std::map<PIIType, std::set<std::string>> Detect(const std::string& input);
 
   // Returns an redacted version of |input|. PII-sensitive data (such as MAC
   // addresses) in |input| is replaced with unique identifiers.
@@ -47,25 +60,67 @@ class RedactionTool {
   // thread.
   std::string Redact(const std::string& input);
 
+  // Attempts to redact PII sensitive data from |input| except the data that
+  // fits in one of the PII types in |pii_types_to_keep| and returns the
+  // redacted version.
+  // Note that URLs and Android storage paths may contain hashes. URLs and
+  // Android storage paths will be partially redacted (only hashes) if
+  // |pii_types_to_keep| contains PIIType::kURL or
+  // PIIType::kAndroidAppStoragePath and not PIIType::kHash.
+  std::string RedactAndKeepSelected(const std::string& input,
+                                    const std::set<PIIType>& pii_types_to_keep);
+
  private:
   friend class RedactionToolTest;
 
   re2::RE2* GetRegExp(const std::string& pattern);
 
-  std::string RedactMACAddresses(const std::string& input);
-  std::string RedactAndroidAppStoragePaths(const std::string& input);
-  std::string RedactHashes(const std::string& input);
-  std::string RedactCustomPatterns(std::string input);
+  // Redacts MAC addresses from |input| and returns the redacted string. Adds
+  // the redacted MAC addresses to |detected| if |detected| is not nullptr.
+  std::string RedactMACAddresses(
+      const std::string& input,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts Android app storage paths from |input| and returns the redacted
+  // string. Adds the redacted app storage paths to |detected| if |detected| is
+  // not nullptr. This function returns meaningpul output only on Chrome OS.
+  std::string RedactAndroidAppStoragePaths(
+      const std::string& input,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts hashes from |input| and returns the redacted string. Adds the
+  // redacted hashes to |detected| if |detected| is not nullptr.
+  std::string RedactHashes(const std::string& input,
+                           std::map<PIIType, std::set<std::string>>* detected);
+
+  // Redacts PII sensitive data that matches |pattern| from |input| and returns
+  // the redacted string. Keeps the PII data that belongs to PII type in
+  // |pii_types_to_keep| in the returned string.
+  std::string RedactAndKeepSelectedCustomPatterns(
+      std::string input,
+      const std::set<PIIType>& pii_types_to_keep);
+
+  // Detects PII sensitive data in |input| using custom patterns. Adds the
+  // detected PII sensitive data to corresponding PII type key in |detected|.
+  void DetectWithCustomPatterns(
+      std::string input,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts PII sensitive data that matches |pattern| from |input| and returns
+  // the redacted string. Adds the redacted PII sensitive data to |detected| if
+  // |detected| is not nullptr.
   std::string RedactCustomPatternWithContext(
       const std::string& input,
-      const CustomPatternWithAlias& pattern);
+      const CustomPatternWithAlias& pattern,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts PII sensitive data that matches |pattern| from |input| and returns
+  // the redacted string. Adds the redacted PII sensitive data to |detected| if
+  // |detected| is not nullptr.
   std::string RedactCustomPatternWithoutContext(
       const std::string& input,
-      const CustomPatternWithAlias& pattern);
+      const CustomPatternWithAlias& pattern,
+      std::map<PIIType, std::set<std::string>>* detected);
 
   // Null-terminated list of first party extension IDs. We need to have this
   // passed into us because we can't refer to the code where these are defined.
-  const char* const* first_party_extension_ids_;  // Not owned.
+  raw_ptr<const char* const> first_party_extension_ids_;  // Not owned.
 
   // Map of MAC addresses discovered in redacted strings to redacted
   // representations. 11:22:33:44:55:66 gets redacted to
@@ -96,8 +151,6 @@ class RedactionTool {
   std::map<std::string, std::unique_ptr<re2::RE2>> regexp_cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RedactionTool);
 };
 
 // A container for a RedactionTool that is thread-safely ref-countable.

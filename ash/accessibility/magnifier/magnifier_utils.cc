@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <cmath>
 
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 
 namespace ash {
 namespace magnifier_utils {
@@ -55,19 +57,28 @@ float GetNextMagnifierScaleValue(int delta_index,
   const int current_index = IndexFromScale(current_scale);
   const int new_scale_index = current_index + delta_index;
   const float new_scale = std::pow(kMagnificationScaleFactor, new_scale_index);
-  return base::ClampToRange(new_scale, min_scale, max_scale);
+  return base::clamp(new_scale, min_scale, max_scale);
 }
 
-ui::InputMethod* GetInputMethod(aura::Window* root_window) {
-  ui::IMEBridge* bridge = ui::IMEBridge::Get();
-  if (bridge && bridge->GetInputContextHandler())
-    return bridge->GetInputContextHandler()->GetInputMethod();
+gfx::Rect GetViewportWidgetBoundsInRoot(aura::Window* root,
+                                        float screen_height_divisor) {
+  DCHECK(root);
+  DCHECK(root->IsRootWindow());
 
-  if (root_window && root_window->GetHost())
-    return root_window->GetHost()->GetInputMethod();
+  auto root_bounds = root->GetBoundsInRootWindow();
+  root_bounds.set_height(root_bounds.height() / screen_height_divisor);
+  return root_bounds;
+}
 
-  // Needed by a handful of browser tests that use MockInputMethod.
-  return Shell::GetRootWindowForNewWindows()->GetHost()->GetInputMethod();
+void MaybeUpdateActiveMagnifierFocus(const gfx::Point& point_in_screen) {
+  DockedMagnifierController* docked_magnifier =
+      Shell::Get()->docked_magnifier_controller();
+  FullscreenMagnifierController* fullscreen_magnifier =
+      Shell::Get()->fullscreen_magnifier_controller();
+  if (docked_magnifier->GetEnabled())
+    docked_magnifier->CenterOnPoint(point_in_screen);
+  else if (fullscreen_magnifier->IsEnabled())
+    fullscreen_magnifier->CenterOnPoint(point_in_screen);
 }
 
 }  // namespace magnifier_utils

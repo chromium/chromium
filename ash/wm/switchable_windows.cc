@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,9 @@ namespace ash {
 
 namespace {
 
-constexpr std::array<int, 2> kSwitchableContainers = {
+constexpr std::array<int, 3> kSwitchableContainers = {
     kShellWindowId_AlwaysOnTopContainer,
+    kShellWindowId_FloatContainer,
     kShellWindowId_PipContainer,
 };
 
@@ -58,7 +59,7 @@ bool IsSwitchableContainer(const aura::Window* window) {
   if (!window)
     return false;
 
-  return base::Contains(GetSwitchableContainerIds(), window->id());
+  return base::Contains(GetSwitchableContainerIds(), window->GetId());
 }
 
 }  // namespace ash

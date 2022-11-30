@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -119,7 +120,7 @@ void MultipartImageResourceParser::Finish() {
     return;
   // If we have any pending data and we're not in a header, go ahead and send
   // it to the client.
-  if (!is_parsing_headers_ && !data_.IsEmpty())
+  if (!is_parsing_headers_ && !data_.empty())
     client_->MultipartDataReceived(data_.data(), data_.size());
   data_.clear();
   saw_last_boundary_ = true;

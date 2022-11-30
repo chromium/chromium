@@ -1,0 +1,53 @@
+<!doctype html>
+<head>
+<meta charset="utf-8"/>
+<meta name="timeout" content="long">
+<meta name="help" href="https://github.com/WICG/CHIPS#chips-cookies-having-independent-partitioned-state">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<title>Test partitioned cookies do not consider ancestor chain</title>
+</head>
+<body>
+<script>
+
+document.body.onload = function main() {
+  if (window.location.hostname != ORIGINAL_HOST) {
+    window.location.hostname = ORIGINAL_HOST;
+  }
+
+  test(() => {
+    assert_equals(document.cookie, "");
+
+    // Valid Partitioned cookie: __Host- prefix and no SameParty attribute.
+    const sameSiteCookie = "__Host-same=site";
+    // Include Partitioned attribute to make sure we don't introduce a site for
+    // cookies regression.
+    const sameSiteCookieAttributes =
+        "; Secure; Path=/; SameSite=Lax; Partitioned";
+    const sameSiteCookieLine = sameSiteCookie + sameSiteCookieAttributes;
+    document.cookie = sameSiteCookieLine;
+
+    const partitionedCookie = "__Host-foo=bar";
+    const partitionedCookieAttributes =
+        "; Secure; Path=/; SameSite=None; Partitioned";
+    const partitionedCookieLine =
+        partitionedCookie + partitionedCookieAttributes;
+    document.cookie = partitionedCookieLine;
+
+    assert_true(document.cookie.includes(sameSiteCookie));
+    assert_true(document.cookie.includes(partitionedCookie));
+
+    const iframe = document.createElement("iframe");
+    const url = new URL(
+      "/cookies/partitioned-cookies/resources/" +
+          "ancestor-chain-cross-site-embed.html",
+      `https://${TEST_HOST}:${window.location.port}`);
+    iframe.src = url.href;
+    document.body.appendChild(iframe);
+    fetch_tests_from_window(iframe.contentWindow);
+  }, "Setting SameSite and Partitioned cookies");
+};
+
+</script>
+</body>

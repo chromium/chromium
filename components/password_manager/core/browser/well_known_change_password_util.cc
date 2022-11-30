@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ GURL CreateChangePasswordUrl(const GURL& url) {
   DCHECK(url.is_valid());
   GURL::Replacements replacements;
   replacements.SetPathStr(password_manager::kWellKnownChangePasswordPath);
-  return url.GetOrigin().ReplaceComponents(replacements);
+  return url.DeprecatedGetOriginAsURL().ReplaceComponents(replacements);
 }
 
 GURL CreateWellKnownNonExistingResourceURL(const GURL& url) {

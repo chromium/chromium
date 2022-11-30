@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
@@ -18,7 +18,7 @@
 namespace exo {
 namespace wayland {
 namespace {
-base::TimeDelta kDeleteTaskDelay = base::TimeDelta::FromSeconds(3);
+base::TimeDelta kDeleteTaskDelay = base::Seconds(3);
 
 void DoDelete(WaylandDisplayOutput* output, int retry_count) {
   if (retry_count > 0 && output->output_counts() > 0) {

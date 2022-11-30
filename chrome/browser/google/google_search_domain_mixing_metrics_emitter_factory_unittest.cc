@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterFactoryTest, DisabledByDefault) {
 TEST_F(GoogleSearchDomainMixingMetricsEmitterFactoryTest, Enabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      GoogleSearchDomainMixingMetricsEmitterFactory::kFeature);
+      kEmitGoogleSearchDomainMixingMetrics);
 
   EXPECT_TRUE(ServiceIsCreatedWithBrowserContext());
 }

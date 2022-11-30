@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>WebGL + WebCodecs + Breakout Box can display frame</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script src="pixel_webgl_util.js"></script>
+
+<script>
+var gl, generator, writer;
+
+function waitForNextVSync() {
+  return new Promise((resolve, _) => {
+    window.requestAnimationFrame(resolve);
+  });
+}
+
+function runTest() {
+  var canvas = new OffscreenCanvas(300, 300);
+  gl = initGL(canvas);
+  if (!gl) {
+    console.log('Failed to initialize GL from canvas: ' + canvas);
+    domAutomationController.send("FAILURE");
+    return;
+  }
+
+  if (!setup(gl)) {
+    console.log('Failed to set up GL: ' + gl);
+    domAutomationController.send("FAILURE");
+    return;
+  }
+
+  gl.viewport(0, 0, 300, 300);
+  drawTriangle(gl);
+
+  let frame = new VideoFrame(canvas, {timestamp: 0});
+  let video = document.querySelector('video');
+  video.requestVideoFrameCallback(async _ => {
+    // Wait for several vsyncs before taking a snapshot, this deflakes the test.
+    // pixel_video_test.js uses addSwapCompletionEventListener() for the same
+    // purpose, but addSwapCompletionEventListener() is not compatible with
+    // Android video overlays, so we can't use those.
+    for (let i = 0; i < 30; i++)
+      await waitForNextVSync();
+    domAutomationController.send("SUCCESS");
+  });
+
+  generator = new MediaStreamTrackGenerator({kind: 'video'});
+  writer = generator.writable.getWriter();
+  video.width = 300;
+  video.height = 300;
+  video.onloadstart = async _ => {
+    await writer.write(frame);
+    frame.close();
+  };
+  video.srcObject = new MediaStream([generator]);
+}
+</script>
+</head>
+<body onload="runTest()">
+<video width="300" height="300" class="nomargin" autoplay muted></video>
+</body>
+</html>

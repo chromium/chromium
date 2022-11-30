@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -14,14 +15,14 @@
 #include "base/location.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/disk_cache/simple/simple_backend_impl.h"
 #include "net/disk_cache/simple/simple_backend_version.h"
@@ -152,13 +153,12 @@ class V8IndexMetadataForTest : public SimpleIndexFile::IndexMetadata {
 class WrappedSimpleIndexFile : public SimpleIndexFile {
  public:
   using SimpleIndexFile::Deserialize;
-  using SimpleIndexFile::LegacyIsIndexFileStale;
   using SimpleIndexFile::Serialize;
   using SimpleIndexFile::SerializeFinalData;
 
   explicit WrappedSimpleIndexFile(const base::FilePath& index_file_directory)
       : SimpleIndexFile(base::ThreadTaskRunnerHandle::Get(),
-                        base::ThreadTaskRunnerHandle::Get(),
+                        base::MakeRefCounted<TrivialFileOperationsFactory>(),
                         net::DISK_CACHE,
                         index_file_directory) {}
   ~WrappedSimpleIndexFile() override = default;
@@ -173,6 +173,13 @@ class WrappedSimpleIndexFile : public SimpleIndexFile {
 
   bool CreateIndexFileDirectory() const {
     return base::CreateDirectory(index_file_.DirName());
+  }
+
+  static bool LegacyIsIndexFileStale(base::Time cache_last_modified,
+                                     const base::FilePath& index_file_path) {
+    TrivialFileOperations ops;
+    return SimpleIndexFile::LegacyIsIndexFileStale(&ops, cache_last_modified,
+                                                   index_file_path);
   }
 };
 
@@ -196,7 +203,7 @@ class SimpleIndexFileTest : public net::TestWithTaskEnvironment {
 TEST_F(SimpleIndexFileTest, Serialize) {
   SimpleIndex::EntrySet entries;
   static const uint64_t kHashes[] = {11, 22, 33};
-  static const size_t kNumHashes = base::size(kHashes);
+  static const size_t kNumHashes = std::size(kHashes);
   EntryMetadata metadata_entries[kNumHashes];
 
   SimpleIndexFile::IndexMetadata index_metadata(
@@ -236,7 +243,7 @@ TEST_F(SimpleIndexFileTest, Serialize) {
 TEST_F(SimpleIndexFileTest, SerializeAppCache) {
   SimpleIndex::EntrySet entries;
   static const uint64_t kHashes[] = {11, 22, 33};
-  static const size_t kNumHashes = base::size(kHashes);
+  static const size_t kNumHashes = std::size(kHashes);
   static const int32_t kTrailerPrefetches[] = {123, -1, 987};
   EntryMetadata metadata_entries[kNumHashes];
 
@@ -277,9 +284,9 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
 TEST_F(SimpleIndexFileTest, ReadV7Format) {
   static const uint64_t kHashes[] = {11, 22, 33};
   static const uint32_t kSizes[] = {394, 594, 495940};
-  static_assert(base::size(kHashes) == base::size(kSizes),
+  static_assert(std::size(kHashes) == std::size(kSizes),
                 "Need same number of hashes and sizes");
-  static const size_t kNumHashes = base::size(kHashes);
+  static const size_t kNumHashes = std::size(kHashes);
 
   V7IndexMetadataForTest v7_metadata(kNumHashes, 100 * 1024 * 1024);
 
@@ -320,9 +327,9 @@ TEST_F(SimpleIndexFileTest, ReadV7Format) {
 TEST_F(SimpleIndexFileTest, ReadV8Format) {
   static const uint64_t kHashes[] = {11, 22, 33};
   static const uint32_t kSizes[] = {394, 594, 495940};
-  static_assert(base::size(kHashes) == base::size(kSizes),
+  static_assert(std::size(kHashes) == std::size(kSizes),
                 "Need same number of hashes and sizes");
-  static const size_t kNumHashes = base::size(kHashes);
+  static const size_t kNumHashes = std::size(kHashes);
 
   // V8 to V9 should not make any modifications for non-APP_CACHE modes.
   // Verify that the data is preserved through the migration.
@@ -361,9 +368,9 @@ TEST_F(SimpleIndexFileTest, ReadV8Format) {
 TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
   static const uint64_t kHashes[] = {11, 22, 33};
   static const uint32_t kSizes[] = {394, 594, 495940};
-  static_assert(base::size(kHashes) == base::size(kSizes),
+  static_assert(std::size(kHashes) == std::size(kSizes),
                 "Need same number of hashes and sizes");
-  static const size_t kNumHashes = base::size(kHashes);
+  static const size_t kNumHashes = std::size(kHashes);
 
   // To simulate an upgrade from v8 to v9 write out the v8 schema
   // using DISK_CACHE mode.  The read it back in in APP_CACHE mode.
@@ -414,10 +421,12 @@ TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
 TEST_F(SimpleIndexFileTest, LegacyIsIndexFileStale) {
   base::ScopedTempDir cache_dir;
   ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
+  base::File::Info file_info;
   base::Time cache_mtime;
   const base::FilePath cache_path = cache_dir.GetPath();
 
-  ASSERT_TRUE(simple_util::GetMTime(cache_path, &cache_mtime));
+  ASSERT_TRUE(base::GetFileInfo(cache_path, &file_info));
+  cache_mtime = file_info.last_modified;
   WrappedSimpleIndexFile simple_index_file(cache_path);
   ASSERT_TRUE(simple_index_file.CreateIndexFileDirectory());
   const base::FilePath& index_path = simple_index_file.GetIndexFilePath();
@@ -427,18 +436,19 @@ TEST_F(SimpleIndexFileTest, LegacyIsIndexFileStale) {
   EXPECT_EQ(static_cast<int>(kDummyData.size()),
             base::WriteFile(index_path,
                             kDummyData.data(), kDummyData.size()));
-  ASSERT_TRUE(simple_util::GetMTime(cache_path, &cache_mtime));
+  ASSERT_TRUE(base::GetFileInfo(cache_path, &file_info));
+  cache_mtime = file_info.last_modified;
   EXPECT_FALSE(
       WrappedSimpleIndexFile::LegacyIsIndexFileStale(cache_mtime, index_path));
 
-  const base::Time past_time = base::Time::Now() -
-      base::TimeDelta::FromSeconds(10);
+  const base::Time past_time = base::Time::Now() - base::Seconds(10);
   EXPECT_TRUE(base::TouchFile(index_path, past_time, past_time));
   EXPECT_TRUE(base::TouchFile(cache_path, past_time, past_time));
-  ASSERT_TRUE(simple_util::GetMTime(cache_path, &cache_mtime));
+  ASSERT_TRUE(base::GetFileInfo(cache_path, &file_info));
+  cache_mtime = file_info.last_modified;
   EXPECT_FALSE(
       WrappedSimpleIndexFile::LegacyIsIndexFileStale(cache_mtime, index_path));
-  const base::Time even_older = past_time - base::TimeDelta::FromSeconds(10);
+  const base::Time even_older = past_time - base::Seconds(10);
   EXPECT_TRUE(base::TouchFile(index_path, even_older, even_older));
   EXPECT_TRUE(
       WrappedSimpleIndexFile::LegacyIsIndexFileStale(cache_mtime, index_path));
@@ -450,7 +460,7 @@ TEST_F(SimpleIndexFileTest, WriteThenLoadIndex) {
 
   SimpleIndex::EntrySet entries;
   static const uint64_t kHashes[] = {11, 22, 33};
-  static const size_t kNumHashes = base::size(kHashes);
+  static const size_t kNumHashes = std::size(kHashes);
   EntryMetadata metadata_entries[kNumHashes];
   for (size_t i = 0; i < kNumHashes; ++i) {
     uint64_t hash = kHashes[i];
@@ -470,8 +480,9 @@ TEST_F(SimpleIndexFileTest, WriteThenLoadIndex) {
   }
 
   WrappedSimpleIndexFile simple_index_file(cache_dir.GetPath());
-  base::Time fake_cache_mtime;
-  ASSERT_TRUE(simple_util::GetMTime(cache_dir.GetPath(), &fake_cache_mtime));
+  base::File::Info file_info;
+  ASSERT_TRUE(base::GetFileInfo(cache_dir.GetPath(), &file_info));
+  base::Time fake_cache_mtime = file_info.last_modified;
   SimpleIndexLoadResult load_index_result;
   simple_index_file.LoadIndexEntries(fake_cache_mtime, closure.closure(),
                                      &load_index_result);
@@ -482,8 +493,8 @@ TEST_F(SimpleIndexFileTest, WriteThenLoadIndex) {
   EXPECT_FALSE(load_index_result.flush_required);
 
   EXPECT_EQ(kNumHashes, load_index_result.entries.size());
-  for (size_t i = 0; i < kNumHashes; ++i)
-    EXPECT_EQ(1U, load_index_result.entries.count(kHashes[i]));
+  for (uint64_t hash : kHashes)
+    EXPECT_EQ(1U, load_index_result.entries.count(hash));
 }
 
 TEST_F(SimpleIndexFileTest, LoadCorruptIndex) {
@@ -496,9 +507,10 @@ TEST_F(SimpleIndexFileTest, LoadCorruptIndex) {
   const std::string kDummyData = "nothing to be seen here";
   EXPECT_EQ(static_cast<int>(kDummyData.size()),
             base::WriteFile(index_path, kDummyData.data(), kDummyData.size()));
-  base::Time fake_cache_mtime;
-  ASSERT_TRUE(simple_util::GetMTime(simple_index_file.GetIndexFilePath(),
-                                    &fake_cache_mtime));
+  base::File::Info file_info;
+  ASSERT_TRUE(
+      base::GetFileInfo(simple_index_file.GetIndexFilePath(), &file_info));
+  base::Time fake_cache_mtime = file_info.last_modified;
   EXPECT_FALSE(WrappedSimpleIndexFile::LegacyIsIndexFileStale(fake_cache_mtime,
                                                               index_path));
   SimpleIndexLoadResult load_index_result;
@@ -528,9 +540,10 @@ TEST_F(SimpleIndexFileTest, LoadCorruptIndex2) {
       static_cast<int>(bad_payload.size()),
       base::WriteFile(index_path, static_cast<const char*>(bad_payload.data()),
                       bad_payload.size()));
-  base::Time fake_cache_mtime;
-  ASSERT_TRUE(simple_util::GetMTime(simple_index_file.GetIndexFilePath(),
-                                    &fake_cache_mtime));
+  base::File::Info file_info;
+  ASSERT_TRUE(
+      base::GetFileInfo(simple_index_file.GetIndexFilePath(), &file_info));
+  base::Time fake_cache_mtime = file_info.last_modified;
   EXPECT_FALSE(WrappedSimpleIndexFile::LegacyIsIndexFileStale(fake_cache_mtime,
                                                               index_path));
   SimpleIndexLoadResult load_index_result;
@@ -571,8 +584,9 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
             base::WriteFile(old_index_file, index_file_contents.data(),
                             index_file_contents.size()));
 
+  TrivialFileOperations file_operations;
   // Upgrade the cache.
-  ASSERT_EQ(disk_cache::UpgradeSimpleCacheOnDisk(cache_path),
+  ASSERT_EQ(disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path),
             SimpleCacheConsistencyResult::kOK);
 
   // Create the backend and initiate index flush by destroying the backend.
@@ -584,17 +598,17 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   net::TestClosure post_cleanup;
   cleanup_tracker->AddPostCleanupCallback(post_cleanup.closure());
 
-  disk_cache::SimpleBackendImpl* simple_cache =
-      new disk_cache::SimpleBackendImpl(
-          cache_path, cleanup_tracker, /* file_tracker = */ nullptr, 0,
-          net::DISK_CACHE, /* net_log = */ nullptr);
+  auto simple_cache = std::make_unique<disk_cache::SimpleBackendImpl>(
+      /*file_operations_factory=*/nullptr, cache_path, cleanup_tracker,
+      /*file_tracker=*/nullptr, 0, net::DISK_CACHE,
+      /*net_log=*/nullptr);
   net::TestCompletionCallback cb;
-  int rv = simple_cache->Init(cb.callback());
-  EXPECT_THAT(cb.GetResult(rv), IsOk());
+  simple_cache->Init(cb.callback());
+  EXPECT_THAT(cb.WaitForResult(), IsOk());
   simple_cache->index()->ExecuteWhenReady(cb.callback());
-  rv = cb.WaitForResult();
+  int rv = cb.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  delete simple_cache;
+  simple_cache.reset();
   cleanup_tracker = nullptr;
 
   // The backend flushes the index on destruction; it will run the post-cleanup

@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
 
-#include "base/stl_util.h"
 #include "device/vr/vr_gl_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 
@@ -321,7 +320,7 @@ void TexturedQuadRenderer::Flush() {
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT,
                      VOID_OFFSET(kInnerRectOffset));
     } else {
-      glDrawElements(GL_TRIANGLES, base::size(kIndices), GL_UNSIGNED_SHORT, 0);
+      glDrawElements(GL_TRIANGLES, std::size(kIndices), GL_UNSIGNED_SHORT, 0);
     }
 
     quad_queue_.pop();
@@ -347,11 +346,11 @@ void TexturedQuadRenderer::CreateBuffers() {
   index_buffer_ = buffers[1];
 
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-  glBufferData(GL_ARRAY_BUFFER, base::size(kVertices) * sizeof(float),
-               kVertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, std::size(kVertices) * sizeof(float), kVertices,
+               GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, base::size(kIndices) * sizeof(GLushort),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, std::size(kIndices) * sizeof(GLushort),
                kIndices, GL_STATIC_DRAW);
 }
 
@@ -372,7 +371,7 @@ GLuint TexturedQuadRenderer::IndexBuffer() {
 }
 
 int TexturedQuadRenderer::NumQuadIndices() {
-  return base::size(kIndices);
+  return std::size(kIndices);
 }
 
 }  // namespace vr

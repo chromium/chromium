@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <windows.h>
 
 #include "base/check.h"
-#include "base/macros.h"
 
 namespace base {
 namespace win {
@@ -20,20 +19,22 @@ class ScopedSelectObject {
       : hdc_(hdc), oldobj_(SelectObject(hdc, object)) {
     DCHECK(hdc_);
     DCHECK(object);
-    DCHECK(oldobj_ != NULL && oldobj_ != HGDI_ERROR);
+    DCHECK(oldobj_);
+    DCHECK(oldobj_ != HGDI_ERROR);
   }
+
+  ScopedSelectObject(const ScopedSelectObject&) = delete;
+  ScopedSelectObject& operator=(const ScopedSelectObject&) = delete;
 
   ~ScopedSelectObject() {
     HGDIOBJ object = SelectObject(hdc_, oldobj_);
-    DCHECK((GetObjectType(oldobj_) != OBJ_REGION && object != NULL) ||
+    DCHECK((GetObjectType(oldobj_) != OBJ_REGION && object) ||
            (GetObjectType(oldobj_) == OBJ_REGION && object != HGDI_ERROR));
   }
 
  private:
-  HDC hdc_;
-  HGDIOBJ oldobj_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSelectObject);
+  const HDC hdc_;
+  const HGDIOBJ oldobj_;
 };
 
 }  // namespace win

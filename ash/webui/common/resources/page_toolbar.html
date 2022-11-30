@@ -1,0 +1,46 @@
+<style cr-shared-style>
+  :host {
+    align-items: center;
+    background: var(--cros-bg-color);
+    display: flex;
+    height: 56px;
+    width: 100%;
+  }
+
+  :host([is-narrow]) #leftContent {
+    padding-inline-start: 14px;
+  }
+
+  :host([is-narrow]) #title {
+    margin-inline-start: 8px;
+  }
+
+  :host(:not([is-narrow])) #leftContent {
+    padding-inline-start: 20px;
+  }
+
+  #leftContent {
+    align-items: center;
+    display: flex;
+  }
+
+  #title {
+    color: var(--cros-text-color-secondary);
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.25px;
+  }
+</style>
+<div id="container">
+  <div id="leftContent">
+    <template is="dom-if" if="[[isNarrow]]">
+      <cr-icon-button id="menuButton" class="no-overlap"
+          iron-icon="cr20:menu" on-click="onMenuTap_"
+          aria-label="[[title]]"
+          title="[[title]]">
+      </cr-icon-button>
+    </template>
+    <h1 id="title" part="title">[[title]]</h1>
+  </div>
+</div>

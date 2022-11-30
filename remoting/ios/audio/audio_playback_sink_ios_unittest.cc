@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "remoting/client/audio/audio_stream_format.h"
 #include "remoting/client/audio/fake_async_audio_data_supplier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,8 +18,7 @@ namespace remoting {
 namespace {
 
 constexpr AudioStreamFormat kStreamFormat = {2, 2, 44100};
-constexpr base::TimeDelta kBufferPlaybackTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kBufferPlaybackTimeout = base::Milliseconds(500);
 
 }  // namespace
 

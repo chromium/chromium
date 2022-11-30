@@ -1,23 +1,23 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
+#import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/notreached.h"
-#include "base/optional.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/sessions/core/session_types.h"
-#include "components/tab_groups/tab_group_id.h"
-#include "components/tab_groups/tab_group_visual_data.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sessions/session_util.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/sessions/core/session_types.h"
+#import "components/tab_groups/tab_group_id.h"
+#import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,6 +39,12 @@ void LiveTabContextBrowserAgent::ShowBrowserWindow() {
 
 SessionID LiveTabContextBrowserAgent::GetSessionID() const {
   return session_id_;
+}
+
+sessions::SessionWindow::WindowType LiveTabContextBrowserAgent::GetWindowType()
+    const {
+  // Not supported by iOS.
+  return sessions::SessionWindow::TYPE_NORMAL;
 }
 
 int LiveTabContextBrowserAgent::GetTabCount() const {
@@ -65,15 +71,20 @@ sessions::LiveTab* LiveTabContextBrowserAgent::GetActiveLiveTab() const {
   return nullptr;
 }
 
-bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
-  // Not supported by iOS.
-  return false;
+std::map<std::string, std::string>
+LiveTabContextBrowserAgent::GetExtraDataForTab(int index) const {
+  return std::map<std::string, std::string>();
 }
 
-base::Optional<tab_groups::TabGroupId>
+std::map<std::string, std::string>
+LiveTabContextBrowserAgent::GetExtraDataForWindow() const {
+  return std::map<std::string, std::string>();
+}
+
+absl::optional<tab_groups::TabGroupId>
 LiveTabContextBrowserAgent::GetTabGroupForTab(int index) const {
   // Not supported by iOS.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const tab_groups::TabGroupVisualData*
@@ -83,6 +94,11 @@ LiveTabContextBrowserAgent::GetVisualDataForGroup(
   // be called.
   NOTREACHED();
   return nullptr;
+}
+
+bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
+  // Not supported by iOS.
+  return false;
 }
 
 void LiveTabContextBrowserAgent::SetVisualDataForGroup(
@@ -111,12 +127,13 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data,
     const SessionID* tab_id) {
   // TODO(crbug.com/661636): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(
@@ -130,11 +147,12 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
 
 sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override) {
+    const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data) {
   web_state_list_->ReplaceWebStateAt(
       web_state_list_->active_index(),
       session_util::CreateWebStateWithNavigationEntries(

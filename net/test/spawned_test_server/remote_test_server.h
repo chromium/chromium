@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "net/test/spawned_test_server/base_test_server.h"
 
@@ -29,9 +28,11 @@ class RemoteTestServerSpawnerRequest;
 // this spawner communicator. The spawner is implemented in
 // build/util/lib/common/chrome_test_server_spawner.py .
 //
-// URL for the spawner server is discovered by reading config file that's
-// expected to be written on the test device by the test scrips. Location of the
-// config dependends on platform:
+// On Fuchsia, the URL for the spawner server is passed to a test via the
+// --remote-test-server-spawner-url-base switch on the command line. On other
+// platforms, the URL is discovered by reading config file that's expected to be
+// written on the test device by the test scrips. Location of the config
+// dependends on platform:
 //   - Android: DIR_ANDROID_EXTERNAL_STORAGE/net-test-server-config
 //   - other: DIR_TEMP/net-test-server-config
 //
@@ -74,11 +75,14 @@ class RemoteTestServer : public BaseTestServer {
                    const SSLOptions& ssl_options,
                    const base::FilePath& document_root);
 
+  RemoteTestServer(const RemoteTestServer&) = delete;
+  RemoteTestServer& operator=(const RemoteTestServer&) = delete;
+
   ~RemoteTestServer() override;
 
   // BaseTestServer overrides.
-  bool StartInBackground() override WARN_UNUSED_RESULT;
-  bool BlockUntilStarted() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartInBackground() override;
+  [[nodiscard]] bool BlockUntilStarted() override;
 
   // Stops the Python test server that is running on the host machine.
   bool Stop();
@@ -107,8 +111,6 @@ class RemoteTestServer : public BaseTestServer {
 
   // Server port. Non-zero when the server is running.
   int remote_port_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteTestServer);
 };
 
 }  // namespace net

@@ -1,18 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_PALETTE_STYLUS_BATTERY_DELEGATE_H_
 #define ASH_SYSTEM_PALETTE_STYLUS_BATTERY_DELEGATE_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace ash {
 
@@ -27,15 +30,16 @@ class ASH_EXPORT StylusBatteryDelegate
   ~StylusBatteryDelegate() override;
 
   SkColor GetColorForBatteryLevel() const;
-  gfx::ImageSkia GetBatteryImage() const;
+  gfx::ImageSkia GetBatteryImage(ui::ColorProvider* color_provider) const;
   gfx::ImageSkia GetBatteryStatusUnknownImage() const;
   void SetBatteryUpdateCallback(Callback battery_update_callback);
   bool IsBatteryCharging() const;
   bool IsBatteryLevelLow() const;
   bool IsBatteryStatusStale() const;
+  bool IsBatteryStatusEligible() const;
   bool ShouldShowBatteryStatus() const;
 
-  base::Optional<uint8_t> battery_level() const { return battery_level_; }
+  absl::optional<uint8_t> battery_level() const { return battery_level_; }
 
  private:
   bool IsBatteryInfoValid(
@@ -51,8 +55,9 @@ class ASH_EXPORT StylusBatteryDelegate
 
   PeripheralBatteryListener::BatteryInfo::ChargeStatus battery_charge_status_ =
       PeripheralBatteryListener::BatteryInfo::ChargeStatus::kUnknown;
-  base::Optional<uint8_t> battery_level_;
-  base::Optional<base::TimeTicks> last_update_timestamp_;
+  absl::optional<uint8_t> battery_level_;
+  absl::optional<base::TimeTicks> last_update_timestamp_;
+  bool last_update_eligible_ = false;
 
   Callback battery_update_callback_;
   base::ScopedObservation<PeripheralBatteryListener,

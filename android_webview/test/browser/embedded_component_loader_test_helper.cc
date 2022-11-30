@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_file.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy.h"
@@ -52,7 +54,7 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
 
   void ComponentLoaded(
       const base::Version& version,
-      const base::flat_map<std::string, int>& fd_map,
+      base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) override {
     // Make sure these values match the values in the
     // EmbeddedComponentLoaderTest.
@@ -65,7 +67,7 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
         base::android::AttachCurrentThread());
   }
 
-  void ComponentLoadFailed() override {
+  void ComponentLoadFailed(ComponentLoadResult /*error*/) override {
     ExpectTrueToJava(
         false, "AvailableComponentLoaderPolicy#ComponentLoadFailed is called");
   }
@@ -74,6 +76,8 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
     hash->assign(std::begin(kAvailableSha256Hash),
                  std::end(kAvailableSha256Hash));
   }
+
+  std::string GetMetricsSuffix() const override { return "AvailableComponent"; }
 };
 
 class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
@@ -83,13 +87,13 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
 
   void ComponentLoaded(
       const base::Version& version,
-      const base::flat_map<std::string, int>& fd_map,
+      base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) override {
     ExpectTrueToJava(
         false, "UnavailableComponentLoaderPolicy#ComponentLoaded is called");
   }
 
-  void ComponentLoadFailed() override {
+  void ComponentLoadFailed(ComponentLoadResult /*error*/) override {
     Java_EmbeddedComponentLoaderTest_onComponentLoadFailed(
         base::android::AttachCurrentThread());
   }
@@ -97,6 +101,10 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override {
     hash->assign(std::begin(kUnavailableComponentSha256Hash),
                  std::end(kUnavailableComponentSha256Hash));
+  }
+
+  std::string GetMetricsSuffix() const override {
+    return "UnavailableComponent";
   }
 };
 

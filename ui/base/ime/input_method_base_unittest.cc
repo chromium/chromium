@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/events/event.h"
 
@@ -22,6 +22,9 @@ namespace {
 class ClientChangeVerifier {
  public:
   ClientChangeVerifier() = default;
+
+  ClientChangeVerifier(const ClientChangeVerifier&) = delete;
+  ClientChangeVerifier& operator=(const ClientChangeVerifier&) = delete;
 
   // Expects that focused text input client will not be changed.
   void ExpectClientDoesNotChange() {
@@ -105,8 +108,6 @@ class ClientChangeVerifier {
   bool on_will_change_focused_client_called_ = false;
   bool on_did_change_focused_client_called_ = false;
   bool on_text_input_state_changed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientChangeVerifier);
 };
 
 class InputMethodBaseTest : public testing::Test {
@@ -119,6 +120,10 @@ class MockInputMethodBase : public InputMethodBase {
  public:
   explicit MockInputMethodBase(ClientChangeVerifier* verifier)
       : InputMethodBase(nullptr), verifier_(verifier) {}
+
+  MockInputMethodBase(const MockInputMethodBase&) = delete;
+  MockInputMethodBase& operator=(const MockInputMethodBase&) = delete;
+
   ~MockInputMethodBase() override = default;
 
  private:
@@ -129,6 +134,16 @@ class MockInputMethodBase : public InputMethodBase {
   void OnCaretBoundsChanged(const TextInputClient* client) override {}
   void CancelComposition(const TextInputClient* client) override {}
   bool IsCandidatePopupOpen() const override { return false; }
+
+#if BUILDFLAG(IS_WIN)
+  bool OnUntranslatedIMEMessage(
+      const CHROME_MSG event,
+      InputMethod::NativeEventResult* result) override {
+    return false;
+  }
+  void OnInputLocaleChanged() override {}
+  bool IsInputLocaleCJK() const override { return false; }
+#endif
 
   // InputMethodBase:
   void OnWillChangeFocusedClient(TextInputClient* focused_before,
@@ -142,10 +157,9 @@ class MockInputMethodBase : public InputMethodBase {
   }
 
   // Not owned.
-  ClientChangeVerifier* const verifier_;
+  const raw_ptr<ClientChangeVerifier> verifier_;
 
   FRIEND_TEST_ALL_PREFIXES(InputMethodBaseTest, CandidateWindowEvents);
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodBase);
 };
 
 class MockInputMethodObserver : public InputMethodObserver {
@@ -153,6 +167,10 @@ class MockInputMethodObserver : public InputMethodObserver {
   explicit MockInputMethodObserver(ClientChangeVerifier* verifier)
       : verifier_(verifier) {
   }
+
+  MockInputMethodObserver(const MockInputMethodObserver&) = delete;
+  MockInputMethodObserver& operator=(const MockInputMethodObserver&) = delete;
+
   ~MockInputMethodObserver() override = default;
 
  private:
@@ -162,12 +180,10 @@ class MockInputMethodObserver : public InputMethodObserver {
   void OnTextInputStateChanged(const TextInputClient* client) override {
     verifier_->OnTextInputStateChanged(client);
   }
-  void OnShowVirtualKeyboardIfEnabled() override {}
   void OnInputMethodDestroyed(const InputMethod* client) override {}
 
   // Not owned.
-  ClientChangeVerifier* const verifier_;
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodObserver);
+  const raw_ptr<ClientChangeVerifier> verifier_;
 };
 
 typedef base::ScopedObservation<InputMethod, InputMethodObserver>
@@ -179,8 +195,8 @@ void SetFocusedTextInputClient(InputMethod* input_method,
 }
 
 TEST_F(InputMethodBaseTest, SetFocusedTextInputClient) {
-  DummyTextInputClient text_input_client_1st;
-  DummyTextInputClient text_input_client_2nd;
+  FakeTextInputClient text_input_client_1st(TEXT_INPUT_TYPE_TEXT);
+  FakeTextInputClient text_input_client_2nd(TEXT_INPUT_TYPE_TEXT);
 
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);
@@ -238,8 +254,8 @@ TEST_F(InputMethodBaseTest, SetFocusedTextInputClient) {
 }
 
 TEST_F(InputMethodBaseTest, DetachTextInputClient) {
-  DummyTextInputClient text_input_client;
-  DummyTextInputClient text_input_client_the_other;
+  FakeTextInputClient text_input_client(TEXT_INPUT_TYPE_TEXT);
+  FakeTextInputClient text_input_client_the_other(TEXT_INPUT_TYPE_TEXT);
 
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);

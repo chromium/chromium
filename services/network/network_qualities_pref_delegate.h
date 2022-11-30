@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/nqe/cached_network_quality.h"
@@ -30,6 +30,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualitiesPrefDelegate {
   NetworkQualitiesPrefDelegate(
       PrefService* pref_service,
       net::NetworkQualityEstimator* network_quality_estimator);
+
+  NetworkQualitiesPrefDelegate(const NetworkQualitiesPrefDelegate&) = delete;
+  NetworkQualitiesPrefDelegate& operator=(const NetworkQualitiesPrefDelegate&) =
+      delete;
+
   ~NetworkQualitiesPrefDelegate();
 
   // Registers the profile-specific network quality estimator prefs.
@@ -53,13 +58,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualitiesPrefDelegate {
   net::NetworkQualitiesPrefsManager prefs_manager_;
 
   // Guaranteed to be non-null during the lifetime of |this|.
-  net::NetworkQualityEstimator* network_quality_estimator_;
+  raw_ptr<net::NetworkQualityEstimator> network_quality_estimator_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NetworkQualitiesPrefDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesPrefDelegate);
 };
 
 }  // namespace network

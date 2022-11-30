@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 #include "android_webview/browser/gfx/browser_view_renderer_client.h"
 #include "android_webview/browser/gfx/test/fake_window.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,18 +44,22 @@ class RenderingTest : public testing::Test,
                       public BrowserViewRendererClient,
                       public WindowHooks {
  public:
+  RenderingTest(const RenderingTest&) = delete;
+  RenderingTest& operator=(const RenderingTest&) = delete;
+
   // BrowserViewRendererClient overrides.
   void OnNewPicture() override;
-  void PostInvalidate() override;
+  void PostInvalidate(bool inside_vsync) override;
   gfx::Point GetLocationOnScreen() override;
-  void ScrollContainerViewTo(const gfx::Vector2d& new_value) override {}
-  void UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
+  void ScrollContainerViewTo(const gfx::Point& new_value) override {}
+  void UpdateScrollState(const gfx::Point& max_scroll_offset,
                          const gfx::SizeF& contents_size_dip,
                          float page_scale_factor,
                          float min_page_scale_factor,
                          float max_page_scale_factor) override {}
   void DidOverscroll(const gfx::Vector2d& overscroll_delta,
-                     const gfx::Vector2dF& overscroll_velocity) override {}
+                     const gfx::Vector2dF& overscroll_velocity,
+                     bool inside_vsync) override {}
   ui::TouchHandleDrawable* CreateDrawable() override;
 
   // WindowHooks overrides.
@@ -100,8 +103,6 @@ class RenderingTest : public testing::Test,
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderingTest);
 };
 
 #define RENDERING_TEST_F(TEST_FIXTURE_NAME)         \

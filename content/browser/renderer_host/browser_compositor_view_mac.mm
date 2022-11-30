@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,24 @@
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/lazy_instance.h"
-#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/compositor/image_transport_factory.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/layout.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -50,20 +50,18 @@ BrowserCompositorMac::BrowserCompositorMac(
     ui::AcceleratedWidgetMacNSView* accelerated_widget_mac_ns_view,
     BrowserCompositorMacClient* client,
     bool render_widget_host_is_hidden,
-    const display::Display& initial_display,
     const viz::FrameSinkId& frame_sink_id)
     : client_(client),
       accelerated_widget_mac_ns_view_(accelerated_widget_mac_ns_view),
-      dfh_display_(initial_display),
       weak_factory_(this) {
   g_browser_compositors.Get().insert(this);
 
-  root_layer_.reset(new ui::Layer(ui::LAYER_SOLID_COLOR));
+  root_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   // Ensure that this layer draws nothing when it does not not have delegated
   // content (otherwise this solid color will be flashed during navigation).
   root_layer_->SetColor(SK_ColorTRANSPARENT);
-  delegated_frame_host_.reset(new DelegatedFrameHost(
-      frame_sink_id, this, true /* should_register_frame_sink_id */));
+  delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
+      frame_sink_id, this, true /* should_register_frame_sink_id */);
 
   SetRenderWidgetHostIsHidden(render_widget_host_is_hidden);
 }
@@ -114,24 +112,22 @@ void BrowserCompositorMac::SetBackgroundColor(SkColor background_color) {
     recyclable_compositor_->compositor()->SetBackgroundColor(background_color_);
 }
 
-bool BrowserCompositorMac::UpdateSurfaceFromNSView(
-    const gfx::Size& new_size_dip,
-    const display::Display& new_display) {
-  if (new_size_dip == dfh_size_dip_ && new_display == dfh_display_)
-    return false;
+void BrowserCompositorMac::UpdateSurfaceFromNSView(
+    const gfx::Size& new_size_dip) {
+  display::ScreenInfo current = client_->GetCurrentScreenInfo();
 
   bool is_resize = !dfh_size_dip_.IsEmpty() && new_size_dip != dfh_size_dip_;
-
   bool needs_new_surface_id =
       new_size_dip != dfh_size_dip_ ||
-      new_display.device_scale_factor() != dfh_display_.device_scale_factor();
+      current.device_scale_factor != dfh_device_scale_factor_;
 
-  dfh_display_ = new_display;
   dfh_size_dip_ = new_size_dip;
+  dfh_device_scale_factor_ = current.device_scale_factor;
+
   // The device scale factor is always an integer, so the result here is also
   // an integer.
-  dfh_size_pixels_ = gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
-      dfh_size_dip_, dfh_display_.device_scale_factor()));
+  dfh_size_pixels_ = gfx::ToRoundedSize(
+      gfx::ConvertSizeToPixels(dfh_size_dip_, current.device_scale_factor));
   root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
 
   if (needs_new_surface_id) {
@@ -143,11 +139,9 @@ bool BrowserCompositorMac::UpdateSurfaceFromNSView(
 
   if (recyclable_compositor_) {
     recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          dfh_display_.device_scale_factor(),
-                                          dfh_display_.color_spaces());
+                                          current.device_scale_factor,
+                                          current.display_color_spaces);
   }
-
-  return true;
 }
 
 void BrowserCompositorMac::UpdateSurfaceFromChild(
@@ -157,16 +151,18 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
     const viz::LocalSurfaceId& child_local_surface_id) {
   if (dfh_local_surface_id_allocator_.UpdateFromChild(child_local_surface_id)) {
     if (auto_resize_enabled) {
-      dfh_display_.set_device_scale_factor(new_device_scale_factor);
+      client_->SetCurrentDeviceScaleFactor(new_device_scale_factor);
+      display::ScreenInfo current = client_->GetCurrentScreenInfo();
       // TODO(danakj): We should avoid lossy conversions to integer DIPs.
       dfh_size_dip_ = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
-          new_size_in_pixels, dfh_display_.device_scale_factor()));
+          new_size_in_pixels, current.device_scale_factor));
       dfh_size_pixels_ = new_size_in_pixels;
+      dfh_device_scale_factor_ = new_device_scale_factor;
       root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
       if (recyclable_compositor_) {
-        recyclable_compositor_->UpdateSurface(
-            dfh_size_pixels_, dfh_display_.device_scale_factor(),
-            dfh_display_.color_spaces());
+        recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
+                                              current.device_scale_factor,
+                                              current.display_color_spaces);
       }
     }
     delegated_frame_host_->EmbedSurface(
@@ -197,6 +193,13 @@ void BrowserCompositorMac::UpdateVSyncParameters(
 void BrowserCompositorMac::SetRenderWidgetHostIsHidden(bool hidden) {
   render_widget_host_is_hidden_ = hidden;
   UpdateState();
+  if (state_ == UseParentLayerCompositor) {
+    // UpdateState might not call WasShown when showing a frame using the same
+    // ParentLayerCompositor, since it returns early on a no-op state
+    // transition.
+    delegated_frame_host_->WasShown(GetRendererLocalSurfaceId(), dfh_size_dip_,
+                                    {} /* record_tab_switch_time_request */);
+  }
 }
 
 void BrowserCompositorMac::SetViewVisible(bool visible) {
@@ -243,8 +246,7 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
   if (state_ == HasOwnCompositor) {
     recyclable_compositor_->widget()->ResetNSView();
     recyclable_compositor_->compositor()->SetRootLayer(nullptr);
-    ui::RecyclableCompositorMacFactory::Get()->RecycleCompositor(
-        std::move(recyclable_compositor_));
+    recyclable_compositor_.reset();
   }
 
   // The compositor is now detached. If this is the target state, we're done.
@@ -265,12 +267,12 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
     state_ = UseParentLayerCompositor;
   }
   if (new_state == HasOwnCompositor) {
-    recyclable_compositor_ =
-        ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
-            content::GetContextFactory());
+    recyclable_compositor_ = std::make_unique<ui::RecyclableCompositorMac>(
+        content::GetContextFactory());
+    display::ScreenInfo current = client_->GetCurrentScreenInfo();
     recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          dfh_display_.device_scale_factor(),
-                                          dfh_display_.color_spaces());
+                                          current.device_scale_factor,
+                                          current.display_color_spaces);
     recyclable_compositor_->compositor()->SetRootLayer(root_layer_.get());
     recyclable_compositor_->compositor()->SetBackgroundColor(background_color_);
     recyclable_compositor_->widget()->SetNSView(
@@ -280,8 +282,6 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
   }
   DCHECK_EQ(state_, new_state);
   delegated_frame_host_->AttachToCompositor(GetCompositor());
-  has_saved_frame_before_state_transition_ =
-      delegated_frame_host_->HasSavedFrame();
   delegated_frame_host_->WasShown(GetRendererLocalSurfaceId(), dfh_size_dip_,
                                   {} /* record_tab_switch_time_request */);
 }
@@ -296,8 +296,6 @@ void BrowserCompositorMac::DisableRecyclingForShutdown() {
         *g_browser_compositors.Get().begin();
     browser_compositor->client_->DestroyCompositorForShutdown();
   }
-
-  ui::RecyclableCompositorMacFactory::Get()->DisableRecyclingForShutdown();
 }
 
 void BrowserCompositorMac::TakeFallbackContentFrom(
@@ -328,7 +326,7 @@ void BrowserCompositorMac::OnFrameTokenChanged(
 }
 
 float BrowserCompositorMac::GetDeviceScaleFactor() const {
-  return dfh_display_.device_scale_factor();
+  return dfh_device_scale_factor_;
 }
 
 void BrowserCompositorMac::InvalidateLocalSurfaceIdOnEviction() {
@@ -379,15 +377,11 @@ void BrowserCompositorMac::SetParentUiLayer(ui::Layer* new_parent_ui_layer) {
   DCHECK_EQ(root_layer_->parent(), parent_ui_layer_);
 }
 
-bool BrowserCompositorMac::ForceNewSurfaceForTesting() {
-  display::Display new_display(dfh_display_);
-  new_display.set_device_scale_factor(new_display.device_scale_factor() * 2.0f);
-  return UpdateSurfaceFromNSView(dfh_size_dip_, new_display);
-}
-
-void BrowserCompositorMac::GetRendererScreenInfo(
-    blink::ScreenInfo* screen_info) const {
-  DisplayUtil::DisplayToScreenInfo(screen_info, dfh_display_);
+void BrowserCompositorMac::ForceNewSurfaceForTesting() {
+  float current_device_scale_factor =
+      client_->GetCurrentScreenInfo().device_scale_factor;
+  client_->SetCurrentDeviceScaleFactor(current_device_scale_factor * 2.0f);
+  UpdateSurfaceFromNSView(dfh_size_dip_);
 }
 
 viz::ScopedSurfaceIdAllocator
@@ -408,7 +402,7 @@ void BrowserCompositorMac::TransformPointToRootSurface(gfx::PointF* point) {
   gfx::Transform transform_to_root;
   if (parent_ui_layer_)
     parent_ui_layer_->GetTargetTransformRelativeTo(nullptr, &transform_to_root);
-  transform_to_root.TransformPoint(point);
+  *point = transform_to_root.MapPoint(*point);
 }
 
 void BrowserCompositorMac::LayerDestroyed(ui::Layer* layer) {

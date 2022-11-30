@@ -1,14 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PREFS_PREF_METRICS_SERVICE_H_
 #define CHROME_BROWSER_PREFS_PREF_METRICS_SERVICE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -19,6 +19,10 @@ class Profile;
 class PrefMetricsService : public KeyedService {
  public:
   explicit PrefMetricsService(Profile* profile);
+
+  PrefMetricsService(const PrefMetricsService&) = delete;
+  PrefMetricsService& operator=(const PrefMetricsService&) = delete;
+
   ~PrefMetricsService() override;
 
   // Records metrics about the state of the homepage on launch.
@@ -26,7 +30,7 @@ class PrefMetricsService : public KeyedService {
                                           bool homepage_is_ntp,
                                           const GURL& homepage_url);
 
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static Factory* GetInstance();
     static PrefMetricsService* GetForProfile(Profile* profile);
@@ -40,20 +44,16 @@ class PrefMetricsService : public KeyedService {
     KeyedService* BuildServiceInstanceFor(
         content::BrowserContext* profile) const override;
     bool ServiceIsCreatedWithBrowserContext() const override;
-    content::BrowserContext* GetBrowserContextToUse(
-        content::BrowserContext* context) const override;
   };
 
  private:
   // Record prefs state on browser context creation.
   void RecordLaunchPrefs();
 
-  Profile* profile_;
-  PrefService* prefs_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> prefs_;
 
   base::WeakPtrFactory<PrefMetricsService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefMetricsService);
 };
 
 #endif  // CHROME_BROWSER_PREFS_PREF_METRICS_SERVICE_H_

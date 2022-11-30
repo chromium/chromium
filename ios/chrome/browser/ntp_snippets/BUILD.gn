@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,8 @@ source_set("ntp_snippets") {
   sources = [
     "ios_chrome_content_suggestions_service_factory.cc",
     "ios_chrome_content_suggestions_service_factory.h",
-    "ios_chrome_content_suggestions_service_factory_util.cc",
     "ios_chrome_content_suggestions_service_factory_util.h",
+    "ios_chrome_content_suggestions_service_factory_util.mm",
   ]
   deps = [
     "//base",
@@ -32,6 +32,7 @@ source_set("ntp_snippets") {
     "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/web",

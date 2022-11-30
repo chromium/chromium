@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
 namespace syncer {
-enum class KeyRetrievalTriggerForUMA;
+enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 
 // Coordinates the Trusted Vault re-authentication dialog. Trusted Valut is
@@ -19,13 +19,15 @@ enum class KeyRetrievalTriggerForUMA;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Designated initializer.
-// |viewController| presents the sign-in.
-// |retrievalTrigger| UI elements where the trusted vault reauth has been
-// triggered.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                          retrievalTrigger:(syncer::KeyRetrievalTriggerForUMA)
-                                               retrievalTrigger
+// `viewController` presents the sign-in.
+// `intent` Dialog to present.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                        intent:(SigninTrustedVaultDialogIntent)intent
+                       trigger:
+                           (syncer::TrustedVaultUserActionTriggerForUMA)trigger
     NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,23 @@ void TextInputV1Reset(wl_client* client, wl_resource* resource) {
   GetUserDataAs<MockZwpTextInput>(resource)->Reset();
 }
 
+void TextInputV1SetSurroundingText(wl_client* client,
+                                   wl_resource* resource,
+                                   const char* text,
+                                   uint32_t cursor,
+                                   uint32_t anchor) {
+  GetUserDataAs<MockZwpTextInput>(resource)->SetSurroundingText(
+      text, gfx::Range(cursor, anchor));
+}
+
+void TextInputV1SetContentType(wl_client* client,
+                               wl_resource* resource,
+                               uint32_t content_hint,
+                               uint32_t content_purpose) {
+  GetUserDataAs<MockZwpTextInput>(resource)->SetContentType(content_hint,
+                                                            content_purpose);
+}
+
 void TextInputV1SetCursorRectangle(wl_client* client,
                                    wl_resource* resource,
                                    int32_t x,
@@ -50,8 +67,8 @@ const struct zwp_text_input_v1_interface kMockZwpTextInputV1Impl = {
     &TextInputV1ShowInputPanel,      // show_input_panel
     &TextInputV1HideInputPanel,      // hide_input_panel
     &TextInputV1Reset,               // reset
-    nullptr,                         // set_surrounding_text
-    nullptr,                         // set_content_type
+    &TextInputV1SetSurroundingText,  // set_surrounding_text
+    &TextInputV1SetContentType,      // set_content_type
     &TextInputV1SetCursorRectangle,  // set_cursor_rectangle
     nullptr,                         // set_preferred_language
     nullptr,                         // commit_state
@@ -61,6 +78,6 @@ const struct zwp_text_input_v1_interface kMockZwpTextInputV1Impl = {
 MockZwpTextInput::MockZwpTextInput(wl_resource* resource)
     : ServerObject(resource) {}
 
-MockZwpTextInput::~MockZwpTextInput() {}
+MockZwpTextInput::~MockZwpTextInput() = default;
 
 }  // namespace wl

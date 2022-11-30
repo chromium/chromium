@@ -1,25 +1,27 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/strings/strcat.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/portal/portal_navigation_throttle.h"
-#include "content/browser/prerender/prerender_navigation_throttle.h"
-#include "content/browser/prerender/prerender_subframe_navigation_throttle.h"
+#include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
+#include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
 #include "content/browser/renderer_host/ancestor_throttle.h"
-#include "content/browser/renderer_host/back_forward_cache_throttle.h"
 #include "content/browser/renderer_host/blocked_scheme_navigation_throttle.h"
-#include "content/browser/renderer_host/form_submission_throttle.h"
 #include "content/browser/renderer_host/http_error_navigation_throttle.h"
+#include "content/browser/renderer_host/isolated_app_throttle.h"
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
-#include "content/browser/renderer_host/origin_policy_throttle.h"
-#include "content/browser/webid/federated_auth_navigation_throttle.h"
+#include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 
@@ -98,8 +100,11 @@ void RecordExecutionTimeHistogram(NavigationThrottleRunner::Event event,
 }  // namespace
 
 NavigationThrottleRunner::NavigationThrottleRunner(Delegate* delegate,
-                                                   int64_t navigation_id)
-    : delegate_(delegate), navigation_id_(navigation_id) {}
+                                                   int64_t navigation_id,
+                                                   bool is_primary_main_frame)
+    : delegate_(delegate),
+      navigation_id_(navigation_id),
+      is_primary_main_frame_(is_primary_main_frame) {}
 
 NavigationThrottleRunner::~NavigationThrottleRunner() = default;
 
@@ -114,10 +119,12 @@ void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
     NavigationThrottle* deferring_throttle) {
   DCHECK_EQ(GetDeferringThrottle(), deferring_throttle);
   RecordDeferTimeHistogram(current_event_, defer_start_time_);
+  RecordDeferTimeUKM();
   ProcessInternal();
 }
 
 void NavigationThrottleRunner::CallResumeForTesting() {
+  RecordDeferTimeUKM();
   ProcessInternal();
 }
 
@@ -147,7 +154,6 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
       BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(request));
 
   AddThrottle(AncestorThrottle::MaybeCreateThrottleFor(request));
-  AddThrottle(FormSubmissionThrottle::MaybeCreateThrottleFor(request));
 
   // Check for mixed content. This is done after the AncestorThrottle and the
   // FormSubmissionThrottle so that when folks block mixed content with a CSP
@@ -155,9 +161,6 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // console about CSP blocking the load.
   AddThrottle(
       MixedContentNavigationThrottle::CreateThrottleForNavigation(request));
-
-  // Handle Origin Policy (if enabled)
-  AddThrottle(OriginPolicyThrottle::MaybeCreateThrottleFor(request));
 
   // Block certain requests that are not permitted for portals.
   AddThrottle(PortalNavigationThrottle::MaybeCreateThrottleFor(request));
@@ -169,8 +172,8 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   AddThrottle(
       PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
 
-  // Intercept federated identity requests.
-  AddThrottle(FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(request));
+  // Prevent navigations to/from isolated apps.
+  AddThrottle(IsolatedAppThrottle::MaybeCreateThrottleFor(request));
 
   for (auto& throttle :
        devtools_instrumentation::CreateNavigationThrottles(request)) {
@@ -183,7 +186,10 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // throttles handling pages with 407 errors that require extra authentication.
   AddThrottle(HttpErrorNavigationThrottle::MaybeCreateThrottleFor(*request));
 
-  AddThrottle(BackForwardCacheThrottle::MaybeCreateThrottleFor(request));
+  // Wait for renderer-initiated navigation cancelation window to end. This will
+  // wait for the JS task that starts the navigation to finish, so add it close
+  // to the end to not delay running other throttles.
+  AddThrottle(RendererCancellationThrottle::MaybeCreateThrottleFor(request));
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
@@ -248,6 +254,9 @@ void NavigationThrottleRunner::ProcessInternal() {
       case NavigationThrottle::DEFER:
         next_index_ = i + 1;
         defer_start_time_ = base::Time::Now();
+        if (first_deferral_callback_for_testing_) {
+          std::move(first_deferral_callback_for_testing_).Run();
+        }
         return;
     }
   }
@@ -267,6 +276,24 @@ void NavigationThrottleRunner::InformDelegate(
   delegate_->OnNavigationEventProcessed(event, result);
   // DO NOT ADD CODE AFTER THIS. The NavigationThrottleRunner might have been
   // deleted by the previous call.
+}
+
+void NavigationThrottleRunner::RecordDeferTimeUKM() {
+  if (!is_primary_main_frame_)
+    return;
+  DCHECK(GetDeferringThrottle());
+  ukm::builders::NavigationThrottleDeferredTime builder(
+      ukm::ConvertToSourceId(navigation_id_, ukm::SourceIdType::NAVIGATION_ID));
+  builder.SetDurationOfNavigationDeferralMs(
+      (base::Time::Now() - defer_start_time_).InMilliseconds());
+  builder.SetNavigationThrottleEventType(static_cast<int64_t>(current_event_));
+  // The logging name is converted to an MD5 int64_t hash which is recorded in
+  // UKM. The possible values are sparse, and analyses should hash the values
+  // returned by NavigationThrottle::GetNameForLogging to determine which
+  // throttle deferred the navigation.
+  builder.SetNavigationThrottleNameHash(
+      base::HashMetricName(GetDeferringThrottle()->GetNameForLogging()));
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace content

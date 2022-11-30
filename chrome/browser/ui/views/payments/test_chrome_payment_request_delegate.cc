@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ namespace payments {
 
 TestChromePaymentRequestDelegate::TestChromePaymentRequestDelegate(
     content::RenderFrameHost* render_frame_host,
-    PaymentRequestDialogView::ObserverForTest* observer,
+    base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer,
     PrefService* pref_service,
     bool is_off_the_record,
     bool is_valid_ssl,
@@ -24,6 +24,8 @@ TestChromePaymentRequestDelegate::TestChromePaymentRequestDelegate(
       is_valid_ssl_(is_valid_ssl),
       is_browser_window_active_(is_browser_window_active),
       skip_ui_for_basic_card_(skip_ui_for_basic_card) {}
+
+TestChromePaymentRequestDelegate::~TestChromePaymentRequestDelegate() = default;
 
 void TestChromePaymentRequestDelegate::ShowDialog(
     base::WeakPtr<PaymentRequest> request) {

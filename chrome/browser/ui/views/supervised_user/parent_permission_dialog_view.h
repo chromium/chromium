@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,15 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -88,6 +87,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   // views::View:
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
   // views::DialogDelegate:
   bool Cancel() override;
@@ -110,6 +110,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   void OnExtensionIconLoaded(const gfx::Image& image);
   void LoadExtensionIcon();
   void CloseWithReason(views::Widget::ClosedReason reason);
+  void OnDialogClose();
 
   // Given an email address of the child's parent, return the parents'
   // obfuscated gaia id.
@@ -138,7 +139,9 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   void OnReAuthProofTokenFailure(
       const GaiaAuthConsumer::ReAuthProofTokenStatus error) override;
 
-  void SendResult(ParentPermissionDialog::Result result);
+  // The first time it is called, logs the result to UMA and passes it to the
+  // callback. No effect if called subsequent times.
+  void SendResultOnce(ParentPermissionDialog::Result result);
 
   // Sets the |extension| to be optionally displayed in the dialog.  This
   // causes the view to show several extension properties including the
@@ -159,7 +162,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   std::unique_ptr<ParentPermissionInputSection>
       parent_permission_input_section_;
 
-  views::Label* invalid_credential_label_ = nullptr;
+  raw_ptr<views::Label> invalid_credential_label_ = nullptr;
 
   bool invalid_credential_received_ = false;
 
@@ -175,14 +178,18 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   // Used to ensure we don't try to show same dialog twice.
   bool is_showing_ = false;
 
+  // Used to set close reason if the dialog is closed without clicking
+  // "approve."
+  bool is_approve_clicked_ = false;
+
   // Used to fetch the Reauth token.
   std::unique_ptr<GaiaAuthFetcher> reauth_token_fetcher_;
 
   // Used to fetch OAuth2 access tokens.
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
 
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   SupervisedUserExtensionsMetricsRecorder supervised_user_metrics_recorder_;
 

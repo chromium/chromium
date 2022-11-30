@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,6 +25,10 @@ class FakeAudioRenderCallback
   // where x = [|number_of_frames| * m, |number_of_frames| * (m + 1)] and m =
   // the number of Render() calls fulfilled thus far.
   FakeAudioRenderCallback(double step, int sample_rate);
+
+  FakeAudioRenderCallback(const FakeAudioRenderCallback&) = delete;
+  FakeAudioRenderCallback& operator=(const FakeAudioRenderCallback&) = delete;
+
   ~FakeAudioRenderCallback() override;
 
   // Renders a sine wave into the provided audio data buffer.  If |half_fill_|
@@ -63,8 +67,6 @@ class FakeAudioRenderCallback
   int last_channel_count_;
   double volume_;
   int sample_rate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioRenderCallback);
 };
 
 }  // namespace media

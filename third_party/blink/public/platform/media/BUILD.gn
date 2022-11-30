@@ -1,0 +1,37 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(https://crbug.com/1198341): once this code is ported to Blink code
+# conventions, this target should be merged into
+# //third_party/blink/public:blink_headers and
+# //third_party/blink/renderer/platform/media should be a dep of
+# //third_party/blink/renderer/platform.
+source_set("media") {
+  sources = [
+    "interval_map.h",
+    "key_system_config_selector.h",
+    "multi_buffer.h",
+    "remote_playback_client_wrapper_impl.h",
+    "resource_fetch_context.h",
+    "url_index.h",
+    "video_frame_compositor.h",
+    "web_encrypted_media_client_impl.h",
+    "web_media_player_builder.h",
+  ]
+  public_deps = [
+    "//base",
+    "//cc",
+    "//components/viz/common",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+  ]
+
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/platform/media" ]
+  deps = [ "//third_party/blink/renderer/platform/media" ]
+}

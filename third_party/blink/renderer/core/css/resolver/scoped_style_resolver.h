@@ -29,18 +29,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_SCOPED_STYLE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_SCOPED_STYLE_RESOLVER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
 class CounterStyleMap;
 class PageRuleCollector;
 class PartNames;
+class CascadeLayerMap;
 class StyleSheetContents;
 
 // ScopedStyleResolver collects the style sheets that occur within a TreeScope
@@ -62,6 +64,15 @@ class CORE_EXPORT ScopedStyleResolver final
 
   CounterStyleMap* GetCounterStyleMap() { return counter_style_map_; }
   static void CounterStyleRulesChanged(TreeScope& scope);
+
+  StyleRulePositionFallback* PositionFallbackForName(
+      const AtomicString& fallback_name);
+
+  void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
+  bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
+  const CascadeLayerMap* GetCascadeLayerMap() const {
+    return cascade_layer_map_;
+  }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingElementScopeRules(ElementRuleCollector&);
@@ -86,40 +97,35 @@ class CORE_EXPORT ScopedStyleResolver final
   void Trace(Visitor*) const;
 
  private:
-  void AddSlottedRules(const RuleSet&, CSSStyleSheet*, unsigned sheet_index);
+  template <class Func>
+  void ForAllStylesheets(const Func& func);
+
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
   void AddKeyframeStyle(StyleRuleKeyframes*);
+  bool KeyframeStyleShouldOverride(
+      const StyleRuleKeyframes* new_rule,
+      const StyleRuleKeyframes* existing_rule) const;
+  void AddPositionFallbackRules(const RuleSet&);
 
   CounterStyleMap& EnsureCounterStyleMap();
 
   Member<TreeScope> scope_;
 
   HeapVector<Member<CSSStyleSheet>> style_sheets_;
-  MediaQueryResultList viewport_dependent_media_query_results_;
-  MediaQueryResultList device_dependent_media_query_results_;
+  MediaQueryResultFlags media_query_result_flags_;
 
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
 
+  using PositionFallbackRuleMap =
+      HeapHashMap<AtomicString, Member<StyleRulePositionFallback>>;
+  PositionFallbackRuleMap position_fallback_rule_map_;
+
   Member<CounterStyleMap> counter_style_map_;
-
-  class RuleSubSet final : public GarbageCollected<RuleSubSet> {
-   public:
-    RuleSubSet(CSSStyleSheet* sheet, unsigned index, RuleSet* rules)
-        : parent_style_sheet_(sheet), parent_index_(index), rule_set_(rules) {}
-
-    Member<CSSStyleSheet> parent_style_sheet_;
-    unsigned parent_index_;
-    Member<RuleSet> rule_set_;
-
-    void Trace(Visitor*) const;
-  };
-  using CSSStyleSheetRuleSubSet = HeapVector<Member<RuleSubSet>>;
-
-  Member<CSSStyleSheetRuleSubSet> slotted_rule_set_;
+  Member<CascadeLayerMap> cascade_layer_map_;
 
   bool has_unresolved_keyframes_rule_ = false;
   bool needs_append_all_sheets_ = false;

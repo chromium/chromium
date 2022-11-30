@@ -32,6 +32,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -39,10 +40,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
-#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -58,13 +59,15 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -81,7 +84,6 @@
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 
@@ -124,9 +126,31 @@ void MaybeRecordImageSelectionUkm(
 
   if (enable) {
     ukm::UkmEntryBuilder builder(source_id, "Blink.ContextMenu.ImageSelection");
-    builder.SetMetric("Outcome", outcome);
+    builder.SetMetric("Outcome", static_cast<int64_t>(outcome));
     builder.Record(ukm::UkmRecorder::Get());
   }
+}
+
+template <class enumType>
+uint32_t EnumToBitmask(enumType outcome) {
+  return 1 << static_cast<uint8_t>(outcome);
+}
+
+absl::optional<uint64_t> GetFormRendererId(HitTestResult& result) {
+  if (auto* text_control_element =
+          DynamicTo<TextControlElement>(result.InnerNode())) {
+    if (text_control_element->Form() != nullptr)
+      return text_control_element->Form()->UniqueRendererFormId();
+  }
+  return absl::nullopt;
+}
+
+absl::optional<uint64_t> GetFieldRendererId(HitTestResult& result) {
+  if (auto* text_control_element =
+          DynamicTo<TextControlElement>(result.InnerNode())) {
+    return text_control_element->UniqueRendererFormControlId();
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -140,6 +164,7 @@ void ContextMenuController::Trace(Visitor* visitor) const {
   visitor->Trace(menu_provider_);
   visitor->Trace(hit_test_result_);
   visitor->Trace(context_menu_client_receiver_);
+  visitor->Trace(image_selection_cached_result_);
 }
 
 void ContextMenuController::ClearContextMenu() {
@@ -148,6 +173,7 @@ void ContextMenuController::ClearContextMenu() {
   menu_provider_ = nullptr;
   context_menu_client_receiver_.reset();
   hit_test_result_ = HitTestResult();
+  image_selection_cached_result_ = nullptr;
 }
 
 void ContextMenuController::DocumentDetached(Document* document) {
@@ -161,8 +187,8 @@ void ContextMenuController::DocumentDetached(Document* document) {
 void ContextMenuController::HandleContextMenuEvent(MouseEvent* mouse_event) {
   DCHECK(mouse_event->type() == event_type_names::kContextmenu);
   LocalFrame* frame = mouse_event->target()->ToNode()->GetDocument().GetFrame();
-  PhysicalOffset location = PhysicalOffset::FromFloatPointRound(
-      FloatPoint(mouse_event->AbsoluteLocation()));
+  PhysicalOffset location =
+      PhysicalOffset::FromPointFRound(mouse_event->AbsoluteLocation());
 
   if (ShowContextMenu(frame, location, mouse_event->GetMenuSourceType(),
                       mouse_event))
@@ -187,8 +213,7 @@ void ContextMenuController::CustomContextMenuItemSelected(unsigned action) {
   ClearContextMenu();
 }
 
-Node* ContextMenuController::GetContextMenuNodeWithImageContents(
-    const bool report_histograms) {
+Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
   uint32_t outcome = 0;
   uint32_t hit_test_depth = 0;
   LocalFrame* top_hit_frame =
@@ -205,12 +230,13 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
     // breaking.
     if (UnvisitedNodeOrAncestorHasContextMenuListener(
             node, already_visited_nodes_for_context_menu_listener)) {
-      outcome |= EnumToBitmask(kFoundContextMenuListener);
+      outcome |=
+          EnumToBitmask(ImageSelectionOutcome::kFoundContextMenuListener);
       // Don't break because it allows us to log the failure reason only
       // if an image node was otherwise available lower in the hit test.
     }
     if (top_hit_frame != node->GetDocument().GetFrame()) {
-      outcome |= EnumToBitmask(kBlockedByCrossFrameNode);
+      outcome |= EnumToBitmask(ImageSelectionOutcome::kBlockedByCrossFrameNode);
       // Don't break because it allows us to log the failure reason only
       // if an image node was otherwise available lower in the hit test.
     }
@@ -220,12 +246,13 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
       found_image_node = node;
 
       if (hit_test_depth == 1) {
-        outcome |= EnumToBitmask(kImageFoundStandard);
+        outcome |= EnumToBitmask(ImageSelectionOutcome::kImageFoundStandard);
         // The context menu listener check is only necessary when penetrating,
         // so clear the bit so we don't want to log it if the image was on top.
-        outcome &= ~EnumToBitmask(kFoundContextMenuListener);
+        outcome &=
+            ~EnumToBitmask(ImageSelectionOutcome::kFoundContextMenuListener);
       } else {
-        outcome |= EnumToBitmask(kImageFoundPenetrating);
+        outcome |= EnumToBitmask(ImageSelectionOutcome::kImageFoundPenetrating);
       }
       break;
     }
@@ -235,17 +262,18 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
         node->GetLayoutBox()->BackgroundIsKnownToBeOpaqueInRect(
             HitTestLocation::RectForPoint(
                 hit_test_result_.PointInInnerNodeFrame()))) {
-      outcome |= EnumToBitmask(kBlockedByOpaqueNode);
+      outcome |= EnumToBitmask(ImageSelectionOutcome::kBlockedByOpaqueNode);
       // Don't break because it allows us to log the failure reason only
       // if an image node was otherwise available lower in the hit test.
     }
   }
 
   // Only log if we found an image node within the hit test.
-  if (report_histograms && (found_image_node != nullptr)) {
+  if (found_image_node != nullptr) {
     base::UmaHistogramCounts1000("Blink.ContextMenu.ImageSelection.Depth",
                                  hit_test_depth);
-    for (uint32_t i = 0; i < kMaxValue; i++) {
+    for (uint32_t i = 0;
+         i <= static_cast<uint8_t>(ImageSelectionOutcome::kMaxValue); i++) {
       unsigned val = 1 << i;
       if (outcome & val) {
         base::UmaHistogramEnumeration(
@@ -259,29 +287,41 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents(
   }
   // If there is anything preventing this image selection, return nullptr.
   uint32_t blocking_image_selection_mask =
-      ~(EnumToBitmask(kImageFoundStandard) |
-        EnumToBitmask(kImageFoundPenetrating));
+      ~(EnumToBitmask(ImageSelectionOutcome::kImageFoundStandard) |
+        EnumToBitmask(ImageSelectionOutcome::kImageFoundPenetrating));
   if (outcome & blocking_image_selection_mask) {
     return nullptr;
   }
+  image_selection_cached_result_ = found_image_node;
   return found_image_node;
 }
 
-// TODO(crbug.com/1184297) Cache image node when the context menu is shown and
-//    return that rather than refetching.
 Node* ContextMenuController::ContextMenuImageNodeForFrame(LocalFrame* frame) {
   if (base::FeatureList::IsEnabled(
           features::kEnablePenetratingImageSelection)) {
-    // Don't report histograms because they were already sent for this node when
-    // ContextMenuData was populated.
-    Node* potential_image_node = GetContextMenuNodeWithImageContents(
-        /*report_histograms=*/false);
-    return potential_image_node != nullptr &&
-                   potential_image_node->GetDocument().GetFrame() == frame
-               ? potential_image_node
-               : nullptr;
+    ImageSelectionRetrievalOutcome outcome;
+    // We currently will fail to retrieve an image if another hit test is made
+    // on
+    //  a non-image node is made before retrieval of the image.
+    if (!image_selection_cached_result_) {
+      outcome = ImageSelectionRetrievalOutcome::kImageNotFound;
+    } else if (image_selection_cached_result_->GetDocument().GetFrame() !=
+               frame) {
+      outcome = ImageSelectionRetrievalOutcome::kCrossFrameRetrieval;
+    } else {
+      outcome = ImageSelectionRetrievalOutcome::kImageFound;
+    }
+
+    base::UmaHistogramEnumeration(
+        "Blink.ContextMenu.ImageSelection.RetrievalOutcome", outcome);
+
+    if (outcome == ImageSelectionRetrievalOutcome::kImageFound) {
+      return image_selection_cached_result_;
+    }
+    return nullptr;
+  } else {
+    return ContextMenuNodeForFrame(frame);
   }
-  return ContextMenuNodeForFrame(frame);
 }
 
 // TODO(crbug.com/1184297) Cache image node when the context menu is shown and
@@ -297,15 +337,13 @@ void ContextMenuController::CustomContextMenuAction(uint32_t action) {
 }
 
 void ContextMenuController::ContextMenuClosed(const KURL& link_followed) {
-  if (!link_followed.IsValid())
-    return;
-
-  WebLocalFrameImpl* selected_web_frame =
-      WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame());
-  if (!selected_web_frame)
-    return;
-
-  selected_web_frame->SendPings(link_followed);
+  if (link_followed.IsValid()) {
+    WebLocalFrameImpl* selected_web_frame =
+        WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame());
+    if (selected_web_frame)
+      selected_web_frame->SendPings(link_followed);
+  }
+  ClearContextMenu();
 }
 
 static int ComputeEditFlags(Document& selected_document, Editor& editor) {
@@ -345,36 +383,45 @@ static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
     if (input->IsTextField())
       return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
     return mojom::blink::ContextMenuDataInputFieldType::kOther;
+  } else if (IsA<HTMLTextAreaElement>(result.InnerNode())) {
+    return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
   }
   return mojom::blink::ContextMenuDataInputFieldType::kNone;
 }
 
 static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
-  IntRect anchor;
-  IntRect focus;
+  gfx::Rect anchor;
+  gfx::Rect focus;
   selected_frame->Selection().ComputeAbsoluteBounds(anchor, focus);
-  anchor = selected_frame->View()->FrameToViewport(anchor);
-  focus = selected_frame->View()->FrameToViewport(focus);
-  int left = std::min(focus.X(), anchor.X());
-  int top = std::min(focus.Y(), anchor.Y());
-  int right = std::max(focus.X() + focus.Width(), anchor.X() + anchor.Width());
-  int bottom =
-      std::max(focus.Y() + focus.Height(), anchor.Y() + anchor.Height());
+  anchor = selected_frame->View()->ConvertToRootFrame(anchor);
+  focus = selected_frame->View()->ConvertToRootFrame(focus);
+
+  gfx::Rect combined_rect = anchor;
+  combined_rect.UnionEvenIfEmpty(focus);
+
   // Intersect the selection rect and the visible bounds of the focused_element
   // to ensure the selection rect is visible.
   Document* doc = selected_frame->GetDocument();
   if (doc) {
-    Element* focused_element = doc->FocusedElement();
-    if (focused_element) {
-      IntRect visible_bound = focused_element->VisibleBoundsInVisualViewport();
-      left = std::max(visible_bound.X(), left);
-      top = std::max(visible_bound.Y(), top);
-      right = std::min(visible_bound.MaxX(), right);
-      bottom = std::min(visible_bound.MaxY(), bottom);
-    }
+    if (Element* focused_element = doc->FocusedElement())
+      combined_rect.Intersect(focused_element->VisibleBoundsInLocalRoot());
   }
 
-  return gfx::Rect(left, top, right - left, bottom - top);
+  // TODO(bokan): This method may not work as expected when the local root
+  // isn't the main frame since the result won't be transformed and clipped by
+  // the visual viewport (which is accessible only from the outermost main
+  // frame).
+  if (selected_frame->LocalFrameRoot().IsOutermostMainFrame()) {
+    VisualViewport& visual_viewport =
+        selected_frame->GetPage()->GetVisualViewport();
+
+    gfx::Rect rect_in_visual_viewport =
+        visual_viewport.RootFrameToViewport(combined_rect);
+    rect_in_visual_viewport.Intersect(gfx::Rect(visual_viewport.Size()));
+    return rect_in_visual_viewport;
+  }
+
+  return combined_rect;
 }
 
 bool ContextMenuController::ShouldShowContextMenuFromTouch(
@@ -383,7 +430,8 @@ bool ContextMenuController::ShouldShowContextMenuFromTouch(
          !data.link_url.is_empty() ||
          data.media_type == mojom::blink::ContextMenuDataMediaType::kImage ||
          data.media_type == mojom::blink::ContextMenuDataMediaType::kVideo ||
-         data.is_editable || !data.selected_text.empty();
+         data.is_editable || data.opened_from_highlight ||
+         !data.selected_text.empty();
 }
 
 bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
@@ -401,9 +449,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (context_menu_client_receiver_.is_bound())
     context_menu_client_receiver_.reset();
 
-  HitTestRequest::HitTestRequestType type = HitTestRequest::kReadOnly |
-                                            HitTestRequest::kActive |
-                                            HitTestRequest::kRetargetForInert;
+  HitTestRequest::HitTestRequestType type =
+      HitTestRequest::kReadOnly | HitTestRequest::kActive;
   if (base::FeatureList::IsEnabled(
           features::kEnablePenetratingImageSelection)) {
     type |= HitTestRequest::kPenetratingList | HitTestRequest::kListBased;
@@ -416,6 +463,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (!result.InnerNodeOrImageMapImage())
     return false;
 
+  // Clear any previously set cached results if we are resetting the hit test
+  // result.
+  image_selection_cached_result_ = nullptr;
+
   hit_test_result_ = result;
   result.SetToShadowHostIfInRestrictedShadowRoot();
 
@@ -426,7 +477,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         .GetSelectionController()
         .UpdateSelectionForContextMenuEvent(
             mouse_event, hit_test_result_,
-            PhysicalOffset(FlooredIntPoint(point)));
+            PhysicalOffset(ToFlooredPoint(point)));
   }
 
   ContextMenuData data;
@@ -453,7 +504,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       result.SetURLElement(target_node->EnclosingLinkEventParentOrSelf());
     }
   }
-  data.link_url = result.AbsoluteLinkURL();
+  data.link_url = GURL(result.AbsoluteLinkURL());
 
   auto* html_element = DynamicTo<HTMLElement>(result.InnerNode());
   if (html_element) {
@@ -461,12 +512,13 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.alt_text = html_element->AltText().Utf8();
   }
   if (!result.AbsoluteMediaURL().IsEmpty() ||
-      result.GetMediaStreamDescriptor()) {
+      result.GetMediaStreamDescriptor() || result.GetMediaSourceHandle()) {
     if (!result.AbsoluteMediaURL().IsEmpty())
-      data.src_url = result.AbsoluteMediaURL();
+      data.src_url = GURL(result.AbsoluteMediaURL());
 
     // We know that if absoluteMediaURL() is not empty or element has a media
-    // stream descriptor, then this is a media element.
+    // stream descriptor or element has a media source handle, then this is a
+    // media element.
     auto* media_element = To<HTMLMediaElement>(result.InnerNode());
     if (IsA<HTMLVideoElement>(*media_element)) {
       // A video element should be presented as an audio element when it has an
@@ -507,7 +559,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (IsA<HTMLVideoElement>(media_element) && media_element->HasVideo() &&
         !media_element->IsFullscreen())
       data.media_flags |= ContextMenuData::kMediaCanToggleControls;
-    if (media_element->ShouldShowControls())
+    if (media_element->ShouldShowAllControls())
       data.media_flags |= ContextMenuData::kMediaControls;
   } else if (IsA<HTMLObjectElement>(*result.InnerNode()) ||
              IsA<HTMLEmbedElement>(*result.InnerNode())) {
@@ -518,20 +570,18 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         data.media_type = mojom::blink::ContextMenuDataMediaType::kPlugin;
 
         WebPlugin* plugin = plugin_view->Plugin();
-        data.link_url = KURL(plugin->LinkAtPosition(data.mouse_position)
-                                 .GetString()
-                                 .Utf8()
-                                 .c_str());
+        data.link_url = GURL(KURL(plugin->LinkAtPosition(data.mouse_position)));
 
         auto* plugin_element = To<HTMLPlugInElement>(result.InnerNode());
-        data.src_url =
-            plugin_element->GetDocument().CompleteURL(plugin_element->Url());
+        data.src_url = GURL(
+            plugin_element->GetDocument().CompleteURL(plugin_element->Url()));
 
         // Figure out the text selection and text edit flags.
         WebString text = plugin->SelectionAsText();
         if (!text.IsEmpty()) {
           data.selected_text = text.Utf8();
-          data.edit_flags |= ContextMenuDataEditFlags::kCanCopy;
+          if (plugin->CanCopy())
+            data.edit_flags |= ContextMenuDataEditFlags::kCanCopy;
         }
         bool plugin_can_edit_text = plugin->CanEditText();
         if (plugin_can_edit_text) {
@@ -572,10 +622,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
             features::kEnablePenetratingImageSelection)) {
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
           "Blink.ContextMenu.ImageSelection.ElapsedTime");
-      potential_image_node =
-          GetContextMenuNodeWithImageContents(/*report_histograms=*/true);
+      potential_image_node = GetContextMenuNodeWithImageContents();
     }
-
     if (potential_image_node != nullptr &&
         IsA<HTMLCanvasElement>(potential_image_node)) {
       data.media_type = mojom::blink::ContextMenuDataMediaType::kCanvas;
@@ -583,7 +631,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     } else if (potential_image_node != nullptr &&
                !HitTestResult::AbsoluteImageURL(potential_image_node)
                     .IsEmpty()) {
-      data.src_url = HitTestResult::AbsoluteImageURL(potential_image_node);
+      data.src_url =
+          GURL(HitTestResult::AbsoluteImageURL(potential_image_node));
       data.media_type = mojom::blink::ContextMenuDataMediaType::kImage;
       data.media_flags |= ContextMenuData::kMediaCanPrint;
       data.has_image_contents =
@@ -619,28 +668,21 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         << "]\nVisibleSelection: "
         << selected_frame->Selection()
                .ComputeVisibleSelectionInDOMTreeDeprecated();
-
-    // Store text selection when it happens as it might be cleared when the
-    // browser will request |TextFragmentSelectorGenerator| to generate
-    // selector.
-    UpdateTextFragmentSelectorGenerator(selected_frame);
+    if (!result.IsContentEditable()) {
+      TextFragmentHandler::OpenedContextMenuOverSelection(selected_frame);
+      AnnotationAgentContainerImpl* annotation_container =
+          AnnotationAgentContainerImpl::From(*selected_frame->GetDocument());
+      annotation_container->OpenedContextMenuOverSelection();
+    }
   }
 
   // If there is a text fragment at the same location as the click indicate that
   // the context menu is being opened from an existing highlight.
-  DocumentMarkerController& marker_controller =
-      selected_frame->GetDocument()->Markers();
-  PositionWithAffinity pos_with_affinity = result.GetPosition();
-  const Position marker_position = pos_with_affinity.GetPosition();
-  auto markers = marker_controller.MarkersAroundPosition(
-      ToPositionInFlatTree(marker_position),
-      DocumentMarker::MarkerTypes::TextFragment());
-  if (!markers.IsEmpty()) {
-    for (const auto& marker : markers) {
-      if (marker.second->GetType() == DocumentMarker::kTextFragment) {
-        data.opened_from_highlight = true;
-        break;
-      }
+  if (result.InnerNodeFrame()) {
+    result.InnerNodeFrame()->View()->UpdateLifecycleToPrePaintClean(
+        DocumentUpdateReason::kHitTest);
+    if (TextFragmentHandler::IsOverTextFragment(result)) {
+      data.opened_from_highlight = true;
     }
   }
 
@@ -726,20 +768,23 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     data.link_text = anchor->innerText().Utf8();
 
-    if (anchor->HasImpression()) {
-      base::Optional<WebImpression> web_impression =
-          GetImpressionForAnchor(anchor);
-      data.impression =
-          web_impression.has_value()
-              ? base::Optional<Impression>(
-                    ConvertWebImpressionToImpression(web_impression.value()))
-              : base::nullopt;
+    if (anchor->FastHasAttribute(html_names::kAttributionsrcAttr)) {
+      const AtomicString& attribution_src_value =
+          anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
+      if (!attribution_src_value.IsNull()) {
+        data.impression =
+            selected_frame->GetAttributionSrcLoader()->RegisterNavigation(
+                selected_frame->GetDocument()->CompleteURL(
+                    attribution_src_value));
+      }
     }
   }
 
   data.input_field_type = ComputeInputFieldType(result);
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
+  data.form_renderer_id = GetFormRendererId(result);
+  data.field_renderer_id = GetFieldRendererId(result);
 
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||
@@ -747,18 +792,24 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (from_touch && !ShouldShowContextMenuFromTouch(data))
     return false;
 
-  base::Optional<gfx::Point> host_context_menu_location;
-  auto* main_frame =
-      WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page_->MainFrame()));
-  if (main_frame) {
-    host_context_menu_location =
-        main_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
-  }
-
   WebLocalFrameImpl* selected_web_frame =
       WebLocalFrameImpl::FromFrame(selected_frame);
   if (!selected_web_frame || !selected_web_frame->Client())
     return false;
+
+  absl::optional<gfx::Point> host_context_menu_location;
+  if (selected_web_frame->FrameWidgetImpl()) {
+    host_context_menu_location =
+        selected_web_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
+  }
+  if (!host_context_menu_location.has_value()) {
+    auto* main_frame =
+        WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page_->MainFrame()));
+    if (main_frame && main_frame != selected_web_frame) {
+      host_context_menu_location =
+          main_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
+    }
+  }
 
   selected_web_frame->ShowContextMenu(
       context_menu_client_receiver_.BindNewEndpointAndPassRemote(
@@ -766,18 +817,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data, host_context_menu_location);
 
   return true;
-}
-
-void ContextMenuController::UpdateTextFragmentSelectorGenerator(
-    LocalFrame* selected_frame) {
-  if (!selected_frame->GetTextFragmentSelectorGenerator())
-    return;
-
-  VisibleSelectionInFlatTree selection =
-      selected_frame->Selection().ComputeVisibleSelectionInFlatTree();
-  EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
-  selected_frame->GetTextFragmentSelectorGenerator()->UpdateSelection(
-      selected_frame, selection_range);
 }
 
 }  // namespace blink

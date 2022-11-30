@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,16 @@
 #include <string>
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/fake_extended_authenticator.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/stub_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
-#include "components/session_manager/core/session_manager.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,7 +26,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 bool IsScreenLockerLocked() {
@@ -44,6 +42,10 @@ class LoginAttemptObserver : public AuthStatusConsumer {
   LoginAttemptObserver() : AuthStatusConsumer() {
     ScreenLocker::default_screen_locker()->SetLoginStatusConsumer(this);
   }
+
+  LoginAttemptObserver(const LoginAttemptObserver&) = delete;
+  LoginAttemptObserver& operator=(const LoginAttemptObserver&) = delete;
+
   ~LoginAttemptObserver() override {
     if (ScreenLocker::default_screen_locker())
       ScreenLocker::default_screen_locker()->SetLoginStatusConsumer(nullptr);
@@ -73,23 +75,33 @@ class LoginAttemptObserver : public AuthStatusConsumer {
 
   bool login_attempted_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginAttemptObserver);
 };
 
 }  // namespace
 
-ScreenLockerTester::ScreenLockerTester() = default;
+ScreenLockerTester::ScreenLockerTester() {
+  DCHECK(session_manager::SessionManager::Get());
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
+}
 
 ScreenLockerTester::~ScreenLockerTester() = default;
 
+void ScreenLockerTester::OnSessionStateChanged() {
+  if (IsLocked() && !on_lock_callback_.is_null()) {
+    std::move(on_lock_callback_).Run();
+  }
+  if (!IsLocked() && !on_unlock_callback_.is_null()) {
+    std::move(on_unlock_callback_).Run();
+  }
+}
+
 void ScreenLockerTester::Lock() {
-  content::WindowedNotificationObserver lock_state_observer(
-      chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-      content::NotificationService::AllSources());
+  base::RunLoop run_loop;
+  on_lock_callback_ = run_loop.QuitClosure();
+
   ScreenLocker::Show();
   if (!IsLocked())
-    lock_state_observer.Wait();
+    run_loop.Run();
   ASSERT_TRUE(IsLocked());
   ASSERT_EQ(session_manager::SessionState::LOCKED,
             session_manager::SessionManager::Get()->session_state());
@@ -97,11 +109,11 @@ void ScreenLockerTester::Lock() {
 }
 
 void ScreenLockerTester::WaitForUnlock() {
-  content::WindowedNotificationObserver lock_state_observer(
-      chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-      content::NotificationService::AllSources());
-  if (IsLocked())
-    lock_state_observer.Wait();
+  if (IsLocked()) {
+    base::RunLoop run_loop;
+    on_unlock_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
   ASSERT_TRUE(!IsLocked());
   ASSERT_EQ(session_manager::SessionState::ACTIVE,
             session_manager::SessionManager::Get()->session_state());
@@ -120,31 +132,29 @@ void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
 }
 
 bool ScreenLockerTester::IsLocked() {
-  return IsScreenLockerLocked() && ash::LoginScreenTestApi::IsLockShown();
+  return IsScreenLockerLocked() && LoginScreenTestApi::IsLockShown();
 }
 
 bool ScreenLockerTester::IsLockRestartButtonShown() {
-  return IsScreenLockerLocked() &&
-         ash::LoginScreenTestApi::IsRestartButtonShown();
+  return IsScreenLockerLocked() && LoginScreenTestApi::IsRestartButtonShown();
 }
 
 bool ScreenLockerTester::IsLockShutdownButtonShown() {
-  return IsScreenLockerLocked() &&
-         ash::LoginScreenTestApi::IsShutdownButtonShown();
+  return IsScreenLockerLocked() && LoginScreenTestApi::IsShutdownButtonShown();
 }
 
 void ScreenLockerTester::UnlockWithPassword(const AccountId& account_id,
                                             const std::string& password) {
-  ash::LoginScreenTestApi::SubmitPassword(account_id, password,
-                                          true /*check_if_submittable*/);
+  LoginScreenTestApi::SubmitPassword(account_id, password,
+                                     true /*check_if_submittable*/);
   base::RunLoop().RunUntilIdle();
 }
 
 void ScreenLockerTester::ForceSubmitPassword(const AccountId& account_id,
                                              const std::string& password) {
-  ash::LoginScreenTestApi::SubmitPassword(account_id, password,
-                                          false /*check_if_submittable*/);
+  LoginScreenTestApi::SubmitPassword(account_id, password,
+                                     false /*check_if_submittable*/);
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

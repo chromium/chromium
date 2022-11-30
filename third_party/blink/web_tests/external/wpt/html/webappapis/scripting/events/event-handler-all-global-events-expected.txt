@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 325 tests; 317 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 345 tests; 343 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -10,6 +10,16 @@ PASS onauxclick: the default value must be null
 PASS onauxclick: the content attribute must be compiled into a function as the corresponding property
 PASS onauxclick: the content attribute must execute when an event is dispatched
 PASS onauxclick: dispatching an Event at a <meta> element must trigger element.onauxclick
+PASS onbeforeinput: must be on the appropriate locations for GlobalEventHandlers
+PASS onbeforeinput: the default value must be null
+PASS onbeforeinput: the content attribute must be compiled into a function as the corresponding property
+PASS onbeforeinput: the content attribute must execute when an event is dispatched
+PASS onbeforeinput: dispatching an Event at a <meta> element must trigger element.onbeforeinput
+PASS onbeforematch: must be on the appropriate locations for GlobalEventHandlers
+PASS onbeforematch: the default value must be null
+FAIL onbeforematch: the content attribute must be compiled into a function as the corresponding property assert_equals: The onbeforematch property must be a function expected "function" but got "object"
+FAIL onbeforematch: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
+PASS onbeforematch: dispatching an Event at a <meta> element must trigger element.onbeforematch
 PASS onblur: must be on the appropriate locations for GlobalEventHandlers
 PASS onblur: the default value must be null
 PASS onblur: the content attribute must be compiled into a function as the corresponding property
@@ -45,11 +55,21 @@ PASS onclose: the default value must be null
 PASS onclose: the content attribute must be compiled into a function as the corresponding property
 PASS onclose: the content attribute must execute when an event is dispatched
 PASS onclose: dispatching an Event at a <meta> element must trigger element.onclose
+PASS oncontextlost: must be on the appropriate locations for GlobalEventHandlers
+PASS oncontextlost: the default value must be null
+PASS oncontextlost: the content attribute must be compiled into a function as the corresponding property
+PASS oncontextlost: the content attribute must execute when an event is dispatched
+PASS oncontextlost: dispatching an Event at a <meta> element must trigger element.oncontextlost
 PASS oncontextmenu: must be on the appropriate locations for GlobalEventHandlers
 PASS oncontextmenu: the default value must be null
 PASS oncontextmenu: the content attribute must be compiled into a function as the corresponding property
 PASS oncontextmenu: the content attribute must execute when an event is dispatched
 PASS oncontextmenu: dispatching an Event at a <meta> element must trigger element.oncontextmenu
+PASS oncontextrestored: must be on the appropriate locations for GlobalEventHandlers
+PASS oncontextrestored: the default value must be null
+PASS oncontextrestored: the content attribute must be compiled into a function as the corresponding property
+PASS oncontextrestored: the content attribute must execute when an event is dispatched
+PASS oncontextrestored: dispatching an Event at a <meta> element must trigger element.oncontextrestored
 PASS oncuechange: must be on the appropriate locations for GlobalEventHandlers
 PASS oncuechange: the default value must be null
 PASS oncuechange: the content attribute must be compiled into a function as the corresponding property
@@ -240,10 +260,10 @@ PASS onscroll: the default value must be null
 PASS onscroll: the content attribute must be compiled into a function as the corresponding property
 PASS onscroll: the content attribute must execute when an event is dispatched
 PASS onscroll: dispatching an Event at a <meta> element must trigger element.onscroll
-FAIL onsecuritypolicyviolation: must be on the appropriate locations for GlobalEventHandlers assert_true: Window has an own property named "onsecuritypolicyviolation" expected true got false
-FAIL onsecuritypolicyviolation: the default value must be null assert_equals: The default value of the property is null for a Window instance expected (object) null but got (undefined) undefined
-FAIL onsecuritypolicyviolation: the content attribute must be compiled into a function as the corresponding property assert_equals: The onsecuritypolicyviolation property must be a function expected "function" but got "undefined"
-FAIL onsecuritypolicyviolation: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
+PASS onsecuritypolicyviolation: must be on the appropriate locations for GlobalEventHandlers
+PASS onsecuritypolicyviolation: the default value must be null
+PASS onsecuritypolicyviolation: the content attribute must be compiled into a function as the corresponding property
+PASS onsecuritypolicyviolation: the content attribute must execute when an event is dispatched
 PASS onsecuritypolicyviolation: dispatching an Event at a <meta> element must trigger element.onsecuritypolicyviolation
 PASS onseeked: must be on the appropriate locations for GlobalEventHandlers
 PASS onseeked: the default value must be null
@@ -260,10 +280,10 @@ PASS onselect: the default value must be null
 PASS onselect: the content attribute must be compiled into a function as the corresponding property
 PASS onselect: the content attribute must execute when an event is dispatched
 PASS onselect: dispatching an Event at a <meta> element must trigger element.onselect
-FAIL onslotchange: must be on the appropriate locations for GlobalEventHandlers assert_true: Window has an own property named "onslotchange" expected true got false
-FAIL onslotchange: the default value must be null assert_equals: The default value of the property is null for a Window instance expected (object) null but got (undefined) undefined
-FAIL onslotchange: the content attribute must be compiled into a function as the corresponding property assert_equals: The onslotchange property must be a function expected "function" but got "undefined"
-FAIL onslotchange: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
+PASS onslotchange: must be on the appropriate locations for GlobalEventHandlers
+PASS onslotchange: the default value must be null
+PASS onslotchange: the content attribute must be compiled into a function as the corresponding property
+PASS onslotchange: the content attribute must execute when an event is dispatched
 PASS onslotchange: dispatching an Event at a <meta> element must trigger element.onslotchange
 PASS onstalled: must be on the appropriate locations for GlobalEventHandlers
 PASS onstalled: the default value must be null

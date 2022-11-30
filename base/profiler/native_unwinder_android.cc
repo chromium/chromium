@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/profiler/module_cache.h"
-#include "base/profiler/native_unwinder.h"
 #include "base/profiler/profile_builder.h"
 #include "build/build_config.h"
 
@@ -33,10 +32,10 @@ namespace {
 
 class NonElfModule : public ModuleCache::Module {
  public:
-  NonElfModule(unwindstack::MapInfo* map_info)
-      : start_(map_info->start),
-        size_(map_info->end - start_),
-        map_info_name_(map_info->name) {}
+  explicit NonElfModule(unwindstack::MapInfo* map_info)
+      : start_(map_info->start()),
+        size_(map_info->end() - start_),
+        map_info_name_(map_info->name()) {}
   ~NonElfModule() override = default;
 
   uintptr_t GetBaseAddress() const override { return start_; }
@@ -144,7 +143,7 @@ bool NativeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
 
 UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
                                               uintptr_t stack_top,
-                                              std::vector<Frame>* stack) const {
+                                              std::vector<Frame>* stack) {
   auto regs = CreateFromRegisterContext(thread_context);
   DCHECK(regs);
   unwindstack::ArchEnum arch = regs->Arch();
@@ -152,31 +151,33 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
   do {
     uint64_t cur_pc = regs->pc();
     uint64_t cur_sp = regs->sp();
-    unwindstack::MapInfo* map_info = memory_regions_map_->Find(cur_pc);
+    unwindstack::MapInfo* map_info = memory_regions_map_->Find(cur_pc).get();
     if (map_info == nullptr ||
-        map_info->flags & unwindstack::MAPS_FLAGS_DEVICE_MAP) {
+        map_info->flags() & unwindstack::MAPS_FLAGS_DEVICE_MAP) {
       break;
     }
 
-    unwindstack::Elf* elf =
-        map_info->GetElf({process_memory_, [](unwindstack::Memory*) {}}, arch);
+    unwindstack::Elf* elf = map_info->GetElf(
+        {process_memory_.get(), [](unwindstack::Memory*) {}}, arch);
     if (!elf->valid())
       break;
 
     UnwindStackMemoryAndroid stack_memory(cur_sp, stack_top);
     uintptr_t rel_pc = elf->GetRelPc(cur_pc, map_info);
+    bool is_signal_frame = false;
     bool finished = false;
     bool stepped =
         elf->StepIfSignalHandler(rel_pc, regs.get(), &stack_memory) ||
-        elf->Step(rel_pc, regs.get(), &stack_memory, &finished);
+        elf->Step(rel_pc, regs.get(), &stack_memory, &finished,
+                  &is_signal_frame);
     if (stepped && finished)
-      return UnwindResult::COMPLETED;
+      return UnwindResult::kCompleted;
 
     if (!stepped) {
       // Stepping failed. Try unwinding using return address.
       if (stack->size() == 1) {
         if (!regs->SetPcFromReturnAddress(&stack_memory))
-          return UnwindResult::ABORTED;
+          return UnwindResult::kAborted;
       } else {
         break;
       }
@@ -184,16 +185,17 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
 
     // If the pc and sp didn't change, then consider everything stopped.
     if (cur_pc == regs->pc() && cur_sp == regs->sp())
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
 
     // Exclusive range of expected stack pointer values after the unwind.
     struct {
       uintptr_t start;
       uintptr_t end;
-    } expected_stack_pointer_range = {cur_sp, stack_top};
+    } expected_stack_pointer_range = {static_cast<uintptr_t>(cur_sp),
+                                      stack_top};
     if (regs->sp() < expected_stack_pointer_range.start ||
         regs->sp() >= expected_stack_pointer_range.end) {
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
     }
 
     if (regs->dex_pc() != 0) {
@@ -214,14 +216,14 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
 
   // Restore registers necessary for further unwinding in |thread_context|.
   CopyToRegisterContext(regs.get(), thread_context);
-  return UnwindResult::UNRECOGNIZED_FRAME;
+  return UnwindResult::kUnrecognizedFrame;
 }
 
 std::unique_ptr<const ModuleCache::Module>
 NativeUnwinderAndroid::TryCreateModuleForAddress(uintptr_t address) {
-  unwindstack::MapInfo* map_info = memory_regions_map_->Find(address);
-  if (map_info == nullptr || !(map_info->flags & PROT_EXEC) ||
-      map_info->flags & unwindstack::MAPS_FLAGS_DEVICE_MAP) {
+  unwindstack::MapInfo* map_info = memory_regions_map_->Find(address).get();
+  if (map_info == nullptr || !(map_info->flags() & PROT_EXEC) ||
+      map_info->flags() & unwindstack::MAPS_FLAGS_DEVICE_MAP) {
     return nullptr;
   }
   return std::make_unique<NonElfModule>(map_info);
@@ -236,7 +238,7 @@ void NativeUnwinderAndroid::EmitDexFrame(uintptr_t dex_pc,
     // usually not executable (.dex file). Since non-executable regions
     // are used much less commonly, it's lazily added here instead of from
     // AddInitialModulesFromMaps().
-    unwindstack::MapInfo* map_info = memory_regions_map_->Find(dex_pc);
+    unwindstack::MapInfo* map_info = memory_regions_map_->Find(dex_pc).get();
     if (map_info) {
       auto new_module = std::make_unique<NonElfModule>(map_info);
       module = new_module.get();

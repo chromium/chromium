@@ -1,10 +1,13 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
-#include "base/macros.h"
+#include <memory>
+
+#include "base/bind.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13,7 +16,11 @@
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -22,13 +29,11 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -99,10 +104,10 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   // ScreenCaptureNotificationUI:
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) override;
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override;
 
   // views::WidgetDelegateView:
-  void DeleteDelegate() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
@@ -120,10 +125,10 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   content::MediaStreamUI::SourceCallback source_callback_;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       bounds_observations_{this};
-  NotificationBarClientView* client_view_ = nullptr;
-  views::View* source_button_ = nullptr;
-  views::View* stop_button_ = nullptr;
-  views::View* hide_link_ = nullptr;
+  raw_ptr<NotificationBarClientView> client_view_ = nullptr;
+  raw_ptr<views::View> source_button_ = nullptr;
+  raw_ptr<views::View> stop_button_ = nullptr;
+  raw_ptr<views::View> hide_link_ = nullptr;
 };
 
 ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
@@ -131,7 +136,14 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
   SetShowCloseButton(false);
   SetShowTitle(false);
   SetTitle(text);
+
+  // TODO(pbos): Investigate if this can be SetOwnedByWidget(true) and get rid
+  // of `delete GetWidget();` in the destructor.
   set_owned_by_client();
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(
+      base::BindOnce(&ScreenCaptureNotificationUIViews::NotifyStopped,
+                     base::Unretained(this)));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -174,9 +186,9 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
 
   // The client rect for NotificationBarClientView uses the bounds for the
   // following views.
-  bounds_observations_.AddObservation(source_button_);
-  bounds_observations_.AddObservation(stop_button_);
-  bounds_observations_.AddObservation(hide_link_);
+  bounds_observations_.AddObservation(source_button_.get());
+  bounds_observations_.AddObservation(stop_button_.get());
+  bounds_observations_.AddObservation(hide_link_.get());
 }
 
 ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
@@ -187,7 +199,8 @@ ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
 
 gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
     base::OnceClosure stop_callback,
-    content::MediaStreamUI::SourceCallback source_callback) {
+    content::MediaStreamUI::SourceCallback source_callback,
+    const std::vector<content::DesktopMediaID>& media_ids) {
   if (GetWidget())
     return 0;
 
@@ -217,8 +230,8 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
   widget->set_frame_type(views::Widget::FrameType::kForceCustom);
   widget->Init(std::move(params));
 
-  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground)));
+  SetBackground(views::CreateSolidBackground(
+      GetColorProvider()->GetColor(ui::kColorDialogBackground)));
 
   display::Screen* screen = display::Screen::GetScreen();
   // TODO(sergeyu): Move the notification to the display being captured when
@@ -232,16 +245,19 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
       work_area.y() + work_area.height() - size.height(),
       size.width(), size.height());
   widget->SetBounds(bounds);
-  widget->Show();
+  if (media_ids.empty() ||
+      media_ids.front().type == content::DesktopMediaID::Type::TYPE_SCREEN) {
+    // Focus the notification widget if sharing a screen.
+    widget->Show();
+  } else {
+    // Do not focus the notification widget if sharing a window.
+    widget->ShowInactive();
+  }
   // This has to be called after Show() to have effect.
   widget->SetOpacity(kWindowAlphaValue);
   widget->SetVisibleOnAllWorkspaces(true);
 
   return 0;
-}
-
-void ScreenCaptureNotificationUIViews::DeleteDelegate() {
-  NotifyStopped();
 }
 
 views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(
@@ -254,14 +270,11 @@ views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(
 std::unique_ptr<views::NonClientFrameView>
 ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
     views::Widget* widget) {
-  constexpr auto kPadding = gfx::Insets(5, 10);
+  constexpr auto kPadding = gfx::Insets::VH(5, 10);
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);
-  SkColor color = widget->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
-  frame->SetBubbleBorder(std::unique_ptr<views::BubbleBorder>(
-      new views::BubbleBorder(views::BubbleBorder::NONE,
-                              views::BubbleBorder::STANDARD_SHADOW, color)));
+  frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW));
   return frame;
 }
 

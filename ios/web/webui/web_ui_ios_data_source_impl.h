@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -23,16 +22,20 @@ namespace web {
 class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
                                public WebUIIOSDataSource {
  public:
+  WebUIIOSDataSourceImpl(const WebUIIOSDataSourceImpl&) = delete;
+  WebUIIOSDataSourceImpl& operator=(const WebUIIOSDataSourceImpl&) = delete;
+
   // WebUIIOSDataSource implementation:
   void AddString(const std::string& name, const std::u16string& value) override;
   void AddString(const std::string& name, const std::string& value) override;
   void AddLocalizedString(const std::string& name, int ids) override;
-  void AddLocalizedStrings(
-      const base::DictionaryValue& localized_strings) override;
+  void AddLocalizedStrings(const base::Value::Dict& localized_strings) override;
   void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) override;
   void AddBoolean(const std::string& name, bool value) override;
   void UseStringsJs() override;
+  void EnableReplaceI18nInJS() override;
+  bool ShouldReplaceI18nInJS() const override;
   void AddResourcePath(const std::string& path, int resource_id) override;
   void SetDefaultResource(int resource_id) override;
   void DisableDenyXFrameOptions() override;
@@ -76,13 +79,12 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
   // IO thread. The map is safe to read from multiple threads as long as no
   // further changes are made to it after initialization.
   ui::TemplateReplacements replacements_;
-  // The |replacements_| is intended to replace |localized_strings_|.
-  base::DictionaryValue localized_strings_;
+  // The `replacements_` is intended to replace `localized_strings_`.
+  base::Value::Dict localized_strings_;
   bool deny_xframe_options_;
   bool load_time_data_defaults_added_;
   bool replace_existing_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIIOSDataSourceImpl);
+  bool should_replace_i18n_in_js_;
 };
 
 }  // web

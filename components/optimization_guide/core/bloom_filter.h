@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 
 namespace optimization_guide {
@@ -33,6 +32,9 @@ class BloomFilter {
               uint32_t num_bits,
               std::string filter_data);
 
+  BloomFilter(const BloomFilter&) = delete;
+  BloomFilter& operator=(const BloomFilter&) = delete;
+
   ~BloomFilter();
 
   // Returns whether this Bloom filter contains |str|.
@@ -55,8 +57,6 @@ class BloomFilter {
   ByteVector bytes_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BloomFilter);
 };
 
 }  // namespace optimization_guide

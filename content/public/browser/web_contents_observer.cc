@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,10 +40,6 @@ void WebContentsObserver::Observe(WebContents* web_contents) {
 bool WebContentsObserver::OnMessageReceived(
     const IPC::Message& message,
     RenderFrameHost* render_frame_host) {
-  return false;
-}
-
-bool WebContentsObserver::OnMessageReceived(const IPC::Message& message) {
   return false;
 }
 

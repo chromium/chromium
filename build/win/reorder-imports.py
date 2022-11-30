@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,8 +10,10 @@ import shutil
 import subprocess
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..',
-                                'third_party', 'pefile'))
+sys.path.insert(
+    0,
+    os.path.join(os.path.dirname(__file__), '..', '..', 'third_party',
+                 'pefile_py3'))
 import pefile
 
 def reorder_imports(input_dir, output_dir, architecture):
@@ -46,7 +48,7 @@ def reorder_imports(input_dir, output_dir, architecture):
 
   found_elf = False
   for i, peimport in enumerate(pe.DIRECTORY_ENTRY_IMPORT):
-    if peimport.dll.lower() == 'chrome_elf.dll':
+    if peimport.dll.lower() == b'chrome_elf.dll':
       assert not found_elf, 'only one chrome_elf.dll import expected'
       found_elf = True
       if i > 0:

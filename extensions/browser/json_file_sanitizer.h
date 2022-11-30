@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include <tuple>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 class DataDecoder;
@@ -62,6 +61,9 @@ class JsonFileSanitizer {
       Callback callback,
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner);
 
+  JsonFileSanitizer(const JsonFileSanitizer&) = delete;
+  JsonFileSanitizer& operator=(const JsonFileSanitizer&) = delete;
+
   ~JsonFileSanitizer();
 
  private:
@@ -76,8 +78,8 @@ class JsonFileSanitizer {
                     std::tuple<std::string, bool, bool> read_and_delete_result);
 
   void JsonParsingDone(const base::FilePath& file_path,
-                       base::Optional<base::Value> json_value,
-                       const base::Optional<std::string>& error);
+                       absl::optional<base::Value> json_value,
+                       const absl::optional<std::string>& error);
 
   void JsonFileWritten(const base::FilePath& file_path,
                        int expected_size,
@@ -92,8 +94,6 @@ class JsonFileSanitizer {
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
   base::WeakPtrFactory<JsonFileSanitizer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsonFileSanitizer);
 };
 
 }  // namespace extensions

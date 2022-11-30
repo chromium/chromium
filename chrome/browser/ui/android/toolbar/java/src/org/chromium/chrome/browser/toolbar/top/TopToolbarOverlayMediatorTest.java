@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,9 @@ import android.graphics.Color;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -24,17 +26,25 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the top toolbar overlay's mediator (composited version of the top toolbar). */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.DISABLE_COMPOSITED_PROGRESS_BAR)
 public class TopToolbarOverlayMediatorTest {
     private TopToolbarOverlayMediator mMediator;
     private PropertyModel mModel;
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private Context mContext;
@@ -59,6 +69,9 @@ public class TopToolbarOverlayMediatorTest {
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
+
+    @Captor
+    private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutObserverCaptor;
 
     @Mock
     private ObservableSupplier<Tab> mTabSupplier;
@@ -88,7 +101,8 @@ public class TopToolbarOverlayMediatorTest {
         when(mTabSupplier.get()).thenReturn(mTab);
         mMediator = new TopToolbarOverlayMediator(mModel, mContext, mLayoutStateProvider,
                 (info)-> {}, mTabSupplier, mBrowserControlsProvider, mTopUiThemeColorProvider,
-                false);
+                LayoutType.BROWSING, false);
+
         mMediator.setIsAndroidViewVisible(true);
 
         // Ensure the observer is added to the initial tab.
@@ -98,6 +112,10 @@ public class TopToolbarOverlayMediatorTest {
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
         verify(mBrowserControlsProvider).addObserver(mBrowserControlsObserverCaptor.capture());
+
+        verify(mLayoutStateProvider).addObserver(mLayoutObserverCaptor.capture());
+
+        mLayoutObserverCaptor.getValue().onStartedShowing(LayoutType.BROWSING, true);
     }
 
     /** Set the tab that will be returned by the supplier and trigger the observer event. */
@@ -163,5 +181,47 @@ public class TopToolbarOverlayMediatorTest {
 
         Assert.assertNull("The progress bar data should be still be empty.",
                 mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testManualVisibility_flagNotSet() {
+        // If the manual visibility flag was not set in the constructor, expect as assert if someone
+        // attempts to set it.
+        mMediator.setManualVisibility(false);
+    }
+
+    @Test
+    public void testManualVisibility() {
+        mMediator.setVisibilityManuallyControlledForTesting(true);
+
+        // Set the manual visibility to true and modify things that would otherwise change it.
+        mMediator.setManualVisibility(true);
+        mMediator.setIsAndroidViewVisible(true);
+
+        Assert.assertTrue(
+                "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+        Assert.assertTrue(
+                "View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(100, 0, 0, 0, false);
+
+        Assert.assertTrue(
+                "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+        Assert.assertTrue(
+                "View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        // Set the manual visibility to false and modify things that would otherwise change it.
+        mMediator.setManualVisibility(false);
+
+        // Note that an invisible view implies invisible shadow as well.
+        Assert.assertFalse(
+                "View should be invisible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        mMediator.setIsAndroidViewVisible(false);
+
+        Assert.assertFalse(
+                "View should be invisible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        mMediator.setVisibilityManuallyControlledForTesting(false);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,18 @@ namespace features {
 // Controls if GPU should synchronize presentation with vsync.
 GL_EXPORT bool UseGpuVsync();
 
+#if BUILDFLAG(IS_ANDROID)
+// Use new Android 13 API to obtain and target a frame deadline.
+GL_EXPORT BASE_DECLARE_FEATURE(kAndroidFrameDeadline);
+#endif
+
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
-GL_EXPORT extern const base::Feature kDefaultPassthroughCommandDecoder;
+GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
+
+GL_EXPORT bool IsAndroidFrameDeadlineEnabled();
+
+GL_EXPORT bool UsePassthroughCommandDecoder();
 
 }  // namespace features
 

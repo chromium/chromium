@@ -1,9 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-'use strict';
+import {MAX_VERTICAL_LABEL_NUM, MIN_LABEL_VERTICAL_SPACING} from './constants.js';
 
 /**
  * Create by |LineChart.LineChart|.
@@ -11,7 +10,7 @@
  * labels.
  * @const
  */
-LineChart.UnitLabel = class {
+export class UnitLabel {
   constructor(/** Array<string> */ units, /** number */ unitBase) {
     /** @const {Array<string>} - See |getSuitableUnit()|. */
     this.units_ = units;
@@ -95,8 +94,9 @@ LineChart.UnitLabel = class {
       return;
     }
     if (this.height_ == height && this.fontHeight_ == fontHeight &&
-        this.precision_ == precision)
+        this.precision_ == precision) {
       return;
+    }
 
     this.height_ = height;
     this.fontHeight_ = fontHeight;
@@ -109,8 +109,9 @@ LineChart.UnitLabel = class {
    * @param {number} maxValue
    */
   setMaxValue(maxValue) {
-    if (this.maxValueCache_ == maxValue)
+    if (this.maxValueCache_ == maxValue) {
       return;
+    }
     this.maxValueCache_ = maxValue;
 
     const /** Array<string> */ units = this.units_;
@@ -149,12 +150,14 @@ LineChart.UnitLabel = class {
    * Update the labels and scale if the status is changed.
    */
   updateLabelsAndScale_() {
-    if (this.isCache_)
+    if (this.isCache_) {
       return;
+    }
     this.isCache_ = true;
 
-    if (this.maxValue_ == 0)
+    if (this.maxValue_ == 0) {
       return;
+    }
 
     const /** {stepSize: number, stepSizePrecision: number} */ result =
         this.getSuitableStepSize_();
@@ -197,8 +200,9 @@ LineChart.UnitLabel = class {
      */
     let stepSizePrecision = Math.max(this.precision_, 0);
     while (true) {
-      if (this.getNumberOfLabelWithStepSize_(stepSize) <= maxLabelNum)
+      if (this.getNumberOfLabelWithStepSize_(stepSize) <= maxLabelNum) {
         break;
+      }
       if (this.getNumberOfLabelWithStepSize_(stepSize * 2) <= maxLabelNum) {
         stepSize *= 2;
         break;
@@ -210,8 +214,9 @@ LineChart.UnitLabel = class {
 
       /* Reduce the precision. */
       stepSize *= 10;
-      if (stepSizePrecision > 0)
+      if (stepSizePrecision > 0) {
         --stepSizePrecision;
+      }
     }
 
     return {
@@ -227,13 +232,13 @@ LineChart.UnitLabel = class {
    */
   getMaxNumberOfLabel_() {
     const /** number */ minLabelSpacing =
-        2 * this.fontHeight_ + LineChart.MIN_LABEL_VERTICAL_SPACING;
+        2 * this.fontHeight_ + MIN_LABEL_VERTICAL_SPACING;
     let /** number */ maxLabelNum =
         1 + Math.floor(this.height_ / minLabelSpacing);
     if (maxLabelNum < 2) {
       maxLabelNum = 2;
-    } else if (maxLabelNum > LineChart.MAX_VERTICAL_LABEL_NUM) {
-      maxLabelNum = LineChart.MAX_VERTICAL_LABEL_NUM;
+    } else if (maxLabelNum > MAX_VERTICAL_LABEL_NUM) {
+      maxLabelNum = MAX_VERTICAL_LABEL_NUM;
     }
 
     return maxLabelNum;
@@ -269,12 +274,4 @@ LineChart.UnitLabel = class {
   getRealValueWithCurrentUnit_(value) {
     return value * Math.pow(this.unitBase_, this.currentUnitIdx_);
   }
-};
-
-/**
- * Export the function getSuitableUnit.
- * @const
- */
-LineChart.getSuitableUnit = LineChart.UnitLabel.getSuitableUnit;
-
-})();
+}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,15 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "services/device/hid/hid_report_type.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 typedef uint64_t HidPlatformDeviceId;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 typedef std::wstring HidPlatformDeviceId;
 #else
 typedef std::string HidPlatformDeviceId;
@@ -52,14 +54,15 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
                 mojom::HidBusType bus_type,
                 base::span<const uint8_t> report_descriptor,
                 std::string device_node = "");
-  HidDeviceInfo(PlatformDeviceIdMap platform_device_id_map,
+  HidDeviceInfo(HidPlatformDeviceId platform_device_id,
                 const std::string& physical_device_id,
+                const std::string& interface_id,
                 uint16_t vendor_id,
                 uint16_t product_id,
                 const std::string& product_name,
                 const std::string& serial_number,
                 mojom::HidBusType bus_type,
-                std::vector<mojom::HidCollectionInfoPtr> collections,
+                mojom::HidCollectionInfoPtr collection,
                 size_t max_input_report_size,
                 size_t max_output_report_size,
                 size_t max_feature_report_size);
@@ -72,6 +75,9 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
   const std::string& device_guid() const { return device_->guid; }
   const PlatformDeviceIdMap& platform_device_id_map() const {
     return platform_device_id_map_;
+  }
+  const absl::optional<std::string>& interface_id() const {
+    return interface_id_;
   }
   const std::string& physical_device_id() const {
     return device_->physical_device_id;
@@ -87,13 +93,13 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
     return device_->collections;
   }
   bool has_report_id() const { return device_->has_report_id; }
-  size_t max_input_report_size() const {
+  uint64_t max_input_report_size() const {
     return device_->max_input_report_size;
   }
-  size_t max_output_report_size() const {
+  uint64_t max_output_report_size() const {
     return device_->max_output_report_size;
   }
-  size_t max_feature_report_size() const {
+  uint64_t max_feature_report_size() const {
     return device_->max_feature_report_size;
   }
 
@@ -103,6 +109,17 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
   }
   const std::string& device_node() const { return device_->device_node; }
 
+  // Merge the device information in |device_info| into this object.
+  // |device_info| must be part of the same HID interface.
+  void AppendDeviceInfo(scoped_refptr<HidDeviceInfo> device_info);
+
+  // Returns the collection in `device_` containing a report with ID `report_id`
+  // and type `report_type`, or nullptr if no collection contains a matching
+  // report.
+  const mojom::HidCollectionInfo* FindCollectionWithReport(
+      uint8_t report_id,
+      HidReportType report_type);
+
  protected:
   virtual ~HidDeviceInfo();
 
@@ -110,6 +127,14 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
   friend class base::RefCountedThreadSafe<HidDeviceInfo>;
 
   PlatformDeviceIdMap platform_device_id_map_;
+
+  // On platforms where the system enumerates top-level HID collections as
+  // separate logical devices, |interface_id_| is an identifier for the HID
+  // interface and is used to associate HidDeviceInfo objects generated from
+  // the same HID interface. May be absl::nullopt if the system does not split
+  // top-level collections during enumeration.
+  absl::optional<std::string> interface_id_;
+
   mojom::HidDeviceInfoPtr device_;
 };
 

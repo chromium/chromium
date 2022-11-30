@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,8 +37,6 @@ group("media") {
 group("libcast_media") {
   if (is_android) {
     deps = [ "//chromecast/media/cma/backend/android:cast_media_android" ]
-  } else if (is_fuchsia) {
-    deps = [ "//chromecast/media/cma/backend/fuchsia:media_backend" ]
   } else if (cast_static_media_lib_target != "") {
     deps = [ "$cast_static_media_lib_target" ]
   } else if (is_cast_desktop_build) {
@@ -81,7 +79,10 @@ test("cast_media_unittests") {
     "//chromecast/base",
     "//chromecast/base/metrics:test_support",
     "//chromecast/common/mojom",
+    "//chromecast/external_mojo/external_service_support:external_service",
+    "//chromecast/external_mojo/external_service_support:test_support",
     "//chromecast/media/api:test_support",
+    "//chromecast/media/audio:test_support",
     "//chromecast/media/audio:unittests",
     "//chromecast/media/audio/capture_service:unittests",
     "//chromecast/media/base:monotonic_clock",
@@ -99,6 +100,13 @@ test("cast_media_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (use_unix_sockets) {
+    deps += [
+      "//chromecast/media/audio/audio_output_service:unittests",
+      "//chromecast/media/audio/net:audio_socket_service_unittests",
+    ]
+  }
 
   if (is_android) {
     deps += [

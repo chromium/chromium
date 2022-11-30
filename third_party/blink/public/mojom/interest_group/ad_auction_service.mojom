@@ -1,0 +1,135 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/parakeet/ad_request.mojom";
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+struct Replacement {
+  string match;
+  string replacement;
+};
+
+// Used to provide a way of aborting a call to AdAuctionService.RunAdAuction
+interface AbortableAdAuction {
+  // Aborts the auction for which the receiver for this pipe was passed to
+  // RunAdAuction(), unless the auction has already finished (with at most
+  // reporting pending).  Either way, the normal callback for RunAdAuction()
+  // will be invoked.
+  Abort();
+};
+
+// Per-frame API to initiate on-device ad auction and add interest groups.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+interface AdAuctionService {
+  // Triggers a request to an enabled PARAKEET service. This request will
+  // provide any joined interestgroups combined with the provided
+  // AdRequestConfig. If a successful request is made the set of returned
+  // ads will be stored and the unique guid to access these ads will be
+  // returned. If no PARAKEET service is available or no ads are returned
+  // null will be returned.
+  CreateAdRequest(AdRequestConfig config) => (string? ads_guid);
+
+  // Triggers the ad finalization process for the supplied |ads_guid| set of
+  // ads. This may involve running seller/buyer specific worklets in a
+  // sandboxed Javascript process. The result of this process is an URL for
+  // the winning ad that can be loaded in a frame by the caller. If no ad
+  // wins, null is returned. This may be called multiple times for a given
+  // |ads_guid| to satisfy multiple placements on a given page without
+  // re-requesting a new set of ads.
+  FinalizeAd(string ads_guid, AuctionAdConfig config)
+     => (url.mojom.Url? ad_display_url);
+
+  // Triggers the ad auction to run in a sandboxed JavaScript process. The
+  // auction scripts run in this process come from the `bidding_logic_url`'s of
+  // the interest groups owned by `interest_group_buyers` and the auction
+  // config `decision_logic_url`. The result of the auction is a URL for the
+  // winning ad creative, which the publisher page loads into a page or iframe
+  // in the owner's domain. If no ad wins the auction, null is returned.
+  // `manually_aborted` is set to true only if the auction was manually
+  // cancelled successfully via a call to `abort_receiver->Abort()`.
+  RunAdAuction(AuctionAdConfig config,
+               pending_receiver<AbortableAdAuction>? abort_receiver)
+      => (bool manually_aborted, url.mojom.Url? ad_display_url);
+
+  // Requests that the browser process create or overwrite persisted interest
+  // group keyed by `group.owner` and `group.name` with information from
+  // `group`. This method may only be invoked from frames with an HTTPS origin.
+  //
+  // The browser verifies that the frame's origin has permission to join the
+  // owner origin's interest groups, performing a CORS-enabled .well-known fetch
+  // if necessary, and invokes the callback on complete.
+  //
+  // `failed_well_known_check` is true if the join failed due to the
+  //  .well-known fetch failing. If it failed for other reasons, such as
+  //  per-site settings blocking joining the IG, it should still be the result
+  //  of the .well-known fetch, to avoid leaking per-site configuration to
+  //  the renderer.
+  //
+  // Neither the result nor the timing may leak anything about what interest
+  // groups the user belongs to, including whether the user was already a
+  // member of the specified interest group.
+  JoinInterestGroup(InterestGroup group) => (bool failed_well_known_check);
+
+  // Deletes the interest group stored in the browser as indicated by the
+  // (`origin`, `name`) tuple. This method may only be invoked from frames with
+  // an HTTPS origin. `origin` must use HTTPS. Invokes callback on completion.
+  //
+  // The browser verifies that the frame's origin has permission to leave the
+  // owner origin's interest groups, performing a CORS-enabled .well-known fetch
+  // if necessary, and invokes the callback on complete.
+  //
+  // `failed_well_known_check` is true if the join failed due to the
+  //  .well-known fetch failing. If it failed for other reasons, such as
+  //  per-site settings blocking joining the IG, it should still be the result
+  //  of the .well-known fetch, to avoid leaking per-site configuration to
+  //  the renderer.
+  //
+  // Neither the result nor the timing may leak anything about what interest
+  // groups the user belongs to, including whether the user was previously a
+  // member of the specified interest group.
+  LeaveInterestGroup(url.mojom.Origin owner, string name)
+      => (bool failed_well_known_check);
+
+  // Deletes the interest group stored in the browser that created the ad in
+  // in the current document. It is an error to call this function outside of a
+  // document whose fenced frame root's src attribute was the result of a
+  // FLEDGE auction.
+  LeaveInterestGroupForDocument();
+
+  // Requests the browser update stored interest groups owned by the current
+  // frame's origin *only* (interest groups not owned by the frame origin aren't
+  // modified) using the last `update_url` registered for each owned interest
+  // group. JSON is downloaded from each interest group's URL, parsed safely
+  // using //services/data_decoder/public/cpp/data_decoder.h, and the interest
+  // group store is updated. Unlike the JoinInterestGroup() operation, this
+  // operation doesn't clear fields that weren't present in the server JSON
+  // response. The JSON `name`, `owner`, `userBiddingSignals` and other unknown
+  // fields will be ignored.
+  UpdateAdInterestGroups();
+
+  // Gets the true URL from a URN returned from RunAdAuction. This function
+  // will be removed once all FLEDGE auctions switch to using fenced frames.
+  // The uuid_url should have the format format
+  // "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122.
+  // TODO(crbug.com/1253118): Remove this function when we remove support for
+  // showing FLEDGE ads in iframes.
+  DeprecatedGetURLFromURN(url.mojom.Url uuid_url) => (url.mojom.Url? decoded_url);
+
+  // Modifies the true URL from a URN returned from RunAdAuction by replacing
+  // substrings specified as pairs the replacements list. The true URLs for any
+  // component ads associated with this URN will also have substrings
+  // substituted. This function will be removed once all FLEDGE auctions switch
+  // to using fenced frames. `uuid_url` should have the format format
+  // "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122. The
+  // replacement strings must start and end with either "${" and "}" or "%%"
+  // and "%%".
+  // TODO(crbug.com/1253118): Remove this function when we remove support for
+  // showing FLEDGE ads in iframes.
+  DeprecatedReplaceInURN(url.mojom.Url uuid_url,
+                         array<Replacement> replacements) => ();
+};

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_CERT_DO_NOTHING_CT_VERIFIER_H_
 #define NET_CERT_DO_NOTHING_CT_VERIFIER_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cert/ct_verifier.h"
 
@@ -48,6 +47,10 @@ namespace net {
 class NET_EXPORT DoNothingCTVerifier : public CTVerifier {
  public:
   DoNothingCTVerifier();
+
+  DoNothingCTVerifier(const DoNothingCTVerifier&) = delete;
+  DoNothingCTVerifier& operator=(const DoNothingCTVerifier&) = delete;
+
   ~DoNothingCTVerifier() override;
 
   void Verify(base::StringPiece hostname,
@@ -56,9 +59,6 @@ class NET_EXPORT DoNothingCTVerifier : public CTVerifier {
               base::StringPiece sct_list_from_tls_extension,
               SignedCertificateTimestampAndStatusList* output_scts,
               const NetLogWithSource& net_log) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DoNothingCTVerifier);
 };
 
 }  // namespace net

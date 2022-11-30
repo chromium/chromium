@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/declarative_net_request/extension_url_pattern_index_matcher.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -40,16 +42,20 @@ class RulesetMatcher {
   RulesetMatcher(std::string ruleset_data,
                  RulesetID id,
                  const ExtensionId& extension_id);
+
+  RulesetMatcher(const RulesetMatcher&) = delete;
+  RulesetMatcher& operator=(const RulesetMatcher&) = delete;
+
   ~RulesetMatcher();
 
-  base::Optional<RequestAction> GetBeforeRequestAction(
+  absl::optional<RequestAction> GetBeforeRequestAction(
       const RequestParams& params) const;
 
   // Returns a list of actions corresponding to all matched
   // modifyHeaders rules with priority greater than |min_priority| if specified.
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
-      base::Optional<uint64_t> min_priority) const;
+      absl::optional<uint64_t> min_priority) const;
 
   bool IsExtraHeadersMatcher() const;
   size_t GetRulesCount() const;
@@ -66,13 +72,13 @@ class RulesetMatcher {
 
   // Returns the tracked highest priority matching allowsAllRequests action, if
   // any, for |host|.
-  base::Optional<RequestAction> GetAllowlistedFrameActionForTesting(
+  absl::optional<RequestAction> GetAllowlistedFrameActionForTesting(
       content::RenderFrameHost* host) const;
 
  private:
   const std::string ruleset_data_;
 
-  const flat::ExtensionIndexedRuleset* const root_;
+  const raw_ptr<const flat::ExtensionIndexedRuleset> root_;
 
   const RulesetID id_;
 
@@ -82,8 +88,6 @@ class RulesetMatcher {
 
   // Underlying matcher for regex rules.
   RegexRulesMatcher regex_matcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetMatcher);
 };
 
 }  // namespace declarative_net_request

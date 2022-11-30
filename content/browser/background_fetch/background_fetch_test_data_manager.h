@@ -1,16 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_TEST_DATA_MANAGER_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_TEST_DATA_MANAGER_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
-#include "url/origin.h"
 
 namespace storage {
 class MockQuotaManager;
@@ -22,7 +21,7 @@ class BrowserContext;
 class CacheStorageManager;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextWrapper;
-class StoragePartition;
+class StoragePartitionImpl;
 
 // Arbitrary quota that is large enough for test purposes.
 constexpr uint64_t kBackgroundFetchMaxQuotaBytes = 424242u;
@@ -34,22 +33,25 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
  public:
   BackgroundFetchTestDataManager(
       BrowserContext* browser_context,
-      StoragePartition* storage_partition,
+      base::WeakPtr<StoragePartitionImpl> storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  BackgroundFetchTestDataManager(const BackgroundFetchTestDataManager&) =
+      delete;
+  BackgroundFetchTestDataManager& operator=(
+      const BackgroundFetchTestDataManager&) = delete;
 
   ~BackgroundFetchTestDataManager() override;
 
-  void InitializeOnCoreThread() override;
+  void Initialize() override;
 
  private:
   friend class BackgroundFetchDataManagerTest;
 
   scoped_refptr<storage::MockQuotaManager> mock_quota_manager_;
-  BrowserContext* browser_context_;
-  StoragePartition* storage_partition_;
+  raw_ptr<BrowserContext> browser_context_;
+  base::WeakPtr<StoragePartition> storage_partition_;
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchTestDataManager);
 };
 
 }  // namespace content

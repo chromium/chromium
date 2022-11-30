@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -39,6 +39,11 @@ class InkDropImplTestApi
     explicit AccessFactoryOnExitHighlightState(
         InkDropImpl::HighlightStateFactory* state_factory);
 
+    AccessFactoryOnExitHighlightState(
+        const AccessFactoryOnExitHighlightState&) = delete;
+    AccessFactoryOnExitHighlightState& operator=(
+        const AccessFactoryOnExitHighlightState&) = delete;
+
     // HighlightState:
     void Exit() override;
     void ShowOnHoverChanged() override;
@@ -48,9 +53,6 @@ class InkDropImplTestApi
     void AnimationStarted(InkDropState ink_drop_state) override;
     void AnimationEnded(InkDropState ink_drop_state,
                         InkDropAnimationEndedReason reason) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(AccessFactoryOnExitHighlightState);
   };
 
   // Highlight state that attempts to set a new highlight state during Exit().
@@ -62,6 +64,10 @@ class InkDropImplTestApi
     explicit SetStateOnExitHighlightState(
         InkDropImpl::HighlightStateFactory* state_factory);
 
+    SetStateOnExitHighlightState(const SetStateOnExitHighlightState&) = delete;
+    SetStateOnExitHighlightState& operator=(
+        const SetStateOnExitHighlightState&) = delete;
+
     // HighlightState:
     void Exit() override;
     void ShowOnHoverChanged() override;
@@ -71,12 +77,13 @@ class InkDropImplTestApi
     void AnimationStarted(InkDropState ink_drop_state) override;
     void AnimationEnded(InkDropState ink_drop_state,
                         InkDropAnimationEndedReason reason) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SetStateOnExitHighlightState);
   };
 
   explicit InkDropImplTestApi(InkDropImpl* ink_drop);
+
+  InkDropImplTestApi(const InkDropImplTestApi&) = delete;
+  InkDropImplTestApi& operator=(const InkDropImplTestApi&) = delete;
+
   ~InkDropImplTestApi() override;
 
   // Ensures that |ink_drop_|->ShouldHighlight() returns the same value as
@@ -85,7 +92,7 @@ class InkDropImplTestApi
 
   // Wrappers to InkDropImpl internals:
   InkDropImpl::HighlightStateFactory* state_factory() {
-    return ink_drop_->highlight_state_factory_.get();
+    return &ink_drop_->highlight_state_factory_;
   }
 
   void SetHighlightState(
@@ -103,9 +110,7 @@ class InkDropImplTestApi
 
  private:
   // The InkDrop to provide internal access to.
-  InkDropImpl* ink_drop_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropImplTestApi);
+  raw_ptr<InkDropImpl> ink_drop_;
 };
 
 }  // namespace test

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,8 @@
 namespace extensions {
 
 IdentifiabilityMetricsTestHelper::IdentifiabilityMetricsTestHelper() {
-  privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+  privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling));
 }
 
 IdentifiabilityMetricsTestHelper::~IdentifiabilityMetricsTestHelper() = default;
@@ -43,6 +44,26 @@ IdentifiabilityMetricsTestHelper::NavigateToBlankAndWaitForMetrics(
   // dependent on periodic flush heuristics.
   content::NavigateToURLBlockUntilNavigationsComplete(contents,
                                                       GURL("about:blank"), 1);
+
+  // Also force a browser-side flush.
+  blink::IdentifiabilitySampleCollector::Get()->Flush(ukm::UkmRecorder::Get());
+
+  run_loop->Run();
+  return ukm_recorder_->GetMergedEntriesByName(
+      ukm::builders::Identifiability::kEntryName);
+}
+
+std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr>
+IdentifiabilityMetricsTestHelper::NavigateToBlankAndWaitForMetrics(
+    content::RenderFrameHost* render_frame_host,
+    base::RunLoop* run_loop) {
+  DCHECK(ukm_recorder_) << "IdentifiabilityMetricsTestHelper::"
+                           "SetUpOnMainThread hasn't been called";
+
+  // Need to navigate away to force a metrics flush; otherwise it would be
+  // dependent on periodic flush heuristics.
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(render_frame_host,
+                                                 GURL("about:blank")));
 
   // Also force a browser-side flush.
   blink::IdentifiabilitySampleCollector::Get()->Flush(ukm::UkmRecorder::Get());

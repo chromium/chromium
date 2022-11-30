@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -30,11 +31,6 @@ std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
       widget, delegate->TransferOwnershipOfContentsView());
 }
 
-std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
-    Widget* widget) {
-  return nullptr;
-}
-
 std::unique_ptr<View> CreateDefaultOverlayView() {
   return nullptr;
 }
@@ -48,16 +44,18 @@ WidgetDelegate::Params::Params() = default;
 WidgetDelegate::Params::~Params() = default;
 
 WidgetDelegate::WidgetDelegate()
-    : widget_initializing_callbacks_(std::make_unique<ClosureVector>()),
-      widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
+    : widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
       client_view_factory_(
           base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
-      non_client_frame_view_factory_(
-          base::BindRepeating(&CreateDefaultNonClientFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 
 WidgetDelegate::~WidgetDelegate() {
   CHECK(can_delete_this_) << "A WidgetDelegate must outlive its Widget";
+  if (!contents_view_taken_ && default_contents_view_ &&
+      !default_contents_view_->parent()) {
+    delete default_contents_view_;
+    default_contents_view_ = nullptr;
+  }
   if (destructor_ran_) {
     DCHECK(!*destructor_ran_);
     *destructor_ran_ = true;
@@ -143,17 +141,17 @@ bool WidgetDelegate::ShouldShowCloseButton() const {
   return params_.show_close_button;
 }
 
-gfx::ImageSkia WidgetDelegate::GetWindowAppIcon() {
+ui::ImageModel WidgetDelegate::GetWindowAppIcon() {
   // Prefer app icon if available.
   if (!params_.app_icon.isNull())
-    return params_.app_icon;
+    return ui::ImageModel::FromImageSkia(params_.app_icon);
   // Fall back to the window icon.
   return GetWindowIcon();
 }
 
 // Returns the icon to be displayed in the window.
-gfx::ImageSkia WidgetDelegate::GetWindowIcon() {
-  return params_.icon;
+ui::ImageModel WidgetDelegate::GetWindowIcon() {
+  return ui::ImageModel::FromImageSkia(params_.icon);
 }
 
 bool WidgetDelegate::ShouldShowWindowIcon() const {
@@ -177,6 +175,10 @@ void WidgetDelegate::SaveWindowPlacement(const gfx::Rect& bounds,
   }
 }
 
+bool WidgetDelegate::ShouldSaveWindowPlacement() const {
+  return !GetWindowName().empty();
+}
+
 bool WidgetDelegate::GetSavedWindowPlacement(
     const Widget* widget,
     gfx::Rect* bounds,
@@ -194,10 +196,6 @@ bool WidgetDelegate::GetSavedWindowPlacement(
 
 void WidgetDelegate::WidgetInitializing(Widget* widget) {
   widget_ = widget;
-  for (auto&& callback : *widget_initializing_callbacks_)
-    std::move(callback).Run();
-  widget_initializing_callbacks_.reset();
-  OnWidgetInitializing();
 }
 
 void WidgetDelegate::WidgetInitialized() {
@@ -279,8 +277,7 @@ ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
 
 std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
     Widget* widget) {
-  DCHECK(non_client_frame_view_factory_);
-  return non_client_frame_view_factory_.Run(widget);
+  return nullptr;
 }
 
 View* WidgetDelegate::CreateOverlayView() {
@@ -401,12 +398,6 @@ void WidgetDelegate::SetHasWindowSizeControls(bool has_controls) {
   SetCanResize(has_controls);
 }
 
-void WidgetDelegate::RegisterWidgetInitializingCallback(
-    base::OnceClosure callback) {
-  DCHECK(widget_initializing_callbacks_);
-  widget_initializing_callbacks_->emplace_back(std::move(callback));
-}
-
 void WidgetDelegate::RegisterWidgetInitializedCallback(
     base::OnceClosure callback) {
   DCHECK(widget_initialized_callbacks_);
@@ -432,24 +423,16 @@ void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
   client_view_factory_ = std::move(factory);
 }
 
-void WidgetDelegate::SetNonClientFrameViewFactory(
-    NonClientFrameViewFactory factory) {
-  DCHECK(!GetWidget());
-  non_client_frame_view_factory_ = std::move(factory);
-}
-
 void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {
   DCHECK(!GetWidget());
   overlay_view_factory_ = std::move(factory);
 }
 
-void WidgetDelegate::SetContentsViewImpl(View* contents) {
-  // Note: DCHECKing the ownership of contents is done in the public setters,
-  // which are inlined in the header.
+void WidgetDelegate::SetContentsViewImpl(std::unique_ptr<View> contents) {
+  DCHECK(!contents->owned_by_client());
   DCHECK(!unowned_contents_view_);
-  if (!contents->owned_by_client())
-    owned_contents_view_ = base::WrapUnique(contents);
-  unowned_contents_view_ = contents;
+  owned_contents_view_ = std::move(contents);
+  unowned_contents_view_ = owned_contents_view_.get();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -457,7 +440,6 @@ void WidgetDelegate::SetContentsViewImpl(View* contents) {
 
 WidgetDelegateView::WidgetDelegateView() {
   // A WidgetDelegate should be deleted on DeleteDelegate.
-  set_owned_by_client();
   SetOwnedByWidget(true);
 }
 

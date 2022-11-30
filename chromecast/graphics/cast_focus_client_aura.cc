@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 
-#define LOG_WINDOW_INFO(top_level, window)                              \
-  "top-level: " << (top_level)->id() << ": '" << (top_level)->GetName() \
-                << "', window: " << (window)->id() << ": '"             \
+#define LOG_WINDOW_INFO(top_level, window)                                 \
+  "top-level: " << (top_level)->GetId() << ": '" << (top_level)->GetName() \
+                << "', window: " << (window)->GetId() << ": '"             \
                 << (window)->GetName() << "'"
 
 namespace chromecast {
@@ -59,8 +60,7 @@ void CastFocusClientAura::OnWindowDestroying(aura::Window* window) {
   DCHECK(top_level);
   DLOG(INFO) << "Removing window, " << LOG_WINDOW_INFO(top_level, window);
 
-  auto iter =
-      std::find(focusable_windows_.begin(), focusable_windows_.end(), window);
+  auto iter = base::ranges::find(focusable_windows_, window);
   if (iter != focusable_windows_.end()) {
     focusable_windows_.erase(iter);
     window->RemoveObserver(this);
@@ -200,7 +200,7 @@ aura::Window* CastFocusClientAura::GetWindowToFocus() {
     // Compare z-order of top-level windows using the window IDs.
     aura::Window* top_level = GetZOrderWindow(window);
     DCHECK(top_level);
-    if (!next || top_level->id() >= next_top_level->id()) {
+    if (!next || top_level->GetId() >= next_top_level->GetId()) {
       next = window;
       next_top_level = top_level;
     }

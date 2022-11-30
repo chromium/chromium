@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
@@ -25,10 +25,12 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
@@ -52,10 +54,14 @@ class CONTENT_EXPORT WebContentsViewAura
       public aura::client::DragDropDelegate {
  public:
   WebContentsViewAura(WebContentsImpl* web_contents,
-                      WebContentsViewDelegate* delegate);
+                      std::unique_ptr<WebContentsViewDelegate> delegate);
+  ~WebContentsViewAura() override;
+
+  WebContentsViewAura(const WebContentsViewAura&) = delete;
+  WebContentsViewAura& operator=(const WebContentsViewAura&) = delete;
 
   // Allow the WebContentsViewDelegate to be set explicitly.
-  void SetDelegateForTesting(WebContentsViewDelegate* delegate);
+  void SetDelegateForTesting(std::unique_ptr<WebContentsViewDelegate> delegate);
 
   // Set a flag to pass nullptr as the parent_view argument to
   // RenderWidgetHostViewAura::InitAsChild().
@@ -71,24 +77,38 @@ class CONTENT_EXPORT WebContentsViewAura
       RenderWidgetHostViewCreateFunction create_render_widget_host_view);
 
  private:
+  // Just the metadata from DropTargetEvent that's safe and cheap to copy to
+  // help locate drop events in the callback.
+  struct DropMetadata {
+    explicit DropMetadata(const ui::DropTargetEvent& event);
+
+    // Location local to WebContentsViewAura.
+    gfx::PointF localized_location;
+    // The supported DnD operation of the source. A bitmask of
+    // ui::mojom::DragOperations.
+    int source_operations;
+    // Flags from ui::Event. Usually represents modifier keys used at drop time.
+    int flags;
+  };
+
   // A structure used to keep drop context for asynchronously finishing a
   // drop operation.  This is required because some drop event data gets
   // cleared out once PerformDropCallback() returns.
   struct CONTENT_EXPORT OnPerformDropContext {
     OnPerformDropContext(RenderWidgetHostImpl* target_rwh,
-                         const ui::DropTargetEvent& event,
+                         DropMetadata drop_metadata,
                          std::unique_ptr<ui::OSExchangeData> data,
                          base::ScopedClosureRunner end_drag_runner,
-                         base::Optional<gfx::PointF> transformed_pt,
+                         absl::optional<gfx::PointF> transformed_pt,
                          gfx::PointF screen_pt);
     OnPerformDropContext(OnPerformDropContext&& other);
     ~OnPerformDropContext();
 
     base::WeakPtr<RenderWidgetHostImpl> target_rwh;
-    ui::DropTargetEvent event;
+    DropMetadata drop_metadata;
     std::unique_ptr<ui::OSExchangeData> data;
     base::ScopedClosureRunner end_drag_runner;
-    base::Optional<gfx::PointF> transformed_pt;
+    absl::optional<gfx::PointF> transformed_pt;
     gfx::PointF screen_pt;
   };
 
@@ -97,18 +117,34 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropFiles);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            DragDropFilesOriginateFromRenderer);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropImageFromRenderer);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropVirtualFiles);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            DragDropVirtualFilesOriginateFromRenderer);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropUrlData);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropOnOopif);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, Drop_DeepScanOK);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, Drop_DeepScanBad);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Cancelled);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      RejectDragFromPrivilegedWebContentsToNonPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      AcceptDragFromPrivilegedWebContentsToPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      RejectDragFromNonPrivilegedWebContentsToPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           StartDragFromPrivilegedWebContents);
 
   class WindowObserver;
 
-  ~WebContentsViewAura() override;
+  // Utility to fill a DropData object from ui::OSExchangeData.
+  void PrepareDropData(DropData* drop_data,
+                       const ui::OSExchangeData& data) const;
 
   void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
                ui::mojom::DragOperation op);
@@ -157,14 +193,17 @@ class CONTENT_EXPORT WebContentsViewAura
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
+  void OnCapturerCountChanged() override;
+  void FullscreenStateChanged(bool is_fullscreen) override;
 
   // Overridden from RenderViewHostDelegateView:
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
+  void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
   void StartDragging(const DropData& drop_data,
                      blink::DragOperationsMask operations,
                      const gfx::ImageSkia& image,
-                     const gfx::Vector2d& image_offset,
+                     const gfx::Vector2d& cursor_offset,
+                     const gfx::Rect& drag_obj_rect,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
   void UpdateDragCursor(ui::mojom::DragOperation operation) override;
@@ -219,29 +258,31 @@ class CONTENT_EXPORT WebContentsViewAura
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) override;
-  void DragEnteredCallback(ui::DropTargetEvent event,
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
+
+  void DragEnteredCallback(DropMetadata flags,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
   void DragUpdatedCallback(ui::DropTargetEvent event,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
-  void PerformDropCallback(ui::DropTargetEvent event,
+                           absl::optional<gfx::PointF> transformed_pt);
+  void PerformDropCallback(DropMetadata drop_metadata,
                            std::unique_ptr<ui::OSExchangeData> data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
 
   // Completes a drag exit operation by communicating with the renderer process.
   void CompleteDragExit();
 
   // Called from PerformDropCallback() to finish processing the drop.
-  void FinishOnPerformDropCallback(
-      OnPerformDropContext context,
-      WebContentsViewDelegate::DropCompletionResult result);
+  // The override with `drop_data` updates `current_drop_data_` before
+  // completing the drop.
+  void FinishOnPerformDrop(OnPerformDropContext context);
+  void FinishOnPerformDropCallback(OnPerformDropContext context,
+                                   absl::optional<DropData> drop_data);
 
   // Completes a drop operation by communicating the drop data to the renderer
   // process.
@@ -250,6 +291,13 @@ class CONTENT_EXPORT WebContentsViewAura
                     const gfx::PointF& client_pt,
                     const gfx::PointF& screen_pt,
                     int key_modifiers);
+
+  // Performs drop if it's run. Otherwise, it exits the drag. Returned by
+  // GetDropCallback.
+  void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
+                             DropMetadata drop_metadata,
+                             std::unique_ptr<ui::OSExchangeData> data,
+                             ui::mojom::DragOperation& output_drag_op);
 
   // For unit testing, registers a callback for when a drop operation
   // completes.
@@ -266,7 +314,7 @@ class CONTENT_EXPORT WebContentsViewAura
     drag_dest_delegate_ = delegate;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Callback for asynchronous retrieval of virtual files.
   void OnGotVirtualFilesAsTempFiles(
       const std::vector<std::pair</*temp path*/ base::FilePath,
@@ -290,7 +338,7 @@ class CONTENT_EXPORT WebContentsViewAura
   std::unique_ptr<WindowObserver> window_observer_;
 
   // The WebContentsImpl whose contents we display.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
@@ -298,7 +346,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   std::unique_ptr<DropData> current_drop_data_;
 
-  WebDragDestDelegate* drag_dest_delegate_;
+  raw_ptr<WebDragDestDelegate> drag_dest_delegate_;
 
   // We keep track of the RenderWidgetHost we're dragging over. If it changes
   // during a drag, we need to re-send the DragEnter message.
@@ -320,8 +368,22 @@ class CONTENT_EXPORT WebContentsViewAura
   // the RenderViewHost may not be in the same process as the RenderProcessHost,
   // since the view corresponds to the page, while the process is specific to
   // the frame from which the drag started.
-  int drag_start_process_id_;
-  GlobalRoutingID drag_start_view_id_;
+  // We also track whether a dragged image is accessible from its frame, so we
+  // can disallow tainted-cross-origin same-page drag-drop.
+  struct DragStart {
+    DragStart(SiteInstanceGroupId site_instance_group_id,
+              GlobalRoutingID view_id,
+              bool image_accessible_from_frame)
+        : site_instance_group_id(site_instance_group_id),
+          view_id(view_id),
+          image_accessible_from_frame(image_accessible_from_frame) {}
+    ~DragStart() = default;
+
+    SiteInstanceGroupId site_instance_group_id;
+    GlobalRoutingID view_id;
+    bool image_accessible_from_frame;
+  };
+  absl::optional<DragStart> drag_start_;
 
   // Responsible for handling gesture-nav and pull-to-refresh UI.
   std::unique_ptr<GestureNavSimple> gesture_nav_simple_;
@@ -333,9 +395,10 @@ class CONTENT_EXPORT WebContentsViewAura
 
   bool init_rwhv_with_null_parent_for_testing_;
 
-  base::WeakPtrFactory<WebContentsViewAura> weak_ptr_factory_{this};
+  // Non-null when the WebContents is being captured for video.
+  std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> video_capture_lock_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewAura);
+  base::WeakPtrFactory<WebContentsViewAura> weak_ptr_factory_{this};
 };
 
 }  // namespace content

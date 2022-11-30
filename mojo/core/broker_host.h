@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
@@ -32,10 +31,13 @@ class BrokerHost : public Channel::Delegate,
              ConnectionParams connection_params,
              const ProcessErrorCallback& process_error_callback);
 
+  BrokerHost(const BrokerHost&) = delete;
+  BrokerHost& operator=(const BrokerHost&) = delete;
+
   // Send |handle| to the client, to be used to establish a NodeChannel to us.
   bool SendChannel(PlatformHandle handle);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sends a named channel to the client. Like above, but for named pipes.
   void SendNamedChannel(base::WStringPiece pipe_name);
 #endif
@@ -58,13 +60,11 @@ class BrokerHost : public Channel::Delegate,
 
   const ProcessErrorCallback process_error_callback_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::Process client_process_;
 #endif
 
   scoped_refptr<Channel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerHost);
 };
 
 }  // namespace core

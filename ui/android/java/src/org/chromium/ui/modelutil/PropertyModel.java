@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.ObjectsCompat;
 
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -273,9 +273,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         mData = startingValues;
     }
 
-    @RemovableInRelease
     private void validateKey(PropertyKey key) {
-        if (!mData.containsKey(key)) {
+        if (BuildConfig.ENABLE_ASSERTS && !mData.containsKey(key)) {
             throw new IllegalArgumentException(
                     "Invalid key passed in: " + key + ". Current data is: " + mData.toString());
         }
@@ -465,9 +464,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
             mData = values;
         }
 
-        @RemovableInRelease
         private void validateKey(PropertyKey key) {
-            if (!mData.containsKey(key)) {
+            if (BuildConfig.ENABLE_ASSERTS && !mData.containsKey(key)) {
                 throw new IllegalArgumentException("Invalid key passed in: " + key);
             }
         }

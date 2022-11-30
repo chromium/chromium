@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,8 +70,8 @@ void PushProvider::Subscribe(
   GetPushMessagingRemote()->Subscribe(
       GetSupplementable()->RegistrationId(), std::move(content_options_ptr),
       user_gesture,
-      WTF::Bind(&PushProvider::DidSubscribe, WrapPersistent(this),
-                std::move(callbacks)));
+      WTF::BindOnce(&PushProvider::DidSubscribe, WrapPersistent(this),
+                    std::move(callbacks)));
 }
 
 void PushProvider::DidSubscribe(
@@ -102,8 +102,8 @@ void PushProvider::Unsubscribe(
 
   GetPushMessagingRemote()->Unsubscribe(
       GetSupplementable()->RegistrationId(),
-      WTF::Bind(&PushProvider::DidUnsubscribe, WrapPersistent(this),
-                std::move(callbacks)));
+      WTF::BindOnce(&PushProvider::DidUnsubscribe, WrapPersistent(this),
+                    std::move(callbacks)));
 }
 
 void PushProvider::DidUnsubscribe(
@@ -127,8 +127,8 @@ void PushProvider::GetSubscription(
 
   GetPushMessagingRemote()->GetSubscription(
       GetSupplementable()->RegistrationId(),
-      WTF::Bind(&PushProvider::DidGetSubscription, WrapPersistent(this),
-                std::move(callbacks)));
+      WTF::BindOnce(&PushProvider::DidGetSubscription, WrapPersistent(this),
+                    std::move(callbacks)));
 }
 
 void PushProvider::Trace(Visitor* visitor) const {

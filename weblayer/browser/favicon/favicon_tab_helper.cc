@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,8 @@ FaviconTabHelper::RegisterFaviconFetcherDelegate(
 }
 
 FaviconTabHelper::FaviconTabHelper(content::WebContents* contents)
-    : WebContentsObserver(contents) {}
+    : content::WebContentsUserData<FaviconTabHelper>(*contents),
+      WebContentsObserver(contents) {}
 
 void FaviconTabHelper::AddDelegate(FaviconFetcherDelegate* delegate) {
   delegates_.AddObserver(delegate);
@@ -103,21 +104,16 @@ void FaviconTabHelper::OnFaviconUpdated(
     delegate.OnFaviconChanged(favicon_);
 }
 
-void FaviconTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
-      navigation_handle->IsSameDocument()) {
+void FaviconTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().IsErrorDocument() || favicon_.IsEmpty()) {
     return;
   }
-  if (favicon_.IsEmpty())
-    return;
 
   favicon_ = gfx::Image();
   for (FaviconFetcherDelegate& delegate : delegates_)
     delegate.OnFaviconChanged(favicon_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FaviconTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FaviconTabHelper);
 
 }  // namespace weblayer

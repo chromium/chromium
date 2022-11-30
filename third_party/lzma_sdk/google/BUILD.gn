@@ -1,0 +1,49 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+source_set("seven_zip_reader") {
+  assert(
+      !is_android,
+      "Android processor detection doesn't work properly. See https://crrev.com/c/3899799")
+
+  sources = [ "seven_zip_reader.cc" ]
+
+  public = [ "seven_zip_reader.h" ]
+
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/lzma_sdk",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "seven_zip_reader_unittest.cc" ]
+
+  deps = [
+    ":seven_zip_reader",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/lzma_sdk",
+  ]
+
+  data = [ "//third_party/lzma_sdk/google/test_data" ]
+}
+
+fuzzer_test("seven_zip_reader_fuzzer") {
+  sources = [ "seven_zip_reader_fuzzer.cc" ]
+  deps = [
+    ":seven_zip_reader",
+    "//base",
+    "//third_party/lzma_sdk",
+  ]
+
+  seed_corpus = "fuzzer_corpus"
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -24,6 +23,9 @@ class NaClBrokerService {
  public:
   // Returns the NaClBrokerService singleton.
   static NaClBrokerService* GetInstance();
+
+  NaClBrokerService(const NaClBrokerService&) = delete;
+  NaClBrokerService& operator=(const NaClBrokerService&) = delete;
 
   // Can be called several times, must be called before LaunchLoader.
   bool StartBroker();
@@ -64,8 +66,6 @@ class NaClBrokerService {
   int next_launch_id_ = 0;
   PendingLaunchesMap pending_launches_;
   PendingDebugExceptionHandlersMap pending_debuggers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBrokerService);
 };
 
 }  // namespace nacl

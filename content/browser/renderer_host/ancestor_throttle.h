@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/x_frame_options.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -27,6 +28,9 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
  public:
   static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
       NavigationHandle* handle);
+
+  AncestorThrottle(const AncestorThrottle&) = delete;
+  AncestorThrottle& operator=(const AncestorThrottle&) = delete;
 
   ~AncestorThrottle() override;
 
@@ -52,13 +56,13 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
   void ConsoleErrorXFrameOptions(
       network::mojom::XFrameOptionsValue disposition);
   void ConsoleErrorEmbeddingRequiresOptIn();
+  void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                           std::string message);
   CheckResult EvaluateXFrameOptions(LoggingDisposition logging);
   CheckResult EvaluateFrameAncestors(
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&
           content_security_policy);
   CheckResult EvaluateEmbeddingOptIn(LoggingDisposition logging);
-
-  DISALLOW_COPY_AND_ASSIGN(AncestorThrottle);
 };
 
 }  // namespace content

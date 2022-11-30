@@ -1,22 +1,24 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/test/test_blink_web_unit_test_support.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/null_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -42,7 +44,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
@@ -60,6 +62,9 @@ namespace {
 class DummyTaskRunner : public base::SingleThreadTaskRunner {
  public:
   DummyTaskRunner() : thread_id_(base::PlatformThread::CurrentId()) {}
+
+  DummyTaskRunner(const DummyTaskRunner&) = delete;
+  DummyTaskRunner& operator=(const DummyTaskRunner&) = delete;
 
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -83,17 +88,15 @@ class DummyTaskRunner : public base::SingleThreadTaskRunner {
   ~DummyTaskRunner() override {}
 
   base::PlatformThreadId thread_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTaskRunner);
 };
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kDefault;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kDefault;
 #endif
 #endif
 
@@ -105,13 +108,17 @@ namespace content {
 
 TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     TestBlinkWebUnitTestSupport::SchedulerType scheduler_type) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 #endif
+
+  // Test shell always exposes the GC, and some tests need to modify flags so do
+  // not freeze them on initialization.
+  std::string v8_flags("--expose-gc --no-freeze-flags-after-init");
 
   blink::Platform::InitializeBlink();
   scoped_refptr<base::SingleThreadTaskRunner> dummy_task_runner;
@@ -127,19 +134,28 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     // create their own thread bundles or message loops, and doing the same in
     // TestBlinkWebUnitTestSupport would introduce a conflict.
     dummy_task_runner = base::MakeRefCounted<base::NullTaskRunner>();
-    dummy_task_runner_handle.reset(
-        new base::ThreadTaskRunnerHandle(dummy_task_runner));
+    dummy_task_runner_handle =
+        std::make_unique<base::ThreadTaskRunnerHandle>(dummy_task_runner);
+    // Force V8 to run single threaded.
+    v8_flags += " --single-threaded";
   } else {
     DCHECK_EQ(scheduler_type, SchedulerType::kRealScheduler);
     main_thread_scheduler_ =
         blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT));
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-        "BlinkTestSupport");
+    base::test::TaskEnvironment::CreateThreadPool();
+    base::ThreadPoolInstance::Get()->StartWithDefaultParams();
   }
 
   // Initialize mojo firstly to enable Blink initialization to use it.
   InitializeMojo();
+
+  // Set V8 flags.
+  v8::V8::SetFlagsFromString(v8_flags.c_str(), v8_flags.size());
+
+  // Makes Mojo calls to the browser. This is called inside
+  // blink::Initialize so it needs to be set first.
+  blink::WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(false);
 
   mojo::BinderMap binders;
   blink::Initialize(this, &binders, main_thread_scheduler_.get());
@@ -156,10 +172,6 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
 
   // Initialize libraries for media.
   media::InitializeMediaLibrary();
-
-  // Test shell always exposes the GC.
-  std::string flags("--expose-gc");
-  v8::V8::SetFlagsFromString(flags.c_str(), flags.size());
 }
 
 TestBlinkWebUnitTestSupport::~TestBlinkWebUnitTestSupport() {
@@ -172,6 +184,14 @@ blink::WebString TestBlinkWebUnitTestSupport::UserAgent() {
   return blink::WebString::FromUTF8("test_runner/0.0.0.0");
 }
 
+blink::WebString TestBlinkWebUnitTestSupport::FullUserAgent() {
+  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
+}
+
+blink::WebString TestBlinkWebUnitTestSupport::ReducedUserAgent() {
+  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
+}
+
 blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     int resource_id) {
   // Returns placeholder strings to check if they are correctly localized.
@@ -179,19 +199,19 @@ blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     case IDS_FORM_FILE_NO_FILE_LABEL:
       return WebString::FromASCII("<<NoFileChosenLabel>>");
     case IDS_FORM_OTHER_DATE_LABEL:
-      return WebString::FromASCII("<<OtherDateLabel>>");
+      return WebString::FromASCII("<<OtherDate>>");
     case IDS_FORM_OTHER_MONTH_LABEL:
-      return WebString::FromASCII("<<OtherMonthLabel>>");
+      return WebString::FromASCII("<<OtherMonth>>");
     case IDS_FORM_OTHER_WEEK_LABEL:
-      return WebString::FromASCII("<<OtherWeekLabel>>");
+      return WebString::FromASCII("<<OtherWeek>>");
     case IDS_FORM_CALENDAR_CLEAR:
-      return WebString::FromASCII("<<CalendarClear>>");
+      return WebString::FromASCII("<<Clear>>");
     case IDS_FORM_CALENDAR_TODAY:
-      return WebString::FromASCII("<<CalendarToday>>");
+      return WebString::FromASCII("<<Today>>");
     case IDS_FORM_THIS_MONTH_LABEL:
-      return WebString::FromASCII("<<ThisMonthLabel>>");
+      return WebString::FromASCII("<<ThisMonth>>");
     case IDS_FORM_THIS_WEEK_LABEL:
-      return WebString::FromASCII("<<ThisWeekLabel>>");
+      return WebString::FromASCII("<<ThisWeek>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING:
       return WebString::FromASCII("<<ValidationValueMissing>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING_SELECT:

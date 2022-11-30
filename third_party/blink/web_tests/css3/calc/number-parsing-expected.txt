@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Ensure using calc() for CSS numbers with + on transition-timing-function does not crash or produce incorrect values."
+PASS Ensure using calc() for CSS numbers with + on -webkit-box-ordinal-group does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS number 0 on -webkit-box-ordinal-group does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with - on -webkit-column-span does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with + on -webkit-column-span does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS lengths with - on -webkit-column-width does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with + on transition-timing-function does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with / on transition-timing-function does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with + on transition-timing-function does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with + on grid-row-start does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with / on grid-row-start does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with + on font-weight does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with + on flex does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with / on saturate() does not crash or produce incorrect values.
+FAIL Ensure using calc() for CSS numbers with / on invert() resulting bigger than 1 does not crash or produce incorrect values. assert_equals: -webkit-filter: invert(calc(4 / 2)) expected "invert(calc(1))" but got "invert(1)"
+PASS Ensure using calc() for CSS numbers with / on invert() resulting smaller than 1 does not crash or produce incorrect values.
+PASS Ensure using calc() for CSS numbers with / on brightness() does not crash or produce incorrect values.
+Harness: the test ran to completion.
+

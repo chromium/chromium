@@ -39,8 +39,7 @@ std::vector<Match> regex_match(const std::string & password,
 
 std::vector<Match> date_match(const std::string & password);
 
-std::vector<Match> omnimatch(const std::string & password,
-                             const std::vector<std::string> & ordered_list = {});
+std::vector<Match> omnimatch(const std::string & password);
 
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,7 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
           base::Time(),  // creation
           expires,
           base::Time(),  // last_access
+          base::Time(),  // last_update
           secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT,
           false /* same_party */);
   // Convert it to system cookie.
@@ -66,10 +67,8 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
   base::Time system_cookie_expire_date = base::Time::FromDoubleT(
       [[system_cookie expiresDate] timeIntervalSince1970]);
-  EXPECT_LE(expires - base::TimeDelta::FromSeconds(1),
-            system_cookie_expire_date);
-  EXPECT_GE(expires + base::TimeDelta::FromSeconds(1),
-            system_cookie_expire_date);
+  EXPECT_LE(expires - base::Seconds(1), system_cookie_expire_date);
+  EXPECT_GE(expires + base::Seconds(1), system_cookie_expire_date);
 }
 
 void VerifyGetCookiesResultHistogram(
@@ -86,7 +85,7 @@ using CookieUtil = PlatformTest;
 
 TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   base::Time creation_time = base::Time::Now();
-  base::Time expire_date = creation_time + base::TimeDelta::FromHours(2);
+  base::Time expire_date = creation_time + base::Hours(2);
   NSDate* system_expire_date =
       [NSDate dateWithTimeIntervalSince1970:expire_date.ToDoubleT()];
   NSMutableDictionary* properties =
@@ -117,10 +116,8 @@ TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   EXPECT_TRUE(chrome_cookie->LastAccessDate().is_null());
   EXPECT_TRUE(chrome_cookie->IsPersistent());
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
-  EXPECT_LE(expire_date - base::TimeDelta::FromSeconds(1),
-            chrome_cookie->ExpiryDate());
-  EXPECT_GE(expire_date + base::TimeDelta::FromSeconds(1),
-            chrome_cookie->ExpiryDate());
+  EXPECT_LE(expire_date - base::Seconds(1), chrome_cookie->ExpiryDate());
+  EXPECT_GE(expire_date + base::Seconds(1), chrome_cookie->ExpiryDate());
   EXPECT_FALSE(chrome_cookie->IsSecure());
   EXPECT_TRUE(chrome_cookie->IsHttpOnly());
   EXPECT_EQ(net::COOKIE_PRIORITY_DEFAULT, chrome_cookie->Priority());
@@ -185,7 +182,7 @@ TEST_F(CookieUtil, ReportGetCookiesForURLResult) {
 }
 
 TEST_F(CookieUtil, SystemCookieFromCanonicalCookie) {
-  base::Time expire_date = base::Time::Now() + base::TimeDelta::FromHours(2);
+  base::Time expire_date = base::Time::Now() + base::Hours(2);
 
   // Test various combinations of session, secure and httponly attributes.
   CheckSystemCookie(expire_date, false, false);
@@ -202,6 +199,7 @@ TEST_F(CookieUtil, SystemCookieFromBadCanonicalCookie) {
           base::Time(),  // creation
           base::Time(),  // expires
           base::Time(),  // last_access
+          base::Time(),  // last_update
           false,         // secure
           false,         // httponly
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
@@ -213,13 +211,14 @@ TEST_F(CookieUtil, SystemCookieFromBadCanonicalCookie) {
 }
 
 TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
-  base::Time expire_date = base::Time::Now() + base::TimeDelta::FromHours(2);
+  base::Time expire_date = base::Time::Now() + base::Hours(2);
   net::CookieList cookie_list = {
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "name1", "value1", "domain1", "path1/",
           base::Time(),  // creation
           expire_date,
           base::Time(),  // last_access
+          base::Time(),  // last_update
           false,         // secure
           false,         // httponly
           net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
@@ -229,6 +228,7 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
           base::Time(),  // creation
           expire_date,
           base::Time(),  // last_access
+          base::Time(),  // last_update
           false,         // secure
           false,         // httponly
           net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,

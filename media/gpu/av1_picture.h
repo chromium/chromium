@@ -1,17 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_AV1_PICTURE_H_
 #define MEDIA_GPU_AV1_PICTURE_H_
 
-#include <memory>
-
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/libgav1/src/src/utils/types.h"
 
 namespace media {
+
 // AV1Picture carries the parsed frame header needed for decoding an AV1 frame.
 // It also owns the decoded frame itself.
 class MEDIA_GPU_EXPORT AV1Picture : public CodecPicture {

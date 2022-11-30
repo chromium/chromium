@@ -1,0 +1,28 @@
+<style>
+li {list-style-type: none;}
+</style>
+<!-- A list item inside of a doc-bibliography is treated the same as the deprecated doc-biblioentry -->
+<div role="doc-bibliography">
+  <div role="list">
+    <div role="listitem">biblioentry</div>
+    <div role="list">
+      <div role="listitem">not a biblioentry</div>
+    </div>
+  </div>
+  <ul>
+    <li>biblioentry</li>
+  </ul>
+</div>
+
+<!-- A list item inside of a doc-endnotes is treated the same as the deprecated doc-endnote -->
+<div role="doc-endnotes">
+  <div role="list">
+    <div role="listitem">endnote</div>
+    <div role="list">
+      <div role="listitem">not an endnote</div>
+    </div>
+  </div>
+  <ul>
+    <li>endnote</li>
+  </ul>
+</div>

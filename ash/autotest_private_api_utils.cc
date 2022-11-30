@@ -1,18 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/autotest_private_api_utils.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 
 namespace ash {
 namespace {
@@ -27,6 +31,10 @@ class HomeLauncherStateWaiter {
             &HomeLauncherStateWaiter::OnHomeLauncherAnimationCompleted,
             base::Unretained(this)));
   }
+
+  HomeLauncherStateWaiter(const HomeLauncherStateWaiter&) = delete;
+  HomeLauncherStateWaiter& operator=(const HomeLauncherStateWaiter&) = delete;
+
   ~HomeLauncherStateWaiter() {
     Shell::Get()
         ->app_list_controller()
@@ -45,8 +53,6 @@ class HomeLauncherStateWaiter {
 
   bool target_shown_;
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeLauncherStateWaiter);
 };
 
 // A waiter that waits until the animation ended with the target state, and
@@ -60,6 +66,10 @@ class LauncherStateWaiter {
         ->SetStateTransitionAnimationCallbackForTesting(base::BindRepeating(
             &LauncherStateWaiter::OnStateChanged, base::Unretained(this)));
   }
+
+  LauncherStateWaiter(const LauncherStateWaiter&) = delete;
+  LauncherStateWaiter& operator=(const LauncherStateWaiter&) = delete;
+
   ~LauncherStateWaiter() {
     Shell::Get()
         ->app_list_controller()
@@ -76,8 +86,6 @@ class LauncherStateWaiter {
  private:
   ash::AppListViewState target_state_;
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(LauncherStateWaiter);
 };
 
 class LauncherAnimationWaiter : public ui::LayerAnimationObserver {
@@ -109,7 +117,7 @@ class LauncherAnimationWaiter : public ui::LayerAnimationObserver {
 
 bool WaitForHomeLauncherState(bool target_visible, base::OnceClosure closure) {
   if (Shell::Get()->app_list_controller()->IsVisible(
-          /*display_id=*/base::nullopt) == target_visible) {
+          /*display_id=*/absl::nullopt) == target_visible) {
     std::move(closure).Run();
     return true;
   }
@@ -120,7 +128,7 @@ bool WaitForHomeLauncherState(bool target_visible, base::OnceClosure closure) {
 
 bool WaitForLauncherAnimation(base::OnceClosure closure) {
   auto* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
   if (!app_list_view) {
     std::move(closure).Run();
     return true;
@@ -166,14 +174,14 @@ bool WaitForLauncherState(AppListViewState target_state,
           ? AppListViewState::kFullscreenAllApps
           : target_state;
 
-  base::Optional<bool> target_home_launcher_visibility;
+  absl::optional<bool> target_home_launcher_visibility;
   if (in_tablet_mode)
     target_home_launcher_visibility = target_state != AppListViewState::kClosed;
 
   // Don't wait if the launcher is already in the target state and not
   // animating.
   auto* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
   bool animating =
       app_list_view &&
       app_list_view->GetWidget()->GetLayer()->GetAnimator()->is_animating();

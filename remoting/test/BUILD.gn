@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -49,6 +49,7 @@ static_library("test_support") {
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
+    "//remoting/base:logging",
     "//remoting/client",
     "//remoting/client/audio",
     "//remoting/codec:decoder",
@@ -61,8 +62,9 @@ static_library("test_support") {
   ]
 
   deps = [
+    "//components/webrtc:net_address_utils",
+    "//components/webrtc:thread_wrapper",
     "//google_apis",
-    "//jingle:webrtc_glue",
     "//remoting/base:authorization",
     "//remoting/base:test_support",
     "//services/network:network_service",
@@ -70,7 +72,7 @@ static_library("test_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/webrtc_overrides:webrtc_component",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -101,10 +103,13 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
       ]
       deps = [
         ":test_support",
+        "//extensions/browser/api/messaging:native_messaging",
         "//mojo/core/embedder",
         "//remoting/base",
         "//remoting/base:authorization",
+        "//remoting/base:logging",
         "//remoting/host",
+        "//remoting/host:resources",
         "//remoting/host/it2me:common",
         "//remoting/host/native_messaging",
       ]
@@ -140,9 +145,12 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
 
     sources = [ "it2me_standalone_host_main.cc" ]
 
-    deps = [ ":it2me_standalone_host" ]
+    deps = [
+      ":it2me_standalone_host",
+      "//remoting/host:resources",
+    ]
 
-    if (is_linux || is_chromeos_lacros) {
+    if ((is_linux || is_chromeos_lacros) && remoting_use_x11) {
       deps += [
         "//build/config/linux/gtk",
         "//ui/events/platform/x11:x11",
@@ -167,7 +175,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
 
     deps = [
       "//base",
-      "//remoting/host:base",
+      "//remoting/host/base",
     ]
   }
 }
@@ -185,6 +193,7 @@ executable("ftl_services_playground") {
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/signaling",
     "//services/network:network_service",
@@ -201,10 +210,11 @@ executable("ftl_signaling_playground") {
   ]
   deps = [
     ":test_support",
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/signaling",
     "//services/network:network_service",
   ]

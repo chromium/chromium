@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,40 +15,90 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
-#include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+namespace {
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using IsInsecureCredential = CredentialEditBridge::IsInsecureCredential;
+
+PasswordUIViewAndroid::SerializationResult SerializePasswords(
+    const base::FilePath& target_directory,
+    std::vector<password_manager::CredentialUIEntry> credentials) {
+  // The UI should not trigger serialization if there are no passwords.
+  DCHECK(!credentials.empty());
+
+  // Creating a file will block the execution on I/O.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  // Ensure that the target directory exists.
+  base::File::Error error = base::File::FILE_OK;
+  if (!base::CreateDirectoryAndGetError(target_directory, &error)) {
+    return {0, std::string(), base::File::ErrorToString(error)};
+  }
+
+  // Create a temporary file in the target directory to hold the serialized
+  // passwords.
+  base::FilePath export_file;
+  if (!base::CreateTemporaryFileInDir(target_directory, &export_file)) {
+    return {
+        0, std::string(),
+        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+  }
+
+  // Write the serialized data in CSV.
+  std::string data =
+      password_manager::PasswordCSVWriter::SerializePasswords(credentials);
+  int bytes_written = base::WriteFile(export_file, data.data(), data.size());
+  if (bytes_written != base::checked_cast<int>(data.size())) {
+    return {
+        0, std::string(),
+        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+  }
+
+  return {static_cast<int>(credentials.size()), export_file.value(),
+          std::string()};
+}
+
+}  // namespace
 
 PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env, jobject obj)
-    : password_manager_presenter_(this), weak_java_ui_controller_(env, obj) {
-  password_manager_presenter_.Initialize();
+    : weak_java_ui_controller_(env, obj) {
+  saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
 }
 
-PasswordUIViewAndroid::~PasswordUIViewAndroid() {}
+PasswordUIViewAndroid::~PasswordUIViewAndroid() {
+  saved_passwords_presenter_.RemoveObserver(this);
+}
 
 void PasswordUIViewAndroid::Destroy(JNIEnv*, const JavaRef<jobject>&) {
   switch (state_) {
@@ -67,32 +117,6 @@ void PasswordUIViewAndroid::Destroy(JNIEnv*, const JavaRef<jobject>&) {
   }
 }
 
-Profile* PasswordUIViewAndroid::GetProfile() {
-  return ProfileManager::GetLastUsedProfile();
-}
-
-void PasswordUIViewAndroid::SetPasswordList(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        password_list) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
-  if (!ui_controller.is_null()) {
-    Java_PasswordUIView_passwordListAvailable(
-        env, ui_controller, static_cast<int>(password_list.size()));
-  }
-}
-
-void PasswordUIViewAndroid::SetPasswordExceptionList(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        password_exception_list) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
-  if (!ui_controller.is_null()) {
-    Java_PasswordUIView_passwordExceptionListAvailable(
-        env, ui_controller, static_cast<int>(password_exception_list.size()));
-  }
-}
-
 void PasswordUIViewAndroid::InsertPasswordEntryForTesting(
     JNIEnv* env,
     const JavaRef<jstring>& origin,
@@ -104,13 +128,13 @@ void PasswordUIViewAndroid::InsertPasswordEntryForTesting(
   form.username_value = ConvertJavaStringToUTF16(env, username);
   form.password_value = ConvertJavaStringToUTF16(env, password);
 
-  password_manager_presenter_.AddLogin(form);
+  profile_store_->AddLogin(form);
 }
 
 void PasswordUIViewAndroid::UpdatePasswordLists(JNIEnv* env,
                                                 const JavaRef<jobject>&) {
   DCHECK_EQ(State::ALIVE, state_);
-  password_manager_presenter_.UpdatePasswordLists();
+  UpdatePasswordLists();
 }
 
 ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
@@ -118,9 +142,7 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPassword(index);
-  if (!form) {
+  if ((size_t)index >= passwords_.size()) {
     return Java_PasswordUIView_createSavedPasswordEntry(
         env, ConvertUTF8ToJavaString(env, std::string()),
         ConvertUTF16ToJavaString(env, std::u16string()),
@@ -129,9 +151,9 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
   return Java_PasswordUIView_createSavedPasswordEntry(
       env,
       ConvertUTF8ToJavaString(
-          env, password_manager::GetShownOriginAndLinkUrl(*form).first),
-      ConvertUTF16ToJavaString(env, form->username_value),
-      ConvertUTF16ToJavaString(env, form->password_value));
+          env, password_manager::GetShownOrigin(passwords_[index])),
+      ConvertUTF16ToJavaString(env, passwords_[index].username),
+      ConvertUTF16ToJavaString(env, passwords_[index].password));
 }
 
 ScopedJavaLocalRef<jstring> PasswordUIViewAndroid::GetSavedPasswordException(
@@ -139,12 +161,10 @@ ScopedJavaLocalRef<jstring> PasswordUIViewAndroid::GetSavedPasswordException(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPasswordException(index);
-  if (!form)
+  if ((size_t)index >= blocked_sites_.size())
     return ConvertUTF8ToJavaString(env, std::string());
   return ConvertUTF8ToJavaString(
-      env, password_manager::GetShownOriginAndLinkUrl(*form).first);
+      env, password_manager::GetShownOrigin(blocked_sites_[index]));
 }
 
 void PasswordUIViewAndroid::HandleRemoveSavedPasswordEntry(
@@ -152,7 +172,12 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordEntry(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  password_manager_presenter_.RemoveSavedPassword(index);
+  if ((size_t)index >= passwords_.size())
+    return;
+  if (saved_passwords_presenter_.RemoveCredential(passwords_[index])) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
+  }
 }
 
 void PasswordUIViewAndroid::HandleRemoveSavedPasswordException(
@@ -160,7 +185,12 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordException(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  password_manager_presenter_.RemovePasswordException(index);
+  if ((size_t)index >= passwords_.size())
+    return;
+  if (saved_passwords_presenter_.RemoveCredential(passwords_[index])) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_RemovePasswordException"));
+  }
 }
 
 void PasswordUIViewAndroid::HandleSerializePasswords(
@@ -184,6 +214,12 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
       NOTREACHED();
       return;
   }
+  std::vector<password_manager::CredentialUIEntry> credentials =
+      saved_passwords_presenter_.GetSavedCredentials();
+  base::EraseIf(credentials, [](const auto& credential) {
+    return credential.blocked_by_user;
+  });
+
   // The tasks are posted with base::Unretained, because deletion is postponed
   // until the reply arrives (look for the occurrences of DELETION_PENDING in
   // this file). The background processing is not expected to take very long,
@@ -193,9 +229,9 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(
-          &PasswordUIViewAndroid::ObtainAndSerializePasswords,
-          base::Unretained(this),
-          base::FilePath(ConvertJavaStringToUTF8(env, java_target_directory))),
+          &SerializePasswords,
+          base::FilePath(ConvertJavaStringToUTF8(env, java_target_directory)),
+          std::move(credentials)),
       base::BindOnce(&PasswordUIViewAndroid::PostSerializedPasswords,
                      base::Unretained(this),
                      base::android::ScopedJavaGlobalRef<jobject>(
@@ -210,16 +246,20 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
     const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPassword(index);
-  if (form && !credential_edit_bridge_) {
-    credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        form, password_manager_presenter_.GetUsernamesForRealm(index),
-        &saved_passwords_presenter_, &password_manager_presenter_,
-        base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
-                       base::Unretained(this)),
-        context, settings_launcher);
+  if ((size_t)index >= passwords_.size() || credential_edit_bridge_) {
+    return;
   }
+  bool is_using_account_store = passwords_[index].stored_in.contains(
+      password_manager::PasswordForm::Store::kAccountStore);
+  credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
+      passwords_[index], IsInsecureCredential(false),
+      GetUsernamesForRealm(saved_passwords_presenter_.GetSavedCredentials(),
+                           passwords_[index].GetFirstSignonRealm(),
+                           is_using_account_store),
+      &saved_passwords_presenter_,
+      base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
+                     base::Unretained(this)),
+      context, settings_launcher);
 }
 
 void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
@@ -228,16 +268,15 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
     const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPasswordException(index);
-  if (form && !credential_edit_bridge_) {
-    credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        form, password_manager_presenter_.GetUsernamesForRealm(index),
-        &saved_passwords_presenter_, &password_manager_presenter_,
-        base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
-                       base::Unretained(this)),
-        context, settings_launcher);
+  if ((size_t)index >= blocked_sites_.size() || credential_edit_bridge_) {
+    return;
   }
+  credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
+      blocked_sites_[index], IsInsecureCredential(false),
+      std::vector<std::u16string>(), &saved_passwords_presenter_,
+      base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
+                     base::Unretained(this)),
+      context, settings_launcher);
 }
 
 void PasswordUIViewAndroid::OnEditUIDismissed() {
@@ -250,11 +289,16 @@ ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetAccountDashboardURL(
       env, l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK));
 }
 
+ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetTrustedVaultLearnMoreURL(
+    JNIEnv* env) {
+  return ConvertUTF8ToJavaString(env, chrome::kSyncTrustedVaultLearnMoreURL);
+}
+
 jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
           ProfileManager::GetLastUsedProfile());
-  return password_manager::AuthenticatedLeakCheck::HasAccountForRequest(
+  return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
       identity_manager);
 }
 
@@ -265,53 +309,29 @@ static jlong JNI_PasswordUIView_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(controller);
 }
 
-PasswordUIViewAndroid::SerializationResult
-PasswordUIViewAndroid::ObtainAndSerializePasswords(
-    const base::FilePath& target_directory) {
-  // This is run on a backend task runner. Do not access any member variables
-  // except for |credential_provider_for_testing_| and
-  // |password_manager_presenter_|.
-  password_manager::CredentialProviderInterface* const provider =
-      credential_provider_for_testing_ ? credential_provider_for_testing_
-                                       : &password_manager_presenter_;
+void PasswordUIViewAndroid::OnSavedPasswordsChanged(
+    password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords) {
+  UpdatePasswordLists();
+}
 
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords =
-      provider->GetAllPasswords();
-
-  // The UI should not trigger serialization if there are not passwords.
-  DCHECK(!passwords.empty());
-
-  // Creating a file will block the execution on I/O.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  // Ensure that the target directory exists.
-  base::File::Error error = base::File::FILE_OK;
-  if (!base::CreateDirectoryAndGetError(target_directory, &error)) {
-    return {0, std::string(), base::File::ErrorToString(error)};
+void PasswordUIViewAndroid::UpdatePasswordLists() {
+  passwords_.clear();
+  blocked_sites_.clear();
+  for (auto& credential : saved_passwords_presenter_.GetSavedCredentials()) {
+    if (credential.blocked_by_user) {
+      blocked_sites_.push_back(std::move(credential));
+    } else {
+      passwords_.push_back(std::move(credential));
+    }
   }
-
-  // Create a temporary file in the target directory to hold the serialized
-  // passwords.
-  base::FilePath export_file;
-  if (!base::CreateTemporaryFileInDir(target_directory, &export_file)) {
-    return {
-        0, std::string(),
-        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
+  if (!ui_controller.is_null()) {
+    Java_PasswordUIView_passwordListAvailable(
+        env, ui_controller, static_cast<int>(passwords_.size()));
+    Java_PasswordUIView_passwordExceptionListAvailable(
+        env, ui_controller, static_cast<int>(blocked_sites_.size()));
   }
-
-  // Write the serialized data in CSV.
-  std::string data =
-      password_manager::PasswordCSVWriter::SerializePasswords(passwords);
-  int bytes_written = base::WriteFile(export_file, data.data(), data.size());
-  if (bytes_written != base::checked_cast<int>(data.size())) {
-    return {
-        0, std::string(),
-        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
-  }
-
-  return {static_cast<int>(passwords.size()), export_file.value(),
-          std::string()};
 }
 
 void PasswordUIViewAndroid::PostSerializedPasswords(

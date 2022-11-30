@@ -22,6 +22,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RESOLVER_H_
 
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/text/bidi_character_run.h"
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 #include "third_party/blink/renderer/platform/text/bidi_run_list.h"
@@ -213,16 +216,17 @@ class NoIsolatedRun {};
 // http://unicode.org/reports/tr9
 template <class Iterator, class Run, class IsolatedRun = NoIsolatedRun>
 class BidiResolver final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   BidiResolver()
       : direction_(WTF::unicode::kOtherNeutral),
         reached_end_of_line_(false),
         empty_run_(true),
-        nested_isolate_count_(0),
         trailing_space_run_(nullptr),
         needs_trailing_space_(false) {}
+  BidiResolver(const BidiResolver&) = delete;
+  BidiResolver& operator=(const BidiResolver&) = delete;
 
 #if DCHECK_IS_ON()
   ~BidiResolver();
@@ -352,7 +356,7 @@ class BidiResolver final {
 
   MidpointState<Iterator> midpoint_state_;
 
-  unsigned nested_isolate_count_;
+  unsigned nested_isolate_count_ = 0;
   Vector<IsolatedRun> isolated_runs_;
   Run* trailing_space_run_;
   bool needs_trailing_space_;
@@ -380,15 +384,13 @@ class BidiResolver final {
 
   Vector<BidiEmbedding, 8> current_explicit_embedding_sequence_;
   HashMap<Run*, MidpointState<Iterator>> midpoint_state_for_isolated_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidiResolver);
 };
 
 #if DCHECK_IS_ON()
 template <class Iterator, class Run, class IsolatedRun>
 BidiResolver<Iterator, Run, IsolatedRun>::~BidiResolver() {
   // The owner of this resolver should have handled the isolated runs.
-  DCHECK(isolated_runs_.IsEmpty());
+  DCHECK(isolated_runs_.empty());
   DCHECK(!runs_.RunCount());
 }
 #endif
@@ -600,7 +602,7 @@ bool BidiResolver<Iterator, Run, IsolatedRun>::CommitExplicitEmbedding(
   // ignores (skips over) the isolated content, including embedding levels.
   // We should never accrue embedding levels while skipping over isolated
   // content.
-  DCHECK(!InIsolate() || current_explicit_embedding_sequence_.IsEmpty());
+  DCHECK(!InIsolate() || current_explicit_embedding_sequence_.empty());
 
   unsigned char from_level = Context()->Level();
   scoped_refptr<BidiContext> to_context = Context();
@@ -1019,7 +1021,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
             case WTF::unicode::kCommonNumberSeparator:
               if (status_.eor == WTF::unicode::kEuropeanNumber)
                 break;
-              FALLTHROUGH;
+              [[fallthrough]];
             case WTF::unicode::kEuropeanNumberTerminator:
             case WTF::unicode::kBoundaryNeutral:
             case WTF::unicode::kBlockSeparator:
@@ -1074,7 +1076,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
             direction_ = WTF::unicode::kLeftToRight;
           break;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case WTF::unicode::kArabicNumber:
         dir_current = WTF::unicode::kArabicNumber;
         switch (status_.last) {
@@ -1093,7 +1095,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
           case WTF::unicode::kCommonNumberSeparator:
             if (status_.eor == WTF::unicode::kArabicNumber)
               break;
-            FALLTHROUGH;
+            [[fallthrough]];
           case WTF::unicode::kEuropeanNumberSeparator:
           case WTF::unicode::kEuropeanNumberTerminator:
           case WTF::unicode::kBoundaryNeutral:
@@ -1202,7 +1204,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
     }
 
     Increment();
-    if (!current_explicit_embedding_sequence_.IsEmpty()) {
+    if (!current_explicit_embedding_sequence_.empty()) {
       bool committed = CommitExplicitEmbedding(runs_);
       if (committed && last_line_ended) {
         current_ = end;

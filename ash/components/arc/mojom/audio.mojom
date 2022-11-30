@@ -1,0 +1,42 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 5
+
+module arc.mojom;
+
+// Use same switch values as kernel switch events.
+[Extensible]
+enum AudioSwitch {
+  SW_HEADPHONE_INSERT = 0x02,
+  SW_MICROPHONE_INSERT = 0x04
+};
+
+// Next method ID:2
+interface AudioHost {
+  // Tells the host to show the volume controls.
+  ShowVolumeControls@0();
+
+  // Request that the volume be changed to |volume|.
+  // This is a privileged API and should only be used on allowlisted cases.
+  // |percent| is of the range [0, 100].
+  [MinVersion=3] OnSystemVolumeUpdateRequest@1(int32 percent);
+};
+
+// Deprecated method IDs: 1
+// Next method ID: 4
+interface AudioInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=4] Init@3(pending_remote<AudioHost> host_remote) => ();
+
+  // Notify plug states of headphone, microphone, etc.  Each switch state is
+  // represented by the corresponding bit, if the bit is set then the switch
+  // is plugged/inserted.
+  NotifySwitchState@0(uint32 state);
+
+  // Notify volume and mute state.
+  // volume ranges from 0 to 100.
+  // muted == true if audio is muted.
+  [MinVersion=2] NotifyVolumeState@2(uint32 volume, bool muted);
+};

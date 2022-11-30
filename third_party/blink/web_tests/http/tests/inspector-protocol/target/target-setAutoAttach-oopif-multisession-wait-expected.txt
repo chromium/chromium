@@ -1,0 +1,4 @@
+Tests that the attachedToTarget message is dispatched to all attached sessions
+Session 1 attached, waitingForDebugger=true
+Session 2 attached, waitingForDebugger=true
+

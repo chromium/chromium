@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_THUNK_VIDEO_CAPTURE_API_H_
-#define PPAPI_THUNK_VIDEO_CAPTURE_API_H_
+#ifndef PPAPI_THUNK_PPB_VIDEO_CAPTURE_API_H_
+#define PPAPI_THUNK_PPB_VIDEO_CAPTURE_API_H_
 
 #include <stdint.h>
 
@@ -46,4 +46,4 @@ class PPB_VideoCapture_API {
 }  // namespace thunk
 }  // namespace ppapi
 
-#endif  // PPAPI_THUNK_VIDEO_CAPTURE_API_H_
+#endif  // PPAPI_THUNK_PPB_VIDEO_CAPTURE_API_H_

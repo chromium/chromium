@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>Autofill>Assistant"
-}
+mixins: "//components/autofill_assistant/COMMON_METADATA"

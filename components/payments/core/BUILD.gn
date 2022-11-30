@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,12 +10,9 @@ static_library("core") {
     "android_app_description.h",
     "android_app_description_tools.cc",
     "android_app_description_tools.h",
-    "autofill_card_validation.cc",
-    "autofill_card_validation.h",
-    "basic_card_response.cc",
-    "basic_card_response.h",
     "can_make_payment_query.cc",
     "can_make_payment_query.h",
+    "csp_checker.h",
     "currency_formatter.cc",
     "currency_formatter.h",
     "error_logger.cc",
@@ -57,10 +54,12 @@ static_library("core") {
     "payments_experimental_features.h",
     "payments_validators.cc",
     "payments_validators.h",
-    "secure_payment_confirmation_instrument.cc",
-    "secure_payment_confirmation_instrument.h",
+    "pre_purchase_query.h",
+    "secure_payment_confirmation_credential.cc",
+    "secure_payment_confirmation_credential.h",
     "secure_payment_confirmation_metrics.cc",
     "secure_payment_confirmation_metrics.h",
+    "sizes.h",
     "url_util.cc",
     "url_util.h",
   ]
@@ -76,8 +75,6 @@ static_library("core") {
       "payments_profile_comparator.h",
       "strings_util.cc",
       "strings_util.h",
-      "web_payment_request.cc",
-      "web_payment_request.h",
     ]
   }
 
@@ -134,6 +131,8 @@ static_library("method_strings") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "const_csp_checker.cc",
+    "const_csp_checker.h",
     "payments_test_util.cc",
     "payments_test_util.h",
     "test_payment_manifest_downloader.cc",
@@ -162,6 +161,7 @@ source_set("unit_tests") {
   sources = [
     "android_app_description_tools_unittest.cc",
     "can_make_payment_query_unittest.cc",
+    "const_csp_checker_unittest.cc",
     "currency_formatter_unittest.cc",
     "journey_logger_unittest.cc",
     "payment_currency_amount_unittest.cc",
@@ -173,18 +173,17 @@ source_set("unit_tests") {
     "payment_method_data_unittest.cc",
     "payment_shipping_option_unittest.cc",
     "payments_validators_unittest.cc",
+    "secure_payment_confirmation_credential_unittest.cc",
     "url_util_unittest.cc",
   ]
 
   if (!is_android) {
     sources += [
-      "basic_card_response_unittest.cc",
       "payment_address_unittest.cc",
       "payment_options_unittest.cc",
       "payment_request_data_util_unittest.cc",
       "payment_response_unittest.cc",
       "payments_profile_comparator_unittest.cc",
-      "web_payment_request_unittest.cc",
     ]
   }
 

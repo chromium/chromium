@@ -1,0 +1,540 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Auto histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="AlsBrightnessDirection">
+  <variant name="Brighten." summary=""/>
+  <variant name="Darken." summary=""/>
+</variants>
+
+<histogram
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.BrightnessChange.Cause"
+    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. This enum states the reason why the
+    model also thinks brightness should be changed. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.ModelIteration"
+    units="count" expires_after="2023-04-30">
+<!-- Name completed by histogram_suffixes name="AdapterDecision" -->
+
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. We also log the number of model
+    iterations if we've set to use personal curve only. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.NoBrightnessChange.Cause"
+    enum="AutoScreenBrightnessNoBrightnessChangeCause"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. This enum states the reason why the
+    model doesn't think brightness should be changed. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.Unknown.AlsStd"
+    units="count" expires_after="2023-04-30">
+<!-- Name completed by histogram_suffixes name="AdapterDecision" -->
+
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. We also log the als-stddev in its
+    averaging period. This metric records the als-stddev when the associated
+    als-delta is unknown. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.{AlsBrightnessDirection}AlsDelta"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. We also log the als-delta from the
+    previous log-lux (when brightness was last changed) to the current log-lux,
+    which includes both the sign of the als-delta and its absolute value. Chrome
+    OS only. {AlsBrightnessDirection}
+  </summary>
+  <token key="AlsBrightnessDirection" variants="AlsBrightnessDirection">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.{AlsBrightnessDirection}AlsStd"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. We also log the als-stddev in its
+    averaging period. We log it separately for the case when the associated
+    als-delta is positive and negative. Chrome OS only. {AlsBrightnessDirection}
+  </summary>
+  <token key="AlsBrightnessDirection" variants="AlsBrightnessDirection">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="AutoScreenBrightness.AlsReaderStatus"
+    enum="AutoScreenBrightnessAlsReaderStatus" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether the ALS is enabled or the error otherwise. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.BrightnessChange.Cause"
+    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>Reason for the model to change brightness. Chrome OS only.</summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.BrightnessChange.ElapsedTime" units="ms"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    The time between two consecutive auto brightness changes. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.BrightnessChange.ModelIteration"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of model iterations when brightness is changed by a personal curve.
+    Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.BrightnessMonitorStatus"
+    enum="AutoScreenBrightnessBrightnessMonitorStatus"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether the brightness monitor is enabled or the error otherwise. Chrome OS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DailyUserAdjustment.Atlas" units="count"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of times that a user has made brightness adjustments on an Atlas
+    device with an ambient sensor that is supported by the auto screen
+    brightness model. Reported daily. The count is accumulated through the day,
+    spanning reboots, and sent once the system clock indicates that a full day
+    or more has passed since the last report. If the system is suspended or off
+    for more than a day, the current count will be reported immediately the next
+    time the system boots, but the skipped days will not be reported. Chrome OS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DailyUserAdjustment.Eve" units="count"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of times that a user has made brightness adjustments on an Eve device
+    with an ambient sensor that is supported by the auto screen brightness
+    model. Reported daily. The count is accumulated through the day, spanning
+    reboots, and sent once the system clock indicates that a full day or more
+    has passed since the last report. If the system is suspended or off for more
+    than a day, the current count will be reported immediately the next time the
+    system boots, but the skipped days will not be reported. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DailyUserAdjustment.Kohaku" units="count"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of times that a user has made brightness adjustments on a Kohaku
+    device with an ambient sensor that is supported by the auto screen
+    brightness model. Reported daily. The count is accumulated through the day,
+    spanning reboots, and sent once the system clock indicates that a full day
+    or more has passed since the last report. If the system is suspended or off
+    for more than a day, the current count will be reported immediately the next
+    time the system boots, but the skipped days will not be reported. Chrome OS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DailyUserAdjustment.NoAls" units="count"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of times that a user has made brightness adjustments on a device
+    without an ambient sensor. Reported daily. The count is accumulated through
+    the day, spanning reboots, and sent once the system clock indicates that a
+    full day or more has passed since the last report. If the system is
+    suspended or off for more than a day, the current count will be reported
+    immediately the next time the system boots, but the skipped days will not be
+    reported. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DailyUserAdjustment.Nocturne"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of times that a user has made brightness adjustments on a Nocturne
+    device with an ambient sensor that is supported by the auto screen
+    brightness model. Reported daily. The count is accumulated through the day,
+    spanning reboots, and sent once the system clock indicates that a full day
+    or more has passed since the last report. If the system is suspended or off
+    for more than a day, the current count will be reported immediately the next
+    time the system boots, but the skipped days will not be reported. Chrome OS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DailyUserAdjustment.SupportedAls"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of times that a user has made brightness adjustments on a device with
+    an ambient sensor that is supported by the auto screen brightness model.
+    Reported daily. The count is accumulated through the day, spanning reboots,
+    and sent once the system clock indicates that a full day or more has passed
+    since the last report. If the system is suspended or off for more than a
+    day, the current count will be reported immediately the next time the system
+    boots, but the skipped days will not be reported. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DailyUserAdjustment.UnsupportedAls"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of times that a user has made brightness adjustments on a device with
+    an ambient sensor that is not supported by the auto screen brightness model.
+    Reported daily. The count is accumulated through the day, spanning reboots,
+    and sent once the system clock indicates that a full day or more has passed
+    since the last report. If the system is suspended or off for more than a
+    day, the current count will be reported immediately the next time the system
+    boots, but the skipped days will not be reported. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.DataError"
+    enum="AutoScreenBrightnessDataError" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Type of error seen when handling data related to automatic screen brightness
+    adjustments. Only reported on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram
+    name="AutoScreenBrightness.ElapsedTimeBetweenModelAndUserAdjustments"
+    units="ms" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    The elapsed time from a model brightness adjustment to the next user manual
+    brightness change. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.GlobalCurveResetOnInitialization"
+    enum="Boolean" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>Whether the global curve is reset at initialization.</summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.InvalidCurveReason"
+    enum="AutoScreenBrightnessInvalidCurveReason" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    A monotone cubic spline curve may be invalid from input that used to
+    generate it. This metric records why it's invalid. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.MissingAlsWhenBrightnessChanged"
+    enum="BooleanError" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether there was no recorded ALS reading when brightness was changed.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.MissingPriorUserBrightnessRequest"
+    enum="BooleanError" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Under the current implementation of brightness monitor, user brightness
+    request should be received before brightness change signal. Adapter operates
+    under this assumption. This metric logs an error if a brightness change
+    signal is received without a prior brightness request signal. Chrome OS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ModelIterationCountAtInitialization"
+    units="count" expires_after="2023-04-30">
+  <owner>napper@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Personal model iteration count when modeller is initialized. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ModelLoadingStatus"
+    enum="AutoScreenBrightnessModelLoadingStatus" expires_after="2023-04-30">
+  <owner>napper@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>Status of the model loading from disk. Chrome OS only.</summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ModelTraining.BrightnessChange"
+    enum="AutoScreenBrightnessBoundedBrightnessChange"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether a new brightness exceeds the preset bound that defines reasonble
+    range of change. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ModelTraining.BrightnessOutlier"
+    enum="Boolean" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether a training data is an outlier and should be discarded by the model
+    during training. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ModelTraining.Inaccuracy.NoUpdate"
+    units="%" expires_after="2023-04-30">
+  <owner>napper@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When training data comes in, the model may or may not be updated. We measure
+    the error of the model as compared with the target value from training data.
+    This metric measures the error when model is not updated. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ModelTraining.Inaccuracy.Update"
+    units="%" expires_after="2023-04-30">
+  <owner>napper@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When training data comes in, the model may or may not be updated. We measure
+    the error of the model as compared with the target value from training data.
+    This metric measures the error when model is updated. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ModelTraining.ModelUserConsistent"
+    enum="Boolean" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether user brightness change is consistent with the model so that model is
+    not updated.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.NewCurveSaved.Duration" units="ms"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    The time elapsed between training start and a new curve saved to disk. Only
+    reported if a new curve was created and saved successfully to disk. Chrome
+    OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.NewCurveSaved.Success"
+    enum="BooleanSuccess" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether a new curve was successfully saved to disk. Only reported if a new
+    curve was created during the training process. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.Opposite.UserModelBrightnessAdjustments"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, if the previous change was caused by
+    the model, then we log bucketized absolute brightness changes of the two
+    adjustments. This metric records changes if they are in the opposite
+    directions. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.ParameterError"
+    enum="AutoScreenBrightnessParameterError" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When there is an error in the automatic screen brightness parameters, this
+    records which kind of parameter is invalid. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.PersonalCurveValid" enum="BooleanValid"
+    expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether the user's personal brightness curve is valid. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.Same.UserModelBrightnessAdjustments"
+    units="count" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, if the previous change was caused by
+    the model, then we log bucketized absolute brightness changes of the two
+    adjustments. This metric records changes if they are in the same direction.
+    Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.TrainingCompleteDuration.NewCurve"
+    units="ms" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    The time elapsed to complete training after which a new curve was generated.
+    Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.TrainingCompleteDuration.NoNewCurve"
+    units="ms" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    The time elapsed to complete training after which no new curve was
+    generated. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="AutoScreenBrightness.UserAdjustmentEffect"
+    enum="AutoScreenBrightnessUserAdjustmentEffect" expires_after="2023-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    How user manual screen brightness adjustment changes the model. Chrome OS
+    only.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

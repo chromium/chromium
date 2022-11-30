@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">ያልተጠበቀ ስህተት ተከስቷል። እባክዎ ይህንን ችግር ለገንቢዎች ሪፖርት ያድርጉት።</translation>
 <translation id="1697532407822776718">በቃ ጨርሰዋል!</translation>
 <translation id="1742469581923031760">በመገናኘት ላይ...</translation>
+<translation id="177040763384871009">በርቀት መሣሪያው ላይ ጠቅ የተደረጉ አገናኞች በደንበኛው አሳሽ ላይ እንዲከፈቱ ለመፍቀድ፣ የስርዓቱን የድር አሳሽ ወደ «<ph name="URL_FORWARDER_NAME" />» መለወጥ ያስፈልግዎታል።</translation>
 <translation id="177096447311351977">የሰርጥ አይ ፒ ለደንበኛ፦ <ph name="CLIENT_GAIA_IDENTIFIER" /> አይ ፒ=«<ph name="CLIENT_IP_ADDRESS_AND_PORT" />» የአስተናጋጅ አይ ፒ=«<ph name="HOST_IP_ADDRESS_AND_PORT" />» ሰርጥ=«<ph name="CHANNEL_TYPE" />» ግንኙነት=«<ph name="CONNECTION_TYPE" />»።</translation>
 <translation id="1897488610212723051">ሰርዝ</translation>
 <translation id="2009755455353575666">ግንኙነት አልተሳካም</translation>
@@ -24,7 +25,7 @@
 «<ph name="SERVICE_SCRIPT_NAME" />» አስቀድሞ ምልክት ከተደረገበት ምልክቱን ያንሱትና እንደገና ምልክት ያድርጉበት።</translation>
 <translation id="225614027745146050">እንኳን ደህና መጡ</translation>
 <translation id="2320166752086256636">የቁልፍ ሰሌዳን ደብቅ</translation>
-<translation id="2333212046079545895">የቅጂ መብት 2021 Google LLC.። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
+<translation id="2329392777730037872">በደንበኛው ላይ <ph name="URL" />ን መክፈት አልተሳካም።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2366718077645204424">አስተናጋጁን መድረስ አልተቻለም። ይሄ በሚጠቀሙት አውታረ መረብ ላይ ባለ ውቅር ምክንያት ሳይሆን አይቀርም።</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ለመጨረሻ ጊዜ መስመር ላይ የታየው በ<ph name="RELATIVE_TIMESTAMP" />።</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">ይህ አገልግሎት ከChrome የርቀት ዴስክቶፕ ደንበኞች ገቢ ግንኙነቶችን ያነቃል።</translation>
 <translation id="2647232381348739934">Chromoting አገልግሎት</translation>
 <translation id="2676780859508944670">በመስራት ላይ…</translation>
+<translation id="2692522824157224199">የቅጂ መብት 2022 Google LLC። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">ማረጋገጥ ላይ አንድ ችግር ነበር፣ እባክዎ እንደገና ይግቡ።</translation>
 <translation id="2803375539583399270">ፒን ያስገቡ</translation>
@@ -52,9 +54,10 @@
 <translation id="3423542133075182604">የደህንነት ቁልፍ በርቀት የመጠቀም ሂደት</translation>
 <translation id="3581045510967524389">ከአውታረ መረቡ ጋር መገናኘት አልተቻለም። እባክዎ መሥሪያዎ መስመር ላይ መሆኑን ያረጋግጡ።</translation>
 <translation id="3596628256176442606">ይህ አገልግሎት ከChromoting ደንበኞች ገቢ ግንኙነቶችን ያነቃል።</translation>
-<translation id="369442766917958684">ከመስመር ውጪ።</translation>
+<translation id="369442766917958684">ከመስመር ውጭ።</translation>
 <translation id="3695446226812920698">እንዴት እንደሆነ ይወቁ</translation>
 <translation id="3776024066357219166">የChrome የርቀት ዴስክቶፕ ክፍለ-ጊዜው ተጠናቅቋል።</translation>
+<translation id="3858860766373142691">ስም</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3905196214175737742">ልክ ያልሆነ የአስተናጋጅ ባለቤት ጎራ።</translation>
 <translation id="3931191050278863510">አስተናጋጅ ቆሟል።</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">የመዳረሻ ኮድ</translation>
 <translation id="4227991223508142681">የአስተናጋጅ አቅርቦት መገልገያ</translation>
 <translation id="4240294130679914010">Chromoting የአስተናጋጅ ማራገፊያ</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> ዩአርኤል አስተላላፊ</translation>
 <translation id="4277736576214464567">የመዳረሻ ኮዱ ልክ ያልሆነ ነው። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
+<translation id="4372650392690220936">የቅጂ መብት 2022 የChromium ደራሲዎች። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="4405930547258349619">ዋና ቤተ መጽሐፍት</translation>
 <translation id="443560535555262820">የተደራሽነት ምርጫዎችን ክፈት</translation>
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
-<translation id="4512952200932940229">የቅጂ መብት 2021 የChromium አዘጋጆች። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="4513946894732546136">ግብረ መልስ</translation>
 <translation id="4563926062592110512">የደንበኛው ግንኙነት ተቋርጧል፦ <ph name="CLIENT_USERNAME" />።</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> በትክክል አልተዋቀረም። እባክዎ የተለየ ነባሪ የድር አሳሽ ይምረጡ እና ከዚያ ዩአርኤል ማስተላለፍን እንደገና ያንቁ።</translation>
 <translation id="4635770493235256822">የርቀት መሣሪያዎች</translation>
 <translation id="4660011489602794167">የቁልፍ ሰሌዳን አሳይ</translation>
 <translation id="4703799847237267011">የChromoting ክፍለ-ጊዜዎ ተጠናቅቋል።</translation>
@@ -87,14 +92,14 @@
 <translation id="4867841927763172006">PrtScn ላክ</translation>
 <translation id="4974476491460646149">የ<ph name="HOSTNAME" /> ግንኙነት ተዘግቷል</translation>
 <translation id="4985296110227979402">በመጀመሪያ ኮምፒውተርዎን ለርቀት መዳረሻ ማዋቀር አለብዎት</translation>
-<translation id="5064360042339518108"><ph name="HOSTNAME" /> (ከመስመር ውጪ)</translation>
+<translation id="4987330545941822761">Chrome የርቀት ዴስክቶፕ ዩአርኤሎችን በአካባቢው ለመክፈት አሳሹን መወሰን አይችልም። እባክዎን ከዚህ በታች ካለው ዝርዝር ውስጥ ይምረጡ።</translation>
+<translation id="5064360042339518108"><ph name="HOSTNAME" /> (ከመስመር ውጭ)</translation>
 <translation id="507204348399810022">ከ<ph name="HOSTNAME" /> ጋር ያሉ የርቀት ግንኙነቶችን ማሰናከል ይፈልጋሉ?</translation>
 <translation id="5170982930780719864">ልክ ያልሆነ የአስተናጋጅ መታወቂያ።</translation>
 <translation id="5204575267916639804">ተደጋጋሚ ጥያቄዎች</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5308380583665731573">ይገናኙ</translation>
-<translation id="5327248766486351172">ስም</translation>
 <translation id="533625276787323658">ምንም የሚገናኙት ነገር የለም</translation>
 <translation id="5397086374758643919">Chrome የርቀት ዴስክቶፕ አስተናጋጅ ማራገፊያ</translation>
 <translation id="5419418238395129586">መጨረሻ መስመር ላይ የነበረው በ፦ <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682">እንደ <ph name="EMAIL_ADDRESS" /> ሆነው ገብተዋል።</translation>
 <translation id="579702532610384533">ዳግም ያገናኙ</translation>
 <translation id="5810269635982033450">ማያ ገጽ እንደ የመከታተያ ፓድ ይሆናል</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ማያ ገጽዎን ለማየት እና የእርስዎን ቁልፍ ሰሌዳ እና መዳፊት ለመቆጣጠር መዳረሻን ጠይቋል። ይህን ጥያቄ እየጠበቁ ካልሆነ ከሆነ «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»ን ይጫኑ። አለበለዚያ ዝግጁ ሲሆኑ ግንኙነትን ለመፍቀድ «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />»ን ይምረጡ።</translation>
 <translation id="5823658491130719298">በርቀት ሊደርሱበት በሚፈልጉት ኮምፒውተር ላይ Chromeን ይክፈቱና <ph name="INSTALLATION_LINK" />ን ይጎብኙ</translation>
 <translation id="5841343754884244200">የማሳያ አማራጮች</translation>
 <translation id="6033507038939587647">የቁልፍ ሰሌዳ አማራጮች</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">Ctrl-Alt-Del ላክ</translation>
 <translation id="6654753848497929428">አጋራ</translation>
 <translation id="677755392401385740">አስተናጋጅ ለተጠቃሚ ተጀምሯል፦ <ph name="HOST_USERNAME" />።</translation>
+<translation id="6902524959760471898">በ<ph name="PRODUCT_NAME" /> ደንበኛው ላይ ዩአርኤልን ለመክፈት አጋዥ መተግበሪያ</translation>
 <translation id="6939719207673461467">የቁልፍ ሰሌዳን አሳይ/ደብቅ።</translation>
 <translation id="6963936880795878952">የሆነ ሰው ልክ ባልሆነ ፒን ከርቀት ኮምፒውተሩ ጋር ለመገናኘት ስለሞከረ ከእሱ ጋር ያሉ ግንኙነቶች ለጊዜው ታግደዋል። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6965382102122355670">እሺ</translation>
@@ -131,12 +138,14 @@
 <translation id="7067321367069083429">ማያ ገጽ እንደ ማያንካ ይሆናል</translation>
 <translation id="7116737094673640201">እንኳን ወደ Chrome የርቀት ዴስክቶፕ በደህና መጡ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
-<translation id="7312846573060934304">አስተናጋጅ ከመስመር ውጪ ነው።</translation>
+<translation id="7312846573060934304">አስተናጋጅ ከመስመር ውጭ ነው።</translation>
 <translation id="7319983568955948908">ማጋራት አቁም</translation>
+<translation id="7359298090707901886">የተመረጠው አሳሽ በአካባቢያዊ ማሽን ላይ ዩአርኤልዎችን ለመክፈት ጥቅም ላይ ሊውል አይችልም።</translation>
 <translation id="7401733114166276557">Chrome የርቀት ዴስክቶፕ</translation>
 <translation id="7434397035092923453">ለደንበኛ መዳረሻ ተከልክሏል፦ <ph name="CLIENT_USERNAME" />።</translation>
 <translation id="7444276978508498879">የተገናኘው ደንበኛ፦ <ph name="CLIENT_USERNAME" />።</translation>
 <translation id="7526139040829362392">መለያ ቀይር</translation>
+<translation id="7535110896613603182">ነባሪ የመተግበሪያ ቅንብሮችን ይክፈቱ</translation>
 <translation id="7628469622942688817">በዚህ መሣሪያ ላይ የእኔን ፒን አስታውስ።</translation>
 <translation id="7649070708921625228">እገዛ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
@@ -161,6 +170,7 @@
 ይህን ፈቃድ ለመስጠት ከታች የ«ተደራሽነት» መቃኑን የሚከፍተውን «<ph name="BUTTON_NAME" />»ን ጠቅ ያድርጉ፣ ከ«<ph name="SERVICE_SCRIPT_NAME" />» ቀጥሎ ያለውን ሳጥን ምልክት ያድርጉበት።
 
 «<ph name="SERVICE_SCRIPT_NAME" />» አስቀድሞ ምልክት የተደረገበት ከሆነ ምልክቱን ያንሱትና ዳግም ያድርጉበት።</translation>
+<translation id="8305209735512572429">የድር ማረጋገጫ የርቀት ሂደት</translation>
 <translation id="8383794970363966105">Chromotingን ለመጠቀም የአንድ የGoogle መለያ በመሣሪያዎ ላይ ማከል አለብዎት።</translation>
 <translation id="8386846956409881180">አስተናጋጅ ልክ ባልሆኑ የOAuth ምስክርነቶች ነው የተዋቀረው።</translation>
 <translation id="8397385476380433240">ለ<ph name="PRODUCT_NAME" /> ፈቃድ ይስጡ</translation>
@@ -180,7 +190,7 @@
 <translation id="916856682307586697">ነባሪውን XSession አስጀምር</translation>
 <translation id="9187628920394877737">ለ<ph name="PRODUCT_NAME" /> የ«ማያ ገጽ ቀረጻ» ፈቃዱን ይስጡ</translation>
 <translation id="9213184081240281106">ልክ ያልሆነ የአስተናጋጅ ውቅር።</translation>
-<translation id="981121421437150478">ከመስመር ውጪ</translation>
+<translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="985602178874221306">የChromium ደራሲዎች</translation>
 <translation id="992215271654996353"><ph name="HOSTNAME" /> (መስመር ላይ የነበረበት <ph name="DATE_OR_TIME" /> መጨረሻ ጊዜ)</translation>
 </translationbundle>

@@ -1,0 +1,100 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+    "//chrome/android:chrome_test_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/content_creation/notes/LineLimitedTextView.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorFactory.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorImpl.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMediator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMetrics.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteProperties.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/GoogleFontService.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceRequest.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceResponse.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/images/ImageService.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarDelegate.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarView.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/content_creation/notes/android:public_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/share/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/content_creation/notes/android:java",
+    "//components/image_fetcher:java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_java_resources",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.content_creation.internal"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    "//chrome/browser",
+    "//chrome/browser/content_creation/notes/internal:*",
+  ]
+
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/note_background_outline.xml",
+    "java/res/drawable/note_title_outline.xml",
+    "java/res/layout/carousel_item.xml",
+    "java/res/layout/creation_dialog.xml",
+    "java/res/layout/top_bar.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+    "java/res/values/styles.xml",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceRequestTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}

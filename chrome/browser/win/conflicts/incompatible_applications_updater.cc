@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -164,10 +164,10 @@ void RemoveStaleApplications(
 template <class UnaryFunction>
 void EnumerateAndTrimIncompatibleApplications(UnaryFunction function) {
   std::vector<std::string> stale_application_names;
-  for (const auto& item : g_browser_process->local_state()
-                              ->FindPreference(prefs::kIncompatibleApplications)
-                              ->GetValue()
-                              ->DictItems()) {
+  for (const auto item : g_browser_process->local_state()
+                             ->FindPreference(prefs::kIncompatibleApplications)
+                             ->GetValue()
+                             ->DictItems()) {
     auto application =
         ConvertToIncompatibleApplication(item.first, item.second);
 

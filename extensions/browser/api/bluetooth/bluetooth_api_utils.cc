@@ -1,11 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/bluetooth/bluetooth_api_utils.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -17,7 +20,7 @@ namespace bluetooth = extensions::api::bluetooth;
 using bluetooth::VendorIdSource;
 using device::BluetoothDevice;
 using device::BluetoothDeviceType;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 using device::BluetoothTransport;
 #endif
 
@@ -91,7 +94,7 @@ bool ConvertDeviceTypeToApi(const BluetoothDeviceType& input,
   }
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool ConvertTransportToApi(const BluetoothTransport& input,
                            bluetooth::Transport* output) {
   switch (input) {
@@ -122,52 +125,54 @@ namespace bluetooth {
 void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
                                 Device* out) {
   out->address = device.GetAddress();
-  out->name.reset(
-      new std::string(base::UTF16ToUTF8(device.GetNameForDisplay())));
-  out->device_class.reset(new int(device.GetBluetoothClass()));
+  out->name = base::UTF16ToUTF8(device.GetNameForDisplay());
+  out->device_class = device.GetBluetoothClass();
 
   // Only include the Device ID members when one exists for the device, and
   // always include all or none.
   if (ConvertVendorIDSourceToApi(device.GetVendorIDSource(),
                                  &(out->vendor_id_source)) &&
       out->vendor_id_source != VENDOR_ID_SOURCE_NONE) {
-    out->vendor_id.reset(new int(device.GetVendorID()));
-    out->product_id.reset(new int(device.GetProductID()));
-    out->device_id.reset(new int(device.GetDeviceID()));
+    out->vendor_id = device.GetVendorID();
+    out->product_id = device.GetProductID();
+    out->device_id = device.GetDeviceID();
   }
 
   ConvertDeviceTypeToApi(device.GetDeviceType(), &(out->type));
 
-  out->paired.reset(new bool(device.IsPaired()));
-  out->connected.reset(new bool(device.IsConnected()));
-  out->connecting.reset(new bool(device.IsConnecting()));
-  out->connectable.reset(new bool(device.IsConnectable()));
+  out->paired = device.IsPaired();
+  out->connected = device.IsConnected();
+  out->connecting = device.IsConnecting();
+  out->connectable = device.IsConnectable();
 
-  std::vector<std::string>* string_uuids = new std::vector<std::string>();
+  out->uuids.emplace();
   const device::BluetoothDevice::UUIDSet& uuids = device.GetUUIDs();
   for (const auto& uuid : uuids) {
-    string_uuids->push_back(uuid.canonical_value());
+    out->uuids->push_back(uuid.canonical_value());
   }
-  out->uuids.reset(string_uuids);
 
   if (device.GetInquiryRSSI())
-    out->inquiry_rssi.reset(new int(device.GetInquiryRSSI().value()));
+    out->inquiry_rssi = device.GetInquiryRSSI().value();
   else
     out->inquiry_rssi.reset();
 
-  if (device.GetInquiryTxPower())
-    out->inquiry_tx_power.reset(new int(device.GetInquiryTxPower().value()));
-  else
+  if (device.GetInquiryTxPower()) {
+    out->inquiry_tx_power = device.GetInquiryTxPower().value();
+  } else {
     out->inquiry_tx_power.reset();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (device.battery_percentage())
-    out->battery_percentage.reset(new int(device.battery_percentage().value()));
+  absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
+      device.GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
+
+  if (battery_info && battery_info->percentage.has_value())
+    out->battery_percentage = battery_info->percentage.value();
   else
     out->battery_percentage.reset();
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ConvertTransportToApi(device.GetType(), &(out->transport));
 #endif
 }

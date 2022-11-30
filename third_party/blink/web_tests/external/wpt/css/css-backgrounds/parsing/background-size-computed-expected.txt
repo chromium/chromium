@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+FAIL Property background-size value '1px' assert_equals: expected "1px auto" but got "1px"
+FAIL Property background-size value '1px auto' assert_equals: expected "1px auto" but got "1px"
+PASS Property background-size value '2% 3%'
+PASS Property background-size value 'auto'
+PASS Property background-size value 'auto auto'
+PASS Property background-size value 'auto 4%'
+PASS Property background-size value 'contain'
+PASS Property background-size value 'cover'
+PASS Property background-size value 'calc(10px + 0.5em) calc(10px - 0.5em)'
+PASS Property background-size value 'calc(10px - 0.5em) calc(10px + 0.5em)'
+PASS Property background-size value 'auto 1px, 2% 3%, contain'
+Harness: the test ran to completion.
+

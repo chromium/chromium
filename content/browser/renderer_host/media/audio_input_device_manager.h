@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -17,8 +17,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -38,6 +39,9 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
  public:
   explicit AudioInputDeviceManager(media::AudioSystem* audio_system);
 
+  AudioInputDeviceManager(const AudioInputDeviceManager&) = delete;
+  AudioInputDeviceManager& operator=(const AudioInputDeviceManager&) = delete;
+
   // Gets the opened device by |session_id|. Returns NULL if the device
   // is not opened, otherwise the opened device. Called on IO thread.
   const blink::MediaStreamDevice* GetOpenedDeviceById(
@@ -49,45 +53,6 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::UnguessableToken Open(const blink::MediaStreamDevice& device) override;
   void Close(const base::UnguessableToken& session_id) override;
 
-  // Owns a keyboard mic stream registration. Dummy implementation on platforms
-  // other than Chrome OS.
-  class KeyboardMicRegistration {
-   public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // No registration.
-    KeyboardMicRegistration() = default;
-
-    KeyboardMicRegistration(KeyboardMicRegistration&& other);
-
-    ~KeyboardMicRegistration();
-
-   private:
-    friend class AudioInputDeviceManager;
-
-    explicit KeyboardMicRegistration(int* shared_registration_count);
-
-    void DeregisterIfNeeded();
-
-    // Null to indicate that there is no stream registration. This points to
-    // a member of the AudioInputDeviceManager, which lives as long as the IO
-    // thread, so the pointer will be valid for the lifetime of the
-    // registration.
-    int* shared_registration_count_ = nullptr;
-#endif
-  };
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Registers that a stream using keyboard mic has been opened or closed.
-  // Keeps count of how many such streams are open and activates and
-  // inactivates the keyboard mic accordingly. The (in)activation is done on the
-  // UI thread and for the register case a callback must therefore be provided
-  // which is called when activated. Deregistration is done when the
-  // registration object is destructed or assigned to, which should only be
-  // done on the IO thread.
-  void RegisterKeyboardMicStream(
-      base::OnceCallback<void(KeyboardMicRegistration)> callback);
-#endif
-
  private:
   ~AudioInputDeviceManager() override;
 
@@ -95,8 +60,8 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   void OpenedOnIOThread(
       const base::UnguessableToken& session_id,
       const blink::MediaStreamDevice& device,
-      const base::Optional<media::AudioParameters>& input_params,
-      const base::Optional<std::string>& matched_output_device_id);
+      const absl::optional<media::AudioParameters>& input_params,
+      const absl::optional<std::string>& matched_output_device_id);
 
   // Callback called on IO thread with the session_id referencing the closed
   // device.
@@ -112,14 +77,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Keeps count of how many streams are using keyboard mic.
-  int keyboard_mic_streams_count_;
-#endif
-
-  media::AudioSystem* const audio_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputDeviceManager);
+  const raw_ptr<media::AudioSystem> audio_system_;
 };
 
 }  // namespace content

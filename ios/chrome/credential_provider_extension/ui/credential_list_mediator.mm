@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #import "ios/chrome/common/credential_provider/credential_store.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_consumer.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface CredentialListMediator () <CredentialListConsumerDelegate>
+@interface CredentialListMediator () <CredentialListHandler>
 
 // The UI Handler of the feature.
 @property(nonatomic, weak) id<CredentialListUIHandler> UIHandler;
@@ -61,6 +63,9 @@
 }
 
 - (void)fetchCredentials {
+  [self.consumer
+      setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
+
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
   dispatch_async(priorityQueue, ^{
@@ -74,7 +79,15 @@
     for (id<Credential> credential in self.allCredentials) {
       for (ASCredentialServiceIdentifier* identifier in self
                .serviceIdentifiers) {
-        if ([identifier.identifier containsString:credential.serviceName]) {
+        if (credential.serviceName &&
+            [identifier.identifier
+                localizedStandardContainsString:credential.serviceName]) {
+          [suggestions addObject:credential];
+          break;
+        }
+        if (credential.serviceIdentifier &&
+            [identifier.identifier
+                localizedStandardContainsString:credential.serviceIdentifier]) {
           [suggestions addObject:credential];
           break;
         }
@@ -83,17 +96,23 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!self.allCredentials.count) {
+      // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+      // new password screen properly supports user url entry.
+      BOOL canCreatePassword =
+          IsPasswordCreationUserEnabled() && self.serviceIdentifiers.count > 0;
+      if (!canCreatePassword && !self.allCredentials.count) {
         [self.UIHandler showEmptyCredentials];
         return;
       }
       [self.consumer presentSuggestedPasswords:self.suggestedCredentials
-                                  allPasswords:self.allCredentials];
+                                  allPasswords:self.allCredentials
+                                 showSearchBar:self.allCredentials.count > 0
+                         showNewPasswordOption:canCreatePassword];
     });
   });
 }
 
-#pragma mark - CredentialListConsumerDelegate
+#pragma mark - CredentialListHandler
 
 - (void)navigationCancelButtonWasPressed:(UIButton*)button {
   NSError* error =
@@ -108,31 +127,46 @@
 }
 
 - (void)updateResultsWithFilter:(NSString*)filter {
+  // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+  // new password screen properly supports user url entry.
+  BOOL showNewPasswordOption = !filter.length &&
+                               IsPasswordCreationUserEnabled() &&
+                               self.serviceIdentifiers.count > 0;
+  if (!filter.length) {
+    [self.consumer presentSuggestedPasswords:self.suggestedCredentials
+                                allPasswords:self.allCredentials
+                               showSearchBar:YES
+                       showNewPasswordOption:showNewPasswordOption];
+    return;
+  }
+
   NSMutableArray<id<Credential>>* suggested = [[NSMutableArray alloc] init];
-  if (self.suggestedCredentials.count > 0) {
-    for (id<Credential> credential in self.suggestedCredentials) {
-      if ([filter length] == 0 ||
-          [credential.serviceName localizedStandardContainsString:filter] ||
-          [credential.user localizedStandardContainsString:filter]) {
-        [suggested addObject:credential];
-      }
+  for (id<Credential> credential in self.suggestedCredentials) {
+    if ([credential.serviceName localizedStandardContainsString:filter] ||
+        [credential.user localizedStandardContainsString:filter]) {
+      [suggested addObject:credential];
     }
   }
+
   NSMutableArray<id<Credential>>* all = [[NSMutableArray alloc] init];
-  if (self.allCredentials.count > 0) {
-    for (id<Credential> credential in self.allCredentials) {
-      if ([filter length] == 0 ||
-          [credential.serviceName localizedStandardContainsString:filter] ||
-          [credential.user localizedStandardContainsString:filter]) {
-        [all addObject:credential];
-      }
+  for (id<Credential> credential in self.allCredentials) {
+    if ([credential.serviceName localizedStandardContainsString:filter] ||
+        [credential.user localizedStandardContainsString:filter]) {
+      [all addObject:credential];
     }
   }
-  [self.consumer presentSuggestedPasswords:suggested allPasswords:all];
+  [self.consumer presentSuggestedPasswords:suggested
+                              allPasswords:all
+                             showSearchBar:YES
+                     showNewPasswordOption:showNewPasswordOption];
 }
 
 - (void)showDetailsForCredential:(id<Credential>)credential {
   [self.UIHandler showDetailsForCredential:credential];
+}
+
+- (void)newPasswordWasSelected {
+  [self.UIHandler showCreateNewPasswordUI];
 }
 
 @end

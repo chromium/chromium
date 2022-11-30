@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
+#include "extensions/common/url_pattern_set.h"
 
 namespace extensions {
 
@@ -51,7 +52,7 @@ bool ignore_user_gesture_for_tests = false;
 
 ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
   std::unique_ptr<api::permissions::Contains::Params> params(
-      api::permissions::Contains::Params::Create(*args_));
+      api::permissions::Contains::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -110,7 +111,7 @@ ExtensionFunction::ResponseAction PermissionsGetAllFunction::Run() {
 
 ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
   std::unique_ptr<api::permissions::Remove::Params> params(
-      api::permissions::Remove::Params::Create(*args_));
+      api::permissions::Remove::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -202,7 +203,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
     return RespondNow(Error("Could not find an active window."));
 
   std::unique_ptr<api::permissions::Request::Params> params(
-      api::permissions::Request::Params::Create(*args_));
+      api::permissions::Request::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -242,13 +243,26 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   requested_optional_ =
       PermissionSet::CreateDifference(*requested_optional_, active_permissions);
 
-  // Do the same for withheld permissions.
+  // Determine which of the requested permissions are withheld host permissions.
+  // Since hosts are not always exact matches, we cannot take a set difference.
+  // Thus we only consider requested permissions that are not already active on
+  // the extension.
+  URLPatternSet explicit_hosts;
+  for (const auto& host : unpack_result->required_explicit_hosts) {
+    if (!active_permissions.explicit_hosts().ContainsPattern(host)) {
+      explicit_hosts.AddPattern(host);
+    }
+  }
+  URLPatternSet scriptable_hosts;
+  for (const auto& host : unpack_result->required_scriptable_hosts) {
+    if (!active_permissions.scriptable_hosts().ContainsPattern(host)) {
+      scriptable_hosts.AddPattern(host);
+    }
+  }
+
   requested_withheld_ = std::make_unique<const PermissionSet>(
-      APIPermissionSet(), ManifestPermissionSet(),
-      std::move(unpack_result->required_explicit_hosts),
-      std::move(unpack_result->required_scriptable_hosts));
-  requested_withheld_ =
-      PermissionSet::CreateDifference(*requested_withheld_, active_permissions);
+      APIPermissionSet(), ManifestPermissionSet(), std::move(explicit_hosts),
+      std::move(scriptable_hosts));
 
   // Determine the total "new" permissions; this is the set of all permissions
   // that aren't currently active on the extension.
@@ -301,7 +315,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
           .empty();
   if (has_no_warnings ||
       extension_->location() == mojom::ManifestLocation::kComponent) {
-    OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+    OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+        ExtensionInstallPrompt::Result::ACCEPTED));
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
@@ -310,14 +325,16 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   if (auto_confirm_for_tests != DO_NOT_SKIP) {
     prompted_permissions_for_testing_ = total_new_permissions->Clone();
     if (auto_confirm_for_tests == PROCEED)
-      OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
+      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ACCEPTED));
     else if (auto_confirm_for_tests == ABORT)
-      OnInstallPromptDone(ExtensionInstallPrompt::Result::USER_CANCELED);
+      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::USER_CANCELED));
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
-  install_ui_.reset(new ExtensionInstallPrompt(
-      Profile::FromBrowserContext(browser_context()), native_window));
+  install_ui_ = std::make_unique<ExtensionInstallPrompt>(
+      Profile::FromBrowserContext(browser_context()), native_window);
   install_ui_->ShowDialog(
       base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone,
                      base::RetainedRef(this)),
@@ -332,8 +349,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 }
 
 void PermissionsRequestFunction::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result != ExtensionInstallPrompt::Result::ACCEPTED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
     Respond(ArgumentList(api::permissions::Request::Results::Create(false)));
     return;
   }

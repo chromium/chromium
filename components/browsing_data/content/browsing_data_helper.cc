@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,13 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"
+#include "components/origin_trials/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/pref_names.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -81,6 +84,7 @@ void RemovePrerenderCacheData(
 
 void RemoveSiteIsolationData(PrefService* prefs) {
   prefs->ClearPref(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
+  prefs->ClearPref(site_isolation::prefs::kWebTriggeredIsolatedOrigins);
   // Note that this does not clear these sites from the in-memory map in
   // ChildProcessSecurityPolicy, since that is not supported at runtime. That
   // list of isolated sites is not directly exposed to users, though, and
@@ -99,6 +103,10 @@ void RemoveEmbedderCookieData(
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::CLIENT_HINTS, base::Time(), base::Time::Max(),
       website_settings_filter);
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, base::Time(),
+      base::Time::Max(), website_settings_filter);
 
   // Clear the safebrowsing cookies only if time period is for "all time".  It
   // doesn't make sense to apply the time period of deleting in the last X
@@ -145,7 +153,12 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::BLUETOOTH_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 
-#if !defined(OS_ANDROID)
+  RemoveFederatedSiteSettingsData(
+      delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate(),
+      host_content_settings_map);
+
+#if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SERIAL_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
@@ -153,7 +166,35 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::HID_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, delete_begin,
+      delete_end, HostContentSettingsMap::PatternSourcePredicate());
 #endif
+}
+
+void RemovePersistentOriginTrials(PrefService* pref_service) {
+  if (pref_service->HasPrefPath(origin_trials::kOriginTrialPrefKey)) {
+    pref_service->ClearPref(origin_trials::kOriginTrialPrefKey);
+  }
+}
+
+void RemoveFederatedSiteSettingsData(
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    HostContentSettingsMap::PatternSourcePredicate pattern_predicate,
+    HostContentSettingsMap* host_content_settings_map) {
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, delete_begin,
+      delete_end, pattern_predicate);
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FEDERATED_IDENTITY_API, delete_begin, delete_end,
+      pattern_predicate);
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FEDERATED_IDENTITY_SHARING, delete_begin, delete_end,
+      pattern_predicate);
 }
 
 }  // namespace browsing_data

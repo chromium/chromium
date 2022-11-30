@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,21 @@ message ClientFeatures {
   // The type of gesture performed by the user on the page before the permission
   // prompt was shown.
   optional Gesture gesture = 3;
+
+  enum GestureEnum {
+    GESTURE_V2 = 0;
+    GESTURE_UNSPECIFIED_V2 = 1;
+  }
+
+  optional GestureEnum gesture_enum = 4;
+
+  enum PlatformEnum {
+    PLATFORM_MOBILE_V2 = 0;
+    PLATFORM_DESKTOP_V2 = 1;
+    PLATFORM_UNSPECIFIED_V2 = 3;
+  }
+
+  optional PlatformEnum platform_enum = 5;
 }
 
 // Features related to a specific permission type.
@@ -66,10 +81,16 @@ message PermissionFeatures {
   // Features related to the notification permission.
   message NotificationPermission {}
 
+  // Features related to the geolocation permission.
+  message GeolocationPermission {}
+
   // This field has two purposes:
   //   * it specifies the permission type
   //   * it contains the possible additional features for the specified type.
-  oneof permission_type { NotificationPermission notification_permission = 2; }
+  oneof permission_type {
+    NotificationPermission notification_permission = 2;
+    GeolocationPermission geolocation_permission = 3;
+  }
 }
 // Permission suggestion with the predicted likelihood that the user will grant
 // the permission prompt (more details at go/hedgehog-backend).
@@ -77,10 +98,16 @@ message PermissionPrediction {
   // Additional information regarding the notification suggestion.
   message NotificationPrediction {}
 
+  // Additional information regarding the geolocation prediction.
+  message GeolocationPrediction {}
+
   // This field has two purposes:
   //   * it specifies the permission type for which we generated the suggestion
   //   * it contains the possible additional information for the specified type.
-  oneof prediction_type { NotificationPrediction notification_prediction = 1; }
+  oneof prediction_type {
+    NotificationPrediction notification_prediction = 1;
+    GeolocationPrediction geolocation_prediction = 3;
+  }
 
   // Information about how likely a user is to perform a specific action.
   message Likelihood {

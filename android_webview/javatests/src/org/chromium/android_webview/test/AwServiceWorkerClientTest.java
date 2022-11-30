@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -92,7 +91,6 @@ public class AwServiceWorkerClientTest {
     // in ServiceWorker fetches.
     @Test
     @SmallTest
-    @DisabledTest(message = "Disable for flakyness http://crbug.com/676422")
     public void testFetchHttpError() throws Throwable {
         final String fullIndexUrl = mWebServer.setResponse("/index.html", INDEX_HTML, null);
         final String fullSwUrl = mWebServer.setResponse("/sw.js", SW_HTML, null);

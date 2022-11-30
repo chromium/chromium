@@ -3,7 +3,7 @@
 This directory contains the implementation of Blink's new layout engine
 "LayoutNG".
 
-This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/ng/README.md).
+This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/ng/README.md).
 
 The original design document can be seen [here](https://docs.google.com/document/d/1uxbDh4uONFQOiGuiumlJBLGgO4KDWB8ZEkp7Rd47fw4/edit).
 
@@ -88,6 +88,12 @@ Here's how it works:
   the `NeedsLayout()` check because we currently have no other way to ensure
   that relayout happens when style or children change. Eventually we need to
   rethink this part as we transition away from legacy layout.
+
+### Block fragmentation ###
+
+Design doc [here](https://docs.google.com/document/d/1EJOdFesZKspvrU7uWtGl-8ab2jIrzRF6NKJhwYOs6hU/).
+
+Tutorial [here](block-fragmentation-tutorial.md).
 
 ### Code coverage ###
 

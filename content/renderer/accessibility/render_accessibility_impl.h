@@ -1,24 +1,22 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_RENDER_ACCESSIBILITY_IMPL_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_RENDER_ACCESSIBILITY_IMPL_H_
 
+#include <list>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/common/render_accessibility.mojom.h"
 #include "content/public/renderer/plugin_ax_tree_source.h"
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/renderer/accessibility/blink_ax_tree_source.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_event.h"
@@ -39,10 +37,13 @@ class WebDocument;
 }  // namespace blink
 
 namespace ui {
+
 struct AXActionData;
 class AXActionTarget;
 struct AXEvent;
-}
+class AXTreeID;
+
+}  // namespace ui
 
 namespace ukm {
 class MojoUkmRecorder;
@@ -53,8 +54,6 @@ namespace content {
 class AXImageAnnotator;
 class RenderFrameImpl;
 class RenderAccessibilityManager;
-
-using BlinkAXTreeSerializer = ui::AXTreeSerializer<blink::WebAXObject>;
 
 // The browser process implements native accessibility APIs, allowing assistive
 // technology (e.g., screen readers, magnifiers) to access and control the web
@@ -85,14 +84,17 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
       RenderAccessibilityManager* const render_accessibility_manager,
       RenderFrameImpl* const render_frame,
       ui::AXMode mode);
+
+  RenderAccessibilityImpl(const RenderAccessibilityImpl&) = delete;
+  RenderAccessibilityImpl& operator=(const RenderAccessibilityImpl&) = delete;
+
   ~RenderAccessibilityImpl() override;
 
-  ui::AXMode GetAccessibilityMode() {
-    return tree_source_->accessibility_mode();
-  }
+  ui::AXMode GetAccessibilityMode() { return accessibility_mode_; }
 
   // RenderAccessibility implementation.
   int GenerateAXID() override;
+  ui::AXTreeID GetTreeIDForPluginHost() const override;
   void SetPluginTreeSource(PluginAXTreeSource* source) override;
   void OnPluginRootNodeUpdated() override;
   void ShowPluginContextMenu() override;
@@ -105,18 +107,22 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void HitTest(const gfx::Point& point,
                ax::mojom::Event event_to_fire,
                int request_id,
-               mojom::RenderAccessibility::HitTestCallback callback);
+               blink::mojom::RenderAccessibility::HitTestCallback callback);
   void PerformAction(const ui::AXActionData& data);
   void Reset(int32_t reset_token);
 
   // Called when an accessibility notification occurs in Blink.
-  void HandleWebAccessibilityEvent(const ui::AXEvent& event);
+  void HandleAXEvent(const ui::AXEvent& event);
   void MarkWebAXObjectDirty(
       const blink::WebAXObject& obj,
       bool subtree,
-      ax::mojom::Action event_from_action = ax::mojom::Action::kNone);
+      ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone,
+      ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
+      std::vector<ui::AXEventIntent> event_intents = {},
+      ax::mojom::Event event_type = ax::mojom::Event::kNone);
 
-  void HandleAXEvent(const ui::AXEvent& event);
+  void NotifyWebAXObjectMarkedDirty(const blink::WebAXObject& obj,
+    ax::mojom::Event event_type = ax::mojom::Event::kNone);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
@@ -127,6 +133,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Access the UKM recorder.
   ukm::MojoUkmRecorder* ukm_recorder() const { return ukm_recorder_.get(); }
+
+  // Called when the renderer has closed the connection to reset the state
+  // machine.
+  void ConnectionClosed();
 
  protected:
   // Send queued events from the renderer to the browser.
@@ -147,16 +157,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   int GetDeferredEventsDelay();
 
  private:
-  struct DirtyObject {
-    DirtyObject();
-    DirtyObject(const DirtyObject& other);
-    ~DirtyObject();
-    blink::WebAXObject obj;
-    ax::mojom::EventFrom event_from;
-    ax::mojom::Action event_from_action;
-    std::vector<ui::AXEventIntent> event_intents;
-  };
-
   enum class EventScheduleMode { kDeferEvents, kProcessEventsImmediately };
 
   enum class EventScheduleStatus {
@@ -200,10 +200,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void Scroll(const ui::AXActionTarget* target,
               ax::mojom::Action scroll_action);
 
-  // Whether an event should mark its associated object dirty.
-  bool ShouldSerializeNodeForEvent(const blink::WebAXObject& obj,
-                                   const ui::AXEvent& event) const;
-
   // If we are calling this from a task, scheduling is allowed even if there is
   // a running task
   void ScheduleSendPendingAccessibilityEvents(
@@ -214,9 +210,15 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Returns the document for the active popup if any.
   blink::WebDocument GetPopupDocument();
 
+  // Returns the bounds of the popup (if there's one) relative to the main
+  // document.
+  absl::optional<gfx::RectF> GetPopupBounds();
+
   // Searches the accessibility tree for plugin's root object and returns it.
   // Returns an empty WebAXObject if no root object is present.
   blink::WebAXObject GetPluginRoot();
+
+  blink::WebAXObject ComputeRoot();
 
   // Cancels scheduled events that are not yet in flight
   void CancelScheduledEvents();
@@ -230,6 +232,18 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // or after navigating to a new page when any previous data will no
   // longer be valid.
   void ResetUKMData();
+
+  bool SerializeUpdatesAndEvents(blink::WebDocument document,
+                                 blink::WebAXObject root,
+                                 std::vector<ui::AXEvent>& events,
+                                 std::vector<ui::AXTreeUpdate>& updates,
+                                 bool invalidate_plugin_subtree);
+
+  void AddImageAnnotations(const blink::WebDocument& document,
+                           std::vector<ui::AXNodeData>&);
+  void AddImageAnnotationsForNode(blink::WebAXObject& src, ui::AXNodeData* dst);
+
+  static void IgnoreProtocolChecksForTesting();
 
   // The initial accessibility tree root still needs to be created. Like other
   // accessible objects, it must be created when layout is clean.
@@ -246,21 +260,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Manages the automatic image annotations, if enabled.
   std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
-
-  // Events from Blink are collected until they are ready to be
-  // sent to the browser.
-  std::vector<ui::AXEvent> pending_events_;
-
-  // Objects that need to be re-serialized, the next time
-  // we send an event bundle to the browser - but don't specifically need
-  // an event fired.
-  std::vector<DirtyObject> dirty_objects_;
-
-  // The adapter that exposes Blink's accessibility tree to AXTreeSerializer.
-  std::unique_ptr<BlinkAXTreeSource> tree_source_;
-
-  // The serializer that sends accessibility messages to the browser process.
-  std::unique_ptr<BlinkAXTreeSerializer> serializer_;
 
   using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
@@ -303,7 +302,20 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // slowest_serialization_ms_. We report UKM before the user navigates
   // away, or every few minutes.
   ukm::SourceId last_ukm_source_id_;
-  std::string last_ukm_url_;
+
+  // The AxID of the first unlabeled image we have encountered in this tree.
+  //
+  // Used to ensure that the tutor message that explains to screen reader users
+  // how to turn on automatic image labels is provided only once.
+  mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
+
+  // Note: this is the accessibility mode communicated to this object.
+  // The actual accessibility mode on a Document is the combination of this
+  // mode and any other active AXContext objects' accessibility modes.
+  ui::AXMode accessibility_mode_;
+
+  // A set of IDs for which we should always load inline text boxes.
+  std::set<int32_t> load_inline_text_boxes_ids_;
 
   // So we can queue up tasks to be executed later.
   base::WeakPtrFactory<RenderAccessibilityImpl>
@@ -313,8 +325,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   friend class PluginActionHandlingTest;
   friend class RenderAccessibilityImplTest;
   friend class RenderAccessibilityImplUKMTest;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderAccessibilityImpl);
 };
 
 }  // namespace content

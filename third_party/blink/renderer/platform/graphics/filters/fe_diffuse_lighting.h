@@ -33,22 +33,13 @@ class PLATFORM_EXPORT FEDiffuseLighting final : public FELighting {
  public:
   FEDiffuseLighting(Filter*,
                     const Color&,
-                    float,
-                    float,
+                    float surface_scale,
+                    float diffuse_constant,
                     scoped_refptr<LightSource>);
   ~FEDiffuseLighting() override;
 
-  Color LightingColor() const;
-  bool SetLightingColor(const Color&);
-
-  float SurfaceScale() const;
-  bool SetSurfaceScale(float);
-
   float DiffuseConstant() const;
   bool SetDiffuseConstant(float);
-
-  const LightSource* GetLightSource() const;
-  void SetLightSource(scoped_refptr<LightSource>);
 
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
                                           int indention) const override;

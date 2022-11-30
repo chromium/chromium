@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/formats/webm/webm_constants.h"
 
 namespace media {
@@ -191,6 +191,7 @@ static const ElementIdInfo kVideoIds[] = {
     {UINT, kWebMIdDisplayHeight},   {UINT, kWebMIdDisplayUnit},
     {UINT, kWebMIdAspectRatioType}, {SKIP_BINARY, kWebMIdColorSpace},
     {SKIP_FLOAT, kWebMIdFrameRate}, {LIST, kWebMIdColour},
+    {LIST, kWebMIdProjection},
 };
 
 static const ElementIdInfo kColourIds[] = {
@@ -207,10 +208,10 @@ static const ElementIdInfo kColourIds[] = {
     {UINT, kWebMIdPrimaries},
     {UINT, kWebMIdMaxCLL},
     {UINT, kWebMIdMaxFALL},
-    {LIST, kWebMIdMasteringMetadata},
+    {LIST, kWebMIdColorVolumeMetadata},
 };
 
-static const ElementIdInfo kMasteringMetadataIds[] = {
+static const ElementIdInfo kColorVolumeMetadataIds[] = {
     {FLOAT, kWebMIdPrimaryRChromaticityX},
     {FLOAT, kWebMIdPrimaryRChromaticityY},
     {FLOAT, kWebMIdPrimaryGChromaticityX},
@@ -221,6 +222,12 @@ static const ElementIdInfo kMasteringMetadataIds[] = {
     {FLOAT, kWebMIdWhitePointChromaticityY},
     {FLOAT, kWebMIdLuminanceMax},
     {FLOAT, kWebMIdLuminanceMin},
+};
+
+static const ElementIdInfo kProjectionIds[]{
+    {UINT, kWebMIdProjectionType},      {SKIP_BINARY, kWebMIdProjectionPrivate},
+    {FLOAT, kWebMIdProjectionPoseYaw},  {FLOAT, kWebMIdProjectionPosePitch},
+    {FLOAT, kWebMIdProjectionPoseRoll},
 };
 
 static const ElementIdInfo kAudioIds[] = {
@@ -375,7 +382,7 @@ static const ElementIdInfo kSimpleTagIds[] = {
 };
 
 #define LIST_ELEMENT_INFO(id, level, id_info) \
-  { (id), (level), (id_info), base::size(id_info) }
+  { (id), (level), (id_info), std::size(id_info) }
 
 static const ListElementInfo kListElementInfo[] = {
     LIST_ELEMENT_INFO(kWebMIdCluster, 1, kClusterIds),
@@ -425,7 +432,8 @@ static const ListElementInfo kListElementInfo[] = {
     LIST_ELEMENT_INFO(kWebMIdTargets, 3, kTargetsIds),
     LIST_ELEMENT_INFO(kWebMIdSimpleTag, 3, kSimpleTagIds),
     LIST_ELEMENT_INFO(kWebMIdColour, 4, kColourIds),
-    LIST_ELEMENT_INFO(kWebMIdMasteringMetadata, 5, kMasteringMetadataIds),
+    LIST_ELEMENT_INFO(kWebMIdColorVolumeMetadata, 5, kColorVolumeMetadataIds),
+    LIST_ELEMENT_INFO(kWebMIdProjection, 4, kProjectionIds),
 };
 
 // Parses an element header id or size field. These fields are variable length
@@ -549,7 +557,7 @@ static ElementType FindIdType(int id,
 
 // Finds ListElementInfo for a specific ID.
 static const ListElementInfo* FindListInfo(int id) {
-  for (size_t i = 0; i < base::size(kListElementInfo); ++i) {
+  for (size_t i = 0; i < std::size(kListElementInfo); ++i) {
     if (id == kListElementInfo[i].id_)
       return &kListElementInfo[i];
   }
@@ -974,7 +982,7 @@ bool WebMListParser::OnListEnd() {
 bool WebMListParser::IsSiblingOrAncestor(int id_a, int id_b) const {
   if (id_a == kWebMIdCluster) {
     // kWebMIdCluster siblings.
-    for (size_t i = 0; i < base::size(kSegmentIds); i++) {
+    for (size_t i = 0; i < std::size(kSegmentIds); i++) {
       if (kSegmentIds[i].id_ == id_b)
         return true;
     }

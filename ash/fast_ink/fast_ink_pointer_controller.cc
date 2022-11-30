@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/fast_ink/fast_ink_pointer_controller.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/cpp/stylus_utils.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
@@ -25,10 +25,7 @@ const int kPresentationDelayMs = 18;
 }  // namespace
 
 FastInkPointerController::FastInkPointerController()
-    : presentation_delay_(
-          base::TimeDelta::FromMilliseconds(kPresentationDelayMs)) {
-  input_device_event_observation_.Observe(ui::DeviceDataManager::GetInstance());
-
+    : presentation_delay_(base::Milliseconds(kPresentationDelayMs)) {
   auto* local_state = ash::Shell::Get()->local_state();
   // |local_state| could be null in tests.
   if (!local_state)
@@ -41,7 +38,6 @@ FastInkPointerController::FastInkPointerController()
       base::BindRepeating(&FastInkPointerController::OnHasSeenStylusPrefChanged,
                           base::Unretained(this)));
 
-  OnDeviceListsComplete();
   OnHasSeenStylusPrefChanged();
 }
 
@@ -97,7 +93,7 @@ bool FastInkPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
 }
 
 bool FastInkPointerController::IsEnabledForMouseEvent() const {
-  return !has_stylus_ || !has_seen_stylus_;
+  return !has_seen_stylus_;
 }
 
 bool FastInkPointerController::IsPointerInExcludedWindows(
@@ -159,7 +155,7 @@ void FastInkPointerController::OnTouchEvent(ui::TouchEvent* event) {
     return;
 
   // Disable on touch events if the device has stylus.
-  if (ash::stylus_utils::HasStylusInput() &&
+  if (has_seen_stylus_ &&
       event->pointer_details().pointer_type != ui::EventPointerType::kPen) {
     return;
   }
@@ -191,10 +187,6 @@ void FastInkPointerController::OnMouseEvent(ui::MouseEvent* event) {
     UpdatePointerView(event);
     event->StopPropagation();
   }
-}
-
-void FastInkPointerController::OnDeviceListsComplete() {
-  has_stylus_ = ash::stylus_utils::HasStylusInput();
 }
 
 void FastInkPointerController::OnHasSeenStylusPrefChanged() {

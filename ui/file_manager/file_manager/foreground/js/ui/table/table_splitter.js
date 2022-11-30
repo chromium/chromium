@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,16 @@
  * It is column model responsibility to resize other columns accordingly.
  */
 
-// clang-format off
-// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.m.js';
-// #import {Table} from './table.m.js';
-// #import {getPropertyDescriptor, dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {dispatchSimpleEvent, getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
+
+import {Splitter} from '../splitter.js';
+
+import {Table} from './table.js';
 
 /**
  * Creates a new table splitter element.
  */
-/* #export */ class TableSplitter extends cr.ui.Splitter {
+export class TableSplitter extends Splitter {
   /**
    * @param {Object=} opt_propertyBag Optional properties.
    */
@@ -28,7 +28,7 @@
     // cr.ui magic overwrites __proto__, so here we restore it back.
     this.__proto__ = TableSplitter.prototype;
 
-    /** @private {cr.ui.Table} */
+    /** @private {Table} */
     this.table_;
     this.table = (opt_propertyBag && opt_propertyBag.table) || null;
 
@@ -92,7 +92,7 @@
    */
   handleSplitterDragEnd() {
     this.ownerDocument.documentElement.classList.remove('col-resize');
-    cr.dispatchSimpleEvent(this, 'column-resize-end', true);
+    dispatchSimpleEvent(this, 'column-resize-end', true);
     this.table_.columnModel.handleSplitterDragEnd();
   }
 }
@@ -104,7 +104,7 @@
 TableSplitter.prototype.columnIndex;
 Object.defineProperty(
     TableSplitter.prototype, 'columnIndex',
-    cr.getPropertyDescriptor('columnIndex'));
+    getPropertyDescriptor('columnIndex'));
 
 /**
  * The table associated with the splitter.
@@ -112,4 +112,4 @@ Object.defineProperty(
  */
 TableSplitter.prototype.table;
 Object.defineProperty(
-    TableSplitter.prototype, 'table', cr.getPropertyDescriptor('table'));
+    TableSplitter.prototype, 'table', getPropertyDescriptor('table'));

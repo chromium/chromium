@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/form_data.h"
 #include "url/gurl.h"
 
@@ -145,7 +144,7 @@ class SavePasswordProgressLogger {
     STRING_LEAK_DETECTION_TOKEN_REQUEST_ERROR,
     STRING_LEAK_DETECTION_NETWORK_ERROR,
     STRING_LEAK_DETECTION_QUOTA_LIMIT,
-    STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE,
+    STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER,
     STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_SPECIAL_SYMBOL,
     STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_SPECIFIC_SPECIAL_SYMBOL,
     STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_PASSWORD_LENGTH,
@@ -162,6 +161,11 @@ class SavePasswordProgressLogger {
   };
 
   SavePasswordProgressLogger();
+
+  SavePasswordProgressLogger(const SavePasswordProgressLogger&) = delete;
+  SavePasswordProgressLogger& operator=(const SavePasswordProgressLogger&) =
+      delete;
+
   virtual ~SavePasswordProgressLogger();
 
   // Call these methods to log information. They sanitize the input and call
@@ -199,9 +203,6 @@ class SavePasswordProgressLogger {
 
   // Translates the StringID values into the corresponding strings.
   static std::string GetStringFromID(SavePasswordProgressLogger::StringID id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordProgressLogger);
 };
 
 }  // namespace autofill

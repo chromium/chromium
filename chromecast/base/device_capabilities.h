@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 
@@ -71,6 +70,9 @@ class DeviceCapabilities {
   // Validator class and implement its interface.
   class Validator {
    public:
+    Validator(const Validator&) = delete;
+    Validator& operator=(const Validator&) = delete;
+
     // |path| is full path to capability, which could include paths expanded on
     // the capability key that gets registered through the Register() method.
     // For example, if a key of "foo" is registered for a Validator, |path|
@@ -101,8 +103,6 @@ class DeviceCapabilities {
 
    private:
     DeviceCapabilities* const capabilities_;
-
-    DISALLOW_COPY_AND_ASSIGN(Validator);
   };
 
   // Class used to store/own capabilities-related data. It is immutable and
@@ -110,6 +110,9 @@ class DeviceCapabilities {
   // lifetime without worrying about the data getting invalidated in any way.
   class Data : public base::RefCountedThreadSafe<Data> {
    public:
+    Data(const Data&) = delete;
+    Data& operator=(const Data&) = delete;
+
     // Accessor for complete capabilities in dictionary format.
     const base::Value& dictionary() const { return dictionary_; }
 
@@ -130,8 +133,6 @@ class DeviceCapabilities {
 
     const base::Value dictionary_;
     std::string json_string_;
-
-    DISALLOW_COPY_AND_ASSIGN(Data);
   };
 
   // Default Capability keys
@@ -139,6 +140,9 @@ class DeviceCapabilities {
   static const char kKeyBluetoothSupported[];
   static const char kKeyDisplaySupported[];
   static const char kKeyHiResAudioSupported[];
+
+  DeviceCapabilities(const DeviceCapabilities&) = delete;
+  DeviceCapabilities& operator=(const DeviceCapabilities&) = delete;
 
   // This class should get destroyed after all Validators have been
   // unregistered, all Observers have been removed, and the class is no longer
@@ -245,8 +249,6 @@ class DeviceCapabilities {
   // visible in GetAllData().
   virtual void SetPrivateValidatedValue(const std::string& path,
                                         base::Value new_value) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCapabilities);
 };
 
 }  // namespace chromecast

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_audio_focus_helper.h"
+#include "content/browser/media/media_internals_cdm_helper.h"
 #include "content/common/content_export.h"
 #include "content/common/media/media_log_records.mojom.h"
 #include "content/public/browser/notification_observer.h"
@@ -52,6 +51,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   using UpdateCallback = base::RepeatingCallback<void(const std::u16string&)>;
 
   static MediaInternals* GetInstance();
+
+  MediaInternals(const MediaInternals&) = delete;
+  MediaInternals& operator=(const MediaInternals&) = delete;
 
   ~MediaInternals() override;
 
@@ -89,6 +91,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   // Sends all audio focus information to each registered UpdateCallback.
   void SendAudioFocusState();
 
+  // Get information of registered CDMs and update the "CDMs" tab.
+  void GetRegisteredCdms();
+
   // Called to inform of the capabilities enumerated for video devices.
   void UpdateVideoCaptureDeviceCapabilities(
       const std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
@@ -123,6 +128,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
  private:
   // Needs access to SendUpdate.
   friend class MediaInternalsAudioFocusHelper;
+  friend class MediaInternalsCdmHelper;
 
   class AudioLogImpl;
   class MediaInternalLogRecordsImpl;
@@ -148,9 +154,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
     UPDATE_AND_DELETE,  // Deletes an existing AudioLog cache entry.
   };
   void UpdateAudioLog(AudioLogUpdateType type,
-                      const std::string& cache_key,
-                      const std::string& function,
-                      const base::DictionaryValue* value);
+                      base::StringPiece cache_key,
+                      base::StringPiece function,
+                      const base::Value::Dict& value);
 
   std::unique_ptr<AudioLogImpl> CreateAudioLogImpl(AudioComponent component,
                                                    int component_id,
@@ -164,19 +170,19 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   std::map<int, std::list<media::MediaLogRecord>> saved_events_by_process_;
 
   // Must only be accessed on the IO thread.
-  base::ListValue video_capture_capabilities_cached_data_;
+  base::Value::List video_capture_capabilities_cached_data_;
 
   NotificationRegistrar registrar_;
 
   MediaInternalsAudioFocusHelper audio_focus_helper_;
 
+  MediaInternalsCdmHelper cdm_helper_;
+
   // All variables below must be accessed under |lock_|.
   base::Lock lock_;
   bool can_update_;
-  base::DictionaryValue audio_streams_cached_data_;
+  base::Value::Dict audio_streams_cached_data_;
   int owner_ids_[media::AudioLogFactory::AUDIO_COMPONENT_MAX];
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternals);
 };
 
 }  // namespace content

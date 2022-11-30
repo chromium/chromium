@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
@@ -18,9 +17,14 @@ class Status;
 class CastTracker : public DevToolsEventListener {
  public:
   explicit CastTracker(DevToolsClient* client);
+
+  CastTracker(const CastTracker&) = delete;
+  CastTracker& operator=(const CastTracker&) = delete;
+
   ~CastTracker() override;
 
   // DevToolsEventListener:
+  bool ListensToConnections() const override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override;
@@ -31,8 +35,6 @@ class CastTracker : public DevToolsEventListener {
  private:
   base::Value sinks_;
   base::Value issue_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTracker);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_CAST_TRACKER_H_

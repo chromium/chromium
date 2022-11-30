@@ -1,15 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/js_messaging/page_script_util.h"
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/mac/bundle_locations.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/browsing_data/cookie_blocking_mode.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/mac/bundle_locations.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,12 +52,7 @@ NSString* GetDocumentStartScriptForMainFrame(BrowserState* browser_state) {
       GetWebClient()->GetDocumentStartScriptForMainFrame(browser_state);
   DCHECK(embedder_page_script);
 
-  NSString* web_bundle = GetPageScript(@"main_frame_web_bundle");
-  DCHECK(web_bundle);
-
-  NSString* script =
-      [NSString stringWithFormat:@"%@; %@", web_bundle, embedder_page_script];
-  return MakeScriptInjectableOnce(@"start_main_frame", script);
+  return MakeScriptInjectableOnce(@"start_main_frame", embedder_page_script);
 }
 
 NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {
@@ -66,30 +60,7 @@ NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {
   NSString* embedder_page_script =
       GetWebClient()->GetDocumentStartScriptForAllFrames(browser_state);
   DCHECK(embedder_page_script);
-  NSString* web_bundle = GetPageScript(@"all_frames_web_bundle");
-  NSString* injectedCookieState = @"allow";
-  switch (browser_state->GetCookieBlockingMode()) {
-    case CookieBlockingMode::kBlock:
-      injectedCookieState = @"block";
-      break;
-    case CookieBlockingMode::kBlockThirdParty:
-      injectedCookieState = @"block-third-party";
-      break;
-    case CookieBlockingMode::kAllow:
-      injectedCookieState = @"allow";
-      break;
-  }
-  web_bundle =
-      [web_bundle stringByReplacingOccurrencesOfString:@"$(COOKIE_STATE)"
-                                            withString:injectedCookieState];
-  NSString* script =
-      [NSString stringWithFormat:@"%@; %@", web_bundle, embedder_page_script];
-  return MakeScriptInjectableOnce(@"start_all_frames", script);
-}
-
-NSString* GetDocumentEndScriptForAllFrames(BrowserState* browser_state) {
-  return MakeScriptInjectableOnce(
-      @"end_all_frames", GetPageScript(@"all_frames_document_end_web_bundle"));
+  return MakeScriptInjectableOnce(@"start_all_frames", embedder_page_script);
 }
 
 }  // namespace web

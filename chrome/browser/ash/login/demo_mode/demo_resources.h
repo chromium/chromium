@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // Loads Demo Mode Resources depending on the configuration:
 // - online demo mode: loads or installs the Demo Mode resources CrOS Component
@@ -34,6 +33,10 @@ class DemoResources {
   static base::FilePath GetPreInstalledPath();
 
   explicit DemoResources(DemoSession::DemoModeConfig config);
+
+  DemoResources(const DemoResources&) = delete;
+  DemoResources& operator=(const DemoResources&) = delete;
+
   ~DemoResources();
 
   // Converts a relative path to an absolute path under the demo
@@ -71,7 +74,7 @@ class DemoResources {
 
   // The error from trying to load the demo mode resources CrOS component from
   // the CrOSComponentManager.
-  const base::Optional<component_updater::CrOSComponentManager::Error>&
+  const absl::optional<component_updater::CrOSComponentManager::Error>&
   component_error() const {
     return component_error_;
   }
@@ -85,12 +88,9 @@ class DemoResources {
       component_updater::CrOSComponentManager::Error error,
       const base::FilePath& path);
 
-  // Loads the preinstalled offline resources image.
-  void LoadPreinstalledOfflineResources();
-
   // Callback for the component or image loader request to load demo resources.
   // `mount_path` is the path at which the resources were loaded.
-  void OnDemoResourcesLoaded(base::Optional<base::FilePath> mounted_path);
+  void OnDemoResourcesLoaded(absl::optional<base::FilePath> mounted_path);
 
   // Which config to load resources for: online or offline.
   DemoSession::DemoModeConfig config_;
@@ -100,7 +100,7 @@ class DemoResources {
 
   // Last error (or NONE) seen when trying to load the CrOS component. Has no
   // value until the load attempt has completed.
-  base::Optional<component_updater::CrOSComponentManager::Error>
+  absl::optional<component_updater::CrOSComponentManager::Error>
       component_error_;
 
   // Path at which demo mode resources were loaded.
@@ -110,10 +110,8 @@ class DemoResources {
   std::list<base::OnceClosure> load_callbacks_;
 
   base::WeakPtrFactory<DemoResources> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoResources);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_RESOURCES_H_

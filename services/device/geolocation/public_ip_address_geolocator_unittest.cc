@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/geolocation/public_ip_address_geolocator.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -30,12 +32,16 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {
-    notifier_.reset(new PublicIpAddressLocationNotifier(
+    notifier_ = std::make_unique<PublicIpAddressLocationNotifier>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         network::TestNetworkConnectionTracker::GetInstance(),
-        kTestGeolocationApiKey));
+        kTestGeolocationApiKey);
   }
+
+  PublicIpAddressGeolocatorTest(const PublicIpAddressGeolocatorTest&) = delete;
+  PublicIpAddressGeolocatorTest& operator=(
+      const PublicIpAddressGeolocatorTest&) = delete;
 
   ~PublicIpAddressGeolocatorTest() override {}
 
@@ -110,8 +116,6 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
 
   // Test URLLoaderFactory for handling requests to the geolocation API.
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicIpAddressGeolocatorTest);
 };
 
 // Basic test of a client invoking QueryNextPosition.

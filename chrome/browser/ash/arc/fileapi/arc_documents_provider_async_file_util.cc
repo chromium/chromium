@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -292,7 +295,7 @@ ArcDocumentsProviderAsyncFileUtil::~ArcDocumentsProviderAsyncFileUtil() =
 void ArcDocumentsProviderAsyncFileUtil::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
-    int file_flags,
+    uint32_t file_flags,
     CreateOrOpenCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // TODO(nya): Implement this function if it is ever called.
@@ -376,17 +379,29 @@ void ArcDocumentsProviderAsyncFileUtil::Truncate(
     int64_t length,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // Truncate() should never be called, since destination path of
-  // copy/move/create is always deduplicated in Files app.
-  NOTREACHED();
-  std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
+  // Truncate() doesn't work well on ARC++ P.
+  // TODO(b/223247850) Fix this.
+  if (!IsArcVmEnabled()) {
+    // HACK: Return FILE_OK even though we do nothing here.
+    // This is a really dirty hack which can result in corrupting file contents.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(base::File::FILE_OK);
+    return;
+  }
+  // Call TruncateOnIOThread() after ResolveToContentUrlOnIOThread().
+  ResolveToContentUrlOnIOThread(
+      url, base::BindOnce(
+               [](int64_t length, StatusCallback callback, const GURL& url) {
+                 TruncateOnIOThread(url, length, std::move(callback));
+               },
+               length, std::move(callback)));
 }
 
 void ArcDocumentsProviderAsyncFileUtil::CopyFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -402,7 +417,7 @@ void ArcDocumentsProviderAsyncFileUtil::MoveFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, src_url.type());

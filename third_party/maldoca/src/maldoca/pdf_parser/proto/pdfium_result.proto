@@ -1,0 +1,64 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package maldoca.pdf;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/pdf_parser/proto/pdf_assets.proto";
+
+enum ExtractionQuota {
+  option allow_alias = true;
+
+  DEFAULT_QUOTA = 0;
+  MAX_TEXT_BYTES = 10485760;           // 10 MB
+  MAX_IMAGE_BYTES = 5242880;           // 5 MB
+  MAX_EMBEDDED_FILE_BYTES = 10485760;  // 10 MB
+  MAX_URL_BYTES = 1048576;             // 1 MB
+  MAX_JS_BYTES = 1048576;              // 1 MB
+  MAX_XFA_BYTES = 1048576;             // 1 MB
+  MAX_XFA_NAME_BUFFER_LENGTH = 20;
+  MAX_XFA_PACKETS = 50;
+}
+
+enum ProcessingLimit {
+  option allow_alias = true;
+
+  DEFAULT_LIMIT = 0;
+  MAX_RECURSION_DEPTH = 100;
+  MAX_JS_OBJECTS = 15000;
+  MAX_PAGES_PARSED = 10;
+  MAX_ELEMENTS_PARSED = 100;
+}
+
+message PdfiumScanResult {
+  // Text of the PDF document.
+  optional string document_text = 1;
+  // URLs in the PDF document.
+  repeated maldoca.pdf.PdfUrl urls = 2;
+  // Images in the PDF document.
+  repeated maldoca.pdf.PdfImage images = 3;
+  // Embedded file in the PDF document.
+  repeated maldoca.pdf.PdfEmbeddedFile embedded_files = 4;
+  // Metadata about the file.
+  optional maldoca.pdf.PdfMetadata metadata = 5;
+  // JavaScript embedded in PDF.
+  optional maldoca.pdf.PdfJavaScriptInfo javascript = 6;
+  // Structural features (similar to an AST) of the PDF.
+  optional maldoca.pdf.PdfStructure structure = 7;
+  // Xfa embedded in PDF.
+  optional maldoca.pdf.PdfXfaInfo xfa = 8;
+}

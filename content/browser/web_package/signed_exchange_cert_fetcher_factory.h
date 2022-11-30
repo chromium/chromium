@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 #include "content/common/content_export.h"
 #include "net/base/isolation_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -44,7 +45,7 @@ class CONTENT_EXPORT SignedExchangeCertFetcherFactory {
   static std::unique_ptr<SignedExchangeCertFetcherFactory> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
-      const base::Optional<base::UnguessableToken>& throttling_profile_id,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id,
       net::IsolationInfo isolation_info);
 };
 

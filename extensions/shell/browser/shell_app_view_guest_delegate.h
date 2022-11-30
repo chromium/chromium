@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_APP_VIEW_GUEST_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_APP_VIEW_GUEST_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest_delegate.h"
 
@@ -14,15 +13,17 @@ namespace extensions {
 class ShellAppViewGuestDelegate : public AppViewGuestDelegate {
  public:
   ShellAppViewGuestDelegate();
+
+  ShellAppViewGuestDelegate(const ShellAppViewGuestDelegate&) = delete;
+  ShellAppViewGuestDelegate& operator=(const ShellAppViewGuestDelegate&) =
+      delete;
+
   ~ShellAppViewGuestDelegate() override;
 
   // AppViewGuestDelegate:
-  bool HandleContextMenu(content::WebContents* web_contents,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   AppDelegate* CreateAppDelegate(content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAppViewGuestDelegate);
 };
 
 }  // namespace extensions

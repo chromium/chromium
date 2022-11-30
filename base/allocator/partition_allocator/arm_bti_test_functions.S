@@ -1,4 +1,4 @@
-# Copyright (c) 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,6 +33,9 @@ arm_bti_test_function_invalid_offset:
 arm_bti_test_function_end:
     nop
 
+// For details see section "6.2 Program Property" in
+// "ELF for the Arm 64-bit Architecture (AArch64)"
+// https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst#62program-property
 .pushsection .note.gnu.property, "a";
 .balign 8;
 .long 4;

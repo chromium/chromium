@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_util.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
@@ -18,9 +22,22 @@
 #include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
 #include "media/base/waiting.h"
+#include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// gn check does not account for BUILDFLAG(), so including these headers will
+// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// for more information.
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"  // nogncheck
+#include "media/gpu/chromeos/secure_buffer.pb.h"                  // nogncheck
+#include "third_party/cros_system_api/constants/cdm_oemcrypto.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 namespace {
@@ -31,7 +48,7 @@ namespace {
 // timestamp field. These two functions are used for converting between
 // bitstream ID and fake timestamp.
 base::TimeDelta BitstreamIdToFakeTimestamp(int32_t bitstream_id) {
-  return base::TimeDelta::FromMilliseconds(bitstream_id);
+  return base::Milliseconds(bitstream_id);
 }
 
 int32_t FakeTimestampToBitstreamId(base::TimeDelta timestamp) {
@@ -44,13 +61,6 @@ std::vector<ColorPlaneLayout> ExtractColorPlaneLayout(
   for (const auto& plane : gmb_handle.native_pixmap_handle.planes)
     planes.emplace_back(plane.stride, plane.offset, plane.size);
   return planes;
-}
-
-std::vector<base::ScopedFD> ExtractFds(gfx::GpuMemoryBufferHandle gmb_handle) {
-  std::vector<base::ScopedFD> fds;
-  for (auto& plane : gmb_handle.native_pixmap_handle.planes)
-    fds.push_back(std::move(plane.fd));
-  return fds;
 }
 
 // TODO(akahuang): Move this function to a utility file.
@@ -67,6 +77,98 @@ std::string VectorToString(const std::vector<T>& vec) {
   result << "]";
   return result.str();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
+    BitstreamBuffer bitstream_buffer) {
+  // Check to see if we have our secure buffer tag and then extract the
+  // decrypt parameters.
+  auto mem_region = bitstream_buffer.DuplicateRegion();
+  if (!mem_region.IsValid()) {
+    DVLOG(2) << "Invalid shared memory region";
+    return nullptr;
+  }
+  const size_t available_size =
+      mem_region.GetSize() -
+      base::checked_cast<size_t>(bitstream_buffer.offset());
+  auto mapping = mem_region.Map();
+  if (!mapping.IsValid()) {
+    DVLOG(2) << "Failed mapping shared memory";
+    return nullptr;
+  }
+  // Checks if this buffer contains the details needed for HW protected video
+  // decoding.
+  // The header is 1KB in size (cdm_oemcrypto::kSecureBufferHeaderSize).
+  // It consists of 3 components.
+  // 1. Marker tag - cdm_oemcrypto::kSecureBufferTag
+  // 2. unsigned 32-bit size of #3
+  // 3. Serialized ArcSecureBufferForChrome proto
+  uint8_t* data = mapping.GetMemoryAs<uint8_t>();
+  if (!data) {
+    DVLOG(2) << "Failed accessing shared memory";
+    return nullptr;
+  }
+  // Apply the offset here so we don't need to worry about page alignment in the
+  // mapping.
+  data += bitstream_buffer.offset();
+  if (available_size <= cdm_oemcrypto::kSecureBufferHeaderSize ||
+      memcmp(data, cdm_oemcrypto::kSecureBufferTag,
+             cdm_oemcrypto::kSecureBufferTagLen)) {
+    // This occurs in Intel implementations when we are in a clear portion.
+    return bitstream_buffer.ToDecoderBuffer();
+  }
+  VLOG(2) << "Detected secure buffer format in VDVDA";
+  // Read the protobuf size.
+  uint32_t proto_size = 0;
+  memcpy(&proto_size, data + cdm_oemcrypto::kSecureBufferTagLen,
+         sizeof(uint32_t));
+  if (proto_size > cdm_oemcrypto::kSecureBufferHeaderSize -
+                       cdm_oemcrypto::kSecureBufferProtoOffset) {
+    DVLOG(2) << "Proto size goes beyond header size";
+    return nullptr;
+  }
+  // Read the serialized proto.
+  std::string serialized_proto(
+      data + cdm_oemcrypto::kSecureBufferProtoOffset,
+      data + cdm_oemcrypto::kSecureBufferProtoOffset + proto_size);
+  chromeos::cdm::ArcSecureBufferForChrome buffer_proto;
+  if (!buffer_proto.ParseFromString(serialized_proto)) {
+    DVLOG(2) << "Failed deserializing secure buffer proto";
+    return nullptr;
+  }
+
+  // Now extract the DecryptConfig info from the protobuf.
+  std::vector<media::SubsampleEntry> subsamples;
+  size_t buffer_size = 0;
+  for (const auto& subsample : buffer_proto.subsample()) {
+    buffer_size += subsample.clear_bytes() + subsample.cypher_bytes();
+    subsamples.emplace_back(subsample.clear_bytes(), subsample.cypher_bytes());
+  }
+  absl::optional<EncryptionPattern> pattern = absl::nullopt;
+  if (buffer_proto.has_pattern()) {
+    pattern.emplace(buffer_proto.pattern().cypher_bytes(),
+                    buffer_proto.pattern().clear_bytes());
+  }
+  // Now create the DecryptConfig and set it in the decoder buffer.
+  scoped_refptr<DecoderBuffer> buffer = bitstream_buffer.ToDecoderBuffer(
+      cdm_oemcrypto::kSecureBufferHeaderSize, buffer_size);
+  if (!buffer) {
+    DVLOG(2) << "Secure buffer data goes beyond shared memory size";
+    return nullptr;
+  }
+  if (buffer_proto.encryption_scheme() !=
+      chromeos::cdm::ArcSecureBufferForChrome::NONE) {
+    buffer->set_decrypt_config(std::make_unique<DecryptConfig>(
+        buffer_proto.encryption_scheme() ==
+                chromeos::cdm::ArcSecureBufferForChrome::CBCS
+            ? EncryptionScheme::kCbcs
+            : EncryptionScheme::kCenc,
+        buffer_proto.key_id(), buffer_proto.iv(), std::move(subsamples),
+        std::move(pattern)));
+  }
+  return buffer;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -103,7 +205,8 @@ void VdVideoDecodeAccelerator::Destroy() {
   // Because VdaVideoFramePool is blocked for this callback, we must call the
   // callback before destroying.
   if (notify_layout_changed_cb_)
-    std::move(notify_layout_changed_cb_).Run(base::nullopt);
+    std::move(notify_layout_changed_cb_)
+        .Run(CroStatus::Codes::kFailedToGetFrameLayout);
   client_ = nullptr;
   vd_.reset();
 
@@ -119,12 +222,13 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
                                           Client* client) {
   VLOGF(2) << "config: " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  DCHECK(!client_);
 
+#if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (config.is_encrypted()) {
     VLOGF(1) << "Encrypted streams are not supported";
     return false;
   }
+#endif  //  !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (config.output_mode != Config::OutputMode::IMPORT) {
     VLOGF(1) << "Only IMPORT OutputMode is supported.";
     return false;
@@ -134,34 +238,45 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  std::unique_ptr<VdaVideoFramePool> frame_pool =
-      std::make_unique<VdaVideoFramePool>(weak_this_, client_task_runner_);
-  vd_ = create_vd_cb_.Run(client_task_runner_, std::move(frame_pool),
-                          std::make_unique<VideoFrameConverter>(),
-                          std::make_unique<NullMediaLog>());
-  if (!vd_)
-    return false;
+  // In case we are re-initializing for encrypted content.
+  if (!vd_) {
+    std::unique_ptr<VdaVideoFramePool> frame_pool =
+        std::make_unique<VdaVideoFramePool>(weak_this_, client_task_runner_);
+    // TODO(b/238684141): Wire a meaningful GpuDriverBugWorkarounds or remove
+    // its use.
+    vd_ = create_vd_cb_.Run(gpu::GpuDriverBugWorkarounds(), client_task_runner_,
+                            std::move(frame_pool),
+                            std::make_unique<VideoFrameConverter>(),
+                            std::make_unique<NullMediaLog>(),
+                            /*oop_video_decoder=*/{});
+    if (!vd_)
+      return false;
 
-  client_ = client;
-
+    client_ = client;
+  }
+  media::CdmContext* cdm_context = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  is_encrypted_ = config.is_encrypted();
+  if (is_encrypted_)
+    cdm_context = chromeos::ChromeOsCdmFactory::GetArcCdmContext();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   VideoDecoderConfig vd_config(
       VideoCodecProfileToVideoCodec(config.profile), config.profile,
       VideoDecoderConfig::AlphaMode::kIsOpaque, config.container_color_space,
       VideoTransformation(), config.initial_expected_coded_size,
       gfx::Rect(config.initial_expected_coded_size),
       config.initial_expected_coded_size, std::vector<uint8_t>(),
-      EncryptionScheme::kUnencrypted);
+      config.encryption_scheme);
   auto init_cb =
       base::BindOnce(&VdVideoDecodeAccelerator::OnInitializeDone, weak_this_);
   auto output_cb =
       base::BindRepeating(&VdVideoDecodeAccelerator::OnFrameReady, weak_this_);
-  vd_->Initialize(std::move(vd_config), false /* low_delay */,
-                  nullptr /* cdm_context */, std::move(init_cb),
-                  std::move(output_cb), WaitingCB());
+  vd_->Initialize(std::move(vd_config), false /* low_delay */, cdm_context,
+                  std::move(init_cb), std::move(output_cb), base::DoNothing());
   return true;
 }
 
-void VdVideoDecodeAccelerator::OnInitializeDone(Status status) {
+void VdVideoDecodeAccelerator::OnInitializeDone(DecoderStatus status) {
   DVLOGF(3) << "success: " << status.is_ok();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
@@ -170,7 +285,21 @@ void VdVideoDecodeAccelerator::OnInitializeDone(Status status) {
 }
 
 void VdVideoDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer) {
-  Decode(bitstream_buffer.ToDecoderBuffer(), bitstream_buffer.id());
+  const int32_t bitstream_id = bitstream_buffer.id();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_encrypted_) {
+    scoped_refptr<DecoderBuffer> buffer =
+        DecryptBitstreamBuffer(std::move(bitstream_buffer));
+    // This happens in the error case.
+    if (!buffer) {
+      OnError(FROM_HERE, PLATFORM_FAILURE);
+      return;
+    }
+    Decode(std::move(buffer), bitstream_id);
+    return;
+  }
+#endif  // BUILFLAG(IS_CHROMEOS_ASH)
+  Decode(bitstream_buffer.ToDecoderBuffer(), bitstream_id);
 }
 
 void VdVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -190,12 +319,13 @@ void VdVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
 }
 
 void VdVideoDecodeAccelerator::OnDecodeDone(int32_t bitstream_buffer_id,
-                                            Status status) {
-  DVLOGF(4) << "status: " << status.code();
+                                            DecoderStatus status) {
+  DVLOGF(4) << "status: " << status.group() << ":"
+            << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
 
-  if (!status.is_ok() && status.code() != StatusCode::kAborted) {
+  if (!status.is_ok() && status.code() != DecoderStatus::Codes::kAborted) {
     OnError(FROM_HERE, PLATFORM_FAILURE);
     return;
   }
@@ -209,7 +339,7 @@ void VdVideoDecodeAccelerator::OnFrameReady(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame);
   DCHECK(client_);
 
-  base::Optional<Picture> picture = GetPicture(*frame);
+  absl::optional<Picture> picture = GetPicture(*frame);
   if (!picture) {
     VLOGF(1) << "Failed to get picture.";
     OnError(FROM_HERE, PLATFORM_FAILURE);
@@ -241,16 +371,16 @@ void VdVideoDecodeAccelerator::Flush() {
       base::BindOnce(&VdVideoDecodeAccelerator::OnFlushDone, weak_this_));
 }
 
-void VdVideoDecodeAccelerator::OnFlushDone(Status status) {
-  DVLOGF(3) << "status: " << status.code();
+void VdVideoDecodeAccelerator::OnFlushDone(DecoderStatus status) {
+  DVLOGF(3) << "status: " << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
 
   switch (status.code()) {
-    case StatusCode::kOk:
+    case DecoderStatus::Codes::kOk:
       client_->NotifyFlushDone();
       break;
-    case StatusCode::kAborted:
+    case DecoderStatus::Codes::kAborted:
       // Do nothing.
       break;
     default:
@@ -264,6 +394,17 @@ void VdVideoDecodeAccelerator::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(vd_);
 
+  if (is_resetting_) {
+    VLOGF(1) << "The previous Reset() has not finished yet, aborted.";
+    return;
+  }
+
+  is_resetting_ = true;
+  if (notify_layout_changed_cb_) {
+    std::move(notify_layout_changed_cb_).Run(CroStatus::Codes::kResetRequired);
+    import_frame_cb_.Reset();
+  }
+
   vd_->Reset(
       base::BindOnce(&VdVideoDecodeAccelerator::OnResetDone, weak_this_));
 }
@@ -272,7 +413,9 @@ void VdVideoDecodeAccelerator::OnResetDone() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
+  DCHECK(is_resetting_);
 
+  is_resetting_ = false;
   client_->NotifyResetDone();
 }
 
@@ -288,14 +431,21 @@ void VdVideoDecodeAccelerator::RequestFrames(
   DCHECK(client_);
   DCHECK(!notify_layout_changed_cb_);
 
-  notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
-  import_frame_cb_ = std::move(import_frame_cb);
-
   // Stop tracking currently-allocated pictures, otherwise the count will be
   // corrupted as we import new frames with the same IDs as the old ones.
   // The client should still have its own reference to the frame data, which
   // will keep it valid for as long as it needs it.
   picture_at_client_.clear();
+
+  notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
+  import_frame_cb_ = std::move(import_frame_cb);
+  // We need to check if Reset() was received before RequestFrames() so that we
+  // can unblock the frame pool in that case.
+  if (is_resetting_) {
+    std::move(notify_layout_changed_cb_).Run(CroStatus::Codes::kResetRequired);
+    import_frame_cb_.Reset();
+    return;
+  }
 
   // After calling ProvidePictureBuffersWithVisibleRect(), the client might
   // still send buffers with old coded size. We temporarily store at
@@ -324,6 +474,9 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   DVLOGF(4) << "picture_buffer_id: " << picture_buffer_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
+  if (!import_frame_cb_)
+    return;
+
   // The first imported picture after requesting buffers.
   // |notify_layout_changed_cb_| must be called in this clause because it blocks
   // VdaVideoFramePool.
@@ -331,10 +484,14 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
     auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
     if (!fourcc) {
       VLOGF(1) << "Failed to convert to Fourcc.";
-      std::move(notify_layout_changed_cb_).Run(base::nullopt);
+      import_frame_cb_.Reset();
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
     }
 
+    CHECK(media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
+                                             gmb_handle));
     const uint64_t modifier = gmb_handle.type == gfx::NATIVE_PIXMAP
                                   ? gmb_handle.native_pixmap_handle.modifier
                                   : gfx::NativePixmapHandle::kNoModifier;
@@ -349,30 +506,67 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", coded_size: " << coded_size_.ToString()
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
-      std::move(notify_layout_changed_cb_).Run(base::nullopt);
+      import_frame_cb_.Reset();
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
     }
 
-    std::move(notify_layout_changed_cb_)
-        .Run(GpuBufferLayout::Create(*fourcc, coded_size_, planes, modifier));
+    auto gb_layout =
+        GpuBufferLayout::Create(*fourcc, coded_size_, planes, modifier);
+    if (!gb_layout) {
+      VLOGF(1) << "Failed to create GpuBufferLayout. fourcc: "
+               << fourcc->ToString()
+               << ", coded_size: " << coded_size_.ToString()
+               << ", planes: " << VectorToString(planes)
+               << ", modifier: " << std::hex << modifier;
+      layout_ = absl::nullopt;
+      import_frame_cb_.Reset();
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
+      return;
+    }
+    std::move(notify_layout_changed_cb_).Run(*gb_layout);
   }
 
   if (!layout_)
     return;
 
+  CHECK(media::VerifyGpuMemoryBufferHandle(pixel_format, layout_->coded_size(),
+                                           gmb_handle));
+  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
+  CHECK(buffer_format);
+  // Usage is SCANOUT_VDA_WRITE because we are just wrapping the dmabuf in a
+  // GpuMemoryBuffer. This buffer is just for decoding purposes, so having
+  // the dmabufs mmapped is not necessary.
+  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+      gpu::GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
+          std::move(gmb_handle), layout_->coded_size(), *buffer_format,
+          gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
+  if (!gpu_memory_buffer) {
+    VLOGF(1) << "Failed to create GpuMemoryBuffer. format: "
+             << gfx::BufferFormatToString(*buffer_format)
+             << ", coded_size: " << layout_->coded_size().ToString();
+    return;
+  }
+
+  const gpu::MailboxHolder mailbox_holder[VideoFrame::kMaxPlanes] = {};
   // VideoFrame::WrapVideoFrame() will check whether the updated visible_rect
   // is sub rect of the original visible_rect. Therefore we set visible_rect
   // as large as coded_size to guarantee this condition.
-  scoped_refptr<VideoFrame> origin_frame = VideoFrame::WrapExternalDmabufs(
-      *layout_, gfx::Rect(coded_size_), coded_size_,
-      ExtractFds(std::move(gmb_handle)), base::TimeDelta());
-  DmabufId dmabuf_id = DmabufVideoFramePool::GetDmabufId(*origin_frame);
-  auto res = frame_id_to_picture_id_.emplace(dmabuf_id, picture_buffer_id);
-  // |dmabuf_id| should not be inside the map before insertion.
+  scoped_refptr<VideoFrame> origin_frame =
+      VideoFrame::WrapExternalGpuMemoryBuffer(
+          gfx::Rect(layout_->coded_size()), layout_->coded_size(),
+          std::move(gpu_memory_buffer), mailbox_holder, base::NullCallback(),
+          base::TimeDelta());
+
+  auto res = frame_id_to_picture_id_.emplace(
+      origin_frame->GetGpuMemoryBuffer()->GetId(), picture_buffer_id);
+  // The frame ID should not be inside the map before insertion.
   DCHECK(res.second);
 
   // |wrapped_frame| is used to keep |origin_frame| alive until everyone
-  // released |wrapped_frame|. Then DmabufId will be available at
+  // released |wrapped_frame|. Then GpuMemoryBufferId will be available at
   // OnFrameReleased().
   scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
       origin_frame, origin_frame->format(), origin_frame->visible_rect(),
@@ -391,31 +585,29 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
              << " still referenced, dropping it.";
   }
 
-  DCHECK(import_frame_cb_);
   import_frame_cb_.Run(std::move(wrapped_frame));
 }
 
-base::Optional<Picture> VdVideoDecodeAccelerator::GetPicture(
+absl::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
     const VideoFrame& frame) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  auto it =
-      frame_id_to_picture_id_.find(DmabufVideoFramePool::GetDmabufId(frame));
+  auto it = frame_id_to_picture_id_.find(frame.GetGpuMemoryBuffer()->GetId());
   if (it == frame_id_to_picture_id_.end()) {
     VLOGF(1) << "Failed to find the picture buffer id.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   int32_t picture_buffer_id = it->second;
   int32_t bitstream_id = FakeTimestampToBitstreamId(frame.timestamp());
-  return base::make_optional(Picture(picture_buffer_id, bitstream_id,
+  return absl::make_optional(Picture(picture_buffer_id, bitstream_id,
                                      frame.visible_rect(), frame.ColorSpace(),
                                      frame.metadata().allow_overlay));
 }
 
 // static
 void VdVideoDecodeAccelerator::OnFrameReleasedThunk(
-    base::Optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
+    absl::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
   DVLOGF(4);
@@ -431,8 +623,8 @@ void VdVideoDecodeAccelerator::OnFrameReleased(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  auto it = frame_id_to_picture_id_.find(
-      DmabufVideoFramePool::GetDmabufId(*origin_frame));
+  auto it =
+      frame_id_to_picture_id_.find(origin_frame->GetGpuMemoryBuffer()->GetId());
   DCHECK(it != frame_id_to_picture_id_.end());
   int32_t picture_buffer_id = it->second;
   frame_id_to_picture_id_.erase(it);

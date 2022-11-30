@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_injector.h"
 
 namespace remoting {
@@ -19,6 +18,9 @@ class InputInjectorChromeos : public InputInjector {
  public:
   explicit InputInjectorChromeos(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  InputInjectorChromeos(const InputInjectorChromeos&) = delete;
+  InputInjectorChromeos& operator=(const InputInjectorChromeos&) = delete;
 
   ~InputInjectorChromeos() override;
 
@@ -41,8 +43,6 @@ class InputInjectorChromeos : public InputInjector {
   // Task runner for input injection.
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorChromeos);
 };
 
 }  // namespace remoting

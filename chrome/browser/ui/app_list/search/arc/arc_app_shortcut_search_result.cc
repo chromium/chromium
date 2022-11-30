@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,20 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -33,47 +36,51 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
     arc::mojom::AppShortcutItemPtr data,
     Profile* profile,
     AppListControllerDelegate* list_controller,
-    bool is_recommendation)
+    bool is_recommendation,
+    const std::u16string& query,
+    const std::string& details)
     : data_(std::move(data)),
       profile_(profile),
       list_controller_(list_controller) {
-  SetTitle(base::UTF8ToUTF16(data_->short_label));
+  const auto title = base::UTF8ToUTF16(data_->short_label);
+  SetTitle(title);
+  SetDetails(base::UTF8ToUTF16(details));
+  if (!query.empty())
+    SetTitleTags(CalculateTags(query, title));
   set_id(kAppShortcutSearchPrefix + GetAppId() + "/" + data_->shortcut_id);
+  SetCategory(Category::kAppShortcuts);
   SetAccessibleName(ComputeAccessibleName());
   SetResultType(ash::AppListSearchResultType::kArcAppShortcut);
   SetDisplayType(ash::SearchResultDisplayType::kTile);
   SetMetricsType(ash::PLAY_STORE_APP_SHORTCUT);
   SetIsRecommendation(is_recommendation);
 
-  const int icon_dimension =
-      ash::SharedAppListConfig::instance().search_tile_icon_dimension();
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    DCHECK(data_->icon);
-    apps::ArcRawIconPngDataToImageSkia(
-        std::move(data_->icon), icon_dimension,
-        base::BindOnce(&ArcAppShortcutSearchResult::SetIcon,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else if (data_->icon && data_->icon->icon_png_data &&
-             !data_->icon->icon_png_data->empty()) {
-    icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-        base::BindOnce(&ArcAppShortcutSearchResult::SetIcon,
-                       weak_ptr_factory_.GetWeakPtr()),
-        icon_dimension);
-    icon_decode_request_->StartWithOptions(data_->icon->icon_png_data.value());
+  if (!data_->icon || !data_->icon->icon_png_data ||
+      data_->icon->icon_png_data->empty()) {
+    UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutSearchResult.ShortcutStatus",
+                              arc::ArcAppShortcutStatus::kEmpty);
   } else {
-    // TODO(crbug.com/1083331): Remove when the ARC change is rolled in Chrome
-    // OS.
-    icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-        base::BindOnce(&ArcAppShortcutSearchResult::SetIcon,
-                       weak_ptr_factory_.GetWeakPtr()),
-        icon_dimension);
-    icon_decode_request_->StartWithOptions(data_->icon_png);
+    UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutSearchResult.ShortcutStatus",
+                              arc::ArcAppShortcutStatus::kNotEmpty);
   }
 
-  badge_icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
-      profile_,
-      ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),
-      this);
+  const int icon_dimension =
+      ash::SharedAppListConfig::instance().search_tile_icon_dimension();
+  DCHECK(data_->icon);
+  apps::ArcRawIconPngDataToImageSkia(
+      std::move(data_->icon), icon_dimension,
+      base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // With categorical search enabled, app results are displayed as normal list
+  // items.
+  const int badge_size = app_list_features::IsCategoricalSearchEnabled()
+                             ? ash::SharedAppListConfig::instance()
+                                   .search_list_badge_icon_dimension()
+                             : ash::SharedAppListConfig::instance()
+                                   .search_tile_badge_icon_dimension();
+  badge_icon_loader_ =
+      std::make_unique<AppServiceAppIconLoader>(profile_, badge_size, this);
   badge_icon_loader_->FetchImage(GetAppId());
 }
 
@@ -109,6 +116,10 @@ std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
   return l10n_util::GetStringFUTF16(IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME,
                                     base::UTF8ToUTF16(data_->short_label),
                                     base::UTF8ToUTF16(app_info->name));
+}
+
+void ArcAppShortcutSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
+  SetIcon(IconInfo(icon, GetAppIconDimension()));
 }
 
 }  // namespace app_list

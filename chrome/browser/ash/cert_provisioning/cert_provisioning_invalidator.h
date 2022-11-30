@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/chromeos/policy/affiliated_invalidation_service_provider.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -75,6 +75,10 @@ class CertProvisioningInvalidationHandler
   // false otherwise.
   bool Register();
 
+  // Sequence checker to ensure that calls from invalidation service are
+  // consecutive.
+  SEQUENCE_CHECKER(sequence_checker_);
+
   struct State {
     bool is_registered;
     bool is_invalidation_service_enabled;
@@ -90,22 +94,21 @@ class CertProvisioningInvalidationHandler
   // An invalidation service providing the handler with incoming invalidations.
   invalidation::InvalidationService* const invalidation_service_;
 
-  ScopedObserver<
-      invalidation::InvalidationService,
-      invalidation::InvalidationHandler,
-      &invalidation::InvalidationService::RegisterInvalidationHandler,
-      &invalidation::InvalidationService::UnregisterInvalidationHandler>
-      invalidation_service_observer_{this};
-
   // A topic representing certificate invalidations.
   const invalidation::Topic topic_;
 
   // A callback to be called on incoming invalidation event.
   const OnInvalidationCallback on_invalidation_callback_;
 
-  // Sequence checker to ensure that calls from invalidation service are
-  // consecutive.
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Automatically unregisters `this` as an observer on destruction. Should be
+  // destroyed first so the other fields are still valid and can be used during
+  // the unregistration.
+  base::ScopedObservation<
+      invalidation::InvalidationService,
+      invalidation::InvalidationHandler,
+      &invalidation::InvalidationService::RegisterInvalidationHandler,
+      &invalidation::InvalidationService::UnregisterInvalidationHandler>
+      invalidation_service_observation_{this};
 };
 
 }  // namespace internal

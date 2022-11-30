@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
+#include "chrome/browser/download/android/download_callback_validator.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -32,6 +34,9 @@
 class DownloadController : public DownloadControllerBase {
  public:
   static DownloadController* GetInstance();
+
+  DownloadController(const DownloadController&) = delete;
+  DownloadController& operator=(const DownloadController&) = delete;
 
   // DownloadControllerBase implementation.
   void AcquireFileAccessPermission(
@@ -54,20 +59,22 @@ class DownloadController : public DownloadControllerBase {
   };
   static void RecordStoragePermission(StoragePermissionType type);
 
-  static void CloseTabIfEmpty(content::WebContents* web_contents);
+  // Close the |web_contents| for |download|. |download| could be null
+  // if the download is created by Android DownloadManager.
+  static void CloseTabIfEmpty(content::WebContents* web_contents,
+                              download::DownloadItem* download);
 
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired, which permission to update.
   using AcquirePermissionCallback =
       base::OnceCallback<void(bool, const std::string&)>;
 
+  DownloadCallbackValidator* validator() { return &validator_; }
+
  private:
   friend struct base::DefaultSingletonTraits<DownloadController>;
   DownloadController();
   ~DownloadController() override;
-
-  // Helper method for implementing AcquireFileAccessPermission().
-  bool HasFileAccessPermission();
 
   // DownloadControllerBase implementation.
   void OnDownloadStarted(download::DownloadItem* download_item) override;
@@ -105,7 +112,9 @@ class DownloadController : public DownloadControllerBase {
   // from the beginning and all downloaded data will be lost.
   StrongValidatorsMap strong_validators_map_;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadController);
+  DownloadCallbackValidator validator_;
+
+  std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_

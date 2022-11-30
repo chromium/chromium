@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,19 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "ui/base/x/visual_picker_glx.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
@@ -30,9 +31,10 @@
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_presentation_helper.h"
-#include "ui/gl/gl_visual_picker_glx.h"
 #include "ui/gl/glx_util.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
@@ -101,6 +103,10 @@ class OMLSyncControlVSyncProvider : public SyncControlVSyncProvider {
   explicit OMLSyncControlVSyncProvider(GLXWindow glx_window)
       : SyncControlVSyncProvider(), glx_window_(glx_window) {}
 
+  OMLSyncControlVSyncProvider(const OMLSyncControlVSyncProvider&) = delete;
+  OMLSyncControlVSyncProvider& operator=(const OMLSyncControlVSyncProvider&) =
+      delete;
+
   ~OMLSyncControlVSyncProvider() override = default;
 
  protected:
@@ -132,8 +138,6 @@ class OMLSyncControlVSyncProvider : public SyncControlVSyncProvider {
 
  private:
   GLXWindow glx_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(OMLSyncControlVSyncProvider);
 };
 
 class SGIVideoSyncThread : public base::Thread,
@@ -161,6 +165,9 @@ class SGIVideoSyncThread : public base::Thread,
     }
     return g_video_sync_thread;
   }
+
+  SGIVideoSyncThread(const SGIVideoSyncThread&) = delete;
+  SGIVideoSyncThread& operator=(const SGIVideoSyncThread&) = delete;
 
   x11::Connection* GetConnection() {
     DCHECK(task_runner()->BelongsToCurrentThread());
@@ -219,8 +226,6 @@ class SGIVideoSyncThread : public base::Thread,
   GLXContext context_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SGIVideoSyncThread);
 };
 
 class SGIVideoSyncProviderThreadShim {
@@ -237,6 +242,11 @@ class SGIVideoSyncProviderThreadShim {
     // is executing in the same thread as the call to create |parent_window_|.
     x11::Connection::Get()->Sync();
   }
+
+  SGIVideoSyncProviderThreadShim(const SGIVideoSyncProviderThreadShim&) =
+      delete;
+  SGIVideoSyncProviderThreadShim& operator=(
+      const SGIVideoSyncProviderThreadShim&) = delete;
 
   ~SGIVideoSyncProviderThreadShim() {
     auto* connection = vsync_thread_->GetConnection();
@@ -320,7 +330,7 @@ class SGIVideoSyncProviderThreadShim {
 
  private:
   gfx::AcceleratedWidget parent_window_;
-  SGIVideoSyncThread* vsync_thread_;
+  raw_ptr<SGIVideoSyncThread> vsync_thread_;
   x11::Window window_ = x11::Window::None;
   GLXWindow glx_window_;
 
@@ -328,8 +338,6 @@ class SGIVideoSyncProviderThreadShim {
 
   base::AtomicFlag cancel_vsync_flag_;
   base::Lock vsync_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SGIVideoSyncProviderThreadShim);
 };
 
 class SGIVideoSyncVSyncProvider
@@ -346,6 +354,10 @@ class SGIVideoSyncVSyncProvider
         FROM_HERE, base::BindOnce(&SGIVideoSyncProviderThreadShim::Initialize,
                                   base::Unretained(shim_.get())));
   }
+
+  SGIVideoSyncVSyncProvider(const SGIVideoSyncVSyncProvider&) = delete;
+  SGIVideoSyncVSyncProvider& operator=(const SGIVideoSyncVSyncProvider&) =
+      delete;
 
   ~SGIVideoSyncVSyncProvider() override {
     {
@@ -398,10 +410,8 @@ class SGIVideoSyncVSyncProvider
   // Raw pointers to sync primitives owned by the shim_.
   // These will only be referenced before we post a task to destroy
   // the shim_, so they are safe to access.
-  base::AtomicFlag* cancel_vsync_flag_;
-  base::Lock* vsync_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SGIVideoSyncVSyncProvider);
+  raw_ptr<base::AtomicFlag> cancel_vsync_flag_;
+  raw_ptr<base::Lock> vsync_lock_;
 };
 
 SGIVideoSyncThread* SGIVideoSyncThread::g_video_sync_thread = nullptr;
@@ -411,7 +421,10 @@ x11::Connection* SGIVideoSyncThread::g_connection = nullptr;
 
 bool GLSurfaceGLX::initialized_ = false;
 
-GLSurfaceGLX::GLSurfaceGLX() = default;
+GLSurfaceGLX::GLSurfaceGLX() {
+  display_ =
+      GLDisplayManagerX11::GetInstance()->GetDisplay(GpuPreference::kDefault);
+}
 
 bool GLSurfaceGLX::InitializeOneOff() {
   if (initialized_)
@@ -437,7 +450,7 @@ bool GLSurfaceGLX::InitializeOneOff() {
     return false;
   }
 
-  auto* visual_picker = gl::GLVisualPickerGLX::GetInstance();
+  auto* visual_picker = ui::VisualPickerGlx::GetInstance();
   auto visual_id = visual_picker->rgba_visual();
   if (visual_id == x11::VisualId{})
     visual_id = visual_picker->system_visual();
@@ -584,8 +597,8 @@ bool GLSurfaceGLX::IsOMLSyncControlSupported() {
   return g_glx_oml_sync_control_supported;
 }
 
-void* GLSurfaceGLX::GetDisplay() {
-  return x11::Connection::Get()->GetXlibDisplay();
+GLDisplay* GLSurfaceGLX::GetGLDisplay() {
+  return display_;
 }
 
 GLSurfaceGLX::~GLSurfaceGLX() = default;
@@ -616,11 +629,11 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 
   window_ = conn->GenerateId<x11::Window>();
   x11::CreateWindowRequest req{
-      .depth = g_depth,
+      .depth = static_cast<uint8_t>(g_depth),
       .wid = window_,
       .parent = static_cast<x11::Window>(parent_window_),
-      .width = size_.width(),
-      .height = size_.height(),
+      .width = static_cast<uint16_t>(size_.width()),
+      .height = static_cast<uint16_t>(size_.height()),
       .c_class = x11::WindowClass::InputOutput,
       .visual = g_visual,
       .background_pixmap = x11::Pixmap::None,
@@ -710,7 +723,8 @@ bool NativeViewGLSurfaceGLX::IsOffscreen() {
 }
 
 gfx::SwapResult NativeViewGLSurfaceGLX::SwapBuffers(
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    FrameData data) {
   TRACE_EVENT2("gpu", "NativeViewGLSurfaceGLX:RealSwapBuffers", "width",
                GetSize().width(), "height", GetSize().height());
   GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
@@ -762,7 +776,8 @@ gfx::SwapResult NativeViewGLSurfaceGLX::PostSubBuffer(
     int y,
     int width,
     int height,
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    FrameData data) {
   DCHECK(g_driver_glx.ext.b_GLX_MESA_copy_sub_buffer);
 
   GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
@@ -834,11 +849,11 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
   auto* conn = x11::Connection::Get();
   window_ = conn->GenerateId<x11::Window>();
   conn->CreateWindow(x11::CreateWindowRequest{
-                         .depth = g_depth,
+                         .depth = static_cast<uint8_t>(g_depth),
                          .wid = window_,
                          .parent = parent_window,
-                         .width = size_.width(),
-                         .height = size_.height(),
+                         .width = static_cast<uint16_t>(size_.width()),
+                         .height = static_cast<uint16_t>(size_.height()),
                          .c_class = x11::WindowClass::InputOutput,
                          .visual = g_visual,
                          .border_pixel = 0,
@@ -879,7 +894,8 @@ bool UnmappedNativeViewGLSurfaceGLX::IsOffscreen() {
 }
 
 gfx::SwapResult UnmappedNativeViewGLSurfaceGLX::SwapBuffers(
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    FrameData data) {
   NOTREACHED() << "Attempted to call SwapBuffers on an unmapped window.";
   return gfx::SwapResult::SWAP_FAILED;
 }

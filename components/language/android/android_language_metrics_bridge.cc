@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,4 +23,14 @@ JNI_AndroidLanguageMetricsBridge_ReportExplicitLanguageAskStateChanged(
       added ? kTranslateExplicitLanguageAskLanguageAdded
             : kTranslateExplicitLanguageAskLanguageRemoved,
       base::HashMetricName(base::android::ConvertJavaStringToUTF8(language)));
+}
+
+// Records the HashMetric of |value| in the sparse histogram |histogramName|.
+static void JNI_AndroidLanguageMetricsBridge_ReportHashMetricName(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& histogramName,
+    const base::android::JavaParamRef<jstring>& value) {
+  base::UmaHistogramSparse(
+      base::android::ConvertJavaStringToUTF8(histogramName),
+      base::HashMetricName(base::android::ConvertJavaStringToUTF8(value)));
 }

@@ -1,0 +1,101 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+// KeyboardLayout structures and enums which are shared over IPC channel between
+// the desktop and network processes.
+// The constructs in this file are mirrors of their corresponding types in:
+//   - //remoting/proto/control.proto
+//   - //remoting/proto/layout_key_function.proto
+
+// This enum mirrors remoting::protocol::LayoutKeyFunction.
+enum LayoutKeyFunction {
+  kUnknown,
+  kControl,
+  kAlt,
+  kShift,
+  kMeta,
+  kAltGr,
+  kMod5,
+  kCompose,
+  kNumLock,
+  kCapsLock,
+  kScrollLock,
+  kBackspace,
+  kEnter,
+  kTab,
+  kInsert,
+  kDelete,
+  kHome,
+  kEnd,
+  kPageUp,
+  kPageDown,
+  kClear,
+  kArrowUp,
+  kArrowDown,
+  kArrowLeft,
+  kArrowRight,
+  kF1,
+  kF2,
+  kF3,
+  kF4,
+  kF5,
+  kF6,
+  kF7,
+  kF8,
+  kF9,
+  kF10,
+  kF11,
+  kF12,
+  kF13,
+  kF14,
+  kF15,
+  kF16,
+  kF17,
+  kF18,
+  kF19,
+  kF20,
+  kF21,
+  kF22,
+  kF23,
+  kF24,
+  kEscape,
+  kContextMenu,
+  kPause,
+  kPrintScreen,
+  kHankakuZenkakuKanji,
+  kHenkan,
+  kMuhenkan,
+  kKatakanaHiriganaRomaji,
+  kKana,
+  kEisu,
+  kHanYeong,
+  kHanja,
+  kOption,
+  kCommand,
+  kSearch,
+};
+
+// This union mirrors remoting::protocol::KeyAction.
+union KeyAction {
+  // Represents a non-printable key.
+  LayoutKeyFunction function;
+  // Represents the character generated when the key is pressed.
+  string character;
+};
+
+// This struct mirrors remoting::protocol::KeyBehavior.
+struct KeyBehavior {
+  // Maps 0-based shift level to key action.
+  // Note: because this is zero-based, it will be one less than the
+  // corresponding ISO shift level)
+  map<uint32, KeyAction> actions;
+};
+
+// This struct mirrors remoting::protocol::KeyboardLayout.
+struct KeyboardLayout {
+  // Map USB code to key behavior.
+  map<uint32, KeyBehavior> keys;
+};

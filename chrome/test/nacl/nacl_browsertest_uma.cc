@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ void FetchHistogramsFromChildProcesses() {
 }
 
 // TODO(crbug.com/1138451): Flaky on Win-32
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_SuccessfulLoadUMA DISABLED_SuccessfulLoadUMA
 #else
 #define MAYBE_SuccessfulLoadUMA SuccessfulLoadUMA
@@ -129,7 +129,13 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_SuccessfulLoadUMA, {
 })
 
 // Test that a successful load adds stats to Subzero buckets.
-IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, SuccessfulLoadUMA) {
+// Test is flaky on Win7 (32).
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_SuccessfulLoadUMA DISABLED_SuccessfulLoadUMA
+#else
+#define MAYBE_SuccessfulLoadUMA SuccessfulLoadUMA
+#endif
+IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, MAYBE_SuccessfulLoadUMA) {
   // Only test where Subzero is supported.
   if (!IsSubzeroSupportedForArch())
     return;
@@ -266,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestGLibcVcacheExtension,
 // Test that validation for the 2 (or 3) PNaCl translator nexes can be cached.
 // This includes pnacl-llc.nexe, pnacl-ld.nexe, and possibly pnacl-sz.nexe.
 // Flaky on Windows https://crbug.com/1059468#c18
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_ValidationCacheOfTranslatorNexes \
   DISABLED_ValidationCacheOfTranslatorNexes
 #else

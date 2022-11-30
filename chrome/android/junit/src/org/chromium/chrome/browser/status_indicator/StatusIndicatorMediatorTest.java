@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -41,6 +42,8 @@ public class StatusIndicatorMediatorTest {
 
     @Mock
     BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock
+    TabObscuringHandler mTabObscuringHandler;
     @Mock
     View mStatusIndicatorView;
     @Mock
@@ -71,8 +74,8 @@ public class StatusIndicatorMediatorTest {
                          .with(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE)
                          .with(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false)
                          .build();
-        mMediator = new StatusIndicatorMediator(
-                mBrowserControlsStateProvider, () -> Color.WHITE, mCanAnimateNativeBrowserControls);
+        mMediator = new StatusIndicatorMediator(mBrowserControlsStateProvider, mTabObscuringHandler,
+                () -> Color.WHITE, mCanAnimateNativeBrowserControls);
         mMediator.initialize(mModel, mRegisterResource, mUnregisterResource,
                 mInvalidateCompositorView, mRequestLayout);
     }

@@ -11,7 +11,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of a pair of nth-child selectors.",
             run: function() {
-                var rule = applyCSSRule("div:nth-child(1) div:nth-child(1) div { color: red; }");
+                var rule = applyCSSRule("div:nth-child(1) div:nth-child(1) div { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

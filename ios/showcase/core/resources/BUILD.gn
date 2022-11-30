@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,9 +25,10 @@ bundle_data("icons") {
     "Icon-180.png",
     "Icon-29.png",
     "Icon-58.png",
-    "Icon-76.png",
     "Icon-80.png",
     "Icon-87.png",
+    "Sample-banner-tall.png",
+    "Sample-banner.png",
     "Sample-screenshot-portrait.png",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,6 +127,9 @@ class SetupSingletonTest : public base::MultiProcessTest {
  public:
   SetupSingletonTest() = default;
 
+  SetupSingletonTest(const SetupSingletonTest&) = delete;
+  SetupSingletonTest& operator=(const SetupSingletonTest&) = delete;
+
   void SetUp() override { ASSERT_TRUE(install_dir_.CreateUniqueTempDir()); }
 
   base::CommandLine MakeCmdLine(const std::string& procname) override {
@@ -148,8 +151,6 @@ class SetupSingletonTest : public base::MultiProcessTest {
 
  private:
   base::ScopedTempDir install_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetupSingletonTest);
 };
 
 }  // namespace

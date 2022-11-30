@@ -1,18 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_PAINT_FILTER_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_PAINT_FILTER_EFFECT_H_
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT PaintFilterEffect : public FilterEffect {
  public:
-  PaintFilterEffect(Filter*, const PaintFlags&);
+  PaintFilterEffect(Filter*, const cc::PaintFlags&);
   ~PaintFilterEffect() override;
 
   FilterEffectType GetFilterEffectType() const override {
@@ -24,7 +24,7 @@ class PLATFORM_EXPORT PaintFilterEffect : public FilterEffect {
   sk_sp<PaintFilter> CreateImageFilter() override;
 
  private:
-  PaintFlags flags_;
+  cc::PaintFlags flags_;
 };
 
 }  // namespace blink

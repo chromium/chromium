@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -28,17 +29,6 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace {
-
-void RecursiveSchedulePainter(ui::Layer* layer) {
-  if (!layer)
-    return;
-  layer->SchedulePaint(gfx::Rect(layer->size()));
-  for (auto* child : layer->children())
-    RecursiveSchedulePainter(child);
-}
-
-}  // namespace
 
 // static
 DragWindowResizer* DragWindowResizer::instance_ = nullptr;
@@ -122,10 +112,6 @@ bool DragWindowResizer::ShouldAllowMouseWarp() {
 
 void DragWindowResizer::EndDragImpl() {
   drag_window_controller_.reset();
-
-  // TODO(malaykeshav) - This is temporary fix/workaround that keeps performance
-  // but may not give the best UI while dragging. See https://crbug/834114
-  RecursiveSchedulePainter(GetTarget()->layer());
 
   // Check if the destination is another display.
   if (details().source == wm::WINDOW_MOVE_SOURCE_TOUCH)

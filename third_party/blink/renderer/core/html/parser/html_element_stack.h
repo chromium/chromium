@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ELEMENT_STACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ELEMENT_STACK_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -36,7 +35,6 @@ namespace blink {
 
 class ContainerNode;
 class Element;
-class QualifiedName;
 
 // NOTE: The HTML5 spec uses a backwards (grows downward) stack.  We're using
 // more standard (grows upwards) stack terminology here.
@@ -45,10 +43,14 @@ class HTMLElementStack {
 
  public:
   HTMLElementStack();
+  HTMLElementStack(const HTMLElementStack&) = delete;
+  HTMLElementStack& operator=(const HTMLElementStack&) = delete;
 
   class ElementRecord final : public GarbageCollected<ElementRecord> {
    public:
     ElementRecord(HTMLStackItem*, ElementRecord*);
+    ElementRecord(const ElementRecord&) = delete;
+    ElementRecord& operator=(const ElementRecord&) = delete;
 
     Element* GetElement() const { return item_->GetElement(); }
     ContainerNode* GetNode() const { return item_->GetNode(); }
@@ -70,8 +72,6 @@ class HTMLElementStack {
 
     Member<HTMLStackItem> item_;
     Member<ElementRecord> next_;
-
-    DISALLOW_COPY_AND_ASSIGN(ElementRecord);
   };
 
   unsigned StackDepth() const { return stack_depth_; }
@@ -97,7 +97,7 @@ class HTMLElementStack {
   ElementRecord* TopRecord() const;
   ElementRecord* Find(Element*) const;
   ElementRecord* FurthestBlockForFormattingElement(Element*) const;
-  ElementRecord* Topmost(const AtomicString& tag_name) const;
+  ElementRecord* Topmost(html_names::HTMLTag tag) const;
 
   void InsertAbove(HTMLStackItem*, ElementRecord*);
 
@@ -108,14 +108,11 @@ class HTMLElementStack {
   void PushHTMLBodyElement(HTMLStackItem*);
 
   void Pop();
-  void PopUntil(const AtomicString& tag_name);
+  void PopUntil(html_names::HTMLTag tag);
   void PopUntil(Element*);
-  void PopUntilPopped(const AtomicString& tag_name);
-  void PopUntilPopped(const QualifiedName& tag_name) {
-    PopUntilPopped(tag_name.LocalName());
-  }
-
   void PopUntilPopped(Element*);
+  void PopUntilPopped(html_names::HTMLTag tag);
+
   void PopUntilNumberedHeaderElementPopped();
 
   // "clear the stack back to a table context" in the spec.
@@ -139,19 +136,13 @@ class HTMLElementStack {
   void RemoveHTMLHeadElement(Element*);
 
   bool Contains(Element*) const;
-  bool Contains(const AtomicString& tag_name) const;
 
   bool InScope(Element*) const;
-  bool InScope(const AtomicString& tag_name) const;
-  bool InScope(const QualifiedName&) const;
-  bool InListItemScope(const AtomicString& tag_name) const;
-  bool InListItemScope(const QualifiedName&) const;
-  bool InTableScope(const AtomicString& tag_name) const;
-  bool InTableScope(const QualifiedName&) const;
-  bool InButtonScope(const AtomicString& tag_name) const;
-  bool InButtonScope(const QualifiedName&) const;
-  bool InSelectScope(const AtomicString& tag_name) const;
-  bool InSelectScope(const QualifiedName&) const;
+  bool InScope(html_names::HTMLTag tag) const;
+  bool InListItemScope(html_names::HTMLTag tag) const;
+  bool InTableScope(html_names::HTMLTag tag) const;
+  bool InButtonScope(html_names::HTMLTag tag) const;
+  bool InSelectScope(html_names::HTMLTag tag) const;
 
   bool HasNumberedHeaderElementInScope() const;
 
@@ -187,8 +178,6 @@ class HTMLElementStack {
   Member<Element> head_element_;
   Member<Element> body_element_;
   unsigned stack_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLElementStack);
 };
 
 }  // namespace blink

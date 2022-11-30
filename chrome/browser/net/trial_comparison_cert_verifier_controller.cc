@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -61,10 +60,10 @@ bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
   is_official_build = true;
 #endif
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  // If the builtin verifier is enabled as the default verifier, the trial does
-  // not make sense.
-  if (base::FeatureList::IsEnabled(net::features::kCertVerifierBuiltinFeature))
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // If the Chrome Root Store is enabled as part of the default verifier, the
+  // trial does not make sense.
+  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed))
     return false;
 #endif
 

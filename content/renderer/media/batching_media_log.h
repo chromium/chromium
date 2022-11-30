@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "media/base/media_log.h"
@@ -40,7 +39,13 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
 
   BatchingMediaLog(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    std::vector<std::unique_ptr<EventHandler>> impl);
+
+  BatchingMediaLog(const BatchingMediaLog&) = delete;
+  BatchingMediaLog& operator=(const BatchingMediaLog&) = delete;
+
   ~BatchingMediaLog() override;
+
+  void Stop() override;
 
   // Will reset |last_ipc_send_time_| with the value of NowTicks().
   void SetTickClockForTesting(const base::TickClock* tick_clock);
@@ -63,9 +68,6 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  // impl for sending queued events.
-  std::vector<std::unique_ptr<EventHandler>> event_handlers_;
-
   // |lock_| protects access to all of the following member variables.  It
   // allows any render process thread to AddEvent(), while preserving their
   // sequence for throttled send on |task_runner_| and coherent retrieval by
@@ -73,34 +75,37 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // guarantees provided by MediaLog, since SendQueuedMediaEvents must also
   // be synchronized with respect to AddEvent.
   mutable base::Lock lock_;
-  const base::TickClock* tick_clock_;
-  base::TimeTicks last_ipc_send_time_;
-  std::vector<media::MediaLogRecord> queued_media_events_;
+  const base::TickClock* tick_clock_ GUARDED_BY(lock_);
+  base::TimeTicks last_ipc_send_time_ GUARDED_BY(lock_);
+  std::vector<media::MediaLogRecord> queued_media_events_ GUARDED_BY(lock_);
+
+  // impl for sending queued events.
+  std::vector<std::unique_ptr<EventHandler>> event_handlers_ GUARDED_BY(lock_);
 
   // For enforcing max 1 pending send.
-  bool ipc_send_pending_;
+  bool ipc_send_pending_ GUARDED_BY(lock_);
 
   // True if we've logged a warning message about exceeding rate limits.
-  bool logged_rate_limit_warning_;
+  bool logged_rate_limit_warning_ GUARDED_BY(lock_);
 
   // Limits the number of events we send over IPC to one.
-  base::Optional<media::MediaLogRecord> last_duration_changed_event_;
-  base::Optional<media::MediaLogRecord> last_buffering_state_event_;
+  absl::optional<media::MediaLogRecord> last_duration_changed_event_
+      GUARDED_BY(lock_);
+  absl::optional<media::MediaLogRecord> last_buffering_state_event_
+      GUARDED_BY(lock_);
 
   // Holds the earliest MEDIA_ERROR_LOG_ENTRY event added to this log. This is
   // most likely to contain the most specific information available describing
   // any eventual fatal error.
   // TODO(wolenetz): Introduce a reset method to clear this in cases like
   // non-fatal error recovery like decoder fallback.
-  base::Optional<media::MediaLogRecord> cached_media_error_for_message_;
+  absl::optional<media::MediaLogRecord> cached_media_error_for_message_;
 
   // Holds a copy of the most recent PIPELINE_ERROR, if any.
-  base::Optional<media::MediaLogRecord> last_pipeline_error_;
+  absl::optional<media::MediaLogRecord> last_pipeline_error_;
 
   base::WeakPtr<BatchingMediaLog> weak_this_;
   base::WeakPtrFactory<BatchingMediaLog> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BatchingMediaLog);
 };
 
 }  // namespace content

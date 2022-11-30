@@ -1,18 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/send_tab_to_self/send_tab_to_self_entry.h"
-#include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
+#import "base/bind.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "components/send_tab_to_self/send_tab_to_self_entry.h"
+#import "components/send_tab_to_self/send_tab_to_self_model.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -45,7 +45,6 @@ class FakeSendTabToSelfModel : public send_tab_to_self::TestSendTabToSelfModel {
   const SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,
-      base::Time navigation_time,
       const std::string& target_device_cache_guid) override {
     last_entry_ = SendTabToSelfEntry::FromRequiredFields(
         "test-guid", url, target_device_cache_guid);
@@ -129,7 +128,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
     item->SetTitle(u"Page title");
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetLastCommittedItem(item.get());
-    // Test nav manager doesn't own its items, so move |item| into the storage
+    // Test nav manager doesn't own its items, so move `item` into the storage
     // vector to define its lifetime.
     navigation_items_.push_back(std::move(item));
     fake_web_state->SetNavigationManager(std::move(navigation_manager));
@@ -159,19 +158,6 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
   // All infobar managers created during tests, for ease of clean-up.
   std::vector<infobars::InfoBarManager*> infobar_managers_;
 };
-
-TEST_F(SendTabToSelfBrowserAgentTest, TestSimpleSendCurrentTab) {
-  AppendNewWebState(GURL("http://www.test.com/test-1"));
-  agent_->SendCurrentTabToDevice(@"device1");
-  EXPECT_EQ(GURL("http://www.test.com/test-1"),
-            model_->GetLastEntry()->GetURL());
-  EXPECT_EQ("device1", model_->GetLastEntry()->GetTargetDeviceSyncCacheGuid());
-}
-
-TEST_F(SendTabToSelfBrowserAgentTest, TestNoActiveWebState) {
-  agent_->SendCurrentTabToDevice(@"device1");
-  EXPECT_EQ(nullptr, model_->GetLastEntry());
-}
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {
   web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));

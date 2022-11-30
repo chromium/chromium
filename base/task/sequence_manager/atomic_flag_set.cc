@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,17 @@ namespace sequence_manager {
 namespace internal {
 
 AtomicFlagSet::AtomicFlagSet(
+<<<<<<< HEAD
     scoped_refptr<AssociatedThreadId> associated_thread)
     : associated_thread_(std::move(associated_thread)),
       ordered_lock_id_(recordreplay::CreateOrderedLock("AtomicFlagSet::Group")) {}
+||||||| 80c960997e61f
+    scoped_refptr<AssociatedThreadId> associated_thread)
+    : associated_thread_(std::move(associated_thread)) {}
+=======
+    scoped_refptr<const AssociatedThreadId> associated_thread)
+    : associated_thread_(std::move(associated_thread)) {}
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 AtomicFlagSet::~AtomicFlagSet() {
   DCHECK(!alloc_list_head_);
@@ -77,8 +85,9 @@ void AtomicFlagSet::AtomicFlag::ReleaseAtomicFlag() {
 
   // If |group_| has become empty delete it.
   if (group_->IsEmpty()) {
-    outer_->RemoveFromPartiallyFreeList(group_);
-    outer_->RemoveFromAllocList(group_);
+    auto ptr = group_.ExtractAsDangling();
+    outer_->RemoveFromPartiallyFreeList(ptr);
+    outer_->RemoveFromAllocList(ptr);
   }
 
   outer_ = nullptr;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_udp.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,9 +23,9 @@ namespace api {
 
 class UDPSocketEventDispatcher;
 
-class UDPSocketAsyncApiFunction : public SocketAsyncApiFunction {
+class UDPSocketApiFunction : public SocketApiFunction {
  protected:
-  ~UDPSocketAsyncApiFunction() override;
+  ~UDPSocketApiFunction() override;
 
   std::unique_ptr<SocketResourceManagerInterface> CreateSocketResourceManager()
       override;
@@ -43,7 +44,7 @@ class UDPSocketExtensionWithDnsLookupFunction
   ResumableUDPSocket* GetUdpSocket(int socket_id);
 };
 
-class SocketsUdpCreateFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpCreateFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.create", SOCKETS_UDP_CREATE)
 
@@ -52,20 +53,14 @@ class SocketsUdpCreateFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpCreateFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SocketsUdpUnitTest, Create);
-
-  mojo::PendingRemote<network::mojom::UDPSocket> socket_;
-  mojo::PendingReceiver<network::mojom::UDPSocketListener>
-      socket_listener_receiver_;
-  std::unique_ptr<sockets_udp::Create::Params> params_;
 };
 
-class SocketsUdpUpdateFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpUpdateFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.update", SOCKETS_UDP_UPDATE)
 
@@ -74,15 +69,11 @@ class SocketsUdpUpdateFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpUpdateFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_udp::Update::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsUdpSetPausedFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpSetPausedFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.setPaused", SOCKETS_UDP_SETPAUSED)
 
@@ -91,16 +82,11 @@ class SocketsUdpSetPausedFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpSetPausedFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_udp::SetPaused::Params> params_;
-  UDPSocketEventDispatcher* socket_event_dispatcher_;
+  // SocketApiFunction
+  ResponseAction Work() override;
 };
 
-class SocketsUdpBindFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpBindFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.bind", SOCKETS_UDP_BIND)
 
@@ -109,14 +95,13 @@ class SocketsUdpBindFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpBindFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
   void OnCompleted(int net_result);
 
  private:
   std::unique_ptr<sockets_udp::Bind::Params> params_;
-  UDPSocketEventDispatcher* socket_event_dispatcher_;
+  raw_ptr<UDPSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
 };
 
 class SocketsUdpSendFunction : public UDPSocketExtensionWithDnsLookupFunction {
@@ -128,9 +113,8 @@ class SocketsUdpSendFunction : public UDPSocketExtensionWithDnsLookupFunction {
  protected:
   ~SocketsUdpSendFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
   void OnCompleted(int net_result);
   void SetSendResult(int net_result, int bytes_sent);
 
@@ -142,10 +126,10 @@ class SocketsUdpSendFunction : public UDPSocketExtensionWithDnsLookupFunction {
 
   std::unique_ptr<sockets_udp::Send::Params> params_;
   scoped_refptr<net::IOBuffer> io_buffer_;
-  size_t io_buffer_size_;
+  size_t io_buffer_size_ = 0;
 };
 
-class SocketsUdpCloseFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpCloseFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.close", SOCKETS_UDP_CLOSE)
 
@@ -154,15 +138,11 @@ class SocketsUdpCloseFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpCloseFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_udp::Close::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsUdpGetInfoFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpGetInfoFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.getInfo", SOCKETS_UDP_GETINFO)
 
@@ -171,15 +151,11 @@ class SocketsUdpGetInfoFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpGetInfoFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_udp::GetInfo::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsUdpGetSocketsFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpGetSocketsFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.getSockets", SOCKETS_UDP_GETSOCKETS)
 
@@ -188,12 +164,11 @@ class SocketsUdpGetSocketsFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpGetSocketsFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsUdpJoinGroupFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpJoinGroupFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.joinGroup", SOCKETS_UDP_JOINGROUP)
 
@@ -202,17 +177,14 @@ class SocketsUdpJoinGroupFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpJoinGroupFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int result);
-
-  std::unique_ptr<sockets_udp::JoinGroup::Params> params_;
 };
 
-class SocketsUdpLeaveGroupFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpLeaveGroupFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.leaveGroup", SOCKETS_UDP_LEAVEGROUP)
 
@@ -221,18 +193,14 @@ class SocketsUdpLeaveGroupFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpLeaveGroupFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int result);
-
-  std::unique_ptr<sockets_udp::LeaveGroup::Params> params_;
 };
 
-class SocketsUdpSetMulticastTimeToLiveFunction
-    : public UDPSocketAsyncApiFunction {
+class SocketsUdpSetMulticastTimeToLiveFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.setMulticastTimeToLive",
                              SOCKETS_UDP_SETMULTICASTTIMETOLIVE)
@@ -242,16 +210,11 @@ class SocketsUdpSetMulticastTimeToLiveFunction
  protected:
   ~SocketsUdpSetMulticastTimeToLiveFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_udp::SetMulticastTimeToLive::Params> params_;
+  // SocketApiFunction
+  ResponseAction Work() override;
 };
 
-class SocketsUdpSetMulticastLoopbackModeFunction
-    : public UDPSocketAsyncApiFunction {
+class SocketsUdpSetMulticastLoopbackModeFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.setMulticastLoopbackMode",
                              SOCKETS_UDP_SETMULTICASTLOOPBACKMODE)
@@ -261,15 +224,11 @@ class SocketsUdpSetMulticastLoopbackModeFunction
  protected:
   ~SocketsUdpSetMulticastLoopbackModeFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_udp::SetMulticastLoopbackMode::Params> params_;
+  // SocketApiFunction
+  ResponseAction Work() override;
 };
 
-class SocketsUdpGetJoinedGroupsFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpGetJoinedGroupsFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.getJoinedGroups",
                              SOCKETS_UDP_GETJOINEDGROUPS)
@@ -279,15 +238,11 @@ class SocketsUdpGetJoinedGroupsFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpGetJoinedGroupsFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_udp::GetJoinedGroups::Params> params_;
+  // SocketApiFunction
+  ResponseAction Work() override;
 };
 
-class SocketsUdpSetBroadcastFunction : public UDPSocketAsyncApiFunction {
+class SocketsUdpSetBroadcastFunction : public UDPSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.udp.setBroadcast",
                              SOCKETS_UDP_SETBROADCAST)
@@ -297,14 +252,11 @@ class SocketsUdpSetBroadcastFunction : public UDPSocketAsyncApiFunction {
  protected:
   ~SocketsUdpSetBroadcastFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int net_result);
-
-  std::unique_ptr<sockets_udp::SetBroadcast::Params> params_;
 };
 
 }  // namespace api

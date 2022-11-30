@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,7 @@ struct FillLayerMethods {
 
 }  // namespace
 
-ValueRange LengthListPropertyFunctions::GetValueRange(
+Length::ValueRange LengthListPropertyFunctions::GetValueRange(
     const CSSProperty& property) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kBackgroundPositionX:
@@ -86,19 +86,18 @@ ValueRange LengthListPropertyFunctions::GetValueRange(
     case CSSPropertyID::kTransformOrigin:
     case CSSPropertyID::kWebkitMaskPositionX:
     case CSSPropertyID::kWebkitMaskPositionY:
-      return kValueRangeAll;
+      return Length::ValueRange::kAll;
 
     case CSSPropertyID::kBorderBottomLeftRadius:
     case CSSPropertyID::kBorderBottomRightRadius:
     case CSSPropertyID::kBorderTopLeftRadius:
     case CSSPropertyID::kBorderTopRightRadius:
     case CSSPropertyID::kStrokeDasharray:
-    case CSSPropertyID::kContainIntrinsicSize:
-      return kValueRangeNonNegative;
+      return Length::ValueRange::kNonNegative;
 
     default:
       NOTREACHED();
-      return kValueRangeAll;
+      return Length::ValueRange::kAll;
   }
 }
 
@@ -132,7 +131,7 @@ static bool AppendToVector(const TransformOrigin& transform_origin,
 bool LengthListPropertyFunctions::GetLengthList(const CSSProperty& property,
                                                 const ComputedStyle& style,
                                                 Vector<Length>& result) {
-  DCHECK(result.IsEmpty());
+  DCHECK(result.empty());
 
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeDasharray: {
@@ -159,8 +158,6 @@ bool LengthListPropertyFunctions::GetLengthList(const CSSProperty& property,
       return AppendToVector(style.BorderTopRightRadius(), result);
     case CSSPropertyID::kTransformOrigin:
       return AppendToVector(style.GetTransformOrigin(), result);
-    case CSSPropertyID::kContainIntrinsicSize:
-      return AppendToVector(style.ContainIntrinsicSize(), result);
 
     case CSSPropertyID::kBackgroundPositionX:
     case CSSPropertyID::kBackgroundPositionY:
@@ -210,7 +207,7 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeDasharray:
       style.SetStrokeDashArray(
-          length_list.IsEmpty()
+          length_list.empty()
               ? nullptr
               : base::MakeRefCounted<SVGDashArray>(std::move(length_list)));
       return;
@@ -239,9 +236,6 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
       return;
     case CSSPropertyID::kBorderTopRightRadius:
       style.SetBorderTopRightRadius(SizeFromVector(length_list));
-      return;
-    case CSSPropertyID::kContainIntrinsicSize:
-      style.SetContainIntrinsicSize(SizeFromVector(length_list));
       return;
 
     case CSSPropertyID::kTransformOrigin:

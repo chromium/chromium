@@ -1,15 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_SUGGESTION_BUTTON_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_SUGGESTION_BUTTON_ROW_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+class OmniboxEditModel;
 class OmniboxPopupContentsView;
 class OmniboxSuggestionRowButton;
 
@@ -22,6 +25,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
  public:
   METADATA_HEADER(OmniboxSuggestionButtonRowView);
   explicit OmniboxSuggestionButtonRowView(OmniboxPopupContentsView* view,
+                                          OmniboxEditModel* model,
                                           int model_index);
   OmniboxSuggestionButtonRowView(const OmniboxSuggestionButtonRowView&) =
       delete;
@@ -29,33 +33,40 @@ class OmniboxSuggestionButtonRowView : public views::View {
       const OmniboxSuggestionButtonRowView&) = delete;
   ~OmniboxSuggestionButtonRowView() override;
 
-  // Called when results background color is refreshed.
-  void OnOmniboxBackgroundChange(SkColor omnibox_bg_color);
+  // Called when the theme state may have changed.
+  void SetThemeState(OmniboxPartState theme_state);
 
   // Updates the suggestion row buttons based on the model.
   void UpdateFromModel();
 
+  // Called when the selected item (row or button) in the popup has changed.
+  void SelectionStateChanged();
+
   views::Button* GetActiveButton() const;
 
  private:
-  // Get the popup model from the view.
-  const OmniboxPopupModel* model() const;
-
   // Digs into the model with index to get the match for owning result view.
   const AutocompleteMatch& match() const;
 
   void SetPillButtonVisibility(OmniboxSuggestionRowButton* button,
-                               OmniboxPopupModel::LineState state);
+                               OmniboxPopupSelection::LineState state);
 
-  void ButtonPressed(OmniboxPopupModel::LineState state,
+  void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
-  OmniboxPopupContentsView* const popup_contents_view_;
+  const raw_ptr<OmniboxPopupContentsView> popup_contents_view_;
+  raw_ptr<OmniboxEditModel> model_;
   size_t const model_index_;
 
-  OmniboxSuggestionRowButton* keyword_button_ = nullptr;
-  OmniboxSuggestionRowButton* pedal_button_ = nullptr;
-  OmniboxSuggestionRowButton* tab_switch_button_ = nullptr;
+  raw_ptr<OmniboxSuggestionRowButton> keyword_button_ = nullptr;
+  // TODO(manukh): Rename `pedal_button_` to `action_button_` as it is shared by
+  //  other actions ('journeys' currently).
+  raw_ptr<OmniboxSuggestionRowButton> pedal_button_ = nullptr;
+  raw_ptr<OmniboxSuggestionRowButton> tab_switch_button_ = nullptr;
+
+  // Which button, if any, was active as of the last call to
+  // SelectionStateChanged().
+  raw_ptr<views::Button> previous_active_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_SUGGESTION_BUTTON_ROW_VIEW_H_

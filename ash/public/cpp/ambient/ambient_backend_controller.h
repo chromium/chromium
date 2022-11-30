@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,22 +10,14 @@
 #include <vector>
 
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace ash {
-
-enum class AmbientModeTopicType {
-  kCurated,
-  kPersonal,
-  kFeatured,
-  kGeo,
-  kCulturalInstitute,
-  kRss,
-  kCapturedOnPixel,
-  kOther,
-};
 
 // AmbientModeTopic contains the information we need for rendering photo frame
 // for Ambient Mode. Corresponding to the |backdrop::ScreenUpdate::Topic| proto.
@@ -33,6 +25,8 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   AmbientModeTopic();
   AmbientModeTopic(const AmbientModeTopic&);
   AmbientModeTopic& operator=(const AmbientModeTopic&);
+  AmbientModeTopic(AmbientModeTopic&&);
+  AmbientModeTopic& operator=(AmbientModeTopic&&);
   ~AmbientModeTopic();
 
   // Details, i.e. the attribution, to be displayed for the current photo on
@@ -42,10 +36,16 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   // Image url.
   std::string url;
 
-  // Only support portrait image tiling in landscape orientation.
-  base::Optional<std::string> related_image_url;
+  std::string related_image_url;
 
-  AmbientModeTopicType topic_type = AmbientModeTopicType::kOther;
+  std::string related_details;
+
+  ::ambient::TopicType topic_type = ::ambient::TopicType::kOther;
+
+  // Whether the original image is portrait or not. Cannot use aspect ratio of
+  // the fetched image to determine it because the fetched image could be
+  // cropped.
+  bool is_portrait = false;
 };
 
 // WeatherInfo contains the weather information we need for rendering a
@@ -58,10 +58,10 @@ struct ASH_PUBLIC_EXPORT WeatherInfo {
   ~WeatherInfo();
 
   // The url of the weather condition icon image.
-  base::Optional<std::string> condition_icon_url;
+  absl::optional<std::string> condition_icon_url;
 
   // Weather temperature in Fahrenheit.
-  base::Optional<float> temp_f;
+  absl::optional<float> temp_f;
 
   // If the temperature should be displayed in celsius. Conversion must happen
   // before the value in temp_f is displayed.
@@ -86,7 +86,7 @@ struct ASH_PUBLIC_EXPORT ScreenUpdate {
   // 2. Fatal errors, such as response parsing failure, happened during the
   // process, and a default |ScreenUpdate| instance was returned to indicate
   // the error.
-  base::Optional<WeatherInfo> weather_info;
+  absl::optional<WeatherInfo> weather_info;
 };
 
 // Interface to manage ambient mode backend.
@@ -95,7 +95,7 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   using OnScreenUpdateInfoFetchedCallback =
       base::OnceCallback<void(const ScreenUpdate&)>;
   using GetSettingsCallback =
-      base::OnceCallback<void(const base::Optional<AmbientSettings>& settings)>;
+      base::OnceCallback<void(const absl::optional<AmbientSettings>& settings)>;
   using UpdateSettingsCallback = base::OnceCallback<void(bool success)>;
   using OnSettingPreviewFetchedCallback =
       base::OnceCallback<void(const std::vector<std::string>& preview_urls)>;
@@ -103,10 +103,13 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       base::OnceCallback<void(PersonalAlbums)>;
   // TODO(wutao): Make |settings| move only.
   using OnSettingsAndAlbumsFetchedCallback =
-      base::OnceCallback<void(const base::Optional<AmbientSettings>& settings,
+      base::OnceCallback<void(const absl::optional<AmbientSettings>& settings,
                               PersonalAlbums personal_albums)>;
   using FetchWeatherCallback =
-      base::OnceCallback<void(const base::Optional<WeatherInfo>& weather_info)>;
+      base::OnceCallback<void(const absl::optional<WeatherInfo>& weather_info)>;
+
+  using GetGooglePhotosAlbumsPreviewCallback =
+      base::OnceCallback<void(const std::vector<GURL>& preview_urls)>;
 
   static AmbientBackendController* Get();
 
@@ -116,12 +119,19 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   virtual ~AmbientBackendController();
 
   // Sends request to retrieve |num_topics| of |ScreenUpdate| from the backdrop
-  // server.
+  // server with the specified |screen_size|.
+  //
+  // |show_pair_personal_portraits|: Whether IMAX should serve paired or single
+  // personal portrait photos returned by the Photos backend. Ignored for
+  // non-personal topic types.
+  //
   // Upon completion, |callback| is run with the parsed |ScreenUpdate|. If any
   // errors happened during the process, e.g. failed to fetch access token, a
   // default instance will be returned.
   virtual void FetchScreenUpdateInfo(
       int num_topics,
+      bool show_pair_personal_portraits,
+      const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) = 0;
 
   // Get ambient mode Settings from server.
@@ -130,11 +140,6 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   // Update ambient mode Settings to server.
   virtual void UpdateSettings(const AmbientSettings& settings,
                               UpdateSettingsCallback callback) = 0;
-
-  // Fetch preview images for live album.
-  virtual void FetchSettingPreview(int preview_width,
-                                   int preview_height,
-                                   OnSettingPreviewFetchedCallback) = 0;
 
   virtual void FetchPersonalAlbums(int banner_width,
                                    int banner_height,
@@ -150,6 +155,13 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
 
   // Fetch the weather information.
   virtual void FetchWeather(FetchWeatherCallback) = 0;
+
+  virtual void GetGooglePhotosAlbumsPreview(
+      const std::vector<std::string>& album_ids,
+      int preview_width,
+      int preview_height,
+      int num_previews,
+      GetGooglePhotosAlbumsPreviewCallback callback) = 0;
 
   // Get stock photo urls to cache in advance in case Ambient mode is started
   // without internet access.

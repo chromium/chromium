@@ -36,17 +36,15 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "net/ssl/ssl_info.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
-#include "third_party/blink/public/platform/web_http_load_info.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_load_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -106,8 +104,8 @@ void WebURLResponse::SetLoadTiming(
   timing->SetRequestTime(mojo_timing.request_start);
   timing->SetProxyStart(mojo_timing.proxy_resolve_start);
   timing->SetProxyEnd(mojo_timing.proxy_resolve_end);
-  timing->SetDnsStart(mojo_timing.connect_timing.dns_start);
-  timing->SetDnsEnd(mojo_timing.connect_timing.dns_end);
+  timing->SetDomainLookupStart(mojo_timing.connect_timing.domain_lookup_start);
+  timing->SetDomainLookupEnd(mojo_timing.connect_timing.domain_lookup_end);
   timing->SetConnectStart(mojo_timing.connect_timing.connect_start);
   timing->SetConnectEnd(mojo_timing.connect_timing.connect_end);
   timing->SetWorkerStart(mojo_timing.service_worker_start_time);
@@ -124,10 +122,6 @@ void WebURLResponse::SetLoadTiming(
   timing->SetPushStart(mojo_timing.push_start);
   timing->SetPushEnd(mojo_timing.push_end);
   resource_response_->SetResourceLoadTiming(std::move(timing));
-}
-
-void WebURLResponse::SetHTTPLoadInfo(const WebHTTPLoadInfo& value) {
-  resource_response_->SetResourceLoadInfo(value);
 }
 
 base::Time WebURLResponse::ResponseTime() const {
@@ -191,6 +185,10 @@ void WebURLResponse::SetHttpStatusText(const WebString& http_status_text) {
   resource_response_->SetHttpStatusText(http_status_text);
 }
 
+void WebURLResponse::SetEmittedExtraInfo(bool emitted_extra_info) {
+  resource_response_->SetEmittedExtraInfo(emitted_extra_info);
+}
+
 WebString WebURLResponse::HttpHeaderField(const WebString& name) const {
   return resource_response_->HttpHeaderField(name);
 }
@@ -219,50 +217,8 @@ void WebURLResponse::VisitHttpHeaderFields(
     visitor->VisitHeader(it->key, it->value);
 }
 
-int64_t WebURLResponse::AppCacheID() const {
-  return resource_response_->AppCacheID();
-}
-
-void WebURLResponse::SetAppCacheID(int64_t app_cache_id) {
-  resource_response_->SetAppCacheID(app_cache_id);
-}
-
-WebURL WebURLResponse::AppCacheManifestURL() const {
-  return resource_response_->AppCacheManifestURL();
-}
-
-void WebURLResponse::SetAppCacheManifestURL(const WebURL& url) {
-  resource_response_->SetAppCacheManifestURL(url);
-}
-
 void WebURLResponse::SetHasMajorCertificateErrors(bool value) {
   resource_response_->SetHasMajorCertificateErrors(value);
-}
-
-void WebURLResponse::SetCTPolicyCompliance(
-    net::ct::CTPolicyCompliance compliance) {
-  switch (compliance) {
-    case net::ct::CTPolicyCompliance::
-        CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE:
-    case net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplianceDetailsNotAvailable);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS:
-    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyDoesNotComply);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplies);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_COUNT:
-      NOTREACHED();
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplianceDetailsNotAvailable);
-      break;
-  };
 }
 
 void WebURLResponse::SetIsLegacyTLSVersion(bool value) {
@@ -273,6 +229,10 @@ void WebURLResponse::SetHasRangeRequested(bool value) {
   resource_response_->SetHasRangeRequested(value);
 }
 
+bool WebURLResponse::TimingAllowPassed() const {
+  return resource_response_->TimingAllowPassed();
+}
+
 void WebURLResponse::SetTimingAllowPassed(bool value) {
   resource_response_->SetTimingAllowPassed(value);
 }
@@ -281,51 +241,8 @@ void WebURLResponse::SetSecurityStyle(SecurityStyle security_style) {
   resource_response_->SetSecurityStyle(security_style);
 }
 
-void WebURLResponse::SetSecurityDetails(
-    const WebSecurityDetails& web_security_details) {
-  ResourceResponse::SignedCertificateTimestampList sct_list;
-  for (const auto& iter : web_security_details.sct_list) {
-    sct_list.push_back(
-        static_cast<ResourceResponse::SignedCertificateTimestamp>(iter));
-  }
-  Vector<String> san_list;
-  san_list.Append(web_security_details.san_list.Data(),
-                  web_security_details.san_list.size());
-  Vector<AtomicString> certificate;
-  for (const auto& iter : web_security_details.certificate) {
-    AtomicString cert = iter;
-    certificate.push_back(cert);
-  }
-  resource_response_->SetSecurityDetails(
-      web_security_details.protocol, web_security_details.key_exchange,
-      web_security_details.key_exchange_group, web_security_details.cipher,
-      web_security_details.mac, web_security_details.subject_name, san_list,
-      web_security_details.issuer,
-      static_cast<time_t>(web_security_details.valid_from),
-      static_cast<time_t>(web_security_details.valid_to), certificate,
-      sct_list);
-}
-
-base::Optional<WebURLResponse::WebSecurityDetails>
-WebURLResponse::SecurityDetailsForTesting() {
-  const base::Optional<ResourceResponse::SecurityDetails>& security_details =
-      resource_response_->GetSecurityDetails();
-  if (!security_details.has_value())
-    return base::nullopt;
-  SignedCertificateTimestampList sct_list;
-  for (const auto& iter : security_details->sct_list) {
-    sct_list.emplace_back(SignedCertificateTimestamp(
-        iter.status_, iter.origin_, iter.log_description_, iter.log_id_,
-        iter.timestamp_, iter.hash_algorithm_, iter.signature_algorithm_,
-        iter.signature_data_));
-  }
-  return WebSecurityDetails(
-      security_details->protocol, security_details->key_exchange,
-      security_details->key_exchange_group, security_details->cipher,
-      security_details->mac, security_details->subject_name,
-      security_details->san_list, security_details->issuer,
-      security_details->valid_from, security_details->valid_to,
-      security_details->certificate, sct_list);
+void WebURLResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
+  resource_response_->SetSSLInfo(ssl_info);
 }
 
 const ResourceResponse& WebURLResponse::ToResourceResponse() const {
@@ -352,6 +269,10 @@ void WebURLResponse::SetWasFetchedViaServiceWorker(bool value) {
   resource_response_->SetWasFetchedViaServiceWorker(value);
 }
 
+void WebURLResponse::SetArrivalTimeAtRenderer(base::TimeTicks value) {
+  resource_response_->SetArrivalTimeAtRenderer(value);
+}
+
 network::mojom::FetchResponseSource
 WebURLResponse::GetServiceWorkerResponseSource() const {
   return resource_response_->GetServiceWorkerResponseSource();
@@ -360,10 +281,6 @@ WebURLResponse::GetServiceWorkerResponseSource() const {
 void WebURLResponse::SetServiceWorkerResponseSource(
     network::mojom::FetchResponseSource value) {
   resource_response_->SetServiceWorkerResponseSource(value);
-}
-
-void WebURLResponse::SetWasFallbackRequiredByServiceWorker(bool value) {
-  resource_response_->SetWasFallbackRequiredByServiceWorker(value);
 }
 
 void WebURLResponse::SetType(network::mojom::FetchResponseType value) {
@@ -384,7 +301,8 @@ int64_t WebURLResponse::GetPadding() const {
 
 void WebURLResponse::SetUrlListViaServiceWorker(
     const WebVector<WebURL>& url_list_via_service_worker) {
-  Vector<KURL> url_list(url_list_via_service_worker.size());
+  Vector<KURL> url_list(
+      base::checked_cast<wtf_size_t>(url_list_via_service_worker.size()));
   std::transform(url_list_via_service_worker.begin(),
                  url_list_via_service_worker.end(), url_list.begin(),
                  [](const WebURL& url) { return url; });
@@ -413,7 +331,8 @@ WebVector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
 void WebURLResponse::SetCorsExposedHeaderNames(
     const WebVector<WebString>& header_names) {
   Vector<String> exposed_header_names;
-  exposed_header_names.Append(header_names.Data(), header_names.size());
+  exposed_header_names.Append(
+      header_names.data(), base::checked_cast<wtf_size_t>(header_names.size()));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 
@@ -437,6 +356,19 @@ network::mojom::IPAddressSpace WebURLResponse::AddressSpace() const {
 void WebURLResponse::SetAddressSpace(
     network::mojom::IPAddressSpace remote_ip_address_space) {
   resource_response_->SetAddressSpace(remote_ip_address_space);
+}
+
+network::mojom::IPAddressSpace WebURLResponse::ClientAddressSpace() const {
+  return resource_response_->ClientAddressSpace();
+}
+
+void WebURLResponse::SetClientAddressSpace(
+    network::mojom::IPAddressSpace client_address_space) {
+  resource_response_->SetClientAddressSpace(client_address_space);
+}
+
+void WebURLResponse::SetIsValidated(bool is_validated) {
+  resource_response_->SetIsValidated(is_validated);
 }
 
 void WebURLResponse::SetEncodedDataLength(int64_t length) {
@@ -466,7 +398,7 @@ void WebURLResponse::SetWasCookieInRequest(bool was_cookie_in_request) {
 }
 
 void WebURLResponse::SetRecursivePrefetchToken(
-    const base::Optional<base::UnguessableToken>& token) {
+    const absl::optional<base::UnguessableToken>& token) {
   resource_response_->SetRecursivePrefetchToken(token);
 }
 
@@ -485,6 +417,19 @@ WebString WebURLResponse::AlpnNegotiatedProtocol() const {
 void WebURLResponse::SetAlpnNegotiatedProtocol(
     const WebString& alpn_negotiated_protocol) {
   resource_response_->SetAlpnNegotiatedProtocol(alpn_negotiated_protocol);
+}
+
+void WebURLResponse::SetAlternateProtocolUsage(
+    const net::AlternateProtocolUsage alternate_protocol_usage) {
+  resource_response_->SetAlternateProtocolUsage(alternate_protocol_usage);
+}
+
+bool WebURLResponse::HasAuthorizationCoveredByWildcardOnPreflight() const {
+  return resource_response_->HasAuthorizationCoveredByWildcardOnPreflight();
+}
+
+void WebURLResponse::SetHasAuthorizationCoveredByWildcardOnPreflight(bool b) {
+  resource_response_->SetHasAuthorizationCoveredByWildcardOnPreflight(b);
 }
 
 bool WebURLResponse::WasAlternateProtocolAvailable() const {
@@ -519,7 +464,7 @@ bool WebURLResponse::FromArchive() const {
 }
 
 void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
-  Vector<String> dns_aliases(aliases.size());
+  Vector<String> dns_aliases(base::checked_cast<wtf_size_t>(aliases.size()));
   std::transform(aliases.begin(), aliases.end(), dns_aliases.begin(),
                  [](const WebString& h) { return WTF::String(h); });
   resource_response_->SetDnsAliases(std::move(dns_aliases));
@@ -534,15 +479,28 @@ void WebURLResponse::SetWebBundleURL(const WebURL& url) {
 }
 
 void WebURLResponse::SetAuthChallengeInfo(
-    const base::Optional<net::AuthChallengeInfo>& auth_challenge_info) {
+    const absl::optional<net::AuthChallengeInfo>& auth_challenge_info) {
   resource_response_->SetAuthChallengeInfo(auth_challenge_info);
 }
 
-const base::Optional<net::AuthChallengeInfo>&
+const absl::optional<net::AuthChallengeInfo>&
 WebURLResponse::AuthChallengeInfo() const {
   return resource_response_->AuthChallengeInfo();
 }
 
+void WebURLResponse::SetRequestIncludeCredentials(
+    bool request_include_credentials) {
+  resource_response_->SetRequestIncludeCredentials(request_include_credentials);
+}
+
+bool WebURLResponse::RequestIncludeCredentials() const {
+  return resource_response_->RequestIncludeCredentials();
+}
+
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
+
+void WebURLResponse::SetHasPartitionedCookie(bool has_partitioned_cookie) {
+  resource_response_->SetHasPartitionedCookie(has_partitioned_cookie);
+}
 
 }  // namespace blink

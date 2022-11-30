@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include <memory>
 
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d.h"
 
 class SkCanvas;
 struct AwDrawSWFunctionTable;
@@ -21,7 +21,7 @@ class SoftwareCanvasHolder {
  public:
   static std::unique_ptr<SoftwareCanvasHolder> Create(
       jobject java_canvas,
-      const gfx::Vector2d& scroll_correction,
+      const gfx::Point& scroll_correction,
       const gfx::Size& auxiliary_bitmap_size,
       bool force_auxiliary_bitmap);
 

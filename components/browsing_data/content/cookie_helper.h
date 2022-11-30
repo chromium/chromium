@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,16 @@
 #include <stddef.h>
 
 #include <map>
-#include <string>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
-#include "net/cookies/cookie_monster.h"
+#include "net/cookies/canonical_cookie.h"
 
 class GURL;
 
-namespace net {
-class CanonicalCookie;
-}
 namespace content {
 struct CookieAccessDetails;
 class StoragePartition;
@@ -40,6 +36,8 @@ class CookieHelper : public base::RefCountedThreadSafe<CookieHelper> {
   using IsDeletionDisabledCallback = base::RepeatingCallback<bool(const GURL&)>;
   explicit CookieHelper(content::StoragePartition* storage_partition,
                         IsDeletionDisabledCallback callback);
+  CookieHelper(const CookieHelper&) = delete;
+  CookieHelper& operator=(const CookieHelper&) = delete;
 
   // Starts the fetching process, which will notify its completion via
   // callback.
@@ -55,10 +53,8 @@ class CookieHelper : public base::RefCountedThreadSafe<CookieHelper> {
   virtual ~CookieHelper();
 
  private:
-  content::StoragePartition* storage_partition_;
+  raw_ptr<content::StoragePartition> storage_partition_;
   IsDeletionDisabledCallback delete_disabled_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieHelper);
 };
 
 // This class is a thin wrapper around CookieHelper that does not
@@ -80,6 +76,8 @@ class CannedCookieHelper : public CookieHelper {
 
   explicit CannedCookieHelper(content::StoragePartition* storage_partition,
                               IsDeletionDisabledCallback callback);
+  CannedCookieHelper(const CannedCookieHelper&) = delete;
+  CannedCookieHelper& operator=(const CannedCookieHelper&) = delete;
 
   // Adds the cookies from |details.cookie_list|. Current cookies that have the
   // same cookie name, cookie domain, cookie path, host-only-flag tuple as
@@ -89,7 +87,7 @@ class CannedCookieHelper : public CookieHelper {
   // Clears the list of canned cookies.
   void Reset();
 
-  // True if no cookie are currently stored.
+  // True if no cookies are currently stored.
   bool empty() const;
 
   // CookieHelper methods.
@@ -102,30 +100,16 @@ class CannedCookieHelper : public CookieHelper {
   // Directly returns stored cookies.
   net::CookieList GetCookieList();
 
-  // Returns the map that contains the cookie lists for all frame urls.
-  const OriginCookieSetMap& origin_cookie_set_map() {
-    return origin_cookie_set_map_;
+  // Returns the set of all cookies.
+  const canonical_cookie::CookieHashSet& origin_cookie_set() {
+    return origin_cookie_set_;
   }
 
  private:
-  // Check if the cookie set contains a cookie with the same name,
-  // domain, and path as the newly created cookie. Delete the old cookie
-  // if does.
-  bool DeleteMatchingCookie(const net::CanonicalCookie& add_cookie,
-                            canonical_cookie::CookieHashSet* cookie_set);
-
   ~CannedCookieHelper() override;
 
-  // Returns the |CookieSet| for the given |origin|.
-  canonical_cookie::CookieHashSet* GetCookiesFor(const GURL& origin);
-
-  // Adds the |cookie| to the cookie set for the given |frame_url|.
-  void AddCookie(const GURL& frame_url, const net::CanonicalCookie& cookie);
-
-  // Map that contains the cookie sets for all frame origins.
-  OriginCookieSetMap origin_cookie_set_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedCookieHelper);
+  // The cookie set for all frame origins.
+  canonical_cookie::CookieHashSet origin_cookie_set_;
 };
 
 }  // namespace browsing_data

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -35,11 +34,14 @@ class FourtyTwo {
  public:
   static const int kMagicValue = 42;
   FourtyTwo() : value_(kMagicValue) {}
+
+  FourtyTwo(const FourtyTwo&) = delete;
+  FourtyTwo& operator=(const FourtyTwo&) = delete;
+
   int value() { return value_; }
 
  private:
   int value_;
-  DISALLOW_COPY_AND_ASSIGN(FourtyTwo);
 };
 
 class EmptyClassTakingPolicy : public bpf_dsl::Policy {
@@ -86,6 +88,10 @@ TEST(BPFTest, BPFTesterCompatibilityDelegateLeakTest) {
 class EnosysPtracePolicy : public bpf_dsl::Policy {
  public:
   EnosysPtracePolicy() { my_pid_ = sys_getpid(); }
+
+  EnosysPtracePolicy(const EnosysPtracePolicy&) = delete;
+  EnosysPtracePolicy& operator=(const EnosysPtracePolicy&) = delete;
+
   ~EnosysPtracePolicy() override {
     // Policies should be able to bind with the process on which they are
     // created. They should never be created in a parent process.
@@ -106,12 +112,15 @@ class EnosysPtracePolicy : public bpf_dsl::Policy {
 
  private:
   pid_t my_pid_;
-  DISALLOW_COPY_AND_ASSIGN(EnosysPtracePolicy);
 };
 
 class BasicBPFTesterDelegate : public BPFTesterDelegate {
  public:
   BasicBPFTesterDelegate() {}
+
+  BasicBPFTesterDelegate(const BasicBPFTesterDelegate&) = delete;
+  BasicBPFTesterDelegate& operator=(const BasicBPFTesterDelegate&) = delete;
+
   ~BasicBPFTesterDelegate() override {}
 
   std::unique_ptr<bpf_dsl::Policy> GetSandboxBPFPolicy() override {
@@ -123,9 +132,6 @@ class BasicBPFTesterDelegate : public BPFTesterDelegate {
     BPF_ASSERT(-1 == ret);
     BPF_ASSERT(ENOSYS == errno);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BasicBPFTesterDelegate);
 };
 
 // This is the most powerful and complex way to create a BPF test, but it

@@ -14,6 +14,7 @@ pausable. Some internal task queues are not.
 | Networking                        | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | NetworkingWithURLLoaderAnnotation | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | NetworkingControl                 | No          | No                      |  Yes       | Yes       | Yes      | No           |
+| LowPriorityScriptExecution        | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | HistoryTraversal                  | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | Embed                             | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | MediaElementEvent                 | No          | No                      |  No        | Yes       | Yes      | Yes          |
@@ -32,6 +33,7 @@ pausable. Some internal task queues are not.
 | Sensor                            | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | PerformanceTimeline               | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | WebGL                             | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| WebGPU                            | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | IdleTask                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | MiscPlatformAPI                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | WorkerAnimation                   | No          | No                      |  No        | Yes       | Yes      | Yes          |
@@ -42,6 +44,7 @@ pausable. Some internal task queues are not.
 | ServiceWorkerClientMessage        | No          | No                      |  No        | Yes       | Yes      | Yes          |
 | WebLocks                          | No          | No                      |  No        | No        | No       | Yes          |
 | WakeLock                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| WebSchedulingPostedTask           | Yes [^3]    | Yes [^3]                |  Yes       | Yes       | Yes      | Yes          |
 | InternalDefault                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | InternalLoading                   | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | InternalTest                      | No          | No                      |  No        | No        | No       | Yes          |
@@ -57,6 +60,7 @@ pausable. Some internal task queues are not.
 | InternalNavigationAssociated      | No          | No                      |  No        | No        | No       | No           |
 | InternalFreezableIPC              | No          | No                      |  No        | Yes       | No       | No           |
 | InternalContinueScriptLoading     | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| InternalPostMessageForwarding     | No          | No                      |  No        | No        | Yes      | Yes          |
 
 Internal Translation queue supports concept of it running only in the foreground. It is disabled if the page that owns it goes in background.
 
@@ -68,3 +72,5 @@ has been backgrounded for 5 minutes. See
 "can_intensively_throttle_low_nesting_level" param is "true".
 
 [^2] "No" if the "IntensiveWakeUpThrottling" feature is disabled.
+
+[^3] "Yes" only for `scheduler.postTask()` tasks where delay > 0.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/optional.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/renderer/render_frame.h"
 #include "crypto/sha2.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -28,14 +29,14 @@ constexpr int kDomCrawlDelayMs = 3000;
 
 // Attempts to produce image metadata for the given element. Will produce a null
 // value if the element has a missing or malformed src attribute.
-base::Optional<PageAnnotator::ImageMetadata> ProduceMetadata(
+absl::optional<PageAnnotator::ImageMetadata> ProduceMetadata(
     const GURL& page_url,
     const blink::WebElement element,
     const uint64_t node_id) {
   const std::string source_id = ContentPageAnnotatorDriver::GenerateSourceId(
       page_url, element.GetAttribute("src").Utf8());
   if (source_id.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   return PageAnnotator::ImageMetadata{node_id, source_id};
 }
@@ -113,7 +114,7 @@ std::string ContentPageAnnotatorDriver::GenerateSourceId(
   return std::string();
 }
 
-void ContentPageAnnotatorDriver::DidFinishDocumentLoad() {
+void ContentPageAnnotatorDriver::DidDispatchDOMContentLoadedEvent() {
   if (!render_frame()->IsMainFrame())
     return;
 
@@ -138,7 +139,7 @@ void ContentPageAnnotatorDriver::DidFinishDocumentLoad() {
       FROM_HERE,
       base::BindOnce(&ContentPageAnnotatorDriver::FindAndTrackImages,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kDomCrawlDelayMs));
+      base::Milliseconds(kDomCrawlDelayMs));
 }
 
 void ContentPageAnnotatorDriver::OnDestruct() {
@@ -157,7 +158,7 @@ void ContentPageAnnotatorDriver::FindImages(const GURL& page_url,
   } else {
     // This element is an image; attempt to produce metadata for it and begin
     // tracking.
-    const base::Optional<PageAnnotator::ImageMetadata> metadata =
+    const absl::optional<PageAnnotator::ImageMetadata> metadata =
         ProduceMetadata(page_url, element, next_node_id_);
 
     if (metadata.has_value())

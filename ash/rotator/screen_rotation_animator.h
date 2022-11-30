@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,25 +11,24 @@
 #include "ash/ash_export.h"
 #include "ash/display/display_configuration_controller.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 
 namespace aura {
 class Window;
-}  // namesapce aura
-
-namespace viz {
-class CopyOutputRequest;
-class CopyOutputResult;
-}  // namespace cc
+}  // namespace aura
 
 namespace ui {
 class LayerTreeOwner;
 class ScopedAnimationDurationScaleMode;
 }  // namespace ui
+
+namespace viz {
+class CopyOutputRequest;
+class CopyOutputResult;
+}  // namespace viz
 
 namespace ash {
 class ScreenRotationAnimatorObserver;
@@ -40,6 +39,10 @@ class ASH_EXPORT ScreenRotationAnimator {
   static ScreenRotationAnimator* GetForRootWindow(aura::Window* root_window);
 
   explicit ScreenRotationAnimator(aura::Window* root_window);
+
+  ScreenRotationAnimator(const ScreenRotationAnimator&) = delete;
+  ScreenRotationAnimator& operator=(const ScreenRotationAnimator&) = delete;
+
   virtual ~ScreenRotationAnimator();
 
   // Rotates the display::Display specified by |display_id| of the |root_window|
@@ -192,12 +195,10 @@ class ASH_EXPORT ScreenRotationAnimator {
   std::unique_ptr<ui::LayerTreeOwner> new_layer_tree_owner_;
   std::unique_ptr<ui::LayerTreeOwner> mask_layer_tree_owner_;
   std::unique_ptr<ScreenRotationRequest> last_pending_request_;
-  base::Optional<ScreenRotationRequest> current_async_rotation_request_;
+  absl::optional<ScreenRotationRequest> current_async_rotation_request_;
   display::Display::Rotation target_rotation_ = display::Display::ROTATE_0;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_scale_mode_;
   base::WeakPtrFactory<ScreenRotationAnimator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimator);
 };
 
 }  // namespace ash

@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 
+#include "base/containers/adapters.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -178,20 +179,20 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
 @property(readonly, nonatomic) NSMenuItem* menuItem;
 
 // Get the source item using the tags and create the menu item.
-- (id)initWithController:(AppShimMenuController*)controller
-                 menuTag:(NSInteger)menuTag
-                 itemTag:(NSInteger)itemTag
-              resourceId:(int)resourceId
-                  action:(SEL)action
-           keyEquivalent:(NSString*)keyEquivalent;
+- (instancetype)initWithController:(AppShimMenuController*)controller
+                           menuTag:(NSInteger)menuTag
+                           itemTag:(NSInteger)itemTag
+                        resourceId:(int)resourceId
+                            action:(SEL)action
+                     keyEquivalent:(NSString*)keyEquivalent;
 // Retain the source item given |menuTag| and |sourceItemTag|. Copy
 // the menu item given |menuTag| and |targetItemTag|.
 // This is useful when we want a doppelganger with a different source item.
 // For example, if there are conflicting key equivalents.
-- (id)initWithMenuTag:(NSInteger)menuTag
-        sourceItemTag:(NSInteger)sourceItemTag
-        targetItemTag:(NSInteger)targetItemTag
-        keyEquivalent:(NSString*)keyEquivalent;
+- (instancetype)initWithMenuTag:(NSInteger)menuTag
+                  sourceItemTag:(NSInteger)sourceItemTag
+                  targetItemTag:(NSInteger)targetItemTag
+                  keyEquivalent:(NSString*)keyEquivalent;
 // Set the title using |resourceId_| and unset the source item's key equivalent.
 - (void)enableForApp:(const Extension*)app;
 // Restore the source item's key equivalent.
@@ -204,12 +205,12 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
   return _menuItem;
 }
 
-- (id)initWithController:(AppShimMenuController*)controller
-                 menuTag:(NSInteger)menuTag
-                 itemTag:(NSInteger)itemTag
-              resourceId:(int)resourceId
-                  action:(SEL)action
-           keyEquivalent:(NSString*)keyEquivalent {
+- (instancetype)initWithController:(AppShimMenuController*)controller
+                           menuTag:(NSInteger)menuTag
+                           itemTag:(NSInteger)itemTag
+                        resourceId:(int)resourceId
+                            action:(SEL)action
+                     keyEquivalent:(NSString*)keyEquivalent {
   if ((self = [super init])) {
     _sourceItem.reset([GetItemByTag(menuTag, itemTag) retain]);
     DCHECK(_sourceItem);
@@ -225,10 +226,10 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
   return self;
 }
 
-- (id)initWithMenuTag:(NSInteger)menuTag
-        sourceItemTag:(NSInteger)sourceItemTag
-        targetItemTag:(NSInteger)targetItemTag
-        keyEquivalent:(NSString*)keyEquivalent {
+- (instancetype)initWithMenuTag:(NSInteger)menuTag
+                  sourceItemTag:(NSInteger)sourceItemTag
+                  targetItemTag:(NSInteger)targetItemTag
+                  keyEquivalent:(NSString*)keyEquivalent {
   if ((self = [super init])) {
     _menuItem.reset([GetItemByTag(menuTag, targetItemTag) copy]);
     _sourceItem.reset([GetItemByTag(menuTag, sourceItemTag) retain]);
@@ -288,7 +289,7 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
 
 @implementation AppShimMenuController
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     [self buildAppMenuItems];
     [self registerEventHandlers];
@@ -427,8 +428,7 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
     // Ignore is_browser: if a window becomes main that does not belong to an
     // extension or browser, treat it the same as switching to a browser.
     const Extension* extension = GetExtensionForNSWindow(window);
-    // Do not install the App menu for bookmark apps (which includes PWAs).
-    if (extension && !extension->from_bookmark())
+    if (extension)
       [self appBecameMain:extension];
     else
       [self chromeBecameMain];
@@ -535,20 +535,20 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
 
 - (void)quitCurrentPlatformApp {
   auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
-    (*it)->GetBaseWindow()->Close();
+  for (extensions::AppWindow* window : base::Reversed(windows))
+    window->GetBaseWindow()->Close();
 }
 
 - (void)hideCurrentPlatformApp {
   auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
-    (*it)->GetBaseWindow()->Hide();
+  for (extensions::AppWindow* window : base::Reversed(windows))
+    window->GetBaseWindow()->Hide();
 }
 
 - (void)focusCurrentPlatformApp {
   auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
-    (*it)->GetBaseWindow()->Show();
+  for (extensions::AppWindow* window : base::Reversed(windows))
+    window->GetBaseWindow()->Show();
 }
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace chromeos {
+namespace ash {
 
 // Ensures that the title of the WebContents instance this object is attached
 // to is always set to the given title value.
@@ -20,6 +20,9 @@ class WebContentsForcedTitle
  public:
   static void CreateForWebContentsWithTitle(content::WebContents* web_contents,
                                             const std::u16string& title);
+
+  WebContentsForcedTitle(const WebContentsForcedTitle&) = delete;
+  WebContentsForcedTitle& operator=(const WebContentsForcedTitle&) = delete;
 
   ~WebContentsForcedTitle() override;
 
@@ -34,10 +37,8 @@ class WebContentsForcedTitle
   std::u16string title_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsForcedTitle);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_

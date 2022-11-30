@@ -638,6 +638,7 @@
           "value": "10"
         }
       },
+      "vendor_id": "0x1002",
       "driver_version": {
         "op": "<",
         "value": "20.19.0.32837"
@@ -711,16 +712,13 @@
           "value2": "5.1.99"
         }
       },
-      "gl_vendor": "Imagination.*",
-      "gl_renderer": "PowerVR Rogue.*",
+      "gl_vendor": ".*Imagination.*",
+      "gl_renderer": ".*PowerVR Rogue.*",
       "driver_version": {
         "op": "between",
         "value": "1.3",
         "value2": "1.4"
       },
-      "features": [
-        "avoid_egl_image_target_texture_reuse"
-      ],
       "disabled_extensions": [
         "EGL_KHR_wait_sync"
       ]
@@ -862,23 +860,6 @@
       ]
     },
     {
-      "id": 118,
-      "cr_bugs": [477306],
-      "description": "NVIDIA 331 series drivers shader compiler may crash when attempting to optimize pow()",
-      "os": {
-        "type": "linux"
-      },
-      "driver_version": {
-        "op": "<=",
-        "value": "331"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "remove_pow_with_constant_exponent"
-      ]
-    },
-    {
       "id": 119,
       "description": "Context lost recovery often fails on Mali-400/450 on Android.",
       "cr_bugs": [496438],
@@ -924,7 +905,7 @@
       "os": {
         "type": "android"
       },
-      "gl_renderer": "Adreno \\(TM\\) 3.*",
+      "gl_renderer": ".*Adreno \\(TM\\) 3.*",
       "features": [
         "disable_program_cache"
       ]
@@ -985,9 +966,16 @@
     {
       "id": 132,
       "description": "On Intel GPUs MSAA performance is not acceptable for GPU rasterization",
-      "cr_bugs": [527565],
+      "cr_bugs": [527565, 1298585],
       "vendor_id": "0x8086",
       "multi_gpu_category": "active",
+      "exceptions": [
+        {
+          "os": {
+            "type": "fuchsia"
+          }
+        }
+      ],
       "features": [
         "msaa_is_slow"
       ]
@@ -1133,7 +1121,7 @@
         "type": "android"
       },
       "features": [
-        "max_texture_size_limit_4096"
+        "webgl_or_caps_max_texture_size_limit_4096"
       ]
     },
     {
@@ -1712,19 +1700,6 @@
       ]
     },
     {
-      "id": 201,
-      "cr_bugs": [659326,639760],
-      "description": "AMD drivers in Linux require invariant qualifier to match between vertex and fragment shaders",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "dont_remove_invariant_for_fragment_input",
-        "remove_invariant_and_centroid_for_essl3"
-      ]
-    },
-    {
       "id": 202,
       "cr_bugs": [639760,641129],
       "description": "Mac driver GL 4.1 requires invariant and centroid to match between shaders",
@@ -2148,21 +2123,6 @@
       ]
     },
     {
-      "id": 237,
-      "description": "eglSwapBuffers intermittently fails on Android when app goes to background",
-      "cr_bugs": [744678],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "9.0"
-        }
-      },
-      "features": [
-        "dont_disable_webgl_when_compositor_context_lost"
-      ]
-    },
-    {
       "id": 239,
       "description": "Reset TexImage2D base level to 0 on Intel Mac 10.12.4",
       "cr_bugs": [705865],
@@ -2367,14 +2327,17 @@
     },
     {
       "id": 256,
-      "description": "Don't expose disjoint_timer_query extensions to WebGL unless site isolation is enabled",
-      "cr_bugs": [808744],
-      "os": {
-        "type": "android"
-      },
-      "disabled_webgl_extensions": [
-        "EXT_disjoint_timer_query",
-        "EXT_disjoint_timer_query_webgl2"
+      "description": "Expose WebGL's disjoint_timer_query extensions on platforms with site isolation",
+      "cr_bugs": [808744, 870491],
+      "features": [
+        "enable_webgl_timer_query_extensions"
+      ],
+      "exceptions": [
+        {
+          "os": {
+            "type": "android"
+          }
+        }
       ]
     },
     {
@@ -2854,8 +2817,8 @@
       },
       "vendor_id": "0x8086",
       "features": [
-        "max_texture_size_limit_4096",
-        "max_3d_array_texture_size_1024"
+        "max_3d_array_texture_size_1024",
+        "webgl_or_caps_max_texture_size_limit_4096"
       ]
     },
     {
@@ -2868,8 +2831,8 @@
       "vendor_id": "0x8086",
       "driver_version": {
         "schema": "intel_driver",
-        "op": "<",
-        "value": "0.0.0.9999"
+        "op": "<=",
+        "value": "0.0.99.9999"
       },
       "features": [
         "disable_nv12_dynamic_textures"
@@ -2992,7 +2955,7 @@
       "os": {
         "type": "android"
       },
-      "gl_renderer": "Adreno.*",
+      "gl_renderer": ".*Adreno.*",
       "disabled_extensions": [
         "GL_EXT_shader_framebuffer_fetch"
       ]
@@ -3247,21 +3210,28 @@
       "device_id": ["0x15d8", "0x15dd"],
       "exceptions": [
         {
+          "vendor_id": "0x1002",
           "driver_version": {
             "op": "between",
             "value": "26.20.11030.2",
             "value2": "26.20.11999.99999"
-          },
+          }
+        },
+        {
           "driver_version": {
             "op": "between",
             "value": "26.20.12020.15",
             "value2": "26.20.12999.99999"
-          },
+          }
+        },
+        {
           "driver_version": {
             "op": "between",
             "value": "26.20.13001.27002",
             "value2": "26.20.13999.99999"
-          },
+          }
+        },
+        {
           "driver_version": {
             "op": ">=",
             "value": "26.20.14001.7001"
@@ -3274,18 +3244,19 @@
     },
     {
       "id": 337,
-      "description": "Disable hardware MFT H264 encoder on older NVIDIA drivers",
-      "cr_bugs": [1058583],
+      "description": "Disable hardware MFT H.264 encoder on older NVIDIA drivers",
+      "cr_bugs": [1058583, 1263058],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
+      "multi_gpu_category": "any",
       "driver_version": {
-        "op": "<",
-        "value": "24.21.13.9827"
+        "op": "<=",
+        "value": "24.21.13.9858"
       },
       "features": [
-        "disable_mediafoundation_async_h264_encoding"
+        "disable_accelerated_h264_encode"
       ]
     },
     {
@@ -3427,21 +3398,6 @@
       ]
     },
     {
-      "id": 346,
-      "cr_bugs": [1062184],
-      "description": "Enable HDR video playing through overlay on Intel",
-      "os": {
-        "type": "win"
-      },
-      "intel_gpu_series": [
-        "icelake",
-        "tigerlake"
-      ],
-      "features": [
-        "force_rgb10a2_overlay_support_flags"
-      ]
-    },
-    {
       "id": 347,
       "cr_bugs": [1119491],
       "description": "Intel GPUs fail to report BGRA8 overlay support",
@@ -3451,24 +3407,6 @@
       "vendor_id": "0x8086",
       "features": [
         "enable_bgra8_overlays_with_yuv_overlay_support"
-      ]
-    },
-    {
-      "id": 348,
-      "cr_bugs": [1120411],
-      "description": "VP8 video encoding hangs on Intel Gen 9.5 GPUs",
-      "os": {
-        "type": "chromeos"
-      },
-      "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "geminilake",
-        "kabylake",
-        "whiskeylake",
-        "cometlake"
-      ],
-      "features": [
-        "disable_accelerated_vp8_encode"
       ]
     },
     {
@@ -3510,7 +3448,7 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
-      "device_id": ["0x98e4", "0x15d8", "0x15dd"],
+      "device_id": ["0x98e4", "0x15dd"],
       "features": [
         "disable_d3d11_video_decoder"
       ],
@@ -3608,7 +3546,9 @@
       },
       "intel_gpu_series": [
         "icelake",
-        "tigerlake"
+        "tigerlake",
+        "alderlake",
+        "alchemist"
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"
@@ -3638,6 +3578,7 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
+      "multi_gpu_category": "any",
       "features": [
         "disable_direct_composition_sw_video_overlays"
       ]
@@ -3655,19 +3596,6 @@
       ]
     },
     {
-      "id": 366,
-      "cr_bugs": [1179557],
-      "description": "The hardware video encoder on the SC7180 SoC has poor quality.",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "freedreno",
-      "features": [
-          "disable_accelerated_h264_encode",
-          "disable_accelerated_vp8_encode"
-        ]
-    },
-    {
       "id": 367,
       "cr_bugs": [1180962],
       "description": "ANGLE cannot recover from context lost",
@@ -3677,18 +3605,6 @@
       "gl_renderer": "ANGLE.*",
       "features": [
         "exit_on_context_lost"
-      ]
-    },
-    {
-      "id": 368,
-      "cr_bugs": [1181358],
-      "description": "High D3D11VideoDecoder error rates for AV1 content on Intel GPUs",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "disable_accelerated_av1_decode_d3d11"
       ]
     },
     {
@@ -3724,6 +3640,7 @@
       "os": {
         "type": "win"
       },
+      "multi_gpu_category": "any",
       "vendor_id": "0x8086",
       "features": [
         "disable_direct_composition_sw_video_overlays"
@@ -3743,6 +3660,455 @@
       },
       "features": [
         "check_ycbcr_studio_g22_left_p709_for_nv12_support"
+      ]
+    },
+    {
+      "id": 373,
+      "cr_bugs": [1198714],
+      "description": "VP9 Profile 2 HW decoding on Qualcomm SC7180 is broken",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+        "disable_accelerated_vp9_profile2_decode"
+      ]
+    },
+    {
+      "id": 374,
+      "cr_bugs": [1087422],
+      "description": "VP9 resilient mode causes corruptions with AMD VCN HW decoders, using DXVA",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "disallow_vp9_resilient_dxva_decoding"
+      ]
+    },
+    {
+      "id": 376,
+      "cr_bugs": [1219028],
+      "description": "Don't use Media Foundation hardware security on Turing-architecture NVIDIA GPUs.",
+      "os": {
+        "type" : "win"
+      },
+      "vendor_id": "0x10de",
+      "device_id": [
+        "0x1f82", "0x1f92",
+        "0x2182", "0x2184", "0x21d1", "0x2191",
+        "0x1f08", "0x1f06", "0x1f47", "0x1f42", "0x1f51", "0x1f11",
+        "0x1f02", "0x1f07", "0x1ec2", "0x1ec7", "0x1e84", "0x1f50", "0x1f10",
+        "0x1e82", "0x1e87", "0x1e81", "0x1ed0", "0x1e90", "0x1e07", "0x1e04",
+        "0x1eb1", "0x1eb6",
+        "0x1eb0", "0x1eb5",
+        "0x1e02", "0x1e30", "0x1eb8"
+      ],
+      "driver_version": {
+        "op": "<",
+        "value": "26.21.14.4140"
+      },
+      "features": [
+        "disable_media_foundation_hardware_security"
+      ]
+    },
+    {
+      "id": 377,
+      "cr_bugs": [1219028],
+      "description": "Don't use Media Foundation hardware security on Pascal-architecture NVIDIA GPUs.",
+      "os": {
+        "type" : "win"
+      },
+      "vendor_id": "0x10de",
+      "device_id": [
+        "0x1d01", "0x1d10", "0x1d12",
+        "0x1c81", "0x1c82", "0x1c83", "0x1c8c", "0x1c8d", "0x1c8f", "0x1c92",
+        "0x1c02", "0x1c03", "0x1c20", "0x1c23", "0x1c60", "0x1c61", "0x1c62",
+        "0x1b81", "0x1b82", "0x1b83", "0x1b84", "0x1ba0", "0x1ba1", "0x1ba2",
+        "0x1be0", "0x1be1", "0x1b06",
+        "0x1b00", "0x1b02",
+        "0x17e4", "0x174d"
+      ],
+      "driver_version": {
+        "op": "<",
+        "value": "26.21.14.4140"
+      },
+      "features": [
+        "disable_media_foundation_hardware_security"
+      ]
+    },
+    {
+      "id": 378,
+      "cr_bugs": [1227033],
+      "description": "Don't use the OOPR Canvas feature on Macs with NVIDIA GPUs",
+      "os": {
+        "type" : "macosx"
+      },
+      "vendor_id": "0x10de",
+      "features": [
+        "disable_canvas_oop_rasterization"
+      ]
+    },
+    {
+      "id": 379,
+      "cr_bugs": [1217298],
+      "description": "Disable VP9 HW encode on Intel Gen 9.5 SoCs using the i965 VA driver backend",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "kabylake",
+        "geminilake"
+      ],
+      "features": [
+        "disable_accelerated_vp9_encode"
+      ]
+    },
+    {
+      "id": 380,
+      "cr_bugs": [1245835],
+      "description": "Intel GPUs do not promote downscaled overlays",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": ">=",
+          "value": "10.0"
+        }
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "9"
+      },
+      "features": [
+        "no_downscaled_overlay_promotion"
+      ]
+    },
+    {
+      "id": 381,
+      "cr_bugs": [
+        1246254
+      ],
+      "description": "Check if egl fences are already signalled before waiting them on the i965 driver",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "4"
+      },
+      "driver_vendor": "Mesa",
+      "gl_vendor": "Intel.*",
+      "features": [
+        "check_egl_fence_before_wait"
+      ]
+    },
+    {
+      "id": 386,
+      "cr_bugs": [1253962],
+      "description": "Older Adreno 4xx drivers drop draws sometimes with oop-c",
+      "os": {
+        "type" : "android"
+      },
+      "driver_version": {
+        "op": "<",
+        "value": "145"
+      },
+      "gl_renderer": ".*Adreno \\(TM\\) 4.*",
+      "features": [
+        "disable_canvas_oop_rasterization"
+      ]
+    },
+    {
+      "id": 387,
+      "description": "DXVAVideoDecodeAccelerator doesn't support a set of legacy AMD Gpus",
+      "cr_bugs": [822644, 1187900],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": [
+        "0x130f", "0x6700", "0x6701", "0x6702", "0x6703", "0x6704", "0x6705", "0x6706", "0x6707",
+        "0x6708", "0x6709", "0x6718", "0x6719", "0x671c", "0x671d", "0x671f", "0x6720", "0x6721",
+        "0x6722", "0x6723", "0x6724", "0x6725", "0x6726", "0x6727", "0x6728", "0x6729", "0x6738",
+        "0x6739", "0x673e", "0x6740", "0x6741", "0x6742", "0x6743", "0x6744", "0x6745", "0x6746",
+        "0x6747", "0x6748", "0x6749", "0x674a", "0x6750", "0x6751", "0x6758", "0x6759", "0x675b",
+        "0x675d", "0x675f", "0x6760", "0x6761", "0x6762", "0x6763", "0x6764", "0x6765", "0x6766",
+        "0x6767", "0x6768", "0x6770", "0x6771", "0x6772", "0x6778", "0x6779", "0x677b", "0x6798",
+        "0x67b1", "0x6821", "0x683d", "0x6840", "0x6841", "0x6842", "0x6843", "0x6849", "0x6850",
+        "0x6858", "0x6859", "0x6880", "0x6888", "0x6889", "0x688a", "0x688c", "0x688d", "0x6898",
+        "0x6899", "0x689b", "0x689c", "0x689d", "0x689e", "0x68a0", "0x68a1", "0x68a8", "0x68a9",
+        "0x68b0", "0x68b8", "0x68b9", "0x68ba", "0x68be", "0x68bf", "0x68c0", "0x68c1", "0x68c7",
+        "0x68c8", "0x68c9", "0x68d8", "0x68d9", "0x68da", "0x68de", "0x68e0", "0x68e1", "0x68e4",
+        "0x68e5", "0x68e8", "0x68e9", "0x68f1", "0x68f2", "0x68f8", "0x68f9", "0x68fa", "0x68fe",
+        "0x9400", "0x9401", "0x9402", "0x9403", "0x9405", "0x940a", "0x940b", "0x940f", "0x9440",
+        "0x9441", "0x9442", "0x9443", "0x9444", "0x9446", "0x944a", "0x944b", "0x944c", "0x944e",
+        "0x9450", "0x9452", "0x9456", "0x945a", "0x945b", "0x945e", "0x9460", "0x9462", "0x946a",
+        "0x946b", "0x947a", "0x947b", "0x9480", "0x9487", "0x9488", "0x9489", "0x948a", "0x948f",
+        "0x9490", "0x9491", "0x9495", "0x9498", "0x949c", "0x949e", "0x949f", "0x94a0", "0x94a1",
+        "0x94a3", "0x94b1", "0x94b3", "0x94b4", "0x94b5", "0x94b9", "0x94c0", "0x94c1", "0x94c3",
+        "0x94c4", "0x94c5", "0x94c6", "0x94c7", "0x94c8", "0x94c9", "0x94cb", "0x94cc", "0x94cd",
+        "0x9500", "0x9501", "0x9504", "0x9505", "0x9506", "0x9507", "0x9508", "0x9509", "0x950f",
+        "0x9511", "0x9515", "0x9517", "0x9519", "0x9540", "0x9541", "0x9542", "0x954e", "0x954f",
+        "0x9552", "0x9553", "0x9555", "0x9557", "0x955f", "0x9580", "0x9581", "0x9583", "0x9586",
+        "0x9587", "0x9588", "0x9589", "0x958a", "0x958b", "0x958c", "0x958d", "0x958e", "0x958f",
+        "0x9590", "0x9591", "0x9593", "0x9595", "0x9596", "0x9597", "0x9598", "0x9599", "0x959b",
+        "0x95c0", "0x95c2", "0x95c4", "0x95c5", "0x95c6", "0x95c7", "0x95c9", "0x95cc", "0x95cd",
+        "0x95ce", "0x95cf", "0x9610", "0x9611", "0x9612", "0x9613", "0x9614", "0x9615", "0x9616",
+        "0x9640", "0x9641", "0x9642", "0x9643", "0x9644", "0x9645", "0x9647", "0x9648", "0x9649",
+        "0x964a", "0x964b", "0x964c", "0x964e", "0x964f", "0x9710", "0x9711", "0x9712", "0x9713",
+        "0x9714", "0x9715", "0x9802", "0x9803", "0x9804", "0x9805", "0x9806", "0x9807", "0x9808",
+        "0x9809", "0x980a", "0x9830", "0x983d", "0x9850", "0x9851", "0x9874", "0x9900", "0x9901",
+        "0x9903", "0x9904", "0x9905", "0x9906", "0x9907", "0x9908", "0x9909", "0x990a", "0x990b",
+        "0x990c", "0x990d", "0x990e", "0x990f", "0x9910", "0x9913", "0x9917", "0x9918", "0x9919",
+        "0x9990", "0x9991", "0x9992", "0x9993", "0x9994", "0x9995", "0x9996", "0x9997", "0x9998",
+        "0x9999", "0x999a", "0x999b", "0x999c", "0x999d", "0x99a0", "0x99a2", "0x99a4"
+      ],
+      "features": [
+        "disable_accelerated_av1_decode",
+        "disable_accelerated_vp8_decode",
+        "disable_accelerated_vp9_decode"
+      ]
+    },
+    {
+      "id": 388,
+      "description": "DXVAVideoDecodeAccelerator doesn't support a set of legacy Intel Gpus",
+      "cr_bugs": [822644, 1187900],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "device_id": [
+        "0x102", "0x106", "0x116", "0x126", "0x152", "0x156", "0x166",
+        "0x402", "0x406", "0x416", "0x41e", "0xa06", "0xa16", "0xf31"
+      ],
+      "features": [
+        "disable_accelerated_av1_decode",
+        "disable_accelerated_vp8_decode",
+        "disable_accelerated_vp9_decode"
+      ]
+    },
+    {
+      "id": 389,
+      "description": "Avoid waiting on a egl fence before pageflipping and rely on implicit sync.",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "nouveau.*",
+      "features": [
+        "rely_on_implicit_sync_for_swap_buffers"
+      ]
+    },
+    {
+      "id": 390,
+      "description": "AVC/AV1 hardware encoder MFT output bitrate incorrect upon framerate update on Intel GPUs.",
+      "cr_bugs": [1295815],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "op": "<",
+        "value": "30.0.101.1340"
+      },
+      "features": [
+        "disable_dynamic_video_encode_framerate_update"
+      ]
+    },
+    {
+      "id": 391,
+      "description": "Skia ReduceOpsTaskSplitting causes artifacts on Intel Skylake",
+      "cr_bugs": [1298809],
+      "os": {
+        "type": "win"
+      },
+      "intel_gpu_series": [
+        "skylake"
+      ],
+      "features": [
+        "disable_skia_reduce_ops_task_splitting"
+      ]
+    },
+    {
+      "id": 392,
+      "cr_bugs": [1305679],
+      "description": "OOPR Canvas is unreliable on MacOS 10.12 and older.",
+      "os": {
+        "type" : "macosx",
+        "version": {
+          "op": "<",
+          "value": "10.13"
+        }
+      },
+      "features": [
+        "disable_canvas_oop_rasterization"
+      ]
+    },
+    {
+      "id": 393,
+      "description": "GL Contexts heavy / exhaust resources",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+        "use_virtualized_gl_contexts"
+      ]
+    },
+    {
+      "id": 394,
+      "cr_bugs": [1318380],
+      "description": "Don't use video processor super resolution on Intel Gen9 and older GPUs and non-Intel GPUs.",
+      "os": {
+        "type" : "win"
+      },
+      "exceptions": [
+        {
+          "vendor_id": "0x8086",
+          "intel_gpu_generation": {
+            "op": ">",
+            "value": "9"
+          },
+          "driver_version": {
+            "op": ">",
+            "value": "27.20.100.8681"
+          }
+        }
+      ],
+      "features": [
+          "disable_vp_super_resolution"
+      ]
+    },
+    {
+      "id": 395,
+      "cr_bugs": [1327088],
+      "description": "Don't use MPO on Intel TigerLake GPUs with old drivers due to VideoProcessorBlt crash.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "12"
+      },
+      "driver_version": {
+        "op": "<=",
+        "value": "27.20.100.9168"
+      },
+      "features": [
+        "disable_direct_composition_video_overlays"
+      ]
+    },
+    {
+      "id": 397,
+      "description": "VPx decoding crashes due to a buggy driver / chipset combo.",
+      "cr_bugs": [1333299],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": ">=",
+          "value": "10"
+        }
+      },
+      "vendor_id": "0x8086",
+      "device_id": [ "0x591B" ],
+      "driver_version": {
+        "op": "=",
+        "value": "26.20.100.6998"
+      },
+      "features": [
+        "disable_accelerated_vp9_decode"
+      ]
+    },
+    {
+      "id": 398,
+      "description": "On pre-Ice Lake Intel GPUs MSAA performance is not acceptable for GPU rasterization",
+      "cr_bugs": [527565, 1298585, 1341830],
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "11"
+      },
+      "multi_gpu_category": "active",
+      "exceptions": [
+        {
+          "os": {
+            "type": "fuchsia"
+          }
+        }
+      ],
+      "features": [
+        "msaa_is_slow_2"
+      ]
+    },
+    {
+      "id": 399,
+      "description": "On pre-Ice Lake Intel GPUs MSAA performance is not acceptable for GPU rasterization. Duplicate of 398 for Android",
+      "cr_bugs": [759471],
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Intel.*",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "11"
+      },
+      "features": [
+        "msaa_is_slow_2"
+      ]
+    },
+    {
+      "id": 400,
+      "description": "Freedreno driver crashes when importing same dma-buf to two different gl textures",
+      "cr_bugs": [1343521],
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+        "cache_texture_in_ozone_backing"
+      ]
+    },
+    {
+      "id": 401,
+      "description": "Disable DrDc on multiple gpus.",
+      "cr_bugs": [1354201, 1356906, 1362720],
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": ".*PowerVR Rogue.*|Adreno \\(TM\\) 730|Mali-G57 MC2|Mali-G68 MC4|Mali-G77 MC9",
+      "features": [
+        "disable_drdc"
+      ]
+    },
+    {
+      "id": 402,
+      "description": "Mali driver disregards fences when importing same dma-buf to two different gl textures",
+      "cr_bugs": [1350094],
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": "Mali.*",
+      "features": [
+        "cache_texture_in_ozone_backing"
+      ]
+    },
+    {
+      "id": 403,
+      "description": "Disable hardware MFT Av1 encoder on machines with multiple GPUs",
+      "cr_bugs": [1367038],
+      "os": {
+        "type": "win"
+      },
+      "gpu_count": {
+        "op": ">",
+        "value": "2"
+      },
+      "features": [
+        "disable_accelerated_av1_encode"
       ]
     }
   ]

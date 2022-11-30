@@ -1,0 +1,149 @@
+<style include="cr-hidden-style">
+  :host {
+    display: flex;
+    justify-content: center;
+    --ntp-module-container-padding-top: 16px;
+  }
+
+  @media (min-width: 672px) {
+    #firstRunExperience {
+      background-image: url(./modules/chromefetti.svg);
+      background-position: top center;
+      background-repeat: no-repeat;
+    }
+  }
+
+  :host([modules-fre-shown]) #freAndModulesContainer {
+    background-color: var(--color-new-tab-page-background-override);
+    border: 1px solid var(--color-new-tab-page-border);
+    border-radius: 4px;
+    padding: 20px;
+  }
+
+  #firstRunExperience {
+    box-sizing: border-box;
+    padding-bottom: 24px;
+    padding-top: 32px;
+    text-align: center;
+  }
+
+  #firstRunExperienceTitle {
+    color: var(--color-new-tab-page-primary-foreground);
+    display: inline-block;
+    font-size: 22px;
+    line-height: 22px;
+    padding-bottom: 16px;
+    padding-inline-end: 9px;
+  }
+
+  #newTag {
+    background: var(--color-new-tab-page-chip-background);
+    border-radius: 4px;
+    color: var(--color-new-tab-page-chip-foreground);
+    display: inline-block;
+    font-size: 10px;
+    height: 12px;
+    padding: 2px 6px;
+    vertical-align: 4px;
+  }
+
+  .first-run-experience-body {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  #customizeChromeLink {
+    color: var(--color-new-tab-page-chip-background);
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .action-button {
+    margin-inline-end: 8px;
+    margin-top: 18px;
+  }
+
+  ntp-module-wrapper {
+    width: var(--ntp-module-width);
+  }
+
+  :host([modules-redesigned-layout-enabled_]) .module-container {
+    --ntp-module-container-padding-top: 0;
+    margin-bottom: 30px;
+    margin-inline-end: 30px;
+  }
+
+  .module-container + .module-container {
+    padding-top: var(--ntp-module-container-padding-top);
+  }
+
+  #modules {
+    max-width: 100%;
+    width: fit-content;
+  }
+
+  :host([modules-redesigned-layout-enabled_]) #modules {
+    display: flex;
+    flex-flow: row wrap;
+  }
+
+  #removeModuleToastMessage {
+    flex-grow: 1;
+  }
+
+  #removeModuleFreToastMessage {
+    flex-grow: 1;
+  }
+
+  :host([drag-enabled_]) ntp-module-wrapper {
+    cursor: grab;
+  }
+
+  [dragging] {
+    pointer-events: none;
+    position: fixed;
+    z-index: 2;
+  }
+</style>
+<div id="freAndModulesContainer">
+  <template is="dom-if" if="[[modulesFreShown]]">
+    <div id="firstRunExperience">
+      <header id="firstRunExperienceTitle">
+        $i18n{modulesFirstRunExperienceTitle}
+      </header>
+      <div id="newTag">$i18n{modulesNewTagLabel}</div>
+      <div class="first-run-experience-body">
+        $i18n{modulesFirstRunExperienceBodyLine1}
+      </div>
+      <div class="first-run-experience-body">
+        $i18nRaw{modulesFirstRunExperienceBodyLine2}
+      </div>
+      <cr-button class="action-button" on-click="onModulesFreOptIn_">
+        $i18n{modulesFirstRunExperienceOptIn}
+      </cr-button>
+      <cr-button class="cancel-button" on-click="onModulesFreOptOut_">
+        $i18n{modulesFirstRunExperienceOptOut}
+      </cr-button>
+    </div>
+  </template>
+  <div id="modules"></div>
+</div>
+<cr-toast id="removeModuleToast" duration="10000">
+  <div id="removeModuleToastMessage">[[removedModuleData_.message]]</div>
+  <cr-button id="undoRemoveModuleButton"
+      aria-label="$i18n{undoDescription}"
+      on-click="onUndoRemoveModuleButtonClick_">
+    $i18n{undo}
+  </cr-button>
+</cr-toast>
+<cr-toast id="removeModuleFreToast" duration="10000">
+  <div id="removeModuleFreToastMessage">
+    $i18n{modulesFirstRunExperienceOptOutToast}
+  </div>
+  <cr-button id="undoRemoveModuleFreButton"
+      aria-label="$i18n{undoDescription}"
+      on-click="onUndoRemoveModuleFreButtonClick_">
+    $i18n{undo}
+  </cr-button>
+</cr-toast>

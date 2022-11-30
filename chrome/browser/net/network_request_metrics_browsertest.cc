@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -76,6 +75,12 @@ class WaitForMainFrameResourceObserver : public content::WebContentsObserver {
  public:
   explicit WaitForMainFrameResourceObserver(WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
+
+  WaitForMainFrameResourceObserver(const WaitForMainFrameResourceObserver&) =
+      delete;
+  WaitForMainFrameResourceObserver& operator=(
+      const WaitForMainFrameResourceObserver&) = delete;
+
   ~WaitForMainFrameResourceObserver() override {}
 
   // content::WebContentsObserver implementation:
@@ -93,8 +98,6 @@ class WaitForMainFrameResourceObserver : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForMainFrameResourceObserver);
 };
 
 // This test fixture tests code in content/. The fixture itself is in chrome/
@@ -261,9 +264,9 @@ class NetworkRequestMetricsBrowserTest
     }
   }
 
-  // Checks all relevant histograms in the case a new main frame navigation
-  // interrupted the first one. The request identified by GetParam() is expected
-  // to fail with net::ERR_ABORTED.
+  // Checks all relevant histograms in the case the navigation is interrupted.
+  // The request identified by GetParam() is expected to fail with
+  // net::ERR_ABORTED.
   void CheckHistogramsAfterMainFrameInterruption() {
     // Some metrics may come from the renderer. This call ensures that those
     // metrics are available.
@@ -274,15 +277,13 @@ class NetworkRequestMetricsBrowserTest
       // Chrome may or may not have attempted to load.
       histograms_->ExpectTotalCount("Net.ErrorCodesForImages2", 0);
 
-      histograms_->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 2);
+      histograms_->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 1);
       EXPECT_EQ(1, histograms_->GetBucketCount("Net.ErrorCodesForMainFrame4",
                                                -net::ERR_ABORTED));
-      EXPECT_EQ(1, histograms_->GetBucketCount("Net.ErrorCodesForMainFrame4",
-                                               -net::OK));
       return;
     }
 
-    histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 2);
+    histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 1);
 
     // Some fuzziness here because of the favicon. It should typically succeed,
     // but allow it to have been aborted, too, since the test server won't
@@ -360,13 +361,13 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        NetErrorBeforeHeaders) {
   TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
-  // Not sending any body will result in failing with ERR_EMPTY_RESPONSE,
-  // without receiving any headers so the load won't be committed until the
-  // error page is seen.
+  interesting_http_response()->Send(
+      "HTTP/1.1 200 OK\r\nContent-Length: 42\r\nContent-Length: 43\r\n\r\n");
   interesting_http_response()->Done();
   navigation_observer.Wait();
 
-  CheckHistograms(net::ERR_EMPTY_RESPONSE, HeadersReceived::kNoHeadersReceived,
+  CheckHistograms(net::ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH,
+                  HeadersReceived::kNoHeadersReceived,
                   NetworkAccessed::kNetworkAccessed);
 }
 
@@ -402,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, CancelDuringBody) {
   // recieved by the time Stop() is called, the test should still pass, however.
   base::RunLoop run_loop;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
   run_loop.Run();
 
   active_web_contents()->Stop();
@@ -414,15 +415,11 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, CancelDuringBody) {
 
 IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        InterruptedBeforeHeaders) {
+  TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
 
-  TestNavigationObserver navigation_observer(active_web_contents(), 1);
-  // Can't use ui_test_utils::NavigateToURLWithDisposition(), as it will wait
-  // for the current load to stop, rather than interrupting it.
-  browser()->OpenURL(OpenURLParams(
-      embedded_test_server()->GetURL("/echo"), Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
-      false /* is_renderer_initiated */));
+  // Stop navigation to record histograms.
+  active_web_contents()->Stop();
   navigation_observer.Wait();
 
   CheckHistogramsAfterMainFrameInterruption();
@@ -430,6 +427,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        InterruptedCancelDuringBody) {
+  TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
   SendHeadersPartialBody();
 
@@ -438,16 +436,11 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
   // recieved by the time Stop() is called, the test should still pass, however.
   base::RunLoop run_loop;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
   run_loop.Run();
 
-  TestNavigationObserver navigation_observer(active_web_contents(), 1);
-  // Can't use ui_test_utils::NavigateToURLWithDisposition(), as it will wait
-  // for the current load to stop, rather than interrupting it.
-  browser()->OpenURL(OpenURLParams(
-      embedded_test_server()->GetURL("/echo"), Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
-      false /* is_renderer_initiated */));
+  // Stop navigation to record histograms.
+  active_web_contents()->Stop();
   navigation_observer.Wait();
 
   CheckHistogramsAfterMainFrameInterruption();
@@ -494,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
   // Need this to wait for the download to be fully cancelled to avoid a
   // confirmation prompt on quit.
   DownloadTestObserverTerminal download_test_observer_terminal(
-      BrowserContext::GetDownloadManager(browser()->profile()), 1,
+      browser()->profile()->GetDownloadManager(), 1,
       DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
 
   TestNavigationObserver navigation_observer(active_web_contents(), 1);
@@ -571,8 +564,8 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, FileURLError) {
     ASSERT_TRUE(base::WriteFile(main_frame_path, main_frame_data));
   }
 
-  ui_test_utils::NavigateToURL(browser(),
-                               net::FilePathToFileURL(main_frame_path));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), net::FilePathToFileURL(main_frame_path)));
   CheckHistograms(net::ERR_FILE_NOT_FOUND, HeadersReceived::kNoHeadersReceived,
                   NetworkAccessed::kNoNetworkAccessed);
 }
@@ -595,8 +588,8 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, FileURLSuccess) {
         temp_dir_.GetPath().AppendASCII(kSubresourcePath), subresource_data));
   }
 
-  ui_test_utils::NavigateToURL(browser(),
-                               net::FilePathToFileURL(main_frame_path));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), net::FilePathToFileURL(main_frame_path)));
   CheckHistograms(net::OK, HeadersReceived::kNoHeadersReceived,
                   NetworkAccessed::kNoNetworkAccessed);
 }

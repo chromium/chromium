@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,9 @@
 #define ASH_DBUS_GESTURE_PROPERTIES_SERVICE_PROVIDER_H_
 
 #include "ash/ash_export.h"
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,9 +26,15 @@ namespace ash {
  * at go/cros-gesture-properties-dbus-design for more details.
  */
 class ASH_EXPORT GesturePropertiesServiceProvider
-    : public chromeos::CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface {
  public:
   GesturePropertiesServiceProvider();
+
+  GesturePropertiesServiceProvider(const GesturePropertiesServiceProvider&) =
+      delete;
+  GesturePropertiesServiceProvider& operator=(
+      const GesturePropertiesServiceProvider&) = delete;
+
   ~GesturePropertiesServiceProvider() override;
 
   void set_service_for_test(
@@ -70,8 +74,6 @@ class ASH_EXPORT GesturePropertiesServiceProvider
   ui::ozone::mojom::GesturePropertiesService* service_for_test_ = nullptr;
 
   base::WeakPtrFactory<GesturePropertiesServiceProvider> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GesturePropertiesServiceProvider);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class TransformOperations;
@@ -80,6 +79,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   void set_target(Target* target) { target_ = target; }                      \
   int Type() const override;                                                 \
   const char* TypeName() const override;                                     \
+                                                                             \
+ protected:                                                                  \
+  Target* target() const { return target_; }                                 \
                                                                              \
  private:                                                                    \
   Target* target_ = nullptr;

@@ -1,0 +1,5 @@
+include_rules = [
+  # Do not add chrome here (use a delegate instead).
+  "+ui/file_manager/grit",
+  "+ui/webui",
+]

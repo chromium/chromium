@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/os_crypt/key_storage_linux.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,28 +16,32 @@ class FakeKeyStorageLinux : public KeyStorageLinux {
  public:
   explicit FakeKeyStorageLinux(base::SequencedTaskRunner* task_runner)
       : task_runner_(task_runner) {}
+
+  FakeKeyStorageLinux(const FakeKeyStorageLinux&) = delete;
+  FakeKeyStorageLinux& operator=(const FakeKeyStorageLinux&) = delete;
+
   ~FakeKeyStorageLinux() override = default;
 
  protected:
   bool Init() override { return true; }
-  base::Optional<std::string> GetKeyImpl() override {
+  absl::optional<std::string> GetKeyImpl() override {
     return std::string("1234");
   }
 
   base::SequencedTaskRunner* GetTaskRunner() override { return task_runner_; }
 
  private:
-  base::SequencedTaskRunner* task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(FakeKeyStorageLinux);
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
 };
 
 class KeyStorageLinuxTest : public testing::Test {
  public:
   KeyStorageLinuxTest() = default;
-  ~KeyStorageLinuxTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageLinuxTest);
+  KeyStorageLinuxTest(const KeyStorageLinuxTest&) = delete;
+  KeyStorageLinuxTest& operator=(const KeyStorageLinuxTest&) = delete;
+
+  ~KeyStorageLinuxTest() override = default;
 };
 
 TEST_F(KeyStorageLinuxTest, SkipPostingToSameTaskRunner) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,24 @@
 #include <deque>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/ime_text_span.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/range/range.h"
 
 namespace ui {
 class TextInputClient;
+
+// d5138268-a1bf-4308-bcbf-2e739398e234
+// Bootstrap the definition of the GUID for the URL property which
+// will be defined in the windows SDK.
+// https://docs.microsoft.com/en-us/windows/win32/tsf/predefined-properties
+const GUID GUID_PROP_URL = {0xd5138268,
+                            0xa1bf,
+                            0x4308,
+                            {0xbc, 0xbf, 0x2e, 0x73, 0x93, 0x98, 0xe2, 0x34}};
 
 // TSFTextStore is used to interact with the input method via TSF manager.
 // TSFTextStore have a string buffer which is manipulated by TSF manager through
@@ -102,10 +110,15 @@ class TextInputClient;
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
     : public ITextStoreACP,
       public ITfContextOwnerCompositionSink,
+      public ITfLanguageProfileNotifySink,
       public ITfKeyTraceEventSink,
       public ITfTextEditSink {
  public:
   TSFTextStore();
+
+  TSFTextStore(const TSFTextStore&) = delete;
+  TSFTextStore& operator=(const TSFTextStore&) = delete;
+
   virtual ~TSFTextStore();
   HRESULT Initialize();
 
@@ -217,6 +230,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   IFACEMETHODIMP OnEndComposition(
       ITfCompositionView* composition_view) override;
 
+  // ITfLanguageProfileNotifySink:
+  IFACEMETHODIMP OnLanguageChange(LANGID langid, BOOL* pfAccept) override;
+  IFACEMETHODIMP OnLanguageChanged() override;
+
   // ITfTextEditSink:
   IFACEMETHODIMP OnEndEdit(ITfContext* context,
                            TfEditCookie read_only_edit_cookie,
@@ -236,11 +253,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Removes currently focused TextInputClient.
   void RemoveFocusedTextInputClient(TextInputClient* text_input_client);
 
-  // Sets InputMethodDelegate pointer.
-  void SetInputMethodDelegate(internal::InputMethodDelegate* delegate);
+  // Sets ImeKeyEventDispatcher pointer.
+  void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
-  // Removes InputMethodDelegate pointer.
-  void RemoveInputMethodDelegate();
+  // Removes ImeKeyEventDispatcher pointer.
+  void RemoveImeKeyEventDispatcher();
 
   // Cancels the ongoing composition if exists.
   bool CancelComposition();
@@ -300,6 +318,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Reset all cached flags when |TSFTextStore::RequestLock| returns.
   void ResetCacheAfterEditSession();
 
+  // Returns if current input method is an IME.
+  bool IsInputIME() const;
+
   // Gets the style information from the display attribute for the actively
   // composed text.
   void GetStyle(const TF_DISPLAYATTRIBUTE& attribute, ImeTextSpan* span);
@@ -317,10 +338,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   HWND window_handle_ = nullptr;
 
   // Current TextInputClient which is set in SetFocusedTextInputClient.
-  TextInputClient* text_input_client_ = nullptr;
+  raw_ptr<TextInputClient> text_input_client_ = nullptr;
 
-  // InputMethodDelegate instance which is used dispatch key events.
-  internal::InputMethodDelegate* input_method_delegate_ = nullptr;
+  // ImeKeyEventDispatcher instance which is used dispatch key events.
+  raw_ptr<ImeKeyEventDispatcher> ime_key_event_dispatcher_ = nullptr;
 
   //  |string_buffer_document_| contains all string in current active view.
   //  |string_pending_insertion_| contains only string in current edit session.
@@ -439,8 +460,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   Microsoft::WRL::ComPtr<ITfCategoryMgr> category_manager_;
   Microsoft::WRL::ComPtr<ITfDisplayAttributeMgr> display_attribute_manager_;
   Microsoft::WRL::ComPtr<ITfContext> context_;
+  Microsoft::WRL::ComPtr<ITfInputProcessorProfileMgr>
+      input_processor_profile_mgr_;
 
-  DISALLOW_COPY_AND_ASSIGN(TSFTextStore);
+  // Current list of requested supported attribute values.
+  // Currently the supported attributes are URL and InputScope.
+  std::vector<TS_ATTRID> supported_attrs_;
 };
 
 }  // namespace ui

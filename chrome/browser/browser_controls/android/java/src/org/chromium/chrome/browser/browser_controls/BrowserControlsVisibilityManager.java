@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,13 @@ public interface BrowserControlsVisibilityManager extends BrowserControlsStatePr
      * @param animate Whether a slide-in animation should be run.
      */
     void showAndroidControls(boolean animate);
+
+    /**
+     * Attempts to restore the controls to the position that they should be at corresponding
+     * to any set constraints, if they've been forced to a different position.
+     * Only actionable if {@link #offsetOverridden()} is true.
+     */
+    void restoreControlsPositions();
 
     /**
      * Indicates whether the browser controls offsets are currently overridden by a Java-side

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -19,25 +19,26 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/test_webrtc_stats_report_obtainer.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/mock_rtp_receiver.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
-#include "third_party/webrtc/api/test/mock_rtpreceiver.h"
 
 namespace blink {
 
 class RTCRtpReceiverImplTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_map_ = base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
-        dependency_factory_.get(), main_thread_);
+        dependency_factory_.Get(), main_thread_);
     peer_connection_ = new rtc::RefCountedObject<blink::MockPeerConnectionImpl>(
-        dependency_factory_.get(), nullptr);
+        dependency_factory_.Get(), nullptr);
   }
 
   void TearDown() override {
@@ -61,8 +62,7 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
 
   std::unique_ptr<RTCRtpReceiverImpl> CreateReceiver(
       scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track,
-      bool force_encoded_audio_insertable_streams = false,
-      bool force_encoded_video_insertable_streams = false) {
+      bool encoded_insertable_streams = false) {
     std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
         track_ref;
     base::RunLoop run_loop;
@@ -80,9 +80,7 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
         mock_webrtc_receiver_.get(), std::move(track_ref), {});
     state.Initialize();
     return std::make_unique<RTCRtpReceiverImpl>(
-        peer_connection_.get(), std::move(state),
-        force_encoded_audio_insertable_streams,
-        force_encoded_video_insertable_streams);
+        peer_connection_.get(), std::move(state), encoded_insertable_streams);
   }
 
   scoped_refptr<blink::TestWebRTCStatsReportObtainer> GetStats() {
@@ -98,20 +96,18 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
       std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>*
           track_ref,
       base::RunLoop* run_loop) {
-    mock_webrtc_receiver_ =
-        new rtc::RefCountedObject<webrtc::MockRtpReceiver>();
+    mock_webrtc_receiver_ = new rtc::RefCountedObject<MockRtpReceiver>();
     *track_ref = track_map_->GetOrCreateRemoteTrackAdapter(webrtc_track);
     run_loop->Quit();
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
-      dependency_factory_;
+  Persistent<blink::MockPeerConnectionDependencyFactory> dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map_;
   rtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;
-  rtc::scoped_refptr<webrtc::MockRtpReceiver> mock_webrtc_receiver_;
+  rtc::scoped_refptr<MockRtpReceiver> mock_webrtc_receiver_;
   std::unique_ptr<RTCRtpReceiverImpl> receiver_;
 };
 
@@ -121,7 +117,8 @@ TEST_F(RTCRtpReceiverImplTest, CreateReceiver) {
   receiver_ = CreateReceiver(webrtc_track);
   EXPECT_FALSE(!receiver_->Track());
   EXPECT_EQ(receiver_->Track()->Id().Utf8(), webrtc_track->id());
-  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   EXPECT_FALSE(receiver_->GetEncodedAudioStreamTransformer());
   EXPECT_FALSE(receiver_->GetEncodedVideoStreamTransformer());
 }
@@ -131,17 +128,20 @@ TEST_F(RTCRtpReceiverImplTest, ShallowCopy) {
       blink::MockWebRtcAudioTrack::Create("webrtc_track");
   receiver_ = CreateReceiver(webrtc_track);
   auto copy = std::make_unique<RTCRtpReceiverImpl>(*receiver_);
-  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   const auto& webrtc_receiver = receiver_->state().webrtc_receiver();
   auto web_track_unique_id = receiver_->Track()->UniqueId();
   // Copy is identical to original.
   EXPECT_EQ(copy->state().webrtc_receiver(), webrtc_receiver);
-  EXPECT_EQ(copy->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(copy->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   EXPECT_EQ(copy->Track()->UniqueId(), web_track_unique_id);
   // Copy keeps the internal state alive.
   receiver_.reset();
   EXPECT_EQ(copy->state().webrtc_receiver(), webrtc_receiver);
-  EXPECT_EQ(copy->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(copy->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   EXPECT_EQ(copy->Track()->UniqueId(), web_track_unique_id);
 }
 
@@ -156,7 +156,7 @@ TEST_F(RTCRtpReceiverImplTest, GetStats) {
       webrtc::RTCStatsReport::Create(0u);
   webrtc_report->AddStats(
       std::make_unique<webrtc::RTCInboundRTPStreamStats>("stats-id", 1234u));
-  peer_connection_->SetGetStatsReport(webrtc_report);
+  peer_connection_->SetGetStatsReport(webrtc_report.get());
 
   auto obtainer = GetStats();
   // Make sure the operation is async.
@@ -176,8 +176,7 @@ TEST_F(RTCRtpReceiverImplTest, CreateReceiverWithInsertableStreams) {
   scoped_refptr<blink::MockWebRtcAudioTrack> webrtc_track =
       blink::MockWebRtcAudioTrack::Create("webrtc_track");
   receiver_ = CreateReceiver(webrtc_track,
-                             /*force_encoded_audio_insertable_streams=*/true,
-                             /*force_encoded_video_insertable_streams=*/true);
+                             /*encoded_insertable_streams=*/true);
   EXPECT_TRUE(receiver_->GetEncodedAudioStreamTransformer());
   // There should be no video transformer in audio receivers.
   EXPECT_FALSE(receiver_->GetEncodedVideoStreamTransformer());

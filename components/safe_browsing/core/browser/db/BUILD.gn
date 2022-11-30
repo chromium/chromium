@@ -1,0 +1,361 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("safebrowsing_proto") {
+  sources = [ "safebrowsing.proto" ]
+}
+
+proto_library("v4_store_proto") {
+  sources = [ "v4_store.proto" ]
+  link_deps = [ ":safebrowsing_proto" ]
+}
+
+proto_library("metadata_proto") {
+  sources = [ "metadata.proto" ]
+}
+
+# This target is shared between the desktop and mobile versions.
+group("safe_browsing_db_shared") {
+  deps = [
+    ":database_manager",
+    ":hit_report",
+    ":safebrowsing_proto",
+    ":util",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+  ]
+}
+
+# This target is for the desktop version.
+group("db") {
+  deps = [
+    ":safe_browsing_db_shared",
+    ":v4_local_database_manager",
+  ]
+}
+
+static_library("database_manager") {
+  sources = [
+    "database_manager.cc",
+    "database_manager.h",
+  ]
+  deps = [
+    ":hit_report",
+    ":util",
+    ":v4_get_hash_protocol_manager",
+    ":v4_protocol_manager_util",
+    "//base",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+
+  public_deps = [ ":safebrowsing_proto" ]
+}
+
+static_library("hit_report") {
+  sources = [
+    "hit_report.cc",
+    "hit_report.h",
+  ]
+  public_deps = [ ":util" ]
+  deps = [
+    "//components/metrics",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//url",
+  ]
+}
+
+static_library("test_database_manager") {
+  sources = [
+    "fake_database_manager.cc",
+    "fake_database_manager.h",
+    "test_database_manager.cc",
+    "test_database_manager.h",
+  ]
+  deps = [
+    ":database_manager",
+    ":util",
+    ":v4_protocol_manager_util",
+    "//base:base",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+static_library("util") {
+  sources = [
+    "util.cc",
+    "util.h",
+  ]
+  public_deps = [
+    ":v4_protocol_manager_util",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+  ]
+  deps = [
+    "//base",
+    "//components/version_info:version_info",
+    "//crypto",
+    "//google_apis:google_apis",
+    "//net",
+    "//url",
+  ]
+}
+
+static_library("v4_database") {
+  sources = [
+    "v4_database.cc",
+    "v4_database.h",
+  ]
+  public_deps = [ ":safebrowsing_proto" ]
+  deps = [
+    ":v4_protocol_manager_util",
+    ":v4_store",
+    "//base",
+    "//components/safe_browsing/core/common/proto:webui_proto",
+  ]
+}
+
+static_library("v4_get_hash_protocol_manager") {
+  sources = [
+    "v4_get_hash_protocol_manager.cc",
+    "v4_get_hash_protocol_manager.h",
+  ]
+  public_deps = [
+    ":safebrowsing_proto",
+    ":util",
+  ]
+  deps = [
+    ":v4_protocol_manager_util",
+    "//base",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:webui_proto",
+    "//net",
+    "//services/network/public/cpp:cpp",
+    "//url",
+  ]
+}
+
+static_library("v4_local_database_manager") {
+  sources = [
+    "v4_local_database_manager.cc",
+    "v4_local_database_manager.h",
+  ]
+  deps = [
+    ":database_manager",
+    ":hit_report",
+    ":safebrowsing_proto",
+    ":v4_database",
+    ":v4_get_hash_protocol_manager",
+    ":v4_protocol_manager_util",
+    ":v4_update_protocol_manager",
+    "//base",
+    "//build:branding_buildflags",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:webui_proto",
+    "//crypto",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("v4_protocol_manager_util") {
+  sources = [
+    "v4_protocol_manager_util.cc",
+    "v4_protocol_manager_util.h",
+  ]
+  public_deps = [ ":safebrowsing_proto" ]
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/version_info:version_info",
+    "//google_apis:google_apis",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("prefix_iterator") {
+  sources = [
+    "prefix_iterator.cc",
+    "prefix_iterator.h",
+  ]
+  deps = [
+    ":v4_protocol_manager_util",
+    "//base",
+  ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  java_cpp_enum("sb_threat_values") {
+    sources = [ "v4_protocol_manager_util.h" ]
+  }
+}
+
+source_set("v4_rice") {
+  sources = [
+    "v4_rice.cc",
+    "v4_rice.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+source_set("v4_store") {
+  sources = [
+    "v4_store.cc",
+    "v4_store.h",
+  ]
+  public_deps = [
+    ":safebrowsing_proto",
+    ":v4_store_proto",
+  ]
+  deps = [
+    ":prefix_iterator",
+    ":v4_protocol_manager_util",
+    ":v4_rice",
+    "//base",
+    "//components/safe_browsing/core/common/proto:webui_proto",
+    "//crypto",
+  ]
+}
+
+static_library("v4_test_util") {
+  testonly = true
+  sources = [
+    "v4_embedded_test_server_util.cc",
+    "v4_embedded_test_server_util.h",
+    "v4_test_util.cc",
+    "v4_test_util.h",
+  ]
+  deps = [
+    ":util",
+    ":v4_database",
+    ":v4_get_hash_protocol_manager",
+    ":v4_protocol_manager_util",
+    "//base",
+    "//net:test_support",
+    "//services/network/public/cpp",
+  ]
+}
+
+static_library("v4_update_protocol_manager") {
+  sources = [
+    "v4_update_protocol_manager.cc",
+    "v4_update_protocol_manager.h",
+  ]
+  deps = [
+    ":safebrowsing_proto",
+    ":util",
+    ":v4_protocol_manager_util",
+    "//base",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:webui_proto",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests_shared") {
+  testonly = true
+  sources = [
+    "allowlist_checker_client_unittest.cc",
+    "database_manager_unittest.cc",
+    "v4_get_hash_protocol_manager_unittest.cc",
+    "v4_protocol_manager_util_unittest.cc",
+  ]
+  deps = [
+    ":allowlist_checker_client",
+    ":database_manager",
+    ":safebrowsing_proto",
+    ":test_database_manager",
+    ":util",
+    ":v4_get_hash_protocol_manager",
+    ":v4_protocol_manager_util",
+    ":v4_test_util",
+    "//base",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests_local_db") {
+  testonly = true
+  sources = [
+    "v4_database_unittest.cc",
+    "v4_local_database_manager_unittest.cc",
+    "v4_rice_unittest.cc",
+    "v4_store_unittest.cc",
+    "v4_update_protocol_manager_unittest.cc",
+  ]
+  deps = [
+    ":unit_tests_shared",
+    ":util",
+    ":v4_database",
+    ":v4_local_database_manager",
+    ":v4_protocol_manager_util",
+    ":v4_rice",
+    ":v4_store",
+    ":v4_store_proto",
+    ":v4_test_util",
+    ":v4_update_protocol_manager",
+    "//base",
+    "//build:branding_buildflags",
+    "//components/prefs:test_support",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//crypto",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+static_library("allowlist_checker_client") {
+  sources = [
+    "allowlist_checker_client.cc",
+    "allowlist_checker_client.h",
+  ]
+  deps = [
+    ":database_manager",
+    "//base:base",
+    "//url:url",
+  ]
+}
+
+fuzzer_test("v4_get_hash_protocol_manager_fuzzer") {
+  sources = [ "v4_get_hash_protocol_manager_fuzzer.cc" ]
+  deps = [
+    ":safebrowsing_proto",
+    ":v4_get_hash_protocol_manager",
+  ]
+}
+
+fuzzer_test("v4_store_fuzzer") {
+  sources = [ "v4_store_fuzzer.cc" ]
+  deps = [
+    ":v4_protocol_manager_util",
+    ":v4_store",
+    ":v4_test_util",
+    "//base/test:test_support",
+  ]
+}

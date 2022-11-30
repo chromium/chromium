@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ struct UserDeviceContext {
   // authenticate the user.
   std::wstring dm_token;
 
-  bool operator==(const UserDeviceContext& other_user_device_context);
+  bool operator==(const UserDeviceContext& other_user_device_context) const;
 };
 
 }  // namespace extension

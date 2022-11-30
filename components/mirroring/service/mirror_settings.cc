@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,7 @@ namespace {
 // Default end-to-end latency. Currently adaptive latency control is disabled
 // because of audio playout regressions (b/32876644).
 // TODO(openscreen/44): Re-enable in port to Open Screen.
-constexpr base::TimeDelta kDefaultPlayoutDelay =
-    base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kDefaultPlayoutDelay = base::Milliseconds(400);
 
 constexpr int kAudioTimebase = 48000;
 constexpr int kVidoTimebase = 90000;
@@ -65,7 +64,7 @@ base::TimeDelta GetPlayoutDelayImpl() {
 
   VLOG(1) << "Using custom mirroring playout delay value of: " << playout_delay
           << "ms...";
-  return base::TimeDelta::FromMilliseconds(playout_delay);
+  return base::Milliseconds(playout_delay);
 }
 
 base::TimeDelta GetPlayoutDelay() {
@@ -93,7 +92,6 @@ FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
   const base::TimeDelta playout_delay = GetPlayoutDelay();
   config.min_playout_delay = playout_delay;
   config.max_playout_delay = playout_delay;
-  config.animated_playout_delay = playout_delay;
   config.rtp_payload_type = payload_type;
   config.rtp_timebase = kAudioTimebase;
   config.channels = kAudioChannels;
@@ -114,7 +112,6 @@ FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
   const base::TimeDelta playout_delay = GetPlayoutDelay();
   config.min_playout_delay = playout_delay;
   config.max_playout_delay = playout_delay;
-  config.animated_playout_delay = playout_delay;
   config.rtp_payload_type = payload_type;
   config.rtp_timebase = kVidoTimebase;
   config.channels = 1;
@@ -154,8 +151,8 @@ media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() {
 
 media::AudioParameters MirrorSettings::GetAudioCaptureParams() {
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_STEREO, kAudioTimebase,
-                                kAudioTimebase / 100);
+                                media::ChannelLayoutConfig::Stereo(),
+                                kAudioTimebase, kAudioTimebase / 100);
   DCHECK(params.IsValid());
   return params;
 }

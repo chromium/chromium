@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.support.test.filters.LargeTest;
 
+import androidx.test.filters.LargeTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +20,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
@@ -26,7 +29,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.paintpreview.player.CompositorStatus;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -43,10 +45,13 @@ public class BitmapGeneratorTest {
 
     private Tab mTab;
     private BitmapGenerator mGenerator;
+    private boolean mBitmapCreated;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        final String url = testServer.getURL("/chrome/test/data/android/about.html");
+        mActivityTestRule.startMainActivityWithURL(url);
         mTab = mActivityTestRule.getActivity().getActivityTab();
     }
 
@@ -60,12 +65,11 @@ public class BitmapGeneratorTest {
     }
 
     /**
-     * Verifies that a Tab's contents are captured.
+     * Verifies that a Tab's contents are captured and rastered.
      */
     @Test
     @LargeTest
     @Feature({"LongScreenshots"})
-    @DisabledTest(message = "https://crbug.com/1183524")
     public void testCapturedNewOne() throws Exception {
         Runnable onErrorCallback = new Runnable() {
             @Override
@@ -78,6 +82,7 @@ public class BitmapGeneratorTest {
             @Override
             public void onResult(Bitmap result) {
                 Assert.assertNotNull(result);
+                mBitmapCreated = true;
             }
         };
 
@@ -97,16 +102,22 @@ public class BitmapGeneratorTest {
             }
         }
 
-        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        final String url = testServer.getURL("/chrome/test/data/android/about.html");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mGenerator = new BitmapGenerator(mTab,
                     new ScreenshotBoundsManager(mActivityTestRule.getActivity(), mTab),
                     new Listener());
             PaintPreviewCompositorUtils.warmupCompositor();
-            mTab.loadUrl(new LoadUrlParams(url));
-            mGenerator.captureTab();
+            mGenerator.captureTab(/*inMemory=*/false);
         });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mGenerator.getContentSize(), Matchers.notNullValue());
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mGenerator.getScrollOffset(), Matchers.notNullValue());
+        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> { Criteria.checkThat(mBitmapCreated, Matchers.equalTo(true)); });
     }
 }

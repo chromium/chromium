@@ -1,0 +1,30 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("mac") {
+  public = [ "plist_settings_client.h" ]
+
+  sources = [ "plist_settings_client.mm" ]
+
+  deps = [
+    "//base",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common/",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plist_settings_client_unittest.mm" ]
+
+  deps = [
+    ":mac",
+    "//base/test:test_support",
+    "//components/device_signals/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,24 +32,11 @@ void HandwritingRecognitionServiceImpl::CreateHandwritingRecognizer(
                                     std::move(callback));
 }
 
-void HandwritingRecognitionServiceImpl::QueryHandwritingRecognizerSupport(
-    handwriting::mojom::HandwritingFeatureQueryPtr query,
-    QueryHandwritingRecognizerSupportCallback callback) {
-  // By default, we do not support any handwriting recognition functionality.
-  auto query_result = handwriting::mojom::HandwritingFeatureQueryResult::New();
-  if (!query->languages.empty()) {
-    query_result->languages =
-        handwriting::mojom::HandwritingFeatureStatus::kNotSupported;
-  }
-  if (query->alternatives) {
-    query_result->alternatives =
-        handwriting::mojom::HandwritingFeatureStatus::kNotSupported;
-  }
-  if (query->segmentation_result) {
-    query_result->segmentation_result =
-        handwriting::mojom::HandwritingFeatureStatus::kNotSupported;
-  }
-  std::move(callback).Run(std::move(query_result));
+void HandwritingRecognitionServiceImpl::QueryHandwritingRecognizer(
+    handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+    QueryHandwritingRecognizerCallback callback) {
+  // By default, we don't support any handwriting recognizer.
+  std::move(callback).Run(nullptr);
 }
 
 HandwritingRecognitionServiceImpl::HandwritingRecognitionServiceImpl() =

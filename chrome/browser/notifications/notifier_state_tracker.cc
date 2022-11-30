@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,24 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/extensions/api/notifications.h"
@@ -39,12 +41,7 @@ void NotifierStateTracker::RegisterProfilePrefs(
 }
 
 NotifierStateTracker::NotifierStateTracker(Profile* profile)
-    : profile_(profile)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      ,
-      extension_registry_observer_(this)
-#endif
-{
+    : profile_(profile) {
   OnStringListPrefChanged(
       prefs::kMessageCenterDisabledExtensionIds, &disabled_extension_ids_);
 
@@ -57,7 +54,7 @@ NotifierStateTracker::NotifierStateTracker(Profile* profile)
           base::Unretained(&disabled_extension_ids_)));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
 #endif
 }
@@ -72,10 +69,11 @@ bool NotifierStateTracker::IsNotifierEnabled(
       return disabled_extension_ids_.find(notifier_id.id) ==
           disabled_extension_ids_.end();
     case message_center::NotifierType::WEB_PAGE:
-      return PermissionManagerFactory::GetForProfile(profile_)
-                 ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                       notifier_id.url, notifier_id.url)
-                 .content_setting == CONTENT_SETTING_ALLOW;
+      return profile_->GetPermissionController()
+                 ->GetPermissionResultForOriginWithoutContext(
+                     blink::PermissionType::NOTIFICATIONS,
+                     url::Origin::Create(notifier_id.url))
+                 .status == blink::mojom::PermissionStatus::GRANTED;
     case message_center::NotifierType::SYSTEM_COMPONENT:
       // We do not disable system component notifications.
       return true;
@@ -114,14 +112,14 @@ void NotifierStateTracker::SetNotifierEnabled(
   DCHECK_NE(message_center::NotifierType::WEB_PAGE, notifier_id.type);
 
   bool add_new_item = false;
-  const char* pref_name = NULL;
-  std::unique_ptr<base::Value> id;
+  const char* pref_name = nullptr;
+  base::Value id;
   switch (notifier_id.type) {
     case message_center::NotifierType::APPLICATION:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       pref_name = prefs::kMessageCenterDisabledExtensionIds;
       add_new_item = !enabled;
-      id.reset(new base::Value(notifier_id.id));
+      id = base::Value(notifier_id.id);
       FirePermissionLevelChangedEvent(notifier_id, enabled);
 #else
       NOTREACHED();
@@ -130,28 +128,26 @@ void NotifierStateTracker::SetNotifierEnabled(
     default:
       NOTREACHED();
   }
-  DCHECK(pref_name != NULL);
+  DCHECK(pref_name != nullptr);
 
-  ListPrefUpdate update(profile_->GetPrefs(), pref_name);
-  base::ListValue* const list = update.Get();
+  ScopedListPrefUpdate update(profile_->GetPrefs(), pref_name);
+  base::Value::List& update_list = update.Get();
   if (add_new_item) {
-    list->AppendIfNotPresent(std::move(id));
+    if (!base::Contains(update_list, id))
+      update_list.Append(std::move(id));
   } else {
-    list->Remove(*id, nullptr);
+    update_list.EraseValue(id);
   }
 }
 
 void NotifierStateTracker::OnStringListPrefChanged(
     const char* pref_name, std::set<std::string>* ids_field) {
   ids_field->clear();
-  // Separate GetPrefs()->GetList() to analyze the crash. See crbug.com/322320
-  const PrefService* pref_service = profile_->GetPrefs();
-  CHECK(pref_service);
-  const base::ListValue* pref_list = pref_service->GetList(pref_name);
-  for (size_t i = 0; i < pref_list->GetSize(); ++i) {
-    std::string element;
-    if (pref_list->GetString(i, &element) && !element.empty())
-      ids_field->insert(element);
+  const base::Value::List& pref_list = profile_->GetPrefs()->GetList(pref_name);
+  for (size_t i = 0; i < pref_list.size(); ++i) {
+    const std::string* element = pref_list[i].GetIfString();
+    if (element && !element->empty())
+      ids_field->insert(*element);
     else
       LOG(WARNING) << i << "-th element is not a string for " << pref_name;
   }
@@ -183,12 +179,12 @@ void NotifierStateTracker::FirePermissionLevelChangedEvent(
   extensions::api::notifications::PermissionLevel permission =
       enabled ? extensions::api::notifications::PERMISSION_LEVEL_GRANTED
               : extensions::api::notifications::PERMISSION_LEVEL_DENIED;
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(extensions::api::notifications::ToString(permission));
-  std::unique_ptr<extensions::Event> event(new extensions::Event(
+  base::Value::List args;
+  args.Append(extensions::api::notifications::ToString(permission));
+  auto event = std::make_unique<extensions::Event>(
       extensions::events::NOTIFICATIONS_ON_PERMISSION_LEVEL_CHANGED,
       extensions::api::notifications::OnPermissionLevelChanged::kEventName,
-      std::move(args)));
+      std::move(args));
 
   event_router->DispatchEventToExtension(notifier_id.id, std::move(event));
 }

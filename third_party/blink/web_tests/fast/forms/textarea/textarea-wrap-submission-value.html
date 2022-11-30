@@ -14,14 +14,16 @@
 
 <script>
 function assertLineWrap(description, formData, name, shouldHaveLineBreakInResult) {
-  const LINE_WRAP = "\r\n";
-  const wireValue = formData.get(name);
+  // Textarea wrapping takes place with LF newlines, which are then normalized
+  // to CRLF when the form payload is encoded.
+  const LINE_WRAP = "\n";
+  const formDataValue = formData.get(name);
   if (shouldHaveLineBreakInResult) {
-    assert_not_equals(wireValue.indexOf(LINE_WRAP), -1,
-        `"${wireValue}" should contain \\r\\n`);
+    assert_not_equals(formDataValue.indexOf(LINE_WRAP), -1,
+        `"${formDataValue}" should contain \\n`);
   } else {
-    assert_equals(wireValue.indexOf(LINE_WRAP), -1,
-        `"${wireValue}" should not contain \\r\\n`);
+    assert_equals(formDataValue.indexOf(LINE_WRAP), -1,
+        `"${formDataValue}" should not contain \\n`);
   }
 }
 

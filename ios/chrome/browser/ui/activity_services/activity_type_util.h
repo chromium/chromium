@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,16 +45,18 @@ enum ActivityType {
   THIRD_PARTY_INSTAPAPER,
   SEND_TAB_TO_SELF,
   GENERATE_QR_CODE,
+  NATIVE_SAVE_FILE,
+  NATIVE_MARKUP,
   // UNKNOWN must be the last type.
   UNKNOWN,
 };
 
-// Returns the ActivityType enum associated with |activityString|, which is the
-// bundle ID of a iOS App Extension. Returns UNKNOWN if |activityString| does
-// match any known App Extensions. |activityString| must not be nil.
+// Returns the ActivityType enum associated with `activityString`, which is the
+// bundle ID of a iOS App Extension. Returns UNKNOWN if `activityString` does
+// match any known App Extensions. `activityString` must not be nil.
 ActivityType TypeFromString(NSString* activityString);
 
-// Records the UMA for activity |type|.
+// Records the UMA for activity `type`.
 void RecordMetricForActivity(ActivityType type);
 
 }  // namespace activity_type_util

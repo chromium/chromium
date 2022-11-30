@@ -1,0 +1,51 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/ambient/resources/resources.gni")
+import("//build/cipd/cipd.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+assert(include_ash_ambient_animation_resources)
+
+lottie_resources_grd_file = "$target_gen_dir/lottie_resources.grd"
+
+generate_grd("build_lottie_grd") {
+  out_grd = lottie_resources_grd_file
+  grd_prefix = "ash_ambient_lottie"
+  input_files = [
+    "lottie/feel_the_breeze/animation.json",
+    "lottie/feel_the_breeze/clip_bottom.png",
+    "lottie/feel_the_breeze/clip_top.png",
+    "lottie/feel_the_breeze/frame_image_1.png",
+    "lottie/feel_the_breeze/frame_image_2.png",
+    "lottie/feel_the_breeze/string.png",
+    "lottie/feel_the_breeze/tree_shadow.png",
+    "lottie/float_on_by/animation.json",
+    "lottie/float_on_by/shadow_a_1.png",
+    "lottie/float_on_by/shadow_b_1.png",
+    "lottie/float_on_by/shadow_c_1.png",
+    "lottie/float_on_by/shadow_d_1.png",
+    "lottie/float_on_by/shadow_e_1.png",
+    "lottie/float_on_by/shadow_f_1.png",
+    "lottie/float_on_by/shadow_g_1.png",
+    "lottie/float_on_by/shadow_h_1.png",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+grit("lottie_resources") {
+  # Required since the .grd file is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = lottie_resources_grd_file
+  deps = [ ":build_lottie_grd" ]
+  outputs = [
+    "grit/ash_ambient_lottie_resources.h",
+    "grit/ash_ambient_lottie_resources_map.cc",
+    "grit/ash_ambient_lottie_resources_map.h",
+    "ash_ambient_lottie_resources.pak",
+  ]
+}

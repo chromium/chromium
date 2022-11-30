@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ DelegatedInkPointRendererBase::DelegatedInkPointRendererBase() = default;
 DelegatedInkPointRendererBase::~DelegatedInkPointRendererBase() = default;
 
 void DelegatedInkPointRendererBase::InitMessagePipeline(
-    mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver) {
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver) {
   // The remote end of this pipeline exists on a per-tab basis, so if tab A
   // is using the feature and then tab B starts trying to use it, a new
   // PendingReceiver will arrive here while |receiver_| is still bound to the
@@ -35,6 +35,12 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   DCHECK_NE(metadata->frame_time(), base::TimeTicks());
   metadata_ = std::move(metadata);
 
+  TRACE_EVENT_WITH_FLOW1(
+      "delegated_ink_trails",
+      "DelegatedInkPointRendererBase::SetDelegatedInkMetadata",
+      TRACE_ID_GLOBAL(metadata_->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
+      "metadata", metadata_->ToString());
+
   // If we already have a cached pointer ID, check if the same pointer ID
   // matches the new metadata.
   if (pointer_id_.has_value() &&
@@ -53,7 +59,7 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
 
   // If we aren't able to find any matching point, set the pointer ID to null
   // so that FilterPoints and PredictPoints can early out.
-  pointer_id_ = base::nullopt;
+  pointer_id_ = absl::nullopt;
 }
 
 std::vector<gfx::DelegatedInkPoint>
@@ -101,11 +107,15 @@ DelegatedInkPointRendererBase::FilterPoints() {
   // Any remaining points must be the points that should be part of the
   // delegated ink trail
   std::vector<gfx::DelegatedInkPoint> points_to_draw;
-  for (auto it : trail_data.GetPoints())
-    points_to_draw.emplace_back(it.second, it.first, pointer_id_.value());
+  for (auto it : trail_data.GetPoints()) {
+    gfx::DelegatedInkPoint point{it.second, it.first, pointer_id_.value()};
+    points_to_draw.emplace_back(point);
+    TRACE_EVENT_WITH_FLOW1("delegated_ink_trails", "Filtering to draw point",
+                           TRACE_ID_GLOBAL(point.trace_id()),
+                           TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
+  }
 
-  DCHECK(points_to_draw.front().point() == metadata_->point() &&
-         points_to_draw.front().timestamp() == metadata_->timestamp());
+  DCHECK(points_to_draw.front().MatchesDelegatedInkMetadata(metadata_.get()));
 
   return points_to_draw;
 }
@@ -125,15 +135,19 @@ void DelegatedInkPointRendererBase::PredictPoints(
 void DelegatedInkPointRendererBase::ResetPrediction() {
   for (auto& it : pointer_ids_)
     it.second.Reset();
-  TRACE_EVENT_INSTANT0("viz", "Delegated ink prediction reset.",
+  TRACE_EVENT_INSTANT0("delegated_ink_trails",
+                       "Delegated ink prediction reset.",
                        TRACE_EVENT_SCOPE_THREAD);
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
     const gfx::DelegatedInkPoint& point) {
-  TRACE_EVENT_INSTANT1("viz",
-                       "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
-                       TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());
+  TRACE_EVENT_WITH_FLOW1(
+      "delegated_ink_trails",
+      "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
+      TRACE_ID_GLOBAL(point.trace_id()),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "point",
+      point.ToString());
 
   pointer_ids_[point.pointer_id()].AddPoint(point);
 }

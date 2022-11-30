@@ -23,10 +23,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_GRADIENT_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/svg/svg_gradient_element.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -35,14 +36,16 @@ struct GradientData;
 class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
  public:
   explicit LayoutSVGResourceGradient(SVGGradientElement*);
+  void Trace(Visitor*) const override;
 
   void RemoveAllClientsFromCache() final;
   bool RemoveClientFromCache(SVGResourceClient&) final;
 
   bool ApplyShader(const SVGResourceClient&,
-                   const FloatRect& reference_box,
+                   const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
-                   PaintFlags&) final;
+                   const AutoDarkMode& auto_dark_mode,
+                   cc::PaintFlags&) final;
 
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const final;
 
@@ -57,14 +60,14 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
 
  private:
   std::unique_ptr<GradientData> BuildGradientData(
-      const FloatRect& object_bounding_box);
+      const gfx::RectF& object_bounding_box);
 
   bool should_collect_gradient_attributes_ : 1;
   using GradientMap = HeapHashMap<Member<const SVGResourceClient>,
                                   std::unique_ptr<GradientData>>;
-  Persistent<GradientMap> gradient_map_;
+  Member<GradientMap> gradient_map_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_GRADIENT_H_

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
@@ -38,9 +36,9 @@ struct Selector {
   explicit Selector(const std::vector<std::string>& s)
       : Selector(ToSelectorProto(s)) {}
 
-  Selector(Selector&& other);
+  Selector(Selector&& other) noexcept;
   Selector(const Selector& other);
-  Selector& operator=(Selector&& other);
+  Selector& operator=(Selector&& other) noexcept;
   Selector& operator=(const Selector& other);
 
   bool operator<(const Selector& other) const;
@@ -50,6 +48,8 @@ struct Selector {
   Selector& MustBeVisible();
 
   // Checks whether this selector is empty or invalid.
+  // TODO(b/235308082): Rename this to be more appropriate to what the method
+  // actually does.
   bool empty() const;
 
   // Convenience function to set inner_text_pattern in a fluent style.
@@ -83,19 +83,6 @@ struct Selector {
     proto.add_filters()->set_pseudo_type(pseudo_type);
     return *this;
   }
-
-  // Returns a single CSS selector pointing to the element from the last frame,
-  // to pass to autofill.
-  //
-  // This call returns nothing if the selector contains unsupported filters,
-  // such as innerText or pseudo-element filters.
-  //
-  // AutofillAgent::GetElementFormAndFieldData takes a single CSS selector that
-  // identifies the form. This means that form elements for autofill are limited
-  // to one single CSS selector and no further filtering. TODO(b/155264465):
-  // have ElementFinder specify the element it has found in a format that
-  // Autofill can recognise.
-  base::Optional<std::string> ExtractSingleCssSelectorForAutofill() const;
 };
 
 // Debug output operator for selectors. The output is only useful in

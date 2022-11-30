@@ -1,13 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/junov/CanvasColorSpace/blob/master/CanvasColorSpaceProposal.md#imageda
-
-enum CanvasColorSpace {
+enum PredefinedColorSpace {
     "srgb", // default
-    "rec2020",
+    "rec2020", // Enabled only in CanvasColorManagementV2 (not in any spec)
     "display-p3",
+    "rec2100-hlg", // Enabled only in CanvasHDR
+    "rec2100-pq", // Enabled only in CanvasHDR
+    "srgb-linear", // Enabled only in CanvasHDR
 };
 
 enum ImageDataStorageFormat {
@@ -17,6 +18,6 @@ enum ImageDataStorageFormat {
 };
 
 dictionary ImageDataSettings {
-  CanvasColorSpace colorSpace = "srgb";
-  ImageDataStorageFormat storageFormat = "uint8";
+  PredefinedColorSpace colorSpace;
+  [RuntimeEnabled=CanvasColorManagementV2] ImageDataStorageFormat storageFormat = "uint8";
 };

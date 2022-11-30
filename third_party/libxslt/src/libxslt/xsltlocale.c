@@ -348,6 +348,8 @@ xsltFreeLocale(xsltLocale locale) {
 #ifdef XSLT_LOCALE_POSIX
     if (locale != NULL)
         freelocale(locale);
+#else
+    (void) locale;
 #endif
 }
 
@@ -383,6 +385,7 @@ xsltStrxfrm(xsltLocale locale, const xmlChar *string)
 #endif
 
 #ifdef XSLT_LOCALE_WINAPI
+    (void) locale;
     xstrlen = MultiByteToWideChar(CP_UTF8, 0, (char *) string, -1, NULL, 0);
     if (xstrlen == 0) {
         xsltTransformError(NULL, NULL, NULL, "xsltStrxfrm : MultiByteToWideChar check failed\n");
@@ -454,7 +457,7 @@ xsltLocaleStrcmp(xsltLocale locale, const xsltLocaleChar *str1, const xsltLocale
  *
  * Returns TRUE
  */
-BOOL CALLBACK
+static BOOL CALLBACK
 xsltCountSupportedLocales(LPSTR lcid) {
     (void) lcid;
     ++xsltLocaleListSize;
@@ -469,7 +472,7 @@ xsltCountSupportedLocales(LPSTR lcid) {
  *
  * Returns TRUE if not at the end of the array
  */
-BOOL CALLBACK
+static BOOL CALLBACK
 xsltIterateSupportedLocales(LPSTR lcid) {
     static int count = 0;
     xmlChar    iso639lang [XSLTMAX_ISO639LANGLEN  +1];
@@ -477,7 +480,7 @@ xsltIterateSupportedLocales(LPSTR lcid) {
     int        k, l;
     xsltRFC1766Info *p = xsltLocaleList + count;
 
-    k = sscanf(lcid, "%lx", (long*)&p->lcid);
+    k = sscanf(lcid, "%lx", (unsigned long*)&p->lcid);
     if (k < 1) goto end;
     /*don't count terminating null character*/
     k = GetLocaleInfoA(p->lcid, LOCALE_SISO639LANGNAME,

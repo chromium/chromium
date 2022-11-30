@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 
@@ -17,19 +17,21 @@ class BrowsingDataTaskObserver : public content::BrowsingDataRemover::Observer {
   BrowsingDataTaskObserver(content::BrowsingDataRemover* remover,
                            base::OnceCallback<void(uint64_t)> callback,
                            int task_count);
+
+  BrowsingDataTaskObserver(const BrowsingDataTaskObserver&) = delete;
+  BrowsingDataTaskObserver& operator=(const BrowsingDataTaskObserver&) = delete;
+
   ~BrowsingDataTaskObserver() override;
 
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
  private:
   base::OnceCallback<void(uint64_t)> callback_;
-  ScopedObserver<content::BrowsingDataRemover,
-                 content::BrowsingDataRemover::Observer>
-      remover_observer_;
+  base::ScopedObservation<content::BrowsingDataRemover,
+                          content::BrowsingDataRemover::Observer>
+      remover_observation_{this};
   int task_count_;
   uint64_t failed_data_types_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataTaskObserver);
 };
 
 BrowsingDataTaskObserver::BrowsingDataTaskObserver(
@@ -37,9 +39,8 @@ BrowsingDataTaskObserver::BrowsingDataTaskObserver(
     base::OnceCallback<void(uint64_t)> callback,
     int task_count)
     : callback_(std::move(callback)),
-      remover_observer_(this),
       task_count_(task_count) {
-  remover_observer_.Add(remover);
+  remover_observation_.Observe(remover);
 }
 
 BrowsingDataTaskObserver::~BrowsingDataTaskObserver() = default;
@@ -50,7 +51,7 @@ void BrowsingDataTaskObserver::OnBrowsingDataRemoverDone(
   failed_data_types_ |= failed_data_types;
   if (--task_count_)
     return;
-  remover_observer_.RemoveAll();
+  remover_observation_.Reset();
   std::move(callback_).Run(failed_data_types_);
   delete this;
 }

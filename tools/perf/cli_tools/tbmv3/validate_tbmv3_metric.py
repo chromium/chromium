@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -49,12 +49,12 @@ def PrintNoLn(msg):
 
 def CursorErase(length):
   """Erase |length| chars starting from cursor."""
-  for _ in xrange(length):
+  for _ in range(length):
     sys.stdout.write('\b')
   # Add 80 spaces, because \b only moves back the cursor.
-  for _ in xrange(80):
+  for _ in range(80):
     sys.stdout.write(' ')
-  for _ in xrange(80):
+  for _ in range(80):
     sys.stdout.write('\b')
   sys.stdout.flush()
 

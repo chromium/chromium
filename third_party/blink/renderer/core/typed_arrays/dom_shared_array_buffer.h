@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ namespace blink {
 
 class CORE_EXPORT DOMSharedArrayBuffer final : public DOMArrayBufferBase {
   DEFINE_WRAPPERTYPEINFO();
+  static const WrapperTypeInfo wrapper_type_info_body_;
 
  public:
   static DOMSharedArrayBuffer* Create(ArrayBufferContents contents) {
@@ -55,9 +56,7 @@ class CORE_EXPORT DOMSharedArrayBuffer final : public DOMArrayBufferBase {
     return true;
   }
 
-  v8::Local<v8::Value> Wrap(v8::Isolate*,
-                            v8::Local<v8::Object> creation_context) override;
-  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) override;
+  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
 };
 
 }  // namespace blink

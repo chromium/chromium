@@ -16,7 +16,7 @@
 function run() {
   if (window.testRunner) {
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
   }
 
   var win = window.open('about:blank');

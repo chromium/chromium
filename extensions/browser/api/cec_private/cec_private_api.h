@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chromeos/dbus/cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -18,43 +18,53 @@ class CecPrivateFunction : public ExtensionFunction {
  public:
   CecPrivateFunction();
 
+  CecPrivateFunction(const CecPrivateFunction&) = delete;
+  CecPrivateFunction& operator=(const CecPrivateFunction&) = delete;
+
  protected:
   ~CecPrivateFunction() override;
   bool PreRunValidation(std::string* error) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CecPrivateFunction);
 };
 
 class CecPrivateSendStandByFunction : public CecPrivateFunction {
  public:
   CecPrivateSendStandByFunction();
+
+  CecPrivateSendStandByFunction(const CecPrivateSendStandByFunction&) = delete;
+  CecPrivateSendStandByFunction& operator=(
+      const CecPrivateSendStandByFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("cecPrivate.sendStandBy", CECPRIVATE_SENDSTANDBY)
 
  protected:
   ~CecPrivateSendStandByFunction() override;
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CecPrivateSendStandByFunction);
 };
 
 class CecPrivateSendWakeUpFunction : public CecPrivateFunction {
  public:
   CecPrivateSendWakeUpFunction();
+
+  CecPrivateSendWakeUpFunction(const CecPrivateSendWakeUpFunction&) = delete;
+  CecPrivateSendWakeUpFunction& operator=(const CecPrivateSendWakeUpFunction&) =
+      delete;
+
   DECLARE_EXTENSION_FUNCTION("cecPrivate.sendWakeUp", CECPRIVATE_SENDWAKEUP)
 
  protected:
   ~CecPrivateSendWakeUpFunction() override;
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CecPrivateSendWakeUpFunction);
 };
 
 class CecPrivateQueryDisplayCecPowerStateFunction : public CecPrivateFunction {
  public:
   CecPrivateQueryDisplayCecPowerStateFunction();
+
+  CecPrivateQueryDisplayCecPowerStateFunction(
+      const CecPrivateQueryDisplayCecPowerStateFunction&) = delete;
+  CecPrivateQueryDisplayCecPowerStateFunction& operator=(
+      const CecPrivateQueryDisplayCecPowerStateFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("cecPrivate.queryDisplayCecPowerState",
                              CECPRIVATE_QUERYDISPLAYCECPOWERSTATE)
 
@@ -64,9 +74,7 @@ class CecPrivateQueryDisplayCecPowerStateFunction : public CecPrivateFunction {
 
  private:
   void HandlePowerStates(
-      const std::vector<chromeos::CecServiceClient::PowerState>& power_states);
-
-  DISALLOW_COPY_AND_ASSIGN(CecPrivateQueryDisplayCecPowerStateFunction);
+      const std::vector<ash::CecServiceClient::PowerState>& power_states);
 };
 
 }  // namespace api

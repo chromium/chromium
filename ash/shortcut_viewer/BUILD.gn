@@ -1,12 +1,14 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
 
 # KSV: Keyboard Shortcut Viewer
 source_set("shortcut_viewer") {
   sources = [
-    "keyboard_shortcut_item.cc",
-    "keyboard_shortcut_item.h",
     "keyboard_shortcut_viewer_metadata.cc",
     "keyboard_shortcut_viewer_metadata.h",
     "ksv_export.h",
@@ -29,14 +31,16 @@ source_set("shortcut_viewer") {
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
+    "//ash/resources/vector_icons",
     "//ash/search_box",
     "//ash/shortcut_viewer/strings",
-    "//ash/shortcut_viewer/vector_icons",
     "//cc/paint",
     "//chromeos/ui/base",
+    "//chromeos/ui/wm",
     "//ui/accessibility",
     "//ui/aura",
     "//ui/chromeos/events",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/events:events_base",
     "//ui/events/devices",
     "//ui/events/ozone/layout",

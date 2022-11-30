@@ -21,6 +21,7 @@ static const int32_t kFLAG_YSHORT = 1 << 2;
 static const int32_t kFLAG_REPEAT = 1 << 3;
 static const int32_t kFLAG_XREPEATSIGN = 1 << 4;
 static const int32_t kFLAG_YREPEATSIGN = 1 << 5;
+static const int32_t kFLAG_OVERLAP_SIMPLE = 1 << 6;
 static const int32_t kFLAG_ARG_1_AND_2_ARE_WORDS = 1 << 0;
 static const int32_t kFLAG_WE_HAVE_A_SCALE = 1 << 3;
 static const int32_t kFLAG_MORE_COMPONENTS = 1 << 5;
@@ -134,6 +135,10 @@ bool ReadGlyph(const uint8_t* data, size_t len, Glyph* glyph) {
       }
     }
 
+    if (!flags.empty() && !flags[0].empty()) {
+      glyph->overlap_simple_flag_set = (flags[0][0] & kFLAG_OVERLAP_SIMPLE);
+    }
+
     // Read the x coordinates.
     int prev_x = 0;
     for (int i = 0; i < num_contours; ++i) {
@@ -239,7 +244,7 @@ bool StoreEndPtsOfContours(const Glyph& glyph, size_t* offset, uint8_t* dst) {
 
 bool StorePoints(const Glyph& glyph, size_t* offset,
                  uint8_t* dst, size_t dst_size) {
-  int last_flag = -1;
+  int previous_flag = -1;
   int repeat_count = 0;
   int last_x = 0;
   int last_y = 0;
@@ -250,6 +255,10 @@ bool StorePoints(const Glyph& glyph, size_t* offset,
   for (const auto& contour : glyph.contours) {
     for (const auto& point : contour) {
       int flag = point.on_curve ? kFLAG_ONCURVE : 0;
+      if (previous_flag == -1 && glyph.overlap_simple_flag_set) {
+        // First flag needs to have overlap simple bit set.
+        flag = flag | kFLAG_OVERLAP_SIMPLE;
+      }
       int dx = point.x - last_x;
       int dy = point.y - last_y;
       if (dx == 0) {
@@ -268,7 +277,7 @@ bool StorePoints(const Glyph& glyph, size_t* offset,
       } else {
         y_bytes += 2;
       }
-      if (flag == last_flag && repeat_count != 255) {
+      if (flag == previous_flag && repeat_count != 255) {
         dst[*offset - 1] |= kFLAG_REPEAT;
         repeat_count++;
       } else {
@@ -286,7 +295,7 @@ bool StorePoints(const Glyph& glyph, size_t* offset,
       }
       last_x = point.x;
       last_y = point.y;
-      last_flag = flag;
+      previous_flag = flag;
     }
   }
   if (repeat_count != 0) {

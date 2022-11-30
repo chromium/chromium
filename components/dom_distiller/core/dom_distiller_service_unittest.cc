@@ -1,13 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/dom_distiller/core/dom_distiller_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -60,11 +62,11 @@ class DomDistillerServiceTest : public testing::Test {
   void SetUp() override {
     distiller_factory_ = new MockDistillerFactory();
     distiller_page_factory_ = new MockDistillerPageFactory();
-    service_.reset(new DomDistillerService(
+    service_ = std::make_unique<DomDistillerService>(
         std::unique_ptr<DistillerFactory>(distiller_factory_),
         std::unique_ptr<DistillerPageFactory>(distiller_page_factory_),
         /* distilled_page_prefs */ nullptr,
-        /* distiller_ui_handle */ nullptr));
+        /* distiller_ui_handle */ nullptr);
   }
 
   void TearDown() override {
@@ -75,8 +77,8 @@ class DomDistillerServiceTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockDistillerFactory* distiller_factory_;
-  MockDistillerPageFactory* distiller_page_factory_;
+  raw_ptr<MockDistillerFactory> distiller_factory_;
+  raw_ptr<MockDistillerPageFactory> distiller_page_factory_;
   std::unique_ptr<DomDistillerService> service_;
 };
 

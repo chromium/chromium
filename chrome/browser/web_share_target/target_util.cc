@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/web_share_target/target_util.h"
 
 #include <sstream>
+#include <utility>
 
 #include "base/files/file_path.h"
+#include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "net/base/mime_util.h"
+#include "services/network/public/cpp/resource_request_body.h"
 
 namespace {
 
@@ -19,7 +21,7 @@ void AddFile(const std::string& value_name,
              const std::string& file_name,
              const std::string& content_type,
              const std::string& boundary,
-             scoped_refptr<network::ResourceRequestBody> result) {
+             scoped_refptr<network::ResourceRequestBody> request_body) {
   const char delimiter[] = "\r\n";
   const size_t delimiter_length = 2;
   std::string mime_header;
@@ -40,17 +42,17 @@ void AddFile(const std::string& value_name,
   // Leave an empty line before appending the file_uri.
   mime_header.append(delimiter);
 
-  result->AppendBytes(mime_header.c_str(), mime_header.length());
+  request_body->AppendBytes(mime_header.c_str(), mime_header.length());
 
-  result->AppendFileRange(
-#if defined(OS_WIN)
+  request_body->AppendFileRange(
+#if BUILDFLAG(IS_WIN)
       base::FilePath::FromUTF8Unsafe(file_uri),
 #else
       base::FilePath(file_uri),
 #endif
       0, -1, base::Time());
 
-  result->AppendBytes(delimiter, delimiter_length);
+  request_body->AppendBytes(delimiter, delimiter_length);
 }
 
 void AddPlainText(const std::string& value_name,
@@ -58,7 +60,7 @@ void AddPlainText(const std::string& value_name,
                   const std::string& file_name,
                   const std::string& content_type,
                   const std::string& boundary,
-                  scoped_refptr<network::ResourceRequestBody> result) {
+                  scoped_refptr<network::ResourceRequestBody> request_body) {
   std::string item;
   if (file_name.empty()) {
     net::AddMultipartValueForUpload(value_name, value, boundary, content_type,
@@ -67,7 +69,7 @@ void AddPlainText(const std::string& value_name,
     net::AddMultipartValueForUploadWithFileName(value_name, file_name, value,
                                                 boundary, content_type, &item);
   }
-  result->AppendBytes(item.c_str(), item.length());
+  request_body->AppendBytes(item.c_str(), item.length());
 }
 
 }  // namespace
@@ -97,32 +99,33 @@ scoped_refptr<network::ResourceRequestBody> ComputeMultipartBody(
     const std::vector<std::string>& filenames,
     const std::vector<std::string>& types,
     const std::string& boundary) {
-  size_t num_files = names.size();
+  const size_t num_files = names.size();
   if (num_files != values.size() || num_files != is_value_file_uris.size() ||
       num_files != filenames.size() || num_files != types.size()) {
     // The length of all arrays should always be the same for multipart POST.
     // This should never happen.
     return nullptr;
   }
-  scoped_refptr<network::ResourceRequestBody> result =
+  scoped_refptr<network::ResourceRequestBody> request_body =
       new network::ResourceRequestBody();
 
   for (size_t i = 0; i < num_files; i++) {
     if (is_value_file_uris[i]) {
       AddFile(PercentEscapeString(names[i]), values[i],
-              PercentEscapeString(filenames[i]), types[i], boundary, result);
+              PercentEscapeString(filenames[i]), types[i], boundary,
+              request_body);
     } else {
       AddPlainText(PercentEscapeString(names[i]), values[i],
                    PercentEscapeString(filenames[i]), types[i], boundary,
-                   result);
+                   request_body);
     }
   }
 
   std::string final_delimiter;
   net::AddMultipartFinalDelimiterForUpload(boundary, &final_delimiter);
-  result->AppendBytes(final_delimiter.c_str(), final_delimiter.length());
+  request_body->AppendBytes(final_delimiter.c_str(), final_delimiter.length());
 
-  return result;
+  return request_body;
 }
 
 std::string ComputeUrlEncodedBody(const std::vector<std::string>& names,
@@ -130,11 +133,11 @@ std::string ComputeUrlEncodedBody(const std::vector<std::string>& names,
   if (names.size() != values.size() || names.size() == 0)
     return "";
   std::ostringstream application_body_oss;
-  application_body_oss << net::EscapeUrlEncodedData(names[0], true) << "="
-                       << net::EscapeUrlEncodedData(values[0], true);
+  application_body_oss << base::EscapeUrlEncodedData(names[0], true) << "="
+                       << base::EscapeUrlEncodedData(values[0], true);
   for (size_t i = 1; i < names.size(); i++)
-    application_body_oss << "&" << net::EscapeUrlEncodedData(names[i], true)
-                         << "=" << net::EscapeUrlEncodedData(values[i], true);
+    application_body_oss << "&" << base::EscapeUrlEncodedData(names[i], true)
+                         << "=" << base::EscapeUrlEncodedData(values[i], true);
 
   return application_body_oss.str();
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,8 +48,7 @@ class BLINK_COMMON_EXPORT WebCoalescedInputEvent {
   const ui::LatencyInfo& latency_info() const { return latency_; }
   ui::LatencyInfo& latency_info() { return latency_; }
 
-  bool CanCoalesceWith(const WebCoalescedInputEvent& other) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CanCoalesceWith(const WebCoalescedInputEvent& other) const;
 
   // Coalesce with the |newer_event|. This object will be updated to take into
   // account |newer_event|'s fields.
@@ -64,4 +63,4 @@ class BLINK_COMMON_EXPORT WebCoalescedInputEvent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_COALESCED_INPUT_EVENT_H_

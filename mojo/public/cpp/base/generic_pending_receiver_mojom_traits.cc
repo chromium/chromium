@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/base/generic_pending_receiver_mojom_traits.h"
+
+#include "base/strings/string_piece.h"
 
 namespace mojo {
 
@@ -28,8 +30,7 @@ bool StructTraits<mojo_base::mojom::GenericPendingReceiverDataView,
   base::StringPiece interface_name;
   if (!data.ReadInterfaceName(&interface_name))
     return false;
-  *out = GenericPendingReceiver(interface_name.as_string(),
-                                data.TakeReceivingPipe());
+  *out = GenericPendingReceiver(interface_name, data.TakeReceivingPipe());
   return true;
 }
 

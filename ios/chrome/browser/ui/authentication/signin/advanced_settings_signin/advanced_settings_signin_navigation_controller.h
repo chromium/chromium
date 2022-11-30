@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,8 @@
 @protocol
     AdvancedSettingsSigninNavigationControllerNavigationDelegate <NSObject>
 
-// Called when the navigation canceled button was tapped.
-- (void)navigationCancelButtonWasTapped;
-
-// Called when the navigation confirm button was tapped.
-- (void)navigationConfirmButtonWasTapped;
+// Called when the navigation done button was tapped.
+- (void)navigationDoneButtonWasTapped;
 
 @end
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,21 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+/**
+ * Tests for TileUmaLogger.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class TileUmaLoggerTest {
     private TileUmaLogger mTileUmaLogger;
     private TestTileProvider mTileProvider;
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mTileProvider = new TestTileProvider(2, 12);
         mTileUmaLogger = new TileUmaLogger("TestUiSurface");
     }
@@ -52,12 +55,6 @@ public class TileUmaLoggerTest {
             assertHistogramClicked(0, 1);
             assertHistogramClicked(303, 2);
             assertHistogramClicked(11, 1);
-
-            // Click on the chip on fakebox.
-            mTileUmaLogger.recordSearchButtonClicked(mTileProvider.getTileAt(0, 2));
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            "Search.QueryTiles.NTP.Chip.SearchClicked", 102));
         });
     }
 

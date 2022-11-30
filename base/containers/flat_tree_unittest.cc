@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 // Following tests are ported and extended tests from libcpp for std::set.
 // They can be found here:
-// https://github.com/llvm-mirror/libcxx/tree/master/test/std/containers/associative/set
+// https://github.com/llvm/llvm-project/tree/main/libcxx/test/std/containers/associative/set
 //
 // Not ported tests:
 // * No tests with PrivateConstructor and std::less<> changed to std::less<T>
@@ -28,6 +28,7 @@
 // * No tests with min_allocator and no tests counting allocations.
 //   Flat sets currently don't support allocators.
 
+#include <deque>
 #include <forward_list>
 #include <functional>
 #include <iterator>

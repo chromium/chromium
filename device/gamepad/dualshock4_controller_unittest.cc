@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -37,7 +37,7 @@ static_assert(sizeof(kUsbStopVibration) == kUsbReportLength,
 constexpr uint8_t kUsbStartVibration[] = {
     0x05,  // report ID
     0x01, 0x00, 0x00,
-    0x7f,  // weak magnitude
+    0x80,  // weak magnitude
     0xff,  // strong magnitude
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -64,7 +64,7 @@ static_assert(sizeof(kBtStopVibration) == kBluetoothReportLength,
 constexpr uint8_t kBtStartVibration[] = {
     0x11,  // report ID
     0xc0, 0x20, 0xf1, 0x04, 0x00,
-    0x7f,  // weak magnitude
+    0x80,  // weak magnitude
     0xff,  // strong magnitude
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x43, 0x43, 0x00, 0x4d, 0x85, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -73,7 +73,7 @@ constexpr uint8_t kBtStartVibration[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     // CRC32
-    0xf7, 0x4e, 0xbe, 0x5a};
+    0x1e, 0x67, 0x45, 0xb4};
 static_assert(sizeof(kBtStartVibration) == kBluetoothReportLength,
               "kBtStartVibration has incorrect size");
 
@@ -89,7 +89,7 @@ constexpr double kStrongMagnitude = 1.0;  // 100% intensity
 constexpr double kWeakMagnitude = 0.5;    // 50% intensity
 
 constexpr base::TimeDelta kPendingTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kDurationMillis);
+    base::Milliseconds(kDurationMillis);
 
 class FakeHidWriter : public HidWriter {
  public:
@@ -136,6 +136,9 @@ class Dualshock4ControllerTest : public testing::Test {
         std::move(bluetooth_writer));
   }
 
+  Dualshock4ControllerTest(const Dualshock4ControllerTest&) = delete;
+  Dualshock4ControllerTest& operator=(const Dualshock4ControllerTest&) = delete;
+
   void TearDown() override {
     ds4_usb_->Shutdown();
     ds4_bluetooth_->Shutdown();
@@ -149,8 +152,9 @@ class Dualshock4ControllerTest : public testing::Test {
       mojom::GamepadHapticsManager::PlayVibrationEffectOnceCallback callback) {
     gamepad->PlayEffect(
         mojom::GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble,
-        mojom::GamepadEffectParameters::New(kDurationMillis, start_delay,
-                                            strong_magnitude, weak_magnitude),
+        mojom::GamepadEffectParameters::New(
+            kDurationMillis, start_delay, strong_magnitude, weak_magnitude,
+            /*left_trigger=*/0, /*right_trigger=*/0),
         std::move(callback), base::ThreadTaskRunnerHandle::Get());
   }
 
@@ -173,14 +177,12 @@ class Dualshock4ControllerTest : public testing::Test {
   const std::vector<uint8_t> bluetooth_stop_vibration_report_;
   int callback_count_;
   mojom::GamepadHapticsResult callback_result_;
-  FakeHidWriter* usb_writer_;
-  FakeHidWriter* bluetooth_writer_;
+  raw_ptr<FakeHidWriter> usb_writer_;
+  raw_ptr<FakeHidWriter> bluetooth_writer_;
   std::unique_ptr<Dualshock4Controller> ds4_usb_;
   std::unique_ptr<Dualshock4Controller> ds4_bluetooth_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(Dualshock4ControllerTest);
 };
 
 TEST_F(Dualshock4ControllerTest, PlayEffectUsb) {

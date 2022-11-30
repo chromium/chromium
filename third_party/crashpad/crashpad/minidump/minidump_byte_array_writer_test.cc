@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 
 #include "minidump/minidump_byte_array_writer.h"
 
+#include <iterator>
 #include <memory>
 
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "minidump/test/minidump_writable_test_util.h"
@@ -35,7 +35,7 @@ TEST(MinidumpByteArrayWriter, Write) {
       {},
   };
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS, i));
 
     StringFile string_file;
@@ -67,7 +67,7 @@ TEST(MinidumpByteArrayWriter, SetData) {
     {},
   };
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS, i));
 
     crashpad::MinidumpByteArrayWriter writer;

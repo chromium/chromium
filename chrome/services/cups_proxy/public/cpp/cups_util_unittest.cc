@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ TEST(GetPrinterIdTest, MissingPathDelimiter) {
 }
 
 TEST(ParseEndpointForPrinterIdTest, SimpleSanityTest) {
-  base::Optional<std::string> printer_id = ParseEndpointForPrinterId(
+  absl::optional<std::string> printer_id = ParseEndpointForPrinterId(
       std::string(kEndpointPrefix) + kDefaultPrinterId);
 
   EXPECT_TRUE(printer_id.has_value());

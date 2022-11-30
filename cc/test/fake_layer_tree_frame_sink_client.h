@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_TEST_FAKE_LAYER_TREE_FRAME_SINK_CLIENT_H_
 #define CC_TEST_FAKE_LAYER_TREE_FRAME_SINK_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 
 #include "cc/trees/managed_memory_policy.h"
@@ -22,13 +23,13 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   ~FakeLayerTreeFrameSinkClient() override;
 
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
-  base::Optional<viz::HitTestRegionList> BuildHitTestData() override;
+  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
   void DidReceiveCompositorFrameAck() override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& details) override {}
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override {}
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
+  }
   void DidLoseLayerTreeFrameSink() override;
   void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect_for_tile_priority,
@@ -53,7 +54,7 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   }
 
   void set_hit_test_region_list(
-      const base::Optional<viz::HitTestRegionList>& hit_test_region_list) {
+      const absl::optional<viz::HitTestRegionList>& hit_test_region_list) {
     hit_test_region_list_ = hit_test_region_list;
   }
 
@@ -61,8 +62,8 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   int ack_count_ = 0;
   bool did_lose_layer_tree_frame_sink_called_ = false;
   ManagedMemoryPolicy memory_policy_{0};
-  viz::BeginFrameSource* begin_frame_source_;
-  base::Optional<viz::HitTestRegionList> hit_test_region_list_;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_;
+  absl::optional<viz::HitTestRegionList> hit_test_region_list_;
 };
 
 }  // namespace cc

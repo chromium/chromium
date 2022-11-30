@@ -1,18 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Monitors user actions.
  */
+import {KeyCode} from '../../common/key_code.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
+import {Command} from '../common/command_store.js';
+import {KeySequence} from '../common/key_sequence.js';
+import {KeyUtil} from '../common/key_util.js';
+import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {QueueMode} from '../common/tts_interface.js';
 
-goog.provide('UserActionMonitor');
-
-goog.require('KeyCode');
-goog.require('KeySequence');
-goog.require('Output');
-goog.require('PanelCommand');
-goog.require('PanelCommandType');
+import {CommandHandlerInterface} from './command_handler_interface.js';
+import {Output} from './output/output.js';
 
 /**
  * The types of actions we want to monitor.
@@ -32,7 +35,7 @@ const ActionType = {
  * various handlers to intercept user actions before they are processed by the
  * rest of ChromeVox.
  */
-UserActionMonitor = class {
+export class UserActionMonitor {
   /**
    * @param {!Array<UserActionMonitor.ActionInfo>} actionInfos A queue of
    *     expected actions.
@@ -110,6 +113,16 @@ UserActionMonitor = class {
     return expectedAction.shouldPropagate;
   }
 
+  /**
+   * @param {Event} evt The key down event to process.
+   * @return {boolean} Whether the event should continue propagating.
+   */
+  onKeyDown(evt) {
+    const keySequence = KeyUtil.keyEventToKeySequence(evt);
+    return this.onKeySequence(keySequence);
+  }
+
+
   // Private methods.
 
   /** @private */
@@ -162,7 +175,29 @@ UserActionMonitor = class {
   static closeChromeVox_() {
     (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
   }
-};
+
+  /**
+   * Creates a new user action monitor.
+   * @param {!Array<{
+   *    type: string,
+   *    value: (string|Object),
+   *    beforeActionMsg: (string|undefined),
+   *    afterActionMsg: (string|undefined)
+   * }>} actions
+   * @param {function(): void} callback
+   */
+  static create(actions, callback) {
+    if (UserActionMonitor.instance) {
+      throw 'Error: trying to create a second UserActionMonitor';
+    }
+    UserActionMonitor.instance = new UserActionMonitor(actions, callback);
+  }
+
+  /** Destroys the user action monitor */
+  static destroy() {
+    UserActionMonitor.instance = null;
+  }
+}
 
 /**
  * The key sequence used to close ChromeVox.
@@ -180,6 +215,7 @@ UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
  *    shouldPropagate: (boolean|undefined),
  *    beforeActionMsg: (string|undefined),
  *    afterActionMsg: (string|undefined),
+ *    afterActionCmd: (!Command|undefined),
  * }}
  */
 UserActionMonitor.ActionInfo;
@@ -262,6 +298,7 @@ UserActionMonitor.Action = class {
     const shouldPropagate = info.shouldPropagate;
     const beforeActionMsg = info.beforeActionMsg;
     const afterActionMsg = info.afterActionMsg;
+    const afterActionCmd = info.afterActionCmd;
 
     const beforeActionCallback = () => {
       if (!beforeActionMsg) {
@@ -271,12 +308,14 @@ UserActionMonitor.Action = class {
       UserActionMonitor.Action.output_(beforeActionMsg);
     };
 
+    // A function that either provides output or performs a command when the
+    // action has been matched.
     const afterActionCallback = () => {
-      if (!afterActionMsg) {
-        return;
+      if (afterActionMsg) {
+        UserActionMonitor.Action.output_(afterActionMsg);
+      } else if (afterActionCmd) {
+        UserActionMonitor.Action.onCommand_(afterActionCmd);
       }
-
-      UserActionMonitor.Action.output_(afterActionMsg);
     };
 
     return new UserActionMonitor.Action({
@@ -284,7 +323,7 @@ UserActionMonitor.Action = class {
       value,
       shouldPropagate,
       beforeActionCallback,
-      afterActionCallback
+      afterActionCallback,
     });
   }
 
@@ -315,4 +354,35 @@ UserActionMonitor.Action = class {
   static output_(message) {
     new Output().withString(message).withQueueMode(QueueMode.FLUSH).go();
   }
+
+  /**
+   * Uses the CommandHandler to perform a command.
+   * @param {!Command} command
+   * @private
+   */
+  static onCommand_(command) {
+    CommandHandlerInterface.instance.onCommand(command);
+  }
 };
+
+/** @type {UserActionMonitor} */
+UserActionMonitor.instance;
+
+BridgeHelper.registerHandler(
+    BridgeConstants.UserActionMonitor.TARGET,
+    BridgeConstants.UserActionMonitor.Action.CREATE,
+    actions =>
+        new Promise(resolve => UserActionMonitor.create(actions, resolve)));
+BridgeHelper.registerHandler(
+    BridgeConstants.UserActionMonitor.TARGET,
+    BridgeConstants.UserActionMonitor.Action.DESTROY,
+    () => UserActionMonitor.destroy());
+BridgeHelper.registerHandler(
+    BridgeConstants.UserActionMonitor.TARGET,
+    BridgeConstants.UserActionMonitor.Action.ON_KEY_DOWN, evt => {
+      if (!UserActionMonitor.instance) {
+        // Continue propagating.
+        return true;
+      }
+      return UserActionMonitor.instance.onKeyDown(evt);
+    });

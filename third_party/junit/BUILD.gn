@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,11 +19,25 @@ android_library("junit") {
     "src/src/main/java/junit/extensions/TestDecorator.java",
     "src/src/main/java/junit/extensions/TestSetup.java",
     "src/src/main/java/junit/extensions/package-info.java",
+    "src/src/main/java/junit/framework/Assert.java",
+    "src/src/main/java/junit/framework/AssertionFailedError.java",
     "src/src/main/java/junit/framework/ComparisonCompactor.java",
+    "src/src/main/java/junit/framework/ComparisonFailure.java",
     "src/src/main/java/junit/framework/JUnit4TestAdapter.java",
     "src/src/main/java/junit/framework/JUnit4TestAdapterCache.java",
     "src/src/main/java/junit/framework/JUnit4TestCaseFacade.java",
+    "src/src/main/java/junit/framework/Protectable.java",
+    "src/src/main/java/junit/framework/Test.java",
+    "src/src/main/java/junit/framework/TestCase.java",
+    "src/src/main/java/junit/framework/TestFailure.java",
+    "src/src/main/java/junit/framework/TestListener.java",
+    "src/src/main/java/junit/framework/TestResult.java",
+    "src/src/main/java/junit/framework/TestSuite.java",
     "src/src/main/java/junit/framework/package-info.java",
+    "src/src/main/java/junit/runner/BaseTestRunner.java",
+    "src/src/main/java/junit/runner/TestRunListener.java",
+    "src/src/main/java/junit/runner/Version.java",
+    "src/src/main/java/junit/runner/package-info.java",
     "src/src/main/java/junit/textui/ResultPrinter.java",
     "src/src/main/java/junit/textui/TestRunner.java",
     "src/src/main/java/junit/textui/package-info.java",

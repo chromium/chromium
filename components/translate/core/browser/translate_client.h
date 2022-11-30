@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -21,9 +22,12 @@ namespace infobars {
 class InfoBar;
 }  // namespace infobars
 
+namespace language {
+class AcceptLanguagesService;
+}
+
 namespace translate {
 
-class TranslateAcceptLanguages;
 class TranslateDriver;
 class TranslateInfoBarDelegate;
 
@@ -45,10 +49,10 @@ class TranslateClient {
   // Returns the associated TranslatePrefs.
   virtual std::unique_ptr<TranslatePrefs> GetTranslatePrefs() = 0;
 
-  // Returns the associated TranslateAcceptLanguages.
-  virtual TranslateAcceptLanguages* GetTranslateAcceptLanguages() = 0;
+  // Returns the associated AcceptLanguagesService.
+  virtual language::AcceptLanguagesService* GetAcceptLanguagesService() = 0;
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Returns a translate infobar that owns |delegate|.
   virtual std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<TranslateInfoBarDelegate> delegate) const = 0;
@@ -64,16 +68,11 @@ class TranslateClient {
   virtual bool ShowTranslateUI(translate::TranslateStep step,
                                const std::string& source_language,
                                const std::string& target_language,
-                               TranslateErrors::Type error_type,
+                               TranslateErrors error_type,
                                bool triggered_from_menu) = 0;
 
   // Returns true if the URL can be translated.
   virtual bool IsTranslatableURL(const GURL& url) = 0;
-
-  // Presents |report_url|, a URL containing information relating to reporting
-  // a language detection error, to the user to allow them to report language
-  // detection errors as desired.
-  virtual void ShowReportLanguageDetectionErrorUI(const GURL& report_url) = 0;
 
   // Returns if AutofillAssistant is running. Translation should be disabled
   // while AutofillAssistant is running.

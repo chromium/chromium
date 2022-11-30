@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 
 namespace webapps {
@@ -20,6 +19,12 @@ class InstallableAmbientBadgeInfoBar : public infobars::InfoBarAndroid {
  public:
   explicit InstallableAmbientBadgeInfoBar(
       std::unique_ptr<InstallableAmbientBadgeInfoBarDelegate> delegate);
+
+  InstallableAmbientBadgeInfoBar(const InstallableAmbientBadgeInfoBar&) =
+      delete;
+  InstallableAmbientBadgeInfoBar& operator=(
+      const InstallableAmbientBadgeInfoBar&) = delete;
+
   ~InstallableAmbientBadgeInfoBar() override;
 
   void AddToHomescreen(JNIEnv* env,
@@ -33,8 +38,6 @@ class InstallableAmbientBadgeInfoBar : public infobars::InfoBarAndroid {
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
   void ProcessButton(int action) override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBar);
 };
 
 }  // namespace webapps

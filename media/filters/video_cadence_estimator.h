@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -75,6 +75,10 @@ class MEDIA_EXPORT VideoCadenceEstimator {
   // be dropped or repeated to compensate for reaching the maximum acceptable
   // drift; this time length is controlled by |minimum_time_until_max_drift|.
   explicit VideoCadenceEstimator(base::TimeDelta minimum_time_until_max_drift);
+
+  VideoCadenceEstimator(const VideoCadenceEstimator&) = delete;
+  VideoCadenceEstimator& operator=(const VideoCadenceEstimator&) = delete;
+
   ~VideoCadenceEstimator();
 
   // Clears stored cadence information.
@@ -179,10 +183,8 @@ class MEDIA_EXPORT VideoCadenceEstimator {
     // In an ideal world, each video frame would be shown for this many display
     // intervals. It equals (display frequency) divided by (video frame rate).
     // Absent when a video has variable frame rate.
-    base::Optional<double> perfect_cadence_;
+    absl::optional<double> perfect_cadence_;
   } bm_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCadenceEstimator);
 };
 
 }  // namespace media

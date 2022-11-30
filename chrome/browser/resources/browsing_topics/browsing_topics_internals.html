@@ -1,0 +1,128 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="chrome://resources/css/roboto.css">
+
+  <link rel="stylesheet" href="browsing_topics_internals.css">
+  <script type="module" src="browsing_topics_internals.js"></script>
+  <title>Topics API Internals</title>
+</head>
+
+<body>
+
+<header>
+<h1>Topics API Internals</h1>
+</header>
+
+<cr-tab-box>
+  <div slot="tab">Topics State</div>
+  <div slot="tab">Classifier</div>
+  <div slot="tab">Features and Parameters</div>
+  <div id="topics-state-slot" slot="panel" class="panel">
+    <div class="refresh-state-buttons-div">
+      <button type="button" id="refresh-topics-state-button" class="refresh-state-button">Refresh</button>
+      <button type="button" id="calculate-now-button" class="refresh-state-button">Calculate Now</button>
+    </div>
+    <div id="topics-state-override-status-message-div" class="topics-state-div"></div>
+    <div id="topics-state-div" class="topics-state-div">
+      <div id="next-scheduled-calculation-time-div">Next scheduled calculation time: </div>
+      <h3 class="epochs-header">Epochs (latest -> oldest)</h3>
+      <div id="epoch-div-list-wrapper"></div>
+    </div>
+  </div>
+  <div id="classifier-slot" slot="panel" class="panel">
+    <div id="model-info-loader" class="loader-div"></div>
+    <div id="model-info-override-status-message-div" class="model-info-div"></div>
+    <div id="model-info-div" class="model-info-div">
+      <div id="model-version-div">Model version: </div>
+      <div id="model-file-path-div">Model file path: </div>
+    </div>
+    <div id="hosts-classification-input-area-div" class="hosts-classification-input-area-div">
+      <textarea id="input-hosts-textarea" class="input-hosts-textarea" placeholder=
+"One host per line. For example:
+google.com
+youtube.com
+" spellcheck="false"></textarea>
+      <button type="button" id="hosts-classification-button">Classify</button>
+    </div>
+    <div id="hosts-classification-loader-div" class="loader-div"></div>
+    <div id="hosts-classification-input-validation-error" class="hosts-classification-input-validation-error-div"></div>
+    <div id="hosts-classification-result-table-wrapper" class="hosts-classification-result-div">
+      <table id="hosts-classification-result-table" class="hosts-classification-result-table">
+        <tr>
+          <th>Host</th>
+          <th>Topics</th>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div id="features-and-parameters-slot" slot="panel" class="panel">
+    <div class="features-and-parameters-div">
+      <div id="browsing-topics-enabled-div">BrowsingTopics: </div>
+      <div id="privacy-sandbox-ads-apis-override-enabled-div">PrivacySandboxAdsAPIsOverride: </div>
+      <div id="privacy-sandbox-settings3-enabled-div">PrivacySandboxSettings3: </div>
+      <div id="override-privacy-sandbox-settings-local-testing-enabled-div">OverridePrivacySandboxSettingsLocalTesting: </div>
+      <div id="browsing-topics-bypass-ip-is-publicly-routable-check-enabled-div">BrowsingTopicsBypassIPIsPubliclyRoutableCheck: </div>
+      <div id="number-of-epochs-to-expose-div">BrowsingTopics:number_of_epochs_to_expose: </div>
+      <div id="time-period-per-epoch-div">BrowsingTopics:time_period_per_epoch: </div>
+      <div id="number-of-top-topics-per-epoch-div">BrowsingTopics:number_of_top_topics_per_epoch: </div>
+      <div id="use-random-topic-probability-percent-div">BrowsingTopics:use_random_topic_probability_percent: </div>
+      <div id="number-of-epochs-of-observation-data-to-use-for-filtering-div">BrowsingTopics:number_of_epochs_of_observation_data_to_use_for_filtering: </div>
+      <div id="max-number-of-api-usage-context-domains-to-keep-per-topic-div">BrowsingTopics:max_number_of_api_usage_context_domains_to_keep_per_topic: </div>
+      <div id="max-number-of-api-usage-context-entries-to-load-per-epoch-div">BrowsingTopics:max_number_of_api_usage_context_entries_to_load_per_epoch: </div>
+      <div id="max-number-of-api-usage-context-domains-to-store-per-page-load-div">BrowsingTopics:max_number_of_api_usage_context_domains_to_store_per_page_load: </div>
+      <div id="config-version-div">BrowsingTopics:config_version: </div>
+      <div id="taxonomy-version-div">BrowsingTopics:taxonomy_version: </div>
+    </div>
+  </div>
+</cr-tab-box>
+
+<template id="classification-result-host-row-template">
+<tr>
+  <td></td>
+  <td></td>
+</tr>
+</template>
+
+<template id="classification-result-topic-entry-template">
+<span class="classification-result-topic-entry"></span>
+</template>
+
+<template id="epoch-div-template">
+<div class="epoch-div">
+  <table class="epoch-topics-table">
+    <tr>
+      <th>Topic ID</th>
+      <th>Topic Name</th>
+      <th>Real or Random</th>
+      <th>Observed-by context domains (hashed)</th>
+    </tr>
+  </table>
+  <div>Calculation time: </div>
+  <div>Model version: </div>
+  <div>Taxonomy version: </div>
+</div>
+</template>
+
+<template id="topic-row-template">
+<tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
+</template>
+
+<template id="context-domain-entry-template">
+<span class="context-domain-entry"></span>
+</template>
+
+</body>
+</html>

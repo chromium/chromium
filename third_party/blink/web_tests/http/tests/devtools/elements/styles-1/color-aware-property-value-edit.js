@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that property value being edited uses the user-specified color format.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected1" style="border: 1px solid red">inspected1</div>
@@ -72,7 +72,7 @@
 
   function setFormat(newFormat, callback) {
     Common.settingForTest('colorFormat').set(newFormat);
-    UI.panels.elements._stylesWidget.doUpdate().then(callback);
+    UI.panels.elements.stylesWidget.doUpdate().then(callback);
   }
 
   function startEditingAndDumpValue(nodeId, format, propertyName, next) {
@@ -90,7 +90,7 @@
     function waitForStylesRebuild(node) {
       if (node && node.getAttribute('id') === nodeId)
         return;
-      return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, '_nodeStylesUpdatedForTest').then(waitForStylesRebuild);
+      return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, 'nodeStylesUpdatedForTest').then(waitForStylesRebuild);
     }
   }
 })();

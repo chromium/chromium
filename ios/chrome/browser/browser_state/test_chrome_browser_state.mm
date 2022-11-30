@@ -1,96 +1,42 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 
-#include "base/base_paths.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/memory/ptr_util.h"
-#include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/test/test_file_util.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_constants.h"
-#include "components/history/core/browser/history_database_params.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/top_sites.h"
-#include "components/history/core/browser/visit_delegate.h"
-#include "components/history/ios/browser/history_database_helper.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/undo/bookmark_undo_service.h"
-#include "components/user_prefs/user_prefs.h"
-#include "components/webdata_services/web_data_service_wrapper.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_sync_service_factory.h"
-#include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
-#include "ios/chrome/browser/history/history_client_impl.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/history/top_sites_factory.h"
-#include "ios/chrome/browser/history/web_history_service_factory.h"
-#include "ios/chrome/browser/prefs/browser_prefs.h"
-#include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
-#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "net/url_request/url_request_test_util.h"
+#import <tuple>
+
+#import "base/base_paths.h"
+#import "base/callback_helpers.h"
+#import "base/files/file_util.h"
+#import "base/location.h"
+#import "base/logging.h"
+#import "base/memory/ptr_util.h"
+#import "base/path_service.h"
+#import "base/task/thread_pool.h"
+#import "base/test/test_file_util.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#import "components/profile_metrics/browser_profile_type.h"
+#import "components/sync_preferences/pref_service_syncable.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/user_prefs/user_prefs.h"
+#import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/url_request/url_request_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<history::HistoryService>(
-      base::WrapUnique(new HistoryClientImpl(
-          ios::BookmarkModelFactory::GetForBrowserState(browser_state))),
-      nullptr);
-}
-
-std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
-          browser_state, nullptr,
-          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state))));
-  bookmark_model->Load(browser_state->GetPrefs(),
-                       browser_state->GetStatePath());
-  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
-      ->Start(bookmark_model.get());
-  return bookmark_model;
-}
-
-std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
-  const base::FilePath& browser_state_path = context->GetStatePath();
-  return std::make_unique<WebDataServiceWrapper>(
-      browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
-      base::DoNothing());
-}
-
-}  // namespace
-
 TestChromeBrowserState::TestChromeBrowserState(
-    TestChromeBrowserState* original_browser_state)
+    TestChromeBrowserState* original_browser_state,
+    TestingFactories testing_factories)
     : ChromeBrowserState(original_browser_state->GetIOTaskRunner()),
       testing_prefs_(nullptr),
       otr_browser_state_(nullptr),
@@ -99,6 +45,13 @@ TestChromeBrowserState::TestChromeBrowserState(
   // off-the-record TestChromeBrowserState must be established before this
   // method can be called.
   DCHECK(original_browser_state_);
+
+  for (const auto& pair : testing_factories) {
+    pair.first->SetTestingFactory(this, std::move(pair.second));
+  }
+
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kIncognito);
 }
 
 TestChromeBrowserState::TestChromeBrowserState(
@@ -106,12 +59,14 @@ TestChromeBrowserState::TestChromeBrowserState(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     RefcountedTestingFactories refcounted_testing_factories,
-    std::unique_ptr<BrowserStatePolicyConnector> policy_connector)
+    std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager)
     : ChromeBrowserState(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       state_path_(path),
       prefs_(std::move(prefs)),
       testing_prefs_(nullptr),
+      user_cloud_policy_manager_(std::move(user_cloud_policy_manager)),
       policy_connector_(std::move(policy_connector)),
       otr_browser_state_(nullptr),
       original_browser_state_(nullptr) {
@@ -123,6 +78,9 @@ TestChromeBrowserState::TestChromeBrowserState(
     pair.first->SetTestingFactory(this, std::move(pair.second));
   }
 
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kRegular);
+
   Init();
 }
 
@@ -133,6 +91,14 @@ TestChromeBrowserState::~TestChromeBrowserState() {
   // If this TestChromeBrowserState owns an incognito TestChromeBrowserState,
   // tear it down first.
   otr_browser_state_.reset();
+
+  // Here, (1) the browser state services may
+  // depend on `policy_connector_` and `user_cloud_policy_manager_`, and (2)
+  // `policy_connector_` depends on `user_cloud_policy_manager_`. The
+  // dependencies have to be shut down backward.
+  policy_connector_->Shutdown();
+  if (user_cloud_policy_manager_)
+    user_cloud_policy_manager_->Shutdown();
 
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
@@ -161,10 +127,10 @@ void TestChromeBrowserState::Init() {
   EnsureBrowserStateKeyedServiceFactoriesBuilt();
 
   if (prefs_) {
-    // If user passed a custom PrefServiceSyncable, then leave |testing_prefs_|
+    // If user passed a custom PrefServiceSyncable, then leave `testing_prefs_`
     // unset as it is not possible to determine its type.
   } else if (IsOffTheRecord()) {
-    // This leaves |testing_prefs_| unset as CreateIncognitoBrowserStatePrefs()
+    // This leaves `testing_prefs_` unset as CreateIncognitoBrowserStatePrefs()
     // does not return a TestingPrefServiceSyncable.
     DCHECK(original_browser_state_);
     prefs_ =
@@ -225,11 +191,19 @@ TestChromeBrowserState::GetOffTheRecordChromeBrowserState() {
   if (IsOffTheRecord())
     return this;
 
-  if (!otr_browser_state_) {
-    otr_browser_state_.reset(new TestChromeBrowserState(this));
-    otr_browser_state_->Init();
-  }
+  if (otr_browser_state_)
+    return otr_browser_state_.get();
 
+  return CreateOffTheRecordBrowserStateWithTestingFactories();
+}
+
+TestChromeBrowserState*
+TestChromeBrowserState::CreateOffTheRecordBrowserStateWithTestingFactories(
+    TestingFactories testing_factories) {
+  DCHECK(!IsOffTheRecord());
+  DCHECK(!otr_browser_state_);
+  otr_browser_state_.reset(new TestChromeBrowserState(this, testing_factories));
+  otr_browser_state_->Init();
   return otr_browser_state_.get();
 }
 
@@ -241,12 +215,9 @@ BrowserStatePolicyConnector* TestChromeBrowserState::GetPolicyConnector() {
   return policy_connector_.get();
 }
 
-PrefService* TestChromeBrowserState::GetPrefs() {
+sync_preferences::PrefServiceSyncable*
+TestChromeBrowserState::GetSyncablePrefs() {
   return prefs_.get();
-}
-
-PrefService* TestChromeBrowserState::GetOffTheRecordPrefs() {
-  return nullptr;
 }
 
 ChromeBrowserStateIOData* TestChromeBrowserState::GetIOData() {
@@ -262,59 +233,7 @@ void TestChromeBrowserState::ClearNetworkingHistorySince(
 
 net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
-  return new net::TestURLRequestContextGetter(
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
-}
-
-void TestChromeBrowserState::CreateWebDataService() {
-  ignore_result(
-      ios::WebDataServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildWebDataService)));
-
-  // Wait a bit after creating the WebDataService to allow the initialisation
-  // to complete (otherwise the TestChromeBrowserState may be destroyed before
-  // initialisation of the database is complete which leads to SQL init errors).
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-}
-
-void TestChromeBrowserState::CreateBookmarkModel(bool delete_file) {
-  if (delete_file) {
-    base::DeleteFile(GetOriginalChromeBrowserState()->GetStatePath().Append(
-        bookmarks::kBookmarksFileName));
-  }
-  ignore_result(
-      ios::BookmarkModelFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildBookmarkModel)));
-}
-
-bool TestChromeBrowserState::CreateHistoryService() {
-  // Should never be created multiple times.
-  DCHECK(!ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-      this, ServiceAccessType::EXPLICIT_ACCESS));
-
-  // Create and initialize the HistoryService, but destroy it if the init fails.
-  history::HistoryService* history_service =
-      static_cast<history::HistoryService*>(
-          ios::HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              this, base::BindRepeating(&BuildHistoryService)));
-  if (!history_service->Init(
-          history::HistoryDatabaseParamsForPath(
-              GetOriginalChromeBrowserState()->GetStatePath()))) {
-    ios::HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        this, BrowserStateKeyedServiceFactory::TestingFactory());
-    return false;
-  }
-
-  // Some tests expect that CreateHistoryService() will also make the
-  // InMemoryURLIndex available.
-  ios::InMemoryURLIndexFactory::GetInstance()->SetTestingFactory(
-      this, ios::InMemoryURLIndexFactory::GetDefaultFactory());
-  // Disable WebHistoryService by default, since it makes network requests.
-  ios::WebHistoryServiceFactory::GetInstance()->SetTestingFactory(
-      this, BrowserStateKeyedServiceFactory::TestingFactory());
-
-  return true;
+  return new net::TestURLRequestContextGetter(web::GetIOThreadTaskRunner({}));
 }
 
 sync_preferences::TestingPrefServiceSyncable*
@@ -360,11 +279,34 @@ void TestChromeBrowserState::Builder::SetPolicyConnector(
   policy_connector_ = std::move(policy_connector);
 }
 
+void TestChromeBrowserState::Builder::SetUserCloudPolicyManager(
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager) {
+  user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+}
+
+policy::UserCloudPolicyManager*
+TestChromeBrowserState::GetUserCloudPolicyManager() {
+  return user_cloud_policy_manager_.get();
+}
+
 std::unique_ptr<TestChromeBrowserState>
 TestChromeBrowserState::Builder::Build() {
   DCHECK(!build_called_);
   build_called_ = true;
   return base::WrapUnique(new TestChromeBrowserState(
       state_path_, std::move(pref_service_), std::move(testing_factories_),
-      std::move(refcounted_testing_factories_), std::move(policy_connector_)));
+      std::move(refcounted_testing_factories_), std::move(policy_connector_),
+      std::move(user_cloud_policy_manager_)));
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+TestChromeBrowserState::GetSharedURLLoaderFactory() {
+  return test_shared_url_loader_factory_
+             ? test_shared_url_loader_factory_
+             : BrowserState::GetSharedURLLoaderFactory();
+}
+
+void TestChromeBrowserState::SetSharedURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+  test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
 }

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,7 @@ if (chromecast_branding != "public") {
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//components/module_installer/android/module_desc_java.gni")
 }
 
 declare_args() {
@@ -31,17 +32,20 @@ declare_args() {
 group("all") {
   data_deps = []
   deps = [ "//chromecast/build:archive" ]
-  if (is_android && chromecast_branding == "public") {
-    deps += [ ":cast_shell_apk" ]
-  }
-  if (!is_android) {
-    data_deps += [ ":cast_shell" ]
-  }
-  if (is_linux || is_chromeos) {
-    deps += [
-      "//chromecast/browser/webview/client:wayland_webview_client",
-      "//chromecast/tracing",
+  if (is_android) {
+    if (chromecast_branding == "public") {
+      deps += [ ":cast_shell_apk" ]
+    } else {
+      deps += [ ":cast_browser_bundle_module" ]
+    }
+  } else if (!is_fuchsia) {
+    data_deps += [
+      ":cast_browser",
+      ":cast_shell",
     ]
+  }
+  if (is_linux) {
+    deps += [ "//chromecast/tracing" ]
   }
   if (chromecast_branding != "public") {
     deps += [ "//chromecast/internal:all" ]
@@ -68,12 +72,14 @@ config("iot_service") {
   }
 }
 
-chromecast_resource_sizes_test("resource_sizes_chromecast") {
-  data_deps = [
-    ":cast_shell",
-    ":cast_shell_pak",
-    ":chromecast_locales_pak",
-  ]
+if (!is_fuchsia) {
+  chromecast_resource_sizes_test("resource_sizes_chromecast") {
+    data_deps = [
+      ":cast_shell",
+      ":cast_shell_pak",
+      ":chromecast_locales_pak",
+    ]
+  }
 }
 
 # A list of all public test() binaries. This is an organizational target that
@@ -88,12 +94,11 @@ cast_test_group("cast_tests") {
     "//chromecast/common:cast_common_unittests",
     "//chromecast/crypto:cast_crypto_unittests",
     "//chromecast/device/bluetooth:cast_bluetooth_unittests",
-    "//chromecast/media:cast_media_unittests",
     "//chromecast/metrics:cast_metrics_unittest",
     "//chromecast/net:cast_net_unittests",
-    "//chromecast/ui/display_settings:cast_display_settings_unittests",
+    "//chromecast/shared:cast_shared_unittests",
     "//chromecast/system/reboot:cast_reboot_unittests",
-    "//content/test:content_unittests",
+    "//components/viz:viz_unittests",
     "//crypto:crypto_unittests",
     "//media:media_unittests",
     "//media/midi:midi_unittests",
@@ -103,16 +108,17 @@ cast_test_group("cast_tests") {
     "//ui/base:ui_base_unittests",
   ]
 
-  if (enable_chromecast_extensions) {
+  if (!is_fuchsia) {
     tests += [
-      "//chromecast/browser/accessibility/flutter:cast_accessibility_unittests",
+      "//chromecast/ui/display_settings:cast_display_settings_unittests",
+      "//content/test:content_unittests",
     ]
   }
 
   if (!is_cast_audio_only) {
     tests += [ "//gpu:gpu_unittests" ]
 
-    if (use_aura) {
+    if (use_aura && !is_fuchsia) {
       tests += [ "//chromecast/graphics:cast_graphics_unittests" ]
     }
   }
@@ -121,10 +127,9 @@ cast_test_group("cast_tests") {
     tests += [ "//media/gpu:video_decode_accelerator_tests" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux) {
     tests += [
       "//chromecast/crash:cast_crash_unittests",
-      "//components/exo:exo_unittests",
       "//sandbox/linux:sandbox_linux_unittests",
     ]
 
@@ -137,7 +142,27 @@ cast_test_group("cast_tests") {
     filters += [ sandbox_linux_unittests_filter ]
   }
 
-  if (is_linux || is_chromeos || is_fuchsia) {
+  # TODO(crbug/1319009): `media_use_ffmpeg` should not largely affect top-level
+  # test list. Better create another flag to do this or handle the ffmpeg flag
+  # in //chromecast/media/cma/decoder.
+  if (media_use_ffmpeg && !is_fuchsia) {
+    tests += [
+      "//chromecast/cast_core:cast_cast_core_unittests",
+      "//chromecast/media:cast_media_unittests",
+    ]
+
+    cast_media_unittests_filter = {
+      test_name = "cast_media_unittests"
+
+      gtest_excludes = vendor_cast_media_gtest_excludes
+
+      # --test-launcher-jobs=1 => so internal code can bind to port
+      args = [ "--test-launcher-jobs=1" ]
+    }
+    filters += [ cast_media_unittests_filter ]
+  }
+
+  if (is_linux) {
     tests += [ "//chromecast/media/cma/backend:cast_audio_backend_unittests" ]
     cast_audio_backend_unittests_filter = {
       test_name = "cast_audio_backend_unittests"
@@ -156,81 +181,76 @@ cast_test_group("cast_tests") {
     tests += [ "//chromecast/media/cma/backend/android:cast_android_cma_backend_unittests" ]
   }
 
-  cast_media_unittests_filter = {
-    test_name = "cast_media_unittests"
-
-    gtest_excludes = vendor_cast_media_gtest_excludes
-
-    # --test-launcher-jobs=1 => so internal code can bind to port
-    args = [ "--test-launcher-jobs=1" ]
-  }
-  filters += [ cast_media_unittests_filter ]
-
   if (!is_android && !is_fuchsia) {
     tests += [
-      ":cast_shell_browsertests",
-      ":cast_shell_unittests",
       "//ipc:ipc_tests",
-      "//jingle:jingle_unittests",
       "//url:url_unittests",
     ]
 
-    cast_shell_browsertests_filter = {
-      test_name = "cast_shell_browsertests"
-
-      # --enable-local-file-accesses => to load sample media files
-      # --test-launcher-jobs=1 => so internal code can bind to port
-      args = [
-        "--no-sandbox",
-        "--enable-local-file-accesses",
-        "--test-launcher-jobs=1",
-        "--enable-hardware-overlays=",
+    if (media_use_ffmpeg) {
+      tests += [
+        ":cast_shell_browsertests",
+        ":cast_shell_unittests",
       ]
 
-      gtest_excludes = []
+      cast_shell_browsertests_filter = {
+        test_name = "cast_shell_browsertests"
 
-      # TODO(b/112440248): This test was failing:
-      #   * On v1 and Cast Audio devices since 2017-03-15.
-      #   * On desktop builds since 2018-08-22
-      # Also see: b/36238710, b/36239051, hotlist/461351
-      gtest_excludes += [ "RendererPrelauncherTest.ReusedRenderer" ]
-
-      if (!is_cast_desktop_build) {
-        args += [ "--use-gpu-in-tests" ]
-
-        # TODO(derekjchow): Make these tests pass on Chromecast devices.
-        #    Once all of the CastMediaBlockerTest.* have been un-DISABLEd and
-        #    are running successfully, revisit these tests and see if they pass
-        #    on devices. (crbug/665118, internal b/32023194)
-        gtest_excludes += [
-          "CastMediaBlockerBrowserTest.Video_BlockUnblock",
-          "CastMediaBlockerBrowserTest.Audio_BlockUnblock",
-
-          # This browser test can only be run inside of a source checkout.
-          "CastWebContentsBrowserTest.*",
+        # --enable-local-file-accesses => to load sample media files
+        # --test-launcher-jobs=1 => so internal code can bind to port
+        args = [
+          "--no-sandbox",
+          "--enable-local-file-accesses",
+          "--test-launcher-jobs=1",
+          "--enable-hardware-overlays=",
         ]
-      }
 
-      if (!is_cast_desktop_build && !is_cast_audio_only && !enable_assistant) {
-        # TODO(mbjorge): The VideoPlaybackMp4 test is failing on v1 devices.
-        # Temporarily disable it as part of an effort to re-green the unittests.
-        # Re-enable once the tests have been fixed. Limitations in the filter
-        # system mean this is getting temporarily disabled on all video devices,
-        # though it is only failing on v1.
-        # b/36723698, hotlist/461351
-        gtest_excludes += [ "CastNavigationBrowserTest.VideoPlaybackMp4" ]
-      }
+        gtest_excludes = []
 
-      # TODO(mbjorge): Temporarily disable AudioPlaybackWavPcm because it is
-      # failing on device. As part of an effort to re-green the unittests,
-      # current (2017-03-15) failures are being disabled to get back to a
-      # green state. Re-enable once the tests have been fixed.
-      # b/36239152, hotlist/461351
-      if (enable_assistant && !is_cast_desktop_build) {
-        gtest_excludes += [ "CastNavigationBrowserTest.AudioPlaybackWavPcm" ]
+        # TODO(b/112440248): This test was failing:
+        #   * On v1 and Cast Audio devices since 2017-03-15.
+        #   * On desktop builds since 2018-08-22
+        # Also see: b/36238710, b/36239051, hotlist/461351
+        gtest_excludes += [ "RendererPrelauncherTest.ReusedRenderer" ]
+
+        if (!is_cast_desktop_build) {
+          args += [ "--use-gpu-in-tests" ]
+
+          # TODO(derekjchow): Make these tests pass on Chromecast devices.
+          #    Once all of the CastMediaBlockerTest.* have been un-DISABLEd and
+          #    are running successfully, revisit these tests and see if they pass
+          #    on devices. (crbug/665118, internal b/32023194)
+          gtest_excludes += [
+            "CastMediaBlockerBrowserTest.Video_BlockUnblock",
+            "CastMediaBlockerBrowserTest.Audio_BlockUnblock",
+
+            # This browser test can only be run inside of a source checkout.
+            "CastWebContentsBrowserTest.*",
+          ]
+        }
+
+        if (!is_cast_desktop_build && !is_cast_audio_only &&
+            !enable_assistant) {
+          # TODO(mbjorge): The VideoPlaybackMp4 test is failing on v1 devices.
+          # Temporarily disable it as part of an effort to re-green the unittests.
+          # Re-enable once the tests have been fixed. Limitations in the filter
+          # system mean this is getting temporarily disabled on all video devices,
+          # though it is only failing on v1.
+          # b/36723698, hotlist/461351
+          gtest_excludes += [ "CastNavigationBrowserTest.VideoPlaybackMp4" ]
+        }
+
+        # TODO(mbjorge): Temporarily disable AudioPlaybackWavPcm because it is
+        # failing on device. As part of an effort to re-green the unittests,
+        # current (2017-03-15) failures are being disabled to get back to a
+        # green state. Re-enable once the tests have been fixed.
+        # b/36239152, hotlist/461351
+        if (enable_assistant && !is_cast_desktop_build) {
+          gtest_excludes += [ "CastNavigationBrowserTest.AudioPlaybackWavPcm" ]
+        }
       }
+      filters += [ cast_shell_browsertests_filter ]
     }
-    filters += [ cast_shell_browsertests_filter ]
 
     ipc_tests_filter = {
       test_name = "ipc_tests"
@@ -303,46 +323,61 @@ cast_test_group("cast_tests") {
   }
   filters += [ cc_unittests_filter ]
 
-  content_unittests_filter = {
-    test_name = "content_unittests"
+  viz_unittests_filter = {
+    test_name = "viz_unittests"
 
-    # IsSupportedVideoConfig_VP9TransferFunctions fails on all cast builds since
-    # the cast IsSupporedVideoConfigs ignore the transfer function parameter.
-    # (b/36984215).
-    gtest_excludes = [ "*.IsSupportedVideoConfig_VP9TransferFunctions" ]
-    if (is_android_things) {
-      gtest_excludes += [
-        "FontUniqueNameLookupTest.TestMatchPostScriptNameTtc",
-        "SiteInstanceTest.IsSuitableForURL",
-      ]
-    }
-    if (target_os == "linux" && !is_cast_desktop_build) {
-      # DesktopCaptureDeviceTest.*: No capture device on Eureka
-      # Disable PepperGamepadHostTest.WaitForReply (pepper not supported on Eureka)
-      # Disable RenderWidgetHostTest.Background because we disable the
-      # blacklist to enable WebGL (b/16142554)
-      gtest_excludes += [
-        "LegacyDomStorageDatabaseTest.TestCanOpenAndReadWebCoreDatabase",
-        "DesktopCaptureDeviceTest.Capture",
-        "GamepadProviderTest.PollingAccess",
-        "PepperGamepadHostTest.WaitForReply",
-        "RenderWidgetHostTest.Background",
-      ]
-    }
-    if (is_cast_audio_only) {
-      # No way to display URL's on audio only cast devices.
-      gtest_excludes += [ "NavigationEntryTest.NavigationEntryURLs" ]
-    }
-    if (enable_assistant && !is_cast_desktop_build) {
-      # Temporarily disable DefaultConstructor on assistant device builds. Cause
-      # of failure is unclear, but it's highly likely it's related to them being
-      # DEATH tests. These were passing until the is_official_build flag was
-      # enabled. These tests are considered non-critical in this context.
-      # (b/62469368)
-      gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
-    }
+    # TODO(crbug.com/1338342): Make these tests pass.
+    gtest_excludes = [
+      "PromotedTrueFalse/MultiUnderlayPromotedTest.UnderlaysBlendPrimaryPlane/0",
+      "UnderlayCastTest.BlackOutsideOverlayContentBounds",
+      "UnderlayCastTest.FullScreenOverlayContentBounds",
+      "UnderlayCastTest.OverlayOccludedContentBounds",
+      "UnderlayCastTest.OverlayOccludedUnionContentBounds",
+      "UnderlayCastTest.OverlayPromotionWithMaskFilter",
+      "UnderlayCastTest.ReplacementQuad",
+      "UnderlayCastTest.RoundContentBounds",
+      "UnderlayCastTest.RoundOverlayContentBounds",
+    ]
   }
-  filters += [ content_unittests_filter ]
+  filters += [ viz_unittests_filter ]
+
+  # content_unittests are not run on Fuchsia.
+  if (!is_fuchsia) {
+    content_unittests_filter = {
+      test_name = "content_unittests"
+
+      # IsSupportedVideoConfig_VP9TransferFunctions fails on all cast builds since
+      # the cast IsSupportedVideoConfigs ignore the transfer function parameter.
+      # (b/36984215).
+      gtest_excludes = [ "*.IsSupportedVideoConfig_VP9TransferFunctions" ]
+      if (target_os == "linux" && !is_cast_desktop_build) {
+        # DesktopCaptureDeviceTest.*: No capture device on Eureka
+        # Disable PepperGamepadHostTest.WaitForReply (pepper not supported on Eureka)
+        # Disable RenderWidgetHostTest.Background because we disable the
+        # blacklist to enable WebGL (b/16142554)
+        gtest_excludes += [
+          "LegacyDomStorageDatabaseTest.TestCanOpenAndReadWebCoreDatabase",
+          "DesktopCaptureDeviceTest.Capture",
+          "GamepadProviderTest.PollingAccess",
+          "PepperGamepadHostTest.WaitForReply",
+          "RenderWidgetHostTest.Background",
+        ]
+      }
+      if (is_cast_audio_only) {
+        # No way to display URL's on audio only cast devices.
+        gtest_excludes += [ "NavigationEntryTest.NavigationEntryURLs" ]
+      }
+      if (enable_assistant && !is_cast_desktop_build) {
+        # Temporarily disable DefaultConstructor on assistant device builds. Cause
+        # of failure is unclear, but it's highly likely it's related to them being
+        # DEATH tests. These were passing until the is_official_build flag was
+        # enabled. These tests are considered non-critical in this context.
+        # (b/62469368)
+        gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
+      }
+    }
+    filters += [ content_unittests_filter ]
+  }
 
   media_unittests_filter = {
     test_name = "media_unittests"
@@ -453,166 +488,173 @@ if (is_android) {
   }
 }
 
-test("cast_shell_unittests") {
-  deps = [
-    ":cast_shell_lib",
-    "//chromecast/app:test_support",
-    "//chromecast/app:unittests",
-    "//chromecast/browser:unittests",
-    "//ui/gl:test_support",
-  ]
-}
-
-test("cast_shell_browsertests") {
-  deps = [
-    ":cast_shell_lib",
-    "//chromecast/app:test_support",
-    "//chromecast/bindings:browsertests",
-    "//chromecast/browser:browsertests",
-  ]
-
-  data_deps = [ ":chromecast_locales_pak" ]
-}
-
-group("cast_shell_lib") {
-  data_deps = [ ":cast_shell_pak" ]
-
-  deps = [
-    "//chromecast/app",
-    "//chromecast/base:default_create_sys_info",
-    "//chromecast/browser",
-    "//chromecast/common",
-    "//chromecast/renderer",
-  ]
-
-  if (chromecast_branding != "public") {
-    deps += [ "//chromecast/internal/shell" ]
-  }
-}
-
-cast_executable("cast_shell") {
-  sources = [ "app/cast_main.cc" ]
-
-  deps = [
-    ":cast_shell_lib",
-    ":chromecast_locales_pak",
-    "//chromecast/app",
-    "//content/public/app",
-    "//third_party/widevine/cdm",
-  ]
-}
-
-repack("cast_shell_pak") {
-  sources = [
-    "$root_gen_dir/chromecast/app/shell_resources.pak",
-    "$root_gen_dir/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
-    "$root_gen_dir/content/content_resources.pak",
-    "$root_gen_dir/content/dev_ui_content_resources.pak",
-    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
-    "$root_gen_dir/net/net_resources.pak",
-    "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
-    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
-    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
-    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
-  ]
-
-  output = "$root_out_dir/assets/cast_shell.pak"
-
-  deps = [
-    "//chromecast/app:resources",
-    "//components/cast/named_message_port_connector:resources",
-    "//content:content_resources",
-    "//content:dev_ui_content_resources",
-    "//content/app/resources",
-    "//mojo/public/js:resources",
-    "//net:net_resources",
-    "//third_party/blink/public:resources",
-    "//third_party/blink/public:scaled_resources_100_percent",
-    "//third_party/blink/public/strings",
-    "//ui/resources",
-    "//ui/strings",
-  ]
-
-  if (enable_chromecast_extensions) {
-    sources += [
-      "$root_gen_dir/chromecast/renderer/extensions_renderer_resources.pak",
-      "$root_gen_dir/extensions/extensions_renderer_resources.pak",
-      "$root_gen_dir/extensions/extensions_resources.pak",
-      "$root_gen_dir/extensions/shell/app_shell_resources.pak",
-    ]
-    deps += [
-      "//chromecast/renderer:extensions_resources",
-      "//extensions:extensions_resources",
-      "//extensions/shell:resources",
+if (!is_fuchsia) {
+  test("cast_shell_unittests") {
+    deps = [
+      ":cast_shell_lib",
+      "//chromecast/app:test_support",
+      "//chromecast/app:unittests",
+      "//chromecast/browser:unittests",
+      "//ui/gl:test_support",
     ]
   }
 
-  if (chromecast_branding != "public") {
-    sources += [ "$root_gen_dir/chromecast/internal/cast_shell_internal.pak" ]
+  test("cast_shell_browsertests") {
+    deps = [
+      # These browser tests always use the simple implementation, since we only
+      # need to test web content primitives and not all of Cast receiver.
+      ":cast_shell_lib_simple",
+      "//chromecast/app:test_support",
+      "//chromecast/bindings:browsertests",
+      "//chromecast/browser:browsertests",
+    ]
 
-    deps += [ "//chromecast/internal:cast_shell_internal_pak" ]
+    data_deps = [ ":chromecast_locales_pak" ]
   }
-}
 
-# Intermediate targets that repack grit resources by locale. For each locale
-# in |cast_locales| (see //chromecast/chromecast.gni), all resources
-# are packed into a single .pak file in an output directory. These targets
-# should not be depended on directly; depend on ":chromecast_locales_pak"
-# instead.
-foreach(locale, cast_locales) {
-  repack("_cast_repack_${locale}") {
-    visibility = [ ":chromecast_locales_pak" ]
-    output = "$root_out_dir/chromecast_locales/${locale}.pak"
-    sources =
-        [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}.pak" ]
-    deps = [ "//chromecast/app:chromecast_settings" ]
-
+  group("cast_shell_lib") {
     if (chromecast_branding != "public") {
-      sources += [
-        "$root_gen_dir/chromecast/internal/castui/app_strings_${locale}.pak",
+      deps = [
+        ":cast_shell_lib_base",
+        "//chromecast/internal/shell",
       ]
-      deps += [ "//chromecast/internal/castui:cast_ui_app_strings" ]
+    } else {
+      deps = [ ":cast_shell_lib_simple" ]
+    }
+  }
 
-      if (enable_chromecast_webui) {
+  group("cast_shell_lib_base") {
+    data_deps = [ ":cast_shell_pak" ]
+
+    deps = [
+      "//chromecast/app",
+      "//chromecast/base:default_create_sys_info",
+      "//chromecast/browser",
+      "//chromecast/common",
+      "//chromecast/renderer",
+      "//chromecast/utility",
+    ]
+  }
+
+  group("cast_shell_lib_simple") {
+    deps = [
+      ":cast_shell_lib_base",
+      "//chromecast/browser:prefs_simple",
+      "//chromecast/browser:simple_client",
+      "//chromecast/browser:simple_main_parts",
+      "//chromecast/renderer:simple_client",
+      "//chromecast/utility:simple_client",
+    ]
+  }
+
+  cast_executable("cast_shell") {
+    sources = [ "app/cast_main.cc" ]
+
+    deps = [
+      ":cast_shell_lib",
+      ":chromecast_locales_pak",
+      "//chromecast/app",
+      "//content/public/app",
+      "//third_party/widevine/cdm",
+    ]
+  }
+
+  cast_executable("cast_browser") {
+    sources = [ "app/cast_main.cc" ]
+
+    deps = [
+      ":cast_shell_lib_simple",
+      ":chromecast_locales_pak",
+      "//chromecast/app",
+      "//content/public/app",
+      "//third_party/widevine/cdm",
+    ]
+  }
+
+  repack("cast_shell_pak") {
+    sources = [
+      "$root_gen_dir/chromecast/app/shell_resources.pak",
+      "$root_gen_dir/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
+      "$root_gen_dir/content/content_resources.pak",
+      "$root_gen_dir/content/dev_ui_content_resources.pak",
+      "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
+      "$root_gen_dir/net/net_resources.pak",
+      "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+      "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+      "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+      "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+      "$root_gen_dir/ui/resources/webui_generated_resources.pak",
+      "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+      "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
+      "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    ]
+
+    output = "$root_out_dir/assets/cast_shell.pak"
+
+    deps = [
+      "//chromecast/app:resources",
+      "//components/cast/named_message_port_connector:resources",
+      "//content:content_resources",
+      "//content:dev_ui_content_resources",
+      "//mojo/public/js:resources",
+      "//net:net_resources",
+      "//third_party/blink/public:resources",
+      "//third_party/blink/public:scaled_resources_100_percent",
+      "//third_party/blink/public/strings",
+      "//ui/resources",
+      "//ui/strings",
+    ]
+  }
+
+  # Intermediate targets that repack grit resources by locale. For each locale
+  # in |cast_locales| (see //chromecast/chromecast.gni), all resources
+  # are packed into a single .pak file in an output directory. These targets
+  # should not be depended on directly; depend on ":chromecast_locales_pak"
+  # instead.
+  foreach(locale, cast_locales) {
+    repack("_cast_repack_${locale}") {
+      visibility = [ ":chromecast_locales_pak" ]
+      output = "$root_out_dir/chromecast_locales/${locale}.pak"
+      sources =
+          [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}.pak" ]
+      deps = [ "//chromecast/app:chromecast_settings" ]
+
+      if (chromecast_branding != "public") {
         sources += [
-          "$root_gen_dir/chromecast/internal/castui/ui_localized_${locale}.pak",
+          "$root_gen_dir/chromecast/internal/castui/app_strings_${locale}.pak",
         ]
-        deps += [ "//chromecast/internal/castui:cast_ui_localized" ]
+        deps += [ "//chromecast/internal/castui:cast_ui_app_strings" ]
+
+        if (enable_chromecast_webui) {
+          sources += [ "$root_gen_dir/chromecast/internal/castui/ui_localized_${locale}.pak" ]
+          deps += [ "//chromecast/internal/castui:cast_ui_localized" ]
+        }
       }
     }
   }
-}
 
-# A meta-target which repacks resources by locale.
-group("chromecast_locales_pak") {
-  data_deps = []
-  foreach(locale, cast_locales) {
-    data_deps += [ ":_cast_repack_${locale}" ]
+  # A meta-target which repacks resources by locale.
+  group("chromecast_locales_pak") {
+    data_deps = []
+    foreach(locale, cast_locales) {
+      data_deps += [ ":_cast_repack_${locale}" ]
+    }
   }
-}
+}  # !is_fuchsia
 
 buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
+  _command_line_flags = string_join(",", default_command_line_flags)
   flags = [
-    "DEFAULT_COMMAND_LINE_FLAGS=\"$default_command_line_flags\"",
+    "DEFAULT_COMMAND_LINE_FLAGS=\"$_command_line_flags\"",
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
-    "ENABLE_CAST_FRAGMENT=$enable_cast_fragment",
-    "ENABLE_CHROMECAST_EXTENSIONS=$enable_chromecast_extensions",
+    "ENABLE_CHROMECAST_WEBUI=$enable_chromecast_webui",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",
-    "IS_ANDROID_APPLIANCE=$is_android_appliance",
-    "IS_ANDROID_THINGS=$is_android_things",
-    "IS_ANDROID_THINGS_NON_PUBLIC=$is_android_things_non_public",
     "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
-    "IS_SINGLE_VOLUME=$is_single_volume",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",
     "ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER=$enable_chromium_runtime_cast_renderer",
@@ -622,6 +664,9 @@ buildflag_header("chromecast_buildflags") {
 if (is_android) {
   generate_jni_registration("cast_shell_jni_registration") {
     targets = [ ":cast_shell_apk" ]
+    if (chromecast_branding != "public") {
+      targets += [ ":cast_browser_bundle_module" ]
+    }
     header_output = "$root_gen_dir/chromecast/android/${target_name}.h"
   }
 
@@ -661,16 +706,16 @@ if (is_android) {
     android_manifest = "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
     android_manifest_dep = "//chromecast/browser/android:cast_shell_manifest"
 
-    min_sdk_version = 21
-    target_sdk_version = 30
+    min_sdk_version = 23
+    target_sdk_version = 33
 
     shared_libraries = [ "//chromecast/android:libcast_shell_android" ]
-
-    product_config_java_packages = [ "org.chromium.chromecast.shell" ]
 
     deps = [
       ":cast_shell_apk_assets",
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//chromecast/android:libcast_shell_android",
       "//chromecast/browser/android:cast_shell_java",
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
@@ -680,5 +725,53 @@ if (is_android) {
 
     command_line_flags_file = "castshell-command-line"
     enable_multidex = true
+  }
+
+  if (chromecast_branding != "public") {
+    android_app_bundle_module("cast_browser_bundle_module") {
+      is_base_module = false
+      base_module_target = "//chromecast/internal/service/main/android:cast_service_bundle_module"
+
+      android_manifest =
+          "$root_gen_dir/cast_browser_manifest/AndroidManifest.xml"
+      android_manifest_dep =
+          "//chromecast/browser/android:cast_browser_manifest"
+
+      min_sdk_version = 23
+      target_sdk_version = 33
+
+      package_name = "cast_browser"
+
+      # |package_id| is required because the default one conflicts with the base
+      # modules' ID (0x7f).
+      package_id = 125
+
+      shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
+      deps = [
+        "//base:base_java",
+        "//base:jni_java",
+        "//build/android:build_java",
+        "//chromecast/browser/android:cast_browser_java",
+        "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
+        "//components/viz/service:service_java",
+        "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
+      ]
+
+      loadable_modules = [
+        "$root_out_dir/libchrome_crashpad_handler.so",
+        "$root_out_dir/libcrashpad_handler_trampoline.so",
+      ]
+
+      # TODO(b/228506503): remove the exclusion rule after cast_service and
+      # cast_browser depend on different resource targets.
+      resource_exclusion_regex = "cast_web_contents_activity.xml"
+
+      enable_multidex = true
+
+      # TODO(b/222780347): Enable when compile errors are resolved on release
+      # builds.
+      proguard_enabled = false
+      generate_native_libraries_java = true
+    }
   }
 }

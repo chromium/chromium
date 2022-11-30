@@ -1,0 +1,50 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/polymer/v3_0/paper-styles/color.js
+ * #css_wrapper_metadata_end */
+
+/* We keep our vars in sort order, though some vars must be defined prior to
+ * others. The --settings-* vars are defined explicitly prior to the --paper-*
+ * and --iron-* vars.
+ */
+html {
+  /* Some colors use non-MD colors.  These custom colors are specified by
+   * UX design (bettes@). */
+
+  --settings-disabled-opacity: .65;
+  --settings-error-color: var(--google-red-700);
+
+  /* No --settings-nav-icon-color needed in light mode. */
+  --settings-nav-item-color: var(--google-grey-700);
+
+  --settings-row-min-height: var(--cr-section-min-height);
+  --settings-row-two-line-min-height: var(--cr-section-two-line-min-height);
+
+  /* Spacing between a control (e.g. checkbox) and its label. */
+  --settings-control-label-spacing: 20px;
+
+  /* Spacing between policy (controlledBy) indicator and control. */
+  --settings-controlled-by-spacing: var(--cr-controlled-by-spacing);
+
+  --settings-input-max-width: var(--cr-default-input-max-width);
+
+  --iron-icon-fill-color: var(--google-grey-700);
+  --iron-icon-height: var(--cr-icon-size);
+  --iron-icon-width: var(--cr-icon-size);
+
+  --cr-radio-group-item-padding: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --iron-icon-fill-color: var(--google-grey-500);
+    --settings-error-color: var(--google-red-300);
+    --settings-nav-icon-color: var(--google-grey-500);
+    --settings-nav-item-color: var(--cr-primary-text-color);
+  }
+}

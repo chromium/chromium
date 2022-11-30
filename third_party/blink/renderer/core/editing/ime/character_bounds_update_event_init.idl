@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The initial parameters for the characterboundsupdate event.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#characterboundsupdateevent
+
+dictionary CharacterBoundsUpdateEventInit : EventInit {
+    unsigned long rangeStart;
+    unsigned long rangeEnd;
+};

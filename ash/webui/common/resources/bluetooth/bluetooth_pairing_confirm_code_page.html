@@ -1,0 +1,24 @@
+<style>
+   #code {
+    font-size: 24px;
+    margin-top: 40px;
+  }
+
+  #pageBody {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+</style>
+<bluetooth-base-page
+    on-pair="onPairClicked_"
+    focus-default
+    button-bar-state="[[buttonBarState_]]">
+  <div slot="page-body" id="pageBody">
+    <div id="message" aria-live="polite">
+      [[i18n('bluetoothConfirmCodeMessage')]]
+    </div>
+    <div id="code">[[code]]</div>
+  </div>
+</bluetooth-base-page>

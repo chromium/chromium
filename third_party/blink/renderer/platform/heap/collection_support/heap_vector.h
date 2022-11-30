@@ -1,12 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_
 
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include <initializer_list>
+#include "third_party/blink/renderer/platform/heap/forward.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -17,44 +20,86 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
                          public Vector<T, inlineCapacity, HeapAllocator> {
   DISALLOW_NEW();
 
+  using BaseVector = Vector<T, inlineCapacity, HeapAllocator>;
+
  public:
   HeapVector() = default;
 
-  explicit HeapVector(wtf_size_t size)
-      : Vector<T, inlineCapacity, HeapAllocator>(size) {}
+  explicit HeapVector(wtf_size_t size) : BaseVector(size) { CheckType(); }
 
-  HeapVector(wtf_size_t size, const T& val)
-      : Vector<T, inlineCapacity, HeapAllocator>(size, val) {}
+  HeapVector(wtf_size_t size, const T& val) : BaseVector(size, val) {
+    CheckType();
+  }
 
   template <wtf_size_t otherCapacity>
   HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {}
+      : BaseVector(other) {
+    CheckType();
+  }
 
   HeapVector(const HeapVector& other)
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {}
+      : BaseVector(static_cast<const BaseVector&>(other)) {
+    CheckType();
+  }
+
+  template <typename Collection,
+            typename =
+                typename std::enable_if<std::is_class<Collection>::value>::type>
+  explicit HeapVector(const Collection& other) : BaseVector(other) {
+    CheckType();
+  }
 
   HeapVector& operator=(const HeapVector& other) {
+    BaseVector::operator=(other);
+    return *this;
+  }
+
+  template <typename Collection>
+  HeapVector& operator=(const Collection& other) {
     Vector<T, inlineCapacity, HeapAllocator>::operator=(other);
     return *this;
   }
 
   HeapVector(HeapVector&& other) noexcept
-      : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {}
+      : BaseVector(static_cast<BaseVector&&>(std::move(other))) {
+    CheckType();
+  }
 
   HeapVector& operator=(HeapVector&& other) noexcept {
-    Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(other));
+    BaseVector::operator=(std::move(other));
     return *this;
   }
 
   HeapVector(std::initializer_list<T> elements)
-      : Vector<T, inlineCapacity, HeapAllocator>(elements) {}
-
-  void Trace(Visitor* visitor) const {
+      : BaseVector(std::move(elements)) {
     CheckType();
-    Vector<T, inlineCapacity, HeapAllocator>::Trace(visitor);
   }
 
+  HeapVector& operator=(std::initializer_list<T> elements) {
+    BaseVector::operator=(std::move(elements));
+    return *this;
+  }
+
+  void Trace(Visitor* visitor) const { BaseVector::Trace(visitor); }
+
  private:
+  template <typename U>
+  struct IsHeapVector {
+   private:
+    typedef char YesType;
+    struct NoType {
+      char padding[8];
+    };
+
+    template <typename X, wtf_size_t Y>
+    static YesType SubclassCheck(HeapVector<X, Y>*);
+    static NoType SubclassCheck(...);
+    static U* u_;
+
+   public:
+    static const bool value = sizeof(SubclassCheck(u_)) == sizeof(YesType);
+  };
+
   static constexpr void CheckType() {
     static_assert(
         std::is_trivially_destructible<HeapVector>::value || inlineCapacity,
@@ -64,6 +109,9 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
                   "instead of HeapVector<>.");
     static_assert(!WTF::IsWeak<T>::value,
                   "Weak types are not allowed in HeapVector.");
+    static_assert(
+        !WTF::IsGarbageCollectedType<T>::value || IsHeapVector<T>::value,
+        "GCed types should not be inlined in a HeapVector.");
     static_assert(WTF::IsTraceableInCollectionTrait<VectorTraits<T>>::value,
                   "Type must be traceable in collection");
   }

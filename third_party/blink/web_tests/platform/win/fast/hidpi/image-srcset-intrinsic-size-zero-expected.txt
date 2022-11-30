@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS imgWidth is 16777216
-This test passes if the image is displayed with infinite dimensions.

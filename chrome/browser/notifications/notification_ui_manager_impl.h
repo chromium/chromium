@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/notifications/notification_system_observer.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,10 +51,11 @@ class NotificationUIManagerImpl : public NotificationUIManager,
               Profile* profile) override;
   const message_center::Notification* FindById(
       const std::string& delegate_id,
-      ProfileID profile_id) const override;
+      ProfileNotification::ProfileID profile_id) const override;
   bool CancelById(const std::string& delegate_id,
-                  ProfileID profile_id) override;
-  std::set<std::string> GetAllIdsByProfile(ProfileID profile_id) override;
+                  ProfileNotification::ProfileID profile_id) override;
+  std::set<std::string> GetAllIdsByProfile(
+      ProfileNotification::ProfileID profile_id) override;
   bool CancelAllBySourceOrigin(const GURL& source_origin) override;
   void CancelAll() override;
   void StartShutdown() override;
@@ -103,7 +102,8 @@ class NotificationUIManagerImpl : public NotificationUIManager,
 
   NotificationSystemObserver system_observer_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_otr_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_otr_profiles_{this};
 
   // Delegate of this class.
   std::unique_ptr<PopupsOnlyUiController> popups_only_ui_controller_;

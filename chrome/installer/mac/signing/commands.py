@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -11,7 +11,6 @@ import plistlib
 import shutil
 import stat
 import subprocess
-import sys
 import tempfile
 
 from . import logger
@@ -71,6 +70,12 @@ def read_file(path):
         return f.read()
 
 
+def zip(out, path):
+    shutil.move(
+        shutil.make_archive('{}.zip.tmp'.format(os.path.basename(out)), 'zip',
+                            path), out)
+
+
 def set_executable(path):
     """Makes the file at the specified path executable.
 
@@ -90,6 +95,19 @@ def run_command(args, **kwargs):
 def run_command_output(args, **kwargs):
     logger.info('Running command: %s', args)
     return subprocess.check_output(args, **kwargs)
+
+
+def run_password_command_output(args, password, **kwargs):
+    """Runs a command that expects a password on stdin. This function feeds
+    |password| to that command and returns the output like
+    run_command_output().
+    """
+    assert 'stdin' not in kwargs
+    return run_command_output(
+        args,
+        start_new_session=True,
+        input=(password + '\n').encode('utf8'),
+        **kwargs)
 
 
 def lenient_run_command_output(args, **kwargs):
@@ -124,18 +142,8 @@ def macos_version():
 
 def read_plist(path):
     """Loads Plist at |path| and returns it as a dictionary."""
-    if sys.version_info.major == 2:
-        fd, name = tempfile.mkstemp()
-        try:
-            subprocess.check_call(
-                ['plutil', '-convert', 'xml1', '-o', name, path])
-            with os.fdopen(fd, 'rb') as f:
-                return plistlib.readPlist(f)
-        finally:
-            os.unlink(name)
-    else:
-        with open(path, 'rb') as f:
-            return plistlib.load(f)
+    with open(path, 'rb') as f:
+        return plistlib.load(f)
 
 
 def write_plist(data, path, format):
@@ -146,22 +154,12 @@ def write_plist(data, path, format):
     # it does exist.
     if os.path.exists(path):
         os.unlink(path)
-    if sys.version_info.major == 2:
-        fd, name = tempfile.mkstemp()
-        try:
-            with os.fdopen(fd, 'wb') as f:
-                plistlib.writePlist(data, f)
-            subprocess.check_call(
-                ['plutil', '-convert', format, '-o', path, name])
-        finally:
-            os.unlink(name)
-    else:
-        with open(path, 'wb') as f:
-            plist_format = {
-                'binary1': plistlib.FMT_BINARY,
-                'xml1': plistlib.FMT_XML
-            }
-            plistlib.dump(data, f, fmt=plist_format[format])
+    with open(path, 'wb') as f:
+        plist_format = {
+            'binary1': plistlib.FMT_BINARY,
+            'xml1': plistlib.FMT_XML
+        }
+        plistlib.dump(data, f, fmt=plist_format[format])
 
 
 class PlistContext(object):

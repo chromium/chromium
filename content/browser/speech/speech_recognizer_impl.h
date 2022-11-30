@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/speech/endpointer/endpointer.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer.h"
+#include "content/common/content_export.h"
 #include "media/base/audio_capturer_source.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
@@ -52,6 +53,9 @@ class CONTENT_EXPORT SpeechRecognizerImpl
                        bool continuous,
                        bool provisional_results,
                        SpeechRecognitionEngine* engine);
+
+  SpeechRecognizerImpl(const SpeechRecognizerImpl&) = delete;
+  SpeechRecognizerImpl& operator=(const SpeechRecognizerImpl&) = delete;
 
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
@@ -113,7 +117,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   void ProcessAudioPipeline(const AudioChunk& raw_audio);
 
   // Callback from AudioSystem.
-  void OnDeviceInfo(const base::Optional<media::AudioParameters>& params);
+  void OnDeviceInfo(const absl::optional<media::AudioParameters>& params);
 
   // The methods below handle transitions of the recognizer FSM.
   FSMState PrepareRecognition(const FSMEventArgs&);
@@ -146,7 +150,8 @@ class CONTENT_EXPORT SpeechRecognizerImpl
                base::TimeTicks audio_capture_time,
                double volume,
                bool key_pressed) final;
-  void OnCaptureError(const std::string& message) final;
+  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
+                      const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final {}
 
   // SpeechRecognitionEngineDelegate methods.
@@ -165,7 +170,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   static media::AudioSystem* audio_system_for_tests_;
   static media::AudioCapturerSource* audio_capturer_source_for_tests_;
 
-  media::AudioSystem* audio_system_;
+  raw_ptr<media::AudioSystem> audio_system_;
   std::unique_ptr<SpeechRecognitionEngine> recognition_engine_;
   Endpointer endpointer_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
@@ -185,7 +190,6 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   std::unique_ptr<SpeechRecognizerImpl::OnDataConverter> audio_converter_;
 
   base::WeakPtrFactory<SpeechRecognizerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerImpl);
 };
 
 }  // namespace content

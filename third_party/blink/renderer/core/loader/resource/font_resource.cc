@@ -45,10 +45,8 @@ namespace blink {
 // https://tabatkins.github.io/specs/css-font-display/#font-display-desc
 // TODO(toyoshim): Revisit short limit value once cache-aware font display is
 // launched. crbug.com/570205
-constexpr base::TimeDelta kFontLoadWaitShort =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kFontLoadWaitLong =
-    base::TimeDelta::FromMilliseconds(3000);
+constexpr base::TimeDelta kFontLoadWaitShort = base::Milliseconds(100);
+constexpr base::TimeDelta kFontLoadWaitLong = base::Milliseconds(3000);
 
 FontResource* FontResource::Fetch(FetchParameters& params,
                                   ResourceFetcher* fetcher,
@@ -103,13 +101,13 @@ void FontResource::StartLoadLimitTimersIfNecessary(
 
   font_load_short_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::Bind(&FontResource::FontLoadShortLimitCallback,
-                WrapWeakPersistent(this)),
+      WTF::BindOnce(&FontResource::FontLoadShortLimitCallback,
+                    WrapWeakPersistent(this)),
       kFontLoadWaitShort);
   font_load_long_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::Bind(&FontResource::FontLoadLongLimitCallback,
-                WrapWeakPersistent(this)),
+      WTF::BindOnce(&FontResource::FontLoadLongLimitCallback,
+                    WrapWeakPersistent(this)),
       kFontLoadWaitLong);
 }
 

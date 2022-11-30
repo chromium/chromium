@@ -31,13 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_OBJECT_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_OBJECT_ITEM_H_
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -64,19 +63,21 @@ class CORE_EXPORT DataObjectItem final
   static DataObjectItem* CreateFromURL(const String& url, const String& title);
   static DataObjectItem* CreateFromHTML(const String& html,
                                         const KURL& base_url);
-  static DataObjectItem* CreateFromSharedBuffer(
+  static DataObjectItem* CreateFromFileSharedBuffer(
       scoped_refptr<SharedBuffer>,
+      bool is_image_accessible,
       const KURL&,
       const String& file_extension,
       const AtomicString& content_disposition);
-  static DataObjectItem* CreateFromClipboard(SystemClipboard* system_clipboard,
-                                             const String& type,
-                                             uint64_t sequence_number);
+  static DataObjectItem* CreateFromClipboard(
+      SystemClipboard* system_clipboard,
+      const String& type,
+      const ClipboardSequenceNumberToken& sequence_number);
 
   DataObjectItem(ItemKind kind, const String& type);
   DataObjectItem(ItemKind,
                  const String& type,
-                 uint64_t sequence_number,
+                 const ClipboardSequenceNumberToken& sequence_number,
                  SystemClipboard* system_clipboard);
 
   ItemKind Kind() const { return kind_; }
@@ -87,6 +88,7 @@ class CORE_EXPORT DataObjectItem final
   // Used to support legacy DataTransfer APIs and renderer->browser
   // serialization.
   scoped_refptr<SharedBuffer> GetSharedBuffer() const { return shared_buffer_; }
+  bool IsImageAccessible() const { return is_image_accessible_; }
   String FilenameExtension() const { return filename_extension_; }
   String Title() const { return title_; }
   KURL BaseURL() const { return base_url_; }
@@ -115,14 +117,15 @@ class CORE_EXPORT DataObjectItem final
   String data_;
   Member<File> file_;
   scoped_refptr<SharedBuffer> shared_buffer_;
+  bool is_image_accessible_ = false;
   // Optional metadata. Currently used for URL, HTML, and dragging files in.
   String filename_extension_;
   String title_;
   KURL base_url_;
 
-  uint64_t sequence_number_;  // Only valid when |source_| ==
-                              // DataSource::kClipboardSource.
-  String file_system_id_;     // Only valid when |file_| is backed by FileEntry.
+  ClipboardSequenceNumberToken  // Only valid when |source_| ==
+      sequence_number_;         // DataSource::kClipboardSource.
+  String file_system_id_;  // Only valid when |file_| is backed by FileEntry.
 
   // Access to the global system clipboard.
   Member<SystemClipboard> system_clipboard_;

@@ -97,4 +97,4 @@ class PLATFORM_EXPORT LocaleMac : public Locale {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LOCALE_MAC_H_

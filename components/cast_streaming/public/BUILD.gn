@@ -1,0 +1,93 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+visibility = [ ":*" ]
+
+# TODO(crbug.com/1357085): Determine whether we need all these separate targets.
+
+source_set("public") {
+  visibility += [ "*" ]
+  public = [
+    "cast_streaming_url.h",
+    "features.h",
+  ]
+  sources = [
+    "cast_streaming_url.cc",
+    "features.cc",
+  ]
+  public_deps = [ "//url" ]
+  deps = [
+    "//base",
+    "//components/cast_streaming:buildflags",
+  ]
+}
+
+source_set("demuxer_stream_traits") {
+  visibility += [ "*" ]
+  public = [ "demuxer_stream_traits.h" ]
+}
+
+source_set("config_conversions") {
+  visibility += [ "*" ]
+  public = [ "config_conversions.h" ]
+  sources = [ "config_conversions.cc" ]
+  public_deps = [
+    "//media",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+  ]
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("remoting_utils") {
+  visibility += [ "*" ]
+  public = [
+    "remoting_message_factories.h",
+    "remoting_proto_enum_utils.h",
+    "remoting_proto_utils.h",
+    "rpc_call_message_handler.h",
+  ]
+  sources = [
+    "remoting_message_factories.cc",
+    "remoting_proto_enum_utils.cc",
+    "remoting_proto_utils.cc",
+    "rpc_call_message_handler.cc",
+  ]
+  public_configs =
+      [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
+  public_deps = [
+    "//base",
+    "//media",
+    "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+  ]
+  deps = [ "//components/openscreen_platform" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility += [ "//components/cast_streaming:unit_tests" ]
+  public = []
+  sources = [
+    "config_conversions_unittest.cc",
+    "remoting_message_factories_unittest.cc",
+    "remoting_proto_utils_unittest.cc",
+    "rpc_call_message_handler_unittest.cc",
+  ]
+  deps = [
+    ":config_conversions",
+    ":remoting_utils",
+    "//media",
+    "//media:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+    "//ui/gfx/geometry",
+  ]
+}

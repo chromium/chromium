@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ DragOperation DropBookmarks(Profile* profile,
                             bool copy) {
   DCHECK(profile);
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bookmarks::ScopedGroupBookmarkActions group_drops(model);
 #endif
   if (data.IsFromProfilePath(profile->GetPath())) {
@@ -57,19 +57,22 @@ DragOperation DropBookmarks(Profile* profile,
            bookmarks::CanAllBeEditedByUser(model->client(), dragged_nodes));
     if (!dragged_nodes.empty()) {
       // Drag from same profile. Copy or move nodes.
+      bool is_reorder = !copy && dragged_nodes[0]->parent() == parent_node;
       for (size_t i = 0; i < dragged_nodes.size(); ++i) {
         if (copy) {
           model->Copy(dragged_nodes[i], parent_node, index);
         } else {
           model->Move(dragged_nodes[i], parent_node, index);
         }
-        index = size_t{parent_node->GetIndexOf(dragged_nodes[i]) + 1};
+        index = parent_node->GetIndexOf(dragged_nodes[i]).value() + 1;
       }
+      RecordBookmarkDropped(data, parent_node, is_reorder);
       return copy ? DragOperation::kCopy : DragOperation::kMove;
     }
     return DragOperation::kNone;
   }
   RecordBookmarksAdded(profile);
+  RecordBookmarkDropped(data, parent_node, false);
   // Dropping a folder from different profile. Always accept.
   bookmarks::CloneBookmarkNode(model, data.elements, parent_node, index, true);
   return DragOperation::kCopy;

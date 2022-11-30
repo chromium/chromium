@@ -1,14 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer.test;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.test.runner.lifecycle.ActivityLifecycleCallback;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.SmallTest;
 
@@ -26,6 +31,7 @@ import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.Tab;
+import org.chromium.weblayer.TabListCallback;
 import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -48,6 +54,16 @@ public class BrowserFragmentLifecycleTest {
     private Tab getTab() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mActivityTestRule.getActivity().getTab());
+    }
+
+    private Browser getBrowser() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivityTestRule.getActivity().getBrowser());
+    }
+
+    private Fragment getFragment() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivityTestRule.getActivity().getFragment());
     }
 
     private boolean isRestoringPreviousState() {
@@ -83,6 +99,104 @@ public class BrowserFragmentLifecycleTest {
         mActivityTestRule.recreateActivity();
 
         waitForTabToFinishRestore(getTab(), url);
+    }
+
+    /**
+     * Helper class used to ensure that during recreation the following are called:
+     * . TabListCallback#onTabAdded().
+     * . NavigationCallback#onNavigationStarted().
+     */
+    private static final class RecreateCallbackTracker {
+        private final ActivityLifecycleCallback mStateListener;
+        private boolean mGotCreate;
+        private boolean mGotOnTabAdded;
+        private boolean mGotOnNavigationStarted;
+
+        RecreateCallbackTracker(Browser browser) {
+            mStateListener = (Activity newActivity, Stage newStage) -> {
+                if (newStage == Stage.CREATED && !mGotCreate) {
+                    mGotCreate = true;
+                    Browser newBrowser = ((InstrumentationActivity) newActivity).getBrowser();
+                    Assert.assertTrue(newBrowser.getTabs().isEmpty());
+                    Assert.assertNotEquals(newBrowser, browser);
+                    newBrowser.registerTabListCallback(new TabListCallback() {
+                        @Override
+                        public void onTabAdded(@NonNull Tab tab) {
+                            mGotOnTabAdded = true;
+                            tab.getNavigationController().registerNavigationCallback(
+                                    new NavigationCallback() {
+                                        @Override
+                                        public void onNavigationStarted(
+                                                @NonNull Navigation navigation) {
+                                            mGotOnNavigationStarted = true;
+                                        }
+                                    });
+                        }
+                    });
+                    // This is needed to ensure the callback added above runs first. Without it the
+                    // tab is made active onTabAdded(), resulting in onNavigationStarted() never
+                    // being called (because the navigation starts from setActiveTab(), before the
+                    // callback is added).
+                    ((InstrumentationActivity) newActivity).reregisterTabListCallback();
+                }
+            };
+            ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(mStateListener);
+        }
+
+        public void runAssertsAfterRecreate() {
+            Assert.assertTrue(mGotCreate);
+            Assert.assertTrue(mGotOnTabAdded);
+            Assert.assertTrue(mGotOnNavigationStarted);
+            ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(mStateListener);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(99)
+    public void restoreAfterRecreateCallsTabAndNavigationCallbacks() throws Throwable {
+        mActivityTestRule.launchShellWithUrl("about:blank");
+        String url = "data:text,foo";
+        mActivityTestRule.navigateAndWait(getTab(), url, false);
+        final RecreateCallbackTracker tracker = new RecreateCallbackTracker(getBrowser());
+
+        mActivityTestRule.recreateActivity();
+
+        waitForTabToFinishRestore(getTab(), url);
+        tracker.runAssertsAfterRecreate();
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(98)
+    public void setMaxNavigationsPerTabForInstanceState() throws Throwable {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> Browser.setMaxNavigationsPerTabForInstanceState(4));
+
+        // Navigate to 5 urls.
+        mActivityTestRule.launchShellWithUrl("about:blank");
+        final String url1 = "data:text,foo";
+        mActivityTestRule.navigateAndWait(getTab(), url1, false);
+        final String url2 = mActivityTestRule.getTestDataURL("simple_page.html");
+        mActivityTestRule.navigateAndWait(getTab(), url2, false);
+        final String url3 = mActivityTestRule.getTestDataURL("simple_page2.html");
+        mActivityTestRule.navigateAndWait(getTab(), url3, false);
+        final String url4 = mActivityTestRule.getTestDataURL("simple_page3.html");
+        mActivityTestRule.navigateAndWait(getTab(), url4, false);
+        final String url5 = mActivityTestRule.getTestDataURL("simple_page4.html");
+        mActivityTestRule.navigateAndWait(getTab(), url5, false);
+
+        mActivityTestRule.recreateActivity();
+
+        // The max set to 4, so only 4 navigation entries should be persisted.
+        waitForTabToFinishRestore(getTab(), url5);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final NavigationController navigationController =
+                    mActivityTestRule.getActivity().getTab().getNavigationController();
+            Assert.assertEquals(4, navigationController.getNavigationListSize());
+            Assert.assertEquals(
+                    Uri.parse(url5), navigationController.getNavigationEntryDisplayUri(3));
+        });
     }
 
     private void destroyFragment(CallbackHelper helper) {
@@ -158,6 +272,24 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(99)
+    public void restoresPreviousSessionAndNotifiesCallbacks() throws Throwable {
+        Bundle extras = new Bundle();
+        extras.putString(InstrumentationActivity.EXTRA_PERSISTENCE_ID, "x");
+        final String url = mActivityTestRule.getTestDataURL("simple_page.html");
+        mActivityTestRule.launchShellWithUrl(url, extras);
+        final RecreateCallbackTracker tracker = new RecreateCallbackTracker(getBrowser());
+
+        mActivityTestRule.recreateActivity();
+
+        Tab tab = getTab();
+        Assert.assertNotNull(tab);
+        waitForTabToFinishRestore(tab, url);
+        tracker.runAssertsAfterRecreate();
+    }
+
+    @Test
+    @SmallTest
     public void restoresPreviousSession() throws Throwable {
         restoresPreviousSession(new Bundle());
     }
@@ -211,6 +343,76 @@ public class BrowserFragmentLifecycleTest {
         final String restoredTabId = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> { return restoredTab.getGuid(); });
         Assert.assertEquals(initialTabId, restoredTabId);
+    }
+
+    @Test
+    @SmallTest
+    public void useViewModelDoesntRecreateBrowser() throws Throwable {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_USE_VIEW_MODEL, true);
+        InstrumentationActivity activity =
+                mActivityTestRule.launchShellWithUrl("about:blank", extras);
+        final Browser browser = getBrowser();
+        final Tab tab = getTab();
+        final Fragment fragment = getFragment();
+
+        mActivityTestRule.recreateActivity();
+
+        // The tab and browser should not have changed.
+        Assert.assertEquals(tab, getTab());
+        Assert.assertEquals(browser, getBrowser());
+        Assert.assertFalse(
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.isDestroyed(); }));
+        // But the fragment should have.
+        Assert.assertNotEquals(fragment, getFragment());
+    }
+
+    @Test
+    @SmallTest
+    public void useViewModelDestroysBrowserWhenActivityDestroyed() throws Throwable {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_USE_VIEW_MODEL, true);
+        InstrumentationActivity activity =
+                mActivityTestRule.launchShellWithUrl("about:blank", extras);
+        final Browser browser = getBrowser();
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getBrowser().registerTabListCallback(new TabListCallback() {
+                @Override
+                public void onWillDestroyBrowserAndAllTabs() {
+                    callbackHelper.notifyCalled();
+                }
+            });
+            activity.finish();
+        });
+        callbackHelper.waitForFirst();
+        Assert.assertTrue(
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.isDestroyed(); }));
+    }
+
+    @Test
+    @SmallTest
+    public void useViewModelDestroysBrowserWhenFragmentDestroyed() throws Throwable {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_USE_VIEW_MODEL, true);
+        InstrumentationActivity activity =
+                mActivityTestRule.launchShellWithUrl("about:blank", extras);
+        final Browser browser = getBrowser();
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getBrowser().registerTabListCallback(new TabListCallback() {
+                @Override
+                public void onWillDestroyBrowserAndAllTabs() {
+                    callbackHelper.notifyCalled();
+                }
+            });
+            destroyFragment(callbackHelper);
+        });
+        // There are two callbacks, one from destroying the fragment, and the second from
+        // onWillDestroyBrowserAndAllTabs().
+        callbackHelper.waitForCallback(0, 2);
+        Assert.assertTrue(
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.isDestroyed(); }));
     }
 
     @Test

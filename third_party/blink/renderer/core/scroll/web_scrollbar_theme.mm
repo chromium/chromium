@@ -30,29 +30,19 @@
 
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 
-#import <AppKit/AppKit.h>
-
-#include "third_party/blink/renderer/core/scroll/ns_scroller_imp_details.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
 
 namespace blink {
 
-static_assert(static_cast<NSScrollerStyle>(kScrollerStyleLegacy) ==
-                  NSScrollerStyleLegacy,
-              "ScrollerStyleLegacy must match NSScrollerStyleLegacy");
-static_assert(static_cast<NSScrollerStyle>(kScrollerStyleOverlay) ==
-                  NSScrollerStyleOverlay,
-              "ScrollerStyleOverlay must match NSScrollerStyleOverlay");
-
 void WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
-    base::Optional<float> initial_button_delay,
-    base::Optional<float> autoscroll_button_delay,
+    absl::optional<float> initial_button_delay,
+    absl::optional<float> autoscroll_button_delay,
     ScrollerStyle preferred_scroller_style,
     bool redraw,
     bool jump_on_track_click) {
   ScrollbarThemeMac::UpdateScrollbarsWithNSDefaults(
       initial_button_delay, autoscroll_button_delay,
-      static_cast<NSScrollerStyle>(preferred_scroller_style), redraw,
+      preferred_scroller_style == kScrollerStyleOverlay, redraw,
       jump_on_track_click);
 }
 

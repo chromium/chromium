@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -19,15 +20,9 @@
 
 AXRootObjWrapper::AXRootObjWrapper(views::AXAuraObjCache::Delegate* delegate,
                                    views::AXAuraObjCache* cache)
-    : AXAuraObjWrapper(cache), delegate_(delegate) {
-  if (display::Screen::GetScreen())
-    display::Screen::GetScreen()->AddObserver(this);
-}
+    : views::AXAuraObjWrapper(cache), delegate_(delegate) {}
 
-AXRootObjWrapper::~AXRootObjWrapper() {
-  if (display::Screen::GetScreen())
-    display::Screen::GetScreen()->RemoveObserver(this);
-}
+AXRootObjWrapper::~AXRootObjWrapper() = default;
 
 bool AXRootObjWrapper::HasChild(views::AXAuraObjWrapper* child) {
   std::vector<views::AXAuraObjWrapper*> children;
@@ -46,7 +41,11 @@ void AXRootObjWrapper::GetChildren(
 
 void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->id = unique_id_.Get();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  out_node_data->role = ax::mojom::Role::kClient;
+#else
   out_node_data->role = ax::mojom::Role::kDesktop;
+#endif
 
   display::Screen* screen = display::Screen::GetScreen();
   if (!screen)

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class FullscreenMediator;
 // Additionally, this object notifies the mediator of foreground events.
 @interface FullscreenSystemNotificationObserver : NSObject
 
-// Designated initializer that updates |controller| and |mediator| for system
+// Designated initializer that updates `controller` and `mediator` for system
 // notifications.
 - (nullable instancetype)
 initWithController:(nonnull FullscreenController*)controller

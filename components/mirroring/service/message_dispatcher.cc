@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,9 @@ namespace mirroring {
 class MessageDispatcher::RequestHolder {
  public:
   RequestHolder() {}
+
+  RequestHolder(const RequestHolder&) = delete;
+  RequestHolder& operator=(const RequestHolder&) = delete;
 
   ~RequestHolder() {}
 
@@ -45,8 +48,6 @@ class MessageDispatcher::RequestHolder {
   OnceResponseCallback response_callback_;
   base::OneShotTimer timer_;
   int32_t sequence_number_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestHolder);
 };
 
 MessageDispatcher::MessageDispatcher(
@@ -68,7 +69,7 @@ MessageDispatcher::~MessageDispatcher() {
   subscriptions.clear();
 }
 
-void MessageDispatcher::Send(mojom::CastMessagePtr message) {
+void MessageDispatcher::OnMessage(mojom::CastMessagePtr message) {
   // TODO(crbug.com/1117673): Add MR-internals logging:
   // VLOG(2) << "Inbound message received: ns=" << message->message_namespace
   //         << ", data=" << message->json_format_data;
@@ -96,13 +97,13 @@ void MessageDispatcher::Send(mojom::CastMessagePtr message) {
     DCHECK_EQ(mojom::kWebRtcNamespace, message->message_namespace);
 #endif  // DCHECK_IS_ON()
 
+  // NOTE: getting a message that we are not subscribed to is purposely
+  // not an error--subscribers are allowed to pick and choose message types
+  // to subscribe to.
   const auto callback_iter = callback_map_.find(response->type());
-  if (callback_iter == callback_map_.end()) {
-    error_callback_.Run("No callback subscribed. message=" +
-                        message->json_format_data);
-    return;
+  if (callback_iter != callback_map_.end()) {
+    callback_iter->second.Run(*response);
   }
-  callback_iter->second.Run(*response);
 }
 
 void MessageDispatcher::Subscribe(ResponseType type,
@@ -133,7 +134,7 @@ void MessageDispatcher::SendOutboundMessage(mojom::CastMessagePtr message) {
   // TODO(crbug.com/1117673): Add MR-internals logging:
   //   VLOG(2) << "Sending outbound message: ns=" << message->message_namespace
   //           << ", data=" << message->json_format_data;
-  outbound_channel_->Send(std::move(message));
+  outbound_channel_->OnMessage(std::move(message));
 }
 
 void MessageDispatcher::RequestReply(mojom::CastMessagePtr message,
@@ -142,7 +143,7 @@ void MessageDispatcher::RequestReply(mojom::CastMessagePtr message,
                                      const base::TimeDelta& timeout,
                                      OnceResponseCallback callback) {
   DCHECK(!callback.is_null());
-  DCHECK(timeout > base::TimeDelta());
+  DCHECK(timeout.is_positive());
 
   Unsubscribe(response_type);  // Cancel the old request if there is any.
   RequestHolder* const request_holder = new RequestHolder();

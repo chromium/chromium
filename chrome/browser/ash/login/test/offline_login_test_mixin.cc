@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/login/auth/user_context.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "content/public/test/test_utils.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const test::UIPath kOfflineLoginLink = {"error-message",
@@ -38,6 +37,8 @@ const test::UIPath kEmailInput = {kOfflineLoginDialog, "emailInput"};
 const test::UIPath kPasswordInput = {kOfflineLoginDialog, "passwordInput"};
 const test::UIPath kNextButton = {kOfflineLoginDialog, "nextButton"};
 const test::UIPath kManagementDisclosure = {kOfflineLoginDialog, "managedBy"};
+const test::UIPath kOnlineRequiredDialog = {kOfflineLoginDialog,
+                                            "onlineRequiredDialog"};
 
 void SetExpectedCredentials(const AccountId& test_account_id,
                             const std::string& password) {
@@ -50,17 +51,13 @@ void SetExpectedCredentials(const AccountId& test_account_id,
   session_manager_test_api.InjectStubUserContext(user_context);
 }
 
-}  // anonymous namespace
+}  // namespace
 
 OfflineLoginTestMixin::OfflineLoginTestMixin(
     InProcessBrowserTestMixinHost* host)
     : InProcessBrowserTestMixin(host) {}
 
 OfflineLoginTestMixin::~OfflineLoginTestMixin() = default;
-
-void OfflineLoginTestMixin::SetUpOnMainThread() {
-  LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-}
 
 void OfflineLoginTestMixin::TearDownOnMainThread() {
   GoOnline();
@@ -75,15 +72,17 @@ void OfflineLoginTestMixin::PrepareOfflineLogin() {
 }
 
 void OfflineLoginTestMixin::GoOffline() {
-  network_state_test_helper_ =
-      std::make_unique<chromeos::NetworkStateTestHelper>(
-          false /*use_default_devices_and_services*/);
+  network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
+      false /*use_default_devices_and_services*/);
   network_state_test_helper_->ClearServices();
   // Notify NetworkStateInformer explicitly
-  LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->network_state_informer_for_test()
-      ->DefaultNetworkChanged(nullptr /* network */);
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetOobeUI()) {
+    LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->network_state_informer_for_test()
+        ->DefaultNetworkChanged(nullptr /* network */);
+  }
 }
 
 void OfflineLoginTestMixin::GoOnline() {
@@ -142,4 +141,21 @@ void OfflineLoginTestMixin::SubmitLoginAuthOfflineForm(
   }
 }
 
-}  // namespace chromeos
+void OfflineLoginTestMixin::SubmitEmailAndBlockOfflineFlow(
+    const std::string& user_email) {
+  test::OobeJS().ExpectVisible(kOfflineLoginDialog);
+
+  test::OobeJS().CreateDisplayedWaiter(true, kEmailPage)->Wait();
+  test::OobeJS().CreateDisplayedWaiter(false, kPasswordPage)->Wait();
+
+  test::OobeJS().TypeIntoPath(user_email, kEmailInput);
+
+  test::OobeJS().ClickOnPath(kNextButton);
+
+  // User offline signin time expired - we show the dialog
+  // instead of proceeding to the password page.
+  test::OobeJS().CreateVisibilityWaiter(true, kOnlineRequiredDialog)->Wait();
+  test::OobeJS().CreateDisplayedWaiter(false, kPasswordPage)->Wait();
+}
+
+}  // namespace ash

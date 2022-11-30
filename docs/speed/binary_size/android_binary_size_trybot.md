@@ -56,6 +56,12 @@ The bot provides analysis using:
 - Add a footer to the commit description along the lines of:
     - `Binary-Size: Size increase is unavoidable (see above).`
     - `Binary-Size: Increase is temporary.`
+    - `Binary-Size: See commit description.` <-- use this if longer than one line.
+
+***note
+**Note:** Make sure there are no blank lines between `Binary-Size:` and other
+footers.
+***
 
 [optimization advice]: /docs/speed/binary_size/optimization_advice.md
 [milestone size breakdowns]: https://storage.googleapis.com/chrome-supersize/index.html
@@ -90,8 +96,8 @@ The bot provides analysis using:
 
 ### Mutable Constants
 
-- **What**: Checks that all variables named `kVariableName` are in read-only
-  sections of the binary (either `.rodata` or `.data.rel.do`).
+- **What**: Checks that all globals named `kVariableName` or `VARIABLE_NAME`
+  are in read-only sections of the binary (either `.rodata` or `.data.rel.do`).
 - **Why**: Guards against accidentally missing a `const` keyword. Non-const
   variables have a larger memory footprint than const ones.
 - For more context see [https://crbug.com/747064](https://crbug.com/747064).
@@ -100,6 +106,9 @@ The bot provides analysis using:
 
 - Make the symbol read-only (usually by adding "const").
 - If you can't make it const, then rename it.
+- If the symbol is logically const, and you really don't want to rename it to
+  reveal that it is not actually mutable, you can annotate it with the
+  [LOGICALLY_CONST] macro.
 - To check what section a symbol is in for a local build:
   ```sh
   ninja -C out/Release obj/.../your_file.o
@@ -119,6 +128,8 @@ const char kMyVar[] = "..."; // A const char array (good).
 
 For more information on when to use `const char *` vs `const char[]`, see
 [//docs/native_relocations.md](/docs/native_relocations.md).
+
+[LOGICALLY_CONST]: https://source.chromium.org/search?q=symbol:LOGICALLY_CONST
 
 ### Added Symbols named “ForTest”
 
@@ -205,8 +216,8 @@ For more information on when to use `const char *` vs `const char[]`, see
 
 ## Code Locations
 
-- [Trybot recipe](https://source.chromium.org/chromium/chromium/tools/build/+/master:recipes/recipes/binary_size_trybot.py),
-[CI recipe](https://source.chromium.org/chromium/chromium/tools/build/+/master:recipes/recipes/binary_size_generator_tot.py),
-[recipe module](https://source.chromium.org/chromium/chromium/tools/build/+/master:recipes/recipe_modules/binary_size/api.py)
+- [Trybot recipe](https://source.chromium.org/chromium/chromium/tools/build/+/main:recipes/recipes/binary_size_trybot.py),
+[CI recipe](https://source.chromium.org/chromium/chromium/tools/build/+/main:recipes/recipes/binary_size_generator_tot.py),
+[recipe module](https://source.chromium.org/chromium/chromium/tools/build/+/main:recipes/recipe_modules/binary_size/api.py)
 - [Link to src-side checks](/tools/binary_size/trybot_commit_size_checker.py)
 - [Link to Gerrit Plugin](https://chromium.googlesource.com/infra/gerrit-plugins/chromium-binary-size/)

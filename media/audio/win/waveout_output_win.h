@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/win/scoped_handle.h"
 #include "media/audio/audio_io.h"
@@ -41,6 +41,11 @@ class PCMWaveOutAudioOutputStream : public AudioOutputStream {
                               const AudioParameters& params,
                               int num_buffers,
                               UINT device_id);
+
+  PCMWaveOutAudioOutputStream(const PCMWaveOutAudioOutputStream&) = delete;
+  PCMWaveOutAudioOutputStream& operator=(const PCMWaveOutAudioOutputStream&) =
+      delete;
+
   ~PCMWaveOutAudioOutputStream() override;
 
   // Implementation of AudioOutputStream.
@@ -91,10 +96,10 @@ class PCMWaveOutAudioOutputStream : public AudioOutputStream {
 
   // The audio manager that created this output stream. We notify it when
   // we close so it can release its own resources.
-  AudioManagerWin* manager_;
+  raw_ptr<AudioManagerWin> manager_;
 
   // We use the callback mostly to periodically request more audio data.
-  AudioSourceCallback* callback_;
+  raw_ptr<AudioSourceCallback> callback_;
 
   // The number of buffers of size |buffer_size_| each to use.
   const int num_buffers_;
@@ -136,8 +141,6 @@ class PCMWaveOutAudioOutputStream : public AudioOutputStream {
 
   // Container for retrieving data from AudioSourceCallback::OnMoreData().
   std::unique_ptr<AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(PCMWaveOutAudioOutputStream);
 };
 
 }  // namespace media

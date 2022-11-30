@@ -1,17 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/shelf/shelf_button.h"
 
-#include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/shelf_config.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
-#include "ash/style/default_color_constants.h"
+#include "ash/style/style_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 
@@ -22,15 +22,16 @@ ShelfButton::ShelfButton(Shelf* shelf,
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(shelf_button_delegate_);
   SetHideInkDropWhenShowingContextMenu(false);
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  SetInkDropBaseColor(ripple_attributes.base_color);
-  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  SetFocusPainter(views::Painter::CreateSolidFocusPainter(
-      ShelfConfig::Get()->shelf_focus_border_color(), kFocusBorderThickness,
-      gfx::InsetsF()));
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  // Inset focus ring path to avoid clipping the edges of the ring.
+  views::FocusRing::Get(this)->SetPathGenerator(
+      std::make_unique<views::CircleHighlightPathGenerator>(
+          gfx::Insets(-views::FocusRing::kDefaultHaloInset)));
+  SetFocusPainter(nullptr);
+  views::InkDrop::UseInkDropForSquareRipple(views::InkDrop::Get(this),
+                                            /*highlight_on_hover=*/false);
 }
 
 ShelfButton::~ShelfButton() = default;
@@ -38,8 +39,23 @@ ShelfButton::~ShelfButton() = default;
 ////////////////////////////////////////////////////////////////////////////////
 // views::View
 
+void ShelfButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  StyleUtil::ConfigureInkDropAttributes(
+      this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
+}
+
 const char* ShelfButton::GetClassName() const {
   return "ash/ShelfButton";
+}
+
+gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = Button::GetAnchorBoundsInScreen();
+  // Padding used to position bubbles offset from the shelf. Note that this
+  // includes Shelf tooltip.
+  constexpr int kAnchorOffset = 6;
+  bounds.Inset(gfx::Insets(-kAnchorOffset));
+  return bounds;
 }
 
 void ShelfButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
@@ -65,14 +81,8 @@ void ShelfButton::NotifyClick(const ui::Event& event) {
 
   Button::NotifyClick(event);
   if (shelf_button_delegate_)
-    shelf_button_delegate_->ButtonPressed(/*sender=*/this, event, GetInkDrop());
-}
-
-std::unique_ptr<views::InkDrop> ShelfButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      Button::CreateDefaultInkDropImpl();
-  ink_drop->SetShowHighlightOnHover(false);
-  return std::move(ink_drop);
+    shelf_button_delegate_->ButtonPressed(
+        /*sender=*/this, event, views::InkDrop::Get(this)->GetInkDrop());
 }
 
 }  // namespace ash

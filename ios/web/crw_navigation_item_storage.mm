@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/nscoder_util.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
@@ -47,7 +47,11 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 
 }  // namespace web
 
-@implementation CRWNavigationItemStorage
+@implementation CRWNavigationItemStorage {
+  GURL _URL;
+  GURL _virtualURL;
+  std::u16string _title;
+}
 
 #pragma mark - NSObject
 
@@ -86,11 +90,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
     if ([aDecoder containsValueForKey:web::kNavigationItemStorageURLKey]) {
       _URL = GURL(web::nscoder_util::DecodeString(
           aDecoder, web::kNavigationItemStorageURLKey));
-    } else {
-      // TODO(crbug.com/1073378): this is a temporary workaround added in M84 to
-      // support old client that don't have the kNavigationItemStorageURLKey. It
-      // should be removed once enough time has passed.
-      _URL = _virtualURL;
     }
 
     if ([aDecoder
@@ -148,8 +147,8 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  // Desktop Chrome doesn't persist |url_| or |originalUrl_|, only
-  // |virtualUrl_|. Chrome on iOS is persisting |url_|.
+  // Desktop Chrome doesn't persist `url_` or `originalUrl_`, only
+  // `virtualUrl_`. Chrome on iOS is persisting `url_`.
   int serializedSizeInBytes = 0;
   int serializedVirtualURLSizeInBytes = 0;
   if (_virtualURL != _URL) {
@@ -232,11 +231,33 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
                              serializedSizeInBytes / 1024);
 }
 
-- (GURL)virtualURL {
+#pragma mark - Properties
+
+- (const GURL&)URL {
+  return _URL;
+}
+
+- (void)setURL:(const GURL&)URL {
+  _URL = URL;
+}
+
+- (const GURL&)virtualURL {
   // virtualURL is not stored (see -encodeWithCoder:) if it's the same as URL.
   // This logic repeats NavigationItemImpl::GetURL to store virtualURL only when
   // different from URL.
   return _virtualURL.is_empty() ? _URL : _virtualURL;
+}
+
+- (void)setVirtualURL:(const GURL&)virtualURL {
+  _virtualURL = virtualURL;
+}
+
+- (const std::u16string&)title {
+  return _title;
+}
+
+- (void)setTitle:(const std::u16string&)title {
+  _title = title;
 }
 
 @end

@@ -1,10 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/base/cdm_context.h"
-#include "build/chromeos_buildflags.h"
 
+#include "build/build_config.h"
 #include "media/base/callback_registry.h"
 
 namespace media {
@@ -22,38 +22,38 @@ Decryptor* CdmContext::GetDecryptor() {
   return nullptr;
 }
 
-base::Optional<base::UnguessableToken> CdmContext::GetCdmId() const {
-  return base::nullopt;
+absl::optional<base::UnguessableToken> CdmContext::GetCdmId() const {
+  return absl::nullopt;
 }
 
 std::string CdmContext::CdmIdToString(const base::UnguessableToken* cdm_id) {
   return cdm_id ? cdm_id->ToString() : "null";
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool CdmContext::RequiresMediaFoundationRenderer() {
   return false;
 }
 
-bool CdmContext::GetMediaFoundationCdmProxy(
-    GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) {
-  return false;
+scoped_refptr<MediaFoundationCdmProxy>
+CdmContext::GetMediaFoundationCdmProxy() {
+  return nullptr;
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 MediaCryptoContext* CdmContext::GetMediaCryptoContext() {
   return nullptr;
 }
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 FuchsiaCdmContext* CdmContext::GetFuchsiaCdmContext() {
   return nullptr;
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 chromeos::ChromeOsCdmContext* CdmContext::GetChromeOsCdmContext() {
   return nullptr;
 }

@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -86,7 +88,7 @@ class MediaStreamTrackMetricsTest : public testing::Test {
   MediaStreamTrackMetricsTest() : signaling_thread_("signaling_thread") {}
 
   void SetUp() override {
-    metrics_.reset(new MockMediaStreamTrackMetrics());
+    metrics_ = std::make_unique<MockMediaStreamTrackMetrics>();
     stream_ = new rtc::RefCountedObject<blink::MockMediaStream>("stream");
     signaling_thread_.Start();
   }

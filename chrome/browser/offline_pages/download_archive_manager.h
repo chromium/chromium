@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_DOWNLOAD_ARCHIVE_MANAGER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_DOWNLOAD_ARCHIVE_MANAGER_H_
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/offline_pages/core/archive_manager.h"
 
@@ -28,15 +28,17 @@ class DownloadArchiveManager : public ArchiveManager {
       const base::FilePath& public_archives_dir,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       PrefService* prefs);
+
+  DownloadArchiveManager(const DownloadArchiveManager&) = delete;
+  DownloadArchiveManager& operator=(const DownloadArchiveManager&) = delete;
+
   ~DownloadArchiveManager() override;
 
   const base::FilePath& GetPublicArchivesDir() override;
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   base::FilePath download_archives_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadArchiveManager);
 };
 
 }  // namespace offline_pages

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
@@ -56,7 +55,7 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   // null, the message receiver must handle the message like it is from an
   // unknown remote origin by dispatching the 'messageerror' event when
   // |file_system_access_tokens| is not an empty array.
-  base::Optional<url::Origin> sender_origin;
+  absl::optional<url::Origin> sender_origin;
 
   // Stack trace captured by sender.
   // For more details see v8_inspector::V8StackTraceId.
@@ -65,18 +64,17 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   int64_t stack_trace_debugger_id_second = 0;
   bool stack_trace_should_pause = false;
 
-  // If not null, this message is locked to the given agent cluster ID.
+  // The sender's agent cluster ID.
   // See
   // https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-agent-cluster-formalism
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id;
+  base::UnguessableToken sender_agent_cluster_id;
+  // If true, this message is locked to the sender agent cluster ID.
+  bool locked_to_sender_agent_cluster = false;
 
   // Tokens required to clone FileSystemFileHandles and/or
   // FileSystemDirectoryHandles.
   std::vector<mojo::PendingRemote<mojom::FileSystemAccessTransferToken>>
       file_system_access_tokens;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloneableMessage);
 };
 
 }  // namespace blink

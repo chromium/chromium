@@ -1,17 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/guest_view/browser/guest_view_manager.h"
-#include "components/guest_view/browser/guest_view_manager_factory.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/extension.h"
@@ -24,12 +20,6 @@
 #include "extensions/shell/browser/shell_extensions_browser_client.h"
 #include "extensions/shell/test/shell_test.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "net/base/filename_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-using guest_view::GuestViewManager;
-using guest_view::TestGuestViewManager;
-using guest_view::TestGuestViewManagerFactory;
 
 namespace {
 
@@ -97,13 +87,7 @@ namespace extensions {
 
 class AppViewTest : public AppShellTest {
  protected:
-  AppViewTest() { GuestViewManager::set_factory_for_testing(&factory_); }
-
-  TestGuestViewManager* GetGuestViewManager() {
-    return static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(
-            ShellContentBrowserClient::Get()->GetBrowserContext()));
-  }
+  AppViewTest() = default;
 
   content::WebContents* GetFirstAppWindowWebContents() {
     const AppWindowRegistry::AppWindowList& app_window_list =
@@ -130,25 +114,23 @@ class AppViewTest : public AppShellTest {
 
     extension_system_->LaunchApp(app_embedder->id());
 
-    ExtensionTestMessageListener launch_listener("LAUNCHED", false);
+    ExtensionTestMessageListener launch_listener("LAUNCHED");
     ASSERT_TRUE(launch_listener.WaitUntilSatisfied());
 
     embedder_web_contents_ = GetFirstAppWindowWebContents();
 
-    ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+    ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
-    ASSERT_TRUE(
-        content::ExecuteScript(embedder_web_contents_,
-                               base::StringPrintf("runTest('%s', '%s')",
-                                                  test_name.c_str(),
-                                                  app_embedded->id().c_str())))
+    ASSERT_TRUE(content::ExecuteScript(
+        embedder_web_contents_.get(),
+        base::StringPrintf("runTest('%s', '%s')", test_name.c_str(),
+                           app_embedded->id().c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   }
 
  private:
-  content::WebContents* embedder_web_contents_;
-  TestGuestViewManagerFactory factory_;
+  raw_ptr<content::WebContents> embedder_web_contents_;
 };
 
 // Tests that <appview> correctly processes parameters passed on connect.

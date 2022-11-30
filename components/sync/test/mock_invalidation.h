@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/invalidation_interface.h"
+#include "components/sync/base/sync_invalidation.h"
 
 namespace syncer {
 
-// An InvalidationInterface used by sync for testing.
+// A SyncInvalidation used by sync for testing.
 // It does not support any form of acknowledgements.
-class MockInvalidation : public InvalidationInterface {
+class MockInvalidation : public SyncInvalidation {
  public:
   // Helpers to build new MockInvalidations.
   static std::unique_ptr<MockInvalidation> BuildUnknownVersion();
@@ -25,7 +25,7 @@ class MockInvalidation : public InvalidationInterface {
 
   ~MockInvalidation() override;
 
-  // Implementation of InvalidationInterface.
+  // Implementation of SyncInvalidation.
   bool IsUnknownVersion() const override;
   const std::string& GetPayload() const override;
   int64_t GetVersion() const override;

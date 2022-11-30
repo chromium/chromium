@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "remoting/protocol/channel_authenticator.h"
@@ -58,6 +57,10 @@ class SslHmacChannelAuthenticator : public ChannelAuthenticator {
       const std::string& local_cert,
       scoped_refptr<RsaKeyPair> key_pair,
       const std::string& auth_key);
+
+  SslHmacChannelAuthenticator(const SslHmacChannelAuthenticator&) = delete;
+  SslHmacChannelAuthenticator& operator=(const SslHmacChannelAuthenticator&) =
+      delete;
 
   ~SslHmacChannelAuthenticator() override;
 
@@ -123,8 +126,6 @@ class SslHmacChannelAuthenticator : public ChannelAuthenticator {
   scoped_refptr<net::GrowableIOBuffer> auth_read_buf_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SslHmacChannelAuthenticator);
 };
 
 }  // namespace protocol

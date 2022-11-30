@@ -1,4 +1,4 @@
-/* Copyright 2020 The Chromium Authors. All rights reserved.
+/* Copyright 2020 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -8,42 +8,36 @@
  * to pref-based settings.
  */
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js'
-// #import '../constants/setting.mojom-lite.js';
-// #import '../search/user_action_recorder.mojom-lite.js';
-// clang-format on
+import {SettingChangeValue} from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-/* #export */ class PrefToSettingMetricConverter {
+export class PrefToSettingMetricConverter {
   /**
    * @param {string} prefKey
    * @param {*} prefValue
-   * @return {?{setting: !chromeos.settings.mojom.Setting, value:
-   *     !chromeos.settings.mojom.SettingChangeValue}}
+   * @return {?{setting: !Setting, value: !SettingChangeValue}}
    */
   convertPrefToSettingMetric(prefKey, prefValue) {
     switch (prefKey) {
       // device_page/keyboard.js
       case 'settings.language.send_function_keys':
         return {
-          setting: chromeos.settings.mojom.Setting.kKeyboardFunctionKeys,
-          value: {boolValue: /** @type {boolean} */ (prefValue)}
+          setting: Setting.kKeyboardFunctionKeys,
+          value: {boolValue: /** @type {boolean} */ (prefValue)},
         };
 
       // device_page/pointers.js
       case 'settings.touchpad.sensitivity2':
-        console.log(prefValue);
         return {
-          setting: chromeos.settings.mojom.Setting.kTouchpadSpeed,
-          value: {intValue: /** @type {number} */ (prefValue)}
+          setting: Setting.kTouchpadSpeed,
+          value: {intValue: /** @type {number} */ (prefValue)},
         };
 
       // os_privacy_page/os_privacy_page.js
       case 'cros.device.peripheral_data_access_enabled':
         return {
-          setting:
-              chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection,
-          value: {boolValue: /** @type {boolean} */ (prefValue)}
+          setting: Setting.kPeripheralDataAccessProtection,
+          value: {boolValue: /** @type {boolean} */ (prefValue)},
         };
 
       // pref to setting metric not implemented.

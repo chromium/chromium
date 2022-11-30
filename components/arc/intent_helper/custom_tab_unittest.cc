@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ TEST_F(CustomTabTest, ResizeAfterClose) {
   {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
     params.bounds = gfx::Rect(0, 0, 200, 200);
     params.parent = root_window();
     toplevel_widget.Init(std::move(params));

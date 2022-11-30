@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
-#include "content/renderer/render_view_impl.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/test/test_content_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -107,7 +107,7 @@ class PepperFileChooserHostTest : public RenderViewTest {
 
     globals_.GetResourceTracker()->DidCreateInstance(pp_instance_);
     mock_file_chooser_ = std::make_unique<MockFileChooser>(
-        static_cast<RenderFrameImpl*>(view_->GetMainRenderFrame())
+        static_cast<RenderFrameImpl*>(GetMainRenderFrame())
             ->GetBrowserInterfaceBroker(),
         run_loop_.QuitClosure());
   }
@@ -142,7 +142,7 @@ class PepperFileChooserHostTest : public RenderViewTest {
 TEST_F(PepperFileChooserHostTest, Show) {
   PP_Resource pp_resource = 123;
 
-  MockRendererPpapiHost host(view_, pp_instance());
+  MockRendererPpapiHost host(GetMainRenderFrame(), pp_instance());
   PepperFileChooserHost chooser(&host, pp_instance(), pp_resource);
 
   // Say there's a user gesture.
@@ -199,7 +199,7 @@ TEST_F(PepperFileChooserHostTest, Show) {
 TEST_F(PepperFileChooserHostTest, NoUserGesture) {
   PP_Resource pp_resource = 123;
 
-  MockRendererPpapiHost host(view_, pp_instance());
+  MockRendererPpapiHost host(GetMainRenderFrame(), pp_instance());
   PepperFileChooserHost chooser(&host, pp_instance(), pp_resource);
 
   // Say there's no user gesture.

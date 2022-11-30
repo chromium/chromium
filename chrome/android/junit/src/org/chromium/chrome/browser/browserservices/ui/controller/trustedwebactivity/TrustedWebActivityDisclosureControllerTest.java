@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
@@ -169,11 +169,11 @@ public class TrustedWebActivityDisclosureControllerTest {
     }
 
     private void enterVerifiedOrigin() {
-        setVerificationState(new VerificationState(SCOPE, VerificationStatus.SUCCESS));
+        setVerificationState(new VerificationState(SCOPE, SCOPE, VerificationStatus.SUCCESS));
     }
 
     private void exitVerifiedOrigin() {
-        setVerificationState(new VerificationState(SCOPE, VerificationStatus.FAILURE));
+        setVerificationState(new VerificationState(SCOPE, SCOPE, VerificationStatus.FAILURE));
     }
 
     private void setVerificationState(VerificationState state) {

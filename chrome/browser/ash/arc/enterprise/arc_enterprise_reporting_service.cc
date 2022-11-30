@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,20 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 namespace {
@@ -36,6 +43,37 @@ class ArcEnterpriseReportingServiceFactory
   ~ArcEnterpriseReportingServiceFactory() override = default;
 };
 
+const char* TimedCloudDpcOpToString(mojom::TimedCloudDpcOp op) {
+  switch (op) {
+    case mojom::TimedCloudDpcOp::UNKNOWN_OP:
+      NOTREACHED();  // handled by if-statement in calling method
+      return "";
+    case mojom::TimedCloudDpcOp::SETUP_TOTAL:
+      return "SetupService.Total";
+    case mojom::TimedCloudDpcOp::SETUP_PULL_AND_APPLY_POLICIES:
+      return "SetupService.PullAndApplyPolicies";
+    case mojom::TimedCloudDpcOp::SETUP_ADD_ACCOUNT:
+      return "SetupService.AddAccount";
+    case mojom::TimedCloudDpcOp::SETUP_INSTALL_APPS:
+      return "SetupService.InstallApps";
+    case mojom::TimedCloudDpcOp::DEVICE_SETUP:
+      return "DeviceSetup";
+    case mojom::TimedCloudDpcOp::SETUP_CHECK_FOR_ANDROID_ID:
+    case mojom::TimedCloudDpcOp::SETUP_CHECK_FOR_FIRST_ACCOUNT_READY:
+    case mojom::TimedCloudDpcOp::SETUP_REGISTER:
+    case mojom::TimedCloudDpcOp::SETUP_REPORT_POLICY_COMPLIANCE:
+    case mojom::TimedCloudDpcOp::SETUP_QUARANTINED:
+    case mojom::TimedCloudDpcOp::SETUP_INSTALL_APPS_RETRY:
+    case mojom::TimedCloudDpcOp::SETUP_UPDATE_PLAY_SERVICES:
+    case mojom::TimedCloudDpcOp::SETUP_CHECK_REGISTRATION_TOKEN:
+    case mojom::TimedCloudDpcOp::SETUP_THIRD_PARTY_SIGNIN:
+      return ""; // Deprecated and unused
+  }
+
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
 // static
@@ -43,6 +81,14 @@ ArcEnterpriseReportingService*
 ArcEnterpriseReportingService::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcEnterpriseReportingServiceFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcEnterpriseReportingService*
+ArcEnterpriseReportingService::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcEnterpriseReportingServiceFactory::GetForBrowserContextForTesting(
+      context);
 }
 
 ArcEnterpriseReportingService::ArcEnterpriseReportingService(
@@ -67,6 +113,25 @@ void ArcEnterpriseReportingService::ReportManagementState(
     VLOG(1) << "Management state lost. Removing ARC user data.";
     ArcSessionManager::Get()->RequestArcDataRemoval();
     ArcSessionManager::Get()->StopAndEnableArc();
+  }
+}
+
+void ArcEnterpriseReportingService::ReportCloudDpcOperationTime(
+    int64_t time_ms,
+    mojom::TimedCloudDpcOp op,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (op != mojom::TimedCloudDpcOp::UNKNOWN_OP) {
+    const std::string histogram_name =
+        base::StrCat({"Arc.CloudDpc.", TimedCloudDpcOpToString(op),
+                      ".TimeDelta", success ? ".Success" : ".Failure"});
+
+    base::UmaHistogramMediumTimes(
+        GetHistogramNameByUserTypeForPrimaryProfile(histogram_name),
+        base::Milliseconds(time_ms));
+  } else {
+    DLOG(ERROR) << "Attempted to record time for unknown op";
   }
 }
 

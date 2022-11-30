@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace {
 
 // Returns whether the URL of the navigation matches the video player URL.
 bool IsVideoPlayerURL(GURL url) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string url_string = url.possibly_invalid_spec();
   if (url_string.find(chrome::kChromeUIUntrustedVideoPlayerUrl) == 0)
     return true;
@@ -26,7 +26,8 @@ bool IsVideoPlayerURL(GURL url) {
 
 VideoTutorialTabHelper::VideoTutorialTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<VideoTutorialTabHelper>(*web_contents) {}
 
 VideoTutorialTabHelper::~VideoTutorialTabHelper() = default;
 
@@ -43,6 +44,6 @@ void VideoTutorialTabHelper::ReadyToCommitNavigation(
                            blink::mojom::kAutoplayFlagUserException);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VideoTutorialTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VideoTutorialTabHelper);
 
 }  // namespace video_tutorials

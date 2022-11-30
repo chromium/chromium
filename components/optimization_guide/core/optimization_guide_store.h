@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,19 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/memory_hint.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PrefService;
 
 namespace base {
 class SequencedTaskRunner;
@@ -41,10 +43,6 @@ class OptimizationGuideStore {
       base::OnceCallback<void(const std::string&, std::unique_ptr<MemoryHint>)>;
   using PredictionModelLoadedCallback =
       base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
-  using HostModelFeaturesLoadedCallback =
-      base::OnceCallback<void(std::unique_ptr<proto::HostModelFeatures>)>;
-  using AllHostModelFeaturesLoadedCallback = base::OnceCallback<void(
-      std::unique_ptr<std::vector<proto::HostModelFeatures>>)>;
   using EntryKey = std::string;
   using StoreEntryProtoDatabase =
       leveldb_proto::ProtoDatabase<proto::StoreEntry>;
@@ -81,26 +79,30 @@ class OptimizationGuideStore {
   // cannot be changed, but new types can be added to the end.
   // StoreEntryType should remain synchronized with the
   // HintCacheStoreEntryType in enums.xml.
-  // Also ensure to add to the OptimizationGuide.StoreEntryTypes histogram
-  // suffixes if adding a new one.
   enum class StoreEntryType {
     kEmpty = 0,
     kMetadata = 1,
     kComponentHint = 2,
     kFetchedHint = 3,
     kPredictionModel = 4,
-    kHostModelFeatures = 5,
-    kMaxValue = kHostModelFeatures,
+    kDeprecatedHostModelFeatures = 5,  // deprecated.
+    kMaxValue = kDeprecatedHostModelFeatures,
   };
 
   OptimizationGuideStore(
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       const base::FilePath& database_dir,
-      scoped_refptr<base::SequencedTaskRunner> store_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> store_task_runner,
+      PrefService* pref_service);
   // For tests only.
   explicit OptimizationGuideStore(
       std::unique_ptr<StoreEntryProtoDatabase> database,
-      scoped_refptr<base::SequencedTaskRunner> store_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> store_task_runner,
+      PrefService* pref_service);
+
+  OptimizationGuideStore(const OptimizationGuideStore&) = delete;
+  OptimizationGuideStore& operator=(const OptimizationGuideStore&) = delete;
+
   virtual ~OptimizationGuideStore();
 
   // Initializes the store. If |purge_existing_data| is set to true,
@@ -169,13 +171,9 @@ class OptimizationGuideStore {
   // removed.
   void PurgeExpiredFetchedHints();
 
-  // Removes all host model features that have expired from the store.
-  // |entry_keys_| is updated after the expired host model features are
-  // removed.
-  void PurgeExpiredHostModelFeatures();
-
   // Removes all models that have not been loaded in the max inactive duration
   // configured. |entry_keys| is updated after the inactive models are removed.
+  // Respects models' |keep_beyond_valid_duration| setting.
   void PurgeInactiveModels();
 
   // Creates and returns a StoreUpdateData object for Prediction Models. This
@@ -193,9 +191,9 @@ class OptimizationGuideStore {
       std::unique_ptr<StoreUpdateData> prediction_models_update_data,
       base::OnceClosure callback);
 
-  // Finds the entry key for the prediction model if it is known to the store.
-  // Returns true if an entry key is found and |out_prediction_model_entry_key|
-  // is populated with the matching key.
+  // Finds the entry key for the prediction model if it is still valid in the
+  // store. Returns true if an entry key is valid and
+  // |out_prediction_model_entry_key| is populated with any matching key.
   // Virtualized for testing.
   virtual bool FindPredictionModelEntryKey(
       proto::OptimizationTarget optimization_target,
@@ -215,57 +213,18 @@ class OptimizationGuideStore {
   // false otherwise.
   bool RemovePredictionModelFromEntryKey(const EntryKey& entry_key);
 
-  // Creates and returns a StoreUpdateData object for host model features. This
-  // object is used to collect a batch of host model features in a format that
-  // is usable to update the store on a background thread. This is always
-  // created when host model features have been successfully fetched from the
-  // remote Optimization Guide Service so the store can update old host model
-  // features.
-  std::unique_ptr<StoreUpdateData> CreateUpdateDataForHostModelFeatures(
-      base::Time host_model_features_update_time,
-      base::Time expiry_time) const;
-
-  // Updates the host model features contained in the store. The callback is run
-  // asynchronously after the database stores the host model features.
-  // Virtualized for testing.
-  virtual void UpdateHostModelFeatures(
-      std::unique_ptr<StoreUpdateData> host_model_features_update_data,
-      base::OnceClosure callback);
-
-  // Finds the entry key for the host model features for |host| if it is known
-  // to the store. Returns true if an entry key is found and
-  // |out_host_model_features_entry_key| is populated with the matching key.
-  bool FindHostModelFeaturesEntryKey(
-      const std::string& host,
-      OptimizationGuideStore::EntryKey* out_host_model_features_entry_key)
-      const;
-
-  // Loads the host model features specified by |host_model_features_entry_key|.
-  // After the load finishes, the host model features data is passed to
-  // |callback|. In the case where the host model features cannot be loaded, the
-  // callback is run with a nullptr. Depending on the load result, the callback
-  // may be synchronous or asynchronous.
-  void LoadHostModelFeatures(const EntryKey& host_model_features_entry_key,
-                             HostModelFeaturesLoadedCallback callback);
-
-  // Loads all the host model features known to the store. After the load
-  // finishes, the host model features data is passed back to |callback|. In the
-  // case where the host model features cannot be loaded, the callback is run
-  // with a nullptr. Depending on the load result, the callback may be
-  // synchronous or asynchronous.
-  // Virtualized for testing.
-  virtual void LoadAllHostModelFeatures(
-      AllHostModelFeaturesLoadedCallback callback);
-
-  // Returns the time that the host model features in the store can be updated.
-  // If |this| is not available, base::Time() is returned.
-  base::Time GetHostModelFeaturesUpdateTime() const;
-
-  // Clears all host model features from the database and resets the entry keys.
-  void ClearHostModelFeaturesFromDatabase();
+  // Removes fetched hints whose keys are in |hint_keys| and runs |on_success|
+  // if successful, otherwise the callback is not run.
+  void RemoveFetchedHintsByKey(base::OnceClosure on_success,
+                               const base::flat_set<std::string>& hint_keys);
 
   // Returns true if the current status is Status::kAvailable.
   bool IsAvailable() const;
+
+  // Returns the weak ptr of |this|.
+  base::WeakPtr<OptimizationGuideStore> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class OptimizationGuideStoreTest;
@@ -291,7 +250,7 @@ class OptimizationGuideStore {
     kSchema = 1,
     kComponent = 2,
     kFetched = 3,
-    kHostModelFeatures = 4,
+    kDeprecatedHostModelFeatures = 4,  // deprecated.
   };
 
   // Current schema version of the hint cache store. When this is changed,
@@ -318,8 +277,10 @@ class OptimizationGuideStore {
   // Returns prefix of the key of every prediction model entry: "4_".
   static EntryKeyPrefix GetPredictionModelEntryKeyPrefix();
 
-  // Returns prefix of the key of every host model features entry: "5_".
-  static EntryKeyPrefix GetHostModelFeaturesEntryKeyPrefix();
+  // Returns the OptimizationTarget from |prediction_model_entry_key|.
+  static proto::OptimizationTarget
+  GetOptimizationTargetFromPredictionModelEntryKey(
+      const EntryKey& prediction_model_entry_key);
 
   // Updates the status of the store to the specified value, validates the
   // transition, and destroys the database in the case where the status
@@ -389,11 +350,19 @@ class OptimizationGuideStore {
   // entry keys contained within the database.
   void OnUpdateStore(base::OnceClosure callback, bool success);
 
+  // Callback that runs after |keys| have been removed from the store. If
+  // |success|, |on_success| is run. Note that |on_success| is not guaranteed to
+  // run and that the calling code must be able to handle the callback not
+  // coming back.
+  void OnFetchedEntriesRemoved(base::OnceClosure on_success,
+                               const EntryKeySet& keys,
+                               bool success);
+
   // Callback that runs after the hint entry keys are fully loaded. If there's
   // currently an in-flight component update, then the hint entry keys will be
   // loaded again after the component update completes, so the results are
-  // tossed; otherwise, |entry_keys| is moved into |entry_keys_|.
-  // Regardless of the outcome of loading the keys, the callback always runs.
+  // tossed; otherwise, |entry_keys| is moved into |entry_keys_|. Regardless of
+  // the outcome of loading the keys, the callback always runs.
   void OnLoadEntryKeys(std::unique_ptr<EntryKeySet> entry_keys,
                        base::OnceClosure callback,
                        bool success,
@@ -440,28 +409,12 @@ class OptimizationGuideStore {
       PredictionModelLoadedCallback callback,
       bool success);
 
-  // Callback that runs after a host model features entry is loaded from the
-  // database. If there's currently an in-flight update, then the data could be
-  // invalidated, so loaded host model features data is discarded. Otherwise,
-  // the host model features are released into the callback, allowing the caller
-  // to own the host model features without copying it. Regardless of the
-  // success or failure of retrieving the key, the callback always runs (it
-  // simply runs with a nullptr on failure).
-  void OnLoadHostModelFeatures(HostModelFeaturesLoadedCallback callback,
-                               bool success,
-                               std::unique_ptr<proto::StoreEntry> entry);
+  // Clean up file paths that were slated for deletion in previous sessions.
+  void CleanUpFilePaths();
 
-  // Callback that runs after all the host model features entries are loaded
-  // from the database. If there's currently an in-flight update, then the data
-  // could be invalidated, so loaded host model features data is discarded.
-  // Otherwise, the host model features are released into the callback, allowing
-  // the caller to own the host model features without copying it. Regardless of
-  // the success or failure of retrieving the key, the callback always runs (it
-  // simply runs with a nullptr on failure).
-  void OnLoadAllHostModelFeatures(
-      AllHostModelFeaturesLoadedCallback callback,
-      bool success,
-      std::unique_ptr<std::vector<proto::StoreEntry>> entry);
+  // Callback invoked when |deleted_file_path| completed its attempt to be
+  // deleted. Will clean up the path if |success| is true.
+  void OnFilePathDeleted(const std::string& deleted_file_path, bool success);
 
   // Proto database used by the store.
   std::unique_ptr<StoreEntryProtoDatabase> database_;
@@ -474,7 +427,7 @@ class OptimizationGuideStore {
   // The current component version of the store. This should only be updated
   // via SetComponentVersion(), which ensures that both |component_version_|
   // and |component_hint_key_prefix_| are updated at the same time.
-  base::Optional<base::Version> component_version_;
+  absl::optional<base::Version> component_version_;
 
   // The current entry key prefix shared by all component hints containd within
   // the store. While this could be generated on the fly using
@@ -496,11 +449,12 @@ class OptimizationGuideStore {
   // The background task runner used to perform operations on the store.
   scoped_refptr<base::SequencedTaskRunner> store_task_runner_;
 
+  // Pref service. Not owned. Guaranteed to outlive |this|.
+  raw_ptr<PrefService> pref_service_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OptimizationGuideStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideStore);
 };
 
 }  // namespace optimization_guide

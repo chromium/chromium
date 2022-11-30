@@ -1,18 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
@@ -29,6 +30,8 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
   USING_PRE_FINALIZER(Worklet, Dispose);
 
  public:
+  Worklet(const Worklet&) = delete;
+  Worklet& operator=(const Worklet&) = delete;
   ~Worklet() override;
 
   void Dispose();
@@ -94,8 +97,6 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
 
   // Keeps track of pending tasks from addModule() call.
   HeapHashSet<Member<WorkletPendingTasks>> pending_tasks_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(Worklet);
 };
 
 }  // namespace blink

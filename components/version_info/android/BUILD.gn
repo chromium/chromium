@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,11 +13,13 @@ _version_constants_java_file = "$target_gen_dir/java/org/chromium/components/ver
 android_library("version_constants_java") {
   sources = [
     "java/src/org/chromium/components/version_info/VersionConstantsBridge.java",
+    "java/src/org/chromium/components/version_info/VersionInfo.java",
     _version_constants_java_file,
   ]
   deps = [
     ":generate_version_constants",
-    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ ":channel_enum_srcjar" ]

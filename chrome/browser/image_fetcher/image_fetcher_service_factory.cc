@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -27,6 +27,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/image_fetcher/image_fetcher_service_provider.h"
+#endif
+
 namespace {
 
 // The path under the browser context's data directory which the image_cache
@@ -34,14 +38,26 @@ namespace {
 const base::FilePath::CharType kImageCacheSubdir[] =
     FILE_PATH_LITERAL("image_cache");
 
-}  // namespace
-
-// static
-base::FilePath ImageFetcherServiceFactory::GetCachePath(SimpleFactoryKey* key) {
+base::FilePath GetCachePath(SimpleFactoryKey* key) {
   base::FilePath cache_path;
   chrome::GetUserCacheDirectory(key->GetPath(), &cache_path);
   return cache_path.Append(kImageCacheSubdir);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+image_fetcher::ImageFetcherService* GetImageFetcherService(
+    SimpleFactoryKey* key) {
+  return ImageFetcherServiceFactory::GetForKey(key);
+}
+
+std::string GetCachePathForJava(SimpleFactoryKey* key, std::string path) {
+  base::FilePath cache_path;
+  chrome::GetUserCacheDirectory(key->GetPath(), &cache_path);
+  return cache_path.Append(kImageCacheSubdir).Append(path).MaybeAsASCII();
+}
+#endif
+
+}  // namespace
 
 // static
 image_fetcher::ImageFetcherService* ImageFetcherServiceFactory::GetForKey(
@@ -58,6 +74,15 @@ ImageFetcherServiceFactory* ImageFetcherServiceFactory::GetInstance() {
 ImageFetcherServiceFactory::ImageFetcherServiceFactory()
     : SimpleKeyedServiceFactory("ImageFetcherService",
                                 SimpleDependencyManager::GetInstance()) {
+// In order to move the android code to components, we need to push
+// |GetImageFetcherService| to image_fetcher_bridge.
+#if BUILDFLAG(IS_ANDROID)
+  image_fetcher::SetImageFetcherServiceProvider(
+      base::BindRepeating(&GetImageFetcherService));
+
+  image_fetcher::SetImageFetcherCachePathProvider(
+      base::BindRepeating(&GetCachePathForJava));
+#endif
 }
 
 ImageFetcherServiceFactory::~ImageFetcherServiceFactory() = default;
@@ -85,7 +110,7 @@ ImageFetcherServiceFactory::BuildServiceInstanceFor(
           std::move(data_store), std::move(metadata_store),
           profile_key->GetPrefs(), clock, task_runner);
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory = nullptr;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   // Network is null for some tests, may be removable after
   // https://crbug.com/981057.
   if (SystemNetworkContextManager::GetInstance()) {

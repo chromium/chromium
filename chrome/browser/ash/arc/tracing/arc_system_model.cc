@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 
 #include <stdio.h>
+
+#include <set>
 
 #include "base/strings/stringprintf.h"
 
@@ -23,7 +25,7 @@ bool LoadThreads(const base::Value* value,
   if (!value || !value->is_dict())
     return false;
 
-  for (const auto& it : value->DictItems()) {
+  for (const auto it : value->DictItems()) {
     int tid;
     if (sscanf(it.first.c_str(), "%d", &tid) != 1)
       return false;

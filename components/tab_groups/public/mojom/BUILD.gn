@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "tab_group_types.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "tab_groups.mojom.Color"
+          cpp = "::tab_groups::TabGroupColorId"
+        },
+      ]
+      traits_headers = [ "tab_groups_mojom_traits.h" ]
+    },
+  ]
+
+  webui_module_path = ""
+}

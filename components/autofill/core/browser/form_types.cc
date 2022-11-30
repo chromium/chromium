@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kAddressBilling:
     case FieldTypeGroup::kPhoneHome:
     case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kBirthdateField:
       return FormType::kAddressForm;
     case FieldTypeGroup::kCreditCard:
       return FormType::kCreditCardForm;
@@ -29,4 +30,21 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
       return FormType::kUnknownFormType;
   }
 }
+
+base::StringPiece FormTypeToStringPiece(FormType form_type) {
+  switch (form_type) {
+    case FormType::kAddressForm:
+      return "AddressForm";
+    case FormType::kCreditCardForm:
+      return "CreditCardForm";
+    case FormType::kPasswordForm:
+      return "PasswordForm";
+    case FormType::kUnknownFormType:
+      return "UnknownFormType";
+  }
+
+  NOTREACHED();
+  return "UnknownFormType";
+}
+
 }  // namespace autofill

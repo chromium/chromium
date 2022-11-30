@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/url_provider.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,9 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
-#include "chrome/grit/oobe_resources.h"
-#include "chromeos/grit/chromeos_resources.h"
-#include "chromeos/services/multidevice_setup/public/cpp/url_provider.h"
+#include "chrome/grit/oobe_conditional_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -36,7 +35,7 @@ namespace multidevice_setup {
 
 namespace {
 
-const char kFootnoteMarker[] = "*";
+const char16_t kFootnoteMarker[] = u"*";
 
 constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"accept", IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL},
@@ -57,6 +56,8 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS},
     {"startSetupPageFeatureWifiSync",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC},
+    {"startSetupPageFeatureCameraRoll",
+     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_CAMERA_ROLL},
     {"startSetupPageFeatureListInstallApps",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTALL_APPS_DESCRIPTION},
     {"startSetupPageFeatureListAddFeatures",
@@ -93,8 +94,7 @@ GetLocalizedStringsWithPlaceholders() {
             "startSetupPageMessage",
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
-                ui::GetChromeOSDeviceName(),
-                base::ASCIIToUTF16(kFootnoteMarker),
+                ui::GetChromeOSDeviceName(), kFootnoteMarker,
                 base::UTF8ToUTF16(
                     chromeos::multidevice_setup::
                         GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
@@ -104,7 +104,7 @@ GetLocalizedStringsWithPlaceholders() {
             "startSetupPageFootnote",
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
-                base::ASCIIToUTF16(kFootnoteMarker)));
+                kFootnoteMarker));
 
         localized_strings.emplace_back(
             "startSetupPageFeatureListHeader",
@@ -136,17 +136,22 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(chromeos::features::kPhoneHub));
 
   html_source->AddBoolean(
+      "phoneHubCameraRollEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kPhoneHub) &&
+          base::FeatureList::IsEnabled(
+              chromeos::features::kPhoneHubCameraRoll));
+
+  html_source->AddBoolean(
       "wifiSyncEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kWifiSyncAndroid));
-
-  html_source->AddBoolean("newLayoutEnabled",
-                          chromeos::features::IsNewOobeLayoutEnabled());
 
   for (const auto& entry : GetLocalizedStringsWithPlaceholders())
     html_source->AddString(entry.name, entry.localized_string);
 
-  html_source->AddResourcePath("multidevice_setup.json",
-                               IDR_MULTIDEVICE_SETUP_ANIMATION);
+  html_source->AddResourcePath("multidevice_setup_dark.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION_DARK);
+  html_source->AddResourcePath("multidevice_setup_light.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
@@ -160,7 +165,7 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
   // localization calls separately.
   builder->AddF(
       "startSetupPageMessage", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
-      ui::GetChromeOSDeviceName(), base::ASCIIToUTF16(kFootnoteMarker),
+      ui::GetChromeOSDeviceName(), kFootnoteMarker,
       base::UTF8ToUTF16(chromeos::multidevice_setup::
                             GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
                                 .spec()));
@@ -171,7 +176,7 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
 
   builder->AddF("startSetupPageFootnote",
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
-                base::ASCIIToUTF16(kFootnoteMarker));
+                kFootnoteMarker);
 
   builder->AddF(
       "startSetupPageFeatureListAwm",

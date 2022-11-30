@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,16 @@ status::Code Apply(const base::FilePath& old_path,
                    const base::FilePath& patch_path,
                    const base::FilePath& new_path,
                    bool force_keep = false);
+
+// Verifies the patch format in |patch_file| and returns
+// Code::kStatusPatchReadError if the patch is malformed or version is
+// unsupported. Since this uses memory mapped files, crashes are expected in
+// case of I/O errors.
+status::Code VerifyPatch(base::File patch_file);
+
+// Alternative VerifyPatch() interface that takes base::FilePath as arguments.
+// Performs proper cleanup in Windows and UNIX if failure occurs.
+status::Code VerifyPatch(const base::FilePath& patch_path);
 
 }  // namespace zucchini
 

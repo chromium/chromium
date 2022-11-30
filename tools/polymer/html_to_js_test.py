@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,7 +22,8 @@ class HtmlToJsTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    return open(os.path.join(self._out_folder, file_name), 'rb').read()
+    with open(os.path.join(self._out_folder, file_name), 'rb') as f:
+      return f.read()
 
   def _run_test(self, js_file, js_out_file, js_out_file_expected):
     assert not self._out_folder
@@ -34,12 +35,24 @@ class HtmlToJsTest(unittest.TestCase):
     ])
 
     actual_js = self._read_out_file(js_out_file)
-    expected_js = open(
-        os.path.join(_HERE_DIR, 'tests', js_out_file_expected), 'rb').read()
-    self.assertEquals(expected_js, actual_js)
+    with open(os.path.join(_HERE_DIR, 'tests', js_out_file_expected),
+              'rb') as f:
+      expected_js = f.read()
+    self.assertEqual(expected_js, actual_js)
 
   def testHtmlToJs(self):
     self._run_test('v3_ready.js', 'v3_ready.js', 'v3_ready_expected.js')
+
+  def testHtmlToTs(self):
+    self._run_test('v3_ready.ts', 'v3_ready.ts', 'v3_ready_expected.ts')
+
+  def testHtmlToJsWithSubfolder(self):
+    self._run_test('subfolder/v3_ready.js', 'subfolder/v3_ready.js',
+                   'subfolder/v3_ready_expected.js')
+
+  def testHtmlToTsWithSubfolder(self):
+    self._run_test('subfolder/v3_ready.ts', 'subfolder/v3_ready.ts',
+                   'subfolder/v3_ready_expected.ts')
 
 
 if __name__ == '__main__':

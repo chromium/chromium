@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/base/interactive_test_utils.h"
+
+#include <windows.h>
 
 #include <Psapi.h>
 
@@ -14,7 +16,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -69,7 +70,7 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow window) {
     // Emit some diagnostic information about the foreground window and its
     // owning process.
     wchar_t window_title[256];
-    GetWindowText(foreground_window, window_title, base::size(window_title));
+    GetWindowText(foreground_window, window_title, std::size(window_title));
 
     std::wstring lineage_str;
     std::wstring window_contents;

@@ -2,7 +2,7 @@ Name: Crashpad
 Short Name: crashpad
 URL: https://crashpad.chromium.org/
 Version: unknown
-Revision: 2dbd019bc2303a0463a396b5c47b4eb16a1a1e27
+Revision: 9f472e5a18d7611adaeb5df727b51102f35e109e
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
@@ -36,12 +36,17 @@ $ git am --3way --message-id -p4 /tmp/patchdir
 
 Local Modifications:
  - codereview.settings has been excluded.
+ - infra/ has been excluded.
  - MultiprocessExec.MultiprocessExec is disabled when OS_POSIX and
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1153544
    (crashpad/test/BUILD.gn, crashpad/test/multiprocess_exec_test.cc)
  - MemoryMap.SelfLargeMapFile, SelfBasic, SelfLargeFiles are disabled when
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1163794
    (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
- - Exclude //build/config/mac:sdk_inputs dependency from iOS builds
- - MultiprocessDeathTest.* (multiprocess_posix_test.cc) explicitly use the
-   "fast" gtest death-test style, rather than "threadsafe".
+ - CloseMultipleNowOrOnExec has been updated to invoke the new
+   base::subtle::ResetFDOwnership() API
+ - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]
+ - Qualified calls to bit_cast<>() with base::.
+ - MultiprocessExec.MultiprocessExec is disabled entirely on the Mac.
+   https://crbug.com/1341377
+ - SystemSnapshotLinux.Basic is disabled on Android: https://crbug.com/1362091

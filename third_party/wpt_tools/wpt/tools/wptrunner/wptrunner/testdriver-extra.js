@@ -136,6 +136,9 @@
             if (testharness_context === null) {
                 throw new Error("Tried to run in a non-testharness window without a call to set_test_context");
             }
+            if (action_msg.context === null) {
+                action_msg.context = get_window_id(window);
+            }
             cmd_id = ctx_cmd_id++;
             action_msg.cmd_id = cmd_id;
             window.test_driver.message_test({type: "testdriver-command",
@@ -171,6 +174,14 @@
 
     window.test_driver_internal.delete_all_cookies = function(context=null) {
         return create_action("delete_all_cookies", {context});
+    };
+
+    window.test_driver_internal.minimize_window = function(context=null) {
+        return create_action("minimize_window", {context});
+    };
+
+    window.test_driver_internal.set_window_rect = function(rect, context=null) {
+        return create_action("set_window_rect", {rect, context});
     };
 
     window.test_driver_internal.send_keys = function(element, keys) {
@@ -232,5 +243,9 @@
 
     window.test_driver_internal.set_user_verified = function(authenticator_id, uv, context=null) {
         return create_action("set_user_verified", {authenticator_id, uv, context});
+    };
+
+    window.test_driver_internal.set_spc_transaction_mode = function(mode, context = null) {
+        return create_action("set_spc_transaction_mode", {mode, context});
     };
 })();

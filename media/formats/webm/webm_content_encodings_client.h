@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_content_encodings.h"
@@ -26,6 +26,11 @@ typedef std::vector<std::unique_ptr<ContentEncoding>> ContentEncodings;
 class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
  public:
   explicit WebMContentEncodingsClient(MediaLog* media_log);
+
+  WebMContentEncodingsClient(const WebMContentEncodingsClient&) = delete;
+  WebMContentEncodingsClient& operator=(const WebMContentEncodingsClient&) =
+      delete;
+
   ~WebMContentEncodingsClient() override;
 
   const ContentEncodings& content_encodings() const;
@@ -37,15 +42,13 @@ class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
   bool OnBinary(int id, const uint8_t* data, int size) override;
 
  private:
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
   std::unique_ptr<ContentEncoding> cur_content_encoding_;
   bool content_encryption_encountered_;
   ContentEncodings content_encodings_;
 
   // |content_encodings_| is ready. For debugging purpose.
   bool content_encodings_ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMContentEncodingsClient);
 };
 
 }  // namespace media

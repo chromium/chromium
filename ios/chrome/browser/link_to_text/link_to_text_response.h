@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/optional.h"
+#include "base/time/time.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 namespace base {
@@ -28,8 +29,8 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Parses a serialized response stored in |value| into a LinkToTextResponse
-// instance, along with the associated |webState| and |latency| for generating
+// Parses a serialized response stored in `value` into a LinkToTextResponse
+// instance, along with the associated `webState` and `latency` for generating
 // the response.
 + (instancetype)linkToTextResponseWithValue:(const base::Value*)value
                                    webState:(web::WebState*)webState
@@ -38,10 +39,10 @@ class WebState;
 // Response payload. Nil when an error occurred.
 @property(nonatomic, readonly) LinkToTextPayload* payload;
 
-// Error which occurred when trying to generate a link. Empty when |payload|
+// Error which occurred when trying to generate a link. Empty when `payload`
 // has a value.
 @property(nonatomic, readonly)
-    base::Optional<shared_highlighting::LinkGenerationError>
+    absl::optional<shared_highlighting::LinkGenerationError>
         error;
 
 // Source ID for the associated WebState.

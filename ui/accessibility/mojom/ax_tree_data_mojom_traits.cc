@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,8 @@ bool StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData>::Read(
   out->sel_focus_offset = data.sel_focus_offset();
   out->sel_focus_affinity = data.sel_focus_affinity();
   out->root_scroller_id = data.root_scroller_id();
+  if (!data.ReadMetadata(&out->metadata))
+    return false;
   return true;
 }
 

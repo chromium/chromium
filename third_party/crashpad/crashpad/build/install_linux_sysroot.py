@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright 2018 The Crashpad Authors. All rights reserved.
+# Copyright 2018 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import os
 import shutil
 import subprocess
 import sys
-import urllib2
+import urllib.request
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,8 +29,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # https://cs.chromium.org/chromium/src/build/linux/sysroot_scripts/sysroots.json
 SERVER = 'https://commondatastorage.googleapis.com'
 PATH = 'chrome-linux-sysroot/toolchain'
-REVISION = '3c248ba4290a5ad07085b7af07e6785bf1ae5b66'
-FILENAME = 'debian_stretch_amd64_sysroot.tar.xz'
+REVISION = '43a87bbebccad99325fdcf34166295b121ee15c7'
+FILENAME = 'debian_sid_amd64_sysroot.tar.xz'
 
 
 def main():
@@ -45,16 +45,16 @@ def main():
             if s.read() == url:
                 return
 
-    print 'Installing Debian root image from %s' % url
+    print('Installing Debian root image from %s' % url)
 
     if os.path.isdir(sysroot):
         shutil.rmtree(sysroot)
     os.mkdir(sysroot)
     tarball = os.path.join(sysroot, FILENAME)
-    print 'Downloading %s' % url
+    print('Downloading %s' % url)
 
     for _ in range(3):
-        response = urllib2.urlopen(url)
+        response = urllib.request.urlopen(url)
         with open(tarball, 'wb') as f:
             f.write(response.read())
         break

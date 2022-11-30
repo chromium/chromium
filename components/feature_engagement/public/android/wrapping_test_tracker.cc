@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feature_engagement/public/jni_headers/CppWrappedTestTracker_jni.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -32,6 +33,11 @@ bool WrappingTestTracker::ShouldTriggerHelpUI(const base::Feature& feature) {
       base::android::ConvertUTF8ToJavaString(env, feature.name));
   return Java_CppWrappedTestTracker_shouldTriggerHelpUI(
       base::android::AttachCurrentThread(), java_tracker_, jfeature);
+}
+
+Tracker::TriggerDetails WrappingTestTracker::ShouldTriggerHelpUIWithSnooze(
+    const base::Feature& feature) {
+  return Tracker::TriggerDetails(false, false);
 }
 
 bool WrappingTestTracker::WouldTriggerHelpUI(
@@ -71,9 +77,35 @@ void WrappingTestTracker::Dismissed(const base::Feature& feature) {
                                        java_tracker_, jfeature);
 }
 
+void WrappingTestTracker::DismissedWithSnooze(
+    const base::Feature& feature,
+    absl::optional<SnoozeAction> snooze_action) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> jfeature(
+      base::android::ConvertUTF8ToJavaString(env, feature.name));
+  Java_CppWrappedTestTracker_dismissedWithSnooze(
+      base::android::AttachCurrentThread(), java_tracker_, jfeature,
+      static_cast<int>(snooze_action.value()));
+}
+
 std::unique_ptr<DisplayLockHandle> WrappingTestTracker::AcquireDisplayLock() {
   return nullptr;
 }
+
+void WrappingTestTracker::SetPriorityNotification(
+    const base::Feature& feature) {}
+
+absl::optional<std::string>
+WrappingTestTracker::GetPendingPriorityNotification() {
+  return absl::nullopt;
+}
+
+void WrappingTestTracker::RegisterPriorityNotificationHandler(
+    const base::Feature& feature,
+    base::OnceClosure callback) {}
+
+void WrappingTestTracker::UnregisterPriorityNotificationHandler(
+    const base::Feature& feature) {}
 
 bool WrappingTestTracker::IsInitialized() const {
   return Java_CppWrappedTestTracker_isInitialized(

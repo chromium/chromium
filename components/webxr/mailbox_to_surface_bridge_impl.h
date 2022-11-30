@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define COMPONENTS_WEBXR_MAILBOX_TO_SURFACE_BRIDGE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -37,6 +37,11 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
   // must be called consistently on a single GL thread. This is verified by
   // DCHECKs.
   MailboxToSurfaceBridgeImpl();
+
+  MailboxToSurfaceBridgeImpl(const MailboxToSurfaceBridgeImpl&) = delete;
+  MailboxToSurfaceBridgeImpl& operator=(const MailboxToSurfaceBridgeImpl&) =
+      delete;
+
   ~MailboxToSurfaceBridgeImpl() override;
 
   bool IsConnected() override;
@@ -61,7 +66,7 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
 
-  void WaitForClientGpuFence(gfx::GpuFence*) override;
+  void WaitForClientGpuFence(gfx::GpuFence&) override;
 
   void CreateGpuFence(const gpu::SyncToken& sync_token,
                       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
@@ -84,8 +89,8 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   std::unique_ptr<gl::ScopedJavaSurface> surface_;
-  gpu::gles2::GLES2Interface* gl_ = nullptr;
-  gpu::ContextSupport* context_support_ = nullptr;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
+  raw_ptr<gpu::ContextSupport> context_support_ = nullptr;
   int surface_handle_ = gpu::kNullSurfaceHandle;
   // TODO(https://crbug.com/836524): shouldn't have both of these closures
   // in the same class like this.
@@ -109,8 +114,6 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   // Must be last.
   base::WeakPtrFactory<MailboxToSurfaceBridgeImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxToSurfaceBridgeImpl);
 };
 
 class MailboxToSurfaceBridgeFactoryImpl
@@ -121,4 +124,4 @@ class MailboxToSurfaceBridgeFactoryImpl
 
 }  // namespace webxr
 
-#endif  // COMPONENTS_WEBXR_MAILBOX_TO_SURFACE_BRIDGE_H_
+#endif  // COMPONENTS_WEBXR_MAILBOX_TO_SURFACE_BRIDGE_IMPL_H_

@@ -1,7 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -30,17 +31,20 @@ class VpxVideoDecoderTest : public testing::Test {
       : decoder_(new VpxVideoDecoder()),
         i_frame_buffer_(ReadTestDataFile("vp9-I-frame-320x240")) {}
 
+  VpxVideoDecoderTest(const VpxVideoDecoderTest&) = delete;
+  VpxVideoDecoderTest& operator=(const VpxVideoDecoderTest&) = delete;
+
   ~VpxVideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
-    InitializeWithConfig(TestVideoConfig::Normal(kCodecVP9));
+    InitializeWithConfig(TestVideoConfig::Normal(VideoCodec::kVP9));
   }
 
   void InitializeWithConfigWithResult(const VideoDecoderConfig& config,
                                       bool success) {
     decoder_->Initialize(config, false, nullptr,
                          base::BindOnce(
-                             [](bool success, Status status) {
+                             [](bool success, DecoderStatus status) {
                                EXPECT_EQ(status.is_ok(), success);
                              },
                              success),
@@ -55,7 +59,7 @@ class VpxVideoDecoderTest : public testing::Test {
   }
 
   void Reinitialize() {
-    InitializeWithConfig(TestVideoConfig::Large(kCodecVP9));
+    InitializeWithConfig(TestVideoConfig::Large(VideoCodec::kVP9));
   }
 
   void Reset() {
@@ -88,29 +92,29 @@ class VpxVideoDecoderTest : public testing::Test {
   // Decodes all buffers in |input_buffers| and push all successfully decoded
   // output frames into |output_frames|.
   // Returns the last decode status returned by the decoder.
-  Status DecodeMultipleFrames(const InputBuffers& input_buffers) {
+  DecoderStatus DecodeMultipleFrames(const InputBuffers& input_buffers) {
     for (auto iter = input_buffers.begin(); iter != input_buffers.end();
          ++iter) {
-      Status status = Decode(*iter);
+      DecoderStatus status = Decode(*iter);
       switch (status.code()) {
-        case StatusCode::kOk:
+        case DecoderStatus::Codes::kOk:
           break;
-        case StatusCode::kAborted:
+        case DecoderStatus::Codes::kAborted:
           NOTREACHED();
-          FALLTHROUGH;
+          [[fallthrough]];
         default:
           DCHECK(output_frames_.empty());
           return status;
       }
     }
-    return OkStatus();
+    return DecoderStatus::Codes::kOk;
   }
 
   // Decodes the single compressed frame in |buffer| and writes the
   // uncompressed output to |video_frame|. This method works with single
   // and multithreaded decoders. End of stream buffers are used to trigger
   // the frame to be returned in the multithreaded decoder case.
-  Status DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
+  DecoderStatus DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
     InputBuffers input_buffers;
     input_buffers.push_back(std::move(buffer));
     input_buffers.push_back(DecoderBuffer::CreateEOSBuffer());
@@ -131,7 +135,7 @@ class VpxVideoDecoderTest : public testing::Test {
     input_buffers.push_back(buffer);
     input_buffers.push_back(DecoderBuffer::CreateEOSBuffer());
 
-    Status status = DecodeMultipleFrames(input_buffers);
+    DecoderStatus status = DecodeMultipleFrames(input_buffers);
 
     EXPECT_TRUE(status.is_ok());
     ASSERT_EQ(2U, output_frames_.size());
@@ -147,8 +151,8 @@ class VpxVideoDecoderTest : public testing::Test {
               output_frames_[1]->visible_rect().size().height());
   }
 
-  Status Decode(scoped_refptr<DecoderBuffer> buffer) {
-    Status status;
+  DecoderStatus Decode(scoped_refptr<DecoderBuffer> buffer) {
+    DecoderStatus status;
     EXPECT_CALL(*this, DecodeDone(_)).WillOnce(testing::SaveArg<0>(&status));
 
     decoder_->Decode(std::move(buffer),
@@ -164,16 +168,13 @@ class VpxVideoDecoderTest : public testing::Test {
     output_frames_.push_back(std::move(frame));
   }
 
-  MOCK_METHOD1(DecodeDone, void(Status));
+  MOCK_METHOD1(DecodeDone, void(DecoderStatus));
 
   base::test::TaskEnvironment task_env_;
   std::unique_ptr<VideoDecoder> decoder_;
 
   scoped_refptr<DecoderBuffer> i_frame_buffer_;
   OutputFrames output_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VpxVideoDecoderTest);
 };
 
 TEST_F(VpxVideoDecoderTest, Initialize_Normal) {
@@ -195,6 +196,14 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_Normal) {
   ASSERT_EQ(1U, output_frames_.size());
 }
 
+TEST_F(VpxVideoDecoderTest, DecodeFrame_OOM) {
+  Initialize();
+  static_cast<VpxVideoDecoder*>(decoder_.get())
+      ->force_allocation_error_for_testing();
+  EXPECT_FALSE(DecodeSingleFrame(i_frame_buffer_).is_ok());
+  EXPECT_TRUE(output_frames_.empty());
+}
+
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
 TEST_F(VpxVideoDecoderTest, DecodeFrame_LargerWidth) {
@@ -204,7 +213,7 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_LargerWidth) {
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
 TEST_F(VpxVideoDecoderTest, Offloaded_DecodeFrame_LargerWidth) {
-  decoder_.reset(new OffloadingVpxVideoDecoder());
+  decoder_ = std::make_unique<OffloadingVpxVideoDecoder>();
   DecodeIFrameThenTestFile("vp9-I-frame-1280x720", gfx::Size(1280, 720));
 }
 
@@ -295,7 +304,7 @@ TEST_F(VpxVideoDecoderTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(output_frames_.front()->data(VideoFrame::kYPlane), 0xff,
+  memset(output_frames_.front()->writable_data(VideoFrame::kYPlane), 0xff,
          output_frames_.front()->rows(VideoFrame::kYPlane) *
              output_frames_.front()->stride(VideoFrame::kYPlane));
 }
@@ -317,7 +326,7 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 
   AVPacket packet = {};
   while (av_read_frame(glue.format_context(), &packet) >= 0) {
-    Status decode_status =
+    DecoderStatus decode_status =
         Decode(DecoderBuffer::CopyFrom(packet.data, packet.size));
     av_packet_unref(&packet);
     if (!decode_status.is_ok())
@@ -345,7 +354,7 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   Destroy();
 
   // ASAN will be very unhappy with this line if the above is incorrect.
-  memset(last_frame->data(VideoFrame::kYPlane), 0,
+  memset(last_frame->writable_data(VideoFrame::kYPlane), 0,
          last_frame->row_bytes(VideoFrame::kYPlane));
 }
 #endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && !defined(ARCH_CPU_ARM_FAMILY)

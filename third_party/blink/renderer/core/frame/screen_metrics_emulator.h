@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/public/mojom/widget/device_emulation_params.mojom-blink.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,15 +29,17 @@ class WebFrameWidgetImpl;
 class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
  public:
   ScreenMetricsEmulator(WebFrameWidgetImpl* frame_widget,
-                        const ScreenInfos& screen_infos,
+                        const display::ScreenInfos& screen_infos,
                         const gfx::Size& widget_size,
                         const gfx::Size& visible_viewport_size,
                         const gfx::Rect& view_screen_rect,
                         const gfx::Rect& window_screen_rect);
+  ScreenMetricsEmulator(const ScreenMetricsEmulator&) = delete;
+  ScreenMetricsEmulator& operator=(const ScreenMetricsEmulator&) = delete;
   virtual ~ScreenMetricsEmulator() = default;
 
-  const ScreenInfo& GetOriginalScreenInfo() const;
-  const ScreenInfos& original_screen_infos() const {
+  const display::ScreenInfo& GetOriginalScreenInfo() const;
+  const display::ScreenInfos& original_screen_infos() const {
     return original_screen_infos_;
   }
 
@@ -88,14 +90,12 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   DeviceEmulationParams emulation_params_;
 
   // Original values to restore back after emulation ends.
-  ScreenInfos original_screen_infos_;
+  display::ScreenInfos original_screen_infos_;
   gfx::Size original_widget_size_;
   gfx::Size original_visible_viewport_size_;
   gfx::Rect original_view_screen_rect_;
   gfx::Rect original_window_screen_rect_;
   std::vector<gfx::Rect> original_root_window_segments_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenMetricsEmulator);
 };
 
 }  // namespace blink

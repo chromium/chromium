@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_BROWSER_PPAPI_HOST_H_
 #define CONTENT_PUBLIC_BROWSER_BROWSER_PPAPI_HOST_H_
 
-#include "base/callback_forward.h"
 #include "base/process/process.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_view_host.h"
@@ -40,8 +39,6 @@ class CONTENT_EXPORT BrowserPpapiHost {
       ppapi::PpapiPermissions permissions,
       base::Process plugin_child_process,
       IPC::ChannelProxy* channel,
-      int render_process_id,
-      int render_view_id,
       const base::FilePath& profile_directory);
 
   virtual ~BrowserPpapiHost() {}

@@ -1,9 +1,10 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/base/feedback_signal_accumulator.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -11,9 +12,9 @@ namespace media {
 class FeedbackSignalAccumulatorTest : public ::testing::Test {
  public:
   FeedbackSignalAccumulatorTest()
-      : half_life_(base::TimeDelta::FromSeconds(1)),
+      : half_life_(base::Seconds(1)),
         acc_(half_life_),
-        t_(base::TimeTicks() + base::TimeDelta::FromSeconds(120)) {
+        t_(base::TimeTicks() + base::Seconds(120)) {
     acc_.Reset(0.0, t_);
   }
 
@@ -45,14 +46,12 @@ TEST_F(FeedbackSignalAccumulatorTest, DoesNotUpdateIfBeforeResetTime) {
   ASSERT_EQ(0.0, acc_.current());
   ASSERT_EQ(t_, acc_.update_time());
 
-  const base::TimeTicks one_usec_before =
-      t_ - base::TimeDelta::FromMicroseconds(1);
+  const base::TimeTicks one_usec_before = t_ - base::Microseconds(1);
   ASSERT_FALSE(acc_.Update(1.0, one_usec_before));
   ASSERT_EQ(0.0, acc_.current());
   ASSERT_EQ(t_, acc_.update_time());
 
-  const base::TimeTicks one_usec_after =
-      t_ + base::TimeDelta::FromMicroseconds(1);
+  const base::TimeTicks one_usec_after = t_ + base::Microseconds(1);
   ASSERT_TRUE(acc_.Update(1.0, one_usec_after));
   ASSERT_LT(0.0, acc_.current());
   ASSERT_EQ(one_usec_after, acc_.update_time());

@@ -30,14 +30,22 @@
 #include <memory>
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/unguessable_token.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/early_hints_preload_entry.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/preload_key.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
@@ -46,7 +54,6 @@
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -66,6 +73,7 @@ class ResourceError;
 class ResourceLoadObserver;
 class ResourceTimingInfo;
 class SubresourceWebBundle;
+class SubresourceWebBundleList;
 class WebBackForwardCacheLoaderHelper;
 class WebCodeCacheLoader;
 struct ResourceFetcherInit;
@@ -112,6 +120,8 @@ class PLATFORM_EXPORT ResourceFetcher
   // ResourceFetcher creators are responsible for setting consistent objects
   // in ResourceFetcherInit to ensure correctness of this ResourceFetcher.
   explicit ResourceFetcher(const ResourceFetcherInit&);
+  ResourceFetcher(const ResourceFetcher&) = delete;
+  ResourceFetcher& operator=(const ResourceFetcher&) = delete;
   virtual ~ResourceFetcher();
   virtual void Trace(Visitor*) const;
 
@@ -149,14 +159,6 @@ class PLATFORM_EXPORT ResourceFetcher
   Resource* RequestResource(FetchParameters&,
                             const ResourceFactory&,
                             ResourceClient*);
-
-  // TODO(crbug/1112515): Instead of having one-off notifications of these
-  // loading milestones, we should introduce an abstract interface that
-  // interested parties can hook into, to be notified of relevant loading
-  // milestones.
-  // These are only called for main frames.
-  void MarkFirstPaint();
-  void MarkFirstContentfulPaint();
 
   // Returns the task runner used by this fetcher, and loading operations
   // this fetcher initiates. The returned task runner will keep working even
@@ -225,7 +227,11 @@ class PLATFORM_EXPORT ResourceFetcher
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
-  void SetDefersLoading(WebURLLoader::DeferType);
+  // Set the deferring state of each loader owned by this ResourceFetcher. This
+  // method must be called when the page freezing state changes.
+  // TODO(yhirano): Rename this to a more easily recognizable name.
+  void SetDefersLoading(LoaderFreezeMode);
+
   void StopFetching();
 
   bool ShouldDeferImageLoad(const KURL&) const;
@@ -248,10 +254,18 @@ class PLATFORM_EXPORT ResourceFetcher
 
   String GetCacheIdentifier(const KURL& url) const;
 
+  // If `url` exists as a resource in a subresource bundle in this frame,
+  // returns its UnguessableToken; otherwise, returns absl::nullopt.
+  absl::optional<base::UnguessableToken> GetSubresourceBundleToken(
+      const KURL& url) const;
+
+  absl::optional<KURL> GetSubresourceBundleSourceUrl(const KURL& url) const;
+
   enum IsImageSet { kImageNotImageSet, kImageIsImageSet };
 
-  WARN_UNUSED_RESULT static mojom::blink::RequestContextType
-      DetermineRequestContext(ResourceType, IsImageSet);
+  [[nodiscard]] static mojom::blink::RequestContextType DetermineRequestContext(
+      ResourceType,
+      IsImageSet);
 
   static network::mojom::RequestDestination DetermineRequestDestination(
       ResourceType);
@@ -264,6 +278,9 @@ class PLATFORM_EXPORT ResourceFetcher
   void RemovePreload(Resource*);
 
   void LoosenLoadThrottlingPolicy() { scheduler_->LoosenThrottlingPolicy(); }
+
+  void StartBatch() { scheduler_->StartBatch(); }
+  void EndBatch() { scheduler_->EndBatch(); }
 
   // Workaround for https://crbug.com/666214.
   // TODO(hiroshige): Remove this hack.
@@ -291,13 +308,11 @@ class PLATFORM_EXPORT ResourceFetcher
       ResourcePriority::VisibilityStatus visibility_statue,
       FetchParameters::DeferOption defer_option,
       FetchParameters::SpeculativePreloadType speculative_preload_type,
+      RenderBlockingBehavior render_blocking_behavior,
       bool is_link_preload) {
     return ComputeLoadPriority(type, request, visibility_statue, defer_option,
-                               speculative_preload_type, is_link_preload);
-  }
-
-  void SetShouldLogRequestAsInvalidInImportedDocument() {
-    should_log_request_as_invalid_in_imported_document_ = true;
+                               speculative_preload_type,
+                               render_blocking_behavior, is_link_preload);
   }
 
   void SetThrottleOptionOverride(
@@ -305,20 +320,23 @@ class PLATFORM_EXPORT ResourceFetcher
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
   }
 
-  void SetOptimizationGuideHints(
-      mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr
-          optimization_hints) {
-    scheduler_->SetOptimizationGuideHints(std::move(optimization_hints));
-  }
-
-  void AddSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
-  void RemoveSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
   void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
-  bool ShouldBeLoadedFromWebBundle(const KURL&) const;
+  SubresourceWebBundleList* GetOrCreateSubresourceWebBundleList();
 
   BackForwardCacheLoaderHelper* GetBackForwardCacheLoaderHelper() {
     return back_forward_cache_loader_helper_;
   }
+
+  void SetEarlyHintsPreloadedResources(
+      HashMap<KURL, EarlyHintsPreloadEntry> resources) {
+    early_hints_preloaded_resources_ = std::move(resources);
+  }
+
+  // Access the UKMRecorder.
+  ukm::MojoUkmRecorder* UkmRecorder();
+
+  void CancelWebBundleSubresourceLoadersFor(
+      const base::UnguessableToken& web_bundle_token);
 
  private:
   friend class ResourceCacheValidationSuppressor;
@@ -335,20 +353,22 @@ class PLATFORM_EXPORT ResourceFetcher
   void AddToMemoryCacheIfNeeded(const FetchParameters&, Resource*);
   Resource* CreateResourceForLoading(const FetchParameters&,
                                      const ResourceFactory&);
-  void StorePerformanceTimingInitiatorInformation(Resource*);
+  void StorePerformanceTimingInitiatorInformation(Resource*,
+                                                  RenderBlockingBehavior);
   ResourceLoadPriority ComputeLoadPriority(
       ResourceType,
       const ResourceRequestHead&,
       ResourcePriority::VisibilityStatus,
-      FetchParameters::DeferOption = FetchParameters::kNoDefer,
+      FetchParameters::DeferOption = FetchParameters::DeferOption::kNoDefer,
       FetchParameters::SpeculativePreloadType =
           FetchParameters::SpeculativePreloadType::kNotSpeculative,
+      RenderBlockingBehavior = RenderBlockingBehavior::kNonBlocking,
       bool is_link_preload = false);
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to
   // |virtual_time_pauser|.
-  base::Optional<ResourceRequestBlockedReason> PrepareRequest(
+  absl::optional<ResourceRequestBlockedReason> PrepareRequest(
       FetchParameters&,
       const ResourceFactory&,
       WebScopedVirtualTimePauser& virtual_time_pauser);
@@ -361,7 +381,7 @@ class PLATFORM_EXPORT ResourceFetcher
                                       ResourceClient*);
 
   Resource* MatchPreload(const FetchParameters& params, ResourceType);
-  void PrintPreloadWarning(Resource*, Resource::MatchStatus);
+  void PrintPreloadMismatch(Resource*, Resource::MatchStatus);
   void InsertAsPreloadIfNecessary(Resource*,
                                   const FetchParameters& params,
                                   ResourceType);
@@ -427,6 +447,11 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void WarnUnusedPreloads();
 
+  void PopulateAndAddResourceTimingInfo(Resource* resource,
+                                        scoped_refptr<ResourceTimingInfo> info,
+                                        base::TimeTicks response_end);
+  SubresourceWebBundle* GetMatchingBundle(const KURL& url) const;
+
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
   Member<FetchContext> context_;
@@ -465,6 +490,8 @@ class PLATFORM_EXPORT ResourceFetcher
   HeapHashSet<Member<ResourceLoader>> loaders_;
   HeapHashSet<Member<ResourceLoader>> non_blocking_loaders_;
 
+  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources_;
+
   std::unique_ptr<HashSet<String>> preloaded_urls_for_test_;
 
   // TODO(altimin): Move FrameScheduler to oilpan.
@@ -477,26 +504,25 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapMojoRemote<mojom::blink::BlobRegistry> blob_registry_remote_;
 
-  HeapHashSet<Member<SubresourceWebBundle>> subresource_web_bundles_;
+  // Lazily initialized when the first <script type=webbundle> is inserted.
+  Member<SubresourceWebBundleList> subresource_web_bundles_;
 
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;
 
-  // 26 bits left
+  // 27 bits left
   bool auto_load_images_ : 1;
   bool images_enabled_ : 1;
   bool allow_stale_resources_ : 1;
   bool image_fetched_ : 1;
   bool stale_while_revalidate_enabled_ : 1;
-  // for https://crbug.com/961614
-  bool should_log_request_as_invalid_in_imported_document_ : 1;
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
 
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+
   // NOTE: This must be the last member.
   base::WeakPtrFactory<ResourceFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceFetcher);
 };
 
 class ResourceCacheValidationSuppressor {
@@ -510,6 +536,10 @@ class ResourceCacheValidationSuppressor {
       loader_->allow_stale_resources_ = true;
     }
   }
+  ResourceCacheValidationSuppressor(const ResourceCacheValidationSuppressor&) =
+      delete;
+  ResourceCacheValidationSuppressor& operator=(
+      const ResourceCacheValidationSuppressor&) = delete;
   ~ResourceCacheValidationSuppressor() {
     if (loader_)
       loader_->allow_stale_resources_ = previous_state_;
@@ -518,8 +548,6 @@ class ResourceCacheValidationSuppressor {
  private:
   ResourceFetcher* loader_;
   bool previous_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCacheValidationSuppressor);
 };
 
 // Used for ResourceFetcher construction.
@@ -544,6 +572,8 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
       ResourceFetcher::LoaderFactory* loader_factory,
       ContextLifecycleNotifier* context_lifecycle_notifier,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper = nullptr);
+  ResourceFetcherInit(const ResourceFetcherInit&) = delete;
+  ResourceFetcherInit& operator=(const ResourceFetcherInit&) = delete;
 
   DetachableResourceFetcherProperties* const properties;
   FetchContext* const context;
@@ -561,8 +591,6 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
       ResourceLoadScheduler::ThrottleOptionOverride::kNone;
   LoadingBehaviorObserver* loading_behavior_observer = nullptr;
   BackForwardCacheLoaderHelper* back_forward_cache_loader_helper = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceFetcherInit);
 };
 
 }  // namespace blink

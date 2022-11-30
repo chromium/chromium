@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,48 @@ enum class PowerMode {
   // Default mode: none of the other use cases were detected.
   kIdle,
 
+  // The vsync signal is observed, but no frames are produced/submitted.
+  kNopAnimation,
+
+  // Like kMainThreadAnimation, but the animation affects only a small screen
+  // area (see FrameProductionPowerModeVoter).
+  kSmallMainThreadAnimation,
+
+  // Like kAnimation, but the animation affects only a small screen area (see
+  // FrameProductionPowerModeVoter).
+  kSmallAnimation,
+
+  // Like kMainThreadAnimation, but the animation affects only a medium screen
+  // area (see FrameProductionPowerModeVoter).
+  kMediumMainThreadAnimation,
+
+  // Like kAnimation, but the animation affects only a medium screen area (see
+  // FrameProductionPowerModeVoter).
+  kMediumAnimation,
+
   // The process is playing audio.
   kAudible,
+
+  // A video is playing in the process and producing frames.
+  kVideoPlayback,
+
+  // The main thread is producing frames. This is broken out into a separate
+  // PowerMode to override kNopAnimation votes in cases where the main thread
+  // takes a long time to produce a new frame.
+  kMainThreadAnimation,
+
+  // The process is executing a script at the browser's request. Mainly relevant
+  // for background work in WebView/WebLayer.
+  kScriptExecution,
 
   // A page or tab associated with the process is loading.
   kLoading,
 
-  // A surface rendered by the process is animating.
+  // A surface rendered by the process is animating and producing frames.
   kAnimation,
+
+  // Both kLoading + kAnimation modes are active.
+  kLoadingAnimation,
 
   // The process is responding to user input.
   kResponse,

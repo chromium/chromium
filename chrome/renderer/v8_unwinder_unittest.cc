@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/v8_unwinder.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -14,32 +13,25 @@
 #include "base/location.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gin/public/isolate_holder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
 
 namespace {
 
-class TestModule : public base::ModuleCache::Module {
- public:
-  TestModule(uintptr_t base_address, size_t size)
-      : base_address_(base_address), size_(size) {}
-
-  uintptr_t GetBaseAddress() const override { return base_address_; }
-  std::string GetId() const override { return ""; }
-  base::FilePath GetDebugBasename() const override { return base::FilePath(); }
-  size_t GetSize() const override { return size_; }
-  bool IsNative() const override { return true; }
-
- private:
-  const uintptr_t base_address_;
-  const size_t size_;
-};
+using ::testing::AllOf;
+using ::testing::AnyOf;
+using ::testing::Contains;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::NotNull;
+using ::testing::Pointee;
+using ::testing::Property;
 
 v8::Local<v8::String> ToV8String(const char* str) {
   return v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), str)
@@ -170,7 +162,7 @@ base::FunctionAddressRange CallThroughV8(
                 .ToLocalChecked());
     v8::Local<v8::Value> argv[] = {CreatePointerHolder(nullptr)};
     js_compile_wait_for_sample
-        ->Call(context, v8::Undefined(isolate), base::size(argv), argv)
+        ->Call(context, v8::Undefined(isolate), std::size(argv), argv)
         .ToLocalChecked();
 
     // Run waitForSample() with the real closure pointer.
@@ -180,7 +172,7 @@ base::FunctionAddressRange CallThroughV8(
             ->Get(context, ToV8String("waitForSample"))
             .ToLocalChecked());
     js_wait_for_sample
-        ->Call(context, v8::Undefined(isolate), base::size(argv), argv)
+        ->Call(context, v8::Undefined(isolate), std::size(argv), argv)
         .ToLocalChecked();
   }
 
@@ -524,7 +516,7 @@ TEST(V8UnwinderTest, CanUnwindFrom_OtherModule) {
   unwinder.OnStackCapture();
   unwinder.UpdateModules();
 
-  auto other_module = std::make_unique<TestModule>(1, 10);
+  auto other_module = std::make_unique<base::TestModule>(1, 10);
   const base::ModuleCache::Module* other_module_ptr = other_module.get();
   module_cache.AddCustomNativeModule(std::move(other_module));
 
@@ -549,8 +541,7 @@ TEST(V8UnwinderTest, CanUnwindFrom_NullModule) {
 
 // Checks that unwinding from C++ through JavaScript and back into C++ succeeds.
 // NB: unwinding is only supported for 64 bit Windows and Intel macOS.
-#if (defined(OS_WIN) && defined(ARCH_CPU_64_BITS)) || \
-    (defined(OS_MAC) && defined(ARCH_CPU_X86_64))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)) || BUILDFLAG(IS_MAC)
 #define MAYBE_UnwindThroughV8Frames UnwindThroughV8Frames
 #else
 #define MAYBE_UnwindThroughV8Frames DISABLED_UnwindThroughV8Frames
@@ -582,12 +573,12 @@ TEST(V8UnwinderTest, MAYBE_UnwindThroughV8Frames) {
                                scenario.GetOuterFunctionAddressRange()});
 
   // The stack should contain a frame from a JavaScript module.
-  auto loc =
-      std::find_if(sample.begin(), sample.end(), [&](const base::Frame& frame) {
-        return frame.module &&
-               (frame.module->GetId() ==
-                    V8Unwinder::kV8EmbeddedCodeRangeBuildId ||
-                frame.module->GetId() == V8Unwinder::kV8CodeRangeBuildId);
-      });
-  EXPECT_NE(sample.end(), loc);
+  EXPECT_THAT(sample,
+              Contains(Field(
+                  "module", &base::Frame::module,
+                  AllOf(NotNull(),
+                        Pointee(Property(
+                            "module.id", &base::ModuleCache::Module::GetId,
+                            AnyOf(Eq(V8Unwinder::kV8EmbeddedCodeRangeBuildId),
+                                  Eq(V8Unwinder::kV8CodeRangeBuildId))))))));
 }

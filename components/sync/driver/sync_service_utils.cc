@@ -1,11 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/driver/sync_service_utils.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -30,13 +33,19 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
   // some data types are never encrypted (e.g. DEVICE_INFO), even if the
   // "encrypt everything" setting is enabled.
   if (sync_service->GetUserSettings()->GetEncryptedDataTypes().Has(type) &&
-      sync_service->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+      sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return UploadState::NOT_ACTIVE;
   }
 
   // Persistent auth errors always map to NOT_ACTIVE. For transient errors, we
   // give the benefit of the doubt and may still say we're INITIALIZING.
+  // TODO(crbug.com/1156584): Remove this entire block once the feature toggle
+  // is cleaned up.
   if (sync_service->GetAuthError().IsPersistentError()) {
+    if (base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError)) {
+      DCHECK_EQ(sync_service->GetTransportState(),
+                SyncService::TransportState::PAUSED);
+    }
     return UploadState::NOT_ACTIVE;
   }
 
@@ -71,9 +80,53 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
   return UploadState::NOT_ACTIVE;
 }
 
-void RecordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA trigger) {
+void RecordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA trigger) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultKeyRetrievalTrigger",
                                 trigger);
+}
+
+void RecordRecoverabilityDegradedFixTrigger(
+    TrustedVaultUserActionTriggerForUMA trigger) {
+  base::UmaHistogramEnumeration(
+      "Sync.TrustedVaultRecoverabilityDegradedFixTrigger", trigger);
+}
+
+bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
+  if (!service) {
+    return false;
+  }
+
+  if (service->GetTransportState() != SyncService::TransportState::ACTIVE) {
+    // Transport state must be active so SyncUserSettings::GetPassphraseType()
+    // changes once the opt-in completes, and the UI is notified.
+    return false;
+  }
+
+  const ModelTypeSet encrypted_types =
+      service->GetUserSettings()->GetEncryptedDataTypes();
+  if (Intersection(service->GetActiveDataTypes(), encrypted_types).Empty()) {
+    // No point in offering the user a new encryption method if they are not
+    // syncing any encrypted types.
+    return false;
+  }
+
+  switch (service->GetUserSettings()->GetPassphraseType()) {
+    case PassphraseType::kImplicitPassphrase:
+    case PassphraseType::kFrozenImplicitPassphrase:
+    case PassphraseType::kCustomPassphrase:
+    case PassphraseType::kTrustedVaultPassphrase:
+      // Either trusted vault is already set or a transition from this
+      // passphrase type to trusted vault is disallowed.
+      return false;
+    case PassphraseType::kKeystorePassphrase:
+      if (service->GetUserSettings()->IsPassphraseRequired()) {
+        // This should be extremely rare.
+        return false;
+      }
+      return base::FeatureList::IsEnabled(
+                 kSyncTrustedVaultPassphraseRecovery) &&
+             base::FeatureList::IsEnabled(kSyncTrustedVaultPassphrasePromo);
+  }
 }
 
 }  // namespace syncer

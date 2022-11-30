@@ -1,21 +1,23 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desk_animation_base.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -24,8 +26,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget.h"
@@ -33,9 +33,6 @@
 namespace ash {
 
 namespace {
-
-constexpr int kNumFingersForHighlight = 3;
-constexpr int kNumFingersForDesksSwitch = 4;
 
 bool InOverviewSession() {
   return Shell::Get()->overview_controller()->InOverviewSession();
@@ -68,18 +65,6 @@ int GetOffsetY(int offset) {
   return offset;
 }
 
-const Desk* GetActiveDesk() {
-  return DesksController::Get()->active_desk();
-}
-
-const Desk* GetNextDesk() {
-  return DesksController::Get()->GetNextDesk();
-}
-
-void AddDesk() {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
-}
-
 }  // namespace
 
 class WmGestureHandlerTest : public AshTestBase {
@@ -91,77 +76,8 @@ class WmGestureHandlerTest : public AshTestBase {
 
   void Scroll(float x_offset, float y_offset, int fingers) {
     GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::TimeDelta::FromMilliseconds(5),
-        GetOffsetX(x_offset), GetOffsetY(y_offset), /*steps=*/100, fingers);
-  }
-
-  void ScrollToSwitchDesks(bool scroll_left) {
-    if (features::IsEnhancedDeskAnimations()) {
-      // Scrolling to switch desks with enhanced desk animations is a bit tricky
-      // because it involves multiple async operations.
-      ui::ScopedAnimationDurationScaleMode test_duration_mode(
-          ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-      // Start off with a fling cancel (touchpad start) to start the touchpad
-      // swipe sequence.
-      base::TimeTicks timestamp = ui::EventTimeForNow();
-      ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
-                                   timestamp, 0, 0, 0, 0, 0,
-                                   kNumFingersForDesksSwitch);
-      auto* event_generator = GetEventGenerator();
-      event_generator->Dispatch(&fling_cancel);
-
-      // Continue with a large enough scroll to start the desk switch animation.
-      // The animation does not start on fling cancel since there is no finger
-      // data in production code.
-      const base::TimeDelta step_delay = base::TimeDelta::FromMilliseconds(5);
-      timestamp += step_delay;
-      const int direction = scroll_left ? -1 : 1;
-      const int initial_move_x =
-          (WmGestureHandler::kContinuousGestureMoveThresholdDp + 5) * direction;
-      ui::ScrollEvent initial_move(ui::ET_SCROLL, gfx::Point(), timestamp, 0,
-                                   initial_move_x, 0, initial_move_x, 0,
-                                   kNumFingersForDesksSwitch);
-      event_generator->Dispatch(&initial_move);
-
-      // Wait until the animations ending screenshot has been taken. Otherwise,
-      // we will just stay at the initial desk if no screenshot has been taken.
-      auto* animation = DesksController::Get()->animation();
-      DCHECK(animation);
-      auto* desk_switch_animator =
-          animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
-      base::RunLoop run_loop;
-      RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
-          .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());
-      run_loop.Run();
-
-      // Send some more move events, enough to shift to the next desk.
-      const int steps = 100;
-      const float x_offset =
-          direction * WmGestureHandler::kHorizontalThresholdDp;
-      float dx = x_offset / steps;
-      for (int i = 0; i < steps; ++i) {
-        timestamp += step_delay;
-        ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, dx, 0,
-                             dx, 0, kNumFingersForDesksSwitch);
-        event_generator->Dispatch(&move);
-      }
-
-      // End the swipe and wait for the animation to finish.
-      ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
-                                  timestamp, 0, x_offset, 0, x_offset, 0,
-                                  kNumFingersForDesksSwitch);
-      DeskSwitchAnimationWaiter animation_finished_waiter;
-      event_generator->Dispatch(&fling_start);
-      animation_finished_waiter.Wait();
-      return;
-    }
-
-    DeskSwitchAnimationWaiter waiter;
-    const float x_offset =
-        (scroll_left ? -1 : 1) * WmGestureHandler::kHorizontalThresholdDp;
-    Scroll(x_offset, 0, kNumFingersForDesksSwitch);
-    waiter.Wait();
+        gfx::Point(), base::Milliseconds(5), GetOffsetX(x_offset),
+        GetOffsetY(y_offset), /*steps=*/100, fingers);
   }
 
   void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
@@ -217,7 +133,7 @@ TEST_F(WmGestureHandlerTest, HorizontalScrollInOverview) {
   // Enter overview mode as if using an accelerator.
   // Entering overview mode with an upwards three-finger scroll gesture would
   // have the same result (allow selection using horizontal scroll).
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(InOverviewSession());
 
   // Scrolls until a window is highlight, ignoring any desks items (if any).
@@ -267,7 +183,7 @@ TEST_F(WmGestureHandlerTest, HorizontalScrolls) {
 TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
   base::TimeTicks timestamp = base::TimeTicks::Now();
   const int num_fingers = 3;
-  base::TimeDelta step_delay(base::TimeDelta::FromMilliseconds(5));
+  base::TimeDelta step_delay(base::Milliseconds(5));
   ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
                                timestamp, 0, 0, 0, 0, 0, num_fingers);
   GetEventGenerator()->Dispatch(&fling_cancel);
@@ -319,11 +235,11 @@ TEST_F(DesksGestureHandlerTest, HorizontalScrolls) {
   ASSERT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Tests that scrolling right should take us to the next desk.
-  ScrollToSwitchDesks(/*scroll_left=*/false);
+  ScrollToSwitchDesks(/*scroll_left=*/false, GetEventGenerator());
   EXPECT_EQ(desk_controller->desks()[1].get(), desk_controller->active_desk());
 
   // Tests that scrolling left should take us to the previous desk.
-  ScrollToSwitchDesks(/*scroll_left=*/true);
+  ScrollToSwitchDesks(/*scroll_left=*/true, GetEventGenerator());
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Tests that since there is no previous desk, we remain on the same desk when
@@ -358,27 +274,6 @@ TEST_F(DesksGestureHandlerTest, NoDeskChanges) {
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 }
 
-// Tests that a large scroll only moves to the next desk.
-TEST_F(DesksGestureHandlerTest, NoDoubleDeskChange) {
-  // Enhanced desk animations supports switching multiple desks with large
-  // enough scrolls.
-  if (features::IsEnhancedDeskAnimations())
-    return;
-
-  auto* desk_controller = DesksController::Get();
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(4u, desk_controller->desks().size());
-  ASSERT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
-
-  const float long_scroll = WmGestureHandler::kHorizontalThresholdDp * 3;
-  DeskSwitchAnimationWaiter waiter;
-  Scroll(long_scroll, 0, kNumFingersForDesksSwitch);
-  waiter.Wait();
-  EXPECT_EQ(desk_controller->desks()[1].get(), desk_controller->active_desk());
-}
-
 // Tests that touchpad gesture scrolls don't lead to any desk changes when the
 // screen is locked.
 TEST_F(DesksGestureHandlerTest, NoDeskChangesInLockScreen) {
@@ -397,6 +292,44 @@ TEST_F(DesksGestureHandlerTest, NoDeskChangesInLockScreen) {
   Scroll(long_scroll, 0, kNumFingersForDesksSwitch);
   EXPECT_FALSE(desk_controller->AreDesksBeingModified());
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
+}
+
+// Tests that activate highlighted desk when using 3-finger swipes to exit
+// overview.
+TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
+  auto* desks_controller = DesksController::Get();
+
+  EnterOverview();
+  EXPECT_TRUE(InOverviewSession());
+
+  // Create a new desk (we have two desks now).
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  EXPECT_EQ(2u, desks_controller->desks().size());
+
+  // The current active desk is the first desk.
+  EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  // Move highlight to the second desk.
+  OverviewSession* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  DeskMiniView* mini_view_1 =
+      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+          ->desks_bar_view()
+          ->mini_views()[1];
+
+  overview_session->highlight_controller()->MoveHighlightToView(
+      mini_view_1->desk_preview());
+  EXPECT_TRUE(mini_view_1->desk_preview()->IsViewHighlighted());
+
+  // Exit overview with 3-fingers downward swipes.
+  DeskSwitchAnimationWaiter waiter;
+  const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
+  Scroll(0, -long_scroll, 3);
+  waiter.Wait();
+  EXPECT_FALSE(InOverviewSession());
+
+  // Current active desk changes to the second desk.
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
 }
 
 class ReverseGestureHandlerTest : public WmGestureHandlerTest {
@@ -447,15 +380,15 @@ TEST_F(ReverseGestureHandlerTest, Overview) {
 
 TEST_F(ReverseGestureHandlerTest, SwitchDesk) {
   // Add a new desk2.
-  AddDesk();
+  NewDesk();
   const Desk* desk1 = GetActiveDesk();
   const Desk* desk2 = GetNextDesk();
 
   // Scroll left to get next desk.
-  ScrollToSwitchDesks(/*scroll_left=*/true);
+  ScrollToSwitchDesks(/*scroll_left=*/true, GetEventGenerator());
   EXPECT_EQ(desk2, GetActiveDesk());
   // Scroll right to get previous desk.
-  ScrollToSwitchDesks(/*scroll_right=*/false);
+  ScrollToSwitchDesks(/*scroll_left=*/false, GetEventGenerator());
   EXPECT_EQ(desk1, GetActiveDesk());
 }
 

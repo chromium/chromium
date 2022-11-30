@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -284,12 +284,16 @@ TEST_F(DelayloadsTest, ChromeExeDelayloadsCheck) {
          "target was built, instead of delayloads_unittests.exe";
 
   static const char* const kValidFilePatterns[] = {
-      "KERNEL32.dll",
-      "chrome_elf.dll",
-      // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
-      // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
-      // be ok.
-      "VERSION.dll",
+    "KERNEL32.dll",
+    "chrome_elf.dll",
+    // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
+    // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
+    // be ok.
+    "VERSION.dll",
+#if defined(ADDRESS_SANITIZER)
+    // The ASan runtime uses the synchapi (see crbug.com/1236586).
+    "api-ms-win-core-synch-l1-2-0.dll",
+#endif
   };
 
   // Make sure all of chrome.exe's imports are in the valid imports list.

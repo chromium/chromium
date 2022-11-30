@@ -60,7 +60,7 @@ DateTimeSymbolicFieldElement::DateTimeSymbolicFieldElement(
       type_ahead_(this),
       minimum_index_(minimum),
       maximum_index_(maximum) {
-  DCHECK(!symbols.IsEmpty());
+  DCHECK(!symbols.empty());
   DCHECK_GE(minimum_index_, 0);
   SECURITY_DCHECK(maximum_index_ < static_cast<int>(symbols_.size()));
   DCHECK_LE(minimum_index_, maximum_index_);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ const char kManagedPref[] = "this.pref.managed";
 const char kSupervisedUserPref[] = "this.pref.supervised_user";
 const char kCommandLinePref[] = "this.pref.command_line";
 const char kExtensionPref[] = "this.pref.extension";
+const char kStandaloneBrowserPref[] = "this.pref.standalone_browser";
 const char kUserPref[] = "this.pref.user";
 const char kRecommendedPref[] = "this.pref.recommended";
 const char kDefaultPref[] = "this.pref.default";
@@ -63,10 +64,18 @@ const char kSupervisedUserValue[] = "extension:supervised_user";
 const char kExtensionValue[] = "extension:extension";
 }
 
+namespace standalone_browser_pref {
+const char kManagedValue[] = "standalone_browser:managed";
+const char kSupervisedUserValue[] = "standalone_browser:supervised_user";
+const char kExtensionValue[] = "standalone_browser:extension";
+const char kStandaloneBrowserValue[] = "standalone_browser:standalone_browser";
+}  // namespace standalone_browser_pref
+
 namespace command_line_pref {
 const char kManagedValue[] = "command_line:managed";
 const char kSupervisedUserValue[] = "command_line:supervised_user";
 const char kExtensionValue[] = "command_line:extension";
+const char kStandaloneBrowserValue[] = "command_line:standalone_browser";
 const char kCommandLineValue[] = "command_line:command_line";
 }
 
@@ -74,6 +83,7 @@ namespace user_pref {
 const char kManagedValue[] = "user:managed";
 const char kSupervisedUserValue[] = "supervised_user:supervised_user";
 const char kExtensionValue[] = "user:extension";
+const char kStandaloneBrowserValue[] = "user:standalone_browser";
 const char kCommandLineValue[] = "user:command_line";
 const char kUserValue[] = "user:user";
 }
@@ -82,6 +92,7 @@ namespace recommended_pref {
 const char kManagedValue[] = "recommended:managed";
 const char kSupervisedUserValue[] = "recommended:supervised_user";
 const char kExtensionValue[] = "recommended:extension";
+const char kStandaloneBrowserValue[] = "recommended:standalone_browser";
 const char kCommandLineValue[] = "recommended:command_line";
 const char kUserValue[] = "recommended:user";
 const char kRecommendedValue[] = "recommended:recommended";
@@ -91,6 +102,7 @@ namespace default_pref {
 const char kManagedValue[] = "default:managed";
 const char kSupervisedUserValue[] = "default:supervised_user";
 const char kExtensionValue[] = "default:extension";
+const char kStandaloneBrowserValue[] = "default:standalone_browser";
 const char kCommandLineValue[] = "default:command_line";
 const char kUserValue[] = "default:user";
 const char kRecommendedValue[] = "default:recommended";
@@ -104,22 +116,20 @@ class PrefValueStoreTest : public testing::Test {
     CreateManagedPrefs();
     CreateSupervisedUserPrefs();
     CreateExtensionPrefs();
+    CreateStandaloneBrowserPrefs();
     CreateCommandLinePrefs();
     CreateUserPrefs();
     CreateRecommendedPrefs();
     CreateDefaultPrefs();
-    sync_associator_.reset(new MockPrefModelAssociator());
+    sync_associator_ = std::make_unique<MockPrefModelAssociator>();
 
     // Create a fresh PrefValueStore.
-    pref_value_store_.reset(
-        new PrefValueStore(managed_pref_store_.get(),
-                           supervised_user_pref_store_.get(),
-                           extension_pref_store_.get(),
-                           command_line_pref_store_.get(),
-                           user_pref_store_.get(),
-                           recommended_pref_store_.get(),
-                           default_pref_store_.get(),
-                           &pref_notifier_));
+    pref_value_store_ = std::make_unique<PrefValueStore>(
+        managed_pref_store_.get(), supervised_user_pref_store_.get(),
+        extension_pref_store_.get(), standalone_browser_pref_store_.get(),
+        command_line_pref_store_.get(), user_pref_store_.get(),
+        recommended_pref_store_.get(), default_pref_store_.get(),
+        &pref_notifier_);
 
     pref_value_store_->set_callback(
         base::BindRepeating(&MockPrefModelAssociator::ProcessPrefChange,
@@ -156,6 +166,20 @@ class PrefValueStoreTest : public testing::Test {
         extension_pref::kExtensionValue);
   }
 
+  void CreateStandaloneBrowserPrefs() {
+    standalone_browser_pref_store_ = new TestingPrefStore;
+    standalone_browser_pref_store_->SetString(
+        prefs::kManagedPref, standalone_browser_pref::kManagedValue);
+    standalone_browser_pref_store_->SetString(
+        prefs::kSupervisedUserPref,
+        standalone_browser_pref::kSupervisedUserValue);
+    standalone_browser_pref_store_->SetString(
+        prefs::kExtensionPref, standalone_browser_pref::kExtensionValue);
+    standalone_browser_pref_store_->SetString(
+        prefs::kStandaloneBrowserPref,
+        standalone_browser_pref::kStandaloneBrowserValue);
+  }
+
   void CreateCommandLinePrefs() {
     command_line_pref_store_ = new TestingPrefStore;
     command_line_pref_store_->SetString(
@@ -167,6 +191,9 @@ class PrefValueStoreTest : public testing::Test {
     command_line_pref_store_->SetString(
         prefs::kExtensionPref,
         command_line_pref::kExtensionValue);
+    command_line_pref_store_->SetString(
+        prefs::kStandaloneBrowserPref,
+        command_line_pref::kStandaloneBrowserValue);
     command_line_pref_store_->SetString(
         prefs::kCommandLinePref,
         command_line_pref::kCommandLineValue);
@@ -186,6 +213,8 @@ class PrefValueStoreTest : public testing::Test {
     user_pref_store_->SetString(
         prefs::kExtensionPref,
         user_pref::kExtensionValue);
+    user_pref_store_->SetString(prefs::kStandaloneBrowserPref,
+                                user_pref::kStandaloneBrowserValue);
     user_pref_store_->SetString(
         prefs::kUserPref,
         user_pref::kUserValue);
@@ -205,6 +234,9 @@ class PrefValueStoreTest : public testing::Test {
     recommended_pref_store_->SetString(
         prefs::kExtensionPref,
         recommended_pref::kExtensionValue);
+    recommended_pref_store_->SetString(
+        prefs::kStandaloneBrowserPref,
+        recommended_pref::kStandaloneBrowserValue);
     recommended_pref_store_->SetString(
         prefs::kUserPref,
         recommended_pref::kUserValue);
@@ -227,6 +259,8 @@ class PrefValueStoreTest : public testing::Test {
     default_pref_store_->SetString(
         prefs::kExtensionPref,
         default_pref::kExtensionValue);
+    default_pref_store_->SetString(prefs::kStandaloneBrowserPref,
+                                   default_pref::kStandaloneBrowserValue);
     default_pref_store_->SetString(
         prefs::kUserPref,
         default_pref::kUserValue);
@@ -255,6 +289,7 @@ class PrefValueStoreTest : public testing::Test {
   scoped_refptr<TestingPrefStore> managed_pref_store_;
   scoped_refptr<TestingPrefStore> supervised_user_pref_store_;
   scoped_refptr<TestingPrefStore> extension_pref_store_;
+  scoped_refptr<TestingPrefStore> standalone_browser_pref_store_;
   scoped_refptr<TestingPrefStore> command_line_pref_store_;
   scoped_refptr<TestingPrefStore> user_pref_store_;
   scoped_refptr<TestingPrefStore> recommended_pref_store_;
@@ -272,52 +307,50 @@ TEST_F(PrefValueStoreTest, GetValue) {
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kManagedPref,
                                           base::Value::Type::STRING, &value));
-  std::string actual_str_value;
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(managed_pref::kManagedValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(managed_pref::kManagedValue, value->GetString());
 
   // Test getting a supervised user value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kSupervisedUserPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(supervised_user_pref::kSupervisedUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(supervised_user_pref::kSupervisedUserValue, value->GetString());
 
   // Test getting an extension value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kExtensionPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(extension_pref::kExtensionValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(extension_pref::kExtensionValue, value->GetString());
 
   // Test getting a command-line value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kCommandLinePref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(command_line_pref::kCommandLineValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(command_line_pref::kCommandLineValue, value->GetString());
 
   // Test getting a user-set value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kUserPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(user_pref::kUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(user_pref::kUserValue, value->GetString());
 
   // Test getting a user set value overwriting a recommended value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kRecommendedPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kRecommendedValue,
-            actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kRecommendedValue, value->GetString());
 
   // Test getting a default value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kDefaultPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(default_pref::kDefaultValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(default_pref::kDefaultValue, value->GetString());
 
   // Test getting a preference value that the |PrefValueStore|
   // does not contain.
@@ -340,50 +373,48 @@ TEST_F(PrefValueStoreTest, GetRecommendedValue) {
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kManagedPref,
       base::Value::Type::STRING, &value));
-  std::string actual_str_value;
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kManagedValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kManagedValue, value->GetString());
 
   // Test getting recommended value when a supervised user value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kSupervisedUserPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kSupervisedUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kSupervisedUserValue, value->GetString());
 
   // Test getting recommended value when an extension value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kExtensionPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kExtensionValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kExtensionValue, value->GetString());
 
   // Test getting recommended value when a command-line value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kCommandLinePref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kCommandLineValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kCommandLineValue, value->GetString());
 
   // Test getting recommended value when a user-set value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kUserPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kUserValue, value->GetString());
 
   // Test getting recommended value when no higher-priority value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kRecommendedPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kRecommendedValue,
-            actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kRecommendedValue, value->GetString());
 
   // Test getting recommended value when no recommended value is present.
   base::Value tmp_dummy_value(true);
@@ -488,6 +519,7 @@ TEST_F(PrefValueStoreTest, OnInitializationCompleted) {
   managed_pref_store_->SetInitializationCompleted();
   supervised_user_pref_store_->SetInitializationCompleted();
   extension_pref_store_->SetInitializationCompleted();
+  standalone_browser_pref_store_->SetInitializationCompleted();
   command_line_pref_store_->SetInitializationCompleted();
   recommended_pref_store_->SetInitializationCompleted();
   default_pref_store_->SetInitializationCompleted();
@@ -506,6 +538,8 @@ TEST_F(PrefValueStoreTest, PrefValueInManagedStore) {
       prefs::kSupervisedUserPref));
   EXPECT_FALSE(pref_value_store_->PrefValueInManagedStore(
       prefs::kExtensionPref));
+  EXPECT_FALSE(pref_value_store_->PrefValueInManagedStore(
+      prefs::kStandaloneBrowserPref));
   EXPECT_FALSE(pref_value_store_->PrefValueInManagedStore(
       prefs::kCommandLinePref));
   EXPECT_FALSE(pref_value_store_->PrefValueInManagedStore(
@@ -526,6 +560,8 @@ TEST_F(PrefValueStoreTest, PrefValueInExtensionStore) {
   EXPECT_TRUE(pref_value_store_->PrefValueInExtensionStore(
       prefs::kExtensionPref));
   EXPECT_FALSE(pref_value_store_->PrefValueInExtensionStore(
+      prefs::kStandaloneBrowserPref));
+  EXPECT_FALSE(pref_value_store_->PrefValueInExtensionStore(
       prefs::kCommandLinePref));
   EXPECT_FALSE(pref_value_store_->PrefValueInExtensionStore(
       prefs::kUserPref));
@@ -544,6 +580,8 @@ TEST_F(PrefValueStoreTest, PrefValueInUserStore) {
       prefs::kSupervisedUserPref));
   EXPECT_TRUE(pref_value_store_->PrefValueInUserStore(
       prefs::kExtensionPref));
+  EXPECT_TRUE(
+      pref_value_store_->PrefValueInUserStore(prefs::kStandaloneBrowserPref));
   EXPECT_TRUE(pref_value_store_->PrefValueInUserStore(
       prefs::kCommandLinePref));
   EXPECT_TRUE(pref_value_store_->PrefValueInUserStore(
@@ -564,6 +602,8 @@ TEST_F(PrefValueStoreTest, PrefValueFromExtensionStore) {
   EXPECT_TRUE(pref_value_store_->PrefValueFromExtensionStore(
       prefs::kExtensionPref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromExtensionStore(
+      prefs::kStandaloneBrowserPref));
+  EXPECT_FALSE(pref_value_store_->PrefValueFromExtensionStore(
       prefs::kCommandLinePref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromExtensionStore(
       prefs::kUserPref));
@@ -582,6 +622,8 @@ TEST_F(PrefValueStoreTest, PrefValueFromUserStore) {
       prefs::kSupervisedUserPref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromUserStore(
       prefs::kExtensionPref));
+  EXPECT_FALSE(
+      pref_value_store_->PrefValueFromUserStore(prefs::kStandaloneBrowserPref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromUserStore(
       prefs::kCommandLinePref));
   EXPECT_TRUE(pref_value_store_->PrefValueFromUserStore(
@@ -602,6 +644,8 @@ TEST_F(PrefValueStoreTest, PrefValueFromRecommendedStore) {
   EXPECT_FALSE(pref_value_store_->PrefValueFromRecommendedStore(
       prefs::kExtensionPref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromRecommendedStore(
+      prefs::kStandaloneBrowserPref));
+  EXPECT_FALSE(pref_value_store_->PrefValueFromRecommendedStore(
       prefs::kCommandLinePref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromRecommendedStore(
       prefs::kUserPref));
@@ -620,6 +664,8 @@ TEST_F(PrefValueStoreTest, PrefValueFromDefaultStore) {
       prefs::kSupervisedUserPref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromDefaultStore(
       prefs::kExtensionPref));
+  EXPECT_FALSE(pref_value_store_->PrefValueFromDefaultStore(
+      prefs::kStandaloneBrowserPref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromDefaultStore(
       prefs::kCommandLinePref));
   EXPECT_FALSE(pref_value_store_->PrefValueFromDefaultStore(
@@ -640,6 +686,8 @@ TEST_F(PrefValueStoreTest, PrefValueUserModifiable) {
   EXPECT_FALSE(pref_value_store_->PrefValueUserModifiable(
       prefs::kExtensionPref));
   EXPECT_FALSE(pref_value_store_->PrefValueUserModifiable(
+      prefs::kStandaloneBrowserPref));
+  EXPECT_FALSE(pref_value_store_->PrefValueUserModifiable(
       prefs::kCommandLinePref));
   EXPECT_TRUE(pref_value_store_->PrefValueUserModifiable(
       prefs::kUserPref));
@@ -658,6 +706,8 @@ TEST_F(PrefValueStoreTest, PrefValueExtensionModifiable) {
       prefs::kSupervisedUserPref));
   EXPECT_TRUE(pref_value_store_->PrefValueExtensionModifiable(
       prefs::kExtensionPref));
+  EXPECT_TRUE(pref_value_store_->PrefValueExtensionModifiable(
+      prefs::kStandaloneBrowserPref));
   EXPECT_TRUE(pref_value_store_->PrefValueExtensionModifiable(
       prefs::kCommandLinePref));
   EXPECT_TRUE(pref_value_store_->PrefValueExtensionModifiable(

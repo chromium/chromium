@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/macros.h"
 #include "chrome/browser/vr/model/text_input_info.h"
@@ -36,6 +36,10 @@ class VR_BASE_EXPORT PlatformUiInputDelegate {
  public:
   PlatformUiInputDelegate();
   explicit PlatformUiInputDelegate(PlatformInputHandler* input_handler);
+
+  PlatformUiInputDelegate(const PlatformUiInputDelegate&) = delete;
+  PlatformUiInputDelegate& operator=(const PlatformUiInputDelegate&) = delete;
+
   virtual ~PlatformUiInputDelegate();
 
   const gfx::Size& size() const { return size_; }
@@ -77,9 +81,7 @@ class VR_BASE_EXPORT PlatformUiInputDelegate {
 
   gfx::Size size_;
 
-  PlatformInputHandler* input_handler_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformUiInputDelegate);
+  raw_ptr<PlatformInputHandler> input_handler_ = nullptr;
 };
 
 }  // namespace vr

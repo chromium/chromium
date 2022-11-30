@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@ namespace sandbox {
 // JOBOBJECT_EXTENDED_LIMIT_INFORMATION.JobMemoryLimit on Windows.
 //
 #if defined(ARCH_CPU_64_BITS)
-constexpr size_t kDataSizeLimit = size_t{1} << 34;  // 16 GB
+// Note: On Linux and Windows, the sandbox may set a higher limit for
+// renderer and GPU processes if the system has enough physical memory.
+constexpr size_t kDataSizeLimit = size_t{1} << 32;  // 4 GB
 #else
 // Limit the data memory to a size that prevents allocations that can't be
 // indexed by an int.

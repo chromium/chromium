@@ -1,16 +1,8 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Provides CORS support for HTTP based RPC requests.
@@ -22,10 +14,10 @@
 
 goog.module('goog.net.rpc.HttpCors');
 
-var GoogUri = goog.require('goog.Uri');
-var googObject = goog.require('goog.object');
-var googString = goog.require('goog.string');
-var googUriUtils = goog.require('goog.uri.utils');
+const GoogUri = goog.require('goog.Uri');
+const googObject = goog.require('goog.object');
+const googString = goog.require('goog.string');
+const googUriUtils = goog.require('goog.uri.utils');
 
 
 /**
@@ -58,7 +50,7 @@ exports.HTTP_METHOD_PARAM_NAME = '$httpMethod';
  * @return {string} The URL param to overwrite custom HTTP headers.
  */
 exports.generateHttpHeadersOverwriteParam = function(headers) {
-  var result = '';
+  let result = '';
   googObject.forEach(headers, function(value, key) {
     result += key;
     result += ':';
@@ -96,7 +88,7 @@ exports.setHttpHeadersWithOverwriteParam = function(
   if (googObject.isEmpty(extraHeaders)) {
     return url;
   }
-  var httpHeaders = exports.generateHttpHeadersOverwriteParam(extraHeaders);
+  const httpHeaders = exports.generateHttpHeadersOverwriteParam(extraHeaders);
   if (typeof url === 'string') {
     return googUriUtils.appendParam(
         url, googString.urlEncode(urlParam), httpHeaders);

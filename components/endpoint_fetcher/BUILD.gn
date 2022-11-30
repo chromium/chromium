@@ -1,0 +1,41 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("endpoint_fetcher") {
+  sources = [
+    "endpoint_fetcher.cc",
+    "endpoint_fetcher.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//components/signin/public/identity_manager",
+    "//components/version_info:channel",
+    "//google_apis",
+    "//net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "endpoint_fetcher_unittest.cc" ]
+
+  deps = [
+    ":endpoint_fetcher",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//net:net",
+    "//net/traffic_annotation:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
+#include "base/stl_util.h"
 #include "chrome/android/chrome_jni_headers/TranslateCompactInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/variations/variations_associated_data.h"
@@ -69,7 +70,7 @@ ScopedJavaLocalRef<jobject> TranslateCompactInfoBar::CreateRenderInfoBar(
       base::android::ConvertUTF8ToJavaString(env,
                                              delegate->target_language_code());
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(this);
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(this);
 
   TabAndroid* tab =
       web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
@@ -77,10 +78,11 @@ ScopedJavaLocalRef<jobject> TranslateCompactInfoBar::CreateRenderInfoBar(
   return Java_TranslateCompactInfoBar_create(
       env, tab ? tab->GetJavaObject() : nullptr, delegate->translate_step(),
       source_language_code, target_language_code,
-      delegate->ShouldAlwaysTranslate(), delegate->triggered_from_menu(),
-      translate_languages.java_languages, translate_languages.java_codes,
-      translate_languages.java_hash_codes, content_languages,
-      TabDefaultTextColor());
+      delegate->ShouldNeverTranslateLanguage(),
+      delegate->IsSiteOnNeverPromptList(), delegate->ShouldAlwaysTranslate(),
+      delegate->triggered_from_menu(), translate_languages.java_languages,
+      translate_languages.java_codes, translate_languages.java_hash_codes,
+      content_languages, TabDefaultTextColor());
 }
 
 void TranslateCompactInfoBar::ProcessButton(int action) {
@@ -154,23 +156,29 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
     delegate->ReportUIInteraction(
         translate::UIInteraction::kAlwaysTranslateLanguage);
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE) {
-    if (value && delegate->IsTranslatableLanguageByPrefs()) {
+    if (delegate->ShouldNeverTranslateLanguage() != value) {
       action_flags_ |= FLAG_NEVER_LANGUAGE;
       delegate->ToggleTranslatableLanguageByPrefs();
-      RemoveSelf();
-      delegate->OnInfoBarClosedByUser();
+      if (value) {
+        RemoveSelf();
+        delegate->RevertTranslation();
+        delegate->OnInfoBarClosedByUser();
+      }
+      delegate->ReportUIInteraction(
+          translate::UIInteraction::kNeverTranslateLanguage);
     }
-    delegate->ReportUIInteraction(
-        translate::UIInteraction::kNeverTranslateLanguage);
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
-    if (value && !delegate->IsSiteOnNeverPromptList()) {
+    if (delegate->IsSiteOnNeverPromptList() != value) {
       action_flags_ |= FLAG_NEVER_SITE;
-      delegate->ToggleNeverPrompt();
-      RemoveSelf();
-      delegate->OnInfoBarClosedByUser();
+      delegate->ToggleNeverPromptSite();
+      if (value) {
+        delegate->RevertTranslation();
+        RemoveSelf();
+        delegate->OnInfoBarClosedByUser();
+      }
+      delegate->ReportUIInteraction(
+          translate::UIInteraction::kNeverTranslateSite);
     }
-    delegate->ReportUIInteraction(
-        translate::UIInteraction::kNeverTranslateSite);
   } else {
     DCHECK(false);
   }
@@ -195,7 +203,7 @@ jboolean TranslateCompactInfoBar::IsIncognito(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   content::WebContents* web_contents =
-      InfoBarService::WebContentsFromInfoBar(this);
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(this);
   if (!web_contents)
     return false;
   return web_contents->GetBrowserContext()->IsOffTheRecord();
@@ -230,7 +238,7 @@ translate::TranslateInfoBarDelegate* TranslateCompactInfoBar::GetDelegate() {
 
 void TranslateCompactInfoBar::OnTranslateStepChanged(
     translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   // TODO(crbug/1093320): intended to mitigate a crash where
   // the java infobar is gone. If this works, look into root cause.
   if (!HasSetJavaInfoBar())
@@ -243,7 +251,7 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
       (step == translate::TRANSLATE_STEP_TRANSLATE_ERROR)) {
     JNIEnv* env = base::android::AttachCurrentThread();
     bool error_ui_shown = Java_TranslateCompactInfoBar_onPageTranslated(
-        env, GetJavaInfoBar(), error_type);
+        env, GetJavaInfoBar(), base::to_underlying(error_type));
 
     if (error_ui_shown) {
       GetDelegate()->OnErrorShown(error_type);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/pipeline.h"
 #include "media/base/renderer.h"
 
@@ -38,6 +39,10 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
       std::unique_ptr<Renderer> renderer,
       MediaLog* media_log,
       const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+
+  DecryptingRenderer(const DecryptingRenderer&) = delete;
+  DecryptingRenderer& operator=(const DecryptingRenderer&) = delete;
+
   ~DecryptingRenderer() override;
 
   // Renderer implementation:
@@ -45,9 +50,10 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
                   RendererClient* client,
                   PipelineStatusCallback init_cb) override;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetAutoplayInitiated(bool autoplay_initiated) override;
+  void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) override;
 
   void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
@@ -76,20 +82,18 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   void OnWaiting(WaitingReason reason);
 
   const std::unique_ptr<Renderer> renderer_;
-  MediaLog* const media_log_;
+  const raw_ptr<MediaLog> media_log_;
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   bool waiting_for_cdm_ = false;
-  CdmContext* cdm_context_ = nullptr;
-  RendererClient* client_;
-  MediaResource* media_resource_;
+  raw_ptr<CdmContext> cdm_context_ = nullptr;
+  raw_ptr<RendererClient> client_;
+  raw_ptr<MediaResource> media_resource_;
   PipelineStatusCallback init_cb_;
 
   std::unique_ptr<DecryptingMediaResource> decrypting_media_resource_;
 
   base::WeakPtrFactory<DecryptingRenderer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DecryptingRenderer);
 };
 
 }  // namespace media

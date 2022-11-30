@@ -22,7 +22,8 @@ description: Splitter that uses a Hub module.
 
 Splitter that uses a Hub module.
 
-Inherits From: [`Splitter`](../text/Splitter.md)
+Inherits From: [`SplitterWithOffsets`](../text/SplitterWithOffsets.md),
+[`Splitter`](../text/Splitter.md)
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>text.HubModuleSplitter(
@@ -63,6 +64,29 @@ corresponding input string).
 
 The output dictionary may contain other tensors (e.g., for debugging) but this
 class is not using them.
+
+#### Example:
+
+```
+>>> HUB_MODULE = "https://tfhub.dev/google/zh_segmentation/1"
+>>> segmenter = HubModuleSplitter(HUB_MODULE)
+>>> segmenter.split(["新华社北京"])
+<tf.RaggedTensor [[b'\xe6\x96\xb0\xe5\x8d\x8e\xe7\xa4\xbe',
+                   b'\xe5\x8c\x97\xe4\xba\xac']]>
+```
+
+You can also use this tokenizer to return the split strings and their offsets:
+
+```
+>>> HUB_MODULE = "https://tfhub.dev/google/zh_segmentation/1"
+>>> segmenter = HubModuleSplitter(HUB_MODULE)
+>>> pieces, starts, ends = segmenter.split_with_offsets(["新华社北京"])
+>>> print("pieces: %s starts: %s ends: %s" % (pieces, starts, ends))
+pieces: <tf.RaggedTensor [[b'\xe6\x96\xb0\xe5\x8d\x8e\xe7\xa4\xbe',
+                           b'\xe5\x8c\x97\xe4\xba\xac']]>
+starts: <tf.RaggedTensor [[0, 9]]>
+ends: <tf.RaggedTensor [[9, 15]]>
+```
 
 Currently, this class also supports an older API, which uses slightly
 different key names for the output dictionary.  For new Hub modules, please
@@ -164,8 +188,6 @@ An N-dimensional `Tensor` or `RaggedTensor` of UTF-8 strings.
 </tr>
 </table>
 
-
-
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -174,13 +196,13 @@ An N-dimensional `Tensor` or `RaggedTensor` of UTF-8 strings.
 <td colspan="2">
 A tuple `(pieces, start_offsets, end_offsets)` where:
 * `pieces` is a `RaggedTensor` of strings where `pieces[i1...iN, j]` is
-the string content of the `j-th` piece in `input_strs[i1...iN]`
+  the string content of the `j-th` piece in `input_strs[i1...iN]`
 * `start_offsets` is a `RaggedTensor` of int64s where
-`start_offsets[i1...iN, j]` is the byte offset for the start of the
-`j-th` piece in `input_strs[i1...iN]`.
+  `start_offsets[i1...iN, j]` is the byte offset for the start of the
+  `j-th` piece in `input_strs[i1...iN]`.
 * `end_offsets` is a `RaggedTensor` of int64s where
-`end_offsets[i1...iN, j]` is the byte offset immediately after the
-end of the `j-th` piece in `input_strs[i...iN]`.
+  `end_offsets[i1...iN, j]` is the byte offset immediately after the
+  end of the `j-th` piece in `input_strs[i...iN]`.
 </td>
 </tr>
 

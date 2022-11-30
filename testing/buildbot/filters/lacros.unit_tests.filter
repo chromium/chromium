@@ -1,5 +1,0 @@
-# TODO(crbug.com/1111979) Enable all tests on lacros.
--NativeDesktopMediaListTest.*
--PermissionMessageCombinationsUnittest.USBSerialBluetoothCoalescing
--RelaunchNotificationControllerPlatformImplTest.SynchronousNotification
--WindowSizerTest.*

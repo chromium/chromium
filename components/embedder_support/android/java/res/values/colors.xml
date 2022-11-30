@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 <resources>
     <!-- TODO(crbug.com/775198): update colors once UX spec available. -->
-    <color name="color_picker_border_color">@color/hairline_stroke_color</color>
-    <color name="color_picker_background_color">@color/default_bg_color</color>
+    <color name="color_picker_border_color">@color/hairline_stroke_color_baseline</color>
+    <color name="color_picker_background_color">@color/default_bg_color_baseline</color>
 </resources>

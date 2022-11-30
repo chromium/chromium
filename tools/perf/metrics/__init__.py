@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,11 +14,9 @@ class Metric(object):
 
   def Start(self, page, tab):
     """Start collecting data for this metric."""
-    pass
 
   def Stop(self, page, tab):
     """Stop collecting data for this metric (if applicable)."""
-    pass
 
   def AddResults(self, tab, results):
     """Add the data collected into the results object for a measurement.

@@ -1,16 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_SERVICES_SPEECH_SODA_CROS_SODA_CLIENT_H_
 #define CHROME_SERVICES_SPEECH_SODA_CROS_SODA_CLIENT_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -24,10 +22,20 @@ class CrosSodaClient : public chromeos::machine_learning::mojom::SodaClient {
   CrosSodaClient();
   ~CrosSodaClient() override;
 
+  using TranscriptionResultCallback =
+      base::RepeatingCallback<void(media::SpeechRecognitionResult event)>;
+
+  using OnStopCallback = base::RepeatingCallback<void()>;
+
   // Adds audio to this soda client. Only makes sense when initialized.
   // Eventually, asynchronous callbacks to the ::SodaClient overrides below are
   // executed.
   void AddAudio(const char* audio_buffer, int audio_buffer_size) const;
+
+  // Notifies the soda client to stop speech recognition after processing the
+  // audio it has received so far.
+  void MarkDone();
+
   // Checks if the sample rate / channels changed between calls.
   bool DidAudioPropertyChange(int sample_rate, int channel_count);
   bool IsInitialized() const { return is_initialized_; }
@@ -42,12 +50,17 @@ class CrosSodaClient : public chromeos::machine_learning::mojom::SodaClient {
   // Reset this client with the provided configuration, and send recognition
   // callbacks of (text, is_final) to the given callback.
   void Reset(chromeos::machine_learning::mojom::SodaConfigPtr soda_config,
-             base::RepeatingCallback<void(const std::string&, bool)> callback);
+             TranscriptionResultCallback transcription_callback,
+             OnStopCallback stop_callback);
 
  private:
-  // This callback is called with (text, is_final) whenever soda responds
-  // appropriately.
-  base::RepeatingCallback<void(const std::string&, bool)> callback_;
+  // This callback is called with (media::mojom::SpeechRecognitionResult)
+  // whenever soda responds appropriately.
+  TranscriptionResultCallback transcription_callback_;
+
+  // This callback is called with transcription stops.
+  OnStopCallback stop_callback_;
+
   bool is_initialized_ = false;
   int sample_rate_ = 0;
   int channel_count_ = 0;

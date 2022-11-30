@@ -1,0 +1,29 @@
+<html>
+
+<head>
+  <script src="subresources/script.js"></script>
+</head>
+
+<body>
+  <script type="text/javascript">
+    // The location's query string contains a comma delimited list of domains.
+    // For each domain, create an iframe in order to perform a request to that
+    // domain.
+
+    const domains = window.location.search.substr(1).split(",");
+
+    for (const domain of domains) {
+      const url = new URL(window.location.href);
+      url.hostname = domain;
+      url.search = "";
+      url.pathname = "/child_frame.html"
+
+      const iframe = document.createElement("iframe");
+      iframe.src = url.href;
+      iframe.name = domain;
+      document.body.appendChild(iframe);
+    }
+  </script>
+</body>
+
+</html>

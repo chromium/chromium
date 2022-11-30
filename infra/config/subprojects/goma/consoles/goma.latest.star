@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -58,6 +58,16 @@ luci.console_view(
         luci.console_view_entry(
             builder = "goma/Win Builder (dbg) Goma RBE Latest Client",
             category = "rbe|win|dbg",
+        ),
+        luci.console_view_entry(
+            builder = "goma/Win Builder Goma RBE ATS Latest Client",
+            category = "rbe|win|rel",
+            short_name = "ats",
+        ),
+        luci.console_view_entry(
+            builder = "goma/Win Builder (dbg) Goma RBE ATS Latest Client",
+            category = "rbe|win|dbg",
+            short_name = "ats",
         ),
     ],
 )

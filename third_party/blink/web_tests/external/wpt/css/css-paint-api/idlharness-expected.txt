@@ -19,6 +19,5 @@ PASS PaintRenderingContext2D interface: existence and properties of interface ob
 PASS PaintSize interface: existence and properties of interface object
 PASS CSS namespace: operation escape(CSSOMString)
 FAIL CSS namespace: attribute paintWorklet assert_own_property: CSS does not have property "paintWorklet" expected property "paintWorklet" missing
-PASS WorkletGlobalScope interface: existence and properties of interface object
 Harness: the test ran to completion.
 

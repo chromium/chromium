@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@ import {ParagraphUtils} from './paragraph_utils.js';
 // Utilities for processing words within strings and nodes.
 
 export class WordUtils {
-  constructor() {}
-
   /**
    * Searches through text starting at an index to find the next word's
    * start boundary.

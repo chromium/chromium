@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 
@@ -63,6 +63,10 @@ class AppMenuIconController : public GlobalErrorObserver,
   AppMenuIconController(UpgradeDetector* upgrade_detector,
                         Profile* profile,
                         Delegate* delegate);
+
+  AppMenuIconController(const AppMenuIconController&) = delete;
+  AppMenuIconController& operator=(const AppMenuIconController&) = delete;
+
   ~AppMenuIconController() override;
 
   // Forces an update of the UI based on the current state of the world. This
@@ -78,7 +82,7 @@ class AppMenuIconController : public GlobalErrorObserver,
   // |severity_none_color|, if provided, will be used when the Severity is NONE.
   // Otherwise the basic toolbar button icon color will be used.
   SkColor GetIconColor(
-      const base::Optional<SkColor>& severity_none_color) const;
+      const absl::optional<SkColor>& severity_none_color) const;
 
  private:
   // GlobalErrorObserver:
@@ -89,13 +93,11 @@ class AppMenuIconController : public GlobalErrorObserver,
 
   // True for desktop Chrome on dev and canary channels.
   const bool is_unstable_channel_;
-  UpgradeDetector* const upgrade_detector_;
-  Profile* const profile_;
-  Delegate* const delegate_;
+  const raw_ptr<UpgradeDetector> upgrade_detector_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<Delegate> delegate_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       global_error_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuIconController);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_ICON_CONTROLLER_H_

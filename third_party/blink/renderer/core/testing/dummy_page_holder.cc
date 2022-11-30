@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -45,11 +46,10 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 
 namespace blink {
 
@@ -69,24 +69,26 @@ class DummyLocalFrameClient : public EmptyLocalFrameClient {
 }  // namespace
 
 DummyPageHolder::DummyPageHolder(
-    const IntSize& initial_view_size,
-    Page::PageClients* page_clients_argument,
+    const gfx::Size& initial_view_size,
+    ChromeClient* chrome_client,
     LocalFrameClient* local_frame_client,
     base::OnceCallback<void(Settings&)> setting_overrider,
     const base::TickClock* clock)
     : enable_mock_scrollbars_(true),
-      agent_group_scheduler_(
-          Thread::MainThread()->Scheduler()->CreateAgentGroupScheduler()) {
-  Page::PageClients page_clients;
-  if (!page_clients_argument)
-    FillWithEmptyClients(page_clients);
-  else
-    page_clients.chrome_client = page_clients_argument->chrome_client;
-  page_ = Page::CreateNonOrdinary(page_clients, *agent_group_scheduler_);
+      agent_group_scheduler_(Thread::MainThread()
+                                 ->Scheduler()
+                                 ->ToMainThreadScheduler()
+                                 ->CreateAgentGroupScheduler()) {
+  if (!chrome_client)
+    chrome_client = &GetStaticEmptyChromeClientInstance();
+  page_ = Page::CreateNonOrdinary(*chrome_client, *agent_group_scheduler_);
   Settings& settings = page_->GetSettings();
   if (setting_overrider)
     std::move(setting_overrider).Run(settings);
 
+  // DummyPageHolder doesn't provide a browser interface, so code caches cannot
+  // be fetched. If testing for code caches provide a mock code cache host.
+  DocumentLoader::DisableCodeCacheForTesting();
   local_frame_client_ = local_frame_client;
   if (!local_frame_client_)
     local_frame_client_ = MakeGarbageCollected<DummyLocalFrameClient>();
@@ -102,7 +104,8 @@ DummyPageHolder::DummyPageHolder(
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);
-  frame_->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
+  frame_->Init(/*opener=*/nullptr, DocumentToken(),
+               /*policy_container=*/nullptr, StorageKey());
 
   CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
                                                       base::EmptyString());

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_form_database_service.h"
 #include "android_webview/browser_jni_headers/AwAutofillClient_jni.h"
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -57,17 +56,17 @@ autofill::PersonalDataManager* AwAutofillClient::GetPersonalDataManager() {
 
 autofill::AutocompleteHistoryManager*
 AwAutofillClient::GetAutocompleteHistoryManager() {
-  return AwBrowserContext::FromWebContents(web_contents_)
+  return AwBrowserContext::FromWebContents(&GetWebContents())
       ->GetAutocompleteHistoryManager();
 }
 
 PrefService* AwAutofillClient::GetPrefs() {
-  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
 }
 
 const PrefService* AwAutofillClient::GetPrefs() const {
-  return user_prefs::UserPrefs::Get(
-      AwBrowserContext::FromWebContents(web_contents_));
+  return user_prefs::UserPrefs::Get(AwBrowserContext::FromWebContents(
+      const_cast<WebContents*>(&GetWebContents())));
 }
 
 syncer::SyncService* AwAutofillClient::GetSyncService() {
@@ -103,8 +102,12 @@ autofill::AddressNormalizer* AwAutofillClient::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& AwAutofillClient::GetLastCommittedURL() const {
-  return web_contents_->GetLastCommittedURL();
+const GURL& AwAutofillClient::GetLastCommittedPrimaryMainFrameURL() const {
+  return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+url::Origin AwAutofillClient::GetLastCommittedPrimaryMainFrameOrigin() const {
+  return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
 }
 
 security_state::SecurityLevel
@@ -176,6 +179,8 @@ void AwAutofillClient::ConfirmCreditCardFillAssist(
 
 void AwAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
+    const autofill::AutofillProfile* original_profile,
+    SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
   NOTIMPLEMENTED();
 }
@@ -188,6 +193,49 @@ void AwAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
   NOTIMPLEMENTED();
 }
 
+bool AwAutofillClient::IsFastCheckoutSupported() {
+  return false;
+}
+
+bool AwAutofillClient::IsFastCheckoutTriggerForm(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& field) {
+  return false;
+}
+
+bool AwAutofillClient::FastCheckoutScriptSupportsConsentlessExecution(
+    const url::Origin& origin) {
+  return false;
+}
+
+bool AwAutofillClient::FastCheckoutClientSupportsConsentlessExecution() {
+  return false;
+}
+
+bool AwAutofillClient::ShowFastCheckout(
+    base::WeakPtr<autofill::FastCheckoutDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void AwAutofillClient::HideFastCheckout() {
+  NOTREACHED();
+}
+
+bool AwAutofillClient::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool AwAutofillClient::ShowTouchToFillCreditCard(
+    base::WeakPtr<autofill::TouchToFillDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void AwAutofillClient::HideTouchToFillCreditCard() {
+  NOTREACHED();
+}
+
 void AwAutofillClient::ShowAutofillPopup(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
@@ -195,7 +243,7 @@ void AwAutofillClient::ShowAutofillPopup(
   delegate_ = delegate;
 
   // Convert element_bounds to be in screen space.
-  gfx::Rect client_area = web_contents_->GetContainerBounds();
+  gfx::Rect client_area = GetWebContents().GetContainerBounds();
   gfx::RectF element_bounds_in_screen_space =
       open_args.element_bounds + client_area.OffsetFromOrigin();
 
@@ -244,16 +292,26 @@ void AwAutofillClient::HideAutofillPopup(autofill::PopupHidingReason reason) {
 }
 
 bool AwAutofillClient::IsAutocompleteEnabled() {
-  bool enabled = GetSaveFormData();
-  if (!autocomplete_uma_recorded_) {
-    UMA_HISTOGRAM_BOOLEAN("Autofill.AutocompleteEnabled", enabled);
-    autocomplete_uma_recorded_ = true;
+  return GetSaveFormData();
+}
+
+bool AwAutofillClient::IsPasswordManagerEnabled() {
+  // Android O+ relies on the AndroidAutofillManager, which does not call this
+  // function. If it ever does, the function needs to be implemented in a
+  // meaningful way.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_OREO) {
+    NOTREACHED();
   }
-  return enabled;
+  // This is behavior preserving: For pre-O versions, AwAutofill did rely on a
+  // BrowserAutofillManager, which now calls the function. But pre-O only
+  // offered an autocomplete feature that restored values of specific input
+  // elements. It did not support password management.
+  return false;
 }
 
 void AwAutofillClient::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
+    autofill::AutofillDriver* driver,
     const std::vector<autofill::FormStructure*>& forms) {}
 
 void AwAutofillClient::DidFillOrPreviewField(
@@ -263,7 +321,7 @@ void AwAutofillClient::DidFillOrPreviewField(
 bool AwAutofillClient::IsContextSecure() const {
   content::SSLStatus ssl_status;
   content::NavigationEntry* navigation_entry =
-      web_contents_->GetController().GetLastCommittedEntry();
+      GetWebContents().GetController().GetLastCommittedEntry();
   if (!navigation_entry)
     return false;
 
@@ -290,6 +348,10 @@ void AwAutofillClient::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }
 
+void AwAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
+  NOTIMPLEMENTED();
+}
+
 void AwAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   NOTIMPLEMENTED();
@@ -304,9 +366,7 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
                                           const JavaParamRef<jobject>& object,
                                           jint position) {
   if (delegate_) {
-    delegate_->DidAcceptSuggestion(suggestions_[position].value,
-                                   suggestions_[position].frontend_id,
-                                   position);
+    delegate_->DidAcceptSuggestion(suggestions_[position], position);
   }
 }
 
@@ -315,13 +375,13 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
 // autofill functionality at the java side. The java peer is owned by Java
 // AwContents. The native object only maintains a weak ref to it.
 AwAutofillClient::AwAutofillClient(WebContents* contents)
-    : web_contents_(contents) {
+    : content::WebContentsUserData<AwAutofillClient>(*contents) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> delegate;
   delegate.Reset(
       Java_AwAutofillClient_create(env, reinterpret_cast<intptr_t>(this)));
 
-  AwContents* aw_contents = AwContents::FromWebContents(web_contents_);
+  AwContents* aw_contents = AwContents::FromWebContents(contents);
   aw_contents->SetAwAutofillClient(delegate);
   java_ref_ = JavaObjectWeakGlobalRef(env, delegate);
 }
@@ -343,13 +403,17 @@ void AwAutofillClient::ShowAutofillPopupImpl(
 
   for (size_t i = 0; i < count; ++i) {
     ScopedJavaLocalRef<jstring> name =
-        ConvertUTF16ToJavaString(env, suggestions[i].value);
+        ConvertUTF16ToJavaString(env, suggestions[i].main_text.value);
     ScopedJavaLocalRef<jstring> label =
-        ConvertUTF16ToJavaString(env, suggestions[i].label);
+        base::android::ConvertUTF8ToJavaString(env, std::string());
+    // For Android, we only show the primary/first label in the matrix.
+    if (!suggestions[i].labels.empty())
+      label = ConvertUTF16ToJavaString(env, suggestions[i].labels[0][0].value);
+
     Java_AwAutofillClient_addToAutofillSuggestionArray(
         env, data_array, i, name, label, suggestions[i].frontend_id);
   }
-  ui::ViewAndroid* view_android = web_contents_->GetNativeView();
+  ui::ViewAndroid* view_android = GetWebContents().GetNativeView();
   if (!view_android)
     return;
 
@@ -365,6 +429,14 @@ void AwAutofillClient::ShowAutofillPopupImpl(
   Java_AwAutofillClient_showAutofillPopup(env, obj, view, is_rtl, data_array);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AwAutofillClient)
+content::WebContents& AwAutofillClient::GetWebContents() const {
+  // While a const_cast is not ideal. The Autofill API uses const in various
+  // spots and the content public API doesn't have const accessors. So the const
+  // cast is the lesser of two evils.
+  return const_cast<content::WebContents&>(
+      content::WebContentsUserData<AwAutofillClient>::GetWebContents());
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AwAutofillClient);
 
 }  // namespace android_webview

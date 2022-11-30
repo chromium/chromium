@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -54,6 +53,10 @@ class TestWindowDelegate : public views::WidgetDelegate {
     SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
   }
+
+  TestWindowDelegate(const TestWindowDelegate&) = delete;
+  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
+
   ~TestWindowDelegate() override = default;
 
   // views::WidgetDelegate:
@@ -65,8 +68,6 @@ class TestWindowDelegate : public views::WidgetDelegate {
 
  private:
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
 };
 
 }  // namespace
@@ -74,6 +75,12 @@ class TestWindowDelegate : public views::WidgetDelegate {
 class LockActionHandlerLayoutManagerTest : public AshTestBase {
  public:
   LockActionHandlerLayoutManagerTest() = default;
+
+  LockActionHandlerLayoutManagerTest(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+  LockActionHandlerLayoutManagerTest& operator=(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+
   ~LockActionHandlerLayoutManagerTest() override = default;
 
   void SetUp() override {
@@ -156,14 +163,20 @@ class LockActionHandlerLayoutManagerTest : public AshTestBase {
       action_background_controller_factory_;
 
   TestTrayActionClient tray_action_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockActionHandlerLayoutManagerTest);
 };
 
 class LockActionHandlerLayoutManagerTestWithTestBackgroundController
     : public LockActionHandlerLayoutManagerTest {
  public:
   LockActionHandlerLayoutManagerTestWithTestBackgroundController() = default;
+
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController& operator=(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+
   ~LockActionHandlerLayoutManagerTestWithTestBackgroundController() override =
       default;
 
@@ -188,9 +201,6 @@ class LockActionHandlerLayoutManagerTestWithTestBackgroundController
   // The lock screen action background controller created by
   // |CreateActionBackgroundController|.
   TestLockScreenActionBackgroundController* background_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      LockActionHandlerLayoutManagerTestWithTestBackgroundController);
 };
 
 TEST_F(LockActionHandlerLayoutManagerTest, PreserveNormalWindowBounds) {
@@ -237,8 +247,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, MaximizedWindowBounds) {
   // alignment, which matches how the shelf is aligned on the lock screen,
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 }
 
@@ -261,8 +271,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, FullscreenWindowBounds) {
   // alignment, which matches how the shelf is aligned on the lock screen,
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 }
 
@@ -280,16 +290,16 @@ TEST_F(LockActionHandlerLayoutManagerTest, MaximizeResizableWindow) {
 
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 }
 
 TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
   gfx::Rect initial_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  initial_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                       ShelfConfig::Get()->shelf_size() /* bottom */);
+  initial_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
 
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
@@ -311,8 +321,7 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
 
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      keyboard_bounds.height() /* bottom */);
+  target_bounds.Inset(gfx::Insets().set_bottom(keyboard_bounds.height()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   // Verify that window bounds get updated when Chromevox bounds are shown (so
@@ -326,8 +335,7 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
       CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
 
-  target_bounds.Inset(0 /* left */, kAccessibilityPanelHeight /* top */,
-                      0 /* right */, 0 /* bottom */);
+  target_bounds.Inset(gfx::Insets().set_top(kAccessibilityPanelHeight));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   ShowKeyboard(false);
@@ -450,8 +458,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, MultipleMonitors) {
 
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
@@ -464,8 +472,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, MultipleMonitors) {
   // lock container windows are always on primary display.
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
   target_bounds = gfx::Rect(300, 400);
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   window_state->Restore();
@@ -712,8 +720,8 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   // alignment, which matches how the shelf is aligned on the lock screen,
   gfx::Rect target_app_window_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_app_window_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                                 ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_app_window_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_app_window_bounds, window->GetBoundsInScreen());
 
   EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().bounds(),

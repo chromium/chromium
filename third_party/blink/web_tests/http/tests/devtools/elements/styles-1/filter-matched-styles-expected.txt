@@ -25,18 +25,18 @@ F      margin-top: 1px
 }
 .mydiv {
    border:v1px solid black
-F      border-top-color: black
-F      border-top-style: solid
 F      border-top-width: 1px
-       border-right-color: black
-       border-right-style: solid
        border-right-width: 1px
-       border-bottom-color: black
-       border-bottom-style: solid
        border-bottom-width: 1px
-       border-left-color: black
-       border-left-style: solid
        border-left-width: 1px
+F      border-top-style: solid
+       border-right-style: solid
+       border-bottom-style: solid
+       border-left-style: solid
+F      border-top-color: black
+       border-right-color: black
+       border-bottom-color: black
+       border-left-color: black
        border-image-source: initial
        border-image-slice: initial
        border-image-width: initial

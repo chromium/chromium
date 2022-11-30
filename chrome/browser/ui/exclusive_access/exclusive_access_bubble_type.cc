@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -111,7 +112,18 @@ std::u16string GetAllowButtonTextForType(ExclusiveAccessBubbleType type,
 }
 
 std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
-                                         const std::u16string& accelerator) {
+                                         const std::u16string& accelerator,
+                                         bool notify_download,
+                                         bool notify_overridden) {
+  if (notify_download) {
+    return notify_overridden
+               ? l10n_util::GetStringFUTF16(
+                     IDS_FULLSCREEN_PRESS_TO_SEE_DOWNLOADS_AND_EXIT,
+                     accelerator)
+               : l10n_util::GetStringFUTF16(
+                     IDS_FULLSCREEN_PRESS_TO_SEE_DOWNLOADS, accelerator);
+  }
+
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION:
@@ -120,11 +132,11 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
       // Both fullscreen and fullscreen + mouselock have the same message (the
       // user does not care about mouse lock when in fullscreen mode). All ways
       // to trigger fullscreen result in the same message.
-      return l10n_util::GetStringFUTF16(
-          IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN, accelerator);
+      return l10n_util::GetStringFUTF16(IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
+                                        accelerator);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
-      return l10n_util::GetStringFUTF16(
-          IDS_FULLSCREEN_HOLD_ESC_TO_EXIT_FULLSCREEN, accelerator);
+      return l10n_util::GetStringFUTF16(IDS_FULLSCREEN_HOLD_TO_EXIT_FULLSCREEN,
+                                        accelerator);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_MOUSELOCK_EXIT_INSTRUCTION:
       return l10n_util::GetStringFUTF16(
           IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_MOUSELOCK, accelerator);
@@ -134,6 +146,24 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
   }
   NOTREACHED();
   return std::u16string();
+}
+
+bool IsExclusiveAccessModeBrowserFullscreen(ExclusiveAccessBubbleType type) {
+  switch (type) {
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
+      return true;
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_MOUSELOCK_EXIT_INSTRUCTION:
+      return false;
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
+      NOTREACHED();
+      return false;
+  }
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace exclusive_access_bubble

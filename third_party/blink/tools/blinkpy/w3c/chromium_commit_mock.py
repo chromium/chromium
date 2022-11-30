@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class MockChromiumCommit(object):
                  patch='Fake patch contents'):
         self.host = host
         self.position = position
-        self.sha = hashlib.sha1(position).hexdigest()
+        self.sha = hashlib.sha1(position.encode('utf-8')).hexdigest()
         self._change_id = change_id
         self._author = author
         self._subject = subject

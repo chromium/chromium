@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ CanonicalCookie MakeCookie(const GURL& url,
                            const std::string& value) {
   return *CanonicalCookie::CreateUnsafeCookieForTesting(
       name, value, url.host(), url.path(), base::Time(), base::Time(),
-      base::Time(), false, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_DEFAULT, false);
+      base::Time(), base::Time(), false, false,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT, false);
 }
 
 }  // namespace

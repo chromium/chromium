@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ void SnapshotController::PendingSnapshotCompleted() {
   state_ = State::READY;
 }
 
-void SnapshotController::DocumentAvailableInMainFrame() {
+void SnapshotController::PrimaryMainDocumentElementAvailable() {
   DCHECK_EQ(PageQuality::POOR, current_page_quality_);
   // Post a delayed task to snapshot.
   task_runner_->PostDelayedTask(
@@ -71,17 +71,16 @@ void SnapshotController::DocumentAvailableInMainFrame() {
       base::BindOnce(&SnapshotController::MaybeStartSnapshot,
                      weak_ptr_factory_.GetWeakPtr(),
                      PageQuality::FAIR_AND_IMPROVING),
-      base::TimeDelta::FromMilliseconds(delay_after_document_available_ms_));
+      base::Milliseconds(delay_after_document_available_ms_));
 }
 
-void SnapshotController::DocumentOnLoadCompletedInMainFrame() {
+void SnapshotController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // Post a delayed task to snapshot and then stop this controller.
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SnapshotController::MaybeStartSnapshotThenStop,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(
-          delay_after_document_on_load_completed_ms_));
+      base::Milliseconds(delay_after_document_on_load_completed_ms_));
 }
 
 void SnapshotController::MaybeStartSnapshot(PageQuality updated_page_quality) {

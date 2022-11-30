@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/dcheck_is_on.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/events/base_event_utils.h"
@@ -33,6 +34,12 @@ AccountId GetChildAccountId() {
 }
 
 class ParentAccessControllerImplTest : public LoginTestBase {
+ public:
+  ParentAccessControllerImplTest(const ParentAccessControllerImplTest&) =
+      delete;
+  ParentAccessControllerImplTest& operator=(
+      const ParentAccessControllerImplTest&) = delete;
+
  protected:
   ParentAccessControllerImplTest() : account_id_(GetChildAccountId()) {}
   ~ParentAccessControllerImplTest() override = default;
@@ -119,7 +126,7 @@ class ParentAccessControllerImplTest : public LoginTestBase {
 
     const std::string all_results_histogram =
         ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
-            base::nullopt);
+            absl::nullopt);
 
     histogram_tester_.ExpectBucketCount(all_results_histogram, result,
                                         bucket_count);
@@ -157,9 +164,6 @@ class ParentAccessControllerImplTest : public LoginTestBase {
   base::HistogramTester histogram_tester_;
 
   PinRequestView* view_ = nullptr;  // Owned by test widget view hierarchy.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ParentAccessControllerImplTest);
 };
 
 // Tests parent access dialog showing/hiding and focus behavior for parent
@@ -281,7 +285,7 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUnsuccessfulValidation) {
       ParentAccessControllerImpl::UMAValidationResult::kInvalid,
       SupervisedAction::kUnlockTimeLimits, 1, 1);
 
-  EXPECT_CALL(*login_client_, ShowParentAccessHelpApp(_)).Times(1);
+  EXPECT_CALL(*login_client_, ShowParentAccessHelpApp()).Times(1);
   SimulateButtonPress(PinRequestView::TestApi(view_).help_button());
   ExpectUMAActionReported(ParentAccessControllerImpl::UMAAction::kGetHelp, 1,
                           2);

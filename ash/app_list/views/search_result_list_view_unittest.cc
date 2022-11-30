@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,18 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
-#include "ash/app_list/test/app_list_test_view_delegate.h"
-#include "ash/app_list/test/test_search_result.h"
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
-#include "base/macros.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 
@@ -26,41 +29,105 @@ namespace ash {
 namespace test {
 
 namespace {
-int kDefaultSearchItems = 5;
+int kDefaultSearchItems = 3;
+
+// Preferred sizing for different types of search result views.
+constexpr int kPreferredWidth = 640;
+constexpr int kClassicViewHeight = 48;
+constexpr int kDefaultViewHeight = 40;
+constexpr int kInlineAnswerViewHeight = 80;
+constexpr gfx::Insets kInlineAnswerBorder(12);
+
+// SearchResultListType::kUnified, SearchResultListType::AnswerCard, and
+//  SearchResultListType::kBestMatch do not have associated categories.
+constexpr int num_list_types_not_in_category = 3;
+// SearchResult::Category::kUnknown does not have an associated list type.
+constexpr int num_category_without_list_type = 1;
+// SearchResultListType::kUnified is used for categorical search.
+constexpr int num_list_types_not_used_for_categorical_search = 1;
+
 }  // namespace
 
-class SearchResultListViewTest : public views::test::WidgetTest {
+class SearchResultListViewTest : public views::test::WidgetTest,
+                                 public testing::WithParamInterface<bool> {
  public:
   SearchResultListViewTest() = default;
+
+  SearchResultListViewTest(const SearchResultListViewTest&) = delete;
+  SearchResultListViewTest& operator=(const SearchResultListViewTest&) = delete;
+
   ~SearchResultListViewTest() override = default;
 
   // Overridden from testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                              IsProductivityLauncherEnabled());
     views::test::WidgetTest::SetUp();
     widget_ = CreateTopLevelPlatformWidget();
-    view_ = std::make_unique<SearchResultListView>(nullptr, &view_delegate_);
-    widget_->SetBounds(gfx::Rect(0, 0, 300, 200));
-    widget_->GetContentsView()->AddChildView(view_.get());
+
+    unified_view_ = std::make_unique<SearchResultListView>(
+        nullptr, &view_delegate_, nullptr,
+        SearchResultView::SearchResultViewType::kClassic, false, absl::nullopt);
+    unified_view_->SetListType(
+        SearchResultListView::SearchResultListType::kUnified);
+
+    default_view_ = std::make_unique<SearchResultListView>(
+        nullptr, &view_delegate_, nullptr,
+        SearchResultView::SearchResultViewType::kDefault, true, absl::nullopt);
+    default_view_->SetListType(
+        SearchResultListView::SearchResultListType::kBestMatch);
+
+    answer_card_view_ = std::make_unique<SearchResultListView>(
+        nullptr, &view_delegate_, nullptr,
+        SearchResultView::SearchResultViewType::kAnswerCard, true,
+        absl::nullopt);
+    answer_card_view_->SetListType(
+        SearchResultListView::SearchResultListType::kAnswerCard);
+
+    widget_->SetBounds(gfx::Rect(0, 0, 700, 500));
+    widget_->GetContentsView()->AddChildView(unified_view_.get());
+    widget_->GetContentsView()->AddChildView(default_view_.get());
+    widget_->GetContentsView()->AddChildView(answer_card_view_.get());
     widget_->Show();
-    view_->SetResults(view_delegate_.GetSearchModel()->results());
+    unified_view_->SetResults(GetResults());
+    default_view_->SetResults(GetResults());
+    answer_card_view_->SetResults(GetResults());
   }
 
   void TearDown() override {
-    view_.reset();
+    unified_view_.reset();
+    default_view_.reset();
+    answer_card_view_.reset();
     widget_->CloseNow();
     views::test::WidgetTest::TearDown();
   }
 
  protected:
-  SearchResultListView* view() const { return view_.get(); }
+  bool IsProductivityLauncherEnabled() const { return GetParam(); }
+  SearchResultListView* unified_view() const { return unified_view_.get(); }
+  SearchResultListView* default_view() const { return default_view_.get(); }
+  SearchResultListView* answer_card_view() const {
+    return answer_card_view_.get();
+  }
 
-  SearchResultView* GetResultViewAt(int index) const {
-    return view_->GetResultViewAt(index);
+  SearchResultView* GetUnifiedResultViewAt(int index) const {
+    return unified_view_->GetResultViewAt(index);
+  }
+  SearchResultView* GetDefaultResultViewAt(int index) const {
+    return default_view_->GetResultViewAt(index);
+  }
+  SearchResultView* GetAnswerCardResultViewAt(int index) const {
+    return answer_card_view_->GetResultViewAt(index);
+  }
+
+  views::FlexLayoutView* GetKeyboardShortcutContents(
+      SearchResultView* result_view) {
+    return result_view->get_keyboard_shortcut_container_for_test();
   }
 
   std::vector<SearchResultView*> GetAssistantResultViews() const {
     std::vector<SearchResultView*> results;
-    for (auto* view : view_->search_result_views_) {
+    for (auto* view : unified_view_->search_result_views_) {
       auto* result = view->result();
       if (result &&
           result->result_type() == AppListSearchResultType::kAssistantText)
@@ -70,7 +137,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   }
 
   SearchModel::SearchResults* GetResults() {
-    return view_delegate_.GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
   void AddAssistantSearchResult() {
@@ -81,7 +148,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     assistant_result->set_result_type(
         ash::AppListSearchResultType::kAssistantText);
     assistant_result->set_display_type(ash::SearchResultDisplayType::kList);
-    assistant_result->set_title(u"assistant result");
+    assistant_result->SetTitle(u"assistant result");
     results->Add(std::move(assistant_result));
 
     RunPendingMessages();
@@ -93,11 +160,47 @@ class SearchResultListViewTest : public views::test::WidgetTest {
       std::unique_ptr<TestSearchResult> result =
           std::make_unique<TestSearchResult>();
       result->set_display_type(ash::SearchResultDisplayType::kList);
-      result->set_title(base::UTF8ToUTF16(base::StringPrintf("Result %d", i)));
+      result->SetTitle(base::UTF8ToUTF16(base::StringPrintf("Result %d", i)));
+      result->set_best_match(true);
       if (i < 2)
-        result->set_details(u"Detail");
+        result->SetDetails(u"Detail");
       results->Add(std::move(result));
     }
+
+    // Adding results will schedule Update().
+    RunPendingMessages();
+  }
+
+  void SetUpKeyboardShortcutResult() {
+    SearchModel::SearchResults* results = GetResults();
+
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kList);
+    result->SetTitle(u"Copy and Paste");
+    result->set_best_match(true);
+
+    std::vector<SearchResult::TextItem> keyboard_shortcut_text_vector;
+    SearchResult::TextItem shortcut_text_item_1(
+        ash::SearchResultTextItemType::kIconifiedText);
+    shortcut_text_item_1.SetText(u"ctrl");
+    shortcut_text_item_1.SetTextTags({});
+    keyboard_shortcut_text_vector.push_back(shortcut_text_item_1);
+
+    SearchResult::TextItem shortcut_text_item_2(
+        ash::SearchResultTextItemType::kString);
+    shortcut_text_item_2.SetText(u" + ");
+    shortcut_text_item_2.SetTextTags({});
+    keyboard_shortcut_text_vector.push_back(shortcut_text_item_2);
+
+    SearchResult::TextItem shortcut_text_item_3(
+        ash::SearchResultTextItemType::kIconifiedText);
+    shortcut_text_item_3.SetText(u"a");
+    shortcut_text_item_3.SetTextTags({});
+    keyboard_shortcut_text_vector.push_back(shortcut_text_item_3);
+
+    result->SetKeyboardShortcutTextVector(keyboard_shortcut_text_vector);
+    results->Add(std::move(result));
 
     // Adding results will schedule Update().
     RunPendingMessages();
@@ -110,50 +213,144 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     return result;
   }
 
-  int GetResultCount() const { return view_->num_results(); }
+  int GetUnifiedViewResultCount() const { return unified_view_->num_results(); }
 
-  void AddTestResultAtIndex(int index) {
-    GetResults()->Add(std::make_unique<TestSearchResult>());
+  void AddTestResult() {
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kList);
+    result->set_best_match(true);
+    result->SetTitle(base::UTF8ToUTF16(
+        base::StringPrintf("Added Result %d", GetUnifiedViewResultCount())));
+    GetResults()->Add(std::move(result));
   }
 
   void DeleteResultAt(int index) { GetResults()->DeleteAt(index); }
 
   bool KeyPress(ui::KeyboardCode key_code) {
     ui::KeyEvent event(ui::ET_KEY_PRESSED, key_code, ui::EF_NONE);
-    return view_->OnKeyPressed(event);
+    return unified_view_->OnKeyPressed(event);
   }
 
   void ExpectConsistent() {
-    // Adding results will schedule Update().
     RunPendingMessages();
-
     SearchModel::SearchResults* results = GetResults();
+
     for (size_t i = 0; i < results->item_count(); ++i) {
-      EXPECT_EQ(results->GetItemAt(i), GetResultViewAt(i)->result());
+      SearchResultView* result_view = IsProductivityLauncherEnabled()
+                                          ? GetDefaultResultViewAt(i)
+                                          : GetUnifiedResultViewAt(i);
+      ASSERT_TRUE(result_view) << "result view at " << i;
+      EXPECT_EQ(results->GetItemAt(i), result_view->result());
     }
   }
 
- private:
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
-  AppListTestViewDelegate view_delegate_;
-  std::unique_ptr<SearchResultListView> view_;
-  views::Widget* widget_;
+  void DoUpdate() { unified_view()->DoUpdate(); }
 
-  DISALLOW_COPY_AND_ASSIGN(SearchResultListViewTest);
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
+  AshColorProvider
+      ash_color_provider_;  // Needed by SearchResultInlineIconView.
+  AppListTestViewDelegate view_delegate_;
+  std::unique_ptr<SearchResultListView> unified_view_;
+  std::unique_ptr<SearchResultListView> default_view_;
+  std::unique_ptr<SearchResultListView> answer_card_view_;
+  views::Widget* widget_;
 };
 
-TEST_F(SearchResultListViewTest, SpokenFeedback) {
+// Run search result list view tests with and without productivity launcher
+// enabled.
+INSTANTIATE_TEST_SUITE_P(All, SearchResultListViewTest, testing::Bool());
+
+TEST_P(SearchResultListViewTest, SpokenFeedback) {
   SetUpSearchResults();
 
   // Result 0 has a detail text. Expect that the detail is appended to the
   // accessibility name.
-  EXPECT_EQ(u"Result 0, Detail", GetResultViewAt(0)->ComputeAccessibleName());
+  EXPECT_EQ(u"Result 0, Detail",
+            GetDefaultResultViewAt(0)->ComputeAccessibleName());
 
   // Result 2 has no detail text.
-  EXPECT_EQ(u"Result 2", GetResultViewAt(2)->ComputeAccessibleName());
+  EXPECT_EQ(u"Result 2", GetDefaultResultViewAt(2)->ComputeAccessibleName());
 }
 
-TEST_F(SearchResultListViewTest, ModelObservers) {
+TEST_P(SearchResultListViewTest, KeyboardShortcutResult) {
+  if (!IsProductivityLauncherEnabled())
+    return;
+
+  default_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  SetUpKeyboardShortcutResult();
+
+  EXPECT_EQ(u"Copy and Paste",
+            GetDefaultResultViewAt(0)->ComputeAccessibleName());
+  EXPECT_TRUE(
+      GetKeyboardShortcutContents(GetDefaultResultViewAt(0))->GetVisible());
+}
+
+TEST_P(SearchResultListViewTest, CorrectEnumLength) {
+  EXPECT_EQ(
+      // Check that all types except for SearchResultListType::kUnified are
+      // included in GetAllListTypesForCategoricalSearch.
+      static_cast<int>(SearchResultListView::SearchResultListType::kMaxValue) +
+          1 /*0 indexing offset*/,
+      static_cast<int>(
+          SearchResultListView::GetAllListTypesForCategoricalSearch().size() +
+          num_list_types_not_used_for_categorical_search));
+  // Check that all types in AppListSearchResultCategory are included in
+  // SearchResultListType.
+  EXPECT_EQ(
+      static_cast<int>(SearchResultListView::SearchResultListType::kMaxValue) +
+          1 /*0 indexing offset*/ - num_list_types_not_in_category,
+      static_cast<int>(SearchResult::Category::kMaxValue) +
+          1 /*0 indexing offset*/ - num_category_without_list_type);
+}
+
+TEST_P(SearchResultListViewTest, SearchResultViewLayout) {
+  // Set SearchResultListView bounds and check views are default size.
+  unified_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  SetUpSearchResults();
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
+            GetUnifiedResultViewAt(0)->size());
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
+            GetUnifiedResultViewAt(1)->size());
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
+            GetUnifiedResultViewAt(2)->size());
+
+  // Override search result types.
+  GetUnifiedResultViewAt(0)->SetSearchResultViewType(
+      SearchResultView::SearchResultViewType::kClassic);
+  GetUnifiedResultViewAt(1)->SetSearchResultViewType(
+      SearchResultView::SearchResultViewType::kAnswerCard);
+  GetUnifiedResultViewAt(2)->SetSearchResultViewType(
+      SearchResultView::SearchResultViewType::kDefault);
+  DoUpdate();
+
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
+            GetUnifiedResultViewAt(0)->size());
+  EXPECT_EQ(GetUnifiedResultViewAt(0)->TitleAndDetailsOrientationForTest(),
+            views::LayoutOrientation::kVertical);
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kInlineAnswerViewHeight),
+            GetUnifiedResultViewAt(1)->size());
+  EXPECT_EQ(GetUnifiedResultViewAt(1)->TitleAndDetailsOrientationForTest(),
+            views::LayoutOrientation::kVertical);
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+            GetUnifiedResultViewAt(2)->size());
+  EXPECT_EQ(GetUnifiedResultViewAt(2)->TitleAndDetailsOrientationForTest(),
+            views::LayoutOrientation::kHorizontal);
+}
+
+TEST_P(SearchResultListViewTest, BorderTest) {
+  unified_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  SetUpSearchResults();
+  DoUpdate();
+  EXPECT_EQ(kInlineAnswerBorder,
+            GetAnswerCardResultViewAt(0)->GetBorder()->GetInsets());
+  EXPECT_EQ(gfx::Insets(), GetUnifiedResultViewAt(0)->GetBorder()->GetInsets());
+  EXPECT_EQ(gfx::Insets(), GetDefaultResultViewAt(0)->GetBorder()->GetInsets());
+}
+
+TEST_P(SearchResultListViewTest, ModelObservers) {
   SetUpSearchResults();
   ExpectConsistent();
 
@@ -161,16 +358,14 @@ TEST_F(SearchResultListViewTest, ModelObservers) {
   DeleteResultAt(kDefaultSearchItems - 1);
   ExpectConsistent();
 
-  // Insert at start.
-  AddTestResultAtIndex(0);
+  AddTestResult();
   ExpectConsistent();
 
   // Remove from end.
   DeleteResultAt(kDefaultSearchItems - 1);
   ExpectConsistent();
 
-  // Insert at end.
-  AddTestResultAtIndex(kDefaultSearchItems);
+  AddTestResult();
   ExpectConsistent();
 
   // Delete from start.
@@ -178,7 +373,7 @@ TEST_F(SearchResultListViewTest, ModelObservers) {
   ExpectConsistent();
 }
 
-TEST_F(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
+TEST_P(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
   SetUpSearchResults();
 
   // No assistant results available.

@@ -1,14 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_BROWSER_CAST_CONTENT_GESTURE_HANDLER_H_
 #define CHROMECAST_BROWSER_CAST_CONTENT_GESTURE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
-#include "chromecast/browser/cast_content_window.h"
+#include "chromecast/browser/gesture_router.h"
 #include "chromecast/graphics/gestures/cast_gesture_handler.h"
 
 namespace chromecast {
@@ -17,8 +16,9 @@ namespace chromecast {
 // CastContentWindow::Delegate.
 class CastContentGestureHandler : public CastGestureHandler {
  public:
-  explicit CastContentGestureHandler(
-      base::WeakPtr<CastContentWindow::Delegate> delegate);
+  explicit CastContentGestureHandler(GestureRouter* delegate);
+  CastContentGestureHandler(GestureRouter* delegate,
+                            bool enable_top_drag_gesture);
   ~CastContentGestureHandler() override;
 
   // CastGestureHandler implementation:
@@ -33,9 +33,6 @@ class CastContentGestureHandler : public CastGestureHandler {
   void SetPriority(Priority priority);
 
  private:
-  friend class CastContentGestureHandlerTest;
-  CastContentGestureHandler(base::WeakPtr<CastContentWindow::Delegate> delegate,
-                            bool enable_top_drag_gesture);
   GestureType GestureForSwipeOrigin(CastSideSwipeOrigin swipe_origin);
 
   Priority priority_;
@@ -44,7 +41,7 @@ class CastContentGestureHandler : public CastGestureHandler {
 
   // Number of pixels past swipe origin to consider as a back gesture.
   const int back_horizontal_threshold_;
-  base::WeakPtr<CastContentWindow::Delegate> const delegate_;
+  GestureRouter* const delegate_;
   base::ElapsedTimer current_swipe_time_;
 };
 

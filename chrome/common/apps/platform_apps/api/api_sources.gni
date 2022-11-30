@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,11 +22,11 @@ if (is_chromeos_ash) {
   chrome_apps_api_schema_files_ += [ "arc_apps_private.idl" ]
 }
 
-chrome_apps_uncompiled_schema_files_ = [ "music_manager_private.idl" ]
+if (is_chromeos) {
+  chrome_apps_api_schema_files_ += [ "enterprise_remote_apps.idl" ]
+}
 
 chrome_apps_api_schema_files =
     get_path_info(chrome_apps_api_schema_files_, "abspath")
-chrome_apps_uncompiled_schema_files =
-    get_path_info(chrome_apps_uncompiled_schema_files_, "abspath")
 
 apps_api_root_namespace = "chrome_apps::api::%(namespace)s"

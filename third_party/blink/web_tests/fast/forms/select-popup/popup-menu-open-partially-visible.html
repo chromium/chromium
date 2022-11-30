@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
 </head>
 <body>
@@ -17,7 +19,7 @@ function openPickerErrorCallback() {
   testFailed('picker didn\'t open')
   finishJSTest();
 }
-openPicker(menu, testPartiallyVisible, openPickerErrorCallback);
+openPickerDeprecatedJsTest(menu, testPartiallyVisible, openPickerErrorCallback);
 
 function testPartiallyVisible() {
   picker = internals.pagePopupWindow.global.picker;

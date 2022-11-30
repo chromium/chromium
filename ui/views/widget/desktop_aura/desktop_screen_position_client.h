@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_SCREEN_POSITION_CLIENT_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_SCREEN_POSITION_CLIENT_H_
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
@@ -17,15 +16,17 @@ class VIEWS_EXPORT DesktopScreenPositionClient
     : public wm::DefaultScreenPositionClient {
  public:
   using DefaultScreenPositionClient::DefaultScreenPositionClient;
+
+  DesktopScreenPositionClient(const DesktopScreenPositionClient&) = delete;
+  DesktopScreenPositionClient& operator=(const DesktopScreenPositionClient&) =
+      delete;
+
   ~DesktopScreenPositionClient() override;
 
   // aura::client::DefaultScreenPositionClient:
   void SetBounds(aura::Window* window,
                  const gfx::Rect& bounds,
                  const display::Display& display) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopScreenPositionClient);
 };
 
 }  // namespace views

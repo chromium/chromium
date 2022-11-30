@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <math.h>
 
+#include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,14 +16,10 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/app_list/views/app_list_view.h"
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/accessibility_controller.h"
-#include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -30,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -49,12 +48,14 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -63,6 +64,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/test/native_widget_factory.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
@@ -107,6 +109,10 @@ extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength;
 class TabletModeControllerTest : public AshTestBase {
  public:
   TabletModeControllerTest() = default;
+
+  TabletModeControllerTest(const TabletModeControllerTest&) = delete;
+  TabletModeControllerTest& operator=(const TabletModeControllerTest&) = delete;
+
   ~TabletModeControllerTest() override = default;
 
   void SetUp() override {
@@ -163,7 +169,7 @@ class TabletModeControllerTest : public AshTestBase {
   // Attaches a SimpleTestTickClock to the TabletModeController with a non
   // null value initial value.
   void AttachTickClockForTest() {
-    test_tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+    test_tick_clock_.Advance(base::Seconds(1));
     test_api_->set_tick_clock(&test_tick_clock_);
   }
 
@@ -202,7 +208,7 @@ class TabletModeControllerTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateDesktopWindowSnappedLeft(
       const gfx::Rect& bounds = gfx::Rect()) {
     std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
-    WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_LEFT);
+    WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
     WindowState::Get(window.get())->OnWMEvent(&snap_to_left);
     return window;
   }
@@ -211,7 +217,7 @@ class TabletModeControllerTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateDesktopWindowSnappedRight(
       const gfx::Rect& bounds = gfx::Rect()) {
     std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
-    WMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_RIGHT);
+    WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
     WindowState::Get(window.get())->OnWMEvent(&snap_to_right);
     return window;
   }
@@ -225,12 +231,12 @@ class TabletModeControllerTest : public AshTestBase {
   }
 
   // Wait one more frame presented for the metrics to get recorded.
-  // ignore_result() and timeout is because the frame could already be
+  // std::ignore and timeout is because the frame could already be
   // presented.
   void WaitForSmoothnessMetrics() {
-    ignore_result(ui::WaitForNextFrameToBePresented(
+    std::ignore = ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::TimeDelta::FromMilliseconds(100)));
+        base::Milliseconds(100));
   }
 
  private:
@@ -240,8 +246,6 @@ class TabletModeControllerTest : public AshTestBase {
 
   // Tracks user action counts.
   base::UserActionTester user_action_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerTest);
 };
 
 // Verify TabletMode enabled/disabled user action metrics are recorded.
@@ -454,13 +458,13 @@ TEST_F(TabletModeControllerTest, EnterTabletModeWithUnstableLidAngle) {
   EXPECT_FALSE(IsTabletModeStarted());
 
   // 1 second after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_FALSE(CanUseUnstableLidAngle());
   OpenLidToAngle(355.0f);
   EXPECT_FALSE(IsTabletModeStarted());
 
   // 2 seconds after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_TRUE(CanUseUnstableLidAngle());
   OpenLidToAngle(355.0f);
   EXPECT_TRUE(IsTabletModeStarted());
@@ -482,13 +486,13 @@ TEST_F(TabletModeControllerTest, NotExitTabletModeWithUnstableLidAngle) {
   EXPECT_TRUE(IsTabletModeStarted());
 
   // 1 second after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_FALSE(CanUseUnstableLidAngle());
   OpenLidToAngle(5.0f);
   EXPECT_TRUE(IsTabletModeStarted());
 
   // 2 seconds after entering unstable angle zone.
-  AdvanceTickClock(base::TimeDelta::FromSeconds(1));
+  AdvanceTickClock(base::Seconds(1));
   EXPECT_TRUE(CanUseUnstableLidAngle());
   OpenLidToAngle(5.0f);
   EXPECT_TRUE(IsTabletModeStarted());
@@ -618,7 +622,7 @@ TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
   ASSERT_FALSE(IsTabletModeStarted());
 
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->StartOverview());
+  EXPECT_TRUE(EnterOverview());
 
   UpdateDisplay("800x600");
   base::RunLoop().RunUntilIdle();
@@ -631,7 +635,7 @@ TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
 // Test that the disabling of the internal display exits tablet mode, and that
 // while disabled we do not re-enter tablet mode.
 TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
-  UpdateDisplay("200x200, 200x200");
+  UpdateDisplay("300x200, 300x200");
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
@@ -668,7 +672,7 @@ TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
 // Tests that is a tablet mode signal is received while docked, that maximize
 // mode is enabled upon exiting docked mode.
 TEST_F(TabletModeControllerTest, TabletModeAfterExitingDockedMode) {
-  UpdateDisplay("200x200, 200x200");
+  UpdateDisplay("300x200, 300x200");
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
@@ -1037,7 +1041,7 @@ TEST_F(TabletModeControllerTest, InternalKeyboardMouseInDockedModeTest) {
   EXPECT_FALSE(IsTabletModeStarted());
   // Input devices events are unblocked.
   EXPECT_FALSE(AreEventsBlocked());
-  EXPECT_TRUE(display::Display::HasInternalDisplay());
+  EXPECT_TRUE(display::HasInternalDisplay());
   EXPECT_TRUE(
       Shell::Get()->display_manager()->IsActiveDisplayId(internal_display_id));
 
@@ -1087,6 +1091,12 @@ class TabletModeControllerForceTabletModeTest
     : public TabletModeControllerTest {
  public:
   TabletModeControllerForceTabletModeTest() = default;
+
+  TabletModeControllerForceTabletModeTest(
+      const TabletModeControllerForceTabletModeTest&) = delete;
+  TabletModeControllerForceTabletModeTest& operator=(
+      const TabletModeControllerForceTabletModeTest&) = delete;
+
   ~TabletModeControllerForceTabletModeTest() override = default;
 
   // AshTestBase:
@@ -1095,9 +1105,6 @@ class TabletModeControllerForceTabletModeTest
         switches::kAshUiMode, switches::kAshUiModeTablet);
     TabletModeControllerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceTabletModeTest);
 };
 
 // Verify when the force touch view mode flag is turned on, tablet mode is on
@@ -1143,6 +1150,12 @@ class TabletModeControllerForceClamshellModeTest
     : public TabletModeControllerTest {
  public:
   TabletModeControllerForceClamshellModeTest() = default;
+
+  TabletModeControllerForceClamshellModeTest(
+      const TabletModeControllerForceClamshellModeTest&) = delete;
+  TabletModeControllerForceClamshellModeTest& operator=(
+      const TabletModeControllerForceClamshellModeTest&) = delete;
+
   ~TabletModeControllerForceClamshellModeTest() override = default;
 
   // AshTestBase:
@@ -1151,9 +1164,6 @@ class TabletModeControllerForceClamshellModeTest
         switches::kAshUiMode, switches::kAshUiModeClamshell);
     TabletModeControllerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceClamshellModeTest);
 };
 
 // Tests that when the force touch view mode flag is set to clamshell, clamshell
@@ -1187,9 +1197,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveNoSnap) {
 TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnap) {
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedLeft();
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1199,9 +1209,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnap) {
 TEST_F(TabletModeControllerTest, StartTabletActiveRightSnap) {
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedRight();
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(window.get(), split_view_controller()->secondary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1217,8 +1227,8 @@ TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnapPreviousRightSnap) {
   tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller()->state());
-  EXPECT_EQ(left_window.get(), split_view_controller()->left_window());
-  EXPECT_EQ(right_window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(left_window.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(right_window.get(), split_view_controller()->secondary_window());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(left_window.get(), window_util::GetActiveWindow());
 }
@@ -1234,8 +1244,8 @@ TEST_F(TabletModeControllerTest, StartTabletActiveRightSnapPreviousLeftSnap) {
   tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller()->state());
-  EXPECT_EQ(left_window.get(), split_view_controller()->left_window());
-  EXPECT_EQ(right_window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(left_window.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(right_window.get(), split_view_controller()->secondary_window());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(right_window.get(), window_util::GetActiveWindow());
 }
@@ -1250,9 +1260,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveTransientChildOfLeftSnap) {
   ::wm::AddTransientChild(parent.get(), child.get());
   wm::ActivateWindow(child.get());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(parent.get(), split_view_controller()->left_window());
+  EXPECT_EQ(parent.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(child.get(), window_util::GetActiveWindow());
 }
@@ -1262,13 +1272,15 @@ TEST_F(TabletModeControllerTest, StartTabletActiveTransientChildOfLeftSnap) {
 // previous window on the left.
 TEST_F(TabletModeControllerTest, StartTabletActiveAppListPreviousLeftSnap) {
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedLeft();
-  Shell::Get()->app_list_controller()->ShowAppList();
-  ASSERT_TRUE(wm::IsActiveWindow(
-      GetAppListTestHelper()->GetAppListView()->GetWidget()->GetNativeView()));
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  app_list_controller->ShowAppList();
+  aura::Window* app_list_window = app_list_controller->GetWindow();
+  ASSERT_TRUE(app_list_window);
+  ASSERT_TRUE(wm::IsActiveWindow(app_list_window));
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1285,9 +1297,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveDraggedPreviousLeftSnap) {
       dragged_window.get(), gfx::PointF(), HTCAPTION,
       ToplevelWindowEventHandler::EndClosure()));
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(snapped_window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(snapped_window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(snapped_window.get(), window_util::GetActiveWindow());
 }
@@ -1304,9 +1316,9 @@ TEST_F(TabletModeControllerTest,
       CreateDesktopWindowSnappedLeft();
   wm::ActivateWindow(window_hidden_from_overview.get());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(snapped_window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(snapped_window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(snapped_window.get(), window_util::GetActiveWindow());
 }
@@ -1327,9 +1339,9 @@ TEST_F(TabletModeControllerTest,
       dragged_window.get(), gfx::PointF(), HTCAPTION,
       ToplevelWindowEventHandler::EndClosure()));
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(parent.get(), split_view_controller()->left_window());
+  EXPECT_EQ(parent.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(parent.get(), window_util::GetActiveWindow());
 }
@@ -1350,7 +1362,7 @@ TEST_F(TabletModeControllerTest,
   WindowState* left_window_state = WindowState::Get(left_window.get());
   ASSERT_TRUE(left_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(left_window.get()));
-  WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_LEFT);
+  WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   left_window_state->OnWMEvent(&snap_to_left);
   std::unique_ptr<aura::Window> right_window =
       CreateDesktopWindowSnappedRight();
@@ -1380,7 +1392,7 @@ TEST_F(TabletModeControllerTest,
   WindowState* right_window_state = WindowState::Get(right_window.get());
   ASSERT_TRUE(right_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(right_window.get()));
-  WMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_RIGHT);
+  WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
   right_window_state->OnWMEvent(&snap_to_right);
   wm::ActivateWindow(right_window.get());
   tablet_mode_controller()->SetEnabledForTest(true);
@@ -1409,13 +1421,13 @@ TEST_F(TabletModeControllerTest,
   WindowState* right_window_state = WindowState::Get(right_window.get());
   ASSERT_TRUE(right_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(right_window.get()));
-  WMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_RIGHT);
+  WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
   right_window_state->OnWMEvent(&snap_to_right);
   ASSERT_EQ(left_window.get(), window_util::GetActiveWindow());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(left_window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(left_window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(left_window.get(), window_util::GetActiveWindow());
 }
@@ -1437,15 +1449,15 @@ TEST_F(TabletModeControllerTest,
   WindowState* left_window_state = WindowState::Get(left_window.get());
   ASSERT_TRUE(left_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(left_window.get()));
-  WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_LEFT);
+  WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   left_window_state->OnWMEvent(&snap_to_left);
   std::unique_ptr<aura::Window> right_window =
       CreateDesktopWindowSnappedRight();
   ASSERT_EQ(right_window.get(), window_util::GetActiveWindow());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(right_window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(right_window.get(), split_view_controller()->secondary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(right_window.get(), window_util::GetActiveWindow());
 }
@@ -1460,7 +1472,7 @@ TEST_F(TabletModeControllerTest,
   tablet_mode_controller()->SetEnabledForTest(true);
   app_list_controller->ShowAppList();
 
-  EXPECT_FALSE(app_list_controller->IsVisible(base::nullopt));
+  EXPECT_FALSE(app_list_controller->IsVisible());
 }
 
 // Test that if both the active window and the previous window are snapped on
@@ -1471,9 +1483,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnapPreviousLeftSnap) {
   std::unique_ptr<aura::Window> window2 = CreateDesktopWindowSnappedLeft();
   wm::ActivateWindow(window1.get());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window1.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window1.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window1.get(), window_util::GetActiveWindow());
 }
@@ -1489,9 +1501,9 @@ TEST_F(TabletModeControllerTest,
   // Make sure display mirroring triggers without any crashes.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, Shell::GetAllRootWindows().size());
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1534,9 +1546,9 @@ TEST_F(TabletModeControllerTest,
   wm::ActivateWindow(window1.get());
   tablet_mode_controller()->SetEnabledForTest(true);
   // After display mirroring triggers, as the split view state will still be
-  // |SplitViewController::State::kLeftSnapped|, check for overview mode.
+  // |SplitViewController::State::kPrimarySnapped|, check for overview mode.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 }
@@ -1659,6 +1671,112 @@ TEST_F(TabletModeControllerTest, CloseWindowDuringExitAnimation) {
   window.reset();
 }
 
+TEST_F(TabletModeControllerTest, TabletModeUsageMetricsTest) {
+  // We haven't seen any accelerometer data or tablet mode event yet, so
+  // no metrics should be logged.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 0);
+
+  // Start in clamshell mode by accelerometer data.
+  OpenLidToAngle(60.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 0);
+
+  // Enter in tablet mode by accelerometer data.
+  OpenLidToAngle(300.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 1);
+
+  // Exit tablet mode by accelerometer data.
+  OpenLidToAngle(60.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 1);
+
+  // Enter tablet mode by tablet mode event.
+  SetTabletMode(true);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 2);
+
+  // Exit tablet mode by tablet mode event.
+  SetTabletMode(false);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 2);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 2);
+}
+
+// Tests that a title bar of a window should be auto hidden if the window is
+// maximized or snapped.
+TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebars) {
+  tablet_mode_controller()->SetEnabledForTest(true);
+  TestWidgetBuilder widget_builder;
+  std::unique_ptr<views::Widget> widget =
+      widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
+          .SetBounds(gfx::Rect(500, 300))
+          .SetContext(GetContext())
+          .SetShow(true)
+          .BuildOwnsNativeWidget();
+  auto* window = widget->GetNativeWindow();
+  auto* window_state = WindowState::Get(window);
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanResize |
+                          aura::client::kResizeBehaviorCanMaximize);
+
+  // If the window is not maximized nor snapped, `ShouldAutoHideTitlebars()`
+  // should return true.
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+  EXPECT_TRUE(window_state->CanSnap());
+
+  // Snap the window and check that `ShouldAutoHideTitlebars()` is true.
+  WindowSnapWMEvent snap_to_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_to_left);
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+
+  // Minimize the window and check that `ShouldAutoHideTitlebars()` is false.
+  WMEvent minimize(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimize);
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+
+  // Maximize the window and check that `ShouldAutoHideTitlebars()` is true.
+  window_state->Maximize();
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+}
+
+// Tests that `ShouldAutoHideTitlebars()` should not crash if the window state
+// does not exist (crbug.com/1267778).
+TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebarsNoWindowState) {
+  TestWidgetBuilder widget_builder;
+  // Create a window type control which is an example of a window that its
+  // state does not exist to test that `ShouldAutoHideTitlebars()` works.
+  std::unique_ptr<views::Widget> widget =
+      widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_CONTROL)
+          .SetBounds(gfx::Rect(500, 300))
+          .SetContext(GetContext())
+          .SetShow(true)
+          .BuildOwnsNativeWidget();
+  auto* window = widget->GetNativeWindow();
+  tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_FALSE(WindowState::Get(window));
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+}
+
 class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
  public:
   TabletModeControllerOnDeviceTest() = default;
@@ -1672,7 +1790,7 @@ class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
   void SetUp() override {
     // We need to simulate the real on-device behavior for some tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kForceSystemCompositorMode);
+        switches::kForceSystemCompositorMode);
     TabletModeControllerTest::SetUp();
     // PowerManagerClient callback is a posted task.
     base::RunLoop().RunUntilIdle();
@@ -1705,6 +1823,12 @@ TEST_F(TabletModeControllerOnDeviceTest, DoNotEnterClamshellWithNoInputDevice) {
 class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
  public:
   TabletModeControllerScreenshotTest() = default;
+
+  TabletModeControllerScreenshotTest(
+      const TabletModeControllerScreenshotTest&) = delete;
+  TabletModeControllerScreenshotTest& operator=(
+      const TabletModeControllerScreenshotTest&) = delete;
+
   ~TabletModeControllerScreenshotTest() override = default;
 
   void SetUp() override {
@@ -1737,8 +1861,6 @@ class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       scoped_animation_duration_scale_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerScreenshotTest);
 };
 
 // Tests that when there are no animations, no screenshot is taken.
@@ -1777,7 +1899,7 @@ TEST_F(TabletModeControllerScreenshotTest, FromOverviewNoScreenshot) {
   window2->layer()->GetAnimator()->StopAnimating();
 
   // Enter overview.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   ShellTestApi().WaitForOverviewAnimationState(
       OverviewAnimationState::kEnterAnimationComplete);
 

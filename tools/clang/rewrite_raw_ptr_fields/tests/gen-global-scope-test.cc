@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // This file (and other gen-*-test.cc files) tests generation of output for
 // --field-filter-file and therefore the expectations file
-// (gen-global-destructor-expected.txt) needs to be compared against the raw
+// (gen-global-scope-expected.txt) needs to be compared against the raw
 // output of the rewriter (rather than against the actual edits result).  This
 // makes the test incompatible with other tests, which require passing
 // --apply-edits switch to test_tool.py and so to disable the test it is named
@@ -17,11 +17,11 @@
 // https://google.github.io/styleguide/cppguide.html#Static_and_Global_Variables
 // go/totw/110#destruction
 //
-// If CheckedPtr has a non-trivial destructor (e.g. if it is implemented via
-// BackupRefPtr) then CheckedPtr cannot be used as the type of fields in structs
+// If raw_ptr has a non-trivial destructor (e.g. if it is implemented via
+// BackupRefPtr) then raw_ptr cannot be used as the type of fields in structs
 // that are (recursively/transitively) the type of a global variable:
-//     struct MyStruct {       //    Presence of CheckedPtr might mean that
-//       CheckedPtr<int> ptr;  // <- MyStruct has a non-trivial destructor.
+//     struct MyStruct {       //    Presence of raw_ptr might mean that
+//       raw_ptr<int> ptr;  // <- MyStruct has a non-trivial destructor.
 //     };
 //     MyStruct g_struct;  // <- Error if MyStruct has a non-trivial destructor.
 //

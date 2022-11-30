@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
+namespace chromeos {
 class MoveToDesksMenuModel;
+}  // namespace chromeos
 
 // Menu model for the menu button in a web app browser window.
 class WebAppMenuModel : public AppMenuModel {
@@ -33,7 +35,7 @@ class WebAppMenuModel : public AppMenuModel {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<MoveToDesksMenuModel> move_to_desks_submenu_;
+  std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_submenu_;
 #endif
 };
 

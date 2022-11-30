@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,14 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 
-namespace chromeos {
 namespace quick_answers {
 namespace {
 
 using base::Value;
 
-constexpr char kCategoryPath[] = "category";
-constexpr char kConversionRateAPath[] = "conversionToSiA";
-constexpr char kResultValueTemplate[] = "%.3f";
-constexpr char kNamePath[] = "name";
-constexpr char kUnitsPath[] = "units";
-
-bool IsLinearFormula(const base::Optional<double> rate_a) {
+bool IsLinearFormula(const absl::optional<double> rate_a) {
   return rate_a.has_value() && rate_a.value() != 0;
 }
 
@@ -51,7 +45,8 @@ const std::string UnitConverter::Convert(const double src_value,
       (src_rate_a.value() / dst_rate_a.value()) * src_value;
 
   return BuildUnitConversionResultText(
-      base::StringPrintf(kResultValueTemplate, result_value), *dst_name);
+      base::StringPrintf(kResultValueTemplate, result_value),
+      GetUnitDisplayText(*dst_name));
 }
 
 const Value* UnitConverter::FindProperDestinationUnit(
@@ -65,6 +60,8 @@ const Value* UnitConverter::FindProperDestinationUnit(
     return nullptr;
 
   const auto* units = GetPossibleUnitsForCategory(*src_category);
+  if (!units)
+    return nullptr;
 
   // Find the unit with closest conversion rate within the preferred range. If
   // no proper unit found, return nullptr.
@@ -108,4 +105,3 @@ const Value* UnitConverter::GetPossibleUnitsForCategory(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos

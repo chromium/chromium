@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ base::win::ScopedHandle CreateAndOpenShortcutInTempDir(
       temp_dir->GetPath().AppendASCII(lnk_name.c_str());
   if (!base::win::CreateOrUpdateShortcutLink(
           shortcut_path, properties,
-          base::win::ShortcutOperation::SHORTCUT_CREATE_ALWAYS)) {
+          base::win::ShortcutOperation::kCreateAlways)) {
     LOG(ERROR) << "Could not create shortcut";
     return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
   }
@@ -55,10 +55,10 @@ void OnLnkParseDone(
     mojom::LnkParsingResult* out_result_code,
     base::OnceClosure callback,
     mojom::LnkParsingResult result_code,
-    const base::Optional<std::wstring>& optional_target_path,
-    const base::Optional<std::wstring>& optional_working_dir,
-    const base::Optional<std::wstring>& optional_command_line_arguments,
-    const base::Optional<std::wstring>& optional_icon_location,
+    const absl::optional<std::wstring>& optional_target_path,
+    const absl::optional<std::wstring>& optional_working_dir,
+    const absl::optional<std::wstring>& optional_command_line_arguments,
+    const absl::optional<std::wstring>& optional_icon_location,
     int32_t icon_index) {
   *out_result_code = result_code;
   if (optional_target_path.has_value())

@@ -1,11 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_GRAPHICS_GESTURES_CAST_GESTURE_HANDLER_H_
 #define CHROMECAST_GRAPHICS_GESTURES_CAST_GESTURE_HANDLER_H_
-
-#include "base/macros.h"
 
 namespace gfx {
 class Point;
@@ -40,6 +38,10 @@ class CastGestureHandler {
   };
 
   CastGestureHandler() = default;
+
+  CastGestureHandler(const CastGestureHandler&) = delete;
+  CastGestureHandler& operator=(const CastGestureHandler&) = delete;
+
   virtual ~CastGestureHandler() = default;
 
   // Returns the gesture handler's current priority.
@@ -60,9 +62,6 @@ class CastGestureHandler {
   // Triggered on the completion of a tap event, fire after a press
   // followed by a release, within the tap timeout window
   virtual void HandleTapGesture(const gfx::Point& touch_location) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastGestureHandler);
 };
 
 }  // namespace chromecast

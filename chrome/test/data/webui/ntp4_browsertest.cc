@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,5 +16,6 @@ NTP4LoggedInWebUITest::~NTP4LoggedInWebUITest() {}
 void NTP4LoggedInWebUITest::SetLoginName(const std::string& name) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  signin::SetPrimaryAccount(identity_manager, name);
+  signin::SetPrimaryAccount(identity_manager, name,
+                            signin::ConsentLevel::kSync);
 }

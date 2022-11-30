@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,11 @@ namespace net {
 namespace {
 
 TEST(HttpBasicStateTest, ConstructsProperly) {
-  ClientSocketHandle* const handle = new ClientSocketHandle;
+  auto handle = std::make_unique<ClientSocketHandle>();
+  ClientSocketHandle* const handle_ptr = handle.get();
   // Ownership of |handle| is passed to |state|.
-  const HttpBasicState state(base::WrapUnique(handle), true /* using_proxy */);
-  EXPECT_EQ(handle, state.connection());
+  const HttpBasicState state(std::move(handle), true /* using_proxy */);
+  EXPECT_EQ(handle_ptr, state.connection());
   EXPECT_TRUE(state.using_proxy());
 }
 
@@ -30,13 +31,14 @@ TEST(HttpBasicStateTest, ConstructsProperlyWithDifferentOptions) {
 }
 
 TEST(HttpBasicStateTest, ReleaseConnectionWorks) {
-  ClientSocketHandle* const handle = new ClientSocketHandle;
+  auto handle = std::make_unique<ClientSocketHandle>();
+  ClientSocketHandle* const handle_ptr = handle.get();
   // Ownership of |handle| is passed to |state|.
-  HttpBasicState state(base::WrapUnique(handle), false);
+  HttpBasicState state(std::move(handle), false);
   const std::unique_ptr<ClientSocketHandle> released_connection(
       state.ReleaseConnection());
-  EXPECT_EQ(NULL, state.connection());
-  EXPECT_EQ(handle, released_connection.get());
+  EXPECT_EQ(nullptr, state.connection());
+  EXPECT_EQ(handle_ptr, released_connection.get());
 }
 
 TEST(HttpBasicStateTest, InitializeWorks) {
@@ -62,7 +64,7 @@ TEST(HttpBasicStateTest, DeleteParser) {
   state.Initialize(&request_info, LOW, NetLogWithSource());
   EXPECT_TRUE(state.parser());
   state.DeleteParser();
-  EXPECT_EQ(NULL, state.parser());
+  EXPECT_EQ(nullptr, state.parser());
 }
 
 TEST(HttpBasicStateTest, GenerateRequestLineNoProxy) {

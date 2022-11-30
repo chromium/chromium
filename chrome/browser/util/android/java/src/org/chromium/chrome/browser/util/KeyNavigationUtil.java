@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,9 +87,8 @@ public class KeyNavigationUtil {
      * @return Whether the event should be processed as ENTER.
      */
     public static boolean isEnter(KeyEvent event) {
-        return isActionUp(event)
-                && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER);
+        return (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER);
     }
 
     /**

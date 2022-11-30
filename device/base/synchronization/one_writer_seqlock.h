@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 #define DEVICE_BASE_SYNCHRONIZATION_ONE_WRITER_SEQLOCK_H_
 
 #include <atomic>
+#include <type_traits>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
-#include "base/threading/platform_thread.h"
+#include "base/check_op.h"
 
 namespace device {
 
@@ -38,12 +38,18 @@ namespace device {
 class OneWriterSeqLock {
  public:
   OneWriterSeqLock();
+
+  OneWriterSeqLock(const OneWriterSeqLock&) = delete;
+  OneWriterSeqLock& operator=(const OneWriterSeqLock&) = delete;
+
   // Copies data from src into dest using atomic stores. This should be used by
   // writer of SeqLock. Data must be 4-byte aligned.
-  static void AtomicWriterMemcpy(void* dest, const void* src, size_t size);
+  template <typename T>
+  static void AtomicWriterMemcpy(T* dest, const T* src, size_t size);
   // Copies data from src into dest using atomic loads. This should be used by
   // readers of SeqLock. Data must be 4-byte aligned.
-  static void AtomicReaderMemcpy(void* dest, const void* src, size_t size);
+  template <typename T>
+  static void AtomicReaderMemcpy(T* dest, const T* src, size_t size);
   // ReadBegin returns |sequence_| when it is even, or when it has retried
   // |max_retries| times. Omitting |max_retries| results in ReadBegin not
   // returning until |sequence_| is even.
@@ -54,8 +60,38 @@ class OneWriterSeqLock {
 
  private:
   std::atomic<int32_t> sequence_;
-  DISALLOW_COPY_AND_ASSIGN(OneWriterSeqLock);
 };
+
+// static
+template <typename T>
+void OneWriterSeqLock::AtomicReaderMemcpy(T* dest, const T* src, size_t size) {
+  static_assert(std::is_trivially_copyable<T>::value,
+                "AtomicReaderMemcpy requires a trivially copyable type");
+
+  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(dest) % 4, 0U);
+  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(src) % 4, 0U);
+  DCHECK_EQ(size % 4, 0U);
+  for (size_t i = 0; i < size / 4; ++i) {
+    reinterpret_cast<int32_t*>(dest)[i] =
+        reinterpret_cast<const std::atomic<int32_t>*>(src)[i].load(
+            std::memory_order_relaxed);
+  }
+}
+
+// static
+template <typename T>
+void OneWriterSeqLock::AtomicWriterMemcpy(T* dest, const T* src, size_t size) {
+  static_assert(std::is_trivially_copyable<T>::value,
+                "AtomicWriterMemcpy requires a trivially copyable type");
+
+  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(dest) % 4, 0U);
+  DCHECK_EQ(reinterpret_cast<std::uintptr_t>(src) % 4, 0U);
+  DCHECK_EQ(size % 4, 0U);
+  for (size_t i = 0; i < size / 4; ++i) {
+    reinterpret_cast<std::atomic<int32_t>*>(dest)[i].store(
+        reinterpret_cast<const int32_t*>(src)[i], std::memory_order_relaxed);
+  }
+}
 
 }  // namespace device
 

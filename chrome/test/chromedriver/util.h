@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 namespace base {
 class FilePath;
-class ListValue;
 }
 
 struct Session;
@@ -22,11 +21,10 @@ class WebView;
 std::string GenerateId();
 
 // Send a sequence of key strokes to the active Element in window.
-Status SendKeysOnWindow(
-    WebView* web_view,
-    const base::ListValue* key_list,
-    bool release_modifiers,
-    int* sticky_modifiers);
+Status SendKeysOnWindow(WebView* web_view,
+                        const base::Value::List* key_list,
+                        bool release_modifiers,
+                        int* sticky_modifiers);
 
 // Decodes the given base64-encoded string, after removing any newlines,
 // which are required in some base64 standards. Returns true on success.
@@ -67,38 +65,38 @@ double ConvertCentimeterToInch(double centimeter);
 //   thus 2.0 is an integer. Also, the spec sometimes uses "safe integer"
 //   (https://www.w3.org/TR/webdriver/#dfn-maximum-safe-integer), whose
 //   absolute value can occupy up to 53 bits.
-bool GetOptionalBool(const base::DictionaryValue* dict,
+bool GetOptionalBool(const base::Value::Dict& dict,
                      base::StringPiece path,
                      bool* out_value,
                      bool* has_value = nullptr);
-bool GetOptionalInt(const base::DictionaryValue* dict,
+bool GetOptionalInt(const base::Value::Dict& dict,
                     base::StringPiece path,
                     int* out_value,
                     bool* has_value = nullptr);
-bool GetOptionalDouble(const base::DictionaryValue* dict,
+bool GetOptionalDouble(const base::Value::Dict& dict,
                        base::StringPiece path,
                        double* out_value,
                        bool* has_value = nullptr);
-bool GetOptionalString(const base::DictionaryValue* dict,
+bool GetOptionalString(const base::Value::Dict& dict,
                        base::StringPiece path,
                        std::string* out_value,
                        bool* has_value = nullptr);
-bool GetOptionalDictionary(const base::DictionaryValue* dict,
+bool GetOptionalDictionary(const base::Value::Dict& dict,
                            base::StringPiece path,
-                           const base::DictionaryValue** out_value,
+                           const base::Value::Dict** out_value,
                            bool* has_value = nullptr);
-bool GetOptionalList(const base::DictionaryValue* dict,
+bool GetOptionalList(const base::Value::Dict& dict,
                      base::StringPiece path,
-                     const base::ListValue** out_value,
+                     const base::Value::List** out_value,
                      bool* has_value = nullptr);
 // Handles "safe integer" mentioned in W3C spec,
 // https://www.w3.org/TR/webdriver/#dfn-maximum-safe-integer.
-bool GetOptionalSafeInt(const base::DictionaryValue* dict,
+bool GetOptionalSafeInt(const base::Value::Dict& dict,
                         base::StringPiece path,
                         int64_t* out_value,
                         bool* has_value = nullptr);
 
-bool SetSafeInt(base::DictionaryValue* dict,
+bool SetSafeInt(base::Value::Dict& dict,
                 const base::StringPiece path,
                 int64_t in_value_64);
 

@@ -1,0 +1,35 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package account_manager.internal;
+
+enum AccountType {
+  ACCOUNT_TYPE_UNSPECIFIED = 0;  // Proto best practice for enums.
+  ACCOUNT_TYPE_GAIA = 1;
+  ACCOUNT_TYPE_ACTIVE_DIRECTORY = 2;
+}
+
+message Account {
+  // The tuple <id, account_type> uniquely identifies an Account.
+  // For |ACCOUNT_TYPE_GAIA|, |id| is the obfuscated GAIA id.
+  // For |ACCOUNT_TYPE_ACTIVE_DIRECTORY|, |id| is the Object GUID.
+  optional string id = 1;
+  optional AccountType account_type = 2;
+
+  // An authentication token for this |Account|. It is a login scoped refresh
+  // token for Gaia accounts and a dummy token for Active Directory accounts.
+  optional string token = 3;
+
+  // Raw, un-canonicalized email id for this |Account|. This is guaranteed to be
+  // present for Gaia accounts.
+  optional string raw_email = 4;
+}
+
+message Accounts {
+  repeated Account accounts = 1;
+}

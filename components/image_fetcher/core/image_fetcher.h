@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,17 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+
+namespace data_decoder {
+class DataDecoder;
+}  // namespace data_decoder
 
 namespace image_fetcher {
 
@@ -56,11 +60,11 @@ class ImageFetcherParams {
     return network_traffic_annotation_tag_;
   }
 
-  void set_max_download_size(base::Optional<int64_t> max_download_bytes) {
+  void set_max_download_size(absl::optional<int64_t> max_download_bytes) {
     max_download_bytes_ = max_download_bytes;
   }
 
-  base::Optional<int64_t> max_download_size() const {
+  absl::optional<int64_t> max_download_size() const {
     return max_download_bytes_;
   }
 
@@ -89,7 +93,7 @@ class ImageFetcherParams {
     skip_disk_cache_read_ = skip_disk_cache_read;
   }
 
-  const base::Optional<base::TimeDelta>& expiration_interval() const {
+  const absl::optional<base::TimeDelta>& expiration_interval() const {
     return expiration_interval_;
   }
 
@@ -97,6 +101,15 @@ class ImageFetcherParams {
       const base::TimeDelta& expiration_interval) {
     expiration_interval_ = expiration_interval;
   }
+
+  // Sets the data decoder to use for this image. Using the same data decoder
+  // across multiple image fetches allows them to be decoded in the same
+  // process.
+  void set_data_decoder(data_decoder::DataDecoder* data_decoder) {
+    data_decoder_ = data_decoder;
+  }
+
+  data_decoder::DataDecoder* data_decoder() const { return data_decoder_; }
 
  private:
   void set_skip_transcoding(bool skip_transcoding) {
@@ -109,11 +122,11 @@ class ImageFetcherParams {
 
   const net::NetworkTrafficAnnotationTag network_traffic_annotation_tag_;
 
-  base::Optional<int64_t> max_download_bytes_;
+  absl::optional<int64_t> max_download_bytes_;
   // Only used in rare cases to keep the cache file on disk for certain period
   // of time. Image files will stay in cache at least for |expiration_interval_|
   // after last use.
-  base::Optional<base::TimeDelta> expiration_interval_;
+  absl::optional<base::TimeDelta> expiration_interval_;
   gfx::Size desired_frame_size_;
   std::string uma_client_name_;
   // When true, the image fetcher will skip transcoding whenever possible. Only
@@ -127,6 +140,10 @@ class ImageFetcherParams {
   // True if allowing images that need transcoding to be stored with a prefix in
   // file names.
   bool allow_needs_transcoding_file_;
+
+  // The data decoder to use for decoding this image. If null, a new data
+  // decoder will be created for each fetch.
+  raw_ptr<data_decoder::DataDecoder> data_decoder_ = nullptr;
 };
 
 // A class used to fetch server images. It can be called from any thread and the
@@ -134,6 +151,10 @@ class ImageFetcherParams {
 class ImageFetcher {
  public:
   ImageFetcher() {}
+
+  ImageFetcher(const ImageFetcher&) = delete;
+  ImageFetcher& operator=(const ImageFetcher&) = delete;
+
   virtual ~ImageFetcher() {}
 
   // Fetch an image and optionally decode it. |image_data_callback| is called
@@ -167,9 +188,6 @@ class ImageFetcher {
   }
 
   virtual ImageDecoder* GetImageDecoder() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcher);
 };
 
 }  // namespace image_fetcher

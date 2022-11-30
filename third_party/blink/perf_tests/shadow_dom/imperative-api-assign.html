@@ -15,7 +15,7 @@
         const start = PerfTestRunner.now();
         for (let i = 0; i < 100; i++) {
           host.appendChild(child1);
-          slot1.assign([child1]);
+          slot1.assign(child1);
           child1.remove();
         }
 

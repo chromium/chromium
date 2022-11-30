@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_constants.h"
@@ -22,8 +22,6 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -38,7 +36,7 @@
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const ui::ModalType kModalType = ui::MODAL_TYPE_CHILD;
 const views::BubbleBorder::Shadow kShadowType = views::BubbleBorder::NO_SHADOW;
 #else
@@ -66,8 +64,8 @@ class AppListOverlayBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(
-        ash::AppListColorProvider::Get()->GetContentsBackgroundColor());
+    flags.setColor(ash::AppListColorProvider::Get()->GetContentsBackgroundColor(
+        view->GetWidget()));
     canvas->DrawRoundRect(view->GetContentsBounds(),
                           kAppListOverlayBorderRadius, flags);
   }
@@ -89,21 +87,6 @@ class FullSizeBubbleFrameView : public views::BubbleFrameView {
   ~FullSizeBubbleFrameView() override = default;
 
  private:
-  // Overridden from views::ViewTargeterDelegate:
-  bool DoesIntersectRect(const View* target,
-                         const gfx::Rect& rect) const override {
-    // Make sure click events can still reach the close button, even if the
-    // ClientView overlaps it.
-    // NOTE: |rect| is in the mirrored coordinate space, so we must use the
-    // close button's mirrored bounds to correctly target the close button when
-    // in RTL mode.
-    if (IsCloseButtonVisible() &&
-        GetCloseButtonMirroredBounds().Intersects(rect)) {
-      return true;
-    }
-    return views::BubbleFrameView::DoesIntersectRect(target, rect);
-  }
-
   // Overridden from views::BubbleFrameView:
   bool ExtendClientIntoTitle() const override { return true; }
 };
@@ -122,7 +105,6 @@ class NativeDialogContainer : public views::DialogDelegateView {
     SetModalType(kModalType);
     AddChildView(std::move(dialog_body));
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    chrome::RecordDialogCreation(chrome::DialogIdentifier::NATIVE_CONTAINER);
     SetPreferredSize(size);
 
     if (!close_callback.is_null()) {
@@ -138,10 +120,8 @@ class NativeDialogContainer : public views::DialogDelegateView {
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     auto frame = std::make_unique<FullSizeBubbleFrameView>();
-    auto border = std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::FLOAT, kShadowType, gfx::kPlaceholderColor);
-    border->set_use_theme_background_color(true);
-    frame->SetBubbleBorder(std::move(border));
+    frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
+        views::BubbleBorder::FLOAT, kShadowType));
     return frame;
   }
 };

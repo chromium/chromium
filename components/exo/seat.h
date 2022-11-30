@@ -1,23 +1,27 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_EXO_SEAT_H_
 #define COMPONENTS_EXO_SEAT_H_
 
+#include <array>
+
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/data_source_observer.h"
+#include "components/exo/key_state.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/platform/platform_event_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -26,21 +30,17 @@
 #endif
 
 namespace ui {
-enum class DomCode;
 class KeyEvent;
 }  // namespace ui
 
 namespace exo {
 class DragDropOperation;
 class DataExchangeDelegate;
+class Pointer;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
 class XkbTracker;
-
-// The maximum number of different data types that we will write to the
-// clipboard (plain text, RTF, HTML, image, text/uri-list)
-constexpr int kMaxClipboardDataTypes = 5;
 
 // Seat object represent a group of input devices such as keyboard, pointer and
 // touch devices and keeps track of input focus.
@@ -59,17 +59,40 @@ class Seat : public aura::client::FocusChangeObserver,
   Seat& operator=(const Seat&) = delete;
   ~Seat() override;
 
+  using FocusChangedCallback =
+      base::RepeatingCallback<void(Surface*, Surface*, bool)>;
+
   void Shutdown();
 
-  void AddObserver(SeatObserver* observer);
+  // Registers the observer with the given priority.
+  // Observers with smaller priority value will be called earlier.
+  // The same observer should not be registered twice or more even with
+  // different priorities. If the order of observer invocations with
+  // the same priority is implementation dependent.
+  // The priority must be in a range of
+  // [0, kMaxObserverPriority] inclusive.
+  void AddObserver(SeatObserver* observer, int priority);
+
+  // Unregisters the observer.
   void RemoveObserver(SeatObserver* observer);
 
-  // Returns currently focused surface. This is vertual so that we can override
+  // Returns true if the given priority can be used for AddObserver.
+  static constexpr bool IsValidObserverPriority(int priority) {
+    return 0 <= priority && priority <= kMaxObserverPriority;
+  }
+
+  // Notify observers about pointer capture state changes.
+  void NotifyPointerCaptureEnabled(Pointer* pointer,
+                                   aura::Window* capture_window);
+  void NotifyPointerCaptureDisabled(Pointer* pointer,
+                                    aura::Window* capture_window);
+
+  // Returns currently focused surface. This is virtual so that we can override
   // the behavior for testing.
   virtual Surface* GetFocusedSurface();
 
   // Returns currently pressed keys.
-  const base::flat_map<ui::DomCode, ui::DomCode>& pressed_keys() const {
+  const base::flat_map<ui::DomCode, KeyState>& pressed_keys() const {
     return pressed_keys_;
   }
 
@@ -93,10 +116,6 @@ class Seat : public aura::client::FocusChangeObserver,
                  Surface* origin,
                  Surface* icon,
                  ui::mojom::DragEventSource event_source);
-
-  // Sets the last location in screen coordinates, irrespective of mouse or
-  // touch.
-  void SetLastPointerLocation(const gfx::PointF& last_pointer_location);
 
   // Abort any drag operations that haven't been started yet.
   void AbortPendingDragOperation();
@@ -136,8 +155,22 @@ class Seat : public aura::client::FocusChangeObserver,
     return drag_drop_operation_;
   }
 
+  bool was_shutdown() const { return was_shutdown_; }
+
  private:
   class RefCountedScopedClipboardWriter;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called when the focused window is a Lacros window and a source
+  // DataTransferEndpoint is read in the available MIME types. This
+  // is currently used to synchronize clipboard source metadata from
+  // Lacros to Ash.
+  void OnDataTransferEndpointRead(
+      scoped_refptr<RefCountedScopedClipboardWriter> writer,
+      base::OnceClosure callback,
+      const std::string& mime_type,
+      std::u16string data);
+#endif
 
   // Called when data is read from FD passed from a client.
   // |data| is read data. |source| is source of the data, or nullptr if
@@ -168,15 +201,27 @@ class Seat : public aura::client::FocusChangeObserver,
                        base::OnceClosure callback,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data);
+  void OnWebCustomDataRead(
+      scoped_refptr<RefCountedScopedClipboardWriter> writer,
+      base::OnceClosure callback,
+      const std::string& mime_type,
+      const std::vector<uint8_t>& data);
 
   void OnAllReadsFinished(
       scoped_refptr<RefCountedScopedClipboardWriter> writer);
 
-  base::ObserverList<SeatObserver>::Unchecked observers_;
+  // Max value of SeatObserver's priority. Both side are inclusive.
+  static constexpr int kMaxObserverPriority = 1;
+
+  // Map from priority to a list of SeatOberver pointers.
+  std::array<base::ObserverList<SeatObserver>::Unchecked,
+             kMaxObserverPriority + 1>
+      priority_observer_list_;
+
   // The platform code is the key in this map as it represents the physical
   // key that was pressed. The value is a potentially rewritten code that the
   // physical key press generated.
-  base::flat_map<ui::DomCode, ui::DomCode> pressed_keys_;
+  base::flat_map<ui::DomCode, KeyState> pressed_keys_;
   ui::DomCode physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
 
   // Data source being used as a clipboard content.
@@ -187,9 +232,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // True while Seat is updating clipboard data to selection source.
   bool changing_clipboard_data_to_selection_source_;
 
-  gfx::PointF last_pointer_location_;
-
-  bool shutdown_ = false;
+  bool was_shutdown_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<UILockController> ui_lock_controller_;

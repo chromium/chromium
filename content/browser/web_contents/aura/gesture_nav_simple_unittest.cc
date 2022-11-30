@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ class GestureNavTestWebContents : public TestWebContents {
             browser_context, std::move(fake_native_view),
             std::move(fake_contents_window));
     web_contents->Init(
-        WebContents::CreateParams(browser_context, std::move(instance)));
+        WebContents::CreateParams(browser_context, std::move(instance)),
+        blink::FramePolicy());
     return web_contents;
   }
 
@@ -61,7 +62,9 @@ class GestureNavSimpleTest : public RenderViewHostImplTestHarness {
   GestureNavSimpleTest()
       : first_("https://www.google.com"), second_("http://www.chromium.org") {}
 
-  ~GestureNavSimpleTest() override {}
+  ~GestureNavSimpleTest() override = default;
+  GestureNavSimpleTest(const GestureNavSimpleTest&) = delete;
+  GestureNavSimpleTest& operator=(const GestureNavSimpleTest&) = delete;
 
  protected:
   // RenderViewHostImplTestHarness:
@@ -126,13 +129,11 @@ class GestureNavSimpleTest : public RenderViewHostImplTestHarness {
   const GURL second_;
 
   std::unique_ptr<GestureNavSimple> gesture_nav_simple_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureNavSimpleTest);
 };
 
 // Tests that setting 'overscroll-behavior-x' to 'auto' allows gesture-nav.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorXAutoAllowsGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_auto;
   behavior_x_auto.x = cc::OverscrollBehavior::Type::kAuto;
@@ -147,7 +148,7 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorXAutoAllowsGestureNav) {
 
 // Tests that setting 'overscroll-behavior-x' to 'contain' prevents gesture-nav.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorXContainPreventsGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_contain;
   behavior_x_contain.x = cc::OverscrollBehavior::Type::kContain;
@@ -162,7 +163,7 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorXContainPreventsGestureNav) {
 
 // Tests that setting 'overscroll-behavior-x' to 'none' prevents gesture-nav.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorXNonePreventsGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_none;
   behavior_x_none.x = cc::OverscrollBehavior::Type::kNone;
@@ -219,7 +220,7 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorYNonePreventsPullToRefresh) {
 // Tests that setting 'overscroll-behavior-x' to a value that prevents
 // gesture-nav after it has started does not affect aborting it.
 TEST_F(GestureNavSimpleTest, PreventGestureNavBeforeAbort) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_auto;
   behavior_x_auto.x = cc::OverscrollBehavior::Type::kAuto;
@@ -239,13 +240,13 @@ TEST_F(GestureNavSimpleTest, PreventGestureNavBeforeAbort) {
 
   EXPECT_EQ(OverscrollMode::OVERSCROLL_NONE, mode());
   EXPECT_EQ(OverscrollSource::NONE, source());
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 }
 
 // Tests that after gesture-nav was prevented due to 'overscroll-behavior-x',
 // setting it to 'auto' does not affect aborting overscroll.
 TEST_F(GestureNavSimpleTest, AllowGestureNavBeforeAbort) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_contain;
   behavior_x_contain.x = cc::OverscrollBehavior::Type::kContain;
@@ -265,13 +266,13 @@ TEST_F(GestureNavSimpleTest, AllowGestureNavBeforeAbort) {
 
   EXPECT_EQ(OverscrollMode::OVERSCROLL_NONE, mode());
   EXPECT_EQ(OverscrollSource::NONE, source());
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 }
 
 // Tests that preventing gesture-nav using 'overscroll-behavior-x' does not
 // affect completing overscroll.
 TEST_F(GestureNavSimpleTest, CompletePreventedGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_contain;
   behavior_x_contain.x = cc::OverscrollBehavior::Type::kContain;
@@ -287,7 +288,7 @@ TEST_F(GestureNavSimpleTest, CompletePreventedGestureNav) {
 
   EXPECT_EQ(OverscrollMode::OVERSCROLL_NONE, mode());
   EXPECT_EQ(OverscrollSource::NONE, source());
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 }
 
 // Tests that setting 'overscroll-behavior-y' to a value that prevents

@@ -1,6 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {RectUtil} from '../common/rect_util.js';
 
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 
@@ -32,9 +34,7 @@ let SelectToSpeakCallbacks;
  * Class to handle user-input, from mouse, keyboard, and copy-paste events.
  */
 export class InputHandler {
-  /**
-   * @param {SelectToSpeakCallbacks} callbacks
-   */
+  /** @param {SelectToSpeakCallbacks} callbacks */
   constructor(callbacks) {
     /** @private {SelectToSpeakCallbacks} */
     this.callbacks_ = callbacks;
@@ -79,72 +79,75 @@ export class InputHandler {
      * @private {Date}
      */
     this.lastClearClipboardDataTime_ = new Date(0);
+  }
 
-    /**
-     * Called when the mouse is moved or dragged and the user is in a
-     * mode where select-to-speak is capturing mouse events (for example
-     * holding down Search).
-     *
-     * @param {!Event} evt The DOM event
-     * @return {boolean} True if the default action should be performed.
-     * @private
-     */
-    this.onMouseMove_ = function(evt) {
-      if (!this.trackingMouse_) {
-        return false;
-      }
+  /** @private */
+  clearClipboard_() {
+    this.lastClearClipboardDataTime_ = new Date();
+    document.execCommand('copy');
+  }
 
-      var rect = RectUtil.rectFromPoints(
-          this.mouseStart_.x, this.mouseStart_.y, evt.screenX, evt.screenY);
-      this.callbacks_.onSelectionChanged(rect);
+  /**
+   * @param {Event} evt
+   * @private
+   */
+  onClipboardCopy_(evt) {
+    if (new Date() - this.lastClearClipboardDataTime_ <
+        InputHandler.CLIPBOARD_CLEAR_MAX_DELAY_MS) {
+      // onClipboardPaste has just completed reading the clipboard for speech.
+      // This is used to clear the clipboard.
+      evt.clipboardData.setData('text/plain', '');
+      evt.preventDefault();
+      this.lastClearClipboardDataTime_ = new Date(0);
+    }
+  }
+
+  /** @private */
+  onClipboardDataChanged_() {
+    if (new Date() - this.lastReadClipboardDataTime_ <
+        InputHandler.CLIPBOARD_READ_MAX_DELAY_MS) {
+      // The data has changed, and we are ready to read it.
+      // Get it using a paste.
+      document.execCommand('paste');
+    }
+  }
+
+  /**
+   * @param {Event} evt
+   * @private
+   */
+  onClipboardPaste_(evt) {
+    if (new Date() - this.lastReadClipboardDataTime_ <
+        InputHandler.CLIPBOARD_READ_MAX_DELAY_MS) {
+      // Read the current clipboard data.
+      evt.preventDefault();
+      this.callbacks_.onTextReceived(evt.clipboardData.getData('text/plain'));
+      this.lastReadClipboardDataTime_ = new Date(0);
+      // Clear the clipboard data by copying nothing (the current document).
+      // Do this in a timeout to avoid a recursive warning per
+      // https://crbug.com/363288.
+      setTimeout(() => this.clearClipboard_(), 0);
+    }
+  }
+
+  /**
+   * Called when the mouse is moved or dragged and the user is in a
+   * mode where select-to-speak is capturing mouse events (for example
+   * holding down Search).
+   *
+   * @param {!Event} evt The DOM event
+   * @return {boolean} True if the default action should be performed.
+   * @private
+   */
+  onMouseMove_(evt) {
+    if (!this.trackingMouse_) {
       return false;
-    };
+    }
 
-    /**
-     * @private
-     */
-    this.onClipboardDataChanged_ = function() {
-      if (new Date() - this.lastReadClipboardDataTime_ <
-          InputHandler.CLIPBOARD_READ_MAX_DELAY_MS) {
-        // The data has changed, and we are ready to read it.
-        // Get it using a paste.
-        document.execCommand('paste');
-      }
-    };
-
-    /**
-     * @private
-     */
-    this.onClipboardCopy_ = function(evt) {
-      if (new Date() - this.lastClearClipboardDataTime_ <
-          InputHandler.CLIPBOARD_CLEAR_MAX_DELAY_MS) {
-        // onClipboardPaste has just completed reading the clipboard for speech.
-        // This is used to clear the clipboard.
-        evt.clipboardData.setData('text/plain', '');
-        evt.preventDefault();
-        this.lastClearClipboardDataTime_ = new Date(0);
-      }
-    };
-
-    /**
-     * @private
-     */
-    this.onClipboardPaste_ = function(evt) {
-      if (new Date() - this.lastReadClipboardDataTime_ <
-          InputHandler.CLIPBOARD_READ_MAX_DELAY_MS) {
-        // Read the current clipboard data.
-        evt.preventDefault();
-        this.callbacks_.onTextReceived(evt.clipboardData.getData('text/plain'));
-        this.lastReadClipboardDataTime_ = new Date(0);
-        // Clear the clipboard data by copying nothing (the current document).
-        // Do this in a timeout to avoid a recursive warning per
-        // https://crbug.com/363288.
-        setTimeout(() => {
-          this.lastClearClipboardDataTime_ = new Date();
-          document.execCommand('copy');
-        }, 0);
-      }
-    };
+    const rect = RectUtil.rectFromPoints(
+        this.mouseStart_.x, this.mouseStart_.y, evt.screenX, evt.screenY);
+    this.callbacks_.onSelectionChanged(rect);
+    return false;
   }
 
   /**
@@ -154,15 +157,15 @@ export class InputHandler {
    * any particular window.
    */
   setUpEventListeners() {
-    document.addEventListener('keydown', this.onKeyDown_.bind(this));
-    document.addEventListener('keyup', this.onKeyUp_.bind(this));
-    document.addEventListener('mousedown', this.onMouseDown_.bind(this));
-    document.addEventListener('mousemove', this.onMouseMove_.bind(this));
-    document.addEventListener('mouseup', this.onMouseUp_.bind(this));
+    document.addEventListener('keydown', evt => this.onKeyDown_(evt));
+    document.addEventListener('keyup', evt => this.onKeyUp_(evt));
+    document.addEventListener('mousedown', evt => this.onMouseDown_(evt));
+    document.addEventListener('mousemove', evt => this.onMouseMove_(evt));
+    document.addEventListener('mouseup', evt => this.onMouseUp_(evt));
     chrome.clipboard.onClipboardDataChanged.addListener(
-        this.onClipboardDataChanged_.bind(this));
-    document.addEventListener('paste', this.onClipboardPaste_.bind(this));
-    document.addEventListener('copy', this.onClipboardCopy_.bind(this));
+        () => this.onClipboardDataChanged_());
+    document.addEventListener('paste', evt => this.onClipboardPaste_(evt));
+    document.addEventListener('copy', evt => this.onClipboardCopy_(evt));
   }
 
   /**

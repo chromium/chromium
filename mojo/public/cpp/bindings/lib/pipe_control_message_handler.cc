@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ bool PipeControlMessageHandler::RunOrClosePipe(Message* message) {
     const auto& event =
         params_ptr->input->get_peer_associated_endpoint_closed_event();
 
-    base::Optional<DisconnectReason> reason;
+    absl::optional<DisconnectReason> reason;
     if (event->disconnect_reason) {
       reason.emplace(event->disconnect_reason->custom_reason,
                      event->disconnect_reason->description);

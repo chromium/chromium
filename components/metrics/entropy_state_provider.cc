@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@ void EntropyStateProvider::ProvideSystemProfileMetrics(
   system_profile->set_low_entropy_source(entropy_state_.GetLowEntropySource());
   system_profile->set_old_low_entropy_source(
       entropy_state_.GetOldLowEntropySource());
+  system_profile->set_pseudo_low_entropy_source(
+      entropy_state_.GetPseudoLowEntropySource());
 }
 
 }  // namespace metrics

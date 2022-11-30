@@ -1,0 +1,71 @@
+caption: Configure the camera, browser settings, os settings, scanning, web store,
+  canvas, explore and crosh features to be disabled
+desc: |-
+  Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features to be disabled.
+
+        Disabling any of these features means that the user can't access it from the UI and will see it as "disabled by admin". The user experience of disabled features is decided by <ph name="SYSTEM_FEATURES_DISABLE_MODE">SystemFeaturesDisableMode</ph>
+
+        If the policy is left not set, all <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features will be enabled by default and the user can use any of them.
+
+        Note: The scanning feature is currently disabled by default via a feature flag. If the user enables the feature via the feature flag, the feature can still be disabled by this policy.
+example_value:
+- camera
+- browser_settings
+- os_settings
+- scanning
+- web_store
+- canvas
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Browser Settings
+  name: browser_settings
+  value: browser_settings
+- caption: OS Settings
+  name: os_settings
+  value: os_settings
+- caption: Camera
+  name: camera
+  value: camera
+- caption: Scanning (supported since version 87)
+  name: scanning
+  value: scanning
+- caption: Web Store (supported since version 89)
+  name: web_store
+  value: web_store
+- caption: Canvas (supported since version 90)
+  name: canvas
+  value: canvas
+- caption: Unsupported
+  name: google_news
+  value: google_news
+- caption: Explore (supported since version 91)
+  name: explore
+  value: explore
+- caption: Crosh (supported since version 99)
+  name: crosh
+  value: crosh
+owners:
+- file://components/policy/resources/OWNERS
+- ayaelattar@chromium.org
+- pmarko@chromium.org
+schema:
+  items:
+    enum:
+    - browser_settings
+    - os_settings
+    - camera
+    - scanning
+    - web_store
+    - canvas
+    - google_news
+    - explore
+    - crosh
+    type: string
+  type: array
+supported_on:
+- chrome_os:84-
+tags: []
+type: string-enum-list

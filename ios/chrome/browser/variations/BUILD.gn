@@ -1,21 +1,42 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//components/variations/service/generate_ui_string_overrider.gni")
 
 source_set("variations") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_variations_service_client.cc",
     "ios_chrome_variations_service_client.h",
+    "ios_chrome_variations_service_client.mm",
   ]
   deps = [
+    ":first_run",
     "//base",
+    "//components/variations",
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/browser",
     "//ios/chrome/common",
     "//ios/web",
+  ]
+}
+
+source_set("first_run") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_chrome_first_run_variations_seed_manager.h",
+    "ios_chrome_first_run_variations_seed_manager.mm",
+    "ios_chrome_seed_response.h",
+    "ios_chrome_seed_response.mm",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/variations",
+    "//components/version_info:version_info",
+    "//ios/chrome/common",
+    "//net",
   ]
 }
 
@@ -41,4 +62,68 @@ generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {
   namespace = ""  # Put the functions in the global namespace on iOS.
   header_filename = "ios_ui_string_overrider_factory.h"
   source_filename = "ios_ui_string_overrider_factory.cc"
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "variations_app_interface.h",
+    "variations_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//ios/chrome/browser",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "variations_app_interface.h",
+    "variations_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "variations_safe_mode_egtest.mm",
+    "variations_safe_mode_end_to_end_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics:metrics",
+    "//components/prefs:prefs",
+    "//components/variations:test_support",
+    "//components/variations:variations",
+    "//components/variations/service:service",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

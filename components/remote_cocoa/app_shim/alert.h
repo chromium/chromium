@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
   // Creates a new alert which controls its own lifetime. It will destroy itself
   // once its NSAlert goes away.
   AlertBridge(mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver);
+
+  AlertBridge(const AlertBridge&) = delete;
+  AlertBridge& operator=(const AlertBridge&) = delete;
 
   // Send the specified disposition via the Show callback, then destroy |this|.
   void SendResultAndDestroy(mojom::AlertDisposition disposition);
@@ -58,7 +61,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
 
   mojo::Receiver<remote_cocoa::mojom::AlertBridge> mojo_receiver_{this};
   base::WeakPtrFactory<AlertBridge> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(AlertBridge);
 };
 
 }  // namespace remote_cocoa

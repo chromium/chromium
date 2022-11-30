@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
@@ -49,7 +50,7 @@ class ProfileStatisticsAggregator {
   // Registers, initializes and starts a BrowsingDataCounter.
   void AddCounter(std::unique_ptr<browsing_data::BrowsingDataCounter> counter);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::FilePath profile_path_;
   profiles::ProfileCategoryStats profile_category_stats_;
 

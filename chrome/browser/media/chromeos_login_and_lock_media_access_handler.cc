@@ -1,0 +1,105 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/media/chromeos_login_and_lock_media_access_handler.h"
+
+#include <string>
+
+#include "base/logging.h"
+#include "base/values.h"
+#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
+#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "content/public/browser/render_frame_host.h"
+#include "url/gurl.h"
+
+ChromeOSLoginAndLockMediaAccessHandler::
+    ChromeOSLoginAndLockMediaAccessHandler() = default;
+
+ChromeOSLoginAndLockMediaAccessHandler::
+    ~ChromeOSLoginAndLockMediaAccessHandler() = default;
+
+bool ChromeOSLoginAndLockMediaAccessHandler::SupportsStreamType(
+    content::WebContents* web_contents,
+    const blink::mojom::MediaStreamType type,
+    const extensions::Extension* extension) {
+  if (!web_contents)
+    return false;
+  // Check if the `web_contents` corresponds to the login screen.
+  auto* host = ash::LoginDisplayHost::default_host();
+  if (host && web_contents == host->GetOobeWebContents()) {
+    return true;
+  }
+  // Check if the `web_contents` corresponds to the reauthentication dialog that
+  // is shown on the lock screen. This is the case when there is an active user
+  // profile and InSessionPasswordSyncManager for this profile is showing reauth
+  // dialog with the same `web_contents`.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile)
+    return false;
+  auto* password_sync_manager =
+      ash::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+  return !!password_sync_manager &&
+         web_contents == password_sync_manager->GetDialogWebContents();
+}
+
+bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type,
+    const extensions::Extension* extension) {
+  if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
+    return false;
+
+  const ash::CrosSettings* const settings = ash::CrosSettings::Get();
+  if (!settings)
+    return false;
+
+  // The following checks are for SAML logins.
+  const base::Value* const list_value =
+      settings->GetPref(ash::kLoginVideoCaptureAllowedUrls);
+  if (!list_value)
+    return false;
+
+  DCHECK(list_value->is_list());
+  for (const auto& base_value : list_value->GetList()) {
+    const std::string* value = base_value.GetIfString();
+    if (value) {
+      const ContentSettingsPattern pattern =
+          ContentSettingsPattern::FromString(*value);
+      // Force administrators to specify more-specific patterns by ignoring the
+      // global wildcard pattern.
+      if (pattern == ContentSettingsPattern::Wildcard()) {
+        VLOG(1) << "Ignoring wildcard URL pattern: " << *value;
+        continue;
+      }
+      if (pattern.IsValid() && pattern.Matches(security_origin))
+        return true;
+    }
+  }
+  return false;
+}
+
+void ChromeOSLoginAndLockMediaAccessHandler::HandleRequest(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback,
+    const extensions::Extension* extension) {
+  bool audio_allowed = false;
+  bool video_allowed =
+      request.video_type ==
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
+      CheckMediaAccessPermission(
+          content::RenderFrameHost::FromID(request.render_process_id,
+                                           request.render_frame_id),
+          request.security_origin,
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, extension);
+
+  CheckDevicesAndRunCallback(web_contents, request, std::move(callback),
+                             audio_allowed, video_allowed);
+}

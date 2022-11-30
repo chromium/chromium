@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
 
 namespace signin {
 struct AccessTokenInfo;
@@ -34,14 +30,11 @@ class SharedURLLoaderFactory;
 // family members and their properties.
 class FamilyInfoFetcher {
  public:
-  // Used in UMA, do not delete or reorder values.
-  // Update enums.xml when adding entries.
   enum class ErrorCode : int {
     kSuccess = 0,
     kTokenError,    // Failed to get OAuth2 token.
     kNetworkError,  // Network failure.
-    kServiceError,  // Service returned an error or malformed reply.
-    kMaxValue = kServiceError
+    kServiceError   // Service returned an error or malformed reply.
   };
   // Note: If you add or update an entry, also update |kFamilyMemberRoleStrings|
   // in the .cc file.
@@ -83,6 +76,7 @@ class FamilyInfoFetcher {
     virtual void OnGetFamilyMembersSuccess(
         const std::vector<FamilyMember>& members) {}
     virtual void OnFailure(ErrorCode error) {}
+    virtual ~Consumer() = default;
   };
 
   // Instantiates a fetcher, but doesn't start a fetch - use the StartGet*
@@ -91,6 +85,10 @@ class FamilyInfoFetcher {
       Consumer* consumer,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  FamilyInfoFetcher(const FamilyInfoFetcher&) = delete;
+  FamilyInfoFetcher& operator=(const FamilyInfoFetcher&) = delete;
+
   ~FamilyInfoFetcher();
 
   // Public so tests can use them.
@@ -113,21 +111,18 @@ class FamilyInfoFetcher {
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
-  static bool ParseMembers(const base::ListValue* list,
+  static bool ParseMembers(const base::Value::List& list,
                            std::vector<FamilyMember>* members);
-  static bool ParseMember(const base::DictionaryValue* dict,
-                          FamilyMember* member);
-  static void ParseProfile(const base::DictionaryValue* dict,
-                           FamilyMember* member);
+  static bool ParseMember(const base::Value::Dict& dict, FamilyMember* member);
+  static void ParseProfile(const base::Value::Dict& dict, FamilyMember* member);
 
   void StartFetching();
   void StartFetchingAccessToken();
   void FamilyProfileFetched(const std::string& response);
   void FamilyMembersFetched(const std::string& response);
 
-  Consumer* consumer_;
-  const CoreAccountId primary_account_id_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<Consumer> consumer_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   std::string request_path_;
@@ -136,8 +131,6 @@ class FamilyInfoFetcher {
   std::string access_token_;
   bool access_token_expired_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(FamilyInfoFetcher);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_FAMILY_INFO_FETCHER_H_

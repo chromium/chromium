@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_DELEGATE_H_
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 @class PasswordDetailsCoordinator;
@@ -21,8 +21,8 @@ struct PasswordForm;
 // Called when user deleted password. This action should be handled
 // outside to update the list of passwords immediately.
 - (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                    deletePassword:
-                        (const password_manager::PasswordForm&)password;
+                  deleteCredential:
+                      (const password_manager::CredentialUIEntry&)credential;
 
 @end
 

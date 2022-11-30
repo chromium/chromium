@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XPATH_EVALUATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XPATH_EVALUATOR_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"

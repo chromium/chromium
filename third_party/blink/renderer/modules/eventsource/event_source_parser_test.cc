@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -378,7 +378,7 @@ TEST(EventSourceParserStoppingTest, StopWhileParsing) {
   client->SetParser(parser);
 
   const char kInput[] = "data:hello\nid:99\n\nid:44\ndata:bye\n\n";
-  parser->AddBytes(kInput, strlen(kInput));
+  parser->AddBytes(kInput, static_cast<uint32_t>(strlen(kInput)));
 
   const auto& events = client->Events();
 

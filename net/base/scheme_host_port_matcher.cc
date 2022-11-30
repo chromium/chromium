@@ -1,13 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/base/scheme_host_port_matcher.h"
 
+#include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 
 namespace net {
+
+SchemeHostPortMatcher::SchemeHostPortMatcher() = default;
+SchemeHostPortMatcher::SchemeHostPortMatcher(SchemeHostPortMatcher&& rhs) =
+    default;
+SchemeHostPortMatcher& SchemeHostPortMatcher::operator=(
+    SchemeHostPortMatcher&& rhs) = default;
+SchemeHostPortMatcher::~SchemeHostPortMatcher() = default;
 
 // Declares SchemeHostPortMatcher::kParseRuleListDelimiterList[], not a
 // redefinition. This is needed for link.
@@ -26,8 +35,8 @@ SchemeHostPortMatcher SchemeHostPortMatcher::FromRawString(
 
   base::StringTokenizer entries(raw, kParseRuleListDelimiterList);
   while (entries.GetNext()) {
-    auto rule =
-        SchemeHostPortMatcherRule::FromUntrimmedRawString(entries.token());
+    auto rule = SchemeHostPortMatcherRule::FromUntrimmedRawString(
+        entries.token_piece());
     if (rule) {
       result.AddAsLastRule(std::move(rule));
     }
@@ -70,8 +79,8 @@ SchemeHostPortMatcherResult SchemeHostPortMatcher::Evaluate(
   //
   // However when mixing positive and negative rules, evaluation order makes a
   // difference.
-  for (auto it = rules_.rbegin(); it != rules_.rend(); ++it) {
-    SchemeHostPortMatcherResult result = (*it)->Evaluate(url);
+  for (const auto& rule : base::Reversed(rules_)) {
+    SchemeHostPortMatcherResult result = rule->Evaluate(url);
     if (result != SchemeHostPortMatcherResult::kNoMatch)
       return result;
   }

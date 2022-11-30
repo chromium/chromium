@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,30 +15,37 @@ proto_library("proto_v2") {
     "v2/packing.proto",
     "v2/store.proto",
     "v2/ui.proto",
+    "v2/user_actions_store.proto",
     "v2/wire/action_diagnostic_info.proto",
     "v2/wire/action_payload.proto",
+    "v2/wire/action_surface.proto",
     "v2/wire/capability.proto",
     "v2/wire/chrome_client_info.proto",
     "v2/wire/chrome_feed_response_metadata.proto",
     "v2/wire/chrome_fulfillment_info.proto",
     "v2/wire/client_info.proto",
-    "v2/wire/color.proto",
+    "v2/wire/client_user_profiles.proto",
     "v2/wire/consistency_token.proto",
     "v2/wire/content_id.proto",
+    "v2/wire/content_lifetime.proto",
     "v2/wire/data_operation.proto",
     "v2/wire/device.proto",
     "v2/wire/diagnostic_info.proto",
     "v2/wire/display_info.proto",
     "v2/wire/duration.proto",
+    "v2/wire/eventid.proto",
     "v2/wire/expiration_info.proto",
     "v2/wire/feature.proto",
     "v2/wire/feed_action.proto",
     "v2/wire/feed_entry_point_data.proto",
+    "v2/wire/feed_entry_point_source.proto",
     "v2/wire/feed_query.proto",
     "v2/wire/feed_request.proto",
     "v2/wire/feed_response.proto",
+    "v2/wire/info_card.proto",
     "v2/wire/next_page_token.proto",
     "v2/wire/payload_metadata.proto",
+    "v2/wire/reliability_logging_enums.proto",
     "v2/wire/render_data.proto",
     "v2/wire/request.proto",
     "v2/wire/request_schedule.proto",
@@ -50,8 +57,9 @@ proto_library("proto_v2") {
     "v2/wire/upload_actions_request.proto",
     "v2/wire/upload_actions_response.proto",
     "v2/wire/version.proto",
+    "v2/wire/web_feed_matcher.proto",
+    "v2/wire/web_feed_token.proto",
     "v2/wire/web_feeds.proto",
-    "v2/wire/wrappers.proto",
     "v2/wire/xsurface_container.proto",
     "v2/wire/xsurface_content.proto",
     "v2/xsurface.proto",
@@ -61,6 +69,9 @@ proto_library("proto_v2") {
 if (is_android) {
   proto_java_library("proto_java_v2") {
     proto_path = "../../../../"
-    sources = [ "v2/ui.proto" ]
+    sources = [
+      "v2/ui.proto",
+      "v2/wire/reliability_logging_enums.proto",
+    ]
   }
 }

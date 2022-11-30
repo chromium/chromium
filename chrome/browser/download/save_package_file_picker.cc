@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,7 +113,7 @@ void AddCompleteFileTypeInfo(
 // error pages (failed DNS lookups, SSL errors, etc), which shouldn't affect
 // functionality.
 bool IsErrorPage(content::WebContents* web_contents) {
-  if (web_contents->GetController().GetActiveEntry() == NULL)
+  if (web_contents->GetController().GetActiveEntry() == nullptr)
     return false;
   return web_contents->GetController().GetLastCommittedEntry()->GetPageType() ==
          content::PAGE_TYPE_ERROR;
@@ -123,13 +123,13 @@ bool IsErrorPage(content::WebContents* web_contents) {
 
 // TODO(crbug/928323): REMOVE DIRTY HACK
 // To prevent access to blocked websites, we are temporarily disabling the
-// HTML-only download of error pages for supervised users only.
+// HTML-only download of error pages for child users only.
 // Note that MHTML is still available, so the save functionality is preserved.
 bool SavePackageFilePicker::ShouldSaveAsOnlyHTML(
     content::WebContents* web_contents) const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return !profile->IsSupervised() || !IsErrorPage(web_contents);
+  return !profile->IsChild() || !IsErrorPage(web_contents);
 }
 
 bool SavePackageFilePicker::ShouldSaveAsMHTML() const {
@@ -148,13 +148,14 @@ SavePackageFilePicker::SavePackageFilePicker(
     bool can_save_as_complete,
     DownloadPrefs* download_prefs,
     content::SavePackagePathPickedCallback callback)
-    : render_process_id_(web_contents->GetMainFrame()->GetProcess()->GetID()),
+    : render_process_id_(
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()),
       can_save_as_complete_(can_save_as_complete),
       download_prefs_(download_prefs),
       callback_(std::move(callback)) {
   base::FilePath suggested_path_copy = suggested_path;
   base::FilePath::StringType default_extension_copy = default_extension;
-  int file_type_index = 0;
+  size_t file_type_index = 0;
   ui::SelectFileDialog::FileTypeInfo file_type_info;
 
   file_type_info.allowed_paths =
@@ -165,16 +166,10 @@ SavePackageFilePicker::SavePackageFilePicker(
     save_types_.push_back(content::SAVE_PAGE_TYPE_UNKNOWN);
 
     base::FilePath::StringType extra_extension;
-    if (ShouldSaveAsMHTML()) {
-      default_extension_copy = FILE_PATH_LITERAL("mhtml");
-      suggested_path_copy = suggested_path_copy.ReplaceExtension(
-          default_extension_copy);
-    } else {
-      if (!suggested_path_copy.FinalExtension().empty() &&
-          !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".htm")) &&
-          !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".html"))) {
-        extra_extension = suggested_path_copy.FinalExtension().substr(1);
-      }
+    if (!ShouldSaveAsMHTML() && !suggested_path_copy.FinalExtension().empty() &&
+        !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".htm")) &&
+        !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".html"))) {
+      extra_extension = suggested_path_copy.FinalExtension().substr(1);
     }
 
     if (ShouldSaveAsOnlyHTML(web_contents)) {
@@ -231,6 +226,13 @@ SavePackageFilePicker::SavePackageFilePicker(
     file_type_index = 1;
   }
 
+  if (file_type_index < save_types_.size() &&
+      save_types_[file_type_index] == content::SAVE_PAGE_TYPE_AS_MHTML) {
+    default_extension_copy = FILE_PATH_LITERAL("mhtml");
+    suggested_path_copy =
+        suggested_path_copy.ReplaceExtension(default_extension_copy);
+  }
+
   if (g_should_prompt_for_filename) {
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
@@ -238,11 +240,11 @@ SavePackageFilePicker::SavePackageFilePicker(
         ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
-        platform_util::GetTopLevel(web_contents->GetNativeView()), NULL);
+        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
   } else {
     // Just use 'suggested_path_copy' instead of opening the dialog prompt.
     // Go through FileSelected() for consistency.
-    FileSelected(suggested_path_copy, file_type_index, NULL);
+    FileSelected(suggested_path_copy, file_type_index, nullptr);
   }
 }
 

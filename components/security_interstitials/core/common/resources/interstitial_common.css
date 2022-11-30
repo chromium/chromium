@@ -1,4 +1,4 @@
-/* Copyright 2014 The Chromium Authors. All rights reserved.
+/* Copyright 2014 The Chromium Authors
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file. */
 
@@ -22,11 +22,11 @@ button {
 
 .bad-clock button,
 .captive-portal button,
+.https-only button,
 .insecure-form button,
 .lookalike-url button,
 .main-frame-blocked button,
 .neterror button,
-.offline button,
 .pdf button,
 .ssl button,
 .safe-browsing-billing button {
@@ -82,9 +82,9 @@ button:active {
 
 .error-code {
   color: var(--error-code-color);
-  font-size: .86667em;
-  text-transform: uppercase;
+  font-size: .8em;
   margin-top: 12px;
+  text-transform: uppercase;
 }
 
 #error-debugging-info {
@@ -114,7 +114,7 @@ input[type=checkbox] {
   opacity: 0;
 }
 
-input[type=checkbox]:focus ~ .checkbox:after {
+input[type=checkbox]:focus ~ .checkbox::after {
   outline: -webkit-focus-ring-color auto 5px;
 }
 
@@ -203,16 +203,16 @@ input[type=checkbox]:focus ~ .checkbox:after {
   border-radius: 2px;
   content: '';
   height: 1em;
+  left: var(--padding);
   position: absolute;
   top: var(--padding);
-  left: var(--padding);
   width: 1em;
 }
 
 .checkbox::before {
   background: transparent;
   border: 2px solid white;
-  border-right-width: 0;
+  border-inline-end-width: 0;
   border-top-width: 0;
   content: '';
   height: .2em;
@@ -231,9 +231,9 @@ input[type=checkbox]:checked ~ .checkbox::before {
 #recurrent-error-message {
   background: #ededed;
   border-radius: 4px;
-  padding: 12px 16px;
-  margin-top: 12px;
   margin-bottom: 16px;
+  margin-top: 12px;
+  padding: 12px 16px;
 }
 
 .showing-recurrent-error-message #extended-reporting-opt-in {
@@ -329,8 +329,8 @@ input[type=checkbox]:checked ~ .checkbox::before {
     left: 0;
     margin: 0 auto;
     max-width: 736px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
     position: fixed;
     right: 0;
     width: 100%;
@@ -493,8 +493,8 @@ input[type=checkbox]:checked ~ .checkbox::before {
     flex: 0 1 auto;
     margin-top: 8px;
     order: 1;
-    padding-left: 0;
-    padding-right: 0;
+    padding-inline-end: 0;
+    padding-inline-start: 0;
     position: relative;
     width: 100%;
   }
@@ -511,7 +511,7 @@ input[type=checkbox]:checked ~ .checkbox::before {
 
 @media (max-width: 239px) and (orientation: portrait) {
   .nav-wrapper {
-    padding-left: 0;
-    padding-right: 0;
+    padding-inline-end: 0;
+    padding-inline-start: 0;
   }
 }

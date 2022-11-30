@@ -1,10 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/ui/page_display_state.h"
 
-#include <cmath>
+#import <cmath>
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,13 +46,13 @@ inline bool IsContentInsetValid(const UIEdgeInsets& content_inset) {
   return !std::isnan(content_inset.top) && !std::isnan(content_inset.left) &&
          !std::isnan(content_inset.bottom) && !std::isnan(content_inset.right);
 }
-// Returns the CGFloat stored under |key| in |serialization|, or NAN if it is
+// Returns the CGFloat stored under `key` in `serialization`, or NAN if it is
 // not set.
 inline CGFloat GetFloatValue(NSString* key, NSDictionary* serialization) {
   NSNumber* value = serialization[key];
   return value ? [value doubleValue] : NAN;
 }
-// Returns the contentOffset stored in |serialization|, or a NAN offset if it is
+// Returns the contentOffset stored in `serialization`, or a NAN offset if it is
 // not set.
 inline CGPoint GetContentOffset(NSDictionary* serialization) {
   NSValue* value = serialization[kContentOffsetKey];
@@ -60,7 +60,7 @@ inline CGPoint GetContentOffset(NSDictionary* serialization) {
     return [value CGPointValue];
   return kInvalidContentOffset;
 }
-// Returns the contentInset stored in |serialization|, or a NAN inset if it is
+// Returns the contentInset stored in `serialization`, or a NAN inset if it is
 // not set.
 inline UIEdgeInsets GetContentInset(NSDictionary* serialization) {
   NSValue* value = serialization[kContentInsetKey];

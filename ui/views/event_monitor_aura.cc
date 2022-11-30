@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -27,23 +28,25 @@ class WindowMonitorAura : public EventMonitorAura, public aura::WindowObserver {
         target_window_(target_window) {
     window_observation_.Observe(target_window);
   }
+
+  WindowMonitorAura(const WindowMonitorAura&) = delete;
+  WindowMonitorAura& operator=(const WindowMonitorAura&) = delete;
+
   ~WindowMonitorAura() override = default;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     DCHECK_EQ(window, target_window_);
-    DCHECK(window_observation_.IsObservingSource(target_window_));
+    DCHECK(window_observation_.IsObservingSource(target_window_.get()));
     window_observation_.Reset();
     target_window_ = nullptr;
     TearDown();
   }
 
  private:
-  aura::Window* target_window_;
+  raw_ptr<aura::Window> target_window_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowMonitorAura);
 };
 
 }  // namespace

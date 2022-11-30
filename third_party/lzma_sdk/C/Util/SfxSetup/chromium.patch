@@ -1,0 +1,53 @@
+diff --git a/third_party/lzma_sdk/Util/SfxSetup/Precomp.h b/third_party/lzma_sdk/Util/SfxSetup/Precomp.h
+index 588a66f7eb8c..177a205f6979 100644
+--- a/third_party/lzma_sdk/Util/SfxSetup/Precomp.h
++++ b/third_party/lzma_sdk/Util/SfxSetup/Precomp.h
+@@ -4,7 +4,7 @@
+ #ifndef __7Z_PRECOMP_H
+ #define __7Z_PRECOMP_H
+ 
+-#include "../../Compiler.h"
+-#include "../../7zTypes.h"
++#include "Compiler.h"
++#include "7zTypes.h"
+ 
+ #endif
+diff --git a/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c b/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c
+index ef19aeac5450..45efac060bd6 100644
+--- a/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c
++++ b/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c
+@@ -11,16 +11,19 @@
+ #define _UNICODE
+ #endif
+ 
++#include <windows.h>
++#include <shellapi.h>
++
+ #ifdef _CONSOLE
+ #include <stdio.h>
+ #endif
+ 
+-#include "../../7z.h"
+-#include "../../7zAlloc.h"
+-#include "../../7zCrc.h"
+-#include "../../7zFile.h"
+-#include "../../CpuArch.h"
+-#include "../../DllSecur.h"
++#include "7z.h"
++#include "7zAlloc.h"
++#include "7zCrc.h"
++#include "7zFile.h"
++#include "CpuArch.h"
++#include "DllSecur.h"
+ 
+ #define k_EXE_ExtIndex 2
+ 
+@@ -125,7 +128,7 @@ static WRes MyCreateDir(const WCHAR *name)
+ #define kBufferSize (1 << 15)
+ #endif
+ 
+-#define kSignatureSearchLimit (1 << 22)
++#define kSignatureSearchLimit (1 << 26)
+ 
+ static BoolInt FindSignature(CSzFile *stream, UInt64 *resPos)
+ {

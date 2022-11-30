@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
@@ -23,7 +24,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -200,15 +201,15 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
 
   VisualViewport& visual_viewport = WebView()->GetPage()->GetVisualViewport();
 
-  IntRect rect_in_document = layout_object->AbsoluteBoundingBoxRect();
+  gfx::Rect rect_in_document = layout_object->AbsoluteBoundingBoxRect();
 
   constexpr int kScaleFactor = 2;
   ScrollOffset scroll_delta(20, 30);
 
   const int expected_x =
-      (rect_in_document.X() - scroll_delta.Width()) * kScaleFactor;
+      (rect_in_document.x() - scroll_delta.x()) * kScaleFactor;
   const int expected_y =
-      (rect_in_document.Y() - scroll_delta.Height()) * kScaleFactor;
+      (rect_in_document.y() - scroll_delta.y()) * kScaleFactor;
 
   WebView()->SetPageScaleFactor(kScaleFactor);
   visual_viewport.Move(scroll_delta);
@@ -217,6 +218,37 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
 
   EXPECT_EQ(expected_x, ShownBounds().x());
   EXPECT_EQ(expected_y, ShownBounds().y());
+}
+
+// Android doesn't use this position data and we don't adjust it for DPR there..
+#ifdef OS_ANDROID
+#define MAYBE_PopupAccountsForDeviceScaleFactor \
+  DISABLED_PopupAccountsForDeviceScaleFactor
+#else
+#define MAYBE_PopupAccountsForDeviceScaleFactor \
+  PopupAccountsForDeviceScaleFactor
+#endif
+
+TEST_F(ExternalPopupMenuTest, MAYBE_PopupAccountsForDeviceScaleFactor) {
+  RegisterMockedURLLoad("select_mid_screen.html");
+  LoadFrame("select_mid_screen.html");
+
+  constexpr float kScaleFactor = 2.0f;
+  WebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(kScaleFactor);
+  WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+
+  auto* select = To<HTMLSelectElement>(
+      MainFrame()->GetFrame()->GetDocument()->getElementById("select"));
+  auto* layout_object = select->GetLayoutObject();
+  ASSERT_TRUE(layout_object);
+
+  select->ShowPopup();
+  WaitUntilShowedPopup();
+
+  // The test file has no body margins but 50px of padding.
+  EXPECT_EQ(50, ShownBounds().x());
+  EXPECT_EQ(50, ShownBounds().y());
 }
 
 TEST_F(ExternalPopupMenuTest, DidAcceptIndex) {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,9 @@ class OverlayRequestCallbackInstallerTest : public PlatformTest {
   }
   ~OverlayRequestCallbackInstallerTest() override = default;
 
-  // Dispatches an OverlayResponse created with DispatchInfo through |request|'s
+  // Dispatches an OverlayResponse created with DispatchInfo through `request`'s
   // callback manager.  The mock callback receiver will be notified to expect
-  // callback execution if |expect_callback_execution| is true.
+  // callback execution if `expect_callback_execution` is true.
   void DispatchResponse(OverlayRequest* request,
                         bool expect_callback_execution) {
     if (expect_callback_execution) {
@@ -91,6 +91,6 @@ TEST_F(OverlayRequestCallbackInstallerTest, Idempotency) {
   DispatchResponse(request.get(), /*expect_callback_execution=*/true);
 
   // Expect the completion callback to be executed upon destruction of
-  // |request|.
+  // `request`.
   EXPECT_CALL(mock_receiver_, CompletionCallback(request.get()));
 }

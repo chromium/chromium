@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/logging.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "remoting/codec/video_encoder_vpx.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/test/cyclic_frame_generator.h"
@@ -13,7 +14,7 @@
 namespace remoting {
 namespace test {
 
-constexpr auto kIntervalBetweenFrames = base::TimeDelta::FromSeconds(1) / 30;
+constexpr auto kIntervalBetweenFrames = base::Seconds(1) / 30;
 
 struct CodecParams {
   CodecParams(bool use_vp9, bool lossless, bool lossless_color)

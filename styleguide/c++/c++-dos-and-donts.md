@@ -147,7 +147,7 @@ declaration.
 When possible, avoid bare `new` by using
 [`std::make_unique<T>(...)`](http://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique)
 and
-[`base::MakeRefCounted<T>(...)`](https://source.chromium.org/chromium/chromium/src/+/master:base/memory/scoped_refptr.h;l=98;drc=f8c5bd9d40969f02ddeb3e6c7bdb83029a99ca63):
+[`base::MakeRefCounted<T>(...)`](https://source.chromium.org/chromium/chromium/src/+/main:base/memory/scoped_refptr.h;l=98;drc=f8c5bd9d40969f02ddeb3e6c7bdb83029a99ca63):
 
 ```cpp
 // BAD: bare call to new; for refcounted types, not compatible with one-based
@@ -294,3 +294,69 @@ cross-references for that symbol.
 Named namespaces are discouraged in top-level embedders (e.g., `chrome/`). See
 [this thread](https://groups.google.com/a/chromium.org/d/msg/chromium-dev/8ROncnL1t4k/J7uJMCQ8BwAJ)
 for background and discussion.
+
+## Guarding with DCHECK_IS_ON()
+
+Any code written inside a `DCHECK()` macro, or the various `DCHECK_EQ()` and
+similar macros, will be compiled out in builds where DCHECKs are disabled. That
+includes any non-debug build where the `dcheck_always_on` GN arg is not present.
+
+Thus even if your `DHECK()` would perform some expensive operation, you can
+be confident that **code within the macro will not run in our official
+release builds**, and that the linker will consider any function it calls to be
+dead code if it's not used elsewhere.
+
+However, if your `DCHECK()` relies on work that is done outside of the
+`DCHECK()` macro, that work may not be eliminated in official release builds.
+Thus any code that is only present to support a `DCHECK()` should be guarded by
+`#if DCHECK_IS_ON()` to avoid including that code in official release builds.
+
+This code is fine without any guards for `DCHECK_IS_ON()`.
+```cpp
+void ExpensiveStuff() { ... }  // No problem.
+
+// The ExpensiveStuff() call will not happen in official release builds. No need
+// to use checks for DCHECK_IS_ON() anywhere.
+DCHECK(ExpensiveStuff());
+
+std::string ExpensiveDebugMessage() { ... }  // No problem.
+
+// Calls in stream operators are also dead code in official release builds (not
+// called with the result discarded). This is fine.
+DCHECK(...) << ExpensiveDebugMessage();
+```
+
+This code will probably do expensive things that are not needed in official
+release builds, which is bad.
+```cpp
+// The result of this call is only used in a DCHECK(), but the code here is
+// outside of the macro. That means it's likely going to show up in official
+// release builds.
+int c = ExpensiveStuff();  // Bad. Don't do this.
+...
+DCHECK_EQ(c, ExpensiveStuff());
+```
+
+Instead, any code outside of a `DCHECK()` macro, that is only needed when
+DCHECKs are enabled, should be explicitly eliminated by checking
+`DCHECK_IS_ON()` as this code does.
+```cpp
+// The result of this call is only used in a DCHECK(), but the code here is
+// outside of the macro. We can't rely on the compiler to remove this in
+// official release builds, so we should guard it with a check for
+// DCHECK_IS_ON().
+#if DCHECK_IS_ON()
+int c = ExpensiveStuff();  // Great, this will be eliminated.
+#endif
+...
+#if DCHECK_IS_ON()
+DCHECK_EQ(c, ExpensiveStuff());  // Must be guarded since `c` won't exist.
+#endif
+```
+
+The `DCHECK()` and friends macros still require the variables and functions they
+use to be declared at compile time, even though they will not be used at
+runtime. This is done to avoid "unused variable" and "unused function" warnings
+when DCHECKs are turned off. This means that you may need to guard the
+`DCHECK()` macro if it depends on a variable or function that is also guarded
+by a check for `DCHECK_IS_ON()`.

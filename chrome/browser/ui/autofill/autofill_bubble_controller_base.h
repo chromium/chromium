@@ -1,19 +1,33 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace autofill {
 
 class AutofillBubbleBase;
+
+// Enum for the current showing state of the bubble.
+enum class BubbleState {
+  // The bubble and the omnibox icon should be hidden.
+  kHidden = 0,
+  // Only the omnibox icon should be visible.
+  kShowingIcon = 1,
+  // The bubble and the omnibox icon should be both visible.
+  kShowingIconAndBubble = 2,
+};
 
 // Interface that exposes controller functionality to all autofill bubbles.
 class AutofillBubbleControllerBase : public content::WebContentsObserver {
@@ -46,8 +60,7 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
 
  private:
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  AutofillBubbleBase* bubble_view_ = nullptr;
-
+  raw_ptr<AutofillBubbleBase> bubble_view_ = nullptr;
 };
 
 }  // namespace autofill

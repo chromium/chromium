@@ -35,9 +35,10 @@ namespace blink {
 IDBCursorWithValue::IDBCursorWithValue(std::unique_ptr<WebIDBCursor> backend,
                                        mojom::IDBCursorDirection direction,
                                        IDBRequest* request,
-                                       const Source& source,
+                                       const Source* source,
                                        IDBTransaction* transaction)
-    : IDBCursor(std::move(backend), direction, request, source, transaction) {}
+    : IDBCursor(std::move(backend), direction, request, source, transaction) {
+}
 
 IDBCursorWithValue::~IDBCursorWithValue() = default;
 

@@ -7,6 +7,8 @@
         {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_elf.dll":
         {"exists": true},
+    "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll":
+        {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\elevation_service.exe": {
       "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
       "exists": true
@@ -51,6 +53,21 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
+    "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\rotate-dtkey": {
+      "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
+      "exists": "required",
+      "values": {
+        "CommandLine": {
+          "type": "SZ",
+          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --rotate-dtkey=%1 --dm-server-url=%2 --nonce=%3 --system-level --verbose-logging"
+        },
+        "WebAccessible": {
+          "type": "DWORD",
+          "data": 1
+        }
+      },
+      "wow_key": "KEY_WOW64_32KEY"
+    },
     "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\store-dmtoken": {
       "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
       "exists": "required",
@@ -58,6 +75,21 @@
         "CommandLine": {
           "type": "SZ",
           "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --store-dmtoken=%1 --system-level --verbose-logging"
+        },
+        "WebAccessible": {
+          "type": "DWORD",
+          "data": 1
+        }
+      },
+      "wow_key": "KEY_WOW64_32KEY"
+    },
+    "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\delete-dmtoken": {
+      "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
+      "exists": "required",
+      "values": {
+        "CommandLine": {
+          "type": "SZ",
+          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --delete-dmtoken --system-level --verbose-logging"
         },
         "WebAccessible": {
           "type": "DWORD",
@@ -89,6 +121,14 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\RuntimeExceptionHelperModules": {
+      "exists": "required",
+      "values": {
+        "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll": {
+          "type": "DWORD"
+        }
+      }
+    },
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID\\$CHROME_TOAST_ACTIVATOR_CLSID\\LocalServer32": {
       "exists": "required",
       "values": {
@@ -113,6 +153,9 @@
         "LocalService": {
           "type": "SZ",
           "data": "$CHROME_ELEVATION_SERVICE_NAME"
+        },
+        "ServiceParameters": {
+          "data": "ValueShouldNotExist"
         }
       }
     },

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation.h"
@@ -43,6 +43,10 @@ class VIEWS_EXPORT MenuClosureAnimationMac
   MenuClosureAnimationMac(MenuItemView* item,
                           SubmenuView* menu,
                           base::OnceClosure callback);
+
+  MenuClosureAnimationMac(const MenuClosureAnimationMac&) = delete;
+  MenuClosureAnimationMac& operator=(const MenuClosureAnimationMac&) = delete;
+
   ~MenuClosureAnimationMac() override;
 
   // Start the animation.
@@ -80,11 +84,9 @@ class VIEWS_EXPORT MenuClosureAnimationMac
   base::OnceClosure callback_;
   base::OneShotTimer timer_;
   std::unique_ptr<gfx::Animation> fade_animation_;
-  MenuItemView* item_;
-  SubmenuView* menu_;
+  raw_ptr<MenuItemView> item_;
+  raw_ptr<SubmenuView> menu_;
   AnimationStep step_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuClosureAnimationMac);
 };
 
 }  // namespace views

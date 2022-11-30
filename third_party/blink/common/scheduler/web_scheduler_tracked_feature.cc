@@ -1,15 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
+#include <atomic>
 #include <map>
+#include <vector>
 
 namespace blink {
 namespace scheduler {
 
 namespace {
+
+std::atomic_bool disable_align_wake_ups{false};
 
 struct FeatureNames {
   std::string short_name;
@@ -20,6 +24,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return {"WebSocket", "WebSocket"};
+    case WebSchedulerTrackedFeature::kWebTransport:
+      return {"WebTransport", "WebTransport"};
     case WebSchedulerTrackedFeature::kWebRTC:
       return {"WebRTC", "WebRTC"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
@@ -34,18 +40,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
       return {"SubresourceHasCacheControlNoStore",
               "subresource has Cache-Control: No-Store"};
-    case WebSchedulerTrackedFeature::kPageShowEventListener:
-      return {"PageShowEventListener", "onpageshow() event listener"};
-    case WebSchedulerTrackedFeature::kPageHideEventListener:
-      return {"PageHideEventListener", "onpagehide() event listener"};
-    case WebSchedulerTrackedFeature::kBeforeUnloadEventListener:
-      return {"BeforeUnloadEventListener", "onbeforeunload() event listener"};
-    case WebSchedulerTrackedFeature::kUnloadEventListener:
-      return {"UnloadEventListener", "onunload() event listener"};
-    case WebSchedulerTrackedFeature::kFreezeEventListener:
-      return {"FreezeEventListener", "onfreeze() event listener"};
-    case WebSchedulerTrackedFeature::kResumeEventListener:
-      return {"ResumeEventListener", "onresume() event listener"};
     case WebSchedulerTrackedFeature::kContainsPlugins:
       return {"ContainsPlugins", "page contains plugins"};
     case WebSchedulerTrackedFeature::kDocumentLoaded:
@@ -67,9 +61,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
       return {"OutstandingIndexedDBTransaction",
               "outstanding IndexedDB transaction"};
-    case WebSchedulerTrackedFeature::kRequestedGeolocationPermission:
-      return {"RequestedGeolocationPermission",
-              "requested geolocation permission"};
     case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
       return {"RequestedNotificationsPermission",
               "requested notifications permission"};
@@ -91,8 +82,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"BroadcastChannel", "requested broadcast channel permission"};
     case WebSchedulerTrackedFeature::kIndexedDBConnection:
       return {"IndexedDBConnection", "IndexedDB connection present"};
-    case WebSchedulerTrackedFeature::kWebVR:
-      return {"WebVR", "WebVR"};
     case WebSchedulerTrackedFeature::kWebXR:
       return {"WebXR", "WebXR"};
     case WebSchedulerTrackedFeature::kWebLocks:
@@ -106,8 +95,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
               "requested storage access permission"};
     case WebSchedulerTrackedFeature::kWebNfc:
       return {"WebNfc", "WebNfc"};
-    case WebSchedulerTrackedFeature::kWebFileSystem:
-      return {"WebFileSystem", "WebFileSystem"};
     case WebSchedulerTrackedFeature::kAppBanner:
       return {"AppBanner", "AppBanner"};
     case WebSchedulerTrackedFeature::kPrinting:
@@ -133,6 +120,12 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return {"OutstandingNetworkRequestDirectSocket",
               "outstanding network request (direct socket)"};
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
+      return {"InjectedJavascript", "External javascript injected"};
+    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
+      return {"InjectedStyleSheet", "External systesheet injected"};
+    case WebSchedulerTrackedFeature::kDummy:
+      return {"Dummy", "Dummy for testing"};
   }
   return {};
 }
@@ -163,62 +156,75 @@ std::string FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).human_readable;
 }
 
-base::Optional<WebSchedulerTrackedFeature> StringToFeature(
+std::string FeatureToShortString(WebSchedulerTrackedFeature feature) {
+  return FeatureToNames(feature).short_name;
+}
+
+absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str) {
   auto map = ShortStringToFeatureMap();
   auto it = map.find(str);
   if (it == map.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return it->second;
 }
 
-bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
-  return (FeatureToBit(feature) & StickyFeaturesBitmask()) > 0;
+bool IsRemovedFeature(const std::string& feature) {
+  // This is an incomplete list. It only contains features that were
+  // BFCache-enabled via finch. It does not contain all those that were removed.
+  // This function is simple, not efficient because it is called once during
+  // finch param parsing.
+  const char* removed_features[] = {"MediaSessionImplOnServiceCreated"};
+  for (const char* removed_feature : removed_features) {
+    if (feature == removed_feature) {
+      return true;
+    }
+  }
+  return false;
 }
 
-uint64_t StickyFeaturesBitmask() {
-  return FeatureToBit(
-             WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPageShowEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPageHideEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kBeforeUnloadEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kUnloadEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kFreezeEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kResumeEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kContainsPlugins) |
-         FeatureToBit(WebSchedulerTrackedFeature::kDocumentLoaded) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedGeolocationPermission) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedNotificationsPermission) |
-         FeatureToBit(WebSchedulerTrackedFeature::kRequestedMIDIPermission) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedAudioCapturePermission) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedVideoCapturePermission) |
-         FeatureToBit(WebSchedulerTrackedFeature::
-                          kRequestedBackForwardCacheBlockedSensors) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebLocks) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedStorageAccessGrant) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebNfc) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebFileSystem) |
-         FeatureToBit(WebSchedulerTrackedFeature::kAppBanner) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPrinting) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPictureInPicture) |
-         FeatureToBit(WebSchedulerTrackedFeature::kIdleManager) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPaymentManager) |
-         FeatureToBit(WebSchedulerTrackedFeature::kKeyboardLock) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebOTPService);
+bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
+  return StickyFeatures().Has(feature);
+}
+
+WebSchedulerTrackedFeatures StickyFeatures() {
+  constexpr WebSchedulerTrackedFeatures features = WebSchedulerTrackedFeatures(
+      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
+      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
+      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
+      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
+      WebSchedulerTrackedFeature::kContainsPlugins,
+      WebSchedulerTrackedFeature::kDocumentLoaded,
+      WebSchedulerTrackedFeature::kRequestedNotificationsPermission,
+      WebSchedulerTrackedFeature::kRequestedMIDIPermission,
+      WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
+      WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
+      WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
+      WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
+      WebSchedulerTrackedFeature::kWebLocks,
+      WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
+      WebSchedulerTrackedFeature::kWebNfc,
+      WebSchedulerTrackedFeature::kAppBanner,
+      WebSchedulerTrackedFeature::kPrinting,
+      WebSchedulerTrackedFeature::kPictureInPicture,
+      WebSchedulerTrackedFeature::kIdleManager,
+      WebSchedulerTrackedFeature::kPaymentManager,
+      WebSchedulerTrackedFeature::kWebOTPService,
+      WebSchedulerTrackedFeature::kInjectedJavascript,
+      WebSchedulerTrackedFeature::kInjectedStyleSheet,
+      WebSchedulerTrackedFeature::kDummy);
+  return features;
+}
+
+// static
+void DisableAlignWakeUpsForProcess() {
+  disable_align_wake_ups.store(true, std::memory_order_relaxed);
+}
+
+// static
+bool IsAlignWakeUpsDisabledForProcess() {
+  return disable_align_wake_ups.load(std::memory_order_relaxed);
 }
 
 }  // namespace scheduler

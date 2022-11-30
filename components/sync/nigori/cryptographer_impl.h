@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -38,6 +38,8 @@ class CryptographerImpl : public Cryptographer {
   // Returns null in case of error (e.g. default key not present in keybag).
   static std::unique_ptr<CryptographerImpl> FromProto(
       const sync_pb::CryptographerData& proto);
+
+  CryptographerImpl& operator=(const CryptographerImpl&) = delete;
 
   ~CryptographerImpl() override;
 
@@ -108,8 +110,6 @@ class CryptographerImpl : public Cryptographer {
   // must correspond to a key within |key_bag_|. May be empty even if |key_bag_|
   // is not.
   std::string default_encryption_key_name_;
-
-  DISALLOW_ASSIGN(CryptographerImpl);
 };
 
 }  // namespace syncer

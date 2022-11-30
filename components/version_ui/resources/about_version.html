@@ -21,37 +21,46 @@ about:version template page
 <if expr="is_android or is_ios">
     <link rel="stylesheet" href="about_version_mobile.css">
 </if>
-
-<if expr="is_ios">
-    <!-- TODO(crbug.com/487000): Remove this once injected by web. -->
-    <script src="chrome://resources/js/ios/web_ui.js"></script>
+<if expr="chromeos_lacros or chromeos_ash">
+    <link rel="stylesheet" href="chrome://resources/css/os_header.css">
 </if>
 
-    <script src="chrome://resources/js/assert.js"></script>
-    <script src="chrome://resources/js/promise_resolver.js"></script>
-    <script src="chrome://resources/js/cr.js"></script>
-    <script src="chrome://resources/js/load_time_data.js"></script>
-    <script src="chrome://resources/js/util.js"></script>
-    <script src="chrome://version/version.js"></script>
-    <script src="chrome://version/strings.js"></script>
+    <script type ="module" src="about_version.js"></script>
   </head>
 
   <body>
+<if expr="chromeos_lacros or chromeos_ash">
+    <div class="os-link-container-container" id="os-link-container" hidden>
+      <div class="os-link-container">
+        <span class="os-link-icon"></span>
+        <span aria-hidden="true" id="os-link-desc">$i18n{os-version-text1}</span>
+        <a href="#" id="os-link-href" aria-describedby="os-link-desc">
+          $i18n{os-version-link}
+        </a>
+        <span aria-hidden="true">$i18n{os-version-text2}</span>
+      </div>
+    </div>
+  </if>
+
     <div id="outer">
       <div id="logo">
 <if expr="not is_android and not is_ios">
         <!-- Version for themes. -->
         <picture>
-          <source srcset="chrome://theme/IDR_PRODUCT_LOGO_WHITE" media="(prefers-color-scheme: dark)">
-          <source srcset="chrome://theme/IDR_PRODUCT_LOGO" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+          <source srcset="chrome://theme/IDR_PRODUCT_LOGO_WHITE,
+                          chrome://theme/IDR_PRODUCT_LOGO_WHITE@2x 2x"
+                  media="(prefers-color-scheme: dark)">
+          <source srcset="chrome://theme/IDR_PRODUCT_LOGO,
+                          chrome://theme/IDR_PRODUCT_LOGO@2x 2x"
+                  media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
           <img alt="$i18n{logo_alt_text}" src="chrome://theme/IDR_PRODUCT_LOGO">
         </picture>
 </if>
 <if expr="is_ios or is_android">
         <picture>
-          <source srcset="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo_white.png" media="(prefers-color-scheme: dark)">
-          <source srcset="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-          <img alt="$i18n{logo_alt_text}" src="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo.png">
+          <source srcset="images/product_logo_white.png" media="(prefers-color-scheme: dark)">
+          <source srcset="images/product_logo.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+          <img alt="$i18n{logo_alt_text}" src="images/product_logo.png">
         </picture>
 </if>
         <div id="company">$i18n{company}</div>
@@ -60,13 +69,18 @@ about:version template page
       <table id="inner" cellpadding="0" cellspacing="0" border="0">
         <tr><td class="label">$i18n{application_label}</td>
           <td class="version" id="version">
-            <span>$i18n{version}</span>
-            (<span>$i18n{official}</span>)
-            <span>$i18n{version_modifier}</span>
-            <span>$i18n{version_processor_variation}</span>
-<if expr="is_win">
-            <span>$i18n{update_cohort_name}</span>
-</if>
+            <span id="copy-content">
+              <span>$i18n{version}</span>
+              (<span>$i18n{official}</span>)
+              <span>$i18n{version_modifier}</span>
+              <span>$i18n{version_processor_variation}</span>
+  <if expr="is_win">
+              <span>$i18n{update_cohort_name}</span>
+  </if>
+            </span>
+            <button id="copy-to-clipboard" aria-label="$i18n{copy_label}">
+              <div id="copy-to-clipboard-icon"></div>
+            </button>
           </td>
         </tr>
         <tr>
@@ -75,7 +89,7 @@ about:version template page
             <span>$i18n{cl}</span>
           </td>
         </tr>
-<if expr="not chromeos">
+<if expr="not chromeos_ash and not chromeos_lacros">
         <tr>
           <td class="label">$i18n{os_name}</td>
           <td class="version" id="os_type">
@@ -97,7 +111,8 @@ about:version template page
           </td>
         </tr>
 </if>
-<if expr="chromeos">
+<!-- TODO(crbug.com/1339120): Unify and reuse between Ash and Lacros -->
+<if expr="chromeos_ash">
         <tr>
           <td class="label">$i18n{platform}</td>
           <td class="version" id="os_type">
@@ -118,7 +133,21 @@ about:version template page
         </tr>
         <tr id="arc_holder"><td class="label">$i18n{arc_label}</td>
           <td class="version">
-            <span id="arc_version"></span>
+            <span id="arc_and_arc_android_sdk_versions"></span>
+          </td>
+        </tr>
+</if>
+<if expr="chromeos_lacros">
+        <tr>
+          <td class="label">$i18n{os_name}</td>
+          <td class="version" id="os_type">
+            <span id="copy-os-content">
+              <span>$i18n{os_type}</span>
+              (Ash <span>$i18n{ash_chrome_version}</span>)
+            </span>
+            <button id="copy-os-content-to-clipboard" aria-label="$i18n{copy_label}">
+              <div id="copy-to-clipboard-icon"></div>
+            </button>
           </td>
         </tr>
 </if>
@@ -144,6 +173,12 @@ about:version template page
           <td class="version" id="profile_path">$i18n{profile_path}</td>
         </tr>
 </if>
+<if expr="is_macosx">
+        <tr id="linker-section">
+          <td class="label">Linker</td>
+          <td class="version" id="linker">$i18n{linker}</td>
+        </tr>
+</if>
         <tr id="variations-section">
           <td class="label">$i18n{variations_name}</td>
           <td class="version" id="variations-list"></td>
@@ -156,12 +191,6 @@ about:version template page
           <td class="label">Sanitizer</td>
           <td class="version" id="sanitizer">$i18n{sanitizer}</td>
         </tr>
-<if expr="is_ios">
-        <tr id="compiler-section">
-          <td class="label">Compiler</td>
-          <td class="version" id="compiler">$i18n{compiler}</td>
-        </tr>
-</if>
       </table>
     </div>
   </body>

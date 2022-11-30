@@ -4,7 +4,6 @@
 <translation id="130631256467250065">Je wijzigingen worden doorgevoerd wanneer je het apparaat opnieuw opstart.</translation>
 <translation id="275588974610408078">Crashrapportage is niet beschikbaar in Chromium.</translation>
 <translation id="3064346599913645280">Je bekijkt een beveiligde Chromium-pagina</translation>
-<translation id="3550966579244642892">De eerste configuratie van Chromium OS is niet voltooid.</translation>
 <translation id="358997566136285270">Chromium-logo</translation>
 <translation id="4365115785552740256">Chromium wordt mogelijk gemaakt door het <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open-sourceproject en andere <ph name="BEGIN_LINK_OSS" />open-sourcesoftware<ph name="END_LINK_OSS" />.</translation>
 <translation id="4559775032954821361">Ga naar
@@ -19,6 +18,7 @@
           en verwijder het vinkje uit het selectievakje bij 'Een proxyserver voor het LAN-netwerk gebruiken'.</translation>
 <translation id="4622039161600275920">Deze pagina is geblokkeerd door Chromium</translation>
 <translation id="48558539577516920">Sta Chromium toe via je firewall- of antivirusinstellingen het netwerk te gebruiken.</translation>
+<translation id="4918837013875648434">De eerste instelling van Chromium OS is niet afgerond.</translation>
 <translation id="580822234363523061">Ga naar
           het menu 'Chromium' &gt;
           <ph name="SETTINGS_TITLE" />

@@ -1,11 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,7 +20,7 @@
 #include "ash/shell.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/test/test_browser_dialog_mac.h"
 #endif
 
@@ -42,6 +44,9 @@ class WidgetCloser {
                                   weak_ptr_factory_.GetWeakPtr(), async));
   }
 
+  WidgetCloser(const WidgetCloser&) = delete;
+  WidgetCloser& operator=(const WidgetCloser&) = delete;
+
  private:
   void CloseWidget(bool async) {
     if (async)
@@ -50,11 +55,9 @@ class WidgetCloser {
       widget_->CloseNow();
   }
 
-  views::Widget* widget_;
+  raw_ptr<views::Widget> widget_;
 
   base::WeakPtrFactory<WidgetCloser> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetCloser);
 };
 
 #endif  // defined(TOOLKIT_VIEWS)
@@ -115,7 +118,7 @@ bool TestBrowserDialog::VerifyUi() {
 // TODO(https://crbug.com/958242) support Mac for pixel tests.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   dialog_widget->SetBlockCloseForTesting(true);
   // Deactivate before taking screenshot. Deactivated dialog pixel outputs
   // is more predictable than activated dialog.
@@ -135,7 +138,7 @@ bool TestBrowserDialog::VerifyUi() {
   }
   if (is_active)
     dialog_widget->Activate();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   if (!should_verify_dialog_bounds_)
     return true;
@@ -162,7 +165,7 @@ bool TestBrowserDialog::VerifyUi() {
 }
 
 void TestBrowserDialog::WaitForUserDismissal() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   internal::TestBrowserDialogInteractiveSetUp();
 #endif
 

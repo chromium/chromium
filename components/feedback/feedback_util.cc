@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/feedback/feedback_report.h"
 #include "third_party/zlib/google/zip.h"
 
@@ -61,6 +62,12 @@ std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info) {
       continue;
     }
 
+    if (key == feedback::FeedbackReport::kFeedbackUserCtlConsentKey) {
+      // Avoid adding user consent to the system_logs.txt file. It just needs to
+      // be in the product specific data.
+      continue;
+    }
+
     std::string value = iter.second;
     base::TrimString(value, "\n ", &value);
     if (value.find("\n") != std::string::npos) {
@@ -78,7 +85,7 @@ std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info) {
 // not pass on OS_WIN.
 // This function is only called on ChromeOS and Lacros build.
 // See https://crbug.com/1119560.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 bool ReadEndOfFile(const base::FilePath& path,
                    size_t max_size,
                    std::string* contents) {
@@ -135,6 +142,6 @@ bool ReadEndOfFile(const base::FilePath& path,
 
   return true;
 }
-#endif  // !OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace feedback_util

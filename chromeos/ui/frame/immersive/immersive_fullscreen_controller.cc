@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,14 +45,15 @@ namespace {
 class ImmersiveWindowTargeter : public aura::WindowTargeter {
  public:
   ImmersiveWindowTargeter() = default;
+
+  ImmersiveWindowTargeter(const ImmersiveWindowTargeter&) = delete;
+  ImmersiveWindowTargeter& operator=(const ImmersiveWindowTargeter&) = delete;
+
   ~ImmersiveWindowTargeter() override = default;
 
   bool ShouldUseExtendedBounds(const aura::Window* target) const override {
     return target->parent() == window();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveWindowTargeter);
 };
 
 // The delay in milliseconds between the mouse stopping at the top edge of the
@@ -418,7 +419,7 @@ void ImmersiveFullscreenController::UpdateTopEdgeHoverTimer(
   top_edge_hover_timer_.Stop();
   // Timer is stopped when |this| is destroyed, hence Unretained() is safe.
   top_edge_hover_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kMouseRevealDelayMs),
+      FROM_HERE, base::Milliseconds(kMouseRevealDelayMs),
       base::BindOnce(
           &ImmersiveFullscreenController::AcquireLocatedEventRevealedLock,
           base::Unretained(this)));
@@ -466,7 +467,8 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
     // overshoots slightly.
     if (event && event->type() == ui::ET_MOUSE_MOVED) {
       const int kBoundsOffsetY = 8;
-      hit_bounds_in_screen[i].Inset(0, 0, 0, -kBoundsOffsetY);
+      hit_bounds_in_screen[i].Inset(
+          gfx::Insets::TLBR(0, 0, -kBoundsOffsetY, 0));
     }
 
     if (hit_bounds_in_screen[i].Contains(location_in_screen)) {
@@ -544,9 +546,9 @@ base::TimeDelta ImmersiveFullscreenController::GetAnimationDuration(
     case ANIMATE_NO:
       return base::TimeDelta();
     case ANIMATE_SLOW:
-      return base::TimeDelta::FromMilliseconds(400);
+      return base::Milliseconds(400);
     case ANIMATE_FAST:
-      return base::TimeDelta::FromMilliseconds(200);
+      return base::Milliseconds(200);
   }
   NOTREACHED();
   return base::TimeDelta();
@@ -614,7 +616,7 @@ void ImmersiveFullscreenController::MaybeEndReveal(Animate animate) {
 
   reveal_state_ = SLIDING_CLOSED;
   base::TimeDelta duration = GetAnimationDuration(animate);
-  if (duration > base::TimeDelta()) {
+  if (duration.is_positive()) {
     animation_->SetSlideDuration(duration);
     animation_->Hide();
   } else {
@@ -772,7 +774,8 @@ void ImmersiveFullscreenController::EnableTouchInsets(bool enable) {
     return;
 
   widget_->GetNativeWindow()->targeter()->SetInsets(
-      {}, gfx::Insets(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0, 0));
+      {}, gfx::Insets::TLBR(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0,
+                            0));
 }
 
 }  // namespace chromeos

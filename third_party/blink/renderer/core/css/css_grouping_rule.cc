@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -141,9 +141,10 @@ CSSRule* CSSGroupingRule::Item(unsigned index) const {
   DCHECK_EQ(child_rule_cssom_wrappers_.size(),
             group_rule_->ChildRules().size());
   Member<CSSRule>& rule = child_rule_cssom_wrappers_[index];
-  if (!rule)
+  if (!rule) {
     rule = group_rule_->ChildRules()[index]->CreateCSSOMWrapper(
-        const_cast<CSSGroupingRule*>(this));
+        index, const_cast<CSSGroupingRule*>(this));
+  }
   return rule.Get();
 }
 

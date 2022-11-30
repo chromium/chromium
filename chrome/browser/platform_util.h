@@ -1,14 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PLATFORM_UTIL_H_
 #define CHROME_BROWSER_PLATFORM_UTIL_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -72,7 +71,11 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path);
 // Open the given external protocol URL in the desktop's default manner.
 // (For example, mailto: URLs in the default mail user agent.)
 // Must be called from the UI thread.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OpenExternal(Profile* profile, const GURL& url);
+#else
+void OpenExternal(const GURL& url);
+#endif
 
 // Get the top level window for the native view. This can return NULL.
 gfx::NativeWindow GetTopLevel(gfx::NativeView view);
@@ -96,10 +99,10 @@ void ActivateWindow(gfx::NativeWindow window);
 // whether the view has the visible attribute set.
 bool IsVisible(gfx::NativeView view);
 
-#if defined(OS_MAC)
-// On 10.7+, back and forward swipe gestures can be triggered using a scroll
-// gesture, if enabled in System Preferences. This function returns true if
-// the feature is supported and enabled, and false otherwise.
+#if BUILDFLAG(IS_MAC)
+// On the Mac, back and forward swipe gestures can be triggered using a scroll
+// gesture, if enabled in System Preferences. This function returns true if the
+// feature is enabled, and false otherwise.
 bool IsSwipeTrackingFromScrollEventsEnabled();
 
 // Returns the active window which accepts keyboard inputs.

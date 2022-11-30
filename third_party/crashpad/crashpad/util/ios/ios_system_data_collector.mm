@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,9 +49,28 @@ std::string ReadStringSysctlByName(const char* name) {
   return value;
 }
 
+template <typename T, void (T::*M)(void)>
+void AddObserver(CFStringRef notification_name, T* observer) {
+  CFNotificationCenterAddObserver(
+      CFNotificationCenterGetLocalCenter(),
+      observer,
+      [](CFNotificationCenterRef center,
+         void* observer_vp,
+         CFNotificationName name,
+         const void* object,
+         CFDictionaryRef userInfo) {
+        T* observer = reinterpret_cast<T*>(observer_vp);
+        (observer->*M)();
+      },
+      notification_name,
+      nullptr,
+      CFNotificationSuspensionBehaviorDeliverImmediately);
+}
+
 }  // namespace
 
 namespace crashpad {
+namespace internal {
 
 IOSSystemDataCollector::IOSSystemDataCollector()
     : major_version_(0),
@@ -76,6 +95,9 @@ IOSSystemDataCollector::IOSSystemDataCollector()
   processor_count_ =
       base::saturated_cast<int>([[NSProcessInfo processInfo] processorCount]);
   build_ = ReadStringSysctlByName("kern.osversion");
+  bundle_identifier_ =
+      base::SysNSStringToUTF8([[NSBundle mainBundle] bundleIdentifier]);
+  is_extension_ = [[NSBundle mainBundle].bundlePath hasSuffix:@"appex"];
 
 #if defined(ARCH_CPU_X86_64)
   cpu_vendor_ = ReadStringSysctlByName("machdep.cpu.vendor");
@@ -87,7 +109,7 @@ IOSSystemDataCollector::IOSSystemDataCollector()
   // util/mac/mac_util.cc).
   const char* model = getenv("SIMULATOR_MODEL_IDENTIFIER");
   if (model == nullptr) {
-    switch (UI_USER_INTERFACE_IDIOM()) {
+    switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
       case UIUserInterfaceIdiomPhone:
         model = "iPhone";
         break;
@@ -119,45 +141,38 @@ IOSSystemDataCollector::~IOSSystemDataCollector() {
 
 void IOSSystemDataCollector::OSVersion(int* major,
                                        int* minor,
-                                       int* bugfix,
-                                       std::string* build) const {
+                                       int* bugfix) const {
   *major = major_version_;
   *minor = minor_version_;
   *bugfix = patch_version_;
-  build->assign(build_);
 }
 
 void IOSSystemDataCollector::InstallHandlers() {
   // Timezone.
-  CFNotificationCenterAddObserver(
-      CFNotificationCenterGetLocalCenter(),
-      this,
-      IOSSystemDataCollector::SystemTimeZoneDidChangeNotificationHandler,
-      reinterpret_cast<CFStringRef>(NSSystemTimeZoneDidChangeNotification),
-      nullptr,
-      CFNotificationSuspensionBehaviorDeliverImmediately);
+  AddObserver<IOSSystemDataCollector,
+              &IOSSystemDataCollector::SystemTimeZoneDidChangeNotification>(
+      (__bridge CFStringRef)NSSystemTimeZoneDidChangeNotification, this);
   SystemTimeZoneDidChangeNotification();
 
   // Orientation.
-  CFNotificationCenterAddObserver(
-      CFNotificationCenterGetLocalCenter(),
-      this,
-      IOSSystemDataCollector::OrientationDidChangeNotificationHandler,
-      reinterpret_cast<CFStringRef>(UIDeviceOrientationDidChangeNotification),
-      nullptr,
-      CFNotificationSuspensionBehaviorDeliverImmediately);
+  AddObserver<IOSSystemDataCollector,
+              &IOSSystemDataCollector::OrientationDidChangeNotification>(
+      (__bridge CFStringRef)UIDeviceOrientationDidChangeNotification, this);
   OrientationDidChangeNotification();
-}
 
-// static
-void IOSSystemDataCollector::SystemTimeZoneDidChangeNotificationHandler(
-    CFNotificationCenterRef center,
-    void* observer,
-    CFStringRef name,
-    const void* object,
-    CFDictionaryRef userInfo) {
-  static_cast<IOSSystemDataCollector*>(observer)
-      ->SystemTimeZoneDidChangeNotification();
+  // Foreground/Background. Extensions shouldn't use UIApplication*.
+  if (!is_extension_) {
+    AddObserver<
+        IOSSystemDataCollector,
+        &IOSSystemDataCollector::ApplicationDidChangeActiveNotification>(
+        (__bridge CFStringRef)UIApplicationDidBecomeActiveNotification, this);
+    AddObserver<
+        IOSSystemDataCollector,
+        &IOSSystemDataCollector::ApplicationDidChangeActiveNotification>(
+        (__bridge CFStringRef)UIApplicationDidEnterBackgroundNotification,
+        this);
+    ApplicationDidChangeActiveNotification();
+  }
 }
 
 void IOSSystemDataCollector::SystemTimeZoneDidChangeNotification() {
@@ -195,20 +210,20 @@ void IOSSystemDataCollector::SystemTimeZoneDidChangeNotification() {
   }
 }
 
-// static
-void IOSSystemDataCollector::OrientationDidChangeNotificationHandler(
-    CFNotificationCenterRef center,
-    void* observer,
-    CFStringRef name,
-    const void* object,
-    CFDictionaryRef userInfo) {
-  static_cast<IOSSystemDataCollector*>(observer)
-      ->OrientationDidChangeNotification();
-}
-
 void IOSSystemDataCollector::OrientationDidChangeNotification() {
   orientation_ =
       base::saturated_cast<int>([[UIDevice currentDevice] orientation]);
 }
 
+void IOSSystemDataCollector::ApplicationDidChangeActiveNotification() {
+  dispatch_assert_queue_debug(dispatch_get_main_queue());
+  bool old_active = active_;
+  active_ = [UIApplication sharedApplication].applicationState ==
+            UIApplicationStateActive;
+  if (active_ != old_active && active_application_callback_) {
+    active_application_callback_(active_);
+  }
+}
+
+}  // namespace internal
 }  // namespace crashpad

@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -15,28 +17,43 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace {
-constexpr int kCustomizationBubbleHeight = 495;
+constexpr int kCustomizationBubbleHeight = 515;
 constexpr int kCustomizationBubbleWidth = 290;
 }  // namespace
 
 ProfileCustomizationBubbleView::~ProfileCustomizationBubbleView() = default;
 
 // static
-void ProfileCustomizationBubbleView::CreateBubble(Profile* profile,
-                                                  views::View* anchor_view) {
+ProfileCustomizationBubbleView* ProfileCustomizationBubbleView::CreateBubble(
+    Browser* browser,
+    views::View* anchor_view) {
+  // With `kSyncPromoAfterSigninIntercept` enabled, the profile customization
+  // should be always displayed in a modal dialog. Once the feature is launched,
+  // `ProfileCustomizationBubbleView` will be removed and all the callers will
+  // migrate to `ShowModalProfileCustomizationDialog()`.
+  // Return value is only used in tests, so it's fine to return nullptr if a
+  // `ProfileCustomizationBubbleView` was not created.
+  if (base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) {
+    browser->signin_view_controller()->ShowModalProfileCustomizationDialog();
+    return nullptr;
+  }
+
+  ProfileCustomizationBubbleView* bubble_view =
+      new ProfileCustomizationBubbleView(browser->profile(), anchor_view);
   // The widget is owned by the views system.
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
-      new ProfileCustomizationBubbleView(profile, anchor_view));
+  views::Widget* widget =
+      views::BubbleDialogDelegateView::CreateBubble(bubble_view);
   // TODO(droger): Delay showing the bubble until the web view is loaded.
   widget->Show();
+  return bubble_view;
 }
 
 ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
@@ -58,7 +75,7 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
   SetInitiallyFocusedView(web_view.get());
   DCHECK(web_ui);
   web_ui->Initialize(
-      base::BindOnce(&ProfileCustomizationBubbleView::OnDoneButtonClicked,
+      base::BindOnce(&ProfileCustomizationBubbleView::OnCompletionButtonClicked,
                      // Unretained is fine because this owns the web view.
                      base::Unretained(this)));
   AddChildView(std::move(web_view));
@@ -68,9 +85,21 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
-void ProfileCustomizationBubbleView::OnDoneButtonClicked() {
-  GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+void ProfileCustomizationBubbleView::OnCompletionButtonClicked(
+    ProfileCustomizationHandler::CustomizationResult customization_result) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      GetAnchorView()->GetWidget()->GetNativeWindow());
+  views::Widget::ClosedReason closed_reason;
+  switch (customization_result) {
+    case ProfileCustomizationHandler::CustomizationResult::kDone:
+      closed_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
+      break;
+    case ProfileCustomizationHandler::CustomizationResult::kSkip:
+      closed_reason = views::Widget::ClosedReason::kCancelButtonClicked;
+      break;
+  }
+  GetWidget()->CloseWithReason(closed_reason);
+  browser_view->MaybeShowProfileSwitchIPH();
 }
 
 BEGIN_METADATA(ProfileCustomizationBubbleView, views::BubbleDialogDelegateView)
@@ -84,5 +113,5 @@ void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubbleInternal(
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();
   DCHECK(anchor_view);
-  ProfileCustomizationBubbleView::CreateBubble(browser->profile(), anchor_view);
+  ProfileCustomizationBubbleView::CreateBubble(browser, anchor_view);
 }

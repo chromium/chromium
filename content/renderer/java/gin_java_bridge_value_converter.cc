@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 
 #include <cmath>
 
-#include "base/macros.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_value.h"
 #include "content/renderer/java/gin_java_bridge_object.h"
 #include "gin/array_buffer.h"
+#include "v8/include/v8-typed-array.h"
 
 namespace content {
 
@@ -32,7 +33,8 @@ GinJavaBridgeValueConverter::~GinJavaBridgeValueConverter() {
 v8::Local<v8::Value> GinJavaBridgeValueConverter::ToV8Value(
     const base::Value* value,
     v8::Local<v8::Context> context) const {
-  return converter_->ToV8Value(value, context);
+  CHECK(value);
+  return converter_->ToV8Value(*value, context);
 }
 
 std::unique_ptr<base::Value> GinJavaBridgeValueConverter::FromV8Value(
@@ -76,6 +78,9 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
         new TypedArraySerializerImpl<ElementType, ListType>(typed_array));
   }
 
+  TypedArraySerializerImpl(const TypedArraySerializerImpl&) = delete;
+  TypedArraySerializerImpl& operator=(const TypedArraySerializerImpl&) = delete;
+
   void serializeTo(char* data,
                    size_t data_length,
                    base::ListValue* out) override {
@@ -88,9 +93,10 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
       // supports only int for the integer type, and the uint8 and the uint16
       // with Base::Value since they fit into int.
       if (std::is_same<ElementType, uint32_t>::value) {
-        out->Append(GinJavaBridgeValue::CreateUInt32Value(*element));
+        out->Append(base::Value::FromUniquePtrValue(
+            GinJavaBridgeValue::CreateUInt32Value(*element)));
       } else {
-        out->Append(std::make_unique<base::Value>(ListType(*element)));
+        out->Append(base::Value(ListType(*element)));
       }
     }
   }
@@ -100,8 +106,6 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
       : typed_array_(typed_array) {}
 
   v8::Local<v8::TypedArray> typed_array_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedArraySerializerImpl);
 };
 
 // static
@@ -126,7 +130,7 @@ std::unique_ptr<TypedArraySerializer> TypedArraySerializer::Create(
     return TypedArraySerializerImpl<double, double>::Create(typed_array);
   }
   NOTREACHED();
-  return std::unique_ptr<TypedArraySerializer>();
+  return nullptr;
 }
 
 }  // namespace

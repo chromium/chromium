@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "ui/gfx/geometry/angle_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/vr/windows/d3d11_texture_helper.h"
 #endif
 
@@ -23,7 +25,11 @@ device::mojom::XRRenderInfoPtr GetRenderInfo(
   device::mojom::XRRenderInfoPtr result = device::mojom::XRRenderInfo::New();
 
   result->frame_id = frame_data.frame_id;
-  result->pose = frame_data.pose.Clone();
+  result->mojo_from_viewer = frame_data.mojo_from_viewer.Clone();
+
+  for (size_t i = 0; i < frame_data.views.size(); i++) {
+    result->views.push_back(frame_data.views[i]->Clone());
+  }
 
   return result;
 }
@@ -114,9 +120,11 @@ void XRCompositorCommon::SubmitFrameDrawnIntoTexture(
   NOTREACHED();
 }
 
+#if BUILDFLAG(IS_WIN)
 void XRCompositorCommon::SubmitFrameWithTextureHandle(
     int16_t frame_index,
-    mojo::PlatformHandle texture_handle) {
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token) {
   TRACE_EVENT1("xr", "SubmitFrameWithTextureHandle", "frameIndex", frame_index);
   webxr_has_pose_ = false;
   // Tell the browser that WebXR has submitted a frame.
@@ -138,18 +146,17 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
   pending_frame_->waiting_for_webxr_ = false;
   pending_frame_->submit_frame_time_ = base::TimeTicks::Now();
 
-#if defined(OS_WIN)
   base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
                                               ? texture_handle.TakeHandle()
                                               : base::win::ScopedHandle();
-  texture_helper_.SetSourceTexture(std::move(scoped_handle), left_webxr_bounds_,
-                                   right_webxr_bounds_);
+  texture_helper_.SetSourceTexture(std::move(scoped_handle), sync_token,
+                                   left_webxr_bounds_, right_webxr_bounds_);
   pending_frame_->webxr_submitted_ = true;
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();
-#endif
 }
+#endif
 
 void XRCompositorCommon::CleanUp() {
   submit_client_.reset();
@@ -289,6 +296,7 @@ void XRCompositorCommon::StartRuntimeFinish(
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->device_config->uses_input_eventing = UsesInputEventing();
   session->device_config->enable_anti_aliasing = CanEnableAntiAliasing();
+  session->device_config->views = GetDefaultViews();
   session->enviroment_blend_mode = GetEnvironmentBlendMode(options->mode);
   session->interaction_mode = GetInteractionMode(options->mode);
 
@@ -306,7 +314,6 @@ void XRCompositorCommon::ExitPresent() {
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   submit_client_.reset();
-  StopRuntime();
 
   pending_frame_.reset();
   delayed_get_frame_data_callback_.Reset();
@@ -319,6 +326,13 @@ void XRCompositorCommon::ExitPresent() {
   overlay_receiver_.reset();
 
   texture_helper_.SetSourceAndOverlayVisible(false, false);
+
+  // Don't call StopRuntime until this thread has finished the rest of the work.
+  // This is to prevent the OpenXrApiWrapper from being deleted before its
+  // cleanup work has finished.
+  task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&XRCompositorCommon::StopRuntime, base::Unretained(this)));
 
   if (on_presentation_ended_) {
     main_thread_task_runner_->PostTask(FROM_HERE,
@@ -394,6 +408,7 @@ void XRCompositorCommon::GetFrameData(
     // shouldn't get new ones until this resolves or presentation ends/restarts.
     if (delayed_get_frame_data_callback_) {
       mojo::ReportBadMessage("Multiple outstanding GetFrameData calls");
+      return;
     }
     delayed_get_frame_data_callback_ = base::BindOnce(
         &XRCompositorCommon::GetFrameData, base::Unretained(this),
@@ -406,12 +421,21 @@ void XRCompositorCommon::GetFrameData(
   pending_frame_->webxr_has_pose_ = true;
   pending_frame_->sent_frame_data_time_ = base::TimeTicks::Now();
 
-  // If the stage parameters have been updated since the last frame that was
-  // sent, send the updated values.
-  pending_frame_->frame_data_->stage_parameters_id = stage_parameters_id_;
-  if (options->stage_parameters_id != stage_parameters_id_) {
-    pending_frame_->frame_data_->stage_parameters =
-        current_stage_parameters_.Clone();
+  // TODO(https://crbug.com/1218135): The lack of frame_data_ here indicates
+  // that we probably should have deferred this call, but it matches the
+  // behavior from before the stage parameters were updated in this function and
+  // avoids a crash. Likely the deferral above should check if we're awaiting
+  // either the webxr or overlay submit.
+  if (pending_frame_->frame_data_) {
+    // If the stage parameters have been updated since the last frame that was
+    // sent, send the updated values.
+    pending_frame_->frame_data_->stage_parameters_id = stage_parameters_id_;
+    if (options->stage_parameters_id != stage_parameters_id_) {
+      pending_frame_->frame_data_->stage_parameters =
+          current_stage_parameters_.Clone();
+    }
+  } else {
+    TRACE_EVENT0("xr", "GetFrameData Missing FrameData");
   }
 
   // Yield here to let the event queue process pending mojo messages,
@@ -468,6 +492,7 @@ void XRCompositorCommon::GetEnvironmentIntegrationProvider(
 void XRCompositorCommon::SubmitOverlayTexture(
     int16_t frame_id,
     mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token,
     const gfx::RectF& left_bounds,
     const gfx::RectF& right_bounds,
     SubmitOverlayTextureCallback overlay_submit_callback) {
@@ -485,9 +510,9 @@ void XRCompositorCommon::SubmitOverlayTexture(
 
   pending_frame_->waiting_for_overlay_ = false;
 
-#if defined(OS_WIN)
-  texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), left_bounds,
-                                    right_bounds);
+#if BUILDFLAG(IS_WIN)
+  texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), sync_token,
+                                    left_bounds, right_bounds);
   pending_frame_->overlay_submitted_ = true;
 
   // Regardless of success - try to composite what we have.

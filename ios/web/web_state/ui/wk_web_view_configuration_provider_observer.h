@@ -1,11 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_WEB_STATE_UI_WK_WEB_VIEW_CONFIGURATION_PROVIDER_OBSERVER_H_
 #define IOS_WEB_WEB_STATE_UI_WK_WEB_VIEW_CONFIGURATION_PROVIDER_OBSERVER_H_
-
-#include "base/macros.h"
 
 @class WKWebViewConfiguration;
 
@@ -21,13 +19,15 @@ class WKWebViewConfigurationProviderObserver {
       WKWebViewConfigurationProvider* config_provider,
       WKWebViewConfiguration* new_config) {}
 
+  WKWebViewConfigurationProviderObserver(
+      const WKWebViewConfigurationProviderObserver&) = delete;
+  WKWebViewConfigurationProviderObserver& operator=(
+      const WKWebViewConfigurationProviderObserver&) = delete;
+
   virtual ~WKWebViewConfigurationProviderObserver() = default;
 
  protected:
   WKWebViewConfigurationProviderObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WKWebViewConfigurationProviderObserver);
 };
 
 }  // namespace web

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace shared_highlighting {
 
@@ -29,15 +29,15 @@ class TextFragment {
   // special characters have been escaped. The given string is expected to have
   // the traditional text fragment format:
   // [prefix-,]textStart[,textEnd][,-suffix]
-  // Returns |base::nullopt| if parsing failed.
-  static base::Optional<TextFragment> FromEscapedString(
+  // Returns |absl::nullopt| if parsing failed.
+  static absl::optional<TextFragment> FromEscapedString(
       std::string escaped_string);
 
   // Returns a TextFragment instance created from a dictionary |value|
   // containing the right set of values. The values stored in |value| must be
   // already unescaped.
-  // Returns |base::nullopt| if parsing failed.
-  static base::Optional<TextFragment> FromValue(const base::Value* value);
+  // Returns |absl::nullopt| if parsing failed.
+  static absl::optional<TextFragment> FromValue(const base::Value* value);
 
   const std::string text_start() const { return text_start_; }
   const std::string text_end() const { return text_end_; }

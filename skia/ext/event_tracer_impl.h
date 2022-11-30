@@ -1,12 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKIA_EXT_TRACE_EVENT_H_
-#define SKIA_EXT_TRACE_EVENT_H_
+#ifndef SKIA_EXT_EVENT_TRACER_IMPL_H_
+#define SKIA_EXT_EVENT_TRACER_IMPL_H_
 
 #include "include/core/SkTypes.h"
 
 SK_API void InitSkiaEventTracer();
 
-#endif  // SKIA_EXT_TRACE_EVENT_H_
+#endif  // SKIA_EXT_EVENT_TRACER_IMPL_H_

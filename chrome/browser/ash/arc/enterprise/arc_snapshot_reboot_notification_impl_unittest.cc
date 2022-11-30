@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class ArcSnapshotRebootNotificationTest : public testing::Test {
     tester_->SimulateClick(
         NotificationHandler::Type::TRANSIENT,
         ArcSnapshotRebootNotificationImpl::get_notification_id_for_testing(),
-        base::nullopt, base::nullopt);
+        absl::nullopt, absl::nullopt);
   }
 
   void ClickOnRestartButton() {
@@ -53,7 +53,7 @@ class ArcSnapshotRebootNotificationTest : public testing::Test {
         NotificationHandler::Type::TRANSIENT,
         ArcSnapshotRebootNotificationImpl::get_notification_id_for_testing(),
         ArcSnapshotRebootNotificationImpl::get_restart_button_id_for_testing(),
-        base::nullopt);
+        absl::nullopt);
   }
 
   void OnNotificationAdded() { is_notification_shown_ = true; }

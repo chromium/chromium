@@ -1,6 +1,6 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be found
-// in the LICENSE file.
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_BYOB_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_BYOB_READER_H_
@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -76,12 +77,24 @@ class CORE_EXPORT ReadableStreamBYOBReader
     Member<StreamPromiseResolver> resolver_;
   };
 
+  //
+  // Readable stream reader abstract operations
+  //
+
   // https://streams.spec.whatwg.org/#readable-stream-byob-reader-read
   static void Read(ScriptState*,
                    ReadableStreamBYOBReader*,
                    NotShared<DOMArrayBufferView> view,
                    ReadIntoRequest*,
                    ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreambyobreadererrorreadintorequests
+  static void ErrorReadIntoRequests(ScriptState*,
+                                    ReadableStreamBYOBReader*,
+                                    v8::Local<v8::Value> e);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreambyobreaderrelease
+  static void Release(ScriptState*, ReadableStreamBYOBReader*);
 
   HeapDeque<Member<ReadIntoRequest>> read_into_requests_;
 };

@@ -1,0 +1,15 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("native_test_instrumentation_test_runner_java") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/build/gtest_apk/NativeTestInstrumentationTestRunner.java",
+    "java/src/org/chromium/build/gtest_apk/NativeTestIntent.java",
+    "java/src/org/chromium/build/gtest_apk/TestStatusIntent.java",
+    "java/src/org/chromium/build/gtest_apk/TestStatusReceiver.java",
+  ]
+}

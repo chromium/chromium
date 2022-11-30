@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ class WebState;
 // OverlayRequestQueue for a given Browser and OverlayModality.
 class OverlayRequestQueueCallbackInstaller {
  public:
-  // Creates an installer for requests in |web_state|'s queue at |modality|.
+  // Creates an installer for requests in `web_state`'s queue at `modality`.
   static std::unique_ptr<OverlayRequestQueueCallbackInstaller> Create(
       web::WebState* web_state,
       OverlayModality modality);

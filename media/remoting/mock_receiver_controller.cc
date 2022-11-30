@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/remoting/mock_receiver_controller.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/remoting/test_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -101,17 +102,15 @@ MockReceiverController* MockReceiverController::GetInstance() {
 
 MockReceiverController::MockReceiverController()
     : mock_remotee_(new MockRemotee()) {
-  // Overwrites |rpc_broker_|.
-  rpc_broker_.SetMessageCallbackForTesting(base::BindRepeating(
-      &MockReceiverController::OnSendRpc, base::Unretained(this)));
+  // Overwrites |rpc_messenger_|.
+  rpc_messenger_.set_send_message_cb_for_testing(
+      [this](std::vector<uint8_t> message) { OnSendRpc(message); });
 }
 
 MockReceiverController::~MockReceiverController() = default;
 
-void MockReceiverController::OnSendRpc(
-    std::unique_ptr<std::vector<uint8_t>> message) {
-  std::vector<uint8_t> binary_message = *message;
-  ReceiverController::OnMessageFromSource(binary_message);
+void MockReceiverController::OnSendRpc(std::vector<uint8_t> message) {
+  ReceiverController::OnMessageFromSource(message);
 }
 
 }  // namespace remoting

@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -147,7 +149,8 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
       node_suggestion_marker_pairs_sorted_by_length.front().second.Get());
 
   suggestion_infos_with_node_and_highlight_color.highlight_color =
-      (first_suggestion_marker->SuggestionHighlightColor() == 0)
+      (first_suggestion_marker->SuggestionHighlightColor() ==
+       Color::kTransparent)
           ? LayoutTheme::TapHighlightColor()
           : first_suggestion_marker->SuggestionHighlightColor();
 
@@ -169,14 +172,15 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
       const String& suggestion = marker_suggestions[suggestion_index];
       if (suggestion_infos.size() == max_number_of_suggestions)
         break;
-      if (std::find_if(suggestion_infos.begin(), suggestion_infos.end(),
-                       [marker, &suggestion](const TextSuggestionInfo& info) {
-                         return info.span_start ==
-                                    (int32_t)marker->StartOffset() &&
-                                info.span_end == (int32_t)marker->EndOffset() &&
-                                info.suggestion == suggestion;
-                       }) != suggestion_infos.end())
+      if (base::ranges::any_of(
+              suggestion_infos,
+              [marker, &suggestion](const TextSuggestionInfo& info) {
+                return info.span_start == (int32_t)marker->StartOffset() &&
+                       info.span_end == (int32_t)marker->EndOffset() &&
+                       info.suggestion == suggestion;
+              })) {
         continue;
+      }
 
       TextSuggestionInfo suggestion_info;
       suggestion_info.marker_tag = marker->Tag();
@@ -238,7 +242,7 @@ void TextSuggestionController::HandlePotentialSuggestionTap(
     return;
 
   const auto* marker = DynamicTo<SuggestionMarker>(node_and_marker.second);
-  if (marker && marker->Suggestions().IsEmpty())
+  if (marker && marker->Suggestions().empty())
     return;
 
   if (!text_suggestion_host_.is_bound()) {
@@ -270,7 +274,7 @@ void TextSuggestionController::ReplaceActiveSuggestionRange(
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::ActiveSuggestion());
 
-  if (node_marker_pairs.IsEmpty())
+  if (node_marker_pairs.empty())
     return;
 
   const Text* const marker_text_node = node_marker_pairs.front().first;
@@ -395,7 +399,7 @@ void TextSuggestionController::SuggestionMenuTimeoutCallback(
       node_suggestion_marker_pairs =
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Suggestion());
-  if (!node_suggestion_marker_pairs.IsEmpty()) {
+  if (!node_suggestion_marker_pairs.empty()) {
     ShowSuggestionMenu(node_suggestion_marker_pairs, max_number_of_suggestions);
     return;
   }
@@ -405,7 +409,7 @@ void TextSuggestionController::SuggestionMenuTimeoutCallback(
       node_spelling_marker_pairs =
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Misspelling());
-  if (!node_spelling_marker_pairs.IsEmpty())
+  if (!node_spelling_marker_pairs.empty())
     ShowSpellCheckMenu(node_spelling_marker_pairs.front());
 
   // If we get here, that means the user tapped on a spellcheck or suggestion
@@ -427,9 +431,9 @@ void TextSuggestionController::ShowSpellCheckMenu(
   is_suggestion_menu_open_ = true;
   GetFrame().Selection().SetCaretEnabled(false);
   GetDocument().Markers().AddActiveSuggestionMarker(
-      active_suggestion_range, SK_ColorTRANSPARENT,
+      active_suggestion_range, Color::kTransparent,
       ui::mojom::ImeTextSpanThickness::kNone,
-      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, SK_ColorTRANSPARENT,
+      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, Color::kTransparent,
       LayoutTheme::GetTheme().PlatformActiveSpellingMarkerHighlightColor());
 
   Vector<String> suggestions;
@@ -443,12 +447,13 @@ void TextSuggestionController::ShowSpellCheckMenu(
     suggestion_ptrs.push_back(std::move(info_ptr));
   }
 
-  const IntRect& absolute_bounds = GetFrame().Selection().AbsoluteCaretBounds();
-  const IntRect& viewport_bounds =
+  const gfx::Rect& absolute_bounds =
+      GetFrame().Selection().AbsoluteCaretBounds();
+  const gfx::Rect& viewport_bounds =
       GetFrame().View()->FrameToViewport(absolute_bounds);
 
   text_suggestion_host_->ShowSpellCheckSuggestionMenu(
-      viewport_bounds.X(), viewport_bounds.MaxY(), std::move(misspelled_word),
+      viewport_bounds.x(), viewport_bounds.bottom(), std::move(misspelled_word),
       std::move(suggestion_ptrs));
 }
 
@@ -456,7 +461,7 @@ void TextSuggestionController::ShowSuggestionMenu(
     const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
         node_suggestion_marker_pairs,
     size_t max_number_of_suggestions) {
-  DCHECK(!node_suggestion_marker_pairs.IsEmpty());
+  DCHECK(!node_suggestion_marker_pairs.empty());
 
   SuggestionInfosWithNodeAndHighlightColor
       suggestion_infos_with_node_and_highlight_color = ComputeSuggestionInfos(
@@ -464,7 +469,7 @@ void TextSuggestionController::ShowSuggestionMenu(
 
   Vector<TextSuggestionInfo>& suggestion_infos =
       suggestion_infos_with_node_and_highlight_color.suggestion_infos;
-  if (suggestion_infos.IsEmpty())
+  if (suggestion_infos.empty())
     return;
 
   int span_union_start = suggestion_infos[0].span_start;
@@ -494,8 +499,8 @@ void TextSuggestionController::ShowSuggestionMenu(
                                     Position(text_node, span_union_end));
 
   GetDocument().Markers().AddActiveSuggestionMarker(
-      marker_range, SK_ColorTRANSPARENT, ui::mojom::ImeTextSpanThickness::kThin,
-      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, SK_ColorTRANSPARENT,
+      marker_range, Color::kTransparent, ui::mojom::ImeTextSpanThickness::kThin,
+      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, Color::kTransparent,
       suggestion_infos_with_node_and_highlight_color.highlight_color);
 
   is_suggestion_menu_open_ = true;
@@ -523,12 +528,13 @@ void TextSuggestionController::CallMojoShowTextSuggestionMenu(
     suggestion_info_ptrs.push_back(std::move(info_ptr));
   }
 
-  const IntRect& absolute_bounds = GetFrame().Selection().AbsoluteCaretBounds();
-  const IntRect& viewport_bounds =
+  const gfx::Rect& absolute_bounds =
+      GetFrame().Selection().AbsoluteCaretBounds();
+  const gfx::Rect& viewport_bounds =
       GetFrame().View()->FrameToViewport(absolute_bounds);
 
   text_suggestion_host_->ShowTextSuggestionMenu(
-      viewport_bounds.X(), viewport_bounds.MaxY(), misspelled_word,
+      viewport_bounds.x(), viewport_bounds.bottom(), misspelled_word,
       std::move(suggestion_info_ptrs));
 }
 

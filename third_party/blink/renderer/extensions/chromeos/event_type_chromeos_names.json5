@@ -1,0 +1,13 @@
+{
+  metadata: {
+    namespace: "event_type_names",
+    suffix: "ChromeOS",
+  },
+
+  data: [
+    "acceleratordown",
+    "acceleratorup",
+    "windowopened",
+    "windowclosed",
+  ]
+}

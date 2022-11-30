@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -20,11 +19,10 @@ class FormSuggestionTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<FormSuggestionTabHelper> {
  public:
-  ~FormSuggestionTabHelper() override;
+  FormSuggestionTabHelper(const FormSuggestionTabHelper&) = delete;
+  FormSuggestionTabHelper& operator=(const FormSuggestionTabHelper&) = delete;
 
-  // Creates a FormSuggestionTabHelper and attaches it to the given |web_state|.
-  static void CreateForWebState(web::WebState* web_state,
-                                NSArray<id<FormSuggestionProvider>>* providers);
+  ~FormSuggestionTabHelper() override;
 
   // Returns an object that can provide an input accessory view from the
   // FormSuggestionController.
@@ -43,8 +41,6 @@ class FormSuggestionTabHelper
   __strong FormSuggestionController* controller_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FormSuggestionTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_SUGGESTION_TAB_HELPER_H_

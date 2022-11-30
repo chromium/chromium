@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <mach/mach.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_support_export.h"
@@ -25,6 +24,9 @@ class IPC_MESSAGE_SUPPORT_EXPORT MachPortAttachmentMac
   // ownership of the result. Should only be called by the sender of a Chrome
   // IPC message.
   explicit MachPortAttachmentMac(mach_port_t mach_port);
+
+  MachPortAttachmentMac(const MachPortAttachmentMac&) = delete;
+  MachPortAttachmentMac& operator=(const MachPortAttachmentMac&) = delete;
 
   enum FromWire {
     FROM_WIRE,
@@ -50,7 +52,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT MachPortAttachmentMac
   // In the destination process, the attachment owns |mach_port_| until
   // ParamTraits<MachPortMac>::Read() is called, which takes ownership.
   bool owns_mach_port_;
-  DISALLOW_COPY_AND_ASSIGN(MachPortAttachmentMac);
 };
 
 }  // namespace internal

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,18 +20,18 @@ using blink::WebElement;
 using blink::WebNode;
 using blink::WebString;
 
-base::Optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
+absl::optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
   // Media Feeds are only discovered on the main frame.
   if (!frame->IsMainFrame())
-    return base::nullopt;
+    return absl::nullopt;
 
   WebDocument document = frame->GetWebFrame()->GetDocument();
   if (document.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   WebElement head = document.Head();
   if (head.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   url::Origin document_origin = document.GetSecurityOrigin();
 
@@ -47,7 +47,7 @@ base::Optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
 
     // The <link> rel must be media-feed.
     std::string rel = elem.GetAttribute("rel").Utf8();
-    if (!base::LowerCaseEqualsASCII(rel, "media-feed"))
+    if (!base::EqualsCaseInsensitiveASCII(rel, "media-feed"))
       continue;
 
     WebString href = elem.GetAttribute("href");
@@ -60,22 +60,21 @@ base::Optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
       frame->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                                  "The Media Feed URL is not a valid URL.");
 
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // If the URL is not the same origin as the document then we should throw
     // and error.
-    auto feed_origin = url::Origin::Create(url);
-    if (!document_origin.IsSameOriginWith(feed_origin)) {
+    if (!document_origin.IsSameOriginWith(url)) {
       frame->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                                  "The Media Feed URL needs to be the same "
                                  "origin as the document URL.");
 
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return url;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }

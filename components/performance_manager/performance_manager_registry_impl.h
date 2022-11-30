@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PERFORMANCE_MANAGER_REGISTRY_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -21,6 +20,7 @@
 #include "components/performance_manager/registered_objects.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/tab_helper_frame_node_source.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 
 namespace content {
 class RenderProcessHost;
@@ -35,7 +35,8 @@ class ServiceWorkerContextAdapter;
 class WorkerWatcher;
 
 class PerformanceManagerRegistryImpl
-    : public PerformanceManagerRegistry,
+    : public content::RenderProcessHostCreationObserver,
+      public PerformanceManagerRegistry,
       public PerformanceManagerTabHelper::DestructionObserver,
       public RenderProcessUserData::DestructionObserver {
  public:
@@ -76,6 +77,7 @@ class PerformanceManagerRegistryImpl
   // PerformanceManagerRegistry:
   void CreatePageNodeForWebContents(
       content::WebContents* web_contents) override;
+  void SetPageType(content::WebContents* web_contents, PageType type) override;
   Throttles CreateThrottlesForNavigation(
       content::NavigationHandle* handle) override;
   void NotifyBrowserContextAdded(
@@ -115,6 +117,9 @@ class PerformanceManagerRegistryImpl
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // Tracks WebContents and RenderProcessHost for which we have created user
   // data. Used to destroy all user data when the registry is destroyed.

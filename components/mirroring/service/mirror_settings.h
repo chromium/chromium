@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_MIRRORING_SERVICE_MIRROR_SETTINGS_H_
 
 #include "base/component_export.h"
-#include "base/time/time.h"
-#include "base/values.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/cast_config.h"
 
@@ -25,6 +23,10 @@ namespace mirroring {
 class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
  public:
   MirrorSettings();
+
+  MirrorSettings(const MirrorSettings&) = delete;
+  MirrorSettings& operator=(const MirrorSettings&) = delete;
+
   ~MirrorSettings();
 
   // Get the audio/video config with given codec.
@@ -54,8 +56,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
   int max_width_;
   int max_height_;
   bool enable_sender_side_letterboxing_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MirrorSettings);
 };
 
 }  // namespace mirroring

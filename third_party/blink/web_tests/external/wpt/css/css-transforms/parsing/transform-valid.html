@@ -18,6 +18,7 @@ test_valid_value("transform", "matrix(1, 2, 3, 4, 5, 6)");
 test_valid_value("transform", "matrix(-0.1, -0.2, -0.3, -0.4, -0.5, -0.6)");
 
 test_valid_value("transform", "translate(1px)");
+test_valid_value("transform", "translate(1px, 0%)");
 test_valid_value("transform", "translate(2%, -3%)");
 
 test_valid_value("transform", "translateX(-4px)");
@@ -66,6 +67,9 @@ test_valid_value("transform", "skewX(90deg)");
 
 test_valid_value("transform", "skewY(0)", "skewY(0deg)");
 test_valid_value("transform", "skewY(-90deg)");
+
+test_valid_value("transform", "perspective(10px)");
+test_valid_value("transform", "perspective(none)");
 
 test_valid_value("transform", "translate(1px, 2%) scale(3, 4) rotate(-90deg)");
 </script>

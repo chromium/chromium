@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/browser/webui/url_data_manager.h"
-#include "content/common/content_export.h"
 
 namespace content {
 class URLDataManagerBackend;
@@ -44,7 +43,7 @@ struct DeleteURLDataSource {
 // pointers and should never be deleted on the IO thread, since their calls
 // are handled almost always on the UI thread and there's a possibility of a
 // data race.  The |DeleteDataSource| trait above is used to enforce this.
-class CONTENT_EXPORT URLDataSourceImpl
+class URLDataSourceImpl
     : public base::RefCountedThreadSafe<URLDataSourceImpl,
                                         DeleteURLDataSource> {
  public:

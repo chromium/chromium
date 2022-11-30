@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.date.DateRangeTest');
 goog.setTestOnly();
@@ -63,6 +55,7 @@ testSuite({
 
   testOffsetInDays() {
     const d = new DateDate(2000, 0, 1);
+    /** @suppress {visibility} suppression added to enable type checking */
     const f = DateRange.offsetInDays_;
 
     assertTrue('same day', d.equals(f(d, 0)));
@@ -72,6 +65,7 @@ testSuite({
 
   testOffsetInMonths() {
     const d = new DateDate(2008, 9, 13);
+    /** @suppress {visibility} suppression added to enable type checking */
     const f = DateRange.offsetInMonths_;
 
     assertTrue('this month', new DateDate(2008, 9, 1).equals(f(d, 0)));
@@ -226,17 +220,17 @@ testSuite({
     const s = new DateDate(2008, 9, 1);
     const e = new DateDate(2008, 9, 10);
     const i = new DateRange(s, e).iterator();
-    assertTrue('day 0', new DateDate(2008, 9, 1).equals(i.next()));
-    assertTrue('day 1', new DateDate(2008, 9, 2).equals(i.next()));
-    assertTrue('day 2', new DateDate(2008, 9, 3).equals(i.next()));
-    assertTrue('day 3', new DateDate(2008, 9, 4).equals(i.next()));
-    assertTrue('day 4', new DateDate(2008, 9, 5).equals(i.next()));
-    assertTrue('day 5', new DateDate(2008, 9, 6).equals(i.next()));
-    assertTrue('day 6', new DateDate(2008, 9, 7).equals(i.next()));
-    assertTrue('day 7', new DateDate(2008, 9, 8).equals(i.next()));
-    assertTrue('day 8', new DateDate(2008, 9, 9).equals(i.next()));
-    assertTrue('day 9', new DateDate(2008, 9, 10).equals(i.next()));
-    assertThrows('day 10', goog.bind(i.next, i));
+    assertTrue('day 0', new DateDate(2008, 9, 1).equals(i.nextValueOrThrow()));
+    assertTrue('day 1', new DateDate(2008, 9, 2).equals(i.nextValueOrThrow()));
+    assertTrue('day 2', new DateDate(2008, 9, 3).equals(i.nextValueOrThrow()));
+    assertTrue('day 3', new DateDate(2008, 9, 4).equals(i.nextValueOrThrow()));
+    assertTrue('day 4', new DateDate(2008, 9, 5).equals(i.nextValueOrThrow()));
+    assertTrue('day 5', new DateDate(2008, 9, 6).equals(i.nextValueOrThrow()));
+    assertTrue('day 6', new DateDate(2008, 9, 7).equals(i.nextValueOrThrow()));
+    assertTrue('day 7', new DateDate(2008, 9, 8).equals(i.nextValueOrThrow()));
+    assertTrue('day 8', new DateDate(2008, 9, 9).equals(i.nextValueOrThrow()));
+    assertTrue('day 9', new DateDate(2008, 9, 10).equals(i.nextValueOrThrow()));
+    assertThrows('day 10', goog.bind(i.nextValueOrThrow, i));
   },
 
   testContains() {

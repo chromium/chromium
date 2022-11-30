@@ -1,14 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/task_environment.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,11 +19,14 @@ namespace {
 
 class SnapshotBrowserAgentTest : public PlatformTest {
  public:
-  SnapshotBrowserAgentTest() : browser_(std::make_unique<TestBrowser>()) {}
-  ~SnapshotBrowserAgentTest() override { browser_ = nullptr; }
+  SnapshotBrowserAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
 };
 

@@ -34,7 +34,7 @@
 
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -52,7 +52,7 @@ class SliderThumbElement final : public HTMLDivElement {
 
   void DragFrom(const LayoutPoint&);
   void DefaultEventHandler(Event&) override;
-  bool WillRespondToMouseMoveEvents() override;
+  bool WillRespondToMouseMoveEvents() const override;
   bool WillRespondToMouseClickEvents() override;
   void DetachLayoutTree(bool performing_reattach) override;
   const AtomicString& ShadowPseudoId() const override;
@@ -71,8 +71,8 @@ class SliderThumbElement final : public HTMLDivElement {
   bool MatchesReadWritePseudoClass() const override;
   void StartDragging();
 
-  bool
-      in_drag_mode_;  // Mouse only. Touch is handled by SliderContainerElement.
+  // Mouse only. Touch is handled by SliderContainerElement.
+  bool in_drag_mode_;
 };
 
 inline Element& SliderThumbElement::CloneWithoutAttributesAndChildren(
@@ -88,7 +88,7 @@ struct DowncastTraits<SliderThumbElement> {
 
 class SliderContainerElement final : public HTMLDivElement {
  public:
-  enum Direction {
+  enum class Direction {
     kHorizontal,
     kVertical,
     kNoMove,
@@ -109,12 +109,12 @@ class SliderContainerElement final : public HTMLDivElement {
   Direction GetDirection(LayoutPoint&, LayoutPoint&);
   bool CanSlide();
 
-  bool has_touch_event_handler_;
-  bool touch_started_;
-  Direction sliding_direction_;
+  bool has_touch_event_handler_ = false;
+  bool touch_started_ = false;
+  Direction sliding_direction_ = Direction::kNoMove;
   LayoutPoint start_point_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_SLIDER_THUMB_ELEMENT_H_

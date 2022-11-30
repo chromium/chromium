@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 
@@ -31,6 +30,11 @@ class ArcAppShortcutsMenuBuilder {
                              int64_t display_id,
                              int command_id_first,
                              int command_id_last);
+
+  ArcAppShortcutsMenuBuilder(const ArcAppShortcutsMenuBuilder&) = delete;
+  ArcAppShortcutsMenuBuilder& operator=(const ArcAppShortcutsMenuBuilder&) =
+      delete;
+
   ~ArcAppShortcutsMenuBuilder();
 
   // Builds arc app shortcuts menu.
@@ -62,8 +66,6 @@ class ArcAppShortcutsMenuBuilder {
 
   // Handles requesting app shortcuts from Android.
   std::unique_ptr<ArcAppShortcutsRequest> arc_app_shortcuts_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsMenuBuilder);
 };
 
 }  // namespace arc

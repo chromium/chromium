@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
  * @fileoverview Constants used throughout ChromeVox.
  */
 
-goog.provide('constants');
-
+export const constants = {};
 /**
  * Possible directions to perform tree traversals.
  * @enum {string}
@@ -17,7 +16,7 @@ constants.Dir = {
   FORWARD: 'forward',
 
   /** Search from right to left. */
-  BACKWARD: 'backward'
+  BACKWARD: 'backward',
 };
 
 /**
@@ -50,3 +49,17 @@ constants.SYSTEM_VOICE = 'chromeos_system_voice';
  * @const
  */
 constants.FOCUS_COLOR = '#F7983A';
+
+/**
+ * Interaction medium for the tutorial.
+ * Note: keep in sync with the enum in
+ * c/b/r/c/accessibility/common/tutorial/constants.js.
+ * TODO: Unify with the above file when ES6 is standard in ChromeVox.
+ * @enum {string}
+ */
+constants.InteractionMedium = {
+  NONE: 'none',
+  KEYBOARD: 'keyboard',
+  TOUCH: 'touch',
+  BRAILLE: 'braille',
+};

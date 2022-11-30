@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_MATCH_TYPE_H_
 
 #include <string>
-
 
 struct AutocompleteMatch;
 
@@ -26,6 +25,12 @@ struct AutocompleteMatchType {
   // numeric values should never be reused. The values should remain
   // synchronized with the enum AutocompleteMatchType in
   // //tools/metrics/histograms/enums.xml.
+  //
+  // Any changes to this enum also requires an update to:
+  //  - `AutocompleteMatch::AsOmniboxEventResultType()`
+  //  - `GetClientSummarizedResultType()`
+  //  - `AutocompleteMatchType::ToString()`
+  //  - `AutocompleteMatchType::GetAccessibilityBaseLabel()`
   enum Type {
     URL_WHAT_YOU_TYPED    = 0,  // The input as a URL.
     HISTORY_URL           = 1,  // A past page whose URL contains the input.
@@ -68,11 +73,21 @@ struct AutocompleteMatchType {
     TAB_SEARCH_DEPRECATED       = 23,  // A suggested open tab, based on its
                                        // URL or title, via HQP (deprecated).
     DOCUMENT_SUGGESTION         = 24,  // A suggested document.
-    PEDAL                       = 25,  // An omnibox pedal suggestion.
+    PEDAL_DEPRECATED            = 25,  // An omnibox pedal match (deprecated).
+                                       // Pedals are now just action buttons
+                                       // attached to search matches.
     CLIPBOARD_TEXT              = 26,  // Text based on the clipboard.
     CLIPBOARD_IMAGE             = 27,  // An image based on the clipboard.
     TILE_SUGGESTION             = 28,  // A suggestion containing query tiles.
     TILE_NAVSUGGEST             = 29,  // A suggestion with navigation tiles.
+    OPEN_TAB                    = 30,  // A URL match amongst the currently open
+                                       // tabs.
+    HISTORY_CLUSTER             = 31,  // A history cluster suggestion.
+    NULL_RESULT_MESSAGE         = 32,  // A suggestion whose purpose is only to
+                                       // deliver a message. This suggestion
+                                       // cannot be opened or acted upon.
+    STARTER_PACK                = 33,  // A URL suggestion that a starter pack
+                                       // keyword mode chip attaches to.
     NUM_TYPES,
   };
   // clang-format on

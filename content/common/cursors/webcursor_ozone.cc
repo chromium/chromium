@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,6 @@ void WebCursor::SetDisplayInfo(const display::Display& display) {
   if (maximum_cursor_size_.width() == 0 || maximum_cursor_size_.height() == 0)
     maximum_cursor_size_ = gfx::Size(kDefaultMaxSize, kDefaultMaxSize);
   CleanupPlatformData();
-  // It is not necessary to recreate platform_cursor_ yet, since it will be
-  // recreated on demand when GetNativeCursor is called.
 }
 
 float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {

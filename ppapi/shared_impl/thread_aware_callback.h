@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define PPAPI_SHARED_IMPL_THREAD_AWARE_CALLBACK_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 #include "ppapi/shared_impl/proxy_lock.h"
@@ -18,6 +17,10 @@ class MessageLoopShared;
 namespace internal {
 
 class PPAPI_SHARED_EXPORT ThreadAwareCallbackBase {
+ public:
+  ThreadAwareCallbackBase(const ThreadAwareCallbackBase&) = delete;
+  ThreadAwareCallbackBase& operator=(const ThreadAwareCallbackBase&) = delete;
+
  protected:
   ThreadAwareCallbackBase();
   ~ThreadAwareCallbackBase();
@@ -31,8 +34,6 @@ class PPAPI_SHARED_EXPORT ThreadAwareCallbackBase {
 
   scoped_refptr<MessageLoopShared> target_loop_;
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadAwareCallbackBase);
 };
 
 }  // namespace internal

@@ -1,0 +1,34 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+USE_PYTHON3 = True
+
+"""Chromium presubmit script to check that BadMessage enums in histograms.xml
+match the corresponding bad_message.h file.
+"""
+
+import traceback
+
+def _RunHistogramChecks(input_api, output_api, histogram_name):
+  try:
+    # Setup sys.path so that we can call histograms code.
+    import sys
+    original_sys_path = sys.path
+    sys.path = sys.path + [input_api.os_path.join(
+      input_api.change.RepositoryRoot(),
+      'tools', 'metrics', 'histograms')]
+
+    end_marker = '^kMaxValue .*'
+    strip_k_prefix = True
+    import presubmit_bad_message_reasons
+    return presubmit_bad_message_reasons.PrecheckBadMessage(input_api,
+        output_api, histogram_name, end_marker, strip_k_prefix)
+  except:
+    return [output_api.PresubmitError('Could not verify histogram!')]
+  finally:
+    sys.path = original_sys_path
+
+def CheckChangeOnUpload(input_api, output_api):
+  return _RunHistogramChecks(input_api, output_api,
+    "BadMessageReasonAutofill")

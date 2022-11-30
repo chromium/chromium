@@ -1,17 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/types.h"
 
+#include <ostream>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/json/values_util.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/public/types.h"
 
 // Note: This file contains implementation for both types.h and public/types.h.
@@ -42,15 +44,15 @@ bool UnpickleNetworkResponseInfo(base::PickleIterator& iterator,
         iterator.ReadString(&value.bless_nonce) &&
         iterator.ReadString(&base_request_url)))
     return false;
-  value.fetch_duration = base::TimeDelta::FromMilliseconds(fetch_duration_ms);
-  value.fetch_time = base::TimeDelta::FromMilliseconds(fetch_time_ms) +
-                     base::Time::UnixEpoch();
+  value.fetch_duration = base::Milliseconds(fetch_duration_ms);
+  value.fetch_time =
+      base::Milliseconds(fetch_time_ms) + base::Time::UnixEpoch();
   value.base_request_url = GURL(base_request_url);
   return true;
 }
 
 void PickleOptionalNetworkResponseInfo(
-    const base::Optional<NetworkResponseInfo>& value,
+    const absl::optional<NetworkResponseInfo>& value,
     base::Pickle& pickle) {
   if (value.has_value()) {
     pickle.WriteBool(true);
@@ -62,7 +64,7 @@ void PickleOptionalNetworkResponseInfo(
 
 bool UnpickleOptionalNetworkResponseInfo(
     base::PickleIterator& iterator,
-    base::Optional<NetworkResponseInfo>& value) {
+    absl::optional<NetworkResponseInfo>& value) {
   bool has_network_response_info = false;
   if (!iterator.ReadBool(&has_network_response_info))
     return false;
@@ -79,7 +81,6 @@ bool UnpickleOptionalNetworkResponseInfo(
 }
 
 void PickleDebugStreamData(const DebugStreamData& value, base::Pickle& pickle) {
-  (void)PickleOptionalNetworkResponseInfo;
   pickle.WriteInt(DebugStreamData::kVersion);
   PickleOptionalNetworkResponseInfo(value.fetch_info, pickle);
   PickleOptionalNetworkResponseInfo(value.upload_info, pickle);
@@ -101,6 +102,9 @@ RequestMetadata::RequestMetadata() = default;
 RequestMetadata::~RequestMetadata() = default;
 RequestMetadata::RequestMetadata(RequestMetadata&&) = default;
 RequestMetadata& RequestMetadata::operator=(RequestMetadata&&) = default;
+feedwire::ClientInfo RequestMetadata::ToClientInfo() const {
+  return CreateClientInfo(*this);
+}
 
 NetworkResponseInfo::NetworkResponseInfo() = default;
 NetworkResponseInfo::~NetworkResponseInfo() = default;
@@ -134,15 +138,15 @@ std::string SerializeDebugStreamData(const DebugStreamData& data) {
       base::span<const uint8_t>(pickle_data_ptr, pickle.size()));
 }
 
-base::Optional<DebugStreamData> DeserializeDebugStreamData(
+absl::optional<DebugStreamData> DeserializeDebugStreamData(
     base::StringPiece base64_encoded) {
   std::string binary_data;
   if (!base::Base64Decode(base64_encoded, &binary_data))
-    return base::nullopt;
+    return absl::nullopt;
   base::Pickle pickle(binary_data.data(), binary_data.size());
   DebugStreamData result;
   if (!UnpickleDebugStreamData(base::PickleIterator(pickle), result))
-    return base::nullopt;
+    return absl::nullopt;
   return result;
 }
 
@@ -151,25 +155,25 @@ DebugStreamData::~DebugStreamData() = default;
 DebugStreamData::DebugStreamData(const DebugStreamData&) = default;
 DebugStreamData& DebugStreamData::operator=(const DebugStreamData&) = default;
 
-base::Value PersistentMetricsDataToValue(const PersistentMetricsData& data) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("day_start", util::TimeToValue(data.current_day_start));
-  dict.SetKey("time_spent_in_feed",
-              util::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
+base::Value::Dict PersistentMetricsDataToDict(
+    const PersistentMetricsData& data) {
+  base::Value::Dict dict;
+  dict.Set("day_start", base::TimeToValue(data.current_day_start));
+  dict.Set("time_spent_in_feed",
+           base::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
   return dict;
 }
 
-PersistentMetricsData PersistentMetricsDataFromValue(const base::Value& value) {
+PersistentMetricsData PersistentMetricsDataFromDict(
+    const base::Value::Dict& dict) {
   PersistentMetricsData result;
-  if (!value.is_dict())
-    return result;
-  base::Optional<base::Time> day_start =
-      util::ValueToTime(value.FindKey("day_start"));
+  absl::optional<base::Time> day_start =
+      base::ValueToTime(dict.Find("day_start"));
   if (!day_start)
     return result;
   result.current_day_start = *day_start;
-  base::Optional<base::TimeDelta> time_spent_in_feed =
-      util::ValueToTimeDelta(value.FindKey("time_spent_in_feed"));
+  absl::optional<base::TimeDelta> time_spent_in_feed =
+      base::ValueToTimeDelta(dict.Find("time_spent_in_feed"));
   if (time_spent_in_feed) {
     result.accumulated_time_spent_in_feed = *time_spent_in_feed;
   }
@@ -184,5 +188,42 @@ void LoadLatencyTimes::StepComplete(StepKind kind) {
   steps_.push_back(Step{kind, now - last_time_});
   last_time_ = now;
 }
+
+ContentHashSet::ContentHashSet() = default;
+ContentHashSet::~ContentHashSet() = default;
+ContentHashSet::ContentHashSet(base::flat_set<uint32_t> content_hashes)
+    : content_hashes_(std::move(content_hashes)) {}
+ContentHashSet::ContentHashSet(const ContentHashSet&) = default;
+ContentHashSet::ContentHashSet(ContentHashSet&&) = default;
+ContentHashSet& ContentHashSet::operator=(const ContentHashSet&) = default;
+ContentHashSet& ContentHashSet::operator=(ContentHashSet&&) = default;
+bool ContentHashSet::ContainsAllOf(const ContentHashSet& items) const {
+  for (uint32_t id : items.content_hashes_) {
+    if (!content_hashes_.contains(id))
+      return false;
+  }
+  return true;
+}
+bool ContentHashSet::IsEmpty() const {
+  return content_hashes_.empty();
+}
+bool ContentHashSet::operator==(const ContentHashSet& rhs) const {
+  return content_hashes_ == rhs.content_hashes_;
+}
+std::ostream& operator<<(std::ostream& s, const ContentHashSet& id_set) {
+  s << "{";
+  for (uint32_t id : id_set.values()) {
+    s << id << ", ";
+  }
+  s << "}";
+  return s;
+}
+
+LaunchResult::LaunchResult(LoadStreamStatus load_stream_status,
+                           feedwire::DiscoverLaunchResult launch_result)
+    : load_stream_status(load_stream_status), launch_result(launch_result) {}
+LaunchResult::LaunchResult(const LaunchResult& other) = default;
+LaunchResult::~LaunchResult() = default;
+LaunchResult& LaunchResult::operator=(const LaunchResult& other) = default;
 
 }  // namespace feed

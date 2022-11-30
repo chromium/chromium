@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ MojoLearningTaskControllerService::~MojoLearningTaskControllerService() =
 void MojoLearningTaskControllerService::BeginObservation(
     const base::UnguessableToken& id,
     const FeatureVector& features,
-    const base::Optional<TargetValue>& default_target) {
+    const absl::optional<TargetValue>& default_target) {
   // Drop the observation if it doesn't match the feature description size.
   if (features.size() != task_.feature_descriptions.size())
     return;
@@ -66,7 +66,7 @@ void MojoLearningTaskControllerService::CancelObservation(
 
 void MojoLearningTaskControllerService::UpdateDefaultTarget(
     const base::UnguessableToken& id,
-    const base::Optional<TargetValue>& default_target) {
+    const absl::optional<TargetValue>& default_target) {
   auto iter = in_flight_observations_.find(id);
   if (iter == in_flight_observations_.end())
     return;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -21,8 +23,10 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permissions_client.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
@@ -43,23 +47,24 @@ constexpr ContentSettingsType kContentTypeCookies =
 
 class SiteSettingsHelperTest : public testing::Test {
  public:
-  void VerifySetting(const base::ListValue& exceptions,
+  void VerifySetting(const base::Value::List& exceptions,
                      int index,
                      const std::string& pattern,
                      const std::string& pattern_display_name,
                      const ContentSetting setting) {
-    const base::DictionaryValue* dict;
-    exceptions.GetDictionary(index, &dict);
-    std::string actual_pattern;
-    dict->GetString("origin", &actual_pattern);
-    EXPECT_EQ(pattern, actual_pattern);
-    std::string actual_display_name;
-    dict->GetString(kDisplayName, &actual_display_name);
-    EXPECT_EQ(pattern_display_name, actual_display_name);
-    std::string actual_setting;
-    dict->GetString(kSetting, &actual_setting);
+    const base::Value& value = exceptions[index];
+    EXPECT_TRUE(value.is_dict());
+    const base::Value::Dict& dict = value.GetDict();
+    const std::string* actual_pattern = dict.FindString("origin");
+    ASSERT_TRUE(actual_pattern);
+    EXPECT_EQ(pattern, *actual_pattern);
+    const std::string* actual_display_name = dict.FindString(kDisplayName);
+    ASSERT_TRUE(actual_display_name);
+    EXPECT_EQ(pattern_display_name, *actual_display_name);
+    const std::string* actual_setting = dict.FindString(kSetting);
+    ASSERT_TRUE(actual_setting);
     EXPECT_EQ(content_settings::ContentSettingToString(setting),
-              actual_setting);
+              *actual_setting);
   }
 
   void AddSetting(HostContentSettingsMap* map,
@@ -91,7 +96,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
                                      kContentTypeNotifications,
                                      CONTENT_SETTING_BLOCK);
 
-  base::ListValue exceptions;
+  base::Value::List exceptions;
   site_settings::GetExceptionsForContentType(kContentTypeNotifications,
                                              &profile,
                                              /*extension_registry=*/nullptr,
@@ -99,18 +104,17 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
                                              /*incognito=*/false, &exceptions);
 
   // |exceptions| size should be 2. One blocked and one embargoed origins.
-  ASSERT_EQ(2U, exceptions.GetSize());
-  base::Value* value = nullptr;
+  ASSERT_EQ(2U, exceptions.size());
+
   // Get last added origin.
-  exceptions.Get(0, &value);
-  base::Value* is_embargoed = value->FindKey(site_settings::kIsEmbargoed);
+  base::Value* is_embargoed =
+      exceptions[0].FindKey(site_settings::kIsEmbargoed);
   ASSERT_NE(nullptr, is_embargoed);
   // Last added origin is blocked, |embargo| key should be false.
   EXPECT_FALSE(is_embargoed->GetBool());
 
   // Get embargoed origin.
-  exceptions.Get(1, &value);
-  is_embargoed = value->FindKey(site_settings::kIsEmbargoed);
+  is_embargoed = exceptions[1].FindKey(site_settings::kIsEmbargoed);
   ASSERT_NE(nullptr, is_embargoed);
   EXPECT_TRUE(is_embargoed->GetBool());
 }
@@ -136,17 +140,17 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
               auto_blocker
                   ->GetEmbargoResult(GURL(kOriginToEmbargo),
                                      kContentTypeNotifications)
-                  .content_setting);
+                  ->content_setting);
   }
 
   // Check there is 1 embargoed origin for a non-incognito profile.
   {
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.size());
   }
 
   TestingProfile* incognito_profile =
@@ -154,13 +158,13 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
 
   // Check there are no blocked origins for an incognito profile.
   {
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(kContentTypeNotifications,
                                                incognito_profile,
                                                /*extension_registry=*/nullptr,
                                                /*web_ui=*/nullptr,
                                                /*incognito=*/true, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_TRUE(exceptions.empty());
   }
 
   {
@@ -173,7 +177,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
 
   // Check there is only 1 blocked origin for an incognito profile.
   {
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(kContentTypeNotifications,
                                                incognito_profile,
                                                /*extension_registry=*/nullptr,
@@ -181,7 +185,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
                                                /*incognito=*/true, &exceptions);
     // The exceptions size should be 1 because previously embargoed origin
     // was for a non-incognito profile.
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.size());
   }
 
   // Add an origin under embargo for incognito profile.
@@ -196,18 +200,18 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
               incognito_auto_blocker
                   ->GetEmbargoResult(GURL(kOriginToEmbargoIncognito),
                                      kContentTypeNotifications)
-                  .content_setting);
+                  ->content_setting);
   }
 
   // Check there are 2 blocked or embargoed origins for an incognito profile.
   {
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(kContentTypeNotifications,
                                                incognito_profile,
                                                /*extension_registry=*/nullptr,
                                                /*web_ui=*/nullptr,
                                                /*incognito=*/true, &exceptions);
-    ASSERT_EQ(2U, exceptions.GetSize());
+    ASSERT_EQ(2U, exceptions.size());
   }
 }
 
@@ -218,12 +222,12 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
 
   // Check there is no blocked origins.
   {
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_TRUE(exceptions.empty());
   }
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -232,12 +236,12 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
                                      CONTENT_SETTING_BLOCK);
   {
     // Check there is 1 blocked origin.
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.size());
   }
 
   // Add an origin under embargo.
@@ -253,51 +257,89 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             auto_blocker
                 ->GetEmbargoResult(origin_to_embargo, kContentTypeNotifications)
-                .content_setting);
+                ->content_setting);
 
   // Check there are 2 blocked origins.
   {
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
-    ASSERT_EQ(2U, exceptions.GetSize());
+    ASSERT_EQ(2U, exceptions.size());
 
     // Fetch and check the first origin.
-    const base::DictionaryValue* dictionary;
-    std::string primary_pattern, display_name;
-    ASSERT_TRUE(exceptions.GetDictionary(0, &dictionary));
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kOrigin, &primary_pattern));
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kDisplayName, &display_name));
+    const base::Value* value = &exceptions[0];
+    ASSERT_TRUE(value->is_dict());
+    const base::Value::Dict* dictionary = &value->GetDict();
+    const std::string* primary_pattern =
+        dictionary->FindString(site_settings::kOrigin);
+    ASSERT_TRUE(primary_pattern);
+    const std::string* display_name =
+        dictionary->FindString(site_settings::kDisplayName);
+    ASSERT_TRUE(display_name);
 
-    EXPECT_EQ(kOriginToBlock, primary_pattern);
-    EXPECT_EQ(kOriginToBlock, display_name);
+    EXPECT_EQ(kOriginToBlock, *primary_pattern);
+    EXPECT_EQ(kOriginToBlock, *display_name);
 
     // Fetch and check the second origin.
-    ASSERT_TRUE(exceptions.GetDictionary(1, &dictionary));
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kOrigin, &primary_pattern));
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kDisplayName, &display_name));
+    value = &exceptions[1];
+    ASSERT_TRUE(value->is_dict());
+    dictionary = &value->GetDict();
 
-    EXPECT_EQ(kOriginToEmbargo, primary_pattern);
-    EXPECT_EQ(kOriginToEmbargo, display_name);
+    primary_pattern = dictionary->FindString(site_settings::kOrigin);
+    ASSERT_TRUE(primary_pattern);
+    display_name = dictionary->FindString(site_settings::kDisplayName);
+    ASSERT_TRUE(display_name);
+
+    EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
+    EXPECT_EQ(kOriginToEmbargo, *display_name);
   }
 
   {
     // Non-permission types should not DCHECK when there is autoblocker data
     // present.
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kContentTypeCookies, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_TRUE(exceptions.empty());
   }
+}
+
+// Test that the exception list contains embargo information for
+// FEDERATED_IDENTITY_API even though FEDERATED_IDENTITY_API is a content
+// setting (and not a permission).
+TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargo) {
+  TestingProfile profile;
+
+  constexpr char kOriginToEmbargo[] = "https://embargoed.co.uk:443";
+  auto* auto_blocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(&profile);
+  auto_blocker->RecordDismissAndEmbargo(
+      GURL(kOriginToEmbargo), ContentSettingsType::FEDERATED_IDENTITY_API,
+      /*dismissed_prompt_was_quiet=*/false);
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(
+      ContentSettingsType::FEDERATED_IDENTITY_API, &profile,
+      /*extension_registry=*/nullptr,
+      /*web_ui=*/nullptr,
+      /*incognito=*/false, &exceptions);
+
+  // |exceptions| should have an exception for the embargoed origin.
+  ASSERT_EQ(1U, exceptions.size());
+
+  absl::optional<bool> is_embargoed =
+      exceptions[0].GetDict().FindBool(site_settings::kIsEmbargoed);
+  ASSERT_TRUE(is_embargoed.has_value());
+  EXPECT_TRUE(*is_embargoed);
+  const std::string* primary_pattern =
+      exceptions[0].GetDict().FindString(site_settings::kOrigin);
+  ASSERT_TRUE(primary_pattern);
+  EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
 }
 
 TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
@@ -305,13 +347,13 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  base::ListValue exceptions;
+  base::Value::List exceptions;
   // Check that the initial state of the map is empty.
   GetExceptionsForContentType(kContentType, &profile,
                               /*extension_registry=*/nullptr,
                               /*web_ui=*/nullptr,
                               /*incognito=*/false, &exceptions);
-  EXPECT_EQ(0u, exceptions.GetSize());
+  EXPECT_TRUE(exceptions.empty());
 
   map->SetDefaultContentSetting(kContentType, CONTENT_SETTING_ALLOW);
 
@@ -321,7 +363,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(star_google_com),
       ContentSettingsPattern::Wildcard(), kContentType,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK));
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
@@ -339,19 +381,19 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   extension_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(drive_google_com),
       ContentSettingsPattern::Wildcard(), kContentType,
-      std::make_unique<base::Value>(CONTENT_SETTING_ASK));
+      base::Value(CONTENT_SETTING_ASK));
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
       HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
 
-  exceptions.Clear();
+  exceptions.clear();
   GetExceptionsForContentType(kContentType, &profile,
                               /*extension_registry=*/nullptr,
                               /*web_ui=*/nullptr,
                               /*incognito=*/false, &exceptions);
 
-  EXPECT_EQ(5u, exceptions.GetSize());
+  EXPECT_EQ(5u, exceptions.size());
 
   // The policy exception should be returned first, the extension exception
   // second and pref exceptions afterwards.
@@ -375,6 +417,8 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
 // default, user-set pattern, user-set origin setting, extension, and policy.
 TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   TestingProfile profile;
+  profile.SetPermissionControllerDelegate(
+      permissions::GetPermissionControllerDelegate(&profile));
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
@@ -416,24 +460,12 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPreference), source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
-// ChromeOS - DRM disabled.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile.GetPrefs()->SetBoolean(prefs::kEnableDRM, false);
-  // Note this is not testing |kContentType|, because this setting is only valid
-  // for protected content.
-  content_setting = GetContentSettingForOrigin(
-      &profile, map, origin, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-      &source, extension_registry, &display_name);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDrmDisabled), source);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
-#endif
-
   // Extension.
   auto extension_provider = std::make_unique<content_settings::MockProvider>();
-  extension_provider->SetWebsiteSetting(
-      ContentSettingsPattern::FromURL(origin),
-      ContentSettingsPattern::FromURL(origin), kContentType,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  extension_provider->SetWebsiteSetting(ContentSettingsPattern::FromURL(origin),
+                                        ContentSettingsPattern::FromURL(origin),
+                                        kContentType,
+                                        base::Value(CONTENT_SETTING_BLOCK));
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
@@ -446,10 +478,10 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
 
   // Enterprise policy.
   auto policy_provider = std::make_unique<content_settings::MockProvider>();
-  policy_provider->SetWebsiteSetting(
-      ContentSettingsPattern::FromURL(origin),
-      ContentSettingsPattern::FromURL(origin), kContentType,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+  policy_provider->SetWebsiteSetting(ContentSettingsPattern::FromURL(origin),
+                                     ContentSettingsPattern::FromURL(origin),
+                                     kContentType,
+                                     base::Value(CONTENT_SETTING_ALLOW));
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
@@ -470,45 +502,29 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
 
 namespace {
 
-// Test GURLs
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL GoogleUrl() {
-  return GURL("https://google.com");
-}
-GURL ChromiumUrl() {
-  return GURL("https://chromium.org");
-}
-GURL AndroidUrl() {
-  return GURL("https://android.com");
-}
-GURL TestUrl() {
-  return GURL("https://test.com");
-}
-
 void ExpectValidChooserExceptionObject(
-    const base::Value& actual_exception_object,
-    const std::string& chooser_type,
-    const std::u16string& display_name,
-    const base::Value& chooser_object) {
-  const base::Value* chooser_type_value = actual_exception_object.FindKeyOfType(
-      kChooserType, base::Value::Type::STRING);
-  ASSERT_TRUE(chooser_type_value);
-  EXPECT_EQ(chooser_type_value->GetString(), chooser_type);
+    const base::Value::Dict& actual_exception_object,
+    const std::string& expected_chooser_type,
+    const std::u16string& expected_display_name,
+    const base::Value::Dict& expected_chooser_object) {
+  const std::string* actual_chooser_type =
+      actual_exception_object.FindString(kChooserType);
+  ASSERT_TRUE(actual_chooser_type);
+  EXPECT_EQ(*actual_chooser_type, expected_chooser_type);
 
-  const base::Value* display_name_value = actual_exception_object.FindKeyOfType(
-      kDisplayName, base::Value::Type::STRING);
-  ASSERT_TRUE(display_name_value);
-  EXPECT_EQ(base::UTF8ToUTF16(display_name_value->GetString()), display_name);
+  const std::string* actual_display_name =
+      actual_exception_object.FindString(kDisplayName);
+  ASSERT_TRUE(actual_display_name);
+  EXPECT_EQ(base::UTF8ToUTF16(*actual_display_name), expected_display_name);
 
-  const base::Value* object_value = actual_exception_object.FindKeyOfType(
-      kObject, base::Value::Type::DICTIONARY);
-  ASSERT_TRUE(object_value);
-  EXPECT_EQ(*object_value, chooser_object);
+  const base::Value::Dict* actual_chooser_object =
+      actual_exception_object.FindDict(kObject);
+  ASSERT_TRUE(actual_chooser_object);
+  EXPECT_EQ(*actual_chooser_object, expected_chooser_object);
 
-  const base::Value* sites_value =
-      actual_exception_object.FindKeyOfType(kSites, base::Value::Type::LIST);
-  ASSERT_TRUE(sites_value);
+  const base::Value::List* sites_list =
+      actual_exception_object.FindList(kSites);
+  ASSERT_TRUE(sites_list);
 }
 
 void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
@@ -520,12 +536,14 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
   const base::Value* display_name_value =
       actual_site_object.FindKeyOfType(kDisplayName, base::Value::Type::STRING);
   ASSERT_TRUE(display_name_value);
-  EXPECT_EQ(display_name_value->GetString(), origin.GetOrigin().spec());
+  EXPECT_EQ(display_name_value->GetString(),
+            origin.DeprecatedGetOriginAsURL().spec());
 
   const base::Value* origin_value =
       actual_site_object.FindKeyOfType(kOrigin, base::Value::Type::STRING);
   ASSERT_TRUE(origin_value);
-  EXPECT_EQ(origin_value->GetString(), origin.GetOrigin().spec());
+  EXPECT_EQ(origin_value->GetString(),
+            origin.DeprecatedGetOriginAsURL().spec());
 
   const base::Value* setting_value =
       actual_site_object.FindKeyOfType(kSetting, base::Value::Type::STRING);
@@ -547,9 +565,8 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
 }  // namespace
 
 TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
-  const std::string kUsbChooserGroupName =
-      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA)
-          .as_string();
+  const std::string kUsbChooserGroupName(
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
   const std::string& kPolicySource =
       SiteSettingSourceToString(SiteSettingSource::kPolicy);
   const std::string& kPreferenceSource =
@@ -558,90 +575,98 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   ChooserExceptionDetails exception_details;
 
   // Create a chooser object for testing.
-  auto chooser_object = std::make_unique<base::DictionaryValue>();
-  chooser_object->SetKey("name", base::Value(kObjectName));
+  base::Value::Dict chooser_object;
+  chooser_object.Set("name", base::Value(kObjectName));
 
-  // Add a user permission for a requesting origin of |kGoogleOrigin| and an
-  // embedding origin of |kChromiumOrigin|.
-  exception_details[std::make_pair(GoogleUrl().GetOrigin(), kPreferenceSource)]
-      .insert(std::make_pair(ChromiumUrl().GetOrigin(), /*incognito=*/false));
+  // Add a user permission for a requesting origin of |kGoogleUrl| and an
+  // embedding origin of chromium.org.
+  const GURL kGoogleUrl("https://google.com");
+  exception_details[std::make_pair(kGoogleUrl.DeprecatedGetOriginAsURL(),
+                                   kPreferenceSource)]
+      .insert(std::make_pair(
+          GURL("https://chromium.org").DeprecatedGetOriginAsURL(),
+          /*incognito=*/false));
 
   {
     auto exception = CreateChooserExceptionObject(
         /*display_name=*/kObjectName,
-        /*object=*/*chooser_object,
+        /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details);
     ExpectValidChooserExceptionObject(
         exception, /*chooser_type=*/kUsbChooserGroupName,
-        /*display_name=*/kObjectName, *chooser_object);
+        /*display_name=*/kObjectName, chooser_object);
 
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
-                                   /*origin=*/GoogleUrl(),
+                                   /*origin=*/kGoogleUrl,
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }
 
   // Add a user permissions for a requesting and embedding origin pair of
-  // |kAndroidOrigin| granted in an off the record profile.
-  exception_details[std::make_pair(AndroidUrl().GetOrigin(), kPreferenceSource)]
-      .insert(std::make_pair(AndroidUrl().GetOrigin(), /*incognito=*/true));
+  // |kAndroidUrl| granted in an off the record profile.
+  const GURL kAndroidUrl("https://android.com");
+  exception_details[std::make_pair(kAndroidUrl.DeprecatedGetOriginAsURL(),
+                                   kPreferenceSource)]
+      .insert(std::make_pair(kAndroidUrl.DeprecatedGetOriginAsURL(),
+                             /*incognito=*/true));
 
   {
     auto exception = CreateChooserExceptionObject(
         /*display_name=*/kObjectName,
-        /*object=*/*chooser_object,
+        /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details);
     ExpectValidChooserExceptionObject(exception,
                                       /*chooser_type=*/kUsbChooserGroupName,
                                       /*display_name=*/kObjectName,
-                                      *chooser_object);
+                                      chooser_object);
 
-    // The map sorts the sites by requesting origin, so |kAndroidOrigin| should
+    // The map sorts the sites by requesting origin, so |kAndroidUrl| should
     // be first, followed by the origin pair (kGoogleOrigin, kChromiumOrigin).
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
-                                   /*origin=*/AndroidUrl(),
+                                   /*origin=*/kAndroidUrl,
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/true);
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[1],
-                                   /*origin=*/GoogleUrl(),
+                                   /*origin=*/kGoogleUrl,
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }
 
-  // Add a policy permission for a requesting origin of |kGoogleOrigin| with a
+  // Add a policy permission for a requesting origin of |kGoogleUrl| with a
   // wildcard embedding origin.
-  exception_details[std::make_pair(GoogleUrl().GetOrigin(), kPolicySource)]
+  exception_details[std::make_pair(kGoogleUrl.DeprecatedGetOriginAsURL(),
+                                   kPolicySource)]
       .insert(std::make_pair(GURL::EmptyGURL(), /*incognito=*/false));
   {
     auto exception = CreateChooserExceptionObject(
         /*display_name=*/kObjectName,
-        /*object=*/*chooser_object,
+        /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details);
     ExpectValidChooserExceptionObject(exception,
                                       /*chooser_type=*/kUsbChooserGroupName,
                                       /*display_name=*/kObjectName,
-                                      *chooser_object);
+                                      chooser_object);
 
     // The map sorts the sites by requesting origin, but the
     // CreateChooserExceptionObject method sorts the sites further by the
     // source. Therefore, policy granted sites are listed before user granted
     // sites.
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
-                                   /*origin=*/GoogleUrl(),
+                                   /*origin=*/kGoogleUrl,
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[1],
-                                   /*origin=*/AndroidUrl(),
+                                   /*origin=*/kAndroidUrl,
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/true);
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[2],
-                                   /*origin=*/GoogleUrl(),
+                                   /*origin=*/kGoogleUrl,
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }
@@ -668,6 +693,11 @@ constexpr char kUsbPolicySetting[] = R"(
 
 class SiteSettingsHelperChooserExceptionTest : public testing::Test {
  protected:
+  const GURL kGoogleUrl{"https://google.com"};
+  const GURL kChromiumUrl{"https://chromium.org"};
+  const GURL kAndroidUrl{"https://android.com"};
+  const GURL kTestUrl{"https://test.com"};
+
   Profile* profile() { return &profile_; }
 
   void SetUp() override { SetUpUsbChooserContext(); }
@@ -688,13 +718,12 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
     chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
-    chooser_context->GetDevices(
-        base::DoNothing::Once<std::vector<device::mojom::UsbDeviceInfoPtr>>());
+    chooser_context->GetDevices(base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
-    const auto kAndroidOrigin = url::Origin::Create(AndroidUrl());
-    const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
-    const auto kTestOrigin = url::Origin::Create(TestUrl());
+    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
+    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
+    const auto kTestOrigin = url::Origin::Create(kTestUrl);
 
     // Add the user granted permissions for testing. "Gizmo" is allowed on two
     // origins, one overlapping with the policy and one distinct. "Gadget" is
@@ -732,9 +761,8 @@ void ExpectDisplayNameEq(const base::Value& actual_exception_object,
 
 TEST_F(SiteSettingsHelperChooserExceptionTest,
        GetChooserExceptionListFromProfile) {
-  const std::string kUsbChooserGroupName =
-      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA)
-          .as_string();
+  const std::string kUsbChooserGroupName(
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
   const ChooserTypeNameEntry* chooser_type =
       ChooserTypeFromGroupName(kUsbChooserGroupName);
   const std::string& kPolicySource =
@@ -747,9 +775,8 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
   // origin and the embedding origin. User granted permissions that are also
   // granted by policy are combined with the policy so that duplicate
   // permissions are not displayed.
-  base::Value exceptions =
+  base::Value::List exceptions_list =
       GetChooserExceptionListFromProfile(profile(), *chooser_type);
-  base::Value::ConstListView exceptions_list = exceptions.GetList();
   ASSERT_EQ(exceptions_list.size(), 4u);
 
   // This exception should describe the permissions for any device with the
@@ -764,7 +791,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
-                                   /*origin=*/AndroidUrl(),
+                                   /*origin=*/kAndroidUrl,
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
   }
@@ -781,7 +808,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
-                                   /*origin=*/GoogleUrl(),
+                                   /*origin=*/kGoogleUrl,
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
   }
@@ -798,7 +825,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
-                                   /*origin=*/AndroidUrl(),
+                                   /*origin=*/kAndroidUrl,
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
   }
@@ -819,11 +846,11 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ASSERT_EQ(sites_list.size(), 2u);
     ExpectValidSiteExceptionObject(sites_list[0],
-                                   /*origin=*/ChromiumUrl(),
+                                   /*origin=*/kChromiumUrl,
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
     ExpectValidSiteExceptionObject(sites_list[1],
-                                   /*origin=*/TestUrl(),
+                                   /*origin=*/kTestUrl,
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }

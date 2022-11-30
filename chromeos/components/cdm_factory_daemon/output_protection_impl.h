@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,10 +46,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) OutputProtectionImpl
     virtual display::ContentProtectionManager::ClientId RegisterClient() = 0;
     virtual void UnregisterClient(
         display::ContentProtectionManager::ClientId client_id) = 0;
-
-    // Delegate to ash::screen::GetScreen().
-    virtual void AddObserver(display::DisplayObserver* observer) = 0;
-    virtual void RemoveObserver(display::DisplayObserver* observer) = 0;
 
     // Delegate to display::DisplayConfigurator.
     virtual const std::vector<display::DisplaySnapshot*>& cached_displays()
@@ -112,6 +108,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) OutputProtectionImpl
 
   std::unique_ptr<DisplaySystemDelegate> delegate_;
   display::ContentProtectionManager::ClientId client_id_;
+
+  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 
   std::vector<int64_t> display_id_list_;
 

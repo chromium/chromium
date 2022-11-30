@@ -1,10 +1,12 @@
-from .base import Browser, ExecutorBrowser, require_arg
+# mypy: allow-untyped-defs
+
+from .base import require_arg
 from .base import get_timeout_multiplier   # noqa: F401
-from ..webdriver_server import OperaDriverServer
+from .chrome import ChromeBrowser
 from ..executors import executor_kwargs as base_executor_kwargs
+from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
                                           SeleniumRefTestExecutor)  # noqa: F401
-from ..executors.executoropera import OperaDriverWdspecExecutor  # noqa: F401
 
 
 __wptrunner__ = {"product": "opera",
@@ -12,7 +14,7 @@ __wptrunner__ = {"product": "opera",
                  "browser": "OperaBrowser",
                  "executor": {"testharness": "SeleniumTestharnessExecutor",
                               "reftest": "SeleniumRefTestExecutor",
-                              "wdspec": "OperaDriverWdspecExecutor"},
+                              "wdspec": "WdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -30,12 +32,11 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "webdriver_args": kwargs.get("webdriver_args")}
 
 
-def executor_kwargs(logger, test_type, server_config, cache_manager, run_info_data,
+def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
     from selenium.webdriver import DesiredCapabilities
 
-    executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, run_info_data, **kwargs)
+    executor_kwargs = base_executor_kwargs(test_type, test_environment, run_info_data, **kwargs)
     executor_kwargs["close_after_done"] = True
     capabilities = dict(DesiredCapabilities.OPERA.items())
     capabilities.setdefault("operaOptions", {})["prefs"] = {
@@ -65,38 +66,5 @@ def env_options():
     return {}
 
 
-class OperaBrowser(Browser):
-    """Opera is backed by operadriver, which is supplied through
-    ``wptrunner.webdriver.OperaDriverServer``.
-    """
-
-    def __init__(self, logger, binary, webdriver_binary="operadriver",
-                 webdriver_args=None, **kwargs):
-        """Creates a new representation of Opera.  The `binary` argument gives
-        the browser binary to use for testing."""
-        Browser.__init__(self, logger)
-        self.binary = binary
-        self.server = OperaDriverServer(self.logger,
-                                        binary=webdriver_binary,
-                                        args=webdriver_args)
-
-    def start(self, **kwargs):
-        self.server.start(block=False)
-
-    def stop(self, force=False):
-        self.server.stop(force=force)
-
-    def pid(self):
-        return self.server.pid
-
-    def is_alive(self):
-        # TODO(ato): This only indicates the driver is alive,
-        # and doesn't say anything about whether a browser session
-        # is active.
-        return self.server.is_alive()
-
-    def cleanup(self):
-        self.stop()
-
-    def executor_browser(self):
-        return ExecutorBrowser, {"webdriver_url": self.server.url}
+class OperaBrowser(ChromeBrowser):
+    pass
